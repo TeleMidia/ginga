@@ -22,67 +22,51 @@ GINGA_PRAGMA_DIAG_PUSH ()
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 GINGA_PRAGMA_DIAG_IGNORE (-Wundef)
 #include <xercesc/dom/DOM.hpp>
-#include <xercesc/framework/LocalFileInputSource.hpp>
-#include <xercesc/framework/MemBufInputSource.hpp>
-#include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/sax/ErrorHandler.hpp>
-#include <xercesc/sax/SAXException.hpp>
 #include <xercesc/sax/SAXParseException.hpp>
-#include <xercesc/util/XercesDefs.hpp>
 XERCES_CPP_NAMESPACE_USE
 GINGA_PRAGMA_DIAG_POP ()
 
-#include "ncl/NclDocument.h"
-#include "ncl/TransitionUtil.h"
-#include "ncl/Rule.h"
-#include "ncl/SimpleRule.h"
-#include "ncl/CompositeRule.h"
-#include "ncl/ContentNode.h"
-#include "ncl/AbsoluteReferenceContent.h"
-#include "ncl/CausalConnector.h"
-#include "ncl/ValueAssessment.h"
-#include "ncl/SwitchNode.h"
-#include "ncl/SpatialAnchor.h"
-#include "ncl/TextAnchor.h"
-#include "ncl/LabeledAnchor.h"
-#include "ncl/RectangleSpatialAnchor.h"
-#include "ncl/CausalLink.h"
-#include "ncl/ReferredNode.h"
-#include "ncl/Comparator.h"
-#include "ncl/Descriptor.h"
-using namespace ginga::ncl;
+#include "NclDocument.h"
+#include "TransitionUtil.h"
+#include "Rule.h"
+#include "SimpleRule.h"
+#include "CompositeRule.h"
+#include "AbsoluteReferenceContent.h"
+#include "CausalConnector.h"
+#include "ValueAssessment.h"
+#include "SwitchNode.h"
+#include "SpatialAnchor.h"
+#include "TextAnchor.h"
+#include "LabeledAnchor.h"
+#include "RectangleSpatialAnchor.h"
+#include "CausalLink.h"
+#include "ReferredNode.h"
+#include "Comparator.h"
+#include "Descriptor.h"
 
-#include <vector>
-using namespace std;
+GINGA_NCL_BEGIN
 
-GINGA_FORMATTER_BEGIN
-
-class NclParser : public ErrorHandler
+class Parser : public ErrorHandler
 {
 public:
-  NclParser ();
-  ~NclParser ();
-
-  void warning (const SAXParseException &);
-  void error (const SAXParseException &);
-  void fatalError (const SAXParseException &);
-  void resetErrors () {};
-
-  NclDocument *parse (const string &);
+  static NclDocument *parse (const string &, int, int);
 
 private:
   NclDocument *_doc;            // NCL document
   string _path;                 // document's absolute path
   string _dirname;              // directory part of document's path
+  int _width;                   // screen width (in pixels)
+  int _height;                  // screen height (in pixels)
 
-  NclDocument *importDocument (string &);
-  void solveNodeReferences (CompositeNode *);
-  vector<Node *> *getSwitchConstituents (SwitchNode *);
+  Parser (int, int);
+  ~Parser ();
+  NclDocument *parse0 (const string &);
 
-  // --------------------------------------------------------------
   void parseNcl (DOMElement *);
   void parseHead (DOMElement *);
 
+  NclDocument *parse1 (const string &);
   NclDocument *parseImportNCL (DOMElement *, string *, string *);
   Base *parseImportBase (DOMElement *, NclDocument **, string *, string *);
   void parseImportedDocumentBase (DOMElement *);
@@ -114,13 +98,14 @@ private:
   SimpleAction *parseSimpleAction (DOMElement *);
 
   ContextNode *parseBody (DOMElement *);
+  void solveNodeReferences (CompositeNode *);
   void posCompileContext (DOMElement *, ContextNode *);
   void posCompileSwitch (DOMElement *, SwitchNode *);
 
   Node *parseContext (DOMElement *);
   Port *parsePort (DOMElement *, CompositeNode *);
 
-  map<string, map<string, Node *> *> _switchConstituents; // FIXME
+  map<string, map<string, Node *> *> _switchMap; // FIXME
   Node *parseSwitch (DOMElement *);
   Node *parseBindRule (DOMElement *, CompositeNode *, Rule **);
   SwitchPort *parseSwitchPort (DOMElement *, SwitchNode *);
@@ -134,8 +119,14 @@ private:
   Parameter *parseLinkParam (DOMElement *);
   Bind *parseBind (DOMElement *, Link *, CompositeNode *);
   Parameter *parseBindParam (DOMElement *);
+
+  // From ErrorHandler.
+  void warning (const SAXParseException &);
+  void error (const SAXParseException &);
+  void fatalError (const SAXParseException &);
+  void resetErrors () {};
 };
 
-GINGA_FORMATTER_END
+GINGA_NCL_END
 
-#endif /*PARSER_H*/
+#endif // PARSER_H

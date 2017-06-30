@@ -19,8 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Scheduler.h"
 
 #include "Converter.h"
-#include "Parser.h"
 
+#include "ncl/Parser.h"
 #include "mb/Display.h"
 
 GINGA_FORMATTER_BEGIN
@@ -542,11 +542,11 @@ Scheduler::startDocument (const string &file)
   vector<Port *> *ports;
   vector<NclEvent *> *entryevts;
   NclNodeNesting *persp;
+  int w, h;
 
   // Parse document.
-  NclParser parser;
-  _file = xpathmakeabs (file);
-  _doc = parser.parse (file);
+  Ginga_Display->getSize (&w, &h);
+  _doc = Parser::parse (file, w, h);
   g_assert_nonnull (_doc);
 
   id = _doc->getId ();

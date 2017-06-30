@@ -18,23 +18,22 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "Parser.h"
 
-#include "mb/Display.h"
-using namespace ginga::mb;
+GINGA_PRAGMA_DIAG_PUSH ()
+GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
+GINGA_PRAGMA_DIAG_IGNORE (-Wundef)
+#include <xercesc/framework/LocalFileInputSource.hpp>
+#include <xercesc/parsers/XercesDOMParser.hpp>
+XERCES_CPP_NAMESPACE_USE
+GINGA_PRAGMA_DIAG_POP ()
 
-GINGA_PRAGMA_DIAG_IGNORE (-Wunused-macros)
-
-GINGA_FORMATTER_BEGIN
+GINGA_NCL_BEGIN
 
 
 // Xerces wrappers.
 
-/**
- * @brief Gets element tagname.
- * @param elt Element.
- * @return Element tagname.
- */
+// Gets element tag.
 static string
-dom_element_tagname (const DOMElement *elt)
+dom_elt_get_tag (const DOMElement *elt)
 {
   char *str = XMLString::transcode (elt->getTagName ());
   string tagname (str);
@@ -42,14 +41,9 @@ dom_element_tagname (const DOMElement *elt)
   return tagname;
 }
 
-/**
- * @brief Tests if element has a given attribute.
- * @param elt Element.
- * @param name Attribute name.
- * @return True if element has attribute, or false otherwise.
- */
+// Tests if element has a given attribute.
 static bool
-dom_element_has_attr (const DOMElement *elt, const string &name)
+dom_elt_has_attribute (const DOMElement *elt, const string &name)
 {
   XMLCh *xmlch = XMLString::transcode (name.c_str ());
   bool result = elt->hasAttribute (xmlch);
@@ -57,14 +51,9 @@ dom_element_has_attr (const DOMElement *elt, const string &name)
   return result;
 }
 
-/**
- * @brief Gets element attribute.
- * @param elt Element.
- * @param name Attribute name.
- * @return Attribute value or the empty string (no such attribute).
- */
+// Gets element attribute.
 static string
-dom_element_get_attr (const DOMElement *elt, const string &name)
+dom_elt_get_attribute (const DOMElement *elt, const string &name)
 {
   XMLCh *xmlch = XMLString::transcode (name.c_str ());
   char *str = XMLString::transcode (elt->getAttribute (xmlch));
@@ -74,15 +63,9 @@ dom_element_get_attr (const DOMElement *elt, const string &name)
   return value;
 }
 
-/**
- * @brief Gets element attribute.
- * @param elt Element.
- * @param name Attribute name.
- * @param value Address to store the attribute value.
- * @return True if successful, or false otherwise.
- */
+// Gets element attribute.
 static bool
-dom_element_try_get_attr (string &value, const DOMElement *elt,
+dom_elt_try_get_attribute (string &value, const DOMElement *elt,
                           const string &name)
 {
   XMLCh *xmlch;
@@ -104,38 +87,15 @@ dom_element_try_get_attr (string &value, const DOMElement *elt,
   return status;
 }
 
-#define FOR_EACH_DOM_ELEM_CHILD(X, Y) \
-  for ( X = Y->getFirstElementChild(); \
-        X != nullptr; \
-        X = X->getNextElementSibling())
-
+// Gets element children.
 static vector <DOMElement *>
-dom_element_children (DOMElement *el)
+dom_elt_get_children (DOMElement *elt)
 {
   vector <DOMElement *> vet;
-
-  DOMElement *child;
-  FOR_EACH_DOM_ELEM_CHILD(child, el)
+  for (DOMElement *child = elt->getFirstElementChild ();
+       child != nullptr; child = child->getNextElementSibling ())
     {
       vet.push_back(child);
-    }
-
-  return vet;
-}
-
-static G_GNUC_UNUSED vector <DOMElement *>
-dom_element_children_by_tagnames (DOMElement *elt,
-                                  const vector<string> &tags)
-{
-  vector <DOMElement *> vet;
-  DOMElement *child;
-  FOR_EACH_DOM_ELEM_CHILD(child, elt)
-    {
-      if (std::find (tags.begin (), tags.end (),
-                     dom_element_tagname (child)) != tags.end())
-        {
-          vet.push_back (child);
-        }
     }
   return vet;
 }
@@ -147,9 +107,9 @@ static inline string
 __error_elt (const DOMElement *elt)
 {
   string id = "";
-  if (dom_element_try_get_attr (id, (elt), "id"))
+  if (dom_elt_try_get_attribute (id, (elt), "id"))
     id = " id='" + id + "'";
-  return "<" + dom_element_tagname (elt) + id + ">";
+  return "<" + dom_elt_get_tag (elt) + id + ">";
 }
 
 #define ERROR_SYNTAX_ELT(elt, fmt, ...)\
@@ -158,7 +118,7 @@ __error_elt (const DOMElement *elt)
 #define ERROR_SYNTAX_ELT_BAD_ATTRIBUTE(elt, name)                       \
   ERROR_SYNTAX_ELT ((elt), "bad value for attribute '%s': '%s'",        \
                     string ((name)).c_str (),                           \
-                    dom_element_get_attr ((elt), (name)).c_str ())
+                    dom_elt_get_attribute ((elt), (name)).c_str ())
 
 #define ERROR_SYNTAX_ELT_MISSING_ATTRIBUTE(elt, name)           \
   ERROR_SYNTAX_ELT ((elt), "missing required attribute '%s'",   \
@@ -178,7 +138,7 @@ __error_elt (const DOMElement *elt)
 #define CHECK_ELT_TAG(elt, expected, pvalue)                            \
   G_STMT_START                                                          \
   {                                                                     \
-    string result = dom_element_tagname ((elt));                        \
+    string result = dom_elt_get_tag ((elt));                            \
     string expect = (expected);                                         \
     if (unlikely (result != expect))                                    \
       ERROR_SYNTAX_ELT ((elt), "bad tagname '%s' (expected '%s')",      \
@@ -191,7 +151,7 @@ __error_elt (const DOMElement *elt)
   G_STMT_START                                                          \
   {                                                                     \
     string result;                                                      \
-    if (unlikely (!dom_element_try_get_attr (result, (elt), (name))))   \
+    if (unlikely (!dom_elt_try_get_attribute (result, (elt), (name))))  \
       ERROR_SYNTAX_ELT_MISSING_ATTRIBUTE ((elt), (name));               \
     set_if_nonnull ((pvalue), result);                                  \
   }                                                                     \
@@ -200,7 +160,7 @@ __error_elt (const DOMElement *elt)
 #define CHECK_ELT_ATTRIBUTE_NOT_SUPPORTED(elt, name)                    \
   G_STMT_START                                                          \
   {                                                                     \
-    if (unlikely (dom_element_has_attr ((elt), (name))))                \
+    if (unlikely (dom_elt_has_attribute ((elt), (name))))               \
       ERROR_NOT_IMPLEMENTED ("%s: attribute '%s' is not supported",     \
                              __error_elt ((elt)).c_str (),              \
                              string ((name)).c_str ());                 \
@@ -211,7 +171,7 @@ __error_elt (const DOMElement *elt)
   G_STMT_START                                                  \
   {                                                             \
     string result;                                              \
-    if (!dom_element_try_get_attr (result, (elt), (name)))      \
+    if (!dom_elt_try_get_attribute (result, (elt), (name)))     \
       result = (default);                                       \
     set_if_nonnull ((pvalue), result);                          \
   }                                                             \
@@ -221,7 +181,7 @@ __error_elt (const DOMElement *elt)
   G_STMT_START                                                          \
   {                                                                     \
     string result;                                                      \
-    if (unlikely (!dom_element_try_get_attr (result, (elt), "id")))     \
+    if (unlikely (!dom_elt_try_get_attribute (result, (elt), "id")))    \
       ERROR_SYNTAX_ELT_MISSING_ID ((elt));                              \
     if (unlikely (_doc->getNode (result) != nullptr))                   \
       ERROR_SYNTAX_ELT_DUPLICATED_ID ((elt), result);                   \
@@ -229,26 +189,27 @@ __error_elt (const DOMElement *elt)
   }                                                                     \
   G_STMT_END
 
-#define CHECK_ELT_OPT_ID(elt, pvalue, default)                          \
-  G_STMT_START                                                          \
-  {                                                                     \
-    string result;                                                      \
-    if (dom_element_try_get_attr (result, (elt), "id"))                 \
-      {                                                                 \
-        if (unlikely (_doc->getNode (result) != nullptr))               \
-          ERROR_SYNTAX_ELT_DUPLICATED_ID ((elt), result);               \
-      }                                                                 \
-    else                                                                \
-      {                                                                 \
-        result = (default);                                             \
-      }                                                                 \
-    set_if_nonnull ((pvalue), result);                                  \
-  }                                                                     \
+#define CHECK_ELT_OPT_ID(elt, pvalue, default)                  \
+  G_STMT_START                                                  \
+  {                                                             \
+    string result;                                              \
+    if (dom_elt_try_get_attribute (result, (elt), "id"))        \
+      {                                                         \
+        if (unlikely (_doc->getNode (result) != nullptr))       \
+          ERROR_SYNTAX_ELT_DUPLICATED_ID ((elt), result);       \
+      }                                                         \
+    else                                                        \
+      {                                                         \
+        result = (default);                                     \
+      }                                                         \
+    set_if_nonnull ((pvalue), result);                          \
+  }                                                             \
   G_STMT_END
 
 
 // Translation tables.
 
+// Reserved conditions.
 static map<string, pair<int,int>> reserved_condition_table =
   {
    {"onBegin",
@@ -277,6 +238,7 @@ static map<string, pair<int,int>> reserved_condition_table =
      (int) EventStateTransition::STARTS}},
   };
 
+// Reserved actions.
 static map<string, pair<int,int>> reserved_action_table =
   {
    {"start",
@@ -299,6 +261,7 @@ static map<string, pair<int,int>> reserved_action_table =
      (int) ACT_START}},
   };
 
+// Maps event type name to event type code.
 static map<string, EventType> event_type_table =
   {
    {"presentation", EventType::PRESENTATION},
@@ -306,6 +269,7 @@ static map<string, EventType> event_type_table =
    {"selection", EventType::SELECTION},
   };
 
+// Maps condition name to condition code.
 static map<string, EventStateTransition> event_transition_table =
   {
    {"starts", EventStateTransition::STARTS},
@@ -315,6 +279,7 @@ static map<string, EventStateTransition> event_transition_table =
    {"resumes", EventStateTransition::RESUMES},
   };
 
+// Maps action name to action code.
 static map<string, SimpleActionType> event_action_type_table =
   {
    {"start", ACT_START},
@@ -327,65 +292,40 @@ static map<string, SimpleActionType> event_action_type_table =
 
 // Public.
 
-NclParser::NclParser ()
+/**
+ * @brief Parses NCL document.
+ * @param path Document path.
+ * @param width Initial screen width (in pixels).
+ * @param height Initial screen width (in pixels).
+ * @return The resulting document.
+ */
+NclDocument *
+Parser::parse (const string &path, int width, int height)
 {
-  _doc = nullptr;
+  Parser parser (width, height);
+  return parser.parse0 (path);
 }
 
-NclParser::~NclParser ()
+
+// Private.
+
+Parser::Parser (int width, int height)
 {
-  for (auto i : _switchConstituents)
+  _doc = nullptr;
+  g_assert_cmpint (width, >, 0);
+  _width = width;
+  g_assert_cmpint (height, >, 0);
+  _height = height;
+}
+
+Parser::~Parser ()
+{
+  for (auto i: _switchMap)
     delete i.second;
 }
 
-void
-NclParser::warning (const SAXParseException &e)
-{
-  char *file = XMLString::transcode (e.getSystemId ());
-  char *errmsg = XMLString::transcode (e.getMessage ());
-  if (file == nullptr || strlen (file) == 0)
-    {
-      g_warning ("%s", errmsg);
-    }
-  else
-    {
-      g_warning ("%s:%u.%u: %s", file,
-                 (guint) e.getLineNumber (),
-                 (guint) e.getColumnNumber (),
-                 errmsg);
-    }
-  XMLString::release (&file);
-  XMLString::release (&errmsg);
-}
-
-void G_GNUC_NORETURN
-NclParser::error (const SAXParseException &e)
-{
-  char *file = XMLString::transcode (e.getSystemId ());
-  char *errmsg = XMLString::transcode (e.getMessage ());
-  if (file == nullptr || strlen (file) == 0)
-    {
-      g_error ("%s", errmsg);
-    }
-  else
-    {
-      g_error ("%s:%u.%u: %s", file,
-               (guint) e.getLineNumber (),
-               (guint) e.getColumnNumber (),
-               errmsg);
-    }
-  XMLString::release (&file);
-  XMLString::release (&errmsg);
-}
-
-void
-NclParser::fatalError (const SAXParseException &e)
-{
-  this->error (e);
-}
-
 NclDocument *
-NclParser::parse (const string &path)
+Parser::parse0 (const string &path)
 {
   DOMDocument *dom;
   DOMElement *elt;
@@ -431,115 +371,8 @@ NclParser::parse (const string &path)
   return _doc;
 }
 
-NclDocument *
-NclParser::importDocument (string &path)
-{
-  NclParser compiler;
-  if (!xpathisuri (path) && !xpathisabs (path))
-    path = xpathbuildabs (_dirname, path);
-  return compiler.parse (path);
-}
-
-// STRUCTURE
-
 void
-NclParser::solveNodeReferences (CompositeNode *composition)
-{
-  NodeEntity *nodeEntity;
-  Entity *referredNode;
-  vector<Node *> *nodes;
-  bool deleteNodes = false;
-
-  if (instanceof (SwitchNode *, composition))
-    {
-      deleteNodes = true;
-      nodes = getSwitchConstituents ((SwitchNode *)composition);
-    }
-  else
-    {
-      nodes = composition->getNodes ();
-    }
-
-  if (nodes)
-    {
-      return;
-    }
-
-  for (Node *node : *nodes)
-  {
-    if (node != NULL)
-      {
-        if (instanceof (ReferNode *, node))
-          {
-            referredNode = ((ReferNode *)node)->getReferredEntity ();
-            if (referredNode != NULL)
-              {
-                if (instanceof (ReferredNode *, referredNode))
-                  {
-                    nodeEntity = (NodeEntity *)(_doc->getNode (
-                                                  referredNode->getId ()));
-                    if (nodeEntity)
-                      {
-                        ((ReferNode *)node)
-                            ->setReferredEntity (nodeEntity
-                                                 ->getDataEntity ());
-                      }
-                    else
-                      {
-                        ERROR_SYNTAX ("<media '%s'>: bad value to attribute refer '%s'",
-                                      node->getId ().c_str (),
-                                      referredNode->getId ().c_str ());
-                      }
-                  }
-              }
-          }
-        else if (instanceof (CompositeNode *, node))
-          {
-            solveNodeReferences ((CompositeNode *)node);
-          }
-      }
-  }
-  if (deleteNodes)
-    delete nodes;
-}
-
-// COMPONENTS
-
-
-// PRESENTATION_CONTROL
-
-
-vector<Node *> *
-NclParser::getSwitchConstituents (SwitchNode *switchNode)
-{
-  map<string, map<string, Node *> *>::iterator i;
-  map<string, Node *> *hTable;
-  map<string, Node *>::iterator j;
-
-  vector<Node *> *ret = new vector<Node *>;
-
-  i = _switchConstituents.find (switchNode->getId ());
-  if (i != _switchConstituents.end ())
-    {
-      hTable = i->second;
-
-      j = hTable->begin ();
-      while (j != hTable->end ())
-        {
-          ret->push_back ((Node *)j->second);
-          ++j;
-        }
-    }
-
-  // Users: you have to delete this vector after using it
-  return ret;
-}
-
-
-// -------------------------------------------------------------------------
-
-void
-NclParser::parseNcl (DOMElement *elt)
+Parser::parseNcl (DOMElement *elt)
 {
   string id;
 
@@ -547,9 +380,9 @@ NclParser::parseNcl (DOMElement *elt)
   CHECK_ELT_OPT_ATTRIBUTE (elt, "id", &id, "ncl");
 
   _doc = new NclDocument (id, _path);
-  for (DOMElement *child: dom_element_children (elt))
+  for (DOMElement *child: dom_elt_get_children (elt))
     {
-      string tag = dom_element_tagname (child);
+      string tag = dom_elt_get_tag (child);
       if (tag == "head")
         {
           this->parseHead (child);
@@ -572,13 +405,13 @@ NclParser::parseNcl (DOMElement *elt)
 // Head.
 
 void
-NclParser::parseHead (DOMElement *elt)
+Parser::parseHead (DOMElement *elt)
 {
   CHECK_ELT_TAG (elt, "head", nullptr);
 
-  for (DOMElement *child: dom_element_children (elt))
+  for (DOMElement *child: dom_elt_get_children (elt))
     {
-      string tag = dom_element_tagname (child);
+      string tag = dom_elt_get_tag (child);
       if (tag == "importedDocumentBase")
         {
           this->parseImportedDocumentBase (child);
@@ -624,20 +457,26 @@ NclParser::parseHead (DOMElement *elt)
 // Private: Import.
 
 NclDocument *
-NclParser::parseImportNCL (DOMElement *elt, string *alias, string *uri)
+Parser::parse1 (const string &path)
+{
+  Parser parser (_width, _height);
+  return parser.parse0 ((!xpathisuri (path) && !xpathisabs (path))
+                        ? xpathbuildabs (_dirname, path) : path);
+}
+
+NclDocument *
+Parser::parseImportNCL (DOMElement *elt, string *alias, string *uri)
 {
   g_assert_nonnull (alias);
   g_assert_nonnull (uri);
-
   CHECK_ELT_TAG (elt, "importNCL", nullptr);
   CHECK_ELT_ATTRIBUTE (elt, "alias", alias);
   CHECK_ELT_ATTRIBUTE (elt, "documentURI", uri);
-
-  return this->importDocument (*uri);
+  return this->parse1 (*uri);
 }
 
 Base *
-NclParser::parseImportBase (DOMElement *elt, NclDocument **doc,
+Parser::parseImportBase (DOMElement *elt, NclDocument **doc,
                             string *alias, string *uri)
 {
   DOMElement *parent;
@@ -651,13 +490,13 @@ NclParser::parseImportBase (DOMElement *elt, NclDocument **doc,
   CHECK_ELT_ATTRIBUTE (elt, "alias", alias);
   CHECK_ELT_ATTRIBUTE (elt, "documentURI", uri);
 
-  *doc = this->importDocument (*uri);
+  *doc = this->parse1 (*uri);
   g_assert_nonnull (*doc);
 
   parent = (DOMElement*) elt->getParentNode ();
   g_assert_nonnull (parent);
 
-  tag = dom_element_tagname (parent);
+  tag = dom_elt_get_tag (parent);
   if (tag == "ruleBase")
     return (*doc)->getRuleBase ();
   else if (tag == "transitionBase")
@@ -673,11 +512,11 @@ NclParser::parseImportBase (DOMElement *elt, NclDocument **doc,
 }
 
 void
-NclParser::parseImportedDocumentBase (DOMElement *elt)
+Parser::parseImportedDocumentBase (DOMElement *elt)
 {
-  for (DOMElement *child: dom_element_children (elt))
+  for (DOMElement *child: dom_elt_get_children (elt))
     {
-      string tag = dom_element_tagname (elt);
+      string tag = dom_elt_get_tag (elt);
       if (tag == "importNCL")
         {
           NclDocument *imported;
@@ -697,7 +536,7 @@ NclParser::parseImportedDocumentBase (DOMElement *elt)
 // Private: Rule.
 
 RuleBase *
-NclParser::parseRuleBase (DOMElement *elt)
+Parser::parseRuleBase (DOMElement *elt)
 {
   RuleBase *base;
   string id;
@@ -706,9 +545,9 @@ NclParser::parseRuleBase (DOMElement *elt)
   CHECK_ELT_OPT_ID (elt, &id, "");
 
   base = new RuleBase (id);
-  for (DOMElement *child: dom_element_children (elt))
+  for (DOMElement *child: dom_elt_get_children (elt))
     {
-      string tag = dom_element_tagname (child);
+      string tag = dom_elt_get_tag (child);
       if ( tag == "importBase")
         {
           NclDocument *doc;     // FIXME: this is lost (leak?)
@@ -736,7 +575,7 @@ NclParser::parseRuleBase (DOMElement *elt)
 }
 
 CompositeRule *
-NclParser::parseCompositeRule (DOMElement *elt)
+Parser::parseCompositeRule (DOMElement *elt)
 {
   CompositeRule *rule;
   string id;
@@ -755,9 +594,9 @@ NclParser::parseCompositeRule (DOMElement *elt)
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "operator");
 
   rule = new CompositeRule (id, op);
-  for (DOMElement *child: dom_element_children (elt))
+  for (DOMElement *child: dom_elt_get_children (elt))
     {
-      string tag = dom_element_tagname (child);
+      string tag = dom_elt_get_tag (child);
       if (tag == "rule")
         {
           rule->addRule (this->parseRule (child));
@@ -775,7 +614,7 @@ NclParser::parseCompositeRule (DOMElement *elt)
 }
 
 SimpleRule *
-NclParser::parseRule (DOMElement *elt)
+Parser::parseRule (DOMElement *elt)
 {
   string id;
   string var;
@@ -792,7 +631,7 @@ NclParser::parseRule (DOMElement *elt)
 // Private: Transition.
 
 TransitionBase *
-NclParser::parseTransitionBase (DOMElement *elt)
+Parser::parseTransitionBase (DOMElement *elt)
 {
   TransitionBase *base;
   string id;
@@ -801,9 +640,9 @@ NclParser::parseTransitionBase (DOMElement *elt)
   CHECK_ELT_OPT_ID (elt, &id, "");
 
   base = new TransitionBase (id);
-  for(DOMElement *child: dom_element_children (elt))
+  for(DOMElement *child: dom_elt_get_children (elt))
     {
-      string tag = dom_element_tagname (child);
+      string tag = dom_elt_get_tag (child);
       if (tag == "importBase")
         {
           NclDocument *doc;     // FIXME: this is lost (leak?)
@@ -829,7 +668,7 @@ NclParser::parseTransitionBase (DOMElement *elt)
 }
 
 Transition *
-NclParser::parseTransition (DOMElement *elt)
+Parser::parseTransition (DOMElement *elt)
 {
   Transition *trans;
   string id;
@@ -846,40 +685,40 @@ NclParser::parseTransition (DOMElement *elt)
 
   trans = new Transition (id, type);
 
-  if (dom_element_try_get_attr (value, elt, "subtype"))
+  if (dom_elt_try_get_attribute (value, elt, "subtype"))
     {
       int subtype = TransitionUtil::getSubtypeCode (type, value);
       trans->setSubtype (CLAMP (subtype, 0, G_MAXINT));
     }
 
-  if (dom_element_try_get_attr (value, elt, "dur"))
+  if (dom_elt_try_get_attribute (value, elt, "dur"))
     trans->setDuration (ginga_parse_time (value));
 
-  if (dom_element_try_get_attr (value, elt, "startProgress"))
+  if (dom_elt_try_get_attribute (value, elt, "startProgress"))
     trans->setStartProgress (xstrtod (value));
 
-  if (dom_element_try_get_attr (value, elt, "endProgress"))
+  if (dom_elt_try_get_attribute (value, elt, "endProgress"))
     trans->setEndProgress (xstrtod (value));
 
-  if (dom_element_try_get_attr (value, elt, "direction"))
+  if (dom_elt_try_get_attribute (value, elt, "direction"))
     {
       int dir = TransitionUtil::getDirectionCode (value);
       trans->setDirection ((short) CLAMP (dir, 0, G_MAXINT));
     }
 
-  if (dom_element_try_get_attr (value, elt, "fadeColor"))
+  if (dom_elt_try_get_attribute (value, elt, "fadeColor"))
     trans->setFadeColor (ginga_parse_color (value));
 
-  if (dom_element_try_get_attr (value, elt, "horzRepeat"))
+  if (dom_elt_try_get_attribute (value, elt, "horzRepeat"))
     trans->setHorzRepeat (xstrtoint (value, 10));
 
-  if (dom_element_try_get_attr (value, elt, "vertRepeat"))
+  if (dom_elt_try_get_attribute (value, elt, "vertRepeat"))
     trans->setVertRepeat (xstrtoint (value, 10));
 
-  if (dom_element_try_get_attr (value, elt, "borderWidth"))
+  if (dom_elt_try_get_attribute (value, elt, "borderWidth"))
     trans->setBorderWidth (xstrtoint (value, 10));
 
-  if (dom_element_try_get_attr (value, elt, "borderColor"))
+  if (dom_elt_try_get_attribute (value, elt, "borderColor"))
     trans->setBorderColor (ginga_parse_color (value));
 
   return trans;
@@ -889,7 +728,7 @@ NclParser::parseTransition (DOMElement *elt)
 // Private: Region.
 
 RegionBase *
-NclParser::parseRegionBase (DOMElement *elt)
+Parser::parseRegionBase (DOMElement *elt)
 {
   RegionBase *base;
   string id;
@@ -898,9 +737,9 @@ NclParser::parseRegionBase (DOMElement *elt)
   CHECK_ELT_OPT_ID (elt, &id, "");
 
   base = new RegionBase (id);
-  for (DOMElement *child: dom_element_children (elt))
+  for (DOMElement *child: dom_elt_get_children (elt))
     {
-      string tag = dom_element_tagname (child);
+      string tag = dom_elt_get_tag (child);
       if (tag == "importBase")
         {
           NclDocument *doc;     // FIXME: this is lost (leak?)
@@ -926,7 +765,7 @@ NclParser::parseRegionBase (DOMElement *elt)
 }
 
 LayoutRegion *
-NclParser::parseRegion (DOMElement *elt, RegionBase *base,
+Parser::parseRegion (DOMElement *elt, RegionBase *base,
                         LayoutRegion *parent)
 {
   LayoutRegion *region;
@@ -951,37 +790,38 @@ NclParser::parseRegion (DOMElement *elt, RegionBase *base,
     {
       parent_rect.x = 0;
       parent_rect.y = 0;
-      Ginga_Display->getSize (&parent_rect.w, &parent_rect.h);
+      parent_rect.w = _width;
+      parent_rect.h = _height;
     }
 
   rect = parent_rect;
   z = zorder = 0;
 
-  if (dom_element_try_get_attr (value, elt, "left"))
+  if (dom_elt_try_get_attribute (value, elt, "left"))
     rect.x += ginga_parse_percent (value, parent_rect.w, 0, G_MAXINT);
 
-  if (dom_element_try_get_attr (value, elt, "top"))
+  if (dom_elt_try_get_attribute (value, elt, "top"))
     rect.y += ginga_parse_percent (value, parent_rect.h, 0, G_MAXINT);
 
-  if (dom_element_try_get_attr (value, elt, "width"))
+  if (dom_elt_try_get_attribute (value, elt, "width"))
     rect.w = ginga_parse_percent (value, parent_rect.w, 0, G_MAXINT);
 
-  if (dom_element_try_get_attr (value, elt, "height"))
+  if (dom_elt_try_get_attribute (value, elt, "height"))
     rect.h = ginga_parse_percent (value, parent_rect.h, 0, G_MAXINT);
 
-  if (dom_element_try_get_attr (value, elt, "right"))
+  if (dom_elt_try_get_attribute (value, elt, "right"))
     {
     rect.x += parent_rect.w - rect.w
       - ginga_parse_percent (value, parent_rect.w, 0, G_MAXINT);
     }
 
-  if (dom_element_try_get_attr (value, elt, "bottom"))
+  if (dom_elt_try_get_attribute (value, elt, "bottom"))
     {
       rect.y += parent_rect.h - rect.h
         - ginga_parse_percent (value, parent_rect.h, 0, G_MAXINT);
     }
 
-  if (dom_element_try_get_attr (value, elt, "zIndex"))
+  if (dom_elt_try_get_attribute (value, elt, "zIndex"))
     z = xstrtoint (value, 10);
   zorder = last_zorder++;
 
@@ -989,9 +829,9 @@ NclParser::parseRegion (DOMElement *elt, RegionBase *base,
   region->setZ (z, zorder);
 
   // Collect children.
-  for (DOMElement *child: dom_element_children (elt))
+  for (DOMElement *child: dom_elt_get_children (elt))
     {
-      string tag = dom_element_tagname (child);
+      string tag = dom_elt_get_tag (child);
       if (tag == "region")
         base->addRegion (this->parseRegion (child, base, region));
       else
@@ -1004,7 +844,7 @@ NclParser::parseRegion (DOMElement *elt, RegionBase *base,
 // Private: Descriptor.
 
 DescriptorBase *
-NclParser::parseDescriptorBase (DOMElement *elt)
+Parser::parseDescriptorBase (DOMElement *elt)
 {
   DescriptorBase *base;
   string id;
@@ -1013,9 +853,9 @@ NclParser::parseDescriptorBase (DOMElement *elt)
   CHECK_ELT_OPT_ID (elt, &id, "");
 
   base = new DescriptorBase (id);
-  for (DOMElement *child: dom_element_children (elt))
+  for (DOMElement *child: dom_elt_get_children (elt))
     {
-      string tag = dom_element_tagname (child);
+      string tag = dom_elt_get_tag (child);
       if (tag == "importBase")
         {
           NclDocument *doc;     // FIXME: this is lost (leak?)
@@ -1068,7 +908,7 @@ NclParser::parseDescriptorBase (DOMElement *elt)
 }
 
 Descriptor *
-NclParser::parseDescriptor (DOMElement *elt)
+Parser::parseDescriptor (DOMElement *elt)
 {
   // List of attributes that should be collected as parameters.
   static vector<string> supported =
@@ -1100,7 +940,7 @@ NclParser::parseDescriptor (DOMElement *elt)
   CHECK_ELT_ID (elt, &id);
 
   desc = new Descriptor (id);
-  if (dom_element_try_get_attr (value, elt, "region"))
+  if (dom_elt_try_get_attribute (value, elt, "region"))
     {
       LayoutRegion *region = _doc->getRegion (value);
       if (unlikely (region == nullptr))
@@ -1110,7 +950,7 @@ NclParser::parseDescriptor (DOMElement *elt)
 
   for (auto attr: supported)
     {
-      if (dom_element_try_get_attr (value, elt, attr))
+      if (dom_elt_try_get_attribute (value, elt, attr))
         desc->addParameter (new Parameter (attr, value));
     }
 
@@ -1118,7 +958,7 @@ NclParser::parseDescriptor (DOMElement *elt)
     {
       TransitionBase *base;
 
-      if (!dom_element_try_get_attr (value, elt, attr))
+      if (!dom_elt_try_get_attribute (value, elt, attr))
         continue;
 
       base = _doc->getTransitionBase ();
@@ -1140,9 +980,9 @@ NclParser::parseDescriptor (DOMElement *elt)
     }
 
   // Collect children.
-  for (DOMElement *child: dom_element_children (elt))
+  for (DOMElement *child: dom_elt_get_children (elt))
     {
-      string tag = dom_element_tagname (child);
+      string tag = dom_elt_get_tag (child);
       if (tag == "descriptorParam")
         {
           string name;
@@ -1163,7 +1003,7 @@ NclParser::parseDescriptor (DOMElement *elt)
 // Private: Descriptor switch.
 
 G_GNUC_NORETURN DescriptorSwitch *
-NclParser::parseDescriptorSwitch (DOMElement *elt)
+Parser::parseDescriptorSwitch (DOMElement *elt)
 {
   ERROR_NOT_IMPLEMENTED ("%s: element is not supported",
                          __error_elt ((elt)).c_str ());
@@ -1173,7 +1013,7 @@ NclParser::parseDescriptorSwitch (DOMElement *elt)
 // Private: Connector.
 
 ConnectorBase *
-NclParser::parseConnectorBase (DOMElement *elt)
+Parser::parseConnectorBase (DOMElement *elt)
 {
   ConnectorBase *base;
   string id;
@@ -1182,9 +1022,9 @@ NclParser::parseConnectorBase (DOMElement *elt)
   CHECK_ELT_OPT_ID (elt, &id, "");
 
   base = new ConnectorBase (id);
-  for (DOMElement *child: dom_element_children (elt))
+  for (DOMElement *child: dom_elt_get_children (elt))
     {
-      string tag = dom_element_tagname (child);
+      string tag = dom_elt_get_tag (child);
       if (tag == "importBase")
         {
           NclDocument *doc;     // FIXME: this is lost (leak?)
@@ -1210,7 +1050,7 @@ NclParser::parseConnectorBase (DOMElement *elt)
 }
 
 CausalConnector *
-NclParser::parseCausalConnector (DOMElement *elt)
+Parser::parseCausalConnector (DOMElement *elt)
 {
   CausalConnector *conn;
   string id;
@@ -1224,9 +1064,9 @@ NclParser::parseCausalConnector (DOMElement *elt)
   nact = 0;
 
   conn = new CausalConnector (id);
-  for (DOMElement *child: dom_element_children (elt))
+  for (DOMElement *child: dom_elt_get_children (elt))
     {
-      string tag = dom_element_tagname (child);
+      string tag = dom_elt_get_tag (child);
       if (tag == "simpleCondition")
         {
           conn->setConditionExpression
@@ -1270,7 +1110,7 @@ NclParser::parseCausalConnector (DOMElement *elt)
 }
 
 CompoundCondition *
-NclParser::parseCompoundCondition (DOMElement *elt)
+Parser::parseCompoundCondition (DOMElement *elt)
 {
   CompoundCondition *cond;
   string op;
@@ -1287,13 +1127,13 @@ NclParser::parseCompoundCondition (DOMElement *elt)
   else
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "operator");
 
-  if (dom_element_try_get_attr (value, elt, "delay"))
+  if (dom_elt_try_get_attribute (value, elt, "delay"))
     cond->setDelay (value);
 
   // Collect children.
-  for (DOMElement *child: dom_element_children (elt))
+  for (DOMElement *child: dom_elt_get_children (elt))
     {
-      string tag = dom_element_tagname (child);
+      string tag = dom_elt_get_tag (child);
       if (tag == "simpleCondition")
         {
           cond->addConditionExpression
@@ -1323,7 +1163,7 @@ NclParser::parseCompoundCondition (DOMElement *elt)
 }
 
 SimpleCondition *
-NclParser::parseSimpleCondition (DOMElement *elt)
+Parser::parseSimpleCondition (DOMElement *elt)
 {
   SimpleCondition *cond;
   string role;
@@ -1346,7 +1186,7 @@ NclParser::parseSimpleCondition (DOMElement *elt)
       trans = (EventStateTransition) it->second.second;
     }
 
-  if (dom_element_try_get_attr (value, elt, "eventType"))
+  if (dom_elt_try_get_attribute (value, elt, "eventType"))
     {
       if (unlikely (type != EventType::UNKNOWN))
         {
@@ -1362,7 +1202,7 @@ NclParser::parseSimpleCondition (DOMElement *elt)
       type = it->second;
     }
 
-  if (dom_element_try_get_attr (value, elt, "transition"))
+  if (dom_elt_try_get_attribute (value, elt, "transition"))
     {
       if (unlikely (trans != EventStateTransition::UNKNOWN))
         {
@@ -1387,15 +1227,15 @@ NclParser::parseSimpleCondition (DOMElement *elt)
   cond->setTransition (trans);
 
   if (type == EventType::SELECTION
-      && dom_element_try_get_attr (value, elt, "key"))
+      && dom_elt_try_get_attribute (value, elt, "key"))
     {
       cond->setKey (value);
     }
 
-  if (dom_element_try_get_attr (value, elt, "delay"))
+  if (dom_elt_try_get_attribute (value, elt, "delay"))
     cond->setDelay (value);
 
-  if (dom_element_try_get_attr (value, elt, "qualifier"))
+  if (dom_elt_try_get_attribute (value, elt, "qualifier"))
     {
       if (value == "or")
         cond->setQualifier (CompoundCondition::OP_OR);
@@ -1409,7 +1249,7 @@ NclParser::parseSimpleCondition (DOMElement *elt)
 }
 
 CompoundStatement *
-NclParser::parseCompoundStatement (DOMElement *elt)
+Parser::parseCompoundStatement (DOMElement *elt)
 {
   CompoundStatement *stmt;
   string op;
@@ -1435,9 +1275,9 @@ NclParser::parseCompoundStatement (DOMElement *elt)
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "isNegated");
 
   // Collect children.
-  for (DOMElement *child: dom_element_children (elt))
+  for (DOMElement *child: dom_elt_get_children (elt))
     {
-      string tag = dom_element_tagname (child);
+      string tag = dom_elt_get_tag (child);
       if (tag == "assessmentStatement")
         {
           stmt->addStatement (this->parseAssessmentStatement (child));
@@ -1455,7 +1295,7 @@ NclParser::parseCompoundStatement (DOMElement *elt)
 }
 
 AssessmentStatement *
-NclParser::parseAssessmentStatement (DOMElement *elt)
+Parser::parseAssessmentStatement (DOMElement *elt)
 {
   AssessmentStatement *stmt;
   string comp;
@@ -1465,9 +1305,9 @@ NclParser::parseAssessmentStatement (DOMElement *elt)
   CHECK_ELT_OPT_ATTRIBUTE (elt, "comparator", &comp, "eq");
 
   stmt = new AssessmentStatement (Comparator::fromString (comp));
-  for (DOMElement *child: dom_element_children (elt))
+  for (DOMElement *child: dom_elt_get_children (elt))
     {
-      string tag = dom_element_tagname (child);
+      string tag = dom_elt_get_tag (child);
       if (tag == "attributeAssessment")
         {
           AttributeAssessment *assess;
@@ -1490,7 +1330,7 @@ NclParser::parseAssessmentStatement (DOMElement *elt)
 }
 
 AttributeAssessment *
-NclParser::parseAttributeAssessment (DOMElement *elt)
+Parser::parseAttributeAssessment (DOMElement *elt)
 {
   AttributeAssessment *assess;
   string role;
@@ -1501,27 +1341,27 @@ NclParser::parseAttributeAssessment (DOMElement *elt)
 
   assess = new AttributeAssessment (role);
 
-  if (dom_element_try_get_attr (value, elt, "eventType"))
+  if (dom_elt_try_get_attribute (value, elt, "eventType"))
     assess->setEventType (EventUtil::getTypeCode (value));
 
-  if (dom_element_try_get_attr (value, elt, "attributeType"))
+  if (dom_elt_try_get_attribute (value, elt, "attributeType"))
     assess->setAttributeType (EventUtil::getAttributeTypeCode (value));
 
   // parameter
   if (assess->getEventType () == EventType::SELECTION
-      && dom_element_try_get_attr (value, elt, "key"))
+      && dom_elt_try_get_attribute (value, elt, "key"))
     {
       assess->setKey (value);
     }
 
-  if (dom_element_try_get_attr (value, elt, "offset"))
+  if (dom_elt_try_get_attribute (value, elt, "offset"))
     assess->setOffset (value);
 
   return assess;
 }
 
 ValueAssessment *
-NclParser::parseValueAssessment (DOMElement *elt)
+Parser::parseValueAssessment (DOMElement *elt)
 {
   string value;
   CHECK_ELT_TAG (elt, "valueAssessment", nullptr);
@@ -1530,7 +1370,7 @@ NclParser::parseValueAssessment (DOMElement *elt)
 }
 
 CompoundAction *
-NclParser::parseCompoundAction (DOMElement *elt)
+Parser::parseCompoundAction (DOMElement *elt)
 {
   CompoundAction *action;
   string value;
@@ -1539,13 +1379,13 @@ NclParser::parseCompoundAction (DOMElement *elt)
 
   action = new CompoundAction ();
 
-  if (dom_element_try_get_attr (value, elt, "delay"))
+  if (dom_elt_try_get_attribute (value, elt, "delay"))
     action->setDelay (value);
 
   // Collect children.
-  for (DOMElement *child: dom_element_children (elt))
+  for (DOMElement *child: dom_elt_get_children (elt))
     {
-      string tag = dom_element_tagname (child);
+      string tag = dom_elt_get_tag (child);
       if (tag == "simpleAction")
         {
           action->addAction (this->parseSimpleAction (child));
@@ -1563,7 +1403,7 @@ NclParser::parseCompoundAction (DOMElement *elt)
 }
 
 SimpleAction *
-NclParser::parseSimpleAction (DOMElement *elt)
+Parser::parseSimpleAction (DOMElement *elt)
 {
   SimpleAction *action;
   string tag;
@@ -1587,7 +1427,7 @@ NclParser::parseSimpleAction (DOMElement *elt)
       acttype = (SimpleActionType) it->second.second;
     }
 
-  if (dom_element_try_get_attr (value, elt, "eventType"))
+  if (dom_elt_try_get_attribute (value, elt, "eventType"))
     {
       if (unlikely (type != EventType::UNKNOWN))
         {
@@ -1603,7 +1443,7 @@ NclParser::parseSimpleAction (DOMElement *elt)
       type = it->second;
     }
 
-  if (dom_element_try_get_attr (value, elt, "actionType"))
+  if (dom_elt_try_get_attribute (value, elt, "actionType"))
     {
       if (unlikely (acttype != -1))
         {
@@ -1628,7 +1468,7 @@ NclParser::parseSimpleAction (DOMElement *elt)
 
   if (type == EventType::ATTRIBUTION
       && acttype == ACT_START
-      && dom_element_try_get_attr (value, elt, "duration"))
+      && dom_elt_try_get_attribute (value, elt, "duration"))
     {
       Animation *anim = new Animation ();
       anim->setDuration (value);
@@ -1636,10 +1476,10 @@ NclParser::parseSimpleAction (DOMElement *elt)
       action->setAnimation (anim);
     }
 
-  if (dom_element_try_get_attr (value, elt, "delay"))
+  if (dom_elt_try_get_attribute (value, elt, "delay"))
     action->setDelay (value);
 
-  if (dom_element_try_get_attr (value, elt, "value"))
+  if (dom_elt_try_get_attribute (value, elt, "value"))
     action->setValue (value);
 
   // TODO: Handle repeatDelay and repeat attributes.
@@ -1651,7 +1491,7 @@ NclParser::parseSimpleAction (DOMElement *elt)
 // Private: Body.
 
 ContextNode *
-NclParser::parseBody (DOMElement *elt)
+Parser::parseBody (DOMElement *elt)
 {
   ContextNode *body;
   string id;
@@ -1662,12 +1502,12 @@ NclParser::parseBody (DOMElement *elt)
   body = new ContextNode (id);
   _doc->setBody (body);
 
-  for (DOMElement *child: dom_element_children (elt))
+  for (DOMElement *child: dom_elt_get_children (elt))
     {
       Node *node;
       string tag;
 
-      tag = dom_element_tagname (child);
+      tag = dom_elt_get_tag (child);
       if (tag == "port" || tag == "link")
         {
           continue;               // skip
@@ -1698,18 +1538,18 @@ NclParser::parseBody (DOMElement *elt)
 }
 
 void
-NclParser::posCompileContext (DOMElement *elt, ContextNode *context)
+Parser::posCompileContext (DOMElement *elt, ContextNode *context)
 {
   Node *node;
   string id;
 
   g_assert_nonnull (context);
-  for(DOMElement *child: dom_element_children (elt))
+  for(DOMElement *child: dom_elt_get_children (elt))
     {
-      string tag = dom_element_tagname(child);
+      string tag = dom_elt_get_tag(child);
       if (tag == "context")
         {
-          g_assert (dom_element_try_get_attr (id, child, "id"));
+          g_assert (dom_elt_try_get_attribute (id, child, "id"));
           node = context->getNode (id);
           g_assert_nonnull (node);
           if (instanceof (ContextNode *, node))
@@ -1717,7 +1557,7 @@ NclParser::posCompileContext (DOMElement *elt, ContextNode *context)
         }
       else if (tag == "switch")
         {
-          g_assert (dom_element_try_get_attr (id, child, "id"));
+          g_assert (dom_elt_try_get_attribute (id, child, "id"));
           node = context->getNode (id);
           g_assert_nonnull (node);
           if (instanceof (SwitchNode *, node))
@@ -1725,9 +1565,9 @@ NclParser::posCompileContext (DOMElement *elt, ContextNode *context)
         }
     }
 
-  for (DOMElement *child: dom_element_children (elt))
+  for (DOMElement *child: dom_elt_get_children (elt))
     {
-      string tag = dom_element_tagname (child);
+      string tag = dom_elt_get_tag (child);
       if (tag == "link")
         context->addLink (this->parseLink (child, context));
       else if (tag == "port")
@@ -1736,18 +1576,18 @@ NclParser::posCompileContext (DOMElement *elt, ContextNode *context)
 }
 
 void
-NclParser::posCompileSwitch (DOMElement *elt, SwitchNode *swtch)
+Parser::posCompileSwitch (DOMElement *elt, SwitchNode *swtch)
 {
   Node *node;
   string id;
 
   g_assert_nonnull (swtch);
-  for (DOMElement *child: dom_element_children (elt))
+  for (DOMElement *child: dom_elt_get_children (elt))
     {
-      string tag = dom_element_tagname(child);
+      string tag = dom_elt_get_tag(child);
       if (tag == "context")
         {
-          g_assert (dom_element_try_get_attr (id, child, "id"));
+          g_assert (dom_elt_try_get_attribute (id, child, "id"));
           node = swtch->getNode (id);
           g_assert_nonnull (node);
           if (instanceof (ContextNode *, node))
@@ -1755,7 +1595,7 @@ NclParser::posCompileSwitch (DOMElement *elt, SwitchNode *swtch)
         }
       else if (tag ==  "switch")
         {
-          g_assert (dom_element_try_get_attr (id, child, "id"));
+          g_assert (dom_elt_try_get_attribute (id, child, "id"));
           node = swtch->getNode (id);
           g_assert_nonnull (node);
           if (instanceof (SwitchNode *, node))
@@ -1763,19 +1603,73 @@ NclParser::posCompileSwitch (DOMElement *elt, SwitchNode *swtch)
         }
     }
 
-  for (DOMElement *child: dom_element_children (elt))
+  for (DOMElement *child: dom_elt_get_children (elt))
     {
-      string tag = dom_element_tagname (child);
+      string tag = dom_elt_get_tag (child);
       if (tag == "switchPort")
         swtch->addPort (this->parseSwitchPort (child, swtch));
     }
+}
+
+void
+Parser::solveNodeReferences (CompositeNode *comp)
+{
+  vector<Node *> *nodes;
+  bool del = false;
+
+  if (instanceof (SwitchNode *, comp))
+    {
+      map<string, map<string, Node *> *>::iterator it;
+      map<string, Node *> *tab;
+
+      nodes = new vector<Node *>;
+      del = true;
+
+      if ((it = _switchMap.find (comp->getId ())) != _switchMap.end ())
+        {
+          tab = it->second;
+          for (auto k: *tab)
+            nodes->push_back (k.second);
+        }
+    }
+  else
+    {
+      nodes = comp->getNodes ();
+    }
+
+  g_assert_nonnull (nodes);
+
+  for (Node *node : *nodes)
+  {
+    g_assert_nonnull (node);
+    if (instanceof (ReferNode *, node))
+      {
+        Entity *ref;
+        NodeEntity *refNode;
+
+        ref = ((ReferNode *) node)->getReferredEntity ();
+        g_assert_nonnull (ref);
+
+        refNode = (NodeEntity *)(_doc->getNode (ref->getId ()));
+        g_assert_nonnull (refNode);
+
+        ((ReferNode *) node)->setReferredEntity (refNode->getDataEntity ());
+      }
+    else if (instanceof (CompositeNode *, node))
+      {
+        this->solveNodeReferences ((CompositeNode *) node);
+      }
+  }
+
+  if (del)
+    delete nodes;
 }
 
 
 // Private: Context.
 
 Node *
-NclParser::parseContext (DOMElement *elt)
+Parser::parseContext (DOMElement *elt)
 {
   ContextNode *context;
   string id;
@@ -1785,12 +1679,12 @@ NclParser::parseContext (DOMElement *elt)
   CHECK_ELT_ATTRIBUTE_NOT_SUPPORTED (elt, "refer");
 
   context = new ContextNode (id);
-  for (DOMElement *child: dom_element_children (elt))
+  for (DOMElement *child: dom_elt_get_children (elt))
     {
       Node *node;
       string tag;
 
-      tag = dom_element_tagname (child);
+      tag = dom_elt_get_tag (child);
       if (tag == "port" || tag == "link")
         {
           continue;             // skip
@@ -1821,7 +1715,7 @@ NclParser::parseContext (DOMElement *elt)
 }
 
 Port *
-NclParser::parsePort (DOMElement *elt, CompositeNode *context)
+Parser::parsePort (DOMElement *elt, CompositeNode *context)
 {
   string id;
   string comp;
@@ -1842,7 +1736,7 @@ NclParser::parsePort (DOMElement *elt, CompositeNode *context)
   targetEntity = cast (NodeEntity *, target->getDataEntity ());
   g_assert_nonnull (targetEntity);
 
-  if (dom_element_try_get_attr (value, elt, "interface"))
+  if (dom_elt_try_get_attribute (value, elt, "interface"))
     {
       interface = targetEntity->getAnchor (value);
       if (interface == nullptr)
@@ -1872,7 +1766,7 @@ NclParser::parsePort (DOMElement *elt, CompositeNode *context)
 // Private: Switch.
 
 Node *
-NclParser::parseSwitch (DOMElement *elt)
+Parser::parseSwitch (DOMElement *elt)
 {
   Node *swtch;
   string id;
@@ -1882,15 +1776,15 @@ NclParser::parseSwitch (DOMElement *elt)
   CHECK_ELT_ATTRIBUTE_NOT_SUPPORTED (elt, "refer");
 
   swtch = new SwitchNode (id);
-  _switchConstituents[id] = new map<string, Node *>;
+  _switchMap[id] = new map<string, Node *>;
 
   // Collect children.
-  for (DOMElement *child: dom_element_children (elt))
+  for (DOMElement *child: dom_elt_get_children (elt))
     {
       Node *node;
       string tag;
 
-      tag = dom_element_tagname (child);
+      tag = dom_elt_get_tag (child);
       if (tag == "switchPort"
           || tag == "bindRule"
           || tag == "defaultComponent")
@@ -1908,15 +1802,15 @@ NclParser::parseSwitch (DOMElement *elt)
         ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
 
       g_assert_nonnull (node);
-      map<string, Node *> *map = _switchConstituents[id];
+      map<string, Node *> *map = _switchMap[id];
       if (map->count (node->getId ()) == 0)
         (*map)[node->getId ()] = node;
     }
 
   // Collect skipped.
-  for (DOMElement *child: dom_element_children (elt)) // redo
+  for (DOMElement *child: dom_elt_get_children (elt)) // redo
     {
-      string tag = dom_element_tagname (child);
+      string tag = dom_elt_get_tag (child);
       if (tag == "bindRule")
         {
           Node *node;
@@ -1934,7 +1828,7 @@ NclParser::parseSwitch (DOMElement *elt)
           CHECK_ELT_TAG (child, "defaultComponent", nullptr);
           CHECK_ELT_ATTRIBUTE (child, "component", &comp);
 
-          nodes = _switchConstituents[swtch->getId ()];
+          nodes = _switchMap[swtch->getId ()];
           g_assert_nonnull (nodes);
 
           if (unlikely (nodes->count (comp) == 0))
@@ -1949,14 +1843,14 @@ NclParser::parseSwitch (DOMElement *elt)
     }
 
   // Add nodes not mapped to switch.
-  for (auto nodes: *_switchConstituents[swtch->getId ()])
+  for (auto nodes: *_switchMap[swtch->getId ()])
     nodes.second->setParentComposition ((CompositeNode *) swtch);
 
   return swtch;
 }
 
 Node *
-NclParser::parseBindRule (DOMElement *elt, CompositeNode *parent,
+Parser::parseBindRule (DOMElement *elt, CompositeNode *parent,
                           Rule **rule)
 {
   Node *node;
@@ -1969,7 +1863,7 @@ NclParser::parseBindRule (DOMElement *elt, CompositeNode *parent,
   CHECK_ELT_ATTRIBUTE (elt, "constituent", &constituent);
   CHECK_ELT_ATTRIBUTE (elt, "rule", &ruleid);
 
-  nodes = _switchConstituents[parent->getId ()];
+  nodes = _switchMap[parent->getId ()];
   g_assert_nonnull (nodes);
 
   if (unlikely (nodes->count (constituent) == 0))
@@ -1987,7 +1881,7 @@ NclParser::parseBindRule (DOMElement *elt, CompositeNode *parent,
 }
 
 SwitchPort *
-NclParser::parseSwitchPort (DOMElement *elt, SwitchNode *swtch)
+Parser::parseSwitchPort (DOMElement *elt, SwitchNode *swtch)
 {
   SwitchPort *port;
   string id;
@@ -1998,9 +1892,9 @@ NclParser::parseSwitchPort (DOMElement *elt, SwitchNode *swtch)
   CHECK_ELT_ID (elt, &id);
 
   port = new SwitchPort (id, swtch);
-  for (DOMElement *child: dom_element_children (elt))
+  for (DOMElement *child: dom_elt_get_children (elt))
     {
-      string tag = dom_element_tagname (child);
+      string tag = dom_elt_get_tag (child);
       if (tag == "mapping")
         {
           swtch->addPort (this->parseMapping (child, swtch, port));
@@ -2014,7 +1908,7 @@ NclParser::parseSwitchPort (DOMElement *elt, SwitchNode *swtch)
 }
 
 Port *
-NclParser::parseMapping (DOMElement *elt, SwitchNode *swtch,
+Parser::parseMapping (DOMElement *elt, SwitchNode *swtch,
                          SwitchPort *port)
 {
   Node *mapping;
@@ -2035,7 +1929,7 @@ NclParser::parseMapping (DOMElement *elt, SwitchNode *swtch,
   mappingEntity = (NodeEntity *) mapping->getDataEntity ();
   g_assert_nonnull (mappingEntity);
 
-  if (dom_element_try_get_attr (value, elt, "interface"))
+  if (dom_elt_try_get_attribute (value, elt, "interface"))
     {
       iface = mappingEntity->getAnchor (value);
       if (iface == nullptr && instanceof (CompositeNode *, mappingEntity))
@@ -2055,7 +1949,7 @@ NclParser::parseMapping (DOMElement *elt, SwitchNode *swtch,
 // Private: Media.
 
 Node *
-NclParser::parseMedia (DOMElement *elt)
+Parser::parseMedia (DOMElement *elt)
 {
   Node *media;
   string id;
@@ -2066,7 +1960,7 @@ NclParser::parseMedia (DOMElement *elt)
   CHECK_ELT_ID (elt, &id);
 
   // Refer?
-  if (dom_element_try_get_attr (value, elt, "refer"))
+  if (dom_elt_try_get_attribute (value, elt, "refer"))
     {
       Entity *refer;
 
@@ -2075,7 +1969,7 @@ NclParser::parseMedia (DOMElement *elt)
         refer = new ReferredNode (value, (void *) elt); // FIXME: Crazy.
 
       media = new ReferNode (id);
-      if (dom_element_try_get_attr (value, elt, "instance"))
+      if (dom_elt_try_get_attribute (value, elt, "instance"))
         ((ReferNode *) media)->setInstanceType (value);
       ((ReferNode *) media)->setReferredEntity (refer);
     }
@@ -2083,7 +1977,7 @@ NclParser::parseMedia (DOMElement *elt)
     {
       media = new ContentNode (id, NULL, "");
 
-      if (dom_element_try_get_attr (value, elt, "type"))
+      if (dom_elt_try_get_attribute (value, elt, "type"))
         ((ContentNode *) media)->setNodeType (value);
 
       CHECK_ELT_OPT_ATTRIBUTE (elt, "src", &src, "");
@@ -2092,7 +1986,7 @@ NclParser::parseMedia (DOMElement *elt)
       ((ContentNode *) media)
         ->setContent (new AbsoluteReferenceContent (src));
 
-      if (dom_element_try_get_attr (value, elt, "descriptor"))
+      if (dom_elt_try_get_attribute (value, elt, "descriptor"))
         {
           GenericDescriptor *desc = _doc->getDescriptor (value);
           if (unlikely (desc == nullptr))
@@ -2102,9 +1996,9 @@ NclParser::parseMedia (DOMElement *elt)
     }
 
   // Collect children.
-  for (DOMElement *child: dom_element_children (elt))
+  for (DOMElement *child: dom_elt_get_children (elt))
     {
-      string tag = dom_element_tagname (child);
+      string tag = dom_elt_get_tag (child);
       if (tag == "area")
         {
           Anchor *area = this->parseArea (child);
@@ -2126,7 +2020,7 @@ NclParser::parseMedia (DOMElement *elt)
 }
 
 PropertyAnchor *
-NclParser::parseProperty (DOMElement *elt)
+Parser::parseProperty (DOMElement *elt)
 {
   PropertyAnchor *prop;
   string name;
@@ -2142,7 +2036,7 @@ NclParser::parseProperty (DOMElement *elt)
 }
 
 Anchor *
-NclParser::parseArea (DOMElement *elt)
+Parser::parseArea (DOMElement *elt)
 {
   string id;
   string value;
@@ -2153,25 +2047,25 @@ NclParser::parseArea (DOMElement *elt)
   CHECK_ELT_ATTRIBUTE_NOT_SUPPORTED (elt, "first");
   CHECK_ELT_ATTRIBUTE_NOT_SUPPORTED (elt, "last");
 
-  if (dom_element_has_attr (elt, "begin")
-      || dom_element_has_attr (elt, "end"))
+  if (dom_elt_has_attribute (elt, "begin")
+      || dom_elt_has_attribute (elt, "end"))
     {
       GingaTime begin;
       GingaTime end;
 
-      if (dom_element_try_get_attr (value, elt ,"begin"))
+      if (dom_elt_try_get_attribute (value, elt ,"begin"))
         begin = ginga_parse_time (value);
       else
         begin = 0;
 
-      if (dom_element_try_get_attr (value, elt, "end"))
+      if (dom_elt_try_get_attribute (value, elt, "end"))
         end = ginga_parse_time (value);
       else
         end = GINGA_TIME_NONE;
 
       return new IntervalAnchor (id, begin, end);
     }
-  else if (dom_element_has_attr (elt, "text"))
+  else if (dom_elt_has_attribute (elt, "text"))
     {
       string text;
       string pos;
@@ -2179,7 +2073,7 @@ NclParser::parseArea (DOMElement *elt)
       CHECK_ELT_OPT_ATTRIBUTE (elt, "position", &pos, "0");
       return new TextAnchor (id, text, xstrtoint (pos, 10));
     }
-  else if (dom_element_has_attr(elt, "label"))
+  else if (dom_elt_has_attribute (elt, "label"))
     {
       string label;
       CHECK_ELT_ATTRIBUTE (elt, "label", &label);
@@ -2195,7 +2089,7 @@ NclParser::parseArea (DOMElement *elt)
 // Private: Link.
 
 Link *
-NclParser::parseLink (DOMElement *elt, CompositeNode *context)
+Parser::parseLink (DOMElement *elt, CompositeNode *context)
 {
   Link *link;
   string id;
@@ -2213,9 +2107,9 @@ NclParser::parseLink (DOMElement *elt, CompositeNode *context)
   link = new CausalLink (id, conn);
 
   // Collect children.
-  for (DOMElement *child: dom_element_children (elt))
+  for (DOMElement *child: dom_elt_get_children (elt))
     {
-      string tag = dom_element_tagname (child);
+      string tag = dom_elt_get_tag (child);
       if (tag == "linkParam")
         {
           link->addParameter (this->parseLinkParam (child));
@@ -2233,7 +2127,7 @@ NclParser::parseLink (DOMElement *elt, CompositeNode *context)
 }
 
 Parameter *
-NclParser::parseLinkParam (DOMElement *elt)
+Parser::parseLinkParam (DOMElement *elt)
 {
   string name;
   string value;
@@ -2244,7 +2138,7 @@ NclParser::parseLinkParam (DOMElement *elt)
 }
 
 Bind *
-NclParser::parseBind (DOMElement *elt, Link *link, CompositeNode *context)
+Parser::parseBind (DOMElement *elt, Link *link, CompositeNode *context)
 {
   Bind *bind;
   string label;
@@ -2282,7 +2176,7 @@ NclParser::parseBind (DOMElement *elt, Link *link, CompositeNode *context)
   iface = nullptr;
   desc = nullptr;
 
-  if (dom_element_try_get_attr (value, elt, "interface"))
+  if (dom_elt_try_get_attribute (value, elt, "interface"))
     {
       if (instanceof (CompositeNode *, targetEntity))
         {
@@ -2315,7 +2209,7 @@ NclParser::parseBind (DOMElement *elt, Link *link, CompositeNode *context)
   if (unlikely (iface == nullptr))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "interface");
 
-  if (dom_element_try_get_attr (value, elt, "descriptor"))
+  if (dom_elt_try_get_attribute (value, elt, "descriptor"))
     desc = _doc->getDescriptor (value);
 
   conn = cast (CausalConnector *, link->getConnector ());
@@ -2354,9 +2248,9 @@ NclParser::parseBind (DOMElement *elt, Link *link, CompositeNode *context)
   g_assert_nonnull (bind);
 
   // Collect children.
-  for (DOMElement *child: dom_element_children (elt))
+  for (DOMElement *child: dom_elt_get_children (elt))
     {
-      string tag = dom_element_tagname (child);
+      string tag = dom_elt_get_tag (child);
       if (tag == "bindParam")
         {
           bind->addParameter (this->parseBindParam (child));
@@ -2370,7 +2264,7 @@ NclParser::parseBind (DOMElement *elt, Link *link, CompositeNode *context)
 }
 
 Parameter *
-NclParser::parseBindParam (DOMElement *elt)
+Parser::parseBindParam (DOMElement *elt)
 {
   string name;
   string value;
@@ -2380,4 +2274,53 @@ NclParser::parseBindParam (DOMElement *elt)
   return new Parameter (name, value);
 }
 
-GINGA_FORMATTER_END
+
+// Private: Error handlers.
+
+void
+Parser::warning (const SAXParseException &e)
+{
+  char *file = XMLString::transcode (e.getSystemId ());
+  char *errmsg = XMLString::transcode (e.getMessage ());
+  if (file == nullptr || strlen (file) == 0)
+    {
+      g_warning ("%s", errmsg);
+    }
+  else
+    {
+      g_warning ("%s:%u.%u: %s", file,
+                 (guint) e.getLineNumber (),
+                 (guint) e.getColumnNumber (),
+                 errmsg);
+    }
+  XMLString::release (&file);
+  XMLString::release (&errmsg);
+}
+
+void G_GNUC_NORETURN
+Parser::error (const SAXParseException &e)
+{
+  char *file = XMLString::transcode (e.getSystemId ());
+  char *errmsg = XMLString::transcode (e.getMessage ());
+  if (file == nullptr || strlen (file) == 0)
+    {
+      g_error ("%s", errmsg);
+    }
+  else
+    {
+      g_error ("%s:%u.%u: %s", file,
+               (guint) e.getLineNumber (),
+               (guint) e.getColumnNumber (),
+               errmsg);
+    }
+  XMLString::release (&file);
+  XMLString::release (&errmsg);
+}
+
+void
+Parser::fatalError (const SAXParseException &e)
+{
+  this->error (e);
+}
+
+GINGA_NCL_END
