@@ -23,6 +23,7 @@
       <area id="a4" begin="4s"/>
       <area id="a5" begin="5s"/>
       <property name="fontColor"/>
+      <property name="fontBgColor"/>
       <property name="fontFamily"/>
       <property name="fontSize"/>
       <property name="fontStyle"/>
@@ -57,6 +58,9 @@
     </link>
     <link xconnector="onBeginSet">
       <bind role="onBegin" component="text" interface="a3"/>
+      <bind role="set" component="text" interface="fontBgColor">
+        <bindParam name="var" value="green"/>
+      </bind>
       <bind role="set" component="text" interface="fontStyle">
         <bindParam name="var" value="italic"/>
       </bind>

@@ -28,7 +28,7 @@ GINGA_PLAYER_BEGIN
 class LuaPlayer : public Player, public IEventListener
 {
 public:
-  LuaPlayer (const string &);
+  LuaPlayer (const string &, const string &);
   virtual ~LuaPlayer (void);
   void start (void) override;
   void stop (void) override;

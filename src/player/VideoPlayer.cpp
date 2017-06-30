@@ -39,10 +39,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PLAYER_BEGIN
 
-VideoPlayer::VideoPlayer (const string &uri) : Player (uri)
+VideoPlayer::VideoPlayer (const string &id, const string &uri)
+  : Player (id, uri)
 {
   GstBus *bus;
-  gulong id;
+  gulong ret;
   char *buf;
 
   GstElement *bin;
@@ -72,8 +73,8 @@ VideoPlayer::VideoPlayer (const string &uri) : Player (uri)
 
   bus = gst_pipeline_get_bus (GST_PIPELINE (_playbin));
   g_assert_nonnull (bus);
-  id = gst_bus_add_watch (bus, (GstBusFunc) cb_Bus, this);
-  g_assert (id > 0);
+  ret = gst_bus_add_watch (bus, (GstBusFunc) cb_Bus, this);
+  g_assert (ret > 0);
   gst_object_unref (bus);
 
   buf = gst_filename_to_uri (uri.c_str (), nullptr);

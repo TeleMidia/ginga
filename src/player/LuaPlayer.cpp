@@ -41,11 +41,12 @@ GINGA_PLAYER_BEGIN
 
 // Public methods.
 
-LuaPlayer::LuaPlayer (const string &mrl) : Player (mrl)
+LuaPlayer::LuaPlayer (const string &id, const string &uri)
+  : Player (id, uri)
 {
   gchar *dir;
 
-  dir = g_path_get_dirname (mrl.c_str ());
+  dir = g_path_get_dirname (uri.c_str ());
   g_assert_nonnull (dir);
 
   if (g_chdir (dir) < 0)
@@ -126,7 +127,7 @@ void
 LuaPlayer::handleKeyEvent (string const &key, bool press)
 {
   g_assert_nonnull (_nw);
-  evt_key_send (_nw, key.c_str (), (press) ? "press" : "release");
+  evt_key_send (_nw, press ? "press" : "release", key.c_str ());
 }
 
 void

@@ -24,10 +24,6 @@ GINGA_MB_BEGIN
 
 class Dashboard
 {
-private:
-  SDL_Texture *texture;
-  PangoFontDescription *font;
-
 public:
   Dashboard ();
   ~Dashboard ();

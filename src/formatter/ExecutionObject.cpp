@@ -651,7 +651,7 @@ ExecutionObject::start ()
 
   // Allocate player.
   mime = contentNode->getNodeType ();
-  _player = Player::createPlayer (src, mime);
+  _player = Player::createPlayer (_id, src, mime);
 
   // Initialize player properties.
   if (_descriptor != nullptr)
@@ -834,6 +834,7 @@ ExecutionObject::handleTickEvent (arg_unused (GingaTime total),
 
   g_assert (GINGA_TIME_IS_VALID (_time));
   _time += diff;
+  _player->incTime (diff);
 
   if (GINGA_TIME_IS_VALID (dur = _player->getDuration ()) && _time > dur)
     {

@@ -27,7 +27,7 @@ GINGA_PLAYER_BEGIN
 class SvgPlayer : public Player
 {
 public:
-  SvgPlayer (const string &uri) : Player (uri) {}
+  SvgPlayer (const string &id, const string &uri) : Player (id, uri) {}
   ~SvgPlayer (void) {}
   void setProperty (const string &, const string &) override;
   void redraw (SDL_Renderer *) override;

@@ -33,44 +33,67 @@ GINGA_PLAYER_BEGIN
  * @param width Font weight ("normal" or "bold").
  * @param style Font style ("normal" or "italic").
  * @param size Font size
- * @param color Text color.
+ * @param fg Text color.
+ * @param bg Background color.
  * @param rect Dimensions of the resulting texture.
  * @param haling Horizontal alignment
  *        ("left", "center", "right", or "justified").
  * @param valign Vertical alignment ("bottom", "middle", or "top").
+ * @param antialias Whether to use antialias.
+ * @param ink Variable to store the inked rectangle.
  * @return The resulting texture.
  */
 SDL_Texture *
 TextPlayer::renderTexture (SDL_Renderer *renderer, const string &text,
                            const string &family, const string &weight,
                            const string &style, const string &size,
-                           SDL_Color color, SDL_Rect rect,
-                           const string &halign, const string &valign)
+                           SDL_Color fg, SDL_Color bg, SDL_Rect rect,
+                           const string &halign, const string &valign,
+                           bool antialias, SDL_Rect *ink)
 {
-  SDL_Surface *sfc;
+  void *pixels;
+  int pitch;
   cairo_t *cr;
   cairo_surface_t *sfc_cr;
 
   PangoLayout *layout;
+  cairo_font_options_t *opts;
   string font;
   PangoFontDescription *desc;
-
   double align;
   int height;
+  PangoRectangle r;
 
   SDL_Texture *texture;         // result
 
-  SDLx_CreateSurfaceARGB32 (rect.w, rect.h, &sfc);
-  SDLx_LockSurface (sfc);
+  g_assert_cmpint (rect.w, >, 0);
+  g_assert_cmpint (rect.h, >, 0);
+  texture = SDL_CreateTexture (renderer, SDL_PIXELFORMAT_ARGB8888,
+                               SDL_TEXTUREACCESS_STREAMING,
+                               rect.w, rect.h);
+  g_assert_nonnull (texture);
+  SDL_LockTexture (texture, NULL, &pixels, &pitch);
+
   sfc_cr = cairo_image_surface_create_for_data
-    ((guchar *) sfc->pixels, CAIRO_FORMAT_ARGB32,
-     sfc->w, sfc->h, sfc->pitch);
+    ((guchar *) pixels, CAIRO_FORMAT_ARGB32,
+     rect.w, rect.h, pitch);
 
   cr = cairo_create (sfc_cr);
   g_assert_nonnull (cr);
 
   layout = pango_cairo_create_layout (cr);
   g_assert_nonnull (layout);
+
+  opts = cairo_font_options_create ();
+  if (antialias)
+    cairo_font_options_set_antialias (opts, CAIRO_ANTIALIAS_GOOD);
+  else
+    cairo_font_options_set_antialias (opts, CAIRO_ANTIALIAS_NONE);
+  cairo_font_options_set_hint_style (opts, CAIRO_HINT_STYLE_FULL);
+
+  pango_cairo_context_set_font_options
+    (pango_layout_get_context (layout), opts);
+  cairo_font_options_destroy (opts);
 
   pango_layout_set_text (layout, text.c_str (), -1);
   font = xstrbuild ("%s %s %s %s",
@@ -85,7 +108,7 @@ TextPlayer::renderTexture (SDL_Renderer *renderer, const string &text,
   pango_layout_set_font_description (layout, desc);
   pango_font_description_free (desc);
 
-  if(halign == "left")
+  if (halign == "" || halign == "left")
     pango_layout_set_alignment (layout, PANGO_ALIGN_LEFT);
   else if(halign == "center")
     pango_layout_set_alignment (layout, PANGO_ALIGN_CENTER);
@@ -100,18 +123,40 @@ TextPlayer::renderTexture (SDL_Renderer *renderer, const string &text,
   pango_layout_set_wrap (layout, PANGO_WRAP_WORD);
   pango_layout_get_size (layout, NULL, &height);
 
-  cairo_set_source_rgba (cr, color.r/255, color.g/255, color.b/255,
-                         color.a/255);
+  cairo_set_source_rgba (cr, fg.r/255., fg.g/255., fg.b/255., fg.a/255.);
   pango_cairo_update_layout (cr, layout);
 
   if (valign == "bottom")
     align = rect.h - (height / PANGO_SCALE);
   else if (valign == "middle")
     align = (rect.h / 2) - ((height / PANGO_SCALE) / 2);
-  else if (valign == "top")
+  else if (valign == "" || valign == "top")
     align = 0;
   else
     ERROR ("unknown vertical alignment: %s", valign.c_str ());
+
+  pango_layout_get_pixel_extents (layout, &r, nullptr);
+  if (ink != nullptr)
+    {
+      ink->x = r.x;
+      ink->y = r.y;
+      ink->w = r.width;
+      ink->h = r.height;
+    }
+
+  if (bg.a > 0)
+    {
+      cairo_save (cr);
+      cairo_set_source_rgba (cr, bg.r/255., bg.g/255.,
+                             bg.b/255., bg.a/255.);
+      r.x -= 2;
+      r.y -= 2;
+      r.width += 4;
+      r.height += 4;
+      cairo_rectangle (cr, r.x, r.y + align, r.width, r.height);
+      cairo_fill (cr);
+      cairo_restore (cr);
+    }
 
   cairo_move_to (cr, 0, align);
   pango_cairo_show_layout (cr, layout);
@@ -120,19 +165,16 @@ TextPlayer::renderTexture (SDL_Renderer *renderer, const string &text,
   cairo_destroy (cr);
   cairo_surface_destroy (sfc_cr);
 
-  texture = SDL_CreateTextureFromSurface (renderer, sfc);
-  g_assert_nonnull (texture);
-
-  SDLx_UnlockSurface (sfc);
-  SDL_FreeSurface(sfc);
-
+  SDL_UnlockTexture (texture);
   return texture;
 }
 
-TextPlayer::TextPlayer (const string &uri) : Player (uri)
+TextPlayer::TextPlayer (const string &id, const string &uri)
+  : Player (id, uri)
 {
   _fontColor = {0, 0, 0, 255};  // black
-  _fontFamily = "helvetica";
+  _fontBgColor = {0, 0, 0, 0};  // transparent
+  _fontFamily = "sans";
   _fontSize = "18px";
   _fontStyle = "";
   _fontVariant = "";
@@ -149,6 +191,11 @@ TextPlayer::setProperty (const string &name, const string &value)
   if (name == "fontColor")
     {
       if (value != "" && !_ginga_parse_color (value, &_fontColor))
+        goto syntax_error;
+    }
+  if (name == "fontBgColor")
+    {
+      if (value != "" && !_ginga_parse_color (value, &_fontBgColor))
         goto syntax_error;
     }
   else if(name == "fontFamily")
@@ -247,7 +294,8 @@ TextPlayer::reload (SDL_Renderer *renderer)
 
   _texture = TextPlayer::renderTexture
     (renderer, text, _fontFamily, _fontWeight, _fontStyle, _fontSize,
-     _fontColor, _rect, _horzAlign, _vertAlign);
+     _fontColor, _fontBgColor, _rect, _horzAlign, _vertAlign, true,
+     nullptr);
   g_assert_nonnull (_texture);
 }
 
