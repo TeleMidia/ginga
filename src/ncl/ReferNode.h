@@ -15,29 +15,28 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef REFERNODE_H_
-#define REFERNODE_H_
+#ifndef REFER_NODE_H
+#define REFER_NODE_H
 
-#include "GenericDescriptor.h"
 #include "Node.h"
-#include "Entity.h"
+#include "GenericDescriptor.h"
 
 GINGA_NCL_BEGIN
 
 class ReferNode : public Node
 {
 public:
-  ReferNode (const string &_id);
-  ReferNode (const string &_id, Entity *entity);
+  ReferNode (const string &);
+  ReferNode (const string &, Entity *);
 
   GenericDescriptor *getInstanceDescriptor ();
-  void setInstanceDescriptor (GenericDescriptor *descriptor);
+  void setInstanceDescriptor (GenericDescriptor *);
 
   string getInstanceType ();
-  void setInstanceType (const string &instance);
+  void setInstanceType (const string &);
 
   Entity *getReferredEntity ();
-  void setReferredEntity (Entity *entity);
+  void setReferredEntity (Entity *);
   Entity *getDataEntity ();
 
 private:
@@ -48,4 +47,4 @@ private:
 
 GINGA_NCL_END
 
-#endif /*REFERNODE_H_*/
+#endif // REFER_NODE_H

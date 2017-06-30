@@ -15,48 +15,23 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef CONVERTER_H_
-#define CONVERTER_H_
+#ifndef CONVERTER_H
+#define CONVERTER_H
 
-#include "ncl/Action.h"
-#include "ncl/AssessmentStatement.h"
-#include "ncl/CausalConnector.h"
-#include "ncl/ValueAssessment.h"
-#include "ncl/CompoundAction.h"
-#include "ncl/CompoundStatement.h"
-#include "ncl/CompoundCondition.h"
-#include "ncl/ConditionExpression.h"
-#include "ncl/AttributeAssessment.h"
-#include "ncl/Role.h"
-#include "ncl/SimpleAction.h"
-#include "ncl/SimpleCondition.h"
-#include "ncl/Statement.h"
-#include "ncl/TriggerExpression.h"
-#include "ncl/EventUtil.h"
-#include "ncl/Bind.h"
-#include "ncl/CausalLink.h"
-#include "ncl/Link.h"
-#include "ncl/Node.h"
-#include "ncl/InterfacePoint.h"
-#include "ncl/Parameter.h"
-using namespace ::ginga::ncl;
-
-#include "ExecutionObjectSwitch.h"
-
-#include "NclEvents.h"
-
-#include "NclFormatterLink.h"
-#include "NclFormatterLink.h"
-#include "NclActions.h"
-#include "NclLinkStatement.h"
-#include "NclLinkCondition.h"
-
-#include "NclCascadingDescriptor.h"
-
-#include "ExecutionObjectContext.h"
 #include "ExecutionObject.h"
-
+#include "ExecutionObjectContext.h"
+#include "ExecutionObjectSwitch.h"
+#include "NclActions.h"
+#include "NclCascadingDescriptor.h"
+#include "NclEvents.h"
+#include "NclFormatterLink.h"
+#include "NclFormatterLink.h"
+#include "NclLinkCondition.h"
+#include "NclLinkStatement.h"
 #include "RuleAdapter.h"
+
+#include "ncl/Ncl.h"
+using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 

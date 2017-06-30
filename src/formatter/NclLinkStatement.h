@@ -15,14 +15,14 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _LINKCOMPOUNDSTATEMENT_H_
-#define _LINKCOMPOUNDSTATEMENT_H_
+#ifndef LINK_COMPOUND_STATEMENT_H
+#define LINK_COMPOUND_STATEMENT_H
 
 #include "NclLinkCondition.h"
 #include "NclLinkAssessment.h"
 #include "NclEvents.h"
 
-#include "ncl/CompoundStatement.h"
+#include "ncl/Ncl.h"
 using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
@@ -83,7 +83,6 @@ private:
   NclLinkAssessment *_mainAssessment;
 };
 
-
 GINGA_FORMATTER_END
 
-#endif //_LINKCOMPOUNDSTATEMENT_H_
+#endif // LINK_COMPOUND_STATEMENT_H

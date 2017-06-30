@@ -15,14 +15,12 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _NCLEVENT_H_
-#define _NCLEVENT_H_
+#ifndef NCL_EVENTS_H
+#define NCL_EVENTS_H
 
 #include "Settings.h"
 
-#include "ncl/ContentAnchor.h"
-#include "ncl/EventUtil.h"
-#include "ncl/PropertyAnchor.h"
+#include "ncl/Ncl.h"
 using namespace ::ginga::ncl;
 
 #include "player/Player.h"
@@ -214,4 +212,4 @@ public:
 
 GINGA_FORMATTER_END
 
-#endif //_NCLEVENT_H_
+#endif // NCL_EVENTS_H

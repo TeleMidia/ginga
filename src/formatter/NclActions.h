@@ -15,12 +15,13 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _LINKACTION_H_
-#define _LINKACTION_H_
+#ifndef LINK_ACTION_H
+#define LINK_ACTION_H
 
 #include "NclEvents.h"
-#include "ncl/Action.h"
-#include "ncl/SimpleAction.h"
+
+#include "ncl/Ncl.h"
+using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
@@ -159,4 +160,4 @@ private:
 
 GINGA_FORMATTER_END
 
-#endif //_LINKACTION_H_
+#endif // LINK_ACTION_H

@@ -18,14 +18,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "NclCascadingDescriptor.h"
 
-#include "ncl/ContentNode.h"
-#include "ncl/NodeEntity.h"
-using namespace ::ginga::ncl;
+#include "ExecutionObject.h"
 
 #include "mb/Display.h"
 using namespace ::ginga::mb;
-
-#include "ExecutionObject.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-conversion)
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)

@@ -15,17 +15,16 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _FORMATTERLINK_H_
-#define _FORMATTERLINK_H_
-
-#include "ncl/Link.h"
-using namespace ::ginga::ncl;
+#ifndef FORMATTER_LINK_H
+#define FORMATTER_LINK_H
 
 #include "NclActions.h"
 #include "NclEvents.h"
-
-#include "NclLinkCondition.h"
 #include "NclFormatterLink.h"
+#include "NclLinkCondition.h"
+
+#include "ncl/Ncl.h"
+using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 

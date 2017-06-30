@@ -15,10 +15,10 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef NODENESTING_H_
-#define NODENESTING_H_
+#ifndef NODE_NESTING_H
+#define NODE_NESTING_H
 
-#include "ncl/Node.h"
+#include "ncl/Ncl.h"
 using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
@@ -56,4 +56,4 @@ public:
 
 GINGA_FORMATTER_END
 
-#endif /*NODENESTING_H_*/
+#endif // NODE_NESTING_H

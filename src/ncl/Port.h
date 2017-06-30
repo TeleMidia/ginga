@@ -15,28 +15,25 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _PORT_H_
-#define _PORT_H_
+#ifndef PORT_H
+#define PORT_H
 
-#include "NodeEntity.h"
-
-#include "InterfacePoint.h"
+#include "Node.h"
 
 GINGA_NCL_BEGIN
 
 class Port : public InterfacePoint
 {
 public:
-  Port (const string &_id, Node *someNode, InterfacePoint *someInterfacePoint);
-
+  Port (const string &, Node *, InterfacePoint *);
   virtual ~Port ();
   InterfacePoint *getInterfacePoint ();
   Node *getNode ();
   virtual Node *getEndNode ();
   virtual InterfacePoint *getEndInterfacePoint ();
   vector<Node *> *getMapNodeNesting ();
-  void setInterfacePoint (InterfacePoint *someInterfacePoint);
-  void setNode (Node *someNode);
+  void setInterfacePoint (InterfacePoint *);
+  void setNode (Node *);
 
 protected:
   Node *_node;
@@ -45,4 +42,4 @@ protected:
 
 GINGA_NCL_END
 
-#endif //_PORT_H_
+#endif // PORT_H

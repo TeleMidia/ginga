@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _SWITCHCONTENT_H_
-#define _SWITCHCONTENT_H_
+#ifndef SWITCH_CONTENT_H
+#define SWITCH_CONTENT_H
 
 #include "Content.h"
 
@@ -31,4 +31,4 @@ public:
 
 GINGA_NCL_END
 
-#endif //_SWITCHCONTENT_H_
+#endif // SWITCH_CONTENT_H

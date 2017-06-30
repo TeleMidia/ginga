@@ -18,10 +18,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NCL_LINK_TRIGGER_CONDITION
 #define NCL_LINK_TRIGGER_CONDITION
 
-#include "ncl/Bind.h"
-using namespace ::ginga::ncl;
-
 #include "NclEvents.h"
+
+#include "ncl/Ncl.h"
+using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 

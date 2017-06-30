@@ -25,20 +25,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclActions.h"
 #include "NclNodeNesting.h"
 
-#include "ncl/GenericDescriptor.h"
-#include "ncl/ReferenceContent.h"
-#include "ncl/LabeledAnchor.h"
-#include "ncl/LambdaAnchor.h"
-#include "ncl/IntervalAnchor.h"
-#include "ncl/PropertyAnchor.h"
-#include "ncl/EventUtil.h"
+#include "ncl/Ncl.h"
 using namespace ::ginga::ncl;
-
-#include "mb/IEventListener.h"
-using namespace ::ginga::mb;
 
 #include "player/Player.h"
 using namespace ::ginga::player;
+
+#include "mb/IEventListener.h"
+using namespace ::ginga::mb;
 
 GINGA_FORMATTER_BEGIN
 

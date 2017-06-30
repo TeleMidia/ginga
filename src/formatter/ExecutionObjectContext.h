@@ -15,23 +15,18 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _EXECUTIONOBJECTCONTEXT_H_
-#define _EXECUTIONOBJECTCONTEXT_H_
+#ifndef EXECUTION_OBJECT_CONTEXT_H
+#define EXECUTION_OBJECT_CONTEXT_H
 
-#include "ncl/Node.h"
-#include "ncl/ContextNode.h"
-#include "ncl/EventUtil.h"
-#include "ncl/Link.h"
-using namespace ::ginga::ncl;
-
+#include "ExecutionObject.h"
+#include "NclCascadingDescriptor.h"
 #include "NclEvents.h"
-
 #include "NclFormatterLink.h"
 #include "NclLinkListener.h"
-
 #include "NclNodeNesting.h"
-#include "NclCascadingDescriptor.h"
-#include "ExecutionObject.h"
+
+#include "ncl/Ncl.h"
+using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
@@ -87,4 +82,4 @@ private:
 
 GINGA_FORMATTER_END
 
-#endif //_EXECUTIONOBJECTCONTEXT_H_
+#endif // EXECUTION_OBJECT_CONTEXT_H

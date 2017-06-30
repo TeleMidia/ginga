@@ -21,9 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ExecutionObjectContext.h"
 #include "NclEvents.h"
 
-#include "ncl/ContentNode.h"
-using namespace ::ginga::ncl;
-
 #include "player/Player.h"
 using namespace ::ginga::player;
 

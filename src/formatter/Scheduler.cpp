@@ -17,11 +17,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "Scheduler.h"
-
 #include "Converter.h"
 
-#include "ncl/Parser.h"
 #include "mb/Display.h"
+using namespace ::ginga::mb;
 
 GINGA_FORMATTER_BEGIN
 
