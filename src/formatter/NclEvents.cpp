@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclEvents.h"
 
 #include "ExecutionObjectContext.h"
-#include "ncl/ContentNode.h"
 
 GINGA_FORMATTER_BEGIN
 

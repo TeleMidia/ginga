@@ -15,30 +15,13 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _CASCADINGDESCRIPTOR_H_
-#define _CASCADINGDESCRIPTOR_H_
-
-#include "ncl/Parameter.h"
-using namespace ::ginga::ncl;
-
-#include "ncl/Descriptor.h"
-#include "ncl/GenericDescriptor.h"
-using namespace ::ginga::ncl;
-
-#include "ncl/LayoutRegion.h"
-using namespace ::ginga::ncl;
-
-#include "ncl/DescriptorSwitch.h"
-using namespace ::ginga::ncl;
-
-#include "ncl/FocusDecoration.h"
-#include "ncl/KeyNavigation.h"
-using namespace ::ginga::ncl;
-
-#include "ncl/Transition.h"
-using namespace ::ginga::ncl;
+#ifndef CASCADING_DESCRIPTOR_H
+#define CASCADING_DESCRIPTOR_H
 
 #include "NclFormatterRegion.h"
+
+#include "ncl/Ncl.h"
+using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 class NclCascadingDescriptor
@@ -109,4 +92,4 @@ public:
 
 GINGA_FORMATTER_END
 
-#endif //_CASCADINGDESCRIPTOR_H_
+#endif // CASCADING_DESCRIPTOR_H

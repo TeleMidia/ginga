@@ -15,14 +15,10 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef FORMATTERREGION_H_
-#define FORMATTERREGION_H_
+#ifndef FORMATTER_REGION_H
+#define FORMATTER_REGION_H
 
-#include "ncl/LayoutRegion.h"
-using namespace ::ginga::ncl;
-
-#include "ncl/Descriptor.h"
-#include "ncl/DescriptorUtil.h"
+#include "ncl/Ncl.h"
 using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
@@ -137,4 +133,4 @@ typedef struct
 
 GINGA_FORMATTER_END
 
-#endif /*FORMATTERREGION_H_*/
+#endif // FORMATTER_REGION_H

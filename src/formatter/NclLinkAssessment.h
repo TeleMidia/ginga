@@ -15,14 +15,14 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef LINKATTRIBUTEASSESSMENT_H_
-#define LINKATTRIBUTEASSESSMENT_H_
-
-#include "ncl/EventUtil.h"
-using namespace ::ginga::ncl;
+#ifndef LINK_ATTRIBUTE_ASSESSMENT_H
+#define LINK_ATTRIBUTE_ASSESSMENT_H
 
 #include "NclEvents.h"
 #include "NclLinkAssessment.h"
+
+#include "ncl/Ncl.h"
+using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
@@ -71,4 +71,4 @@ protected:
 
 GINGA_FORMATTER_END
 
-#endif /*LINKATTRIBUTEASSESSMENT_H_*/
+#endif // LINK_ATTRIBUTE_ASSESSMENT_H

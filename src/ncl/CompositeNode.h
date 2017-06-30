@@ -15,78 +15,73 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _COMPOSITENODE_H_
-#define _COMPOSITENODE_H_
+#ifndef COMPOSITE_NODE_H
+#define COMPOSITE_NODE_H
 
-#include "InterfacePoint.h"
+#include "NodeEntity.h"
 #include "Port.h"
-#include "Anchor.h"
-
-#include "Node.h"
 
 GINGA_NCL_BEGIN
 
 class CompositeNode : public NodeEntity
 {
 public:
-  CompositeNode (const string &_id);
+  CompositeNode (const string &);
   virtual ~CompositeNode ();
-  bool addAnchor (int index, Anchor *anchor);
-  bool addAnchor (Anchor *anchor);
+  bool addAnchor (int, Anchor *);
+  bool addAnchor (Anchor *);
 
-  // virtual to all
-  virtual bool addNode (Node *node) = 0;
+  // Virtual to all.
+  virtual bool addNode (Node *) = 0;
 
-  // virtual to SwitchNode
-  virtual bool addPort (unsigned int index, Port *port);
+  // Virtual to SwitchNode
+  virtual bool addPort (unsigned int, Port *);
 
-  // virtual to SwitchNode
-  virtual bool addPort (Port *port);
+  // Virtual to SwitchNode.
+  virtual bool addPort (Port *);
 
   void clearPorts ();
   unsigned int getNumPorts ();
-  Port *getPort (const string &portId);
-  Port *getPort (unsigned int index);
+  Port *getPort (const string &);
+  Port *getPort (unsigned int);
   vector<Port *> *getPorts ();
-  unsigned int indexOfPort (Port *port);
-  bool removePort (Port *port);
+  unsigned int indexOfPort (Port *);
+  bool removePort (Port *);
 
-  // virtual to SwitchNode
-  virtual InterfacePoint *getMapInterface (Port *port);
+  // Virtual to SwitchNode.
+  virtual InterfacePoint *getMapInterface (Port *);
 
-  // virtual to SwitchNode
+  // Virtual to SwitchNode.
   virtual Node *getNode (const string &nodeId);
 
   vector<Node *> *getNodes ();
   unsigned int getNumNodes ();
 
-  // virtual to SwitchNode
-  virtual bool recursivelyContainsNode (const string &nodeId);
+  // Virtual to SwitchNode.
+  virtual bool recursivelyContainsNode (const string &);
 
-  // virtual to SwitchNode
-  virtual bool recursivelyContainsNode (Node *node);
+  // Virtual to SwitchNode.
+  virtual bool recursivelyContainsNode (Node *);
 
-  // virtual to SwitchNode
-  virtual Node *recursivelyGetNode (const string &nodeId);
+  // Virtual to SwitchNode.
+  virtual Node *recursivelyGetNode (const string &);
 
-  // virtual to SwitchNode
-  virtual bool removeNode (Node *node);
+  // Virtual to SwitchNode.
+  virtual bool removeNode (Node *);
 
-  // virtual to ContextNode
-  virtual GenericDescriptor *getNodeDescriptor (Node *node);
+  // Virtual to ContextNode.
+  virtual GenericDescriptor *getNodeDescriptor (Node *);
 
-  // virtual to ContextNode
-  virtual bool setNodeDescriptor (const string &nodeId,
-                                  GenericDescriptor *_descriptor);
+  // Virtual to ContextNode.
+  virtual bool setNodeDescriptor (const string &, GenericDescriptor *);
 
 protected:
   vector<Node *> _nodes;
   vector<Port *> _portList;
-
   static bool
   isDocumentNode (Node *node);
 };
 
 GINGA_NCL_END
 
-#endif //_COMPOSITENODE_H_
+#endif // COMPOSITE_NODE_H

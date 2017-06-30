@@ -15,29 +15,16 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _RULEADAPTER_H_
-#define _RULEADAPTER_H_
+#ifndef RULE_ADAPTER_H
+#define RULE_ADAPTER_H
 
-#include "NclCascadingDescriptor.h"
-#include "ExecutionObjectContext.h"
 #include "ExecutionObject.h"
+#include "ExecutionObjectContext.h"
 #include "ExecutionObjectSwitch.h"
+#include "NclCascadingDescriptor.h"
 #include "Settings.h"
 
-#include "ncl/GenericDescriptor.h"
-using namespace ::ginga::ncl;
-
-#include "ncl/DescriptorSwitch.h"
-#include "ncl/CompositeRule.h"
-#include "ncl/Rule.h"
-#include "ncl/SimpleRule.h"
-#include "ncl/SwitchNode.h"
-using namespace ::ginga::ncl;
-
-#include "ncl/Comparator.h"
-using namespace ::ginga::ncl;
-
-#include "ncl/Node.h"
+#include "ncl/Ncl.h"
 using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
@@ -76,4 +63,4 @@ private:
 
 GINGA_FORMATTER_END
 
-#endif //_RULEADAPTER_H_
+#endif // RULE_ADAPTER_H

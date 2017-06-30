@@ -15,16 +15,14 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _EXECUTIONOBJECTSWITCH_H_
-#define _EXECUTIONOBJECTSWITCH_H_
-
-#include "ncl/Node.h"
-#include "ncl/LambdaAnchor.h"
-using namespace ::ginga::ncl;
+#ifndef EXECUTION_OBJECT_SWITCH_H
+#define EXECUTION_OBJECT_SWITCH_H
 
 #include "ExecutionObjectContext.h"
-
 #include "NclEvents.h"
+
+#include "ncl/Ncl.h"
+using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
@@ -45,4 +43,4 @@ protected:
 
 GINGA_FORMATTER_END
 
-#endif //_EXECUTIONOBJECTSWITCH_H_
+#endif // EXECUTION_OBJECT_SWITCH_H

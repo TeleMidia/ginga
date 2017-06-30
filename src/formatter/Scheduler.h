@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Converter.h"
 #include "NclActions.h"
 
-#include "ncl/NclDocument.h"
+#include "ncl/Ncl.h"
 using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN

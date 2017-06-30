@@ -15,12 +15,12 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef EventTransitionManager_H_
-#define EventTransitionManager_H_
+#ifndef EVENT_TRANSITION_MANAGER_H
+#define EVENT_TRANSITION_MANAGER_H
 
 #include "NclEvents.h"
 
-#include "ncl/EventUtil.h"
+#include "ncl/Ncl.h"
 using namespace ::ginga::ncl;
 
 #include "player/Player.h"
@@ -58,4 +58,4 @@ private:
 
 GINGA_FORMATTER_END
 
-#endif /*EventTransitionManager_H_*/
+#endif // EVENT_TRANSITION_MANAGER_H

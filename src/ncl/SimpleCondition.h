@@ -15,12 +15,11 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _SIMPLECONDITION_H_
-#define _SIMPLECONDITION_H_
+#ifndef SIMPLE_CONDITION_H
+#define SIMPLE_CONDITION_H
 
-#include "EventUtil.h"
-#include "TriggerExpression.h"
 #include "Role.h"
+#include "TriggerExpression.h"
 
 GINGA_NCL_BEGIN
 
@@ -46,4 +45,4 @@ private:
 
 GINGA_NCL_END
 
-#endif //_SIMPLECONDITION_H_
+#endif // SIMPLE_CONDITION_H

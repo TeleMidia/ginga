@@ -18,21 +18,19 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PROPERTY_ANCHOR_H
 #define PROPERTY_ANCHOR_H
 
-#include "ginga.h"
 #include "Anchor.h"
-#include "Entity.h"
 
 GINGA_NCL_BEGIN
 
 class PropertyAnchor : public Anchor
 {
 public:
-  PropertyAnchor (const string &attName);
+  PropertyAnchor (const string &);
   virtual ~PropertyAnchor (){}
   string getName ();
-  void setName (const string &name);
+  void setName (const string &);
   string getValue ();
-  void setValue (const string &_value);
+  void setValue (const string &);
   PropertyAnchor *clone ();
 
 private:
@@ -41,4 +39,4 @@ private:
 
 GINGA_NCL_END
 
-#endif /* PROPERTY_ANCHOR_H */
+#endif // PROPERTY_ANCHOR_H

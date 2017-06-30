@@ -15,11 +15,9 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef NODE_H_
-#define NODE_H_
+#ifndef NODE_H
+#define NODE_H
 
-#include "Entity.h"
-#include "Anchor.h"
 #include "PropertyAnchor.h"
 
 GINGA_NCL_BEGIN
@@ -33,22 +31,21 @@ public:
   virtual ~Node ();
 
   void copyProperties (Node *node);
-  void setParentComposition (CompositeNode *composition);
+  void setParentComposition (CompositeNode *);
   CompositeNode *getParentComposition ();
   vector<Node *> *getPerspective ();
-  virtual bool addAnchor (Anchor *anchor);
-  virtual bool addAnchor (int index, Anchor *anchor);
-  Anchor *getAnchor (const string &anchorId);
-  Anchor *getAnchor (int index);
-
+  virtual bool addAnchor (Anchor *);
+  virtual bool addAnchor (int, Anchor *);
+  Anchor *getAnchor (const string &);
+  Anchor *getAnchor (int);
   const vector<Anchor *> &getAnchors ();
   vector<PropertyAnchor *> *getOriginalPropertyAnchors ();
 
-  PropertyAnchor *getPropertyAnchor (const string &propertyName);
+  PropertyAnchor *getPropertyAnchor (const string &);
   int getNumAnchors ();
-  int indexOfAnchor (Anchor *anchor);
-  virtual bool removeAnchor (int index);
-  virtual bool removeAnchor (Anchor *anchor);
+  int indexOfAnchor (Anchor *);
+  virtual bool removeAnchor (int);
+  virtual bool removeAnchor (Anchor *);
 
 protected:
   vector<Anchor *> _anchorList;
@@ -56,10 +53,9 @@ protected:
 
 private:
   CompositeNode *_parentNode;
-
   bool hasProperty (const string &propName);
 };
 
 GINGA_NCL_END
 
-#endif /*NODE_H_*/
+#endif // NODE_H

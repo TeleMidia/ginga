@@ -16,33 +16,12 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-
-#include "ncl/SwitchNode.h"
-#include "ncl/PropertyAnchor.h"
-#include "ncl/ContentAnchor.h"
-#include "ncl/LambdaAnchor.h"
-#include "ncl/SwitchPort.h"
-#include "ncl/Port.h"
-#include "ncl/InterfacePoint.h"
-#include "ncl/CompositeNode.h"
-#include "ncl/ContextNode.h"
-#include "ncl/ContentNode.h"
-#include "ncl/Node.h"
-#include "ncl/NodeEntity.h"
-#include "ncl/EventUtil.h"
-#include "ncl/GenericDescriptor.h"
-#include "ncl/Bind.h"
-#include "ncl/CausalLink.h"
-#include "ncl/Link.h"
-#include "ncl/ReferNode.h"
-using namespace ::ginga::ncl;
+#include "Converter.h"
 
 #include "NclActions.h"
-
 #include "NclLinkStatement.h"
 #include "NclLinkAssessment.h"
 
-#include "Converter.h"
 GINGA_FORMATTER_BEGIN
 
 int Converter::_dummyCount = 0;
