@@ -30,13 +30,13 @@ GINGA_PLAYER_BEGIN
  * @param renderer SDL renderer.
  * @param text Text to be rendered.
  * @param family Font family.
- * @param width Font weight ("normal" or "bold").
+ * @param weight Font weight ("normal" or "bold").
  * @param style Font style ("normal" or "italic").
  * @param size Font size
  * @param fg Text color.
  * @param bg Background color.
  * @param rect Dimensions of the resulting texture.
- * @param haling Horizontal alignment
+ * @param halign Horizontal alignment
  *        ("left", "center", "right", or "justified").
  * @param valign Vertical alignment ("bottom", "middle", or "top").
  * @param antialias Whether to use antialias.
