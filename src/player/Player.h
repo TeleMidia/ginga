@@ -22,6 +22,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PLAYER_BEGIN
 
+#define PL_TRACE(fmt, ...)\
+  TRACE ("%s: " fmt, _id.c_str (), ## __VA_ARGS__)
+
 class Player
 {
 public:
