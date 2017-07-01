@@ -556,15 +556,6 @@ Player::redraw (SDL_Renderer *renderer)
 
 // Private.
 
-#define DEBUG_TIME_FORMAT "u:%02u:%02u"
-#define DEBUG_TIME_ARGS(t)                                              \
-  GINGA_TIME_IS_VALID (t) ?                                             \
-  (guint) (((GingaTime)(t)) / (GINGA_SECOND * 60 * 60)) : 99,           \
-    GINGA_TIME_IS_VALID (t) ?                                           \
-    (guint) ((((GingaTime)(t)) / (GINGA_SECOND * 60)) % 60) : 99,       \
-    GINGA_TIME_IS_VALID (t) ?                                           \
-    (guint) ((((GingaTime)(t)) / GINGA_SECOND) % 60) : 99
-
 void
 Player::redrawDebuggingInfo (SDL_Renderer *renderer)
 {
@@ -581,8 +572,9 @@ Player::redrawDebuggingInfo (SDL_Renderer *renderer)
     }
 
   // Draw info.
-  str = xstrbuild ("%s:%" DEBUG_TIME_FORMAT "\n%dx%d:(%d,%d):%d",
-                   id.c_str (), DEBUG_TIME_ARGS (_time),
+  str = xstrbuild ("%s:%.1fs\n%dx%d:(%d,%d):%d",
+                   id.c_str (),
+                   ((double) GINGA_TIME_AS_MSECONDS (_time)) / 1000.,
                    _rect.w, _rect.h, _rect.x, _rect.y, _z);
 
   debug = TextPlayer::renderTexture
