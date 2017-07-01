@@ -173,11 +173,12 @@ VideoPlayer::stop ()
   Player::stop ();
 }
 
-void G_GNUC_NORETURN
+void
 VideoPlayer::pause ()
 {
   g_assert (_state != PL_PAUSED && _state != PL_SLEEPING);
-  ERROR_NOT_IMPLEMENTED ("pause action is not supported");
+  gstx_element_set_state_sync (_playbin, GST_STATE_PAUSED);
+  Player::pause ();
 }
 
 void G_GNUC_NORETURN

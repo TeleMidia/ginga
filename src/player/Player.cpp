@@ -221,21 +221,25 @@ Player::stop ()
 /**
  * @brief Pauses player.
  */
-void G_GNUC_NORETURN
+void
 Player::pause ()
 {
   g_assert (_state != PL_PAUSED && _state != PL_SLEEPING);
-  ERROR_NOT_IMPLEMENTED ("pause action is not supported");
+  TRACE ("pausing");
+
+  _state = PL_PAUSED;
 }
 
 /**
  * @brief Resumes player.
  */
-void G_GNUC_NORETURN
+void
 Player::resume ()
 {
   g_assert (_state == PL_PAUSED);
-  ERROR_NOT_IMPLEMENTED ("resume action is not supported");
+  TRACE ("resuming");
+
+  _state = PL_OCCURRING;
 }
 
 /**
