@@ -133,28 +133,25 @@ LuaPlayer::handleKeyEvent (string const &key, bool press)
 void
 LuaPlayer::redraw (SDL_Renderer *renderer)
 {
-  SDL_Surface *sfc;
+  void *pixels;
+  int pitch;
 
   g_assert (_state != PL_SLEEPING);
   g_assert_nonnull (_nw);
 
   ncluaw_cycle (_nw);
 
-  SDLx_CreateSurfaceARGB32 (_init_rect.w, _init_rect.h, &sfc);
-  SDLx_LockSurface (sfc);
-  ncluaw_paint (_nw, (guchar *) sfc->pixels, "ARGB32",
-                sfc->w, sfc->h, sfc->pitch);
-  SDLx_UnlockSurface (sfc);
-
-  if (_texture == nullptr) // first call
+  if (_texture == nullptr)
     {
-      _texture = SDL_CreateTextureFromSurface (renderer, sfc);
+      _texture = SDL_CreateTexture
+        (renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
+         _rect.w, _rect.h);
       g_assert_nonnull (_texture);
     }
 
-  SDLx_LockSurface (sfc);
-  SDL_UpdateTexture (_texture, NULL, sfc->pixels, sfc->pitch);
-  SDLx_UnlockSurface (sfc);
+  SDLx_LockTexture (_texture, NULL, &pixels, &pitch);
+  ncluaw_paint (_nw, (guchar *) pixels, "ARGB32", _rect.w, _rect.h, pitch);
+  SDLx_UnlockTexture (_texture);
 
   Player::redraw (renderer);
 }

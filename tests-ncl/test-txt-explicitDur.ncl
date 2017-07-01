@@ -20,27 +20,30 @@
     </connectorBase>
   </head>
   <body>
-    <port id="start1" component="vid1"/>
-    <port id="start2" component="lua1"/>
-    <media id="vid1" src="samples/clock.ogv" descriptor="desc1">
+    <port id="start1" component="txt0"/>
+    <port id="start2" component="txt1"/>
+    <media id="txt0" src="samples/text.txt" descriptor="desc1">
       <property name="explicitDur" value="1s"/>
+      <property name="background" value="red"/>
     </media>
-    <media id="lua1" src="samples/fps.lua" descriptor="desc2">
+    <media id="txt1" src="samples/text.txt" descriptor="desc2">
       <property name="explicitDur" value="1s"/>
+      <property name="background" value="green"/>
     </media>
     <link xconnector="onEndStart">
-      <bind role="onEnd" component="lua1"/>
-      <bind role="start" component="vid1"/>
-      <bind role="start" component="lua1"/>
+      <bind role="onEnd" component="txt1"/>
+      <bind role="start" component="txt0"/>
+      <bind role="start" component="txt1"/>
     </link>
     <port id="startctx" component="ctx"/>
     <context id="ctx">
-      <port id="start3" component="svg2"/>
-      <port id="start4" component="png4"/>
-      <media id="svg2" src="samples/vector.svg" descriptor="desc3">
+      <port id="start3" component="txt2"/>
+      <port id="start4" component="txt3"/>
+      <media id="txt2" src="samples/text.txt" descriptor="desc3">
         <property name="explicitDur" value="3s"/>
+        <property name="background" value="blue"/>
       </media>
-      <media id="png4" src="samples/gnu.png" descriptor="desc4">
+      <media id="txt3" src="samples/text.txt" descriptor="desc4">
         <property name="explicitDur" value="2s"/>
       </media>
     </context>

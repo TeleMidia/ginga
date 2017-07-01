@@ -72,7 +72,7 @@ TextPlayer::renderTexture (SDL_Renderer *renderer, const string &text,
                                SDL_TEXTUREACCESS_STREAMING,
                                rect.w, rect.h);
   g_assert_nonnull (texture);
-  SDL_LockTexture (texture, NULL, &pixels, &pitch);
+  SDLx_LockTexture (texture, NULL, &pixels, &pitch);
 
   sfc_cr = cairo_image_surface_create_for_data
     ((guchar *) pixels, CAIRO_FORMAT_ARGB32,
