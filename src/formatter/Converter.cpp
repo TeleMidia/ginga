@@ -76,13 +76,9 @@ Converter::getExecutionObjectFromPerspective (
   ExecutionObjectContext *parentObj;
   ExecutionObject *exeObj;
 
-  string id = perspective->getId () + SEPARATOR;
+  string id = perspective->getId ();
   NclCascadingDescriptor *cascadingDescriptor
       = getCascadingDescriptor (perspective, descriptor);
-  if (cascadingDescriptor)
-    {
-      id = id + cascadingDescriptor->getId ();
-    }
 
   auto i = _exeObjects.find (id);
   if (i != _exeObjects.end ())
@@ -302,18 +298,8 @@ Converter::addSameInstance (ExecutionObject *exeObj,
       // A new entry for the execution object is inserted using
       // the refer node id.  As a consequence, links referring to the
       // refer node will generate events in the execution object.
-      NclCascadingDescriptor *desc = exeObj->getDescriptor ();
-
       string objectId;
-      if (desc)
-        {
-          objectId = (referPerspective->getId () + SEPARATOR
-                      + exeObj->getDescriptor ()->getId ());
-        }
-      else
-        {
-          objectId = referPerspective->getId ();
-        }
+      objectId = referPerspective->getId ();
       _exeObjects[objectId] = exeObj;
     }
 
@@ -980,15 +966,10 @@ Converter::processExecutionObjectSwitch (
   selectedPerspective = switchObject->getNodePerspective ();
   selectedPerspective->insertAnchorNode (selectedNode);
 
-  id = selectedPerspective->getId () + SEPARATOR;
+  id = selectedPerspective->getId ();
 
   descriptor = Converter::getCascadingDescriptor (
         selectedPerspective, NULL);
-
-  if (descriptor != NULL)
-    {
-      id += descriptor->getId ();
-    }
 
   i = _exeObjects.find (id);
   if (i != _exeObjects.end ())
@@ -1135,30 +1116,26 @@ Converter::insertNode (NclNodeNesting *perspective,
                        GenericDescriptor *descriptor)
 {
   ExecutionObject *executionObject;
-  NclEvent *event;
   EventType eventType;
 
-  event = nullptr;
   executionObject = getExecutionObjectFromPerspective (perspective,
                                                        descriptor);
+  g_assert_nonnull (executionObject);
 
-  if (executionObject != nullptr)
+  if (instanceof (ContentAnchor *, interfacePoint))
     {
-      if (!(instanceof (PropertyAnchor *, interfacePoint)))
-        {
-          eventType = EventType::PRESENTATION;
-        }
-      else
-        {
-          eventType = EventType::ATTRIBUTION;
-        }
-
-      // get the event corresponding to the node anchor
-      event = getEvent (executionObject, interfacePoint, eventType, "");
+      eventType = EventType::PRESENTATION;
+    }
+  else if (instanceof (PropertyAnchor *, interfacePoint))
+    {
+      eventType = EventType::ATTRIBUTION;
+    }
+  else
+    {
+      ERROR_NOT_IMPLEMENTED ("anchor type not supported");
     }
 
-  return event;
-
+  return getEvent (executionObject, interfacePoint, eventType, "");
 }
 
 NclEvent *
@@ -1168,46 +1145,35 @@ Converter::insertContext (NclNodeNesting *contextPerspective,
   vector<Node *> *nestedSeq;
   NclNodeNesting *perspective;
   NclEvent *newEvent;
-  bool error = false;
 
-  if (contextPerspective == nullptr || port == nullptr)
-    {
-      error = true;
-    }
+  g_assert_nonnull (contextPerspective);
+  g_assert_nonnull (port);
 
-  if (!(instanceof (ContentAnchor *, port->getEndInterfacePoint ())
-        || instanceof (LabeledAnchor *, port->getEndInterfacePoint ())
-        || instanceof (PropertyAnchor *, port->getEndInterfacePoint ())
-        || instanceof (SwitchPort *, port->getEndInterfacePoint ()))
-      || !(instanceof (ContextNode *,
-                       contextPerspective->getAnchorNode ()
-                       ->getDataEntity ())))
-    {
-      error = true;
+  InterfacePoint *iface = port->getEndInterfacePoint ();
+  g_assert (instanceof (ContentAnchor *, iface)
+            || instanceof (LabeledAnchor *, iface)
+            || instanceof (PropertyAnchor *, iface)
+            || instanceof (SwitchPort *, iface));
 
-    }
+  Node *node = contextPerspective->getAnchorNode ();
+  g_assert_nonnull (node);
 
-  if (error)
-    {
-      WARNING ("Can't find a valid interface point in '%s'.",
-               contextPerspective->getId ().c_str());
+  Entity *entity = node->getDataEntity ();
+  g_assert_nonnull (entity);
 
-      return nullptr;
-    }
-  else
-    {
-      nestedSeq = port->getMapNodeNesting ();
-      perspective = new NclNodeNesting (contextPerspective);
-      perspective->append (nestedSeq);
-      delete nestedSeq;
+  g_assert (instanceof (ContextNode *, entity));
 
-      newEvent = insertNode (perspective,
-                             port->getEndInterfacePoint (),
-                             nullptr);
-      delete perspective;
+  nestedSeq = port->getMapNodeNesting ();
+  perspective = new NclNodeNesting (contextPerspective);
+  perspective->append (nestedSeq);
+  delete nestedSeq;
 
-      return newEvent;
-    }
+  newEvent = insertNode (perspective,
+                         port->getEndInterfacePoint (),
+                         nullptr);
+  delete perspective;
+
+  return newEvent;
 }
 
 void

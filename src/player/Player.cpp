@@ -196,7 +196,7 @@ void
 Player::start ()
 {
   g_assert (_state != PL_OCCURRING);
-  TRACE ("starting");
+  PL_TRACE ("starting");
 
   _state = PL_OCCURRING;
   _time = 0;
@@ -211,7 +211,7 @@ void
 Player::stop ()
 {
   g_assert (_state != PL_SLEEPING);
-  TRACE ("stopping");
+  PL_TRACE ("stopping");
 
   _state = PL_SLEEPING;
   _animator.clear ();
@@ -225,7 +225,7 @@ void
 Player::pause ()
 {
   g_assert (_state != PL_PAUSED && _state != PL_SLEEPING);
-  TRACE ("pausing");
+  PL_TRACE ("pausing");
 
   _state = PL_PAUSED;
 }
@@ -237,7 +237,7 @@ void
 Player::resume ()
 {
   g_assert (_state == PL_PAUSED);
-  TRACE ("resuming");
+  PL_TRACE ("resuming");
 
   _state = PL_OCCURRING;
 }
@@ -253,9 +253,9 @@ void
 Player::schedulePropertyAnimation (const string &name, const string &from,
                                    const string &to, GingaTime dur)
 {
-  TRACE ("animating %p.%s from '%s' to '%s' in %" GINGA_TIME_FORMAT,
-         this, name.c_str (), from.c_str (), to.c_str (),
-         GINGA_TIME_ARGS (dur));
+  PL_TRACE ("animating %s from '%s' to '%s' in %" GINGA_TIME_FORMAT,
+            name.c_str (), from.c_str (), to.c_str (),
+            GINGA_TIME_ARGS (dur));
   _animator.schedule (name, from, to, dur);
 }
 
@@ -279,7 +279,7 @@ Player::setProperty (const string &name, const string &value)
 {
   vector<string> params;
 
-  TRACE ("setting %p.%s to '%s'", this, name.c_str (), value.c_str ());
+  PL_TRACE ("setting %s to '%s'", name.c_str (), value.c_str ());
 
   if (value == "")
     goto done;
@@ -569,11 +569,7 @@ Player::redrawDebuggingInfo (SDL_Renderer *renderer)
 
   id = _id;
   if (id.find ("/") != std::string::npos)
-    {
-      id = xpathdirname (id);
-      if (id.find ("/") != std::string::npos)
-        id = xpathbasename (id);
-    }
+    id = xpathbasename (id);
 
   // Draw info.
   str = xstrbuild ("%s:%.1fs\n%dx%d:(%d,%d):%d",

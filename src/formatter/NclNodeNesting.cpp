@@ -53,7 +53,7 @@ void
 NclNodeNesting::initialize ()
 {
   this->nodes = new vector<Node *>;
-  id = "";  
+  id = "";
 }
 
 void
