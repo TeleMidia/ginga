@@ -826,6 +826,9 @@ ExecutionObject::handleTickEvent (arg_unused (GingaTime total),
   if (_player == nullptr)
     return;                     // nothing to do
 
+  if (this->isPaused ())
+    return;                     // nothing to do
+
   if (_player->getEOS ())
     {
       this->stop ();            // done
@@ -874,6 +877,9 @@ ExecutionObject::handleKeyEvent (const string &key, bool press)
   list<SelectionEvent *> buf;
 
   if (!press)
+    return;                     // nothing to do
+
+  if (this->isPaused ())
     return;                     // nothing to do
 
   g_assert (this->isOccurring ());
