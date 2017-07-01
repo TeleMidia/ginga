@@ -49,7 +49,7 @@ Dashboard::redraw (SDL_Renderer *renderer, GingaTime total, double fps,
 
   Ginga_Display->getSize (&rect.w, &rect.h);
   debug = TextPlayer::renderTexture
-    (renderer, info, "monospace", "", "bold", "10", fg, bg,
+    (renderer, info, "monospace", "", "bold", "9", fg, bg,
      rect, "center", "", false, &ink);
 
   SDLx_SetTextureBlendMode (debug, SDL_BLENDMODE_BLEND);
