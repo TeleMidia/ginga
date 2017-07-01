@@ -292,6 +292,9 @@ TextPlayer::reload (SDL_Renderer *renderer)
   text = string (contents);
   g_free (contents);
 
+  if (_texture != nullptr)
+    SDL_DestroyTexture (_texture);
+
   _texture = TextPlayer::renderTexture
     (renderer, text, _fontFamily, _fontWeight, _fontStyle, _fontSize,
      _fontColor, _fontBgColor, _rect, _horzAlign, _vertAlign, true,
