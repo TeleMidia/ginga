@@ -74,12 +74,6 @@ NclCascadingDescriptor::~NclCascadingDescriptor ()
   vector<GenericDescriptor *>::iterator i;
   DescriptorSwitch *ds;
 
-  if (formatterRegion != NULL)
-    {
-      delete formatterRegion;
-      formatterRegion = NULL;
-    }
-
   if (inputTransitions != NULL)
     {
       delete inputTransitions;
@@ -114,7 +108,6 @@ NclCascadingDescriptor::initializeCascadingDescriptor ()
   explicitDuration = GINGA_TIME_NONE;
   repetitions = 0;
   region = NULL;
-  formatterRegion = NULL;
 
   focusIndex = "";
   moveUp = "";
@@ -356,22 +349,11 @@ NclCascadingDescriptor::getRegion ()
   return region;
 }
 
-NclFormatterRegion *
-NclCascadingDescriptor::getFormatterRegion ()
-{
-  return formatterRegion;
-}
-
 void
 NclCascadingDescriptor::setFormatterLayout ()
 {
   if (region == NULL)
       this->region = new LayoutRegion ("");
-
-  if (this->formatterRegion != NULL)
-    delete this->formatterRegion;
-
-  this->formatterRegion = new NclFormatterRegion (id, this);
 }
 
 int

@@ -21,7 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclEvents.h"
 #include "NclEventTransitionManager.h"
 #include "NclCascadingDescriptor.h"
-#include "NclFormatterRegion.h"
 #include "NclActions.h"
 #include "NclNodeNesting.h"
 
