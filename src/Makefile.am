@@ -46,7 +46,6 @@ src+= formatter/NclCascadingDescriptor.cpp
 src+= formatter/NclEventTransitionManager.cpp
 src+= formatter/NclEvents.cpp
 src+= formatter/NclFormatterLink.cpp
-src+= formatter/NclFormatterRegion.cpp
 src+= formatter/NclLinkAssessment.cpp
 src+= formatter/NclLinkCondition.cpp
 src+= formatter/NclLinkStatement.cpp

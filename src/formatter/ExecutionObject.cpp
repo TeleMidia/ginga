@@ -656,20 +656,14 @@ ExecutionObject::start ()
   // Initialize player properties.
   if (_descriptor != nullptr)
     {
-      NclFormatterRegion *formreg = _descriptor->getFormatterRegion ();
-      if (formreg != nullptr)
-        {
-          LayoutRegion *region;
-          int z, zorder;
+      LayoutRegion *region = _descriptor->getRegion ();
+      int z, zorder;
 
-          region = formreg->getLayoutRegion ();
-          g_assert_nonnull (region);
+      _player->setRect (region->getRect ());
 
-          _player->setRect (region->getRect ());
+      region->getZ (&z, &zorder);
+      _player->setZ (z, zorder);
 
-          region->getZ (&z, &zorder);
-          _player->setZ (z, zorder);
-        }
       for (Parameter &p: _descriptor->getParameters ())
         _player->setProperty (p.getName (), p.getValue ());
     }

@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef CASCADING_DESCRIPTOR_H
 #define CASCADING_DESCRIPTOR_H
 
-#include "NclFormatterRegion.h"
-
 #include "ncl/Ncl.h"
 using namespace ::ginga::ncl;
 
@@ -35,7 +33,6 @@ private:
   GingaTime explicitDuration;
   int repetitions;
   LayoutRegion *region;
-  NclFormatterRegion *formatterRegion;
 
   string focusIndex, moveUp, moveDown, moveLeft, moveRight;
   string focusSrc, selectionSrc;
@@ -66,7 +63,6 @@ public:
   void cascadeUnsolvedDescriptor ();
   GingaTime getExplicitDuration ();
   LayoutRegion *getRegion ();
-  NclFormatterRegion *getFormatterRegion ();
 
 public:
   void setFormatterLayout ();
