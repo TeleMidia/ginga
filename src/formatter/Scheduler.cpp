@@ -176,85 +176,36 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
   if (action->getType () == ACT_START)
     {
       event = action->getEvent ();
-      if (event != nullptr)
+      g_assert_nonnull (event);
+
+      eventType = event->getType ();
+      if (eventType == EventType::UNKNOWN)
         {
-          eventType = event->getType ();
-          if (eventType == EventType::UNKNOWN)
+          if (instanceof (PresentationEvent *, event))
             {
-              if (instanceof (PresentationEvent *, event))
-                {
-                  eventType = EventType::PRESENTATION;
-                }
-              else if (instanceof (AttributionEvent *, event))
-                {
-                  eventType = EventType::ATTRIBUTION;
-                }
-              else if (instanceof (SwitchEvent *, event))
-                {
-                  eventType = EventType::PRESENTATION;
-                }
+              eventType = EventType::PRESENTATION;
+            }
+          else if (instanceof (AttributionEvent *, event))
+            {
+              eventType = EventType::ATTRIBUTION;
+            }
+          else if (instanceof (SwitchEvent *, event))
+            {
+              eventType = EventType::PRESENTATION;
             }
         }
 
       if (eventType == EventType::ATTRIBUTION)
         {
-          event = action->getEvent ();
-          if (!instanceof (AttributionEvent *, event))
-            return;
-
-          attrEvent = cast (AttributionEvent *, event);
-          g_assert_nonnull (attrEvent);
-
-          propName = attrEvent->getAnchor ()->getName ();
-          propValue = ((NclAssignmentAction *) action)->getValue ();
-          event = compObj->getEventFromAnchorId (propName);
-
-          if (event != nullptr)
-            {
-              event->start ();
-              ((AttributionEvent *)event)->setValue (propValue);
-              event->stop ();
-            }
-          else
-            {
-              attrEvent->stop ();
-            }
-
-          objects = compObj->getExecutionObjects ();
-          if (objects == nullptr)
-              return;
-
-          j = objects->begin ();
-          while (j != objects->end ())
-            {
-              childObject = j->second;
-              if (instanceof (ExecutionObjectContext *, childObject))
-                {
-                  runActionOverComposition (
-                      (ExecutionObjectContext *)childObject, action);
-                }
-              else
-                {
-                  childEvent = childObject->getEventFromAnchorId (propName);
-                  if (childEvent != nullptr)
-                    {
-                      runAction (childEvent, action);
-                    }
-                  else
-                    {
-                      ERROR_NOT_IMPLEMENTED
-                        ("context property attributions are not supported");
-                    }
-                }
-              ++j;
-            }
+          ERROR_NOT_IMPLEMENTED
+            ("context property attributions are not supported");
         }
       else if (eventType == EventType::PRESENTATION)
         {
-          compObj->suspendLinkEvaluation (false);
+          ctxObj->suspendLinkEvaluation (false);
 
           compositeNode
-              = (CompositeNode *)(compObj->getDataObject ()
+              = (CompositeNode *)(ctxObj->getDataObject ()
                                       ->getDataEntity ());
 
           size = compositeNode->getNumPorts ();
@@ -267,7 +218,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
           else
             {
               compositionPerspective
-                  = compObj->getNodePerspective ();
+                  = ctxObj->getNodePerspective ();
             }
 
           events = new vector<NclEvent *>;
@@ -341,18 +292,18 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
           && (action->getType () == ACT_STOP
               || action->getType () == ACT_ABORT))
         {
-          if (compObj->getWholeContentPresentationEvent () == event)
+          if (ctxObj->getWholeContentPresentationEvent () == event)
             {
-              compObj->suspendLinkEvaluation (true);
+              ctxObj->suspendLinkEvaluation (true);
             }
         }
 
       events = new vector<NclEvent *>;
 
-      compositeNode = (CompositeNode *)(compObj->getDataObject ()
+      compositeNode = (CompositeNode *)(ctxObj->getDataObject ()
                                             ->getDataEntity ());
 
-      objects = compObj->getExecutionObjects ();
+      objects = ctxObj->getExecutionObjects ();
       if (objects != nullptr)
         {
           j = objects->begin ();
@@ -382,14 +333,14 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
           compositionPerspective
               = new NclNodeNesting (compositeNode->getPerspective ());
 
-          compObj
+          ctxObj
               = (ExecutionObjectContext *) (_converter
                     ->getExecutionObjectFromPerspective (
                         compositionPerspective, nullptr));
 
           delete compositionPerspective;
 
-          objects = compObj->getExecutionObjects ();
+          objects = ctxObj->getExecutionObjects ();
           if (objects != nullptr)
             {
               j = objects->begin ();
