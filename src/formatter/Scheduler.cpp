@@ -150,7 +150,7 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
 }
 
 void
-Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
+Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
                                      NclSimpleAction *action)
 {
   CompositeNode *compositeNode;
@@ -162,7 +162,6 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
   map<string, ExecutionObject *>::iterator j;
   ExecutionObject *childObject;
 
-  AttributionEvent *attrEvent;
   NclEvent *event;
   string propName;
   string propValue;
