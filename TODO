@@ -3,6 +3,9 @@ Ginga TODO                                                     -*-outline-*-
 * KNOWN BUGS
   + player::Player: Dimension properties are treated as being orthogonal.
 
+  + common.cpp::xstrtodorpercent: This function should return an error when
+  + receiving a letter as parameter
+
     Currently, we process "top", "left", "right", "bottom", "width",
     "height", "location", "bounds", and "size" in declaration order, but
     they are not independent.  For instance, "right" depends on "width" and
