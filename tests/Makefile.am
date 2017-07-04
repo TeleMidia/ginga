@@ -79,6 +79,9 @@ test_ginga_parse_percent_SOURCES= test-ginga-parse-percent.cpp
 progs+= test-ginga-parse-time
 test_ginga_parse_time_SOURCES= test-ginga-parse-time.cpp
 
+progs+= test-xstrispercent
+test_xstrispercent_SOURCES= test-xstrispercent.cpp
+
 check_SCRIPTS= $(ncls)
 check_PROGRAMS= $(progs)
 TESTS= $(check_SCRIPTS) $(check_PROGRAMS)
