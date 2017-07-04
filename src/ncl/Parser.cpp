@@ -1176,7 +1176,7 @@ Parser::parseSimpleCondition (DOMElement *elt)
   CHECK_ELT_TAG (elt, "simpleCondition", nullptr);
   CHECK_ELT_ATTRIBUTE (elt, "role", &role);
 
-  type = EventType::UNKNOWN;
+  type = (EventType) -1;
   trans = EventStateTransition::UNKNOWN;
 
   if ((it = reserved_condition_table.find (role))
@@ -1188,7 +1188,7 @@ Parser::parseSimpleCondition (DOMElement *elt)
 
   if (dom_elt_try_get_attribute (value, elt, "eventType"))
     {
-      if (unlikely (type != EventType::UNKNOWN))
+      if (unlikely (type != (EventType) -1))
         {
           ERROR_SYNTAX_ELT (elt, "eventType of '%s' cannot be overridden",
                             role.c_str ());
@@ -1219,7 +1219,7 @@ Parser::parseSimpleCondition (DOMElement *elt)
       trans = it->second;
     }
 
-  g_assert (type != EventType::UNKNOWN);
+  g_assert (type != (EventType) -1);
   g_assert (trans != EventStateTransition::UNKNOWN);
 
   cond = new SimpleCondition (role);
@@ -1332,6 +1332,7 @@ Parser::parseAssessmentStatement (DOMElement *elt)
 AttributeAssessment *
 Parser::parseAttributeAssessment (DOMElement *elt)
 {
+  map<string, EventType>::iterator it;
   AttributeAssessment *assess;
   string role;
   string value;
@@ -1340,9 +1341,17 @@ Parser::parseAttributeAssessment (DOMElement *elt)
   CHECK_ELT_ATTRIBUTE (elt, "role", &role);
 
   assess = new AttributeAssessment (role);
-
   if (dom_elt_try_get_attribute (value, elt, "eventType"))
-    assess->setEventType (EventUtil::getTypeCode (value));
+    {
+      if ((it = event_type_table.find (value)) != event_type_table.end ())
+        {
+           assess->setEventType (it->second);
+        }
+      else
+        {
+          ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "eventType");
+        }
+    }
 
   if (dom_elt_try_get_attribute (value, elt, "attributeType"))
     assess->setAttributeType (EventUtil::getAttributeTypeCode (value));
@@ -1417,7 +1426,7 @@ Parser::parseSimpleAction (DOMElement *elt)
   CHECK_ELT_TAG (elt, "simpleAction", nullptr);
   CHECK_ELT_ATTRIBUTE (elt, "role", &role);
 
-  type = EventType::UNKNOWN;
+  type = (EventType) -1;
   acttype = -1;
 
   if ((it = reserved_action_table.find (role))
@@ -1429,7 +1438,7 @@ Parser::parseSimpleAction (DOMElement *elt)
 
   if (dom_elt_try_get_attribute (value, elt, "eventType"))
     {
-      if (unlikely (type != EventType::UNKNOWN))
+      if (unlikely (type != (EventType) -1))
         {
           ERROR_SYNTAX_ELT (elt, "eventType '%s' cannot be overridden",
                             role.c_str ());
@@ -1459,7 +1468,7 @@ Parser::parseSimpleAction (DOMElement *elt)
       acttype = it->second;
     }
 
-  g_assert (type != EventType::UNKNOWN);
+  g_assert (type != (EventType) -1);
   g_assert (acttype != -1);
 
   action = new SimpleAction (role);
