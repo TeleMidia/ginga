@@ -249,232 +249,130 @@ void
 Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
                                      NclSimpleAction *action)
 {
-  CompositeNode *compositeNode;
-  Port *port;
-  NclNodeNesting *compositionPerspective;
-  NclNodeNesting *perspective;
-
-  map<string, ExecutionObject *> *objects;
-  map<string, ExecutionObject *>::iterator j;
-  ExecutionObject *childObject;
-
   NclEvent *event;
-  string propName;
-  string propValue;
+  EventType type;
+  SimpleActionType acttype;
 
-  vector<Node *> *nestedSeq;
+  Node *node;
+  Entity *entity;
+  CompositeNode *compNode;
+  NclNodeNesting *compPerspective;
 
-  NclEvent *childEvent;
-  size_t i, size = 0;
-  vector<NclEvent *> *events;
-  EventType eventType = EventType::UNKNOWN;
+  event = action->getEvent ();
+  g_assert_nonnull (event);
 
-  if (action->getType () == ACT_START)
+  type = event->getType ();
+
+  if (type == EventType::ATTRIBUTION)
     {
-      event = action->getEvent ();
-      g_assert_nonnull (event);
+      ERROR_NOT_IMPLEMENTED
+        ("context property attribution is not supported");
+    }
 
-      eventType = event->getType ();
-      if (eventType == EventType::UNKNOWN)
-        {
-          if (instanceof (PresentationEvent *, event))
-            {
-              eventType = EventType::PRESENTATION;
-            }
-          else if (instanceof (AttributionEvent *, event))
-            {
-              eventType = EventType::ATTRIBUTION;
-            }
-          else if (instanceof (SwitchEvent *, event))
-            {
-              eventType = EventType::PRESENTATION;
-            }
-        }
+  if (type == EventType::SELECTION)
+    {
+      WARNING ("trying to select composition '%s'",
+               ctxObj->getId ().c_str ());
+      return;
+    }
 
-      if (eventType == EventType::ATTRIBUTION)
-        {
-          ERROR_NOT_IMPLEMENTED
-            ("context property attributions are not supported");
-        }
-      else if (eventType == EventType::PRESENTATION)
-        {
-          ctxObj->suspendLinkEvaluation (false);
+  node = ctxObj->getDataObject ();
+  g_assert_nonnull (node);
 
-          compositeNode
-              = (CompositeNode *)(ctxObj->getDataObject ()
-                                      ->getDataEntity ());
+  entity = node->getDataEntity ();
+  g_assert_nonnull (entity);
 
-          size = compositeNode->getNumPorts ();
+  compNode = cast (CompositeNode *, entity);
+  g_assert_nonnull (compNode);
 
-          if (compositeNode->getParentComposition () == nullptr)
-            {
-              compositionPerspective
-                  = new NclNodeNesting (compositeNode->getPerspective ());
-            }
-          else
-            {
-              compositionPerspective
-                  = ctxObj->getNodePerspective ();
-            }
-
-          events = new vector<NclEvent *>;
-          for (i = 0; i < size; i++)
-            {
-              port = compositeNode->getPort ((unsigned int) i);
-              g_assert_nonnull (port);
-
-              perspective = compositionPerspective->copy ();
-              g_assert_nonnull (perspective);
-
-              nestedSeq = port->getMapNodeNesting ();
-              g_assert_nonnull (nestedSeq);
-
-              perspective->append (nestedSeq);
-              try
-                {
-                  childObject = _converter->getExecutionObjectFromPerspective (
-                                                  perspective, nullptr);
-
-                  if (childObject != nullptr
-                      && port->getEndInterfacePoint () != nullptr
-                      && instanceof (ContentAnchor *,
-                                     port->getEndInterfacePoint ()))
-                    {
-                      childEvent
-                          = (PresentationEvent
-                                 *)(_converter
-                                        ->getEvent (
-                                            childObject,
-                                            port->getEndInterfacePoint (),
-                                            EventType::PRESENTATION,
-                                            ""));
-
-                      if (childEvent != nullptr)
-                        {
-                          events->push_back (childEvent);
-                        }
-                    }
-                }
-              catch (exception *exc)
-                {
-                  g_assert_not_reached ();
-                }
-
-              delete nestedSeq;
-              delete perspective;
-            }
-
-          delete compositionPerspective;
-
-          size = events->size ();
-
-          for (i = 0; i < size; i++)
-            {
-              runAction ((*events)[i], action);
-            }
-          delete events;
-          events = nullptr;
-        }
+  if (compNode->getParentComposition () == nullptr)
+    {
+      compPerspective
+        = new NclNodeNesting (compNode->getPerspective ());
     }
   else
     {
-      event = action->getEvent ();
-      if (event != nullptr)
-        {
-          eventType = event->getType ();
-        }
-
-      if ((eventType == EventType::PRESENTATION)
-          && (action->getType () == ACT_STOP
-              || action->getType () == ACT_ABORT))
-        {
-          if (ctxObj->getWholeContentPresentationEvent () == event)
-            {
-              ctxObj->suspendLinkEvaluation (true);
-            }
-        }
-
-      events = new vector<NclEvent *>;
-
-      compositeNode = (CompositeNode *)(ctxObj->getDataObject ()
-                                            ->getDataEntity ());
-
-      objects = ctxObj->getExecutionObjects ();
-      if (objects != nullptr)
-        {
-          j = objects->begin ();
-          while (j != objects->end ())
-            {
-              childObject = j->second;
-
-              childEvent = childObject->getMainEvent ();
-              if (childEvent == nullptr)
-                {
-                  childEvent
-                      = childObject->getWholeContentPresentationEvent ();
-                }
-
-              if (childEvent != nullptr)
-                {
-                  events->push_back (childEvent);
-                }
-              ++j;
-            }
-          delete objects;
-          objects = nullptr;
-        }
-
-      if (compositeNode->getParentComposition () == nullptr)
-        {
-          compositionPerspective
-              = new NclNodeNesting (compositeNode->getPerspective ());
-
-          ctxObj
-              = (ExecutionObjectContext *) (_converter
-                    ->getExecutionObjectFromPerspective (
-                        compositionPerspective, nullptr));
-
-          delete compositionPerspective;
-
-          objects = ctxObj->getExecutionObjects ();
-          if (objects != nullptr)
-            {
-              j = objects->begin ();
-              while (j != objects->end ())
-                {
-                  childObject = j->second;
-
-                  childEvent = childObject->getMainEvent ();
-                  if (childEvent == nullptr)
-                    {
-                      childEvent
-                          = childObject
-                                ->getWholeContentPresentationEvent ();
-                    }
-
-                  if (childEvent != nullptr)
-                    {
-                      events->push_back (childEvent);
-                    }
-                  ++j;
-                }
-              delete objects;
-              objects = nullptr;
-            }
-
-          // *** QUIT PRESENTATION ***
-          Ginga_Display->quit ();
-        }
-
-      size = events->size ();
-      for (i = 0; i < size; i++)
-        {
-          runAction ((*events)[i], action);
-        }
-
-      delete events;
-      events = nullptr;
+      compPerspective
+        = ctxObj->getNodePerspective ();
     }
+
+  acttype = action->getType ();
+  if (acttype == ACT_START)     // start all ports
+    {
+      ctxObj->suspendLinkEvaluation (false);
+      for (auto port: *compNode->getPorts ())
+        {
+          NclNodeNesting *persp;
+          vector<Node *> *nestedSeq;
+          InterfacePoint *iface;
+
+          ExecutionObject *child;
+          NclEvent *evt;
+
+          persp = compPerspective->copy ();
+          g_assert_nonnull (persp);
+
+          nestedSeq = port->getMapNodeNesting ();
+          g_assert_nonnull (nestedSeq);
+
+          persp->append (nestedSeq);
+
+          // Create or get the execution object mapped by port.
+          child = _converter
+            ->getExecutionObjectFromPerspective (persp, nullptr);
+          g_assert (child);
+
+          iface = port->getEndInterfacePoint ();
+          g_assert_nonnull (iface);
+
+          if (!instanceof (ContentAnchor *, iface))
+            continue;           // nothing to do
+
+          evt = _converter->getEvent (child, iface,
+                                      EventType::PRESENTATION, "");
+          g_assert_nonnull (evt);
+          g_assert (instanceof (PresentationEvent *, evt));
+
+          runAction (evt, action);
+
+          delete nestedSeq;
+          delete persp;
+        }
+    }
+  else if (acttype == ACT_STOP) // stop all children
+    {
+      ctxObj->suspendLinkEvaluation (true);
+      for (const auto pair: *ctxObj->getExecutionObjects ())
+        {
+          ExecutionObject *child;
+          NclEvent *evt;
+
+          child = pair.second;
+          evt = child->getMainEvent ();
+          if (evt == nullptr)
+            evt = child->getWholeContentPresentationEvent ();
+          g_assert_nonnull (evt);
+          runAction (evt, action);
+        }
+      ctxObj->suspendLinkEvaluation (false);
+    }
+  else if (acttype == ACT_ABORT)
+    {
+      ERROR_NOT_IMPLEMENTED ("action 'abort' is not supported");
+    }
+  else if (acttype == ACT_PAUSE)
+    {
+      ERROR_NOT_IMPLEMENTED ("action 'pause' is not supported");
+    }
+  else if (acttype == ACT_RESUME)
+    {
+      ERROR_NOT_IMPLEMENTED ("action 'resume' is not supported");
+    }
+  else
+    {
+      g_assert_not_reached ();
+    }
+  delete compPerspective;
 }
 
 void
