@@ -50,8 +50,6 @@ public:
   ExecutionObject *getExecutionObjectFromPerspective (
       NclNodeNesting *perspec, GenericDescriptor *desc);
 
-  set<ExecutionObject *> *getSettingsObjects ();
-
   NclEvent *getEvent (ExecutionObject *exeObj,
                       InterfacePoint *interfacePoint,
                       EventType ncmEventType,

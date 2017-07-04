@@ -20,21 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-EventType
-EventUtil::getTypeCode (const string &typeName)
-{
-  if (typeName == "presentation")
-    return EventType::PRESENTATION;
-
-  if (typeName == "selection")
-    return EventType::SELECTION;
-
-  if (typeName == "attribution")
-    return EventType::ATTRIBUTION;
-
-  return EventType::UNKNOWN;
-}
-
 string
 EventUtil::getTypeName (EventType type)
 {

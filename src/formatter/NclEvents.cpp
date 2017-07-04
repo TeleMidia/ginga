@@ -22,6 +22,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
+
+// NclEvent.
+
 set<NclEvent *> NclEvent::_instances;
 
 NclEvent::NclEvent (const string &id, ExecutionObject *exeObj)
@@ -30,8 +33,6 @@ NclEvent::NclEvent (const string &id, ExecutionObject *exeObj)
   _state = EventState::SLEEPING;
   _occurrences = 0;
   _exeObj = exeObj;
-  _type = EventType::UNKNOWN;
-
   _instances.insert (this);
 }
 
@@ -194,7 +195,9 @@ NclEvent::changeState (EventState newState,
   return true;
 }
 
-// AnchorEvent
+
+// AnchorEvent.
+
 AnchorEvent::AnchorEvent (const string &id,
                           ExecutionObject *executionObject,
                           ContentAnchor *anchor)
@@ -203,7 +206,9 @@ AnchorEvent::AnchorEvent (const string &id,
   this->_anchor = anchor;
 }
 
-// PresentationEvent
+
+// PresentationEvent.
+
 PresentationEvent::PresentationEvent (const string &id,
                                       ExecutionObject *exeObj,
                                       ContentAnchor *anchor)
@@ -211,6 +216,7 @@ PresentationEvent::PresentationEvent (const string &id,
 {
   _numPresentations = 1;
   _repetitionInterval = 0;
+  _type = EventType::PRESENTATION;
 
   auto intervalAnchor = cast (IntervalAnchor *, anchor);
   if (intervalAnchor)
@@ -272,12 +278,15 @@ PresentationEvent::incOccurrences ()
   _occurrences++;
 }
 
+
 // SelectionEvent
+
 SelectionEvent::SelectionEvent (const string &id,
                                 ExecutionObject *exeObj,
                                 ContentAnchor *anchor)
   : AnchorEvent (id, exeObj, anchor)
 {
+  _type = EventType::SELECTION;
   _selCode.assign("NO_CODE");
 }
 
@@ -290,7 +299,9 @@ SelectionEvent::start ()
     return false;
 }
 
+
 // AttributionEvent
+
 AttributionEvent::AttributionEvent (const string &id,
                                     ExecutionObject *exeObj,
                                     PropertyAnchor *anchor,
@@ -300,6 +311,7 @@ AttributionEvent::AttributionEvent (const string &id,
   Entity *entity;
   NodeEntity *dataObject;
 
+  _type = EventType::ATTRIBUTION;
   this->_anchor = anchor;
   this->_player = nullptr;
   this->_settingsNode = false;
@@ -408,7 +420,9 @@ AttributionEvent::solveImplicitRefAssessment (const string &val)
   return (evt != nullptr) ? evt->getCurrentValue () : "";
 }
 
-// SwitchEvent
+
+// SwitchEvent.
+
 SwitchEvent::SwitchEvent (const string &id,
                           ExecutionObject *exeObjSwitch,
                           InterfacePoint *interface,
@@ -452,6 +466,9 @@ SwitchEvent::eventStateChanged (
 {
   changeState (EventUtil::getNextState (trans), trans);
 }
+
+
+// EventTransition.
 
 EventTransition::EventTransition (GingaTime time,
                                   PresentationEvent *evt)
