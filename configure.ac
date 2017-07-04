@@ -41,7 +41,7 @@ AC_DEFINE_UNQUOTED([VERSION], ["$PACKAGE_VERSION"], [Ginga version.])
 # Required dependencies version.
 m4_define([cairo_required_version],      [1.10.2])
 m4_define([glib_required_version],       [2.32.4])
-m4_define([gstreamer_required_version],  [1.8.0])
+m4_define([gstreamer_required_version],  [1.4.0])
 m4_define([nclua_required_version],      [1.0])
 m4_define([pango_required_version],      [1.30.0])
 m4_define([sdl2_image_require_version],  [2.0])
