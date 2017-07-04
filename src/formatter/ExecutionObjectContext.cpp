@@ -26,7 +26,6 @@ ExecutionObjectContext::ExecutionObjectContext (
     : ExecutionObject (id, dataObject, descriptor, seListener)
 {
   ContextNode *compositeNode;
-  set<Link *> *compositionLinks;
   set<Link *>::iterator i;
   Entity *entity;
 
@@ -38,21 +37,16 @@ ExecutionObjectContext::ExecutionObjectContext (
   _pendingLinks.clear ();
 
   entity = dataObject->getDataEntity ();
+  g_assert_nonnull (entity);
+  if (!instanceof (ContextNode *, entity))
+    return;                     // switch, nothing to do
 
-  if (entity != NULL && instanceof (ContextNode *, entity))
-    {
-      compositeNode = (ContextNode *)entity;
-      compositionLinks = compositeNode->getLinks ();
-      if (compositionLinks != NULL)
-        {
-          i = compositionLinks->begin ();
-          while (i != compositionLinks->end ())
-            {
-              _uncompiledLinks.insert (*i);
-              ++i;
-            }
-        }
-    }
+  compositeNode = cast (ContextNode *, entity);
+  g_assert_nonnull (compositeNode);
+
+  g_assert_nonnull (compositeNode->getLinks ());
+  for (auto link: *compositeNode->getLinks ())
+    _uncompiledLinks.insert (link);
 }
 
 ExecutionObjectContext::~ExecutionObjectContext ()

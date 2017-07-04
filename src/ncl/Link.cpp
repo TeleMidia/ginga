@@ -173,7 +173,7 @@ Link::getConnector ()
 }
 
 void
-Link::setParentComposition (LinkComposition *composition)
+Link::setParentComposition (ContextNode *composition)
 {
   if (composition == NULL
       || ((ContextNode *)composition)->containsLink (this))
@@ -182,7 +182,7 @@ Link::setParentComposition (LinkComposition *composition)
     }
 }
 
-LinkComposition *
+ContextNode *
 Link::getParentComposition ()
 {
   return _composition;

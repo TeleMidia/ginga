@@ -24,6 +24,9 @@ using namespace ::ginga::mb;
 
 GINGA_FORMATTER_BEGIN
 
+
+// Public.
+
 Scheduler::Scheduler ()
 {
   _converter = new Converter (new RuleAdapter (new Settings ()));
@@ -41,6 +44,99 @@ Scheduler::scheduleAction (NclSimpleAction *action)
 {
   runAction (action->getEvent (), action);
 }
+
+void
+Scheduler::startDocument (const string &file)
+{
+  string id;
+  ContextNode *body;
+  vector<Port *> *ports;
+  vector<NclEvent *> *entryevts;
+  NclNodeNesting *persp;
+  int w, h;
+
+  // Parse document.
+  Ginga_Display->getSize (&w, &h);
+  _doc = Parser::parse (file, w, h);
+  g_assert_nonnull (_doc);
+
+  id = _doc->getId ();
+  body = _doc->getBody ();
+  if (unlikely (body == nullptr))
+    ERROR_SYNTAX ("document has no body");
+
+  // Get entry events (i.e., those mapped by ports).
+  ports = body->getPorts ();
+  if (unlikely (ports == nullptr))
+    ERROR ("document has no ports");
+
+  persp = new NclNodeNesting ();
+  persp->insertAnchorNode (body);
+  entryevts = new vector<NclEvent *>;
+  for (auto port: *ports)
+    {
+      NclEvent *evt = _converter->insertContext (persp, port);
+      g_assert_nonnull (evt);
+      entryevts->push_back (evt);
+    }
+  delete persp;
+
+  if (unlikely (entryevts->empty ()))
+    {
+      WARNING ("document has no ports");
+      return;
+    }
+
+  // Create execution object for settings node and initialize it.
+  vector <Node *> *settings = _doc->getSettingsNodes ();
+  for (auto node: *settings)
+    {
+      ContentNode *content;
+      ExecutionObject *execobj;
+
+      persp = new NclNodeNesting (node->getPerspective ());
+      execobj = _converter->getExecutionObjectFromPerspective (persp, nullptr);
+      g_assert_nonnull (execobj);
+
+      TRACE ("processing '%s'", persp->getId ().c_str ());
+      delete persp;
+
+      content = (ContentNode *) node;
+      for (auto anchor: content->getAnchors ())
+        {
+          PropertyAnchor *prop;
+          string name;
+          string value;
+
+          if (!instanceof (PropertyAnchor *, anchor))
+            continue;           // nothing to do
+
+          prop = cast (PropertyAnchor *, anchor);
+          name = prop->getName ();
+          value = prop->getValue ();
+          if (value == "")
+            continue;           // nothing to do
+
+          TRACE ("settings: %s='%s'", name.c_str (), value.c_str ());
+          //this->settings->set (name, value);
+        }
+    }
+  delete settings;
+
+  // Start entry events.
+  for (auto event: *entryevts)
+    {
+      NclSimpleAction *fakeAction;
+      _events.push_back (event);
+      fakeAction = new NclSimpleAction (event, ACT_START);
+      runAction (event, fakeAction);
+      delete fakeAction;
+    }
+  delete entryevts;
+}
+
+
+// Private.
 
 void
 Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
@@ -481,96 +577,6 @@ Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObj,
       switchEvent->setMappedEvent (selectedEvent);
       runAction (selectedEvent, action);
     }
-}
-
-void
-Scheduler::startDocument (const string &file)
-{
-  string id;
-  ContextNode *body;
-  vector<Port *> *ports;
-  vector<NclEvent *> *entryevts;
-  NclNodeNesting *persp;
-  int w, h;
-
-  // Parse document.
-  Ginga_Display->getSize (&w, &h);
-  _doc = Parser::parse (file, w, h);
-  g_assert_nonnull (_doc);
-
-  id = _doc->getId ();
-  body = _doc->getBody ();
-  if (unlikely (body == nullptr))
-    ERROR_SYNTAX ("document has no body");
-
-  // Get entry events (i.e., those mapped by ports).
-  ports = body->getPorts ();
-  if (unlikely (ports == nullptr))
-    ERROR ("document has no ports");
-
-  persp = new NclNodeNesting ();
-  persp->insertAnchorNode (body);
-  entryevts = new vector<NclEvent *>;
-  for (auto port: *ports)
-    {
-      NclEvent *evt = _converter->insertContext (persp, port);
-      g_assert_nonnull (evt);
-      entryevts->push_back (evt);
-    }
-  delete persp;
-
-  if (unlikely (entryevts->empty ()))
-    {
-      WARNING ("document has no ports");
-      return;
-    }
-
-  // Create execution object for settings node and initialize it.
-  vector <Node *> *settings = _doc->getSettingsNodes ();
-  for (auto node: *settings)
-    {
-      ContentNode *content;
-      ExecutionObject *execobj;
-
-      persp = new NclNodeNesting (node->getPerspective ());
-      execobj = _converter->getExecutionObjectFromPerspective (persp, nullptr);
-      g_assert_nonnull (execobj);
-
-      TRACE ("processing '%s'", persp->getId ().c_str ());
-      delete persp;
-
-      content = (ContentNode *) node;
-      for (auto anchor: content->getAnchors ())
-        {
-          PropertyAnchor *prop;
-          string name;
-          string value;
-
-          if (!instanceof (PropertyAnchor *, anchor))
-            continue;           // nothing to do
-
-          prop = cast (PropertyAnchor *, anchor);
-          name = prop->getName ();
-          value = prop->getValue ();
-          if (value == "")
-            continue;           // nothing to do
-
-          TRACE ("settings: %s='%s'", name.c_str (), value.c_str ());
-          //this->settings->set (name, value);
-        }
-    }
-  delete settings;
-
-  // Start entry events.
-  for (auto event: *entryevts)
-    {
-      NclSimpleAction *fakeAction;
-      _events.push_back (event);
-      fakeAction = new NclSimpleAction (event, ACT_START);
-      runAction (event, fakeAction);
-      delete fakeAction;
-    }
-  delete entryevts;
 }
 
 GINGA_FORMATTER_END
