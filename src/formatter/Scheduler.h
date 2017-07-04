@@ -41,7 +41,7 @@ private:
   NclDocument *_doc;            // document tree
   vector<NclEvent *> _events;   // document events
 
-  void runAction (NclEvent *event, NclSimpleAction *action);
+  void runAction (NclEvent *, NclSimpleAction *);
   void runActionOverComposition (ExecutionObjectContext *,
                                  NclSimpleAction *);
   void runActionOverSwitch (ExecutionObjectSwitch *, SwitchEvent *,

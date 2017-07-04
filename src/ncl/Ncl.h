@@ -57,7 +57,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "LambdaAnchor.h"
 #include "LayoutRegion.h"
 #include "Link.h"
-#include "LinkComposition.h"
 #include "Ncl.h"
 #include "NclDocument.h"
 #include "Node.h"
