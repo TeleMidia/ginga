@@ -514,7 +514,7 @@ xstrhasprefix (const string &s, const string &prefix)
 bool
 xstrhassuffix (const string &s, const string &suffix)
 {
-  return g_str_has_prefix (s.c_str (), suffix.c_str ());
+  return g_str_has_suffix (s.c_str (), suffix.c_str ());
 }
 
 /**

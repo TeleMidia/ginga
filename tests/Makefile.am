@@ -85,6 +85,18 @@ test_xstrispercent_SOURCES= test-xstrispercent.cpp
 progs+= test-xstrtodorpercent
 test_xstrtodorpercent_SOURCES= test-xstrtodorpercent.cpp
 
+progs+= test-xstrcasecmp
+test_xstrcasecmp_SOURCES= test-xstrcasecmp.cpp
+
+progs+= test-xstrcaseeq
+test_xstrcaseeq_SOURCES= test-xstrcaseeq.cpp
+
+progs+= test-xstrhasprefix
+test_xstrhasprefix_SOURCES= test-xstrhasprefix.cpp
+
+progs+= test-xstrhassuffix
+test_xstrhassuffix_SOURCES= test-xstrhassuffix.cpp
+
 check_SCRIPTS= $(ncls)
 check_PROGRAMS= $(progs)
 TESTS= $(check_SCRIPTS) $(check_PROGRAMS)
