@@ -443,17 +443,14 @@ _GINGA_XSTRTOU_DEFN (uint64, G_MAXUINT64)
 bool
 xstrispercent (const string &s)
 {
+  const gchar *str = s.c_str ();
   gchar *end;
-  const gchar *str;
 
-  str = s.c_str ();
-
-  if (s[0] == '%')
+  if (str[0] == '%')
     return false;
 
-  g_strtod (s.c_str (), &end);
-
-  return (*end == '%');
+  g_ascii_strtod (str, &end);
+  return *end == '%';
 }
 
 /**
