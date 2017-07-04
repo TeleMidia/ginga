@@ -18,25 +18,20 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _LINK_H_
 #define _LINK_H_
 
-#include "Entity.h"
-#include "Parameter.h"
-
-#include "GenericDescriptor.h"
-
-#include "NodeEntity.h"
-
-#include "Connector.h"
-#include "Role.h"
-
-#include "InterfacePoint.h"
-#include "SwitchPort.h"
-
 #include "Bind.h"
+#include "Connector.h"
+#include "ContextNode.h"
+#include "Entity.h"
+#include "GenericDescriptor.h"
+#include "InterfacePoint.h"
+#include "NodeEntity.h"
+#include "Parameter.h"
+#include "Role.h"
+#include "SwitchPort.h"
 
 GINGA_NCL_BEGIN
 
-class LinkComposition;
-
+class ContextNode;
 class Link : public Entity
 {
 public:
@@ -55,8 +50,8 @@ public:
 
   vector<Bind *> *getBinds ();
   Connector *getConnector ();
-  void setParentComposition (LinkComposition *composition);
-  LinkComposition *getParentComposition ();
+  void setParentComposition (ContextNode *composition);
+  ContextNode *getParentComposition ();
   unsigned int getNumBinds ();
   unsigned int getNumRoleBinds (Role *role);
   vector<Bind *> *getRoleBinds (Role *role);
@@ -80,7 +75,7 @@ protected:
                      vector<Bind *> *_binds);
 
 private:
-  LinkComposition *_composition;
+  ContextNode *_composition;
 };
 
 GINGA_NCL_END

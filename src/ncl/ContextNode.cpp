@@ -117,11 +117,6 @@ ContextNode::containsLink (Link *link)
 set<Link *> *
 ContextNode::getLinks ()
 {
-  if (this->_linkSet.size () == 0)
-    {
-      return NULL;
-    }
-
   return &_linkSet;
 }
 

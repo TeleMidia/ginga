@@ -18,17 +18,15 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _CONTEXTNODE_H_
 #define _CONTEXTNODE_H_
 
-#include "GenericDescriptor.h"
-
-#include "Link.h"
-#include "LinkComposition.h"
-
-#include "NodeEntity.h"
 #include "CompositeNode.h"
+#include "GenericDescriptor.h"
+#include "Link.h"
+#include "NodeEntity.h"
 
 GINGA_NCL_BEGIN
 
-class ContextNode : public CompositeNode, public LinkComposition
+class Link;
+class ContextNode : public CompositeNode
 {
 public:
   ContextNode (const string &_id);
@@ -39,7 +37,7 @@ public:
 
   void clearLinks ();
   bool containsLink (Link *link);
-  virtual set<Link *> *getLinks ();
+  set<Link *> *getLinks ();
   Link *getLink (const string &linkId);
   GenericDescriptor *getNodeDescriptor (Node *node);
   int getNumLinks ();
