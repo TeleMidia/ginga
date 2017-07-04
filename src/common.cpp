@@ -444,7 +444,16 @@ bool
 xstrispercent (const string &s)
 {
   gchar *end;
-  return (g_strtod (s.c_str (), &end), *end == '%');
+  const gchar *str;
+
+  str = s.c_str ();
+
+  if (s[0] == '%')
+    return false;
+
+  g_strtod (s.c_str (), &end);
+
+  return (*end == '%');
 }
 
 /**
