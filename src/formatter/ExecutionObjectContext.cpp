@@ -25,8 +25,7 @@ ExecutionObjectContext::ExecutionObjectContext (
     INclActionListener *seListener)
     : ExecutionObject (id, dataObject, descriptor, seListener)
 {
-  ContextNode *compositeNode;
-  set<Link *>::iterator i;
+  ContextNode *context;
   Entity *entity;
 
   _execObjList.clear ();
@@ -41,11 +40,11 @@ ExecutionObjectContext::ExecutionObjectContext (
   if (!instanceof (ContextNode *, entity))
     return;                     // switch, nothing to do
 
-  compositeNode = cast (ContextNode *, entity);
-  g_assert_nonnull (compositeNode);
+  context = cast (ContextNode *, entity);
+  g_assert_nonnull (context);
 
-  g_assert_nonnull (compositeNode->getLinks ());
-  for (auto link: *compositeNode->getLinks ())
+  g_assert_nonnull (context->getLinks ());
+  for (auto link: *context->getLinks ())
     _uncompiledLinks.insert (link);
 }
 
@@ -188,15 +187,7 @@ ExecutionObjectContext::getExecutionObject (const string &id)
 map<string, ExecutionObject *> *
 ExecutionObjectContext::getExecutionObjects ()
 {
-  map<string, ExecutionObject *> *objs;
-
-  if (_execObjList.empty ())
-    {
-      return NULL;
-    }
-  objs = new map<string, ExecutionObject *> (_execObjList);
-
-  return objs;
+  return &_execObjList;
 }
 
 bool

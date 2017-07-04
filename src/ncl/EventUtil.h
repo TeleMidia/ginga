@@ -18,13 +18,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef EVENT_UTIL_H
 #define EVENT_UTIL_H
 
-#include "ginga.h"
-
 GINGA_NCL_BEGIN
 
- // Event types.
+// Event types.
 enum class EventType {
-  UNKNOWN = -1,
   SELECTION = 0,
   PRESENTATION,
   ATTRIBUTION,
@@ -60,9 +57,6 @@ enum class AttributeType {
 class EventUtil
 {
 public:
-  static EventType
-    getTypeCode (const string &typeName);
-
   static string
     getTypeName (EventType type);
 

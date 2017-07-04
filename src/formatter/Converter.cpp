@@ -138,12 +138,6 @@ Converter::getExecutionObjectFromPerspective (
   return exeObj;
 }
 
-set<ExecutionObject *> *
-Converter::getSettingsObjects ()
-{
-  return new set<ExecutionObject *> (_settingsObjects);
-}
-
 NclEvent *
 Converter::getEvent (ExecutionObject *exeObj,
                      InterfacePoint *interfacePoint,
@@ -467,7 +461,7 @@ Converter::createExecutionObject (
   ExecutionObject *exeObj;
   PresentationEvent *compositeEvt;
 
-  auto nodeEntity = cast (NodeEntity *, 
+  auto nodeEntity = cast (NodeEntity *,
         perspective->getAnchorNode ()->getDataEntity ());
 
   g_assert_nonnull (nodeEntity);
@@ -1813,7 +1807,7 @@ Converter::createSimpleAction (
 {
   NclEvent *event;
   SimpleActionType actionType;
-  EventType eventType = EventType::UNKNOWN;
+  EventType eventType;
   NclSimpleAction *action;
   Parameter *connParam;
   Parameter *param;

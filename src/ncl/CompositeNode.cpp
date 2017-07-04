@@ -146,9 +146,6 @@ CompositeNode::getPort (unsigned int index)
 vector<Port *> *
 CompositeNode::getPorts ()
 {
-  if (_portList.empty ())
-    return NULL;
-
   return &_portList;
 }
 

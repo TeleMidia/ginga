@@ -31,8 +31,8 @@ GINGA_FORMATTER_BEGIN
 class INclEventListener;
 class ExecutionObject;
 
-#define PROPERTY_READONLY(type,name,getfunc) \
-  protected: type name; \
+#define PROPERTY_READONLY(type,name,getfunc)\
+  protected: type name;\
   public: type getfunc () const { return this->name; }
 
 #define PROPERTY(type,name,getfunc,setfunc) \
@@ -49,20 +49,16 @@ class NclEvent
   PROPERTY_READONLY (EventState, _previousState, getPreviousState)
 
 public:
-  NclEvent (const string &id, ExecutionObject *exeObj);
+  NclEvent (const string &, ExecutionObject *);
   virtual ~NclEvent ();
-
   void setState (EventState newState);
-
   virtual bool start ();
   virtual bool stop ();
   bool pause ();
   bool resume ();
   bool abort ();
-
   void addListener (INclEventListener *listener);
   void removeListener (INclEventListener *listener);
-
   static bool hasInstance (NclEvent *evt, bool remove);
   static bool hasNcmId (NclEvent *evt, const string &anchorId);
 
@@ -102,12 +98,10 @@ class PresentationEvent : public AnchorEvent
 public:
   PresentationEvent (const string &, ExecutionObject *, ContentAnchor *);
   virtual ~PresentationEvent () {}
-
   virtual bool stop () override;
-
   GingaTime getDuration ();
   int getRepetitions ();
-  void setRepetitionSettings (int repetitions, GingaTime repetitionInterval);
+  void setRepetitionSettings (int, GingaTime);
   void incOccurrences ();
 
 private:
