@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  char* end;
   g_assert (xstrispercent ("") == false);
   g_assert (xstrispercent ("%50") == false);
   g_assert (xstrispercent ("50") == false);
