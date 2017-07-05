@@ -130,14 +130,14 @@ void
 PlayerAnimator::update (SDL_Rect *rect, SDL_Color *bgColor, guint8 *alpha)
 {
 
-#define UPDATE(info, Type, var, min, max)                       \
-  G_STMT_START                                                  \
-    {                                                           \
-      if (!(info)->isInit ())                                   \
-        (info)->init (var);                                     \
-      (info)->update ();                                        \
-      var = (Type) CLAMP ((info)->getCurrent (), min, max);     \
-    }                                                           \
+#define UPDATE(info, Type, var, min, max)                               \
+  G_STMT_START                                                          \
+    {                                                                   \
+      if (!(info)->isInit ())                                           \
+        (info)->init (var);                                             \
+      (info)->update ();                                                \
+      var = (Type) CLAMP (lround ((info)->getCurrent ()), min, max);    \
+    }                                                                   \
   G_STMT_END
 
   g_assert_nonnull (rect);
