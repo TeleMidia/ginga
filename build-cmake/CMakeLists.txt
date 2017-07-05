@@ -90,12 +90,10 @@ set (GINGA_SOURCES
   ../src/formatter/NclEvents.cpp
   ../src/formatter/NclEventTransitionManager.cpp
   ../src/formatter/NclFormatterLink.cpp
-  ../src/formatter/NclFormatterRegion.cpp
   ../src/formatter/NclLinkAssessment.cpp
   ../src/formatter/NclLinkCondition.cpp
   ../src/formatter/NclLinkStatement.cpp
   ../src/formatter/NclNodeNesting.cpp
-  ../src/formatter/Parser.cpp
   ../src/formatter/RuleAdapter.cpp
   ../src/formatter/Settings.cpp
   ../src/formatter/Scheduler.cpp
@@ -125,7 +123,6 @@ set (GINGA_SOURCES
   ../src/ncl/ContextNode.cpp
   ../src/ncl/Descriptor.cpp
   ../src/ncl/DescriptorBase.cpp
-  ../src/ncl/DescriptorSwitch.cpp
   ../src/ncl/Entity.cpp
   ../src/ncl/EventUtil.cpp
   ../src/ncl/FocusDecoration.cpp
@@ -139,6 +136,7 @@ set (GINGA_SOURCES
   ../src/ncl/Node.cpp
   ../src/ncl/NodeEntity.cpp
   ../src/ncl/Parameter.cpp
+  ../src/ncl/Parser.cpp
   ../src/ncl/Port.cpp
   ../src/ncl/PropertyAnchor.cpp
   ../src/ncl/RectangleSpatialAnchor.cpp
