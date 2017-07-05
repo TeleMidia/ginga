@@ -89,8 +89,11 @@ Display::Display (int width, int height, double fps, bool fullscreen)
   _screen = SDL_CreateWindow ("ginga", 0, 0, width, height, flags);
   g_assert_nonnull (_screen);
 
+<<<<<<< HEAD
   SDL_GL_SetAttribute (SDL_GL_ACCELERATED_VISUAL, 1);
 
+=======
+>>>>>>> 83f704c9876a02a680a629990c7cf33abd678452
   flags = SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED;
   _renderer = SDL_CreateRenderer (_screen, -1, flags);
   g_assert_nonnull (_renderer);

@@ -41,8 +41,20 @@ main (void)
   c = ginga_parse_color ("#00");
   CHECK_COLOR (c, 0, 0, 0, 255);
 
+  c = ginga_parse_color ("#000");
+  CHECK_COLOR (c, 0, 0, 0, 255);
+
+  c = ginga_parse_color ("#0000");
+  CHECK_COLOR (c, 0, 0, 0, 0);
+
+  c = ginga_parse_color ("#00000");
+  CHECK_COLOR (c, 0, 0, 0, 255);
+
   c = ginga_parse_color ("#000000");
   CHECK_COLOR (c, 0, 0, 0, 255);
+
+  c = ginga_parse_color ("#0000000");
+  CHECK_COLOR (c, 0, 0, 0, 0);
 
   c = ginga_parse_color ("rgb(0,0,0)");
   CHECK_COLOR (c, 0, 0, 0, 255);
