@@ -527,7 +527,6 @@ Converter::processLink (Link *ncmLink,
                         ExecutionObject *executionObject,
                         ExecutionObjectContext *parentObject)
 {
-  Descriptor *descriptor = nullptr;
   NodeEntity *nodeEntity = nullptr;
   set<ReferNode *> *sameInstances;
   bool contains = false;
@@ -550,8 +549,7 @@ Converter::processLink (Link *ncmLink,
               sameInstances = nodeEntity->getInstSameInstances ();
               for (ReferNode *referNode: *sameInstances)
                 {
-                  contains = causalLink->containsSourceNode (referNode,
-                                                             descriptor);
+                  contains = causalLink->contains (referNode, true);
                   if (contains)
                     {
                       break;
@@ -560,7 +558,7 @@ Converter::processLink (Link *ncmLink,
             }
 
           // Checks if execution object is part of link conditions.
-          if (causalLink->containsSourceNode (dataObject, descriptor)
+          if (causalLink->contains (dataObject, true)
               || contains)
             {
               // Compile causal link.
@@ -1000,7 +998,7 @@ Converter::createLink (Link *ncmLink,
                              ExecutionObjectContext *parentObj)
 {
   CausalConnector *connector;
-  ConditionExpression *conditionExpression;
+  Condition *conditionExpression;
   Action *actionExp;
   NclLinkCondition *formatterCondition;
   NclAction *formatterAction;
@@ -1021,7 +1019,7 @@ Converter::createLink (Link *ncmLink,
   connector = cast (CausalConnector *, ncmLink->getConnector ());
   g_assert_nonnull (connector);
 
-  conditionExpression = connector->getConditionExpression ();
+  conditionExpression = connector->getCondition ();
   formatterCondition
       = createCondition ((TriggerExpression *)conditionExpression, ncmLink,
                          parentObj);
@@ -1160,7 +1158,7 @@ Converter::createAction (Action *actionExp,
                          ExecutionObjectContext *parentObj)
 {
   GingaTime delay;
-  vector<Bind *> *binds;
+  vector<Bind *> binds;
   size_t i, size;
   string delayObject;
   NclSimpleAction *simpleAction;
@@ -1176,46 +1174,43 @@ Converter::createAction (Action *actionExp,
   auto cae = cast (CompoundAction *, actionExp);
   if (sae) // SimpleAction
     {
-      binds = ncmLink->getRoleBinds (sae);
-      if (binds != NULL)
+      binds = ncmLink->getBinds (sae);
+      size = binds.size ();
+      if (size == 1)
         {
-          size = binds->size ();
-          if (size == 1)
-            {
-              return createSimpleAction (sae, (*binds)[0], ncmLink,
-                  parentObj);
-            }
-          else if (size > 1)
-            {
-              compoundAction
-                  = new NclCompoundAction ();
-
-              for (i = 0; i < size; i++)
-                {
-                  simpleAction = createSimpleAction (
-                        sae, (*binds)[i], ncmLink, parentObj);
-
-                  if (simpleAction == NULL)
-                    {
-                      WARNING ("Cannot create compound action: invalid "
-                               "action(s)");
-                      delete compoundAction;
-                      return nullptr;
-                    }
-                  compoundAction->addAction (simpleAction);
-                }
-
-              return compoundAction;
-            }
-          else
-            {
-              WARNING ("Cannot create action of link '%s' because number of"
-                       "binds is = %lu.",
-                       ncmLink->getId ().c_str (),
-                       size);
-              return nullptr;
-            }
+          return createSimpleAction (sae, binds[0], ncmLink,
+                                     parentObj);
         }
+      else if (size > 1)
+        {
+          compoundAction
+            = new NclCompoundAction ();
+
+          for (i = 0; i < size; i++)
+            {
+              simpleAction = createSimpleAction (sae, binds[i], ncmLink, parentObj);
+
+              if (simpleAction == NULL)
+                {
+                  WARNING ("Cannot create compound action: invalid "
+                           "action(s)");
+                  delete compoundAction;
+                  return nullptr;
+                }
+              compoundAction->addAction (simpleAction);
+            }
+
+          return compoundAction;
+        }
+      else
+        {
+          WARNING ("Cannot create action of link '%s' because number of"
+                   "binds is = %lu.",
+                   ncmLink->getId ().c_str (),
+                   size);
+          return nullptr;
+        }
+
     }
   else if (cae) // CompundAction
     {
@@ -1238,7 +1233,7 @@ Converter::createAction (Action *actionExp,
 
 NclLinkCondition *
 Converter::createCondition (
-    ConditionExpression *ncmExp, Link *ncmLink,
+    Condition *ncmExp, Link *ncmLink,
     ExecutionObjectContext *parentObj)
 {
   auto triggerExp = cast (TriggerExpression *, ncmExp);
@@ -1258,11 +1253,11 @@ Converter::createCondition (
 NclLinkCompoundTriggerCondition *
 Converter::createCompoundTriggerCondition (
     short op, GingaTime delay,
-    vector<ConditionExpression *> *ncmChildConditions, Link *ncmLink,
+    vector<Condition *> *ncmChildConditions, Link *ncmLink,
     ExecutionObjectContext *parentObj)
 {
   NclLinkCompoundTriggerCondition *condition;
-  ConditionExpression *ncmChildCondition;
+  Condition *ncmChildCondition;
   NclLinkCondition *childCondition;
 
   if (op == CompoundCondition::OP_AND)
@@ -1281,7 +1276,7 @@ Converter::createCompoundTriggerCondition (
 
   if (ncmChildConditions != nullptr)
     {
-      vector<ConditionExpression *>::iterator i;
+      vector<Condition *>::iterator i;
       i = ncmChildConditions->begin ();
       while (i != ncmChildConditions->end ())
         {
@@ -1310,45 +1305,41 @@ Converter::createCondition (
 
   if (ste) // SimpleCondition
     {
-      vector<Bind *> *binds = ncmLink->getRoleBinds (ste);
-      if (binds != nullptr)
+      vector<Bind *> binds = ncmLink->getBinds (ste);
+      size_t size = binds.size ();
+      if (size == 1)
         {
-          size_t size = binds->size ();
-          if (size == 1)
+          return createSimpleCondition (ste, binds[0], ncmLink,
+                                        parentObj);
+        }
+      else if (size > 1)
+        {
+          if (ste->getQualifier () == CompoundCondition::OP_AND)
             {
-              return createSimpleCondition (ste, (*binds)[0], ncmLink,
-                  parentObj);
-            }
-          else if (size > 1)
-            {
-              if (ste->getQualifier () == CompoundCondition::OP_AND)
-                {
-                  compoundCondition
-                      = new NclLinkAndCompoundTriggerCondition ();
-                }
-              else
-                {
-                  compoundCondition
-                      = new NclLinkCompoundTriggerCondition ();
-                }
-
-              for (size_t i = 0; i < size; i++)
-                {
-                  simpleCondition = createSimpleCondition (
-                        ste, (*binds)[i], ncmLink, parentObj);
-
-                  compoundCondition->addCondition (simpleCondition);
-                }
-              return compoundCondition;
+              compoundCondition
+                = new NclLinkAndCompoundTriggerCondition ();
             }
           else
             {
-              WARNING ("Cannot create condition of link '%s' because number "
-                       "of binds is %lu",
-                       ncmLink->getId ().c_str(), size);
-
-              return nullptr;
+              compoundCondition
+                = new NclLinkCompoundTriggerCondition ();
             }
+
+          for (size_t i = 0; i < size; i++)
+            {
+              simpleCondition = createSimpleCondition (ste, binds[i], ncmLink, parentObj);
+
+              compoundCondition->addCondition (simpleCondition);
+            }
+          return compoundCondition;
+        }
+      else
+        {
+          WARNING ("Cannot create condition of link '%s' because number "
+                   "of binds is %lu",
+                   ncmLink->getId ().c_str(), size);
+
+          return nullptr;
         }
     }
   else if (cte) // CompoundCondition
@@ -1381,7 +1372,7 @@ Converter::createAssessmentStatement (
   NclLinkAssessmentStatement *statement;
   string paramValue;
   Parameter *connParam, *param;
-  vector<Bind *> *otherBinds;
+  vector<Bind *> otherBinds;
 
   mainAssessment = createAttributeAssessment (
         assessmentStatement->getMainAssessment (), bind, ncmLink,
@@ -1417,11 +1408,11 @@ Converter::createAssessmentStatement (
     }
   else if (attrAssessment)
     {
-      otherBinds = ncmLink->getRoleBinds (attrAssessment);
-      if (otherBinds != nullptr && !otherBinds->empty ())
+      otherBinds = ncmLink->getBinds (attrAssessment);
+      if (!otherBinds.empty ())
         {
           otherAssessment = createAttributeAssessment (
-                attrAssessment, (*otherBinds)[0], ncmLink, parentObj);
+                attrAssessment, otherBinds[0], ncmLink, parentObj);
         }
       else
         {
@@ -1453,29 +1444,17 @@ Converter::createStatement (
   auto cs = cast (CompoundStatement *, statementExpression);
   if (as) // AssessmentStatement
     {
-      vector<Bind *> *binds = ncmLink->getRoleBinds (as->getMainAssessment ());
-      if (binds != nullptr)
+      vector<Bind *> binds = ncmLink->getBinds (as->getMainAssessment ());
+      size = (int) binds.size ();
+      if (size == 1)
         {
-          size = (int) binds->size ();
-          if (size == 1)
-            {
-              statement = createAssessmentStatement (
-                    as, (*binds)[0], ncmLink, parentObj);
-            }
-          else
-            {
-              WARNING ("Cannot create statement of link '%s' because number "
-                       "of binds is %d.",
-                       ncmLink->getId ().c_str(), size);
-
-              return nullptr;
-            }
+          statement = createAssessmentStatement (as, binds[0], ncmLink, parentObj);
         }
       else
         {
-          ERROR ("Cannot create statement of link '%s' because binds is "
-                 "nullptr.",
-                 ncmLink->getId ().c_str());
+          WARNING ("Cannot create statement of link '%s' because number "
+                   "of binds is %d.",
+                   ncmLink->getId ().c_str(), size);
 
           return nullptr;
         }

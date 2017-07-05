@@ -18,11 +18,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef TRIGGEREXPRESSION_H_
 #define TRIGGEREXPRESSION_H_
 
-#include "ConditionExpression.h"
+#include "Condition.h"
 
 GINGA_NCL_BEGIN
 
-class TriggerExpression : public ConditionExpression
+class TriggerExpression : public Condition
 {
 public:
   TriggerExpression ();

@@ -34,7 +34,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "CompoundAction.h"
 #include "CompoundCondition.h"
 #include "CompoundStatement.h"
-#include "ConditionExpression.h"
+#include "Condition.h"
 #include "Connector.h"
 #include "ConnectorBase.h"
 #include "Content.h"

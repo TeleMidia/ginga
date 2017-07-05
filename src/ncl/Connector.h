@@ -28,18 +28,16 @@ GINGA_NCL_BEGIN
 class Connector : public Entity
 {
 public:
-  Connector (const string &_id);
+  Connector (const string &);
   virtual ~Connector ();
-  int getNumRoles ();
-  Role *getRole (const string &roleId);
+  Role *getRole (const string &);
   virtual vector<Role *> *getRoles () = 0;
-  void addParameter (Parameter *parameter);
-  vector<Parameter *> *getParameters ();
-  Parameter *getParameter (const string &name);
-  bool removeParameter (const string &name);
+  void addParameter (Parameter *);
+  const vector<Parameter *> *getParameters ();
+  Parameter *getParameter (const string &);
 
 private:
-  map<string, Parameter *> *_params;
+  vector<Parameter *> _parameters;
 };
 
 GINGA_NCL_END

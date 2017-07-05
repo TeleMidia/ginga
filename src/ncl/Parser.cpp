@@ -1068,13 +1068,13 @@ Parser::parseCausalConnector (DOMElement *elt)
       string tag = dom_elt_get_tag (child);
       if (tag == "simpleCondition")
         {
-          conn->setConditionExpression
+          conn->setCondition
             (this->parseSimpleCondition (child));
           ncond++;
         }
       else if (tag == "compoundCondition")
         {
-          conn->setConditionExpression
+          conn->setCondition
             (this->parseCompoundCondition (child));
           ncond++;
         }
@@ -1135,22 +1135,22 @@ Parser::parseCompoundCondition (DOMElement *elt)
       string tag = dom_elt_get_tag (child);
       if (tag == "simpleCondition")
         {
-          cond->addConditionExpression
+          cond->addCondition
             (this->parseSimpleCondition (child));
         }
       else if (tag == "assessmentStatement")
         {
-          cond->addConditionExpression
+          cond->addCondition
             (this->parseAssessmentStatement (child));
         }
       else if (tag == "compoundCondition")
         {
-          cond->addConditionExpression
+          cond->addCondition
             (this->parseCompoundCondition (child));
         }
       else if (tag ==  "compoundStatement")
         {
-          cond->addConditionExpression
+          cond->addCondition
             (this->parseCompoundStatement (child));
         }
       else
@@ -2098,7 +2098,7 @@ Parser::parseArea (DOMElement *elt)
 // Private: Link.
 
 Link *
-Parser::parseLink (DOMElement *elt, CompositeNode *context)
+Parser::parseLink (DOMElement *elt, ContextNode *context)
 {
   Link *link;
   string id;
@@ -2113,7 +2113,7 @@ Parser::parseLink (DOMElement *elt, CompositeNode *context)
   if (unlikely (conn == nullptr))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "xconnector");
 
-  link = new Link (id, conn);
+  link = new Link (id, context, conn);
 
   // Collect children.
   for (DOMElement *child: dom_elt_get_children (elt))
@@ -2147,7 +2147,7 @@ Parser::parseLinkParam (DOMElement *elt)
 }
 
 Bind *
-Parser::parseBind (DOMElement *elt, Link *link, CompositeNode *context)
+Parser::parseBind (DOMElement *elt, Link *link, ContextNode *context)
 {
   Bind *bind;
   string label;
@@ -2235,7 +2235,7 @@ Parser::parseBind (DOMElement *elt, Link *link, CompositeNode *context)
   role = conn->getRole (label);
   if (role == nullptr)          // ghost "get"
     {
-      ConditionExpression *cond;
+      Condition *cond;
       AssessmentStatement *stmt;
       AttributeAssessment *assess;
 
@@ -2247,22 +2247,22 @@ Parser::parseBind (DOMElement *elt, Link *link, CompositeNode *context)
       stmt->setMainAssessment (assess);
       stmt->setOtherAssessment (new ValueAssessment (label));
 
-      cond = conn->getConditionExpression ();
+      cond = conn->getCondition ();
       if (instanceof (CompoundCondition *, cond))
         {
-          ((CompoundCondition *) cond)->addConditionExpression (stmt);
+          ((CompoundCondition *) cond)->addCondition (stmt);
         }
       else
         {
-          conn->setConditionExpression
+          conn->setCondition
             (new CompoundCondition (cond, stmt, CompoundCondition::OP_OR));
         }
       role = (Role *) assess;
     }
   g_assert_nonnull (role);
 
-  bind = link->bind (target, iface, desc, role->getLabel ());
-  g_assert_nonnull (bind);
+  bind = new Bind (target, iface, desc, role);
+  link->addBind (bind);
 
   // Collect children.
   for (DOMElement *child: dom_elt_get_children (elt))

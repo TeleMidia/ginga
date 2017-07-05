@@ -26,37 +26,13 @@ ReferNode::ReferNode (const string &id) : Node (id)
 {
   _instanceType = "new";
   _referredNode = NULL;
-  _instDesc = NULL;
 }
 
 ReferNode::ReferNode (const string &id, Entity *entity) : Node (id)
 {
   _instanceType = "new";
-  _instDesc = NULL;
 
   setReferredEntity (entity);
-}
-
-Descriptor *
-ReferNode::getInstanceDescriptor ()
-{
-  Descriptor *desc = NULL;
-
-  if (_instanceType == "new")
-    {
-      desc = _instDesc;
-    }
-
-  return desc;
-}
-
-void
-ReferNode::setInstanceDescriptor (Descriptor *descriptor)
-{
-  if (_instanceType == "new")
-    {
-      _instDesc = descriptor;
-    }
 }
 
 string

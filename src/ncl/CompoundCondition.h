@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "AssessmentStatement.h"
 #include "CompoundStatement.h"
-#include "ConditionExpression.h"
+#include "Condition.h"
 #include "TriggerExpression.h"
 #include "SimpleCondition.h"
 #include "Role.h"
@@ -35,19 +35,19 @@ public:
 
 public:
   CompoundCondition ();
-  CompoundCondition (ConditionExpression *c1, ConditionExpression *c2,
+  CompoundCondition (Condition *c1, Condition *c2,
                      short op);
 
   virtual ~CompoundCondition ();
   void setOperator (short op);
   short getOperator ();
-  vector<ConditionExpression *> *getConditions ();
-  void addConditionExpression (ConditionExpression *condition);
-  void removeConditionExpression (ConditionExpression *condition);
+  vector<Condition *> *getConditions ();
+  void addCondition (Condition *condition);
+  void removeCondition (Condition *condition);
   vector<Role *> *getRoles ();
 
 private:
-  vector<ConditionExpression *> *_expressions;
+  vector<Condition *> *_expressions;
   short _myOperator;
 };
 

@@ -19,13 +19,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Node.h"
 #include "CompositeNode.h"
 
-GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
-
 GINGA_NCL_BEGIN
 
 Node::Node (const string &id) : Entity (id)
 {
-  _parentNode = NULL;
+  _parentNode = nullptr;
 }
 
 Node::~Node ()
@@ -64,34 +62,6 @@ Node::hasProperty (const string &propName)
     }
 
   return false;
-}
-
-void
-Node::copyProperties (Node *node)
-{
-  vector<PropertyAnchor *> *props;
-  vector<PropertyAnchor *>::iterator i;
-  PropertyAnchor *prop;
-  PropertyAnchor *cProp;
-
-  props = node->getOriginalPropertyAnchors ();
-
-  i = props->begin ();
-  while (i != props->end ())
-    {
-      prop = *i;
-
-      if (!hasProperty (prop->getName ()))
-        {
-          cProp = new PropertyAnchor (prop->getId ());
-          cProp->setValue (prop->getValue ());
-
-          _originalPAnchors.push_back (cProp);
-          _anchorList.push_back (cProp);
-        }
-
-      ++i;
-    }
 }
 
 CompositeNode *
@@ -212,12 +182,6 @@ Node::getAnchors ()
   return this->_anchorList;
 }
 
-vector<PropertyAnchor *> *
-Node::getOriginalPropertyAnchors ()
-{
-  return &_originalPAnchors;
-}
-
 PropertyAnchor *
 Node::getPropertyAnchor (const string &propertyName)
 {
@@ -239,31 +203,6 @@ Node::getPropertyAnchor (const string &propertyName)
     }
 
   return NULL;
-}
-
-int
-Node::getNumAnchors ()
-{
-  return (int) _anchorList.size ();
-}
-
-int
-Node::indexOfAnchor (Anchor *anchor)
-{
-  vector<Anchor *>::iterator i;
-  int n;
-  n = 0;
-
-  for (i = _anchorList.begin (); i != _anchorList.end (); ++i)
-    {
-      if (*i == anchor)
-        {
-          return n;
-        }
-      n++;
-    }
-
-  return (int) _anchorList.size () + 10;
 }
 
 GINGA_NCL_END

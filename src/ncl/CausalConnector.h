@@ -25,7 +25,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "CompoundAction.h"
 #include "CompoundStatement.h"
 #include "CompoundCondition.h"
-#include "ConditionExpression.h"
+#include "Condition.h"
 #include "SimpleAction.h"
 #include "SimpleCondition.h"
 #include "Role.h"
@@ -36,25 +36,20 @@ class CausalConnector : public Connector
 {
 public:
   CausalConnector (const string &_id);
-  CausalConnector (const string &_id, ConditionExpression *condition,
-                   Action *action);
-
   virtual ~CausalConnector ();
 
   Action *getAction ();
-  ConditionExpression *getConditionExpression ();
+  Condition *getCondition ();
   void setAction (Action *newAction);
-  void setConditionExpression (ConditionExpression *newConditionExpression);
+  void setCondition (Condition *newCondition);
 
   vector<Role *> *getRoles ();
 
 private:
-  ConditionExpression *_conditionExpression;
+  Condition *_conditionExpression;
   Action *_actionExpression;
 
-  void releaseAction ();
-  void releaseCondition ();
-  void getConditionRoles (ConditionExpression *condition,
+  void getConditionRoles (Condition *condition,
                           vector<Role *> *roles);
 
   void getActionRoles (Action *action, vector<Role *> *roles);

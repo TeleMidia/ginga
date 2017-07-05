@@ -27,10 +27,9 @@ class CompositeNode;
 class Node : public Entity
 {
 public:
-  Node (const string &id);
+  Node (const string &);
   virtual ~Node ();
 
-  void copyProperties (Node *node);
   void setParentComposition (CompositeNode *);
   CompositeNode *getParentComposition ();
   vector<Node *> *getPerspective ();
@@ -39,11 +38,8 @@ public:
   Anchor *getAnchor (const string &);
   Anchor *getAnchor (int);
   const vector<Anchor *> &getAnchors ();
-  vector<PropertyAnchor *> *getOriginalPropertyAnchors ();
 
   PropertyAnchor *getPropertyAnchor (const string &);
-  int getNumAnchors ();
-  int indexOfAnchor (Anchor *);
 
 protected:
   vector<Anchor *> _anchorList;
