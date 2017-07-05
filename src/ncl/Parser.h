@@ -111,9 +111,9 @@ private:
   PropertyAnchor *parseProperty (DOMElement *);
   Anchor *parseArea (DOMElement *);
 
-  Link *parseLink (DOMElement *, CompositeNode *);
+  Link *parseLink (DOMElement *, ContextNode *);
   Parameter *parseLinkParam (DOMElement *);
-  Bind *parseBind (DOMElement *, Link *, CompositeNode *);
+  Bind *parseBind (DOMElement *, Link *, ContextNode *);
   Parameter *parseBindParam (DOMElement *);
 
   // From ErrorHandler.

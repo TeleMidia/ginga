@@ -34,7 +34,6 @@ ContextNode::addLink (Link *link)
 {
   g_assert_nonnull (link);
   _links.push_back (link);
-  link->setParentComposition (this);
 }
 
 void
