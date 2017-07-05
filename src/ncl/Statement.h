@@ -18,20 +18,15 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _STATEMENT_H_
 #define _STATEMENT_H_
 
-#include "ConditionExpression.h"
+#include "Condition.h"
 
 GINGA_NCL_BEGIN
 
-class Statement : public ConditionExpression
+class Statement : public Condition
 {
 public:
-  Statement () : ConditionExpression () {typeSet.insert ("Statement"); };
-  virtual ~Statement () {typeSet.clear (); };
-  virtual bool
-  instanceOf (const string &type)
-  {
-    return ConditionExpression::instanceOf (type);
-  };
+  Statement () : Condition () {};
+  virtual ~Statement () {};
 };
 
 GINGA_NCL_END

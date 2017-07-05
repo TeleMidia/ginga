@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-TriggerExpression::TriggerExpression () : ConditionExpression ()
+TriggerExpression::TriggerExpression () : Condition ()
 {
   _delay = "0";
 }
