@@ -84,10 +84,10 @@
 /tests/test-xstrstrip
 /tests/test-xstrtodorpercent
 /tests/test-xstrup
-/test-xpathbasename
-/test-xpathbuild
-/test-xpathbuildabs
-/test-xpathdirname
-/test-xpathisabs
-/test-xpathisuri
-/test-xpathmakeabs
+/tests/test-xpathbasename
+/tests/test-xpathbuild
+/tests/test-xpathbuildabs
+/tests/test-xpathdirname
+/tests/test-xpathisabs
+/tests/test-xpathisuri
+/tests/test-xpathmakeabs
