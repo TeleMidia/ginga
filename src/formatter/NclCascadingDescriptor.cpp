@@ -184,12 +184,6 @@ NclCascadingDescriptor::cascadeDescriptor (Descriptor *descriptor)
       this->selBorderColor = focusDecoration->getSelBorderColor ();
       focusBorderWidth = focusDecoration->getFocusBorderWidth ();
 
-      if (!(std::isnan (focusDecoration->getFocusBorderTransparency ())))
-        {
-          focusBorderTransparency
-              = focusDecoration->getFocusBorderTransparency ();
-        }
-
       if (focusDecoration->getFocusSrc () != "")
         {
           focusSrc = focusDecoration->getFocusSrc ();

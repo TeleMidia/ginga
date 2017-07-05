@@ -26,5 +26,5 @@ main (void)
   g_assert (ginga_parse_time ("00:00:50") == 50 * GINGA_SECOND);
   g_assert (ginga_parse_time ("00:01:00") == 60 * GINGA_SECOND);
   g_assert (ginga_parse_time ("01:00:00") == 3600 * GINGA_SECOND);
-  exit (0);
+  exit (EXIT_SUCCESS);
 }

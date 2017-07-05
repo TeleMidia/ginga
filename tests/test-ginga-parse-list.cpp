@@ -52,5 +52,5 @@ main (void)
   g_assert (v[2] == "cc");
   g_assert (v[3] == "dd");
 
-  exit (0);
+  exit (EXIT_SUCCESS);
 }

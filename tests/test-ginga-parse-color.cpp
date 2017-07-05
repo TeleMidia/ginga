@@ -83,5 +83,5 @@ main (void)
   c = ginga_parse_color ("rgb(50%,50%,50%)");
   CHECK_COLOR (c, 128, 128, 128, 255);
 
-  exit (0);
+  exit (EXIT_SUCCESS);
 }

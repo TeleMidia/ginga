@@ -26,5 +26,5 @@ main (void)
   g_assert (xstrhasprefix ("hasprefix", "hasprefix") == true);
   g_assert (xstrhasprefix ("HasPrEfix", "hAs") == false);
   g_assert (xstrhasprefix ("", "has") == false);
-  exit (0);
+  exit (EXIT_SUCCESS);
 }

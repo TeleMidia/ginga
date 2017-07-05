@@ -27,5 +27,5 @@ main (void)
   g_assert (ginga_parse_bool ("False") == false);
   g_assert (ginga_parse_bool ("TRUE") == true);
   g_assert (ginga_parse_bool ("FALSE") == false);
-  exit (0);
+  exit (EXIT_SUCCESS);
 }
