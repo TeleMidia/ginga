@@ -2098,7 +2098,7 @@ Parser::parseArea (DOMElement *elt)
 // Private: Link.
 
 Link *
-Parser::parseLink (DOMElement *elt, CompositeNode *context)
+Parser::parseLink (DOMElement *elt, ContextNode *context)
 {
   Link *link;
   string id;
@@ -2113,7 +2113,7 @@ Parser::parseLink (DOMElement *elt, CompositeNode *context)
   if (unlikely (conn == nullptr))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "xconnector");
 
-  link = new Link (id, conn);
+  link = new Link (id, context, conn);
 
   // Collect children.
   for (DOMElement *child: dom_elt_get_children (elt))
@@ -2147,7 +2147,7 @@ Parser::parseLinkParam (DOMElement *elt)
 }
 
 Bind *
-Parser::parseBind (DOMElement *elt, Link *link, CompositeNode *context)
+Parser::parseBind (DOMElement *elt, Link *link, ContextNode *context)
 {
   Bind *bind;
   string label;
@@ -2261,8 +2261,8 @@ Parser::parseBind (DOMElement *elt, Link *link, CompositeNode *context)
     }
   g_assert_nonnull (role);
 
-  bind = link->bind (target, iface, desc, role->getLabel ());
-  g_assert_nonnull (bind);
+  bind = new Bind (target, iface, desc, role);
+  link->addBind (bind);
 
   // Collect children.
   for (DOMElement *child: dom_elt_get_children (elt))
