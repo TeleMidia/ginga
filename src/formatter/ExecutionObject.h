@@ -63,7 +63,7 @@ public:
   virtual void removeParentObject (Node *parentNode,
                                    ExecutionObjectContext *parentObject);
 
-  void setDescriptor (GenericDescriptor *_descriptor);
+  void setDescriptor (Descriptor *_descriptor);
   virtual bool addEvent (NclEvent *event);
   void addPresentationEvent (PresentationEvent *event);
   bool containsEvent (NclEvent *event);

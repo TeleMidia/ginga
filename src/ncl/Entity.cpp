@@ -22,7 +22,8 @@ GINGA_NCL_BEGIN
 
 Entity::Entity (const string &id)
 {
-  this->_id = id;
+  g_assert (id != "");
+  _id = id;
 }
 
 Entity::~Entity ()

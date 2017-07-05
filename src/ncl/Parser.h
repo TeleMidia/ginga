@@ -41,7 +41,6 @@ GINGA_PRAGMA_DIAG_POP ()
 #include "LabeledAnchor.h"
 #include "RectangleSpatialAnchor.h"
 #include "CausalLink.h"
-#include "ReferredNode.h"
 #include "Comparator.h"
 #include "Descriptor.h"
 

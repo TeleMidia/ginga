@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Base.h"
 
-#include "GenericDescriptor.h"
+#include "Descriptor.h"
 
 GINGA_NCL_BEGIN
 
@@ -30,18 +30,18 @@ public:
   DescriptorBase (const string &_id);
   virtual ~DescriptorBase ();
 
-  bool addDescriptor (GenericDescriptor *descriptor);
+  bool addDescriptor (Descriptor *descriptor);
   bool addBase (Base *base, const string &alias, const string &location);
 
   void clear ();
 
-  GenericDescriptor *getDescriptor (const string &descriptorId);
-  vector<GenericDescriptor *> *getDescriptors ();
-  bool removeDescriptor (GenericDescriptor *descriptor);
+  Descriptor *getDescriptor (const string &descriptorId);
+  vector<Descriptor *> *getDescriptors ();
+  bool removeDescriptor (Descriptor *descriptor);
 
 private:
-  vector<GenericDescriptor *> *_descriptorSet;
-  GenericDescriptor *getDescriptorLocally (const string &descriptorId);
+  vector<Descriptor *> *_descriptorSet;
+  Descriptor *getDescriptorLocally (const string &descriptorId);
 };
 
 GINGA_NCL_END

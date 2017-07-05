@@ -29,7 +29,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Connector.h"
 #include "ConnectorBase.h"
 
-#include "GenericDescriptor.h"
+#include "Descriptor.h"
 #include "DescriptorBase.h"
 
 #include "LayoutRegion.h"
@@ -61,7 +61,7 @@ public:
   ConnectorBase *getConnectorBase ();
   Transition *getTransition (const string &transitionId);
   TransitionBase *getTransitionBase ();
-  GenericDescriptor *getDescriptor (const string &descriptorId);
+  Descriptor *getDescriptor (const string &descriptorId);
   DescriptorBase *getDescriptorBase ();
   NclDocument *getDocument (const string &documentId);
   string getDocumentAlias (NclDocument *document);

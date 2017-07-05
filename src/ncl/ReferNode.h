@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define REFER_NODE_H
 
 #include "Node.h"
-#include "GenericDescriptor.h"
+#include "Descriptor.h"
 
 GINGA_NCL_BEGIN
 
@@ -30,8 +30,8 @@ public:
   ReferNode (const string &);
   ReferNode (const string &, Entity *);
 
-  GenericDescriptor *getInstanceDescriptor ();
-  void setInstanceDescriptor (GenericDescriptor *);
+  Descriptor *getInstanceDescriptor ();
+  void setInstanceDescriptor (Descriptor *);
 
   string getInstanceType ();
   void setInstanceType (const string &);
@@ -42,7 +42,7 @@ public:
 private:
   string _instanceType;
   Entity *_referredNode;
-  GenericDescriptor *_instDesc;
+  Descriptor *_instDesc;
 };
 
 GINGA_NCL_END

@@ -216,10 +216,10 @@ NclDocument::getTransitionBase ()
   return _transitionBase;
 }
 
-GenericDescriptor *
+Descriptor *
 NclDocument::getDescriptor (const string &descriptorId)
 {
-  GenericDescriptor *descriptor;
+  Descriptor *descriptor;
   vector<NclDocument *>::iterator i;
 
   if (_descriptorBase != NULL)
