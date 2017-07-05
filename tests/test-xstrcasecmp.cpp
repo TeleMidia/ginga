@@ -26,5 +26,5 @@ main (void)
   g_assert (xstrcasecmp ("testing", "test") > 0);
   g_assert (xstrcasecmp ("", "test") < 0);
   g_assert (xstrcasecmp ("test ing", "test") > 0);
-  exit (0);
+  exit (EXIT_SUCCESS);
 }

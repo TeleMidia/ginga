@@ -83,9 +83,7 @@ Node::copyProperties (Node *node)
 
       if (!hasProperty (prop->getName ()))
         {
-          cProp = new PropertyAnchor (prop->getName ());
-          cProp->setId (prop->getId ());
-          cProp->setName (prop->getName ());
+          cProp = new PropertyAnchor (prop->getId ());
           cProp->setValue (prop->getValue ());
 
           _originalPAnchors.push_back (cProp);
@@ -266,24 +264,6 @@ Node::indexOfAnchor (Anchor *anchor)
     }
 
   return (int) _anchorList.size () + 10;
-}
-
-bool
-Node::removeAnchor (int index)
-{
-  if (index < 0 || index >= (int)_anchorList.size ())
-    {
-      return false;
-    }
-
-  _anchorList.erase (_anchorList.begin () + index);
-  return true;
-}
-
-bool
-Node::removeAnchor (Anchor *anchor)
-{
-  return removeAnchor (indexOfAnchor (anchor));
 }
 
 GINGA_NCL_END

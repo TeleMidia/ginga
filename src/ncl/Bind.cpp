@@ -197,11 +197,18 @@ Bind::getNodeNesting ()
 InterfacePoint *
 Bind::getEndPointInterface ()
 {
-  NodeEntity *nodeEntity;
   CompositeNode *compositeNode;
   Port *port;
 
-  nodeEntity = (NodeEntity *)(_node->getDataEntity ());
+  NodeEntity *nodeEntity = cast (NodeEntity *, _node);
+  if (nodeEntity == nullptr)
+    {
+      g_assert (instanceof (ReferNode *, _node));
+      nodeEntity = cast (NodeEntity *, cast (ReferNode *, _node)
+                         ->getReferredEntity ());
+    }
+  g_assert_nonnull (nodeEntity);
+
   if (instanceof (CompositeNode *, nodeEntity)
       && instanceof (Port *, _interfacePoint))
     {

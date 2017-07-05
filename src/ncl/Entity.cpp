@@ -20,58 +20,19 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-set<Entity *> Entity::_instances;
-
 Entity::Entity (const string &id)
 {
   this->_id = id;
-  _instances.insert (this);
 }
 
 Entity::~Entity ()
 {
-  set<Entity *>::iterator i;
-
-  i = _instances.find (this);
-  if (i != _instances.end ())
-    _instances.erase (i);
-}
-
-bool
-Entity::hasInstance (Entity *instance, bool eraseFromList)
-{
-  set<Entity *>::iterator i;
-  bool hasEntity = false;
-
-  i = _instances.find (instance);
-  if (i != _instances.end ())
-    {
-      if (eraseFromList)
-        {
-          _instances.erase (i);
-        }
-      hasEntity = true;
-    }
-
-  return hasEntity;
 }
 
 string
 Entity::getId ()
 {
   return _id;
-}
-
-void
-Entity::setId (const string &someId)
-{
-  _id = someId;
-}
-
-Entity *
-Entity::getDataEntity ()
-{
-  return this;
 }
 
 GINGA_NCL_END

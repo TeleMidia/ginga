@@ -50,7 +50,7 @@ Scheduler::startDocument (const string &file)
 {
   string id;
   ContextNode *body;
-  vector<Port *> *ports;
+  const vector<Port *> *ports;
   vector<NclEvent *> *entryevts;
   NclNodeNesting *persp;
   int w, h;
@@ -279,7 +279,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
   node = ctxObj->getDataObject ();
   g_assert_nonnull (node);
 
-  entity = node->getDataEntity ();
+  entity = cast (Entity *, node);
   g_assert_nonnull (entity);
 
   compNode = cast (CompositeNode *, entity);

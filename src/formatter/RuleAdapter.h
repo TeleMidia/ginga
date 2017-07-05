@@ -35,7 +35,6 @@ private:
   Settings *settings;
   map<string, vector<Rule *> *> *ruleListenMap;
   map<Rule *, vector<ExecutionObjectSwitch *> *> *entityListenMap;
-  map<Rule *, vector<DescriptorSwitch *> *> *descListenMap;
 
 public:
   RuleAdapter (Settings *);
@@ -52,7 +51,6 @@ public:
 
   void adapt (ExecutionObjectSwitch *objectAlternatives, bool force);
 
-  bool adaptDescriptor (ExecutionObject *executionObject);
   Node *adaptSwitch (SwitchNode *switchNode);
   bool evaluateRule (Rule *rule);
 

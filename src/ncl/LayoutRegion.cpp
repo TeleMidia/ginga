@@ -70,7 +70,6 @@ LayoutRegion::LayoutRegion (const string &id) : Entity (id)
 
 LayoutRegion::~LayoutRegion ()
 {
-  Entity::hasInstance (this, true);
 }
 
 int

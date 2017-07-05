@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "RuleAdapter.h"
 
-GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
-
 GINGA_FORMATTER_BEGIN
 
 RuleAdapter::RuleAdapter (Settings *settings)
@@ -27,7 +25,6 @@ RuleAdapter::RuleAdapter (Settings *settings)
   this->settings = settings;
   ruleListenMap = new map<string, vector<Rule *> *>;
   entityListenMap = new map<Rule *, vector<ExecutionObjectSwitch *> *>;
-  descListenMap = new map<Rule *, vector<DescriptorSwitch *> *>;
 }
 
 RuleAdapter::~RuleAdapter ()
@@ -47,12 +44,6 @@ RuleAdapter::~RuleAdapter ()
     {
       delete entityListenMap;
       entityListenMap = NULL;
-    }
-
-  if (descListenMap != NULL)
-    {
-      delete descListenMap;
-      descListenMap = NULL;
     }
 }
 
@@ -98,26 +89,6 @@ RuleAdapter::reset ()
 
       entityListenMap->clear ();
     }
-
-  if (descListenMap != NULL)
-    {
-      map<Rule *, vector<DescriptorSwitch *> *>::iterator k;
-      vector<DescriptorSwitch *> *descs;
-
-      k = descListenMap->begin ();
-      while (k != descListenMap->end ())
-        {
-          descs = k->second;
-          if (descs != NULL)
-            {
-              delete descs;
-              descs = NULL;
-            }
-          ++k;
-        }
-
-      descListenMap->clear ();
-    }
 }
 
 Settings *
@@ -143,15 +114,10 @@ RuleAdapter::adapt (ExecutionObjectContext *compositeObject,
           object = i->second;
           if (instanceof (ExecutionObjectSwitch *, object))
             {
-              initializeRuleObjectRelation (
-                  (ExecutionObjectSwitch *)object);
-
-              //adapt ((ExecutionObjectSwitch *)object, force);
               object = ((ExecutionObjectSwitch *)object)
                            ->getSelectedObject ();
             }
 
-          adaptDescriptor (object);
           if (instanceof (ExecutionObjectContext *, object))
             {
               adapt ((ExecutionObjectContext *)object, force);
@@ -204,101 +170,10 @@ RuleAdapter::initializeAttributeRuleRelation (Rule *topRule, Rule *rule)
     }
 }
 
-void
-RuleAdapter::initializeRuleObjectRelation (
-    arg_unused (ExecutionObjectSwitch *objectAlternatives))
-{
-}
-
-bool
-RuleAdapter::adaptDescriptor (ExecutionObject *executionObject)
-{
-  NclCascadingDescriptor *cascadingDescriptor;
-  GenericDescriptor *selectedDescriptor;
-  GenericDescriptor *unsolvedDescriptor;
-  DescriptorSwitch *descAlternatives;
-  int i, j, size;
-  Rule *rule;
-  bool selected, result;
-  vector<DescriptorSwitch *> *objectVector;
-  map<Rule *, vector<DescriptorSwitch *> *>::iterator k;
-  bool adapted = false;
-
-  clog << "RuleAdapter::adaptDescriptor for '";
-  clog << executionObject->getId () << "'";
-  clog << endl;
-
-  cascadingDescriptor = executionObject->getDescriptor ();
-  if (cascadingDescriptor == NULL)
-    {
-      return adapted;
-    }
-
-  j = 0;
-  unsolvedDescriptor = cascadingDescriptor->getUnsolvedDescriptor (j);
-  clog << "RuleAdapter::adaptDescriptor first unsolved descriptor ";
-  clog << "address '" << unsolvedDescriptor << "'" << endl;
-  while (unsolvedDescriptor != NULL)
-    {
-      j++;
-      if (instanceof (DescriptorSwitch *, unsolvedDescriptor))
-        {
-          descAlternatives = (DescriptorSwitch *)unsolvedDescriptor;
-
-          clog << "RuleAdapter::adaptDescriptor solving ";
-          clog << "descriptor switch '";
-          clog << descAlternatives->getId ();
-          clog << "'";
-          clog << endl;
-
-          selectedDescriptor = descAlternatives->getSelectedDescriptor ();
-          selected = false;
-          size = descAlternatives->getNumRules ();
-          for (i = 0; i < size; i++)
-            {
-              rule = descAlternatives->getRule (i);
-              result = evaluateRule (rule);
-              if (result && !selected)
-                {
-                  selected = true;
-                  descAlternatives->select (
-                      descAlternatives->getDescriptor (i));
-                }
-
-              if (descListenMap->count (rule) == 0)
-                {
-                  objectVector = new vector<DescriptorSwitch *>;
-                  (*descListenMap)[rule] = objectVector;
-                }
-              else
-                {
-                  objectVector = ((*descListenMap)[rule]);
-                }
-
-              objectVector->push_back (descAlternatives);
-            }
-          if (!selected)
-            {
-              descAlternatives->selectDefault ();
-            }
-
-          if (selectedDescriptor
-              != descAlternatives->getSelectedDescriptor ())
-            {
-              adapted = true;
-            }
-        }
-         
-      cascadingDescriptor->cascadeUnsolvedDescriptor ();
-      unsolvedDescriptor = cascadingDescriptor->getUnsolvedDescriptor (j);
-    }  
-  return adapted;
-}
-
 Node *
 RuleAdapter::adaptSwitch (SwitchNode *switchNode)
 {
-  int i, size;
+  size_t i, size;
   Rule *rule;
   Node *selectedNode;
 
@@ -306,10 +181,10 @@ RuleAdapter::adaptSwitch (SwitchNode *switchNode)
   size = switchNode->getNumRules ();
   for (i = 0; i < size; i++)
     {
-      rule = switchNode->getRule (i);
+      rule = switchNode->getRule ((unsigned int) i);
       if (evaluateRule (rule))
         {
-          selectedNode = switchNode->getNode (i);
+          selectedNode = switchNode->getNode ((unsigned int) i);
         }
     }
 

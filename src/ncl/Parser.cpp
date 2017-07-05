@@ -888,10 +888,8 @@ Parser::parseDescriptorBase (DOMElement *elt)
         }
       else if (tag == "descriptorSwitch")
         {
-          DescriptorSwitch *descSwitch;
-          descSwitch = this->parseDescriptorSwitch (child);
-          g_assert_nonnull (descSwitch);
-          base->addDescriptor (descSwitch);
+          ERROR_NOT_IMPLEMENTED ("%s: element is not supported",
+                                 __error_elt (child).c_str ());
         }
       else if (tag == "descriptor")
         {
@@ -997,16 +995,6 @@ Parser::parseDescriptor (DOMElement *elt)
         }
     }
   return desc;
-}
-
-
-// Private: Descriptor switch.
-
-G_GNUC_NORETURN DescriptorSwitch *
-Parser::parseDescriptorSwitch (DOMElement *elt)
-{
-  ERROR_NOT_IMPLEMENTED ("%s: element is not supported",
-                         __error_elt ((elt)).c_str ());
 }
 
 
@@ -1623,23 +1611,23 @@ Parser::posCompileSwitch (DOMElement *elt, SwitchNode *swtch)
 void
 Parser::solveNodeReferences (CompositeNode *comp)
 {
-  vector<Node *> *nodes;
+  const vector<Node *> *nodes;
   bool del = false;
 
   if (instanceof (SwitchNode *, comp))
     {
       map<string, map<string, Node *> *>::iterator it;
       map<string, Node *> *tab;
-
-      nodes = new vector<Node *>;
+      vector<Node *> *aux_nodes = new vector<Node *>;
       del = true;
 
       if ((it = _switchMap.find (comp->getId ())) != _switchMap.end ())
         {
           tab = it->second;
           for (auto k: *tab)
-            nodes->push_back (k.second);
+            aux_nodes->push_back (k.second);
         }
+      nodes = aux_nodes;
     }
   else
     {
@@ -1662,7 +1650,7 @@ Parser::solveNodeReferences (CompositeNode *comp)
         refNode = (NodeEntity *)(_doc->getNode (ref->getId ()));
         g_assert_nonnull (refNode);
 
-        ((ReferNode *) node)->setReferredEntity (refNode->getDataEntity ());
+        ((ReferNode *) node)->setReferredEntity (refNode);
       }
     else if (instanceof (CompositeNode *, node))
       {
@@ -1742,7 +1730,7 @@ Parser::parsePort (DOMElement *elt, CompositeNode *context)
   if (unlikely (target == nullptr))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "component");
 
-  targetEntity = cast (NodeEntity *, target->getDataEntity ());
+  targetEntity = cast (NodeEntity *, target);
   g_assert_nonnull (targetEntity);
 
   if (dom_elt_try_get_attribute (value, elt, "interface"))
@@ -1935,7 +1923,7 @@ Parser::parseMapping (DOMElement *elt, SwitchNode *swtch,
   if (unlikely (mapping == nullptr))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "component");
 
-  mappingEntity = (NodeEntity *) mapping->getDataEntity ();
+  mappingEntity = cast (NodeEntity *, mapping);
   g_assert_nonnull (mappingEntity);
 
   if (dom_elt_try_get_attribute (value, elt, "interface"))
@@ -2181,7 +2169,15 @@ Parser::parseBind (DOMElement *elt, Link *link, CompositeNode *context)
     }
   g_assert_nonnull (target);
 
-  targetEntity = (NodeEntity *)(target->getDataEntity ());
+  targetEntity = cast (NodeEntity *, target);
+  if (targetEntity == nullptr)
+    {
+      g_assert (instanceof (ReferNode *, target));
+      targetEntity = cast (NodeEntity *, cast (ReferNode *, target)
+                           ->getReferredEntity ());
+    }
+  g_assert_nonnull (targetEntity);
+
   iface = nullptr;
   desc = nullptr;
 

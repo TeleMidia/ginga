@@ -25,5 +25,5 @@ main (void)
   g_assert (xstrcaseeq ("equal", "EqUAl") == true);
   g_assert (xstrcaseeq ("eq", "equal") == false);
   g_assert (xstrcaseeq ("not equal", "not") == false);
-  exit (0);
+  exit (EXIT_SUCCESS);
 }

@@ -22,22 +22,10 @@ GINGA_NCL_BEGIN
 
 ConnectorBase::ConnectorBase (const string &id) : Base (id)
 {
-
 }
 
 ConnectorBase::~ConnectorBase ()
 {
-  set<Connector *>::iterator i;
-
-  i = _connectorSet.begin ();
-  while (i != _connectorSet.end ())
-    {
-      if (Entity::hasInstance (*i, true))
-        {
-          delete *i;
-        }
-      ++i;
-    }
   _connectorSet.clear ();
 }
 
