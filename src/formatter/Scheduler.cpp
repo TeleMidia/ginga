@@ -50,7 +50,7 @@ Scheduler::startDocument (const string &file)
 {
   string id;
   ContextNode *body;
-  vector<Port *> *ports;
+  const vector<Port *> *ports;
   vector<NclEvent *> *entryevts;
   NclNodeNesting *persp;
   int w, h;

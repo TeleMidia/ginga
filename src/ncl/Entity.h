@@ -18,25 +18,20 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef ENTITY_H
 #define ENTITY_H
 
-#include "ginga.h"
-
 GINGA_NCL_BEGIN
 
 class Entity
 {
 public:
-  Entity (const string &someId);
+  Entity (const string &);
   virtual ~Entity ();
-  static bool hasInstance (Entity *instance, bool eraseFromList);
   string getId ();
-  virtual void setId (const string &someId);
   virtual Entity *getDataEntity ();
 
 private:
   string _id;
-  static set<Entity *> _instances;
 };
 
 GINGA_NCL_END
 
-#endif /* ENTITY_H */
+#endif

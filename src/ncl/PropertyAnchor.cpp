@@ -31,12 +31,6 @@ PropertyAnchor::getName ()
   return Anchor::getId ();
 }
 
-void
-PropertyAnchor::setName (const string &name)
-{
-  Anchor::setId (name);
-}
-
 string
 PropertyAnchor::getValue ()
 {

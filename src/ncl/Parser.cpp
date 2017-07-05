@@ -1623,23 +1623,23 @@ Parser::posCompileSwitch (DOMElement *elt, SwitchNode *swtch)
 void
 Parser::solveNodeReferences (CompositeNode *comp)
 {
-  vector<Node *> *nodes;
+  const vector<Node *> *nodes;
   bool del = false;
 
   if (instanceof (SwitchNode *, comp))
     {
       map<string, map<string, Node *> *>::iterator it;
       map<string, Node *> *tab;
-
-      nodes = new vector<Node *>;
+      vector<Node *> *aux_nodes = new vector<Node *>;
       del = true;
 
       if ((it = _switchMap.find (comp->getId ())) != _switchMap.end ())
         {
           tab = it->second;
           for (auto k: *tab)
-            nodes->push_back (k.second);
+            aux_nodes->push_back (k.second);
         }
+      nodes = aux_nodes;
     }
   else
     {

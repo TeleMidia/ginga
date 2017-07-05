@@ -64,9 +64,6 @@ CompositeRule::addRule (Rule *rule)
 vector<Rule *> *
 CompositeRule::getRules ()
 {
-  if (_rules->begin () == _rules->end ())
-    return NULL;
-
   return _rules;
 }
 

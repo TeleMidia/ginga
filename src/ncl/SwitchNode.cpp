@@ -127,23 +127,6 @@ SwitchNode::addSwitchPortMap (SwitchPort *switchPort, Node *node,
   return switchPort->addPort (port);
 }
 
-bool
-SwitchNode::addPort (Port *port)
-{
-  return addPort ((int) _portList.size (), port);
-}
-
-bool
-SwitchNode::addPort (unsigned int index, Port *port)
-{
-  if (!(instanceof (SwitchPort *, port)))
-    {
-      return false;
-    }
-
-  return CompositeNode::addPort (index, port);
-}
-
 void
 SwitchNode::exchangeNodesAndRules (unsigned int index1, unsigned int index2)
 {
