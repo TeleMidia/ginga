@@ -109,6 +109,27 @@ test_xstrstrip_SOURCES= test-xstrstrip.cpp
 progs+= test-xstrsplit
 test_xstrsplit_SOURCES= test-xstrsplit.cpp
 
+progs+= test-xpathbasename
+test_xpathbasename_SOURCES= test-xpathbasename.cpp
+
+progs+= test-xpathdirname
+test_xpathdirname_SOURCES= test-xpathdirname.cpp
+
+progs+= test-xpathisabs
+test_xpathisabs_SOURCES= test-xpathisabs.cpp
+
+progs+= test-xpathisuri
+test_xpathisuri_SOURCES= test-xpathisuri.cpp
+
+progs+= test-xpathmakeabs
+test_xpathmakeabs_SOURCES= test-xpathmakeabs.cpp
+
+progs+= test-xpathbuild
+test_xpathbuild_SOURCES= test-xpathbuild.cpp
+
+progs+= test-xpathbuildabs
+test_xpathbuildabs_SOURCES= test-xpathbuildabs.cpp
+
 check_SCRIPTS= $(ncls)
 check_PROGRAMS= $(progs)
 TESTS= $(check_SCRIPTS) $(check_PROGRAMS)
