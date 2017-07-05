@@ -316,13 +316,6 @@ NclCascadingDescriptor::getRegion ()
   return region;
 }
 
-void
-NclCascadingDescriptor::setFormatterLayout ()
-{
-  if (region == NULL)
-      this->region = new LayoutRegion ("");
-}
-
 int
 NclCascadingDescriptor::getRepetitions ()
 {

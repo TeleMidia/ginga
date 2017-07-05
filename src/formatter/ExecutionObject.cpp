@@ -656,13 +656,20 @@ ExecutionObject::start ()
   // Initialize player properties.
   if (_descriptor != nullptr)
     {
-      LayoutRegion *region = _descriptor->getRegion ();
-      int z, zorder;
+      vector <GenericDescriptor *> *vec = _descriptor->getNcmDescriptors ();
+      g_assert (vec->size () == 1);
 
-      _player->setRect (region->getRect ());
+      Descriptor *desc = cast (Descriptor *, (*vec)[0]);
+      g_assert_nonnull (desc);
 
-      region->getZ (&z, &zorder);
-      _player->setZ (z, zorder);
+      LayoutRegion *region = desc->getRegion ();
+      if (region != nullptr)
+        {
+          int z, zorder;
+          _player->setRect (region->getRect ());
+          region->getZ (&z, &zorder);
+          _player->setZ (z, zorder);
+        }
 
       for (Parameter &p: _descriptor->getParameters ())
         _player->setProperty (p.getName (), p.getValue ());

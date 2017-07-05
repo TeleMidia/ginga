@@ -22,7 +22,7 @@ GINGA_NCL_BEGIN
 
 RegionBase::RegionBase (const string &id) : Base (id)
 {
-  _deviceRegion = new LayoutRegion ("");
+  _deviceRegion = new LayoutRegion (id);
 }
 
 RegionBase::~RegionBase ()
