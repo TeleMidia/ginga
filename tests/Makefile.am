@@ -97,6 +97,18 @@ test_xstrhasprefix_SOURCES= test-xstrhasprefix.cpp
 progs+= test-xstrhassuffix
 test_xstrhassuffix_SOURCES= test-xstrhassuffix.cpp
 
+progs+= test-xstrup
+test_xstrup_SOURCES= test-xstrup.cpp
+
+progs+= test-xstrdown
+test_xstrdown_SOURCES= test-xstrdown.cpp
+
+progs+= test-xstrstrip
+test_xstrstrip_SOURCES= test-xstrstrip.cpp
+
+progs+= test-xstrsplit
+test_xstrsplit_SOURCES= test-xstrsplit.cpp
+
 check_SCRIPTS= $(ncls)
 check_PROGRAMS= $(progs)
 TESTS= $(check_SCRIPTS) $(check_PROGRAMS)
