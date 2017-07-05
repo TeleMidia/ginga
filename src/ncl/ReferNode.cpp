@@ -121,10 +121,4 @@ ReferNode::setReferredEntity (Entity *entity)
     }
 }
 
-Entity *
-ReferNode::getDataEntity ()
-{
-  return _referredNode;
-}
-
 GINGA_NCL_END

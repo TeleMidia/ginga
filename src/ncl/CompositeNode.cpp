@@ -68,7 +68,8 @@ CompositeNode::getMapInterface (Port *port)
   interfacePoint = port->getInterfacePoint ();
   if (instanceof (Port *, interfacePoint))
     {
-      compositeNode = (CompositeNode *)node->getDataEntity ();
+      compositeNode = cast (CompositeNode *, node);
+      g_assert_nonnull (compositeNode);
       return compositeNode->getMapInterface ((Port *)interfacePoint);
     }
   else

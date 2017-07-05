@@ -67,16 +67,6 @@ NodeEntity::getLambdaAnchor ()
   return lambda;
 }
 
-bool
-NodeEntity::removeAnchor (int index)
-{
-  if (index == 0)
-    {
-      return false;
-    }
-  return Node::removeAnchor (index);
-}
-
 GenericDescriptor *
 NodeEntity::getDescriptor ()
 {
@@ -105,12 +95,6 @@ bool
 NodeEntity::addAnchor (Anchor *anchor)
 {
   return Node::addAnchor (anchor);
-}
-
-bool
-NodeEntity::removeAnchor (Anchor *anchor)
-{
-  return Node::removeAnchor (anchor);
 }
 
 set<ReferNode *> *

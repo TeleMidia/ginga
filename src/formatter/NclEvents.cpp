@@ -331,7 +331,9 @@ AttributionEvent::AttributionEvent (const string &id,
     {
       if (referNode->getInstanceType () == "instSame")
         {
-          entity = referNode->getDataEntity ();
+          entity = referNode->getReferredEntity ();
+          g_assert_nonnull (entity);
+
           auto contentNode = cast (ContentNode *, entity);
           if (contentNode
               && contentNode->isSettingNode ())
