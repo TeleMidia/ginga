@@ -17,511 +17,167 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "Link.h"
+
+#include "AttributeAssessment.h"
 #include "SimpleAction.h"
 #include "SimpleCondition.h"
-#include "AttributeAssessment.h"
 
 GINGA_NCL_BEGIN
 
-Link::Link (const string &id, Connector *connector) : Entity (id)
+/**
+ * @brief Creates a new link.
+ * @param id Link id.
+ * @param ctx Parent context.
+ * @param conn Associated connector.
+ */
+Link::Link (const string &id, ContextNode *ctx, Connector *conn)
+  : Entity (id)
 {
-  _roleBinds = new map<string, vector<Bind *> *>;
-  _binds = new vector<Bind *>;
-  this->_connector = connector;
-  _parameters = new map<string, Parameter *>;
-  _context = NULL;
+  g_assert_nonnull (conn);
+  _connector = conn;
+  g_assert_nonnull (ctx);
+  _context = ctx;
 }
 
+/**
+ * @brief Destroys link.
+ */
 Link::~Link ()
 {
-  map<string, vector<Bind *> *>::iterator i;
-  vector<Bind *>::iterator j;
-  map<string, Parameter *>::iterator k;
-  vector<Bind *> *rmBinds;
-
-  if (_roleBinds != NULL)
-    {
-      i = _roleBinds->begin ();
-      while (i != _roleBinds->end ())
-        {
-          rmBinds = i->second;
-          rmBinds->clear ();
-          delete rmBinds;
-          ++i;
-        }
-      delete _roleBinds;
-      _roleBinds = NULL;
-    }
-
-  if (_binds != NULL)
-    {
-      j = _binds->begin ();
-      while (j != _binds->end ())
-        {
-          delete *j;
-          ++j;
-        }
-      delete _binds;
-      _binds = NULL;
-    }
-
-  if (_parameters != NULL)
-    {
-      k = _parameters->begin ();
-      while (k != _parameters->end ())
-        {
-          delete k->second;
-          ++k;
-        }
-      delete _parameters;
-      _parameters = NULL;
-    }
+  _parameters.clear ();
+  _binds.clear ();
 }
 
-Bind *
-Link::bind (Node *node, InterfacePoint *interfPt, Descriptor *desc,
-            string roleId)
-{
-  Role *role;
-
-  role = _connector->getRole (roleId);
-  if (role == NULL)
-    {
-      clog << "Link::bind Warning! Can't find role '" << roleId;
-      clog << "'" << endl;
-      return NULL;
-    }
-
-  return bind (node, interfPt, desc, role);
-}
-
-Bind *
-Link::bind (Node *node, InterfacePoint *interfPt, Descriptor *desc,
-            Role *role)
-{
-  Bind *bind;
-  vector<Bind *> *roleBindList;
-  string label;
-
-  label = role->getLabel ();
-  if (_roleBinds->count (label) == 0)
-    {
-      roleBindList = new vector<Bind *>;
-      (*_roleBinds)[label] = roleBindList;
-    }
-  else
-    {
-      roleBindList = (*_roleBinds)[label];
-    }
-
-  bind = new Bind (node, interfPt, desc, role);
-  roleBindList->push_back (bind);
-  _binds->push_back (bind);
-  return bind;
-}
-
-Bind *
-Link::getBind (Node *node, InterfacePoint *interfPt,
-               Descriptor *desc, Role *role)
-{
-  map<string, vector<Bind *> *>::iterator i;
-
-  bool containsKey = false;
-  for (i = _roleBinds->begin (); i != _roleBinds->end (); ++i)
-    if (i->first == role->getLabel ())
-      containsKey = true;
-
-  if (!containsKey)
-    return NULL;
-
-  Bind *bind;
-  vector<Bind *>::iterator bindIterator;
-
-  vector<Bind *> *roleBindList;
-  roleBindList = (*_roleBinds)[role->getLabel ()];
-
-  for (bindIterator = roleBindList->begin ();
-       bindIterator != roleBindList->end (); ++roleBindList)
-    {
-      bind = (*bindIterator);
-      if ((bind->getNode () == node)
-          && (bind->getInterfacePoint () == interfPt)
-          && (bind->getDescriptor () == desc))
-        return bind;
-    }
-
-  return NULL;
-}
-
-vector<Bind *> *
-Link::getBinds ()
-{
-  return _binds;
-}
-
+/**
+ * @brief Gets link connector.
+ */
 Connector *
 Link::getConnector ()
 {
   return _connector;
 }
 
-void
-Link::setParentComposition (ContextNode *composition)
-{
-  g_assert_nonnull (composition);
-  _context = composition;
-}
-
+/**
+ * @brief Gets link context.
+ */
 ContextNode *
-Link::getParentComposition ()
+Link::getContext ()
 {
   return _context;
 }
 
-unsigned int
-Link::getNumBinds ()
-{
-  return (unsigned int) _binds->size ();
-}
-
-unsigned int
-Link::getNumRoleBinds (Role *role)
-{
-  map<string, vector<Bind *> *>::iterator i;
-
-  i = _roleBinds->find (role->getLabel ());
-  if (i == _roleBinds->end ())
-    {
-      return 0;
-    }
-
-  return (unsigned int) i->second->size ();
-}
-
-vector<Bind *> *
-Link::getRoleBinds (Role *role)
-{
-  map<string, vector<Bind *> *>::iterator i;
-
-  i = _roleBinds->find (role->getLabel ());
-  if (i == _roleBinds->end ())
-    {
-      return NULL;
-    }
-
-  return i->second;
-}
-
-bool
-Link::isMultiPoint ()
-{
-  if (_binds->size () > 2)
-    return true;
-  else
-    return false;
-}
-
-void
-Link::setConnector (Connector *connector)
-{
-  this->_connector = connector;
-
-  _roleBinds->clear ();
-  _binds->clear ();
-}
-
-bool
-Link::unBind (Bind *bind)
-{
-  vector<Bind *> *roleBindList;
-  bool containsBind = false;
-
-  vector<Bind *>::iterator it;
-  for (it = _binds->begin (); it != _binds->end (); ++it)
-    {
-      if (bind == *it)
-        {
-          containsBind = true;
-          _binds->erase (it);
-          break;
-        }
-    }
-
-  if (!containsBind)
-    {
-      return false;
-    }
-
-  if (_roleBinds->count (bind->getRole ()->getLabel ()) == 1)
-    {
-      roleBindList = (*_roleBinds)[bind->getRole ()->getLabel ()];
-      vector<Bind *>::iterator i;
-      for (i = roleBindList->begin (); i != roleBindList->end (); ++i)
-        {
-          if (*i == bind)
-            {
-              roleBindList->erase (i);
-              break;
-            }
-        }
-    }
-  return true;
-}
-
+/**
+ * @brief Adds parameter to link.
+ * @param parameter Parameter.
+ */
 void
 Link::addParameter (Parameter *parameter)
 {
-  if (parameter == NULL)
-    return;
-
-  (*_parameters)[parameter->getName ()] = parameter;
+  g_assert_nonnull (parameter);
+  _parameters.push_back (parameter);
 }
 
-vector<Parameter *> *
+/**
+ * @brief Gets all link parameters.
+ */
+const vector<Parameter *> *
 Link::getParameters ()
 {
-  if (_parameters->empty ())
-    return NULL;
-
-  vector<Parameter *> *params;
-  params = new vector<Parameter *>;
-
-  map<string, Parameter *>::iterator i;
-  for (i = _parameters->begin (); i != _parameters->end (); ++i)
-    params->push_back (i->second);
-
-  return params;
+  return &_parameters;
 }
 
+/**
+ * @brief Gets link parameter.
+ * @param name Parameter name.
+ * @return Parameter if successful, or null if not found.
+ */
 Parameter *
 Link::getParameter (const string &name)
 {
-  if (_parameters->empty ())
-    return NULL;
-
-  map<string, Parameter *>::iterator i;
-  for (i = _parameters->begin (); i != _parameters->end (); ++i)
-    if (i->first == name)
-      return (Parameter *)(i->second);
-
-  return NULL;
+  for (auto param: _parameters)
+    if (param->getName () == name)
+      return param;
+  return nullptr;
 }
 
+/**
+ * @brief Adds bind to link.
+ * @param bind Bind.
+ */
 void
-Link::removeParameter (Parameter *parameter)
+Link::addBind (Bind *bind)
 {
-  if (_parameters->empty ())
-    return;
+  g_assert_nonnull (bind);
+  _binds.push_back (bind);
+}
 
-  map<string, Parameter *>::iterator i;
-  for (i = _parameters->begin (); i != _parameters->end (); ++i)
+/**
+ * @brief Gets all link binds.
+ */
+const vector<Bind *> *
+Link::getBinds ()
+{
+  return &_binds;
+}
+
+/**
+ * @brief Gets link binds.
+ * @param role Role.
+ * @return A vector containing the binds with the given role.
+ */
+vector<Bind *>
+Link::getBinds (Role *role)
+{
+  vector<Bind *> result;
+  for (auto bind: _binds)
+    if (bind->getRole ()->getLabel () == role->getLabel ())
+      result.push_back (bind);
+  return result;
+}
+
+/**
+ * @brief Tests whether node is referenced by link.
+ * @param node Node.
+ * @param condition True if only conditions are to be checked.
+ * @return True if successful, or false otherwise.
+ */
+bool
+Link::contains (Node *node, bool condition)
+{
+  for (auto bind: _binds)
     {
-      if (i->first == parameter->getName ())
+      InterfacePoint *iface;
+      Node *bound;
+      Role *role;
+
+      role = bind->getRole ();
+      if ((instanceof (SimpleCondition *, role)
+           || instanceof (AttributeAssessment *, role)) && !condition)
         {
-          _parameters->erase (i);
-          return;
+          continue;             // skip
         }
-    }
-}
 
-void
-Link::updateConnector (Connector *newConnector)
-{
-  int i, size;
-  Bind *bind;
-  Role *newRole;
-
-  if (this->_connector == NULL)
-    {
-      // TODO test if the set of roles is identical
-      return;
-    }
-
-  size = (int) _binds->size ();
-  for (i = 0; i < size; i++)
-    {
-      bind = (Bind *)(*_binds)[i];
-      newRole = newConnector->getRole (bind->getRole ()->getLabel ());
-      bind->setRole (newRole);
-    }
-  this->_connector = newConnector;
-}
-
-bool
-Link::containsNode (Node *node, Descriptor *descriptor)
-{
-  return containsNode (node, descriptor, getBinds ());
-}
-
-bool
-Link::containsNode (Node *node, Descriptor *descriptor,
-                    vector<Bind *> *binds)
-{
-  Bind *bind;
-  Node *bindNode;
-  InterfacePoint *bindInterface;
-  Descriptor *bindDescriptor;
-
-  NodeEntity *nodeEntity;
-  Descriptor *entityDesc;
-
-  vector<Bind *>::iterator i;
-
-  clog << "Link::containsNode searching '" << node->getId () << "' ";
-  clog << "inside link '" << getId () << "' (" << binds->size ();
-  clog << " condition binds)" << endl;
-
-  i = binds->begin ();
-  while (i != binds->end ())
-    {
-      bind = (*i);
-      bindInterface = bind->getInterfacePoint ();
-      if (bindInterface != NULL && instanceof (Port *, bindInterface))
+      if (instanceof (SimpleAction *, role)
+          && condition)
         {
-          bindNode = ((Port *)bindInterface)->getEndNode ();
+          continue;             // skip
+        }
+
+      if ((iface = bind->getInterfacePoint ()) != nullptr
+          && instanceof (Port *, iface))
+        {
+          bound = cast (Port *, iface)->getEndNode ();
         }
       else
         {
-          bindNode = bind->getNode ();
+          bound = bind->getNode ();
         }
+      g_assert_nonnull (bound);
 
-      clog << "Link::containsNode link '" << getId () << "' has '";
-      clog << bindNode->getId () << "' with descriptor = '";
-      if (descriptor != NULL)
-        {
-          clog << descriptor->getId () << "'" << endl;
-        }
-      else
-        {
-          clog << "NULL'" << endl;
-        }
-
-      if (node == bindNode)
-        {
-          bindDescriptor = bind->getDescriptor ();
-          nodeEntity = cast (NodeEntity *, node);
-          if (nodeEntity == nullptr)
-            {
-              g_assert (instanceof (ReferNode *, node));
-              nodeEntity = cast (NodeEntity *, cast (ReferNode *, node)
-                                 ->getReferredEntity ());
-            }
-          g_assert_nonnull (nodeEntity);
-
-          if (bindDescriptor != NULL)
-            {
-              if (bindDescriptor == descriptor)
-                {
-                  return true;
-                }
-            }
-          else if (descriptor == NULL)
-            {
-              return true;
-            }
-          else if (nodeEntity != NULL)
-            {
-              entityDesc = nodeEntity->getDescriptor ();
-              if (entityDesc == descriptor)
-                {
-                  return true;
-                }
-              else if (descriptor != NULL
-                       && descriptor->getId ().find ("dummy")
-                              != std::string::npos)
-                {
-                  return true;
-                }
-              else if (entityDesc != NULL
-                       && entityDesc->getId ().find ("dummy")
-                              != std::string::npos)
-                {
-                  return true;
-                }
-            }
-        }
-      ++i;
+      if (bound == node)
+        return true;            // found
     }
   return false;
 }
-
-bool
-Link::containsSourceNode (Node *node, Descriptor *descriptor)
-{
-  bool contains;
-  vector<Bind *> *conds;
-
-  conds = getConditionBinds ();
-  contains = Link::containsNode (node, descriptor, conds);
-
-  delete conds;
-  return contains;
-}
-
-vector<Bind *> *
-Link::getActionBinds ()
-{
-  vector<Bind *> *actionsVector;
-  actionsVector = new vector<Bind *>;
-  vector<Bind *>::iterator i;
-
-  if (_binds->empty ())
-    {
-      delete actionsVector;
-      return NULL;
-    }
-
-  for (i = _binds->begin (); i != _binds->end (); ++i)
-    {
-      if (instanceof (SimpleAction *, (*i)->getRole ()))
-        actionsVector->push_back (*i);
-    }
-
-  if (actionsVector->empty ())
-    {
-      delete actionsVector;
-      return NULL;
-    }
-
-  return actionsVector;
-}
-
-vector<Bind *> *
-Link::getConditionBinds ()
-{
-  vector<Bind *> *conditionsVector;
-  vector<Bind *>::iterator iterator;
-  Bind *bind;
-  Role *role;
-
-  if (_binds->empty ())
-    {
-      return NULL;
-    }
-
-  conditionsVector = new vector<Bind *>;
-  for (iterator = _binds->begin (); iterator != _binds->end (); ++iterator)
-    {
-      bind = (Bind *)(*iterator);
-      role = bind->getRole ();
-      if (role != NULL)
-        {
-          if (instanceof (SimpleCondition *, role)
-              || instanceof (AttributeAssessment *, role))
-            {
-              conditionsVector->push_back (bind);
-            }
-        }
-    }
-
-  if (conditionsVector->empty ())
-    {
-      delete conditionsVector;
-      conditionsVector = NULL;
-    }
-
-  return conditionsVector;
-}
-
 
 GINGA_NCL_END

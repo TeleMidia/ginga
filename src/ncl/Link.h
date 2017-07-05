@@ -27,50 +27,26 @@ class ContextNode;
 class Link : public Entity
 {
 public:
-  Link (const string &, Connector *);
+  Link (const string &, ContextNode *, Connector *);
   virtual ~Link ();
 
-  Bind *bind (Node *node, InterfacePoint *interfPt, Descriptor *desc,
-              string roleId);
-
-  Bind *bind (Node *node, InterfacePoint *interfPt, Descriptor *desc,
-              Role *role);
-
-  Bind *getBind (Node *node, InterfacePoint *interfPt,
-                 Descriptor *desc, Role *role);
-
-  bool containsSourceNode (Node *node, Descriptor *descriptor);
-
-  vector<Bind *> *getBinds ();
   Connector *getConnector ();
-  void setParentComposition (ContextNode *composition);
-  ContextNode *getParentComposition ();
-  unsigned int getNumBinds ();
-  unsigned int getNumRoleBinds (Role *role);
-  vector<Bind *> *getRoleBinds (Role *role);
-  bool isMultiPoint ();
-  void setConnector (Connector *connector);
-  bool unBind (Bind *bind);
-  void addParameter (Parameter *parameter);
-  vector<Parameter *> *getParameters ();
-  Parameter *getParameter (const string &name);
-  void removeParameter (Parameter *parameter);
-  void updateConnector (Connector *newConnector);
-  bool containsNode (Node *node, Descriptor *descriptor);
-  vector<Bind *> *getActionBinds ();
-  vector<Bind *> *getConditionBinds ();
+  ContextNode *getContext ();
 
-protected:
-  Connector *_connector;
-  map<string, vector<Bind *> *> *_roleBinds;
-  vector<Bind *> *_binds;
-  map<string, Parameter *> *_parameters;
+  void addParameter (Parameter *);
+  const vector<Parameter *> *getParameters ();
+  Parameter *getParameter (const string &);
 
-  bool containsNode (Node *node, Descriptor *descriptor,
-                     vector<Bind *> *_binds);
+  void addBind (Bind *);
+  const vector<Bind *> *getBinds ();
+  vector<Bind *> getBinds (Role *);
+  bool contains (Node *, bool);
 
 private:
   ContextNode *_context;
+  Connector *_connector;
+  vector<Bind *> _binds;
+  vector<Parameter *> _parameters;
 };
 
 GINGA_NCL_END

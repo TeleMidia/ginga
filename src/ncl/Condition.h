@@ -15,28 +15,18 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _CONDITIONEXPRESSION_H_
-#define _CONDITIONEXPRESSION_H_
-
-#include "Role.h"
+#ifndef CONDITION_H
+#define CONDITION_H
 
 GINGA_NCL_BEGIN
 
-class ConditionExpression
+class Condition
 {
-protected:
-  set<string> typeSet;
-
 public:
-  ConditionExpression () {typeSet.insert ("ConditionExpression"); };
-  virtual ~ConditionExpression () {typeSet.clear (); };
-  virtual bool
-  instanceOf (const string &type)
-  {
-    return typeSet.count (type);
-  }
+  Condition () {};
+  virtual ~Condition () {};
 };
 
 GINGA_NCL_END
 
-#endif //_CONDITIONEXPRESSION_H_
+#endif // CONDITION
