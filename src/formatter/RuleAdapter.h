@@ -21,7 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ExecutionObject.h"
 #include "ExecutionObjectContext.h"
 #include "ExecutionObjectSwitch.h"
-#include "NclCascadingDescriptor.h"
 #include "Settings.h"
 
 #include "ncl/Ncl.h"

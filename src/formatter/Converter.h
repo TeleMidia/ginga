@@ -22,7 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ExecutionObjectContext.h"
 #include "ExecutionObjectSwitch.h"
 #include "NclActions.h"
-#include "NclCascadingDescriptor.h"
 #include "NclEvents.h"
 #include "NclFormatterLink.h"
 #include "NclFormatterLink.h"
@@ -87,7 +86,7 @@ private:
 
   ExecutionObject *
   createExecutionObject (const string &id, NclNodeNesting *perspective,
-                         NclCascadingDescriptor *descriptor);
+                         Descriptor *descriptor);
 
   void compileExecutionObjectLinks (ExecutionObject *exeObj, Node *dataObj,
                                     ExecutionObjectContext *parentObj);
@@ -110,13 +109,10 @@ private:
                           EventState previousState) override;
 
   static Descriptor *createDummyDescriptor (Node *node);
-  static NclCascadingDescriptor *createDummyCascadingDescriptor (Node *node);
 
-  static NclCascadingDescriptor *
+  static Descriptor *
   getCascadingDescriptor (NclNodeNesting *nodePerspective,
                           Descriptor *descriptor);
-
-  static NclCascadingDescriptor *checkCascadingDescriptor (Node *node);
 
   static bool hasDescriptorPropName (const string &name);
 

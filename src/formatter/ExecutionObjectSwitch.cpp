@@ -23,7 +23,7 @@ GINGA_FORMATTER_BEGIN
 ExecutionObjectSwitch::ExecutionObjectSwitch (
     const string &id, Node *switchNode,
     INclActionListener *seListener)
-    : ExecutionObjectContext (id, switchNode, nullptr, seListener)
+    : ExecutionObjectContext (id, switchNode, seListener)
 {
   _selectedObj = nullptr;
 }

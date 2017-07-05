@@ -77,61 +77,17 @@ Converter::getExecutionObjectFromPerspective (
   ExecutionObject *exeObj;
 
   string id = perspective->getId () + SEPARATOR;
-  NclCascadingDescriptor *cascadingDescriptor
-      = getCascadingDescriptor (perspective, descriptor);
-  if (cascadingDescriptor)
-    {
-      id = id + cascadingDescriptor->getId ();
-    }
 
   auto i = _exeObjects.find (id);
   if (i != _exeObjects.end ())
     {
-      if (cascadingDescriptor)
-        {
-          delete cascadingDescriptor;
-          cascadingDescriptor = nullptr;
-        }
       exeObj = i->second;
       return exeObj;
     }
 
   parentObj = getParentExecutionObject (perspective);
-  exeObj = createExecutionObject (id, perspective, cascadingDescriptor);
-
-  if (exeObj == nullptr)
-    {
-      if (cascadingDescriptor != nullptr)
-        {
-          delete cascadingDescriptor;
-          cascadingDescriptor = nullptr;
-        }
-
-      string descId = "nullptr";
-      if (descriptor)
-        {
-          descId = descriptor->getId();
-        }
-
-      WARNING ("Object id = '%s', perspective = '%s' descriptor = '%s' "
-               "was not created.",
-               id.c_str(),
-               perspective->getId().c_str(),
-               descId.c_str());
-
-      return nullptr;
-    }
-
-  string parentId = "nullptr";
-  if (parentObj != nullptr)
-    {
-      parentId = parentObj->getId ();
-    }
-
-  TRACE ("adding_object with id='%s', perspective='%s', and parent='%s'",
-         id.c_str (),
-         perspective->getId ().c_str (),
-         parentId.c_str ());
+  exeObj = createExecutionObject (id, perspective, descriptor);
+  g_assert_nonnull (exeObj);
 
   addExecutionObject (exeObj, parentObj);
 
@@ -296,7 +252,7 @@ Converter::addSameInstance (ExecutionObject *exeObj,
       // A new entry for the execution object is inserted using
       // the refer node id.  As a consequence, links referring to the
       // refer node will generate events in the execution object.
-      NclCascadingDescriptor *desc = exeObj->getDescriptor ();
+      Descriptor *desc = exeObj->getDescriptor ();
 
       string objectId;
       if (desc)
@@ -451,7 +407,7 @@ Converter::getParentExecutionObject (NclNodeNesting *perspective)
 ExecutionObject *
 Converter::createExecutionObject (
     const string &id, NclNodeNesting *perspective,
-    NclCascadingDescriptor *descriptor)
+    Descriptor *descriptor)
 {
   Node *node;
   NclNodeNesting *nodePerspective;
@@ -480,37 +436,32 @@ Converter::createExecutionObject (
       auto referNode = cast (ReferNode *, node);
       if (referNode)
         {
-          if (referNode->getInstanceType () != "new")
+          nodePerspective
+            = new NclNodeNesting (nodeEntity->getPerspective ());
+
+          // verify if both nodes are in the same base.
+          if (nodePerspective->getHeadNode ()
+              == perspective->getHeadNode ())
             {
-              nodePerspective
-                  = new NclNodeNesting (nodeEntity->getPerspective ());
-
-              // verify if both nodes are in the same base.
-              if (nodePerspective->getHeadNode ()
-                  == perspective->getHeadNode ())
+              exeObj = getExecutionObjectFromPerspective (nodePerspective,
+                                                          descriptor);
+              if (exeObj == nullptr)
                 {
-                  exeObj = getExecutionObjectFromPerspective (nodePerspective,
-                                                              nullptr);
-                  if (exeObj == nullptr)
-                    {
-                      exeObj  = new ExecutionObject
-                        (id, nodeEntity, descriptor,
-                         _actionListener);
-                    }
+                  exeObj  = new ExecutionObject
+                    (id, nodeEntity, _actionListener);
                 }
-              else
-                {
-                  exeObj = new ExecutionObject
-                    (id, nodeEntity, descriptor,
-                     _actionListener);
-                }
+            }
+          else
+            {
+              exeObj = new ExecutionObject
+                (id, nodeEntity, _actionListener);
+            }
 
-              delete nodePerspective;
+          delete nodePerspective;
 
-              if (exeObj != nullptr)
-                {
-                  return exeObj;
-                }
+          if (exeObj != nullptr)
+            {
+              return exeObj;
             }
         }
     }
@@ -536,8 +487,7 @@ Converter::createExecutionObject (
   else if (instanceof (CompositeNode* , nodeEntity))
     {
       string s;
-      exeObj = new ExecutionObjectContext (
-            id, node, descriptor, _actionListener);
+      exeObj = new ExecutionObjectContext (id, node, _actionListener);
 
       xstrassign (s, "%d", (int) EventType::PRESENTATION);
       compositeEvt = new PresentationEvent (
@@ -552,8 +502,7 @@ Converter::createExecutionObject (
     }
   else
     {
-      exeObj = new ExecutionObject (id, node, descriptor,
-                                    _actionListener);
+      exeObj = new ExecutionObject (id, node, _actionListener);
     }
 
   return exeObj;
@@ -570,162 +519,6 @@ Converter::createDummyDescriptor (arg_unused (Node *node))
   _dummyCount++;
 
   return ncmDesc;
-}
-
-NclCascadingDescriptor *
-Converter::createDummyCascadingDescriptor (Node *node)
-{
-  Descriptor *ncmDesc = nullptr;
-  string name;
-
-  vector<PropertyAnchor *> *anchors = node->getOriginalPropertyAnchors ();
-  g_assert_nonnull (anchors);
-
-  for (PropertyAnchor *property: *anchors)
-    {
-      name = property->getName ();
-
-      if (hasDescriptorPropName (name))
-        {
-          auto nodeEntity = cast (NodeEntity *, node);
-          auto referNode = cast (ReferNode *, node);
-          if (nodeEntity)
-            {
-              ncmDesc = createDummyDescriptor (nodeEntity);
-              nodeEntity->setDescriptor (ncmDesc);
-            }
-          else if (referNode
-                   && referNode->getInstanceType () == "new")
-            {
-              if (referNode->getInstanceDescriptor () == nullptr)
-                {
-                  nodeEntity = cast (NodeEntity *, node);
-                  g_assert_nonnull (nodeEntity);
-                  ncmDesc = (Descriptor *) nodeEntity->getDescriptor ();
-
-                  if (ncmDesc == nullptr)
-                    {
-                      ncmDesc = createDummyDescriptor (node);
-                    }
-                  referNode->setInstanceDescriptor (ncmDesc);
-                }
-              else
-                {
-                  ncmDesc = (Descriptor *) referNode->getInstanceDescriptor ();
-                }
-            }
-          else
-            {
-              ncmDesc = createDummyDescriptor (node);
-            }
-
-          return new NclCascadingDescriptor (ncmDesc);
-        }
-    }
-
-  auto referNode = cast (ReferNode *, node);
-  if (referNode
-      && referNode->getInstanceType () == "new"
-      && referNode->getInstanceDescriptor () == nullptr)
-    {
-      auto nodeEntity = cast (NodeEntity *, node);
-      g_assert_nonnull (nodeEntity);
-
-      ncmDesc = cast (Descriptor *, nodeEntity->getDescriptor ());
-      g_assert_nonnull (ncmDesc);
-
-      referNode->setInstanceDescriptor (ncmDesc);
-
-      return new NclCascadingDescriptor (ncmDesc);
-    }
-
-  return nullptr;
-}
-
-NclCascadingDescriptor *
-Converter::checkCascadingDescriptor (Node *node)
-{
-  NclCascadingDescriptor *cascadingDescriptor = nullptr;
-
-  auto contentNode = cast (ContentNode *, node);
-  auto referNode = cast (ReferNode *, node);
-
-  if (contentNode)
-    {
-      cascadingDescriptor = createDummyCascadingDescriptor (node);
-    }
-  else if (referNode
-           && referNode->getInstanceType () == "new")
-    {
-      auto nodeEntity = cast (NodeEntity *, node);
-      g_assert_nonnull (nodeEntity);
-
-      node->copyProperties (nodeEntity);
-      cascadingDescriptor = createDummyCascadingDescriptor (node);
-    }
-
-  return cascadingDescriptor;
-}
-
-NclCascadingDescriptor *
-Converter::getCascadingDescriptor (NclNodeNesting *nodePerspective,
-                                   Descriptor *descriptor)
-{
-  NclCascadingDescriptor *cascadingDescriptor = nullptr;
-  Descriptor *ncmDesc;
-  Node *anchorNode;
-  Node *node;
-
-  anchorNode = nodePerspective->getAnchorNode ();
-
-  auto referNode = cast (ReferNode *, anchorNode);
-
-  if (referNode
-      && referNode->getInstanceType () == "new")
-    {
-      node = anchorNode;
-      ncmDesc
-          = cast (Descriptor *, referNode->getInstanceDescriptor ());
-    }
-  else
-    {
-      node = cast (Node *, anchorNode);
-      g_assert_nonnull (node);
-
-      auto nodeEntity = cast (NodeEntity *, node);
-      if (node == nullptr || nodeEntity == nullptr)
-        {
-          WARNING ("failed to cascading descriptor: invalid node entity");
-          return nullptr;
-        }
-
-      ncmDesc = cast (Descriptor *, nodeEntity->getDescriptor ());
-    }
-
-  if (ncmDesc != nullptr)
-    {
-      cascadingDescriptor = new NclCascadingDescriptor (ncmDesc);
-    }
-
-  // there is an explicit descriptor (user descriptor)?
-  if (descriptor != nullptr)
-    {
-      if (cascadingDescriptor == nullptr)
-        {
-          cascadingDescriptor = new NclCascadingDescriptor (descriptor);
-        }
-      else
-        {
-          cascadingDescriptor->cascade (descriptor);
-        }
-    }
-
-  if (cascadingDescriptor == nullptr)
-    {
-      cascadingDescriptor = checkCascadingDescriptor (node);
-    }
-
-  return cascadingDescriptor;
 }
 
 void
@@ -749,18 +542,6 @@ Converter::processLink (Link *ncmLink,
   // check that the link was not compiled.
   if (parentObject->containsUncompiledLink (ncmLink))
     {
-      if (executionObject->getDescriptor () != nullptr)
-        {
-          vector<Descriptor *> *descriptors
-              = executionObject->getDescriptor ()->getNcmDescriptors ();
-
-          if (descriptors != nullptr
-              && !(descriptors->empty ()))
-            {
-              descriptor = (*descriptors)[descriptors->size () - 1];
-            }
-        }
-
       auto causalLink = cast (CausalLink *, ncmLink);
       if (causalLink)
         {
@@ -922,7 +703,6 @@ Converter::processExecutionObjectSwitch (
   Node *selectedNode;
   NclNodeNesting *selectedPerspective;
   string id;
-  NclCascadingDescriptor *descriptor;
   map<string, ExecutionObject *>::iterator i;
   ExecutionObject *selectedObject;
 
@@ -943,43 +723,23 @@ Converter::processExecutionObjectSwitch (
 
   id = selectedPerspective->getId () + SEPARATOR;
 
-  descriptor = Converter::getCascadingDescriptor (
-        selectedPerspective, NULL);
-
-  if (descriptor != NULL)
-    {
-      id += descriptor->getId ();
-    }
-
   i = _exeObjects.find (id);
   if (i != _exeObjects.end ())
     {
       selectedObject = i->second;
       switchObject->select (selectedObject);
       resolveSwitchEvents (switchObject);
-      if (descriptor != NULL)
-        {
-          delete descriptor;
-          descriptor = NULL;
-        }
-
       delete selectedPerspective;
 
       return selectedObject;
     }
 
-  selectedObject = createExecutionObject (id, selectedPerspective, descriptor);
+  selectedObject = createExecutionObject (id, selectedPerspective, nullptr);
 
   delete selectedPerspective;
 
   if (selectedObject == nullptr)
     {
-      if (descriptor != nullptr)
-        {
-          delete descriptor;
-          descriptor = nullptr;
-        }
-
       WARNING ("Cannot process '%s' because select object is NULL.",
                switchObject->getId ().c_str ());
       return nullptr;

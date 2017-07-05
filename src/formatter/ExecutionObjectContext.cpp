@@ -21,9 +21,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_FORMATTER_BEGIN
 
 ExecutionObjectContext::ExecutionObjectContext (
-    const string &id, Node *dataObject, NclCascadingDescriptor *descriptor,
+    const string &id, Node *dataObject,
     INclActionListener *seListener)
-    : ExecutionObject (id, dataObject, descriptor, seListener)
+    : ExecutionObject (id, dataObject, seListener)
 {
   ContextNode *context;
   Entity *entity;

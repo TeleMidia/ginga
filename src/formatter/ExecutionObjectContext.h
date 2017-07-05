@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define EXECUTION_OBJECT_CONTEXT_H
 
 #include "ExecutionObject.h"
-#include "NclCascadingDescriptor.h"
 #include "NclEvents.h"
 #include "NclFormatterLink.h"
 #include "NclLinkListener.h"
@@ -37,7 +36,6 @@ class ExecutionObjectContext : public ExecutionObject,
 public:
   ExecutionObjectContext (const string &id,
                           Node *dataObject,
-                          NclCascadingDescriptor *descriptor,
                           INclActionListener *seListener);
 
   virtual ~ExecutionObjectContext ();
