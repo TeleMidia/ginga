@@ -206,6 +206,17 @@ __error_elt (const DOMElement *elt)
   }                                                             \
   G_STMT_END
 
+#define CHECK_ELT_OPT_ID_AUTO(elt, pvalue, Elt)                 \
+  G_STMT_START                                                  \
+  {                                                             \
+    static int __opt_auto_id_##Elt = 1;                         \
+    string autoid = xstrbuild ("unnamed-%s-%d",                 \
+                               G_STRINGIFY (Elt),               \
+                               (__opt_auto_id_##Elt)++);        \
+    CHECK_ELT_OPT_ID ((elt), (pvalue), autoid);                 \
+  }                                                             \
+  G_STMT_END
+
 
 // Translation tables.
 
@@ -542,7 +553,7 @@ Parser::parseRuleBase (DOMElement *elt)
   string id;
 
   CHECK_ELT_TAG (elt, "ruleBase", nullptr);
-  CHECK_ELT_OPT_ID (elt, &id, "");
+  CHECK_ELT_OPT_ID_AUTO (elt, &id, ruleBase);
 
   base = new RuleBase (id);
   for (DOMElement *child: dom_elt_get_children (elt))
@@ -621,7 +632,7 @@ Parser::parseRule (DOMElement *elt)
   string comp;
   string value;
   CHECK_ELT_TAG (elt, "rule", nullptr);
-  CHECK_ELT_OPT_ID (elt, &id, "");
+  CHECK_ELT_OPT_ID_AUTO (elt, &id, rule);
   CHECK_ELT_ATTRIBUTE (elt, "var", &var);
   CHECK_ELT_ATTRIBUTE (elt, "comparator", &value);
   CHECK_ELT_ATTRIBUTE (elt, "value", &value);
@@ -637,7 +648,7 @@ Parser::parseTransitionBase (DOMElement *elt)
   string id;
 
   CHECK_ELT_TAG (elt, "transitionBase", nullptr);
-  CHECK_ELT_OPT_ID (elt, &id, "");
+  CHECK_ELT_OPT_ID_AUTO (elt, &id, transitionBase);
 
   base = new TransitionBase (id);
   for(DOMElement *child: dom_elt_get_children (elt))
@@ -734,7 +745,7 @@ Parser::parseRegionBase (DOMElement *elt)
   string id;
 
   CHECK_ELT_TAG (elt, "regionBase", nullptr);
-  CHECK_ELT_OPT_ID (elt, &id, "");
+  CHECK_ELT_OPT_ID_AUTO (elt, &id, regionBase);
 
   base = new RegionBase (id);
   for (DOMElement *child: dom_elt_get_children (elt))
@@ -850,7 +861,7 @@ Parser::parseDescriptorBase (DOMElement *elt)
   string id;
 
   CHECK_ELT_TAG (elt, "descriptorBase", nullptr);
-  CHECK_ELT_OPT_ID (elt, &id, "");
+  CHECK_ELT_OPT_ID_AUTO (elt, &id, descriptorBase);
 
   base = new DescriptorBase (id);
   for (DOMElement *child: dom_elt_get_children (elt))
@@ -1007,7 +1018,7 @@ Parser::parseConnectorBase (DOMElement *elt)
   string id;
 
   CHECK_ELT_TAG (elt, "connectorBase", nullptr);
-  CHECK_ELT_OPT_ID (elt, &id, "");
+  CHECK_ELT_OPT_ID_AUTO (elt, &id, connectorBase);
 
   base = new ConnectorBase (id);
   for (DOMElement *child: dom_elt_get_children (elt))
@@ -1962,8 +1973,9 @@ Parser::parseMedia (DOMElement *elt)
       Entity *refer;
 
       refer = (ContentNode *) _doc->getNode (value);
-      if (unlikely (refer == nullptr))
-        refer = new ReferredNode (value, (void *) elt); // FIXME: Crazy.
+      g_assert_nonnull (refer);
+      //if (unlikely (refer == nullptr))
+        //refer = new ReferredNode (value, (void *) elt); // FIXME: Crazy.
 
       media = new ReferNode (id);
       if (dom_elt_try_get_attribute (value, elt, "instance"))
@@ -2094,7 +2106,7 @@ Parser::parseLink (DOMElement *elt, CompositeNode *context)
   Connector *conn;
 
   CHECK_ELT_TAG (elt, "link", nullptr);
-  CHECK_ELT_OPT_ID (elt, &id, "");
+  CHECK_ELT_OPT_ID_AUTO (elt, &id, link);
   CHECK_ELT_ATTRIBUTE (elt, "xconnector", &xconn);
 
   conn = _doc->getConnector (xconn);

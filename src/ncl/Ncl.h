@@ -67,7 +67,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "RectangleSpatialAnchor.h"
 #include "ReferNode.h"
 #include "ReferenceContent.h"
-#include "ReferredNode.h"
 #include "RegionBase.h"
 #include "Role.h"
 #include "Rule.h"

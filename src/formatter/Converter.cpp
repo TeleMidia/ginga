@@ -385,10 +385,6 @@ Converter::addExecutionObject (ExecutionObject *exeObj,
 
   delete nodePerspective;
 
-  NclCascadingDescriptor *descriptor = exeObj->getDescriptor ();
-  if (descriptor)
-    descriptor->setFormatterLayout ();
-
   // Compile execution object links
   for (Node *node : exeObj->getNodes ())
     {

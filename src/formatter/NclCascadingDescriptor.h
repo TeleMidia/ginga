@@ -65,7 +65,6 @@ public:
   LayoutRegion *getRegion ();
 
 public:
-  void setFormatterLayout ();
   int getRepetitions ();
   vector<Parameter> getParameters ();
   string getParameterValue (const string &paramName);
