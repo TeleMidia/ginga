@@ -124,12 +124,12 @@ private:
                                ExecutionObjectContext *parentObject);
 
   NclLinkCondition *
-  createCondition (ConditionExpression *ncmExpression, Link *ncmLink,
+  createCondition (Condition *ncmExpression, Link *ncmLink,
                    ExecutionObjectContext *parentObject);
 
   NclLinkCompoundTriggerCondition *createCompoundTriggerCondition (
       short op, GingaTime delay,
-      vector<ConditionExpression *> *ncmChildConditions,
+      vector<Condition *> *ncmChildConditions,
       Link *ncmLink, ExecutionObjectContext *parentObject);
 
   NclLinkCondition *createCondition (

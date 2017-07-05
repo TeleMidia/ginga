@@ -24,14 +24,14 @@ GINGA_NCL_BEGIN
 
 CompoundCondition::CompoundCondition () : TriggerExpression ()
 {
-  _expressions = new vector<ConditionExpression *>;
+  _expressions = new vector<Condition *>;
 }
 
-CompoundCondition::CompoundCondition (ConditionExpression *c1,
-                                      ConditionExpression *c2, short op)
+CompoundCondition::CompoundCondition (Condition *c1,
+                                      Condition *c2, short op)
     : TriggerExpression ()
 {
-  _expressions = new vector<ConditionExpression *>;
+  _expressions = new vector<Condition *>;
   _expressions->push_back (c1);
   _expressions->push_back (c2);
   _myOperator = op;
@@ -39,7 +39,7 @@ CompoundCondition::CompoundCondition (ConditionExpression *c1,
 
 CompoundCondition::~CompoundCondition ()
 {
-  vector<ConditionExpression *>::iterator i;
+  vector<Condition *>::iterator i;
 
   if (_expressions != NULL)
     {
@@ -67,7 +67,7 @@ CompoundCondition::getOperator ()
   return _myOperator;
 }
 
-vector<ConditionExpression *> *
+vector<Condition *> *
 CompoundCondition::getConditions ()
 {
   if (_expressions->empty ())
@@ -77,11 +77,11 @@ CompoundCondition::getConditions ()
 }
 
 void
-CompoundCondition::addConditionExpression (ConditionExpression *condition)
+CompoundCondition::addCondition (Condition *condition)
 {
   if (condition == NULL)
     {
-      clog << "CompoundCondition::addConditionExpression ";
+      clog << "CompoundCondition::addCondition ";
       clog << "Warning! Trying to add a NULL condition." << endl;
     }
   else
@@ -91,11 +91,11 @@ CompoundCondition::addConditionExpression (ConditionExpression *condition)
 }
 
 void
-CompoundCondition::removeConditionExpression (
-    ConditionExpression *condition)
+CompoundCondition::removeCondition (
+    Condition *condition)
 {
-  vector<ConditionExpression *>::iterator iterator;
-  vector<ConditionExpression *>::iterator i;
+  vector<Condition *>::iterator iterator;
+  vector<Condition *>::iterator i;
 
   iterator = _expressions->begin ();
   while (iterator != _expressions->end ())
@@ -115,7 +115,7 @@ CompoundCondition::getRoles ()
 {
   vector<Role *> *roles;
   int i, size;
-  ConditionExpression *condition;
+  Condition *condition;
   vector<Role *> *childRoles;
 
   roles = new vector<Role *>;

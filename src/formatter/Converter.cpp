@@ -998,7 +998,7 @@ Converter::createLink (Link *ncmLink,
                              ExecutionObjectContext *parentObj)
 {
   CausalConnector *connector;
-  ConditionExpression *conditionExpression;
+  Condition *conditionExpression;
   Action *actionExp;
   NclLinkCondition *formatterCondition;
   NclAction *formatterAction;
@@ -1019,7 +1019,7 @@ Converter::createLink (Link *ncmLink,
   connector = cast (CausalConnector *, ncmLink->getConnector ());
   g_assert_nonnull (connector);
 
-  conditionExpression = connector->getConditionExpression ();
+  conditionExpression = connector->getCondition ();
   formatterCondition
       = createCondition ((TriggerExpression *)conditionExpression, ncmLink,
                          parentObj);
@@ -1233,7 +1233,7 @@ Converter::createAction (Action *actionExp,
 
 NclLinkCondition *
 Converter::createCondition (
-    ConditionExpression *ncmExp, Link *ncmLink,
+    Condition *ncmExp, Link *ncmLink,
     ExecutionObjectContext *parentObj)
 {
   auto triggerExp = cast (TriggerExpression *, ncmExp);
@@ -1253,11 +1253,11 @@ Converter::createCondition (
 NclLinkCompoundTriggerCondition *
 Converter::createCompoundTriggerCondition (
     short op, GingaTime delay,
-    vector<ConditionExpression *> *ncmChildConditions, Link *ncmLink,
+    vector<Condition *> *ncmChildConditions, Link *ncmLink,
     ExecutionObjectContext *parentObj)
 {
   NclLinkCompoundTriggerCondition *condition;
-  ConditionExpression *ncmChildCondition;
+  Condition *ncmChildCondition;
   NclLinkCondition *childCondition;
 
   if (op == CompoundCondition::OP_AND)
@@ -1276,7 +1276,7 @@ Converter::createCompoundTriggerCondition (
 
   if (ncmChildConditions != nullptr)
     {
-      vector<ConditionExpression *>::iterator i;
+      vector<Condition *>::iterator i;
       i = ncmChildConditions->begin ();
       while (i != ncmChildConditions->end ())
         {

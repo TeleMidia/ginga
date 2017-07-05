@@ -26,38 +26,8 @@ CausalConnector::CausalConnector (const string &id) : Connector (id)
   _actionExpression = NULL;
 }
 
-CausalConnector::CausalConnector (const string &id, ConditionExpression *condition,
-                                  Action *action)
-    : Connector (id)
-{
-  _conditionExpression = (TriggerExpression *)condition;
-  _actionExpression = (Action *)action;
-}
-
 CausalConnector::~CausalConnector ()
 {
-  releaseAction ();
-  releaseCondition ();
-}
-
-void
-CausalConnector::releaseAction ()
-{
-  if (_actionExpression != NULL)
-    {
-      delete _actionExpression;
-      _actionExpression = NULL;
-    }
-}
-
-void
-CausalConnector::releaseCondition ()
-{
-  if (_conditionExpression != NULL)
-    {
-      // delete conditionExpression;
-      // conditionExpression = NULL;
-    }
 }
 
 Action *
@@ -66,8 +36,8 @@ CausalConnector::getAction ()
   return _actionExpression;
 }
 
-ConditionExpression *
-CausalConnector::getConditionExpression ()
+Condition *
+CausalConnector::getCondition ()
 {
   return _conditionExpression;
 }
@@ -75,20 +45,18 @@ CausalConnector::getConditionExpression ()
 void
 CausalConnector::setAction (Action *newAction)
 {
-  releaseAction ();
   _actionExpression = newAction;
 }
 
 void
-CausalConnector::setConditionExpression (
-    ConditionExpression *newConditionExpression)
+CausalConnector::setCondition (
+    Condition *newCondition)
 {
-  releaseCondition ();
-  _conditionExpression = newConditionExpression;
+  _conditionExpression = newCondition;
 }
 
 void
-CausalConnector::getConditionRoles (ConditionExpression *condition,
+CausalConnector::getConditionRoles (Condition *condition,
                                     vector<Role *> *roles)
 {
   vector<Role *> *childRoles;
