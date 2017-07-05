@@ -22,37 +22,11 @@ GINGA_NCL_BEGIN
 
 Connector::Connector (const string &id) : Entity (id)
 {
-  _params = new map<string, Parameter *>;
 }
 
 Connector::~Connector ()
 {
-  map<string, Parameter *>::iterator i;
-
-  if (_params != NULL)
-    {
-      i = _params->begin ();
-      while (i != _params->end ())
-        {
-          delete i->second;
-          ++i;
-        }
-      delete _params;
-      _params = NULL;
-    }
-}
-
-int
-Connector::getNumRoles ()
-{
-  int numOfRoles;
-
-  vector<Role *> *childRoles;
-  childRoles = getRoles ();
-  numOfRoles = (int) childRoles->size ();
-  delete childRoles;
-
-  return numOfRoles;
+  _parameters.clear ();
 }
 
 Role *
@@ -82,63 +56,23 @@ Connector::getRole (const string &roleId)
 void
 Connector::addParameter (Parameter *parameter)
 {
-  if (parameter == NULL)
-    return;
-
-  map<string, Parameter *>::iterator i;
-  for (i = _params->begin (); i != _params->end (); ++i)
-    if (i->first == parameter->getName ())
-      return;
-
-  (*_params)[parameter->getName ()] = parameter;
+  g_assert_nonnull (parameter);
+  _parameters.push_back (parameter);
 }
 
-vector<Parameter *> *
+const vector<Parameter *> *
 Connector::getParameters ()
 {
-  if (_params->empty ())
-    return NULL;
-
-  vector<Parameter *> *params;
-  params = new vector<Parameter *>;
-  map<string, Parameter *>::iterator i;
-  for (i = _params->begin (); i != _params->end (); ++i)
-    params->push_back (i->second);
-
-  return params;
+  return &_parameters;
 }
 
 Parameter *
 Connector::getParameter (const string &name)
 {
-  if (_params->empty ())
-    return NULL;
-
-  map<string, Parameter *>::iterator i;
-  for (i = _params->begin (); i != _params->end (); ++i)
-    if (i->first == name)
-      return (Parameter *)(i->second);
-
-  return NULL;
-}
-
-bool
-Connector::removeParameter (const string &name)
-{
-  if (_params->empty ())
-    return false;
-
-  map<string, Parameter *>::iterator i;
-  for (i = _params->begin (); i != _params->end (); ++i)
-    {
-      if (i->first == name)
-        {
-          _params->erase (i);
-          return true;
-        }
-    }
-
-  return false;
+  for (auto param: _parameters)
+    if (param->getName () == name)
+      return param;
+  return nullptr;
 }
 
 GINGA_NCL_END
