@@ -26,160 +26,29 @@ ContextNode::ContextNode (const string &id) : CompositeNode (id)
 
 ContextNode::~ContextNode ()
 {
-  set<Link *>::iterator i;
-  vector<Node *>::iterator j;
-
-  _descriptorCollection.clear ();
-
-  i = _linkSet.begin ();
-  while (i != _linkSet.end ())
-    {
-      delete *i;
-      ++i;
-    }
-  _linkSet.clear ();
-  _nodes.clear ();
-  _nodes.clear ();
-}
-
-bool
-ContextNode::addLink (Link *link)
-{
-  if (link == NULL)
-    return false;
-
-  _linkSet.insert (link);
-  link->setParentComposition (this);
-  return true;
-}
-
-bool
-ContextNode::addNode (Node *node)
-{
-  if (!isDocumentNode(node))
-    {
-      return false;
-    }
-
-  if (node == NULL || this->getNode (node->getId ()) != NULL)
-    {
-      return false;
-    }
-
-  _nodes.push_back (node);
-  node->setParentComposition (this);
-  return true;
+  _links.clear ();
 }
 
 void
-ContextNode::clearLinks ()
+ContextNode::addLink (Link *link)
 {
-  set<Link *>::iterator it;
-  Link *link;
-
-  for (it = _linkSet.begin (); it != _linkSet.end (); ++it)
-    {
-      link = (Link *)(*it);
-      link->setParentComposition (NULL);
-    }
-  _linkSet.clear ();
+  g_assert_nonnull (link);
+  _links.push_back (link);
+  link->setParentComposition (this);
 }
 
-bool
-ContextNode::containsLink (Link *link)
+void
+ContextNode::addNode (Node *node)
 {
-  set<Link *>::iterator i;
-
-  i = _linkSet.find (link);
-  if (i != _linkSet.end ())
-    {
-      return true;
-    }
-  return false;
+  g_assert_nonnull (node);
+  _nodes.push_back (node);
+  node->setParentComposition (this);
 }
 
-set<Link *> *
+const vector<Link *> *
 ContextNode::getLinks ()
 {
-  return &_linkSet;
-}
-
-Link *
-ContextNode::getLink (const string &linkId)
-{
-  set<Link *>::iterator i;
-
-  i = _linkSet.begin ();
-  while (i != _linkSet.end ())
-    {
-      if ((*i)->getId () != "" && (*i)->getId () == linkId)
-        {
-          return *i;
-        }
-      ++i;
-    }
-  return NULL;
-}
-
-GenericDescriptor *
-ContextNode::getNodeDescriptor (Node *node)
-{
-  if (_descriptorCollection.count (node->getId ()) != 0)
-    {
-      return _descriptorCollection[node->getId ()];
-    }
-
-  return NULL;
-}
-
-int
-ContextNode::getNumLinks ()
-{
-  return (int)(_linkSet.size ());
-}
-
-bool
-ContextNode::removeLink (Link *link)
-{
-  set<Link *>::iterator it;
-
-  it = _linkSet.find (link);
-  if (it != _linkSet.end ())
-    {
-      _linkSet.erase (it);
-      link->setParentComposition (NULL);
-      return true;
-    }
-  return false;
-}
-
-bool
-ContextNode::setNodeDescriptor (const string &nodeId,
-                                GenericDescriptor *descriptor)
-{
-  Node *node;
-  node = getNode (nodeId);
-  if (node == NULL)
-    {
-      return false;
-    }
-
-  if (_descriptorCollection.count (nodeId) != 0)
-    {
-      if (descriptor == NULL)
-        {
-          _descriptorCollection.erase (_descriptorCollection.find (nodeId));
-
-          return true;
-        }
-    }
-  else if (descriptor == NULL)
-    {
-      return true;
-    }
-
-  _descriptorCollection[nodeId] = descriptor;
-  return true;
+  return &_links;
 }
 
 GINGA_NCL_END

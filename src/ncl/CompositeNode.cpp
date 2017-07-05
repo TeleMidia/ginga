@@ -192,13 +192,4 @@ CompositeNode::recursivelyGetNode (const string &nodeId)
   return NULL;
 }
 
-bool
-CompositeNode::isDocumentNode (Node *node)
-{
-  return (instanceof (ContentNode *, node)
-          || instanceof (ContextNode *, node)
-          || instanceof (ReferNode *, node)
-          || instanceof (SwitchNode *, node));
-}
-
 GINGA_NCL_END

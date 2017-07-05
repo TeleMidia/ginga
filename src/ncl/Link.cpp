@@ -175,11 +175,8 @@ Link::getConnector ()
 void
 Link::setParentComposition (ContextNode *composition)
 {
-  if (composition == NULL
-      || ((ContextNode *)composition)->containsLink (this))
-    {
-      this->_composition = composition;
-    }
+  g_assert_nonnull (composition);
+  _composition = composition;
 }
 
 ContextNode *
