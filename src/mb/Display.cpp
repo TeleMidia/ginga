@@ -60,6 +60,8 @@ win_cmp_z (Player *p1, Player *p2)
 Display::Display (int width, int height, double fps, bool fullscreen)
 {
   guint flags;
+  SDL_RendererInfo info;
+  int i;
 
   _width = width;
   _height = height;
@@ -79,15 +81,41 @@ Display::Display (int width, int height, double fps, bool fullscreen)
 #endif
   SDL_SetHint (SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
-  flags = SDL_WINDOW_SHOWN;
+  flags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
   if (_fullscreen)
     flags |= SDL_WINDOW_FULLSCREEN;
 
   _dashboard = new Dashboard ();
   _screen = SDL_CreateWindow ("ginga", 0, 0, width, height, flags);
   g_assert_nonnull (_screen);
-  _renderer = SDL_CreateRenderer (_screen, -1, SDL_RENDERER_PRESENTVSYNC);
+
+  SDL_GL_SetAttribute (SDL_GL_ACCELERATED_VISUAL, 1);
+
+  flags = SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED;
+  _renderer = SDL_CreateRenderer (_screen, -1, flags);
   g_assert_nonnull (_renderer);
+
+  g_assert (SDL_GetRendererInfo (_renderer, &info) == 0);
+
+  printf ("%s \n", info.name);
+  printf ("width: %d \t height: %d \n", info.max_texture_width, info.max_texture_height);
+  if (info.flags & SDL_RENDERER_PRESENTVSYNC)
+    printf ("SDL_RENDERER_PRESENTVSYNC \n");
+  if (info.flags & SDL_RENDERER_ACCELERATED)
+    printf ("SDL_RENDERER_ACCELERATED \n");
+
+
+  for (i=0; i<SDL_GetNumRenderDrivers(); i++) {
+    g_assert (SDL_GetRenderDriverInfo (i, &info) == 0);
+
+    printf ("%s \n", info.name);
+    printf ("width: %d \t height: %d \n", info.max_texture_width, info.max_texture_height);
+    if (info.flags & SDL_RENDERER_PRESENTVSYNC)
+      printf ("SDL_RENDERER_PRESENTVSYNC \n");
+    if (info.flags & SDL_RENDERER_ACCELERATED)
+      printf ("SDL_RENDERER_ACCELERATED \n");
+  }
+
 }
 
 /**
