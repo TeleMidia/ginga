@@ -30,7 +30,7 @@ public:
   virtual ~CompositeNode ();
 
   // Virtual to all.
-  virtual bool addNode (Node *) = 0;
+  virtual void addNode (Node *) = 0;
 
   // Virtual to SwitchNode.
   virtual void addPort (Port *);
@@ -57,8 +57,6 @@ public:
 protected:
   vector<Node *> _nodes;
   vector<Port *> _ports;
-  static bool
-  isDocumentNode (Node *node);
 };
 
 GINGA_NCL_END

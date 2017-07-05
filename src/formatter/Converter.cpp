@@ -672,39 +672,6 @@ Converter::checkCascadingDescriptor (Node *node)
 }
 
 NclCascadingDescriptor *
-Converter::checkContextCascadingDescriptor (
-    NclNodeNesting *nodePerspective,
-    NclCascadingDescriptor *cascadingDescriptor, Node *ncmNode)
-{
-  int size;
-  NclCascadingDescriptor *resDesc = cascadingDescriptor;
-
-  // Is there a node descriptor defined in the context node?
-  size = nodePerspective->getNumNodes ();
-  if (size > 1 && nodePerspective->getNode (size - 2) != nullptr
-      && instanceof (ContextNode *, nodePerspective->getNode (size - 2)))
-    {
-      auto context = cast (ContextNode *, nodePerspective->getNode (size - 2));
-      g_assert_nonnull (context);
-
-      if (context->getNodeDescriptor (ncmNode) != nullptr)
-        {
-          if (resDesc == nullptr)
-            {
-              resDesc = new NclCascadingDescriptor (
-                    context->getNodeDescriptor (ncmNode));
-            }
-          else
-            {
-              resDesc->cascade (context->getNodeDescriptor (ncmNode));
-            }
-        }
-    }
-
-  return resDesc;
-}
-
-NclCascadingDescriptor *
 Converter::getCascadingDescriptor (NclNodeNesting *nodePerspective,
                                    GenericDescriptor *descriptor)
 {
@@ -743,9 +710,6 @@ Converter::getCascadingDescriptor (NclNodeNesting *nodePerspective,
     {
       cascadingDescriptor = new NclCascadingDescriptor (ncmDesc);
     }
-
-  cascadingDescriptor = checkContextCascadingDescriptor (
-        nodePerspective, cascadingDescriptor, node);
 
   // there is an explicit descriptor (user descriptor)?
   if (descriptor != nullptr)

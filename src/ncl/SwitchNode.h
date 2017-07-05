@@ -36,16 +36,14 @@ class SwitchNode : public CompositeNode
 public:
   SwitchNode (const string &_id);
   virtual ~SwitchNode ();
-  bool addNode (unsigned int index, Node *node, Rule *rule);
-  bool addNode (Node *node, Rule *rule);
+  void addNode (unsigned int index, Node *node, Rule *rule);
+  void addNode (Node *node, Rule *rule);
 
   // virtual from CompositeNode
-  bool addNode (Node *node);
+  void addNode (Node *);
 
   bool addSwitchPortMap (SwitchPort *switchPort, Node *node,
                          InterfacePoint *interfacePoint);
-
-  void exchangeNodesAndRules (unsigned int index1, unsigned int index2);
 
   Node *getDefaultNode ();
 

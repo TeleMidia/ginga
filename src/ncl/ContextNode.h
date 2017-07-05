@@ -15,13 +15,11 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _CONTEXTNODE_H_
-#define _CONTEXTNODE_H_
+#ifndef CONTEXT_NODE_H
+#define CONTEXT_NODE_H
 
 #include "CompositeNode.h"
-#include "GenericDescriptor.h"
 #include "Link.h"
-#include "NodeEntity.h"
 
 GINGA_NCL_BEGIN
 
@@ -29,29 +27,16 @@ class Link;
 class ContextNode : public CompositeNode
 {
 public:
-  ContextNode (const string &_id);
+  ContextNode (const string &);
   virtual ~ContextNode ();
-
-  bool addLink (Link *link);
-  bool addNode (Node *node);
-
-  void clearLinks ();
-  bool containsLink (Link *link);
-  set<Link *> *getLinks ();
-  Link *getLink (const string &linkId);
-  GenericDescriptor *getNodeDescriptor (Node *node);
-  int getNumLinks ();
-  bool removeLink (const string &linkId);
-  bool removeLink (Link *link);
-  bool setNodeDescriptor (const string &nodeId, GenericDescriptor *_descriptor);
-
-protected:
-  map<string, GenericDescriptor *> _descriptorCollection;
+  void addLink (Link *);
+  void addNode (Node *);
+  const vector<Link *> *getLinks ();
 
 private:
-  set<Link *> _linkSet;
+  vector<Link *> _links;
 };
 
 GINGA_NCL_END
 
-#endif //_CONTEXTNODE_H_
+#endif // CONTEXT_NODE_H
