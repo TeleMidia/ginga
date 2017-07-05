@@ -30,9 +30,6 @@ public:
   ReferNode (const string &);
   ReferNode (const string &, Entity *);
 
-  Descriptor *getInstanceDescriptor ();
-  void setInstanceDescriptor (Descriptor *);
-
   string getInstanceType ();
   void setInstanceType (const string &);
 
@@ -42,7 +39,6 @@ public:
 private:
   string _instanceType;
   Entity *_referredNode;
-  Descriptor *_instDesc;
 };
 
 GINGA_NCL_END
