@@ -24,7 +24,7 @@ class Entity
 {
 public:
   Entity (const string &);
-  virtual ~Entity ();
+  virtual ~Entity () = 0;
   string getId ();
 
 private:
