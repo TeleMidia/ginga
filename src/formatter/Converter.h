@@ -75,7 +75,7 @@ private:
   bool removeExecutionObject (ExecutionObject *exeObj);
 
   NclFormatterLink *
-  createCausalLink (CausalLink *ncmLink,
+  createLink (Link *ncmLink,
                     ExecutionObjectContext *parentObject);
 
   ExecutionObjectContext *
@@ -116,24 +116,24 @@ private:
 
   static bool hasDescriptorPropName (const string &name);
 
-  void setImplicitRefAssessment (const string &roleId, CausalLink *ncmLink,
+  void setImplicitRefAssessment (const string &roleId, Link *ncmLink,
                                  NclEvent *event);
 
   NclAction *createAction (Action *actionExpression,
-                               CausalLink *ncmLink,
+                               Link *ncmLink,
                                ExecutionObjectContext *parentObject);
 
   NclLinkCondition *
-  createCondition (ConditionExpression *ncmExpression, CausalLink *ncmLink,
+  createCondition (ConditionExpression *ncmExpression, Link *ncmLink,
                    ExecutionObjectContext *parentObject);
 
   NclLinkCompoundTriggerCondition *createCompoundTriggerCondition (
       short op, GingaTime delay,
       vector<ConditionExpression *> *ncmChildConditions,
-      CausalLink *ncmLink, ExecutionObjectContext *parentObject);
+      Link *ncmLink, ExecutionObjectContext *parentObject);
 
   NclLinkCondition *createCondition (
-      TriggerExpression *triggerExpression, CausalLink *ncmLink,
+      TriggerExpression *triggerExpression, Link *ncmLink,
       ExecutionObjectContext *parentObject);
 
   NclLinkAssessmentStatement *createAssessmentStatement (
@@ -154,7 +154,7 @@ private:
 
   NclCompoundAction *createCompoundAction (
       GingaTime delay, vector<Action *> *ncmChildActions,
-      CausalLink *ncmLink, ExecutionObjectContext *parentObject);
+      Link *ncmLink, ExecutionObjectContext *parentObject);
 
   NclLinkTriggerCondition *createSimpleCondition (
       SimpleCondition *condition, Bind *bind, Link *ncmLink,
