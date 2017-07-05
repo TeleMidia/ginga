@@ -888,10 +888,8 @@ Parser::parseDescriptorBase (DOMElement *elt)
         }
       else if (tag == "descriptorSwitch")
         {
-          DescriptorSwitch *descSwitch;
-          descSwitch = this->parseDescriptorSwitch (child);
-          g_assert_nonnull (descSwitch);
-          base->addDescriptor (descSwitch);
+          ERROR_NOT_IMPLEMENTED ("%s: element is not supported",
+                                 __error_elt (child).c_str ());
         }
       else if (tag == "descriptor")
         {
@@ -997,16 +995,6 @@ Parser::parseDescriptor (DOMElement *elt)
         }
     }
   return desc;
-}
-
-
-// Private: Descriptor switch.
-
-G_GNUC_NORETURN DescriptorSwitch *
-Parser::parseDescriptorSwitch (DOMElement *elt)
-{
-  ERROR_NOT_IMPLEMENTED ("%s: element is not supported",
-                         __error_elt ((elt)).c_str ());
 }
 
 
