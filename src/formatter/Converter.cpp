@@ -542,7 +542,7 @@ Converter::processLink (Link *ncmLink,
   // check that the link was not compiled.
   if (parentObject->containsUncompiledLink (ncmLink))
     {
-      auto causalLink = cast (CausalLink *, ncmLink);
+      auto causalLink = cast (Link *, ncmLink);
       if (causalLink)
         {
           if (nodeEntity != nullptr)
@@ -566,7 +566,7 @@ Converter::processLink (Link *ncmLink,
               // Compile causal link.
               parentObject->removeLinkUncompiled (ncmLink);
               NclFormatterLink *formatterLink
-                  = createCausalLink (causalLink, parentObject);
+                  = createLink (causalLink, parentObject);
 
               if (formatterLink != NULL)
                 {
@@ -996,7 +996,7 @@ Converter::hasDescriptorPropName (const string &name)
 }
 
 NclFormatterLink *
-Converter::createCausalLink (CausalLink *ncmLink,
+Converter::createLink (Link *ncmLink,
                              ExecutionObjectContext *parentObj)
 {
   CausalConnector *connector;
@@ -1014,15 +1014,6 @@ Converter::createCausalLink (CausalLink *ncmLink,
     {
       WARNING ("Cannot create formatter link inside '%s' NCM link is nullptr",
                parentObj->getId ().c_str ());
-      return nullptr;
-    }
-
-  if (!ncmLink->isConsistent ())
-    {
-      WARNING ("Cannot create formatter link inside '%s' from ncmlinkId '%s':"
-               "inconsistent link (check min and max attributes!)",
-               parentObj->getId ().c_str (),
-               ncmLink->getId ().c_str ());
       return nullptr;
     }
 
@@ -1117,7 +1108,7 @@ Converter::createCausalLink (CausalLink *ncmLink,
 
 void
 Converter::setImplicitRefAssessment (const string &roleId,
-                                     CausalLink *ncmLink,
+                                     Link *ncmLink,
                                      NclEvent *event)
 {
   NclNodeNesting *refPerspective;
@@ -1165,7 +1156,7 @@ Converter::setImplicitRefAssessment (const string &roleId,
 
 NclAction *
 Converter::createAction (Action *actionExp,
-                         CausalLink *ncmLink,
+                         Link *ncmLink,
                          ExecutionObjectContext *parentObj)
 {
   GingaTime delay;
@@ -1247,7 +1238,7 @@ Converter::createAction (Action *actionExp,
 
 NclLinkCondition *
 Converter::createCondition (
-    ConditionExpression *ncmExp, CausalLink *ncmLink,
+    ConditionExpression *ncmExp, Link *ncmLink,
     ExecutionObjectContext *parentObj)
 {
   auto triggerExp = cast (TriggerExpression *, ncmExp);
@@ -1267,7 +1258,7 @@ Converter::createCondition (
 NclLinkCompoundTriggerCondition *
 Converter::createCompoundTriggerCondition (
     short op, GingaTime delay,
-    vector<ConditionExpression *> *ncmChildConditions, CausalLink *ncmLink,
+    vector<ConditionExpression *> *ncmChildConditions, Link *ncmLink,
     ExecutionObjectContext *parentObj)
 {
   NclLinkCompoundTriggerCondition *condition;
@@ -1308,7 +1299,7 @@ Converter::createCompoundTriggerCondition (
 
 NclLinkCondition *
 Converter::createCondition (
-    TriggerExpression *condition, CausalLink *ncmLink,
+    TriggerExpression *condition, Link *ncmLink,
     ExecutionObjectContext *parentObj)
 {
   NclLinkCompoundTriggerCondition *compoundCondition;
@@ -1740,7 +1731,7 @@ Converter::createSimpleAction (
 NclCompoundAction *
 Converter::createCompoundAction (
     GingaTime delay, vector<Action *> *ncmChildActions,
-    CausalLink *ncmLink, ExecutionObjectContext *parentObj)
+    Link *ncmLink, ExecutionObjectContext *parentObj)
 {
   NclCompoundAction *action;
   NclAction *childAction;

@@ -2113,7 +2113,7 @@ Parser::parseLink (DOMElement *elt, CompositeNode *context)
   if (unlikely (conn == nullptr))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "xconnector");
 
-  link = new CausalLink (id, conn);
+  link = new Link (id, conn);
 
   // Collect children.
   for (DOMElement *child: dom_elt_get_children (elt))

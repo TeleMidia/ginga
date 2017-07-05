@@ -28,7 +28,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Base.h"
 #include "Bind.h"
 #include "CausalConnector.h"
-#include "CausalLink.h"
 #include "Comparator.h"
 #include "CompositeNode.h"
 #include "CompositeRule.h"

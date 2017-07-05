@@ -15,19 +15,11 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _LINK_H_
-#define _LINK_H_
+#ifndef LINK_H
+#define LINK_H
 
-#include "Bind.h"
 #include "Connector.h"
-#include "ContextNode.h"
-#include "Entity.h"
-#include "Descriptor.h"
-#include "InterfacePoint.h"
-#include "NodeEntity.h"
-#include "Parameter.h"
-#include "Role.h"
-#include "SwitchPort.h"
+#include "Bind.h"
 
 GINGA_NCL_BEGIN
 
@@ -35,7 +27,7 @@ class ContextNode;
 class Link : public Entity
 {
 public:
-  Link (const string &_id, Connector *connector);
+  Link (const string &, Connector *);
   virtual ~Link ();
 
   Bind *bind (Node *node, InterfacePoint *interfPt, Descriptor *desc,
@@ -44,9 +36,10 @@ public:
   Bind *bind (Node *node, InterfacePoint *interfPt, Descriptor *desc,
               Role *role);
 
-  bool isConsistent ();
   Bind *getBind (Node *node, InterfacePoint *interfPt,
                  Descriptor *desc, Role *role);
+
+  bool containsSourceNode (Node *node, Descriptor *descriptor);
 
   vector<Bind *> *getBinds ();
   Connector *getConnector ();
@@ -64,6 +57,8 @@ public:
   void removeParameter (Parameter *parameter);
   void updateConnector (Connector *newConnector);
   bool containsNode (Node *node, Descriptor *descriptor);
+  vector<Bind *> *getActionBinds ();
+  vector<Bind *> *getConditionBinds ();
 
 protected:
   Connector *_connector;
@@ -75,9 +70,9 @@ protected:
                      vector<Bind *> *_binds);
 
 private:
-  ContextNode *_composition;
+  ContextNode *_context;
 };
 
 GINGA_NCL_END
 
-#endif //_LINK_H_
+#endif // LINK_H

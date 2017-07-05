@@ -63,7 +63,6 @@ src+= ncl/AttributeAssessment.cpp
 src+= ncl/Base.cpp
 src+= ncl/Bind.cpp
 src+= ncl/CausalConnector.cpp
-src+= ncl/CausalLink.cpp
 src+= ncl/Comparator.cpp
 src+= ncl/CompositeNode.cpp
 src+= ncl/CompositeRule.cpp

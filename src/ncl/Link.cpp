@@ -17,10 +17,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "Link.h"
-
-#include "ContextNode.h"
-
-GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
+#include "SimpleAction.h"
+#include "SimpleCondition.h"
+#include "AttributeAssessment.h"
 
 GINGA_NCL_BEGIN
 
@@ -30,7 +29,7 @@ Link::Link (const string &id, Connector *connector) : Entity (id)
   _binds = new vector<Bind *>;
   this->_connector = connector;
   _parameters = new map<string, Parameter *>;
-  _composition = NULL;
+  _context = NULL;
 }
 
 Link::~Link ()
@@ -121,12 +120,6 @@ Link::bind (Node *node, InterfacePoint *interfPt, Descriptor *desc,
   return bind;
 }
 
-bool
-Link::isConsistent ()
-{
-  return true;
-}
-
 Bind *
 Link::getBind (Node *node, InterfacePoint *interfPt,
                Descriptor *desc, Role *role)
@@ -176,13 +169,13 @@ void
 Link::setParentComposition (ContextNode *composition)
 {
   g_assert_nonnull (composition);
-  _composition = composition;
+  _context = composition;
 }
 
 ContextNode *
 Link::getParentComposition ()
 {
-  return _composition;
+  return _context;
 }
 
 unsigned int
@@ -451,5 +444,84 @@ Link::containsNode (Node *node, Descriptor *descriptor,
     }
   return false;
 }
+
+bool
+Link::containsSourceNode (Node *node, Descriptor *descriptor)
+{
+  bool contains;
+  vector<Bind *> *conds;
+
+  conds = getConditionBinds ();
+  contains = Link::containsNode (node, descriptor, conds);
+
+  delete conds;
+  return contains;
+}
+
+vector<Bind *> *
+Link::getActionBinds ()
+{
+  vector<Bind *> *actionsVector;
+  actionsVector = new vector<Bind *>;
+  vector<Bind *>::iterator i;
+
+  if (_binds->empty ())
+    {
+      delete actionsVector;
+      return NULL;
+    }
+
+  for (i = _binds->begin (); i != _binds->end (); ++i)
+    {
+      if (instanceof (SimpleAction *, (*i)->getRole ()))
+        actionsVector->push_back (*i);
+    }
+
+  if (actionsVector->empty ())
+    {
+      delete actionsVector;
+      return NULL;
+    }
+
+  return actionsVector;
+}
+
+vector<Bind *> *
+Link::getConditionBinds ()
+{
+  vector<Bind *> *conditionsVector;
+  vector<Bind *>::iterator iterator;
+  Bind *bind;
+  Role *role;
+
+  if (_binds->empty ())
+    {
+      return NULL;
+    }
+
+  conditionsVector = new vector<Bind *>;
+  for (iterator = _binds->begin (); iterator != _binds->end (); ++iterator)
+    {
+      bind = (Bind *)(*iterator);
+      role = bind->getRole ();
+      if (role != NULL)
+        {
+          if (instanceof (SimpleCondition *, role)
+              || instanceof (AttributeAssessment *, role))
+            {
+              conditionsVector->push_back (bind);
+            }
+        }
+    }
+
+  if (conditionsVector->empty ())
+    {
+      delete conditionsVector;
+      conditionsVector = NULL;
+    }
+
+  return conditionsVector;
+}
+
 
 GINGA_NCL_END
