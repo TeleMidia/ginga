@@ -31,7 +31,7 @@ GINGA_FORMATTER_BEGIN
 int NclCascadingDescriptor::dummyCount = 0;
 
 NclCascadingDescriptor::NclCascadingDescriptor (
-    GenericDescriptor *firstDescriptor)
+    Descriptor *firstDescriptor)
 {
   initializeCascadingDescriptor ();
 
@@ -53,7 +53,7 @@ NclCascadingDescriptor::NclCascadingDescriptor (
       for (i = 0; i < size; i++)
         {
           cascade (
-              (GenericDescriptor *)(((NclCascadingDescriptor *)descriptor)
+              (Descriptor *)(((NclCascadingDescriptor *)descriptor)
                                         ->descriptors[i]));
         }
 
@@ -63,7 +63,7 @@ NclCascadingDescriptor::NclCascadingDescriptor (
       for (i = 0; i < size; i++)
         {
           cascade (
-              (GenericDescriptor *)(((NclCascadingDescriptor *)descriptor)
+              (Descriptor *)(((NclCascadingDescriptor *)descriptor)
                                         ->unsolvedDescriptors[i]));
         }
     }
@@ -71,7 +71,7 @@ NclCascadingDescriptor::NclCascadingDescriptor (
 
 NclCascadingDescriptor::~NclCascadingDescriptor ()
 {
-  vector<GenericDescriptor *>::iterator i;
+  vector<Descriptor *>::iterator i;
 
   if (inputTransitions != NULL)
     {
@@ -223,11 +223,11 @@ NclCascadingDescriptor::cascadeDescriptor (Descriptor *descriptor)
 }
 
 bool
-NclCascadingDescriptor::isLastDescriptor (GenericDescriptor *descriptor)
+NclCascadingDescriptor::isLastDescriptor (Descriptor *descriptor)
 {
   if ((descriptors.size () > 0)
       && (descriptor->getId ()
-          == ((GenericDescriptor *)descriptors[descriptors.size () - 1])
+          == ((Descriptor *)descriptors[descriptors.size () - 1])
                  ->getId ()))
 
     return true;
@@ -236,9 +236,9 @@ NclCascadingDescriptor::isLastDescriptor (GenericDescriptor *descriptor)
 }
 
 void
-NclCascadingDescriptor::cascade (GenericDescriptor *descriptor)
+NclCascadingDescriptor::cascade (Descriptor *descriptor)
 {
-  GenericDescriptor *preferredDescriptor;
+  Descriptor *preferredDescriptor;
 
   preferredDescriptor = descriptor;
 
@@ -267,7 +267,7 @@ NclCascadingDescriptor::cascade (GenericDescriptor *descriptor)
     }
 }
 
-GenericDescriptor *
+Descriptor *
 NclCascadingDescriptor::getUnsolvedDescriptor (int i)
 {
   if ((size_t) i >= unsolvedDescriptors.size ())
@@ -278,7 +278,7 @@ NclCascadingDescriptor::getUnsolvedDescriptor (int i)
   return unsolvedDescriptors.at (i);
 }
 
-vector<GenericDescriptor *> *
+vector<Descriptor *> *
 NclCascadingDescriptor::getUnsolvedDescriptors ()
 {
   return &unsolvedDescriptors;
@@ -290,9 +290,9 @@ NclCascadingDescriptor::cascadeUnsolvedDescriptor ()
   if (unsolvedDescriptors.empty ())
     return;
 
-  GenericDescriptor *genericDescriptor, *descriptor;
+  Descriptor *genericDescriptor, *descriptor;
 
-  genericDescriptor = (GenericDescriptor *)(unsolvedDescriptors[0]);
+  genericDescriptor = (Descriptor *)(unsolvedDescriptors[0]);
 
   descriptor = (Descriptor *)genericDescriptor;
   unsolvedDescriptors.erase (unsolvedDescriptors.begin ());
@@ -364,7 +364,7 @@ NclCascadingDescriptor::getParameterValue (const string &paramName)
   return paramValue;
 }
 
-vector<GenericDescriptor *> *
+vector<Descriptor *> *
 NclCascadingDescriptor::getNcmDescriptors ()
 {
   return &descriptors;

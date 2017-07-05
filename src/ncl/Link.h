@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Connector.h"
 #include "ContextNode.h"
 #include "Entity.h"
-#include "GenericDescriptor.h"
+#include "Descriptor.h"
 #include "InterfacePoint.h"
 #include "NodeEntity.h"
 #include "Parameter.h"
@@ -38,15 +38,15 @@ public:
   Link (const string &_id, Connector *connector);
   virtual ~Link ();
 
-  Bind *bind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
+  Bind *bind (Node *node, InterfacePoint *interfPt, Descriptor *desc,
               string roleId);
 
-  Bind *bind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
+  Bind *bind (Node *node, InterfacePoint *interfPt, Descriptor *desc,
               Role *role);
 
   bool isConsistent ();
   Bind *getBind (Node *node, InterfacePoint *interfPt,
-                 GenericDescriptor *desc, Role *role);
+                 Descriptor *desc, Role *role);
 
   vector<Bind *> *getBinds ();
   Connector *getConnector ();
@@ -63,7 +63,7 @@ public:
   Parameter *getParameter (const string &name);
   void removeParameter (Parameter *parameter);
   void updateConnector (Connector *newConnector);
-  bool containsNode (Node *node, GenericDescriptor *descriptor);
+  bool containsNode (Node *node, Descriptor *descriptor);
 
 protected:
   Connector *_connector;
@@ -71,7 +71,7 @@ protected:
   vector<Bind *> *_binds;
   map<string, Parameter *> *_parameters;
 
-  bool containsNode (Node *node, GenericDescriptor *descriptor,
+  bool containsNode (Node *node, Descriptor *descriptor,
                      vector<Bind *> *_binds);
 
 private:

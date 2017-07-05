@@ -67,14 +67,14 @@ NodeEntity::getLambdaAnchor ()
   return lambda;
 }
 
-GenericDescriptor *
+Descriptor *
 NodeEntity::getDescriptor ()
 {
   return _descriptor;
 }
 
 void
-NodeEntity::setDescriptor (GenericDescriptor *someDescriptor)
+NodeEntity::setDescriptor (Descriptor *someDescriptor)
 {
   _descriptor = someDescriptor;
 }

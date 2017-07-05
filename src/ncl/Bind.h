@@ -19,8 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _BIND_H_
 
 #include "Parameter.h"
-
-#include "GenericDescriptor.h"
+#include "Descriptor.h"
 
 #include "Role.h"
 
@@ -36,18 +35,18 @@ GINGA_NCL_BEGIN
 class Bind
 {
 public:
-  Bind (Node *_node, InterfacePoint *interfPt, GenericDescriptor *desc,
+  Bind (Node *_node, InterfacePoint *interfPt, Descriptor *desc,
         Role *_role);
 
   virtual ~Bind ();
-  GenericDescriptor *getDescriptor ();
+  Descriptor *getDescriptor ();
   InterfacePoint *getInterfacePoint ();
   Node *getNode ();
   Role *getRole ();
   void setInterfacePoint (InterfacePoint *interfPt);
   void setNode (Node *_node);
   void setRole (Role *_role);
-  void setDescriptor (GenericDescriptor *desc);
+  void setDescriptor (Descriptor *desc);
   Parameter *setParameterValue (const string &propertyLabel,
                                 Parameter *propertyValue);
 
@@ -64,7 +63,7 @@ protected:
 private:
   Node *_node;
   InterfacePoint *_interfacePoint;
-  GenericDescriptor *_descriptor;
+  Descriptor *_descriptor;
   Role *_role;
 };
 

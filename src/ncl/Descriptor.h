@@ -28,11 +28,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Transition.h"
 
-#include "GenericDescriptor.h"
+#include "Descriptor.h"
 
 GINGA_NCL_BEGIN
 
-class Descriptor : public GenericDescriptor
+class Descriptor : public Entity
 {
 public:
   static const short FIT_FILL = 0;

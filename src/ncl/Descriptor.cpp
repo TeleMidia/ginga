@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-Descriptor::Descriptor (const string &id) : GenericDescriptor (id)
+Descriptor::Descriptor (const string &id) : Entity (id)
 {
   _explicitDuration = GINGA_TIME_NONE;
   _presentationTool = "";

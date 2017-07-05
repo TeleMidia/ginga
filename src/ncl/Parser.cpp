@@ -1997,7 +1997,7 @@ Parser::parseMedia (DOMElement *elt)
 
       if (dom_elt_try_get_attribute (value, elt, "descriptor"))
         {
-          GenericDescriptor *desc = _doc->getDescriptor (value);
+          Descriptor *desc = _doc->getDescriptor (value);
           if (unlikely (desc == nullptr))
             ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "descriptor");
           ((ContentNode *) media)->setDescriptor (desc);
@@ -2160,7 +2160,7 @@ Parser::parseBind (DOMElement *elt, Link *link, CompositeNode *context)
   Node *target;
   NodeEntity *targetEntity;
   InterfacePoint *iface;
-  GenericDescriptor *desc;
+  Descriptor *desc;
 
   CHECK_ELT_TAG (elt, "bind", nullptr);
   CHECK_ELT_ATTRIBUTE (elt, "role", &label);

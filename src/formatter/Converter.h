@@ -48,7 +48,7 @@ public:
   void setLinkActionListener (INclActionListener *actionListener);
 
   ExecutionObject *getExecutionObjectFromPerspective (
-      NclNodeNesting *perspec, GenericDescriptor *desc);
+      NclNodeNesting *perspec, Descriptor *desc);
 
   NclEvent *getEvent (ExecutionObject *exeObj,
                       InterfacePoint *interfacePoint,
@@ -103,7 +103,7 @@ private:
 
   NclEvent *insertNode (NclNodeNesting *perspective,
                         InterfacePoint *interfacePoint,
-                        GenericDescriptor *descriptor);
+                        Descriptor *descriptor);
 
   void eventStateChanged (NclEvent *someEvent,
                           EventStateTransition transition,
@@ -114,7 +114,7 @@ private:
 
   static NclCascadingDescriptor *
   getCascadingDescriptor (NclNodeNesting *nodePerspective,
-                          GenericDescriptor *descriptor);
+                          Descriptor *descriptor);
 
   static NclCascadingDescriptor *checkCascadingDescriptor (Node *node);
 
