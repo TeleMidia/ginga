@@ -25,7 +25,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Node.h"
 #include "Content.h"
 
-#include "GenericDescriptor.h"
+#include "Descriptor.h"
 
 GINGA_NCL_BEGIN
 
@@ -36,8 +36,8 @@ public:
   virtual ~NodeEntity ();
 
   LambdaAnchor *getLambdaAnchor ();
-  GenericDescriptor *getDescriptor ();
-  void setDescriptor (GenericDescriptor *someDescriptor);
+  Descriptor *getDescriptor ();
+  void setDescriptor (Descriptor *someDescriptor);
   Content *getContent ();
   void setContent (Content *_content);
   bool addAnchor (Anchor *anchor);
@@ -47,7 +47,7 @@ public:
   void removeSameInstance (ReferNode *node);
 
 protected:
-  GenericDescriptor *_descriptor;
+  Descriptor *_descriptor;
   Content *_content;
 
 private:

@@ -26,7 +26,7 @@ CausalLink::CausalLink (const string &uid, Connector *connector)
 }
 
 bool
-CausalLink::containsSourceNode (Node *node, GenericDescriptor *descriptor)
+CausalLink::containsSourceNode (Node *node, Descriptor *descriptor)
 {
   bool contains;
   vector<Bind *> *conds;

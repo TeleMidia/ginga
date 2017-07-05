@@ -247,7 +247,7 @@ ExecutionObject::removeParentObject (Node *parentNode,
 }
 
 void
-ExecutionObject::setDescriptor (GenericDescriptor *descriptor)
+ExecutionObject::setDescriptor (Descriptor *descriptor)
 {
   NclCascadingDescriptor *cascade;
   cascade = new NclCascadingDescriptor (descriptor);
@@ -656,7 +656,7 @@ ExecutionObject::start ()
   // Initialize player properties.
   if (_descriptor != nullptr)
     {
-      vector <GenericDescriptor *> *vec = _descriptor->getNcmDescriptors ();
+      vector <Descriptor *> *vec = _descriptor->getNcmDescriptors ();
       g_assert (vec->size () == 1);
 
       Descriptor *desc = cast (Descriptor *, (*vec)[0]);

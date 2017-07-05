@@ -22,12 +22,12 @@ GINGA_NCL_BEGIN
 
 DescriptorBase::DescriptorBase (const string &id) : Base (id)
 {
-  _descriptorSet = new vector<GenericDescriptor *>;
+  _descriptorSet = new vector<Descriptor *>;
 }
 
 DescriptorBase::~DescriptorBase ()
 {
-  vector<GenericDescriptor *>::iterator i;
+  vector<Descriptor *>::iterator i;
 
   if (_descriptorSet != NULL)
     {
@@ -43,12 +43,12 @@ DescriptorBase::~DescriptorBase ()
 }
 
 bool
-DescriptorBase::addDescriptor (GenericDescriptor *descriptor)
+DescriptorBase::addDescriptor (Descriptor *descriptor)
 {
   if (descriptor == NULL)
     return false;
 
-  vector<GenericDescriptor *>::iterator i;
+  vector<Descriptor *>::iterator i;
   for (i = _descriptorSet->begin (); i != _descriptorSet->end (); ++i)
     {
       if (*i == descriptor)
@@ -77,10 +77,10 @@ DescriptorBase::clear ()
   Base::clear ();
 }
 
-GenericDescriptor *
+Descriptor *
 DescriptorBase::getDescriptorLocally (const string &descriptorId)
 {
-  vector<GenericDescriptor *>::iterator descriptors;
+  vector<Descriptor *>::iterator descriptors;
 
   descriptors = _descriptorSet->begin ();
   while (descriptors != _descriptorSet->end ())
@@ -94,7 +94,7 @@ DescriptorBase::getDescriptorLocally (const string &descriptorId)
   return NULL;
 }
 
-GenericDescriptor *
+Descriptor *
 DescriptorBase::getDescriptor (const string &descriptorId)
 {
   string::size_type index;
@@ -125,16 +125,16 @@ DescriptorBase::getDescriptor (const string &descriptorId)
     }
 }
 
-vector<GenericDescriptor *> *
+vector<Descriptor *> *
 DescriptorBase::getDescriptors ()
 {
   return _descriptorSet;
 }
 
 bool
-DescriptorBase::removeDescriptor (GenericDescriptor *descriptor)
+DescriptorBase::removeDescriptor (Descriptor *descriptor)
 {
-  vector<GenericDescriptor *>::iterator i;
+  vector<Descriptor *>::iterator i;
   for (i = _descriptorSet->begin (); i != _descriptorSet->end (); ++i)
     {
       if (*i == descriptor)

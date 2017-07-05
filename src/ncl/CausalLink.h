@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Node.h"
 
-#include "GenericDescriptor.h"
+#include "Descriptor.h"
 
 #include "Connector.h"
 #include "AttributeAssessment.h"
@@ -37,7 +37,7 @@ class CausalLink : public Link
 public:
   CausalLink (const string &uid, Connector *_connector);
   virtual ~CausalLink (){}
-  bool containsSourceNode (Node *node, GenericDescriptor *descriptor);
+  bool containsSourceNode (Node *node, Descriptor *descriptor);
 
   vector<Bind *> *getActionBinds ();
   vector<Bind *> *getConditionBinds ();

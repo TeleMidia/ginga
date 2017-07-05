@@ -48,7 +48,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Entity.h"
 #include "EventUtil.h"
 #include "FocusDecoration.h"
-#include "GenericDescriptor.h"
 #include "InterfacePoint.h"
 #include "IntervalAnchor.h"
 #include "KeyNavigation.h"

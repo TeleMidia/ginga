@@ -80,7 +80,7 @@ Link::~Link ()
 }
 
 Bind *
-Link::bind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
+Link::bind (Node *node, InterfacePoint *interfPt, Descriptor *desc,
             string roleId)
 {
   Role *role;
@@ -97,7 +97,7 @@ Link::bind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
 }
 
 Bind *
-Link::bind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
+Link::bind (Node *node, InterfacePoint *interfPt, Descriptor *desc,
             Role *role)
 {
   Bind *bind;
@@ -129,7 +129,7 @@ Link::isConsistent ()
 
 Bind *
 Link::getBind (Node *node, InterfacePoint *interfPt,
-               GenericDescriptor *desc, Role *role)
+               Descriptor *desc, Role *role)
 {
   map<string, vector<Bind *> *>::iterator i;
 
@@ -355,22 +355,22 @@ Link::updateConnector (Connector *newConnector)
 }
 
 bool
-Link::containsNode (Node *node, GenericDescriptor *descriptor)
+Link::containsNode (Node *node, Descriptor *descriptor)
 {
   return containsNode (node, descriptor, getBinds ());
 }
 
 bool
-Link::containsNode (Node *node, GenericDescriptor *descriptor,
+Link::containsNode (Node *node, Descriptor *descriptor,
                     vector<Bind *> *binds)
 {
   Bind *bind;
   Node *bindNode;
   InterfacePoint *bindInterface;
-  GenericDescriptor *bindDescriptor;
+  Descriptor *bindDescriptor;
 
   NodeEntity *nodeEntity;
-  GenericDescriptor *entityDesc;
+  Descriptor *entityDesc;
 
   vector<Bind *>::iterator i;
 
