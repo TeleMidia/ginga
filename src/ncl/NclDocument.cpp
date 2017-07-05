@@ -144,14 +144,7 @@ NclDocument::clearDocument ()
       _connectorBase = NULL;
     }
 
-  if (_body != NULL)
-    {
-      if (Entity::hasInstance (_body, true))
-        {
-          delete _body;
-        }
-      _body = NULL;
-    }
+  delete _body;
 }
 
 Connector *
@@ -507,7 +500,7 @@ NclDocument::getSettingsNodes ()
   ContextNode *body;
   list<Node *> compositions;
 
-  vector<Node *> *nodes;
+  const vector<Node *> *nodes;
   vector<Node *> *settings;
 
   body = this->getBody ();
@@ -524,7 +517,13 @@ NclDocument::getSettingsNodes ()
 
   for (guint i = 0; i < nodes->size (); i++)
     {
-      NodeEntity *node = (NodeEntity *)((nodes->at (i))->getDataEntity ());
+      NodeEntity *node = cast (NodeEntity *, nodes->at (i));
+      if (node == nullptr)
+        {
+          g_assert (instanceof (ReferNode *, nodes->at (i)));
+          node = cast (NodeEntity *, cast (ReferNode *, nodes->at (i))
+                       ->getReferredEntity ());
+        }
       g_assert_nonnull (node);
 
       if (instanceof (ContentNode *, node)

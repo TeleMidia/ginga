@@ -342,7 +342,8 @@ Converter::addExecutionObject (ExecutionObject *exeObj,
     {
       if (referNode->getInstanceType () == "instSame")
         {
-          Entity *entity = referNode->getDataEntity ();
+          Entity *entity = referNode->getReferredEntity ();
+          g_assert_nonnull (entity);
           auto entityContentNode = cast (ContentNode *, entity);
 
           if (entityContentNode
@@ -461,12 +462,17 @@ Converter::createExecutionObject (
   ExecutionObject *exeObj;
   PresentationEvent *compositeEvt;
 
-  auto nodeEntity = cast (NodeEntity *,
-        perspective->getAnchorNode ()->getDataEntity ());
-
-  g_assert_nonnull (nodeEntity);
 
   node = perspective->getAnchorNode ();
+
+  NodeEntity *nodeEntity = cast (NodeEntity *, node);
+  if (nodeEntity == nullptr)
+    {
+      g_assert (instanceof (ReferNode *, node));
+      nodeEntity = cast (NodeEntity *, cast (ReferNode *, node)
+                         ->getReferredEntity ());
+    }
+  g_assert_nonnull (nodeEntity);
 
   // solve execution object cross reference coming from refer nodes with
   // new instance = false
@@ -597,7 +603,8 @@ Converter::createDummyCascadingDescriptor (Node *node)
             {
               if (referNode->getInstanceDescriptor () == nullptr)
                 {
-                  nodeEntity = (NodeEntity *) node->getDataEntity ();
+                  nodeEntity = cast (NodeEntity *, node);
+                  g_assert_nonnull (nodeEntity);
                   ncmDesc = (Descriptor *) nodeEntity->getDescriptor ();
 
                   if (ncmDesc == nullptr)
@@ -625,7 +632,7 @@ Converter::createDummyCascadingDescriptor (Node *node)
       && referNode->getInstanceType () == "new"
       && referNode->getInstanceDescriptor () == nullptr)
     {
-      auto nodeEntity = cast (NodeEntity *, node->getDataEntity ());
+      auto nodeEntity = cast (NodeEntity *, node);
       g_assert_nonnull (nodeEntity);
 
       ncmDesc = cast (Descriptor *, nodeEntity->getDescriptor ());
@@ -654,7 +661,7 @@ Converter::checkCascadingDescriptor (Node *node)
   else if (referNode
            && referNode->getInstanceType () == "new")
     {
-      auto nodeEntity = cast (NodeEntity *, node->getDataEntity ());
+      auto nodeEntity = cast (NodeEntity *, node);
       g_assert_nonnull (nodeEntity);
 
       node->copyProperties (nodeEntity);
@@ -662,40 +669,6 @@ Converter::checkCascadingDescriptor (Node *node)
     }
 
   return cascadingDescriptor;
-}
-
-NclCascadingDescriptor *
-Converter::checkContextCascadingDescriptor (
-    NclNodeNesting *nodePerspective,
-    NclCascadingDescriptor *cascadingDescriptor, Node *ncmNode)
-{
-  int size;
-  NclCascadingDescriptor *resDesc = cascadingDescriptor;
-
-  // Is there a node descriptor defined in the context node?
-  size = nodePerspective->getNumNodes ();
-  if (size > 1 && nodePerspective->getNode (size - 2) != nullptr
-      && instanceof (ContextNode *, nodePerspective->getNode (size - 2)))
-    {
-      auto context = cast (ContextNode *, 
-            nodePerspective->getNode (size - 2)->getDataEntity ());
-      g_assert_nonnull (context);
-
-      if (context->getNodeDescriptor (ncmNode) != nullptr)
-        {
-          if (resDesc == nullptr)
-            {
-              resDesc = new NclCascadingDescriptor (
-                    context->getNodeDescriptor (ncmNode));
-            }
-          else
-            {
-              resDesc->cascade (context->getNodeDescriptor (ncmNode));
-            }
-        }
-    }
-
-  return resDesc;
 }
 
 NclCascadingDescriptor *
@@ -720,7 +693,9 @@ Converter::getCascadingDescriptor (NclNodeNesting *nodePerspective,
     }
   else
     {
-      node = cast (Node *, anchorNode->getDataEntity ());
+      node = cast (Node *, anchorNode);
+      g_assert_nonnull (node);
+
       auto nodeEntity = cast (NodeEntity *, node);
       if (node == nullptr || nodeEntity == nullptr)
         {
@@ -735,9 +710,6 @@ Converter::getCascadingDescriptor (NclNodeNesting *nodePerspective,
     {
       cascadingDescriptor = new NclCascadingDescriptor (ncmDesc);
     }
-
-  cascadingDescriptor = checkContextCascadingDescriptor (
-        nodePerspective, cascadingDescriptor, node);
 
   // there is an explicit descriptor (user descriptor)?
   if (descriptor != nullptr)
@@ -958,8 +930,7 @@ Converter::processExecutionObjectSwitch (
   map<string, ExecutionObject *>::iterator i;
   ExecutionObject *selectedObject;
 
-  auto switchNode = cast (SwitchNode *, 
-        switchObject->getDataObject ()->getDataEntity ());
+  auto switchNode = cast (SwitchNode *, switchObject->getDataObject ());
   g_assert_nonnull (switchNode);
 
   selectedNode = _ruleAdapter->adaptSwitch (switchNode);
@@ -1049,7 +1020,8 @@ Converter::resolveSwitchEvents (
     }
 
   selectedNode = selectedObject->getDataObject ();
-  selectedNodeEntity = (NodeEntity *)(selectedNode->getDataEntity ());
+  selectedNodeEntity = cast (NodeEntity *, selectedNode);
+  g_assert_nonnull (selectedNodeEntity);
 
   if (events.empty ())
     {
@@ -1077,9 +1049,7 @@ Converter::resolveSwitchEvents (
 
           for (Port *mapping: *(switchPort->getPorts ()))
             {
-              if (mapping->getNode () == selectedNode
-                  || mapping->getNode ()->getDataEntity ()
-                  == selectedNode->getDataEntity ())
+              if (mapping->getNode () == selectedNode)
                 {
                   nodePerspective
                       = switchObject->getNodePerspective ();
@@ -1174,11 +1144,9 @@ Converter::insertContext (NclNodeNesting *contextPerspective,
         || instanceof (PropertyAnchor *, port->getEndInterfacePoint ())
         || instanceof (SwitchPort *, port->getEndInterfacePoint ()))
       || !(instanceof (ContextNode *,
-                       contextPerspective->getAnchorNode ()
-                       ->getDataEntity ())))
+                       contextPerspective->getAnchorNode ())))
     {
       error = true;
-
     }
 
   if (error)
@@ -2102,8 +2070,7 @@ Converter::createEvent (
   endPointNodeSequence = new NclNodeNesting (seq);
   if (endPointNodeSequence->getAnchorNode ()
       != endPointPerspective->getAnchorNode ()
-      && endPointNodeSequence->getAnchorNode ()
-      != parentNode->getDataEntity ())
+      && endPointNodeSequence->getAnchorNode () != parentNode)
     {
       endPointPerspective->append (endPointNodeSequence);
     }

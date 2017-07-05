@@ -35,8 +35,9 @@ ExecutionObjectContext::ExecutionObjectContext (
   _pausedEvents.clear ();
   _pendingLinks.clear ();
 
-  entity = dataObject->getDataEntity ();
+  entity = cast (Entity *, dataObject);
   g_assert_nonnull (entity);
+
   if (!instanceof (ContextNode *, entity))
     return;                     // switch, nothing to do
 
@@ -372,17 +373,6 @@ ExecutionObjectContext::eventStateChanged (
                 }
             }
 
-          if (_runningEvents.size () < 2)
-            {
-              listRunningObjects ();
-            }
-
-          if (_runningEvents.size () < 2 && _pausedEvents.empty ()
-              && !_pendingLinks.empty ())
-            {
-              listPendingLinks ();
-            }
-
           if (_runningEvents.empty () && _pausedEvents.empty ()
               && _pendingLinks.empty ())
             {
@@ -492,60 +482,5 @@ ExecutionObjectContext::checkLinkConditions ()
     }
 }
 
-void
-ExecutionObjectContext::listRunningObjects ()
-{
-  map<string, ExecutionObject *>::iterator i;
-  vector<NclEvent *>::iterator j;
-  ExecutionObject *object;
-  NclEvent *event;
-
-  clog << "ExecutionObjectContext::listRunningObjects for '";
-  clog << _id << "': ";
-  i = _execObjList.begin ();
-  while (i != _execObjList.end ())
-    {
-      object = i->second;
-      vector<NclEvent *> events = object->getEvents ();
-      j = events.begin ();
-      while (j != events.end ())
-        {
-          event = *j;
-          if (event->getCurrentState () != EventState::SLEEPING)
-            {
-              clog << "'" << i->first << "', ";
-            }
-          ++j;
-        }
-      ++i;
-    }
-  clog << " runingEvents->size = '" << _runningEvents.size () << "'";
-  clog << endl;
-}
-
-void
-ExecutionObjectContext::listPendingLinks ()
-{
-  map<NclFormatterLink *, int>::iterator i;
-  Link *ncmLink;
-
-  clog << "ExecutionObjectContext::listPendingLinks for '";
-  clog << _id << "': ";
-
-  i = _pendingLinks.begin ();
-  while (i != _pendingLinks.end ())
-    {
-      ncmLink = i->first->getNcmLink ();
-
-      if (Entity::hasInstance (ncmLink, false))
-        {
-          clog << "'" << ncmLink->getId () << "', ";
-        }
-      ++i;
-    }
-
-  clog << " pendingLinks.size = '" << _pendingLinks.size () << "'";
-  clog << endl;
-}
 
 GINGA_FORMATTER_END

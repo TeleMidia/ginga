@@ -23,6 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
+class Node;
 class ReferNode : public Node
 {
 public:
@@ -37,7 +38,6 @@ public:
 
   Entity *getReferredEntity ();
   void setReferredEntity (Entity *);
-  Entity *getDataEntity ();
 
 private:
   string _instanceType;

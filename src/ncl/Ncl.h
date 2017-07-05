@@ -44,7 +44,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ContextNode.h"
 #include "Descriptor.h"
 #include "DescriptorBase.h"
-#include "DescriptorSwitch.h"
 #include "DescriptorUtil.h"
 #include "Entity.h"
 #include "EventUtil.h"

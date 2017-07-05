@@ -32,7 +32,6 @@ NodeEntity::~NodeEntity ()
 {
   vector<Anchor *>::iterator i;
   set<ReferNode *>::iterator j;
-  Anchor *anchor;
 
   if (_descriptor != NULL)
     {
@@ -46,31 +45,7 @@ NodeEntity::~NodeEntity ()
       _content = NULL;
     }
 
-  for (j = _instSameInstances.begin (); j != _instSameInstances.end (); ++j)
-    {
-      if ((Node *)(*j) != (Node *)this && Entity::hasInstance ((*j), true))
-        {
-          delete (*j);
-        }
-    }
   _instSameInstances.clear ();
-
-  for (j = _gradSameInstances.begin (); j != _gradSameInstances.end (); ++j)
-    {
-      delete (*j);
-    }
-  _gradSameInstances.clear ();
-
-  i = _anchorList.begin ();
-  while (i != _anchorList.end ())
-    {
-      anchor = (*i);
-      if (Entity::hasInstance (anchor, true))
-        {
-          delete (*i);
-        }
-      ++i;
-    }
   _anchorList.clear ();
 }
 
@@ -90,26 +65,6 @@ NodeEntity::getLambdaAnchor ()
   LambdaAnchor *lambda;
   lambda = static_cast<LambdaAnchor *> (*(_anchorList.begin ()));
   return lambda;
-}
-
-void
-NodeEntity::setId (const string &id)
-{
-  LambdaAnchor *anchor;
-
-  Entity::setId (id);
-  anchor = getLambdaAnchor ();
-  anchor->setId (id);
-}
-
-bool
-NodeEntity::removeAnchor (int index)
-{
-  if (index == 0)
-    {
-      return false;
-    }
-  return Node::removeAnchor (index);
 }
 
 GenericDescriptor *
@@ -142,27 +97,10 @@ NodeEntity::addAnchor (Anchor *anchor)
   return Node::addAnchor (anchor);
 }
 
-bool
-NodeEntity::removeAnchor (Anchor *anchor)
-{
-  return Node::removeAnchor (anchor);
-}
-
 set<ReferNode *> *
 NodeEntity::getInstSameInstances ()
 {
   return &_instSameInstances;
-}
-
-set<ReferNode *> *
-NodeEntity::getGradSameInstances ()
-{
-  if (_gradSameInstances.empty ())
-    {
-      return NULL;
-    }
-
-  return &_gradSameInstances;
 }
 
 bool
@@ -177,20 +115,6 @@ NodeEntity::addSameInstance (ReferNode *node)
 
       _instSameInstances.insert (node);
     }
-  else if (node->getInstanceType () == "gradSame")
-    {
-      if (_gradSameInstances.count (node) != 0)
-        {
-          return false;
-        }
-
-      _gradSameInstances.insert (node);
-    }
-  else
-    {
-      return false;
-    }
-
   return true;
 }
 
@@ -198,12 +122,6 @@ void
 NodeEntity::removeSameInstance (ReferNode *node)
 {
   set<ReferNode *>::iterator i;
-
-  i = _gradSameInstances.find (node);
-  if (i != _gradSameInstances.end ())
-    {
-      _gradSameInstances.erase (i);
-    }
 
   i = _instSameInstances.find (node);
   if (i != _instSameInstances.end ())

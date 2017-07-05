@@ -61,13 +61,11 @@ SwitchNode::~SwitchNode ()
   _ruleList.clear ();
 }
 
-bool
+void
 SwitchNode::addNode (unsigned int index, Node *node, Rule *rule)
 {
-  if (node == NULL || rule == NULL || index > _nodes.size ())
-    {
-      return false;
-    }
+  g_assert_nonnull (node);
+  g_assert_nonnull (rule);
 
   if (index == _nodes.size ())
     {
@@ -81,34 +79,25 @@ SwitchNode::addNode (unsigned int index, Node *node, Rule *rule)
     }
 
   node->setParentComposition (this);
-  return true;
 }
 
-bool
+void
 SwitchNode::addNode (Node *node, Rule *rule)
 {
-  if (node == NULL || rule == NULL)
-    {
-      return false;
-    }
+  g_assert_nonnull (node);
+  g_assert_nonnull (rule);
 
   _nodes.push_back (node);
   _ruleList.push_back (rule);
 
   node->setParentComposition (this);
-  return true;
 }
 
-bool
+void
 SwitchNode::addNode (Node *node)
 {
-  if (!isDocumentNode(node))
-    {
-      return false;
-    }
-
+  g_assert_nonnull (node);
   setDefaultNode (node);
-  return true;
 }
 
 bool
@@ -125,44 +114,6 @@ SwitchNode::addSwitchPortMap (SwitchPort *switchPort, Node *node,
 
   port = new Port (switchPort->getId (), node, interfacePoint);
   return switchPort->addPort (port);
-}
-
-bool
-SwitchNode::addPort (Port *port)
-{
-  return addPort ((int) _portList.size (), port);
-}
-
-bool
-SwitchNode::addPort (unsigned int index, Port *port)
-{
-  if (!(instanceof (SwitchPort *, port)))
-    {
-      return false;
-    }
-
-  return CompositeNode::addPort (index, port);
-}
-
-void
-SwitchNode::exchangeNodesAndRules (unsigned int index1, unsigned int index2)
-{
-  Node *auxNode;
-  Rule *auxRule;
-
-  if (index1 >= _nodes.size () || index2 >= _nodes.size ())
-    {
-      return;
-    }
-
-  auxNode = (Node *)(_nodes[index1]);
-  auxRule = (Rule *)(_ruleList[index1]);
-
-  _nodes[index1] = _nodes[index2];
-  _nodes[index2] = auxNode;
-
-  _ruleList[index1] = _ruleList[index2];
-  _ruleList[index2] = auxRule;
 }
 
 Node *

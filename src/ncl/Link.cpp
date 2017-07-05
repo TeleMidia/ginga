@@ -175,11 +175,8 @@ Link::getConnector ()
 void
 Link::setParentComposition (ContextNode *composition)
 {
-  if (composition == NULL
-      || ((ContextNode *)composition)->containsLink (this))
-    {
-      this->_composition = composition;
-    }
+  g_assert_nonnull (composition);
+  _composition = composition;
 }
 
 ContextNode *
@@ -409,7 +406,14 @@ Link::containsNode (Node *node, GenericDescriptor *descriptor,
       if (node == bindNode)
         {
           bindDescriptor = bind->getDescriptor ();
-          nodeEntity = (NodeEntity *)node->getDataEntity ();
+          nodeEntity = cast (NodeEntity *, node);
+          if (nodeEntity == nullptr)
+            {
+              g_assert (instanceof (ReferNode *, node));
+              nodeEntity = cast (NodeEntity *, cast (ReferNode *, node)
+                                 ->getReferredEntity ());
+            }
+          g_assert_nonnull (nodeEntity);
 
           if (bindDescriptor != NULL)
             {

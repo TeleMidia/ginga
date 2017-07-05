@@ -117,9 +117,6 @@ private:
                           GenericDescriptor *descriptor);
 
   static NclCascadingDescriptor *checkCascadingDescriptor (Node *node);
-  static NclCascadingDescriptor *checkContextCascadingDescriptor (
-      NclNodeNesting *nodePerspective,
-      NclCascadingDescriptor *cascadingDescriptor, Node *ncmNode);
 
   static bool hasDescriptorPropName (const string &name);
 

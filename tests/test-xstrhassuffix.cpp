@@ -25,5 +25,5 @@ main (void)
   g_assert (xstrhassuffix ("hassuffix", "x") == true);
   g_assert (xstrhassuffix ("hassuffix", "has") == false);
   g_assert (xstrhassuffix ("", "has") == false);
-  exit (0);
+  exit (EXIT_SUCCESS);
 }

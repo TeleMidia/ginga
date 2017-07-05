@@ -27,7 +27,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SwitchPort.h"
 
 #include "Rule.h"
-#include "DescriptorSwitch.h"
 #include "SwitchContent.h"
 
 GINGA_NCL_BEGIN
@@ -37,22 +36,14 @@ class SwitchNode : public CompositeNode
 public:
   SwitchNode (const string &_id);
   virtual ~SwitchNode ();
-  bool addNode (unsigned int index, Node *node, Rule *rule);
-  bool addNode (Node *node, Rule *rule);
+  void addNode (unsigned int index, Node *node, Rule *rule);
+  void addNode (Node *node, Rule *rule);
 
   // virtual from CompositeNode
-  bool addNode (Node *node);
+  void addNode (Node *);
 
   bool addSwitchPortMap (SwitchPort *switchPort, Node *node,
                          InterfacePoint *interfacePoint);
-
-  // virtual from CompositeNode
-  bool addPort (Port *port);
-
-  // virtual from CompositeNode
-  bool addPort (unsigned int index, Port *port);
-
-  void exchangeNodesAndRules (unsigned int index1, unsigned int index2);
 
   Node *getDefaultNode ();
 

@@ -72,7 +72,6 @@ NclCascadingDescriptor::NclCascadingDescriptor (
 NclCascadingDescriptor::~NclCascadingDescriptor ()
 {
   vector<GenericDescriptor *>::iterator i;
-  DescriptorSwitch *ds;
 
   if (inputTransitions != NULL)
     {
@@ -84,20 +83,6 @@ NclCascadingDescriptor::~NclCascadingDescriptor ()
     {
       delete outputTransitions;
       outputTransitions = NULL;
-    }
-
-  i = descriptors.begin ();
-  while (i != descriptors.end ())
-    {
-      if (DescriptorSwitch::hasInstance ((DescriptorSwitch *)*i, false))
-        {
-          ds = cast (DescriptorSwitch *, *i);
-          if (ds != NULL)
-            {
-              ds->select (NULL);
-            }
-        }
-      ++i;
     }
 }
 
@@ -184,12 +169,6 @@ NclCascadingDescriptor::cascadeDescriptor (Descriptor *descriptor)
       this->selBorderColor = focusDecoration->getSelBorderColor ();
       focusBorderWidth = focusDecoration->getFocusBorderWidth ();
 
-      if (!(std::isnan (focusDecoration->getFocusBorderTransparency ())))
-        {
-          focusBorderTransparency
-              = focusDecoration->getFocusBorderTransparency ();
-        }
-
       if (focusDecoration->getFocusSrc () != "")
         {
           focusSrc = focusDecoration->getFocusSrc ();
@@ -261,7 +240,7 @@ NclCascadingDescriptor::cascade (GenericDescriptor *descriptor)
 {
   GenericDescriptor *preferredDescriptor;
 
-  preferredDescriptor = (GenericDescriptor *)(descriptor->getDataEntity ());
+  preferredDescriptor = descriptor;
 
   if ((preferredDescriptor == NULL)
       || instanceof (NclCascadingDescriptor *, preferredDescriptor))
@@ -312,23 +291,11 @@ NclCascadingDescriptor::cascadeUnsolvedDescriptor ()
     return;
 
   GenericDescriptor *genericDescriptor, *descriptor;
-  DescriptorSwitch *descAlternatives;
-  GenericDescriptor *auxDescriptor;
 
   genericDescriptor = (GenericDescriptor *)(unsolvedDescriptors[0]);
 
-  if (instanceof (DescriptorSwitch *, genericDescriptor))
-    {
-      descAlternatives = (DescriptorSwitch *)genericDescriptor;
-      auxDescriptor = descAlternatives->getSelectedDescriptor ();
-      descriptor = (GenericDescriptor *)auxDescriptor->getDataEntity ();
-    }
-  else
-    {
-      descriptor = (Descriptor *)genericDescriptor;
-      unsolvedDescriptors.erase (unsolvedDescriptors.begin ());
-    }
-
+  descriptor = (Descriptor *)genericDescriptor;
+  unsolvedDescriptors.erase (unsolvedDescriptors.begin ());
   if (isLastDescriptor (descriptor))
     {
       return;

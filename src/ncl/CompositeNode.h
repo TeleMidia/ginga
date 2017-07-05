@@ -28,34 +28,22 @@ class CompositeNode : public NodeEntity
 public:
   CompositeNode (const string &);
   virtual ~CompositeNode ();
-  bool addAnchor (int, Anchor *);
-  bool addAnchor (Anchor *);
 
   // Virtual to all.
-  virtual bool addNode (Node *) = 0;
-
-  // Virtual to SwitchNode
-  virtual bool addPort (unsigned int, Port *);
+  virtual void addNode (Node *) = 0;
 
   // Virtual to SwitchNode.
-  virtual bool addPort (Port *);
+  virtual void addPort (Port *);
 
-  void clearPorts ();
-  unsigned int getNumPorts ();
   Port *getPort (const string &);
-  Port *getPort (unsigned int);
-  vector<Port *> *getPorts ();
-  unsigned int indexOfPort (Port *);
-  bool removePort (Port *);
+  const vector<Node *> *getNodes ();
+  const vector<Port *> *getPorts ();
 
   // Virtual to SwitchNode.
   virtual InterfacePoint *getMapInterface (Port *);
 
   // Virtual to SwitchNode.
   virtual Node *getNode (const string &nodeId);
-
-  vector<Node *> *getNodes ();
-  unsigned int getNumNodes ();
 
   // Virtual to SwitchNode.
   virtual bool recursivelyContainsNode (const string &);
@@ -66,20 +54,9 @@ public:
   // Virtual to SwitchNode.
   virtual Node *recursivelyGetNode (const string &);
 
-  // Virtual to SwitchNode.
-  virtual bool removeNode (Node *);
-
-  // Virtual to ContextNode.
-  virtual GenericDescriptor *getNodeDescriptor (Node *);
-
-  // Virtual to ContextNode.
-  virtual bool setNodeDescriptor (const string &, GenericDescriptor *);
-
 protected:
   vector<Node *> _nodes;
-  vector<Port *> _portList;
-  static bool
-  isDocumentNode (Node *node);
+  vector<Port *> _ports;
 };
 
 GINGA_NCL_END
