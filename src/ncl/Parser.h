@@ -84,8 +84,6 @@ private:
   DescriptorBase *parseDescriptorBase (DOMElement *);
   Descriptor *parseDescriptor (DOMElement *);
 
-  DescriptorSwitch *parseDescriptorSwitch (DOMElement *);
-
   ConnectorBase *parseConnectorBase (DOMElement *);
   CausalConnector *parseCausalConnector (DOMElement *);
   CompoundCondition *parseCompoundCondition (DOMElement *);

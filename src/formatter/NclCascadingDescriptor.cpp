@@ -72,7 +72,6 @@ NclCascadingDescriptor::NclCascadingDescriptor (
 NclCascadingDescriptor::~NclCascadingDescriptor ()
 {
   vector<GenericDescriptor *>::iterator i;
-  DescriptorSwitch *ds;
 
   if (inputTransitions != NULL)
     {
@@ -84,20 +83,6 @@ NclCascadingDescriptor::~NclCascadingDescriptor ()
     {
       delete outputTransitions;
       outputTransitions = NULL;
-    }
-
-  i = descriptors.begin ();
-  while (i != descriptors.end ())
-    {
-      if (DescriptorSwitch::hasInstance ((DescriptorSwitch *)*i, false))
-        {
-          ds = cast (DescriptorSwitch *, *i);
-          if (ds != NULL)
-            {
-              ds->select (NULL);
-            }
-        }
-      ++i;
     }
 }
 
@@ -306,23 +291,11 @@ NclCascadingDescriptor::cascadeUnsolvedDescriptor ()
     return;
 
   GenericDescriptor *genericDescriptor, *descriptor;
-  DescriptorSwitch *descAlternatives;
-  GenericDescriptor *auxDescriptor;
 
   genericDescriptor = (GenericDescriptor *)(unsolvedDescriptors[0]);
 
-  if (instanceof (DescriptorSwitch *, genericDescriptor))
-    {
-      descAlternatives = (DescriptorSwitch *)genericDescriptor;
-      auxDescriptor = descAlternatives->getSelectedDescriptor ();
-      descriptor = (GenericDescriptor *)auxDescriptor->getDataEntity ();
-    }
-  else
-    {
-      descriptor = (Descriptor *)genericDescriptor;
-      unsolvedDescriptors.erase (unsolvedDescriptors.begin ());
-    }
-
+  descriptor = (Descriptor *)genericDescriptor;
+  unsolvedDescriptors.erase (unsolvedDescriptors.begin ());
   if (isLastDescriptor (descriptor))
     {
       return;

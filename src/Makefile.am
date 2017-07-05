@@ -79,7 +79,6 @@ src+= ncl/ContentNode.cpp
 src+= ncl/ContextNode.cpp
 src+= ncl/Descriptor.cpp
 src+= ncl/DescriptorBase.cpp
-src+= ncl/DescriptorSwitch.cpp
 src+= ncl/Entity.cpp
 src+= ncl/EventUtil.cpp
 src+= ncl/FocusDecoration.cpp
