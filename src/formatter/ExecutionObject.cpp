@@ -36,16 +36,17 @@ set<ExecutionObject *> ExecutionObject::_objects;
 
 ExecutionObject::ExecutionObject (const string &id,
                                   Node *node,
-                                  NclCascadingDescriptor *descriptor,
                                   INclActionListener *seListener)
 {
   this->_seListener = seListener;
   this->_dataObject = node;
   this->_wholeContent = nullptr;
-  this->_descriptor = nullptr;
   this->_isCompiled = false;
   this->_mainEvent = nullptr;
-  this->_descriptor = descriptor;
+
+  NodeEntity *entity = cast (NodeEntity *, _dataObject);
+  if (entity != nullptr)
+    _descriptor = entity->getDescriptor ();
 
   _id = id;
   _player = nullptr;
@@ -176,7 +177,7 @@ ExecutionObject::getDataObject ()
   return _dataObject;
 }
 
-NclCascadingDescriptor *
+Descriptor *
 ExecutionObject::getDescriptor ()
 {
   return _descriptor;
@@ -244,20 +245,6 @@ ExecutionObject::removeParentObject (Node *parentNode,
         }
       _parentTable.erase (i);
     }
-}
-
-void
-ExecutionObject::setDescriptor (Descriptor *descriptor)
-{
-  NclCascadingDescriptor *cascade;
-  cascade = new NclCascadingDescriptor (descriptor);
-
-  if (this->_descriptor != nullptr)
-    {
-      delete this->_descriptor;
-    }
-
-  this->_descriptor = cascade;
 }
 
 bool
@@ -656,13 +643,7 @@ ExecutionObject::start ()
   // Initialize player properties.
   if (_descriptor != nullptr)
     {
-      vector <Descriptor *> *vec = _descriptor->getNcmDescriptors ();
-      g_assert (vec->size () == 1);
-
-      Descriptor *desc = cast (Descriptor *, (*vec)[0]);
-      g_assert_nonnull (desc);
-
-      LayoutRegion *region = desc->getRegion ();
+      LayoutRegion *region = _descriptor->getRegion ();
       if (region != nullptr)
         {
           int z, zorder;
@@ -671,7 +652,7 @@ ExecutionObject::start ()
           _player->setZ (z, zorder);
         }
 
-      for (auto param: *desc->getParameters ())
+      for (auto param: *_descriptor->getParameters ())
         _player->setProperty (param->getName (), param->getValue ());
     }
 

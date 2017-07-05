@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclEvents.h"
 #include "NclEventTransitionManager.h"
-#include "NclCascadingDescriptor.h"
 #include "NclActions.h"
 #include "NclNodeNesting.h"
 
@@ -40,9 +39,7 @@ class ExecutionObjectContext;
 class ExecutionObject : public IEventListener
 {
 public:
-  ExecutionObject (const string &, Node *, NclCascadingDescriptor *,
-                   INclActionListener *);
-
+  ExecutionObject (const string &, Node *, INclActionListener *);
   virtual ~ExecutionObject ();
 
   virtual bool isSleeping ();
@@ -50,7 +47,7 @@ public:
   virtual bool isOccurring ();
 
   Node *getDataObject ();
-  NclCascadingDescriptor *getDescriptor ();
+  Descriptor *getDescriptor ();
   string getId ();
 
   ExecutionObjectContext *getParentObject ();
@@ -63,7 +60,6 @@ public:
   virtual void removeParentObject (Node *parentNode,
                                    ExecutionObjectContext *parentObject);
 
-  void setDescriptor (Descriptor *_descriptor);
   virtual bool addEvent (NclEvent *event);
   void addPresentationEvent (PresentationEvent *event);
   bool containsEvent (NclEvent *event);
@@ -91,7 +87,7 @@ public:
 
 protected:
   Node *_dataObject;
-  NclCascadingDescriptor *_descriptor;
+  Descriptor *_descriptor;
   PresentationEvent *_wholeContent;
   INclActionListener *_seListener;
 

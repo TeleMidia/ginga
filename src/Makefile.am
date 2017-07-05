@@ -42,7 +42,6 @@ src+= formatter/ExecutionObject.cpp
 src+= formatter/ExecutionObjectContext.cpp
 src+= formatter/ExecutionObjectSwitch.cpp
 src+= formatter/NclActions.cpp
-src+= formatter/NclCascadingDescriptor.cpp
 src+= formatter/NclEventTransitionManager.cpp
 src+= formatter/NclEvents.cpp
 src+= formatter/NclFormatterLink.cpp
