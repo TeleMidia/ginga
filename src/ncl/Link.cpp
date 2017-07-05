@@ -409,7 +409,14 @@ Link::containsNode (Node *node, GenericDescriptor *descriptor,
       if (node == bindNode)
         {
           bindDescriptor = bind->getDescriptor ();
-          nodeEntity = (NodeEntity *)node->getDataEntity ();
+          nodeEntity = cast (NodeEntity *, node);
+          if (nodeEntity == nullptr)
+            {
+              g_assert (instanceof (ReferNode *, node));
+              nodeEntity = cast (NodeEntity *, cast (ReferNode *, node)
+                                 ->getReferredEntity ());
+            }
+          g_assert_nonnull (nodeEntity);
 
           if (bindDescriptor != NULL)
             {

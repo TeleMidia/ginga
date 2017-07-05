@@ -44,8 +44,6 @@ public:
   PropertyAnchor *getPropertyAnchor (const string &);
   int getNumAnchors ();
   int indexOfAnchor (Anchor *);
-  virtual bool removeAnchor (int);
-  virtual bool removeAnchor (Anchor *);
 
 protected:
   vector<Anchor *> _anchorList;

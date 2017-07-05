@@ -35,8 +35,9 @@ ExecutionObjectContext::ExecutionObjectContext (
   _pausedEvents.clear ();
   _pendingLinks.clear ();
 
-  entity = dataObject->getDataEntity ();
+  entity = cast (Entity *, dataObject);
   g_assert_nonnull (entity);
+
   if (!instanceof (ContextNode *, entity))
     return;                     // switch, nothing to do
 

@@ -26,7 +26,6 @@ public:
   Entity (const string &);
   virtual ~Entity ();
   string getId ();
-  virtual Entity *getDataEntity ();
 
 private:
   string _id;

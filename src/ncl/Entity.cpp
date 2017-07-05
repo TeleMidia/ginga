@@ -35,10 +35,4 @@ Entity::getId ()
   return _id;
 }
 
-Entity *
-Entity::getDataEntity ()
-{
-  return this;
-}
-
 GINGA_NCL_END

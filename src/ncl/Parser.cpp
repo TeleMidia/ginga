@@ -1650,7 +1650,7 @@ Parser::solveNodeReferences (CompositeNode *comp)
         refNode = (NodeEntity *)(_doc->getNode (ref->getId ()));
         g_assert_nonnull (refNode);
 
-        ((ReferNode *) node)->setReferredEntity (refNode->getDataEntity ());
+        ((ReferNode *) node)->setReferredEntity (refNode);
       }
     else if (instanceof (CompositeNode *, node))
       {
@@ -1730,7 +1730,7 @@ Parser::parsePort (DOMElement *elt, CompositeNode *context)
   if (unlikely (target == nullptr))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "component");
 
-  targetEntity = cast (NodeEntity *, target->getDataEntity ());
+  targetEntity = cast (NodeEntity *, target);
   g_assert_nonnull (targetEntity);
 
   if (dom_elt_try_get_attribute (value, elt, "interface"))
@@ -1923,7 +1923,7 @@ Parser::parseMapping (DOMElement *elt, SwitchNode *swtch,
   if (unlikely (mapping == nullptr))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "component");
 
-  mappingEntity = (NodeEntity *) mapping->getDataEntity ();
+  mappingEntity = cast (NodeEntity *, mapping);
   g_assert_nonnull (mappingEntity);
 
   if (dom_elt_try_get_attribute (value, elt, "interface"))
@@ -2169,7 +2169,15 @@ Parser::parseBind (DOMElement *elt, Link *link, CompositeNode *context)
     }
   g_assert_nonnull (target);
 
-  targetEntity = (NodeEntity *)(target->getDataEntity ());
+  targetEntity = cast (NodeEntity *, target);
+  if (targetEntity == nullptr)
+    {
+      g_assert (instanceof (ReferNode *, target));
+      targetEntity = cast (NodeEntity *, cast (ReferNode *, target)
+                           ->getReferredEntity ());
+    }
+  g_assert_nonnull (targetEntity);
+
   iface = nullptr;
   desc = nullptr;
 

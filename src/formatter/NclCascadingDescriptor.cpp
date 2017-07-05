@@ -240,7 +240,7 @@ NclCascadingDescriptor::cascade (GenericDescriptor *descriptor)
 {
   GenericDescriptor *preferredDescriptor;
 
-  preferredDescriptor = (GenericDescriptor *)(descriptor->getDataEntity ());
+  preferredDescriptor = descriptor;
 
   if ((preferredDescriptor == NULL)
       || instanceof (NclCascadingDescriptor *, preferredDescriptor))

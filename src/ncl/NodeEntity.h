@@ -42,10 +42,7 @@ public:
   void setContent (Content *_content);
   bool addAnchor (Anchor *anchor);
   bool addAnchor (int index, Anchor *anchor);
-  bool removeAnchor (int index);
-  bool removeAnchor (Anchor *anchor);
   set<ReferNode *> *getInstSameInstances ();
-  set<ReferNode *> *getGradSameInstances ();
   bool addSameInstance (ReferNode *node);
   void removeSameInstance (ReferNode *node);
 
@@ -55,7 +52,6 @@ protected:
 
 private:
   set<ReferNode *> _instSameInstances;
-  set<ReferNode *> _gradSameInstances;
 };
 
 GINGA_NCL_END
