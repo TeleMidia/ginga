@@ -247,7 +247,7 @@ ExecutionObject::removeParentObject (Node *parentNode,
 }
 
 void
-ExecutionObject::setDescriptor (GenericDescriptor *descriptor)
+ExecutionObject::setDescriptor (Descriptor *descriptor)
 {
   NclCascadingDescriptor *cascade;
   cascade = new NclCascadingDescriptor (descriptor);
@@ -656,16 +656,23 @@ ExecutionObject::start ()
   // Initialize player properties.
   if (_descriptor != nullptr)
     {
-      LayoutRegion *region = _descriptor->getRegion ();
-      int z, zorder;
+      vector <Descriptor *> *vec = _descriptor->getNcmDescriptors ();
+      g_assert (vec->size () == 1);
 
-      _player->setRect (region->getRect ());
+      Descriptor *desc = cast (Descriptor *, (*vec)[0]);
+      g_assert_nonnull (desc);
 
-      region->getZ (&z, &zorder);
-      _player->setZ (z, zorder);
+      LayoutRegion *region = desc->getRegion ();
+      if (region != nullptr)
+        {
+          int z, zorder;
+          _player->setRect (region->getRect ());
+          region->getZ (&z, &zorder);
+          _player->setZ (z, zorder);
+        }
 
-      for (Parameter &p: _descriptor->getParameters ())
-        _player->setProperty (p.getName (), p.getValue ());
+      for (auto param: *desc->getParameters ())
+        _player->setProperty (param->getName (), param->getValue ());
     }
 
   for (Anchor *anchor: contentNode->getAnchors ())

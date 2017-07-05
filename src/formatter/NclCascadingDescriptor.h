@@ -27,8 +27,8 @@ class NclCascadingDescriptor
 private:
   static int dummyCount;
   string id;
-  vector<GenericDescriptor *> descriptors;
-  vector<GenericDescriptor *> unsolvedDescriptors;
+  vector<Descriptor *> descriptors;
+  vector<Descriptor *> unsolvedDescriptors;
   map<string, string> parameters;
   GingaTime explicitDuration;
   int repetitions;
@@ -47,7 +47,7 @@ private:
   void cascadeDescriptor (Descriptor *descriptor);
 
 public:
-  NclCascadingDescriptor (GenericDescriptor *firstDescriptor);
+  NclCascadingDescriptor (Descriptor *firstDescriptor);
   NclCascadingDescriptor (NclCascadingDescriptor *descriptor);
   ~NclCascadingDescriptor ();
 
@@ -56,20 +56,19 @@ protected:
 
 public:
   string getId ();
-  bool isLastDescriptor (GenericDescriptor *descriptor);
-  void cascade (GenericDescriptor *preferredDescriptor);
-  GenericDescriptor *getUnsolvedDescriptor (int i);
-  vector<GenericDescriptor *> *getUnsolvedDescriptors ();
+  bool isLastDescriptor (Descriptor *descriptor);
+  void cascade (Descriptor *preferredDescriptor);
+  Descriptor *getUnsolvedDescriptor (int i);
+  vector<Descriptor *> *getUnsolvedDescriptors ();
   void cascadeUnsolvedDescriptor ();
   GingaTime getExplicitDuration ();
   LayoutRegion *getRegion ();
 
 public:
-  void setFormatterLayout ();
   int getRepetitions ();
   vector<Parameter> getParameters ();
   string getParameterValue (const string &paramName);
-  vector<GenericDescriptor *> *getNcmDescriptors ();
+  vector<Descriptor *> *getNcmDescriptors ();
   SDL_Color getFocusBorderColor ();
   double getFocusBorderTransparency ();
   int getFocusBorderWidth ();

@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-Bind::Bind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
+Bind::Bind (Node *node, InterfacePoint *interfPt, Descriptor *desc,
             Role *role)
 {
   this->_node = node;
@@ -47,7 +47,7 @@ Bind::~Bind ()
     }
 }
 
-GenericDescriptor *
+Descriptor *
 Bind::getDescriptor ()
 {
   return _descriptor;
@@ -90,7 +90,7 @@ Bind::setRole (Role *role)
 }
 
 void
-Bind::setDescriptor (GenericDescriptor *desc)
+Bind::setDescriptor (Descriptor *desc)
 {
   this->_descriptor = desc;
 }

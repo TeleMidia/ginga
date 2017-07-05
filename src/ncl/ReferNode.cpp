@@ -37,10 +37,10 @@ ReferNode::ReferNode (const string &id, Entity *entity) : Node (id)
   setReferredEntity (entity);
 }
 
-GenericDescriptor *
+Descriptor *
 ReferNode::getInstanceDescriptor ()
 {
-  GenericDescriptor *desc = NULL;
+  Descriptor *desc = NULL;
 
   if (_instanceType == "new")
     {
@@ -51,7 +51,7 @@ ReferNode::getInstanceDescriptor ()
 }
 
 void
-ReferNode::setInstanceDescriptor (GenericDescriptor *descriptor)
+ReferNode::setInstanceDescriptor (Descriptor *descriptor)
 {
   if (_instanceType == "new")
     {

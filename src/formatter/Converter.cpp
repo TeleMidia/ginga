@@ -71,7 +71,7 @@ Converter::setLinkActionListener (INclActionListener *actListener)
 
 ExecutionObject *
 Converter::getExecutionObjectFromPerspective (
-    NclNodeNesting *perspective, GenericDescriptor *descriptor)
+    NclNodeNesting *perspective, Descriptor *descriptor)
 {
   ExecutionObjectContext *parentObj;
   ExecutionObject *exeObj;
@@ -385,10 +385,6 @@ Converter::addExecutionObject (ExecutionObject *exeObj,
 
   delete nodePerspective;
 
-  NclCascadingDescriptor *descriptor = exeObj->getDescriptor ();
-  if (descriptor)
-    descriptor->setFormatterLayout ();
-
   // Compile execution object links
   for (Node *node : exeObj->getNodes ())
     {
@@ -673,7 +669,7 @@ Converter::checkCascadingDescriptor (Node *node)
 
 NclCascadingDescriptor *
 Converter::getCascadingDescriptor (NclNodeNesting *nodePerspective,
-                                   GenericDescriptor *descriptor)
+                                   Descriptor *descriptor)
 {
   NclCascadingDescriptor *cascadingDescriptor = nullptr;
   Descriptor *ncmDesc;
@@ -738,7 +734,7 @@ Converter::processLink (Link *ncmLink,
                         ExecutionObject *executionObject,
                         ExecutionObjectContext *parentObject)
 {
-  GenericDescriptor *descriptor = nullptr;
+  Descriptor *descriptor = nullptr;
   NodeEntity *nodeEntity = nullptr;
   set<ReferNode *> *sameInstances;
   bool contains = false;
@@ -755,7 +751,7 @@ Converter::processLink (Link *ncmLink,
     {
       if (executionObject->getDescriptor () != nullptr)
         {
-          vector<GenericDescriptor *> *descriptors
+          vector<Descriptor *> *descriptors
               = executionObject->getDescriptor ()->getNcmDescriptors ();
 
           if (descriptors != nullptr
@@ -1096,7 +1092,7 @@ Converter::resolveSwitchEvents (
 NclEvent *
 Converter::insertNode (NclNodeNesting *perspective,
                        InterfacePoint *interfacePoint,
-                       GenericDescriptor *descriptor)
+                       Descriptor *descriptor)
 {
   ExecutionObject *executionObject;
   NclEvent *event;
