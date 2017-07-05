@@ -25,5 +25,5 @@ main (void)
   g_assert (ginga_parse_percent ("15", 100, 0, 255) == 15);
   g_assert (ginga_parse_percent ("15%", 200, 0, 255) == 30);
   g_assert (ginga_parse_percent ("15%", 200, 0, 10) == 10);
-  exit (0);
+  exit (EXIT_SUCCESS);
 }

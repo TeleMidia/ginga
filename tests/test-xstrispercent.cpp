@@ -30,5 +30,5 @@ main (void)
 
   g_assert (xstrispercent ("50%") == true);
   g_assert (xstrispercent ("1250%") == true);
-  exit (0);
+  exit (EXIT_SUCCESS);
 }
