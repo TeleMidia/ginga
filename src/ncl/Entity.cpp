@@ -20,16 +20,26 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
+/**
+ * @brief Creates a new entity.
+ * @param id Entity id.
+ */
 Entity::Entity (const string &id)
 {
   g_assert (id != "");
   _id = id;
 }
 
+/**
+ * @brief Destroys entity.
+ */
 Entity::~Entity ()
 {
 }
 
+/**
+ * @brief Gets entity id.
+ */
 string
 Entity::getId ()
 {
