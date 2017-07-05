@@ -46,12 +46,6 @@ public:
   bool addSwitchPortMap (SwitchPort *switchPort, Node *node,
                          InterfacePoint *interfacePoint);
 
-  // virtual from CompositeNode
-  bool addPort (Port *port);
-
-  // virtual from CompositeNode
-  bool addPort (unsigned int index, Port *port);
-
   void exchangeNodesAndRules (unsigned int index1, unsigned int index2);
 
   Node *getDefaultNode ();

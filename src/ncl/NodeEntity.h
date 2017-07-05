@@ -42,7 +42,6 @@ public:
   void setContent (Content *_content);
   bool addAnchor (Anchor *anchor);
   bool addAnchor (int index, Anchor *anchor);
-  void setId (const string &_id);
   bool removeAnchor (int index);
   bool removeAnchor (Anchor *anchor);
   set<ReferNode *> *getInstSameInstances ();

@@ -83,9 +83,7 @@ Node::copyProperties (Node *node)
 
       if (!hasProperty (prop->getName ()))
         {
-          cProp = new PropertyAnchor (prop->getName ());
-          cProp->setId (prop->getId ());
-          cProp->setName (prop->getName ());
+          cProp = new PropertyAnchor (prop->getId ());
           cProp->setValue (prop->getValue ());
 
           _originalPAnchors.push_back (cProp);

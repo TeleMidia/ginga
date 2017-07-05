@@ -28,7 +28,6 @@ ContextNode::~ContextNode ()
 {
   set<Link *>::iterator i;
   vector<Node *>::iterator j;
-  Node *node;
 
   _descriptorCollection.clear ();
 
@@ -39,22 +38,7 @@ ContextNode::~ContextNode ()
       ++i;
     }
   _linkSet.clear ();
-
-  j = _nodes.begin ();
-  while (j != _nodes.end ())
-    {
-      node = (*j);
-      if (Entity::hasInstance (node, true))
-        {
-          if (node != this && node->getParentComposition () == this)
-            {
-              (*j)->setParentComposition (NULL);
-              delete *j;
-            }
-        }
-      ++j;
-    }
-
+  _nodes.clear ();
   _nodes.clear ();
 }
 

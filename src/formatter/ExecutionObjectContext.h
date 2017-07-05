@@ -76,8 +76,6 @@ private:
   map<string, ExecutionObject *> _execObjList;
 
   void checkLinkConditions ();
-  void listRunningObjects ();
-  void listPendingLinks ();
 };
 
 GINGA_FORMATTER_END
