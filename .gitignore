@@ -76,7 +76,11 @@
 /tests/test-ginga-parse-time
 /tests/test-xstrcasecmp
 /tests/test-xstrcaseeq
+/tests/test-xstrdown
 /tests/test-xstrhasprefix
 /tests/test-xstrhassuffix
 /tests/test-xstrispercent
+/tests/test-xstrsplit
+/tests/test-xstrstrip
 /tests/test-xstrtodorpercent
+/tests/test-xstrup
