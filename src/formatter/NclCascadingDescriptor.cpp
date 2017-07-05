@@ -204,22 +204,6 @@ NclCascadingDescriptor::cascadeDescriptor (Descriptor *descriptor)
                                  transitions->begin (),
                                  transitions->end ());
     }
-
-  Parameter *param;
-  vector<Parameter *> *paramsMap;
-  vector<Parameter *>::iterator it;
-
-  paramsMap = descriptor->getParameters ();
-  if (paramsMap != NULL)
-    {
-      for (it = paramsMap->begin (); it != paramsMap->end (); ++it)
-        {
-          param = *it;
-          parameters[param->getName ()] = param->getValue ();
-        }
-      delete paramsMap;
-      paramsMap = NULL;
-    }
 }
 
 bool

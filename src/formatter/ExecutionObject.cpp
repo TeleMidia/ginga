@@ -671,8 +671,8 @@ ExecutionObject::start ()
           _player->setZ (z, zorder);
         }
 
-      for (Parameter &p: _descriptor->getParameters ())
-        _player->setProperty (p.getName (), p.getValue ());
+      for (auto param: *desc->getParameters ())
+        _player->setProperty (param->getName (), param->getValue ());
     }
 
   for (Anchor *anchor: contentNode->getAnchors ())

@@ -54,35 +54,27 @@ public:
   LayoutRegion *getRegion ();
   int getRepetitions ();
   void setExplicitDuration (GingaTime);
-  void setPlayerName (const string &name);
   void setRegion (LayoutRegion *_region);
   void setRepetitions (int r);
   void addParameter (Parameter *parameter);
-  vector<Parameter *> *getParameters ();
+  const vector<Parameter *> *getParameters ();
   Parameter *getParameter (const string &paramName);
-  void removeParameter (Parameter *parameter);
   KeyNavigation *getKeyNavigation ();
   void setKeyNavigation (KeyNavigation *keyNav);
   FocusDecoration *getFocusDecoration ();
   void setFocusDecoration (FocusDecoration *focusDec);
   vector<Transition *> *getInputTransitions ();
   bool addInputTransition (Transition *transition, int pos);
-  void removeInputTransition (Transition *transition);
-  void removeAllInputTransitions ();
   vector<Transition *> *getOutputTransitions ();
   bool addOutputTransition (Transition *transition, int pos);
-  void removeOutputTransition (Transition *transition);
-  void removeAllOutputTransitions ();
 
 protected:
-  GingaTime _explicitDuration;
-  string _presentationTool;
-  int _repetitions;
-  LayoutRegion *_region;
-  map<string, Parameter *> _parameters;
-
-  KeyNavigation *_keyNavigation;
   FocusDecoration *_focusDecoration;
+  GingaTime _explicitDuration;
+  KeyNavigation *_keyNavigation;
+  LayoutRegion *_region;
+  int _repetitions;
+  vector<Parameter *> _parameters;
   vector<Transition *> _inputTransitions;
   vector<Transition *> _outputTransitions;
 };
