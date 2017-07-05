@@ -74,3 +74,9 @@
 /tests/test-ginga-parse-list
 /tests/test-ginga-parse-percent
 /tests/test-ginga-parse-time
+/tests/test-xstrcasecmp
+/tests/test-xstrcaseeq
+/tests/test-xstrhasprefix
+/tests/test-xstrhassuffix
+/tests/test-xstrispercent
+/tests/test-xstrtodorpercent
