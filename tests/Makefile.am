@@ -130,6 +130,21 @@ test_xpathbuild_SOURCES= test-xpathbuild.cpp
 progs+= test-xpathbuildabs
 test_xpathbuildabs_SOURCES= test-xpathbuildabs.cpp
 
+progs+= xfail-test-xstrtod
+xfail_test_xstrtod_SOURCES= xfail-test-xstrtod.cpp
+
+progs+= test-xstrtod
+test_xstrtod_SOURCES= test-xstrtod.cpp
+
+progs+= test-xstrtoll
+test_xstrtoll_SOURCES= test-xstrtoll.cpp
+
+progs+= test-xstrassign
+test_xstrassign_SOURCES= test-xstrassign.cpp
+
+progs+= test-xstrbuild
+test_xstrbuild_SOURCES= test-xstrbuild.cpp
+
 check_SCRIPTS= $(ncls)
 check_PROGRAMS= $(progs)
 TESTS= $(check_SCRIPTS) $(check_PROGRAMS)
@@ -142,4 +157,5 @@ XFAIL_TESTS=\
   xfail-test-vid-open.ncl\
   xfail-test-syntax-ncl-bad-tag.ncl\
   xfail-test-syntax-ncl-bad-child.ncl\
+  xfail-test-xstrtod\
   $(NULL)

@@ -91,3 +91,8 @@
 /tests/test-xpathisabs
 /tests/test-xpathisuri
 /tests/test-xpathmakeabs
+/tests/test-xstrassign
+/tests/test-xstrbuild
+/tests/test-xstrtod
+/tests/test-xstrtoll
+/tests/xfail-test-xstrtod
