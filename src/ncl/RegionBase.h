@@ -15,11 +15,10 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef REGIONBASE_H_
-#define REGIONBASE_H_
+#ifndef REGION_BASE_H
+#define REGION_BASE_H
 
 #include "Base.h"
-
 #include "Region.h"
 
 GINGA_NCL_BEGIN
@@ -27,25 +26,13 @@ GINGA_NCL_BEGIN
 class RegionBase : public Base
 {
 public:
-  RegionBase (const string &_id);
+  RegionBase (const string &);
   virtual ~RegionBase ();
 
-  bool addRegion (Region *region);
-
-  Region *getRegion (const string &regionId);
-  vector<Region *> *getRegions ();
-  bool removeRegion (Region *region);
-  string getDevice ();
-  void setDevice (const string &device, const string &regionId);
-  int getDeviceClass ();
-
-private:
-  map<string, Region *> _regions;
-  Region *_deviceRegion;
-
-  Region *getRegionLocally (const string &regionId);
+  void addRegion (Region *);
+  Region *getRegion (const string &);
 };
 
 GINGA_NCL_END
 
-#endif /*REGIONBASE_H_*/
+#endif // REGION_BASE_H

@@ -15,11 +15,10 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef RULEBASE_H_
-#define RULEBASE_H_
+#ifndef RULE_BASE_H
+#define RULE_BASE_H
 
 #include "Base.h"
-
 #include "Rule.h"
 
 GINGA_NCL_BEGIN
@@ -27,20 +26,13 @@ GINGA_NCL_BEGIN
 class RuleBase : public Base
 {
 public:
-  RuleBase (const string &_id);
+  RuleBase (const string &);
   virtual ~RuleBase ();
 
-  bool addRule (Rule *rule);
-
-  Rule *getRule (const string &ruleId);
-  vector<Rule *> *getRules ();
-
-private:
-  vector<Rule *> *_ruleSet;
-
-  Rule *getRuleLocally (const string &ruleId);
+  void addRule (Rule *);
+  Rule *getRule (const string &);
 };
 
 GINGA_NCL_END
 
-#endif /*RULEBASE_H_*/
+#endif // RULE_BASE_H

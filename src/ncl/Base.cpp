@@ -20,8 +20,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
+
+// Public.
+
 /**
  * @brief Creates a new base.
+ * @param id Base id.
  */
 Base::Base (const string &id) : Entity (id)
 {
@@ -33,6 +37,9 @@ Base::Base (const string &id) : Entity (id)
 Base::~Base ()
 {
   _bases.clear ();
+  _entities.clear ();
+  _aliases.clear ();
+  _locations.clear ();
 }
 
 /**
@@ -50,6 +57,60 @@ Base::addBase (Base *base, const string &alias, const string &location)
   _aliases[alias] = base;
   g_assert (location != "");
   _locations[location] = base;
+}
+
+
+// Protected.
+
+void
+Base::addEntity (Entity *entity)
+{
+  g_assert_nonnull (entity);
+  _entities.push_back (entity);
+}
+
+Entity *
+Base::getEntity (const string &id)
+{
+  Base *base;
+  string suffix;
+
+  if ((base = this->getHashBase (id, nullptr, &suffix)) != nullptr)
+    return base->getEntity (suffix);
+
+  for (auto entity: _entities)
+    if (entity->getId () == id)
+      return entity;
+
+  return nullptr;
+}
+
+Base *
+Base::getHashBase (const string &id, string *prefixp, string *suffixp)
+{
+  string::size_type index;
+  string prefix, suffix;
+  Base *base;
+
+  index = id.find_first_of ("#");
+  if (index == string::npos)
+    return nullptr;
+
+  base = nullptr;
+  prefix = id.substr (0, index++);
+  suffix = id.substr (index, id.length () - index);
+  if (_aliases.find (prefix) != _aliases.end ())
+    {
+      base = _aliases[prefix];  // found
+    }
+  else if (_locations.find (prefix) != _locations.end ())
+    {
+      base = _locations[prefix]; // found
+    }
+
+  set_if_nonnull (prefixp, prefix);
+  set_if_nonnull (suffixp, suffix);
+  return base;
 }
 
 GINGA_NCL_END

@@ -20,125 +20,40 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
+/**
+ * @brief Creates a new transition base.
+ * @param id Base id.
+ */
 TransitionBase::TransitionBase (const string &id) : Base (id)
 {
-  _transitionSet = new vector<Transition *>;
 }
 
+/**
+ * @brief Destroys transition base.
+ */
 TransitionBase::~TransitionBase ()
 {
-  vector<Transition *>::iterator i;
-
-  if (_transitionSet != NULL)
-    {
-      i = _transitionSet->begin ();
-      while (i != _transitionSet->end ())
-        {
-          delete *i;
-          ++i;
-        }
-
-      delete _transitionSet;
-      _transitionSet = NULL;
-    }
 }
 
-bool
+/**
+ * @brief Adds transition to base.
+ * @param transition Transition.
+ */
+void
 TransitionBase::addTransition (Transition *transition)
 {
-  if (transition == NULL)
-    {
-      return false;
-    }
-
-  vector<Transition *>::iterator i;
-  i = _transitionSet->begin ();
-  while (i != _transitionSet->end ())
-    {
-      if (*i == transition)
-        {
-          return false;
-        }
-      ++i;
-    }
-
-  _transitionSet->push_back (transition);
-  return true;
+  Base::addEntity (transition);
 }
 
+/**
+ * @brief Gets transition.
+ * @param id Transition id.
+ * @return Transition if successful, or null if not found.
+ */
 Transition *
-TransitionBase::getTransitionLocally (const string &transitionId)
+TransitionBase::getTransition (const string &id)
 {
-  vector<Transition *>::iterator i;
-  Transition *transition;
-
-  i = _transitionSet->begin ();
-  while (i != _transitionSet->end ())
-    {
-      transition = *i;
-      if (transition->getId () == transitionId)
-        {
-          return transition;
-        }
-      ++i;
-    }
-  return NULL;
-}
-
-Transition *
-TransitionBase::getTransition (const string &transitionId)
-{
-  string::size_type index;
-  string prefix, suffix;
-  TransitionBase *base;
-
-  index = transitionId.find_first_of ("#");
-  if (index == std::string::npos)
-    {
-      return getTransitionLocally (transitionId);
-    }
-
-  prefix = transitionId.substr (0, index);
-  index++;
-  suffix = transitionId.substr (index, transitionId.length () - index);
-  if (_aliases.count (prefix) != 0)
-    {
-      base = (TransitionBase *)(_aliases[prefix]);
-      return base->getTransition (suffix);
-    }
-  else if (_locations.count (prefix) != 0)
-    {
-      base = (TransitionBase *)(_locations[prefix]);
-      return base->getTransition (suffix);
-    }
-  else
-    {
-      return NULL;
-    }
-}
-
-vector<Transition *> *
-TransitionBase::getTransitions ()
-{
-  return _transitionSet;
-}
-
-bool
-TransitionBase::removeTransition (Transition *transition)
-{
-  vector<Transition *>::iterator i;
-  i = _transitionSet->begin ();
-  while (i != _transitionSet->end ())
-    {
-      if (*i == transition)
-        {
-          _transitionSet->erase (i);
-          return true;
-        }
-      ++i;
-    }
-
-  return false;
+  return cast (Transition *, Base::getEntity (id));
 }
 
 GINGA_NCL_END
