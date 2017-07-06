@@ -28,9 +28,10 @@ GINGA_NCL_BEGIN
 Media::Media (const string &id, bool settings)
   : Node (id)
 {
-  _content = nullptr;
-  _descriptor = nullptr;
   _isSettings = settings;
+  _src = "";
+  _mimetype = (settings) ? "application/x-ginga-settings" : "";
+  _descriptor = nullptr;
 }
 
 /**
@@ -38,8 +39,6 @@ Media::Media (const string &id, bool settings)
  */
 Media::~Media ()
 {
-  if (_content != nullptr)
-    delete _content;
   if (_descriptor != nullptr)
     delete _descriptor;
   _instances.clear ();
@@ -55,23 +54,52 @@ Media::isSettings ()
 }
 
 /**
- * @brief Gets media content.
+ * @brief Gets media mime-type.
  */
-Content *
-Media::getContent ()
+string
+Media::getMimeType ()
 {
-  return _content;
+  return _mimetype;
 }
 
 /**
- * @brief Sets media content.  (Can only be called once.)
+ * @brief Gets media source.
+ */
+string
+Media::getSrc ()
+{
+  return _src;
+}
+
+/**
+ * @brief Sets media source.
  */
 void
-Media::setContent (Content *content)
+Media::setSrc (const string &src)
 {
-  g_assert_null (_content);
-  g_assert_nonnull (content);
-  _content = content;
+  string type, extension;
+  string::size_type index, len;
+
+  type = "";
+  if (src == "")
+    goto done;
+
+  index = src.find_last_of (".");
+  if (index != std::string::npos)
+    {
+      index++;
+      len = src.length ();
+      if (index < len)
+        {
+          extension = src.substr (index, (len - index));
+          if (extension != "")
+            ginga_mime_table_index (extension, &type);
+        }
+    }
+
+ done:
+  _src = src;
+  _mimetype = type;
 }
 
 /**
