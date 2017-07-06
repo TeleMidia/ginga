@@ -319,9 +319,9 @@ AttributionEvent::AttributionEvent (const string &id,
 
   dataObject = cast (NodeEntity *, exeObj->getDataObject ());
 
-  auto contentNode = cast (ContentNode *, dataObject);
+  auto contentNode = cast (Media *, dataObject);
   if (contentNode
-      && contentNode->isSettingNode ())
+      && contentNode->isSettings ())
     {
       _settingsNode = true;
     }
@@ -334,9 +334,9 @@ AttributionEvent::AttributionEvent (const string &id,
           entity = referNode->getReferredEntity ();
           g_assert_nonnull (entity);
 
-          auto contentNode = cast (ContentNode *, entity);
+          auto contentNode = cast (Media *, entity);
           if (contentNode
-              && contentNode->isSettingNode ())
+              && contentNode->isSettings ())
             {
               _settingsNode = true;
             }

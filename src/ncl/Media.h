@@ -15,52 +15,38 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef CONTENT_NODE_H
-#define CONTENT_NODE_H
-
-#include "ginga.h"
+#ifndef MEDIA_H
+#define MEDIA_H
 
 #include "NodeEntity.h"
 #include "Content.h"
 
 GINGA_NCL_BEGIN
 
-class ContentNode : public NodeEntity
+class Media : public NodeEntity
 {
 public:
-  ContentNode (const string &uid, Content *someContent);
-  ContentNode (const string &uid, Content *_content, const string &_type);
-  virtual ~ContentNode ();
+  Media (const string &, bool);
+  virtual ~Media ();
 
-  bool isSettingNode ();
-  bool isTimeNode ();
-  string getTypeValue ();
-  string getNodeType ();
-  void setNodeType (const string &_type);
+  bool isSettings ();
 
   Content *getContent ();
-  void setContent (Content *_content);
+  void setContent (Content *);
 
   Descriptor *getDescriptor ();
-  void setDescriptor (Descriptor *someDescriptor);
+  void setDescriptor (Descriptor *);
 
-  set<ReferNode *> *getInstSameInstances ();
-  bool addSameInstance (ReferNode *node);
-
+  void addSameInstance (ReferNode *);
+  const set<ReferNode *> *getInstSameInstances ();
 
 private:
-  string _type;
-  bool _isSettingNodeType;
-  bool _isTimeNodeType;
-
+  bool _isSettings;
   Content *_content;
   Descriptor *_descriptor;
-  set<ReferNode *> _instSameInstances;
-
-
-  void initialize (const string &_type);
+  set<ReferNode *> _instances;
 };
 
 GINGA_NCL_END
 
-#endif /* CONTENT_NODE_H */
+#endif // MEDIA_H

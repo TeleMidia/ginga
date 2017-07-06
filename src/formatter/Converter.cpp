@@ -286,12 +286,10 @@ Converter::addExecutionObject (ExecutionObject *exeObj,
 
   // Hanlde settings nodes.
   Node *dataObject = exeObj->getDataObject ();
-  auto contentNode = cast (ContentNode *, dataObject);
+  auto contentNode = cast (Media *, dataObject);
 
-  if (contentNode && contentNode->isSettingNode ())
-    {
-      _settingsObjects.insert (exeObj);
-    }
+  if (contentNode != nullptr && contentNode->isSettings ())
+    _settingsObjects.insert (exeObj);
 
   auto referNode = cast (ReferNode *, dataObject);
   if (referNode)
@@ -300,10 +298,10 @@ Converter::addExecutionObject (ExecutionObject *exeObj,
         {
           Entity *entity = referNode->getReferredEntity ();
           g_assert_nonnull (entity);
-          auto entityContentNode = cast (ContentNode *, entity);
+          auto entityMedia = cast (Media *, entity);
 
-          if (entityContentNode
-              && entityContentNode->isSettingNode ())
+          if (entityMedia
+              && entityMedia->isSettings ())
             {
               _settingsObjects.insert (exeObj);
             }
@@ -313,11 +311,12 @@ Converter::addExecutionObject (ExecutionObject *exeObj,
   NclNodeNesting *nodePerspective = exeObj->getNodePerspective ();
   Node *headNode = nodePerspective->getHeadNode ();
 
-  auto nodeEntity = cast (ContentNode *, dataObject);
+  auto nodeEntity = cast (Media *, dataObject);
   auto headCompositeNode = cast (CompositeNode *, headNode);
   if (headCompositeNode != nullptr && nodeEntity != nullptr)
     {
-      set<ReferNode *> *sameInstances = nodeEntity->getInstSameInstances ();
+      const set<ReferNode *> *sameInstances
+        = nodeEntity->getInstSameInstances ();
       g_assert_nonnull (sameInstances);
 
       for (ReferNode *referNode: *(sameInstances))
@@ -422,10 +421,8 @@ Converter::createExecutionObject (
 
   // solve execution object cross reference coming from refer nodes with
   // new instance = false
-  auto contentNode = cast (ContentNode *, nodeEntity);
-  if (contentNode
-      && contentNode->getNodeType () != ""
-      && !contentNode->isSettingNode ())
+  auto contentNode = cast (Media *, nodeEntity);
+  if (contentNode != nullptr && !contentNode->isSettings ())
     {
       auto referNode = cast (ReferNode *, node);
       if (referNode)
@@ -509,7 +506,7 @@ Converter::processLink (Link *ncmLink,
                         ExecutionObjectContext *parentObject)
 {
   NodeEntity *nodeEntity = nullptr;
-  set<ReferNode *> *sameInstances;
+  const set<ReferNode *> *sameInstances;
   bool contains = false;
 
   if (executionObject->getDataObject () != nullptr)
@@ -525,9 +522,9 @@ Converter::processLink (Link *ncmLink,
       auto causalLink = cast (Link *, ncmLink);
       if (causalLink)
         {
-          if (nodeEntity != nullptr && instanceof (ContentNode *, nodeEntity))
+          if (nodeEntity != nullptr && instanceof (Media *, nodeEntity))
             {
-              sameInstances = cast (ContentNode *, nodeEntity)
+              sameInstances = cast (Media *, nodeEntity)
                 ->getInstSameInstances ();
               for (ReferNode *referNode: *sameInstances)
                 {

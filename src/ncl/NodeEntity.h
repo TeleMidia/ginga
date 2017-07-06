@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _NODEENTITY_H_
-#define _NODEENTITY_H_
+#ifndef NODE_ENTITY_H
+#define NODE_ENTITY_H
 
 #include "Anchor.h"
 #include "Area.h"
@@ -28,10 +28,9 @@ GINGA_NCL_BEGIN
 class NodeEntity : public Node
 {
 public:
-  NodeEntity (const string &uid);
+  NodeEntity (const string &);
   virtual ~NodeEntity ();
-
-  Anchor *getLambda () {return _lambda;};
+  Anchor *getLambda ();
 
 private:
   Anchor *_lambda;
@@ -39,4 +38,4 @@ private:
 
 GINGA_NCL_END
 
-#endif //_NODEENTITY_H_
+#endif // NODE_ENTITY_H

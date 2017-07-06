@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "CompositeNode.h"
 
-#include "ContentNode.h"
+#include "Media.h"
 #include "Context.h"
 #include "SwitchNode.h"
 
