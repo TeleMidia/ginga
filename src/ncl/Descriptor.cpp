@@ -20,65 +20,50 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
+/**
+ * @brief Creates a new descriptor.
+ * @param id Descriptor id.
+ */
 Descriptor::Descriptor (const string &id) : Entity (id)
 {
-  _explicitDuration = GINGA_TIME_NONE;
-  _focusDecoration = nullptr;
-  _keyNavigation = nullptr;
   _region = nullptr;
-  _repetitions = 0;
 }
 
+/**
+ * @brief Destroys descriptor.
+ */
 Descriptor::~Descriptor ()
 {
-  if (_focusDecoration != nullptr)
-    delete _focusDecoration;
-
-  if (_keyNavigation != nullptr)
-    delete _keyNavigation;
-
   _parameters.clear ();
   _inputTransitions.clear ();
   _outputTransitions.clear ();
-
 }
 
-GingaTime
-Descriptor::getExplicitDuration ()
-{
-  return _explicitDuration;
-}
-
+/**
+ * @brief Gets descriptor region.
+ */
 Region *
 Descriptor::getRegion ()
 {
   return _region;
 }
 
-int
-Descriptor::getRepetitions ()
-{
-  return _repetitions;
-}
-
+/**
+ * @brief Sets descriptor region.  (Can only be called once.)
+ * @param region Region.
+ */
 void
-Descriptor::setExplicitDuration (GingaTime dur)
+Descriptor::setRegion (Region *region)
 {
-  _explicitDuration = dur;
+  g_assert_null (_region);
+  g_assert_nonnull (region);
+  _region = region;
 }
 
-void
-Descriptor::setRegion (Region *someRegion)
-{
-  _region = someRegion;
-}
-
-void
-Descriptor::setRepetitions (int r)
-{
-  _repetitions = r;
-}
-
+/**
+ * @brief Adds parameter to descriptor.
+ * @param parameter Parameter.
+ */
 void
 Descriptor::addParameter (Parameter *parameter)
 {
@@ -86,12 +71,20 @@ Descriptor::addParameter (Parameter *parameter)
   _parameters.push_back (parameter);
 }
 
+/**
+ * @brief Gets all parameters.
+ */
 const vector<Parameter *> *
 Descriptor::getParameters ()
 {
   return &_parameters;
 }
 
+/**
+ * @brief Gets parameter.
+ * @param name Parameter name.
+ * @return Parameter if successful, or null otherwise.
+ */
 Parameter *
 Descriptor::getParameter (const string &name)
 {
@@ -101,86 +94,44 @@ Descriptor::getParameter (const string &name)
   return nullptr;
 }
 
-KeyNavigation *
-Descriptor::getKeyNavigation ()
-{
-  return _keyNavigation;
-}
-
+/**
+ * @brief Adds input transition to descriptor.
+ * @param transition Input transition.
+ */
 void
-Descriptor::setKeyNavigation (KeyNavigation *keyNav)
+Descriptor::addInputTransition (Transition *transition)
 {
-  _keyNavigation = keyNav;
+  g_assert_nonnull (transition);
+  _inputTransitions.push_back (transition);
 }
 
-FocusDecoration *
-Descriptor::getFocusDecoration ()
-{
-  return _focusDecoration;
-}
-
-void
-Descriptor::setFocusDecoration (FocusDecoration *focusDec)
-{
-  _focusDecoration = focusDec;
-}
-
-vector<Transition *> *
+/**
+ * @brief Gets all input transitions.
+ */
+const vector<Transition *> *
 Descriptor::getInputTransitions ()
 {
   return &_inputTransitions;
 }
 
-bool
-Descriptor::addInputTransition (Transition *transition, int somePos)
+/**
+ * @brief Adds output transition to descriptor.
+ * @param transition Output transition.
+ */
+void
+Descriptor::addOutputTransition (Transition *transition)
 {
-  unsigned int pos;
-  pos = (unsigned int)somePos;
-  if (pos > _inputTransitions.size () || transition == NULL)
-    {
-      return false;
-    }
-
-  if (pos == _inputTransitions.size ())
-    {
-      _inputTransitions.push_back (transition);
-      return true;
-    }
-
-  vector<Transition *>::iterator i;
-  i = _inputTransitions.begin () + pos;
-
-  _inputTransitions.insert (i, transition);
-  return true;
+  g_assert_nonnull (transition);
+  _outputTransitions.push_back (transition);
 }
 
-vector<Transition *> *
+/**
+ * @brief Gets all output transitions.
+ */
+const vector<Transition *> *
 Descriptor::getOutputTransitions ()
 {
   return &_outputTransitions;
-}
-
-bool
-Descriptor::addOutputTransition (Transition *transition, int somePos)
-{
-  unsigned int pos;
-  pos = (unsigned int)somePos;
-  if (pos > _outputTransitions.size () || transition == NULL)
-    {
-      return false;
-    }
-
-  if (pos == _outputTransitions.size ())
-    {
-      _outputTransitions.push_back (transition);
-      return true;
-    }
-
-  vector<Transition *>::iterator i;
-  i = _outputTransitions.begin () + pos;
-
-  _outputTransitions.insert (i, transition);
-  return true;
 }
 
 GINGA_NCL_END

@@ -982,9 +982,9 @@ Parser::parseDescriptor (DOMElement *elt)
             ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, attr);
 
           if (attr == "transIn")
-            desc->addInputTransition (trans, (int) i);
+            desc->addInputTransition (trans);
           else
-            desc->addOutputTransition (trans, (int) i);
+            desc->addOutputTransition (trans);
         }
     }
 

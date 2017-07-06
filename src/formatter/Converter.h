@@ -108,8 +108,6 @@ private:
                           EventStateTransition transition,
                           EventState previousState) override;
 
-  static Descriptor *createDummyDescriptor (Node *node);
-
   static Descriptor *
   getCascadingDescriptor (NclNodeNesting *nodePerspective,
                           Descriptor *descriptor);

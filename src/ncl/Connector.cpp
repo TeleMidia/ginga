@@ -60,7 +60,6 @@ Connector::addParameter (Parameter *parameter)
 
 /**
  * @brief Gets all connector parameters.
- * @return All connector parameters.
  */
 const vector<Parameter *> *
 Connector::getParameters ()
