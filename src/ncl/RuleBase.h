@@ -31,13 +31,9 @@ public:
   virtual ~RuleBase ();
 
   bool addRule (Rule *rule);
-  bool addBase (Base *base, const string &alias, const string &location);
-
-  void clear ();
 
   Rule *getRule (const string &ruleId);
   vector<Rule *> *getRules ();
-  bool removeRule (Rule *rule);
 
 private:
   vector<Rule *> *_ruleSet;

@@ -60,21 +60,10 @@ DescriptorBase::addDescriptor (Descriptor *descriptor)
   return true;
 }
 
-bool
-DescriptorBase::addBase (Base *base, const string &alias, const string &location)
-{
-  if (instanceof (DescriptorBase *, base))
-    {
-      return Base::addBase (base, alias, location);
-    }
-  return false;
-}
-
 void
 DescriptorBase::clear ()
 {
   _descriptorSet->clear ();
-  Base::clear ();
 }
 
 Descriptor *
@@ -109,14 +98,14 @@ DescriptorBase::getDescriptor (const string &descriptorId)
   prefix = descriptorId.substr (0, index);
   index++;
   suffix = descriptorId.substr (index, descriptorId.length () - index);
-  if (_baseAliases.find (prefix) != _baseAliases.end ())
+  if (_aliases.find (prefix) != _aliases.end ())
     {
-      base = (DescriptorBase *)(_baseAliases[prefix]);
+      base = (DescriptorBase *)(_aliases[prefix]);
       return base->getDescriptor (suffix);
     }
-  else if (_baseLocations.find (prefix) != _baseLocations.end ())
+  else if (_locations.find (prefix) != _locations.end ())
     {
-      base = (DescriptorBase *)(_baseLocations[prefix]);
+      base = (DescriptorBase *)(_locations[prefix]);
       return base->getDescriptor (suffix);
     }
   else

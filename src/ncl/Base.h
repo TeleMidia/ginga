@@ -18,38 +18,24 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef BASE_H
 #define BASE_H
 
-#include "ginga.h"
+#include "Entity.h"
 
 GINGA_NCL_BEGIN
 
-class Base
+class Base : public Entity
 {
 public:
-  Base (const string &_id);
+  Base (const string &);
   virtual ~Base ();
-  static bool hasInstance (Base *base, bool eraseFromList);
-  virtual bool addBase (Base *base, const string &alias, const string &location);
-  virtual void clear ();
-  Base *getBase (const string &baseId);
-  string getBaseAlias (Base *base);
-  string getBaseLocation (Base *base);
-  vector<Base *> *getBases ();
-  bool removeBase (Base *base);
-  void setBaseAlias (Base *base, const string &alias);
-  void setBaseLocation (Base *base, const string &location);
-  string getId ();
-  void setId (const string &_id);
+  void addBase (Base *, const string &, const string &);
 
 protected:
   string _id;
-  vector<Base *> _baseSet;
-  map<string, Base *> _baseAliases;
-  map<string, Base *> _baseLocations;
-
-private:
-  static set<Base *> _baseInstances;
+  vector<Base *> _bases;
+  map<string, Base *> _aliases;
+  map<string, Base *> _locations;
 };
 
 GINGA_NCL_END
 
-#endif /* BASE_H */
+#endif // BASE_H

@@ -31,7 +31,6 @@ public:
   virtual ~RegionBase ();
 
   bool addRegion (Region *region);
-  virtual bool addBase (Base *base, const string &alias, const string &location);
 
   Region *getRegion (const string &regionId);
   vector<Region *> *getRegions ();
@@ -39,13 +38,11 @@ public:
   string getDevice ();
   void setDevice (const string &device, const string &regionId);
   int getDeviceClass ();
-  void clear ();
 
 private:
   map<string, Region *> _regions;
   Region *_deviceRegion;
 
-  void createDeviceRegion ();
   Region *getRegionLocally (const string &regionId);
 };
 

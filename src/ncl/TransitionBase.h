@@ -30,8 +30,6 @@ public:
   TransitionBase (const string &_id);
   virtual ~TransitionBase ();
   bool addTransition (Transition *transition);
-  bool addBase (Base *base, const string &alias, const string &location);
-  void clear ();
 
   Transition *getTransition (const string &transitionId);
   vector<Transition *> *getTransitions ();

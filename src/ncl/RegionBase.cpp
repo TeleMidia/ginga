@@ -53,13 +53,6 @@ RegionBase::addRegion (Region *region)
   return true;
 }
 
-bool
-RegionBase::addBase (Base *base, const string &alias, const string &location)
-{
-  g_assert (instanceof (RegionBase *, base));
-  return Base::addBase (base, alias, location);
-}
-
 Region *
 RegionBase::getRegionLocally (const string &regionId)
 {
@@ -94,14 +87,14 @@ RegionBase::getRegion (const string &regionId)
   prefix = regionId.substr (0, index);
   index++;
   suffix = regionId.substr (index, regionId.length () - index);
-  if (_baseAliases.find (prefix) != _baseAliases.end ())
+  if (_aliases.find (prefix) != _aliases.end ())
     {
-      base = (RegionBase *)(_baseAliases[prefix]);
+      base = (RegionBase *)(_aliases[prefix]);
       return base->getRegion (suffix);
     }
-  else if (_baseLocations.find (prefix) != _baseLocations.end ())
+  else if (_locations.find (prefix) != _locations.end ())
     {
-      base = (RegionBase *)(_baseLocations[prefix]);
+      base = (RegionBase *)(_locations[prefix]);
       return base->getRegion (suffix);
     }
   else
@@ -139,13 +132,6 @@ RegionBase::removeRegion (Region *region)
         }
     }
   return false;
-}
-
-void
-RegionBase::clear ()
-{
-  _regions.clear ();
-  Base::clear ();
 }
 
 GINGA_NCL_END
