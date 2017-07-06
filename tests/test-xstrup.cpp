@@ -25,5 +25,5 @@ main (void)
   g_assert (xstrup ("upper case") == "UPPER CASE");
   g_assert (xstrup ("UpPeRCaSe") == "UPPERCASE");
   g_assert (xstrup ("UP") == "UP");
-  exit (0);
+  exit (EXIT_SUCCESS);
 }

@@ -17,12 +17,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-equal)
+
 int
 main (void)
 {
-  g_assert (xstrtod ("1") == 1);
-  g_assert (xstrtod ("   1") == 1);
-  g_assert (xstrtod ("50") == 50);
-  g_assert (xstrtod ("1   ") == 1);
-  exit (0);
+  g_assert (xstrtod ("1") == 1.);
+  g_assert (xstrtod ("   1") == 1.);
+  g_assert (xstrtod ("50") == 50.);
+  g_assert (xstrtod ("1   ") == 1.);
+  exit (EXIT_SUCCESS);
 }

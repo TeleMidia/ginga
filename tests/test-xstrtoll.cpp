@@ -29,5 +29,6 @@ main (void)
   g_assert (_xstrtoll ("", &ip, 10) == false);
   g_assert (_xstrtoll ("a", &ip, 10) == false);
   g_assert (_xstrtoll ("   a", &ip, 10) == false);
-  exit (0);
+
+  exit (EXIT_SUCCESS);
 }

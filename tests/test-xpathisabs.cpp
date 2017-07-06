@@ -26,5 +26,5 @@ main (void)
   g_assert (xpathisabs ("./") == false);
   g_assert (xpathisabs ("/") == true);
   g_assert (xpathisabs ("") == false);
-  exit (0);
+  exit (EXIT_SUCCESS);
 }

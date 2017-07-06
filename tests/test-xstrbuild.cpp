@@ -22,5 +22,5 @@ main (void)
 {
   g_assert ("5 \n" == xstrbuild ("%d \n", 5));
   g_assert ("a \n" == xstrbuild ("%c \n", 'a'));
-  exit (0);
+  exit (EXIT_SUCCESS);
 }

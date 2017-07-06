@@ -21,5 +21,5 @@ int
 main (void)
 {
   xstrtod ("a");
-  exit (0);
+  exit (EXIT_SUCCESS);
 }

@@ -34,5 +34,5 @@ main (void)
   s = xpathbuildabs ("/", "this/");
   g_assert (xpathisabs (s) == true);
 
-  exit (0);
+  exit (EXIT_SUCCESS);
 }

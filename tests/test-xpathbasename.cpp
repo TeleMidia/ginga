@@ -25,5 +25,5 @@ main (void)
   g_assert (xpathbasename ("./") == ".");
   g_assert (xpathbasename ("/") == "/");
   g_assert (xpathbasename ("") == ".");
-  exit (0);
+  exit (EXIT_SUCCESS);
 }

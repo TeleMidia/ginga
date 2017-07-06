@@ -28,5 +28,5 @@ main (void)
   g_assert (xstrassign (s, "%c \n", 'a'));
   g_assert (s == "a \n");
 
-  exit (0);
+  exit (EXIT_SUCCESS);
 }

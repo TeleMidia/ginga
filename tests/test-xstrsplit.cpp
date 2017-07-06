@@ -54,5 +54,5 @@ main (void)
   g_assert (xstrsplit ("hello world", 'l') == list);
   list.clear ();
 
-  exit (0);
+  exit (EXIT_SUCCESS);
 }
