@@ -94,7 +94,6 @@ src+= ncl/PropertyAnchor.cpp
 src+= ncl/RectangleSpatialAnchor.cpp
 src+= ncl/ReferNode.cpp
 src+= ncl/ReferenceContent.cpp
-src+= ncl/ReferredNode.cpp
 src+= ncl/Region.cpp
 src+= ncl/RegionBase.cpp
 src+= ncl/Role.cpp
