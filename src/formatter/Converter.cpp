@@ -309,17 +309,7 @@ Converter::addExecutionObject (ExecutionObject *exeObj,
           TRACE ("'%s' instSame of '%s'",
                  exeObj->getId ().c_str(),
                  referNode->getId ().c_str());
-
-          if (headComposition->recursivelyContainsNode (referNode))
-            {
-              addSameInstance (exeObj, referNode);
-            }
-          else
-            {
-              WARNING ("cannot find '%s' inside '%s'",
-                       referNode->getId ().c_str(),
-                       headNode->getId ().c_str());
-            }
+          addSameInstance (exeObj, referNode);
         }
     }
 

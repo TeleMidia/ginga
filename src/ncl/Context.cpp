@@ -48,18 +48,6 @@ Context::addLink (Link *link)
 }
 
 /**
- * @brief Adds component to context.
- * @param node Node.
- */
-void
-Context::addNode (Node *node)
-{
-  g_assert_nonnull (node);
-  _nodes.push_back (node);
-  node->setParent (this);
-}
-
-/**
  * @brief Gets all context links.
  */
 const vector<Link *> *

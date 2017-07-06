@@ -27,32 +27,18 @@ class Composition : public Node
 {
 public:
   Composition (const string &);
-  virtual ~Composition ();
+  ~Composition ();
 
-  // Virtual to all.
-  virtual void addNode (Node *) = 0;
-
-  // Virtual to SwitchNode.
-  virtual void addPort (Port *);
-
-  Port *getPort (const string &);
+  void addNode (Node *);
   const vector<Node *> *getNodes ();
+  Node *getNode (const string &);
+  Node *getNestedNode (const string &);
+
+  void addPort (Port *);
   const vector<Port *> *getPorts ();
+  Port *getPort (const string &);
 
-  // Virtual to SwitchNode.
-  virtual Anchor *getMapInterface (Port *);
-
-  // Virtual to SwitchNode.
-  virtual Node *getNode (const string &nodeId);
-
-  // Virtual to SwitchNode.
-  virtual bool recursivelyContainsNode (const string &);
-
-  // Virtual to SwitchNode.
-  virtual bool recursivelyContainsNode (Node *);
-
-  // Virtual to SwitchNode.
-  virtual Node *recursivelyGetNode (const string &);
+  Anchor *getMapInterface (Port *);
 
 protected:
   vector<Node *> _nodes;

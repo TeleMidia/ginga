@@ -326,7 +326,7 @@ NclDocument::getNodeLocally (const string &nodeId)
         }
       else
         {
-          return _body->recursivelyGetNode (nodeId);
+          return _body->getNestedNode (nodeId);
         }
     }
   else

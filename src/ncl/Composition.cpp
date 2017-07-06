@@ -18,66 +18,50 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "Composition.h"
 
-#include "Media.h"
-#include "Context.h"
-#include "SwitchNode.h"
-
-GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
-
 GINGA_NCL_BEGIN
 
+/**
+ * @brief Creates a new composition.
+ * @param id Composition id.
+ */
 Composition::Composition (const string &id) : Node (id)
 {
 }
 
+/**
+ * @brief Destroys composition.
+ */
 Composition::~Composition ()
 {
   _nodes.clear ();
   _ports.clear ();
 }
 
+/**
+ * @brief Adds child node to composition.
+ */
 void
-Composition::addPort (Port *port)
+Composition::addNode (Node *node)
 {
-  _ports.push_back (port);
+  g_assert_nonnull (node);
+  _nodes.push_back (node);
+  node->setParent (this);
 }
 
-Port *
-Composition::getPort (const string &id)
+/**
+ * @brief Gets all child nodes.
+ */
+const vector<Node *> *
+Composition::getNodes ()
 {
-  for (auto port: _ports)
-    if (port->getId () == id)
-      return port;
-  return nullptr;
+  return &_nodes;
 }
 
-const vector<Port *> *
-Composition::getPorts ()
-{
-  return &_ports;
-}
-
-Anchor *
-Composition::getMapInterface (Port *port)
-{
-  Node *node;
-  Composition *compositeNode;
-  Anchor *interfacePoint;
-
-  node = port->getNode ();
-  interfacePoint = port->getInterface ();
-  if (instanceof (Port *, interfacePoint))
-    {
-      compositeNode = cast (Composition *, node);
-      g_assert_nonnull (compositeNode);
-      return compositeNode->getMapInterface ((Port *)interfacePoint);
-    }
-  else
-    {
-      return (Anchor *)interfacePoint;
-    }
-}
-
+/**
+ * @brief Gets child node.
+ * @param id Node id.
+ * @return Child node if successful, or null if not found.
+ */
 Node *
 Composition::getNode (const string &id)
 {
@@ -87,107 +71,81 @@ Composition::getNode (const string &id)
   return nullptr;
 }
 
-const vector<Node *> *
-Composition::getNodes ()
+/**
+ * @brief Gets descendant node.
+ * @param id Node id.
+ * @return Descendant node if successful, or null if not found.
+ */
+Node *
+Composition::getNestedNode (const string &id)
 {
-  return &_nodes;
+  for (auto node: _nodes)
+    {
+      if (node->getId () == id)
+        return node;
+      if (instanceof (Composition *, node))
+        {
+          Node *out = cast (Composition *, node)->getNestedNode (id);
+          if (out != nullptr)
+            return out;
+        }
+    }
+  return nullptr;
 }
 
-bool
-Composition::recursivelyContainsNode (const string &nodeId)
+/**
+ * @brief Adds port to composition.
+ */
+void
+Composition::addPort (Port *port)
 {
-  if (recursivelyGetNode (nodeId) != NULL)
+  _ports.push_back (port);
+}
+
+/**
+ * @brief Gets all ports.
+ */
+const vector<Port *> *
+Composition::getPorts ()
+{
+  return &_ports;
+}
+
+/**
+ * @brief Gets port.
+ * @param id Port id.
+ * @return Port if successful, or null if not found.
+ */
+Port *
+Composition::getPort (const string &id)
+{
+  for (auto port: _ports)
+    if (port->getId () == id)
+      return port;
+  return nullptr;
+}
+
+/**
+ * @brief Gets interface mapped by port.
+ */
+Anchor *
+Composition::getMapInterface (Port *port)
+{
+  Node *node;
+  Anchor *iface;
+
+  node = port->getNode ();
+  iface = port->getInterface ();
+  if (instanceof (Port *, iface))
     {
-      return true;
+      Composition *comp = cast (Composition *, node);
+      g_assert_nonnull (comp);
+      return comp->getMapInterface (cast (Port *, iface));
     }
   else
     {
-      return false;
+      return (Anchor *) iface;
     }
-}
-
-bool
-Composition::recursivelyContainsNode (Node *node)
-{
-  vector<Node *>::iterator it;
-  Node *childNode;
-  Composition *compositeNode;
-  unsigned int i;
-
-  if (_nodes.empty ())
-    {
-      return false;
-    }
-
-  for (i = 0; i < _nodes.size (); i++)
-    {
-      childNode = _nodes[i];
-      if (childNode == node)
-        {
-          return true;
-        }
-    }
-
-  for (it = _nodes.begin (); it != _nodes.end (); ++it)
-    {
-      childNode = (Node *)*it;
-      if (instanceof (Composition *, childNode))
-        {
-          compositeNode = (Composition *)childNode;
-          if (compositeNode->recursivelyContainsNode (node))
-            {
-              return true;
-            }
-        }
-      else if (instanceof (Refer *, childNode))
-        {
-          childNode = childNode->derefer ();
-          if (childNode == node)
-            {
-              return true;
-            }
-          else if (instanceof (Composition *, childNode))
-            {
-              compositeNode = (Composition *)childNode;
-              if (compositeNode->recursivelyContainsNode (node))
-                {
-                  return true;
-                }
-            }
-        }
-    }
-  return false;
-}
-
-Node *
-Composition::recursivelyGetNode (const string &nodeId)
-{
-  Node *node;
-  vector<Node *>::iterator i;
-
-  if (_nodes.empty ())
-    {
-      return NULL;
-    }
-
-  for (i = _nodes.begin (); i != _nodes.end (); ++i)
-    {
-      if (((*i)->getId ()).compare (nodeId) == 0)
-        {
-          return (*i);
-        }
-
-      if (instanceof (Composition *, (*i)))
-        {
-          node = ((Composition *)(*i))->recursivelyGetNode (nodeId);
-          if (node != NULL)
-            {
-              return node;
-            }
-        }
-    }
-
-  return NULL;
 }
 
 GINGA_NCL_END

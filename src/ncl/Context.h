@@ -30,7 +30,6 @@ public:
   Context (const string &);
   virtual ~Context ();
   void addLink (Link *);
-  void addNode (Node *);
   const vector<Link *> *getLinks ();
 
 private:
