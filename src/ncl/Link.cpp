@@ -146,7 +146,7 @@ Link::contains (Node *node, bool condition)
 {
   for (auto bind: _binds)
     {
-      Interface *iface;
+      Anchor *iface;
       Node *bound;
       Role *role;
 

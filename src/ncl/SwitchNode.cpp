@@ -88,7 +88,7 @@ SwitchNode::addNode (Node *node)
 
 bool
 SwitchNode::addSwitchPortMap (SwitchPort *switchPort, Node *node,
-                              Interface *interfacePoint)
+                              Anchor *interfacePoint)
 {
   Port *port;
 
@@ -108,7 +108,7 @@ SwitchNode::getDefaultNode ()
   return _defaultNode;
 }
 
-Interface *
+Anchor *
 SwitchNode::getMapInterface (Port *port)
 {
   if (instanceof (SwitchPort *, port))

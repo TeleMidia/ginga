@@ -304,7 +304,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
         {
           NclNodeNesting *persp;
           vector<Node *> *nestedSeq;
-          Interface *iface;
+          Anchor *iface;
 
           ExecutionObject *child;
           NclEvent *evt;

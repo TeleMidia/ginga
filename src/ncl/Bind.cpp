@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-Bind::Bind (Node *node, Interface *interfPt, Descriptor *desc,
+Bind::Bind (Node *node, Anchor *interfPt, Descriptor *desc,
             Role *role)
 {
   this->_node = node;
@@ -54,7 +54,7 @@ Bind::getDescriptor ()
   return _descriptor;
 }
 
-Interface *
+Anchor *
 Bind::getInterface ()
 {
   return this->_interfacePoint;
@@ -73,7 +73,7 @@ Bind::getRole ()
 }
 
 void
-Bind::setInterface (Interface *interfPt)
+Bind::setInterface (Anchor *interfPt)
 {
   this->_interfacePoint = interfPt;
 }
@@ -195,7 +195,7 @@ Bind::getNodeNesting ()
   return nodeNesting;
 }
 
-Interface *
+Anchor *
 Bind::getEndPointInterface ()
 {
   Composition *compositeNode;

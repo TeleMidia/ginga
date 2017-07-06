@@ -42,7 +42,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "DescriptorBase.h"
 #include "Entity.h"
 #include "EventUtil.h"
-#include "Interface.h"
 #include "Link.h"
 #include "Media.h"
 #include "Ncl.h"
