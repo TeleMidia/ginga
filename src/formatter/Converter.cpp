@@ -401,7 +401,7 @@ Converter::createExecutionObject (
 
   node = perspective->getAnchorNode ();
 
-  NodeEntity *nodeEntity = cast (NodeEntity *, node->derefer ());
+  Node *nodeEntity = cast (Node *, node->derefer ());
   g_assert_nonnull (nodeEntity);
 
   // solve execution object cross reference coming from refer nodes with
@@ -490,14 +490,14 @@ Converter::processLink (Link *ncmLink,
                         ExecutionObject *executionObject,
                         ExecutionObjectContext *parentObject)
 {
-  NodeEntity *nodeEntity = nullptr;
+  Node *nodeEntity = nullptr;
   const set<ReferNode *> *sameInstances;
   bool contains = false;
 
   if (executionObject->getDataObject () != nullptr)
     {
       nodeEntity
-          = cast (NodeEntity *, executionObject->getDataObject ());
+          = cast (Node *, executionObject->getDataObject ());
     }
 
   // Since the link may be removed in a deepest compilation it is necessary to
@@ -721,7 +721,6 @@ Converter::resolveSwitchEvents (
   ExecutionObject *selectedObject;
   ExecutionObject *endPointObject;
   Node *selectedNode;
-  NodeEntity *selectedNodeEntity;
   vector<NclEvent *> events;
   vector<NclEvent *>::iterator i;
   SwitchEvent *switchEvent;
@@ -738,8 +737,8 @@ Converter::resolveSwitchEvents (
     }
 
   selectedNode = selectedObject->getDataObject ();
-  selectedNodeEntity = cast (NodeEntity *, selectedNode);
-  g_assert_nonnull (selectedNodeEntity);
+  selectedNode = cast (Node *, selectedNode);
+  g_assert_nonnull (selectedNode);
 
   if (events.empty ())
     {
@@ -757,7 +756,7 @@ Converter::resolveSwitchEvents (
       if (lambdaAnchor)
         {
           mappedEvent = getEvent (
-                selectedObject, selectedNodeEntity->getLambda (),
+                selectedObject, selectedNode->getLambda (),
                 switchEvent->getType (), switchEvent->getKey ());
         }
       else

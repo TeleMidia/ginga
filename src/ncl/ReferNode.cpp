@@ -24,7 +24,7 @@ GINGA_NCL_BEGIN
  * @brief Creates a new refer node.
  * @param id Refer node id.
  */
-ReferNode::ReferNode (const string &id) : NodeEntity (id)
+ReferNode::ReferNode (const string &id) : Node (id)
 {
   _referred = nullptr;
 }

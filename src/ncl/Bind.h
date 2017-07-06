@@ -18,17 +18,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _BIND_H_
 #define _BIND_H_
 
-#include "Parameter.h"
-#include "Descriptor.h"
-
-#include "Role.h"
-
-#include "NodeEntity.h"
 #include "CompositeNode.h"
-
+#include "Descriptor.h"
 #include "InterfacePoint.h"
-#include "SwitchPort.h"
+#include "Node.h"
+#include "Parameter.h"
 #include "Port.h"
+#include "Role.h"
+#include "SwitchPort.h"
 
 GINGA_NCL_BEGIN
 

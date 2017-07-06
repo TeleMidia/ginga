@@ -517,7 +517,7 @@ NclDocument::getSettingsNodes ()
 
   for (guint i = 0; i < nodes->size (); i++)
     {
-      NodeEntity *node = cast (NodeEntity *, nodes->at (i)->derefer ());
+      Node *node = cast (Node *, nodes->at (i)->derefer ());
       g_assert_nonnull (node);
 
       if (instanceof (Media *, node)

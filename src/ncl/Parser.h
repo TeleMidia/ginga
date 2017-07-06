@@ -28,6 +28,7 @@ XERCES_CPP_NAMESPACE_USE
 GINGA_PRAGMA_DIAG_POP ()
 
 #include "AbsoluteReferenceContent.h"
+#include "Area.h"
 #include "AreaLabeled.h"
 #include "Comparator.h"
 #include "CompositeRule.h"

@@ -18,6 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "Node.h"
 
+#include "Area.h"
 #include "CompositeNode.h"
 #include "ReferNode.h"
 
@@ -30,6 +31,8 @@ GINGA_NCL_BEGIN
 Node::Node (const string &id) : Entity (id)
 {
   _parent = nullptr;
+  _lambda = new AreaLambda (id);
+  this->addAnchor (_lambda);
 }
 
 /**
@@ -38,6 +41,7 @@ Node::Node (const string &id) : Entity (id)
 Node::~Node ()
 {
   _anchors.clear ();
+  delete _lambda;
 }
 
 /**
@@ -92,6 +96,16 @@ Node::getAnchor (const string &id)
     if (anchor->getId () == id)
       return anchor;
   return nullptr;
+}
+
+/**
+ * @brief Gets lambda anchor.
+ */
+Anchor *
+Node::getLambda ()
+{
+  g_assert_nonnull (_lambda);
+  return _lambda;
 }
 
 

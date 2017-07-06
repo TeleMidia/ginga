@@ -35,6 +35,7 @@ public:
   void addAnchor (Anchor *);
   const vector<Anchor *> *getAnchors ();
   Anchor *getAnchor (const string &);
+  Anchor *getLambda ();
 
   vector<Node *> *getPerspective (); // fixme
   Node *derefer ();                  // fixme
@@ -42,6 +43,7 @@ public:
 private:
   CompositeNode *_parent;
   vector<Anchor *> _anchors;
+  Anchor *_lambda;
 };
 
 GINGA_NCL_END

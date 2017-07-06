@@ -82,7 +82,6 @@ src+= ncl/Link.cpp
 src+= ncl/Media.cpp
 src+= ncl/NclDocument.cpp
 src+= ncl/Node.cpp
-src+= ncl/NodeEntity.cpp
 src+= ncl/Parameter.cpp
 src+= ncl/Parser.cpp
 src+= ncl/Port.cpp
