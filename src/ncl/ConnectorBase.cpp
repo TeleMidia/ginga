@@ -41,22 +41,10 @@ ConnectorBase::addConnector (Connector *connector)
   return true;
 }
 
-bool
-ConnectorBase::addBase (Base *base, const string &alias, const string &location)
-{
-  if (Base::hasInstance (base, false) && instanceof (ConnectorBase *, base))
-    {
-      return Base::addBase (base, alias, location);
-    }
-
-  return false;
-}
-
 void
 ConnectorBase::clear ()
 {
   _connectorSet.clear ();
-  Base::clear ();
 }
 
 bool
@@ -122,8 +110,8 @@ ConnectorBase::getConnector (const string &connectorId)
   index++;
   suffix = connectorId.substr (index, connectorId.length () - index);
 
-  i = _baseAliases.find (prefix);
-  if (i != _baseAliases.end ())
+  i = _aliases.find (prefix);
+  if (i != _aliases.end ())
     {
       base = (ConnectorBase *)(i->second);
       conn = base->getConnector (suffix);
@@ -131,24 +119,14 @@ ConnectorBase::getConnector (const string &connectorId)
 
   if (conn == NULL)
     {
-      i = _baseLocations.find (prefix);
-      if (i != _baseLocations.end ())
+      i = _locations.find (prefix);
+      if (i != _locations.end ())
         {
           base = (ConnectorBase *)(i->second);
           conn = base->getConnector (suffix);
         }
     }
 
-  if (conn == NULL)
-    {
-      cout << "ConnectorBase::getConnector can't find connector '";
-      cout << connectorId << "'";
-      cout << " using prefix = '" << prefix << "'";
-      cout << " and suffix = '" << suffix << "'";
-      cout << " baseAli has = '" << _baseAliases.size () << "' aliases";
-      cout << " baseLoc has = '" << _baseLocations.size () << "' locations";
-      cout << endl;
-    }
   return conn;
 }
 

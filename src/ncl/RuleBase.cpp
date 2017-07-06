@@ -60,23 +60,6 @@ RuleBase::addRule (Rule *rule)
   return true;
 }
 
-bool
-RuleBase::addBase (Base *base, const string &alias, const string &location)
-{
-  if (instanceof (RuleBase *, base))
-    {
-      return Base::addBase (base, alias, location);
-    }
-  return false;
-}
-
-void
-RuleBase::clear ()
-{
-  _ruleSet->clear ();
-  Base::clear ();
-}
-
 Rule *
 RuleBase::getRuleLocally (const string &ruleId)
 {
@@ -109,14 +92,14 @@ RuleBase::getRule (const string &ruleId)
   prefix = ruleId.substr (0, index);
   index++;
   suffix = ruleId.substr (index, ruleId.length () - index);
-  if (_baseAliases.find (prefix) != _baseAliases.end ())
+  if (_aliases.find (prefix) != _aliases.end ())
     {
-      base = (RuleBase *)(_baseAliases[prefix]);
+      base = (RuleBase *)(_aliases[prefix]);
       return base->getRule (suffix);
     }
-  else if (_baseLocations.find (prefix) != _baseLocations.end ())
+  else if (_locations.find (prefix) != _locations.end ())
     {
-      base = (RuleBase *)(_baseLocations[prefix]);
+      base = (RuleBase *)(_locations[prefix]);
       return base->getRule (suffix);
     }
   else
@@ -129,21 +112,6 @@ vector<Rule *> *
 RuleBase::getRules ()
 {
   return _ruleSet;
-}
-
-bool
-RuleBase::removeRule (Rule *rule)
-{
-  vector<Rule *>::iterator i;
-  for (i = _ruleSet->begin (); i != _ruleSet->end (); ++i)
-    {
-      if (*i == rule)
-        {
-          _ruleSet->erase (i);
-          return true;
-        }
-    }
-  return false;
 }
 
 GINGA_NCL_END

@@ -31,7 +31,6 @@ public:
   virtual ~DescriptorBase ();
 
   bool addDescriptor (Descriptor *descriptor);
-  bool addBase (Base *base, const string &alias, const string &location);
 
   void clear ();
 

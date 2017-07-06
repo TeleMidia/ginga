@@ -66,23 +66,6 @@ TransitionBase::addTransition (Transition *transition)
   return true;
 }
 
-bool
-TransitionBase::addBase (Base *base, const string &alias, const string &location)
-{
-  if (instanceof (TransitionBase *, base))
-    {
-      return Base::addBase (base, alias, location);
-    }
-  return false;
-}
-
-void
-TransitionBase::clear ()
-{
-  _transitionSet->clear ();
-  Base::clear ();
-}
-
 Transition *
 TransitionBase::getTransitionLocally (const string &transitionId)
 {
@@ -118,14 +101,14 @@ TransitionBase::getTransition (const string &transitionId)
   prefix = transitionId.substr (0, index);
   index++;
   suffix = transitionId.substr (index, transitionId.length () - index);
-  if (_baseAliases.count (prefix) != 0)
+  if (_aliases.count (prefix) != 0)
     {
-      base = (TransitionBase *)(_baseAliases[prefix]);
+      base = (TransitionBase *)(_aliases[prefix]);
       return base->getTransition (suffix);
     }
-  else if (_baseLocations.count (prefix) != 0)
+  else if (_locations.count (prefix) != 0)
     {
-      base = (TransitionBase *)(_baseLocations[prefix]);
+      base = (TransitionBase *)(_locations[prefix]);
       return base->getTransition (suffix);
     }
   else

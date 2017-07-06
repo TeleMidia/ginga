@@ -31,7 +31,6 @@ public:
   virtual ~ConnectorBase ();
 
   bool addConnector (Connector *connector);
-  bool addBase (Base *base, const string &alias, const string &location);
 
   void clear ();
   bool containsConnector (const string &connectorId);
