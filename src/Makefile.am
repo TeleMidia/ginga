@@ -104,7 +104,6 @@ src+= ncl/SimpleRule.cpp
 src+= ncl/SwitchContent.cpp
 src+= ncl/SwitchNode.cpp
 src+= ncl/SwitchPort.cpp
-src+= ncl/TextAnchor.cpp
 src+= ncl/Transition.cpp
 src+= ncl/TransitionBase.cpp
 src+= ncl/TransitionUtil.cpp
