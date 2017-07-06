@@ -19,8 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _SWITCHPORT_H_
 
 #include "Node.h"
-
-#include "Interface.h"
 #include "Port.h"
 
 GINGA_NCL_BEGIN
@@ -37,7 +35,7 @@ public:
   vector<Port *> *getPorts ();
   bool removePort (Port *port);
   Node *getEndNode ();
-  Interface *getEndInterface ();
+  Anchor *getEndInterface ();
 
 private:
   vector<Port *> *_portList;

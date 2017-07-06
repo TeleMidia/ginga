@@ -15,14 +15,14 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef ANCHOR_H_
-#define ANCHOR_H_
+#ifndef ANCHOR_H
+#define ANCHOR_H
 
-#include "Interface.h"
+#include "Entity.h"
 
 GINGA_NCL_BEGIN
 
-class Anchor : public Interface
+class Anchor : public Entity
 {
 public:
   Anchor (const string &_id);
@@ -30,4 +30,4 @@ public:
 
 GINGA_NCL_END
 
-#endif /*ANCHOR_H_*/
+#endif // ANCHOR_H

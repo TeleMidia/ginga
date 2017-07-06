@@ -150,20 +150,20 @@ private:
 class SwitchEvent : public NclEvent, public INclEventListener
 {
 private:
-  Interface *_interface;
+  Anchor *_interface;
   string _key;
   NclEvent *_mappedEvent;
 
 public:
   SwitchEvent (const string &id,
                ExecutionObject *exeObjSwitch,
-               Interface *interface,
+               Anchor *interface,
                EventType type,
                const string &key);
 
   virtual ~SwitchEvent ();
 
-  Interface *getInterface () { return this->_interface; }
+  Anchor *getInterface () { return this->_interface; }
   string getKey () { return this->_key; }
 
   void setMappedEvent (NclEvent *evt);

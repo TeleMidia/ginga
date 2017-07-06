@@ -21,8 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-Port::Port (const string &id, Node *someNode, Interface *someInterface)
-    : Interface (id)
+Port::Port (const string &id, Node *someNode, Anchor *someInterface)
+    : Anchor (id)
 {
   _node = someNode;
   _interfacePoint = someInterface;
@@ -30,7 +30,7 @@ Port::Port (const string &id, Node *someNode, Interface *someInterface)
 
 Port::~Port () {}
 
-Interface *
+Anchor *
 Port::getInterface ()
 {
   return _interfacePoint;
@@ -51,7 +51,7 @@ Port::getEndNode ()
     return ((Port *)(_interfacePoint))->getEndNode ();
 }
 
-Interface *
+Anchor *
 Port::getEndInterface ()
 {
   // Polimorfismo
@@ -94,7 +94,7 @@ Port::getMapNodeNesting ()
 }
 
 void
-Port::setInterface (Interface *someInterface)
+Port::setInterface (Anchor *someInterface)
 {
   _interfacePoint = someInterface;
 }

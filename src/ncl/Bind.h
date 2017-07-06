@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _BIND_H_
 
 #include "Descriptor.h"
-#include "Interface.h"
 #include "Node.h"
 #include "Parameter.h"
 #include "Port.h"
@@ -31,15 +30,15 @@ GINGA_NCL_BEGIN
 class Bind
 {
 public:
-  Bind (Node *_node, Interface *interfPt, Descriptor *desc,
+  Bind (Node *_node, Anchor *interfPt, Descriptor *desc,
         Role *_role);
 
   virtual ~Bind ();
   Descriptor *getDescriptor ();
-  Interface *getInterface ();
+  Anchor *getInterface ();
   Node *getNode ();
   Role *getRole ();
-  void setInterface (Interface *interfPt);
+  void setInterface (Anchor *);
   void setNode (Node *_node);
   void setRole (Role *_role);
   void setDescriptor (Descriptor *desc);
@@ -51,14 +50,14 @@ public:
   Parameter *getParameter (const string &name);
   bool removeParameter (Parameter *parameter);
   vector<Node *> *getNodeNesting ();
-  Interface *getEndPointInterface ();
+  Anchor *getEndPointInterface ();
 
 protected:
   map<string, Parameter *> *_parameters;
 
 private:
   Node *_node;
-  Interface *_interfacePoint;
+  Anchor *_interfacePoint;
   Descriptor *_descriptor;
   Role *_role;
 };

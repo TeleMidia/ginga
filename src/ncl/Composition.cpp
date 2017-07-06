@@ -57,12 +57,12 @@ Composition::getPorts ()
   return &_ports;
 }
 
-Interface *
+Anchor *
 Composition::getMapInterface (Port *port)
 {
   Node *node;
   Composition *compositeNode;
-  Interface *interfacePoint;
+  Anchor *interfacePoint;
 
   node = port->getNode ();
   interfacePoint = port->getInterface ();

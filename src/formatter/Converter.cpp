@@ -96,7 +96,7 @@ Converter::getExecutionObjectFromPerspective (
 
 NclEvent *
 Converter::getEvent (ExecutionObject *exeObj,
-                     Interface *interfacePoint,
+                     Anchor *interfacePoint,
                      EventType ncmEventType,
                      const string &key)
 {
@@ -724,7 +724,7 @@ Converter::resolveSwitchEvents (
   vector<NclEvent *> events;
   vector<NclEvent *>::iterator i;
   SwitchEvent *switchEvent;
-  Interface *interfacePoint;
+  Anchor *interfacePoint;
   vector<Node *> *nestedSeq;
   NclNodeNesting *nodePerspective;
   NclEvent *mappedEvent;
@@ -812,7 +812,7 @@ Converter::resolveSwitchEvents (
 
 NclEvent *
 Converter::insertNode (NclNodeNesting *perspective,
-                       Interface *interfacePoint,
+                       Anchor *interfacePoint,
                        Descriptor *descriptor)
 {
   ExecutionObject *executionObject;
@@ -1084,7 +1084,7 @@ Converter::setImplicitRefAssessment (const string &roleId,
           value = bind->getRole ()->getLabel ();
           if (roleId == value)
             {
-              Interface *refInterface = bind->getInterface ();
+              Anchor *refInterface = bind->getInterface ();
               auto propAnchor = cast (Property *, refInterface);
               if (propAnchor)
                 {
@@ -1743,7 +1743,7 @@ Converter::createEvent (
   NclNodeNesting *endPointPerspective;
   Node *parentNode;
   ExecutionObject *executionObject;
-  Interface *interfacePoint;
+  Anchor *interfacePoint;
   string key;
   NclEvent *event = nullptr;
   vector<Node *> *seq;
