@@ -432,7 +432,7 @@ Converter::createExecutionObject (
         }
     }
 
-  auto switchNode = cast (SwitchNode *, nodeEntity);
+  auto switchNode = cast (Switch *, nodeEntity);
   if (switchNode)
     {
       string s;
@@ -658,7 +658,7 @@ Converter::processExecutionObjectSwitch (
   map<string, ExecutionObject *>::iterator i;
   ExecutionObject *selectedObject;
 
-  auto switchNode = cast (SwitchNode *, switchObject->getDataObject ());
+  auto switchNode = cast (Switch *, switchObject->getDataObject ());
   g_assert_nonnull (switchNode);
 
   selectedNode = _ruleAdapter->adaptSwitch (switchNode);

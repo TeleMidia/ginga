@@ -50,7 +50,7 @@ public:
 
   void adapt (ExecutionObjectSwitch *objectAlternatives, bool force);
 
-  Node *adaptSwitch (SwitchNode *switchNode);
+  Node *adaptSwitch (Switch *switchNode);
   bool evaluateRule (Rule *rule);
 
 private:

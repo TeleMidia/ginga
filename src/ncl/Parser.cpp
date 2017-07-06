@@ -1568,8 +1568,8 @@ Parser::posCompileContext (DOMElement *elt, Context *context)
           g_assert (dom_elt_try_get_attribute (id, child, "id"));
           node = context->getNode (id);
           g_assert_nonnull (node);
-          if (instanceof (SwitchNode *, node))
-            this->posCompileSwitch (child, (SwitchNode*) node);
+          if (instanceof (Switch *, node))
+            this->posCompileSwitch (child, (Switch*) node);
         }
     }
 
@@ -1584,7 +1584,7 @@ Parser::posCompileContext (DOMElement *elt, Context *context)
 }
 
 void
-Parser::posCompileSwitch (DOMElement *elt, SwitchNode *swtch)
+Parser::posCompileSwitch (DOMElement *elt, Switch *swtch)
 {
   Node *node;
   string id;
@@ -1606,8 +1606,8 @@ Parser::posCompileSwitch (DOMElement *elt, SwitchNode *swtch)
           g_assert (dom_elt_try_get_attribute (id, child, "id"));
           node = swtch->getNode (id);
           g_assert_nonnull (node);
-          if (instanceof (SwitchNode *, node))
-            this->posCompileSwitch (child, (SwitchNode*) node);
+          if (instanceof (Switch *, node))
+            this->posCompileSwitch (child, (Switch*) node);
         }
     }
 
@@ -1625,7 +1625,7 @@ Parser::solveNodeReferences (Composition *comp)
   const vector<Node *> *nodes;
   bool del = false;
 
-  if (instanceof (SwitchNode *, comp))
+  if (instanceof (Switch *, comp))
     {
       map<string, map<string, Node *> *>::iterator it;
       map<string, Node *> *tab;
@@ -1779,7 +1779,7 @@ Parser::parseSwitch (DOMElement *elt)
   CHECK_ELT_ID (elt, &id);
   CHECK_ELT_ATTRIBUTE_NOT_SUPPORTED (elt, "refer");
 
-  swtch = new SwitchNode (id);
+  swtch = new Switch (id);
   _switchMap[id] = new map<string, Node *>;
 
   // Collect children.
@@ -1821,7 +1821,7 @@ Parser::parseSwitch (DOMElement *elt)
           Rule *rule;
           node = this->parseBindRule (child, (Composition *) swtch, &rule);
           g_assert_nonnull (node);
-          ((SwitchNode *) swtch)->addNode (node, rule);
+          ((Switch *) swtch)->addNode (node, rule);
         }
       else if (tag == "defaultComponent")
         {
@@ -1842,7 +1842,7 @@ Parser::parseSwitch (DOMElement *elt)
           if (unlikely (node == nullptr))
             ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (child, "component");
 
-          ((SwitchNode *) swtch)->setDefaultNode (node);
+          ((Switch *) swtch)->setDefaultNode (node);
         }
     }
 
@@ -1881,7 +1881,7 @@ Parser::parseBindRule (DOMElement *elt, Composition *parent,
 }
 
 SwitchPort *
-Parser::parseSwitchPort (DOMElement *elt, SwitchNode *swtch)
+Parser::parseSwitchPort (DOMElement *elt, Switch *swtch)
 {
   SwitchPort *port;
   string id;
@@ -1908,8 +1908,8 @@ Parser::parseSwitchPort (DOMElement *elt, SwitchNode *swtch)
 }
 
 Port *
-Parser::parseMapping (DOMElement *elt, SwitchNode *swtch,
-                         SwitchPort *port)
+Parser::parseMapping (DOMElement *elt, Switch *swtch,
+                      SwitchPort *port)
 {
   Node *mapping;
   string id;
