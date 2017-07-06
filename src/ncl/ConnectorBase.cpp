@@ -20,137 +20,40 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
+/**
+ * @brief Creates a new connector base.
+ * @param id Base id.
+ */
 ConnectorBase::ConnectorBase (const string &id) : Base (id)
 {
 }
 
+/**
+ * @brief Destroys connector base.
+ */
 ConnectorBase::~ConnectorBase ()
 {
-  _connectorSet.clear ();
 }
 
-bool
+/**
+ * @brief Adds connector to base.
+ * @param connector Connector.
+ */
+void
 ConnectorBase::addConnector (Connector *connector)
 {
-  if (connector == NULL || containsConnector (connector))
-    {
-      return false;
-    }
-
-  _connectorSet.insert (connector);
-  return true;
+  Base::addEntity (connector);
 }
 
-void
-ConnectorBase::clear ()
-{
-  _connectorSet.clear ();
-}
-
-bool
-ConnectorBase::containsConnector (const string &connectorId)
-{
-  if (getConnectorLocally (connectorId) != NULL)
-    {
-      return true;
-    }
-  else
-    {
-      return false;
-    }
-}
-
-bool
-ConnectorBase::containsConnector (Connector *connector)
-{
-  set<Connector *>::iterator i;
-
-  i = _connectorSet.find (connector);
-  if (i != _connectorSet.end ())
-    {
-      return true;
-    }
-  return false;
-}
-
+/**
+ * @brief Gets connector.
+ * @param id Connector id.
+ * @return Connector if successful, or null if not found.
+ */
 Connector *
-ConnectorBase::getConnectorLocally (const string &connectorId)
+ConnectorBase::getConnector (const string &id)
 {
-  set<Connector *>::iterator i;
-
-  i = _connectorSet.begin ();
-  while (i != _connectorSet.end ())
-    {
-      if ((*i)->getId () == connectorId)
-        {
-          return (*i);
-        }
-
-      ++i;
-    }
-  return NULL;
-}
-
-Connector *
-ConnectorBase::getConnector (const string &connectorId)
-{
-  string::size_type index;
-  string prefix, suffix;
-  ConnectorBase *base;
-  Connector *conn = NULL;
-  map<string, Base *>::iterator i;
-
-  index = connectorId.find_first_of ("#");
-  if (index == string::npos)
-    {
-      return getConnectorLocally (connectorId);
-    }
-
-  prefix = connectorId.substr (0, index);
-  index++;
-  suffix = connectorId.substr (index, connectorId.length () - index);
-
-  i = _aliases.find (prefix);
-  if (i != _aliases.end ())
-    {
-      base = (ConnectorBase *)(i->second);
-      conn = base->getConnector (suffix);
-    }
-
-  if (conn == NULL)
-    {
-      i = _locations.find (prefix);
-      if (i != _locations.end ())
-        {
-          base = (ConnectorBase *)(i->second);
-          conn = base->getConnector (suffix);
-        }
-    }
-
-  return conn;
-}
-
-bool
-ConnectorBase::removeConnector (const string &connectorId)
-{
-  Connector *connector;
-
-  connector = getConnectorLocally (connectorId);
-  return removeConnector (connector);
-}
-
-bool
-ConnectorBase::removeConnector (Connector *connector)
-{
-  set<Connector *>::iterator i;
-
-  i = _connectorSet.find (connector);
-  if (i != _connectorSet.end ())
-    {
-      _connectorSet.erase (i);
-      return true;
-    }
-  return false;
+  return cast (Connector *, Base::getEntity (id));
 }
 
 GINGA_NCL_END

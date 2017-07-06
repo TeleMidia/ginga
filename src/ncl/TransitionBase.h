@@ -15,11 +15,10 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef TRANSITIONBASE_H_
-#define TRANSITIONBASE_H_
+#ifndef TRANSITION_BASE_H
+#define TRANSITION_BASE_H
 
 #include "Base.h"
-
 #include "Transition.h"
 
 GINGA_NCL_BEGIN
@@ -27,20 +26,13 @@ GINGA_NCL_BEGIN
 class TransitionBase : public Base
 {
 public:
-  TransitionBase (const string &_id);
+  TransitionBase (const string &);
   virtual ~TransitionBase ();
-  bool addTransition (Transition *transition);
 
-  Transition *getTransition (const string &transitionId);
-  vector<Transition *> *getTransitions ();
-  bool removeTransition (Transition *transition);
-
-private:
-  vector<Transition *> *_transitionSet;
-
-  Transition *getTransitionLocally (const string &transitionId);
+  void addTransition (Transition *);
+  Transition *getTransition (const string &);
 };
 
 GINGA_NCL_END
 
-#endif /*TRANSITIONBASE_H_*/
+#endif // TRANSITION_BASE_H

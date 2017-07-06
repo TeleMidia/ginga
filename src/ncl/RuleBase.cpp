@@ -20,98 +20,40 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
+/**
+ * @brief Creates a new rule base.
+ * @param id Base id.
+ */
 RuleBase::RuleBase (const string &id) : Base (id)
 {
-  _ruleSet = new vector<Rule *>;
 }
 
+/**
+ * @brief Destroys rule base.
+ */
 RuleBase::~RuleBase ()
 {
-  vector<Rule *>::iterator i;
-
-  if (_ruleSet != NULL)
-    {
-      i = _ruleSet->begin ();
-      while (i != _ruleSet->end ())
-        {
-          delete *i;
-          ++i;
-        }
-
-      delete _ruleSet;
-      _ruleSet = NULL;
-    }
 }
 
-bool
+/**
+ * @brief Adds rule to base.
+ * @param rule Rule.
+ */
+void
 RuleBase::addRule (Rule *rule)
 {
-  if (rule == NULL)
-    return false;
-
-  vector<Rule *>::iterator i;
-  for (i = _ruleSet->begin (); i != _ruleSet->end (); ++i)
-    {
-      if (*i == rule)
-        return false;
-    }
-
-  _ruleSet->push_back (rule);
-  return true;
+  Base::addEntity (rule);
 }
 
+/**
+ * @brief Gets rule.
+ * @param id Rule id.
+ * @return Rule if successful, or null if not found.
+ */
 Rule *
-RuleBase::getRuleLocally (const string &ruleId)
+RuleBase::getRule (const string &id)
 {
-  vector<Rule *>::iterator rules;
-
-  rules = _ruleSet->begin ();
-  while (rules != _ruleSet->end ())
-    {
-      if ((*rules)->getId () == ruleId)
-        {
-          return (*rules);
-        }
-      ++rules;
-    }
-  return NULL;
-}
-
-Rule *
-RuleBase::getRule (const string &ruleId)
-{
-  string::size_type index;
-  string prefix, suffix;
-  RuleBase *base;
-
-  index = ruleId.find_first_of ("#");
-  if (index == string::npos)
-    {
-      return getRuleLocally (ruleId);
-    }
-  prefix = ruleId.substr (0, index);
-  index++;
-  suffix = ruleId.substr (index, ruleId.length () - index);
-  if (_aliases.find (prefix) != _aliases.end ())
-    {
-      base = (RuleBase *)(_aliases[prefix]);
-      return base->getRule (suffix);
-    }
-  else if (_locations.find (prefix) != _locations.end ())
-    {
-      base = (RuleBase *)(_locations[prefix]);
-      return base->getRule (suffix);
-    }
-  else
-    {
-      return NULL;
-    }
-}
-
-vector<Rule *> *
-RuleBase::getRules ()
-{
-  return _ruleSet;
+  return cast (Rule *, Base::getEntity (id));
 }
 
 GINGA_NCL_END

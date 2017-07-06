@@ -15,11 +15,10 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef CONNECTORBASE_H_
-#define CONNECTORBASE_H_
+#ifndef CONNECTOR_BASE_H
+#define CONNECTOR_BASE_H
 
 #include "Base.h"
-
 #include "Connector.h"
 
 GINGA_NCL_BEGIN
@@ -27,25 +26,13 @@ GINGA_NCL_BEGIN
 class ConnectorBase : public Base
 {
 public:
-  ConnectorBase (const string &_id);
+  ConnectorBase (const string &);
   virtual ~ConnectorBase ();
 
-  bool addConnector (Connector *connector);
-
-  void clear ();
-  bool containsConnector (const string &connectorId);
-  bool containsConnector (Connector *connector);
-
-  Connector *getConnector (const string &connectorId);
-  bool removeConnector (const string &connectorId);
-  bool removeConnector (Connector *connector);
-
-private:
-  set<Connector *> _connectorSet;
-
-  Connector *getConnectorLocally (const string &connectorId);
+  void addConnector (Connector *);
+  Connector *getConnector (const string &);
 };
 
 GINGA_NCL_END
 
-#endif /*CONNECTORBASE_H_*/
+#endif // CONNECTOR_BASE_H

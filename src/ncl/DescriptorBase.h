@@ -15,11 +15,10 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef DESCRIPTORBASE_H_
-#define DESCRIPTORBASE_H_
+#ifndef DESCRIPTOR_BASE_H
+#define DESCRIPTOR_BASE_H
 
 #include "Base.h"
-
 #include "Descriptor.h"
 
 GINGA_NCL_BEGIN
@@ -27,22 +26,13 @@ GINGA_NCL_BEGIN
 class DescriptorBase : public Base
 {
 public:
-  DescriptorBase (const string &_id);
+  DescriptorBase (const string &);
   virtual ~DescriptorBase ();
 
-  bool addDescriptor (Descriptor *descriptor);
-
-  void clear ();
-
-  Descriptor *getDescriptor (const string &descriptorId);
-  vector<Descriptor *> *getDescriptors ();
-  bool removeDescriptor (Descriptor *descriptor);
-
-private:
-  vector<Descriptor *> *_descriptorSet;
-  Descriptor *getDescriptorLocally (const string &descriptorId);
+  void addDescriptor (Descriptor *);
+  Descriptor *getDescriptor (const string &);
 };
 
 GINGA_NCL_END
 
-#endif /*DESCRIPTORBASE_H_*/
+#endif // DESCRIPTOR_BASE_H

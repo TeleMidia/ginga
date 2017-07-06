@@ -20,119 +20,40 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
+/**
+ * @brief Creates a new descriptor base.
+ * @param id Base id.
+ */
 DescriptorBase::DescriptorBase (const string &id) : Base (id)
 {
-  _descriptorSet = new vector<Descriptor *>;
 }
 
+/**
+ * @brief Destroys descriptor base.
+ */
 DescriptorBase::~DescriptorBase ()
 {
-  vector<Descriptor *>::iterator i;
-
-  if (_descriptorSet != NULL)
-    {
-      i = _descriptorSet->begin ();
-      while (i != _descriptorSet->end ())
-        {
-          delete *i;
-          ++i;
-        }
-      delete _descriptorSet;
-      _descriptorSet = NULL;
-    }
 }
 
-bool
+/**
+ * @brief Adds descriptor to base.
+ * @param descriptor Descriptor.
+ */
+void
 DescriptorBase::addDescriptor (Descriptor *descriptor)
 {
-  if (descriptor == NULL)
-    return false;
-
-  vector<Descriptor *>::iterator i;
-  for (i = _descriptorSet->begin (); i != _descriptorSet->end (); ++i)
-    {
-      if (*i == descriptor)
-        {
-          return false;
-        }
-    }
-  _descriptorSet->push_back (descriptor);
-  return true;
+  Base::addEntity (descriptor);
 }
 
-void
-DescriptorBase::clear ()
-{
-  _descriptorSet->clear ();
-}
-
+/**
+ * @brief Gets descriptor.
+ * @param id Descriptor id.
+ * @return Descriptor if successful, or null if not found.
+ */
 Descriptor *
-DescriptorBase::getDescriptorLocally (const string &descriptorId)
+DescriptorBase::getDescriptor (const string &id)
 {
-  vector<Descriptor *>::iterator descriptors;
-
-  descriptors = _descriptorSet->begin ();
-  while (descriptors != _descriptorSet->end ())
-    {
-      if ((*descriptors)->getId () == descriptorId)
-        {
-          return (*descriptors);
-        }
-      ++descriptors;
-    }
-  return NULL;
-}
-
-Descriptor *
-DescriptorBase::getDescriptor (const string &descriptorId)
-{
-  string::size_type index;
-  string prefix, suffix;
-  DescriptorBase *base;
-
-  index = descriptorId.find_first_of ("#");
-  if (index == string::npos)
-    {
-      return getDescriptorLocally (descriptorId);
-    }
-  prefix = descriptorId.substr (0, index);
-  index++;
-  suffix = descriptorId.substr (index, descriptorId.length () - index);
-  if (_aliases.find (prefix) != _aliases.end ())
-    {
-      base = (DescriptorBase *)(_aliases[prefix]);
-      return base->getDescriptor (suffix);
-    }
-  else if (_locations.find (prefix) != _locations.end ())
-    {
-      base = (DescriptorBase *)(_locations[prefix]);
-      return base->getDescriptor (suffix);
-    }
-  else
-    {
-      return NULL;
-    }
-}
-
-vector<Descriptor *> *
-DescriptorBase::getDescriptors ()
-{
-  return _descriptorSet;
-}
-
-bool
-DescriptorBase::removeDescriptor (Descriptor *descriptor)
-{
-  vector<Descriptor *>::iterator i;
-  for (i = _descriptorSet->begin (); i != _descriptorSet->end (); ++i)
-    {
-      if (*i == descriptor)
-        {
-          _descriptorSet->erase (i);
-          return true;
-        }
-    }
-  return false;
+  return cast (Descriptor *, Base::getEntity (id));
 }
 
 GINGA_NCL_END

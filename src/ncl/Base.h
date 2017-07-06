@@ -32,8 +32,13 @@ public:
 protected:
   string _id;
   vector<Base *> _bases;
+  vector <Entity *> _entities;
   map<string, Base *> _aliases;
   map<string, Base *> _locations;
+
+  void addEntity (Entity *);
+  Entity *getEntity (const string &);
+  Base *getHashBase (const string &, string *, string *);
 };
 
 GINGA_NCL_END
