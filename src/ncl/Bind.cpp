@@ -200,13 +200,7 @@ Bind::getEndPointInterface ()
   CompositeNode *compositeNode;
   Port *port;
 
-  NodeEntity *nodeEntity = cast (NodeEntity *, _node);
-  if (nodeEntity == nullptr)
-    {
-      g_assert (instanceof (ReferNode *, _node));
-      nodeEntity = cast (NodeEntity *, cast (ReferNode *, _node)
-                         ->getReferredEntity ());
-    }
+  NodeEntity *nodeEntity = cast (NodeEntity *, _node->derefer ());
   g_assert_nonnull (nodeEntity);
 
   if (instanceof (CompositeNode *, nodeEntity)

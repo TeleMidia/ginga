@@ -417,13 +417,7 @@ Converter::createExecutionObject (
 
   node = perspective->getAnchorNode ();
 
-  NodeEntity *nodeEntity = cast (NodeEntity *, node);
-  if (nodeEntity == nullptr)
-    {
-      g_assert (instanceof (ReferNode *, node));
-      nodeEntity = cast (NodeEntity *, cast (ReferNode *, node)
-                         ->getReferredEntity ());
-    }
+  NodeEntity *nodeEntity = cast (NodeEntity *, node->derefer ());
   g_assert_nonnull (nodeEntity);
 
   // solve execution object cross reference coming from refer nodes with
