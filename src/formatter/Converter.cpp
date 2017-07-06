@@ -508,19 +508,6 @@ Converter::createExecutionObject (
   return exeObj;
 }
 
-Descriptor *
-Converter::createDummyDescriptor (arg_unused (Node *node))
-{
-  Descriptor *ncmDesc
-      = new Descriptor ("dummyDescriptor" + xstrbuild ("%d", _dummyCount));
-
-  ncmDesc->setFocusDecoration (new FocusDecoration ());
-
-  _dummyCount++;
-
-  return ncmDesc;
-}
-
 void
 Converter::processLink (Link *ncmLink,
                         Node *dataObject,

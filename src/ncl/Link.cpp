@@ -79,7 +79,6 @@ Link::addParameter (Parameter *parameter)
 
 /**
  * @brief Gets all link parameters.
- * @return All link parameters.
  */
 const vector<Parameter *> *
 Link::getParameters ()
@@ -114,7 +113,6 @@ Link::addBind (Bind *bind)
 
 /**
  * @brief Gets all link binds.
- * @return All link binds.
  */
 const vector<Bind *> *
 Link::getBinds ()

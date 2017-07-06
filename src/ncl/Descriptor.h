@@ -15,64 +15,37 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _DESCRIPTOR_H_
-#define _DESCRIPTOR_H_
+#ifndef DESCRIPTOR_H
+#define DESCRIPTOR_H
 
 #include "Entity.h"
 #include "Parameter.h"
 #include "Region.h"
-
-#include "FocusDecoration.h"
-#include "KeyNavigation.h"
-
 #include "Transition.h"
-
-#include "Descriptor.h"
 
 GINGA_NCL_BEGIN
 
 class Descriptor : public Entity
 {
 public:
-  static const short FIT_FILL = 0;
-  static const short FIT_HIDDEN = 1;
-  static const short FIT_MEET = 2;
-  static const short FIT_MEETBEST = 3;
-  static const short FIT_SLICE = 4;
-
-  static const short SCROLL_NONE = 0;
-  static const short SCROLL_HORIZONTAL = 1;
-  static const short SCROLL_VERTICAL = 2;
-  static const short SCROLL_BOTH = 3;
-  static const short SCROLL_AUTOMATIC = 4;
-
-  Descriptor (const string &_id);
+  Descriptor (const string &);
   virtual ~Descriptor ();
-  GingaTime getExplicitDuration ();
 
   Region *getRegion ();
-  int getRepetitions ();
-  void setExplicitDuration (GingaTime);
-  void setRegion (Region *_region);
-  void setRepetitions (int r);
-  void addParameter (Parameter *parameter);
-  const vector<Parameter *> *getParameters ();
-  Parameter *getParameter (const string &paramName);
-  KeyNavigation *getKeyNavigation ();
-  void setKeyNavigation (KeyNavigation *keyNav);
-  FocusDecoration *getFocusDecoration ();
-  void setFocusDecoration (FocusDecoration *focusDec);
-  vector<Transition *> *getInputTransitions ();
-  bool addInputTransition (Transition *transition, int pos);
-  vector<Transition *> *getOutputTransitions ();
-  bool addOutputTransition (Transition *transition, int pos);
+  void setRegion (Region *);
 
-protected:
-  FocusDecoration *_focusDecoration;
-  GingaTime _explicitDuration;
-  KeyNavigation *_keyNavigation;
+  void addParameter (Parameter *);
+  const vector<Parameter *> *getParameters ();
+  Parameter *getParameter (const string &);
+
+  void addInputTransition (Transition *);
+  const vector<Transition *> *getInputTransitions ();
+
+  void addOutputTransition (Transition *);
+  const vector<Transition *> *getOutputTransitions ();
+
+private:
   Region *_region;
-  int _repetitions;
   vector<Parameter *> _parameters;
   vector<Transition *> _inputTransitions;
   vector<Transition *> _outputTransitions;
@@ -80,4 +53,4 @@ protected:
 
 GINGA_NCL_END
 
-#endif //_DESCRIPTOR_H_
+#endif // DESCRIPTOR_H
