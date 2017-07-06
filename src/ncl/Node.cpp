@@ -21,180 +21,95 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
+/**
+ * @brief Creates a new component.
+ * @param id Component id.
+ */
 Node::Node (const string &id) : Entity (id)
 {
-  _parentNode = nullptr;
+  _parent = nullptr;
 }
 
+/**
+ * @brief Destroys component.
+ */
 Node::~Node ()
 {
-  vector<Anchor *>::iterator i;
-  vector<Property *>::iterator j;
-
-  _parentNode = NULL;
-
-  i = _anchorList.begin ();
-  while (i != _anchorList.end ())
-    {
-      delete *i;
-      ++i;
-    }
-
-  _anchorList.clear ();
-
-  // properties are inside anchorList as well.
-  _originalPAnchors.clear ();
+  _anchors.clear ();
 }
 
-bool
-Node::hasProperty (const string &propName)
-{
-  vector<Property *>::iterator i;
-
-  i = _originalPAnchors.begin ();
-  while (i != _originalPAnchors.end ())
-    {
-      if ((*i)->getName () == propName)
-        {
-          return true;
-        }
-      ++i;
-    }
-
-  return false;
-}
-
+/**
+ * @brief Gets component parent.
+ */
 CompositeNode *
-Node::getParentComposition ()
+Node::getParent ()
 {
-  return _parentNode;
+  return _parent;
 }
+
+/**
+ * @brief Sets component parent.  (Can only be called once.)
+ */
+void
+Node::setParent (CompositeNode *parent)
+{
+  g_assert_null (_parent);
+  g_assert_nonnull (parent);
+  _parent = parent;
+}
+
+/**
+ * @brief Adds anchor to component.
+ * @param anchor Anchor.
+ */
+void
+Node::addAnchor (Anchor *anchor)
+{
+  g_assert_nonnull (anchor);
+  _anchors.push_back (anchor);
+}
+
+/**
+ * @brief Gets all anchors.
+ */
+const vector<Anchor *> *
+Node::getAnchors ()
+{
+  return &_anchors;
+}
+
+/**
+ * @brief Gets anchor.
+ * @param id Anchor id.
+ * @return Anchor if successful, or null if not found.
+ */
+Anchor *
+Node::getAnchor (const string &id)
+{
+  for (auto anchor: _anchors)
+    if (anchor->getId () == id)
+      return anchor;
+  return nullptr;
+}
+
+
+// FIXME: Remove this with NclNodeNesting stuff.
 
 vector<Node *> *
 Node::getPerspective ()
 {
   vector<Node *> *perspective;
 
-  if (_parentNode == NULL)
+  if (_parent == NULL)
     {
       perspective = new vector<Node *>;
     }
   else
     {
-      perspective = ((CompositeNode *)_parentNode)->getPerspective ();
+      perspective = ((CompositeNode *)_parent)->getPerspective ();
     }
   perspective->push_back ((Node *)this);
   return perspective;
-}
-
-void
-Node::setParentComposition (CompositeNode *composition)
-{
-  if (composition == NULL
-      || composition->getNode (getId ()) != NULL)
-    {
-      this->_parentNode = composition;
-    }
-}
-
-bool
-Node::addAnchor (int index, Anchor *anchor)
-{
-  int lSize = (int)_anchorList.size ();
-
-  // anchor position must be in the correct range and anchor must exist
-  if ((index < 0 || index > lSize) || anchor == NULL)
-    {
-      return false;
-    }
-
-  // anchor id must be unique - conflicts with referredNode anchor ids
-  // can only be solved at runtime, since anchors can be inserted after
-  if (getAnchor (anchor->getId ()) != NULL)
-    {
-      return false;
-    }
-
-  if (index == lSize)
-    {
-      _anchorList.push_back (anchor);
-    }
-  else
-    {
-      _anchorList.insert (_anchorList.begin () + index, anchor);
-    }
-
-  if (instanceof (Property *, anchor))
-    {
-      // g_assert_not_reached ();
-      // _originalPAnchors.push_back (((Property *)anchor)->clone ());
-    }
-
-  return true;
-}
-
-bool
-Node::addAnchor (Anchor *anchor)
-{
-  return Node::addAnchor ((int) _anchorList.size (), anchor);
-}
-
-Anchor *
-Node::getAnchor (const string &anchorId)
-{
-  vector<Anchor *>::iterator i;
-  Anchor *anchor;
-
-  i = _anchorList.begin ();
-  while (i != _anchorList.end ())
-    {
-      anchor = *i;
-      if (anchor == NULL)
-        {
-          return NULL;
-        }
-      else if (anchor->getId () != "" && anchor->getId () == anchorId)
-        {
-          return anchor;
-        }
-      ++i;
-    }
-  return NULL;
-}
-
-Anchor *
-Node::getAnchor (int index)
-{
-  return (Anchor *)_anchorList[(size_t)index];
-}
-
-const vector<Anchor *> &
-Node::getAnchors ()
-{
-  return this->_anchorList;
-}
-
-Property *
-Node::getProperty (const string &propertyName)
-{
-  vector<Anchor *>::iterator i;
-  Property *property;
-
-  i = _anchorList.begin ();
-  while (i != _anchorList.end ())
-    {
-      if (instanceof (Property *, (*i)))
-        {
-          property = (Property *)(*i);
-          if (property->getName () == propertyName)
-            {
-              return property;
-            }
-        }
-      ++i;
-    }
-
-  return NULL;
 }
 
 GINGA_NCL_END

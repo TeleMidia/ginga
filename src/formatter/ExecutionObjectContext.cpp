@@ -97,7 +97,7 @@ ExecutionObjectContext::getParentFromDataObject (Node *dataObject)
   Node *parentDataObject;
   map<string, ExecutionObject *>::iterator i;
 
-  parentDataObject = (Node *)(dataObject->getParentComposition ());
+  parentDataObject = (Node *)(dataObject->getParent ());
 
   if (parentDataObject != NULL)
     {

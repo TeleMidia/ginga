@@ -487,16 +487,13 @@ ExecutionObject::getNodes ()
 }
 
 Property *
-ExecutionObject::getNCMProperty (const string &propertyName)
+ExecutionObject::getNCMProperty (const string &name)
 {
-  Property *property = nullptr;
-
-  if (_dataObject != nullptr)
-    {
-      property = _dataObject->getProperty (propertyName);
-    }
-
-  return property;
+  g_assert_nonnull (_dataObject);
+  for (auto anchor: *_dataObject->getAnchors ())
+    if (instanceof (Property *, anchor) && anchor->getId () == name)
+      return cast (Property *, anchor);
+  return nullptr;
 }
 
 NclNodeNesting *
@@ -656,7 +653,7 @@ ExecutionObject::start ()
         _player->setProperty (param->getName (), param->getValue ());
     }
 
-  for (Anchor *anchor: contentNode->getAnchors ())
+  for (auto anchor: *contentNode->getAnchors ())
     {
       Property *prop = cast (Property *, anchor);
       if (prop != nullptr)

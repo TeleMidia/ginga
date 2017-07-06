@@ -102,7 +102,7 @@ Scheduler::startDocument (const string &file)
       delete persp;
 
       content = (ContentNode *) node;
-      for (auto anchor: content->getAnchors ())
+      for (auto anchor: *content->getAnchors ())
         {
           Property *prop;
           string name;
@@ -285,7 +285,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
   compNode = cast (CompositeNode *, entity);
   g_assert_nonnull (compNode);
 
-  if (compNode->getParentComposition () == nullptr)
+  if (compNode->getParent () == nullptr)
     {
       compPerspective
         = new NclNodeNesting (compNode->getPerspective ());
