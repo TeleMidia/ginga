@@ -872,7 +872,7 @@ ExecutionObject::handleKeyEvent (const string &key, bool press)
 
   for (SelectionEvent *evt: _selectionEvents)
     {
-      ContentAnchor *anchor;
+      IntervalAnchor *anchor;
       string expected;
 
       expected = evt->getSelectionCode ();

@@ -18,11 +18,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _INTERVALANCHOR_H_
 #define _INTERVALANCHOR_H_
 
-#include "ContentAnchor.h"
+#include "Anchor.h"
 
 GINGA_NCL_BEGIN
 
-class IntervalAnchor : public ContentAnchor
+class IntervalAnchor : public Anchor
 {
 public:
   IntervalAnchor (const string &_id, GingaTime begin, GingaTime end);

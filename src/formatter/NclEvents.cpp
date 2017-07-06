@@ -200,7 +200,7 @@ NclEvent::changeState (EventState newState,
 
 AnchorEvent::AnchorEvent (const string &id,
                           ExecutionObject *executionObject,
-                          ContentAnchor *anchor)
+                          IntervalAnchor *anchor)
   : NclEvent (id, executionObject)
 {
   this->_anchor = anchor;
@@ -211,7 +211,7 @@ AnchorEvent::AnchorEvent (const string &id,
 
 PresentationEvent::PresentationEvent (const string &id,
                                       ExecutionObject *exeObj,
-                                      ContentAnchor *anchor)
+                                      IntervalAnchor *anchor)
   : AnchorEvent (id, exeObj, anchor)
 {
   _numPresentations = 1;
@@ -283,7 +283,7 @@ PresentationEvent::incOccurrences ()
 
 SelectionEvent::SelectionEvent (const string &id,
                                 ExecutionObject *exeObj,
-                                ContentAnchor *anchor)
+                                IntervalAnchor *anchor)
   : AnchorEvent (id, exeObj, anchor)
 {
   _type = EventType::SELECTION;

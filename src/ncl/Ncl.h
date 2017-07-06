@@ -37,7 +37,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Connector.h"
 #include "ConnectorBase.h"
 #include "Content.h"
-#include "ContentAnchor.h"
 #include "ContentNode.h"
 #include "ContextNode.h"
 #include "Descriptor.h"
