@@ -79,6 +79,7 @@ Link::addParameter (Parameter *parameter)
 
 /**
  * @brief Gets all link parameters.
+ * @return All link parameters.
  */
 const vector<Parameter *> *
 Link::getParameters ()
@@ -113,6 +114,7 @@ Link::addBind (Bind *bind)
 
 /**
  * @brief Gets all link binds.
+ * @return All link binds.
  */
 const vector<Bind *> *
 Link::getBinds ()
@@ -123,7 +125,7 @@ Link::getBinds ()
 /**
  * @brief Gets link binds.
  * @param role Role.
- * @return A vector containing the binds with the given role.
+ * @return The binds with the given role.
  */
 vector<Bind *>
 Link::getBinds (Role *role)
