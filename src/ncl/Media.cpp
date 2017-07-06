@@ -99,7 +99,7 @@ Media::setDescriptor (Descriptor *descriptor)
  * @param node Refer node.
  */
 void
-Media::addSameInstance (ReferNode *node)
+Media::addSameInstance (Refer *node)
 {
   g_assert_nonnull (node);
   _instances.insert (node);
@@ -108,7 +108,7 @@ Media::addSameInstance (ReferNode *node)
 /**
  * @brief Get media references.
  */
-const set<ReferNode *> *
+const set<Refer *> *
 Media::getInstSameInstances ()
 {
   return &_instances;

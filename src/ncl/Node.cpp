@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Area.h"
 #include "CompositeNode.h"
-#include "ReferNode.h"
+#include "Refer.h"
 
 GINGA_NCL_BEGIN
 
@@ -134,10 +134,10 @@ Node::getPerspective ()
 Node *
 Node::derefer ()
 {
-  if (instanceof (ReferNode *, this))
+  if (instanceof (Refer *, this))
     {
       Node *result;
-      result = cast (Node *, cast (ReferNode *, this)->getReferred ());
+      result = cast (Node *, cast (Refer *, this)->getReferred ());
       g_assert_nonnull (result);
       return result;
     }

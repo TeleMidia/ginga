@@ -79,7 +79,7 @@ private:
                     ExecutionObjectContext *parentObject);
 
   ExecutionObjectContext *
-  addSameInstance (ExecutionObject *exeObj, ReferNode *referNode);
+  addSameInstance (ExecutionObject *exeObj, Refer *referNode);
 
   ExecutionObjectContext *getParentExecutionObject (
       NclNodeNesting *perspective);

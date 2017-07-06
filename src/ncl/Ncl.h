@@ -54,7 +54,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Parser.h"
 #include "Port.h"
 #include "Property.h"
-#include "ReferNode.h"
+#include "Refer.h"
 #include "ReferenceContent.h"
 #include "Region.h"
 #include "RegionBase.h"
