@@ -15,38 +15,35 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _SWITCHNODE_H_
-#define _SWITCHNODE_H_
+#ifndef SWITCH_H
+#define SWITCH_H
 
-#include "Context.h"
 #include "Composition.h"
-#include "Node.h"
-
-#include "Port.h"
-#include "SwitchPort.h"
-
 #include "Rule.h"
 
 GINGA_NCL_BEGIN
 
-class SwitchNode : public Composition
+class Switch : public Composition
 {
 public:
-  SwitchNode (const string &_id);
-  virtual ~SwitchNode ();
-  void addNode (Node *node, Rule *rule);
+  Switch (const string &);
+  virtual ~Switch ();
+
+  void addNode (Node *, Rule *);
   void addNode (Node *);
+  Node *getNode (const string &);
+
   Node *getDefaultNode ();
-  Anchor *getMapInterface (Port *port);
-  Node *getNode (const string &nodeId);
+  void setDefaultNode (Node *);
+
   const vector <Rule *> *getRules ();
-  void setDefaultNode (Node *node);
+  Anchor *getMapInterface (Port *port);
 
 private:
-  Node *_defaultNode;
+  Node *_default;
   vector<Rule *> _rules;
 };
 
 GINGA_NCL_END
 
-#endif //_SWITCHNODE_H_
+#endif // SWITCH_H

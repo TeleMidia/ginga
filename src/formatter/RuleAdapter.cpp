@@ -171,7 +171,7 @@ RuleAdapter::initializeAttributeRuleRelation (Rule *topRule, Rule *rule)
 }
 
 Node *
-RuleAdapter::adaptSwitch (SwitchNode *swtch)
+RuleAdapter::adaptSwitch (Switch *swtch)
 {
   const vector<Node *> *nodes;
   const vector<Rule *> *rules;

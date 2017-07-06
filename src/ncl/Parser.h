@@ -38,7 +38,7 @@ GINGA_PRAGMA_DIAG_POP ()
 #include "Property.h"
 #include "Rule.h"
 #include "SimpleRule.h"
-#include "SwitchNode.h"
+#include "Switch.h"
 #include "TransitionUtil.h"
 #include "ValueAssessment.h"
 
@@ -95,7 +95,7 @@ private:
   Context *parseBody (DOMElement *);
   void solveNodeReferences (Composition *);
   void posCompileContext (DOMElement *, Context *);
-  void posCompileSwitch (DOMElement *, SwitchNode *);
+  void posCompileSwitch (DOMElement *, Switch *);
 
   Node *parseContext (DOMElement *);
   Port *parsePort (DOMElement *, Composition *);
@@ -103,8 +103,8 @@ private:
   map<string, map<string, Node *> *> _switchMap; // FIXME
   Node *parseSwitch (DOMElement *);
   Node *parseBindRule (DOMElement *, Composition *, Rule **);
-  SwitchPort *parseSwitchPort (DOMElement *, SwitchNode *);
-  Port *parseMapping (DOMElement *, SwitchNode *, SwitchPort *);
+  SwitchPort *parseSwitchPort (DOMElement *, Switch *);
+  Port *parseMapping (DOMElement *, Switch *, SwitchPort *);
 
   Node *parseMedia (DOMElement *);
   Property *parseProperty (DOMElement *);
