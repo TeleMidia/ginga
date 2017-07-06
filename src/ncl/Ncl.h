@@ -74,7 +74,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SwitchContent.h"
 #include "SwitchNode.h"
 #include "SwitchPort.h"
-#include "TextAnchor.h"
 #include "Transition.h"
 #include "TransitionBase.h"
 #include "TransitionUtil.h"

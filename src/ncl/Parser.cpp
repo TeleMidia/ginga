@@ -2053,6 +2053,7 @@ Parser::parseArea (DOMElement *elt)
   CHECK_ELT_ATTRIBUTE_NOT_SUPPORTED (elt, "coords");
   CHECK_ELT_ATTRIBUTE_NOT_SUPPORTED (elt, "first");
   CHECK_ELT_ATTRIBUTE_NOT_SUPPORTED (elt, "last");
+  CHECK_ELT_ATTRIBUTE_NOT_SUPPORTED (elt, "text");
 
   if (dom_elt_has_attribute (elt, "begin")
       || dom_elt_has_attribute (elt, "end"))
@@ -2071,14 +2072,6 @@ Parser::parseArea (DOMElement *elt)
         end = GINGA_TIME_NONE;
 
       return new IntervalAnchor (id, begin, end);
-    }
-  else if (dom_elt_has_attribute (elt, "text"))
-    {
-      string text;
-      string pos;
-      CHECK_ELT_ATTRIBUTE (elt, "text", &text);
-      CHECK_ELT_OPT_ATTRIBUTE (elt, "position", &pos, "0");
-      return new TextAnchor (id, text, xstrtoint (pos, 10));
     }
   else if (dom_elt_has_attribute (elt, "label"))
     {

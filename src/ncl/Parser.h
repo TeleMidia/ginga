@@ -38,7 +38,6 @@ GINGA_PRAGMA_DIAG_POP ()
 #include "Rule.h"
 #include "SimpleRule.h"
 #include "SwitchNode.h"
-#include "TextAnchor.h"
 #include "TransitionUtil.h"
 #include "ValueAssessment.h"
 
