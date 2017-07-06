@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Context.h"
 #include "CompositeNode.h"
-#include "NodeEntity.h"
+#include "Node.h"
 
 #include "Port.h"
 #include "InterfacePoint.h"

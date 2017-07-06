@@ -597,7 +597,7 @@ ExecutionObject::prepare (NclEvent *event)
 bool
 ExecutionObject::start ()
 {
-  NodeEntity *entity;
+  Node *entity;
   Media *contentNode;
   Content *content;
 
@@ -615,7 +615,7 @@ ExecutionObject::start ()
   if (instanceof (ExecutionObjectContext *, this))
     goto done;
 
-  entity = cast (NodeEntity *, _dataObject);
+  entity = cast (Node *, _dataObject);
   g_assert_nonnull (entity);
 
   contentNode = cast (Media *, entity);

@@ -18,12 +18,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef COMPOSITE_NODE_H
 #define COMPOSITE_NODE_H
 
-#include "NodeEntity.h"
+#include "Node.h"
 #include "Port.h"
 
 GINGA_NCL_BEGIN
 
-class CompositeNode : public NodeEntity
+class CompositeNode : public Node
 {
 public:
   CompositeNode (const string &);

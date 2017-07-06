@@ -1730,7 +1730,7 @@ Parser::parsePort (DOMElement *elt, CompositeNode *context)
   string value;
 
   Node *target;
-  NodeEntity *targetEntity;
+  Node *targetEntity;
   InterfacePoint *interface;
 
   CHECK_ELT_TAG (elt, "port", nullptr);
@@ -1741,7 +1741,7 @@ Parser::parsePort (DOMElement *elt, CompositeNode *context)
   if (unlikely (target == nullptr))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "component");
 
-  targetEntity = cast (NodeEntity *, target);
+  targetEntity = cast (Node *, target);
   g_assert_nonnull (targetEntity);
 
   if (dom_elt_try_get_attribute (value, elt, "interface"))
@@ -1873,7 +1873,7 @@ Parser::parseBindRule (DOMElement *elt, CompositeNode *parent,
   if (unlikely (nodes->count (constituent) == 0))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "constituent");
 
-  node = (NodeEntity *)(*nodes)[constituent];
+  node = (Node *)(*nodes)[constituent];
   if (unlikely (node == nullptr))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "constituent");
 
@@ -1920,7 +1920,7 @@ Parser::parseMapping (DOMElement *elt, SwitchNode *swtch,
   string comp;
   string value;
 
-  NodeEntity *mappingEntity;
+  Node *mappingEntity;
   InterfacePoint *iface;
 
   CHECK_ELT_TAG (elt, "mapping", nullptr);
@@ -1930,7 +1930,7 @@ Parser::parseMapping (DOMElement *elt, SwitchNode *swtch,
   if (unlikely (mapping == nullptr))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "component");
 
-  mappingEntity = cast (NodeEntity *, mapping);
+  mappingEntity = cast (Node *, mapping);
   g_assert_nonnull (mappingEntity);
 
   if (dom_elt_try_get_attribute (value, elt, "interface"))
@@ -2148,7 +2148,7 @@ Parser::parseBind (DOMElement *elt, Link *link, Context *context)
   Connector *conn;
 
   Node *target;
-  NodeEntity *targetEntity;
+  Node *targetEntity;
   InterfacePoint *iface;
   Descriptor *desc;
 
@@ -2171,7 +2171,7 @@ Parser::parseBind (DOMElement *elt, Link *link, Context *context)
     }
   g_assert_nonnull (target);
 
-  targetEntity = cast (NodeEntity *, target->derefer ());
+  targetEntity = cast (Node *, target->derefer ());
   g_assert_nonnull (targetEntity);
 
   iface = nullptr;

@@ -20,13 +20,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Content.h"
 #include "Descriptor.h"
-#include "NodeEntity.h"
+#include "Node.h"
 #include "ReferNode.h"
 
 GINGA_NCL_BEGIN
 
 class ReferNode;
-class Media : public NodeEntity
+class Media : public Node
 {
 public:
   Media (const string &, bool);

@@ -24,7 +24,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Context.h"
 #include "Media.h"
 #include "Node.h"
-#include "NodeEntity.h"
 
 #include "Connector.h"
 #include "ConnectorBase.h"

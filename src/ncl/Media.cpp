@@ -26,7 +26,7 @@ GINGA_NCL_BEGIN
  * @param settings True if media is settings node.
  */
 Media::Media (const string &id, bool settings)
-  : NodeEntity (id)
+  : Node (id)
 {
   _content = nullptr;
   _descriptor = nullptr;
