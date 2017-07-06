@@ -15,27 +15,41 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef REFER_NODE_H
-#define REFER_NODE_H
-
-#include "Media.h"
-#include "Node.h"
+#include "ginga.h"
+#include "Refer.h"
 
 GINGA_NCL_BEGIN
 
-class Media;
-class Node;
-class ReferNode : public Node
+/**
+ * @brief Creates a new refer node.
+ * @param id Refer node id.
+ */
+Refer::Refer (const string &id) : Node (id)
 {
-public:
-  ReferNode (const string &);
-  Media *getReferred ();
-  void setReferred (Media *);
+  _referred = nullptr;
+}
 
-private:
-  Media *_referred;
-};
+/**
+ * @brief Gets the media referenced by refer node.
+ */
+Media *
+Refer::getReferred ()
+{
+  return _referred;
+}
+
+/**
+ * @brief Sets the media referenced by refer node.
+ * (Can only be called once.)
+ * @param media Media.
+ */
+void
+Refer::setReferred (Media *media)
+{
+  g_assert_nonnull (media);
+  g_assert (_referred == nullptr || _referred == media);
+  _referred = media;
+  media->addSameInstance (this);
+}
 
 GINGA_NCL_END
-
-#endif // REFER_NODE_H

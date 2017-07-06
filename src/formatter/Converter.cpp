@@ -224,7 +224,7 @@ Converter::getEvent (ExecutionObject *exeObj,
 
 ExecutionObjectContext *
 Converter::addSameInstance (ExecutionObject *exeObj,
-                            ReferNode *referNode)
+                            Refer *referNode)
 {
   vector<Node *> *ncmPerspective = referNode->getPerspective ();
   NclNodeNesting *referPerspective = new NclNodeNesting (ncmPerspective);
@@ -283,7 +283,7 @@ Converter::addExecutionObject (ExecutionObject *exeObj,
   if (contentNode != nullptr && contentNode->isSettings ())
     _settingsObjects.insert (exeObj);
 
-  auto referNode = cast (ReferNode *, dataObject);
+  auto referNode = cast (Refer *, dataObject);
   if (referNode)
     {
 
@@ -300,11 +300,11 @@ Converter::addExecutionObject (ExecutionObject *exeObj,
   auto headCompositeNode = cast (CompositeNode *, headNode);
   if (headCompositeNode != nullptr && nodeEntity != nullptr)
     {
-      const set<ReferNode *> *sameInstances
+      const set<Refer *> *sameInstances
         = nodeEntity->getInstSameInstances ();
       g_assert_nonnull (sameInstances);
 
-      for (ReferNode *referNode: *(sameInstances))
+      for (Refer *referNode: *(sameInstances))
         {
           TRACE ("'%s' instSame of '%s'",
                  exeObj->getId ().c_str(),
@@ -409,7 +409,7 @@ Converter::createExecutionObject (
   auto contentNode = cast (Media *, nodeEntity);
   if (contentNode != nullptr && !contentNode->isSettings ())
     {
-      auto referNode = cast (ReferNode *, node);
+      auto referNode = cast (Refer *, node);
       if (referNode)
         {
           nodePerspective
@@ -491,7 +491,7 @@ Converter::processLink (Link *ncmLink,
                         ExecutionObjectContext *parentObject)
 {
   Node *nodeEntity = nullptr;
-  const set<ReferNode *> *sameInstances;
+  const set<Refer *> *sameInstances;
   bool contains = false;
 
   if (executionObject->getDataObject () != nullptr)
@@ -511,7 +511,7 @@ Converter::processLink (Link *ncmLink,
             {
               sameInstances = cast (Media *, nodeEntity)
                 ->getInstSameInstances ();
-              for (ReferNode *referNode: *sameInstances)
+              for (Refer *referNode: *sameInstances)
                 {
                   contains = causalLink->contains (referNode, true);
                   if (contains)

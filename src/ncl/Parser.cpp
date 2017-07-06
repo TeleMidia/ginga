@@ -1650,18 +1650,18 @@ Parser::solveNodeReferences (CompositeNode *comp)
   for (Node *node : *nodes)
   {
     g_assert_nonnull (node);
-    if (instanceof (ReferNode *, node))
+    if (instanceof (Refer *, node))
       {
         Entity *ref;
         Media *refNode;
 
-        ref = ((ReferNode *) node)->getReferred ();
+        ref = ((Refer *) node)->getReferred ();
         g_assert_nonnull (ref);
 
         refNode = cast (Media *, _doc->getNode (ref->getId ()));
         g_assert_nonnull (refNode);
 
-        ((ReferNode *) node)->setReferred (refNode);
+        ((Refer *) node)->setReferred (refNode);
       }
     else if (instanceof (CompositeNode *, node))
       {
@@ -1962,8 +1962,8 @@ Parser::parseMedia (DOMElement *elt)
       refer = cast (Media *, _doc->getNode (value));
       g_assert_nonnull (refer);
 
-      media = new ReferNode (id);
-      ((ReferNode *) media)->setReferred (refer);
+      media = new Refer (id);
+      ((Refer *) media)->setReferred (refer);
     }
   else
     {
@@ -2182,7 +2182,7 @@ Parser::parseBind (DOMElement *elt, Link *link, Context *context)
               iface = target->getAnchor (value);
               if (iface == nullptr) // retry
                 {
-                  for (ReferNode *refer:
+                  for (Refer *refer:
                          *cast (Media *, derefer)
                          ->getInstSameInstances ())
                     {

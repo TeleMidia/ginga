@@ -139,7 +139,7 @@ CompositeNode::recursivelyContainsNode (Node *node)
               return true;
             }
         }
-      else if (instanceof (ReferNode *, childNode))
+      else if (instanceof (Refer *, childNode))
         {
           childNode = childNode->derefer ();
           if (childNode == node)

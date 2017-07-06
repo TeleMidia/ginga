@@ -21,11 +21,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Content.h"
 #include "Descriptor.h"
 #include "Node.h"
-#include "ReferNode.h"
+#include "Refer.h"
 
 GINGA_NCL_BEGIN
 
-class ReferNode;
+class Refer;
 class Media : public Node
 {
 public:
@@ -40,14 +40,14 @@ public:
   Descriptor *getDescriptor ();
   void setDescriptor (Descriptor *);
 
-  void addSameInstance (ReferNode *);
-  const set<ReferNode *> *getInstSameInstances ();
+  void addSameInstance (Refer *);
+  const set<Refer *> *getInstSameInstances ();
 
 private:
   bool _isSettings;
   Content *_content;
   Descriptor *_descriptor;
-  set<ReferNode *> _instances;
+  set<Refer *> _instances;
 };
 
 GINGA_NCL_END
