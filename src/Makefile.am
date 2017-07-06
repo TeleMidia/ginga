@@ -91,7 +91,6 @@ src+= ncl/Parameter.cpp
 src+= ncl/Parser.cpp
 src+= ncl/Port.cpp
 src+= ncl/PropertyAnchor.cpp
-src+= ncl/RectangleSpatialAnchor.cpp
 src+= ncl/ReferNode.cpp
 src+= ncl/ReferenceContent.cpp
 src+= ncl/Region.cpp
