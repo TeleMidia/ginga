@@ -24,8 +24,9 @@ GINGA_NCL_BEGIN
 NodeEntity::NodeEntity (const string &uid, Content *someContent) : Node (uid)
 {
   _descriptor = NULL;
-  _anchorList.push_back (new AreaLambda (uid));
-  this->_content = someContent;
+  _lambda = new AreaLambda (uid);
+  this->addAnchor (_lambda);
+  _content = someContent;
 }
 
 NodeEntity::~NodeEntity ()
@@ -46,26 +47,18 @@ NodeEntity::~NodeEntity ()
     }
 
   _instSameInstances.clear ();
-  _anchorList.clear ();
+  delete _lambda;
 }
 
-bool
-NodeEntity::addAnchor (int index, Anchor *anchor)
-{
-  if (index == 0)
-    {
-      return false;
-    }
-  return Node::addAnchor (index, anchor);
-}
-
-AreaLambda *
-NodeEntity::getAreaLambda ()
-{
-  AreaLambda *lambda;
-  lambda = static_cast<AreaLambda *> (*(_anchorList.begin ()));
-  return lambda;
-}
+// bool
+// NodeEntity::addAnchor (int index, Anchor *anchor)
+// {
+//   if (index == 0)
+//     {
+//       return false;
+//     }
+//   return Node::addAnchor (index, anchor);
+// }
 
 Descriptor *
 NodeEntity::getDescriptor ()
@@ -89,12 +82,6 @@ void
 NodeEntity::setContent (Content *someContent)
 {
   _content = someContent;
-}
-
-bool
-NodeEntity::addAnchor (Anchor *anchor)
-{
-  return Node::addAnchor (anchor);
 }
 
 set<ReferNode *> *

@@ -18,36 +18,30 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NODE_H
 #define NODE_H
 
-#include "Property.h"
+#include "Anchor.h"
 
 GINGA_NCL_BEGIN
 
 class CompositeNode;
-
 class Node : public Entity
 {
 public:
   Node (const string &);
   virtual ~Node ();
 
-  void setParentComposition (CompositeNode *);
-  CompositeNode *getParentComposition ();
-  vector<Node *> *getPerspective ();
-  virtual bool addAnchor (Anchor *);
-  virtual bool addAnchor (int, Anchor *);
+  void setParent (CompositeNode *);
+  CompositeNode *getParent ();
+
+  void addAnchor (Anchor *);
+  const vector<Anchor *> *getAnchors ();
   Anchor *getAnchor (const string &);
-  Anchor *getAnchor (int);
-  const vector<Anchor *> &getAnchors ();
 
-  Property *getProperty (const string &);
+  vector<Node *> *getPerspective (); // legacy
 
-protected:
-  vector<Anchor *> _anchorList;
-  vector<Property *> _originalPAnchors;
 
 private:
-  CompositeNode *_parentNode;
-  bool hasProperty (const string &propName);
+  CompositeNode *_parent;
+  vector<Anchor *> _anchors;
 };
 
 GINGA_NCL_END

@@ -43,16 +43,9 @@ SwitchNode::~SwitchNode ()
   j = _ruleList.begin ();
   while (i != _nodes.end ())
     {
-      if ((*i) != this && (*i)->getParentComposition () == this)
+      if ((*i) != this && (*i)->getParent () == this)
         {
-          (*i)->setParentComposition (NULL);
-          /*clog << "SwitchNode::~SwitchNode call delete node '";
-          clog << (*i)->getId() << "'" << endl;*/
           delete (*i);
-
-          /*clog << "SwitchNode::~SwitchNode call delete rule '";
-          clog << (*j)->getId() << "'" << endl;
-          delete (*j);*/
         }
       ++i;
       //++j;
@@ -78,7 +71,7 @@ SwitchNode::addNode (unsigned int index, Node *node, Rule *rule)
       _ruleList.insert (_ruleList.begin () + index, rule);
     }
 
-  node->setParentComposition (this);
+  node->setParent (this);
 }
 
 void
@@ -90,7 +83,7 @@ SwitchNode::addNode (Node *node, Rule *rule)
   _nodes.push_back (node);
   _ruleList.push_back (rule);
 
-  node->setParentComposition (this);
+  node->setParent (this);
 }
 
 void
@@ -274,7 +267,7 @@ SwitchNode::removeNode (unsigned int index)
   clog << "SwitchNode::removeNode" << endl;
 
   node = (Node *)CompositeNode::_nodes[index];
-  node->setParentComposition (NULL);
+  node->setParent (NULL);
 
   (CompositeNode::_nodes).erase (CompositeNode::_nodes.begin () + index);
   _ruleList.erase (_ruleList.begin () + index);

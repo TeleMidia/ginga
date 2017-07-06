@@ -1761,7 +1761,7 @@ Parser::parsePort (DOMElement *elt, CompositeNode *context)
     }
   else                          // no interface
     {
-      interface = targetEntity->getAnchor (0);
+      interface = targetEntity->getLambda ();
     }
 
   if (unlikely (interface == nullptr))
@@ -1849,10 +1849,6 @@ Parser::parseSwitch (DOMElement *elt)
           ((SwitchNode *) swtch)->setDefaultNode (node);
         }
     }
-
-  // Add nodes not mapped to switch.
-  for (auto nodes: *_switchMap[swtch->getId ()])
-    nodes.second->setParentComposition ((CompositeNode *) swtch);
 
   return swtch;
 }
@@ -1947,7 +1943,7 @@ Parser::parseMapping (DOMElement *elt, SwitchNode *swtch,
     }
   else
     {
-      iface = mappingEntity->getAnchor (0);
+      iface = mappingEntity->getLambda ();
       g_assert_nonnull (iface);
     }
   return new Port (port->getId (), mapping, iface);
@@ -2211,7 +2207,7 @@ Parser::parseBind (DOMElement *elt, Link *link, Context *context)
     }
   else                          // no interface
     {
-      iface = targetEntity->getAnchor (0);
+      iface = targetEntity->getLambda ();
     }
 
   if (unlikely (iface == nullptr))

@@ -35,6 +35,7 @@ GINGA_PRAGMA_DIAG_POP ()
 #include "CompoundCondition.h"
 #include "Descriptor.h"
 #include "NclDocument.h"
+#include "Property.h"
 #include "Rule.h"
 #include "SimpleRule.h"
 #include "SwitchNode.h"

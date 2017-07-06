@@ -56,7 +56,7 @@ Context::addNode (Node *node)
 {
   g_assert_nonnull (node);
   _nodes.push_back (node);
-  node->setParentComposition (this);
+  node->setParent (this);
 }
 
 /**

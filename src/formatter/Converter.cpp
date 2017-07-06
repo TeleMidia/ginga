@@ -474,9 +474,9 @@ Converter::createExecutionObject (
                                           _actionListener);
       xstrassign (s, "%d", (int) EventType::PRESENTATION);
       compositeEvt = new PresentationEvent (
-            nodeEntity->getAreaLambda ()->getId () + "_" + s,
+            nodeEntity->getLambda ()->getId () + "_" + s,
             exeObj,
-            (Area *)(nodeEntity->getAreaLambda ()));
+            (Area *)(nodeEntity->getLambda ()));
 
       exeObj->addEvent (compositeEvt);
       // to monitor the switch presentation and clear the selection after
@@ -491,9 +491,9 @@ Converter::createExecutionObject (
 
       xstrassign (s, "%d", (int) EventType::PRESENTATION);
       compositeEvt = new PresentationEvent (
-            nodeEntity->getAreaLambda ()->getId () + "_" + s,
+            nodeEntity->getLambda ()->getId () + "_" + s,
             exeObj,
-            (Area *)(nodeEntity->getAreaLambda ()));
+            (Area *)(nodeEntity->getLambda ()));
 
       exeObj->addEvent (compositeEvt);
 
@@ -780,7 +780,7 @@ Converter::resolveSwitchEvents (
       if (lambdaAnchor)
         {
           mappedEvent = getEvent (
-                selectedObject, selectedNodeEntity->getAreaLambda (),
+                selectedObject, selectedNodeEntity->getLambda (),
                 switchEvent->getType (), switchEvent->getKey ());
         }
       else

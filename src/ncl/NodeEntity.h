@@ -40,15 +40,18 @@ public:
   void setDescriptor (Descriptor *someDescriptor);
   Content *getContent ();
   void setContent (Content *_content);
-  bool addAnchor (Anchor *anchor);
-  bool addAnchor (int index, Anchor *anchor);
+  // void addAnchor (Anchor *anchor);
+//x  bool addAnchor (int index, Anchor *anchor);
   set<ReferNode *> *getInstSameInstances ();
   bool addSameInstance (ReferNode *node);
   void removeSameInstance (ReferNode *node);
 
+  Anchor *getLambda () {return _lambda;};
+
 protected:
   Descriptor *_descriptor;
   Content *_content;
+  Anchor *_lambda;
 
 private:
   set<ReferNode *> _instSameInstances;
