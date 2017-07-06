@@ -91,9 +91,9 @@ private:
   CompoundAction *parseCompoundAction (DOMElement *);
   SimpleAction *parseSimpleAction (DOMElement *);
 
-  ContextNode *parseBody (DOMElement *);
+  Context *parseBody (DOMElement *);
   void solveNodeReferences (CompositeNode *);
-  void posCompileContext (DOMElement *, ContextNode *);
+  void posCompileContext (DOMElement *, Context *);
   void posCompileSwitch (DOMElement *, SwitchNode *);
 
   Node *parseContext (DOMElement *);
@@ -109,9 +109,9 @@ private:
   Property *parseProperty (DOMElement *);
   Anchor *parseArea (DOMElement *);
 
-  Link *parseLink (DOMElement *, ContextNode *);
+  Link *parseLink (DOMElement *, Context *);
   Parameter *parseLinkParam (DOMElement *);
-  Bind *parseBind (DOMElement *, Link *, ContextNode *);
+  Bind *parseBind (DOMElement *, Link *, Context *);
   Parameter *parseBindParam (DOMElement *);
 
   // From ErrorHandler.

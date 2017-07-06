@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Rule.h"
 #include "RuleBase.h"
 
-#include "ContextNode.h"
+#include "Context.h"
 #include "ContentNode.h"
 #include "Node.h"
 #include "NodeEntity.h"
@@ -65,7 +65,7 @@ public:
   DescriptorBase *getDescriptorBase ();
   NclDocument *getDocument (const string &documentId);
   string getDocumentAlias (NclDocument *document);
-  ContextNode *getBody ();
+  Context *getBody ();
   string getDocumentLocation (NclDocument *document);
   vector<NclDocument *> *getDocuments ();
   string getId ();
@@ -84,7 +84,7 @@ public:
   void setTransitionBase (TransitionBase *_transitionBase);
   void setDescriptorBase (DescriptorBase *_descriptorBase);
   void setDocumentAlias (NclDocument *document, const string &alias);
-  void setBody (ContextNode *node);
+  void setBody (Context *node);
   void setDocumentLocation (NclDocument *document, const string &location);
   void setId (const string &_id);
   void addRegionBase (RegionBase *regionBase);
@@ -92,7 +92,7 @@ public:
   void removeRegionBase (const string &regionBaseId);
 
 private:
-  ContextNode *_body;
+  Context *_body;
   ConnectorBase *_connectorBase;
   DescriptorBase *_descriptorBase;
   map<string, NclDocument *> _documentAliases;

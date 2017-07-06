@@ -25,7 +25,7 @@ ExecutionObjectContext::ExecutionObjectContext (
     INclActionListener *seListener)
     : ExecutionObject (id, dataObject, seListener)
 {
-  ContextNode *context;
+  Context *context;
   Entity *entity;
 
   _execObjList.clear ();
@@ -38,10 +38,10 @@ ExecutionObjectContext::ExecutionObjectContext (
   entity = cast (Entity *, dataObject);
   g_assert_nonnull (entity);
 
-  if (!instanceof (ContextNode *, entity))
+  if (!instanceof (Context *, entity))
     return;                     // switch, nothing to do
 
-  context = cast (ContextNode *, entity);
+  context = cast (Context *, entity);
   g_assert_nonnull (context);
 
   g_assert_nonnull (context->getLinks ());

@@ -884,7 +884,7 @@ Converter::insertContext (NclNodeNesting *contextPerspective,
         || instanceof (AreaLabeled *, port->getEndInterfacePoint ())
         || instanceof (Property *, port->getEndInterfacePoint ())
         || instanceof (SwitchPort *, port->getEndInterfacePoint ()))
-      || !(instanceof (ContextNode *,
+      || !(instanceof (Context *,
                        contextPerspective->getAnchorNode ())))
     {
       error = true;

@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "CompositeNode.h"
 
 #include "ContentNode.h"
-#include "ContextNode.h"
+#include "Context.h"
 #include "SwitchNode.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)

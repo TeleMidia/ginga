@@ -30,7 +30,7 @@ GINGA_NCL_BEGIN
  * @param ctx Parent context.
  * @param conn Associated connector.
  */
-Link::Link (const string &id, ContextNode *ctx, Connector *conn)
+Link::Link (const string &id, Context *ctx, Connector *conn)
   : Entity (id)
 {
   g_assert_nonnull (conn);
@@ -60,7 +60,7 @@ Link::getConnector ()
 /**
  * @brief Gets link context.
  */
-ContextNode *
+Context *
 Link::getContext ()
 {
   return _context;

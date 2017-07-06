@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _SWITCHNODE_H_
 #define _SWITCHNODE_H_
 
-#include "ContextNode.h"
+#include "Context.h"
 #include "CompositeNode.h"
 #include "NodeEntity.h"
 
