@@ -36,8 +36,8 @@ public:
   const vector<Anchor *> *getAnchors ();
   Anchor *getAnchor (const string &);
 
-  vector<Node *> *getPerspective (); // legacy
-
+  vector<Node *> *getPerspective (); // fixme
+  Node *derefer ();
 
 private:
   CompositeNode *_parent;

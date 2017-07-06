@@ -112,4 +112,20 @@ Node::getPerspective ()
   return perspective;
 }
 
+
+// FIXME: Find a better place to put this.
+
+Node *
+Node::derefer ()
+{
+  if (instanceof (ReferNode *, this))
+    {
+      Node *result;
+      result = cast (Node *, cast (ReferNode *, this)->getReferredEntity ());
+      g_assert_nonnull (result);
+      return result;
+    }
+  return this;
+}
+
 GINGA_NCL_END

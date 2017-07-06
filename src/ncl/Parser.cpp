@@ -2168,13 +2168,7 @@ Parser::parseBind (DOMElement *elt, Link *link, Context *context)
     }
   g_assert_nonnull (target);
 
-  targetEntity = cast (NodeEntity *, target);
-  if (targetEntity == nullptr)
-    {
-      g_assert (instanceof (ReferNode *, target));
-      targetEntity = cast (NodeEntity *, cast (ReferNode *, target)
-                           ->getReferredEntity ());
-    }
+  targetEntity = cast (NodeEntity *, target->derefer ());
   g_assert_nonnull (targetEntity);
 
   iface = nullptr;
