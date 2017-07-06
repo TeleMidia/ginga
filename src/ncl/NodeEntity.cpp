@@ -24,7 +24,7 @@ GINGA_NCL_BEGIN
 NodeEntity::NodeEntity (const string &uid, Content *someContent) : Node (uid)
 {
   _descriptor = NULL;
-  _anchorList.push_back (new LambdaAnchor (uid));
+  _anchorList.push_back (new AreaLambda (uid));
   this->_content = someContent;
 }
 
@@ -59,11 +59,11 @@ NodeEntity::addAnchor (int index, Anchor *anchor)
   return Node::addAnchor (index, anchor);
 }
 
-LambdaAnchor *
-NodeEntity::getLambdaAnchor ()
+AreaLambda *
+NodeEntity::getAreaLambda ()
 {
-  LambdaAnchor *lambda;
-  lambda = static_cast<LambdaAnchor *> (*(_anchorList.begin ()));
+  AreaLambda *lambda;
+  lambda = static_cast<AreaLambda *> (*(_anchorList.begin ()));
   return lambda;
 }
 

@@ -474,9 +474,9 @@ Converter::createExecutionObject (
                                           _actionListener);
       xstrassign (s, "%d", (int) EventType::PRESENTATION);
       compositeEvt = new PresentationEvent (
-            nodeEntity->getLambdaAnchor ()->getId () + "_" + s,
+            nodeEntity->getAreaLambda ()->getId () + "_" + s,
             exeObj,
-            (Area *)(nodeEntity->getLambdaAnchor ()));
+            (Area *)(nodeEntity->getAreaLambda ()));
 
       exeObj->addEvent (compositeEvt);
       // to monitor the switch presentation and clear the selection after
@@ -491,9 +491,9 @@ Converter::createExecutionObject (
 
       xstrassign (s, "%d", (int) EventType::PRESENTATION);
       compositeEvt = new PresentationEvent (
-            nodeEntity->getLambdaAnchor ()->getId () + "_" + s,
+            nodeEntity->getAreaLambda ()->getId () + "_" + s,
             exeObj,
-            (Area *)(nodeEntity->getLambdaAnchor ()));
+            (Area *)(nodeEntity->getAreaLambda ()));
 
       exeObj->addEvent (compositeEvt);
 
@@ -789,11 +789,11 @@ Converter::resolveSwitchEvents (
       g_assert_nonnull (switchEvent);
 
       interfacePoint = switchEvent->getInterfacePoint ();
-      auto lambdaAnchor = cast (LambdaAnchor *, interfacePoint);
+      auto lambdaAnchor = cast (AreaLambda *, interfacePoint);
       if (lambdaAnchor)
         {
           mappedEvent = getEvent (
-                selectedObject, selectedNodeEntity->getLambdaAnchor (),
+                selectedObject, selectedNodeEntity->getAreaLambda (),
                 switchEvent->getType (), switchEvent->getKey ());
         }
       else
@@ -894,7 +894,7 @@ Converter::insertContext (NclNodeNesting *contextPerspective,
     }
 
   if (!(instanceof (Area *, port->getEndInterfacePoint ())
-        || instanceof (LabeledAnchor *, port->getEndInterfacePoint ())
+        || instanceof (AreaLabeled *, port->getEndInterfacePoint ())
         || instanceof (Property *, port->getEndInterfacePoint ())
         || instanceof (SwitchPort *, port->getEndInterfacePoint ()))
       || !(instanceof (ContextNode *,

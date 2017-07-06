@@ -34,6 +34,12 @@ protected:
   GingaTime _end;
 };
 
+class AreaLambda : public Area
+{
+public:
+  AreaLambda (const string &id) : Area (id, 0, GINGA_TIME_NONE) {};
+};
+
 GINGA_NCL_END
 
 #endif // AREA_H

@@ -69,11 +69,11 @@ NclEvent::hasNcmId (NclEvent *evt, const string &anchorId)
             {
               anchorName = anchor->getId ();
             }
-          else if (auto labeledAnchor = cast (LabeledAnchor *, anchor))
+          else if (auto labeledAnchor = cast (AreaLabeled *, anchor))
             {
               anchorName = labeledAnchor->getLabel ();
             }
-          else if (instanceof (LambdaAnchor *, anchor))
+          else if (instanceof (AreaLambda *, anchor))
             {
               anchorName = "";
             }

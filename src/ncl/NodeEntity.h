@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _NODEENTITY_H_
 
 #include "Anchor.h"
-#include "LambdaAnchor.h"
+#include "Area.h"
 #include "ReferNode.h"
 
 #include "Node.h"
@@ -35,7 +35,7 @@ public:
   NodeEntity (const string &uid, Content *someContent);
   virtual ~NodeEntity ();
 
-  LambdaAnchor *getLambdaAnchor ();
+  AreaLambda *getAreaLambda ();
   Descriptor *getDescriptor ();
   void setDescriptor (Descriptor *someDescriptor);
   Content *getContent ();
