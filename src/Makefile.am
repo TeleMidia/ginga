@@ -71,7 +71,6 @@ src+= ncl/CompoundCondition.cpp
 src+= ncl/CompoundStatement.cpp
 src+= ncl/Connector.cpp
 src+= ncl/ConnectorBase.cpp
-src+= ncl/Content.cpp
 src+= ncl/Context.cpp
 src+= ncl/Descriptor.cpp
 src+= ncl/DescriptorBase.cpp

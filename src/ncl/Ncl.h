@@ -37,7 +37,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Condition.h"
 #include "Connector.h"
 #include "ConnectorBase.h"
-#include "Content.h"
 #include "Context.h"
 #include "Descriptor.h"
 #include "DescriptorBase.h"

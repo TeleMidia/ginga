@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef MEDIA_H
 #define MEDIA_H
 
-#include "Content.h"
 #include "Descriptor.h"
 #include "Node.h"
 #include "Refer.h"
@@ -34,8 +33,9 @@ public:
 
   bool isSettings ();
 
-  Content *getContent ();
-  void setContent (Content *);
+  string getMimeType ();
+  string getSrc ();
+  void setSrc (const string &);
 
   Descriptor *getDescriptor ();
   void setDescriptor (Descriptor *);
@@ -45,7 +45,8 @@ public:
 
 private:
   bool _isSettings;
-  Content *_content;
+  string _src;
+  string _mimetype;
   Descriptor *_descriptor;
   set<Refer *> _instances;
 };
