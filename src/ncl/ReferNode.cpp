@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "ReferNode.h"
 
-#include "NodeEntity.h"
+#include "ContentNode.h"
 
 GINGA_NCL_BEGIN
 
@@ -44,31 +44,7 @@ ReferNode::getInstanceType ()
 void
 ReferNode::setInstanceType (const string &instance)
 {
-  if (instance != this->_instanceType)
-    {
-      // if it was new
-      if (this->_instanceType == "new")
-        {
-          this->_instanceType = instance;
-          if (_referredNode != NULL
-              && instanceof (NodeEntity *, _referredNode))
-            {
-              ((NodeEntity *)_referredNode)->addSameInstance (this);
-            }
-        }
-      else
-        {
-          this->_instanceType = instance;
-          if (_referredNode != NULL
-              && instanceof (NodeEntity *, _referredNode))
-            {
-              if (instance == "new")
-                {
-                  ((NodeEntity *)_referredNode)->removeSameInstance (this);
-                }
-            }
-        }
-    }
+  this->_instanceType = instance;
 }
 
 Entity *
@@ -80,21 +56,8 @@ ReferNode::getReferredEntity ()
 void
 ReferNode::setReferredEntity (Entity *entity)
 {
-  if (_referredNode != entity)
-    {
-      if (_referredNode != NULL && instanceof (NodeEntity *, _referredNode))
-        {
-          ((NodeEntity *)_referredNode)->removeSameInstance (this);
-        }
-
-      _referredNode = entity;
-
-      if (_referredNode != NULL && instanceof (NodeEntity *, _referredNode)
-          && _instanceType != "new")
-        {
-          ((NodeEntity *)_referredNode)->addSameInstance (this);
-        }
-    }
+  _referredNode = entity;
+  ((ContentNode *)_referredNode)->addSameInstance (this);
 }
 
 GINGA_NCL_END

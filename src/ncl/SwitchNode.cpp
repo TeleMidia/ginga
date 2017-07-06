@@ -24,7 +24,6 @@ GINGA_NCL_BEGIN
 
 SwitchNode::SwitchNode (const string &id) : CompositeNode (id)
 {
-  _content = nullptr;
   _defaultNode = NULL;
 }
 
@@ -32,12 +31,6 @@ SwitchNode::~SwitchNode ()
 {
   vector<Node *>::iterator i;
   vector<Rule *>::iterator j;
-
-  if (_content != NULL)
-    {
-      delete _content;
-      _content = NULL;
-    }
 
   i = _nodes.begin ();
   j = _ruleList.begin ();

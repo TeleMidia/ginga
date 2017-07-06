@@ -20,39 +20,21 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Anchor.h"
 #include "Area.h"
-#include "ReferNode.h"
-
 #include "Node.h"
-#include "Content.h"
-
-#include "Descriptor.h"
+#include "ReferNode.h"
 
 GINGA_NCL_BEGIN
 
 class NodeEntity : public Node
 {
 public:
-  NodeEntity (const string &uid, Content *someContent);
+  NodeEntity (const string &uid);
   virtual ~NodeEntity ();
-
-  AreaLambda *getAreaLambda ();
-  Descriptor *getDescriptor ();
-  void setDescriptor (Descriptor *someDescriptor);
-  Content *getContent ();
-  void setContent (Content *_content);
-  set<ReferNode *> *getInstSameInstances ();
-  bool addSameInstance (ReferNode *node);
-  void removeSameInstance (ReferNode *node);
 
   Anchor *getLambda () {return _lambda;};
 
-protected:
-  Descriptor *_descriptor;
-  Content *_content;
-  Anchor *_lambda;
-
 private:
-  set<ReferNode *> _instSameInstances;
+  Anchor *_lambda;
 };
 
 GINGA_NCL_END
