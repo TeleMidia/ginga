@@ -1974,8 +1974,6 @@ Parser::parseMedia (DOMElement *elt)
 
       refer = (ContentNode *) _doc->getNode (value);
       g_assert_nonnull (refer);
-      //if (unlikely (refer == nullptr))
-        //refer = new ReferredNode (value, (void *) elt); // FIXME: Crazy.
 
       media = new ReferNode (id);
       if (dom_elt_try_get_attribute (value, elt, "instance"))
