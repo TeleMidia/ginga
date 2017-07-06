@@ -15,23 +15,21 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef PROPERTY_ANCHOR_H
-#define PROPERTY_ANCHOR_H
+#ifndef PROPERTY_H
+#define PROPERTY_H
 
 #include "Anchor.h"
 
 GINGA_NCL_BEGIN
 
-class PropertyAnchor : public Anchor
+class Property : public Anchor
 {
 public:
-  PropertyAnchor (const string &);
-  virtual ~PropertyAnchor (){}
+  Property (const string &);
+  ~Property ();
   string getName ();
-  void setName (const string &);
   string getValue ();
   void setValue (const string &);
-  PropertyAnchor *clone ();
 
 private:
   string _value;
@@ -39,4 +37,4 @@ private:
 
 GINGA_NCL_END
 
-#endif // PROPERTY_ANCHOR_H
+#endif // PROPERTY_H

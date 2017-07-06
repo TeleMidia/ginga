@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NODE_H
 #define NODE_H
 
-#include "PropertyAnchor.h"
+#include "Property.h"
 
 GINGA_NCL_BEGIN
 
@@ -39,11 +39,11 @@ public:
   Anchor *getAnchor (int);
   const vector<Anchor *> &getAnchors ();
 
-  PropertyAnchor *getPropertyAnchor (const string &);
+  Property *getProperty (const string &);
 
 protected:
   vector<Anchor *> _anchorList;
-  vector<PropertyAnchor *> _originalPAnchors;
+  vector<Property *> _originalPAnchors;
 
 private:
   CompositeNode *_parentNode;

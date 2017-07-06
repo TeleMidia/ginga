@@ -73,7 +73,7 @@ public:
   bool isCompiled ();
   void setCompiled (bool status);
   vector<Node *> getNodes ();
-  PropertyAnchor *getNCMProperty (const string &propertyName);
+  Property *getNCMProperty (const string &propertyName);
   NclNodeNesting *getNodePerspective ();
   NclNodeNesting *getNodePerspective (Node *node);
   NclEvent *getMainEvent ();

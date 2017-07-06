@@ -1523,7 +1523,7 @@ Parser::parseBody (DOMElement *elt)
 
       if (tag == "property")
         {
-          PropertyAnchor *prop = this->parseProperty (child);
+          Property *prop = this->parseProperty (child);
           g_assert_nonnull (prop);
           body->addAnchor (prop);
           continue;
@@ -1700,7 +1700,7 @@ Parser::parseContext (DOMElement *elt)
 
       if (tag == "property")
         {
-          PropertyAnchor *prop = this->parseProperty (child);
+          Property *prop = this->parseProperty (child);
           g_assert_nonnull (prop);
           context->addAnchor (prop);
           continue;
@@ -2014,7 +2014,7 @@ Parser::parseMedia (DOMElement *elt)
         }
       else if (tag == "property")
         {
-          PropertyAnchor *prop = this->parseProperty (child);
+          Property *prop = this->parseProperty (child);
           g_assert_nonnull (prop);
           media->addAnchor (prop);
         }
@@ -2026,10 +2026,10 @@ Parser::parseMedia (DOMElement *elt)
   return media;
 }
 
-PropertyAnchor *
+Property *
 Parser::parseProperty (DOMElement *elt)
 {
-  PropertyAnchor *prop;
+  Property *prop;
   string name;
   string value;
 
@@ -2037,7 +2037,7 @@ Parser::parseProperty (DOMElement *elt)
   CHECK_ELT_ATTRIBUTE (elt, "name", &name);
   CHECK_ELT_OPT_ATTRIBUTE (elt, "value", &value, "");
 
-  prop = new PropertyAnchor (name);
+  prop = new Property (name);
   prop->setValue (value);
   return prop;
 }

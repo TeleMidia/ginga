@@ -106,7 +106,7 @@ private:
   Port *parseMapping (DOMElement *, SwitchNode *, SwitchPort *);
 
   Node *parseMedia (DOMElement *);
-  PropertyAnchor *parseProperty (DOMElement *);
+  Property *parseProperty (DOMElement *);
   Anchor *parseArea (DOMElement *);
 
   Link *parseLink (DOMElement *, ContextNode *);

@@ -29,7 +29,7 @@ Node::Node (const string &id) : Entity (id)
 Node::~Node ()
 {
   vector<Anchor *>::iterator i;
-  vector<PropertyAnchor *>::iterator j;
+  vector<Property *>::iterator j;
 
   _parentNode = NULL;
 
@@ -49,7 +49,7 @@ Node::~Node ()
 bool
 Node::hasProperty (const string &propName)
 {
-  vector<PropertyAnchor *>::iterator i;
+  vector<Property *>::iterator i;
 
   i = _originalPAnchors.begin ();
   while (i != _originalPAnchors.end ())
@@ -124,9 +124,10 @@ Node::addAnchor (int index, Anchor *anchor)
       _anchorList.insert (_anchorList.begin () + index, anchor);
     }
 
-  if (instanceof (PropertyAnchor *, anchor))
+  if (instanceof (Property *, anchor))
     {
-      _originalPAnchors.push_back (((PropertyAnchor *)anchor)->clone ());
+      // g_assert_not_reached ();
+      // _originalPAnchors.push_back (((Property *)anchor)->clone ());
     }
 
   return true;
@@ -173,18 +174,18 @@ Node::getAnchors ()
   return this->_anchorList;
 }
 
-PropertyAnchor *
-Node::getPropertyAnchor (const string &propertyName)
+Property *
+Node::getProperty (const string &propertyName)
 {
   vector<Anchor *>::iterator i;
-  PropertyAnchor *property;
+  Property *property;
 
   i = _anchorList.begin ();
   while (i != _anchorList.end ())
     {
-      if (instanceof (PropertyAnchor *, (*i)))
+      if (instanceof (Property *, (*i)))
         {
-          property = (PropertyAnchor *)(*i);
+          property = (Property *)(*i);
           if (property->getName () == propertyName)
             {
               return property;

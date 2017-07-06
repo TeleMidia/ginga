@@ -90,7 +90,7 @@ NclEvent::hasNcmId (NclEvent *evt, const string &anchorId)
       anchor = attrEvt->getAnchor ();
       if (anchor != nullptr)
         {
-          auto propAnchor = cast (PropertyAnchor *, anchor);
+          auto propAnchor = cast (Property *, anchor);
           g_assert_nonnull (propAnchor);
           anchorName = propAnchor->getName ();
           if (anchorName == anchorId)
@@ -304,7 +304,7 @@ SelectionEvent::start ()
 
 AttributionEvent::AttributionEvent (const string &id,
                                     ExecutionObject *exeObj,
-                                    PropertyAnchor *anchor,
+                                    Property *anchor,
                                     Settings *settings)
   : NclEvent (id, exeObj)
 {

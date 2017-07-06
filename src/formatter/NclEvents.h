@@ -122,12 +122,12 @@ public:
 class AttributionEvent : public NclEvent
 {
   PROPERTY (Player *, _player, getPlayer, setPlayer)
-  PROPERTY_READONLY (PropertyAnchor *, _anchor, getAnchor)
+  PROPERTY_READONLY (Property *, _anchor, getAnchor)
 
 public:
   AttributionEvent (const string &id,
                     ExecutionObject *exeObj,
-                    PropertyAnchor *anchor,
+                    Property *anchor,
                     Settings *settings);
 
   virtual ~AttributionEvent ();
