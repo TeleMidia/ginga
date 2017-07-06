@@ -67,12 +67,6 @@ CompositeRule::getRules ()
   return _rules;
 }
 
-unsigned int
-CompositeRule::getNumRules ()
-{
-  return (unsigned int) _rules->size ();
-}
-
 short
 CompositeRule::getOperator ()
 {

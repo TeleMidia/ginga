@@ -34,48 +34,17 @@ class SwitchNode : public Composition
 public:
   SwitchNode (const string &_id);
   virtual ~SwitchNode ();
-  void addNode (unsigned int index, Node *node, Rule *rule);
   void addNode (Node *node, Rule *rule);
-
-  // virtual from Composition
   void addNode (Node *);
-
-  bool addSwitchPortMap (SwitchPort *switchPort, Node *node,
-                         Anchor *interfacePoint);
-
   Node *getDefaultNode ();
-
-  // virtual from Composition
   Anchor *getMapInterface (Port *port);
-
-  // virtual from Composition
   Node *getNode (const string &nodeId);
-
-  Node *getNode (unsigned int index);
-  Node *getNode (Rule *rule);
-  unsigned int getNumRules ();
-  Rule *getRule (unsigned int index);
-  unsigned int indexOfRule (Rule *rule);
-
-  // virtual from Composition
-  bool recursivelyContainsNode (Node *node);
-
-  // virtual from Composition
-  bool recursivelyContainsNode (const string &nodeId);
-
-  // virtual from Composition
-  Node *recursivelyGetNode (const string &nodeId);
-
-  // virtual from Composition
-  bool removeNode (Node *node);
-
-  bool removeNode (unsigned int index);
-  bool removeRule (Rule *rule);
+  const vector <Rule *> *getRules ();
   void setDefaultNode (Node *node);
 
 private:
   Node *_defaultNode;
-  vector<Rule *> _ruleList;
+  vector<Rule *> _rules;
 };
 
 GINGA_NCL_END

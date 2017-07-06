@@ -35,7 +35,6 @@ public:
   virtual ~CompositeRule ();
   bool addRule (Rule *rule);
   vector<Rule *> *getRules ();
-  unsigned int getNumRules ();
   short getOperator ();
   bool removeRule (Rule *rule);
   void setOperator (short op);

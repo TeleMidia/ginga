@@ -171,29 +171,17 @@ RuleAdapter::initializeAttributeRuleRelation (Rule *topRule, Rule *rule)
 }
 
 Node *
-RuleAdapter::adaptSwitch (SwitchNode *switchNode)
+RuleAdapter::adaptSwitch (SwitchNode *swtch)
 {
-  size_t i, size;
-  Rule *rule;
-  Node *selectedNode;
+  const vector<Node *> *nodes;
+  const vector<Rule *> *rules;
 
-  selectedNode = NULL;
-  size = switchNode->getNumRules ();
-  for (i = 0; i < size; i++)
-    {
-      rule = switchNode->getRule ((unsigned int) i);
-      if (evaluateRule (rule))
-        {
-          selectedNode = switchNode->getNode ((unsigned int) i);
-        }
-    }
-
-  if (selectedNode == NULL)
-    {
-      selectedNode = switchNode->getDefaultNode ();
-    }
-
-  return selectedNode;
+  nodes = swtch->getNodes ();
+  rules = swtch->getRules ();
+  for (size_t i = 0; i < rules->size (); i++)
+    if (evaluateRule (rules->at (i)))
+      return nodes->at (i);
+  return swtch->getDefaultNode ();
 }
 
 bool
