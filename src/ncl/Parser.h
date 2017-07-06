@@ -27,21 +27,22 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wundef)
 XERCES_CPP_NAMESPACE_USE
 GINGA_PRAGMA_DIAG_POP ()
 
+#include "AbsoluteReferenceContent.h"
+#include "Comparator.h"
+#include "CompositeRule.h"
+#include "CompoundAction.h"
+#include "CompoundCondition.h"
+#include "Descriptor.h"
+#include "LabeledAnchor.h"
 #include "NclDocument.h"
-#include "TransitionUtil.h"
+#include "RectangleSpatialAnchor.h"
 #include "Rule.h"
 #include "SimpleRule.h"
-#include "CompositeRule.h"
-#include "AbsoluteReferenceContent.h"
-#include "CausalConnector.h"
-#include "ValueAssessment.h"
-#include "SwitchNode.h"
 #include "SpatialAnchor.h"
+#include "SwitchNode.h"
 #include "TextAnchor.h"
-#include "LabeledAnchor.h"
-#include "RectangleSpatialAnchor.h"
-#include "Comparator.h"
-#include "Descriptor.h"
+#include "TransitionUtil.h"
+#include "ValueAssessment.h"
 
 GINGA_NCL_BEGIN
 
@@ -83,7 +84,7 @@ private:
   Descriptor *parseDescriptor (DOMElement *);
 
   ConnectorBase *parseConnectorBase (DOMElement *);
-  CausalConnector *parseCausalConnector (DOMElement *);
+  Connector *parseCausalConnector (DOMElement *);
   CompoundCondition *parseCompoundCondition (DOMElement *);
   SimpleCondition *parseSimpleCondition (DOMElement *);
   CompoundStatement *parseCompoundStatement (DOMElement *);

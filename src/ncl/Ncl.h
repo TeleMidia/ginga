@@ -27,7 +27,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "AttributeAssessment.h"
 #include "Base.h"
 #include "Bind.h"
-#include "CausalConnector.h"
 #include "Comparator.h"
 #include "CompositeNode.h"
 #include "CompositeRule.h"

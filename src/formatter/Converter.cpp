@@ -997,7 +997,7 @@ NclFormatterLink *
 Converter::createLink (Link *ncmLink,
                              ExecutionObjectContext *parentObj)
 {
-  CausalConnector *connector;
+  Connector *connector;
   Condition *conditionExpression;
   Action *actionExp;
   NclLinkCondition *formatterCondition;
@@ -1016,7 +1016,7 @@ Converter::createLink (Link *ncmLink,
     }
 
   // compile link condition and verify if it is a trigger condition
-  connector = cast (CausalConnector *, ncmLink->getConnector ());
+  connector = cast (Connector *, ncmLink->getConnector ());
   g_assert_nonnull (connector);
 
   conditionExpression = connector->getCondition ();

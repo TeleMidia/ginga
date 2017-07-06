@@ -1036,7 +1036,7 @@ Parser::parseConnectorBase (DOMElement *elt)
         }
       else if (tag ==  "causalConnector")
         {
-          CausalConnector *conn = parseCausalConnector (child);
+          Connector *conn = parseCausalConnector (child);
           g_assert_nonnull (conn);
           base->addConnector (conn);
         }
@@ -1048,10 +1048,10 @@ Parser::parseConnectorBase (DOMElement *elt)
   return base;
 }
 
-CausalConnector *
+Connector *
 Parser::parseCausalConnector (DOMElement *elt)
 {
-  CausalConnector *conn;
+  Connector *conn;
   string id;
   int ncond;
   int nact;
@@ -1062,7 +1062,7 @@ Parser::parseCausalConnector (DOMElement *elt)
   ncond = 0;
   nact = 0;
 
-  conn = new CausalConnector (id);
+  conn = new Connector (id);
   for (DOMElement *child: dom_elt_get_children (elt))
     {
       string tag = dom_elt_get_tag (child);
@@ -2155,7 +2155,7 @@ Parser::parseBind (DOMElement *elt, Link *link, ContextNode *context)
   string value;
 
   Role *role;
-  CausalConnector *conn;
+  Connector *conn;
 
   Node *target;
   NodeEntity *targetEntity;
@@ -2229,7 +2229,7 @@ Parser::parseBind (DOMElement *elt, Link *link, ContextNode *context)
   if (dom_elt_try_get_attribute (value, elt, "descriptor"))
     desc = _doc->getDescriptor (value);
 
-  conn = cast (CausalConnector *, link->getConnector ());
+  conn = cast (Connector *, link->getConnector ());
   g_assert_nonnull (conn);
 
   role = conn->getRole (label);

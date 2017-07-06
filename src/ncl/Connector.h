@@ -15,12 +15,13 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _CONNECTOR_H_
-#define _CONNECTOR_H_
+#ifndef CONNECTOR_H
+#define CONNECTOR_H
 
+#include "Action.h"
+#include "Condition.h"
 #include "Entity.h"
 #include "Parameter.h"
-
 #include "Role.h"
 
 GINGA_NCL_BEGIN
@@ -30,16 +31,26 @@ class Connector : public Entity
 public:
   Connector (const string &);
   virtual ~Connector ();
-  Role *getRole (const string &);
-  virtual vector<Role *> *getRoles () = 0;
+
   void addParameter (Parameter *);
   const vector<Parameter *> *getParameters ();
   Parameter *getParameter (const string &);
 
+  Condition *getCondition ();
+  void setCondition (Condition *);
+
+  Action *getAction ();
+  void setAction (Action *);
+
+  Role *getRole (const string &);
+
 private:
   vector<Parameter *> _parameters;
+  vector <Role *>_roles;
+  Condition *_condition;
+  Action *_action;
 };
 
 GINGA_NCL_END
 
-#endif //_CONNECTOR_H_
+#endif // CONNECTOR_H

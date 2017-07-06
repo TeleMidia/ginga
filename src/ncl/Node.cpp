@@ -164,16 +164,7 @@ Node::getAnchor (const string &anchorId)
 Anchor *
 Node::getAnchor (int index)
 {
-  int lSize = (int)_anchorList.size ();
-
-  if (index < 0 || index > lSize - 1)
-    {
-      return NULL;
-    }
-  else
-    {
-      return (Anchor *)_anchorList[index];
-    }
+  return (Anchor *)_anchorList[(size_t)index];
 }
 
 const vector<Anchor *> &
