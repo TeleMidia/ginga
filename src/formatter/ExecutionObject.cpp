@@ -44,7 +44,7 @@ ExecutionObject::ExecutionObject (const string &id,
   this->_isCompiled = false;
   this->_mainEvent = nullptr;
 
-  ContentNode *entity = cast (ContentNode *, _dataObject);
+  Media *entity = cast (Media *, _dataObject);
   if (entity != nullptr)
     _descriptor = entity->getDescriptor ();
 
@@ -598,7 +598,7 @@ bool
 ExecutionObject::start ()
 {
   NodeEntity *entity;
-  ContentNode *contentNode;
+  Media *contentNode;
   Content *content;
 
   string src;
@@ -618,7 +618,7 @@ ExecutionObject::start ()
   entity = cast (NodeEntity *, _dataObject);
   g_assert_nonnull (entity);
 
-  contentNode = cast (ContentNode *, entity);
+  contentNode = cast (Media *, entity);
   g_assert_nonnull (contentNode);
 
   content = contentNode->getContent ();
@@ -634,7 +634,7 @@ ExecutionObject::start ()
     }
 
   // Allocate player.
-  mime = contentNode->getNodeType ();
+  mime = content->getType ();
   _player = Player::createPlayer (_id, src, mime);
 
   // Initialize player properties.

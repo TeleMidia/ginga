@@ -17,19 +17,24 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "NodeEntity.h"
-#include "CompositeNode.h"
 
 GINGA_NCL_BEGIN
 
-NodeEntity::NodeEntity (const string &uid) : Node (uid)
+NodeEntity::NodeEntity (const string &id) : Node (id)
 {
-  _lambda = new AreaLambda (uid);
+  _lambda = new AreaLambda (id);
   this->addAnchor (_lambda);
 }
 
 NodeEntity::~NodeEntity ()
 {
   delete _lambda;
+}
+
+Anchor *
+NodeEntity::getLambda ()
+{
+  return _lambda;
 }
 
 GINGA_NCL_END

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "ReferNode.h"
 
-#include "ContentNode.h"
+#include "Media.h"
 
 GINGA_NCL_BEGIN
 
@@ -57,7 +57,7 @@ void
 ReferNode::setReferredEntity (Entity *entity)
 {
   _referredNode = entity;
-  ((ContentNode *)_referredNode)->addSameInstance (this);
+  ((Media *)_referredNode)->addSameInstance (this);
 }
 
 GINGA_NCL_END

@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "RuleBase.h"
 
 #include "Context.h"
-#include "ContentNode.h"
+#include "Media.h"
 #include "Node.h"
 #include "NodeEntity.h"
 

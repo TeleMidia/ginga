@@ -1968,7 +1968,7 @@ Parser::parseMedia (DOMElement *elt)
     {
       Entity *refer;
 
-      refer = (ContentNode *) _doc->getNode (value);
+      refer = (Media *) _doc->getNode (value);
       g_assert_nonnull (refer);
 
       media = new ReferNode (id);
@@ -1978,15 +1978,20 @@ Parser::parseMedia (DOMElement *elt)
     }
   else
     {
-      media = new ContentNode (id, NULL, "");
-
-      if (dom_elt_try_get_attribute (value, elt, "type"))
-        ((ContentNode *) media)->setNodeType (value);
+      if (dom_elt_try_get_attribute (value, elt, "type")
+          && value == "application/x-ginga-settings") // settings?
+        {
+          media = new Media (id, true);
+        }
+      else
+        {
+          media = new Media (id, false);
+        }
 
       CHECK_ELT_OPT_ATTRIBUTE (elt, "src", &src, "");
       if (!xpathisuri (src) && !xpathisabs (src))
         src = xpathbuildabs (_dirname, src);
-      ((ContentNode *) media)
+      ((Media *) media)
         ->setContent (new AbsoluteReferenceContent (src));
 
       if (dom_elt_try_get_attribute (value, elt, "descriptor"))
@@ -1994,7 +1999,7 @@ Parser::parseMedia (DOMElement *elt)
           Descriptor *desc = _doc->getDescriptor (value);
           if (unlikely (desc == nullptr))
             ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "descriptor");
-          ((ContentNode *) media)->setDescriptor (desc);
+          ((Media *) media)->setDescriptor (desc);
         }
     }
 
@@ -2189,7 +2194,7 @@ Parser::parseBind (DOMElement *elt, Link *link, Context *context)
               if (iface == nullptr) // retry
                 {
                   for (ReferNode *refer:
-                         *cast (ContentNode *, targetEntity)
+                         *cast (Media *, targetEntity)
                          ->getInstSameInstances ())
                     {
                       iface = refer->getAnchor (value);

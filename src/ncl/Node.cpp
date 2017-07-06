@@ -100,15 +100,15 @@ Node::getPerspective ()
 {
   vector<Node *> *perspective;
 
-  if (_parent == NULL)
+  if (_parent == nullptr)
     {
       perspective = new vector<Node *>;
     }
   else
     {
-      perspective = ((CompositeNode *)_parent)->getPerspective ();
+      perspective = ((CompositeNode *) _parent)->getPerspective ();
     }
-  perspective->push_back ((Node *)this);
+  perspective->push_back (this);
   return perspective;
 }
 
@@ -121,7 +121,8 @@ Node::derefer ()
   if (instanceof (ReferNode *, this))
     {
       Node *result;
-      result = cast (Node *, cast (ReferNode *, this)->getReferredEntity ());
+      result = cast (Node *,
+                     cast (ReferNode *, this)->getReferredEntity ());
       g_assert_nonnull (result);
       return result;
     }

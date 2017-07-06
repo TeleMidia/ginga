@@ -91,7 +91,7 @@ Scheduler::startDocument (const string &file)
   vector <Node *> *settings = _doc->getSettingsNodes ();
   for (auto node: *settings)
     {
-      ContentNode *content;
+      Media *content;
       ExecutionObject *execobj;
 
       persp = new NclNodeNesting (node->getPerspective ());
@@ -101,7 +101,7 @@ Scheduler::startDocument (const string &file)
       TRACE ("processing '%s'", persp->getId ().c_str ());
       delete persp;
 
-      content = (ContentNode *) node;
+      content = (Media *) node;
       for (auto anchor: *content->getAnchors ())
         {
           Property *prop;

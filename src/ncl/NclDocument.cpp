@@ -520,8 +520,8 @@ NclDocument::getSettingsNodes ()
       NodeEntity *node = cast (NodeEntity *, nodes->at (i)->derefer ());
       g_assert_nonnull (node);
 
-      if (instanceof (ContentNode *, node)
-          && ((ContentNode *) node)->isSettingNode ())
+      if (instanceof (Media *, node)
+          && ((Media *) node)->isSettings ())
         {
           //
           // WARNING: For some obscure reason, we have to store the Node,
