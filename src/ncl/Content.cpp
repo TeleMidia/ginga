@@ -20,23 +20,47 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-Content::Content (const string &someType)
+Content::Content (const string &src)
 {
-  _type = someType;
+  string type, extension;
+  string::size_type index, len;
+
+  type = "";
+  if (src == "")
+    goto done;
+
+  index = src.find_last_of (".");
+  if (index != std::string::npos)
+    {
+      index++;
+      len = src.length ();
+      if (index < len)
+        {
+          extension = src.substr (index, (len - index));
+          if (extension != "")
+            ginga_mime_table_index (extension, &type);
+        }
+    }
+
+ done:
+  _src = src;
+  _type = type;
 }
 
-Content::~Content () {}
+Content::~Content ()
+{
+}
+
+string
+Content::getSrc ()
+{
+  return _src;
+}
 
 string
 Content::getType ()
 {
   return _type;
-}
-
-void
-Content::setType (const string &someType)
-{
-  _type = someType;
 }
 
 GINGA_NCL_END

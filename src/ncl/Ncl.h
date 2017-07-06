@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NCL_H
 #define NCL_H
 
-#include "AbsoluteReferenceContent.h"
 #include "Action.h"
 #include "Anchor.h"
 #include "Animation.h"
@@ -55,7 +54,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Port.h"
 #include "Property.h"
 #include "Refer.h"
-#include "ReferenceContent.h"
 #include "Region.h"
 #include "RegionBase.h"
 #include "Role.h"

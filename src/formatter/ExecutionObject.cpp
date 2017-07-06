@@ -624,9 +624,9 @@ ExecutionObject::start ()
   content = contentNode->getContent ();
   if (content != nullptr)
     {
-      ReferenceContent *ref = cast (ReferenceContent *, content);
+      Content *ref = cast (Content *, content);
       g_assert_nonnull (ref);
-      src = ref->getCompleteReferenceUrl ();
+      src = ref->getSrc ();
     }
   else
     {

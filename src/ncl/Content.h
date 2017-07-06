@@ -18,23 +18,21 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef CONTENT_H
 #define CONTENT_H
 
-#include "ginga.h"
-
 GINGA_NCL_BEGIN
 
 class Content
 {
 public:
-  Content (const string &someType);
-  Content ();
-  virtual ~Content ();
-  virtual string getType (void);
-  virtual void setType (const string &someType);
+  Content (const string &);
+  ~Content ();
+  string getSrc ();
+  string getType ();
 
-protected:
+private:
+  string _src;
   string _type;
 };
 
 GINGA_NCL_END
 
-#endif /* CONTENT_H */
+#endif // CONTENT_H
