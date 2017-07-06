@@ -141,9 +141,7 @@ CompositeNode::recursivelyContainsNode (Node *node)
         }
       else if (instanceof (ReferNode *, childNode))
         {
-          childNode
-              = (Node *)(((ReferNode *)childNode)->getReferredEntity ());
-
+          childNode = childNode->derefer ();
           if (childNode == node)
             {
               return true;

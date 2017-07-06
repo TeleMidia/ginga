@@ -1653,15 +1653,15 @@ Parser::solveNodeReferences (CompositeNode *comp)
     if (instanceof (ReferNode *, node))
       {
         Entity *ref;
-        NodeEntity *refNode;
+        Media *refNode;
 
-        ref = ((ReferNode *) node)->getReferredEntity ();
+        ref = ((ReferNode *) node)->getReferred ();
         g_assert_nonnull (ref);
 
-        refNode = (NodeEntity *)(_doc->getNode (ref->getId ()));
+        refNode = cast (Media *, _doc->getNode (ref->getId ()));
         g_assert_nonnull (refNode);
 
-        ((ReferNode *) node)->setReferredEntity (refNode);
+        ((ReferNode *) node)->setReferred (refNode);
       }
     else if (instanceof (CompositeNode *, node))
       {
@@ -1966,15 +1966,13 @@ Parser::parseMedia (DOMElement *elt)
   // Refer?
   if (dom_elt_try_get_attribute (value, elt, "refer"))
     {
-      Entity *refer;
+      Media *refer;
 
-      refer = (Media *) _doc->getNode (value);
+      refer = cast (Media *, _doc->getNode (value));
       g_assert_nonnull (refer);
 
       media = new ReferNode (id);
-      if (dom_elt_try_get_attribute (value, elt, "instance"))
-        ((ReferNode *) media)->setInstanceType (value);
-      ((ReferNode *) media)->setReferredEntity (refer);
+      ((ReferNode *) media)->setReferred (refer);
     }
   else
     {

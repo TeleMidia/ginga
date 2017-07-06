@@ -21,7 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Anchor.h"
 #include "Area.h"
 #include "Node.h"
-#include "ReferNode.h"
 
 GINGA_NCL_BEGIN
 

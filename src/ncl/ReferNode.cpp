@@ -18,46 +18,38 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "ReferNode.h"
 
-#include "Media.h"
-
 GINGA_NCL_BEGIN
 
-ReferNode::ReferNode (const string &id) : Node (id)
+/**
+ * @brief Creates a new refer node.
+ * @param id Refer node id.
+ */
+ReferNode::ReferNode (const string &id) : NodeEntity (id)
 {
-  _instanceType = "new";
-  _referredNode = NULL;
+  _referred = nullptr;
 }
 
-ReferNode::ReferNode (const string &id, Entity *entity) : Node (id)
+/**
+ * @brief Gets the media referenced by refer node.
+ */
+Media *
+ReferNode::getReferred ()
 {
-  _instanceType = "new";
-
-  setReferredEntity (entity);
+  return _referred;
 }
 
-string
-ReferNode::getInstanceType ()
-{
-  return _instanceType;
-}
-
+/**
+ * @brief Sets the media referenced by refer node.
+ * (Can only be called once.)
+ * @param media Media.
+ */
 void
-ReferNode::setInstanceType (const string &instance)
+ReferNode::setReferred (Media *media)
 {
-  this->_instanceType = instance;
-}
-
-Entity *
-ReferNode::getReferredEntity ()
-{
-  return _referredNode;
-}
-
-void
-ReferNode::setReferredEntity (Entity *entity)
-{
-  _referredNode = entity;
-  ((Media *)_referredNode)->addSameInstance (this);
+  g_assert_nonnull (media);
+  g_assert (_referred == nullptr || _referred == media);
+  _referred = media;
+  media->addSameInstance (this);
 }
 
 GINGA_NCL_END

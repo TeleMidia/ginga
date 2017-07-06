@@ -17,7 +17,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "Node.h"
+
 #include "CompositeNode.h"
+#include "ReferNode.h"
 
 GINGA_NCL_BEGIN
 
@@ -121,8 +123,7 @@ Node::derefer ()
   if (instanceof (ReferNode *, this))
     {
       Node *result;
-      result = cast (Node *,
-                     cast (ReferNode *, this)->getReferredEntity ());
+      result = cast (Node *, cast (ReferNode *, this)->getReferred ());
       g_assert_nonnull (result);
       return result;
     }
