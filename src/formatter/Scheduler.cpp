@@ -91,7 +91,7 @@ Scheduler::startDocument (const string &file)
   vector <Node *> *settings = _doc->getSettingsNodes ();
   for (auto node: *settings)
     {
-      ContentNode *content;
+      Media *content;
       ExecutionObject *execobj;
 
       persp = new NclNodeNesting (node->getPerspective ());
@@ -101,7 +101,7 @@ Scheduler::startDocument (const string &file)
       TRACE ("processing '%s'", persp->getId ().c_str ());
       delete persp;
 
-      content = (ContentNode *) node;
+      content = (Media *) node;
       for (auto anchor: *content->getAnchors ())
         {
           Property *prop;
@@ -255,7 +255,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
 
   Node *node;
   Entity *entity;
-  CompositeNode *compNode;
+  Composition *compNode;
   NclNodeNesting *compPerspective;
 
   event = action->getEvent ();
@@ -282,7 +282,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
   entity = cast (Entity *, node);
   g_assert_nonnull (entity);
 
-  compNode = cast (CompositeNode *, entity);
+  compNode = cast (Composition *, entity);
   g_assert_nonnull (compNode);
 
   if (compNode->getParent () == nullptr)
@@ -304,7 +304,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
         {
           NclNodeNesting *persp;
           vector<Node *> *nestedSeq;
-          InterfacePoint *iface;
+          Anchor *iface;
 
           ExecutionObject *child;
           NclEvent *evt;
@@ -322,7 +322,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
             ->getExecutionObjectFromPerspective (persp, nullptr);
           g_assert (child);
 
-          iface = port->getEndInterfacePoint ();
+          iface = port->getEndInterface ();
           g_assert_nonnull (iface);
 
           if (!instanceof (Area *, iface))
@@ -427,7 +427,7 @@ Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObj,
   ExecutionObject *endPointObject;
 
   selectedEvent = nullptr;
-  switchPort = (SwitchPort *)(switchEvent->getInterfacePoint ());
+  switchPort = (SwitchPort *)(switchEvent->getInterface ());
   mappings = switchPort->getPorts ();
   if (mappings != nullptr)
     {
@@ -454,7 +454,7 @@ Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObj,
                           = _converter
                                 ->getEvent (
                                     endPointObject,
-                                    mapping->getEndInterfacePoint (),
+                                    mapping->getEndInterface (),
                                     switchEvent->getType (),
                                     switchEvent->getKey ());
                     }

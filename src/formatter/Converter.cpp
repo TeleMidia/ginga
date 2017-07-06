@@ -96,7 +96,7 @@ Converter::getExecutionObjectFromPerspective (
 
 NclEvent *
 Converter::getEvent (ExecutionObject *exeObj,
-                     InterfacePoint *interfacePoint,
+                     Anchor *interfacePoint,
                      EventType ncmEventType,
                      const string &key)
 {
@@ -224,7 +224,7 @@ Converter::getEvent (ExecutionObject *exeObj,
 
 ExecutionObjectContext *
 Converter::addSameInstance (ExecutionObject *exeObj,
-                            ReferNode *referNode)
+                            Refer *referNode)
 {
   vector<Node *> *ncmPerspective = referNode->getPerspective ();
   NclNodeNesting *referPerspective = new NclNodeNesting (ncmPerspective);
@@ -234,14 +234,6 @@ Converter::addSameInstance (ExecutionObject *exeObj,
 
   if (referParentObject != nullptr)
     {
-      TRACE ("'%s' with head node '%s' refer to '%s', which has as "
-             "execution object '%s' and parent object '%s'",
-             referNode->getId ().c_str (),
-             referPerspective->getHeadNode ()->getId ().c_str (),
-             referNode->getReferredEntity ()->getId ().c_str (),
-             exeObj->getId ().c_str (),
-             referParentObject->getId ().c_str ());
-
       exeObj->addParentObject (
             referNode,
             referParentObject,
@@ -286,47 +278,39 @@ Converter::addExecutionObject (ExecutionObject *exeObj,
 
   // Hanlde settings nodes.
   Node *dataObject = exeObj->getDataObject ();
-  auto contentNode = cast (ContentNode *, dataObject);
+  auto contentNode = cast (Media *, dataObject);
 
-  if (contentNode && contentNode->isSettingNode ())
-    {
-      _settingsObjects.insert (exeObj);
-    }
+  if (contentNode != nullptr && contentNode->isSettings ())
+    _settingsObjects.insert (exeObj);
 
-  auto referNode = cast (ReferNode *, dataObject);
+  auto referNode = cast (Refer *, dataObject);
   if (referNode)
     {
-      if (referNode->getInstanceType () == "instSame")
-        {
-          Entity *entity = referNode->getReferredEntity ();
-          g_assert_nonnull (entity);
-          auto entityContentNode = cast (ContentNode *, entity);
 
-          if (entityContentNode
-              && entityContentNode->isSettingNode ())
-            {
-              _settingsObjects.insert (exeObj);
-            }
-        }
+      Media *media = referNode->getReferred ();
+      g_assert_nonnull (media);
+      if (media->isSettings ())
+        _settingsObjects.insert (exeObj);
     }
 
   NclNodeNesting *nodePerspective = exeObj->getNodePerspective ();
   Node *headNode = nodePerspective->getHeadNode ();
 
-  auto nodeEntity = cast (ContentNode *, dataObject);
-  auto headCompositeNode = cast (CompositeNode *, headNode);
-  if (headCompositeNode != nullptr && nodeEntity != nullptr)
+  auto nodeEntity = cast (Media *, dataObject);
+  auto headComposition = cast (Composition *, headNode);
+  if (headComposition != nullptr && nodeEntity != nullptr)
     {
-      set<ReferNode *> *sameInstances = nodeEntity->getInstSameInstances ();
+      const set<Refer *> *sameInstances
+        = nodeEntity->getInstSameInstances ();
       g_assert_nonnull (sameInstances);
 
-      for (ReferNode *referNode: *(sameInstances))
+      for (Refer *referNode: *(sameInstances))
         {
           TRACE ("'%s' instSame of '%s'",
                  exeObj->getId ().c_str(),
                  referNode->getId ().c_str());
 
-          if (headCompositeNode->recursivelyContainsNode (referNode))
+          if (headComposition->recursivelyContainsNode (referNode))
             {
               addSameInstance (exeObj, referNode);
             }
@@ -417,17 +401,15 @@ Converter::createExecutionObject (
 
   node = perspective->getAnchorNode ();
 
-  NodeEntity *nodeEntity = cast (NodeEntity *, node->derefer ());
+  Node *nodeEntity = cast (Node *, node->derefer ());
   g_assert_nonnull (nodeEntity);
 
   // solve execution object cross reference coming from refer nodes with
   // new instance = false
-  auto contentNode = cast (ContentNode *, nodeEntity);
-  if (contentNode
-      && contentNode->getNodeType () != ""
-      && !contentNode->isSettingNode ())
+  auto contentNode = cast (Media *, nodeEntity);
+  if (contentNode != nullptr && !contentNode->isSettings ())
     {
-      auto referNode = cast (ReferNode *, node);
+      auto referNode = cast (Refer *, node);
       if (referNode)
         {
           nodePerspective
@@ -478,7 +460,7 @@ Converter::createExecutionObject (
       compositeEvt->addListener (this);
       _listening.insert (compositeEvt);
     }
-  else if (instanceof (CompositeNode* , nodeEntity))
+  else if (instanceof (Composition* , nodeEntity))
     {
       string s;
       exeObj = new ExecutionObjectContext (id, node, _actionListener);
@@ -508,14 +490,14 @@ Converter::processLink (Link *ncmLink,
                         ExecutionObject *executionObject,
                         ExecutionObjectContext *parentObject)
 {
-  NodeEntity *nodeEntity = nullptr;
-  set<ReferNode *> *sameInstances;
+  Node *nodeEntity = nullptr;
+  const set<Refer *> *sameInstances;
   bool contains = false;
 
   if (executionObject->getDataObject () != nullptr)
     {
       nodeEntity
-          = cast (NodeEntity *, executionObject->getDataObject ());
+          = cast (Node *, executionObject->getDataObject ());
     }
 
   // Since the link may be removed in a deepest compilation it is necessary to
@@ -525,11 +507,11 @@ Converter::processLink (Link *ncmLink,
       auto causalLink = cast (Link *, ncmLink);
       if (causalLink)
         {
-          if (nodeEntity != nullptr && instanceof (ContentNode *, nodeEntity))
+          if (nodeEntity != nullptr && instanceof (Media *, nodeEntity))
             {
-              sameInstances = cast (ContentNode *, nodeEntity)
+              sameInstances = cast (Media *, nodeEntity)
                 ->getInstSameInstances ();
-              for (ReferNode *referNode: *sameInstances)
+              for (Refer *referNode: *sameInstances)
                 {
                   contains = causalLink->contains (referNode, true);
                   if (contains)
@@ -739,11 +721,10 @@ Converter::resolveSwitchEvents (
   ExecutionObject *selectedObject;
   ExecutionObject *endPointObject;
   Node *selectedNode;
-  NodeEntity *selectedNodeEntity;
   vector<NclEvent *> events;
   vector<NclEvent *>::iterator i;
   SwitchEvent *switchEvent;
-  InterfacePoint *interfacePoint;
+  Anchor *interfacePoint;
   vector<Node *> *nestedSeq;
   NclNodeNesting *nodePerspective;
   NclEvent *mappedEvent;
@@ -756,8 +737,8 @@ Converter::resolveSwitchEvents (
     }
 
   selectedNode = selectedObject->getDataObject ();
-  selectedNodeEntity = cast (NodeEntity *, selectedNode);
-  g_assert_nonnull (selectedNodeEntity);
+  selectedNode = cast (Node *, selectedNode);
+  g_assert_nonnull (selectedNode);
 
   if (events.empty ())
     {
@@ -770,12 +751,12 @@ Converter::resolveSwitchEvents (
       switchEvent = cast (SwitchEvent *, event);
       g_assert_nonnull (switchEvent);
 
-      interfacePoint = switchEvent->getInterfacePoint ();
+      interfacePoint = switchEvent->getInterface ();
       auto lambdaAnchor = cast (AreaLambda *, interfacePoint);
       if (lambdaAnchor)
         {
           mappedEvent = getEvent (
-                selectedObject, selectedNodeEntity->getLambda (),
+                selectedObject, selectedNode->getLambda (),
                 switchEvent->getType (), switchEvent->getKey ());
         }
       else
@@ -801,7 +782,7 @@ Converter::resolveSwitchEvents (
                     {
                       mappedEvent = getEvent (
                             endPointObject,
-                            mapping->getEndInterfacePoint (),
+                            mapping->getEndInterface (),
                             switchEvent->getType (),
                             switchEvent->getKey ());
                     }
@@ -831,7 +812,7 @@ Converter::resolveSwitchEvents (
 
 NclEvent *
 Converter::insertNode (NclNodeNesting *perspective,
-                       InterfacePoint *interfacePoint,
+                       Anchor *interfacePoint,
                        Descriptor *descriptor)
 {
   ExecutionObject *executionObject;
@@ -875,10 +856,10 @@ Converter::insertContext (NclNodeNesting *contextPerspective,
       error = true;
     }
 
-  if (!(instanceof (Area *, port->getEndInterfacePoint ())
-        || instanceof (AreaLabeled *, port->getEndInterfacePoint ())
-        || instanceof (Property *, port->getEndInterfacePoint ())
-        || instanceof (SwitchPort *, port->getEndInterfacePoint ()))
+  if (!(instanceof (Area *, port->getEndInterface ())
+        || instanceof (AreaLabeled *, port->getEndInterface ())
+        || instanceof (Property *, port->getEndInterface ())
+        || instanceof (SwitchPort *, port->getEndInterface ()))
       || !(instanceof (Context *,
                        contextPerspective->getAnchorNode ())))
     {
@@ -900,7 +881,7 @@ Converter::insertContext (NclNodeNesting *contextPerspective,
       delete nestedSeq;
 
       newEvent = insertNode (perspective,
-                             port->getEndInterfacePoint (),
+                             port->getEndInterface (),
                              nullptr);
       delete perspective;
 
@@ -1103,7 +1084,7 @@ Converter::setImplicitRefAssessment (const string &roleId,
           value = bind->getRole ()->getLabel ();
           if (roleId == value)
             {
-              InterfacePoint *refInterface = bind->getInterfacePoint ();
+              Anchor *refInterface = bind->getInterface ();
               auto propAnchor = cast (Property *, refInterface);
               if (propAnchor)
                 {
@@ -1762,7 +1743,7 @@ Converter::createEvent (
   NclNodeNesting *endPointPerspective;
   Node *parentNode;
   ExecutionObject *executionObject;
-  InterfacePoint *interfacePoint;
+  Anchor *interfacePoint;
   string key;
   NclEvent *event = nullptr;
   vector<Node *> *seq;

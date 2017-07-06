@@ -17,10 +17,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "Bind.h"
+#include "Composition.h"
 
 GINGA_NCL_BEGIN
 
-Bind::Bind (Node *node, InterfacePoint *interfPt, Descriptor *desc,
+Bind::Bind (Node *node, Anchor *interfPt, Descriptor *desc,
             Role *role)
 {
   this->_node = node;
@@ -53,8 +54,8 @@ Bind::getDescriptor ()
   return _descriptor;
 }
 
-InterfacePoint *
-Bind::getInterfacePoint ()
+Anchor *
+Bind::getInterface ()
 {
   return this->_interfacePoint;
 }
@@ -72,7 +73,7 @@ Bind::getRole ()
 }
 
 void
-Bind::setInterfacePoint (InterfacePoint *interfPt)
+Bind::setInterface (Anchor *interfPt)
 {
   this->_interfacePoint = interfPt;
 }
@@ -194,19 +195,19 @@ Bind::getNodeNesting ()
   return nodeNesting;
 }
 
-InterfacePoint *
+Anchor *
 Bind::getEndPointInterface ()
 {
-  CompositeNode *compositeNode;
+  Composition *compositeNode;
   Port *port;
 
-  NodeEntity *nodeEntity = cast (NodeEntity *, _node->derefer ());
+  Node *nodeEntity = cast (Node *, _node->derefer ());
   g_assert_nonnull (nodeEntity);
 
-  if (instanceof (CompositeNode *, nodeEntity)
+  if (instanceof (Composition *, nodeEntity)
       && instanceof (Port *, _interfacePoint))
     {
-      compositeNode = (CompositeNode *)nodeEntity;
+      compositeNode = cast (Composition *, nodeEntity);
       port = (Port *)_interfacePoint;
       return compositeNode->getMapInterface (port);
     }

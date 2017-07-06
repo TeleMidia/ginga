@@ -511,17 +511,17 @@ NclDocument::getSettingsNodes ()
 
  next:
   g_assert (compositions.size () > 0);
-  nodes = ((CompositeNode *)(compositions.front ()))->getNodes ();
+  nodes = ((Composition *)(compositions.front ()))->getNodes ();
   g_assert_nonnull (nodes);
   compositions.pop_front ();
 
   for (guint i = 0; i < nodes->size (); i++)
     {
-      NodeEntity *node = cast (NodeEntity *, nodes->at (i)->derefer ());
+      Node *node = cast (Node *, nodes->at (i)->derefer ());
       g_assert_nonnull (node);
 
-      if (instanceof (ContentNode *, node)
-          && ((ContentNode *) node)->isSettingNode ())
+      if (instanceof (Media *, node)
+          && ((Media *) node)->isSettings ())
         {
           //
           // WARNING: For some obscure reason, we have to store the Node,
@@ -529,7 +529,7 @@ NclDocument::getSettingsNodes ()
           //
           settings->push_back (nodes->at (i)); // found
         }
-      else if (instanceof (CompositeNode *, node))
+      else if (instanceof (Composition *, node))
         {
           compositions.push_back (node);
         }

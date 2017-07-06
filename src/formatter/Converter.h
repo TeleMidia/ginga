@@ -50,7 +50,7 @@ public:
       NclNodeNesting *perspec, Descriptor *desc);
 
   NclEvent *getEvent (ExecutionObject *exeObj,
-                      InterfacePoint *interfacePoint,
+                      Anchor *interfacePoint,
                       EventType ncmEventType,
                       const string &key);
 
@@ -79,7 +79,7 @@ private:
                     ExecutionObjectContext *parentObject);
 
   ExecutionObjectContext *
-  addSameInstance (ExecutionObject *exeObj, ReferNode *referNode);
+  addSameInstance (ExecutionObject *exeObj, Refer *referNode);
 
   ExecutionObjectContext *getParentExecutionObject (
       NclNodeNesting *perspective);
@@ -101,7 +101,7 @@ private:
   void resolveSwitchEvents (ExecutionObjectSwitch *switchObject);
 
   NclEvent *insertNode (NclNodeNesting *perspective,
-                        InterfacePoint *interfacePoint,
+                        Anchor *interfacePoint,
                         Descriptor *descriptor);
 
   void eventStateChanged (NclEvent *someEvent,

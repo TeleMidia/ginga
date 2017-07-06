@@ -308,40 +308,17 @@ AttributionEvent::AttributionEvent (const string &id,
                                     Settings *settings)
   : NclEvent (id, exeObj)
 {
-  Entity *entity;
-  NodeEntity *dataObject;
-
   _type = EventType::ATTRIBUTION;
   this->_anchor = anchor;
   this->_player = nullptr;
   this->_settingsNode = false;
   this->_settings = settings;
 
-  dataObject = cast (NodeEntity *, exeObj->getDataObject ());
+  Node *node = exeObj->getDataObject ();
+  g_assert_nonnull (node);
 
-  auto contentNode = cast (ContentNode *, dataObject);
-  if (contentNode
-      && contentNode->isSettingNode ())
-    {
-      _settingsNode = true;
-    }
-
-  auto referNode = cast (ReferNode *, dataObject);
-  if (referNode)
-    {
-      if (referNode->getInstanceType () == "instSame")
-        {
-          entity = referNode->getReferredEntity ();
-          g_assert_nonnull (entity);
-
-          auto contentNode = cast (ContentNode *, entity);
-          if (contentNode
-              && contentNode->isSettingNode ())
-            {
-              _settingsNode = true;
-            }
-        }
-    }
+  if (instanceof (Media *, node) && cast (Media *, node)->isSettings ())
+    _settingsNode = true;
 }
 
 AttributionEvent::~AttributionEvent ()
@@ -427,7 +404,7 @@ AttributionEvent::solveImplicitRefAssessment (const string &val)
 
 SwitchEvent::SwitchEvent (const string &id,
                           ExecutionObject *exeObjSwitch,
-                          InterfacePoint *interface,
+                          Anchor *interface,
                           EventType type, const string &key)
   : NclEvent (id, exeObjSwitch)
 {

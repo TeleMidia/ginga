@@ -16,14 +16,40 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "AbsoluteReferenceContent.h"
+#include "Refer.h"
 
 GINGA_NCL_BEGIN
 
-AbsoluteReferenceContent::AbsoluteReferenceContent (const string &ref)
-    : ReferenceContent (ref)
+/**
+ * @brief Creates a new refer node.
+ * @param id Refer node id.
+ */
+Refer::Refer (const string &id) : Node (id)
 {
+  _referred = nullptr;
+}
 
+/**
+ * @brief Gets the media referenced by refer node.
+ */
+Media *
+Refer::getReferred ()
+{
+  return _referred;
+}
+
+/**
+ * @brief Sets the media referenced by refer node.
+ * (Can only be called once.)
+ * @param media Media.
+ */
+void
+Refer::setReferred (Media *media)
+{
+  g_assert_nonnull (media);
+  g_assert (_referred == nullptr || _referred == media);
+  _referred = media;
+  media->addSameInstance (this);
 }
 
 GINGA_NCL_END

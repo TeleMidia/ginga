@@ -146,7 +146,7 @@ Link::contains (Node *node, bool condition)
 {
   for (auto bind: _binds)
     {
-      InterfacePoint *iface;
+      Anchor *iface;
       Node *bound;
       Role *role;
 
@@ -163,7 +163,7 @@ Link::contains (Node *node, bool condition)
           continue;             // skip
         }
 
-      if ((iface = bind->getInterfacePoint ()) != nullptr
+      if ((iface = bind->getInterface ()) != nullptr
           && instanceof (Port *, iface))
         {
           bound = cast (Port *, iface)->getEndNode ();

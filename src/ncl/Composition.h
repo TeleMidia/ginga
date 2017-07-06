@@ -15,19 +15,19 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef COMPOSITE_NODE_H
-#define COMPOSITE_NODE_H
+#ifndef COMPOSITION_H
+#define COMPOSITION_H
 
-#include "NodeEntity.h"
+#include "Node.h"
 #include "Port.h"
 
 GINGA_NCL_BEGIN
 
-class CompositeNode : public NodeEntity
+class Composition : public Node
 {
 public:
-  CompositeNode (const string &);
-  virtual ~CompositeNode ();
+  Composition (const string &);
+  virtual ~Composition ();
 
   // Virtual to all.
   virtual void addNode (Node *) = 0;
@@ -40,7 +40,7 @@ public:
   const vector<Port *> *getPorts ();
 
   // Virtual to SwitchNode.
-  virtual InterfacePoint *getMapInterface (Port *);
+  virtual Anchor *getMapInterface (Port *);
 
   // Virtual to SwitchNode.
   virtual Node *getNode (const string &nodeId);
@@ -61,4 +61,4 @@ protected:
 
 GINGA_NCL_END
 
-#endif // COMPOSITE_NODE_H
+#endif // COMPOSITION_H

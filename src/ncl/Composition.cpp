@@ -16,9 +16,9 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "CompositeNode.h"
+#include "Composition.h"
 
-#include "ContentNode.h"
+#include "Media.h"
 #include "Context.h"
 #include "SwitchNode.h"
 
@@ -26,24 +26,24 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_NCL_BEGIN
 
-CompositeNode::CompositeNode (const string &id) : NodeEntity (id)
+Composition::Composition (const string &id) : Node (id)
 {
 }
 
-CompositeNode::~CompositeNode ()
+Composition::~Composition ()
 {
   _nodes.clear ();
   _ports.clear ();
 }
 
 void
-CompositeNode::addPort (Port *port)
+Composition::addPort (Port *port)
 {
   _ports.push_back (port);
 }
 
 Port *
-CompositeNode::getPort (const string &id)
+Composition::getPort (const string &id)
 {
   for (auto port: _ports)
     if (port->getId () == id)
@@ -52,23 +52,23 @@ CompositeNode::getPort (const string &id)
 }
 
 const vector<Port *> *
-CompositeNode::getPorts ()
+Composition::getPorts ()
 {
   return &_ports;
 }
 
-InterfacePoint *
-CompositeNode::getMapInterface (Port *port)
+Anchor *
+Composition::getMapInterface (Port *port)
 {
   Node *node;
-  CompositeNode *compositeNode;
-  InterfacePoint *interfacePoint;
+  Composition *compositeNode;
+  Anchor *interfacePoint;
 
   node = port->getNode ();
-  interfacePoint = port->getInterfacePoint ();
+  interfacePoint = port->getInterface ();
   if (instanceof (Port *, interfacePoint))
     {
-      compositeNode = cast (CompositeNode *, node);
+      compositeNode = cast (Composition *, node);
       g_assert_nonnull (compositeNode);
       return compositeNode->getMapInterface ((Port *)interfacePoint);
     }
@@ -79,7 +79,7 @@ CompositeNode::getMapInterface (Port *port)
 }
 
 Node *
-CompositeNode::getNode (const string &id)
+Composition::getNode (const string &id)
 {
   for (auto node: _nodes)
     if (node->getId () == id)
@@ -88,13 +88,13 @@ CompositeNode::getNode (const string &id)
 }
 
 const vector<Node *> *
-CompositeNode::getNodes ()
+Composition::getNodes ()
 {
   return &_nodes;
 }
 
 bool
-CompositeNode::recursivelyContainsNode (const string &nodeId)
+Composition::recursivelyContainsNode (const string &nodeId)
 {
   if (recursivelyGetNode (nodeId) != NULL)
     {
@@ -107,11 +107,11 @@ CompositeNode::recursivelyContainsNode (const string &nodeId)
 }
 
 bool
-CompositeNode::recursivelyContainsNode (Node *node)
+Composition::recursivelyContainsNode (Node *node)
 {
   vector<Node *>::iterator it;
   Node *childNode;
-  CompositeNode *compositeNode;
+  Composition *compositeNode;
   unsigned int i;
 
   if (_nodes.empty ())
@@ -131,26 +131,24 @@ CompositeNode::recursivelyContainsNode (Node *node)
   for (it = _nodes.begin (); it != _nodes.end (); ++it)
     {
       childNode = (Node *)*it;
-      if (instanceof (CompositeNode *, childNode))
+      if (instanceof (Composition *, childNode))
         {
-          compositeNode = (CompositeNode *)childNode;
+          compositeNode = (Composition *)childNode;
           if (compositeNode->recursivelyContainsNode (node))
             {
               return true;
             }
         }
-      else if (instanceof (ReferNode *, childNode))
+      else if (instanceof (Refer *, childNode))
         {
-          childNode
-              = (Node *)(((ReferNode *)childNode)->getReferredEntity ());
-
+          childNode = childNode->derefer ();
           if (childNode == node)
             {
               return true;
             }
-          else if (instanceof (CompositeNode *, childNode))
+          else if (instanceof (Composition *, childNode))
             {
-              compositeNode = (CompositeNode *)childNode;
+              compositeNode = (Composition *)childNode;
               if (compositeNode->recursivelyContainsNode (node))
                 {
                   return true;
@@ -162,7 +160,7 @@ CompositeNode::recursivelyContainsNode (Node *node)
 }
 
 Node *
-CompositeNode::recursivelyGetNode (const string &nodeId)
+Composition::recursivelyGetNode (const string &nodeId)
 {
   Node *node;
   vector<Node *>::iterator i;
@@ -179,9 +177,9 @@ CompositeNode::recursivelyGetNode (const string &nodeId)
           return (*i);
         }
 
-      if (instanceof (CompositeNode *, (*i)))
+      if (instanceof (Composition *, (*i)))
         {
-          node = ((CompositeNode *)(*i))->recursivelyGetNode (nodeId);
+          node = ((Composition *)(*i))->recursivelyGetNode (nodeId);
           if (node != NULL)
             {
               return node;

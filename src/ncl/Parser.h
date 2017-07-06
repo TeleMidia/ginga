@@ -27,7 +27,7 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wundef)
 XERCES_CPP_NAMESPACE_USE
 GINGA_PRAGMA_DIAG_POP ()
 
-#include "AbsoluteReferenceContent.h"
+#include "Area.h"
 #include "AreaLabeled.h"
 #include "Comparator.h"
 #include "CompositeRule.h"
@@ -93,16 +93,16 @@ private:
   SimpleAction *parseSimpleAction (DOMElement *);
 
   Context *parseBody (DOMElement *);
-  void solveNodeReferences (CompositeNode *);
+  void solveNodeReferences (Composition *);
   void posCompileContext (DOMElement *, Context *);
   void posCompileSwitch (DOMElement *, SwitchNode *);
 
   Node *parseContext (DOMElement *);
-  Port *parsePort (DOMElement *, CompositeNode *);
+  Port *parsePort (DOMElement *, Composition *);
 
   map<string, map<string, Node *> *> _switchMap; // FIXME
   Node *parseSwitch (DOMElement *);
-  Node *parseBindRule (DOMElement *, CompositeNode *, Rule **);
+  Node *parseBindRule (DOMElement *, Composition *, Rule **);
   SwitchPort *parseSwitchPort (DOMElement *, SwitchNode *);
   Port *parseMapping (DOMElement *, SwitchNode *, SwitchPort *);
 

@@ -15,28 +15,27 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga.h"
-#include "Content.h"
+#ifndef REFER_H
+#define REFER_H
+
+#include "Media.h"
+#include "Node.h"
 
 GINGA_NCL_BEGIN
 
-Content::Content (const string &someType)
+class Media;
+class Node;
+class Refer : public Node
 {
-  _type = someType;
-}
+public:
+  Refer (const string &);
+  Media *getReferred ();
+  void setReferred (Media *);
 
-Content::~Content () {}
-
-string
-Content::getType ()
-{
-  return _type;
-}
-
-void
-Content::setType (const string &someType)
-{
-  _type = someType;
-}
+private:
+  Media *_referred;
+};
 
 GINGA_NCL_END
+
+#endif // REFER_H
