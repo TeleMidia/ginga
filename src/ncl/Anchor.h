@@ -25,7 +25,7 @@ GINGA_NCL_BEGIN
 class Anchor : public Entity
 {
 public:
-  Anchor (const string &_id);
+  Anchor (const string &id) : Entity (id) {};
 };
 
 GINGA_NCL_END
