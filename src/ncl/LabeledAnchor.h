@@ -15,10 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef LABELED_ANCHOR_H_
-#define LABELED_ANCHOR_H_
-
-#include "Entity.h"
+#ifndef LABELED_ANCHOR_H
+#define LABELED_ANCHOR_H
 
 #include "Anchor.h"
 
@@ -27,9 +25,8 @@ GINGA_NCL_BEGIN
 class LabeledAnchor : public Anchor
 {
 public:
-  LabeledAnchor (const string &_id, const string &_label);
+  LabeledAnchor (const string &, const string &);
   string getLabel ();
-  void setLabel (const string &_label);
 
 private:
   string _label;
@@ -37,4 +34,4 @@ private:
 
 GINGA_NCL_END
 
-#endif // LABELED_ANCHOR_H_
+#endif // LABELED_ANCHOR_H

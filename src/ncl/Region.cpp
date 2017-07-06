@@ -25,7 +25,7 @@ GINGA_NCL_BEGIN
 
 /**
  * @brief Creates a new region.
- * @param Region id.
+ * @param id Region id.
  */
 Region::Region (const string &id) : Entity (id)
 {
