@@ -97,7 +97,6 @@ src+= ncl/RuleBase.cpp
 src+= ncl/SimpleAction.cpp
 src+= ncl/SimpleCondition.cpp
 src+= ncl/SimpleRule.cpp
-src+= ncl/SwitchContent.cpp
 src+= ncl/SwitchNode.cpp
 src+= ncl/SwitchPort.cpp
 src+= ncl/Transition.cpp

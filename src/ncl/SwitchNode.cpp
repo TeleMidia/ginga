@@ -24,7 +24,7 @@ GINGA_NCL_BEGIN
 
 SwitchNode::SwitchNode (const string &id) : CompositeNode (id)
 {
-  _content = new SwitchContent ();
+  _content = nullptr;
   _defaultNode = NULL;
 }
 
