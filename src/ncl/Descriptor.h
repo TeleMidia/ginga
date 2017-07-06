@@ -20,8 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Entity.h"
 #include "Parameter.h"
-
-#include "LayoutRegion.h"
+#include "Region.h"
 
 #include "FocusDecoration.h"
 #include "KeyNavigation.h"
@@ -51,10 +50,10 @@ public:
   virtual ~Descriptor ();
   GingaTime getExplicitDuration ();
 
-  LayoutRegion *getRegion ();
+  Region *getRegion ();
   int getRepetitions ();
   void setExplicitDuration (GingaTime);
-  void setRegion (LayoutRegion *_region);
+  void setRegion (Region *_region);
   void setRepetitions (int r);
   void addParameter (Parameter *parameter);
   const vector<Parameter *> *getParameters ();
@@ -72,7 +71,7 @@ protected:
   FocusDecoration *_focusDecoration;
   GingaTime _explicitDuration;
   KeyNavigation *_keyNavigation;
-  LayoutRegion *_region;
+  Region *_region;
   int _repetitions;
   vector<Parameter *> _parameters;
   vector<Transition *> _inputTransitions;

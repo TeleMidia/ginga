@@ -78,7 +78,7 @@ private:
   Transition *parseTransition (DOMElement *);
 
   RegionBase *parseRegionBase (DOMElement *);
-  LayoutRegion *parseRegion (DOMElement *, RegionBase *, LayoutRegion *);
+  Region *parseRegion (DOMElement *, RegionBase *, Region *);
 
   DescriptorBase *parseDescriptorBase (DOMElement *);
   Descriptor *parseDescriptor (DOMElement *);

@@ -22,12 +22,12 @@ GINGA_NCL_BEGIN
 
 RegionBase::RegionBase (const string &id) : Base (id)
 {
-  _deviceRegion = new LayoutRegion (id);
+  _deviceRegion = new Region (id);
 }
 
 RegionBase::~RegionBase ()
 {
-  map<string, LayoutRegion *>::iterator i;
+  map<string, Region *>::iterator i;
 
   _regions.clear ();
 
@@ -39,9 +39,9 @@ RegionBase::~RegionBase ()
 }
 
 bool
-RegionBase::addRegion (LayoutRegion *region)
+RegionBase::addRegion (Region *region)
 {
-  map<string, LayoutRegion *>::iterator i;
+  map<string, Region *>::iterator i;
   string regId;
 
   regId = region->getId ();
@@ -60,11 +60,11 @@ RegionBase::addBase (Base *base, const string &alias, const string &location)
   return Base::addBase (base, alias, location);
 }
 
-LayoutRegion *
+Region *
 RegionBase::getRegionLocally (const string &regionId)
 {
-  map<string, LayoutRegion *>::iterator childRegions;
-  LayoutRegion *region;
+  map<string, Region *>::iterator childRegions;
+  Region *region;
 
   childRegions = _regions.begin ();
   while (childRegions != _regions.end ())
@@ -79,7 +79,7 @@ RegionBase::getRegionLocally (const string &regionId)
   return NULL;
 }
 
-LayoutRegion *
+Region *
 RegionBase::getRegion (const string &regionId)
 {
   string::size_type index;
@@ -110,13 +110,13 @@ RegionBase::getRegion (const string &regionId)
     }
 }
 
-vector<LayoutRegion *> *
+vector<Region *> *
 RegionBase::getRegions ()
 {
-  map<string, LayoutRegion *>::iterator i;
-  vector<LayoutRegion *> *childRegions;
+  map<string, Region *>::iterator i;
+  vector<Region *> *childRegions;
 
-  childRegions = new vector<LayoutRegion *>;
+  childRegions = new vector<Region *>;
   for (i = _regions.begin (); i != _regions.end (); ++i)
     {
       childRegions->push_back (i->second);
@@ -126,9 +126,9 @@ RegionBase::getRegions ()
 }
 
 bool
-RegionBase::removeRegion (LayoutRegion *region)
+RegionBase::removeRegion (Region *region)
 {
-  map<string, LayoutRegion *>::iterator i;
+  map<string, Region *>::iterator i;
 
   for (i = _regions.begin (); i != _regions.end (); ++i)
     {

@@ -92,7 +92,7 @@ Connector::getCondition ()
 }
 
 /**
- * @brief Sets connector condition.
+ * @brief Sets connector condition.  (Can only be called once.)
  */
 void
 Connector::setCondition (Condition *condition)
@@ -122,7 +122,7 @@ Connector::getAction ()
 }
 
 /**
- * @brief Sets connector action.
+ * @brief Sets connector action.  (Can only be called once.)
  */
 void
 Connector::setAction (Action *action)

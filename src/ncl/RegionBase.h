@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Base.h"
 
-#include "LayoutRegion.h"
+#include "Region.h"
 
 GINGA_NCL_BEGIN
 
@@ -30,23 +30,23 @@ public:
   RegionBase (const string &_id);
   virtual ~RegionBase ();
 
-  bool addRegion (LayoutRegion *region);
+  bool addRegion (Region *region);
   virtual bool addBase (Base *base, const string &alias, const string &location);
 
-  LayoutRegion *getRegion (const string &regionId);
-  vector<LayoutRegion *> *getRegions ();
-  bool removeRegion (LayoutRegion *region);
+  Region *getRegion (const string &regionId);
+  vector<Region *> *getRegions ();
+  bool removeRegion (Region *region);
   string getDevice ();
   void setDevice (const string &device, const string &regionId);
   int getDeviceClass ();
   void clear ();
 
 private:
-  map<string, LayoutRegion *> _regions;
-  LayoutRegion *_deviceRegion;
+  map<string, Region *> _regions;
+  Region *_deviceRegion;
 
   void createDeviceRegion ();
-  LayoutRegion *getRegionLocally (const string &regionId);
+  Region *getRegionLocally (const string &regionId);
 };
 
 GINGA_NCL_END

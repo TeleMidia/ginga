@@ -22,28 +22,22 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-class LayoutRegion : public Entity
+class Region : public Entity
 {
 public:
-  LayoutRegion (const string &_id);
-  virtual ~LayoutRegion ();
-  void setRect (SDL_Rect);
-  SDL_Rect getRect ();
-  void setZ (int, int);
-  void getZ (int *, int *);
-  void dump ();
+  Region (const string &_id);
+  virtual ~Region ();
 
-  int getLeft ();
-  int getTop ();
-  int getRight ();
-  int getBottom ();
-  int getWidth ();
-  int getHeight ();
+  SDL_Rect getRect ();
+  void setRect (SDL_Rect);
+
+  void getZ (int *, int *);
+  void setZ (int, int);
 
 private:
-  SDL_Rect _rect;               // x, y, w, h in pixels
-  int _z;                       // z-index
-  int _zorder;                  // z-order
+  SDL_Rect _rect;
+  int _z;
+  int _zorder;
 };
 
 GINGA_NCL_END

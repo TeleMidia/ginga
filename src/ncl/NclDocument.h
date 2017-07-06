@@ -32,7 +32,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Descriptor.h"
 #include "DescriptorBase.h"
 
-#include "LayoutRegion.h"
+#include "Region.h"
 #include "RegionBase.h"
 
 #include "Transition.h"
@@ -71,7 +71,7 @@ public:
   string getId ();
 
   Node *getNode (const string &nodeId);
-  LayoutRegion *getRegion (const string &regionId);
+  Region *getRegion (const string &regionId);
 
   RegionBase *getRegionBase (int devClass);
   RegionBase *getRegionBase (const string &regionBaseId);
@@ -107,7 +107,7 @@ private:
   NclDocument *_parentDocument;
 
   Node *getNodeLocally (const string &nodeId);
-  LayoutRegion *getRegion (const string &regionId, RegionBase *regionBase);
+  Region *getRegion (const string &regionId, RegionBase *regionBase);
 };
 
 GINGA_NCL_END

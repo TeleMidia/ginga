@@ -49,7 +49,7 @@ Descriptor::getExplicitDuration ()
   return _explicitDuration;
 }
 
-LayoutRegion *
+Region *
 Descriptor::getRegion ()
 {
   return _region;
@@ -68,7 +68,7 @@ Descriptor::setExplicitDuration (GingaTime dur)
 }
 
 void
-Descriptor::setRegion (LayoutRegion *someRegion)
+Descriptor::setRegion (Region *someRegion)
 {
   _region = someRegion;
 }

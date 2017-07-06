@@ -373,10 +373,10 @@ NclDocument::getNode (const string &nodeId)
   return NULL;
 }
 
-LayoutRegion *
+Region *
 NclDocument::getRegion (const string &regionId)
 {
-  LayoutRegion *region;
+  Region *region;
   map<int, RegionBase *>::iterator i;
 
   i = _regionBases.begin ();
@@ -393,10 +393,10 @@ NclDocument::getRegion (const string &regionId)
   return NULL;
 }
 
-LayoutRegion *
+Region *
 NclDocument::getRegion (const string &regionId, RegionBase *regionBase)
 {
-  LayoutRegion *region;
+  Region *region;
   vector<NclDocument *>::iterator i;
 
   if (regionBase != NULL)
