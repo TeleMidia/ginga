@@ -71,7 +71,6 @@ src+= ncl/CompoundStatement.cpp
 src+= ncl/Connector.cpp
 src+= ncl/ConnectorBase.cpp
 src+= ncl/Content.cpp
-src+= ncl/ContentAnchor.cpp
 src+= ncl/ContentNode.cpp
 src+= ncl/ContextNode.cpp
 src+= ncl/Descriptor.cpp

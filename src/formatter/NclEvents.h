@@ -82,10 +82,10 @@ public:
 
 class AnchorEvent : public NclEvent
 {
-  PROPERTY_READONLY (ContentAnchor *, _anchor, getAnchor)
+  PROPERTY_READONLY (IntervalAnchor *, _anchor, getAnchor)
 
 public:
-  AnchorEvent (const string &, ExecutionObject *, ContentAnchor *);
+  AnchorEvent (const string &, ExecutionObject *, IntervalAnchor *);
   virtual ~AnchorEvent () {}
 };
 
@@ -96,7 +96,7 @@ class PresentationEvent : public AnchorEvent
   PROPERTY_READONLY (GingaTime, _repetitionInterval, getRepetitionInterval)
 
 public:
-  PresentationEvent (const string &, ExecutionObject *, ContentAnchor *);
+  PresentationEvent (const string &, ExecutionObject *, IntervalAnchor *);
   virtual ~PresentationEvent () {}
   virtual bool stop () override;
   GingaTime getDuration ();
@@ -113,7 +113,7 @@ class SelectionEvent : public AnchorEvent
   PROPERTY (string, _selCode, getSelectionCode, setSelectionCode)
 
 public:
-  SelectionEvent (const string &, ExecutionObject *, ContentAnchor *);
+  SelectionEvent (const string &, ExecutionObject *, IntervalAnchor *);
   virtual ~SelectionEvent () {}
 
   virtual bool start () override;

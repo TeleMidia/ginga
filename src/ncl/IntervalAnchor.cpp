@@ -23,7 +23,7 @@ GINGA_NCL_BEGIN
 IntervalAnchor::IntervalAnchor (const string &id,
                                 GingaTime begin,
                                 GingaTime end)
-  : ContentAnchor (id)
+  : Anchor (id)
 {
   this->_begin = begin;
   this->_end = end;

@@ -132,7 +132,7 @@ Converter::getEvent (ExecutionObject *exeObj,
   else if (ncmEventType == EventType::PRESENTATION)
     {
       event = new PresentationEvent (
-            id, exeObj, (ContentAnchor *)interfacePoint);
+            id, exeObj, (IntervalAnchor *)interfacePoint);
     }
   else if (cObj)
     {
@@ -195,7 +195,7 @@ Converter::getEvent (ExecutionObject *exeObj,
         case EventType::SELECTION:
           {
             event = new SelectionEvent (
-                  id, exeObj, (ContentAnchor *)interfacePoint);
+                  id, exeObj, (IntervalAnchor *)interfacePoint);
 
             if (key != "")
               {
@@ -476,7 +476,7 @@ Converter::createExecutionObject (
       compositeEvt = new PresentationEvent (
             nodeEntity->getLambdaAnchor ()->getId () + "_" + s,
             exeObj,
-            (ContentAnchor *)(nodeEntity->getLambdaAnchor ()));
+            (IntervalAnchor *)(nodeEntity->getLambdaAnchor ()));
 
       exeObj->addEvent (compositeEvt);
       // to monitor the switch presentation and clear the selection after
@@ -493,7 +493,7 @@ Converter::createExecutionObject (
       compositeEvt = new PresentationEvent (
             nodeEntity->getLambdaAnchor ()->getId () + "_" + s,
             exeObj,
-            (ContentAnchor *)(nodeEntity->getLambdaAnchor ()));
+            (IntervalAnchor *)(nodeEntity->getLambdaAnchor ()));
 
       exeObj->addEvent (compositeEvt);
 
@@ -893,7 +893,7 @@ Converter::insertContext (NclNodeNesting *contextPerspective,
       error = true;
     }
 
-  if (!(instanceof (ContentAnchor *, port->getEndInterfacePoint ())
+  if (!(instanceof (IntervalAnchor *, port->getEndInterfacePoint ())
         || instanceof (LabeledAnchor *, port->getEndInterfacePoint ())
         || instanceof (Property *, port->getEndInterfacePoint ())
         || instanceof (SwitchPort *, port->getEndInterfacePoint ()))
