@@ -404,7 +404,7 @@ AttributionEvent::solveImplicitRefAssessment (const string &val)
 
 SwitchEvent::SwitchEvent (const string &id,
                           ExecutionObject *exeObjSwitch,
-                          InterfacePoint *interface,
+                          Interface *interface,
                           EventType type, const string &key)
   : NclEvent (id, exeObjSwitch)
 {

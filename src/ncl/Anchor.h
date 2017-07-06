@@ -18,11 +18,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef ANCHOR_H_
 #define ANCHOR_H_
 
-#include "InterfacePoint.h"
+#include "Interface.h"
 
 GINGA_NCL_BEGIN
 
-class Anchor : public InterfacePoint
+class Anchor : public Interface
 {
 public:
   Anchor (const string &_id);

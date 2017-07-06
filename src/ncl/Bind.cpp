@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-Bind::Bind (Node *node, InterfacePoint *interfPt, Descriptor *desc,
+Bind::Bind (Node *node, Interface *interfPt, Descriptor *desc,
             Role *role)
 {
   this->_node = node;
@@ -53,8 +53,8 @@ Bind::getDescriptor ()
   return _descriptor;
 }
 
-InterfacePoint *
-Bind::getInterfacePoint ()
+Interface *
+Bind::getInterface ()
 {
   return this->_interfacePoint;
 }
@@ -72,7 +72,7 @@ Bind::getRole ()
 }
 
 void
-Bind::setInterfacePoint (InterfacePoint *interfPt)
+Bind::setInterface (Interface *interfPt)
 {
   this->_interfacePoint = interfPt;
 }
@@ -194,7 +194,7 @@ Bind::getNodeNesting ()
   return nodeNesting;
 }
 
-InterfacePoint *
+Interface *
 Bind::getEndPointInterface ()
 {
   CompositeNode *compositeNode;

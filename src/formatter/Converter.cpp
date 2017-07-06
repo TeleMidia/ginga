@@ -96,7 +96,7 @@ Converter::getExecutionObjectFromPerspective (
 
 NclEvent *
 Converter::getEvent (ExecutionObject *exeObj,
-                     InterfacePoint *interfacePoint,
+                     Interface *interfacePoint,
                      EventType ncmEventType,
                      const string &key)
 {
@@ -724,7 +724,7 @@ Converter::resolveSwitchEvents (
   vector<NclEvent *> events;
   vector<NclEvent *>::iterator i;
   SwitchEvent *switchEvent;
-  InterfacePoint *interfacePoint;
+  Interface *interfacePoint;
   vector<Node *> *nestedSeq;
   NclNodeNesting *nodePerspective;
   NclEvent *mappedEvent;
@@ -751,7 +751,7 @@ Converter::resolveSwitchEvents (
       switchEvent = cast (SwitchEvent *, event);
       g_assert_nonnull (switchEvent);
 
-      interfacePoint = switchEvent->getInterfacePoint ();
+      interfacePoint = switchEvent->getInterface ();
       auto lambdaAnchor = cast (AreaLambda *, interfacePoint);
       if (lambdaAnchor)
         {
@@ -782,7 +782,7 @@ Converter::resolveSwitchEvents (
                     {
                       mappedEvent = getEvent (
                             endPointObject,
-                            mapping->getEndInterfacePoint (),
+                            mapping->getEndInterface (),
                             switchEvent->getType (),
                             switchEvent->getKey ());
                     }
@@ -812,7 +812,7 @@ Converter::resolveSwitchEvents (
 
 NclEvent *
 Converter::insertNode (NclNodeNesting *perspective,
-                       InterfacePoint *interfacePoint,
+                       Interface *interfacePoint,
                        Descriptor *descriptor)
 {
   ExecutionObject *executionObject;
@@ -856,10 +856,10 @@ Converter::insertContext (NclNodeNesting *contextPerspective,
       error = true;
     }
 
-  if (!(instanceof (Area *, port->getEndInterfacePoint ())
-        || instanceof (AreaLabeled *, port->getEndInterfacePoint ())
-        || instanceof (Property *, port->getEndInterfacePoint ())
-        || instanceof (SwitchPort *, port->getEndInterfacePoint ()))
+  if (!(instanceof (Area *, port->getEndInterface ())
+        || instanceof (AreaLabeled *, port->getEndInterface ())
+        || instanceof (Property *, port->getEndInterface ())
+        || instanceof (SwitchPort *, port->getEndInterface ()))
       || !(instanceof (Context *,
                        contextPerspective->getAnchorNode ())))
     {
@@ -881,7 +881,7 @@ Converter::insertContext (NclNodeNesting *contextPerspective,
       delete nestedSeq;
 
       newEvent = insertNode (perspective,
-                             port->getEndInterfacePoint (),
+                             port->getEndInterface (),
                              nullptr);
       delete perspective;
 
@@ -1084,7 +1084,7 @@ Converter::setImplicitRefAssessment (const string &roleId,
           value = bind->getRole ()->getLabel ();
           if (roleId == value)
             {
-              InterfacePoint *refInterface = bind->getInterfacePoint ();
+              Interface *refInterface = bind->getInterface ();
               auto propAnchor = cast (Property *, refInterface);
               if (propAnchor)
                 {
@@ -1743,7 +1743,7 @@ Converter::createEvent (
   NclNodeNesting *endPointPerspective;
   Node *parentNode;
   ExecutionObject *executionObject;
-  InterfacePoint *interfacePoint;
+  Interface *interfacePoint;
   string key;
   NclEvent *event = nullptr;
   vector<Node *> *seq;

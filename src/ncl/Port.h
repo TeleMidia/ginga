@@ -22,22 +22,22 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-class Port : public InterfacePoint
+class Port : public Interface
 {
 public:
-  Port (const string &, Node *, InterfacePoint *);
+  Port (const string &, Node *, Interface *);
   virtual ~Port ();
-  InterfacePoint *getInterfacePoint ();
+  Interface *getInterface ();
   Node *getNode ();
   virtual Node *getEndNode ();
-  virtual InterfacePoint *getEndInterfacePoint ();
+  virtual Interface *getEndInterface ();
   vector<Node *> *getMapNodeNesting ();
-  void setInterfacePoint (InterfacePoint *);
+  void setInterface (Interface *);
   void setNode (Node *);
 
 protected:
   Node *_node;
-  InterfacePoint *_interfacePoint;
+  Interface *_interfacePoint;
 };
 
 GINGA_NCL_END

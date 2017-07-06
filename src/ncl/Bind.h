@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "CompositeNode.h"
 #include "Descriptor.h"
-#include "InterfacePoint.h"
+#include "Interface.h"
 #include "Node.h"
 #include "Parameter.h"
 #include "Port.h"
@@ -32,15 +32,15 @@ GINGA_NCL_BEGIN
 class Bind
 {
 public:
-  Bind (Node *_node, InterfacePoint *interfPt, Descriptor *desc,
+  Bind (Node *_node, Interface *interfPt, Descriptor *desc,
         Role *_role);
 
   virtual ~Bind ();
   Descriptor *getDescriptor ();
-  InterfacePoint *getInterfacePoint ();
+  Interface *getInterface ();
   Node *getNode ();
   Role *getRole ();
-  void setInterfacePoint (InterfacePoint *interfPt);
+  void setInterface (Interface *interfPt);
   void setNode (Node *_node);
   void setRole (Role *_role);
   void setDescriptor (Descriptor *desc);
@@ -52,14 +52,14 @@ public:
   Parameter *getParameter (const string &name);
   bool removeParameter (Parameter *parameter);
   vector<Node *> *getNodeNesting ();
-  InterfacePoint *getEndPointInterface ();
+  Interface *getEndPointInterface ();
 
 protected:
   map<string, Parameter *> *_parameters;
 
 private:
   Node *_node;
-  InterfacePoint *_interfacePoint;
+  Interface *_interfacePoint;
   Descriptor *_descriptor;
   Role *_role;
 };

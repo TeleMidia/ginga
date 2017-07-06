@@ -57,15 +57,15 @@ CompositeNode::getPorts ()
   return &_ports;
 }
 
-InterfacePoint *
+Interface *
 CompositeNode::getMapInterface (Port *port)
 {
   Node *node;
   CompositeNode *compositeNode;
-  InterfacePoint *interfacePoint;
+  Interface *interfacePoint;
 
   node = port->getNode ();
-  interfacePoint = port->getInterfacePoint ();
+  interfacePoint = port->getInterface ();
   if (instanceof (Port *, interfacePoint))
     {
       compositeNode = cast (CompositeNode *, node);
