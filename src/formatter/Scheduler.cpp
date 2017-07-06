@@ -104,14 +104,14 @@ Scheduler::startDocument (const string &file)
       content = (ContentNode *) node;
       for (auto anchor: content->getAnchors ())
         {
-          PropertyAnchor *prop;
+          Property *prop;
           string name;
           string value;
 
-          if (!instanceof (PropertyAnchor *, anchor))
+          if (!instanceof (Property *, anchor))
             continue;           // nothing to do
 
-          prop = cast (PropertyAnchor *, anchor);
+          prop = cast (Property *, anchor);
           name = prop->getName ();
           value = prop->getValue ();
           if (value == "")
@@ -177,7 +177,7 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
     {
       AttributionEvent *attevt;
       NclAssignmentAction *attact;
-      PropertyAnchor *property;
+      Property *property;
 
       string name;
       string from;

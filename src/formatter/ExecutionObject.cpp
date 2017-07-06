@@ -486,14 +486,14 @@ ExecutionObject::getNodes ()
   return nodes;
 }
 
-PropertyAnchor *
+Property *
 ExecutionObject::getNCMProperty (const string &propertyName)
 {
-  PropertyAnchor *property = nullptr;
+  Property *property = nullptr;
 
   if (_dataObject != nullptr)
     {
-      property = _dataObject->getPropertyAnchor (propertyName);
+      property = _dataObject->getProperty (propertyName);
     }
 
   return property;
@@ -557,7 +557,7 @@ ExecutionObject::prepare (NclEvent *event)
   map<Node *, ExecutionObjectContext *>::iterator i;
   NclEvent *auxEvent;
   AttributionEvent *attributeEvent;
-  PropertyAnchor *attributeAnchor;
+  Property *attributeAnchor;
   size_t j;
   string value;
 
@@ -658,7 +658,7 @@ ExecutionObject::start ()
 
   for (Anchor *anchor: contentNode->getAnchors ())
     {
-      PropertyAnchor *prop = cast (PropertyAnchor *, anchor);
+      Property *prop = cast (Property *, anchor);
       if (prop != nullptr)
         _player->setProperty (prop->getName (), prop->getValue ());
     }

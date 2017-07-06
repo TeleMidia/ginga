@@ -139,12 +139,12 @@ Converter::getEvent (ExecutionObject *exeObj,
       // TODO: eventos internos da composicao estao sendo tratados nos elos.
       if (ncmEventType == EventType::ATTRIBUTION)
         {
-          auto propAnchor = cast (PropertyAnchor *, interfacePoint);
+          auto propAnchor = cast (Property *, interfacePoint);
           if (propAnchor)
             {
               event = new AttributionEvent (
                     id, exeObj,
-                    (PropertyAnchor *)interfacePoint,
+                    (Property *)interfacePoint,
                     _ruleAdapter->getSettings ());
             }
           else
@@ -163,7 +163,7 @@ Converter::getEvent (ExecutionObject *exeObj,
         {
         case EventType::ATTRIBUTION:
           {
-            auto propAnchor = cast (PropertyAnchor *, interfacePoint);
+            auto propAnchor = cast (Property *, interfacePoint);
             if (propAnchor)
               {
                 event = new AttributionEvent (
@@ -862,7 +862,7 @@ Converter::insertNode (NclNodeNesting *perspective,
 
   if (executionObject != nullptr)
     {
-      if (!(instanceof (PropertyAnchor *, interfacePoint)))
+      if (!(instanceof (Property *, interfacePoint)))
         {
           eventType = EventType::PRESENTATION;
         }
@@ -895,7 +895,7 @@ Converter::insertContext (NclNodeNesting *contextPerspective,
 
   if (!(instanceof (ContentAnchor *, port->getEndInterfacePoint ())
         || instanceof (LabeledAnchor *, port->getEndInterfacePoint ())
-        || instanceof (PropertyAnchor *, port->getEndInterfacePoint ())
+        || instanceof (Property *, port->getEndInterfacePoint ())
         || instanceof (SwitchPort *, port->getEndInterfacePoint ()))
       || !(instanceof (ContextNode *,
                        contextPerspective->getAnchorNode ())))
@@ -1122,7 +1122,7 @@ Converter::setImplicitRefAssessment (const string &roleId,
           if (roleId == value)
             {
               InterfacePoint *refInterface = bind->getInterfacePoint ();
-              auto propAnchor = cast (PropertyAnchor *, refInterface);
+              auto propAnchor = cast (Property *, refInterface);
               if (propAnchor)
                 {
                   vector<Node *> *ncmPerspective

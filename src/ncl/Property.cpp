@@ -16,42 +16,50 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "PropertyAnchor.h"
+#include "Property.h"
 
 GINGA_NCL_BEGIN
 
-PropertyAnchor::PropertyAnchor (const string &attName) : Anchor (attName)
+/**
+ * @brief Creates a new property.
+ */
+Property::Property (const string &name) : Anchor (name)
 {
   _value = "";
 }
 
+/**
+ * @brief Destroys property.
+ */
+Property::~Property ()
+{
+}
+
+/**
+ * @brief Gets property name.
+ */
 string
-PropertyAnchor::getName ()
+Property::getName ()
 {
   return Anchor::getId ();
 }
 
+/**
+ * @brief Gets property value.
+ */
 string
-PropertyAnchor::getValue ()
+Property::getValue ()
 {
   return _value;
 }
 
+/**
+ * @brief Sets property value.
+ */
 void
-PropertyAnchor::setValue (const string &value)
+Property::setValue (const string &value)
 {
-  this->_value = value;
-}
-
-PropertyAnchor *
-PropertyAnchor::clone ()
-{
-  PropertyAnchor *pAnchor;
-
-  pAnchor = new PropertyAnchor (Entity::getId ());
-  pAnchor->setValue (_value);
-
-  return pAnchor;
+  _value = value;
 }
 
 GINGA_NCL_END
