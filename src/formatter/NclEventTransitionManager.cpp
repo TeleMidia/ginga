@@ -176,7 +176,7 @@ NclEventTransitionManager::addPresentationEvent (PresentationEvent *evt)
   BeginEventTransition *beginTrans = nullptr;
   EndEventTransition *endTrans = nullptr;
 
-  auto lambdaAnchor = cast (LambdaAnchor *, evt->getAnchor());
+  auto lambdaAnchor = cast (AreaLambda *, evt->getAnchor());
   if (lambdaAnchor)
     {
       beginTrans = new BeginEventTransition (0, evt);

@@ -278,7 +278,7 @@ ExecutionObject::addPresentationEvent (PresentationEvent *event)
   int posBeg = -1;
   int posEnd, posMid;
 
-  if (instanceof (LambdaAnchor *, event->getAnchor ()))
+  if (instanceof (AreaLambda *, event->getAnchor ()))
     {
       _presEvents.insert (_presEvents.begin (), event);
       _wholeContent = (PresentationEvent *)event;
@@ -882,7 +882,7 @@ ExecutionObject::handleKeyEvent (const string &key, bool press)
       anchor = evt->getAnchor ();
       g_assert_nonnull (anchor);
 
-      if (instanceof (LambdaAnchor *, anchor))
+      if (instanceof (AreaLambda *, anchor))
         {
           buf.push_back (evt);
         }

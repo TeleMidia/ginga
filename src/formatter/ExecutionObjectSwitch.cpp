@@ -54,7 +54,7 @@ ExecutionObjectSwitch::addEvent (NclEvent *evt)
  auto presentationEvt = cast (PresentationEvent *, evt);
 
   if (presentationEvt
-      && instanceof (LambdaAnchor *, presentationEvt->getAnchor ()))
+      && instanceof (AreaLambda *, presentationEvt->getAnchor ()))
     {
       ExecutionObject::_wholeContent = presentationEvt;
       return true;

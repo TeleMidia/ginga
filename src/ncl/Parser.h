@@ -28,12 +28,12 @@ XERCES_CPP_NAMESPACE_USE
 GINGA_PRAGMA_DIAG_POP ()
 
 #include "AbsoluteReferenceContent.h"
+#include "AreaLabeled.h"
 #include "Comparator.h"
 #include "CompositeRule.h"
 #include "CompoundAction.h"
 #include "CompoundCondition.h"
 #include "Descriptor.h"
-#include "LabeledAnchor.h"
 #include "NclDocument.h"
 #include "Rule.h"
 #include "SimpleRule.h"

@@ -2077,11 +2077,11 @@ Parser::parseArea (DOMElement *elt)
     {
       string label;
       CHECK_ELT_ATTRIBUTE (elt, "label", &label);
-      return new LabeledAnchor (id, label);
+      return new AreaLabeled (id, label);
     }
   else
     {
-      return new LabeledAnchor (id, id); // FIXME: Why?
+      ERROR_SYNTAX_ELT (elt, "missing time or label specifier");
     }
 }
 

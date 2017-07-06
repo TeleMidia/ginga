@@ -16,14 +16,29 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "LambdaAnchor.h"
+#include "AreaLabeled.h"
 
 GINGA_NCL_BEGIN
 
-LambdaAnchor::LambdaAnchor (const string &id)
-    : Area (id, 0, GINGA_TIME_NONE)
+/**
+ * @brief Creates a new labeled area.
+ * @param id area id.
+ * @param label area label.
+ */
+AreaLabeled::AreaLabeled (const string &id, const string &label)
+  : Anchor (id)
 {
+  g_assert (label != "");
+  _label = label;
+}
 
+/**
+ * @brief Gets anchor label.
+ */
+string
+AreaLabeled::getLabel ()
+{
+  return _label;
 }
 
 GINGA_NCL_END
