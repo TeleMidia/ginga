@@ -20,21 +20,25 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-LabeledAnchor::LabeledAnchor (const string &id, const string &label) : Anchor (id)
+/**
+ * @brief Creates a new labeled anchor.
+ * @param id Anchor id.
+ * @param label Anchor label.
+ */
+LabeledAnchor::LabeledAnchor (const string &id, const string &label)
+  : Anchor (id)
 {
-  this->_label = label;
+  g_assert (label != "");
+  _label = label;
 }
 
+/**
+ * @brief Gets anchor label.
+ */
 string
 LabeledAnchor::getLabel ()
 {
   return _label;
-}
-
-void
-LabeledAnchor::setLabel (const string &label)
-{
-  this->_label = label;
 }
 
 GINGA_NCL_END
