@@ -643,7 +643,7 @@ ExecutionObject::start ()
   // Initialize player properties.
   if (_descriptor != nullptr)
     {
-      LayoutRegion *region = _descriptor->getRegion ();
+      Region *region = _descriptor->getRegion ();
       if (region != nullptr)
         {
           int z, zorder;

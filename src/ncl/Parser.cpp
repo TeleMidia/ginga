@@ -763,7 +763,7 @@ Parser::parseRegionBase (DOMElement *elt)
         }
       else if (tag == "region")
         {
-          LayoutRegion *region = this->parseRegion (child, base, nullptr);
+          Region *region = this->parseRegion (child, base, nullptr);
           g_assert_nonnull (region);
           base->addRegion (region);
         }
@@ -775,11 +775,11 @@ Parser::parseRegionBase (DOMElement *elt)
   return base;
 }
 
-LayoutRegion *
+Region *
 Parser::parseRegion (DOMElement *elt, RegionBase *base,
-                        LayoutRegion *parent)
+                        Region *parent)
 {
-  LayoutRegion *region;
+  Region *region;
   string id;
   string value;
 
@@ -792,7 +792,7 @@ Parser::parseRegion (DOMElement *elt, RegionBase *base,
   CHECK_ELT_TAG (elt, "region", nullptr);
   CHECK_ELT_ID (elt, &id);
 
-  region = new LayoutRegion (id);
+  region = new Region (id);
   if (parent != NULL)
     {
       parent_rect = parent->getRect ();
@@ -951,7 +951,7 @@ Parser::parseDescriptor (DOMElement *elt)
   desc = new Descriptor (id);
   if (dom_elt_try_get_attribute (value, elt, "region"))
     {
-      LayoutRegion *region = _doc->getRegion (value);
+      Region *region = _doc->getRegion (value);
       if (unlikely (region == nullptr))
         ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "region");
       desc->setRegion (region);
