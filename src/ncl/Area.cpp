@@ -16,41 +16,38 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "IntervalAnchor.h"
+#include "Area.h"
 
 GINGA_NCL_BEGIN
 
-IntervalAnchor::IntervalAnchor (const string &id,
-                                GingaTime begin,
-                                GingaTime end)
-  : Anchor (id)
+/**
+ * @brief Creates a new area.
+ * @param id Area id.
+ * @param begin Area begin time.
+ * @param end Area end time.
+ */
+Area::Area (const string &id, GingaTime begin, GingaTime end) : Anchor (id)
 {
-  this->_begin = begin;
-  this->_end = end;
+  _begin = begin;
+  _end = end;
 }
 
+/**
+ * @brief Gets area begin time.
+ */
 GingaTime
-IntervalAnchor::getBegin ()
+Area::getBegin ()
 {
-  return this->_begin;
+  return _begin;
 }
 
+/**
+ * @brief Gets area end time.
+ */
 GingaTime
-IntervalAnchor::getEnd ()
+Area::getEnd ()
 {
-  return this->_end;
-}
-
-void
-IntervalAnchor::setBegin (GingaTime begin)
-{
-  this->_begin = GINGA_TIME_IS_VALID (begin) ? begin : 0;
-}
-
-void
-IntervalAnchor::setEnd (GingaTime end)
-{
-  this->_end = end;
+  return _end;
 }
 
 GINGA_NCL_END

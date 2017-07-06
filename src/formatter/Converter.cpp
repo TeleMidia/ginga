@@ -132,7 +132,7 @@ Converter::getEvent (ExecutionObject *exeObj,
   else if (ncmEventType == EventType::PRESENTATION)
     {
       event = new PresentationEvent (
-            id, exeObj, (IntervalAnchor *)interfacePoint);
+            id, exeObj, (Area *)interfacePoint);
     }
   else if (cObj)
     {
@@ -176,7 +176,7 @@ Converter::getEvent (ExecutionObject *exeObj,
                          "isn't.");
 
                 auto intervalAnchor
-                    = cast (IntervalAnchor *, interfacePoint);
+                    = cast (Area *, interfacePoint);
                 if (intervalAnchor)
                   {
                     WARNING ("It was supposed to be a PRESENTATION EVENT");
@@ -195,7 +195,7 @@ Converter::getEvent (ExecutionObject *exeObj,
         case EventType::SELECTION:
           {
             event = new SelectionEvent (
-                  id, exeObj, (IntervalAnchor *)interfacePoint);
+                  id, exeObj, (Area *)interfacePoint);
 
             if (key != "")
               {
@@ -476,7 +476,7 @@ Converter::createExecutionObject (
       compositeEvt = new PresentationEvent (
             nodeEntity->getLambdaAnchor ()->getId () + "_" + s,
             exeObj,
-            (IntervalAnchor *)(nodeEntity->getLambdaAnchor ()));
+            (Area *)(nodeEntity->getLambdaAnchor ()));
 
       exeObj->addEvent (compositeEvt);
       // to monitor the switch presentation and clear the selection after
@@ -493,7 +493,7 @@ Converter::createExecutionObject (
       compositeEvt = new PresentationEvent (
             nodeEntity->getLambdaAnchor ()->getId () + "_" + s,
             exeObj,
-            (IntervalAnchor *)(nodeEntity->getLambdaAnchor ()));
+            (Area *)(nodeEntity->getLambdaAnchor ()));
 
       exeObj->addEvent (compositeEvt);
 
@@ -893,7 +893,7 @@ Converter::insertContext (NclNodeNesting *contextPerspective,
       error = true;
     }
 
-  if (!(instanceof (IntervalAnchor *, port->getEndInterfacePoint ())
+  if (!(instanceof (Area *, port->getEndInterfacePoint ())
         || instanceof (LabeledAnchor *, port->getEndInterfacePoint ())
         || instanceof (Property *, port->getEndInterfacePoint ())
         || instanceof (SwitchPort *, port->getEndInterfacePoint ()))

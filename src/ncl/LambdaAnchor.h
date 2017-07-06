@@ -18,11 +18,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _LAMBDAANCHOR_H_
 #define _LAMBDAANCHOR_H_
 
-#include "IntervalAnchor.h"
+#include "Area.h"
 
 GINGA_NCL_BEGIN
 
-class LambdaAnchor : public IntervalAnchor
+class LambdaAnchor : public Area
 {
 public:
   LambdaAnchor (const string &_id);

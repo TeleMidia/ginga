@@ -15,21 +15,19 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _INTERVALANCHOR_H_
-#define _INTERVALANCHOR_H_
+#ifndef AREA_H
+#define AREA_H
 
 #include "Anchor.h"
 
 GINGA_NCL_BEGIN
 
-class IntervalAnchor : public Anchor
+class Area : public Anchor
 {
 public:
-  IntervalAnchor (const string &_id, GingaTime begin, GingaTime end);
+  Area (const string &, GingaTime, GingaTime);
   GingaTime getBegin ();
   GingaTime getEnd ();
-  void setBegin (GingaTime);
-  void setEnd (GingaTime);
 
 protected:
   GingaTime _begin;
@@ -38,4 +36,4 @@ protected:
 
 GINGA_NCL_END
 
-#endif //_INTERVALANCHOR_H_
+#endif // AREA_H
