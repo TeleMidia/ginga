@@ -18,26 +18,27 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PORT_H
 #define PORT_H
 
+#include "Anchor.h"
 #include "Node.h"
 
 GINGA_NCL_BEGIN
 
-class Port : public InterfacePoint
+class Port : public Anchor
 {
 public:
-  Port (const string &, Node *, InterfacePoint *);
+  Port (const string &, Node *, Anchor *);
   virtual ~Port ();
-  InterfacePoint *getInterfacePoint ();
+  Anchor *getInterface ();
   Node *getNode ();
   virtual Node *getEndNode ();
-  virtual InterfacePoint *getEndInterfacePoint ();
+  virtual Anchor *getEndInterface ();
   vector<Node *> *getMapNodeNesting ();
-  void setInterfacePoint (InterfacePoint *);
+  void setInterface (Anchor *);
   void setNode (Node *);
 
 protected:
   Node *_node;
-  InterfacePoint *_interfacePoint;
+  Anchor *_interfacePoint;
 };
 
 GINGA_NCL_END

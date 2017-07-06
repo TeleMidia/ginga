@@ -21,17 +21,17 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-Port::Port (const string &id, Node *someNode, InterfacePoint *someInterfacePoint)
-    : InterfacePoint (id)
+Port::Port (const string &id, Node *someNode, Anchor *someInterface)
+    : Anchor (id)
 {
   _node = someNode;
-  _interfacePoint = someInterfacePoint;
+  _interfacePoint = someInterface;
 }
 
 Port::~Port () {}
 
-InterfacePoint *
-Port::getInterfacePoint ()
+Anchor *
+Port::getInterface ()
 {
   return _interfacePoint;
 }
@@ -51,8 +51,8 @@ Port::getEndNode ()
     return ((Port *)(_interfacePoint))->getEndNode ();
 }
 
-InterfacePoint *
-Port::getEndInterfacePoint ()
+Anchor *
+Port::getEndInterface ()
 {
   // Polimorfismo
   if (instanceof (Anchor *, _interfacePoint))
@@ -61,7 +61,7 @@ Port::getEndInterfacePoint ()
     }
   else
     {
-      return ((Port *)_interfacePoint)->getEndInterfacePoint ();
+      return ((Port *)_interfacePoint)->getEndInterface ();
     }
 }
 
@@ -94,9 +94,9 @@ Port::getMapNodeNesting ()
 }
 
 void
-Port::setInterfacePoint (InterfacePoint *someInterfacePoint)
+Port::setInterface (Anchor *someInterface)
 {
-  _interfacePoint = someInterfacePoint;
+  _interfacePoint = someInterface;
 }
 
 void

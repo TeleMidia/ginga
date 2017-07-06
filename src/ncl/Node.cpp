@@ -17,7 +17,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "Node.h"
-#include "CompositeNode.h"
+
+#include "Area.h"
+#include "Composition.h"
+#include "Refer.h"
 
 GINGA_NCL_BEGIN
 
@@ -28,6 +31,8 @@ GINGA_NCL_BEGIN
 Node::Node (const string &id) : Entity (id)
 {
   _parent = nullptr;
+  _lambda = new AreaLambda (id);
+  this->addAnchor (_lambda);
 }
 
 /**
@@ -36,12 +41,13 @@ Node::Node (const string &id) : Entity (id)
 Node::~Node ()
 {
   _anchors.clear ();
+  delete _lambda;
 }
 
 /**
  * @brief Gets component parent.
  */
-CompositeNode *
+Composition *
 Node::getParent ()
 {
   return _parent;
@@ -51,7 +57,7 @@ Node::getParent ()
  * @brief Sets component parent.  (Can only be called once.)
  */
 void
-Node::setParent (CompositeNode *parent)
+Node::setParent (Composition *parent)
 {
   g_assert_null (_parent);
   g_assert_nonnull (parent);
@@ -92,6 +98,16 @@ Node::getAnchor (const string &id)
   return nullptr;
 }
 
+/**
+ * @brief Gets lambda anchor.
+ */
+Anchor *
+Node::getLambda ()
+{
+  g_assert_nonnull (_lambda);
+  return _lambda;
+}
+
 
 // FIXME: Remove this with NclNodeNesting stuff.
 
@@ -100,15 +116,15 @@ Node::getPerspective ()
 {
   vector<Node *> *perspective;
 
-  if (_parent == NULL)
+  if (_parent == nullptr)
     {
       perspective = new vector<Node *>;
     }
   else
     {
-      perspective = ((CompositeNode *)_parent)->getPerspective ();
+      perspective = ((Composition *) _parent)->getPerspective ();
     }
-  perspective->push_back ((Node *)this);
+  perspective->push_back (this);
   return perspective;
 }
 
@@ -118,10 +134,10 @@ Node::getPerspective ()
 Node *
 Node::derefer ()
 {
-  if (instanceof (ReferNode *, this))
+  if (instanceof (Refer *, this))
     {
       Node *result;
-      result = cast (Node *, cast (ReferNode *, this)->getReferredEntity ());
+      result = cast (Node *, cast (Refer *, this)->getReferred ());
       g_assert_nonnull (result);
       return result;
     }

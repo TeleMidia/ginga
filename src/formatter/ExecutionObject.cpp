@@ -44,7 +44,7 @@ ExecutionObject::ExecutionObject (const string &id,
   this->_isCompiled = false;
   this->_mainEvent = nullptr;
 
-  ContentNode *entity = cast (ContentNode *, _dataObject);
+  Media *entity = cast (Media *, _dataObject);
   if (entity != nullptr)
     _descriptor = entity->getDescriptor ();
 
@@ -597,9 +597,8 @@ ExecutionObject::prepare (NclEvent *event)
 bool
 ExecutionObject::start ()
 {
-  NodeEntity *entity;
-  ContentNode *contentNode;
-  Content *content;
+  Node *entity;
+  Media *media;
 
   string src;
   string mime;
@@ -615,26 +614,15 @@ ExecutionObject::start ()
   if (instanceof (ExecutionObjectContext *, this))
     goto done;
 
-  entity = cast (NodeEntity *, _dataObject);
+  entity = cast (Node *, _dataObject);
   g_assert_nonnull (entity);
 
-  contentNode = cast (ContentNode *, entity);
-  g_assert_nonnull (contentNode);
-
-  content = contentNode->getContent ();
-  if (content != nullptr)
-    {
-      ReferenceContent *ref = cast (ReferenceContent *, content);
-      g_assert_nonnull (ref);
-      src = ref->getCompleteReferenceUrl ();
-    }
-  else
-    {
-      src = "";                 // empty source
-    }
+  media = cast (Media *, entity);
+  g_assert_nonnull (media);
 
   // Allocate player.
-  mime = contentNode->getNodeType ();
+  src = media->getSrc ();
+  mime = media->getMimeType ();
   _player = Player::createPlayer (_id, src, mime);
 
   // Initialize player properties.
@@ -653,7 +641,7 @@ ExecutionObject::start ()
         _player->setProperty (param->getName (), param->getValue ());
     }
 
-  for (auto anchor: *contentNode->getAnchors ())
+  for (auto anchor: *media->getAnchors ())
     {
       Property *prop = cast (Property *, anchor);
       if (prop != nullptr)

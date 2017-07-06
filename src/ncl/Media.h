@@ -15,26 +15,42 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef CONTENT_H
-#define CONTENT_H
+#ifndef MEDIA_H
+#define MEDIA_H
 
-#include "ginga.h"
+#include "Descriptor.h"
+#include "Node.h"
+#include "Refer.h"
 
 GINGA_NCL_BEGIN
 
-class Content
+class Refer;
+class Media : public Node
 {
 public:
-  Content (const string &someType);
-  Content ();
-  virtual ~Content ();
-  virtual string getType (void);
-  virtual void setType (const string &someType);
+  Media (const string &, bool);
+  virtual ~Media ();
 
-protected:
-  string _type;
+  bool isSettings ();
+
+  string getMimeType ();
+  string getSrc ();
+  void setSrc (const string &);
+
+  Descriptor *getDescriptor ();
+  void setDescriptor (Descriptor *);
+
+  void addSameInstance (Refer *);
+  const set<Refer *> *getInstSameInstances ();
+
+private:
+  bool _isSettings;
+  string _src;
+  string _mimetype;
+  Descriptor *_descriptor;
+  set<Refer *> _instances;
 };
 
 GINGA_NCL_END
 
-#endif /* CONTENT_H */
+#endif // MEDIA_H

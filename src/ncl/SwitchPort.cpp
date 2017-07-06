@@ -98,11 +98,10 @@ SwitchPort::getEndNode ()
   return _node;
 }
 
-InterfacePoint *
-SwitchPort::getEndInterfacePoint ()
+Anchor *
+SwitchPort::getEndInterface ()
 {
-  // Polimorfismo
-  return (InterfacePoint *)(this);
+  return this;
 }
 
 GINGA_NCL_END

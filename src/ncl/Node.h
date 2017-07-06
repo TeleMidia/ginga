@@ -22,26 +22,28 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-class CompositeNode;
+class Composition;
 class Node : public Entity
 {
 public:
   Node (const string &);
   virtual ~Node ();
 
-  void setParent (CompositeNode *);
-  CompositeNode *getParent ();
+  void setParent (Composition *);
+  Composition *getParent ();
 
   void addAnchor (Anchor *);
   const vector<Anchor *> *getAnchors ();
   Anchor *getAnchor (const string &);
+  Anchor *getLambda ();
 
   vector<Node *> *getPerspective (); // fixme
-  Node *derefer ();
+  Node *derefer ();                  // fixme
 
 private:
-  CompositeNode *_parent;
+  Composition *_parent;
   vector<Anchor *> _anchors;
+  Anchor *_lambda;
 };
 
 GINGA_NCL_END
