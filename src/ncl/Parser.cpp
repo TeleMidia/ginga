@@ -1981,7 +1981,7 @@ Parser::parseMedia (DOMElement *elt)
       if (!xpathisuri (src) && !xpathisabs (src))
         src = xpathbuildabs (_dirname, src);
       ((Media *) media)
-        ->setContent (new AbsoluteReferenceContent (src));
+        ->setContent (new Content (src));
 
       if (dom_elt_try_get_attribute (value, elt, "descriptor"))
         {
