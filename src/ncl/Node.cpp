@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Node.h"
 
 #include "Area.h"
-#include "CompositeNode.h"
+#include "Composition.h"
 #include "Refer.h"
 
 GINGA_NCL_BEGIN
@@ -47,7 +47,7 @@ Node::~Node ()
 /**
  * @brief Gets component parent.
  */
-CompositeNode *
+Composition *
 Node::getParent ()
 {
   return _parent;
@@ -57,7 +57,7 @@ Node::getParent ()
  * @brief Sets component parent.  (Can only be called once.)
  */
 void
-Node::setParent (CompositeNode *parent)
+Node::setParent (Composition *parent)
 {
   g_assert_null (_parent);
   g_assert_nonnull (parent);
@@ -122,7 +122,7 @@ Node::getPerspective ()
     }
   else
     {
-      perspective = ((CompositeNode *) _parent)->getPerspective ();
+      perspective = ((Composition *) _parent)->getPerspective ();
     }
   perspective->push_back (this);
   return perspective;

@@ -22,7 +22,7 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_NCL_BEGIN
 
-SwitchNode::SwitchNode (const string &id) : CompositeNode (id)
+SwitchNode::SwitchNode (const string &id) : Composition (id)
 {
   _defaultNode = NULL;
 }
@@ -117,7 +117,7 @@ SwitchNode::getMapInterface (Port *port)
     }
   else
     {
-      return CompositeNode::getMapInterface (port);
+      return Composition::getMapInterface (port);
     }
 }
 
@@ -130,7 +130,7 @@ SwitchNode::getNode (const string &nodeId)
       return _defaultNode;
     }
 
-  return CompositeNode::getNode (nodeId);
+  return Composition::getNode (nodeId);
 }
 
 Node *
@@ -219,11 +219,11 @@ SwitchNode::recursivelyGetNode (const string &nodeId)
       return _defaultNode;
     }
 
-  wanted = CompositeNode::recursivelyGetNode (nodeId);
+  wanted = Composition::recursivelyGetNode (nodeId);
   if (wanted == NULL && _defaultNode != NULL
-      && instanceof (CompositeNode *, _defaultNode))
+      && instanceof (Composition *, _defaultNode))
     {
-      wanted = ((CompositeNode *)_defaultNode)->recursivelyGetNode (nodeId);
+      wanted = ((Composition *)_defaultNode)->recursivelyGetNode (nodeId);
     }
 
   return wanted;
@@ -235,10 +235,10 @@ SwitchNode::removeNode (Node *node)
   int i, size;
   Node *auxNode;
 
-  size = (int) CompositeNode::_nodes.size ();
+  size = (int) Composition::_nodes.size ();
   for (i = 0; i < size; i++)
     {
-      auxNode = (Node *)CompositeNode::_nodes[i];
+      auxNode = (Node *)Composition::_nodes[i];
       if (auxNode->getId () == node->getId ())
         {
           return removeNode (i);
@@ -252,17 +252,17 @@ SwitchNode::removeNode (unsigned int index)
 {
   Node *node;
 
-  if (index >= CompositeNode::_nodes.size ())
+  if (index >= Composition::_nodes.size ())
     {
       return false;
     }
 
   clog << "SwitchNode::removeNode" << endl;
 
-  node = (Node *)CompositeNode::_nodes[index];
+  node = (Node *)Composition::_nodes[index];
   node->setParent (NULL);
 
-  (CompositeNode::_nodes).erase (CompositeNode::_nodes.begin () + index);
+  (Composition::_nodes).erase (Composition::_nodes.begin () + index);
   _ruleList.erase (_ruleList.begin () + index);
   return true;
 }

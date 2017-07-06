@@ -255,7 +255,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
 
   Node *node;
   Entity *entity;
-  CompositeNode *compNode;
+  Composition *compNode;
   NclNodeNesting *compPerspective;
 
   event = action->getEvent ();
@@ -282,7 +282,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
   entity = cast (Entity *, node);
   g_assert_nonnull (entity);
 
-  compNode = cast (CompositeNode *, entity);
+  compNode = cast (Composition *, entity);
   g_assert_nonnull (compNode);
 
   if (compNode->getParent () == nullptr)

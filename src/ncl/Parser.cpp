@@ -1620,7 +1620,7 @@ Parser::posCompileSwitch (DOMElement *elt, SwitchNode *swtch)
 }
 
 void
-Parser::solveNodeReferences (CompositeNode *comp)
+Parser::solveNodeReferences (Composition *comp)
 {
   const vector<Node *> *nodes;
   bool del = false;
@@ -1663,9 +1663,9 @@ Parser::solveNodeReferences (CompositeNode *comp)
 
         ((Refer *) node)->setReferred (refNode);
       }
-    else if (instanceof (CompositeNode *, node))
+    else if (instanceof (Composition *, node))
       {
-        this->solveNodeReferences ((CompositeNode *) node);
+        this->solveNodeReferences ((Composition *) node);
       }
   }
 
@@ -1723,7 +1723,7 @@ Parser::parseContext (DOMElement *elt)
 }
 
 Port *
-Parser::parsePort (DOMElement *elt, CompositeNode *context)
+Parser::parsePort (DOMElement *elt, Composition *context)
 {
   string id;
   string comp;
@@ -1745,9 +1745,9 @@ Parser::parsePort (DOMElement *elt, CompositeNode *context)
       iface = target->getAnchor (value);
       if (iface == nullptr)
         {
-          if (instanceof (CompositeNode *, target))
+          if (instanceof (Composition *, target))
             {
-              iface = ((CompositeNode *) target)->getPort (value);
+              iface = ((Composition *) target)->getPort (value);
             }
           else
             {
@@ -1819,7 +1819,7 @@ Parser::parseSwitch (DOMElement *elt)
         {
           Node *node;
           Rule *rule;
-          node = this->parseBindRule (child, (CompositeNode *) swtch, &rule);
+          node = this->parseBindRule (child, (Composition *) swtch, &rule);
           g_assert_nonnull (node);
           ((SwitchNode *) swtch)->addNode (node, rule);
         }
@@ -1850,7 +1850,7 @@ Parser::parseSwitch (DOMElement *elt)
 }
 
 Node *
-Parser::parseBindRule (DOMElement *elt, CompositeNode *parent,
+Parser::parseBindRule (DOMElement *elt, Composition *parent,
                           Rule **rule)
 {
   Node *node;
@@ -1927,8 +1927,8 @@ Parser::parseMapping (DOMElement *elt, SwitchNode *swtch,
   if (dom_elt_try_get_attribute (value, elt, "interface"))
     {
       iface = mapping->getAnchor (value);
-      if (iface == nullptr && instanceof (CompositeNode *, mapping))
-        iface = ((CompositeNode *) mapping)->getPort (value);
+      if (iface == nullptr && instanceof (Composition *, mapping))
+        iface = ((Composition *) mapping)->getPort (value);
       if (unlikely (iface == nullptr))
         ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "interface");
     }
@@ -2169,9 +2169,9 @@ Parser::parseBind (DOMElement *elt, Link *link, Context *context)
 
   if (dom_elt_try_get_attribute (value, elt, "interface"))
     {
-      if (instanceof (CompositeNode *, derefer))
+      if (instanceof (Composition *, derefer))
         {
-          iface = ((CompositeNode *) derefer)->getPort (value);
+          iface = ((Composition *) derefer)->getPort (value);
         }
       else
         {
