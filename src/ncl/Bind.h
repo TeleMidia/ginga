@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _BIND_H_
 #define _BIND_H_
 
-#include "CompositeNode.h"
 #include "Descriptor.h"
 #include "Interface.h"
 #include "Node.h"

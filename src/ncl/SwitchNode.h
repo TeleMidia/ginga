@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _SWITCHNODE_H_
 
 #include "Context.h"
-#include "CompositeNode.h"
+#include "Composition.h"
 #include "Node.h"
 
 #include "Port.h"
@@ -30,7 +30,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-class SwitchNode : public CompositeNode
+class SwitchNode : public Composition
 {
 public:
   SwitchNode (const string &_id);
@@ -38,7 +38,7 @@ public:
   void addNode (unsigned int index, Node *node, Rule *rule);
   void addNode (Node *node, Rule *rule);
 
-  // virtual from CompositeNode
+  // virtual from Composition
   void addNode (Node *);
 
   bool addSwitchPortMap (SwitchPort *switchPort, Node *node,
@@ -46,10 +46,10 @@ public:
 
   Node *getDefaultNode ();
 
-  // virtual from CompositeNode
+  // virtual from Composition
   Interface *getMapInterface (Port *port);
 
-  // virtual from CompositeNode
+  // virtual from Composition
   Node *getNode (const string &nodeId);
 
   Node *getNode (unsigned int index);
@@ -58,16 +58,16 @@ public:
   Rule *getRule (unsigned int index);
   unsigned int indexOfRule (Rule *rule);
 
-  // virtual from CompositeNode
+  // virtual from Composition
   bool recursivelyContainsNode (Node *node);
 
-  // virtual from CompositeNode
+  // virtual from Composition
   bool recursivelyContainsNode (const string &nodeId);
 
-  // virtual from CompositeNode
+  // virtual from Composition
   Node *recursivelyGetNode (const string &nodeId);
 
-  // virtual from CompositeNode
+  // virtual from Composition
   bool removeNode (Node *node);
 
   bool removeNode (unsigned int index);

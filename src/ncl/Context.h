@@ -18,13 +18,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef CONTEXT_H
 #define CONTEXT_H
 
-#include "CompositeNode.h"
+#include "Composition.h"
 #include "Link.h"
 
 GINGA_NCL_BEGIN
 
 class Link;
-class Context : public CompositeNode
+class Context : public Composition
 {
 public:
   Context (const string &);

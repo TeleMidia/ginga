@@ -511,7 +511,7 @@ NclDocument::getSettingsNodes ()
 
  next:
   g_assert (compositions.size () > 0);
-  nodes = ((CompositeNode *)(compositions.front ()))->getNodes ();
+  nodes = ((Composition *)(compositions.front ()))->getNodes ();
   g_assert_nonnull (nodes);
   compositions.pop_front ();
 
@@ -529,7 +529,7 @@ NclDocument::getSettingsNodes ()
           //
           settings->push_back (nodes->at (i)); // found
         }
-      else if (instanceof (CompositeNode *, node))
+      else if (instanceof (Composition *, node))
         {
           compositions.push_back (node);
         }

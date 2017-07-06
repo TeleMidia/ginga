@@ -297,8 +297,8 @@ Converter::addExecutionObject (ExecutionObject *exeObj,
   Node *headNode = nodePerspective->getHeadNode ();
 
   auto nodeEntity = cast (Media *, dataObject);
-  auto headCompositeNode = cast (CompositeNode *, headNode);
-  if (headCompositeNode != nullptr && nodeEntity != nullptr)
+  auto headComposition = cast (Composition *, headNode);
+  if (headComposition != nullptr && nodeEntity != nullptr)
     {
       const set<Refer *> *sameInstances
         = nodeEntity->getInstSameInstances ();
@@ -310,7 +310,7 @@ Converter::addExecutionObject (ExecutionObject *exeObj,
                  exeObj->getId ().c_str(),
                  referNode->getId ().c_str());
 
-          if (headCompositeNode->recursivelyContainsNode (referNode))
+          if (headComposition->recursivelyContainsNode (referNode))
             {
               addSameInstance (exeObj, referNode);
             }
@@ -460,7 +460,7 @@ Converter::createExecutionObject (
       compositeEvt->addListener (this);
       _listening.insert (compositeEvt);
     }
-  else if (instanceof (CompositeNode* , nodeEntity))
+  else if (instanceof (Composition* , nodeEntity))
     {
       string s;
       exeObj = new ExecutionObjectContext (id, node, _actionListener);

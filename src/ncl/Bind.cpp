@@ -17,6 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "Bind.h"
+#include "Composition.h"
 
 GINGA_NCL_BEGIN
 
@@ -197,16 +198,16 @@ Bind::getNodeNesting ()
 Interface *
 Bind::getEndPointInterface ()
 {
-  CompositeNode *compositeNode;
+  Composition *compositeNode;
   Port *port;
 
   Node *nodeEntity = cast (Node *, _node->derefer ());
   g_assert_nonnull (nodeEntity);
 
-  if (instanceof (CompositeNode *, nodeEntity)
+  if (instanceof (Composition *, nodeEntity)
       && instanceof (Port *, _interfacePoint))
     {
-      compositeNode = (CompositeNode *)nodeEntity;
+      compositeNode = cast (Composition *, nodeEntity);
       port = (Port *)_interfacePoint;
       return compositeNode->getMapInterface (port);
     }
