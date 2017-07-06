@@ -26,7 +26,7 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_NCL_BEGIN
 
-CompositeNode::CompositeNode (const string &id) : NodeEntity (id, NULL)
+CompositeNode::CompositeNode (const string &id) : NodeEntity (id)
 {
 }
 

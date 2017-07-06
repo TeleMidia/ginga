@@ -30,7 +30,7 @@ class ContentNode : public NodeEntity
 public:
   ContentNode (const string &uid, Content *someContent);
   ContentNode (const string &uid, Content *_content, const string &_type);
-  virtual ~ContentNode (){}
+  virtual ~ContentNode ();
 
   bool isSettingNode ();
   bool isTimeNode ();
@@ -38,10 +38,25 @@ public:
   string getNodeType ();
   void setNodeType (const string &_type);
 
+  Content *getContent ();
+  void setContent (Content *_content);
+
+  Descriptor *getDescriptor ();
+  void setDescriptor (Descriptor *someDescriptor);
+
+  set<ReferNode *> *getInstSameInstances ();
+  bool addSameInstance (ReferNode *node);
+
+
 private:
   string _type;
   bool _isSettingNodeType;
   bool _isTimeNodeType;
+
+  Content *_content;
+  Descriptor *_descriptor;
+  set<ReferNode *> _instSameInstances;
+
 
   void initialize (const string &_type);
 };

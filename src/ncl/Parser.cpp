@@ -2195,7 +2195,8 @@ Parser::parseBind (DOMElement *elt, Link *link, Context *context)
               if (iface == nullptr) // retry
                 {
                   for (ReferNode *refer:
-                         *targetEntity->getInstSameInstances ())
+                         *cast (ContentNode *, targetEntity)
+                         ->getInstSameInstances ())
                     {
                       iface = refer->getAnchor (value);
                       if (iface != nullptr)

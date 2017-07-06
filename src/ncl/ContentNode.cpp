@@ -21,15 +21,24 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NCL_BEGIN
 
 ContentNode::ContentNode (const string &uid, Content *someContent)
-    : NodeEntity (uid, someContent)
+    : NodeEntity (uid)
 {
+  _content = someContent;
+  _descriptor = nullptr;
   initialize ("");
 }
 
 ContentNode::ContentNode (const string &uid, Content *someContent, const string &type)
-    : NodeEntity (uid, someContent)
+    : NodeEntity (uid)
 {
+  _content = someContent;
+  _descriptor = nullptr;
   initialize (type);
+}
+
+ContentNode::~ContentNode ()
+{
+  _instSameInstances.clear ();
 }
 
 void
@@ -45,6 +54,31 @@ ContentNode::initialize (const string &type)
   _isTimeNodeType = false;
   _isTimeNodeType = isTimeNode ();
 }
+
+Content *
+ContentNode::getContent ()
+{
+  return _content;
+}
+
+void
+ContentNode::setContent (Content *someContent)
+{
+  _content = someContent;
+}
+
+Descriptor *
+ContentNode::getDescriptor ()
+{
+  return _descriptor;
+}
+
+void
+ContentNode::setDescriptor (Descriptor *someDescriptor)
+{
+  _descriptor = someDescriptor;
+}
+
 
 bool
 ContentNode::isSettingNode ()
@@ -126,5 +160,29 @@ ContentNode::setNodeType (const string &type)
   _isSettingNodeType = false;
   _isSettingNodeType = isSettingNode ();
 }
+
+
+
+set<ReferNode *> *
+ContentNode::getInstSameInstances ()
+{
+  return &_instSameInstances;
+}
+
+bool
+ContentNode::addSameInstance (ReferNode *node)
+{
+  if (node->getInstanceType () == "instSame")
+    {
+      if (_instSameInstances.count (node) != 0)
+        {
+          return false;
+        }
+
+      _instSameInstances.insert (node);
+    }
+  return true;
+}
+
 
 GINGA_NCL_END

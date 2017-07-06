@@ -21,100 +21,15 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-NodeEntity::NodeEntity (const string &uid, Content *someContent) : Node (uid)
+NodeEntity::NodeEntity (const string &uid) : Node (uid)
 {
-  _descriptor = NULL;
   _lambda = new AreaLambda (uid);
   this->addAnchor (_lambda);
-  _content = someContent;
 }
 
 NodeEntity::~NodeEntity ()
 {
-  vector<Anchor *>::iterator i;
-  set<ReferNode *>::iterator j;
-
-  if (_descriptor != NULL)
-    {
-      // descriptor is deleted in descriptor base
-      _descriptor = NULL;
-    }
-
-  if (_content != NULL)
-    {
-      delete _content;
-      _content = NULL;
-    }
-
-  _instSameInstances.clear ();
   delete _lambda;
-}
-
-// bool
-// NodeEntity::addAnchor (int index, Anchor *anchor)
-// {
-//   if (index == 0)
-//     {
-//       return false;
-//     }
-//   return Node::addAnchor (index, anchor);
-// }
-
-Descriptor *
-NodeEntity::getDescriptor ()
-{
-  return _descriptor;
-}
-
-void
-NodeEntity::setDescriptor (Descriptor *someDescriptor)
-{
-  _descriptor = someDescriptor;
-}
-
-Content *
-NodeEntity::getContent ()
-{
-  return _content;
-}
-
-void
-NodeEntity::setContent (Content *someContent)
-{
-  _content = someContent;
-}
-
-set<ReferNode *> *
-NodeEntity::getInstSameInstances ()
-{
-  return &_instSameInstances;
-}
-
-bool
-NodeEntity::addSameInstance (ReferNode *node)
-{
-  if (node->getInstanceType () == "instSame")
-    {
-      if (_instSameInstances.count (node) != 0)
-        {
-          return false;
-        }
-
-      _instSameInstances.insert (node);
-    }
-  return true;
-}
-
-void
-NodeEntity::removeSameInstance (ReferNode *node)
-{
-  set<ReferNode *>::iterator i;
-
-  i = _instSameInstances.find (node);
-  if (i != _instSameInstances.end ())
-    {
-      _instSameInstances.erase (i);
-    }
 }
 
 GINGA_NCL_END

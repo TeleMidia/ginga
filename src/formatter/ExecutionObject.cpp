@@ -44,7 +44,7 @@ ExecutionObject::ExecutionObject (const string &id,
   this->_isCompiled = false;
   this->_mainEvent = nullptr;
 
-  NodeEntity *entity = cast (NodeEntity *, _dataObject);
+  ContentNode *entity = cast (ContentNode *, _dataObject);
   if (entity != nullptr)
     _descriptor = entity->getDescriptor ();
 

@@ -313,9 +313,9 @@ Converter::addExecutionObject (ExecutionObject *exeObj,
   NclNodeNesting *nodePerspective = exeObj->getNodePerspective ();
   Node *headNode = nodePerspective->getHeadNode ();
 
-  auto nodeEntity = cast (NodeEntity *, dataObject);
+  auto nodeEntity = cast (ContentNode *, dataObject);
   auto headCompositeNode = cast (CompositeNode *, headNode);
-  if (headCompositeNode && nodeEntity)
+  if (headCompositeNode != nullptr && nodeEntity != nullptr)
     {
       set<ReferNode *> *sameInstances = nodeEntity->getInstSameInstances ();
       g_assert_nonnull (sameInstances);
@@ -531,9 +531,10 @@ Converter::processLink (Link *ncmLink,
       auto causalLink = cast (Link *, ncmLink);
       if (causalLink)
         {
-          if (nodeEntity != nullptr)
+          if (nodeEntity != nullptr && instanceof (ContentNode *, nodeEntity))
             {
-              sameInstances = nodeEntity->getInstSameInstances ();
+              sameInstances = cast (ContentNode *, nodeEntity)
+                ->getInstSameInstances ();
               for (ReferNode *referNode: *sameInstances)
                 {
                   contains = causalLink->contains (referNode, true);
