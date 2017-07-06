@@ -18,27 +18,22 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef REFER_NODE_H
 #define REFER_NODE_H
 
-#include "Node.h"
-#include "Descriptor.h"
+#include "Media.h"
+#include "NodeEntity.h"
 
 GINGA_NCL_BEGIN
 
-class Node;
-class ReferNode : public Node
+class Media;
+class NodeEntity;
+class ReferNode : public NodeEntity
 {
 public:
   ReferNode (const string &);
-  ReferNode (const string &, Entity *);
-
-  string getInstanceType ();
-  void setInstanceType (const string &);
-
-  Entity *getReferredEntity ();
-  void setReferredEntity (Entity *);
+  Media *getReferred ();
+  void setReferred (Media *);
 
 private:
-  string _instanceType;
-  Entity *_referredNode;
+  Media *_referred;
 };
 
 GINGA_NCL_END

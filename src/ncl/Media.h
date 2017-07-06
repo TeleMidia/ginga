@@ -18,11 +18,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef MEDIA_H
 #define MEDIA_H
 
-#include "NodeEntity.h"
 #include "Content.h"
+#include "Descriptor.h"
+#include "NodeEntity.h"
+#include "ReferNode.h"
 
 GINGA_NCL_BEGIN
 
+class ReferNode;
 class Media : public NodeEntity
 {
 public:

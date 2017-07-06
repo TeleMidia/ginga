@@ -234,14 +234,6 @@ Converter::addSameInstance (ExecutionObject *exeObj,
 
   if (referParentObject != nullptr)
     {
-      TRACE ("'%s' with head node '%s' refer to '%s', which has as "
-             "execution object '%s' and parent object '%s'",
-             referNode->getId ().c_str (),
-             referPerspective->getHeadNode ()->getId ().c_str (),
-             referNode->getReferredEntity ()->getId ().c_str (),
-             exeObj->getId ().c_str (),
-             referParentObject->getId ().c_str ());
-
       exeObj->addParentObject (
             referNode,
             referParentObject,
@@ -294,18 +286,11 @@ Converter::addExecutionObject (ExecutionObject *exeObj,
   auto referNode = cast (ReferNode *, dataObject);
   if (referNode)
     {
-      if (referNode->getInstanceType () == "instSame")
-        {
-          Entity *entity = referNode->getReferredEntity ();
-          g_assert_nonnull (entity);
-          auto entityMedia = cast (Media *, entity);
 
-          if (entityMedia
-              && entityMedia->isSettings ())
-            {
-              _settingsObjects.insert (exeObj);
-            }
-        }
+      Media *media = referNode->getReferred ();
+      g_assert_nonnull (media);
+      if (media->isSettings ())
+        _settingsObjects.insert (exeObj);
     }
 
   NclNodeNesting *nodePerspective = exeObj->getNodePerspective ();
