@@ -40,7 +40,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ConnectorBase.h"
 #include "Content.h"
 #include "ContentNode.h"
-#include "ContextNode.h"
+#include "Context.h"
 #include "Descriptor.h"
 #include "DescriptorBase.h"
 #include "Entity.h"

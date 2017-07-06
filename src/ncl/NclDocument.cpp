@@ -281,7 +281,7 @@ NclDocument::getDocumentAlias (NclDocument *document)
   return "";
 }
 
-ContextNode *
+Context *
 NclDocument::getBody ()
 {
   return _body;
@@ -497,7 +497,7 @@ NclDocument::getRuleBase ()
 vector<Node *> *
 NclDocument::getSettingsNodes ()
 {
-  ContextNode *body;
+  Context *body;
   list<Node *> compositions;
 
   const vector<Node *> *nodes;
@@ -596,7 +596,7 @@ NclDocument::setDocumentAlias (NclDocument *document, const string &alias)
 }
 
 void
-NclDocument::setBody (ContextNode *node)
+NclDocument::setBody (Context *node)
 {
   _body = node;
 }

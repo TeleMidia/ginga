@@ -15,40 +15,57 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef LINK_H
-#define LINK_H
-
-#include "Connector.h"
-#include "Bind.h"
+#include "ginga.h"
+#include "Context.h"
 
 GINGA_NCL_BEGIN
 
-class Context;
-class Link : public Entity
+/**
+ * @brief Creates a new context.
+ * @param id Context id.
+ */
+Context::Context (const string &id) : CompositeNode (id)
 {
-public:
-  Link (const string &, Context *, Connector *);
-  virtual ~Link ();
+}
 
-  Connector *getConnector ();
-  Context *getContext ();
+/**
+ * @brief Destroys context.
+ */
+Context::~Context ()
+{
+  _links.clear ();
+}
 
-  void addParameter (Parameter *);
-  const vector<Parameter *> *getParameters ();
-  Parameter *getParameter (const string &);
+/**
+ * @brief Adds link to context.
+ * @param link Link.
+ */
+void
+Context::addLink (Link *link)
+{
+  g_assert_nonnull (link);
+  _links.push_back (link);
+}
 
-  void addBind (Bind *);
-  const vector<Bind *> *getBinds ();
-  vector<Bind *> getBinds (Role *);
-  bool contains (Node *, bool);
+/**
+ * @brief Adds component to context.
+ * @param node Node.
+ */
+void
+Context::addNode (Node *node)
+{
+  g_assert_nonnull (node);
+  _nodes.push_back (node);
+  node->setParentComposition (this);
+}
 
-private:
-  Context *_context;
-  Connector *_connector;
-  vector<Bind *> _binds;
-  vector<Parameter *> _parameters;
-};
+/**
+ * @brief Gets all context links.
+ */
+const vector<Link *> *
+Context::getLinks ()
+{
+  return &_links;
+}
 
 GINGA_NCL_END
-
-#endif // LINK_H

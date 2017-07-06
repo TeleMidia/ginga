@@ -400,7 +400,7 @@ Parser::parseNcl (DOMElement *elt)
         }
       else if (tag == "body")
         {
-          ContextNode *body = this->parseBody (child);
+          Context *body = this->parseBody (child);
           g_assert_nonnull (body);
           this->solveNodeReferences (body);
           this->posCompileContext (child, body);
@@ -1498,16 +1498,16 @@ Parser::parseSimpleAction (DOMElement *elt)
 
 // Private: Body.
 
-ContextNode *
+Context *
 Parser::parseBody (DOMElement *elt)
 {
-  ContextNode *body;
+  Context *body;
   string id;
 
   CHECK_ELT_TAG (elt, "body", nullptr);
   CHECK_ELT_OPT_ID (elt, &id, _doc->getId ());
 
-  body = new ContextNode (id);
+  body = new Context (id);
   _doc->setBody (body);
 
   for (DOMElement *child: dom_elt_get_children (elt))
@@ -1546,7 +1546,7 @@ Parser::parseBody (DOMElement *elt)
 }
 
 void
-Parser::posCompileContext (DOMElement *elt, ContextNode *context)
+Parser::posCompileContext (DOMElement *elt, Context *context)
 {
   Node *node;
   string id;
@@ -1560,8 +1560,8 @@ Parser::posCompileContext (DOMElement *elt, ContextNode *context)
           g_assert (dom_elt_try_get_attribute (id, child, "id"));
           node = context->getNode (id);
           g_assert_nonnull (node);
-          if (instanceof (ContextNode *, node))
-            this->posCompileContext (child, (ContextNode*) node);
+          if (instanceof (Context *, node))
+            this->posCompileContext (child, (Context*) node);
         }
       else if (tag == "switch")
         {
@@ -1598,8 +1598,8 @@ Parser::posCompileSwitch (DOMElement *elt, SwitchNode *swtch)
           g_assert (dom_elt_try_get_attribute (id, child, "id"));
           node = swtch->getNode (id);
           g_assert_nonnull (node);
-          if (instanceof (ContextNode *, node))
-            this->posCompileContext (child, (ContextNode*) node);
+          if (instanceof (Context *, node))
+            this->posCompileContext (child, (Context*) node);
         }
       else if (tag ==  "switch")
         {
@@ -1679,14 +1679,14 @@ Parser::solveNodeReferences (CompositeNode *comp)
 Node *
 Parser::parseContext (DOMElement *elt)
 {
-  ContextNode *context;
+  Context *context;
   string id;
 
   CHECK_ELT_TAG (elt, "context", nullptr);
   CHECK_ELT_ID (elt, &id);
   CHECK_ELT_ATTRIBUTE_NOT_SUPPORTED (elt, "refer");
 
-  context = new ContextNode (id);
+  context = new Context (id);
   for (DOMElement *child: dom_elt_get_children (elt))
     {
       Node *node;
@@ -2089,7 +2089,7 @@ Parser::parseArea (DOMElement *elt)
 // Private: Link.
 
 Link *
-Parser::parseLink (DOMElement *elt, ContextNode *context)
+Parser::parseLink (DOMElement *elt, Context *context)
 {
   Link *link;
   string id;
@@ -2138,7 +2138,7 @@ Parser::parseLinkParam (DOMElement *elt)
 }
 
 Bind *
-Parser::parseBind (DOMElement *elt, Link *link, ContextNode *context)
+Parser::parseBind (DOMElement *elt, Link *link, Context *context)
 {
   Bind *bind;
   string label;
