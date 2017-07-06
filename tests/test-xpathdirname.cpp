@@ -20,10 +20,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  g_assert (xpathdirname ("this/is/a/directory/") == "this/is/a/directory");
-  g_assert (xpathdirname ("this/is/ not a/directory/") == "this/is/ not a/directory");
+  g_assert (xpathdirname ("this/is/a/directory/")
+            == "this/is/a/directory");
+  g_assert (xpathdirname ("this/is/ not a/directory/")
+            == "this/is/ not a/directory");
   g_assert (xpathdirname ("./") == ".");
   g_assert (xpathdirname ("/") == "/");
   g_assert (xpathdirname ("") == ".");
-  exit (0);
+
+  exit (EXIT_SUCCESS);
 }

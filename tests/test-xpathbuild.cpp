@@ -20,9 +20,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  g_assert (xpathbuild ("this/is/", "a/directory/") == "this/is/a/directory/");
+  g_assert (xpathbuild ("this/is/", "a/directory/")
+            == "this/is/a/directory/");
   g_assert (xpathbuild ("this/", "") == "this/");
   g_assert (xpathbuild ("", "this/") == "this/");
-  g_assert (xpathbuild ("/this/is/", "a/directory/") == "/this/is/a/directory/");
-  exit (0);
+  g_assert (xpathbuild ("/this/is/", "a/directory/")
+            == "/this/is/a/directory/");
+  exit (EXIT_SUCCESS);
 }

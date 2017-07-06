@@ -26,5 +26,5 @@ main (void)
   g_assert (xstrstrip (" hello ") == "hello");
   g_assert (xstrstrip ("hell o ") == "hell o");
   g_assert (xstrstrip ("       hello") == "hello");
-  exit (0);
+  exit (EXIT_SUCCESS);
 }

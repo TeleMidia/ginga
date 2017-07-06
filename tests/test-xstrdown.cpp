@@ -25,5 +25,5 @@ main (void)
   g_assert (xstrdown ("LOWER CASE") == "lower case");
   g_assert (xstrdown ("LoWeRCaSe") == "lowercase");
   g_assert (xstrdown ("LOW") == "low");
-  exit (0);
+  exit (EXIT_SUCCESS);
 }

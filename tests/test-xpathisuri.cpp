@@ -25,5 +25,5 @@ main (void)
   g_assert (xpathisuri ("http://") == true);
   g_assert (xpathisuri ("http") == false);
   g_assert (xpathisuri ("") == false);
-  exit (0);
+  exit (EXIT_SUCCESS);
 }
