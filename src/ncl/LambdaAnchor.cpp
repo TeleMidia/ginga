@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NCL_BEGIN
 
 LambdaAnchor::LambdaAnchor (const string &id)
-    : IntervalAnchor (id, 0, GINGA_TIME_NONE)
+    : Area (id, 0, GINGA_TIME_NONE)
 {
 
 }

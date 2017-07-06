@@ -2071,7 +2071,7 @@ Parser::parseArea (DOMElement *elt)
       else
         end = GINGA_TIME_NONE;
 
-      return new IntervalAnchor (id, begin, end);
+      return new Area (id, begin, end);
     }
   else if (dom_elt_has_attribute (elt, "label"))
     {

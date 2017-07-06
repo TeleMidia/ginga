@@ -325,7 +325,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
           iface = port->getEndInterfacePoint ();
           g_assert_nonnull (iface);
 
-          if (!instanceof (IntervalAnchor *, iface))
+          if (!instanceof (Area *, iface))
             continue;           // nothing to do
 
           evt = _converter->getEvent (child, iface,

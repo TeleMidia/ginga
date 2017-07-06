@@ -872,7 +872,7 @@ ExecutionObject::handleKeyEvent (const string &key, bool press)
 
   for (SelectionEvent *evt: _selectionEvents)
     {
-      IntervalAnchor *anchor;
+      Area *anchor;
       string expected;
 
       expected = evt->getSelectionCode ();
@@ -886,7 +886,7 @@ ExecutionObject::handleKeyEvent (const string &key, bool press)
         {
           buf.push_back (evt);
         }
-      else if (instanceof (IntervalAnchor *, anchor))
+      else if (instanceof (Area *, anchor))
         {
           ERROR_NOT_IMPLEMENTED
             ("selection of temporal anchors is no supported");

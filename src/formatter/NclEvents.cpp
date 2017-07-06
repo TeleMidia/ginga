@@ -65,7 +65,7 @@ NclEvent::hasNcmId (NclEvent *evt, const string &anchorId)
       anchor = anchorEvt->getAnchor ();
       if (anchor != nullptr)
         {
-          if (instanceof (IntervalAnchor *, anchor))
+          if (instanceof (Area *, anchor))
             {
               anchorName = anchor->getId ();
             }
@@ -200,7 +200,7 @@ NclEvent::changeState (EventState newState,
 
 AnchorEvent::AnchorEvent (const string &id,
                           ExecutionObject *executionObject,
-                          IntervalAnchor *anchor)
+                          Area *anchor)
   : NclEvent (id, executionObject)
 {
   this->_anchor = anchor;
@@ -211,14 +211,14 @@ AnchorEvent::AnchorEvent (const string &id,
 
 PresentationEvent::PresentationEvent (const string &id,
                                       ExecutionObject *exeObj,
-                                      IntervalAnchor *anchor)
+                                      Area *anchor)
   : AnchorEvent (id, exeObj, anchor)
 {
   _numPresentations = 1;
   _repetitionInterval = 0;
   _type = EventType::PRESENTATION;
 
-  auto intervalAnchor = cast (IntervalAnchor *, anchor);
+  auto intervalAnchor = cast (Area *, anchor);
   if (intervalAnchor)
     {
       _begin = intervalAnchor->getBegin ();
@@ -283,7 +283,7 @@ PresentationEvent::incOccurrences ()
 
 SelectionEvent::SelectionEvent (const string &id,
                                 ExecutionObject *exeObj,
-                                IntervalAnchor *anchor)
+                                Area *anchor)
   : AnchorEvent (id, exeObj, anchor)
 {
   _type = EventType::SELECTION;
