@@ -1730,7 +1730,7 @@ Parser::parsePort (DOMElement *elt, CompositeNode *context)
   string value;
 
   Node *target;
-  InterfacePoint *iface;
+  Interface *iface;
 
   CHECK_ELT_TAG (elt, "port", nullptr);
   CHECK_ELT_ID (elt, &id);
@@ -1915,7 +1915,7 @@ Parser::parseMapping (DOMElement *elt, SwitchNode *swtch,
   string id;
   string comp;
   string value;
-  InterfacePoint *iface;
+  Interface *iface;
 
   CHECK_ELT_TAG (elt, "mapping", nullptr);
   CHECK_ELT_ATTRIBUTE (elt, "component", &comp);
@@ -2140,7 +2140,7 @@ Parser::parseBind (DOMElement *elt, Link *link, Context *context)
 
   Node *target;
   Node *derefer;
-  InterfacePoint *iface;
+  Interface *iface;
   Descriptor *desc;
 
   CHECK_ELT_TAG (elt, "bind", nullptr);

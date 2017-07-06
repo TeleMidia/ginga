@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Node.h"
 
 #include "Port.h"
-#include "InterfacePoint.h"
+#include "Interface.h"
 #include "SwitchPort.h"
 
 #include "Rule.h"
@@ -42,12 +42,12 @@ public:
   void addNode (Node *);
 
   bool addSwitchPortMap (SwitchPort *switchPort, Node *node,
-                         InterfacePoint *interfacePoint);
+                         Interface *interfacePoint);
 
   Node *getDefaultNode ();
 
   // virtual from CompositeNode
-  InterfacePoint *getMapInterface (Port *port);
+  Interface *getMapInterface (Port *port);
 
   // virtual from CompositeNode
   Node *getNode (const string &nodeId);

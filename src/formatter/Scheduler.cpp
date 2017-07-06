@@ -304,7 +304,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
         {
           NclNodeNesting *persp;
           vector<Node *> *nestedSeq;
-          InterfacePoint *iface;
+          Interface *iface;
 
           ExecutionObject *child;
           NclEvent *evt;
@@ -322,7 +322,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
             ->getExecutionObjectFromPerspective (persp, nullptr);
           g_assert (child);
 
-          iface = port->getEndInterfacePoint ();
+          iface = port->getEndInterface ();
           g_assert_nonnull (iface);
 
           if (!instanceof (Area *, iface))
@@ -427,7 +427,7 @@ Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObj,
   ExecutionObject *endPointObject;
 
   selectedEvent = nullptr;
-  switchPort = (SwitchPort *)(switchEvent->getInterfacePoint ());
+  switchPort = (SwitchPort *)(switchEvent->getInterface ());
   mappings = switchPort->getPorts ();
   if (mappings != nullptr)
     {
@@ -454,7 +454,7 @@ Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObj,
                           = _converter
                                 ->getEvent (
                                     endPointObject,
-                                    mapping->getEndInterfacePoint (),
+                                    mapping->getEndInterface (),
                                     switchEvent->getType (),
                                     switchEvent->getKey ());
                     }

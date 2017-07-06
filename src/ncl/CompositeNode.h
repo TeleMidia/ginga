@@ -40,7 +40,7 @@ public:
   const vector<Port *> *getPorts ();
 
   // Virtual to SwitchNode.
-  virtual InterfacePoint *getMapInterface (Port *);
+  virtual Interface *getMapInterface (Port *);
 
   // Virtual to SwitchNode.
   virtual Node *getNode (const string &nodeId);

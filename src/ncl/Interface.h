@@ -15,20 +15,20 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _INTERFACEPOINT_H_
-#define _INTERFACEPOINT_H_
+#ifndef INTERFACE_H
+#define INTERFACE_H
 
 #include "Entity.h"
 
 GINGA_NCL_BEGIN
 
-class InterfacePoint : public Entity
+class Interface : public Entity
 {
 public:
-  InterfacePoint (const string &someId) : Entity (someId) {}
-  virtual ~InterfacePoint (){}
+  Interface (const string &id) : Entity (id) {}
+  virtual ~Interface () {}
 };
 
 GINGA_NCL_END
 
-#endif //_INTERFACEPOINT_H_
+#endif // INTERFACE_H

@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-Anchor::Anchor (const string &id) : InterfacePoint (id)
+Anchor::Anchor (const string &id) : Interface (id)
 {
 }
 
