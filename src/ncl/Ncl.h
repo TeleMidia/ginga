@@ -66,7 +66,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SimpleCondition.h"
 #include "SimpleRule.h"
 #include "Statement.h"
-#include "SwitchContent.h"
 #include "SwitchNode.h"
 #include "SwitchPort.h"
 #include "Transition.h"
