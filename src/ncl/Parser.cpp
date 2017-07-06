@@ -1730,8 +1730,7 @@ Parser::parsePort (DOMElement *elt, CompositeNode *context)
   string value;
 
   Node *target;
-  Node *targetEntity;
-  InterfacePoint *interface;
+  InterfacePoint *iface;
 
   CHECK_ELT_TAG (elt, "port", nullptr);
   CHECK_ELT_ID (elt, &id);
@@ -1741,33 +1740,30 @@ Parser::parsePort (DOMElement *elt, CompositeNode *context)
   if (unlikely (target == nullptr))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "component");
 
-  targetEntity = cast (Node *, target);
-  g_assert_nonnull (targetEntity);
-
   if (dom_elt_try_get_attribute (value, elt, "interface"))
     {
-      interface = targetEntity->getAnchor (value);
-      if (interface == nullptr)
+      iface = target->getAnchor (value);
+      if (iface == nullptr)
         {
-          if (instanceof (CompositeNode *, targetEntity))
+          if (instanceof (CompositeNode *, target))
             {
-              interface = ((CompositeNode *) targetEntity)->getPort (value);
+              iface = ((CompositeNode *) target)->getPort (value);
             }
           else
             {
-              interface = target->getAnchor (value);
+              iface = target->getAnchor (value);
             }
         }
     }
   else                          // no interface
     {
-      interface = targetEntity->getLambda ();
+      iface = target->getLambda ();
     }
 
-  if (unlikely (interface == nullptr))
+  if (unlikely (iface == nullptr))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "interface");
 
-  return new Port (id, target, interface);
+  return new Port (id, target, iface);
 }
 
 
@@ -1919,8 +1915,6 @@ Parser::parseMapping (DOMElement *elt, SwitchNode *swtch,
   string id;
   string comp;
   string value;
-
-  Node *mappingEntity;
   InterfacePoint *iface;
 
   CHECK_ELT_TAG (elt, "mapping", nullptr);
@@ -1930,20 +1924,17 @@ Parser::parseMapping (DOMElement *elt, SwitchNode *swtch,
   if (unlikely (mapping == nullptr))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "component");
 
-  mappingEntity = cast (Node *, mapping);
-  g_assert_nonnull (mappingEntity);
-
   if (dom_elt_try_get_attribute (value, elt, "interface"))
     {
-      iface = mappingEntity->getAnchor (value);
-      if (iface == nullptr && instanceof (CompositeNode *, mappingEntity))
-        iface = ((CompositeNode *) mappingEntity)->getPort (value);
+      iface = mapping->getAnchor (value);
+      if (iface == nullptr && instanceof (CompositeNode *, mapping))
+        iface = ((CompositeNode *) mapping)->getPort (value);
       if (unlikely (iface == nullptr))
         ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "interface");
     }
   else
     {
-      iface = mappingEntity->getLambda ();
+      iface = mapping->getLambda ();
       g_assert_nonnull (iface);
     }
   return new Port (port->getId (), mapping, iface);
@@ -2148,7 +2139,7 @@ Parser::parseBind (DOMElement *elt, Link *link, Context *context)
   Connector *conn;
 
   Node *target;
-  Node *targetEntity;
+  Node *derefer;
   InterfacePoint *iface;
   Descriptor *desc;
 
@@ -2171,28 +2162,28 @@ Parser::parseBind (DOMElement *elt, Link *link, Context *context)
     }
   g_assert_nonnull (target);
 
-  targetEntity = cast (Node *, target->derefer ());
-  g_assert_nonnull (targetEntity);
+  derefer = cast (Node *, target->derefer ());
+  g_assert_nonnull (derefer);
 
   iface = nullptr;
   desc = nullptr;
 
   if (dom_elt_try_get_attribute (value, elt, "interface"))
     {
-      if (instanceof (CompositeNode *, targetEntity))
+      if (instanceof (CompositeNode *, derefer))
         {
-          iface = ((CompositeNode *) targetEntity)->getPort (value);
+          iface = ((CompositeNode *) derefer)->getPort (value);
         }
       else
         {
-          iface = targetEntity->getAnchor (value);
+          iface = derefer->getAnchor (value);
           if (iface == nullptr) // retry
             {
               iface = target->getAnchor (value);
               if (iface == nullptr) // retry
                 {
                   for (ReferNode *refer:
-                         *cast (Media *, targetEntity)
+                         *cast (Media *, derefer)
                          ->getInstSameInstances ())
                     {
                       iface = refer->getAnchor (value);
@@ -2205,7 +2196,7 @@ Parser::parseBind (DOMElement *elt, Link *link, Context *context)
     }
   else                          // no interface
     {
-      iface = targetEntity->getLambda ();
+      iface = derefer->getLambda ();
     }
 
   if (unlikely (iface == nullptr))
