@@ -24,7 +24,7 @@ GINGA_NCL_BEGIN
 /**
  * @brief Creates a new port.
  * @param id Port id.
- * @param component Port component.
+ * @param node Port component.
  * @param iface Port interface.
  */
 Port::Port (const string &id, Node *node, Anchor *iface) : Anchor (id)

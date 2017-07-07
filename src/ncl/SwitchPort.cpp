@@ -21,87 +21,41 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-SwitchPort::SwitchPort (const string &id, Switch *switchNode)
-    : Port (id, switchNode, NULL)
+/**
+ * @brief Creates a new switch port.
+ * @param id Switch port id.
+ * @param node Parent switch.
+ */
+SwitchPort::SwitchPort (const string &id, Switch *node)
+  : Port (id, node, nullptr)
 {
-  _portList = new vector<Port *>;
 }
 
+/**
+ * @brief Destroys switch port.
+ */
 SwitchPort::~SwitchPort ()
 {
-  vector<Port *>::iterator i;
-
-  if (_portList != NULL)
-    {
-      i = _portList->begin ();
-      while (i != _portList->end ())
-        {
-          delete *i;
-          ++i;
-        }
-
-      delete _portList;
-      _portList = NULL;
-    }
+  _ports.clear ();
 }
 
-bool
+/**
+ * @brief Adds mapping.
+ */
+void
 SwitchPort::addPort (Port *port)
 {
-  if (containsMap (port->getNode ()))
-    return false;
-
-  _portList->push_back (port);
-  return true;
+  g_assert_nonnull (port);
+  _ports.push_back (port);
 }
 
-bool
-SwitchPort::containsMap (Node *node)
-{
-  vector<Port *>::iterator i;
-  Port *port;
-
-  for (i = _portList->begin (); i < _portList->end (); ++i)
-    {
-      port = (Port *)(*i);
-      if (port->getNode ()->getId () == node->getId ())
-        return true;
-    }
-  return false;
-}
-
-vector<Port *> *
+/**
+ * @brief Gets all mappings.
+ */
+const vector<Port *> *
 SwitchPort::getPorts ()
 {
-  return _portList;
-}
-
-bool
-SwitchPort::removePort (Port *port)
-{
-  vector<Port *>::iterator i;
-
-  for (i = _portList->begin (); i != _portList->end (); ++i)
-    {
-      if ((*i)->getId () == port->getId ())
-        {
-          _portList->erase (i);
-          return true;
-        }
-    }
-  return false;
-}
-
-Node *
-SwitchPort::getEndNode ()
-{
-  return _node;
-}
-
-Anchor *
-SwitchPort::getEndInterface ()
-{
-  return this;
+  return &_ports;
 }
 
 GINGA_NCL_END
