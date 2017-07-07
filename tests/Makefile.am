@@ -64,6 +64,9 @@ ncls+= xfail-test-syntax-ncl-bad-child.ncl
 # Test programs.
 progs=
 
+progs+= xfail-test-xstrtod
+xfail_test_xstrtod_SOURCES= xfail-test-xstrtod.cpp
+
 progs+= test-ginga-parse-bool
 test_ginga_parse_bool_SOURCES= test-ginga-parse-bool.cpp
 
@@ -129,9 +132,6 @@ test_xpathbuild_SOURCES= test-xpathbuild.cpp
 
 progs+= test-xpathbuildabs
 test_xpathbuildabs_SOURCES= test-xpathbuildabs.cpp
-
-progs+= xfail-test-xstrtod
-xfail_test_xstrtod_SOURCES= xfail-test-xstrtod.cpp
 
 progs+= test-xstrtod
 test_xstrtod_SOURCES= test-xstrtod.cpp
