@@ -416,53 +416,44 @@ Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObj,
 {
   NclEvent *selectedEvent;
   SwitchPort *switchPort;
-  vector<Port *> *mappings;
   vector<Port *>::iterator i;
-  Port *mapping;
   NclNodeNesting *nodePerspective;
   vector<Node *> nestedSeq;
   ExecutionObject *endPointObject;
 
   selectedEvent = nullptr;
   switchPort = (SwitchPort *)(switchEvent->getInterface ());
-  mappings = switchPort->getPorts ();
-  if (mappings != nullptr)
+  for (auto mapping: *switchPort->getPorts ())
     {
-      i = mappings->begin ();
-      while (i != mappings->end ())
+      if (mapping->getNode () == selectedObject->getNode ())
         {
-          mapping = *i;
-          if (mapping->getNode () == selectedObject->getNode ())
+          nodePerspective = switchObj->getNodePerspective ();
+          nestedSeq = mapping->getMapNodeNesting ();
+          nodePerspective->append (&nestedSeq);
+          try
             {
-              nodePerspective = switchObj->getNodePerspective ();
-              nestedSeq = mapping->getMapNodeNesting ();
-              nodePerspective->append (&nestedSeq);
-              try
-                {
-                  endPointObject
-                      = _converter
-                            ->getExecutionObjectFromPerspective (
-                                  nodePerspective, nullptr);
+              endPointObject
+                = _converter
+                ->getExecutionObjectFromPerspective (
+                                                     nodePerspective, nullptr);
 
-                  if (endPointObject != nullptr)
-                    {
-                      selectedEvent
-                          = _converter
-                                ->getEvent (
-                                    endPointObject,
-                                    mapping->getFinalInterface (),
-                                    switchEvent->getType (),
-                                    switchEvent->getKey ());
-                    }
-                }
-              catch (exception *exc)
+              if (endPointObject != nullptr)
                 {
-                  // continue
+                  selectedEvent
+                    = _converter
+                    ->getEvent (
+                                endPointObject,
+                                mapping->getFinalInterface (),
+                                switchEvent->getType (),
+                                switchEvent->getKey ());
                 }
-
-              break;
             }
-          ++i;
+          catch (exception *exc)
+            {
+              // continue
+            }
+
+          break;
         }
     }
 

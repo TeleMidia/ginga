@@ -15,10 +15,9 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _SWITCHPORT_H_
-#define _SWITCHPORT_H_
+#ifndef SWITCH_PORT_H
+#define SWITCH_PORT_H
 
-#include "Node.h"
 #include "Port.h"
 
 GINGA_NCL_BEGIN
@@ -27,19 +26,15 @@ class Switch;
 class SwitchPort : public Port
 {
 public:
-  SwitchPort (const string &id, Switch *switchNode);
+  SwitchPort (const string &, Switch *);
   virtual ~SwitchPort ();
-  bool addPort (Port *port);
-  bool containsMap (Node *node);
-  vector<Port *> *getPorts ();
-  bool removePort (Port *port);
-  Node *getEndNode ();
-  Anchor *getEndInterface ();
+  void addPort (Port *);
+  const vector<Port *> *getPorts ();
 
 private:
-  vector<Port *> *_portList;
+  vector<Port *> _ports;
 };
 
 GINGA_NCL_END
 
-#endif //_SWITCHPORT_H_
+#endif // SWITCH_PORT_H
