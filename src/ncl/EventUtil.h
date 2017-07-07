@@ -58,25 +58,10 @@ class EventUtil
 {
 public:
   static string
-    getTypeName (EventType type);
-
-  static EventState
-    getStateCode (const string &stateName);
-
-  static string
     getStateName (EventState state);
-
-  static EventStateTransition
-    getTransitionCode (const string &transition);
-
-  static string
-    getTransitionName (EventStateTransition transition);
 
   static AttributeType
     getAttributeTypeCode (const string &attTypeName);
-
-  static string
-    getAttributeTypeName (AttributeType type);
 
   static EventStateTransition
     getTransition (EventState previousState, EventState nextState);
