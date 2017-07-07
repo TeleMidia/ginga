@@ -276,7 +276,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
       return;
     }
 
-  node = ctxObj->getDataObject ();
+  node = ctxObj->getNode ();
   g_assert_nonnull (node);
 
   entity = cast (Entity *, node);
@@ -435,7 +435,7 @@ Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObj,
       while (i != mappings->end ())
         {
           mapping = *i;
-          if (mapping->getNode () == selectedObject->getDataObject ())
+          if (mapping->getNode () == selectedObject->getNode ())
             {
               nodePerspective = switchObj->getNodePerspective ();
               nestedSeq = mapping->getMapNodeNesting ();

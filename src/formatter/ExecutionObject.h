@@ -46,8 +46,7 @@ public:
   virtual bool isPaused ();
   virtual bool isOccurring ();
 
-  Node *getDataObject ();
-  Descriptor *getDescriptor ();
+  Node *getNode ();
   string getId ();
 
   ExecutionObjectContext *getParentObject ();
@@ -86,8 +85,7 @@ public:
   virtual bool resume ();
 
 protected:
-  Node *_dataObject;
-  Descriptor *_descriptor;
+  Node *_node;
   PresentationEvent *_wholeContent;
   INclActionListener *_seListener;
 
