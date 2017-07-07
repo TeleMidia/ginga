@@ -21,88 +21,84 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-Port::Port (const string &id, Node *someNode, Anchor *someInterface)
-    : Anchor (id)
+/**
+ * @brief Creates a new port.
+ * @param id Port id.
+ * @param component Port component.
+ * @param iface Port interface.
+ */
+Port::Port (const string &id, Node *node, Anchor *iface) : Anchor (id)
 {
-  _node = someNode;
-  _interfacePoint = someInterface;
+  g_assert_nonnull (node);
+  _node = node;
+  _interface = iface;
 }
 
-Port::~Port () {}
-
-Anchor *
-Port::getInterface ()
+/**
+ * @brief Destroys port.
+ */
+Port::~Port ()
 {
-  return _interfacePoint;
 }
 
+/**
+ * @brief Gets port component.
+ */
 Node *
 Port::getNode ()
 {
   return _node;
 }
 
-Node *
-Port::getEndNode ()
-{
-  if (instanceof (Anchor *, _interfacePoint))
-    return _node;
-  else
-    return ((Port *)(_interfacePoint))->getEndNode ();
-}
-
+/**
+ * @brief Gets port interface.
+ */
 Anchor *
-Port::getEndInterface ()
+Port::getInterface ()
 {
-  // Polimorfismo
-  if (instanceof (Anchor *, _interfacePoint))
-    {
-      return _interfacePoint;
-    }
-  else
-    {
-      return ((Port *)_interfacePoint)->getEndInterface ();
-    }
+  return _interface;
 }
 
-vector<Node *> *
+/**
+ * @brief Gets final component.
+ */
+Node *
+Port::getFinalNode ()
+{
+  if (instanceof (Port *, _interface))
+    return cast (Port *, _interface)->getFinalNode ();
+  else
+    return _node;
+}
+
+/**
+ * @brief Gets final interface.
+ */
+Anchor *
+Port::getFinalInterface ()
+{
+  if (instanceof (Port *, _interface))
+    return cast (Port *, _interface)->getFinalInterface ();
+  else
+    return _interface;
+}
+
+/**
+ * @brief Gets list of nodes chained via port.
+ */
+vector<Node *>
 Port::getMapNodeNesting ()
 {
-  vector<Node *> *nodeSequence;
-  vector<Node *> *nodeList;
+  vector<Node *> result;
 
-  nodeSequence = new vector<Node *>;
-  nodeSequence->push_back (_node);
-  if (instanceof (Anchor *, _interfacePoint)
-      || instanceof (SwitchPort *, _interfacePoint))
-    {
-      return nodeSequence;
-    }
-  else
-    { // Port
-      nodeList = ((Port *)_interfacePoint)->getMapNodeNesting ();
+  result.push_back (_node);
+  if (!instanceof (Port *, _interface))
+    return result;
 
-      vector<Node *>::iterator it;
-      for (it = nodeList->begin (); it != nodeList->end (); ++it)
-        {
-          nodeSequence->push_back (*it);
-        }
-
-      delete nodeList;
-      return nodeSequence;
-    }
-}
-
-void
-Port::setInterface (Anchor *someInterface)
-{
-  _interfacePoint = someInterface;
-}
-
-void
-Port::setNode (Node *someNode)
-{
-  _node = someNode;
+  vector<Node *> aux = cast (Port *, _interface)->getMapNodeNesting ();
+  for (auto node: aux)
+    result.push_back (node);
+  return result;
 }
 
 GINGA_NCL_END

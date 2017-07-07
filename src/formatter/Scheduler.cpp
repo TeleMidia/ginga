@@ -303,7 +303,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
       for (auto port: *compNode->getPorts ())
         {
           NclNodeNesting *persp;
-          vector<Node *> *nestedSeq;
+          vector<Node *> nestedSeq;
           Anchor *iface;
 
           ExecutionObject *child;
@@ -313,16 +313,14 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
           g_assert_nonnull (persp);
 
           nestedSeq = port->getMapNodeNesting ();
-          g_assert_nonnull (nestedSeq);
-
-          persp->append (nestedSeq);
+          persp->append (&nestedSeq);
 
           // Create or get the execution object mapped by port.
           child = _converter
             ->getExecutionObjectFromPerspective (persp, nullptr);
           g_assert (child);
 
-          iface = port->getEndInterface ();
+          iface = port->getFinalInterface ();
           g_assert_nonnull (iface);
 
           if (!instanceof (Area *, iface))
@@ -335,7 +333,6 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
 
           runAction (evt, action);
 
-          delete nestedSeq;
           delete persp;
         }
     }
@@ -423,7 +420,7 @@ Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObj,
   vector<Port *>::iterator i;
   Port *mapping;
   NclNodeNesting *nodePerspective;
-  vector<Node *> *nestedSeq;
+  vector<Node *> nestedSeq;
   ExecutionObject *endPointObject;
 
   selectedEvent = nullptr;
@@ -439,8 +436,7 @@ Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObj,
             {
               nodePerspective = switchObj->getNodePerspective ();
               nestedSeq = mapping->getMapNodeNesting ();
-              nodePerspective->append (nestedSeq);
-              delete nestedSeq;
+              nodePerspective->append (&nestedSeq);
               try
                 {
                   endPointObject
@@ -454,7 +450,7 @@ Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObj,
                           = _converter
                                 ->getEvent (
                                     endPointObject,
-                                    mapping->getEndInterface (),
+                                    mapping->getFinalInterface (),
                                     switchEvent->getType (),
                                     switchEvent->getKey ());
                     }
