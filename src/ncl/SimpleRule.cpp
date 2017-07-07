@@ -25,7 +25,7 @@ SimpleRule::SimpleRule (const string &id, const string &attr,
     : Rule (id)
 {
   _attribute = attr;
-  setOperator (op);
+  _ruleOperator = op;
   _value = val;
 }
 
@@ -45,24 +45,6 @@ string
 SimpleRule::getValue ()
 {
   return _value;
-}
-
-void
-SimpleRule::setOperator (Comparator::Op newOp)
-{
-  _ruleOperator = newOp;
-}
-
-void
-SimpleRule::setValue (const string &newValue)
-{
-  _value = newValue;
-}
-
-void
-SimpleRule::setAttribute (const string &someAttribute)
-{
-  _attribute = someAttribute;
 }
 
 GINGA_NCL_END

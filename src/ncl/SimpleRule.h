@@ -33,9 +33,6 @@ public:
   string getAttribute ();
   Comparator::Op getOperator ();
   string getValue ();
-  void setOperator (Comparator::Op newOp);
-  void setValue (const string &newValue);
-  void setAttribute (const string &someAttribute);
 
 private:
   string _attribute;
