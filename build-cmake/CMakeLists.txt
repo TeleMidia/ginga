@@ -81,12 +81,16 @@ endif()
 set (GINGA_SOURCES
   ../src/ginga.h
 
+  ../src/common-color-table.cpp
+  ../src/common-key-table.cpp
+  ../src/common-mime-table.cpp
+  ../src/common.cpp
+
   ../src/formatter/Converter.cpp
   ../src/formatter/ExecutionObject.cpp
   ../src/formatter/ExecutionObjectContext.cpp
   ../src/formatter/ExecutionObjectSwitch.cpp
   ../src/formatter/NclActions.cpp
-  ../src/formatter/NclCascadingDescriptor.cpp
   ../src/formatter/NclEvents.cpp
   ../src/formatter/NclEventTransitionManager.cpp
   ../src/formatter/NclFormatterLink.cpp
@@ -97,88 +101,65 @@ set (GINGA_SOURCES
   ../src/formatter/RuleAdapter.cpp
   ../src/formatter/Settings.cpp
   ../src/formatter/Scheduler.cpp
+
   ../src/mb/Display.cpp
   ../src/mb/Dashboard.cpp
-  ../src/ncl/AbsoluteReferenceContent.cpp
+
   ../src/ncl/Action.cpp
-  ../src/ncl/Anchor.cpp
   ../src/ncl/Animation.cpp
+  ../src/ncl/Area.cpp
+  ../src/ncl/AreaLabeled.cpp
   ../src/ncl/AssessmentStatement.cpp
   ../src/ncl/AttributeAssessment.cpp
   ../src/ncl/Base.cpp
   ../src/ncl/Bind.cpp
-  ../src/ncl/CausalConnector.cpp
-  ../src/ncl/CausalLink.cpp
   ../src/ncl/Comparator.cpp
-  ../src/ncl/CompositeNode.cpp
   ../src/ncl/CompositeRule.cpp
+  ../src/ncl/Composition.cpp
   ../src/ncl/CompoundAction.cpp
   ../src/ncl/CompoundCondition.cpp
   ../src/ncl/CompoundStatement.cpp
   ../src/ncl/Connector.cpp
   ../src/ncl/ConnectorBase.cpp
-  ../src/ncl/Content.cpp
-  ../src/ncl/ContentAnchor.cpp
-  ../src/ncl/ContentNode.cpp
-  ../src/ncl/ContextNode.cpp
+  ../src/ncl/Context.cpp
   ../src/ncl/Descriptor.cpp
   ../src/ncl/DescriptorBase.cpp
   ../src/ncl/Entity.cpp
   ../src/ncl/EventUtil.cpp
-  ../src/ncl/FocusDecoration.cpp
-  ../src/ncl/IntervalAnchor.cpp
-  ../src/ncl/KeyNavigation.cpp
-  ../src/ncl/LabeledAnchor.cpp
-  ../src/ncl/LambdaAnchor.cpp
-  ../src/ncl/LayoutRegion.cpp
   ../src/ncl/Link.cpp
+  ../src/ncl/Media.cpp
   ../src/ncl/NclDocument.cpp
   ../src/ncl/Node.cpp
-  ../src/ncl/NodeEntity.cpp
   ../src/ncl/Parameter.cpp
   ../src/ncl/Parser.cpp
   ../src/ncl/Port.cpp
-  ../src/ncl/PropertyAnchor.cpp
-  ../src/ncl/RectangleSpatialAnchor.cpp
-  ../src/ncl/ReferNode.cpp
-  ../src/ncl/ReferenceContent.cpp
-  ../src/ncl/ReferredNode.cpp
+  ../src/ncl/Property.cpp
+  ../src/ncl/Refer.cpp
+  ../src/ncl/Region.cpp
   ../src/ncl/RegionBase.cpp
   ../src/ncl/Role.cpp
-  ../src/ncl/Rule.cpp
   ../src/ncl/RuleBase.cpp
   ../src/ncl/SimpleAction.cpp
   ../src/ncl/SimpleCondition.cpp
   ../src/ncl/SimpleRule.cpp
-  ../src/ncl/SwitchContent.cpp
-  ../src/ncl/SwitchNode.cpp
+  ../src/ncl/Switch.cpp
   ../src/ncl/SwitchPort.cpp
-  ../src/ncl/TextAnchor.cpp
   ../src/ncl/Transition.cpp
   ../src/ncl/TransitionBase.cpp
   ../src/ncl/TransitionUtil.cpp
   ../src/ncl/TriggerExpression.cpp
   ../src/ncl/ValueAssessment.cpp
+
   ../src/player/ImagePlayer.cpp
   ../src/player/LuaPlayer.cpp
   ../src/player/Player.cpp
   ../src/player/PlayerAnimator.cpp
-  ../src/common-color-table.cpp
-  ../src/common-key-table.cpp
-  ../src/common-mime-table.cpp
-  ../src/common.cpp
-
-#if WITH_GSTREAMER
+  ../src/player/TextPlayer.cpp
   ../src/player/VideoPlayer.cpp
-# WITH_GSTREAMER
 
 #if WITH_LIBRSVG
   ../src/player/SvgPlayer.cpp
 #WITH_LIBRSVG
-
-#if WITH_PANGO
-  ../src/player/TextPlayer.cpp
-# WITH_PANGO
 
 #  main
   ../src/main.cpp
