@@ -39,14 +39,10 @@ ExecutionObject::ExecutionObject (const string &id,
                                   INclActionListener *seListener)
 {
   this->_seListener = seListener;
-  this->_dataObject = node;
+  this->_node = node;
   this->_wholeContent = nullptr;
   this->_isCompiled = false;
   this->_mainEvent = nullptr;
-
-  Media *entity = cast (Media *, _dataObject);
-  if (entity != nullptr)
-    _descriptor = entity->getDescriptor ();
 
   _id = id;
   _player = nullptr;
@@ -66,7 +62,7 @@ ExecutionObject::~ExecutionObject ()
   unsetParentsAsListeners ();
 
   _seListener = nullptr;
-  _dataObject = nullptr;
+  _node = nullptr;
   _wholeContent = nullptr;
   _mainEvent = nullptr;
 
@@ -87,12 +83,6 @@ ExecutionObject::~ExecutionObject ()
   _nodeParentTable.clear ();
 
   _parentTable.clear ();
-  if (_descriptor != nullptr)
-    {
-      delete _descriptor;
-      _descriptor = nullptr;
-    }
-
   _objects.insert (this);
   TRACE ("destroying exec object '%s' (%p)", _id.c_str (), this);
 }
@@ -172,15 +162,9 @@ ExecutionObject::isOccurring ()
 }
 
 Node *
-ExecutionObject::getDataObject ()
+ExecutionObject::getNode ()
 {
-  return _dataObject;
-}
-
-Descriptor *
-ExecutionObject::getDescriptor ()
-{
-  return _descriptor;
+  return _node;
 }
 
 string
@@ -192,7 +176,7 @@ ExecutionObject::getId ()
 ExecutionObjectContext *
 ExecutionObject::getParentObject ()
 {
-  return getParentObject (_dataObject);
+  return getParentObject (_node);
 }
 
 ExecutionObjectContext *
@@ -218,7 +202,7 @@ void
 ExecutionObject::addParentObject (ExecutionObjectContext *parentObject,
                                   Node *parentNode)
 {
-  addParentObject (_dataObject, parentObject, parentNode);
+  addParentObject (_node, parentObject, parentNode);
 }
 
 void
@@ -477,9 +461,9 @@ ExecutionObject::getNodes ()
           nodes.push_back (i.first);
         }
 
-      if (_nodeParentTable.count (_dataObject) == 0)
+      if (_nodeParentTable.count (_node) == 0)
         {
-          nodes.push_back (_dataObject);
+          nodes.push_back (_node);
         }
     }
 
@@ -489,8 +473,8 @@ ExecutionObject::getNodes ()
 Property *
 ExecutionObject::getNCMProperty (const string &name)
 {
-  g_assert_nonnull (_dataObject);
-  for (auto anchor: *_dataObject->getAnchors ())
+  g_assert_nonnull (_node);
+  for (auto anchor: *_node->getAnchors ())
     if (instanceof (Property *, anchor) && anchor->getId () == name)
       return cast (Property *, anchor);
   return nullptr;
@@ -499,7 +483,7 @@ ExecutionObject::getNCMProperty (const string &name)
 NclNodeNesting *
 ExecutionObject::getNodePerspective ()
 {
-  return getNodePerspective (_dataObject);
+  return getNodePerspective (_node);
 }
 
 NclNodeNesting *
@@ -512,7 +496,7 @@ ExecutionObject::getNodePerspective (Node *node)
 
   if (_nodeParentTable.count (node) == 0)
     {
-      if (_dataObject == node)
+      if (_node == node)
         {
           perspective = new NclNodeNesting ();
         }
@@ -597,8 +581,8 @@ ExecutionObject::prepare (NclEvent *event)
 bool
 ExecutionObject::start ()
 {
-  Node *entity;
   Media *media;
+  Descriptor *desc;
 
   string src;
   string mime;
@@ -614,10 +598,7 @@ ExecutionObject::start ()
   if (instanceof (ExecutionObjectContext *, this))
     goto done;
 
-  entity = cast (Node *, _dataObject);
-  g_assert_nonnull (entity);
-
-  media = cast (Media *, entity);
+  media = cast (Media *, _node);
   g_assert_nonnull (media);
 
   // Allocate player.
@@ -626,9 +607,10 @@ ExecutionObject::start ()
   _player = Player::createPlayer (_id, src, mime);
 
   // Initialize player properties.
-  if (_descriptor != nullptr)
+  desc = media->getDescriptor ();
+  if (desc != nullptr)
     {
-      Region *region = _descriptor->getRegion ();
+      Region *region = desc->getRegion ();
       if (region != nullptr)
         {
           int z, zorder;
@@ -637,7 +619,7 @@ ExecutionObject::start ()
           _player->setZ (z, zorder);
         }
 
-      for (auto param: *_descriptor->getParameters ())
+      for (auto param: *desc->getParameters ())
         _player->setProperty (param->getName (), param->getValue ());
     }
 

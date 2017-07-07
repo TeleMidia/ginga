@@ -314,7 +314,7 @@ AttributionEvent::AttributionEvent (const string &id,
   this->_settingsNode = false;
   this->_settings = settings;
 
-  Node *node = exeObj->getDataObject ();
+  Node *node = exeObj->getNode ();
   g_assert_nonnull (node);
 
   if (instanceof (Media *, node) && cast (Media *, node)->isSettings ())

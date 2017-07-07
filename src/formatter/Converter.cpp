@@ -244,18 +244,18 @@ Converter::addSameInstance (ExecutionObject *exeObj,
       // A new entry for the execution object is inserted using
       // the refer node id.  As a consequence, links referring to the
       // refer node will generate events in the execution object.
-      Descriptor *desc = exeObj->getDescriptor ();
+      // Descriptor *desc = exeObj->getDescriptor ();
 
-      string objectId;
-      if (desc)
-        {
-          objectId = (referPerspective->getId () + SEPARATOR
-                      + exeObj->getDescriptor ()->getId ());
-        }
-      else
-        {
-          objectId = referPerspective->getId ();
-        }
+      // string objectId;
+      // if (desc)
+      //   {
+      //     objectId = (referPerspective->getId () + SEPARATOR
+      //                 + exeObj->getDescriptor ()->getId ());
+      //   }
+      // else
+      //   {
+      string objectId = referPerspective->getId ();
+        // }
       _exeObjects[objectId] = exeObj;
     }
 
@@ -277,7 +277,7 @@ Converter::addExecutionObject (ExecutionObject *exeObj,
     }
 
   // Hanlde settings nodes.
-  Node *dataObject = exeObj->getDataObject ();
+  Node *dataObject = exeObj->getNode ();
   auto contentNode = cast (Media *, dataObject);
 
   if (contentNode != nullptr && contentNode->isSettings ())
@@ -413,12 +413,14 @@ Converter::createExecutionObject (
                                                           descriptor);
               if (exeObj == nullptr)
                 {
+                  g_assert_nonnull (nodeEntity);
                   exeObj  = new ExecutionObject
                     (id, nodeEntity, _actionListener);
                 }
             }
           else
             {
+              g_assert_nonnull (nodeEntity);
               exeObj = new ExecutionObject
                 (id, nodeEntity, _actionListener);
             }
@@ -436,6 +438,7 @@ Converter::createExecutionObject (
   if (switchNode)
     {
       string s;
+      g_assert_nonnull (node);
       exeObj = new ExecutionObjectSwitch (id, node,
                                           _actionListener);
       xstrassign (s, "%d", (int) EventType::PRESENTATION);
@@ -453,6 +456,7 @@ Converter::createExecutionObject (
   else if (instanceof (Composition* , nodeEntity))
     {
       string s;
+      g_assert_nonnull (node);
       exeObj = new ExecutionObjectContext (id, node, _actionListener);
 
       xstrassign (s, "%d", (int) EventType::PRESENTATION);
@@ -468,6 +472,7 @@ Converter::createExecutionObject (
     }
   else
     {
+      g_assert_nonnull (node);
       exeObj = new ExecutionObject (id, node, _actionListener);
     }
 
@@ -484,10 +489,10 @@ Converter::processLink (Link *ncmLink,
   const set<Refer *> *sameInstances;
   bool contains = false;
 
-  if (executionObject->getDataObject () != nullptr)
+  if (executionObject->getNode () != nullptr)
     {
       nodeEntity
-          = cast (Node *, executionObject->getDataObject ());
+          = cast (Node *, executionObject->getNode ());
     }
 
   // Since the link may be removed in a deepest compilation it is necessary to
@@ -574,7 +579,7 @@ Converter::compileExecutionObjectLinks (
       return;
     }
 
-  execDataObject = exeObj->getDataObject ();
+  execDataObject = exeObj->getNode ();
   if (execDataObject != dataObject)
     {
       compObj = parentObj->getParentFromDataObject (execDataObject);
@@ -658,7 +663,7 @@ Converter::processExecutionObjectSwitch (
   map<string, ExecutionObject *>::iterator i;
   ExecutionObject *selectedObject;
 
-  auto switchNode = cast (Switch *, switchObject->getDataObject ());
+  auto switchNode = cast (Switch *, switchObject->getNode ());
   g_assert_nonnull (switchNode);
 
   selectedNode = _ruleAdapter->adaptSwitch (switchNode);
@@ -726,7 +731,7 @@ Converter::resolveSwitchEvents (
       return;
     }
 
-  selectedNode = selectedObject->getDataObject ();
+  selectedNode = selectedObject->getNode ();
   selectedNode = cast (Node *, selectedNode);
   g_assert_nonnull (selectedNode);
 

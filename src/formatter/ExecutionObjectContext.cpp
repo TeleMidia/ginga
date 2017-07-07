@@ -83,7 +83,7 @@ ExecutionObjectContext::~ExecutionObjectContext ()
       object = j->second;
       if (object != this)
         {
-          object->removeParentObject (_dataObject, this);
+          object->removeParentObject (_node, this);
         }
       ++j;
     }
@@ -105,7 +105,7 @@ ExecutionObjectContext::getParentFromDataObject (Node *dataObject)
       while (i != _execObjList.end ())
         {
           object = i->second;
-          if (object->getDataObject () == parentDataObject)
+          if (object->getNode () == parentDataObject)
             {
               return (ExecutionObjectContext *)object;
             }
@@ -147,7 +147,7 @@ ExecutionObjectContext::addExecutionObject (ExecutionObject *obj)
 
   _execObjList[objId] = obj;
 
-  obj->addParentObject (this, getDataObject ());
+  obj->addParentObject (this, getNode ());
   return true;
 }
 
