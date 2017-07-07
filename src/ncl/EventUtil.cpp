@@ -21,41 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NCL_BEGIN
 
 string
-EventUtil::getTypeName (EventType type)
-{
-  switch (type)
-    {
-    case EventType::PRESENTATION:
-      return "presentation";
-
-    case EventType::SELECTION:
-      return "selection";
-
-    case EventType::ATTRIBUTION:
-      return "attribution";
-
-    default:
-      g_assert_not_reached ();
-    }
-}
-
-EventState
-EventUtil::getStateCode (const string &stateName)
-{
-  if (stateName == "occurring")
-    {
-      return EventState::OCCURRING;
-    }
-  else if (stateName == "paused")
-    {
-      return EventState::PAUSED;
-    }
-
-  // "sleeping"
-  return EventState::SLEEPING;
-}
-
-string
 EventUtil::getStateName (EventState state)
 {
   switch (state)
@@ -72,58 +37,6 @@ EventUtil::getStateName (EventState state)
     default:
       g_assert_not_reached ();
     }
-}
-
-string
-EventUtil::getTransitionName (EventStateTransition transition)
-{
-  switch (transition)
-    {
-    case EventStateTransition::STARTS:
-      return "starts";
-
-    case EventStateTransition::STOPS:
-      return "stops";
-
-    case EventStateTransition::PAUSES:
-      return "pauses";
-
-    case EventStateTransition::RESUMES:
-      return "resumes";
-
-    case EventStateTransition::ABORTS:
-      return "aborts";
-
-    default:
-      g_assert_not_reached ();
-    }
-}
-
-EventStateTransition
-EventUtil::getTransitionCode (const string &transition)
-{
-  if (transition == "starts")
-    {
-      return EventStateTransition::STARTS;
-    }
-  else if (transition == "stops")
-    {
-      return EventStateTransition::STOPS;
-    }
-  else if (transition == "pauses")
-    {
-      return EventStateTransition::PAUSES;
-    }
-  else if (transition == "resumes")
-    {
-      return EventStateTransition::RESUMES;
-    }
-  else if (transition == "aborts")
-    {
-      return EventStateTransition::ABORTS;
-    }
-
-  return EventStateTransition::UNKNOWN;
 }
 
 AttributeType
@@ -147,28 +60,6 @@ EventUtil::getAttributeTypeCode (const string &attTypeName)
     }
 
   return AttributeType::UNKNOWN;
-}
-
-string
-EventUtil::getAttributeTypeName (AttributeType type)
-{
-  switch (type)
-    {
-    case AttributeType::OCCURRENCES:
-      return "occurrences";
-
-    case AttributeType::NODE_PROPERTY:
-      return "nodeProperty";
-
-    case AttributeType::REPETITIONS:
-      return "repetitions";
-
-    case AttributeType::STATE:
-      return "state";
-
-    default:
-      return "nodeProperty";
-    }
 }
 
 EventStateTransition
