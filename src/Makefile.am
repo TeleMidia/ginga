@@ -87,7 +87,6 @@ src+= ncl/Refer.cpp
 src+= ncl/Region.cpp
 src+= ncl/RegionBase.cpp
 src+= ncl/Role.cpp
-src+= ncl/Rule.cpp
 src+= ncl/RuleBase.cpp
 src+= ncl/SimpleAction.cpp
 src+= ncl/SimpleCondition.cpp

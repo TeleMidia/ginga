@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _RULE_H_
-#define _RULE_H_
+#ifndef RULE_H
+#define RULE_H
 
 #include "Entity.h"
 
@@ -25,10 +25,10 @@ GINGA_NCL_BEGIN
 class Rule : public Entity
 {
 public:
-  Rule (const string &_id);
-  virtual ~Rule (){}
+  Rule (const string &id) : Entity (id) {};
+  ~Rule () {};
 };
 
 GINGA_NCL_END
 
-#endif //_RULE_H_
+#endif // RULE_H
