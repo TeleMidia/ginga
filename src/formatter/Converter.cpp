@@ -720,7 +720,7 @@ Converter::resolveSwitchEvents (
   vector<NclEvent *>::iterator i;
   SwitchEvent *switchEvent;
   Anchor *interfacePoint;
-  vector<Node *> *nestedSeq;
+  vector<Node *> nestedSeq;
   NclNodeNesting *nodePerspective;
   NclEvent *mappedEvent;
 
@@ -767,7 +767,7 @@ Converter::resolveSwitchEvents (
                       = switchObject->getNodePerspective ();
 
                   nestedSeq = mapping->getMapNodeNesting ();
-                  nodePerspective->append (nestedSeq);
+                  nodePerspective->append (&nestedSeq);
 
                   endPointObject
                       = getExecutionObjectFromPerspective (
@@ -777,12 +777,11 @@ Converter::resolveSwitchEvents (
                     {
                       mappedEvent = getEvent (
                             endPointObject,
-                            mapping->getEndInterface (),
+                            mapping->getFinalInterface (),
                             switchEvent->getType (),
                             switchEvent->getKey ());
                     }
 
-                  delete nestedSeq;
                   delete nodePerspective;
 
                   break;
@@ -841,7 +840,7 @@ NclEvent *
 Converter::insertContext (NclNodeNesting *contextPerspective,
                           Port *port)
 {
-  vector<Node *> *nestedSeq;
+  vector<Node *> nestedSeq;
   NclNodeNesting *perspective;
   NclEvent *newEvent;
   bool error = false;
@@ -851,10 +850,10 @@ Converter::insertContext (NclNodeNesting *contextPerspective,
       error = true;
     }
 
-  if (!(instanceof (Area *, port->getEndInterface ())
-        || instanceof (AreaLabeled *, port->getEndInterface ())
-        || instanceof (Property *, port->getEndInterface ())
-        || instanceof (SwitchPort *, port->getEndInterface ()))
+  if (!(instanceof (Area *, port->getFinalInterface ())
+        || instanceof (AreaLabeled *, port->getFinalInterface ())
+        || instanceof (Property *, port->getFinalInterface ())
+        || instanceof (SwitchPort *, port->getFinalInterface ()))
       || !(instanceof (Context *,
                        contextPerspective->getAnchorNode ())))
     {
@@ -872,11 +871,10 @@ Converter::insertContext (NclNodeNesting *contextPerspective,
     {
       nestedSeq = port->getMapNodeNesting ();
       perspective = new NclNodeNesting (contextPerspective);
-      perspective->append (nestedSeq);
-      delete nestedSeq;
+      perspective->append (&nestedSeq);
 
       newEvent = insertNode (perspective,
-                             port->getEndInterface (),
+                             port->getFinalInterface (),
                              nullptr);
       delete perspective;
 

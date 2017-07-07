@@ -166,7 +166,7 @@ Link::contains (Node *node, bool condition)
       if ((iface = bind->getInterface ()) != nullptr
           && instanceof (Port *, iface))
         {
-          bound = cast (Port *, iface)->getEndNode ();
+          bound = cast (Port *, iface)->getFinalNode ();
         }
       else
         {

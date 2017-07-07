@@ -167,7 +167,7 @@ vector<Node *> *
 Bind::getNodeNesting ()
 {
   vector<Node *> *nodeNesting;
-  vector<Node *> *nodeSequence;
+  vector<Node *> nodeSequence;
   vector<Node *>::iterator i;
 
   nodeNesting = new vector<Node *>;
@@ -179,16 +179,10 @@ Bind::getNodeNesting ()
         {
           nodeSequence = ((Port *)_interfacePoint)->getMapNodeNesting ();
 
-          if (nodeSequence != NULL)
+          for (auto node: nodeSequence)
             {
-              for (i = nodeSequence->begin (); i != nodeSequence->end ();
-                   ++i)
-                {
-                  nodeNesting->push_back (*i);
-                }
+              nodeNesting->push_back (node);
             }
-
-          delete nodeSequence;
         }
     }
 

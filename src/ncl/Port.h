@@ -27,18 +27,19 @@ class Port : public Anchor
 {
 public:
   Port (const string &, Node *, Anchor *);
-  virtual ~Port ();
-  Anchor *getInterface ();
+  ~Port ();
+
   Node *getNode ();
-  virtual Node *getEndNode ();
-  virtual Anchor *getEndInterface ();
-  vector<Node *> *getMapNodeNesting ();
-  void setInterface (Anchor *);
-  void setNode (Node *);
+  Anchor *getInterface ();
+
+  Node *getFinalNode ();
+  Anchor *getFinalInterface ();
+
+  vector<Node *> getMapNodeNesting ();
 
 protected:
   Node *_node;
-  Anchor *_interfacePoint;
+  Anchor *_interface;
 };
 
 GINGA_NCL_END
