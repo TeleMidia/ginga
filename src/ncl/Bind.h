@@ -15,53 +15,38 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _BIND_H_
-#define _BIND_H_
+#ifndef BIND_H
+#define BIND_H
 
 #include "Descriptor.h"
 #include "Node.h"
-#include "Parameter.h"
-#include "Port.h"
 #include "Role.h"
-#include "SwitchPort.h"
 
 GINGA_NCL_BEGIN
 
 class Bind
 {
 public:
-  Bind (Node *_node, Anchor *interfPt, Descriptor *desc,
-        Role *_role);
-
+  Bind (Role *, Node *, Anchor *, Descriptor *);
   virtual ~Bind ();
-  Descriptor *getDescriptor ();
-  Anchor *getInterface ();
-  Node *getNode ();
+
   Role *getRole ();
-  void setInterface (Anchor *);
-  void setNode (Node *_node);
-  void setRole (Role *_role);
-  void setDescriptor (Descriptor *desc);
-  Parameter *setParameterValue (const string &propertyLabel,
-                                Parameter *propertyValue);
+  Node *getNode ();
+  Anchor *getInterface ();
+  Descriptor *getDescriptor ();
 
-  void addParameter (Parameter *parameter);
-  vector<Parameter *> *getParameters ();
-  Parameter *getParameter (const string &name);
-  bool removeParameter (Parameter *parameter);
-  vector<Node *> *getNodeNesting ();
-  Anchor *getEndPointInterface ();
-
-protected:
-  map<string, Parameter *> *_parameters;
+  void addParameter (Parameter *);
+  const vector<Parameter *> *getParameters ();
+  Parameter *getParameter (const string &);
 
 private:
-  Node *_node;
-  Anchor *_interfacePoint;
-  Descriptor *_descriptor;
   Role *_role;
+  Node *_node;
+  Anchor *_interface;
+  Descriptor *_descriptor;
+  vector<Parameter *> _parameters;
 };
 
 GINGA_NCL_END
 
-#endif //_BIND_H_
+#endif // BIND_H

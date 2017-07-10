@@ -17,198 +17,103 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "Bind.h"
+
 #include "Composition.h"
+#include "SwitchPort.h"
 
 GINGA_NCL_BEGIN
 
-Bind::Bind (Node *node, Anchor *interfPt, Descriptor *desc,
-            Role *role)
+/**
+ * @brief Creates a new bind.
+ * @param comp Component.
+ * @param iface Interface.
+ * @param desc Descriptor.
+ * @param role Role.
+ */
+Bind::Bind (Role *role, Node *comp, Anchor *iface, Descriptor *desc)
 {
-  this->_node = node;
-  this->_interfacePoint = interfPt;
-  this->_descriptor = desc;
-  this->_role = role;
-  this->_parameters = new map<string, Parameter *>;
+  _role = role;
+  _node = comp;
+  _interface = iface;
+  _descriptor = desc;
 }
 
+/**
+ * @brief Destroys bind.
+ */
 Bind::~Bind ()
 {
-  map<string, Parameter *>::iterator i;
-
-  if (_parameters != NULL)
-    {
-      i = _parameters->begin ();
-      while (i != _parameters->end ())
-        {
-          delete i->second;
-          ++i;
-        }
-      delete _parameters;
-      _parameters = NULL;
-    }
+  _parameters.clear ();
 }
 
+/**
+ * @brief Gets role.
+ */
+Role *
+Bind::getRole ()
+{
+  return _role;
+}
+
+/**
+ * @brief Gets component.
+ */
+Node *
+Bind::getNode ()
+{
+  return _node;
+}
+
+/**
+ * @brief Gets interface.
+ */
+Anchor *
+Bind::getInterface ()
+{
+  return _interface;
+}
+
+/**
+ * @brief Gets descriptor.
+ */
 Descriptor *
 Bind::getDescriptor ()
 {
   return _descriptor;
 }
 
-Anchor *
-Bind::getInterface ()
-{
-  return this->_interfacePoint;
-}
-
-Node *
-Bind::getNode ()
-{
-  return this->_node;
-}
-
-Role *
-Bind::getRole ()
-{
-  return this->_role;
-}
-
-void
-Bind::setInterface (Anchor *interfPt)
-{
-  this->_interfacePoint = interfPt;
-}
-
-void
-Bind::setNode (Node *node)
-{
-  this->_node = node;
-}
-
-void
-Bind::setRole (Role *role)
-{
-  this->_role = role;
-}
-
-void
-Bind::setDescriptor (Descriptor *desc)
-{
-  this->_descriptor = desc;
-}
-
-Parameter *
-Bind::setParameterValue (const string &propertyLabel, Parameter *propertyValue)
-{
-  return (*_parameters)[propertyLabel] = propertyValue;
-}
-
+/**
+ * @brief Adds parameter to bind.
+ * @param parameter Parameter.
+ */
 void
 Bind::addParameter (Parameter *parameter)
 {
-  if (parameter == NULL || _parameters == NULL)
-    {
-      return;
-    }
-
-  (*_parameters)[parameter->getName ()] = parameter;
+  g_assert_nonnull (parameter);
+  _parameters.push_back (parameter);
 }
 
-vector<Parameter *> *
+/**
+ * @brief Gets all parameters.
+ */
+const vector<Parameter *> *
 Bind::getParameters ()
 {
-  if (_parameters->empty ())
-    return NULL;
-
-  map<string, Parameter *>::iterator i;
-  vector<Parameter *> *params;
-
-  params = new vector<Parameter *>;
-  for (i = _parameters->begin (); i != _parameters->end (); ++i)
-    params->push_back (i->second);
-
-  return params;
+  return &_parameters;
 }
 
+/**
+ * @brief Gets parameter.
+ * @param name Parameter name.
+ * @return Parameter if successful, or null if not found.
+ */
 Parameter *
-Bind::getParameter (const string &paramName)
+Bind::getParameter (const string &name)
 {
-  if (_parameters->empty ())
-    return NULL;
-
-  map<string, Parameter *>::iterator i;
-  for (i = _parameters->begin (); i != _parameters->end (); ++i)
-    if (i->first == paramName)
-      return (Parameter *)(i->second);
-
-  return NULL;
-}
-
-bool
-Bind::removeParameter (Parameter *parameter)
-{
-  if (_parameters->empty ())
-    return false;
-
-  map<string, Parameter *>::iterator i;
-
-  for (i = _parameters->begin (); i != _parameters->end (); ++i)
-    {
-      if (i->first == parameter->getName ())
-        {
-          _parameters->erase (i);
-          return true;
-        }
-    }
-
-  return false;
-}
-
-vector<Node *> *
-Bind::getNodeNesting ()
-{
-  vector<Node *> *nodeNesting;
-  vector<Node *> nodeSequence;
-  vector<Node *>::iterator i;
-
-  nodeNesting = new vector<Node *>;
-  nodeNesting->push_back (_node);
-  if (_interfacePoint != NULL)
-    {
-      if (instanceof (Port *, _interfacePoint)
-          && !(instanceof (SwitchPort *, _interfacePoint)))
-        {
-          nodeSequence = ((Port *)_interfacePoint)->getMapNodeNesting ();
-
-          for (auto node: nodeSequence)
-            {
-              nodeNesting->push_back (node);
-            }
-        }
-    }
-
-  return nodeNesting;
-}
-
-Anchor *
-Bind::getEndPointInterface ()
-{
-  Composition *compositeNode;
-  Port *port;
-
-  Node *nodeEntity = cast (Node *, _node->derefer ());
-  g_assert_nonnull (nodeEntity);
-
-  if (instanceof (Composition *, nodeEntity)
-      && instanceof (Port *, _interfacePoint))
-    {
-      compositeNode = cast (Composition *, nodeEntity);
-      port = (Port *)_interfacePoint;
-      return compositeNode->getMapInterface (port);
-    }
-  else
-    {
-      return _interfacePoint;
-    }
+  for (auto param: _parameters)
+    if (param->getName () == name)
+      return param;
+  return nullptr;
 }
 
 GINGA_NCL_END

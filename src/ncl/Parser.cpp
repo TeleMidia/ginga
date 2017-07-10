@@ -2236,7 +2236,7 @@ Parser::parseBind (DOMElement *elt, Link *link, Context *context)
     }
   g_assert_nonnull (role);
 
-  bind = new Bind (target, iface, desc, role);
+  bind = new Bind (role, target, iface, desc);
   link->addBind (bind);
 
   // Collect children.
