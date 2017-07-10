@@ -591,20 +591,18 @@ Parser::parseCompositeRule (DOMElement *elt)
   CompositeRule *rule;
   string id;
   string value;
-  short op;
 
   CHECK_ELT_TAG (elt, "compositeRule", nullptr);
   CHECK_ELT_ID (elt, &id);
 
   CHECK_ELT_ATTRIBUTE (elt, "operator", &value);
   if (value == "and")
-    op = CompositeRule::OP_AND;
+    rule = new CompositeRule (id, true);
   else if (value == "or")
-    op = CompositeRule::OP_OR;
+    rule = new CompositeRule (id, false);
   else
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "operator");
 
-  rule = new CompositeRule (id, op);
   for (DOMElement *child: dom_elt_get_children (elt))
     {
       string tag = dom_elt_get_tag (child);
