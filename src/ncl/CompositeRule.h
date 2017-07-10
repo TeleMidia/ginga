@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _COMPOSITERULE_H_
-#define _COMPOSITERULE_H_
+#ifndef COMPOSITE_RULE_H
+#define COMPOSITE_RULE_H
 
 #include "Rule.h"
 
@@ -25,26 +25,17 @@ GINGA_NCL_BEGIN
 class CompositeRule : public Rule
 {
 public:
-  static const short OP_AND = 0;
-  static const short OP_OR = 1;
-
-  CompositeRule (const string &_id, short someOperator);
-  CompositeRule (const string &_id, Rule *firstRule, Rule *secondRule,
-                 short someOperator);
-
+  CompositeRule (const string &, bool);
   virtual ~CompositeRule ();
-  bool addRule (Rule *rule);
-  vector<Rule *> *getRules ();
-  short getOperator ();
-  bool removeRule (Rule *rule);
-  void setOperator (short op);
+  bool isConjunction ();
+  void addRule (Rule *);
+  const vector<Rule *> *getRules ();
 
 private:
-  vector<Rule *> *_rules;
-  short _ruleOperator;
-  string _opStr;
+  vector<Rule *> _rules;
+  bool _conjunction;
 };
 
 GINGA_NCL_END
 
-#endif //_COMPOSITERULE_H_
+#endif // COMPOSITE_RULE_H

@@ -151,21 +151,17 @@ RuleAdapter::initializeAttributeRuleRelation (Rule *topRule, Rule *rule)
         {
           ruleVector = new vector<Rule *>;
           (*ruleListenMap)[(((SimpleRule *)rule)->getAttribute ())]
-              = ruleVector;
+            = ruleVector;
         }
       ruleVector->push_back (topRule);
     }
   else
     {
-      ruleVector = ((CompositeRule *)rule)->getRules ();
-      if (ruleVector != NULL)
+      const vector<Rule *> *vec = ((CompositeRule *)rule)->getRules ();
+      for (auto rule: *vec)
         {
-          rules = ruleVector->begin ();
-          while (rules != ruleVector->end ())
-            {
-              initializeAttributeRuleRelation (topRule, (Rule *)(*rules));
-              ++rules;
-            }
+          initializeAttributeRuleRelation (topRule, rule);
+          ++rules;
         }
     }
 }
@@ -204,41 +200,21 @@ RuleAdapter::evaluateRule (Rule *rule)
 bool
 RuleAdapter::evaluateCompositeRule (CompositeRule *rule)
 {
-  Rule *childRule;
-
-  vector<Rule *> *rules;
-  vector<Rule *>::iterator iterator;
-
-  rules = (rule->getRules ()); // sf
-  if (rules != NULL)
+  if (rule->isConjunction ())
     {
-      iterator = rules->begin ();
-      switch (rule->getOperator ())
-        {
-        case CompositeRule::OP_OR:
-          while (iterator != rules->end ())
-            {
-              childRule = (*iterator);
-              if (evaluateRule (childRule))
-                return true;
-              ++iterator;
-            }
+      for (auto child: *rule->getRules ())
+        if (!evaluateRule (child))
           return false;
-
-        case CompositeRule::OP_AND:
-
-        default:
-          while (iterator != rules->end ())
-            {
-              childRule = (*iterator);
-              if (!evaluateRule (childRule))
-                return false;
-              ++iterator;
-            }
-          return true;
-        }
+      return true;
     }
-  return false;
+  else
+    {
+      for (auto child: *rule->getRules ())
+        if (evaluateRule (child))
+          return true;
+      return false;
+    }
+  g_assert_not_reached ();
 }
 
 bool

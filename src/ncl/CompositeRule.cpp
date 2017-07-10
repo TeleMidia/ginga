@@ -20,97 +20,50 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-CompositeRule::CompositeRule (const string &id, short someOperator) : Rule (id)
+/**
+ * @brief Creates a new composite rule.
+ * @param id Rule id.
+ * @param conj True if composite rule is a conjunction.
+ */
+CompositeRule::CompositeRule (const string &id, bool conj) : Rule (id)
 {
-  _rules = new vector<Rule *>;
-  setOperator (someOperator);
+  _conjunction = conj;
 }
 
-CompositeRule::CompositeRule (const string &id, Rule *firstRule, Rule *secondRule,
-                              short someOperator)
-    : Rule (id)
-{
-  _rules = new vector<Rule *>;
-  setOperator (someOperator);
-  _rules->push_back (firstRule);
-  _rules->push_back (secondRule);
-}
-
+/**
+ * @brief Destroys composite rule.
+ */
 CompositeRule::~CompositeRule ()
 {
-  vector<Rule *>::iterator i;
-
-  if (_rules != NULL)
-    {
-      i = _rules->begin ();
-      while (i != _rules->begin ())
-        {
-          delete *i;
-          ++i;
-        }
-
-      delete _rules;
-      _rules = NULL;
-    }
+  _rules.clear ();
 }
 
+/**
+ * @brief Tests whether composite rule is a conjunction.
+ */
 bool
+CompositeRule::isConjunction ()
+{
+  return _conjunction;
+}
+
+/**
+ * @brief Adds rule to composite rule.
+ */
+void
 CompositeRule::addRule (Rule *rule)
 {
-  _rules->push_back (rule);
-  return true;
+  g_assert_nonnull (rule);
+  _rules.push_back (rule);
 }
 
-vector<Rule *> *
+/**
+ * @brief Gets all child rules.
+ */
+const vector<Rule *> *
 CompositeRule::getRules ()
 {
-  return _rules;
-}
-
-short
-CompositeRule::getOperator ()
-{
-  return _ruleOperator;
-}
-
-bool
-CompositeRule::removeRule (Rule *rule)
-{
-  vector<Rule *>::iterator iterRule;
-
-  iterRule = _rules->begin ();
-  while (iterRule != _rules->end ())
-    {
-      if ((*(*iterRule)).getId () == rule->getId ())
-        {
-          _rules->erase (iterRule);
-          return true;
-        }
-      ++iterRule;
-    }
-  return false;
-}
-
-void
-CompositeRule::setOperator (short op)
-{
-  switch (op)
-    {
-    case OP_OR:
-      _ruleOperator = OP_OR;
-      _opStr = "OR";
-      break;
-
-    case OP_AND:
-      _ruleOperator = OP_AND;
-      _opStr = "AND";
-      break;
-
-    default:
-      _ruleOperator = OP_AND;
-      _opStr = "AND";
-      break;
-    }
+  return &_rules;
 }
 
 GINGA_NCL_END
