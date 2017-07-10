@@ -186,7 +186,7 @@ bool ginga_color_table_index (const string &, SDL_Color *);
 bool ginga_key_table_index (SDL_Keycode, string *);
 bool ginga_mime_table_index (string, string *);
 
-// Parsing functions.
+// Parsing and evaluation functions.
 bool _ginga_parse_bool (const string &, bool *);
 bool ginga_parse_bool (const string &);
 bool _ginga_parse_color (const string &, SDL_Color *);
@@ -197,6 +197,7 @@ int ginga_parse_percent (const string &, int, int, int);
 #define ginga_parse_pixel(s) (guint8) ginga_parse_percent ((s), 255, 0, 255)
 bool _ginga_parse_time (const string &, GingaTime *);
 GingaTime ginga_parse_time (const string &);
+bool ginga_eval_operator (const string &, const string &, const string &);
 
 // String functions.
 bool _xstrtod (const string &, double *);

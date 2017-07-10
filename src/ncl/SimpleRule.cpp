@@ -20,27 +20,50 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
+/**
+ * @brief Creates a new simple rule.
+ * @param id Rule id.
+ * @param attr Attribute.
+ * @param op Operator.
+ * @param value Value.
+ */
 SimpleRule::SimpleRule (const string &id, const string &attr,
-                        Comparator::Op op, const string &val)
-    : Rule (id)
+                        const string &op, const string &value)
+  : Rule (id)
 {
   _attribute = attr;
-  _ruleOperator = op;
-  _value = val;
+  _operator = op;
+  _value = value;
 }
 
+/**
+ * @brief Destroys simple rule.
+ */
+SimpleRule::~SimpleRule ()
+{
+}
+
+/**
+ * @brief Gets attribute.
+ */
 string
 SimpleRule::getAttribute ()
 {
   return _attribute;
 }
 
-Comparator::Op
+/**
+ * @brief Gets operator.
+ */
+string
 SimpleRule::getOperator ()
 {
-  return _ruleOperator;
+  return _operator;
 }
 
+/**
+ * @brief Gets value.
+ */
 string
 SimpleRule::getValue ()
 {
