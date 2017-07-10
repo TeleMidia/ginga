@@ -62,7 +62,6 @@ src+= ncl/AssessmentStatement.cpp
 src+= ncl/AttributeAssessment.cpp
 src+= ncl/Base.cpp
 src+= ncl/Bind.cpp
-src+= ncl/Comparator.cpp
 src+= ncl/CompositeRule.cpp
 src+= ncl/Composition.cpp
 src+= ncl/CompoundAction.cpp

@@ -1313,8 +1313,21 @@ Parser::parseAssessmentStatement (DOMElement *elt)
 
   CHECK_ELT_TAG (elt, "assessmentStatement", nullptr);
   CHECK_ELT_OPT_ATTRIBUTE (elt, "comparator", &comp, "eq");
+  if (xstrcaseeq (comp, "eq")
+      || xstrcaseeq (comp, "ne")
+      || xstrcaseeq (comp, "lt")
+      || xstrcaseeq (comp, "lte")
+      || xstrcaseeq (comp, "gt")
+      || xstrcaseeq (comp, "gte"))
+    {
+      comp = xstrdown (comp);
+    }
+  else
+    {
+      ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "comparator");
+    }
 
-  stmt = new AssessmentStatement (Comparator::fromString (comp));
+  stmt = new AssessmentStatement (comp);
   for (DOMElement *child: dom_elt_get_children (elt))
     {
       string tag = dom_elt_get_tag (child);
@@ -2229,7 +2242,7 @@ Parser::parseBind (DOMElement *elt, Link *link, Context *context)
       assess->setEventType (EventType::ATTRIBUTION);
       assess->setAttributeType (AttributeType::NODE_PROPERTY);
 
-      stmt = new AssessmentStatement (Comparator::CMP_NE);
+      stmt = new AssessmentStatement ("ne");
       stmt->setMainAssessment (assess);
       stmt->setOtherAssessment (new ValueAssessment (label));
 

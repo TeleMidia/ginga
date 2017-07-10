@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define SIMPLE_RULE_H
 
 #include "Rule.h"
-#include "Comparator.h"
 
 GINGA_NCL_BEGIN
 
@@ -28,7 +27,7 @@ class SimpleRule : public Rule
 public:
   SimpleRule (const string &, const string &,
               const string &, const string &);
-  ~SimpleRule (){}
+  ~SimpleRule ();
   string getAttribute ();
   string getOperator ();
   string getValue ();

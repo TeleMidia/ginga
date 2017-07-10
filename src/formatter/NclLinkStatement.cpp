@@ -120,7 +120,7 @@ NclLinkCompoundStatement::evaluate ()
 }
 
 NclLinkAssessmentStatement::NclLinkAssessmentStatement (
-    Comparator::Op comparator, NclLinkAttributeAssessment *mainAssessment,
+    const string &comparator, NclLinkAttributeAssessment *mainAssessment,
     NclLinkAssessment *otherAssessment)
     : NclLinkStatement ()
 {
@@ -155,16 +155,10 @@ NclLinkAssessmentStatement::getEvents ()
   return events;
 }
 
-Comparator::Op
+string
 NclLinkAssessmentStatement::getComparator ()
 {
   return _comparator;
-}
-
-void
-NclLinkAssessmentStatement::setComparator (Comparator::Op comp)
-{
-  _comparator = comp;
 }
 
 NclLinkAssessment *
@@ -198,9 +192,8 @@ NclLinkAssessmentStatement::evaluate ()
 {
   if (_mainAssessment == NULL || _otherAssessment == NULL)
     return false;
-
-  return Comparator::evaluate (_mainAssessment->getValue (),
-                               _otherAssessment->getValue (), _comparator);
+  return ginga_eval_operator (_comparator, _mainAssessment->getValue (),
+                              _otherAssessment->getValue ());
 }
 
 GINGA_FORMATTER_END

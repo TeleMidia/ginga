@@ -61,14 +61,14 @@ protected:
 class NclLinkAssessmentStatement : public NclLinkStatement
 {
 public:
-  NclLinkAssessmentStatement (Comparator::Op _comparator,
+  NclLinkAssessmentStatement (const string &,
                               NclLinkAttributeAssessment *mainAssessment,
                               NclLinkAssessment *otherAssessment);
 
   virtual ~NclLinkAssessmentStatement ();
   vector<NclEvent *> getEvents ();
-  Comparator::Op getComparator ();
-  void setComparator (Comparator::Op comp);
+  string getComparator ();
+  void setComparator (string comp);
   NclLinkAssessment *getMainAssessment ();
   void setMainAssessment (NclLinkAssessment *assessment);
   NclLinkAssessment *getOtherAssessment ();
@@ -76,7 +76,7 @@ public:
   virtual bool evaluate ();
 
 protected:
-  Comparator::Op _comparator;
+  string _comparator;
   NclLinkAssessment *_otherAssessment;
 
 private:
