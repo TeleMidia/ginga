@@ -1729,8 +1729,8 @@ Converter::createSimpleCondition (
 }
 
 NclEvent *
-Converter::createEvent (
-    Bind *bind, Link *ncmLink, ExecutionObjectContext *parentObject)
+Converter::createEvent (Bind *bind, Link *ncmLink,
+                        ExecutionObjectContext *parentObject)
 {
   NclNodeNesting *endPointNodeSequence;
   NclNodeNesting *endPointPerspective;
@@ -1739,17 +1739,28 @@ Converter::createEvent (
   Anchor *interfacePoint;
   string key;
   NclEvent *event = nullptr;
-  vector<Node *> *seq;
+  vector<Node *> seq;
 
   endPointPerspective = parentObject->getNodePerspective ();
 
-  // parent object may be a refer
   parentNode = endPointPerspective->getAnchorNode ();
 
-  // teste para verificar se ponto terminal eh o proprio contexto ou
-  // refer para o proprio contexto
-  seq = bind->getNodeNesting ();
-  endPointNodeSequence = new NclNodeNesting (seq);
+  Node *node = bind->getNode ();
+  g_assert_nonnull (node);
+
+  interfacePoint = bind->getInterface ();
+
+  //seq = bind->getNodeNesting ();
+  seq.push_back (node);
+  if (interfacePoint != nullptr
+    && instanceof (Port *, interfacePoint)
+      && !(instanceof (SwitchPort *, interfacePoint)))
+    {
+      for (auto inner: ((Port *) interfacePoint)->getMapNodeNesting ())
+        seq.push_back (inner);
+    }
+
+  endPointNodeSequence = new NclNodeNesting (&seq);
   if (endPointNodeSequence->getAnchorNode ()
       != endPointPerspective->getAnchorNode ()
       && endPointNodeSequence->getAnchorNode () != parentNode)
@@ -1757,7 +1768,6 @@ Converter::createEvent (
       endPointPerspective->append (endPointNodeSequence);
     }
 
-  delete seq;
   delete endPointNodeSequence;
 
   try
@@ -1784,7 +1794,7 @@ Converter::createEvent (
     return nullptr;
   }
 
-  interfacePoint = bind->getEndPointInterface ();
+
   if (interfacePoint == nullptr)
     {
       // TODO: This is an error, the formatter then return the main event
@@ -1794,6 +1804,14 @@ Converter::createEvent (
       delete endPointPerspective;
 
       return executionObject->getWholeContentPresentationEvent ();
+    }
+
+  if (instanceof (Composition *, node)
+      && instanceof (Port *, interfacePoint))
+    {
+      Composition *comp = cast (Composition *, node);
+      Port *port = cast (Port *, interfacePoint);
+      interfacePoint = comp->getMapInterface (port);
     }
 
   key = getBindKey (ncmLink, bind);
