@@ -29,7 +29,6 @@ GINGA_PRAGMA_DIAG_POP ()
 
 #include "Area.h"
 #include "AreaLabeled.h"
-#include "Comparator.h"
 #include "CompositeRule.h"
 #include "CompoundAction.h"
 #include "CompoundCondition.h"

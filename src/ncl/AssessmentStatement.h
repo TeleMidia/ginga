@@ -21,25 +21,23 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Assessment.h"
 #include "AttributeAssessment.h"
 #include "Statement.h"
-#include "Comparator.h"
 
 GINGA_NCL_BEGIN
 
 class AssessmentStatement : public Statement
 {
 public:
-  AssessmentStatement (Comparator::Op comp);
+  AssessmentStatement (const string &);
   virtual ~AssessmentStatement ();
   AttributeAssessment *getMainAssessment ();
-  void setMainAssessment (AttributeAssessment *assessment);
+  void setMainAssessment (AttributeAssessment *);
   Assessment *getOtherAssessment ();
-  void setOtherAssessment (Assessment *assessment);
-  Comparator::Op getComparator ();
-  void setComparator (Comparator::Op comp);
+  void setOtherAssessment (Assessment *);
+  string getComparator ();
   vector<Role *> *getRoles ();
 
 private:
-  Comparator::Op _comparator;
+  string _comparator;
   AttributeAssessment *_mainAssessment;
   Assessment *_otherAssessment;
 };

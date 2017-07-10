@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-AssessmentStatement::AssessmentStatement (Comparator::Op comp) : Statement ()
+AssessmentStatement::AssessmentStatement (const string &comp) : Statement ()
 {
   _comparator = comp;
   _mainAssessment = NULL;
@@ -30,16 +30,9 @@ AssessmentStatement::AssessmentStatement (Comparator::Op comp) : Statement ()
 AssessmentStatement::~AssessmentStatement ()
 {
   if (_mainAssessment != NULL)
-    {
-      delete _mainAssessment;
-      _mainAssessment = NULL;
-    }
-
+    delete _mainAssessment;
   if (_otherAssessment != NULL)
-    {
-      delete _otherAssessment;
-      _otherAssessment = NULL;
-    }
+    delete _otherAssessment;
 }
 
 AttributeAssessment *
@@ -66,16 +59,10 @@ AssessmentStatement::setOtherAssessment (Assessment *assessment)
   this->_otherAssessment = assessment;
 }
 
-Comparator::Op
+string
 AssessmentStatement::getComparator ()
 {
   return _comparator;
-}
-
-void
-AssessmentStatement::setComparator (Comparator::Op comp)
-{
-  _comparator = comp;
 }
 
 vector<Role *> *
