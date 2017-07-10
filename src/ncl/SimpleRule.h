@@ -26,17 +26,16 @@ GINGA_NCL_BEGIN
 class SimpleRule : public Rule
 {
 public:
-  SimpleRule (const string &id, const string &attr, Comparator::Op op,
-              const string &val);
-
-  virtual ~SimpleRule (){}
+  SimpleRule (const string &, const string &,
+              const string &, const string &);
+  ~SimpleRule (){}
   string getAttribute ();
-  Comparator::Op getOperator ();
+  string getOperator ();
   string getValue ();
 
 private:
   string _attribute;
-  Comparator::Op _ruleOperator;
+  string _operator;
   string _value;
 };
 

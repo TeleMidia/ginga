@@ -632,9 +632,22 @@ Parser::parseRule (DOMElement *elt)
   CHECK_ELT_TAG (elt, "rule", nullptr);
   CHECK_ELT_OPT_ID_AUTO (elt, &id, rule);
   CHECK_ELT_ATTRIBUTE (elt, "var", &var);
-  CHECK_ELT_ATTRIBUTE (elt, "comparator", &value);
+  CHECK_ELT_ATTRIBUTE (elt, "comparator", &comp);
   CHECK_ELT_ATTRIBUTE (elt, "value", &value);
-  return new SimpleRule (id, var, Comparator::fromString (comp), value);
+  if (xstrcaseeq (comp, "eq")
+      || xstrcaseeq (comp, "ne")
+      || xstrcaseeq (comp, "lt")
+      || xstrcaseeq (comp, "lte")
+      || xstrcaseeq (comp, "gt")
+      || xstrcaseeq (comp, "gte"))
+    {
+      comp = xstrdown (comp);
+    }
+  else
+    {
+      ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "comparator");
+    }
+  return new SimpleRule (id, var, comp, value);
 }
 
 // Private: Transition.

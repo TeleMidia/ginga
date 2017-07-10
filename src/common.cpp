@@ -56,7 +56,7 @@ __ginga_strfunc (const string &strfunc)
 }
 
 
-// Parsing -----------------------------------------------------------------
+// Parsing and evaluation --------------------------------------------------
 
 /**
  * @brief Parses boolean string.
@@ -327,6 +327,51 @@ ginga_parse_list (const string &s, char sep, size_t min, size_t max)
   if (unlikely (!_ginga_parse_list (s, sep, min, max, &result)))
     ERROR_SYNTAX ("invalid list string '%s'", s.c_str ());
   return result;
+}
+
+/**
+ * @brief Evaluates operator with the given operands.
+ * @param Operator ("eq", "ne", "lt", "lte", "gt", or "gte").
+ * @param a First operand.
+ * @param b Second operand.
+ */
+bool
+ginga_eval_operator (const string &op, const string &a, const string &b)
+{
+  if (xstrcaseeq (op, "eq"))
+    {
+      if (a == b)
+        return true;
+    }
+  else if (xstrcaseeq (op, "ne"))
+    {
+      if (a != b)
+        return true;
+    }
+  else if (xstrcaseeq (op, "lt"))
+    {
+      if (a.compare (b) < 0)
+        return true;
+    }
+  else if (xstrcaseeq (op, "lte"))
+    {
+      if (a.compare (b) <= 0)
+        return true;
+    }
+  else if (xstrcaseeq (op, "gt"))
+    {
+      if (a.compare (b) > 0)
+        return true;
+    }
+  else if (xstrcaseeq (op, "gte"))
+    {
+      if (a.compare (b) >= 0)
+        return true;
+    }
+  else
+    g_assert_not_reached ();
+
+  return false;
 }
 
 

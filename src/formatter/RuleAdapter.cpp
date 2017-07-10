@@ -221,54 +221,15 @@ bool
 RuleAdapter::evaluateSimpleRule (SimpleRule *rule)
 {
   string attribute;
-  Comparator::Op op;
   string ruleValue;
   string attributeValue;
+  string op = rule->getOperator ();
 
   attribute = rule->getAttribute ();
   attributeValue = settings->get (attribute);
-
   ruleValue = rule->getValue ();
-
-  if (attributeValue == "")
-    {
-      return false;
-    }
-
-  op = rule->getOperator ();
-  switch (op)
-    {
-    case Comparator::CMP_EQ:
-      if (attributeValue == "" && ruleValue == "")
-        {
-          return true;
-        }
-      else if (attributeValue == "")
-        {
-          return false;
-        }
-      else
-        {
-          return Comparator::evaluate (attributeValue, ruleValue, op);
-        }
-
-    case Comparator::CMP_NE:
-      if (attributeValue == "" && ruleValue == "")
-        {
-          return false;
-        }
-      else if (attributeValue == "")
-        {
-          return true;
-        }
-      else
-        {
-          return Comparator::evaluate (attributeValue, ruleValue, op);
-        }
-
-    default:
-      return Comparator::evaluate (attributeValue, ruleValue, op);
-    }
+  return ginga_eval_operator (rule->getOperator (),
+                              attributeValue, ruleValue);
 }
 
 GINGA_FORMATTER_END
