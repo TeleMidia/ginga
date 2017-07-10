@@ -331,7 +331,7 @@ ginga_parse_list (const string &s, char sep, size_t min, size_t max)
 
 /**
  * @brief Evaluates operator with the given operands.
- * @param Operator ("eq", "ne", "lt", "lte", "gt", or "gte").
+ * @param op Operator ("eq", "ne", "lt", "lte", "gt", or "gte").
  * @param a First operand.
  * @param b Second operand.
  */
