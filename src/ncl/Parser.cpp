@@ -1164,9 +1164,11 @@ Parser::parseCompoundCondition (DOMElement *elt)
 SimpleCondition *
 Parser::parseSimpleCondition (DOMElement *elt)
 {
-  SimpleCondition *cond;
+  string str;
   string role;
-  string value;
+  string key;
+  string delay;
+  string qualifier;
 
   EventType type;
   EventStateTransition trans;
@@ -1174,9 +1176,12 @@ Parser::parseSimpleCondition (DOMElement *elt)
 
   CHECK_ELT_TAG (elt, "simpleCondition", nullptr);
   CHECK_ELT_ATTRIBUTE (elt, "role", &role);
+  CHECK_ELT_OPT_ATTRIBUTE (elt, "qualifier", &qualifier, "or");
+  CHECK_ELT_OPT_ATTRIBUTE (elt, "delay", &delay, "0");
+  CHECK_ELT_OPT_ATTRIBUTE (elt, "key", &key, "");
 
   type = (EventType) -1;
-  trans = EventStateTransition::UNKNOWN;
+  trans = (EventStateTransition) -1;
 
   if ((it = reserved_condition_table.find (role))
       != reserved_condition_table.end ())
@@ -1185,7 +1190,7 @@ Parser::parseSimpleCondition (DOMElement *elt)
       trans = (EventStateTransition) it->second.second;
     }
 
-  if (dom_elt_try_get_attribute (value, elt, "eventType"))
+  if (dom_elt_try_get_attribute (str, elt, "eventType"))
     {
       if (unlikely (type != (EventType) -1))
         {
@@ -1193,15 +1198,15 @@ Parser::parseSimpleCondition (DOMElement *elt)
                             role.c_str ());
         }
       map<string, EventType>::iterator it;
-      if ((it = event_type_table.find (value)) == event_type_table.end ())
+      if ((it = event_type_table.find (str)) == event_type_table.end ())
         {
           ERROR_SYNTAX_ELT (elt, "bad eventType '%s' for role '%s'",
-                            value.c_str (), role.c_str ());
+                            str.c_str (), role.c_str ());
         }
       type = it->second;
     }
 
-  if (dom_elt_try_get_attribute (value, elt, "transition"))
+  if (dom_elt_try_get_attribute (str, elt, "transition"))
     {
       if (unlikely (trans != EventStateTransition::UNKNOWN))
         {
@@ -1209,41 +1214,23 @@ Parser::parseSimpleCondition (DOMElement *elt)
                             role.c_str ());
         }
       map<string, EventStateTransition>::iterator it;
-      if ((it = event_transition_table.find (value))
+      if ((it = event_transition_table.find (str))
           == event_transition_table.end ())
         {
           ERROR_SYNTAX_ELT (elt, "bad transition '%s' for role '%s'",
-                            value.c_str (), role.c_str ());
+                            str.c_str (), role.c_str ());
         }
       trans = it->second;
     }
 
   g_assert (type != (EventType) -1);
-  g_assert (trans != EventStateTransition::UNKNOWN);
+  g_assert (trans != (EventStateTransition) -1);
 
-  cond = new SimpleCondition (type, role);
-  cond->setTransition (trans);
+  if (qualifier != "and" && qualifier != "or")
+    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "qualifier");
 
-  if (type == EventType::SELECTION
-      && dom_elt_try_get_attribute (value, elt, "key"))
-    {
-      cond->setKey (value);
-    }
-
-  if (dom_elt_try_get_attribute (value, elt, "delay"))
-    cond->setDelay (value);
-
-  if (dom_elt_try_get_attribute (value, elt, "qualifier"))
-    {
-      if (value == "or")
-        cond->setQualifier (CompoundCondition::OP_OR);
-      else if (value == "and")
-        cond->setQualifier (CompoundCondition::OP_AND);
-      else
-        ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "qualifier");
-    }
-
-  return cond;
+  return new SimpleCondition (type, trans, role, qualifier == "and",
+                              delay, key);
 }
 
 CompoundStatement *

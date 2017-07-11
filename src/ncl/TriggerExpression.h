@@ -30,7 +30,7 @@ public:
   string getDelay ();
   void setDelay (const string &delay);
 
-private:
+protected:
   string _delay;
 };
 
