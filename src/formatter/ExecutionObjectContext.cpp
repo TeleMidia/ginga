@@ -118,13 +118,9 @@ ExecutionObjectContext::getParentFromDataObject (Node *dataObject)
 void
 ExecutionObjectContext::suspendLinkEvaluation (bool suspend)
 {
-  set<NclFormatterLink *>::iterator i;
-
-  i = _links.begin ();
-  while (i != _links.end ())
+  for (NclFormatterLink *link : _links)
     {
-      (*i)->suspendLinkEvaluation (suspend);
-      ++i;
+      link->suspendLinkEvaluation (suspend);
     }
 }
 
