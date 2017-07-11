@@ -26,14 +26,12 @@ GINGA_NCL_BEGIN
 class SimpleCondition : public TriggerExpression, public Role
 {
 public:
-  static const short NO_QUALIFIER = -1;
-  SimpleCondition (const string &role);
+  SimpleCondition (EventType, const string &);
   virtual ~SimpleCondition (){}
-
   string getKey ();
-  void setKey (const string &_key);
+  void setKey (const string &);
   EventStateTransition getTransition ();
-  void setTransition (EventStateTransition transition);
+  void setTransition (EventStateTransition);
   short getQualifier ();
   void setQualifier (short _qualifier);
 

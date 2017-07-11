@@ -34,7 +34,7 @@ public:
      STOP,
      ABORT,
     };
-  SimpleAction (Type, const string &, const string &,
+  SimpleAction (EventType, Type, const string &, const string &,
                 const string &, const string &, const string &,
                 const string &, const string &);
   virtual ~SimpleAction ();
