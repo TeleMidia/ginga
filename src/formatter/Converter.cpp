@@ -1579,7 +1579,7 @@ Converter::createSimpleAction (
 
 NclCompoundAction *
 Converter::createCompoundAction (
-    GingaTime delay, vector<Action *> *ncmChildActions,
+    GingaTime delay, const vector<Action *> *ncmChildActions,
     Link *ncmLink, ExecutionObjectContext *parentObj)
 {
   NclCompoundAction *action;
