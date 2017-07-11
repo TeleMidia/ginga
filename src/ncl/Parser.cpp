@@ -1409,9 +1409,15 @@ SimpleAction *
 Parser::parseSimpleAction (DOMElement *elt)
 {
   SimpleAction *action;
+  string str;
   string tag;
   string role;
+  string delay;
+  string repeat;
+  string repeatDelay;
   string value;
+  string duration;
+  string by;
 
   EventType type;
   int acttype;
@@ -1419,6 +1425,12 @@ Parser::parseSimpleAction (DOMElement *elt)
 
   CHECK_ELT_TAG (elt, "simpleAction", nullptr);
   CHECK_ELT_ATTRIBUTE (elt, "role", &role);
+  CHECK_ELT_OPT_ATTRIBUTE (elt, "delay", &delay, "0s");
+  CHECK_ELT_OPT_ATTRIBUTE (elt, "repeat", &repeat, "0");
+  CHECK_ELT_OPT_ATTRIBUTE (elt, "repeatDelay", &repeatDelay, "0s");
+  CHECK_ELT_OPT_ATTRIBUTE (elt, "value", &value, "0s");
+  CHECK_ELT_OPT_ATTRIBUTE (elt, "duration", &duration, "0s");
+  CHECK_ELT_OPT_ATTRIBUTE (elt, "by", &by, "0");
 
   type = (EventType) -1;
   acttype = -1;
@@ -1430,7 +1442,7 @@ Parser::parseSimpleAction (DOMElement *elt)
       acttype = (SimpleActionType) it->second.second;
     }
 
-  if (dom_elt_try_get_attribute (value, elt, "eventType"))
+  if (dom_elt_try_get_attribute (str, elt, "eventType"))
     {
       if (unlikely (type != (EventType) -1))
         {
@@ -1438,15 +1450,15 @@ Parser::parseSimpleAction (DOMElement *elt)
                             role.c_str ());
         }
       map<string, EventType>::iterator it;
-      if ((it = event_type_table.find (value)) == event_type_table.end ())
+      if ((it = event_type_table.find (str)) == event_type_table.end ())
         {
           ERROR_SYNTAX_ELT (elt, "bad eventType '%s' for role '%s'",
-                            value.c_str (), role.c_str ());
+                            str.c_str (), role.c_str ());
         }
       type = it->second;
     }
 
-  if (dom_elt_try_get_attribute (value, elt, "actionType"))
+  if (dom_elt_try_get_attribute (str, elt, "actionType"))
     {
       if (unlikely (acttype != -1))
         {
@@ -1454,7 +1466,7 @@ Parser::parseSimpleAction (DOMElement *elt)
                             role.c_str ());
         }
       map<string, SimpleActionType>::iterator it;
-      if ((it = event_action_type_table.find (value))
+      if ((it = event_action_type_table.find (str))
           == event_action_type_table.end ())
         {
           ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "actionType");
@@ -1465,27 +1477,10 @@ Parser::parseSimpleAction (DOMElement *elt)
   g_assert (type != (EventType) -1);
   g_assert (acttype != -1);
 
-  action = new SimpleAction (role);
+  action = new SimpleAction ((SimpleActionType) acttype, role,
+                             delay, repeat, repeatDelay, value,
+                             duration, by);
   action->setEventType (type);
-  action->setActionType ((SimpleActionType) acttype);
-
-  if (type == EventType::ATTRIBUTION
-      && acttype == ACT_START
-      && dom_elt_try_get_attribute (value, elt, "duration"))
-    {
-      Animation *anim = new Animation ();
-      anim->setDuration (value);
-      anim->setBy ("indefinite"); // TODO: Handle "by".
-      action->setAnimation (anim);
-    }
-
-  if (dom_elt_try_get_attribute (value, elt, "delay"))
-    action->setDelay (value);
-
-  if (dom_elt_try_get_attribute (value, elt, "value"))
-    action->setValue (value);
-
-  // TODO: Handle repeatDelay and repeat attributes.
 
   return action;
 }

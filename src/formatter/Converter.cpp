@@ -962,7 +962,6 @@ Converter::createLink (Link *ncmLink,
   NclAssignmentAction *action;
   string value;
   NclEvent *event;
-  Animation *anim;
 
   if (ncmLink == nullptr)
     {
@@ -1033,26 +1032,12 @@ Converter::createLink (Link *ncmLink,
                     value.substr (1, value.length ()), ncmLink, event);
             }
 
-          anim = action->getAnimation ();
-          if (anim)
+          value = action->getDuration ();
+          if (value != "" && value.substr (0, 1) == "$")
             {
-              value = anim->getDuration ();
-              if (value != "" && value.substr (0, 1) == "$")
-                {
-                  event = ((NclRepeatAction *)action)->getEvent ();
-                  setImplicitRefAssessment (
-                        value.substr (1, value.length ()), ncmLink,
-                        event);
-                }
-
-              value = anim->getBy ();
-              if (value != "" && value.substr (0, 1) == "$")
-                {
-                  event = ((NclRepeatAction *)action)->getEvent ();
-                  setImplicitRefAssessment (
-                        value.substr (1, value.length ()), ncmLink,
-                        event);
-                }
+              event = ((NclRepeatAction *)action)->getEvent ();
+              setImplicitRefAssessment
+                (value.substr (1, value.length ()), ncmLink, event);
             }
         }
     }
@@ -1450,14 +1435,9 @@ Converter::createSimpleAction (
   Parameter *connParam;
   Parameter *param;
   string paramValue;
-  Animation *animation;
   int repeat;
   GingaTime delay;
-  Animation *newAnimation;
-  bool isUsing;
 
-  newAnimation = new Animation ();
-  isUsing = false;
   action = nullptr;
   event = createEvent (bind, ncmLink, parentObj);
 
@@ -1544,80 +1524,31 @@ Converter::createSimpleAction (
                 }
             }
 
-          action
-              = new NclAssignmentAction (event, actionType, paramValue);
+          string paramDur;
 
-          // animation
-          animation = sae->getAnimation ();
-
-          if (animation != nullptr)
+          paramDur = sae->getDuration ();
+          if (paramDur[0] == '$')
             {
-              string durVal = "0";
-              string byVal = "0";
+              connParam = new Parameter
+                (paramDur.substr (1, paramDur.length () - 1), "");
 
-              paramValue = animation->getDuration ();
-              if (paramValue[0] == '$')
+              param = bind->getParameter (connParam->getName ());
+              if (param == nullptr)
                 {
-                  connParam = new Parameter (
-                        paramValue.substr (1, paramValue.length () - 1), "");
-
-                  param = bind->getParameter (connParam->getName ());
-                  if (param == nullptr)
-                    {
-                      param = ncmLink->getParameter (connParam->getName ());
-                    }
-
-                  delete connParam;
-                  connParam = nullptr;
-
-                  if (param != nullptr)
-                    {
-                      durVal = param->getValue ();
-                    }
-
-                  newAnimation->setDuration (durVal);
-                }
-              else
-                {
-                  durVal = paramValue;
-                  newAnimation->setDuration (durVal);
+                  param = ncmLink->getParameter (connParam->getName ());
                 }
 
-              paramValue = animation->getBy ();
-              if (paramValue[0] == '$')
+              delete connParam;
+              connParam = nullptr;
+
+              if (param != nullptr)
                 {
-                  connParam = new Parameter (
-                        paramValue.substr (1, paramValue.length () - 1), "");
-
-                  param = bind->getParameter (connParam->getName ());
-                  if (param == nullptr)
-                    {
-                      param = ncmLink->getParameter (connParam->getName ());
-                    }
-
-                  delete connParam;
-                  connParam = nullptr;
-
-                  if (param != nullptr)
-                    {
-                      byVal = param->getValue ();
-                    }
-
-                  newAnimation->setBy (byVal);
-                }
-              else
-                {
-                  byVal = paramValue;
-                  newAnimation->setBy (byVal);
-                }
-
-              if (durVal != "0")
-                {
-                  isUsing = true;
-                  ((NclAssignmentAction *)action)
-                      ->setAnimation (newAnimation);
+                  paramDur = param->getValue ();
                 }
             }
+
+          action = new NclAssignmentAction (event, actionType,
+                                            paramValue, paramDur);
         }
       else
         {
@@ -1642,11 +1573,6 @@ Converter::createSimpleAction (
   paramValue = sae->getDelay ();
   delay = compileDelay (ncmLink, paramValue, bind);
   action->setWaitDelay (delay);
-
-  if (!isUsing)
-    {
-      delete newAnimation;
-    }
 
   return action;
 }

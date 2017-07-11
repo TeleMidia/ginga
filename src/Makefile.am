@@ -55,7 +55,6 @@ src+= formatter/Settings.cpp
 src+= mb/Dashboard.cpp
 src+= mb/Display.cpp
 src+= ncl/Action.cpp
-src+= ncl/Animation.cpp
 src+= ncl/Area.cpp
 src+= ncl/AreaLabeled.cpp
 src+= ncl/AssessmentStatement.cpp

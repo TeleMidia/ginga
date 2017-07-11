@@ -20,22 +20,40 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-SimpleAction::SimpleAction (const string &role) : Action (), Role ()
+SimpleAction::SimpleAction (SimpleActionType type,
+                            const string &role,
+                            const string &delay,
+                            const string &repeat,
+                            const string &repeatDelay,
+                            const string &value,
+                            const string &duration,
+                            const string &by)
+  : Action (), Role ()
 {
-  SimpleAction::setLabel (role);
-  _repeat = "0";
-  _repeatDelay = "0";
-  _value = "";
-  _animation = NULL;
+  _type = type;
+  Role::setLabel (role);
+  _delay = delay;
+  _repeat = repeat;
+  _repeatDelay = repeatDelay;
+  _value = value;
+  _duration = duration;
+  _by = by;
 }
 
 SimpleAction::~SimpleAction ()
 {
-  if (_animation != NULL)
-    {
-      delete _animation;
-      _animation = NULL;
-    }
+}
+
+SimpleActionType
+SimpleAction::getActionType ()
+{
+  return _type;
+}
+
+string
+SimpleAction::getDelay ()
+{
+  return _delay;
 }
 
 string
@@ -50,52 +68,22 @@ SimpleAction::getRepeatDelay ()
   return _repeatDelay;
 }
 
-void
-SimpleAction::setRepeatDelay (const string &time)
-{
-  _repeatDelay = time;
-}
-
-void
-SimpleAction::setRepeat (const string &newRepetitions)
-{
-  _repeat = newRepetitions;
-}
-
-SimpleActionType
-SimpleAction::getActionType ()
-{
-  return _actionType;
-}
-
-void
-SimpleAction::setActionType (SimpleActionType action)
-{
-  _actionType = action;
-}
-
 string
 SimpleAction::getValue ()
 {
   return _value;
 }
 
-void
-SimpleAction::setValue (const string &value)
+string
+SimpleAction::getDuration ()
 {
-  this->_value = value;
+  return _duration;
 }
 
-Animation *
-SimpleAction::getAnimation ()
+string
+SimpleAction::getBy ()
 {
-  return _animation;
-}
-
-void
-SimpleAction::setAnimation (Animation *animation)
-{
-  this->_animation = animation;
+  return _by;
 }
 
 GINGA_NCL_END

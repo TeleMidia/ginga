@@ -116,17 +116,16 @@ class NclAssignmentAction : public NclRepeatAction
 public:
   NclAssignmentAction (NclEvent *evt,
                        SimpleActionType actType,
-                       const string &value);
+                       const string &value,
+                       const string &duration);
 
   virtual ~NclAssignmentAction ();
-
   string getValue ();
-  Animation *getAnimation ();
-  void setAnimation (Animation *anim);
+  string getDuration ();
 
 private:
   string _value;
-  Animation *_anim;
+  string _duration;
 };
 
 class NclCompoundAction : public NclAction,
