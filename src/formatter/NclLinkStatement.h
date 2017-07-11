@@ -36,24 +36,22 @@ public:
 class NclLinkCompoundStatement : public NclLinkStatement
 {
 public:
-  NclLinkCompoundStatement (short _op);
+  NclLinkCompoundStatement (bool, bool);
   virtual ~NclLinkCompoundStatement ();
 
-  short getOperator ();
+  bool isConjunction ();
+  bool isNegated ();
 
   void addStatement (NclLinkStatement *statement);
-  vector<NclLinkStatement *> *getStatements ();
-
-  bool isNegated ();
-  void setNegated (bool neg);
+  const vector<NclLinkStatement *> *getStatements ();
 
   virtual vector<NclEvent *> getEvents () override;
   virtual bool evaluate () override;
 
-protected:
+private:
   vector<NclLinkStatement *> _statements;
   bool _negated;
-  short _op;
+  bool _conjunction;
 
   bool returnEvaluationResult (bool result);
 };

@@ -1253,25 +1253,18 @@ Parser::parseCompoundStatement (DOMElement *elt)
   CompoundStatement *stmt;
   string op;
   string neg;
-  bool negated;
 
   CHECK_ELT_TAG (elt, "compoundStatement", nullptr);
   CHECK_ELT_ATTRIBUTE (elt, "operator", &op);
   CHECK_ELT_OPT_ATTRIBUTE (elt, "isNegated", &neg, "false");
 
-  stmt = new CompoundStatement ();
-
-  if (op == "and")
-    stmt->setOperator (CompoundStatement::OP_AND);
-  else if (op == "or")
-    stmt->setOperator (CompoundStatement::OP_OR);
-  else
+  if (unlikely (op != "and" && op != "or"))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "operator");
 
-  if (_ginga_parse_bool (neg, &negated))
-    stmt->setNegated (negated);
-  else
+  if (unlikely (neg != "true" && neg != "false"))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "isNegated");
+
+  stmt = new CompoundStatement (op == "and", neg == "true");
 
   // Collect children.
   for (DOMElement *child: dom_elt_get_children (elt))

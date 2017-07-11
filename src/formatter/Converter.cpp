@@ -1417,15 +1417,13 @@ Converter::createStatement (
     }
   else if (cs) // CompoundStatement
     {
-      statement = new NclLinkCompoundStatement (cs->getOperator ());
-      ((NclLinkCompoundStatement *)statement)->setNegated (cs->isNegated ());
+      statement = new NclLinkCompoundStatement (cs->isConjunction (),
+                                                cs->isNegated ());
 
-      vector<Statement *> *statements = cs->getStatements ();
-
-      for (Statement *ncmChildStatement: *statements)
+      for (auto child: *cs->getStatements ())
         {
           NclLinkStatement *childStatement
-              = createStatement (ncmChildStatement, ncmLink, parentObj);
+              = createStatement (child, ncmLink, parentObj);
 
           ((NclLinkCompoundStatement *)statement)
               ->addStatement (childStatement);

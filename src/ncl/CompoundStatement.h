@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _COMPOUNDSTATEMENT_H_
-#define _COMPOUNDSTATEMENT_H_
+#ifndef COMPOUND_STATEMENT_H
+#define COMPOUND_STATEMENT_H
 
 #include "Statement.h"
 #include "AssessmentStatement.h"
@@ -27,28 +27,23 @@ GINGA_NCL_BEGIN
 class CompoundStatement : public Statement
 {
 public:
-  static const short OP_AND = 0;
-  static const short OP_OR = 1;
-
-  CompoundStatement ();
-  CompoundStatement (Statement *p1, Statement *p2, short op);
-
+  CompoundStatement (bool, bool);
   virtual ~CompoundStatement ();
-  void setOperator (short op);
-  short getOperator ();
-  vector<Statement *> *getStatements ();
-  void addStatement (Statement *statement);
-  void removeStatement (Statement *statement);
-  void setNegated (bool newNegated);
+
   bool isNegated ();
-  vector<Role *> *getRoles ();
+  bool isConjunction ();
+
+  void addStatement (Statement *);
+  const vector<Statement *> *getStatements ();
+
+//  vector<Role *> *getRoles ();
 
 protected:
-  vector<Statement *> *_statements;
-  short _myOperator;
+  vector<Statement *> _statements;
+  bool _conjunction;
   bool _negated;
 };
 
 GINGA_NCL_END
 
-#endif //_COMPOUNDSTATEMENT_H_
+#endif // COMPOUND_STATEMENT_H
