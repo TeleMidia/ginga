@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef VALUEASSESSMENT_H_
-#define VALUEASSESSMENT_H_
+#ifndef VALUE_ASSESSMENT_H
+#define VALUE_ASSESSMENT_H
 
 #include "Assessment.h"
 
@@ -25,9 +25,8 @@ GINGA_NCL_BEGIN
 class ValueAssessment : public Assessment
 {
 public:
-  ValueAssessment (const string &value);
+  ValueAssessment (const string &);
   string getValue ();
-  void setValue (const string &newValue);
 
 private:
   string _value;
@@ -35,4 +34,4 @@ private:
 
 GINGA_NCL_END
 
-#endif /*VALUEASSESSMENT_H_*/
+#endif // VALUE_ASSESSMENT_H

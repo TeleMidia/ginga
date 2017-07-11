@@ -27,14 +27,16 @@ GINGA_NCL_BEGIN
 class AttributeAssessment : public Assessment, public Role
 {
 public:
-  AttributeAssessment (const string &role);
-  virtual ~AttributeAssessment (){}
+  AttributeAssessment (const string &);
+
   AttributeType getAttributeType ();
-  void setAttributeType (AttributeType attribute);
+  void setAttributeType (AttributeType);
+
   string getKey ();
-  void setKey (const string &key);
+  void setKey (const string &);
+
   string getOffset ();
-  void setOffset (const string &offset);
+  void setOffset (const string &);
 
 private:
   AttributeType _attributeType;

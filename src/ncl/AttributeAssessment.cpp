@@ -20,10 +20,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-AttributeAssessment::AttributeAssessment (const string &role)
+AttributeAssessment::AttributeAssessment (const string &label)
     : Assessment (), Role ()
 {
-  Role::setLabel (role);
+  Role::setLabel (label);
   _eventType = EventType::ATTRIBUTION;
   _attributeType = AttributeType::NODE_PROPERTY;
   _key = "";
@@ -51,7 +51,7 @@ AttributeAssessment::getKey ()
 void
 AttributeAssessment::setKey (const string &key)
 {
-  this->_key = key;
+  _key = key;
 }
 
 string
@@ -63,7 +63,7 @@ AttributeAssessment::getOffset ()
 void
 AttributeAssessment::setOffset (const string &offset)
 {
-  this->_offset = offset;
+  _offset = offset;
 }
 
 GINGA_NCL_END

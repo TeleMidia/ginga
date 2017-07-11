@@ -18,25 +18,15 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef ASSESSMENT_H
 #define ASSESSMENT_H
 
-#include "ginga.h"
-
 GINGA_NCL_BEGIN
 
 class Assessment
 {
-protected:
-  set<string> typeSet;
-
 public:
-  Assessment () {typeSet.insert ("Assessment"); };
-  virtual ~Assessment () {typeSet.clear (); };
-  virtual bool
-  instanceOf (const string &type)
-  {
-    return typeSet.count (type);
-  }
+  Assessment () {};
+  virtual ~Assessment () {};
 };
 
 GINGA_NCL_END
 
-#endif /* ASSESSMENT_H */
+#endif // ASSESSMENT_H

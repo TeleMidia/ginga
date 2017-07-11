@@ -59,7 +59,7 @@ EventUtil::getAttributeTypeCode (const string &attTypeName)
       return AttributeType::STATE;
     }
 
-  return AttributeType::UNKNOWN;
+  g_assert_not_reached ();
 }
 
 EventStateTransition

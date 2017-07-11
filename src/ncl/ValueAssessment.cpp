@@ -20,21 +20,21 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
+/**
+ * @brief Creates a new value assessment.
+ */
 ValueAssessment::ValueAssessment (const string &value) : Assessment ()
 {
-  this->_value = value;
+  _value = value;
 }
 
+/**
+ * @brief Gets value.
+ */
 string
 ValueAssessment::getValue ()
 {
   return _value;
-}
-
-void
-ValueAssessment::setValue (const string &newValue)
-{
-  _value = newValue;
 }
 
 GINGA_NCL_END
