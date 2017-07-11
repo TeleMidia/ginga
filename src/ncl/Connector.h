@@ -46,9 +46,11 @@ public:
 
 private:
   vector<Parameter *> _parameters;
-  vector <Role *>_roles;
   Condition *_condition;
   Action *_action;
+
+  Role *searchRole (Condition *, const string &);
+  Role *searchRole (Action *, const string &);
 };
 
 GINGA_NCL_END

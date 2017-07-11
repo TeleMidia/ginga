@@ -26,6 +26,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
+
+// Public.
+
 /**
  * @brief Creates a new connector.
  * @param id Connector id.
@@ -42,7 +45,6 @@ Connector::Connector (const string &id) : Entity (id)
 Connector::~Connector ()
 {
   _parameters.clear ();
-  _roles.clear ();
   delete _condition;
   delete _action;
 }
@@ -99,16 +101,6 @@ Connector::setCondition (Condition *condition)
   g_assert_nonnull (condition);
   g_assert_null (_condition);
   _condition = condition;
-
-  if (instanceof (SimpleCondition *, _condition))
-    {
-      _roles.push_back (cast (Role *, _condition));
-    }
-  else
-    {
-      for (auto role: *(((CompoundCondition *) _condition)->getRoles ()))
-        _roles.push_back (role);
-    }
 }
 
 /**
@@ -129,16 +121,6 @@ Connector::setAction (Action *action)
   g_assert_nonnull (action);
   g_assert_null (_action);
   _action = action;
-
-  if (instanceof (SimpleAction *, _action))
-    {
-      _roles.push_back (cast (Role *, _action));
-    }
-  else
-    {
-      for (auto role: *(((CompoundAction *) _action)->getRoles ()))
-        _roles.push_back (role);
-    }
 }
 
 /**
@@ -149,10 +131,109 @@ Connector::setAction (Action *action)
 Role *
 Connector::getRole (const string &label)
 {
-  for (auto role: _roles)
-    if (role->getLabel () == label)
-      return role;
-  return nullptr;
+  Role *role = this->searchRole (_condition, label);
+  if (role != nullptr)
+    return role;
+  return this->searchRole (_action, label);
+}
+
+
+// Private.
+
+Role *
+Connector::searchRole (Condition *cond, const string &label)
+{
+  Role *role;
+
+  g_assert (instanceof (Condition *, cond));
+
+  if (instanceof (SimpleCondition *, cond)
+      || instanceof (AttributeAssessment *, cond))
+    {
+      role = cast (Role *, cond);
+      g_assert_nonnull (role);
+      if (role->getLabel () == label)
+        return role;
+    }
+  else if (instanceof (CompoundCondition *, cond))
+    {
+      CompoundCondition *parent = cast (CompoundCondition *, cond);
+      g_assert_nonnull (parent);
+      for (auto child: *parent->getConditions ())
+        {
+          role = this->searchRole (child, label);
+          if (role != nullptr)
+            return role;
+        }
+    }
+  else if (instanceof (AssessmentStatement *, cond))
+    {
+      AssessmentStatement *parent = cast (AssessmentStatement *, cond);
+      g_assert_nonnull (parent);
+
+      role = cast (Role *, parent->getMainAssessment ());
+      g_assert_nonnull (role);
+      if (role->getLabel () == label)
+        return role;
+
+      Assessment *other = parent->getOtherAssessment ();
+      if (instanceof (Role *, other))
+        {
+          role = cast (Role *, other);
+          g_assert_nonnull (other);
+          if (role->getLabel () == label)
+            return role;
+        }
+    }
+  else if (instanceof (CompoundStatement *, cond))
+    {
+      CompoundStatement *parent = cast (CompoundStatement *, cond);
+      g_assert_nonnull (parent);
+      for (auto child: *parent->getStatements ())
+        {
+          role = this->searchRole (child, label);
+          if (role != nullptr)
+            return role;
+        }
+    }
+  else
+    {
+      g_assert_not_reached ();
+    }
+
+  return nullptr;               // not found
+}
+
+Role *
+Connector::searchRole (Action *act, const string &label)
+{
+  Role *role;
+
+  g_assert (instanceof (Action *, act));
+
+  if (instanceof (SimpleAction *, act))
+    {
+      role = cast (Role *, act);
+      g_assert_nonnull (role);
+      if (role->getLabel () == label)
+        return role;
+    }
+  else if (instanceof (CompoundAction *, act))
+    {
+      CompoundAction *parent = cast (CompoundAction *, act);
+      for (auto child: *parent->getActions ())
+        {
+          role = this->searchRole (child, label);
+          if (role != nullptr)
+            return role;
+        }
+    }
+  else
+    {
+      g_assert_not_reached ();
+    }
+
+  return nullptr;               // not found
 }
 
 GINGA_NCL_END

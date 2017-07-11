@@ -18,40 +18,24 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "NclLinkStatement.h"
 
-GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
-
 GINGA_FORMATTER_BEGIN
 
-NclLinkCompoundStatement::NclLinkCompoundStatement (short op)
+NclLinkCompoundStatement::NclLinkCompoundStatement (bool conj, bool neg)
     : NclLinkStatement ()
 {
-  this->_op = op;
+  _conjunction = conj;
+  _negated = neg;
 }
 
 NclLinkCompoundStatement::~NclLinkCompoundStatement ()
 {
-  for (NclLinkStatement *statement : _statements)
-    {
-      delete statement;
-    }
+  _statements.clear ();
 }
 
-short
-NclLinkCompoundStatement::getOperator ()
+bool
+NclLinkCompoundStatement::isConjunction ()
 {
-  return _op;
-}
-
-void
-NclLinkCompoundStatement::addStatement (NclLinkStatement *statement)
-{
-  _statements.push_back (statement);
-}
-
-vector<NclLinkStatement *> *
-NclLinkCompoundStatement::getStatements ()
-{
-  return &_statements;
+  return _conjunction;
 }
 
 bool
@@ -61,9 +45,16 @@ NclLinkCompoundStatement::isNegated ()
 }
 
 void
-NclLinkCompoundStatement::setNegated (bool neg)
+NclLinkCompoundStatement::addStatement (NclLinkStatement *statement)
 {
-  _negated = neg;
+  g_assert_nonnull (statement);
+  _statements.push_back (statement);
+}
+
+const vector<NclLinkStatement *> *
+NclLinkCompoundStatement::getStatements ()
+{
+  return &_statements;
 }
 
 bool
@@ -95,7 +86,7 @@ NclLinkCompoundStatement::evaluate ()
   NclLinkStatement *childStatement;
 
   size = (int) _statements.size ();
-  if (_op == CompoundStatement::OP_OR)
+  if (!_conjunction)
     {
       for (i = 0; i < size; i++)
         {

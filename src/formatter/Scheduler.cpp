@@ -183,7 +183,6 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
       string from;
       string to;
 
-      Animation *anim;
       GingaTime dur;
 
       g_assert (instanceof (NclAssignmentAction *, action));
@@ -202,16 +201,9 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
       from = property->getValue ();
       to = attevt->solveImplicitRefAssessment (attact->getValue ());
 
-      if ((anim = attact->getAnimation ()) != nullptr)
-        {
-          string s;
-          s = attevt->solveImplicitRefAssessment (anim->getDuration ());
-          dur = ginga_parse_time (s);
-        }
-      else
-        {
-          dur = 0;
-        }
+      string s;
+      s = attevt->solveImplicitRefAssessment (attact->getDuration ());
+      dur = ginga_parse_time (s);
 
       attevt->start ();
       attevt->setValue (to);

@@ -133,22 +133,14 @@ NclSimpleAction::getImplicitRefRoleActions ()
 {
   vector<NclAction *> actions;
   string attVal = "", durVal = "", byVal = "";
-  Animation *anim;
 
   auto assignmentAct = cast (NclAssignmentAction *, this);
   if (assignmentAct)
     {
       attVal = assignmentAct->getValue ();
-      anim = assignmentAct->getAnimation ();
+      durVal = assignmentAct->getDuration ();
 
-      if (anim != NULL)
-        {
-          durVal = anim->getDuration ();
-          byVal = anim->getBy ();
-        }
-
-      if ((byVal != "" && byVal.substr (0, 1) == "$")
-          || (durVal != "" && durVal.substr (0, 1) == "$")
+      if ((durVal != "" && durVal.substr (0, 1) == "$")
           || (attVal != "" && attVal.substr (0, 1) == "$"))
         {
           AttributionEvent *attrEvt = cast (AttributionEvent *, _event);
@@ -228,20 +220,17 @@ NclRepeatAction::run ()
 }
 
 NclAssignmentAction::NclAssignmentAction (NclEvent *evt,
-                                                  SimpleActionType actType,
-                                                  const string &value)
+                                          SimpleActionType actType,
+                                          const string &value,
+                                          const string &duration)
     : NclRepeatAction (evt, actType)
 {
-  this->_value = value;
-  this->_anim = nullptr;
+  _value = value;
+  _duration = duration;
 }
 
 NclAssignmentAction::~NclAssignmentAction ()
 {
-  if (_anim != nullptr)
-    {
-      delete _anim;
-    }
 }
 
 string
@@ -250,16 +239,10 @@ NclAssignmentAction::getValue ()
   return _value;
 }
 
-Animation *
-NclAssignmentAction::getAnimation ()
+string
+NclAssignmentAction::getDuration ()
 {
-  return _anim;
-}
-
-void
-NclAssignmentAction::setAnimation (Animation *animation)
-{
-  this->_anim = animation;
+  return _duration;
 }
 
 NclCompoundAction::NclCompoundAction () : NclAction (0.)

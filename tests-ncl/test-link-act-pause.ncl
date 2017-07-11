@@ -11,7 +11,7 @@
       </causalConnector>
       <causalConnector id="onBeginResume">
         <simpleCondition role="onBegin"/>
-        <simpleAction role="pause"/>
+        <simpleAction role="resume"/>
       </causalConnector>
     </connectorBase>
   </head>
