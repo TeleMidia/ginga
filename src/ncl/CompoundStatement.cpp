@@ -77,28 +77,4 @@ CompoundStatement::addStatement (Statement *statement)
   _statements.push_back (statement);
 }
 
-// vector<Role *> *
-// CompoundStatement::getRoles ()
-// {
-//   vector<Role *> *roles;
-//   vector<Role *> *childRoles;
-//   roles = new vector<Role *>;
-//   for (auto stmt: _statements)
-//     {
-//       if (instanceof (AssessmentStatement *, stmt))
-//         {
-//           childRoles = ((AssessmentStatement *) stmt)->getRoles ();
-//         }
-//       else
-//         {
-//           childRoles = ((CompoundStatement *) stmt)->getRoles ();
-//         }
-//       vector<Role *>::iterator it;
-//       for (auto role: *childRoles)
-//         roles->push_back (role);
-//       delete childRoles;
-//     }
-//   return roles;
-// }
-
 GINGA_NCL_END

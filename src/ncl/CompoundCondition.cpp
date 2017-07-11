@@ -67,12 +67,9 @@ CompoundCondition::getOperator ()
   return _myOperator;
 }
 
-vector<Condition *> *
+const vector<Condition *> *
 CompoundCondition::getConditions ()
 {
-  if (_expressions->empty ())
-    return NULL;
-
   return _expressions;
 }
 
@@ -108,55 +105,6 @@ CompoundCondition::removeCondition (
         }
       ++iterator;
     }
-}
-
-vector<Role *> *
-CompoundCondition::getRoles ()
-{
-  vector<Role *> *roles;
-  int i, size;
-  Condition *condition;
-  vector<Role *> *childRoles;
-
-  roles = new vector<Role *>;
-  size = (int) _expressions->size ();
-  for (i = 0; i < size; i++)
-    {
-      condition = (*_expressions)[i];
-      if (condition == NULL)
-        {
-          clog << "CompoundCondition::getRoles ";
-          clog << "Warning! condition = NULL." << endl;
-        }
-      else if (instanceof (SimpleCondition *, condition))
-        {
-          roles->push_back ((SimpleCondition *)condition);
-        }
-      else
-        {
-          if (instanceof (CompoundCondition *, condition))
-            {
-              childRoles = ((CompoundCondition *)condition)->getRoles ();
-            }
-          else if (instanceof (AssessmentStatement *, condition))
-            {
-              childRoles = ((AssessmentStatement *)condition)->getRoles ();
-            }
-          else
-            { // ICompoundStatement
-              childRoles = ((CompoundStatement *)condition)->getRoles ();
-            }
-
-          vector<Role *>::iterator it;
-          for (it = childRoles->begin (); it != childRoles->end (); ++it)
-            {
-              roles->push_back (*it);
-            }
-
-          delete childRoles;
-        }
-    }
-  return roles;
 }
 
 GINGA_NCL_END

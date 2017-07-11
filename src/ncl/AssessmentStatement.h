@@ -34,7 +34,6 @@ public:
   Assessment *getOtherAssessment ();
   void setOtherAssessment (Assessment *);
   string getComparator ();
-  vector<Role *> *getRoles ();
 
 private:
   string _comparator;

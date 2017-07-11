@@ -36,8 +36,6 @@ public:
   void addStatement (Statement *);
   const vector<Statement *> *getStatements ();
 
-//  vector<Role *> *getRoles ();
-
 protected:
   vector<Statement *> _statements;
   bool _conjunction;
