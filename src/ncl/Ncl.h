@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Action.h"
 #include "Anchor.h"
-#include "Animation.h"
 #include "Area.h"
 #include "AreaLabeled.h"
 #include "Assessment.h"

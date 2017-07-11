@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _SIMPLEACTION_H_
 #define _SIMPLEACTION_H_
 
-#include "Animation.h"
-
 #include "Action.h"
 #include "CompoundAction.h"
 #include "EventUtil.h"
@@ -68,26 +66,27 @@ public:
     g_assert_not_reached ();
   }
 
-  SimpleAction (const string &role);
+  SimpleAction (SimpleActionType, const string &, const string &,
+                const string &, const string &, const string &,
+                const string &, const string &);
   virtual ~SimpleAction ();
 
+  SimpleActionType getActionType ();
+  string getDelay ();
   string getRepeat ();
   string getRepeatDelay ();
-  void setRepeatDelay (const string &time);
-  void setRepeat (const string &newRepetitions);
-  SimpleActionType getActionType ();
-  void setActionType (SimpleActionType action);
   string getValue ();
-  void setValue (const string &value);
-  Animation *getAnimation ();
-  void setAnimation (Animation *animation);
+  string getDuration ();
+  string getBy ();
 
 private:
-  SimpleActionType _actionType;
+  SimpleActionType _type;
+  string _delay;
   string _repeat;
   string _repeatDelay;
   string _value;
-  Animation *_animation;
+  string _duration;
+  string _by;
 };
 
 GINGA_NCL_END
