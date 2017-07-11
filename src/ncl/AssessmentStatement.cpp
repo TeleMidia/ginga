@@ -65,18 +65,4 @@ AssessmentStatement::getComparator ()
   return _comparator;
 }
 
-vector<Role *> *
-AssessmentStatement::getRoles ()
-{
-  vector<Role *> *roles;
-
-  roles = new vector<Role *>;
-  roles->push_back (_mainAssessment);
-  if (instanceof (AttributeAssessment *, _otherAssessment))
-    {
-      roles->push_back ((AttributeAssessment *)_otherAssessment);
-    }
-  return roles;
-}
-
 GINGA_NCL_END

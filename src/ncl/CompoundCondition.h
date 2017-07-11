@@ -41,10 +41,9 @@ public:
   virtual ~CompoundCondition ();
   void setOperator (short op);
   short getOperator ();
-  vector<Condition *> *getConditions ();
+  const vector<Condition *> *getConditions ();
   void addCondition (Condition *condition);
   void removeCondition (Condition *condition);
-  vector<Role *> *getRoles ();
 
 private:
   vector<Condition *> *_expressions;

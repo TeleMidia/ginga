@@ -39,8 +39,6 @@ public:
   short getOperator ();
   vector<Action *> *getActions ();
   void addAction (Action *action);
-  void removeAction (Action *action);
-  vector<Role *> *getRoles ();
 
 protected:
   vector<Action *> *_actions;
