@@ -29,4 +29,4 @@ public:
 
 GINGA_NCL_END
 
-#endif // CONDITION
+#endif // CONDITION_H
