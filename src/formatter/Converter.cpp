@@ -1209,11 +1209,10 @@ Converter::createCondition (
 NclLinkCompoundTriggerCondition *
 Converter::createCompoundTriggerCondition (
     short op, GingaTime delay,
-    vector<Condition *> *ncmChildConditions, Link *ncmLink,
+    const vector<Condition *> *ncmChildConditions, Link *ncmLink,
     ExecutionObjectContext *parentObj)
 {
   NclLinkCompoundTriggerCondition *condition;
-  Condition *ncmChildCondition;
   NclLinkCondition *childCondition;
 
   if (op == CompoundCondition::OP_AND)
@@ -1230,19 +1229,10 @@ Converter::createCompoundTriggerCondition (
       condition->setDelay (delay);
     }
 
-  if (ncmChildConditions != nullptr)
+  for (auto cond: *ncmChildConditions)
     {
-      vector<Condition *>::iterator i;
-      i = ncmChildConditions->begin ();
-      while (i != ncmChildConditions->end ())
-        {
-          ncmChildCondition = (*i);
-          childCondition = createCondition (ncmChildCondition, ncmLink,
-                                            parentObj);
-
-          condition->addCondition (childCondition);
-          ++i;
-        }
+      childCondition = createCondition (cond, ncmLink, parentObj);
+      condition->addCondition (childCondition);
     }
 
   return condition;
