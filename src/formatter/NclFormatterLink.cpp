@@ -27,75 +27,71 @@ NclFormatterLink::NclFormatterLink (
     NclLinkTriggerCondition *condition, NclAction *act,
     Link *ncmLink, ExecutionObjectContext *parentObj)
 {
-  this->parentObject = parentObj;
-  this->ncmLink = ncmLink;
-  this->suspend = false;
+  this->_parentObj = parentObj;
+  this->_ncmLink = ncmLink;
+  this->_suspended = false;
 
-  this->condition = condition;
-  this->action = act;
+  this->_condition = condition;
+  this->_action = act;
 
-  if (this->condition != nullptr)
-    {
-      this->condition->setTriggerListener (this);
-    }
+  g_assert_nonnull (this->_condition);
+  g_assert_nonnull (this->_action);
 
-  if (this->action != nullptr)
-    {
-      this->action->addProgressListener (this);
-    }
+  this->_condition->setTriggerListener (this);
+  this->_action->addProgressListener (this);
 }
 
 NclFormatterLink::~NclFormatterLink ()
 {
-  if (condition != nullptr)
+  if (_condition != nullptr)
     {
-      delete condition;
+      delete _condition;
     }
 
-  if (action != nullptr)
+  if (_action != nullptr)
     {
-      delete action;
+      delete _action;
     }
 }
 
 void
-NclFormatterLink::suspendLinkEvaluation (bool suspend)
+NclFormatterLink::  suspendLinkEvaluation (bool suspend)
 {
-  this->suspend = suspend;
+  this->_suspended = suspend;
 }
 
 Link *
 NclFormatterLink::getNcmLink ()
 {
-  return ncmLink;
+  return _ncmLink;
 }
 
 NclAction *
 NclFormatterLink::getAction ()
 {
-  return action;
+  return _action;
 }
 
 NclLinkTriggerCondition *
 NclFormatterLink::getTriggerCondition ()
 {
-  return condition;
+  return _condition;
 }
 
 void
 NclFormatterLink::conditionSatisfied (NclLinkCondition *condition)
 {
-  if (!suspend)
+  if (!_suspended)
     {
-      action->run (condition);
+      _action->run (condition);
     }
 }
 
 vector<NclEvent *>
 NclFormatterLink::getEvents ()
 {
-  vector<NclEvent *> events = condition->getEvents ();
-  vector<NclEvent *> actEvents = action->getEvents ();
+  vector<NclEvent *> events = _condition->getEvents ();
+  vector<NclEvent *> actEvents = _action->getEvents ();
 
   events.insert(events.end(), actEvents.begin(), actEvents.end());
 
@@ -105,19 +101,19 @@ NclFormatterLink::getEvents ()
 void
 NclFormatterLink::evaluationStarted ()
 {
-  parentObject->linkEvaluationStarted (this);
+  _parentObj->linkEvaluationStarted (this);
 }
 
 void
 NclFormatterLink::evaluationEnded ()
 {
-  parentObject->linkEvaluationFinished (this, false);
+  _parentObj->linkEvaluationFinished (this, false);
 }
 
 void
 NclFormatterLink::actionProcessed (bool start)
 {
-  parentObject->linkEvaluationFinished (this, start);
+  _parentObj->linkEvaluationFinished (this, start);
 }
 
 GINGA_FORMATTER_END

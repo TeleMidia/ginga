@@ -149,9 +149,10 @@ private:
 
 class SwitchEvent : public NclEvent, public INclEventListener
 {
+  PROPERTY_READONLY (Anchor*, _interface, getInterface)
+  PROPERTY_READONLY (string, _key, getKey)
+
 private:
-  Anchor *_interface;
-  string _key;
   NclEvent *_mappedEvent;
 
 public:
@@ -162,9 +163,6 @@ public:
                const string &key);
 
   virtual ~SwitchEvent ();
-
-  Anchor *getInterface () { return this->_interface; }
-  string getKey () { return this->_key; }
 
   void setMappedEvent (NclEvent *evt);
   NclEvent *getMappedEvent () { return this->_mappedEvent; }
