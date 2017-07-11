@@ -228,8 +228,8 @@ RuleAdapter::evaluateSimpleRule (SimpleRule *rule)
   attribute = rule->getAttribute ();
   attributeValue = settings->get (attribute);
   ruleValue = rule->getValue ();
-  return ginga_eval_operator (rule->getOperator (),
-                              attributeValue, ruleValue);
+  return ginga_eval_comparator (rule->getOperator (),
+                                attributeValue, ruleValue);
 }
 
 GINGA_FORMATTER_END

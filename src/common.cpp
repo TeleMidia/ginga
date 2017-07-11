@@ -330,40 +330,69 @@ ginga_parse_list (const string &s, char sep, size_t min, size_t max)
 }
 
 /**
- * @brief Evaluates operator with the given operands.
+ * @brief Parses comparator string.
+ * @param s Comparator string.
+ * @param result Variable to store the resulting comparator.
+ * @return True if success, or false otherwise.
+ */
+bool
+_ginga_parse_comparator (const string &s, string *result)
+{
+  if (xstrcaseeq (s, "eq")
+      || xstrcaseeq (s, "ne")
+      || xstrcaseeq (s, "lt")
+      || xstrcaseeq (s, "lte")
+      || xstrcaseeq (s, "gt")
+      || xstrcaseeq (s, "gte"))
+    {
+      set_if_nonnull (result, xstrdown (s));
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
+/**
+ * @brief Evaluates comparator with the given operands.
  * @param op Operator ("eq", "ne", "lt", "lte", "gt", or "gte").
  * @param a First operand.
  * @param b Second operand.
  */
 bool
-ginga_eval_operator (const string &op, const string &a, const string &b)
+ginga_eval_comparator (const string &s, const string &a, const string &b)
 {
-  if (xstrcaseeq (op, "eq"))
+  string comp;
+
+  g_assert (_ginga_parse_comparator (s, &comp));
+
+  if (comp == "eq")
     {
       if (a == b)
         return true;
     }
-  else if (xstrcaseeq (op, "ne"))
+  else if (comp == "ne")
     {
       if (a != b)
         return true;
     }
-  else if (xstrcaseeq (op, "lt"))
+  else if (comp == "lt")
     {
       if (a.compare (b) < 0)
         return true;
     }
-  else if (xstrcaseeq (op, "lte"))
+  else if (comp == "lte")
     {
       if (a.compare (b) <= 0)
         return true;
     }
-  else if (xstrcaseeq (op, "gt"))
+  else if (comp == "gt")
     {
       if (a.compare (b) > 0)
         return true;
     }
-  else if (xstrcaseeq (op, "gte"))
+  else if (comp == "gte")
     {
       if (a.compare (b) >= 0)
         return true;
