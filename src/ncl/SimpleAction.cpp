@@ -20,7 +20,18 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-SimpleAction::SimpleAction (SimpleActionType type,
+/**
+ * @brief Creates a new simple action.
+ * @param type Action type.
+ * @param role Role.
+ * @param delay Delay.
+ * @param repeat Repeat.
+ * @param repeatDelay Repeat delay.
+ * @param value Value.
+ * @param duration Duration.
+ * @param by By.
+ */
+SimpleAction::SimpleAction (SimpleAction::Type type,
                             const string &role,
                             const string &delay,
                             const string &repeat,
@@ -30,7 +41,7 @@ SimpleAction::SimpleAction (SimpleActionType type,
                             const string &by)
   : Action (), Role ()
 {
-  _type = type;
+  _actionType = type;
   Role::setLabel (role);
   _delay = delay;
   _repeat = repeat;
@@ -40,46 +51,70 @@ SimpleAction::SimpleAction (SimpleActionType type,
   _by = by;
 }
 
+/**
+ * @brief Destroys simple action.
+ */
 SimpleAction::~SimpleAction ()
 {
 }
 
-SimpleActionType
+/**
+ * @brief Gets simple action type.
+ */
+SimpleAction::Type
 SimpleAction::getActionType ()
 {
-  return _type;
+  return _actionType;
 }
 
+/**
+ * @brief Gets simple action delay.
+ */
 string
 SimpleAction::getDelay ()
 {
   return _delay;
 }
 
+/**
+ * @brief Gets simple action repeat.
+ */
 string
 SimpleAction::getRepeat ()
 {
   return _repeat;
 }
 
+/**
+ * @brief Gets simple action repeat delay.
+ */
 string
 SimpleAction::getRepeatDelay ()
 {
   return _repeatDelay;
 }
 
+/**
+ * @brief Gets simple action value.
+ */
 string
 SimpleAction::getValue ()
 {
   return _value;
 }
 
+/**
+ * @brief Gets simple action duration.
+ */
 string
 SimpleAction::getDuration ()
 {
   return _duration;
 }
 
+/**
+ * @brief Gets simple action by.
+ */
 string
 SimpleAction::getBy ()
 {

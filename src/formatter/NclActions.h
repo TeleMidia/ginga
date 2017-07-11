@@ -73,14 +73,13 @@ private:
 class NclSimpleAction : public NclAction
 {
 public:
-  NclSimpleAction (NclEvent *event, SimpleActionType type);
+  NclSimpleAction (NclEvent *event, SimpleAction::Type type);
   virtual ~NclSimpleAction ();
 
   virtual void run () override;
 
   NclEvent *getEvent ();
-  SimpleActionType getType ();
-  string getTypeString ();
+  SimpleAction::Type getType ();
 
   void setSimpleActionListener (INclActionListener *listener);
 
@@ -89,7 +88,7 @@ public:
 
 protected:
   NclEvent *_event;
-  SimpleActionType _actType;
+  SimpleAction::Type _actType;
 
 private:
   INclActionListener *listener;
@@ -98,7 +97,7 @@ private:
 class NclRepeatAction : public NclSimpleAction
 {
 public:
-  NclRepeatAction (NclEvent *, SimpleActionType);
+  NclRepeatAction (NclEvent *, SimpleAction::Type);
   virtual ~NclRepeatAction ();
 
   virtual void run () override;
@@ -115,7 +114,7 @@ class NclAssignmentAction : public NclRepeatAction
 {
 public:
   NclAssignmentAction (NclEvent *evt,
-                       SimpleActionType actType,
+                       SimpleAction::Type actType,
                        const string &value,
                        const string &duration);
 
