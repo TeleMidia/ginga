@@ -1245,7 +1245,7 @@ Converter::createCondition (
         }
       else if (size > 1)
         {
-          if (ste->getQualifier () == CompoundCondition::OP_AND)
+          if (ste->isConjunction ())
             {
               compoundCondition
                 = new NclLinkAndCompoundTriggerCondition ();
