@@ -332,7 +332,7 @@ AnimInfo::init (double current)
   g_assert (!_init);
   _current = current;
   if (_duration > 0)
-    _speed = abs (_target - current)
+    _speed = fabs (_target - current)
       / (double) GINGA_TIME_AS_SECONDS (_duration);
   else
     _speed = 0;
