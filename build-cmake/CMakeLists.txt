@@ -106,7 +106,6 @@ set (GINGA_SOURCES
   ../src/mb/Dashboard.cpp
 
   ../src/ncl/Action.cpp
-  ../src/ncl/Animation.cpp
   ../src/ncl/Area.cpp
   ../src/ncl/AreaLabeled.cpp
   ../src/ncl/AssessmentStatement.cpp
