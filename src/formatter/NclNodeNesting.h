@@ -27,17 +27,14 @@ class NclNodeNesting
 {
 private:
   string id;
-  vector<Node *> *nodes;
+  vector<Node *> nodes;
 
 public:
   NclNodeNesting ();
   NclNodeNesting (Node *node);
   NclNodeNesting (NclNodeNesting *seq);
   NclNodeNesting (vector<Node *> *seq);
-  virtual ~NclNodeNesting ();
-
-private:
-  void initialize ();
+  virtual ~NclNodeNesting () {}
 
 public:
   void append (NclNodeNesting *otherSeq);
