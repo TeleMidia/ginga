@@ -20,34 +20,40 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-Role::Role ()
+/**
+ * @brief Creates a new role.
+ * @param type Role event type.
+ * @param label Role label.
+ */
+Role::Role (EventType type, const string &label)
+{
+  _eventType = type;
+  _label = label;
+}
+
+/**
+ * @brief Destroys role.
+ */
+Role::~Role ()
 {
 }
 
-Role::~Role () {}
-
+/**
+ * @brief Gets event type.
+ */
 EventType
 Role::getEventType ()
 {
   return _eventType;
 }
 
+/**
+ * @brief Gets label.
+ */
 string
 Role::getLabel ()
 {
   return _label;
-}
-
-void
-Role::setEventType (EventType type)
-{
-  _eventType = type;
-}
-
-void
-Role::setLabel (const string &id)
-{
-  _label = id;
 }
 
 GINGA_NCL_END

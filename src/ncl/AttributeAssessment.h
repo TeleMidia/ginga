@@ -27,7 +27,7 @@ GINGA_NCL_BEGIN
 class AttributeAssessment : public Assessment, public Role
 {
 public:
-  AttributeAssessment (const string &);
+  AttributeAssessment (EventType, const string &);
 
   AttributeType getAttributeType ();
   void setAttributeType (AttributeType);

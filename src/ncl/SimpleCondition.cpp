@@ -20,12 +20,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-SimpleCondition::SimpleCondition (const string &role)
-    : TriggerExpression (), Role ()
+SimpleCondition::SimpleCondition (EventType type, const string &label)
+    : TriggerExpression (), Role (type, label)
 {
-  SimpleCondition::setLabel (role);
   _key = "";
-  _qualifier = SimpleCondition::NO_QUALIFIER;
+  _qualifier = -1;
 }
 
 string

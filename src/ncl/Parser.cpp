@@ -1221,8 +1221,7 @@ Parser::parseSimpleCondition (DOMElement *elt)
   g_assert (type != (EventType) -1);
   g_assert (trans != EventStateTransition::UNKNOWN);
 
-  cond = new SimpleCondition (role);
-  cond->setEventType (type);
+  cond = new SimpleCondition (type, role);
   cond->setTransition (trans);
 
   if (type == EventType::SELECTION
@@ -1330,22 +1329,19 @@ Parser::parseAttributeAssessment (DOMElement *elt)
   AttributeAssessment *assess;
   string role;
   string value;
+  EventType type;
 
   CHECK_ELT_TAG (elt, "attributeAssessment", nullptr);
   CHECK_ELT_ATTRIBUTE (elt, "role", &role);
 
-  assess = new AttributeAssessment (role);
   if (dom_elt_try_get_attribute (value, elt, "eventType"))
     {
-      if ((it = event_type_table.find (value)) != event_type_table.end ())
-        {
-           assess->setEventType (it->second);
-        }
-      else
-        {
-          ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "eventType");
-        }
+      if ((it = event_type_table.find (value)) == event_type_table.end ())
+        ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "eventType");
+      type = it->second;
     }
+
+  assess = new AttributeAssessment (type, role);
 
   if (dom_elt_try_get_attribute (value, elt, "attributeType"))
     assess->setAttributeType (EventUtil::getAttributeTypeCode (value));
@@ -1408,7 +1404,6 @@ Parser::parseCompoundAction (DOMElement *elt)
 SimpleAction *
 Parser::parseSimpleAction (DOMElement *elt)
 {
-  SimpleAction *action;
   string str;
   string tag;
   string role;
@@ -1477,12 +1472,9 @@ Parser::parseSimpleAction (DOMElement *elt)
   g_assert (type != (EventType) -1);
   g_assert (acttype != -1);
 
-  action = new SimpleAction ((SimpleAction::Type) acttype, role,
-                             delay, repeat, repeatDelay, value,
-                             duration, by);
-  action->setEventType (type);
-
-  return action;
+  return new SimpleAction ((EventType) type, (SimpleAction::Type) acttype,
+                           role, delay, repeat, repeatDelay, value,
+                           duration, by);
 }
 
 
@@ -2204,8 +2196,7 @@ Parser::parseBind (DOMElement *elt, Link *link, Context *context)
       AssessmentStatement *stmt;
       AttributeAssessment *assess;
 
-      assess = new AttributeAssessment (label);
-      assess->setEventType (EventType::ATTRIBUTION);
+      assess = new AttributeAssessment (EventType::ATTRIBUTION, label);
       assess->setAttributeType (AttributeType::NODE_PROPERTY);
 
       stmt = new AssessmentStatement ("ne");

@@ -22,8 +22,9 @@ GINGA_NCL_BEGIN
 
 /**
  * @brief Creates a new simple action.
- * @param type Action type.
- * @param role Role.
+ * @param type Event type.
+ * @param actType Action type.
+ * @param label Role.
  * @param delay Delay.
  * @param repeat Repeat.
  * @param repeatDelay Repeat delay.
@@ -31,18 +32,18 @@ GINGA_NCL_BEGIN
  * @param duration Duration.
  * @param by By.
  */
-SimpleAction::SimpleAction (SimpleAction::Type type,
-                            const string &role,
+SimpleAction::SimpleAction (EventType type,
+                            SimpleAction::Type actType,
+                            const string &label,
                             const string &delay,
                             const string &repeat,
                             const string &repeatDelay,
                             const string &value,
                             const string &duration,
                             const string &by)
-  : Action (), Role ()
+  : Action (), Role (type, label)
 {
-  _actionType = type;
-  Role::setLabel (role);
+  _actionType = actType;
   _delay = delay;
   _repeat = repeat;
   _repeatDelay = repeatDelay;
