@@ -192,8 +192,8 @@ NclLinkAssessmentStatement::evaluate ()
 {
   if (_mainAssessment == NULL || _otherAssessment == NULL)
     return false;
-  return ginga_eval_operator (_comparator, _mainAssessment->getValue (),
-                              _otherAssessment->getValue ());
+  return ginga_eval_comparator (_comparator, _mainAssessment->getValue (),
+                                _otherAssessment->getValue ());
 }
 
 GINGA_FORMATTER_END

@@ -632,21 +632,10 @@ Parser::parseRule (DOMElement *elt)
   CHECK_ELT_TAG (elt, "rule", nullptr);
   CHECK_ELT_OPT_ID_AUTO (elt, &id, rule);
   CHECK_ELT_ATTRIBUTE (elt, "var", &var);
-  CHECK_ELT_ATTRIBUTE (elt, "comparator", &comp);
   CHECK_ELT_ATTRIBUTE (elt, "value", &value);
-  if (xstrcaseeq (comp, "eq")
-      || xstrcaseeq (comp, "ne")
-      || xstrcaseeq (comp, "lt")
-      || xstrcaseeq (comp, "lte")
-      || xstrcaseeq (comp, "gt")
-      || xstrcaseeq (comp, "gte"))
-    {
-      comp = xstrdown (comp);
-    }
-  else
-    {
-      ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "comparator");
-    }
+  CHECK_ELT_ATTRIBUTE (elt, "comparator", &comp);
+  if (unlikely (!_ginga_parse_comparator (comp, &comp)))
+    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "comparator");
   return new SimpleRule (id, var, comp, value);
 }
 
@@ -1312,20 +1301,9 @@ Parser::parseAssessmentStatement (DOMElement *elt)
   string value;
 
   CHECK_ELT_TAG (elt, "assessmentStatement", nullptr);
-  CHECK_ELT_OPT_ATTRIBUTE (elt, "comparator", &comp, "eq");
-  if (xstrcaseeq (comp, "eq")
-      || xstrcaseeq (comp, "ne")
-      || xstrcaseeq (comp, "lt")
-      || xstrcaseeq (comp, "lte")
-      || xstrcaseeq (comp, "gt")
-      || xstrcaseeq (comp, "gte"))
-    {
-      comp = xstrdown (comp);
-    }
-  else
-    {
-      ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "comparator");
-    }
+  CHECK_ELT_ATTRIBUTE (elt, "comparator", &comp);
+  if (unlikely (!_ginga_parse_comparator (comp, &comp)))
+    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "comparator");
 
   stmt = new AssessmentStatement (comp);
   for (DOMElement *child: dom_elt_get_children (elt))
