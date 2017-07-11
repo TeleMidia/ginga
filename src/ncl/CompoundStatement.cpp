@@ -18,145 +18,87 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "CompoundStatement.h"
 
-GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
-
 GINGA_NCL_BEGIN
 
-CompoundStatement::CompoundStatement () : Statement ()
+/**
+ * @brief Creates a new compound statement.
+ * @param conj True if statement is a conjunction.
+ * @param neg True if statement is negated.
+ */
+CompoundStatement::CompoundStatement (bool conj, bool neg) : Statement ()
 {
-  _statements = new vector<Statement *>;
-  _myOperator = OP_OR;
-  _negated = false;
+  _conjunction = conj;
+  _negated = neg;
 }
 
-CompoundStatement::CompoundStatement (Statement *p1, Statement *p2,
-                                      short op)
-    : Statement ()
-{
-  _statements = new vector<Statement *>;
-  _negated = false;
-  _myOperator = op;
-
-  _statements->push_back (p1);
-  _statements->push_back (p2);
-}
-
+/**
+ * @brief Destroys compound statement.
+ */
 CompoundStatement::~CompoundStatement ()
 {
-  vector<Statement *>::iterator i;
-
-  if (_statements != NULL)
-    {
-      i = _statements->begin ();
-      while (i != _statements->end ())
-        {
-          delete *i;
-          ++i;
-        }
-
-      delete _statements;
-      _statements = NULL;
-    }
+  _statements.clear ();
 }
 
-void
-CompoundStatement::setOperator (short op)
+/**
+ * @brief Tests whether statement is a conjunction.
+ */
+bool
+CompoundStatement::isConjunction ()
 {
-  switch (op)
-    {
-    case OP_AND:
-      _myOperator = op;
-      break;
-
-    case OP_OR:
-    default:
-      _myOperator = OP_OR;
-      break;
-    }
+  return _conjunction;
 }
 
-short
-CompoundStatement::getOperator ()
-{
-  return _myOperator;
-}
-
-vector<Statement *> *
-CompoundStatement::getStatements ()
-{
-  if (_statements->empty ())
-    return NULL;
-  return _statements;
-}
-
-void
-CompoundStatement::addStatement (Statement *statement)
-{
-  _statements->push_back (statement);
-}
-
-void
-CompoundStatement::removeStatement (Statement *statement)
-{
-  vector<Statement *>::iterator iterator;
-  vector<Statement *>::iterator i;
-
-  iterator = _statements->begin ();
-  while (iterator != _statements->end ())
-    {
-      if ((*iterator) == statement)
-        {
-          i = _statements->erase (iterator);
-          if (i == _statements->end ())
-            return;
-        }
-      ++iterator;
-    }
-}
-
-void
-CompoundStatement::setNegated (bool newNegated)
-{
-  _negated = newNegated;
-}
-
+/**
+ * @brief Tests whether statement is negated.
+ */
 bool
 CompoundStatement::isNegated ()
 {
   return _negated;
 }
 
-vector<Role *> *
-CompoundStatement::getRoles ()
+/**
+ * @brief Gets all child statements.
+ */
+const vector<Statement *> *
+CompoundStatement::getStatements ()
 {
-  vector<Role *> *roles;
-  int i, size;
-  Statement *statement;
-  vector<Role *> *childRoles;
-
-  roles = new vector<Role *>;
-  size = (int) _statements->size ();
-  for (i = 0; i < size; i++)
-    {
-      statement = (Statement *)((*_statements)[i]);
-      if (instanceof (AssessmentStatement *, statement))
-        {
-          childRoles = ((AssessmentStatement *)statement)->getRoles ();
-        }
-      else
-        { // ICompoundStatement
-          childRoles = ((CompoundStatement *)statement)->getRoles ();
-        }
-
-      vector<Role *>::iterator it;
-      for (it = childRoles->begin (); it != childRoles->end (); ++it)
-        {
-          roles->push_back (*it);
-        }
-
-      delete childRoles;
-    }
-  return roles;
+  return &_statements;
 }
+
+/**
+ * @brief Adds child statement.
+ * @param statement Child statement.
+ */
+void
+CompoundStatement::addStatement (Statement *statement)
+{
+  g_assert_nonnull (statement);
+  _statements.push_back (statement);
+}
+
+// vector<Role *> *
+// CompoundStatement::getRoles ()
+// {
+//   vector<Role *> *roles;
+//   vector<Role *> *childRoles;
+//   roles = new vector<Role *>;
+//   for (auto stmt: _statements)
+//     {
+//       if (instanceof (AssessmentStatement *, stmt))
+//         {
+//           childRoles = ((AssessmentStatement *) stmt)->getRoles ();
+//         }
+//       else
+//         {
+//           childRoles = ((CompoundStatement *) stmt)->getRoles ();
+//         }
+//       vector<Role *>::iterator it;
+//       for (auto role: *childRoles)
+//         roles->push_back (role);
+//       delete childRoles;
+//     }
+//   return roles;
+// }
 
 GINGA_NCL_END
