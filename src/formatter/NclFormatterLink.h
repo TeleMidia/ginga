@@ -35,12 +35,12 @@ class NclFormatterLink : public NclLinkTriggerListener,
 {
 public:
   NclFormatterLink (NclLinkTriggerCondition *condition,
-                    NclAction *action, Link *ncmLink,
-                    ExecutionObjectContext *parentObject);
+                    NclAction *_action, Link *ncmLink,
+                    ExecutionObjectContext *parentObj);
 
   virtual ~NclFormatterLink ();
 
-  void suspendLinkEvaluation (bool suspend);
+  void suspendLinkEvaluation (bool suspended);
   Link *getNcmLink ();
 
   NclAction *getAction ();
@@ -52,13 +52,13 @@ public:
   void actionProcessed (bool start);
 
 protected:
-  Link *ncmLink;
-  bool suspend;
-  ExecutionObjectContext *parentObject;
+  Link *_ncmLink;
+  bool _suspended;
+  ExecutionObjectContext *_parentObj;
 
 private:
-  NclLinkTriggerCondition *condition;
-  NclAction *action;
+  NclLinkTriggerCondition *_condition;
+  NclAction *_action;
 };
 
 

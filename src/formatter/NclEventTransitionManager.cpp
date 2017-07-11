@@ -84,7 +84,7 @@ NclEventTransitionManager::prepare (bool wholeContent, GingaTime startTime)
    _startTransitionIdx = 0;
   if (wholeContent && startTime == 0)
     {
-      // do nothing
+      // do nothing.
     }
   else
     {
@@ -159,6 +159,7 @@ NclEventTransitionManager::abort (GingaTime endTime)
     {
       EventTransition *trans = _transTbl[i];
       NclEvent *fev = trans->getEvent ();
+
       if (trans->getTime () > endTime)
         {
           fev->setState (EventState::SLEEPING);
