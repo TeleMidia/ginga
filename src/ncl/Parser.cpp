@@ -254,22 +254,22 @@ static map<string, pair<int,int>> reserved_action_table =
   {
    {"start",
     {(int) EventType::PRESENTATION,
-     (int) ACT_START}},
+     (int) SimpleAction::START}},
    {"stop",
     {(int) EventType::PRESENTATION,
-     (int) ACT_STOP}},
+     (int) SimpleAction::STOP}},
    {"abort",
     {(int) EventType::PRESENTATION,
-     (int) ACT_ABORT}},
+     (int) SimpleAction::ABORT}},
    {"pause",
     {(int) EventType::PRESENTATION,
-     (int) ACT_PAUSE}},
+     (int) SimpleAction::PAUSE}},
    {"resume",
     {(int) EventType::PRESENTATION,
-     (int) ACT_RESUME}},
+     (int) SimpleAction::RESUME}},
    {"set",
     {(int) EventType::ATTRIBUTION,
-     (int) ACT_START}},
+     (int) SimpleAction::START}},
   };
 
 // Maps event type name to event type code.
@@ -291,13 +291,13 @@ static map<string, EventStateTransition> event_transition_table =
   };
 
 // Maps action name to action code.
-static map<string, SimpleActionType> event_action_type_table =
+static map<string, SimpleAction::Type> event_action_type_table =
   {
-   {"start", ACT_START},
-   {"stop", ACT_STOP},
-   {"abort", ACT_ABORT},
-   {"pause", ACT_PAUSE},
-   {"resume", ACT_RESUME},
+   {"start", SimpleAction::START},
+   {"stop", SimpleAction::STOP},
+   {"abort", SimpleAction::ABORT},
+   {"pause", SimpleAction::PAUSE},
+   {"resume", SimpleAction::RESUME},
   };
 
 
@@ -1439,7 +1439,7 @@ Parser::parseSimpleAction (DOMElement *elt)
       != reserved_action_table.end ())
     {
       type = (EventType) it->second.first;
-      acttype = (SimpleActionType) it->second.second;
+      acttype = (SimpleAction::Type) it->second.second;
     }
 
   if (dom_elt_try_get_attribute (str, elt, "eventType"))
@@ -1465,7 +1465,7 @@ Parser::parseSimpleAction (DOMElement *elt)
           ERROR_SYNTAX_ELT (elt, "actionType of '%s' cannot be overridden",
                             role.c_str ());
         }
-      map<string, SimpleActionType>::iterator it;
+      map<string, SimpleAction::Type>::iterator it;
       if ((it = event_action_type_table.find (str))
           == event_action_type_table.end ())
         {
@@ -1477,7 +1477,7 @@ Parser::parseSimpleAction (DOMElement *elt)
   g_assert (type != (EventType) -1);
   g_assert (acttype != -1);
 
-  action = new SimpleAction ((SimpleActionType) acttype, role,
+  action = new SimpleAction ((SimpleAction::Type) acttype, role,
                              delay, repeat, repeatDelay, value,
                              duration, by);
   action->setEventType (type);
