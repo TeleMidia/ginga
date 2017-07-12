@@ -61,7 +61,6 @@ Display::Display (int width, int height, double fps, bool fullscreen)
 {
   guint flags;
   SDL_RendererInfo info;
-  int i;
 
   _width = width;
   _height = height;
@@ -89,32 +88,15 @@ Display::Display (int width, int height, double fps, bool fullscreen)
   _screen = SDL_CreateWindow ("ginga", 0, 0, width, height, flags);
   g_assert_nonnull (_screen);
 
-  SDL_GL_SetAttribute (SDL_GL_ACCELERATED_VISUAL, 1);
-
   flags = SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED;
   _renderer = SDL_CreateRenderer (_screen, -1, flags);
   g_assert_nonnull (_renderer);
 
-  g_assert (SDL_GetRendererInfo (_renderer, &info) == 0);
-
-  TRACE ("%s \n", info.name);
-  TRACE ("width: %d \t height: %d \n", info.max_texture_width, info.max_texture_height);
-  if (info.flags & SDL_RENDERER_PRESENTVSYNC)
-    TRACE ("SDL_RENDERER_PRESENTVSYNC \n");
-  if (info.flags & SDL_RENDERER_ACCELERATED)
-    TRACE ("SDL_RENDERER_ACCELERATED \n");
-
-
-  for (i=0; i<SDL_GetNumRenderDrivers(); i++) {
-    g_assert (SDL_GetRenderDriverInfo (i, &info) == 0);
-
-    TRACE ("%s \n", info.name);
-    TRACE ("width: %d \t height: %d \n", info.max_texture_width, info.max_texture_height);
-    if (info.flags & SDL_RENDERER_PRESENTVSYNC)
-      TRACE ("SDL_RENDERER_PRESENTVSYNC \n");
-    if (info.flags & SDL_RENDERER_ACCELERATED)
-      TRACE ("SDL_RENDERER_ACCELERATED \n");
-  }
+  SDLx_GetRendererInfo (_renderer, &info);
+  TRACE ("Renderer info: %s (%dx%d), flags: %s %s\n",
+         info.name, info.max_texture_width, info.max_texture_height,
+         (info.flags & SDL_RENDERER_PRESENTVSYNC) ? "vsync" : "",
+         (info.flags & SDL_RENDERER_ACCELERATED) ? "accelerated" : "");
 }
 
 /**
