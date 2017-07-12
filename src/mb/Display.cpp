@@ -89,36 +89,32 @@ Display::Display (int width, int height, double fps, bool fullscreen)
   _screen = SDL_CreateWindow ("ginga", 0, 0, width, height, flags);
   g_assert_nonnull (_screen);
 
-<<<<<<< HEAD
   SDL_GL_SetAttribute (SDL_GL_ACCELERATED_VISUAL, 1);
 
-=======
->>>>>>> 83f704c9876a02a680a629990c7cf33abd678452
   flags = SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED;
   _renderer = SDL_CreateRenderer (_screen, -1, flags);
   g_assert_nonnull (_renderer);
 
   g_assert (SDL_GetRendererInfo (_renderer, &info) == 0);
 
-  printf ("%s \n", info.name);
-  printf ("width: %d \t height: %d \n", info.max_texture_width, info.max_texture_height);
+  DEBUG ("%s \n", info.name);
+  DEBUG ("width: %d \t height: %d \n", info.max_texture_width, info.max_texture_height);
   if (info.flags & SDL_RENDERER_PRESENTVSYNC)
-    printf ("SDL_RENDERER_PRESENTVSYNC \n");
+    DEBUG ("SDL_RENDERER_PRESENTVSYNC \n");
   if (info.flags & SDL_RENDERER_ACCELERATED)
-    printf ("SDL_RENDERER_ACCELERATED \n");
+    DEBUG ("SDL_RENDERER_ACCELERATED \n");
 
 
   for (i=0; i<SDL_GetNumRenderDrivers(); i++) {
     g_assert (SDL_GetRenderDriverInfo (i, &info) == 0);
 
-    printf ("%s \n", info.name);
-    printf ("width: %d \t height: %d \n", info.max_texture_width, info.max_texture_height);
+    DEBUG ("%s \n", info.name);
+    DEBUG ("width: %d \t height: %d \n", info.max_texture_width, info.max_texture_height);
     if (info.flags & SDL_RENDERER_PRESENTVSYNC)
-      printf ("SDL_RENDERER_PRESENTVSYNC \n");
+      DEBUG ("SDL_RENDERER_PRESENTVSYNC \n");
     if (info.flags & SDL_RENDERER_ACCELERATED)
-      printf ("SDL_RENDERER_ACCELERATED \n");
+      DEBUG ("SDL_RENDERER_ACCELERATED \n");
   }
-
 }
 
 /**
