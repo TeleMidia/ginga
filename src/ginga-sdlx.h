@@ -81,6 +81,9 @@ GINGA_PRAGMA_DIAG_POP ()
 #define SDLx_QueryTexture(T, f, a, w, h)\
   SDLx_assert (SDL_QueryTexture ((T), (f), (a), (w), (h)))
 
+#define SDLx_GetRendererInfo(R, i)\
+  SDLx_assert (SDL_GetRendererInfo ((R), (i)))
+
 #define SDLx_SetRenderDrawBlendMode(R, m)\
   SDLx_assert (SDL_SetRenderDrawBlendMode ((R), (m)))
 
