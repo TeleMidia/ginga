@@ -356,7 +356,7 @@ _ginga_parse_comparator (const string &s, string *result)
 
 /**
  * @brief Evaluates comparator with the given operands.
- * @param op Operator ("eq", "ne", "lt", "lte", "gt", or "gte").
+ * @param s Operator ("eq", "ne", "lt", "lte", "gt", or "gte").
  * @param a First operand.
  * @param b Second operand.
  */

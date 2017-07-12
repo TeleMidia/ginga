@@ -20,48 +20,63 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-SimpleCondition::SimpleCondition (const string &role)
-    : TriggerExpression (), Role ()
+/**
+ * @brief Creates a new simple condition.
+ * @param type Event type.
+ * @param transition Condition type.
+ * @param label Role.
+ * @param conj True if multiple binds are to be interpreted as conjunctions.
+ * @param delay Delay.
+ * @param key Key.
+ */
+SimpleCondition::SimpleCondition (EventType type,
+                                  EventStateTransition transition,
+                                  const string &label,
+                                  bool conj,
+                                  const string &delay,
+                                  const string &key)
+  : TriggerExpression (), Role (type, label)
 {
-  SimpleCondition::setLabel (role);
-  _key = "";
-  _qualifier = SimpleCondition::NO_QUALIFIER;
+  _transition = transition;
+  _conjunction = conj;
+  _delay = delay;
+  _key = key;
 }
 
-string
-SimpleCondition::getKey ()
-{
-  return _key;
-}
-
-void
-SimpleCondition::setKey (const string &key)
-{
-  this->_key = key;
-}
-
+/**
+ * @brief Gets transition.
+ */
 EventStateTransition
 SimpleCondition::getTransition ()
 {
   return _transition;
 }
 
-void
-SimpleCondition::setTransition (EventStateTransition transition)
+/**
+ * @brief Tests whether simple condition is a conjunction.
+ */
+bool
+SimpleCondition::isConjunction ()
 {
-  this->_transition = transition;
+  return _conjunction;
 }
 
-short
-SimpleCondition::getQualifier ()
+/**
+ * @brief Gets delay.
+ */
+string
+SimpleCondition::getDelay ()
 {
-  return _qualifier;
+  return _delay;
 }
 
-void
-SimpleCondition::setQualifier (short qualifier)
+/**
+ * @brief Gets key.
+ */
+string
+SimpleCondition::getKey ()
 {
-  this->_qualifier = qualifier;
+  return _key;
 }
 
 GINGA_NCL_END

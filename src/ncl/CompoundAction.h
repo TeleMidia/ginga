@@ -15,36 +15,25 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _COMPOUNDACTION_H_
-#define _COMPOUNDACTION_H_
+#ifndef COMPOUND_ACTION_H
+#define COMPOUND_ACTION_H
 
 #include "Action.h"
-#include "SimpleAction.h"
 
 GINGA_NCL_BEGIN
 
 class CompoundAction : public Action
 {
 public:
-  static const short OP_PAR = 0;
-  static const short OP_SEQ = 1;
-  static const short OP_EXCL = 2;
-
   CompoundAction ();
-  CompoundAction (Action *a1, Action *a2, short op);
-
   virtual ~CompoundAction ();
-
-  void setOperator (short op);
-  short getOperator ();
-  vector<Action *> *getActions ();
-  void addAction (Action *action);
+  void addAction (Action *);
+  const vector<Action *> *getActions ();
 
 protected:
-  vector<Action *> *_actions;
-  short _myOperator;
+  vector<Action *> _actions;
 };
 
 GINGA_NCL_END
 
-#endif //_COMPOUNDACTION_H_
+#endif // COMPOUND_ACTION_H

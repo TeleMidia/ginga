@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef ROLE_H
 #define ROLE_H
 
-#include "ginga.h"
 #include "EventUtil.h"
 
 GINGA_NCL_BEGIN
@@ -26,16 +25,14 @@ GINGA_NCL_BEGIN
 class Role
 {
 public:
-  Role ();
+  Role (EventType, const string &);
   virtual ~Role ();
   virtual EventType getEventType ();
   virtual string getLabel ();
-  virtual void setEventType (EventType type);
-  virtual void setLabel (const string &id);
 
 protected:
-  string _label;
   EventType _eventType;
+  string _label;
 };
 
 GINGA_NCL_END

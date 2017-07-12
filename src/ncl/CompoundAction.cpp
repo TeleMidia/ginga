@@ -18,81 +18,41 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "CompoundAction.h"
 
-GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
-
 GINGA_NCL_BEGIN
 
+/**
+ * @brief Creates a new compound action.
+ */
 CompoundAction::CompoundAction () : Action ()
 {
-  _actions = new vector<Action *>;
 }
 
-CompoundAction::CompoundAction (Action *a1, Action *a2, short op)
-    : Action ()
-{
-  _actions = new vector<Action *>;
-  _actions->push_back (a1);
-  _actions->push_back (a2);
-  _myOperator = op;
-}
-
+/**
+ * @brief Destroys compound action.
+ */
 CompoundAction::~CompoundAction ()
 {
-  vector<Action *>::iterator i;
-
-  if (_actions != NULL)
-    {
-      i = _actions->begin ();
-      while (i != _actions->end ())
-        {
-          delete (*i);
-          ++i;
-        }
-
-      delete _actions;
-      _actions = NULL;
-    }
+  _actions.clear ();
 }
 
-void
-CompoundAction::setOperator (short op)
-{
-  _myOperator = op;
-}
-
-short
-CompoundAction::getOperator ()
-{
-  return _myOperator;
-}
-
-vector<Action *> *
+/**
+ * @brief Gets all child actions.
+ */
+const vector<Action *> *
 CompoundAction::getActions ()
 {
-  if (_actions->begin () == _actions->end ())
-    return NULL;
-
-  return _actions;
+  return &_actions;
 }
 
+/**
+ * @brief Adds child action.
+ * @param action Child action.
+ */
 void
 CompoundAction::addAction (Action *action)
 {
-  vector<Action *>::iterator i;
-
-  i = _actions->begin ();
-  while (i != _actions->end ())
-    {
-      if (action == *i)
-        {
-          clog << "CompoundAction::addAction ";
-          clog << "Warning! Trying to add the action twice";
-          clog << endl;
-          return;
-        }
-      ++i;
-    }
-  _actions->push_back (action);
+  g_assert_nonnull (action);
+  _actions.push_back (action);
 }
 
 GINGA_NCL_END

@@ -20,18 +20,30 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-SimpleAction::SimpleAction (SimpleActionType type,
-                            const string &role,
+/**
+ * @brief Creates a new simple action.
+ * @param type Event type.
+ * @param actType Action type.
+ * @param label Role.
+ * @param delay Delay.
+ * @param repeat Repeat.
+ * @param repeatDelay Repeat delay.
+ * @param value Value.
+ * @param duration Duration.
+ * @param by By.
+ */
+SimpleAction::SimpleAction (EventType type,
+                            SimpleAction::Type actType,
+                            const string &label,
                             const string &delay,
                             const string &repeat,
                             const string &repeatDelay,
                             const string &value,
                             const string &duration,
                             const string &by)
-  : Action (), Role ()
+  : Action (), Role (type, label)
 {
-  _type = type;
-  Role::setLabel (role);
+  _actionType = actType;
   _delay = delay;
   _repeat = repeat;
   _repeatDelay = repeatDelay;
@@ -40,46 +52,70 @@ SimpleAction::SimpleAction (SimpleActionType type,
   _by = by;
 }
 
+/**
+ * @brief Destroys simple action.
+ */
 SimpleAction::~SimpleAction ()
 {
 }
 
-SimpleActionType
+/**
+ * @brief Gets simple action type.
+ */
+SimpleAction::Type
 SimpleAction::getActionType ()
 {
-  return _type;
+  return _actionType;
 }
 
+/**
+ * @brief Gets simple action delay.
+ */
 string
 SimpleAction::getDelay ()
 {
   return _delay;
 }
 
+/**
+ * @brief Gets simple action repeat.
+ */
 string
 SimpleAction::getRepeat ()
 {
   return _repeat;
 }
 
+/**
+ * @brief Gets simple action repeat delay.
+ */
 string
 SimpleAction::getRepeatDelay ()
 {
   return _repeatDelay;
 }
 
+/**
+ * @brief Gets simple action value.
+ */
 string
 SimpleAction::getValue ()
 {
   return _value;
 }
 
+/**
+ * @brief Gets simple action duration.
+ */
 string
 SimpleAction::getDuration ()
 {
   return _duration;
 }
 
+/**
+ * @brief Gets simple action by.
+ */
 string
 SimpleAction::getBy ()
 {

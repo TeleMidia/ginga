@@ -151,7 +151,7 @@ private:
                       ExecutionObjectContext *parentObject);
 
   NclCompoundAction *createCompoundAction (
-      GingaTime delay, vector<Action *> *ncmChildActions,
+      GingaTime delay, const vector<Action *> *ncmChildActions,
       Link *ncmLink, ExecutionObjectContext *parentObject);
 
   NclLinkTriggerCondition *createSimpleCondition (
