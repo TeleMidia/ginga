@@ -128,7 +128,7 @@ Scheduler::startDocument (const string &file)
     {
       NclSimpleAction *fakeAction;
       _events.push_back (event);
-      fakeAction = new NclSimpleAction (event, ACT_START);
+      fakeAction = new NclSimpleAction (event, SimpleAction::START);
       runAction (event, fakeAction);
       delete fakeAction;
     }
@@ -146,8 +146,8 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
   obj = event->getExecutionObject ();
   g_assert_nonnull (obj);
 
-  TRACE ("running action '%s' over event '%s' (object '%s')",
-         action->getTypeString ().c_str (),
+  TRACE ("running action '%d' over event '%s' (object '%s')",
+         action->getType (),
          event->getId ().c_str (),
          obj->getId ().c_str ());
 
@@ -186,7 +186,7 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
       GingaTime dur;
 
       g_assert (instanceof (NclAssignmentAction *, action));
-      g_assert (action->getType () == ACT_START);
+      g_assert (action->getType () == SimpleAction::START);
 
       attevt = (AttributionEvent *) event;
       attact = (NclAssignmentAction *) action;
@@ -216,20 +216,20 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
 
   switch (action->getType ())
     {
-    case ACT_START:
+    case SimpleAction::START:
       obj->prepare (event);
       g_assert (obj->start ());
       break;
-    case ACT_STOP:
+    case SimpleAction::STOP:
       g_assert (obj->stop ());
       break;
-    case ACT_PAUSE:
+    case SimpleAction::PAUSE:
       g_assert (obj->pause ());
       break;
-    case ACT_RESUME:
+    case SimpleAction::RESUME:
       g_assert (obj->resume ());
       break;
-    case ACT_ABORT:
+    case SimpleAction::ABORT:
       g_assert (obj->abort ());
       break;
     default:
@@ -243,7 +243,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
 {
   NclEvent *event;
   EventType type;
-  SimpleActionType acttype;
+  SimpleAction::Type acttype;
 
   Node *node;
   Entity *entity;
@@ -289,7 +289,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
     }
 
   acttype = action->getType ();
-  if (acttype == ACT_START)     // start all ports
+  if (acttype == SimpleAction::START)     // start all ports
     {
       ctxObj->suspendLinkEvaluation (false);
       for (auto port: *compNode->getPorts ())
@@ -328,7 +328,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
           delete persp;
         }
     }
-  else if (acttype == ACT_STOP) // stop all children
+  else if (acttype == SimpleAction::STOP) // stop all children
     {
       ctxObj->suspendLinkEvaluation (true);
       for (const auto pair: *ctxObj->getExecutionObjects ())
@@ -345,15 +345,15 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
         }
       ctxObj->suspendLinkEvaluation (false);
     }
-  else if (acttype == ACT_ABORT)
+  else if (acttype == SimpleAction::ABORT)
     {
       ERROR_NOT_IMPLEMENTED ("action 'abort' is not supported");
     }
-  else if (acttype == ACT_PAUSE)
+  else if (acttype == SimpleAction::PAUSE)
     {
       ERROR_NOT_IMPLEMENTED ("action 'pause' is not supported");
     }
-  else if (acttype == ACT_RESUME)
+  else if (acttype == SimpleAction::RESUME)
     {
       ERROR_NOT_IMPLEMENTED ("action 'resume' is not supported");
     }
@@ -393,8 +393,8 @@ Scheduler::runActionOverSwitch (ExecutionObjectSwitch *switchObj,
       runSwitchEvent (switchObj, event, selectedObject, action);
     }
 
-  if (action->getType () == ACT_STOP
-      || action->getType () == ACT_ABORT)
+  if (action->getType () == SimpleAction::STOP
+      || action->getType () == SimpleAction::ABORT)
     {
       switchObj->select (nullptr);
     }

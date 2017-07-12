@@ -79,8 +79,7 @@ NclAction::notifyProgressListeners (bool start)
     }
 }
 
-NclSimpleAction::NclSimpleAction (NclEvent *event,
-                                          SimpleActionType type)
+NclSimpleAction::NclSimpleAction (NclEvent *event, SimpleAction::Type type)
     : NclAction (0.)
 {
   this->_event = event;
@@ -98,16 +97,10 @@ NclSimpleAction::getEvent ()
   return _event;
 }
 
-SimpleActionType
+SimpleAction::Type
 NclSimpleAction::getType ()
 {
   return _actType;
-}
-
-string
-NclSimpleAction::getTypeString ()
-{
-  return SimpleAction::actionTypeToString (this->_actType);
 }
 
 void
@@ -165,7 +158,7 @@ NclSimpleAction::run ()
       listener->scheduleAction (this);
     }
 
-  if (_actType == ACT_START)
+  if (_actType == SimpleAction::START)
     {
       notifyProgressListeners (true);
     }
@@ -176,7 +169,7 @@ NclSimpleAction::run ()
 }
 
 NclRepeatAction::NclRepeatAction (NclEvent *evt,
-                                          SimpleActionType actType)
+                                  SimpleAction::Type actType)
     : NclSimpleAction (evt, actType)
 {
   this->_repetitions = 0;
@@ -220,7 +213,7 @@ NclRepeatAction::run ()
 }
 
 NclAssignmentAction::NclAssignmentAction (NclEvent *evt,
-                                          SimpleActionType actType,
+                                          SimpleAction::Type actType,
                                           const string &value,
                                           const string &duration)
     : NclRepeatAction (evt, actType)

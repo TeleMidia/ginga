@@ -36,6 +36,7 @@ GINGA_PRAGMA_DIAG_POP ()
 #include "NclDocument.h"
 #include "Property.h"
 #include "Rule.h"
+#include "SimpleAction.h"
 #include "SimpleRule.h"
 #include "Switch.h"
 #include "SwitchPort.h"

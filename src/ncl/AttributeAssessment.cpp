@@ -20,11 +20,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-AttributeAssessment::AttributeAssessment (const string &label)
-    : Assessment (), Role ()
+AttributeAssessment::AttributeAssessment (EventType type,
+                                          const string &label)
+  : Assessment (), Role (type, label)
 {
-  Role::setLabel (label);
-  _eventType = EventType::ATTRIBUTION;
   _attributeType = AttributeType::NODE_PROPERTY;
   _key = "";
   _offset = "";

@@ -15,63 +15,31 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _SIMPLEACTION_H_
-#define _SIMPLEACTION_H_
+#ifndef SIMPLE_ACTION_H
+#define SIMPLE_ACTION_H
 
 #include "Action.h"
 #include "CompoundAction.h"
-#include "EventUtil.h"
-#include "Role.h"
 
 GINGA_NCL_BEGIN
-
-enum SimpleActionType
-{
-   ACT_START = 1,
-   ACT_PAUSE,
-   ACT_RESUME,
-   ACT_STOP,
-   ACT_ABORT,
-};
 
 class SimpleAction : public Action, public Role
 {
 public:
-  static string actionTypeToString (SimpleActionType t)
-  {
-    switch (t)
-      {
-      case ACT_START:
-        return "start";
-      case ACT_PAUSE:
-        return "pause";
-      case ACT_RESUME:
-        return "resume";
-      case ACT_STOP:
-        return "stop";
-      case ACT_ABORT:
-        return "abort";
-      default:
-        g_assert_not_reached ();
-      }
-  }
-
-  static SimpleActionType stringToActionType (const string &s)
-  {
-    if (s == "start")  return ACT_START;
-    if (s == "pause")  return ACT_PAUSE;
-    if (s == "resume") return ACT_RESUME;
-    if (s == "stop")   return ACT_STOP;
-    if (s == "abort")  return ACT_ABORT;
-    g_assert_not_reached ();
-  }
-
-  SimpleAction (SimpleActionType, const string &, const string &,
+  enum Type
+    {
+     START = 1,
+     PAUSE,
+     RESUME,
+     STOP,
+     ABORT,
+    };
+  SimpleAction (EventType, Type, const string &, const string &,
                 const string &, const string &, const string &,
                 const string &, const string &);
   virtual ~SimpleAction ();
 
-  SimpleActionType getActionType ();
+  Type getActionType ();
   string getDelay ();
   string getRepeat ();
   string getRepeatDelay ();
@@ -80,7 +48,7 @@ public:
   string getBy ();
 
 private:
-  SimpleActionType _type;
+  Type _actionType;
   string _delay;
   string _repeat;
   string _repeatDelay;
@@ -91,4 +59,4 @@ private:
 
 GINGA_NCL_END
 
-#endif //_SIMPLEACTION_H_
+#endif // SIMPLE_ACTION_H

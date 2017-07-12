@@ -254,22 +254,22 @@ static map<string, pair<int,int>> reserved_action_table =
   {
    {"start",
     {(int) EventType::PRESENTATION,
-     (int) ACT_START}},
+     (int) SimpleAction::START}},
    {"stop",
     {(int) EventType::PRESENTATION,
-     (int) ACT_STOP}},
+     (int) SimpleAction::STOP}},
    {"abort",
     {(int) EventType::PRESENTATION,
-     (int) ACT_ABORT}},
+     (int) SimpleAction::ABORT}},
    {"pause",
     {(int) EventType::PRESENTATION,
-     (int) ACT_PAUSE}},
+     (int) SimpleAction::PAUSE}},
    {"resume",
     {(int) EventType::PRESENTATION,
-     (int) ACT_RESUME}},
+     (int) SimpleAction::RESUME}},
    {"set",
     {(int) EventType::ATTRIBUTION,
-     (int) ACT_START}},
+     (int) SimpleAction::START}},
   };
 
 // Maps event type name to event type code.
@@ -291,13 +291,13 @@ static map<string, EventStateTransition> event_transition_table =
   };
 
 // Maps action name to action code.
-static map<string, SimpleActionType> event_action_type_table =
+static map<string, SimpleAction::Type> event_action_type_table =
   {
-   {"start", ACT_START},
-   {"stop", ACT_STOP},
-   {"abort", ACT_ABORT},
-   {"pause", ACT_PAUSE},
-   {"resume", ACT_RESUME},
+   {"start", SimpleAction::START},
+   {"stop", SimpleAction::STOP},
+   {"abort", SimpleAction::ABORT},
+   {"pause", SimpleAction::PAUSE},
+   {"resume", SimpleAction::RESUME},
   };
 
 
@@ -1164,9 +1164,11 @@ Parser::parseCompoundCondition (DOMElement *elt)
 SimpleCondition *
 Parser::parseSimpleCondition (DOMElement *elt)
 {
-  SimpleCondition *cond;
+  string str;
   string role;
-  string value;
+  string key;
+  string delay;
+  string qualifier;
 
   EventType type;
   EventStateTransition trans;
@@ -1174,9 +1176,12 @@ Parser::parseSimpleCondition (DOMElement *elt)
 
   CHECK_ELT_TAG (elt, "simpleCondition", nullptr);
   CHECK_ELT_ATTRIBUTE (elt, "role", &role);
+  CHECK_ELT_OPT_ATTRIBUTE (elt, "qualifier", &qualifier, "or");
+  CHECK_ELT_OPT_ATTRIBUTE (elt, "delay", &delay, "0");
+  CHECK_ELT_OPT_ATTRIBUTE (elt, "key", &key, "");
 
   type = (EventType) -1;
-  trans = EventStateTransition::UNKNOWN;
+  trans = (EventStateTransition) -1;
 
   if ((it = reserved_condition_table.find (role))
       != reserved_condition_table.end ())
@@ -1185,7 +1190,7 @@ Parser::parseSimpleCondition (DOMElement *elt)
       trans = (EventStateTransition) it->second.second;
     }
 
-  if (dom_elt_try_get_attribute (value, elt, "eventType"))
+  if (dom_elt_try_get_attribute (str, elt, "eventType"))
     {
       if (unlikely (type != (EventType) -1))
         {
@@ -1193,15 +1198,15 @@ Parser::parseSimpleCondition (DOMElement *elt)
                             role.c_str ());
         }
       map<string, EventType>::iterator it;
-      if ((it = event_type_table.find (value)) == event_type_table.end ())
+      if ((it = event_type_table.find (str)) == event_type_table.end ())
         {
           ERROR_SYNTAX_ELT (elt, "bad eventType '%s' for role '%s'",
-                            value.c_str (), role.c_str ());
+                            str.c_str (), role.c_str ());
         }
       type = it->second;
     }
 
-  if (dom_elt_try_get_attribute (value, elt, "transition"))
+  if (dom_elt_try_get_attribute (str, elt, "transition"))
     {
       if (unlikely (trans != EventStateTransition::UNKNOWN))
         {
@@ -1209,42 +1214,23 @@ Parser::parseSimpleCondition (DOMElement *elt)
                             role.c_str ());
         }
       map<string, EventStateTransition>::iterator it;
-      if ((it = event_transition_table.find (value))
+      if ((it = event_transition_table.find (str))
           == event_transition_table.end ())
         {
           ERROR_SYNTAX_ELT (elt, "bad transition '%s' for role '%s'",
-                            value.c_str (), role.c_str ());
+                            str.c_str (), role.c_str ());
         }
       trans = it->second;
     }
 
   g_assert (type != (EventType) -1);
-  g_assert (trans != EventStateTransition::UNKNOWN);
+  g_assert (trans != (EventStateTransition) -1);
 
-  cond = new SimpleCondition (role);
-  cond->setEventType (type);
-  cond->setTransition (trans);
+  if (qualifier != "and" && qualifier != "or")
+    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "qualifier");
 
-  if (type == EventType::SELECTION
-      && dom_elt_try_get_attribute (value, elt, "key"))
-    {
-      cond->setKey (value);
-    }
-
-  if (dom_elt_try_get_attribute (value, elt, "delay"))
-    cond->setDelay (value);
-
-  if (dom_elt_try_get_attribute (value, elt, "qualifier"))
-    {
-      if (value == "or")
-        cond->setQualifier (CompoundCondition::OP_OR);
-      else if (value == "and")
-        cond->setQualifier (CompoundCondition::OP_AND);
-      else
-        ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "qualifier");
-    }
-
-  return cond;
+  return new SimpleCondition (type, trans, role, qualifier == "and",
+                              delay, key);
 }
 
 CompoundStatement *
@@ -1330,22 +1316,19 @@ Parser::parseAttributeAssessment (DOMElement *elt)
   AttributeAssessment *assess;
   string role;
   string value;
+  EventType type;
 
   CHECK_ELT_TAG (elt, "attributeAssessment", nullptr);
   CHECK_ELT_ATTRIBUTE (elt, "role", &role);
 
-  assess = new AttributeAssessment (role);
   if (dom_elt_try_get_attribute (value, elt, "eventType"))
     {
-      if ((it = event_type_table.find (value)) != event_type_table.end ())
-        {
-           assess->setEventType (it->second);
-        }
-      else
-        {
-          ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "eventType");
-        }
+      if ((it = event_type_table.find (value)) == event_type_table.end ())
+        ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "eventType");
+      type = it->second;
     }
+
+  assess = new AttributeAssessment (type, role);
 
   if (dom_elt_try_get_attribute (value, elt, "attributeType"))
     assess->setAttributeType (EventUtil::getAttributeTypeCode (value));
@@ -1408,7 +1391,6 @@ Parser::parseCompoundAction (DOMElement *elt)
 SimpleAction *
 Parser::parseSimpleAction (DOMElement *elt)
 {
-  SimpleAction *action;
   string str;
   string tag;
   string role;
@@ -1439,7 +1421,7 @@ Parser::parseSimpleAction (DOMElement *elt)
       != reserved_action_table.end ())
     {
       type = (EventType) it->second.first;
-      acttype = (SimpleActionType) it->second.second;
+      acttype = (SimpleAction::Type) it->second.second;
     }
 
   if (dom_elt_try_get_attribute (str, elt, "eventType"))
@@ -1465,7 +1447,7 @@ Parser::parseSimpleAction (DOMElement *elt)
           ERROR_SYNTAX_ELT (elt, "actionType of '%s' cannot be overridden",
                             role.c_str ());
         }
-      map<string, SimpleActionType>::iterator it;
+      map<string, SimpleAction::Type>::iterator it;
       if ((it = event_action_type_table.find (str))
           == event_action_type_table.end ())
         {
@@ -1477,12 +1459,9 @@ Parser::parseSimpleAction (DOMElement *elt)
   g_assert (type != (EventType) -1);
   g_assert (acttype != -1);
 
-  action = new SimpleAction ((SimpleActionType) acttype, role,
-                             delay, repeat, repeatDelay, value,
-                             duration, by);
-  action->setEventType (type);
-
-  return action;
+  return new SimpleAction ((EventType) type, (SimpleAction::Type) acttype,
+                           role, delay, repeat, repeatDelay, value,
+                           duration, by);
 }
 
 
@@ -2204,8 +2183,7 @@ Parser::parseBind (DOMElement *elt, Link *link, Context *context)
       AssessmentStatement *stmt;
       AttributeAssessment *assess;
 
-      assess = new AttributeAssessment (label);
-      assess->setEventType (EventType::ATTRIBUTION);
+      assess = new AttributeAssessment (EventType::ATTRIBUTION, label);
       assess->setAttributeType (AttributeType::NODE_PROPERTY);
 
       stmt = new AssessmentStatement ("ne");
