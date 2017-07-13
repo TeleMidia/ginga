@@ -85,6 +85,9 @@ NclSimpleAction::NclSimpleAction (NclEvent *event, SimpleAction::Type type)
   this->_event = event;
   this->_actType = type;
   this->listener = nullptr;
+
+  this->_repetitions = 0;
+  this->_repetitionInterval = 0;
 }
 
 NclSimpleAction::~NclSimpleAction ()
@@ -150,6 +153,20 @@ NclSimpleAction::getImplicitRefRoleActions ()
 void
 NclSimpleAction::run ()
 {
+  if (_event != nullptr)
+    {
+      auto presentationEvt = cast (PresentationEvent *, _event);
+      if (presentationEvt)
+        {
+          presentationEvt->setRepetitionSettings (_repetitions,
+                                                  _repetitionInterval);
+        }
+    }
+  else
+    {
+      g_assert_not_reached ();
+    }
+
   NclAction::run ();
 
   if (listener != NULL)
@@ -168,62 +185,28 @@ NclSimpleAction::run ()
     }
 }
 
-NclRepeatAction::NclRepeatAction (NclEvent *evt,
-                                  SimpleAction::Type actType)
-    : NclSimpleAction (evt, actType)
-{
-  this->_repetitions = 0;
-  this->_repetitionInterval = 0;
-}
-
-NclRepeatAction::~NclRepeatAction ()
-{
-}
-
 void
-NclRepeatAction::setRepetitions (int repetitions)
+NclSimpleAction::setRepetitions (int repetitions)
 {
   this->_repetitions = repetitions;
 }
 
 void
-NclRepeatAction::setRepetitionInterval (GingaTime delay)
+NclSimpleAction::setRepetitionInterval (GingaTime delay)
 {
   this->_repetitionInterval = delay;
 }
 
-void
-NclRepeatAction::run ()
-{
-  if (_event != nullptr)
-    {
-      auto presentationEvt = cast (PresentationEvent *, _event);
-      if (presentationEvt)
-        {
-          presentationEvt->setRepetitionSettings (_repetitions,
-                                                  _repetitionInterval);
-        }
-    }
-  else
-    {
-      g_assert_not_reached ();
-    }
-
-  NclSimpleAction::run ();
-}
+// NclAssignmentAction
 
 NclAssignmentAction::NclAssignmentAction (NclEvent *evt,
                                           SimpleAction::Type actType,
                                           const string &value,
                                           const string &duration)
-    : NclRepeatAction (evt, actType)
+    : NclSimpleAction (evt, actType)
 {
   _value = value;
   _duration = duration;
-}
-
-NclAssignmentAction::~NclAssignmentAction ()
-{
 }
 
 string
