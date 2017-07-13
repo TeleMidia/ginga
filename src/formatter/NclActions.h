@@ -86,31 +86,21 @@ public:
   virtual vector<NclEvent *> getEvents () override;
   virtual vector<NclAction *> getImplicitRefRoleActions () override;
 
+  void setRepetitions (int repetitions);
+  void setRepetitionInterval (GingaTime _delay);
+
 protected:
   NclEvent *_event;
   SimpleAction::Type _actType;
 
 private:
   INclActionListener *listener;
-};
 
-class NclRepeatAction : public NclSimpleAction
-{
-public:
-  NclRepeatAction (NclEvent *, SimpleAction::Type);
-  virtual ~NclRepeatAction ();
-
-  virtual void run () override;
-
-  void setRepetitions (int repetitions);
-  void setRepetitionInterval (GingaTime _delay);
-
-private:
   int _repetitions;
   GingaTime _repetitionInterval;
 };
 
-class NclAssignmentAction : public NclRepeatAction
+class NclAssignmentAction : public NclSimpleAction
 {
 public:
   NclAssignmentAction (NclEvent *evt,
@@ -118,7 +108,7 @@ public:
                        const string &value,
                        const string &duration);
 
-  virtual ~NclAssignmentAction ();
+  virtual ~NclAssignmentAction () {}
   string getValue ();
   string getDuration ();
 

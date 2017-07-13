@@ -1027,7 +1027,7 @@ Converter::createLink (Link *ncmLink,
           value = action->getValue ();
           if (value != "" && value.substr (0, 1) == "$")
             {
-              event = ((NclRepeatAction *)action)->getEvent ();
+              event = action->getEvent ();
               setImplicitRefAssessment (
                     value.substr (1, value.length ()), ncmLink, event);
             }
@@ -1035,7 +1035,7 @@ Converter::createLink (Link *ncmLink,
           value = action->getDuration ();
           if (value != "" && value.substr (0, 1) == "$")
             {
-              event = ((NclRepeatAction *)action)->getEvent ();
+              event = action->getEvent ();
               setImplicitRefAssessment
                 (value.substr (1, value.length ()), ncmLink, event);
             }
@@ -1453,7 +1453,7 @@ Converter::createSimpleAction (
     case SimpleAction::START:
       if (eventType == EventType::PRESENTATION)
         {
-          action = new NclRepeatAction (event, actionType);
+          action = new NclSimpleAction (event, actionType);
 
           // repeat
           paramValue = sae->getRepeat ();
@@ -1486,12 +1486,12 @@ Converter::createSimpleAction (
               repeat = xstrtoint (paramValue, 10);
             }
 
-          ((NclRepeatAction *) action)->setRepetitions (repeat);
+          action->setRepetitions (repeat);
 
           // repeatDelay
           paramValue = sae->getRepeatDelay ();
           delay = compileDelay (ncmLink, paramValue, bind);
-          ((NclRepeatAction *) action)->setRepetitionInterval (delay);
+          action->setRepetitionInterval (delay);
         }
       else if (eventType == EventType::ATTRIBUTION)
         {
