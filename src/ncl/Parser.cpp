@@ -1313,37 +1313,22 @@ AttributeAssessment *
 Parser::parseAttributeAssessment (DOMElement *elt)
 {
   map<string, EventType>::iterator it;
-  AttributeAssessment *assess;
   string role;
-  string value;
-  EventType type;
+  string type;
+  string key;
+  string offset;
+  EventType evttype;
 
   CHECK_ELT_TAG (elt, "attributeAssessment", nullptr);
   CHECK_ELT_ATTRIBUTE (elt, "role", &role);
+  CHECK_ELT_OPT_ATTRIBUTE (elt, "type", &type, "attribution");
+  CHECK_ELT_OPT_ATTRIBUTE (elt, "key", &key, "");
+  CHECK_ELT_OPT_ATTRIBUTE (elt, "offset", &offset, "");
 
-  if (dom_elt_try_get_attribute (value, elt, "eventType"))
-    {
-      if ((it = event_type_table.find (value)) == event_type_table.end ())
-        ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "eventType");
-      type = it->second;
-    }
-
-  assess = new AttributeAssessment (type, role);
-
-  if (dom_elt_try_get_attribute (value, elt, "attributeType"))
-    assess->setAttributeType (EventUtil::getAttributeTypeCode (value));
-
-  // parameter
-  if (assess->getEventType () == EventType::SELECTION
-      && dom_elt_try_get_attribute (value, elt, "key"))
-    {
-      assess->setKey (value);
-    }
-
-  if (dom_elt_try_get_attribute (value, elt, "offset"))
-    assess->setOffset (value);
-
-  return assess;
+  if ((it = event_type_table.find (type)) == event_type_table.end ())
+    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "eventType");
+  evttype = it->second;
+  return new AttributeAssessment (evttype, role, key, offset);
 }
 
 ValueAssessment *
@@ -2181,9 +2166,7 @@ Parser::parseBind (DOMElement *elt, Link *link, Context *context)
       AssessmentStatement *stmt;
       AttributeAssessment *assess;
 
-      assess = new AttributeAssessment (EventType::ATTRIBUTION, label);
-      assess->setAttributeType (AttributeType::NODE_PROPERTY);
-
+      assess = new AttributeAssessment (EventType::ATTRIBUTION, label, "", "");
       stmt = new AssessmentStatement ("ne");
       stmt->setMainAssessment (assess);
       stmt->setOtherAssessment (new ValueAssessment (label));

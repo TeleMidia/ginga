@@ -20,49 +20,39 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
+/**
+ * @brief Creates a new attribute assessment.
+ * @param type Assessment type.
+ * @param label Role label.
+ * @param key Assessment key.
+ * @param offset Assessment offset.
+ */
 AttributeAssessment::AttributeAssessment (EventType type,
-                                          const string &label)
+                                          const string &label,
+                                          const string &key,
+                                          const string &offset)
   : Assessment (), Role (type, label)
 {
-  _attributeType = AttributeType::NODE_PROPERTY;
-  _key = "";
-  _offset = "";
+  _key = key;
+  _offset = offset;
 }
 
-AttributeType
-AttributeAssessment::getAttributeType ()
-{
-  return _attributeType;
-}
-
-void
-AttributeAssessment::setAttributeType (AttributeType attribute)
-{
-  _attributeType = attribute;
-}
-
+/**
+ * @brief Gets assessment key.
+ */
 string
 AttributeAssessment::getKey ()
 {
   return _key;
 }
 
-void
-AttributeAssessment::setKey (const string &key)
-{
-  _key = key;
-}
-
+/**
+ * @brief Gets assessment offset.
+ */
 string
 AttributeAssessment::getOffset ()
 {
   return _offset;
-}
-
-void
-AttributeAssessment::setOffset (const string &offset)
-{
-  _offset = offset;
 }
 
 GINGA_NCL_END
