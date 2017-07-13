@@ -1098,7 +1098,6 @@ Converter::createAction (Action *actionExp,
                          Link *ncmLink,
                          ExecutionObjectContext *parentObj)
 {
-  GingaTime delay;
   vector<Bind *> binds;
   size_t i, size;
   string delayObject;
@@ -1155,10 +1154,7 @@ Converter::createAction (Action *actionExp,
     }
   else if (cae) // CompundAction
     {
-      delayObject = actionExp->getDelay ();
-      delay = compileDelay (ncmLink, delayObject, nullptr);
-      return createCompoundAction (delay,
-                                   cae->getActions (), ncmLink,
+      return createCompoundAction (0, cae->getActions (), ncmLink,
                                    parentObj);
     }
   else

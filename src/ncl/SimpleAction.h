@@ -20,6 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Action.h"
 #include "CompoundAction.h"
+#include "Role.h"
 
 GINGA_NCL_BEGIN
 
