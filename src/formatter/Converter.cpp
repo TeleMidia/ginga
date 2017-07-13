@@ -1410,13 +1410,13 @@ Converter::createStatement (
 
 NclLinkAttributeAssessment *
 Converter::createAttributeAssessment (
-    AttributeAssessment *attributeAssessment, Bind *bind, Link *ncmLink,
+    arg_unused (AttributeAssessment *attributeAssessment), Bind *bind, Link *ncmLink,
     ExecutionObjectContext *parentObj)
 {
   NclEvent *event = createEvent (bind, ncmLink, parentObj);
 
-  return new NclLinkAttributeAssessment (
-        event, attributeAssessment->getAttributeType ());
+  return new NclLinkAttributeAssessment
+    (event, AttributeType::NODE_PROPERTY);
 }
 
 NclSimpleAction *
