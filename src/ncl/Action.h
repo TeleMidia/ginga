@@ -15,26 +15,18 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _ACTION_H_
-#define _ACTION_H_
-
-#include "Role.h"
+#ifndef ACTION_H
+#define ACTION_H
 
 GINGA_NCL_BEGIN
 
 class Action
 {
 public:
-  Action ();
-  Action (const string &newDelay);
-  virtual ~Action (){}
-  string getDelay ();
-  void setDelay (const string &dur);
-
-private:
-  string _delay;
+  Action () {};
+  virtual ~Action () {};
 };
 
 GINGA_NCL_END
 
-#endif //_ACTION_H_
+#endif // ACTION_H

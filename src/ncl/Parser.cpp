@@ -1362,11 +1362,9 @@ Parser::parseCompoundAction (DOMElement *elt)
   string value;
 
   CHECK_ELT_TAG (elt, "compoundAction", nullptr);
+  CHECK_ELT_ATTRIBUTE_NOT_SUPPORTED (elt, "delay");
 
   action = new CompoundAction ();
-
-  if (dom_elt_try_get_attribute (value, elt, "delay"))
-    action->setDelay (value);
 
   // Collect children.
   for (DOMElement *child: dom_elt_get_children (elt))
