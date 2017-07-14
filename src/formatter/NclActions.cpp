@@ -77,8 +77,8 @@ NclSimpleAction::NclSimpleAction (NclEvent *event, SimpleAction::Type type)
   this->_event = event;
   this->_actType = type;
   this->listener = nullptr;
-
-  this->_repetitions = this->_repetitionInterval = 0;
+  this->_repetitions = 0;
+  this->_repetitionInterval = 0;
 }
 
 NclEvent *
@@ -175,7 +175,7 @@ NclSimpleAction::setRepetitions (int repetitions, GingaTime repetitionInterval)
 {
   this->_repetitions = repetitions;
 
-  if (repetitionInterval != -1)
+  if (repetitionInterval != GINGA_TIME_NONE)
     this->_repetitionInterval = repetitionInterval;
 }
 
