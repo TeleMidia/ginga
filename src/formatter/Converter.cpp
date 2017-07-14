@@ -1432,7 +1432,7 @@ Converter::createSimpleAction (
   Parameter *param;
   string paramValue;
   int repeat;
-  GingaTime repetDelay;
+  GingaTime delay;
 
   action = nullptr;
   event = createEvent (bind, ncmLink, parentObj);
@@ -1488,9 +1488,9 @@ Converter::createSimpleAction (
 
           // repeatDelay
           paramValue = sae->getRepeatDelay ();
-          repetDelay = compileDelay (ncmLink, paramValue, bind);
+          delay = compileDelay (ncmLink, paramValue, bind);
 
-          action->setRepetitions (repeat, repetDelay);
+          action->setRepetitions (repeat, delay);
         }
       else if (eventType == EventType::ATTRIBUTION)
         {
@@ -1566,8 +1566,8 @@ Converter::createSimpleAction (
   g_assert_nonnull (action);
 
   paramValue = sae->getDelay ();
-  repetDelay = compileDelay (ncmLink, paramValue, bind);
-  action->setWaitDelay (repetDelay);
+  delay = compileDelay (ncmLink, paramValue, bind);
+  action->setDelay (delay);
 
   return action;
 }
@@ -1583,7 +1583,7 @@ Converter::createCompoundAction (
   action = new NclCompoundAction ();
   if (delay > 0)
     {
-      action->setWaitDelay (delay);
+      action->setDelay (delay);
     }
 
   if (ncmChildActions != nullptr)
@@ -1662,7 +1662,7 @@ Converter::createEvent (Bind *bind, Link *ncmLink,
   //seq = bind->getNodeNesting ();
   seq.push_back (node);
   if (interfacePoint != nullptr
-    && instanceof (Port *, interfacePoint)
+      && instanceof (Port *, interfacePoint)
       && !(instanceof (SwitchPort *, interfacePoint)))
     {
       for (auto inner: ((Port *) interfacePoint)->getMapNodeNesting ())
@@ -1679,29 +1679,18 @@ Converter::createEvent (Bind *bind, Link *ncmLink,
 
   delete endPointNodeSequence;
 
-  try
-  {
-    executionObject = getExecutionObjectFromPerspective (
-          endPointPerspective, bind->getDescriptor ());
+  executionObject = getExecutionObjectFromPerspective (
+        endPointPerspective, bind->getDescriptor ());
 
-    if (executionObject == nullptr)
-      {
+  if (executionObject == nullptr)
+    {
 
-        WARNING ("Can't find execution object for perspective '%s'.",
-                 endPointPerspective->getId ().c_str ());
+      WARNING ("Can't find execution object for perspective '%s'.",
+               endPointPerspective->getId ().c_str ());
 
-        delete endPointPerspective;
-        return nullptr;
-      }
-  }
-  catch (exception *exc)
-  {
-    ERROR ("Execution object exception for perspective '%s'.",
-           endPointPerspective->getId ().c_str ());
-
-    delete endPointPerspective;
-    return nullptr;
-  }
+      delete endPointPerspective;
+      return nullptr;
+    }
 
 
   if (interfacePoint == nullptr)

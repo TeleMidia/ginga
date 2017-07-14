@@ -51,7 +51,7 @@ public:
 private:
   size_t _currentTransitionIdx;
   size_t _startTransitionIdx;
-  vector<EventTransition *> _transTbl;
+  vector <EventTransition *> _transTbl;
 
   void addTransition (EventTransition *trans);
 };

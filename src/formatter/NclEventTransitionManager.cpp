@@ -22,6 +22,31 @@ using namespace ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
+class EndEventTransition;
+
+class BeginEventTransition : public EventTransition
+{
+  PROPERTY (EndEventTransition *, _endTrans, getEndTransition, setEndTransition)
+
+public:
+  BeginEventTransition (GingaTime time, PresentationEvent *evt)
+  : EventTransition (time, evt) { }
+};
+
+class EndEventTransition : public EventTransition
+{
+  PROPERTY_READONLY (BeginEventTransition *, _beginTrans, getBeginTransition)
+
+public:
+  EndEventTransition (GingaTime t, PresentationEvent *evt,
+                      BeginEventTransition *trans)
+    : EventTransition (t, evt)
+  {
+    _beginTrans = trans;
+    _beginTrans->setEndTransition (this);
+  }
+};
+
 NclEventTransitionManager::~NclEventTransitionManager ()
 {
   for (EventTransition *t: _transTbl)
@@ -34,7 +59,7 @@ cmp_transitions (EventTransition *t1, EventTransition *t2)
   if (t1->getTime() < t2->getTime()) return true;
   else if (t1->getTime() > t2->getTime()) return false;
 
-  auto t1Begin = cast (BeginEventTransition *, t1);
+  bool t1Begin = cast (BeginEventTransition *, t1);
   auto t2End = cast (EndEventTransition *, t2);
 
   return (t1Begin && t2End);
@@ -141,6 +166,7 @@ NclEventTransitionManager::stop (GingaTime endTime)
   for (EventTransition *trans : _transTbl)
     {
       NclEvent *fev = trans->getEvent ();
+
       if (!GINGA_TIME_IS_VALID (endTime) || trans->getTime () > endTime)
         {
           fev->setState (EventState::SLEEPING);
@@ -201,7 +227,7 @@ void
 NclEventTransitionManager::updateTransitionTable (
     GingaTime value, Player *player, NclEvent *mainEvt)
 {
-  for (size_t transIdx = _currentTransitionIdx; transIdx < _transTbl.size ();)
+  for (size_t transIdx = _currentTransitionIdx; transIdx < _transTbl.size (); )
     {
       EventTransition *trans = _transTbl[transIdx];
 

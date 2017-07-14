@@ -27,12 +27,6 @@ NclAction::NclAction (GingaTime delay)
 }
 
 void
-NclAction::setSatisfiedCondition (NclLinkCondition *satisfiedCondition)
-{
-  this->_satisfiedCondition = satisfiedCondition;
-}
-
-void
 NclAction::run (NclLinkCondition *satisfiedCondition)
 {
   this->_satisfiedCondition = satisfiedCondition;
@@ -40,7 +34,7 @@ NclAction::run (NclLinkCondition *satisfiedCondition)
 }
 
 void
-NclAction::setWaitDelay (GingaTime delay)
+NclAction::setDelay (GingaTime delay)
 {
   this->_delay = delay;
 }
@@ -78,7 +72,7 @@ NclAction::notifyProgressListeners (bool start)
 }
 
 NclSimpleAction::NclSimpleAction (NclEvent *event, SimpleAction::Type type)
-    : NclAction (0.)
+  : NclAction (0.)
 {
   this->_event = event;
   this->_actType = type;
@@ -191,7 +185,7 @@ NclAssignmentAction::NclAssignmentAction (NclEvent *evt,
                                           SimpleAction::Type actType,
                                           const string &value,
                                           const string &duration)
-    : NclSimpleAction (evt, actType)
+  : NclSimpleAction (evt, actType)
 {
   _value = value;
   _duration = duration;
