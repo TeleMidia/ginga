@@ -57,6 +57,8 @@
 /doc/Doxyfile
 /doc/html
 /libtool
+/src-gtk/Makefile
+/src-gtk/Makefile.in
 /src-gtk/ginga-gtk
 /src/Makefile
 /src/Makefile.in
