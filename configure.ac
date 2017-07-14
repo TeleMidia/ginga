@@ -42,6 +42,7 @@ AC_DEFINE_UNQUOTED([VERSION], ["$PACKAGE_VERSION"], [Ginga version.])
 m4_define([cairo_required_version],      [1.10.2])
 m4_define([glib_required_version],       [2.32.4])
 m4_define([gstreamer_required_version],  [1.4.0])
+m4_define([gtk_required_version],        [3.4.2])
 m4_define([nclua_required_version],      [1.0])
 m4_define([pango_required_version],      [1.30.0])
 m4_define([sdl2_image_require_version],  [2.0])
@@ -50,6 +51,7 @@ m4_define([xercesc_required_version],    [2.7])
 AC_SUBST([CAIRO_REQUIRED_VERSION],       cairo_required_version)
 AC_SUBST([GLIB_REQUIRED_VERSION],        glib_required_version)
 AC_SUBST([GSTREAMER_REQUIRED_VERSION],   gstreamer_required_version)
+AC_SUBST([GTK_REQUIRED_VERSION],         gtk_required_version)
 AC_SUBST([NCLUA_REQUIRED_VERSION],       nclua_required_version)
 AC_SUBST([PANGO_REQUIRED_VERSION],       pango_required_version)
 AC_SUBST([SDL2_IMAGE_REQUIRE_VERSION],   sdl2_image_require_version)
@@ -209,6 +211,20 @@ AU_CHECK_OPTIONAL_PKG([librsvg], [build with LibRsvg support], [],
  [LIBRSVG],
  [librsvg-2.0 >= librsvg_required_version])
 
+AU_VERSION_BREAK([gtk], gtk_required_version)
+AU_CHECK_OPTIONAL_PKG([ginga-gtk], [build the GTK gui], [],
+ [GTK], gtk+-3.0 >= gtk_required_version,
+ [AC_LANG_PROGRAM([[
+#include <gtk/gtk.h>
+#if !GTK_CHECK_VERSION  \
+    (GTK_REQUIRED_MAJOR,\
+     GTK_REQUIRED_MINOR,\
+     GTK_REQUIRED_MICRO)
+# error "gtk is too old"
+#endif
+ ]])],
+ [AC_LANG_PROGRAM([[]], [[gtk_init (0, 0);]])])
+
 # Aliases for compiler flags.
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $WARN_CFLAGS $WERROR_CFLAGS "])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $CAIRO_CFLAGS"])
@@ -238,6 +254,7 @@ AC_SUBST([GINGA_ALL_LDFLAGS])
 # Epilogue.
 AC_CONFIG_FILES([
 Makefile
+src-gtk/Makefile
 src/Makefile
 tests/Makefile
 ])
@@ -253,6 +270,7 @@ AC_MSG_NOTICE([summary of main build options:
   warning flags:  ${WERROR_CFLAGS} ${WARN_CFLAGS}
   valgrind:       ${VALGRIND}
 
-  with html: ${with_cef_result}
-  with svg:  ${with_librsvg_result}
+  build html player: ${with_cef_result}
+  build svg player:  ${with_librsvg_result}
+  build ginga-gtk:   ${with_ginga_gtk_result}
 ])

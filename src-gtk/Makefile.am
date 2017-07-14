@@ -18,37 +18,18 @@
 
 include $(top_srcdir)/build-aux/Makefile.am.common
 
-ACLOCAL_AMFLAGS= -I build-aux ${ACLOCAL_FLAGS}
-SUBDIRS= src tests
+AM_CXXFLAGS= -I$(top_srcdir)/src $(GINGA_ALL_CXXFLAGS)
+AM_LDFLAGS=
+
+bin_PROGRAMS=
 if WITH_GINGA_GTK
-SUBDIRS+= src-gtk
+bin_PROGRAMS+= ginga-gtk
 endif
-
-# Setup code coverage.
-include $(top_srcdir)/build-aux/Makefile.am.coverage
-COVERAGE_EXCLUDE+=
-
-include doc/doc.mk
-
-MAINTAINERCLEANFILES+=\
-  INSTALL\
-  Makefile.in\
-  aclocal.m4\
-  build-aux/ar-lib\
-  build-aux/compile\
-  build-aux/config.guess\
-  build-aux/config.sub\
-  build-aux/depcomp\
-  build-aux/install-sh\
-  build-aux/libtool.m4\
-  build-aux/ltmain.sh\
-  build-aux/ltoptions.m4\
-  build-aux/ltsugar.m4\
-  build-aux/ltversion.m4\
-  build-aux/lt~obsolete.m4\
-  build-aux/missing\
-  configure\
+ginga_gtk_CXXFLAGS= $(AM_CXXFLAGS) $(CAIRO_CFLAGS)\
+  $(GLIB_CFLAGS) $(GTK_CFLAGS)
+ginga_gtk_LDADD= $(top_builddir)/src/libginga.la
+ginga_gtk_LDFLAGS= $(AM_LDFLAGS) $(CAIRO_LIBS)\
+  $(GLIB_LIBS) $(GTK_LIBS)
+ginga_gtk_SOURCES=\
+  ginga-gtk.cpp\
   $(NULL)
-
-clean-local: coverage-clean
-	rm -rf $(CLEANDIRS)
