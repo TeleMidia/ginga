@@ -58,7 +58,7 @@ public:
   void setSatisfiedCondition (NclLinkCondition *satisfiedCondition);
   void run (NclLinkCondition *satisfiedCondition);
 
-  virtual void run () {}
+  virtual void run () = 0;
 
 protected:
   NclLinkCondition *_satisfiedCondition;
@@ -74,7 +74,7 @@ class NclSimpleAction : public NclAction
 {
 public:
   NclSimpleAction (NclEvent *event, SimpleAction::Type type);
-  virtual ~NclSimpleAction ();
+  virtual ~NclSimpleAction () {}
 
   virtual void run () override;
 
@@ -86,8 +86,7 @@ public:
   virtual vector<NclEvent *> getEvents () override;
   virtual vector<NclAction *> getImplicitRefRoleActions () override;
 
-  void setRepetitions (int repetitions);
-  void setRepetitionInterval (GingaTime _delay);
+  void setRepetitions (int repetitions, GingaTime repetitionInterval = -1);
 
 protected:
   NclEvent *_event;
@@ -128,9 +127,9 @@ public:
 
   void addAction (NclAction *action);
 
-  void getSimpleActions (vector<NclSimpleAction *> *simpleActions);
   void setCompoundActionListener (INclActionListener *listener);
 
+  void getSimpleActions (vector<NclSimpleAction *> &simpleActions);
   virtual vector<NclEvent *> getEvents () override;
   void actionProcessed (bool start) override;
   virtual vector<NclAction *> getImplicitRefRoleActions () override;
@@ -141,7 +140,6 @@ protected:
 private:
   int _pendingActions;
   bool _hasStart;
-  bool _running;
 
   INclActionListener *_listener;
 };

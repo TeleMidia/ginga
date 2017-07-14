@@ -639,7 +639,7 @@ Converter::setActionListener (NclAction *action)
       vector<NclSimpleAction *> actions;
 
       compoundAction->setCompoundActionListener (_actionListener);
-      compoundAction->getSimpleActions (&actions);
+      compoundAction->getSimpleActions (actions);
 
       for (NclSimpleAction *a: actions)
         {
@@ -1432,7 +1432,7 @@ Converter::createSimpleAction (
   Parameter *param;
   string paramValue;
   int repeat;
-  GingaTime delay;
+  GingaTime repetDelay;
 
   action = nullptr;
   event = createEvent (bind, ncmLink, parentObj);
@@ -1486,12 +1486,11 @@ Converter::createSimpleAction (
               repeat = xstrtoint (paramValue, 10);
             }
 
-          action->setRepetitions (repeat);
-
           // repeatDelay
           paramValue = sae->getRepeatDelay ();
-          delay = compileDelay (ncmLink, paramValue, bind);
-          action->setRepetitionInterval (delay);
+          repetDelay = compileDelay (ncmLink, paramValue, bind);
+
+          action->setRepetitions (repeat, repetDelay);
         }
       else if (eventType == EventType::ATTRIBUTION)
         {
@@ -1567,8 +1566,8 @@ Converter::createSimpleAction (
   g_assert_nonnull (action);
 
   paramValue = sae->getDelay ();
-  delay = compileDelay (ncmLink, paramValue, bind);
-  action->setWaitDelay (delay);
+  repetDelay = compileDelay (ncmLink, paramValue, bind);
+  action->setWaitDelay (repetDelay);
 
   return action;
 }
