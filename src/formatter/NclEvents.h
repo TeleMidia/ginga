@@ -183,25 +183,6 @@ public:
   virtual ~EventTransition () {}
 };
 
-class EndEventTransition;
-
-class BeginEventTransition : public EventTransition
-{
-  PROPERTY (EndEventTransition *, _endTrans, getEndTransition, setEndTransition)
-
-public:
-  BeginEventTransition (GingaTime time, PresentationEvent *evt);
-};
-
-class EndEventTransition : public EventTransition
-{
-  PROPERTY_READONLY (BeginEventTransition *, _beginTrans, getBeginTransition)
-
-public:
-  EndEventTransition (GingaTime t, PresentationEvent *evt,
-                      BeginEventTransition *trans);
-};
-
 GINGA_FORMATTER_END
 
 #endif // NCL_EVENTS_H

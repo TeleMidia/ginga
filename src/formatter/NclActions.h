@@ -47,7 +47,7 @@ public:
   explicit NclAction (GingaTime _delay);
 
   virtual ~NclAction () {}
-  void setWaitDelay (GingaTime delay);
+  void setDelay (GingaTime delay);
 
   void addProgressListener (NclActionProgressListener *listener);
   void removeProgressListener (NclActionProgressListener *listener);
@@ -55,7 +55,6 @@ public:
   virtual vector<NclEvent *> getEvents () = 0;
   virtual vector<NclAction *> getImplicitRefRoleActions () = 0;
 
-  void setSatisfiedCondition (NclLinkCondition *satisfiedCondition);
   void run (NclLinkCondition *satisfiedCondition);
 
   virtual void run () = 0;

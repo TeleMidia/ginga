@@ -456,20 +456,4 @@ EventTransition::EventTransition (GingaTime time,
   this->_evt = evt;
 }
 
-BeginEventTransition::BeginEventTransition (
-    GingaTime t, PresentationEvent *evt)
-  : EventTransition (t, evt)
-{
-
-}
-
-EndEventTransition::EndEventTransition (GingaTime t,
-                                        PresentationEvent *evt,
-                                        BeginEventTransition *trans)
-  : EventTransition (t, evt)
-{
-  _beginTrans = trans;
-  _beginTrans->setEndTransition (this);
-}
-
 GINGA_FORMATTER_END
