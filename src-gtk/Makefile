@@ -402,18 +402,11 @@ DISTCLEANFILES =
 EXTRA_DIST = 
 MAINTAINERCLEANFILES = Makefile.in
 AM_CXXFLAGS = -I$(top_srcdir)/src $(GINGA_ALL_CXXFLAGS)
-AM_LDFLAGS = 
-ginga_gtk_CXXFLAGS = $(AM_CXXFLAGS) $(CAIRO_CFLAGS)\
-  $(GLIB_CFLAGS) $(GTK_CFLAGS)
-
+AM_LDFLAGS = $(GINGA_ALL_LDFLAGS)
+ginga_gtk_CXXFLAGS = $(AM_CXXFLAGS) $(GTK_CFLAGS)
 ginga_gtk_LDADD = $(top_builddir)/src/libginga.la
-ginga_gtk_LDFLAGS = $(AM_LDFLAGS) $(CAIRO_LIBS)\
-  $(GLIB_LIBS) $(GTK_LIBS)
-
-ginga_gtk_SOURCES = \
-  ginga-gtk.cpp\
-  $(NULL)
-
+ginga_gtk_LDFLAGS = $(AM_LDFLAGS) $(GTK_LIBS)
+ginga_gtk_SOURCES = ginga-gtk.cpp
 all: all-am
 
 .SUFFIXES:
