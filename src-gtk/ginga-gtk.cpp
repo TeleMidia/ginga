@@ -39,6 +39,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 typedef struct{
   GtkWidget *toplevel_window;
+  GtkWidget *tvcontrol_window;
   GtkWidget *remote_control_window;
   guint16 default_margin = 5;   
   GtkWidget *canvas;
@@ -51,7 +52,7 @@ typedef struct{
   gchar *executable_folder = g_strdup("/home/busson/ginga/src-gtk/"); //fix me
   SDL_Rect window_rect = {0,0, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT+30};
   SDL_Rect canvas_rect = {0,MENU_BOX_HEIGHT, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT};
-  SDL_Rect controll_area_rect = {0,DEFAULT_WINDOW_HEIGHT+15, DEFAULT_WINDOW_WIDTH,20}; 
+  SDL_Rect controll_area_rect = {0,DEFAULT_WINDOW_HEIGHT+MENU_BOX_HEIGHT+15, DEFAULT_WINDOW_WIDTH,20}; 
 }Ginga_GUI; 
 
 Ginga_GUI ginga_gui;
@@ -94,6 +95,85 @@ draw_callback(GtkWidget *widget, cairo_t *cr, arg_unused (gpointer data)){
   return TRUE;
 }
 
+static void 
+create_tvcontrol_window(GtkWidget *widget, gpointer data){
+    
+    ginga_gui.tvcontrol_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+    g_assert_nonnull(ginga_gui.tvcontrol_window);
+    gtk_window_set_title (GTK_WINDOW (ginga_gui.tvcontrol_window), "TV Control");
+    gtk_window_set_default_size (GTK_WINDOW (ginga_gui.tvcontrol_window), 220, 400);
+    gtk_window_set_position(GTK_WINDOW(ginga_gui.tvcontrol_window), GTK_WIN_POS_CENTER);
+    gtk_window_set_resizable(GTK_WINDOW(ginga_gui.tvcontrol_window), FALSE);
+    gtk_container_set_border_width(GTK_CONTAINER(ginga_gui.tvcontrol_window), ginga_gui.default_margin);
+    
+    GtkWidget *fixed_layout = gtk_fixed_new( );
+    g_assert_nonnull(fixed_layout);
+   //4 -> 55
+    GdkColor color;
+    color.red = 65535;
+    color.blue = 0;
+    color.green = 0;
+    
+    
+    GtkWidget *button_1 = gtk_button_new_with_label ("1");
+    g_assert_nonnull(button_1);
+    gtk_widget_set_size_request(button_1, 40, 40);
+    gtk_fixed_put(GTK_FIXED (fixed_layout),  button_1, 25, 0);
+
+    GtkWidget *button_2 = gtk_button_new_with_label ("2");
+    g_assert_nonnull(button_2);
+    gtk_widget_set_size_request(button_2, 40, 40);
+    gtk_fixed_put(GTK_FIXED (fixed_layout),  button_2, 80, 0);
+
+    GtkWidget *button_3 = gtk_button_new_with_label ("3");
+    g_assert_nonnull(button_3);
+    gtk_widget_set_size_request(button_3, 40, 40);
+    gtk_fixed_put(GTK_FIXED (fixed_layout),  button_3, 135, 0);
+
+    //
+
+    GtkWidget *button_4 = gtk_button_new_with_label ("4");
+    g_assert_nonnull(button_4);
+    gtk_widget_set_size_request(button_4, 40, 40);
+    gtk_fixed_put(GTK_FIXED (fixed_layout),  button_4, 25, 50);
+
+    GtkWidget *button_5 = gtk_button_new_with_label ("5");
+    g_assert_nonnull(button_5);
+    gtk_widget_set_size_request(button_5, 40, 40);
+    gtk_fixed_put(GTK_FIXED (fixed_layout),  button_5, 80, 50);
+
+    GtkWidget *button_6 = gtk_button_new_with_label ("6");
+    g_assert_nonnull(button_6);
+    gtk_widget_set_size_request(button_6, 40, 40);
+    gtk_fixed_put(GTK_FIXED (fixed_layout),  button_6, 135, 50);
+
+    //
+
+    GtkWidget *button_red = gtk_button_new_with_label ("C");
+    g_assert_nonnull(button_red);
+    gtk_widget_set_size_request(button_red, 40, 40);
+    gtk_fixed_put(GTK_FIXED (fixed_layout),  button_red, 0, 200);
+
+    GtkWidget *button_green = gtk_button_new_with_label ("C");
+    g_assert_nonnull(button_green);
+    gtk_widget_set_size_request(button_green, 40, 40);
+    gtk_fixed_put(GTK_FIXED (fixed_layout),  button_green, 55, 200);
+
+    GtkWidget *button_yellow = gtk_button_new_with_label ("C");
+    g_assert_nonnull(button_yellow);
+    gtk_widget_set_size_request(button_yellow, 40, 40);
+    gtk_fixed_put(GTK_FIXED (fixed_layout),  button_yellow, 110, 200);
+
+    GtkWidget *button_blue = gtk_button_new_with_label ("C");
+    g_assert_nonnull(button_blue);
+    gtk_widget_set_size_request(button_blue, 40, 40);
+    gtk_fixed_put(GTK_FIXED (fixed_layout),  button_blue, 165, 200);
+
+    
+    gtk_container_add(GTK_CONTAINER(ginga_gui.tvcontrol_window), fixed_layout);
+    gtk_widget_show_all(ginga_gui.tvcontrol_window);
+}
+
 
 SDL_Window*
 create_sdl_window_from_gtk_widget(GtkWidget *gtk_widget){
@@ -132,7 +212,7 @@ create_gtk_layout(){
     gtk_fixed_put(GTK_FIXED (fixed_layout),  ginga_gui.canvas,  ginga_gui.canvas_rect.x,  ginga_gui.canvas_rect.y);
     
     GtkWidget * canvas_separator = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-    gtk_widget_set_size_request(canvas_separator, ginga_gui.canvas_rect.w, 10);
+    gtk_widget_set_size_request(canvas_separator, ginga_gui.canvas_rect.w, 2);
     gtk_fixed_put(GTK_FIXED (fixed_layout), canvas_separator, 0, ginga_gui.canvas_rect.y + ginga_gui.canvas_rect.h + ginga_gui.default_margin );
     
     // ----- top-menu begin
@@ -160,8 +240,9 @@ create_gtk_layout(){
     g_assert_nonnull(menu_tool);  
     GtkWidget *menu_item_tools = gtk_menu_item_new_with_label("Tools");
     g_assert_nonnull(menu_item_tools);
-     GtkWidget *menu_item_tvcontrol = gtk_menu_item_new_with_label("TV Control");
+    GtkWidget *menu_item_tvcontrol = gtk_menu_item_new_with_label("TV Control");
     g_assert_nonnull(menu_item_tvcontrol);
+    g_signal_connect(menu_item_tvcontrol, "activate", G_CALLBACK(create_tvcontrol_window), NULL); 
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_item_tools),menu_tool);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu_tool), menu_item_tvcontrol);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), menu_item_tools);
@@ -188,7 +269,6 @@ create_gtk_layout(){
     ginga_gui.play_button = gtk_button_new();
     g_assert_nonnull(ginga_gui.play_button);
     gtk_button_set_image(GTK_BUTTON(ginga_gui.play_button), play_icon);
-    gtk_widget_set_size_request(ginga_gui.play_button,16, 26);
     gtk_fixed_put(GTK_FIXED (fixed_layout),  ginga_gui.play_button, 0, ginga_gui.controll_area_rect.y);
 
     GtkWidget *stop_icon = gtk_image_new_from_file (g_strconcat(ginga_gui.executable_folder,"icons/light-theme/stop-icon.png",NULL));
