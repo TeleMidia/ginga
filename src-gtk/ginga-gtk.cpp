@@ -32,7 +32,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define BUTTON_SIZE 30
 #elif defined (GDK_WINDOWING_QUARTZ)
 #include <gdk/gdkquartz.h>
-#define MENU_BOX_HEIGHT 30
+#define MENU_BOX_HEIGHT 72
 #define BUTTON_SIZE 30
 #endif
 
@@ -107,13 +107,22 @@ draw_callback(GtkWidget *widget, cairo_t *cr, arg_unused (gpointer data)){
 static void
 play_pause_ginga(GtkWidget *widget, gpointer data){
 
-    printf("HAHAHAHAHA");
-
     ginga_gui.playMode = !ginga_gui.playMode;
     GtkWidget *play_icon = gtk_image_new_from_file (g_strconcat(ginga_gui.executable_folder,"icons/light-theme/play-icon.png",NULL));
     if(ginga_gui.playMode)
          play_icon = gtk_image_new_from_file (g_strconcat(ginga_gui.executable_folder,"icons/light-theme/pause-icon.png",NULL));
     gtk_button_set_image(GTK_BUTTON(ginga_gui.play_button), play_icon);   
+}
+
+static void
+set_full_screen(GtkWidget *widget, gpointer data){
+    
+    printf("FULLSCREEN! \n");
+
+    gtk_window_fullscreen (GTK_WINDOW(ginga_gui.toplevel_window));
+
+    gtk_window_fullscreen_on_monitor(GTK_WINDOW(ginga_gui.toplevel_window),
+               gtk_window_get_screen(GTK_WINDOW(ginga_gui.toplevel_window)), 0);
 }
 
 static void 
@@ -136,16 +145,15 @@ enable_disable_debug(GtkWidget *widget, gpointer data){
    gtk_fixed_move(GTK_FIXED (ginga_gui.fixed_layout), ginga_gui.config_button, 770, ginga_gui.controll_area_rect.y + offset);
    gtk_fixed_move(GTK_FIXED (ginga_gui.fixed_layout), ginga_gui.volume_button, 710, ginga_gui.controll_area_rect.y + offset);
    gtk_fixed_move(GTK_FIXED (ginga_gui.fixed_layout), ginga_gui.canvas_separator_bottom, 0, ginga_gui.canvas_rect.y + ginga_gui.canvas_rect.h + ginga_gui.default_margin + offset);
+
+   gtk_window_set_default_size (GTK_WINDOW (ginga_gui.toplevel_window), ginga_gui.window_rect.w, ginga_gui.window_rect.h);
 }
 
 static void 
 create_tvcontrol_window(GtkWidget *widget, gpointer data){
     
-    GtkCssProvider *cssProvider;
-
-   
     guint16 control_width = (BUTTON_SIZE*4);
-    guint16 control_height = (BUTTON_SIZE*11)+145;
+    guint16 control_height = (BUTTON_SIZE*11);
 
     ginga_gui.tvcontrol_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
     g_assert_nonnull(ginga_gui.tvcontrol_window);
@@ -399,13 +407,13 @@ create_gtk_layout(){
     GtkWidget *open_button = gtk_button_new();
     g_assert_nonnull(open_button);
     gtk_button_set_image(GTK_BUTTON(open_button), icon);
-    gtk_fixed_put(GTK_FIXED (ginga_gui.fixed_layout), open_button, 0, 0);
+    gtk_fixed_put(GTK_FIXED (ginga_gui.fixed_layout), open_button, 0, MENU_BOX_HEIGHT - 38);
 
     GtkWidget *entry = gtk_entry_new();
     g_assert_nonnull(entry);
     gtk_widget_set_size_request(entry,  ginga_gui.window_rect.w -BUTTON_SIZE, BUTTON_SIZE);
     gtk_entry_set_text(GTK_ENTRY(entry),g_get_user_special_dir(G_USER_DIRECTORY_DOCUMENTS));
-    gtk_fixed_put(GTK_FIXED (ginga_gui.fixed_layout), entry, BUTTON_SIZE, 0);
+    gtk_fixed_put(GTK_FIXED (ginga_gui.fixed_layout), entry, BUTTON_SIZE, MENU_BOX_HEIGHT - 38);
 
     GtkWidget * canvas_separator = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
     gtk_widget_set_size_request(canvas_separator, ginga_gui.canvas_rect.w, 2);
@@ -502,12 +510,12 @@ create_gtk_layout(){
     g_assert_nonnull(ginga_gui.time_label);
     gtk_fixed_put(GTK_FIXED (ginga_gui.fixed_layout), ginga_gui.time_label, 65, ginga_gui.controll_area_rect.y+4);
 
-   
     GtkWidget *fullscreen_icon = gtk_image_new_from_file (g_strconcat(ginga_gui.executable_folder,"icons/light-theme/fullscreen-icon.png",NULL));
     g_assert_nonnull(fullscreen_icon);
     ginga_gui.fullscreen_button = gtk_button_new();
     g_assert_nonnull(ginga_gui.fullscreen_button);
     gtk_button_set_image(GTK_BUTTON(ginga_gui.fullscreen_button), fullscreen_icon);
+    g_signal_connect(ginga_gui.fullscreen_button, "clicked", G_CALLBACK(set_full_screen), NULL); 
     gtk_fixed_put(GTK_FIXED (ginga_gui.fixed_layout),  ginga_gui.fullscreen_button, 740, ginga_gui.controll_area_rect.y);
 
     GtkWidget *config_icon = gtk_image_new_from_file (g_strconcat(ginga_gui.executable_folder,"icons/light-theme/settings-icon.png",NULL));
