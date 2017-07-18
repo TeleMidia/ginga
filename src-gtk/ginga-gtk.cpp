@@ -19,6 +19,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 
+#include <string.h>
+#include <gdk/gdkkeysyms.h>
+
 #define DEFAULT_WINDOW_WIDTH 800
 #define DEFAULT_WINDOW_HEIGHT 600
 
@@ -48,20 +51,25 @@ typedef struct{
   GtkWidget *notebook;
   guint16 default_margin = 5;   
   GtkWidget *canvas;
+  GtkWidget *menu_bar;
   guint16 controller_container_height = 48;
+  GtkWidget *file_entry;
   GtkWidget *play_button;
   GtkWidget *stop_button;
   GtkWidget *time_label;
   GtkWidget *config_button;
   GtkWidget *fullscreen_button;
   GtkWidget *volume_button;
+  GtkWidget *open_button;
   GtkWidget *canvas_separator_bottom;
-  gchar *executable_folder = g_strdup("/home/busson/ginga/src-gtk/"); //fix me
+  gchar *executable_folder; 
   SDL_Rect window_rect = {0,0, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT+30};
   SDL_Rect canvas_rect = {0,MENU_BOX_HEIGHT, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT};
   SDL_Rect controll_area_rect = {0,DEFAULT_WINDOW_HEIGHT+MENU_BOX_HEIGHT+10, DEFAULT_WINDOW_WIDTH,20}; 
   gboolean debugMode = FALSE;
   gboolean playMode = FALSE;
+  gboolean fullScreenMode = FALSE;
+  gboolean crtlModifier = FALSE;
 }Ginga_GUI; 
 
 Ginga_GUI ginga_gui;
@@ -82,6 +90,7 @@ resize_callback(GtkWidget *widget, gpointer data){
   printf(" %d - %d \n", window_width, window_height);  */
   return TRUE;
 }
+
 
 static gboolean
 draw_callback(GtkWidget *widget, cairo_t *cr, arg_unused (gpointer data)){
@@ -105,8 +114,45 @@ draw_callback(GtkWidget *widget, cairo_t *cr, arg_unused (gpointer data)){
 }
 
 static void
-play_pause_ginga(GtkWidget *widget, gpointer data){
+select_ncl_file(GtkWidget *widget, gpointer data){
+    GtkWidget *dialog = gtk_file_chooser_dialog_new ("Open File", GTK_WINDOW(ginga_gui.toplevel_window),
+                                      GTK_FILE_CHOOSER_ACTION_OPEN, "_Cancel",
+                                      GTK_RESPONSE_CANCEL, "_Open",
+                                      GTK_RESPONSE_ACCEPT, NULL);
 
+    gint res = gtk_dialog_run (GTK_DIALOG (dialog));
+    if (res == GTK_RESPONSE_ACCEPT)
+    {
+      gchar *filename;
+      GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
+      filename = gtk_file_chooser_get_filename (chooser);
+
+      gchar* ext = strrchr(filename, '.');
+
+      if(g_strcmp0( ext , ".ncl")){
+           GtkWidget * dialog_error = gtk_message_dialog_new ( GTK_WINDOW(ginga_gui.toplevel_window),
+                                 GTK_DIALOG_DESTROY_WITH_PARENT,
+                                 GTK_MESSAGE_ERROR,
+                                 GTK_BUTTONS_CLOSE,
+                                 "Error reading “%s”: %s",
+                                 filename,
+                                 "is a invalid formart file.");
+           gtk_dialog_run (GTK_DIALOG (dialog_error));
+           gtk_widget_destroy (dialog_error);
+      } 
+      else{
+           gtk_entry_set_text(GTK_ENTRY(ginga_gui.file_entry), filename); 
+      }
+
+      g_free (filename);
+    }
+
+    gtk_widget_destroy (dialog);                                  
+
+}
+
+static void
+play_pause_ginga(GtkWidget *widget, gpointer data){
     ginga_gui.playMode = !ginga_gui.playMode;
     GtkWidget *play_icon = gtk_image_new_from_file (g_strconcat(ginga_gui.executable_folder,"icons/light-theme/play-icon.png",NULL));
     if(ginga_gui.playMode)
@@ -115,14 +161,46 @@ play_pause_ginga(GtkWidget *widget, gpointer data){
 }
 
 static void
-set_full_screen(GtkWidget *widget, gpointer data){
-    
-    printf("FULLSCREEN! \n");
-
+set_fullscreen_mode(GtkWidget *widget, gpointer data){
+    ginga_gui.fullScreenMode = TRUE;
+    GdkScreen *screen = gdk_screen_get_default();
+    gtk_fixed_move(GTK_FIXED(ginga_gui.fixed_layout), ginga_gui.notebook, 0, 0);
+    gtk_widget_set_size_request(ginga_gui.canvas, gdk_screen_get_width(screen), gdk_screen_get_height(screen));
+    gtk_container_set_border_width(GTK_CONTAINER(ginga_gui.toplevel_window), 0); 
     gtk_window_fullscreen (GTK_WINDOW(ginga_gui.toplevel_window));
 
-    gtk_window_fullscreen_on_monitor(GTK_WINDOW(ginga_gui.toplevel_window),
-               gtk_window_get_screen(GTK_WINDOW(ginga_gui.toplevel_window)), 0);
+    gtk_widget_set_visible(ginga_gui.play_button, FALSE);
+    gtk_widget_set_visible(ginga_gui.stop_button, FALSE);
+    gtk_widget_set_visible(ginga_gui.volume_button, FALSE);
+    gtk_widget_set_visible(ginga_gui.fullscreen_button, FALSE);
+    gtk_widget_set_visible(ginga_gui.config_button, FALSE);
+    gtk_widget_set_visible(ginga_gui.time_label, FALSE);
+    gtk_widget_set_visible(ginga_gui.open_button, FALSE);
+    gtk_widget_set_visible(ginga_gui.file_entry, FALSE);
+    gtk_widget_set_visible(ginga_gui.menu_bar, FALSE);
+}
+
+static void
+set_unfullscreen_mode(GtkWidget *widget, gpointer data){
+    ginga_gui.fullScreenMode = FALSE;
+    gtk_window_unfullscreen (GTK_WINDOW(ginga_gui.toplevel_window));
+    gtk_container_set_border_width(GTK_CONTAINER(ginga_gui.toplevel_window), ginga_gui.default_margin);
+    gtk_fixed_move(GTK_FIXED(ginga_gui.fixed_layout), ginga_gui.notebook, ginga_gui.canvas_rect.x, ginga_gui.canvas_rect.y);
+    gtk_widget_set_size_request(ginga_gui.canvas, ginga_gui.canvas_rect.w, ginga_gui.canvas_rect.h);
+    gtk_window_resize(GTK_WINDOW (ginga_gui.toplevel_window), ginga_gui.window_rect.w, ginga_gui.window_rect.h); 
+ //   gtk_widget_set_size_request(ginga_gui.toplevel_window, ginga_gui.window_rect.w, ginga_gui.window_rect.h); 
+ //   gtk_window_set_default_size (GTK_WINDOW (ginga_gui.toplevel_window), ginga_gui.window_rect.w, ginga_gui.window_rect.h); 
+
+   
+    gtk_widget_set_visible(ginga_gui.play_button, TRUE);
+    gtk_widget_set_visible(ginga_gui.stop_button, TRUE);
+    gtk_widget_set_visible(ginga_gui.volume_button, TRUE);
+    gtk_widget_set_visible(ginga_gui.fullscreen_button, TRUE);
+    gtk_widget_set_visible(ginga_gui.config_button, TRUE);
+    gtk_widget_set_visible(ginga_gui.time_label, TRUE);
+    gtk_widget_set_visible(ginga_gui.open_button, TRUE);
+    gtk_widget_set_visible(ginga_gui.file_entry, TRUE);
+    gtk_widget_set_visible(ginga_gui.menu_bar, TRUE);
 }
 
 static void 
@@ -385,6 +463,44 @@ create_sdl_window_from_gtk_widget(GtkWidget *gtk_widget){
 #endif      
 }
 
+static gboolean
+key_event_press(GtkWidget *widget,
+          GdkEventKey *event)
+{  
+
+    char *key_name = gdk_keyval_name (event->keyval);
+    
+  //   g_printerr("press %s %d\n",
+  //            gdk_keyval_name (event->keyval),ginga_gui.crtlModifier);
+
+    if(!g_strcmp0(key_name, "Control_L") || !g_strcmp0(key_name, "Control_R"))
+        ginga_gui.crtlModifier=TRUE;
+    else if((!g_strcmp0(key_name, "r") || !g_strcmp0(key_name, "R")) && ginga_gui.crtlModifier)
+        create_tvcontrol_window(NULL,0); 
+    else if((!g_strcmp0(key_name, "d") || !g_strcmp0(key_name, "D")) && ginga_gui.crtlModifier)
+        enable_disable_debug(NULL,0);     
+    else if((!g_strcmp0(key_name, "f") || !g_strcmp0(key_name, "F")) && ginga_gui.crtlModifier)
+        set_fullscreen_mode(NULL,0);
+    else if(!g_strcmp0(key_name, "Escape") && ginga_gui.fullScreenMode)
+        set_unfullscreen_mode(NULL,0);    
+    
+    return FALSE;
+}
+
+static gboolean
+key_event_release(GtkWidget *widget, GdkEventKey *event){  
+
+    char *key_name = gdk_keyval_name (event->keyval);
+    
+    if(!g_strcmp0( key_name , "Control_L") || !g_strcmp0( key_name , "Control_R")){
+        ginga_gui.crtlModifier=FALSE;
+    }
+    
+
+    return FALSE;
+}
+
+
 void 
 create_gtk_layout(){
     
@@ -397,23 +513,24 @@ create_gtk_layout(){
     gtk_window_set_title (GTK_WINDOW (ginga_gui.toplevel_window), PACKAGE_STRING);
     gtk_window_set_default_size (GTK_WINDOW (ginga_gui.toplevel_window), ginga_gui.window_rect.w, ginga_gui.window_rect.h);
     gtk_window_set_position(GTK_WINDOW(ginga_gui.toplevel_window), GTK_WIN_POS_CENTER);
-    gtk_window_set_resizable(GTK_WINDOW(ginga_gui.toplevel_window), FALSE);
+ //   gtk_window_set_resizable(GTK_WINDOW(ginga_gui.toplevel_window), FALSE);
     gtk_container_set_border_width(GTK_CONTAINER(ginga_gui.toplevel_window), ginga_gui.default_margin);    
 
     ginga_gui.fixed_layout = gtk_fixed_new( );
     g_assert_nonnull(ginga_gui.fixed_layout);
-
+    
     GtkWidget *icon = gtk_image_new_from_file (g_strconcat(ginga_gui.executable_folder,"icons/light-theme/open_file.png",NULL));
-    GtkWidget *open_button = gtk_button_new();
-    g_assert_nonnull(open_button);
-    gtk_button_set_image(GTK_BUTTON(open_button), icon);
-    gtk_fixed_put(GTK_FIXED (ginga_gui.fixed_layout), open_button, 0, MENU_BOX_HEIGHT - 38);
+    ginga_gui.open_button = gtk_button_new();
+    g_assert_nonnull(ginga_gui.open_button);
+    gtk_button_set_image(GTK_BUTTON( ginga_gui.open_button), icon);
+    g_signal_connect( ginga_gui.open_button, "clicked", G_CALLBACK(select_ncl_file), NULL); 
+    gtk_fixed_put(GTK_FIXED (ginga_gui.fixed_layout),  ginga_gui.open_button, 0, MENU_BOX_HEIGHT - 38);
 
-    GtkWidget *entry = gtk_entry_new();
-    g_assert_nonnull(entry);
-    gtk_widget_set_size_request(entry,  ginga_gui.window_rect.w -BUTTON_SIZE, BUTTON_SIZE);
-    gtk_entry_set_text(GTK_ENTRY(entry),g_get_user_special_dir(G_USER_DIRECTORY_DOCUMENTS));
-    gtk_fixed_put(GTK_FIXED (ginga_gui.fixed_layout), entry, BUTTON_SIZE, MENU_BOX_HEIGHT - 38);
+    ginga_gui.file_entry = gtk_entry_new();
+    g_assert_nonnull(ginga_gui.file_entry);
+    gtk_widget_set_size_request(ginga_gui.file_entry,  ginga_gui.window_rect.w -BUTTON_SIZE, BUTTON_SIZE);
+    gtk_entry_set_text(GTK_ENTRY(ginga_gui.file_entry),g_get_user_special_dir(G_USER_DIRECTORY_DOCUMENTS));
+    gtk_fixed_put(GTK_FIXED (ginga_gui.fixed_layout), ginga_gui.file_entry, BUTTON_SIZE, MENU_BOX_HEIGHT - 38);
 
     GtkWidget * canvas_separator = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
     gtk_widget_set_size_request(canvas_separator, ginga_gui.canvas_rect.w, 2);
@@ -441,8 +558,8 @@ create_gtk_layout(){
     
 
     // ----- top-menu begin
-    GtkWidget *menu_bar = gtk_menu_bar_new();
-    g_assert_nonnull(menu_bar);
+    ginga_gui.menu_bar = gtk_menu_bar_new();
+    g_assert_nonnull(ginga_gui.menu_bar);
     
     
     //File
@@ -450,30 +567,30 @@ create_gtk_layout(){
     g_assert_nonnull(menu_file);  
     GtkWidget *menu_item_file = gtk_menu_item_new_with_label("File");
     g_assert_nonnull(menu_item_file);
-    GtkWidget *menu_item_open = gtk_menu_item_new_with_label("Open");
+    GtkWidget *menu_item_open = gtk_menu_item_new_with_label("Open  (Ctrl+O)");
     g_assert_nonnull(menu_item_open);
-    GtkWidget *menu_item_quit = gtk_menu_item_new_with_label("Quit");
+    GtkWidget *menu_item_quit = gtk_menu_item_new_with_label("Quit  (Ctrl+Q)");
     g_assert_nonnull(menu_item_quit);
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_item_file), menu_file);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu_file), menu_item_open);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu_file), menu_item_quit);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), menu_item_file);
+    gtk_menu_shell_append(GTK_MENU_SHELL(ginga_gui.menu_bar), menu_item_file);
 
     //Tools
     GtkWidget *menu_tool = gtk_menu_new();
     g_assert_nonnull(menu_tool);  
     GtkWidget *menu_item_tools = gtk_menu_item_new_with_label("Tools");
     g_assert_nonnull(menu_item_tools);
-    GtkWidget *menu_item_tvcontrol = gtk_menu_item_new_with_label("TV Control");
+    GtkWidget *menu_item_tvcontrol = gtk_menu_item_new_with_label("TV Control  (Ctrl+R)");
     g_assert_nonnull(menu_item_tvcontrol);
-    GtkWidget *menu_item_debug = gtk_menu_item_new_with_label("Enable Debug");
+    GtkWidget *menu_item_debug = gtk_menu_item_new_with_label("Debug Mode  (Ctrl+D)");
     g_assert_nonnull(menu_item_debug); 
     g_signal_connect(menu_item_tvcontrol, "activate", G_CALLBACK(create_tvcontrol_window), NULL); 
     g_signal_connect(menu_item_debug, "activate", G_CALLBACK(enable_disable_debug), NULL); 
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_item_tools),menu_tool);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu_tool), menu_item_tvcontrol);
      gtk_menu_shell_append(GTK_MENU_SHELL(menu_tool), menu_item_debug);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), menu_item_tools);
+    gtk_menu_shell_append(GTK_MENU_SHELL(ginga_gui.menu_bar), menu_item_tools);
 
     //Help
     GtkWidget *menu_help = gtk_menu_new();
@@ -481,11 +598,11 @@ create_gtk_layout(){
     GtkWidget *menu_item_help = gtk_menu_item_new_with_label("Help");
     g_assert_nonnull(menu_item_help);
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_item_help),menu_help);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), menu_item_help); 
+    gtk_menu_shell_append(GTK_MENU_SHELL(ginga_gui.menu_bar), menu_item_help); 
     
     
     GtkWidget *menu_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
-    gtk_box_pack_start(GTK_BOX(menu_box), menu_bar, TRUE, TRUE, 3);
+    gtk_box_pack_start(GTK_BOX(menu_box), ginga_gui.menu_bar, TRUE, TRUE, 3);
     gtk_fixed_put(GTK_FIXED (ginga_gui.fixed_layout), menu_box, 0, 0);
 
     // ----- top-menu end
@@ -515,7 +632,7 @@ create_gtk_layout(){
     ginga_gui.fullscreen_button = gtk_button_new();
     g_assert_nonnull(ginga_gui.fullscreen_button);
     gtk_button_set_image(GTK_BUTTON(ginga_gui.fullscreen_button), fullscreen_icon);
-    g_signal_connect(ginga_gui.fullscreen_button, "clicked", G_CALLBACK(set_full_screen), NULL); 
+    g_signal_connect(ginga_gui.fullscreen_button, "clicked", G_CALLBACK(set_fullscreen_mode), NULL); 
     gtk_fixed_put(GTK_FIXED (ginga_gui.fixed_layout),  ginga_gui.fullscreen_button, 740, ginga_gui.controll_area_rect.y);
 
     GtkWidget *config_icon = gtk_image_new_from_file (g_strconcat(ginga_gui.executable_folder,"icons/light-theme/settings-icon.png",NULL));
@@ -531,6 +648,9 @@ create_gtk_layout(){
    
     gtk_container_add(GTK_CONTAINER(ginga_gui.toplevel_window), ginga_gui.fixed_layout);
      // Setup GTK+ callbacks.
+ 
+    g_signal_connect(ginga_gui.toplevel_window, "key-press-event",G_CALLBACK(key_event_press), NULL); 
+    g_signal_connect(ginga_gui.toplevel_window, "key-release-event",G_CALLBACK(key_event_release), NULL); 
     g_signal_connect(ginga_gui.toplevel_window, "check-resize", G_CALLBACK(resize_callback), NULL); 
     g_signal_connect(ginga_gui.toplevel_window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
   
@@ -538,8 +658,10 @@ create_gtk_layout(){
 }
 
 int
-main (int argc, char **argv)
-{
+main (int argc, char **argv){
+    ginga_gui.executable_folder = g_strconcat(g_get_current_dir(), g_path_get_dirname (argv[0])+1,"/",NULL);
+    printf("PATH: %s \n", ginga_gui.executable_folder);  
+
     gtk_init (&argc, &argv);
     create_gtk_layout();
   
