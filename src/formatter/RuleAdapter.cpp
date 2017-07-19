@@ -33,13 +33,9 @@ RuleAdapter::~RuleAdapter ()
 void
 RuleAdapter::reset ()
 {
-  vector<Rule *> *rules;
-  map<string, vector<Rule *> *>::iterator i;
-
   for (auto i : _ruleListenMap)
     {
-      rules = i.second;
-      g_assert_nonnull (rules);
+      vector<Rule *> *rules = i.second;
       if (rules != nullptr)
         {
           delete rules;
@@ -187,7 +183,6 @@ RuleAdapter::evaluateSimpleRule (SimpleRule *rule)
   string ruleValue = rule->getValue ();
   string attrValue = _settings->get (attr);
   string op = rule->getOperator ();
-
 
   return ginga_eval_comparator (op, attrValue, ruleValue);
 }
