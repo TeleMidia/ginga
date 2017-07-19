@@ -71,28 +71,23 @@ RuleAdapter::getSettings ()
 void
 RuleAdapter::adapt (ExecutionObjectContext *compositeObject, bool force)
 {
-  ExecutionObject *object;
-  map<string, ExecutionObject *> *objs;
-  map<string, ExecutionObject *>::iterator i;
+  map<string, ExecutionObject *> *objs =
+      compositeObject->getExecutionObjects ();
 
-  objs = compositeObject->getExecutionObjects ();
   if (objs != nullptr)
     {
-      i = objs->begin ();
-      while (i != objs->end ())
+      for (auto i : *objs)
         {
-          object = i->second;
-          if (instanceof (ExecutionObjectSwitch *, object))
+          ExecutionObject *obj = i.second;
+          if (instanceof (ExecutionObjectSwitch *, obj))
             {
-              object = ((ExecutionObjectSwitch *)object)
-                           ->getSelectedObject ();
+              obj = ((ExecutionObjectSwitch *)obj)->getSelectedObject ();
             }
 
-          if (instanceof (ExecutionObjectContext *, object))
+          if (instanceof (ExecutionObjectContext *, obj))
             {
-              adapt ((ExecutionObjectContext *)object, force);
+              adapt ((ExecutionObjectContext *)obj, force);
             }
-          ++i;
         }
       delete objs;
     }
