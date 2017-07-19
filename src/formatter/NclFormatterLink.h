@@ -30,8 +30,9 @@ GINGA_FORMATTER_BEGIN
 
 class ExecutionObjectContext;
 
-class NclFormatterLink : public NclLinkTriggerListener,
-    public NclActionProgressListener
+class NclFormatterLink :
+    public NclLinkTriggerListener,
+    public INclActionListener
 {
 public:
   NclFormatterLink (NclLinkTriggerCondition *condition,
