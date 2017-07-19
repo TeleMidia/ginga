@@ -30,11 +30,6 @@ GINGA_FORMATTER_BEGIN
 
 class RuleAdapter
 {
-private:
-  Settings *settings;
-  map<string, vector<Rule *> *> *ruleListenMap;
-  map<Rule *, vector<ExecutionObjectSwitch *> *> *entityListenMap;
-
 public:
   RuleAdapter (Settings *);
   virtual ~RuleAdapter ();
@@ -54,6 +49,10 @@ public:
   bool evaluateRule (Rule *rule);
 
 private:
+  Settings *_settings;
+  map<string, vector<Rule *> *> _ruleListenMap;
+  map<Rule *, vector<ExecutionObjectSwitch *> *> _entityListenMap;
+
   bool evaluateCompositeRule (CompositeRule *rule);
   bool evaluateSimpleRule (SimpleRule *rule);
 };
