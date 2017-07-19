@@ -101,6 +101,7 @@ public:
                        const string &duration);
 
   virtual ~NclAssignmentAction () {}
+
   string getValue ();
   string getDuration ();
 
@@ -109,8 +110,7 @@ private:
   string _duration;
 };
 
-class NclCompoundAction : public NclAction,
-    public INclActionListener
+class NclCompoundAction : public NclAction, public INclActionListener
 {
 public:
   NclCompoundAction ();
