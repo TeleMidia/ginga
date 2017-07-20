@@ -21,6 +21,11 @@ find_package(RSVG REQUIRED)
 find_package(GStreamer REQUIRED)
 add_definitions(-DWITH_PANGO=1 -DWITH_GSTREAMER=1)
 
+find_package(GTK3)
+if (GTK3_FOUND)
+  set (WITH_GINGA_GTK ON)
+endif()
+
 # NCLUA download/configure/build/install
 include(ExternalProject)
 ExternalProject_Add(nclua_build
@@ -162,6 +167,10 @@ set (GINGA_SOURCES
   ../src/main.cpp
 )
 
+set (GINGA_GUI_GTK_SOURCES
+  ../src-gtk/ginga-gtk.cpp
+)
+
 set (GINGA_INCLUDE_DIRS
   ../src
 
@@ -226,8 +235,15 @@ add_dependencies(ginga nclua_build)
 target_include_directories(ginga PRIVATE ${GINGA_INCLUDE_DIRS})
 target_link_libraries(ginga PRIVATE ${GINGA_LIBS})
 
+if (WITH_GINGA_GTK)
+  add_executable (ginga-gtk ${GINGA_GUI_GTK_SOURCES})
+  target_include_directories (ginga-gtk PRIVATE ${GINGA_INCLUDE_DIRS} ${GTK3_INCLUDE_DIRS})
+  target_link_libraries (ginga-gtk PRIVATE ${GTK3_LIBRARIES} ${GINGA_LIBS})
+  set_target_properties(ginga-gtk PROPERTIES RUNTIME_OUTPUT_DIRECTORY bin/)
+endif()
+
 # Copy datafiles to build dir
-add_custom_target(copy-data-files ALL
+add_custom_target (copy-data-files ALL
   COMMAND ${CMAKE_COMMAND} -E
     copy_directory ${CMAKE_SOURCE_DIR}/../data ${CMAKE_BINARY_DIR}/data
 )
@@ -236,6 +252,7 @@ add_custom_target(copy-data-files ALL
 set_target_properties(ginga PROPERTIES INSTALL_RPATH "$ORIGIN")
 set_target_properties(ginga PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
 set_target_properties(ginga PROPERTIES RUNTIME_OUTPUT_DIRECTORY bin/)
+
 
 if (WITH_CEF)
   # Copy binary and resource files to the target output directory.
@@ -275,8 +292,8 @@ CMAKE_CXX_FLAGS:	${CMAKE_CXX_FLAGS}
 
 Optional dependencies:
 with cef:		${WITH_CEF}
+with ginga-gtk:		${WITH_GINGA_GTK}
 ")
-
  
 set (CPACK_PACKAGE_NAME ginga-idtv)
 set (CPACK_PACKAGE_CONTACT robertogerson@telemidia.puc-rio.br)

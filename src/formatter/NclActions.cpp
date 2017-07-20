@@ -40,7 +40,7 @@ NclAction::setDelay (GingaTime delay)
 }
 
 void
-NclAction::addProgressListener (NclActionProgressListener *listener)
+NclAction::addProgressListener (INclActionListener *listener)
 {
   auto i = find (_progressListeners.begin(), _progressListeners.end(),
                  listener);
@@ -55,7 +55,7 @@ NclAction::addProgressListener (NclActionProgressListener *listener)
 }
 
 void
-NclAction::removeProgressListener (NclActionProgressListener *listener)
+NclAction::removeProgressListener (INclActionListener *listener)
 {
   xvectremove (_progressListeners, listener);
 }
@@ -63,7 +63,7 @@ NclAction::removeProgressListener (NclActionProgressListener *listener)
 void
 NclAction::notifyProgressListeners (bool start)
 {
-  vector<NclActionProgressListener *> notifyList (_progressListeners);
+  vector<INclActionListener *> notifyList (_progressListeners);
 
   for (size_t i = 0; i < notifyList.size (); i++)
     {

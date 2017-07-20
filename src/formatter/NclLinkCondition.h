@@ -54,8 +54,8 @@ public:
 class NclLinkTriggerCondition : public NclLinkCondition
 {
   PROPERTY (NclLinkTriggerListener *, _listener, getTriggerListener,
-            setTriggerListener);
-  PROPERTY (GingaTime, _delay, getDelay, setDelay);
+            setTriggerListener)
+  PROPERTY (GingaTime, _delay, getDelay, setDelay)
 
 public:
   NclLinkTriggerCondition ();

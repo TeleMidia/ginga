@@ -28,17 +28,11 @@ GINGA_FORMATTER_BEGIN
 class NclLinkCondition;
 class NclSimpleAction;
 
-class NclActionProgressListener
-{
-public:
-  virtual ~NclActionProgressListener (){}
-  virtual void actionProcessed (bool start) = 0;
-};
-
 class INclActionListener
 {
 public:
-  virtual void scheduleAction (NclSimpleAction *action) = 0;
+  virtual void scheduleAction (NclSimpleAction *action) {}
+  virtual void actionProcessed (bool start) {}
 };
 
 class NclAction
@@ -49,8 +43,8 @@ public:
   virtual ~NclAction () {}
   void setDelay (GingaTime delay);
 
-  void addProgressListener (NclActionProgressListener *listener);
-  void removeProgressListener (NclActionProgressListener *listener);
+  void addProgressListener (INclActionListener *listener);
+  void removeProgressListener (INclActionListener *listener);
 
   virtual vector<NclEvent *> getEvents () = 0;
   virtual vector<NclAction *> getImplicitRefRoleActions () = 0;
@@ -66,7 +60,7 @@ protected:
 
 private:
   GingaTime _delay;
-  vector<NclActionProgressListener *> _progressListeners;
+  vector<INclActionListener *> _progressListeners;
 };
 
 class NclSimpleAction : public NclAction
@@ -107,6 +101,7 @@ public:
                        const string &duration);
 
   virtual ~NclAssignmentAction () {}
+
   string getValue ();
   string getDuration ();
 
@@ -115,8 +110,7 @@ private:
   string _duration;
 };
 
-class NclCompoundAction : public NclAction,
-    public NclActionProgressListener
+class NclCompoundAction : public NclAction, public INclActionListener
 {
 public:
   NclCompoundAction ();
