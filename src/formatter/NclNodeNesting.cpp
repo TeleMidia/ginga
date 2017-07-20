@@ -46,13 +46,9 @@ NclNodeNesting::NclNodeNesting (vector<Node *> *seq)
 void
 NclNodeNesting::append (NclNodeNesting *otherSeq)
 {
-  int i, size;
-  Node *node;
-
-  size = otherSeq->getNumNodes ();
-  for (i = 0; i < size; i++)
+  for (int i = 0; i < otherSeq->getNumNodes (); i++)
     {
-      node = otherSeq->getNode (i);
+      Node *node = otherSeq->getNode (i);
       insertAnchorNode (node);
     }
 }
@@ -60,11 +56,9 @@ NclNodeNesting::append (NclNodeNesting *otherSeq)
 void
 NclNodeNesting::append (vector<Node *> *otherSeq)
 {
-  vector<Node *>::iterator i;
-
-  for (i = otherSeq->begin (); i != otherSeq->end (); ++i)
+  for (Node *node : *otherSeq)
     {
-      insertAnchorNode (*i);
+      insertAnchorNode (node);
     }
 }
 
@@ -75,7 +69,7 @@ NclNodeNesting::getAnchorNode ()
 
   if (nodes.empty ())
     {
-      return NULL;
+      return nullptr;
     }
   else if (nodes.size () == 1)
     {
@@ -114,7 +108,7 @@ NclNodeNesting::getNode (int index)
   if (nodes.empty () || index < 0
       || index >= (int)(nodes.size ()))
     {
-      return NULL;
+      return nullptr;
     }
 
   i = nodes.begin () + index;

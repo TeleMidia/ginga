@@ -22,142 +22,102 @@ GINGA_FORMATTER_BEGIN
 
 RuleAdapter::RuleAdapter (Settings *settings)
 {
-  this->settings = settings;
-  ruleListenMap = new map<string, vector<Rule *> *>;
-  entityListenMap = new map<Rule *, vector<ExecutionObjectSwitch *> *>;
+  this->_settings = settings;
 }
 
 RuleAdapter::~RuleAdapter ()
 {
-  if (settings != NULL)
-    settings = NULL;
-
   reset ();
-
-  if (ruleListenMap != NULL)
-    {
-      delete ruleListenMap;
-      ruleListenMap = NULL;
-    }
-
-  if (entityListenMap != NULL)
-    {
-      delete entityListenMap;
-      entityListenMap = NULL;
-    }
 }
 
 void
 RuleAdapter::reset ()
 {
-  if (ruleListenMap != NULL)
+  for (auto i : _ruleListenMap)
     {
-      vector<Rule *> *rules;
-      map<string, vector<Rule *> *>::iterator i;
-
-      i = ruleListenMap->begin ();
-      while (i != ruleListenMap->end ())
+      vector<Rule *> *rules = i.second;
+      if (rules != nullptr)
         {
-          rules = i->second;
-          if (rules != NULL)
-            {
-              delete rules;
-              rules = NULL;
-            }
-          ++i;
+          delete rules;
+        }
+    }
+  _ruleListenMap.clear ();
+
+  map<Rule *, vector<ExecutionObjectSwitch *> *>::iterator j;
+  vector<ExecutionObjectSwitch *> *objects;
+
+  for (auto i : _entityListenMap)
+    {
+      objects = i.second;
+      if (objects != nullptr)
+        {
+          delete objects;
         }
 
-      ruleListenMap->clear ();
     }
-
-  if (entityListenMap != NULL)
-    {
-      map<Rule *, vector<ExecutionObjectSwitch *> *>::iterator j;
-      vector<ExecutionObjectSwitch *> *objects;
-
-      j = entityListenMap->begin ();
-      while (j != entityListenMap->end ())
-        {
-          objects = j->second;
-          if (objects != NULL)
-            {
-              delete objects;
-              objects = NULL;
-            }
-          ++j;
-        }
-
-      entityListenMap->clear ();
-    }
+  _entityListenMap.clear ();
 }
 
 Settings *
 RuleAdapter::getSettings ()
 {
-  return this->settings;
+  return this->_settings;
 }
 
 void
-RuleAdapter::adapt (ExecutionObjectContext *compositeObject,
-                    bool force)
+RuleAdapter::adapt (ExecutionObjectContext *compositeObject, bool force)
 {
-  ExecutionObject *object;
-  map<string, ExecutionObject *> *objs;
-  map<string, ExecutionObject *>::iterator i;
+  map<string, ExecutionObject *> *objs =
+      compositeObject->getExecutionObjects ();
 
-  objs = compositeObject->getExecutionObjects ();
-  if (objs != NULL)
+  if (objs != nullptr)
     {
-      i = objs->begin ();
-      while (i != objs->end ())
+      for (auto i : *objs)
         {
-          object = i->second;
-          if (instanceof (ExecutionObjectSwitch *, object))
+          ExecutionObject *obj = i.second;
+          if (instanceof (ExecutionObjectSwitch *, obj))
             {
-              object = ((ExecutionObjectSwitch *)object)
-                           ->getSelectedObject ();
+              obj = ((ExecutionObjectSwitch *)obj)->getSelectedObject ();
             }
 
-          if (instanceof (ExecutionObjectContext *, object))
+          if (instanceof (ExecutionObjectContext *, obj))
             {
-              adapt ((ExecutionObjectContext *)object, force);
+              adapt ((ExecutionObjectContext *)obj, force);
             }
-          ++i;
         }
       delete objs;
-      objs = NULL;
     }
 }
 
 void
 RuleAdapter::initializeAttributeRuleRelation (Rule *topRule, Rule *rule)
 {
-  vector<Rule *> *ruleVector = NULL;
+  vector<Rule *> *ruleVector = nullptr;
   vector<Rule *>::iterator rules;
 
-  if (instanceof (SimpleRule *, rule))
+  SimpleRule *simpleRule = cast (SimpleRule *, rule);
+  CompositeRule *compositeRule = cast (CompositeRule *, rule);
+  if (simpleRule)
     {
-      map<string, vector<Rule *> *>::iterator i;
-      for (i = ruleListenMap->begin (); i != ruleListenMap->end (); ++i)
+      for (auto i : _ruleListenMap)
         {
-          if (((SimpleRule *)rule)->getAttribute () == i->first)
+          if (simpleRule->getAttribute () == i.first)
             {
-              ruleVector = i->second;
+              ruleVector = i.second;
               break;
             }
         }
 
-      if (ruleVector == NULL)
+      if (ruleVector == nullptr)
         {
           ruleVector = new vector<Rule *>;
-          (*ruleListenMap)[(((SimpleRule *)rule)->getAttribute ())]
-            = ruleVector;
+          _ruleListenMap[simpleRule->getAttribute ()] = ruleVector;
         }
       ruleVector->push_back (topRule);
     }
   else
     {
-      const vector<Rule *> *vec = ((CompositeRule *)rule)->getRules ();
+      const vector<Rule *> *vec = compositeRule->getRules ();
       for (auto rule: *vec)
         {
           initializeAttributeRuleRelation (topRule, rule);
@@ -169,14 +129,13 @@ RuleAdapter::initializeAttributeRuleRelation (Rule *topRule, Rule *rule)
 Node *
 RuleAdapter::adaptSwitch (Switch *swtch)
 {
-  const vector<Node *> *nodes;
-  const vector<Rule *> *rules;
+  const vector<Node *> *nodes = swtch->getNodes ();
+  const vector<Rule *> *rules = swtch->getRules ();
 
-  nodes = swtch->getNodes ();
-  rules = swtch->getRules ();
   for (size_t i = 0; i < rules->size (); i++)
     if (evaluateRule (rules->at (i)))
       return nodes->at (i);
+
   return swtch->getDefaultNode ();
 }
 
@@ -220,16 +179,12 @@ RuleAdapter::evaluateCompositeRule (CompositeRule *rule)
 bool
 RuleAdapter::evaluateSimpleRule (SimpleRule *rule)
 {
-  string attribute;
-  string ruleValue;
-  string attributeValue;
+  string attr = rule->getAttribute ();
+  string ruleValue = rule->getValue ();
+  string attrValue = _settings->get (attr);
   string op = rule->getOperator ();
 
-  attribute = rule->getAttribute ();
-  attributeValue = settings->get (attribute);
-  ruleValue = rule->getValue ();
-  return ginga_eval_comparator (rule->getOperator (),
-                                attributeValue, ruleValue);
+  return ginga_eval_comparator (op, attrValue, ruleValue);
 }
 
 GINGA_FORMATTER_END
