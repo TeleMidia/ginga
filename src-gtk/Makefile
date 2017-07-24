@@ -120,8 +120,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_triplet = x86_64-pc-linux-gnu
-host_triplet = x86_64-pc-linux-gnu
+build_triplet = x86_64-apple-darwin16.5.0
+host_triplet = x86_64-apple-darwin16.5.0
 bin_PROGRAMS = $(am__EXEEXT_1)
 am__append_1 = ginga-gtk
 subdir = src-gtk
@@ -147,7 +147,14 @@ CONFIG_CLEAN_VPATH_FILES =
 am__EXEEXT_1 = ginga-gtk$(EXEEXT)
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_ginga_gtk_OBJECTS = ginga_gtk-ginga-gtk.$(OBJEXT)
+am__dirstamp = $(am__leading_dot)dirstamp
+am_ginga_gtk_OBJECTS = view/ginga_gtk-MainWindow.$(OBJEXT) \
+	view/ginga_gtk-FullscreenWindow.$(OBJEXT) \
+	view/ginga_gtk-SettingsWindow.$(OBJEXT) \
+	view/ginga_gtk-TvControlWindow.$(OBJEXT) \
+	view/ginga_gtk-Draw.$(OBJEXT) \
+	control/ginga_gtk-KeyEvent.$(OBJEXT) \
+	ginga_gtk-ginga-gtk.$(OBJEXT)
 ginga_gtk_OBJECTS = $(am_ginga_gtk_OBJECTS)
 ginga_gtk_DEPENDENCIES = $(top_builddir)/src/libginga.la
 AM_V_lt = $(am__v_lt_$(V))
@@ -221,17 +228,17 @@ am__DIST_COMMON = $(srcdir)/Makefile.in \
 	$(top_srcdir)/build-aux/Makefile.am.common \
 	$(top_srcdir)/build-aux/depcomp
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /home/busson/ginga/build-aux/missing aclocal-1.15
+ACLOCAL = ${SHELL} /Users/antoniobusson/ginga/build-aux/missing aclocal-1.15
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 0
 AR = ar
 AS = as
-AUTOCONF = ${SHELL} /home/busson/ginga/build-aux/missing autoconf
-AUTOHEADER = ${SHELL} /home/busson/ginga/build-aux/missing autoheader
-AUTOMAKE = ${SHELL} /home/busson/ginga/build-aux/missing automake-1.15
-AWK = mawk
-CAIRO_CFLAGS = -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12
-CAIRO_LIBS = -lcairo
+AUTOCONF = ${SHELL} /Users/antoniobusson/ginga/build-aux/missing autoconf
+AUTOHEADER = ${SHELL} /Users/antoniobusson/ginga/build-aux/missing autoheader
+AUTOMAKE = ${SHELL} /Users/antoniobusson/ginga/build-aux/missing automake-1.15
+AWK = awk
+CAIRO_CFLAGS = -I/usr/local/Cellar/cairo/1.14.10/include/cairo -I/usr/local/Cellar/glib/2.52.3/include/glib-2.0 -I/usr/local/Cellar/glib/2.52.3/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.41/include -I/usr/local/Cellar/pixman/0.34.0_1/include/pixman-1 -I/usr/local/Cellar/fontconfig/2.12.4/include -I/usr/local/opt/freetype/include/freetype2 -I/usr/local/Cellar/libpng/1.6.30/include/libpng16
+CAIRO_LIBS = -L/usr/local/Cellar/cairo/1.14.10/lib -lcairo
 CAIRO_REQUIRED_VERSION = 1.10.2
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -244,31 +251,31 @@ CPPFLAGS =
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -export-dynamic -std=gnu++11
+CXXFLAGS = -ObjC++ -std=gnu++11
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
 DLLTOOL = false
-DSYMUTIL = 
+DSYMUTIL = dsymutil
 DUMPBIN = 
-ECHO_C = 
-ECHO_N = -n
+ECHO_C = \c
+ECHO_N = 
 ECHO_T = 
-EGREP = /bin/grep -E
+EGREP = /usr/bin/grep -E
 EXEEXT = 
-FGREP = /bin/grep -F
+FGREP = /usr/bin/grep -F
 GENHTML = 
-GINGA_ALL_CXXFLAGS =     -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -pthread -I/usr/local/include/gstreamer-1.0 -I/usr/local/lib/gstreamer-1.0/include -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -pthread -I/usr/include/librsvg-2.0 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12 -D_REENTRANT -I/usr/include/SDL2 -D_REENTRANT -I/usr/include/SDL2 
-GINGA_ALL_LDFLAGS =  -lcairo  -lglib-2.0 -L/usr/local/lib -lgstvideo-1.0 -lgstaudio-1.0 -lgstapp-1.0 -lgstbase-1.0 -lgstreamer-1.0 -lgobject-2.0 -lglib-2.0 -lrsvg-2 -lm -lgio-2.0 -lgdk_pixbuf-2.0 -lgobject-2.0 -lglib-2.0 -lcairo -L/usr/local/lib -lnclua -lpangocairo-1.0 -lpango-1.0 -lgobject-2.0 -lglib-2.0 -lcairo -lSDL2_image -lSDL2 -lSDL2 -lxerces-c
-GLIB_CFLAGS = -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include
-GLIB_LIBS = -lglib-2.0
+GINGA_ALL_CXXFLAGS =     -I/usr/local/Cellar/cairo/1.14.10/include/cairo -I/usr/local/Cellar/glib/2.52.3/include/glib-2.0 -I/usr/local/Cellar/glib/2.52.3/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.41/include -I/usr/local/Cellar/pixman/0.34.0_1/include/pixman-1 -I/usr/local/Cellar/fontconfig/2.12.4/include -I/usr/local/opt/freetype/include/freetype2 -I/usr/local/Cellar/libpng/1.6.30/include/libpng16  -I/usr/local/Cellar/glib/2.52.3/include/glib-2.0 -I/usr/local/Cellar/glib/2.52.3/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.41/include -D_REENTRANT -I/usr/local/Cellar/gst-plugins-base/1.12.1/include/gstreamer-1.0 -I/usr/local/Cellar/gstreamer/1.12.1/include/gstreamer-1.0 -I/usr/local/Cellar/glib/2.52.3/include/glib-2.0 -I/usr/local/Cellar/glib/2.52.3/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.41/include -D_REENTRANT -I/usr/local/Cellar/librsvg/2.40.17/include/librsvg-2.0 -I/usr/local/Cellar/gdk-pixbuf/2.36.6/include/gdk-pixbuf-2.0 -I/usr/local/Cellar/libpng/1.6.30/include/libpng16 -I/usr/local/Cellar/cairo/1.14.10/include/cairo -I/usr/local/Cellar/glib/2.52.3/include/glib-2.0 -I/usr/local/Cellar/glib/2.52.3/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.41/include -I/usr/local/Cellar/pixman/0.34.0_1/include/pixman-1 -I/usr/local/Cellar/fontconfig/2.12.4/include -I/usr/local/opt/freetype/include/freetype2 -I/usr/local/Cellar/libpng/1.6.30/include/libpng16  -I/usr/local/Cellar/pango/1.40.5/include/pango-1.0 -I/usr/local/Cellar/harfbuzz/1.4.6/include/harfbuzz -I/usr/local/Cellar/pango/1.40.5/include/pango-1.0 -I/usr/local/Cellar/cairo/1.14.10/include/cairo -I/usr/local/Cellar/glib/2.52.3/include/glib-2.0 -I/usr/local/Cellar/glib/2.52.3/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.41/include -I/usr/local/Cellar/pixman/0.34.0_1/include/pixman-1 -I/usr/local/Cellar/fontconfig/2.12.4/include -I/usr/local/opt/freetype/include/freetype2 -I/usr/local/Cellar/libpng/1.6.30/include/libpng16 -D_THREAD_SAFE -I/usr/local/include/SDL2 -D_THREAD_SAFE -I/usr/local/include/SDL2 -I/usr/local/Cellar/xerces-c/3.1.4/include
+GINGA_ALL_LDFLAGS =  -L/usr/local/Cellar/cairo/1.14.10/lib -lcairo  -L/usr/local/Cellar/glib/2.52.3/lib -L/usr/local/opt/gettext/lib -lglib-2.0 -lintl -Wl,-framework -Wl,CoreFoundation -L/usr/local/Cellar/gst-plugins-base/1.12.1/lib -L/usr/local/Cellar/gstreamer/1.12.1/lib -L/usr/local/Cellar/glib/2.52.3/lib -L/usr/local/opt/gettext/lib -lgstvideo-1.0 -lgstaudio-1.0 -lgstapp-1.0 -lgstbase-1.0 -lgstreamer-1.0 -lgobject-2.0 -lglib-2.0 -lintl -Wl,-framework -Wl,CoreFoundation -L/usr/local/Cellar/librsvg/2.40.17/lib -L/usr/local/Cellar/glib/2.52.3/lib -L/usr/local/Cellar/gdk-pixbuf/2.36.6/lib -L/usr/local/Cellar/glib/2.52.3/lib -L/usr/local/opt/gettext/lib -L/usr/local/Cellar/cairo/1.14.10/lib -lrsvg-2 -lm -lgio-2.0 -lgdk_pixbuf-2.0 -lgobject-2.0 -lglib-2.0 -lintl -Wl,-framework -Wl,CoreFoundation -lcairo -L/usr/local/lib -lnclua -L/usr/local/Cellar/pango/1.40.5/lib -L/usr/local/Cellar/glib/2.52.3/lib -L/usr/local/opt/gettext/lib -L/usr/local/Cellar/cairo/1.14.10/lib -lpangocairo-1.0 -lpango-1.0 -lgobject-2.0 -lglib-2.0 -lintl -Wl,-framework -Wl,CoreFoundation -lcairo -L/usr/local/lib -lSDL2_image -lSDL2 -L/usr/local/lib -lSDL2 -L/usr/local/Cellar/xerces-c/3.1.4/lib -lxerces-c
+GLIB_CFLAGS = -I/usr/local/Cellar/glib/2.52.3/include/glib-2.0 -I/usr/local/Cellar/glib/2.52.3/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.41/include
+GLIB_LIBS = -L/usr/local/Cellar/glib/2.52.3/lib -L/usr/local/opt/gettext/lib -lglib-2.0 -lintl -Wl,-framework -Wl,CoreFoundation
 GLIB_REQUIRED_VERSION = 2.32.4
-GREP = /bin/grep
-GSTREAMER_CFLAGS = -pthread -I/usr/local/include/gstreamer-1.0 -I/usr/local/lib/gstreamer-1.0/include -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include
-GSTREAMER_LIBS = -L/usr/local/lib -lgstvideo-1.0 -lgstaudio-1.0 -lgstapp-1.0 -lgstbase-1.0 -lgstreamer-1.0 -lgobject-2.0 -lglib-2.0
+GREP = /usr/bin/grep
+GSTREAMER_CFLAGS = -D_REENTRANT -I/usr/local/Cellar/gst-plugins-base/1.12.1/include/gstreamer-1.0 -I/usr/local/Cellar/gstreamer/1.12.1/include/gstreamer-1.0 -I/usr/local/Cellar/glib/2.52.3/include/glib-2.0 -I/usr/local/Cellar/glib/2.52.3/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.41/include
+GSTREAMER_LIBS = -L/usr/local/Cellar/gst-plugins-base/1.12.1/lib -L/usr/local/Cellar/gstreamer/1.12.1/lib -L/usr/local/Cellar/glib/2.52.3/lib -L/usr/local/opt/gettext/lib -lgstvideo-1.0 -lgstaudio-1.0 -lgstapp-1.0 -lgstbase-1.0 -lgstreamer-1.0 -lgobject-2.0 -lglib-2.0 -lintl -Wl,-framework -Wl,CoreFoundation
 GSTREAMER_REQUIRED_VERSION = 1.4.0
-GTK_CFLAGS = -pthread -I/usr/include/gtk-3.0 -I/usr/include/at-spi2-atk/2.0 -I/usr/include/at-spi-2.0 -I/usr/include/dbus-1.0 -I/usr/lib/x86_64-linux-gnu/dbus-1.0/include -I/usr/include/gtk-3.0 -I/usr/include/gio-unix-2.0/ -I/usr/include/mirclient -I/usr/include/mircommon -I/usr/include/mircookie -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include
-GTK_LIBS = -lgtk-3 -lgdk-3 -lpangocairo-1.0 -lpango-1.0 -latk-1.0 -lcairo-gobject -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lgobject-2.0 -lglib-2.0
+GTK_CFLAGS = -D_REENTRANT -I/usr/local/Cellar/gtk+3/3.22.11/include/gtk-3.0 -I/usr/local/Cellar/glib/2.52.3/include/gio-unix-2.0/ -I/usr/local/Cellar/cairo/1.14.10/include/cairo -I/usr/local/Cellar/libepoxy/1.4.2/include -I/usr/local/Cellar/pango/1.40.5/include/pango-1.0 -I/usr/local/Cellar/harfbuzz/1.4.6/include/harfbuzz -I/usr/local/Cellar/pango/1.40.5/include/pango-1.0 -I/usr/local/Cellar/atk/2.24.0/include/atk-1.0 -I/usr/local/Cellar/cairo/1.14.10/include/cairo -I/usr/local/Cellar/pixman/0.34.0_1/include/pixman-1 -I/usr/local/Cellar/fontconfig/2.12.4/include -I/usr/local/opt/freetype/include/freetype2 -I/usr/local/Cellar/libpng/1.6.30/include/libpng16 -I/usr/local/Cellar/gdk-pixbuf/2.36.6/include/gdk-pixbuf-2.0 -I/usr/local/Cellar/libpng/1.6.30/include/libpng16 -I/usr/local/Cellar/glib/2.52.3/include/glib-2.0 -I/usr/local/Cellar/glib/2.52.3/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.41/include
+GTK_LIBS = -L/usr/local/Cellar/gtk+3/3.22.11/lib -L/usr/local/Cellar/pango/1.40.5/lib -L/usr/local/Cellar/atk/2.24.0/lib -L/usr/local/Cellar/cairo/1.14.10/lib -L/usr/local/Cellar/gdk-pixbuf/2.36.6/lib -L/usr/local/Cellar/glib/2.52.3/lib -L/usr/local/opt/gettext/lib -lgtk-3 -lgdk-3 -lpangocairo-1.0 -lpango-1.0 -latk-1.0 -lcairo-gobject -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lgobject-2.0 -lglib-2.0 -lintl -Wl,-framework -Wl,CoreFoundation
 GTK_REQUIRED_VERSION = 3.4.2
 HAVE_CXX11 = 
 INSTALL = /usr/bin/install -c
@@ -277,33 +284,33 @@ INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LCOV = 
-LD = /usr/bin/ld -m elf_x86_64
+LD = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld
 LDFLAGS = 
 LIBOBJS = 
-LIBRSVG_CFLAGS = -pthread -I/usr/include/librsvg-2.0 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12
-LIBRSVG_LIBS = -lrsvg-2 -lm -lgio-2.0 -lgdk_pixbuf-2.0 -lgobject-2.0 -lglib-2.0 -lcairo
+LIBRSVG_CFLAGS = -D_REENTRANT -I/usr/local/Cellar/librsvg/2.40.17/include/librsvg-2.0 -I/usr/local/Cellar/gdk-pixbuf/2.36.6/include/gdk-pixbuf-2.0 -I/usr/local/Cellar/libpng/1.6.30/include/libpng16 -I/usr/local/Cellar/cairo/1.14.10/include/cairo -I/usr/local/Cellar/glib/2.52.3/include/glib-2.0 -I/usr/local/Cellar/glib/2.52.3/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.41/include -I/usr/local/Cellar/pixman/0.34.0_1/include/pixman-1 -I/usr/local/Cellar/fontconfig/2.12.4/include -I/usr/local/opt/freetype/include/freetype2 -I/usr/local/Cellar/libpng/1.6.30/include/libpng16
+LIBRSVG_LIBS = -L/usr/local/Cellar/librsvg/2.40.17/lib -L/usr/local/Cellar/glib/2.52.3/lib -L/usr/local/Cellar/gdk-pixbuf/2.36.6/lib -L/usr/local/Cellar/glib/2.52.3/lib -L/usr/local/opt/gettext/lib -L/usr/local/Cellar/cairo/1.14.10/lib -lrsvg-2 -lm -lgio-2.0 -lgdk_pixbuf-2.0 -lgobject-2.0 -lglib-2.0 -lintl -Wl,-framework -Wl,CoreFoundation -lcairo
 LIBRSVG_REQUIRED_VERSION = 2.40.0
 LIBS = 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIB_EXE_MACHINE_FLAG = 
-LIPO = 
+LIPO = lipo
 LN_S = ln -s
 LTLIBOBJS = 
 LT_SYS_LIBRARY_PATH = 
 M4 = m4
-MAKEINFO = ${SHELL} /home/busson/ginga/build-aux/missing makeinfo
+MAKEINFO = ${SHELL} /Users/antoniobusson/ginga/build-aux/missing makeinfo
 MANIFEST_TOOL = :
 MINGW_ROOT = 
-MKDIR_P = /bin/mkdir -p
+MKDIR_P = ../build-aux/install-sh -c -d
 NCLUA_CFLAGS = 
 NCLUA_LIBS = -L/usr/local/lib -lnclua
 NCLUA_REQUIRED_VERSION = 1.0
 NM = /usr/bin/nm -B
-NMEDIT = 
+NMEDIT = nmedit
 OBJDUMP = objdump
 OBJEXT = o
-OTOOL = 
-OTOOL64 = 
+OTOOL = otool
+OTOOL64 = :
 PACKAGE = ginga
 PACKAGE_BUGREPORT = bugs@telemidia.puc-rio.br
 PACKAGE_NAME = Ginga
@@ -311,24 +318,24 @@ PACKAGE_STRING = Ginga 0.13.6
 PACKAGE_TARNAME = ginga
 PACKAGE_URL = http://www.telemidia.puc-rio.br
 PACKAGE_VERSION = 0.13.6
-PANGO_CFLAGS = -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12
-PANGO_LIBS = -lpangocairo-1.0 -lpango-1.0 -lgobject-2.0 -lglib-2.0 -lcairo
+PANGO_CFLAGS = -I/usr/local/Cellar/pango/1.40.5/include/pango-1.0 -I/usr/local/Cellar/harfbuzz/1.4.6/include/harfbuzz -I/usr/local/Cellar/pango/1.40.5/include/pango-1.0 -I/usr/local/Cellar/cairo/1.14.10/include/cairo -I/usr/local/Cellar/glib/2.52.3/include/glib-2.0 -I/usr/local/Cellar/glib/2.52.3/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.41/include -I/usr/local/Cellar/pixman/0.34.0_1/include/pixman-1 -I/usr/local/Cellar/fontconfig/2.12.4/include -I/usr/local/opt/freetype/include/freetype2 -I/usr/local/Cellar/libpng/1.6.30/include/libpng16
+PANGO_LIBS = -L/usr/local/Cellar/pango/1.40.5/lib -L/usr/local/Cellar/glib/2.52.3/lib -L/usr/local/opt/gettext/lib -L/usr/local/Cellar/cairo/1.14.10/lib -lpangocairo-1.0 -lpango-1.0 -lgobject-2.0 -lglib-2.0 -lintl -Wl,-framework -Wl,CoreFoundation -lcairo
 PANGO_REQUIRED_VERSION = 1.30.0
 PATH_SEPARATOR = :
 PERL = perl
-PKG_CONFIG = /usr/bin/pkg-config
+PKG_CONFIG = /usr/local/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
 PKG_CONFIG_PATH = 
 RANLIB = ranlib
-SDL2IMAGE_CFLAGS = -D_REENTRANT -I/usr/include/SDL2
-SDL2IMAGE_LIBS = -lSDL2_image -lSDL2
-SDL2_CFLAGS = -D_REENTRANT -I/usr/include/SDL2
+SDL2IMAGE_CFLAGS = -D_THREAD_SAFE -I/usr/local/include/SDL2
+SDL2IMAGE_LIBS = -L/usr/local/lib -lSDL2_image -lSDL2
+SDL2_CFLAGS = -D_THREAD_SAFE -I/usr/local/include/SDL2
 SDL2_IMAGE_REQUIRE_VERSION = 2.0
-SDL2_LIBS = -lSDL2
+SDL2_LIBS = -L/usr/local/lib -lSDL2
 SDL2_REQUIRED_VERSION = 2.0
-SED = /bin/sed
+SED = /usr/local/bin/gsed
 SET_MAKE = 
-SHELL = /bin/bash
+SHELL = /bin/sh
 SHTOOL = 
 SOEXT = .so
 STRIP = strip
@@ -337,13 +344,13 @@ VERSION = 0.13.6
 WARN_CFLAGS = 
 WERROR_CFLAGS = 
 WINDRES = 
-XERCESC_CFLAGS = 
-XERCESC_LIBS = -lxerces-c
+XERCESC_CFLAGS = -I/usr/local/Cellar/xerces-c/3.1.4/include
+XERCESC_LIBS = -L/usr/local/Cellar/xerces-c/3.1.4/lib -lxerces-c
 XERCESC_REQUIRED_VERSION = 2.7
-abs_builddir = /home/busson/ginga/src-gtk
-abs_srcdir = /home/busson/ginga/src-gtk
-abs_top_builddir = /home/busson/ginga
-abs_top_srcdir = /home/busson/ginga
+abs_builddir = /Users/antoniobusson/ginga/src-gtk
+abs_srcdir = /Users/antoniobusson/ginga/src-gtk
+abs_top_builddir = /Users/antoniobusson/ginga
+abs_top_srcdir = /Users/antoniobusson/ginga
 ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_CXX = g++
@@ -354,11 +361,11 @@ am__quote =
 am__tar = $${TAR-tar} chof - "$$tardir"
 am__untar = $${TAR-tar} xf -
 bindir = ${exec_prefix}/bin
-build = x86_64-pc-linux-gnu
+build = x86_64-apple-darwin16.5.0
 build_alias = 
 build_cpu = x86_64
-build_os = linux-gnu
-build_vendor = pc
+build_os = darwin16.5.0
+build_vendor = apple
 builddir = .
 cef_dir = 
 datadir = ${datarootdir}
@@ -366,15 +373,15 @@ datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
-host = x86_64-pc-linux-gnu
+host = x86_64-apple-darwin16.5.0
 host_alias = 
 host_cpu = x86_64
-host_os = linux-gnu
-host_vendor = pc
+host_os = darwin16.5.0
+host_vendor = apple
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/busson/ginga/build-aux/install-sh
+install_sh = ${SHELL} /Users/antoniobusson/ginga/build-aux/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -387,7 +394,6 @@ pdfdir = ${docdir}
 prefix = /usr/local
 program_transform_name = s,x,x,
 psdir = ${docdir}
-runstatedir = ${localstatedir}/run
 sbindir = ${exec_prefix}/sbin
 sharedstatedir = ${prefix}/com
 srcdir = .
@@ -406,7 +412,7 @@ AM_LDFLAGS = $(GINGA_ALL_LDFLAGS)
 ginga_gtk_CXXFLAGS = $(AM_CXXFLAGS) $(GTK_CFLAGS)
 ginga_gtk_LDADD = $(top_builddir)/src/libginga.la
 ginga_gtk_LDFLAGS = $(AM_LDFLAGS) $(GTK_LIBS)
-ginga_gtk_SOURCES = ginga-gtk.cpp
+ginga_gtk_SOURCES = view/MainWindow.cpp view/FullscreenWindow.cpp view/SettingsWindow.cpp view/TvControlWindow.cpp view/Draw.cpp control/KeyEvent.cpp ginga-gtk.cpp
 all: all-am
 
 .SUFFIXES:
@@ -490,6 +496,30 @@ clean-binPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+view/$(am__dirstamp):
+	@$(MKDIR_P) view
+	@: > view/$(am__dirstamp)
+view/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) view/$(DEPDIR)
+	@: > view/$(DEPDIR)/$(am__dirstamp)
+view/ginga_gtk-MainWindow.$(OBJEXT): view/$(am__dirstamp) \
+	view/$(DEPDIR)/$(am__dirstamp)
+view/ginga_gtk-FullscreenWindow.$(OBJEXT): view/$(am__dirstamp) \
+	view/$(DEPDIR)/$(am__dirstamp)
+view/ginga_gtk-SettingsWindow.$(OBJEXT): view/$(am__dirstamp) \
+	view/$(DEPDIR)/$(am__dirstamp)
+view/ginga_gtk-TvControlWindow.$(OBJEXT): view/$(am__dirstamp) \
+	view/$(DEPDIR)/$(am__dirstamp)
+view/ginga_gtk-Draw.$(OBJEXT): view/$(am__dirstamp) \
+	view/$(DEPDIR)/$(am__dirstamp)
+control/$(am__dirstamp):
+	@$(MKDIR_P) control
+	@: > control/$(am__dirstamp)
+control/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) control/$(DEPDIR)
+	@: > control/$(DEPDIR)/$(am__dirstamp)
+control/ginga_gtk-KeyEvent.$(OBJEXT): control/$(am__dirstamp) \
+	control/$(DEPDIR)/$(am__dirstamp)
 
 ginga-gtk$(EXEEXT): $(ginga_gtk_OBJECTS) $(ginga_gtk_DEPENDENCIES) $(EXTRA_ginga_gtk_DEPENDENCIES) 
 	@rm -f ginga-gtk$(EXEEXT)
@@ -497,11 +527,19 @@ ginga-gtk$(EXEEXT): $(ginga_gtk_OBJECTS) $(ginga_gtk_DEPENDENCIES) $(EXTRA_ginga
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f control/*.$(OBJEXT)
+	-rm -f view/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
 include ./$(DEPDIR)/ginga_gtk-ginga-gtk.Po
+include control/$(DEPDIR)/ginga_gtk-KeyEvent.Po
+include view/$(DEPDIR)/ginga_gtk-Draw.Po
+include view/$(DEPDIR)/ginga_gtk-FullscreenWindow.Po
+include view/$(DEPDIR)/ginga_gtk-MainWindow.Po
+include view/$(DEPDIR)/ginga_gtk-SettingsWindow.Po
+include view/$(DEPDIR)/ginga_gtk-TvControlWindow.Po
 
 .cpp.o:
 	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -526,6 +564,90 @@ include ./$(DEPDIR)/ginga_gtk-ginga-gtk.Po
 #	$(AM_V_CXX)source='$<' object='$@' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(LTCXXCOMPILE) -c -o $@ $<
+
+view/ginga_gtk-MainWindow.o: view/MainWindow.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ginga_gtk_CXXFLAGS) $(CXXFLAGS) -MT view/ginga_gtk-MainWindow.o -MD -MP -MF view/$(DEPDIR)/ginga_gtk-MainWindow.Tpo -c -o view/ginga_gtk-MainWindow.o `test -f 'view/MainWindow.cpp' || echo '$(srcdir)/'`view/MainWindow.cpp
+	$(AM_V_at)$(am__mv) view/$(DEPDIR)/ginga_gtk-MainWindow.Tpo view/$(DEPDIR)/ginga_gtk-MainWindow.Po
+#	$(AM_V_CXX)source='view/MainWindow.cpp' object='view/ginga_gtk-MainWindow.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ginga_gtk_CXXFLAGS) $(CXXFLAGS) -c -o view/ginga_gtk-MainWindow.o `test -f 'view/MainWindow.cpp' || echo '$(srcdir)/'`view/MainWindow.cpp
+
+view/ginga_gtk-MainWindow.obj: view/MainWindow.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ginga_gtk_CXXFLAGS) $(CXXFLAGS) -MT view/ginga_gtk-MainWindow.obj -MD -MP -MF view/$(DEPDIR)/ginga_gtk-MainWindow.Tpo -c -o view/ginga_gtk-MainWindow.obj `if test -f 'view/MainWindow.cpp'; then $(CYGPATH_W) 'view/MainWindow.cpp'; else $(CYGPATH_W) '$(srcdir)/view/MainWindow.cpp'; fi`
+	$(AM_V_at)$(am__mv) view/$(DEPDIR)/ginga_gtk-MainWindow.Tpo view/$(DEPDIR)/ginga_gtk-MainWindow.Po
+#	$(AM_V_CXX)source='view/MainWindow.cpp' object='view/ginga_gtk-MainWindow.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ginga_gtk_CXXFLAGS) $(CXXFLAGS) -c -o view/ginga_gtk-MainWindow.obj `if test -f 'view/MainWindow.cpp'; then $(CYGPATH_W) 'view/MainWindow.cpp'; else $(CYGPATH_W) '$(srcdir)/view/MainWindow.cpp'; fi`
+
+view/ginga_gtk-FullscreenWindow.o: view/FullscreenWindow.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ginga_gtk_CXXFLAGS) $(CXXFLAGS) -MT view/ginga_gtk-FullscreenWindow.o -MD -MP -MF view/$(DEPDIR)/ginga_gtk-FullscreenWindow.Tpo -c -o view/ginga_gtk-FullscreenWindow.o `test -f 'view/FullscreenWindow.cpp' || echo '$(srcdir)/'`view/FullscreenWindow.cpp
+	$(AM_V_at)$(am__mv) view/$(DEPDIR)/ginga_gtk-FullscreenWindow.Tpo view/$(DEPDIR)/ginga_gtk-FullscreenWindow.Po
+#	$(AM_V_CXX)source='view/FullscreenWindow.cpp' object='view/ginga_gtk-FullscreenWindow.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ginga_gtk_CXXFLAGS) $(CXXFLAGS) -c -o view/ginga_gtk-FullscreenWindow.o `test -f 'view/FullscreenWindow.cpp' || echo '$(srcdir)/'`view/FullscreenWindow.cpp
+
+view/ginga_gtk-FullscreenWindow.obj: view/FullscreenWindow.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ginga_gtk_CXXFLAGS) $(CXXFLAGS) -MT view/ginga_gtk-FullscreenWindow.obj -MD -MP -MF view/$(DEPDIR)/ginga_gtk-FullscreenWindow.Tpo -c -o view/ginga_gtk-FullscreenWindow.obj `if test -f 'view/FullscreenWindow.cpp'; then $(CYGPATH_W) 'view/FullscreenWindow.cpp'; else $(CYGPATH_W) '$(srcdir)/view/FullscreenWindow.cpp'; fi`
+	$(AM_V_at)$(am__mv) view/$(DEPDIR)/ginga_gtk-FullscreenWindow.Tpo view/$(DEPDIR)/ginga_gtk-FullscreenWindow.Po
+#	$(AM_V_CXX)source='view/FullscreenWindow.cpp' object='view/ginga_gtk-FullscreenWindow.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ginga_gtk_CXXFLAGS) $(CXXFLAGS) -c -o view/ginga_gtk-FullscreenWindow.obj `if test -f 'view/FullscreenWindow.cpp'; then $(CYGPATH_W) 'view/FullscreenWindow.cpp'; else $(CYGPATH_W) '$(srcdir)/view/FullscreenWindow.cpp'; fi`
+
+view/ginga_gtk-SettingsWindow.o: view/SettingsWindow.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ginga_gtk_CXXFLAGS) $(CXXFLAGS) -MT view/ginga_gtk-SettingsWindow.o -MD -MP -MF view/$(DEPDIR)/ginga_gtk-SettingsWindow.Tpo -c -o view/ginga_gtk-SettingsWindow.o `test -f 'view/SettingsWindow.cpp' || echo '$(srcdir)/'`view/SettingsWindow.cpp
+	$(AM_V_at)$(am__mv) view/$(DEPDIR)/ginga_gtk-SettingsWindow.Tpo view/$(DEPDIR)/ginga_gtk-SettingsWindow.Po
+#	$(AM_V_CXX)source='view/SettingsWindow.cpp' object='view/ginga_gtk-SettingsWindow.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ginga_gtk_CXXFLAGS) $(CXXFLAGS) -c -o view/ginga_gtk-SettingsWindow.o `test -f 'view/SettingsWindow.cpp' || echo '$(srcdir)/'`view/SettingsWindow.cpp
+
+view/ginga_gtk-SettingsWindow.obj: view/SettingsWindow.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ginga_gtk_CXXFLAGS) $(CXXFLAGS) -MT view/ginga_gtk-SettingsWindow.obj -MD -MP -MF view/$(DEPDIR)/ginga_gtk-SettingsWindow.Tpo -c -o view/ginga_gtk-SettingsWindow.obj `if test -f 'view/SettingsWindow.cpp'; then $(CYGPATH_W) 'view/SettingsWindow.cpp'; else $(CYGPATH_W) '$(srcdir)/view/SettingsWindow.cpp'; fi`
+	$(AM_V_at)$(am__mv) view/$(DEPDIR)/ginga_gtk-SettingsWindow.Tpo view/$(DEPDIR)/ginga_gtk-SettingsWindow.Po
+#	$(AM_V_CXX)source='view/SettingsWindow.cpp' object='view/ginga_gtk-SettingsWindow.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ginga_gtk_CXXFLAGS) $(CXXFLAGS) -c -o view/ginga_gtk-SettingsWindow.obj `if test -f 'view/SettingsWindow.cpp'; then $(CYGPATH_W) 'view/SettingsWindow.cpp'; else $(CYGPATH_W) '$(srcdir)/view/SettingsWindow.cpp'; fi`
+
+view/ginga_gtk-TvControlWindow.o: view/TvControlWindow.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ginga_gtk_CXXFLAGS) $(CXXFLAGS) -MT view/ginga_gtk-TvControlWindow.o -MD -MP -MF view/$(DEPDIR)/ginga_gtk-TvControlWindow.Tpo -c -o view/ginga_gtk-TvControlWindow.o `test -f 'view/TvControlWindow.cpp' || echo '$(srcdir)/'`view/TvControlWindow.cpp
+	$(AM_V_at)$(am__mv) view/$(DEPDIR)/ginga_gtk-TvControlWindow.Tpo view/$(DEPDIR)/ginga_gtk-TvControlWindow.Po
+#	$(AM_V_CXX)source='view/TvControlWindow.cpp' object='view/ginga_gtk-TvControlWindow.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ginga_gtk_CXXFLAGS) $(CXXFLAGS) -c -o view/ginga_gtk-TvControlWindow.o `test -f 'view/TvControlWindow.cpp' || echo '$(srcdir)/'`view/TvControlWindow.cpp
+
+view/ginga_gtk-TvControlWindow.obj: view/TvControlWindow.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ginga_gtk_CXXFLAGS) $(CXXFLAGS) -MT view/ginga_gtk-TvControlWindow.obj -MD -MP -MF view/$(DEPDIR)/ginga_gtk-TvControlWindow.Tpo -c -o view/ginga_gtk-TvControlWindow.obj `if test -f 'view/TvControlWindow.cpp'; then $(CYGPATH_W) 'view/TvControlWindow.cpp'; else $(CYGPATH_W) '$(srcdir)/view/TvControlWindow.cpp'; fi`
+	$(AM_V_at)$(am__mv) view/$(DEPDIR)/ginga_gtk-TvControlWindow.Tpo view/$(DEPDIR)/ginga_gtk-TvControlWindow.Po
+#	$(AM_V_CXX)source='view/TvControlWindow.cpp' object='view/ginga_gtk-TvControlWindow.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ginga_gtk_CXXFLAGS) $(CXXFLAGS) -c -o view/ginga_gtk-TvControlWindow.obj `if test -f 'view/TvControlWindow.cpp'; then $(CYGPATH_W) 'view/TvControlWindow.cpp'; else $(CYGPATH_W) '$(srcdir)/view/TvControlWindow.cpp'; fi`
+
+view/ginga_gtk-Draw.o: view/Draw.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ginga_gtk_CXXFLAGS) $(CXXFLAGS) -MT view/ginga_gtk-Draw.o -MD -MP -MF view/$(DEPDIR)/ginga_gtk-Draw.Tpo -c -o view/ginga_gtk-Draw.o `test -f 'view/Draw.cpp' || echo '$(srcdir)/'`view/Draw.cpp
+	$(AM_V_at)$(am__mv) view/$(DEPDIR)/ginga_gtk-Draw.Tpo view/$(DEPDIR)/ginga_gtk-Draw.Po
+#	$(AM_V_CXX)source='view/Draw.cpp' object='view/ginga_gtk-Draw.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ginga_gtk_CXXFLAGS) $(CXXFLAGS) -c -o view/ginga_gtk-Draw.o `test -f 'view/Draw.cpp' || echo '$(srcdir)/'`view/Draw.cpp
+
+view/ginga_gtk-Draw.obj: view/Draw.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ginga_gtk_CXXFLAGS) $(CXXFLAGS) -MT view/ginga_gtk-Draw.obj -MD -MP -MF view/$(DEPDIR)/ginga_gtk-Draw.Tpo -c -o view/ginga_gtk-Draw.obj `if test -f 'view/Draw.cpp'; then $(CYGPATH_W) 'view/Draw.cpp'; else $(CYGPATH_W) '$(srcdir)/view/Draw.cpp'; fi`
+	$(AM_V_at)$(am__mv) view/$(DEPDIR)/ginga_gtk-Draw.Tpo view/$(DEPDIR)/ginga_gtk-Draw.Po
+#	$(AM_V_CXX)source='view/Draw.cpp' object='view/ginga_gtk-Draw.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ginga_gtk_CXXFLAGS) $(CXXFLAGS) -c -o view/ginga_gtk-Draw.obj `if test -f 'view/Draw.cpp'; then $(CYGPATH_W) 'view/Draw.cpp'; else $(CYGPATH_W) '$(srcdir)/view/Draw.cpp'; fi`
+
+control/ginga_gtk-KeyEvent.o: control/KeyEvent.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ginga_gtk_CXXFLAGS) $(CXXFLAGS) -MT control/ginga_gtk-KeyEvent.o -MD -MP -MF control/$(DEPDIR)/ginga_gtk-KeyEvent.Tpo -c -o control/ginga_gtk-KeyEvent.o `test -f 'control/KeyEvent.cpp' || echo '$(srcdir)/'`control/KeyEvent.cpp
+	$(AM_V_at)$(am__mv) control/$(DEPDIR)/ginga_gtk-KeyEvent.Tpo control/$(DEPDIR)/ginga_gtk-KeyEvent.Po
+#	$(AM_V_CXX)source='control/KeyEvent.cpp' object='control/ginga_gtk-KeyEvent.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ginga_gtk_CXXFLAGS) $(CXXFLAGS) -c -o control/ginga_gtk-KeyEvent.o `test -f 'control/KeyEvent.cpp' || echo '$(srcdir)/'`control/KeyEvent.cpp
+
+control/ginga_gtk-KeyEvent.obj: control/KeyEvent.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ginga_gtk_CXXFLAGS) $(CXXFLAGS) -MT control/ginga_gtk-KeyEvent.obj -MD -MP -MF control/$(DEPDIR)/ginga_gtk-KeyEvent.Tpo -c -o control/ginga_gtk-KeyEvent.obj `if test -f 'control/KeyEvent.cpp'; then $(CYGPATH_W) 'control/KeyEvent.cpp'; else $(CYGPATH_W) '$(srcdir)/control/KeyEvent.cpp'; fi`
+	$(AM_V_at)$(am__mv) control/$(DEPDIR)/ginga_gtk-KeyEvent.Tpo control/$(DEPDIR)/ginga_gtk-KeyEvent.Po
+#	$(AM_V_CXX)source='control/KeyEvent.cpp' object='control/ginga_gtk-KeyEvent.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ginga_gtk_CXXFLAGS) $(CXXFLAGS) -c -o control/ginga_gtk-KeyEvent.obj `if test -f 'control/KeyEvent.cpp'; then $(CYGPATH_W) 'control/KeyEvent.cpp'; else $(CYGPATH_W) '$(srcdir)/control/KeyEvent.cpp'; fi`
 
 ginga_gtk-ginga-gtk.o: ginga-gtk.cpp
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ginga_gtk_CXXFLAGS) $(CXXFLAGS) -MT ginga_gtk-ginga-gtk.o -MD -MP -MF $(DEPDIR)/ginga_gtk-ginga-gtk.Tpo -c -o ginga_gtk-ginga-gtk.o `test -f 'ginga-gtk.cpp' || echo '$(srcdir)/'`ginga-gtk.cpp
@@ -663,6 +785,10 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f control/$(DEPDIR)/$(am__dirstamp)
+	-rm -f control/$(am__dirstamp)
+	-rm -f view/$(DEPDIR)/$(am__dirstamp)
+	-rm -f view/$(am__dirstamp)
 	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
@@ -674,7 +800,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR) control/$(DEPDIR) view/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -720,7 +846,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR) control/$(DEPDIR) view/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
