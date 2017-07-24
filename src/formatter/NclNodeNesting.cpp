@@ -22,24 +22,24 @@ GINGA_FORMATTER_BEGIN
 
 NclNodeNesting::NclNodeNesting ()
 {
-  id = "";
+  _id = "";
 }
 
 NclNodeNesting::NclNodeNesting (Node *node)
 {
-  id = "";
+  _id = "";
   insertAnchorNode (node);
 }
 
 NclNodeNesting::NclNodeNesting (NclNodeNesting *seq)
 {
-  id = "";
+  _id = "";
   append (seq);
 }
 
 NclNodeNesting::NclNodeNesting (vector<Node *> *seq)
 {
-  id = "";
+  _id = "";
   append (seq);
 }
 
@@ -67,18 +67,18 @@ NclNodeNesting::getAnchorNode ()
 {
   Node *node;
 
-  if (nodes.empty ())
+  if (_nodes.empty ())
     {
       return nullptr;
     }
-  else if (nodes.size () == 1)
+  else if (_nodes.size () == 1)
     {
-      node = *(nodes.begin ());
+      node = *(_nodes.begin ());
       return node;
     }
   else
     {
-      node = *(nodes.end () - 1);
+      node = *(_nodes.end () - 1);
       return node;
     }
 }
@@ -88,13 +88,13 @@ NclNodeNesting::getHeadNode ()
 {
   Node *node;
 
-  if (nodes.empty ())
+  if (_nodes.empty ())
     {
       return nullptr;
     }
   else
     {
-      node = *(nodes.begin ());
+      node = *(_nodes.begin ());
       return node;
     }
 }
@@ -105,13 +105,13 @@ NclNodeNesting::getNode (int index)
   Node *node;
   vector<Node *>::iterator i;
 
-  if (nodes.empty () || index < 0
-      || index >= (int)(nodes.size ()))
+  if (_nodes.empty () || index < 0
+      || index >= (int)(_nodes.size ()))
     {
       return nullptr;
     }
 
-  i = nodes.begin () + index;
+  i = _nodes.begin () + index;
   node = *i;
   return node;
 }
@@ -119,7 +119,7 @@ NclNodeNesting::getNode (int index)
 int
 NclNodeNesting::getNumNodes ()
 {
-  return (int) nodes.size ();
+  return (int) _nodes.size ();
 }
 
 void
@@ -128,44 +128,44 @@ NclNodeNesting::insertAnchorNode (Node *node)
   string nodeId;
 
   nodeId = node->getId ();
-  if (nodes.size () > 0)
+  if (_nodes.size () > 0)
     {
-      id = id + "/" + nodeId;
+      _id = _id + "/" + nodeId;
     }
   else
     {
-      id = nodeId;
+      _id = nodeId;
     }
 
-  nodes.push_back (node);
+  _nodes.push_back (node);
 }
 
 void
 NclNodeNesting::insertHeadNode (Node *node)
 {
-  if (nodes.size () > 0)
+  if (_nodes.size () > 0)
     {
-      id = node->getId () + "/" + id;
+      _id = node->getId () + "/" + _id;
     }
   else
     {
-      id = node->getId ();
+      _id = node->getId ();
     }
 
-  nodes.insert (nodes.begin (), node);
+  _nodes.insert (_nodes.begin (), node);
 }
 
 bool
 NclNodeNesting::removeAnchorNode ()
 {
-  if (nodes.empty ())
+  if (_nodes.empty ())
     return false;
 
-  nodes.erase (nodes.end () - 1);
+  _nodes.erase (_nodes.end () - 1);
 
-  if (id.find ("/") != std::string::npos)
+  if (_id.find ("/") != std::string::npos)
     {
-      id = id.substr (0, id.find_last_of ("/"));
+      _id = _id.substr (0, _id.find_last_of ("/"));
     }
 
   return true;
@@ -174,16 +174,16 @@ NclNodeNesting::removeAnchorNode ()
 bool
 NclNodeNesting::removeHeadNode ()
 {
-  if (nodes.empty ())
+  if (_nodes.empty ())
     {
       return false;
     }
 
-  nodes.erase (nodes.begin ());
+  _nodes.erase (_nodes.begin ());
 
-  if (id.find ("/") != std::string::npos)
+  if (_id.find ("/") != std::string::npos)
     {
-      id = id.substr (0, id.find_last_of ("/"));
+      _id = _id.substr (0, _id.find_last_of ("/"));
     }
 
   return true;
@@ -192,7 +192,7 @@ NclNodeNesting::removeHeadNode ()
 string
 NclNodeNesting::getId ()
 {
-  return id;
+  return _id;
 }
 
 NclNodeNesting *

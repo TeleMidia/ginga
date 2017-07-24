@@ -25,10 +25,6 @@ GINGA_FORMATTER_BEGIN
 
 class NclNodeNesting
 {
-private:
-  string id;
-  vector<Node *> nodes;
-
 public:
   NclNodeNesting ();
   NclNodeNesting (Node *node);
@@ -36,7 +32,6 @@ public:
   NclNodeNesting (vector<Node *> *seq);
   virtual ~NclNodeNesting () {}
 
-public:
   void append (NclNodeNesting *otherSeq);
   void append (vector<Node *> *otherSeq);
   Node *getAnchorNode ();
@@ -49,6 +44,10 @@ public:
   bool removeHeadNode ();
   string getId ();
   NclNodeNesting *copy ();
+
+private:
+  string _id;
+  vector<Node *> _nodes;
 };
 
 GINGA_FORMATTER_END
