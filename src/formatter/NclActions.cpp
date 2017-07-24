@@ -42,28 +42,28 @@ NclAction::setDelay (GingaTime delay)
 void
 NclAction::addProgressListener (INclActionListener *listener)
 {
-  auto i = find (_progressListeners.begin(), _progressListeners.end(),
+  auto i = find (_listeners.begin(), _listeners.end(),
                  listener);
 
-  if (i != _progressListeners.end())
+  if (i != _listeners.end())
     {
       WARNING ("Trying to add the same listener twice.");
       return;
     }
 
-  _progressListeners.push_back (listener);
+  _listeners.push_back (listener);
 }
 
 void
 NclAction::removeProgressListener (INclActionListener *listener)
 {
-  xvectremove (_progressListeners, listener);
+  xvectremove (_listeners, listener);
 }
 
 void
 NclAction::notifyProgressListeners (bool start)
 {
-  vector<INclActionListener *> notifyList (_progressListeners);
+  vector<INclActionListener *> notifyList (_listeners);
 
   for (size_t i = 0; i < notifyList.size (); i++)
     {
@@ -76,7 +76,7 @@ NclSimpleAction::NclSimpleAction (NclEvent *event, SimpleAction::Type type)
 {
   this->_event = event;
   this->_actType = type;
-  this->listener = nullptr;
+  this->_listener = nullptr;
   this->_repetitions = 0;
   this->_repetitionInterval = 0;
 }
@@ -97,7 +97,7 @@ void
 NclSimpleAction::setSimpleActionListener (INclActionListener *listener)
 {
   g_assert_nonnull (listener);
-  this->listener = listener;
+  this->_listener = listener;
 }
 
 vector<NclEvent *>
@@ -154,10 +154,10 @@ NclSimpleAction::run ()
       g_assert_not_reached ();
     }
 
-  if (listener != nullptr)
+  if (_listener != nullptr)
     {
       g_assert_nonnull (_satisfiedCondition);
-      listener->scheduleAction (this);
+      _listener->scheduleAction (this);
     }
 
   if (_actType == SimpleAction::START)

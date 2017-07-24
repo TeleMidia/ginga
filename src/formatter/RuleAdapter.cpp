@@ -43,15 +43,12 @@ RuleAdapter::reset ()
     }
   _ruleListenMap.clear ();
 
-  map<Rule *, vector<ExecutionObjectSwitch *> *>::iterator j;
-  vector<ExecutionObjectSwitch *> *objects;
-
   for (auto i : _entityListenMap)
     {
-      objects = i.second;
-      if (objects != nullptr)
+      vector<ExecutionObjectSwitch *> *objs = i.second;
+      if (objs != nullptr)
         {
-          delete objects;
+          delete objs;
         }
 
     }
@@ -93,7 +90,6 @@ void
 RuleAdapter::initializeAttributeRuleRelation (Rule *topRule, Rule *rule)
 {
   vector<Rule *> *ruleVector = nullptr;
-  vector<Rule *>::iterator rules;
 
   SimpleRule *simpleRule = cast (SimpleRule *, rule);
   CompositeRule *compositeRule = cast (CompositeRule *, rule);
@@ -121,7 +117,6 @@ RuleAdapter::initializeAttributeRuleRelation (Rule *topRule, Rule *rule)
       for (auto rule: *vec)
         {
           initializeAttributeRuleRelation (topRule, rule);
-          ++rules;
         }
     }
 }
