@@ -60,7 +60,7 @@ protected:
 
 private:
   GingaTime _delay;
-  vector<INclActionListener *> _progressListeners;
+  vector<INclActionListener *> _listeners;
 };
 
 class NclSimpleAction : public NclAction
@@ -74,7 +74,7 @@ public:
   NclEvent *getEvent ();
   SimpleAction::Type getType ();
 
-  void setSimpleActionListener (INclActionListener *listener);
+  void setSimpleActionListener (INclActionListener *_listener);
 
   virtual vector<NclEvent *> getEvents () override;
   virtual vector<NclAction *> getImplicitRefRoleActions () override;
@@ -86,7 +86,7 @@ protected:
   SimpleAction::Type _actType;
 
 private:
-  INclActionListener *listener;
+  INclActionListener *_listener;
 
   int _repetitions;
   GingaTime _repetitionInterval;
