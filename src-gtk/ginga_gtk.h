@@ -77,6 +77,7 @@ extern Ginga_GUI ginga_gui;
 extern GtkWidget *tvcontrolWindow;
 extern GtkWidget *fullscreenWindow;
 extern GtkWidget *settingsWindow;
+extern GtkWidget *aboutWindow;
 extern gboolean isFullScreenMode;
 extern gboolean isDebugMode;
 extern gboolean isCrtlModifierActive;
@@ -101,6 +102,10 @@ void set_unfullscreen_mode(void);
 /* View/SettingsWindow */
 void create_settings_window(void);
 void destroy_settings_window(void);
+
+/* View/AboutWindow */
+void create_about_window(void);
+void destroy_about_window(void);
 
 /* View/Draw */
 SDL_Window* create_sdl_window_from_gtk_widget(GtkWidget *gtk_widget);

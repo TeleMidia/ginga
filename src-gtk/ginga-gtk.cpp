@@ -31,6 +31,11 @@ main (int argc, char **argv)
   printf ("PATH: %s \n", ginga_gui.executable_folder);
 
   gtk_init (&argc, &argv);
+  
+  GError **error;
+  gtk_window_set_default_icon_from_file (g_strconcat (ginga_gui.executable_folder,
+                   "icons/common/ginga_icon.png", NULL), error);
+
   create_main_window ();
 
   // SDL TEST

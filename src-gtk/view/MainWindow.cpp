@@ -147,7 +147,13 @@ create_main_window (void)
   g_assert_nonnull (menu_help);
   GtkWidget *menu_item_help = gtk_menu_item_new_with_label ("Help");
   g_assert_nonnull (menu_item_help);
+  GtkWidget *menu_item_about
+      = gtk_menu_item_new_with_label ("About");
+  g_assert_nonnull (menu_item_about);
+    g_signal_connect (menu_item_about, "activate",
+                    G_CALLBACK (create_about_window), NULL);
   gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu_item_help), menu_help);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu_help), menu_item_about);
   gtk_menu_shell_append (GTK_MENU_SHELL (ginga_gui.menu_bar),
                          menu_item_help);
 
