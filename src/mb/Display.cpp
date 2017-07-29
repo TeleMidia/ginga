@@ -80,7 +80,7 @@ Display::Display (int width, int height, double fps, bool fullscreen)
 #endif
   SDL_SetHint (SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
-  flags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
+  flags = SDL_WINDOW_SHOWN;
   if (_fullscreen)
     flags |= SDL_WINDOW_FULLSCREEN;
 
