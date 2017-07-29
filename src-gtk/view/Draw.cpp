@@ -28,7 +28,7 @@ draw_callback(GtkWidget *widget, cairo_t *cr, arg_unused (gpointer data)){
   cairo_set_source_rgb (cr,0, 0, 0);
   cairo_rectangle (cr, 0, 0, w, h);
   cairo_fill (cr);
-
+  
  /*
   SDL_SetRenderDrawColor (renderer, 255, 0, 255, 255);
   SDL_RenderClear (renderer); 

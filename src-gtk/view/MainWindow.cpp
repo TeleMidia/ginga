@@ -20,6 +20,20 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 gboolean isDebugMode = FALSE;
 
 void
+resize_main_window_canvas (void)
+{
+  printf ("Resizing %d - %d", presentationAttributes.resolutionWidth,
+          presentationAttributes.resolutionHeight);
+
+
+  gtk_widget_set_size_request (ginga_gui.canvas,
+                               presentationAttributes.resolutionWidth,
+                               presentationAttributes.resolutionHeight);                                                  
+
+  destroy_settings_window ();
+}
+
+void
 create_main_window (void)
 {
   // Create application window.
@@ -147,10 +161,9 @@ create_main_window (void)
   g_assert_nonnull (menu_help);
   GtkWidget *menu_item_help = gtk_menu_item_new_with_label ("Help");
   g_assert_nonnull (menu_item_help);
-  GtkWidget *menu_item_about
-      = gtk_menu_item_new_with_label ("About");
+  GtkWidget *menu_item_about = gtk_menu_item_new_with_label ("About");
   g_assert_nonnull (menu_item_about);
-    g_signal_connect (menu_item_about, "activate",
+  g_signal_connect (menu_item_about, "activate",
                     G_CALLBACK (create_about_window), NULL);
   gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu_item_help), menu_help);
   gtk_menu_shell_append (GTK_MENU_SHELL (menu_help), menu_item_about);

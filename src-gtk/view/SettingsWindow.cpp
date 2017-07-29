@@ -18,6 +18,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga_gtk.h"
 
 GtkWidget *settingsWindow = NULL;
+PresentationAttributes presentationAttributes;
+
+GtkWidget *widthEntry = NULL;
+GtkWidget *heightEntry = NULL;
 
 void
 create_key_combobox (GtkWidget *combo_box)
@@ -40,8 +44,116 @@ create_key_combobox (GtkWidget *combo_box)
 }
 
 void
+combobox_changed (GtkComboBox *widget, gpointer user_data)
+{
+  presentationAttributes.aspectRatio
+      = gtk_combo_box_get_active (GTK_COMBO_BOX (widget));
+
+  if (presentationAttributes.resolutionWidth
+      >= presentationAttributes.resolutionHeight)
+    {
+      if (presentationAttributes.aspectRatio == 0)
+        presentationAttributes.resolutionHeight
+            = (presentationAttributes.resolutionWidth * 3) / 4;
+      else if (presentationAttributes.aspectRatio == 1)
+        presentationAttributes.resolutionHeight
+            = (presentationAttributes.resolutionWidth * 9) / 16;
+      else if (presentationAttributes.aspectRatio == 2)
+        presentationAttributes.resolutionHeight
+            = (presentationAttributes.resolutionWidth * 10) / 16;
+      gtk_entry_set_text (
+          GTK_ENTRY (heightEntry),
+          g_markup_printf_escaped (
+              "%d", presentationAttributes.resolutionHeight));
+    }
+  else
+    {
+      if (presentationAttributes.aspectRatio == 0)
+        presentationAttributes.resolutionWidth
+            = (presentationAttributes.resolutionHeight * 4) / 3;
+      else if (presentationAttributes.aspectRatio == 1)
+        presentationAttributes.resolutionWidth
+            = (presentationAttributes.resolutionHeight * 16) / 9;
+      else if (presentationAttributes.aspectRatio == 2)
+        presentationAttributes.resolutionWidth
+            = (presentationAttributes.resolutionHeight * 16) / 10;
+      gtk_entry_set_text (
+          GTK_ENTRY (widthEntry),
+          g_markup_printf_escaped ("%d",
+                                   presentationAttributes.resolutionWidth));
+    }
+}
+
+void
+preedit_changed_callback (GtkEditable *edit, gchar *new_text,
+                          gint new_length, gpointer position, gpointer data)
+{
+  const gchar *entry_str = gtk_entry_get_text (GTK_ENTRY (edit));
+  gchar *content = g_strconcat (entry_str, new_text, NULL);
+
+  if (strlen (content) == 0)
+    return;
+
+  for (guint8 i = 0; i < strlen (content); i++)
+    {
+      if (content[i] < '0' || content[i] > '9')
+        {
+          content[i] = 0;
+          break;
+        }
+    }
+
+  if (widthEntry == (GtkWidget *)edit)
+    {
+      gint64 value = atoi (content);
+      if (presentationAttributes.resolutionWidth != value)
+        presentationAttributes.resolutionWidth = value;
+      else
+        return;
+      presentationAttributes.resolutionWidth = atoi (content);
+      if (presentationAttributes.aspectRatio == 0)
+        presentationAttributes.resolutionHeight
+            = (presentationAttributes.resolutionWidth * 3) / 4;
+      else if (presentationAttributes.aspectRatio == 1)
+        presentationAttributes.resolutionHeight
+            = (presentationAttributes.resolutionWidth * 9) / 16;
+      else if (presentationAttributes.aspectRatio == 2)
+        presentationAttributes.resolutionHeight
+            = (presentationAttributes.resolutionWidth * 10) / 16;
+      gtk_entry_set_text (
+          GTK_ENTRY (heightEntry),
+          g_markup_printf_escaped (
+              "%d", presentationAttributes.resolutionHeight));
+    }
+  else
+    {
+      gint64 value = atoi (content);
+      if (presentationAttributes.resolutionHeight != value)
+        presentationAttributes.resolutionHeight = value;
+      else
+        return;
+      if (presentationAttributes.aspectRatio == 0)
+        presentationAttributes.resolutionWidth
+            = (presentationAttributes.resolutionHeight * 4) / 3;
+      else if (presentationAttributes.aspectRatio == 1)
+        presentationAttributes.resolutionWidth
+            = (presentationAttributes.resolutionHeight * 16) / 9;
+      else if (presentationAttributes.aspectRatio == 2)
+        presentationAttributes.resolutionWidth
+            = (presentationAttributes.resolutionHeight * 16) / 10;
+      gtk_entry_set_text (
+          GTK_ENTRY (widthEntry),
+          g_markup_printf_escaped ("%d",
+                                   presentationAttributes.resolutionWidth));
+    }
+}
+
+void
 create_settings_window (void)
 {
+  if (settingsWindow != NULL)
+    return;
+
   settingsWindow = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   g_assert_nonnull (settingsWindow);
   gtk_window_set_title (GTK_WINDOW (settingsWindow), "Settings");
@@ -73,25 +185,32 @@ create_settings_window (void)
     gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), 0);
     gtk_fixed_put (GTK_FIXED (fixed_layout_controls), combo_box, 50, 0);
    */
+
   GtkWidget *fixed_layout_presentation = gtk_fixed_new ();
   g_assert_nonnull (fixed_layout_presentation);
 
   GtkWidget *combo_box = gtk_combo_box_text_new ();
   g_assert_nonnull (combo_box);
-  gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (combo_box), -1, "4:3");
-  gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (combo_box), -1, "16:9");
-  gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (combo_box), -1, "16:10");
-  gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), 0);
+  gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (combo_box), -1,
+                                  "4:3");
+  gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (combo_box), -1,
+                                  "16:9");
+  gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (combo_box), -1,
+                                  "16:10");
+  gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box),
+                            presentationAttributes.aspectRatio);
+  g_signal_connect (combo_box, "changed", G_CALLBACK (combobox_changed),
+                    NULL);
   gtk_fixed_put (GTK_FIXED (fixed_layout_presentation), combo_box, 100, 10);
-  
+
   GtkWidget *aspect_label = gtk_label_new ("Aspect ratio");
   gtk_label_set_markup (
       GTK_LABEL (aspect_label),
       g_markup_printf_escaped ("<span font=\"13\"><b>\%s</b></span>",
                                "Aspect ratio"));
   g_assert_nonnull (aspect_label);
-  gtk_fixed_put (GTK_FIXED (fixed_layout_presentation), aspect_label,
-                 10,(BUTTON_SIZE/3)+25);
+  gtk_fixed_put (GTK_FIXED (fixed_layout_presentation), aspect_label, 10,
+                 (BUTTON_SIZE / 3) + 15);
 
   GtkWidget *width_label = gtk_label_new ("Width");
   gtk_label_set_markup (
@@ -99,8 +218,8 @@ create_settings_window (void)
       g_markup_printf_escaped ("<span font=\"13\"><b>\%s</b></span>",
                                "Width"));
   g_assert_nonnull (width_label);
-  gtk_fixed_put (GTK_FIXED (fixed_layout_presentation), width_label,
-                 10, (BUTTON_SIZE/3)+ BUTTON_SIZE + 20) ;
+  gtk_fixed_put (GTK_FIXED (fixed_layout_presentation), width_label, 10,
+                 (BUTTON_SIZE / 3) + BUTTON_SIZE + 20);
 
   GtkWidget *height_label = gtk_label_new ("Height");
   gtk_label_set_markup (
@@ -108,28 +227,30 @@ create_settings_window (void)
       g_markup_printf_escaped ("<span font=\"13\"><b>\%s</b></span>",
                                "Height"));
   g_assert_nonnull (height_label);
-  gtk_fixed_put (GTK_FIXED (fixed_layout_presentation), height_label,
-                 10, (BUTTON_SIZE/3)+ (BUTTON_SIZE*2) + 15) ;
+  gtk_fixed_put (GTK_FIXED (fixed_layout_presentation), height_label, 110,
+                 (BUTTON_SIZE / 3) + BUTTON_SIZE + 20);
 
-  GtkWidget *width_entry = gtk_entry_new ();
-  g_assert_nonnull (width_entry);
-  gtk_widget_set_size_request (width_entry,
-                               20,
-                               BUTTON_SIZE);
-  gtk_entry_set_text (GTK_ENTRY (width_entry),
-                      "800");
-  gtk_fixed_put (GTK_FIXED (fixed_layout_presentation), width_entry,
-                 100, (BUTTON_SIZE) + 20);
+  widthEntry = gtk_entry_new ();
+  g_assert_nonnull (widthEntry);
+  gtk_entry_set_width_chars (GTK_ENTRY (widthEntry), 4);
+  g_signal_connect (widthEntry, "insert-text",
+                    G_CALLBACK (preedit_changed_callback), NULL);
+  gtk_entry_set_text (GTK_ENTRY (widthEntry),
+                      g_markup_printf_escaped (
+                          "%d", presentationAttributes.resolutionWidth));
+  gtk_fixed_put (GTK_FIXED (fixed_layout_presentation), widthEntry, 50,
+                 (BUTTON_SIZE) + 20);
 
-   GtkWidget *height_entry = gtk_entry_new ();
-  g_assert_nonnull (height_entry);
-  gtk_widget_set_size_request (height_entry,
-                               20,
-                               BUTTON_SIZE);
-  gtk_entry_set_text (GTK_ENTRY (height_entry),
-                      "600");
-  gtk_fixed_put (GTK_FIXED (fixed_layout_presentation), height_entry,
-                 100, (BUTTON_SIZE*2) + 25);             
+  heightEntry = gtk_entry_new ();
+  g_assert_nonnull (heightEntry);
+  gtk_entry_set_width_chars (GTK_ENTRY (heightEntry), 4);
+  g_signal_connect (heightEntry, "insert-text",
+                    G_CALLBACK (preedit_changed_callback), NULL);
+  gtk_entry_set_text (GTK_ENTRY (heightEntry),
+                      g_markup_printf_escaped (
+                          "%d", presentationAttributes.resolutionHeight));
+  gtk_fixed_put (GTK_FIXED (fixed_layout_presentation), heightEntry, 150,
+                 (BUTTON_SIZE) + 20);
 
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
                             fixed_layout_presentation,
@@ -137,8 +258,19 @@ create_settings_window (void)
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook), fixed_layout_controls,
                             gtk_label_new ("Controls"));
 
-
   gtk_fixed_put (GTK_FIXED (fixed_layout), notebook, 0, 0);
+  GtkWidget *apply_button = gtk_button_new_with_label ("Apply");
+  g_assert_nonnull (apply_button);
+  g_signal_connect (apply_button, "clicked",
+                    G_CALLBACK (resize_main_window_canvas), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), apply_button, 200, 200);
+
+  GtkWidget *cancel_button = gtk_button_new_with_label ("Cancel");
+  g_assert_nonnull (cancel_button);
+  g_signal_connect (cancel_button, "clicked",
+                    G_CALLBACK (destroy_settings_window), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), cancel_button, 120, 200);
+
   gtk_container_add (GTK_CONTAINER (settingsWindow), fixed_layout);
   gtk_widget_show_all (settingsWindow);
 }
@@ -146,4 +278,6 @@ create_settings_window (void)
 void
 destroy_settings_window (void)
 {
+  gtk_widget_destroy (settingsWindow);
+  settingsWindow = NULL;
 }
