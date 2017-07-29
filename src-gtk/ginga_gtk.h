@@ -67,10 +67,10 @@ typedef struct{
 }Ginga_GUI; 
 
 typedef struct{
-  SDL_Rect main_window_rect = {0,0, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT+30};
-  SDL_Rect canvas_rect = {0,MENU_BOX_HEIGHT, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT};
-  SDL_Rect control_area_rect = {0,DEFAULT_WINDOW_HEIGHT+MENU_BOX_HEIGHT+10, DEFAULT_WINDOW_WIDTH,20};   
-}gui_layout_param;  
+  guint8 aspectRatio = 0; /* 0=(4:3) 1=(16:9) 2=(16:10) */
+  guint16 resolutionWidth = 800;
+  guint16 resolutionHeight = 600;
+}PresentationAttributes;  
 
 extern Ginga_GUI ginga_gui;
 
@@ -81,6 +81,7 @@ extern GtkWidget *aboutWindow;
 extern gboolean isFullScreenMode;
 extern gboolean isDebugMode;
 extern gboolean isCrtlModifierActive;
+extern PresentationAttributes presentationAttributes;
 
 /* View/MainWindow */ 
 void create_main_window(void);
@@ -88,6 +89,7 @@ void destroy_main_window(void);
 void enable_disable_debug(void);
 void select_ncl_file_callback(GtkWidget *widget, gpointer data);
 void play_pause_ginga(void);
+void resize_main_window_canvas (void);
 
 /* View/TvControlWindow */
 void create_tvcontrol_window(void);

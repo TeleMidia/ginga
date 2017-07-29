@@ -30,7 +30,7 @@ create_about_window (void)
                                      PACKAGE_STRING);
   gtk_about_dialog_set_copyright (
       GTK_ABOUT_DIALOG (aboutWindow),
-      "Copyright (C) 2006-2017 PUC-Rio/Laboratorio TeleMidia");
+      "Copyright (C) 2006-2017 PUC-Rio/TeleMidia Lab");
   gtk_about_dialog_set_license (
       GTK_ABOUT_DIALOG (aboutWindow),
       "GNU General Public License v2.0 (GPL-2.0) \n"
@@ -41,7 +41,8 @@ create_about_window (void)
                                       "http://ginga.org.br");
 
   const gchar **authors = (const gchar **)malloc (sizeof (gchar *) * 2);
-  authors[0] = g_strconcat ("PUC-Rio/Laboratorio TeleMidia", NULL);
+  authors[0] = g_strconcat (
+      "PUC-Rio/TeleMidia Lab. \nwww.telemidia.puc-rio.br", NULL);
   authors[1] = NULL;
   gtk_about_dialog_set_authors (GTK_ABOUT_DIALOG (aboutWindow), authors);
   gtk_about_dialog_set_wrap_license (GTK_ABOUT_DIALOG (aboutWindow), TRUE);
