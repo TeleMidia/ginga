@@ -28,5 +28,5 @@ endif
 ginga_gtk_CXXFLAGS= $(AM_CXXFLAGS) $(GTK_CFLAGS)
 ginga_gtk_LDADD= $(top_builddir)/src/libginga.la
 ginga_gtk_LDFLAGS= $(AM_LDFLAGS) $(GTK_LIBS)
-ginga_gtk_SOURCES= view/MainWindow.cpp view/FullscreenWindow.cpp view/SettingsWindow.cpp view/TvControlWindow.cpp view/AboutWindow.cpp view/Draw.cpp control/KeyEvent.cpp ginga-gtk.cpp
+ginga_gtk_SOURCES= view/MainWindow.cpp view/FullscreenWindow.cpp view/SettingsWindow.cpp view/TvControlWindow.cpp view/AboutWindow.cpp view/Draw.cpp controller/KeyEvent.cpp model/SaveLoadSettings.cpp ginga-gtk.cpp
 
