@@ -18,32 +18,32 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga_gtk.h"
 
 gboolean isDebugMode = FALSE;
+gboolean destroyWindowToResize = FALSE;
 
 void
 resize_main_window_canvas (void)
 {
-  printf ("Resizing %d - %d", presentationAttributes.resolutionWidth,
-          presentationAttributes.resolutionHeight);
-
-
-  gtk_widget_set_size_request (ginga_gui.canvas,
-                               presentationAttributes.resolutionWidth,
-                               presentationAttributes.resolutionHeight);                                                  
-
   destroy_settings_window ();
+  save_settings ();
+  destroyWindowToResize = TRUE;
+  destroy_main_window ();
+  create_main_window ();
+  destroyWindowToResize = FALSE;
 }
 
 void
 create_main_window (void)
 {
+  load_settings ();
+
   // Create application window.
   ginga_gui.toplevel_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   g_assert_nonnull (ginga_gui.toplevel_window);
   gtk_window_set_title (GTK_WINDOW (ginga_gui.toplevel_window),
                         PACKAGE_STRING);
   gtk_window_set_default_size (GTK_WINDOW (ginga_gui.toplevel_window),
-                               ginga_gui.window_rect.w,
-                               ginga_gui.window_rect.h);
+                               presentationAttributes.resolutionWidth,
+                               presentationAttributes.resolutionHeight);
   gtk_window_set_position (GTK_WINDOW (ginga_gui.toplevel_window),
                            GTK_WIN_POS_CENTER);
   gtk_window_set_resizable (GTK_WINDOW (ginga_gui.toplevel_window), FALSE);
@@ -65,9 +65,9 @@ create_main_window (void)
 
   ginga_gui.file_entry = gtk_entry_new ();
   g_assert_nonnull (ginga_gui.file_entry);
-  gtk_widget_set_size_request (ginga_gui.file_entry,
-                               ginga_gui.window_rect.w - BUTTON_SIZE,
-                               BUTTON_SIZE);
+  gtk_widget_set_size_request (
+      ginga_gui.file_entry,
+      presentationAttributes.resolutionWidth - BUTTON_SIZE, BUTTON_SIZE);
   gtk_entry_set_text (GTK_ENTRY (ginga_gui.file_entry),
                       g_get_user_special_dir (G_USER_DIRECTORY_DOCUMENTS));
   gtk_fixed_put (GTK_FIXED (ginga_gui.fixed_layout), ginga_gui.file_entry,
@@ -75,8 +75,8 @@ create_main_window (void)
 
   GtkWidget *canvas_separator
       = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-  gtk_widget_set_size_request (canvas_separator, ginga_gui.canvas_rect.w,
-                               2);
+  gtk_widget_set_size_request (canvas_separator,
+                               presentationAttributes.resolutionWidth, 2);
   gtk_fixed_put (GTK_FIXED (ginga_gui.fixed_layout), canvas_separator,
                  ginga_gui.canvas_rect.x, ginga_gui.canvas_rect.y - 5);
 
@@ -86,22 +86,25 @@ create_main_window (void)
   gtk_widget_set_app_paintable (ginga_gui.canvas, TRUE);
   g_signal_connect (ginga_gui.canvas, "draw", G_CALLBACK (draw_callback),
                     NULL);
-  gtk_widget_set_size_request (ginga_gui.canvas, ginga_gui.canvas_rect.w,
-                               ginga_gui.canvas_rect.h);
+  gtk_widget_set_size_request (ginga_gui.canvas,
+                               presentationAttributes.resolutionWidth,
+                               presentationAttributes.resolutionHeight);
 
   ginga_gui.canvas_separator_bottom
       = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
   gtk_widget_set_size_request (ginga_gui.canvas_separator_bottom,
-                               ginga_gui.canvas_rect.w, 2);
+                               presentationAttributes.resolutionWidth, 2);
   gtk_fixed_put (GTK_FIXED (ginga_gui.fixed_layout),
                  ginga_gui.canvas_separator_bottom, 0,
-                 ginga_gui.canvas_rect.y + ginga_gui.canvas_rect.h
+                 ginga_gui.canvas_rect.y
+                     + presentationAttributes.resolutionHeight
                      + ginga_gui.default_margin);
 
   ginga_gui.log_view = gtk_text_view_new ();
   g_assert_nonnull (ginga_gui.log_view);
-  gtk_widget_set_size_request (ginga_gui.log_view, ginga_gui.canvas_rect.w,
-                               ginga_gui.canvas_rect.h);
+  gtk_widget_set_size_request (ginga_gui.log_view,
+                               presentationAttributes.resolutionWidth,
+                               presentationAttributes.resolutionHeight);
 
   ginga_gui.notebook = gtk_notebook_new ();
   g_assert_nonnull (ginga_gui.notebook);
@@ -186,7 +189,9 @@ create_main_window (void)
   g_signal_connect (ginga_gui.play_button, "clicked",
                     G_CALLBACK (play_pause_ginga), NULL);
   gtk_fixed_put (GTK_FIXED (ginga_gui.fixed_layout), ginga_gui.play_button,
-                 0, ginga_gui.controll_area_rect.y);
+                 0,
+                 ginga_gui.controll_area_rect.y
+                     + presentationAttributes.resolutionHeight);
 
   GtkWidget *stop_icon = gtk_image_new_from_icon_name (
       "media-playback-stop", GTK_ICON_SIZE_BUTTON);
@@ -195,7 +200,9 @@ create_main_window (void)
   g_assert_nonnull (ginga_gui.stop_button);
   gtk_button_set_image (GTK_BUTTON (ginga_gui.stop_button), stop_icon);
   gtk_fixed_put (GTK_FIXED (ginga_gui.fixed_layout), ginga_gui.stop_button,
-                 BUTTON_SIZE, ginga_gui.controll_area_rect.y);
+                 BUTTON_SIZE,
+                 ginga_gui.controll_area_rect.y
+                     + presentationAttributes.resolutionHeight);
 
   ginga_gui.time_label = gtk_label_new ("00:00");
   gtk_label_set_markup (
@@ -205,8 +212,8 @@ create_main_window (void)
   g_assert_nonnull (ginga_gui.time_label);
   gtk_fixed_put (GTK_FIXED (ginga_gui.fixed_layout), ginga_gui.time_label,
                  (BUTTON_SIZE * 2) + 5,
-                 ginga_gui.window_rect.h + MENU_BOX_HEIGHT
-                     - (BUTTON_SIZE / 3));
+                 presentationAttributes.resolutionHeight + MENU_BOX_HEIGHT
+                     + (BUTTON_SIZE / 2));
 
   GtkWidget *fullscreen_icon = gtk_image_new_from_icon_name (
       "view-fullscreen", GTK_ICON_SIZE_BUTTON);
@@ -219,8 +226,9 @@ create_main_window (void)
                     G_CALLBACK (set_fullscreen_mode), NULL);
   gtk_fixed_put (GTK_FIXED (ginga_gui.fixed_layout),
                  ginga_gui.fullscreen_button,
-                 ginga_gui.window_rect.w - (BUTTON_SIZE * 2),
-                 ginga_gui.controll_area_rect.y);
+                 presentationAttributes.resolutionWidth - (BUTTON_SIZE * 2),
+                 ginga_gui.controll_area_rect.y
+                     + presentationAttributes.resolutionHeight);
 
   GtkWidget *config_icon = gtk_image_new_from_icon_name (
       "emblem-system", GTK_ICON_SIZE_BUTTON);
@@ -232,15 +240,17 @@ create_main_window (void)
                     G_CALLBACK (create_settings_window), NULL);
   gtk_fixed_put (GTK_FIXED (ginga_gui.fixed_layout),
                  ginga_gui.config_button,
-                 ginga_gui.window_rect.w - (BUTTON_SIZE),
-                 ginga_gui.controll_area_rect.y);
+                 presentationAttributes.resolutionWidth - (BUTTON_SIZE),
+                 ginga_gui.controll_area_rect.y
+                     + presentationAttributes.resolutionHeight);
 
   ginga_gui.volume_button = gtk_volume_button_new ();
   g_assert_nonnull (ginga_gui.volume_button);
   gtk_fixed_put (GTK_FIXED (ginga_gui.fixed_layout),
                  ginga_gui.volume_button,
-                 ginga_gui.window_rect.w - (BUTTON_SIZE * 3),
-                 ginga_gui.controll_area_rect.y);
+                 presentationAttributes.resolutionWidth - (BUTTON_SIZE * 3),
+                 ginga_gui.controll_area_rect.y
+                     + presentationAttributes.resolutionHeight);
 
   gtk_container_add (GTK_CONTAINER (ginga_gui.toplevel_window),
                      ginga_gui.fixed_layout);
@@ -251,7 +261,7 @@ create_main_window (void)
   g_signal_connect (ginga_gui.toplevel_window, "key-release-event",
                     G_CALLBACK (key_release_event_callback), NULL);
   g_signal_connect (ginga_gui.toplevel_window, "destroy",
-                    G_CALLBACK (gtk_main_quit), NULL);
+                    G_CALLBACK (destroy_main_window), NULL);
 
   gtk_widget_show_all (ginga_gui.toplevel_window);
 }
@@ -259,45 +269,59 @@ create_main_window (void)
 void
 destroy_main_window (void)
 {
+  gtk_widget_destroy (ginga_gui.toplevel_window);
+  ginga_gui.toplevel_window = NULL;
+  if (!destroyWindowToResize)
+    {
+      gtk_main_quit ();
+    }
 }
 
 void
 enable_disable_debug (void)
 {
   isDebugMode = !isDebugMode;
-
   guint offset = 0;
+  gtk_notebook_set_current_page (GTK_NOTEBOOK (ginga_gui.notebook), 0);
   if (isDebugMode)
     {
-      offset = 30;
+      offset = 35;
       gtk_notebook_set_show_tabs (GTK_NOTEBOOK (ginga_gui.notebook), TRUE);
     }
   else
     gtk_notebook_set_show_tabs (GTK_NOTEBOOK (ginga_gui.notebook), FALSE);
 
   gtk_fixed_move (GTK_FIXED (ginga_gui.fixed_layout), ginga_gui.play_button,
-                  0, ginga_gui.controll_area_rect.y + offset);
+                  0,
+                  ginga_gui.controll_area_rect.y
+                      + presentationAttributes.resolutionHeight + offset);
   gtk_fixed_move (GTK_FIXED (ginga_gui.fixed_layout), ginga_gui.stop_button,
-                  BUTTON_SIZE, ginga_gui.controll_area_rect.y + offset);
+                  BUTTON_SIZE,
+                  ginga_gui.controll_area_rect.y
+                      + presentationAttributes.resolutionHeight + offset);
   gtk_fixed_move (GTK_FIXED (ginga_gui.fixed_layout), ginga_gui.time_label,
                   (BUTTON_SIZE * 2) + 5,
-                  ginga_gui.window_rect.h + MENU_BOX_HEIGHT
-                      - (BUTTON_SIZE / 3) + offset);
-  gtk_fixed_move (GTK_FIXED (ginga_gui.fixed_layout),
-                  ginga_gui.fullscreen_button,
-                  ginga_gui.window_rect.w - (BUTTON_SIZE * 2),
-                  ginga_gui.controll_area_rect.y + offset);
+                  presentationAttributes.resolutionHeight + MENU_BOX_HEIGHT
+                      + (BUTTON_SIZE / 2) + offset);
+  gtk_fixed_move (
+      GTK_FIXED (ginga_gui.fixed_layout), ginga_gui.fullscreen_button,
+      presentationAttributes.resolutionWidth - (BUTTON_SIZE * 2),
+      ginga_gui.controll_area_rect.y
+          + presentationAttributes.resolutionHeight + offset);
   gtk_fixed_move (GTK_FIXED (ginga_gui.fixed_layout),
                   ginga_gui.config_button,
-                  ginga_gui.window_rect.w - (BUTTON_SIZE),
-                  ginga_gui.controll_area_rect.y + offset);
-  gtk_fixed_move (GTK_FIXED (ginga_gui.fixed_layout),
-                  ginga_gui.volume_button,
-                  ginga_gui.window_rect.w - (BUTTON_SIZE * 3),
-                  ginga_gui.controll_area_rect.y + offset);
+                  presentationAttributes.resolutionWidth - (BUTTON_SIZE),
+                  ginga_gui.controll_area_rect.y
+                      + presentationAttributes.resolutionHeight + offset);
+  gtk_fixed_move (
+      GTK_FIXED (ginga_gui.fixed_layout), ginga_gui.volume_button,
+      presentationAttributes.resolutionWidth - (BUTTON_SIZE * 3),
+      ginga_gui.controll_area_rect.y
+          + presentationAttributes.resolutionHeight + offset);
   gtk_fixed_move (GTK_FIXED (ginga_gui.fixed_layout),
                   ginga_gui.canvas_separator_bottom, 0,
-                  ginga_gui.canvas_rect.y + ginga_gui.canvas_rect.h
+                  ginga_gui.canvas_rect.y
+                      + presentationAttributes.resolutionHeight
                       + ginga_gui.default_margin + offset);
 
   gtk_window_resize (GTK_WINDOW (ginga_gui.toplevel_window),

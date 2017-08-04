@@ -62,14 +62,15 @@ typedef struct{
   gchar *executable_folder = NULL;
   SDL_Rect window_rect = {0,0, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT+30};
   SDL_Rect canvas_rect = {0,MENU_BOX_HEIGHT, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT};
-  SDL_Rect controll_area_rect = {0,DEFAULT_WINDOW_HEIGHT+MENU_BOX_HEIGHT+10, DEFAULT_WINDOW_WIDTH,20}; 
+  SDL_Rect controll_area_rect = {0,MENU_BOX_HEIGHT+10, DEFAULT_WINDOW_WIDTH,20}; 
   gboolean playMode = FALSE;
 }Ginga_GUI; 
 
 typedef struct{
   guint8 aspectRatio = 0; /* 0=(4:3) 1=(16:9) 2=(16:10) */
-  guint16 resolutionWidth = 800;
-  guint16 resolutionHeight = 600;
+  guint16 resolutionWidth = DEFAULT_WINDOW_WIDTH;
+  guint16 resolutionHeight = DEFAULT_WINDOW_HEIGHT;
+  guint8 frameRate = 0; /* 0=30 1=60 2=Free  */
 }PresentationAttributes;  
 
 extern Ginga_GUI ginga_gui;
@@ -117,5 +118,8 @@ void draw_callback(GtkWidget *widget, cairo_t *cr, arg_unused (gpointer data));
 void key_press_event_callback(GtkWidget *widget, GdkEventKey *event);
 void key_release_event_callback(GtkWidget *widget, GdkEventKey *event);
 
+/* Model/SaveLoadSettings */
+void save_settings(void);
+void load_settings(void);
 
 #endif /* GINGA_GTK_H */
