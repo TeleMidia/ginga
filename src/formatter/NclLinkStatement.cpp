@@ -82,10 +82,10 @@ NclLinkCompoundStatement::getEvents ()
 bool
 NclLinkCompoundStatement::evaluate ()
 {
-  int i, size;
+  size_t i, size;
   NclLinkStatement *childStatement;
 
-  size = (int) _statements.size ();
+  size = _statements.size ();
   if (!_conjunction)
     {
       for (i = 0; i < size; i++)
