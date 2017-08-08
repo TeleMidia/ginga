@@ -32,14 +32,14 @@ update_draw_callback (arg_unused (GtkWidget *widget))
   if (_Ginga_Display != NULL)
     _Ginga_Display->renderLoop ();
 
-  gtk_widget_queue_draw (ginga_gui.canvas);
+ // gtk_widget_queue_draw (ginga_gui.canvas);
   return G_SOURCE_CONTINUE;
 }
 
 void
 draw_callback (GtkWidget *widget, cairo_t *cr, arg_unused (gpointer data))
 {
-    /*
+   
   int w, h;
   w = gtk_widget_get_allocated_width (widget);
   h = gtk_widget_get_allocated_height (widget);
@@ -48,7 +48,7 @@ draw_callback (GtkWidget *widget, cairo_t *cr, arg_unused (gpointer data))
   cairo_set_source_rgb (cr, 0, 0, 0);
   cairo_rectangle (cr, 0, 0, w, h);
   cairo_fill (cr);
-
+ /*
   if (_Ginga_Display == NULL)
     return;
 
