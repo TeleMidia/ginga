@@ -31,8 +31,8 @@ class NclSimpleAction;
 class INclActionListener
 {
 public:
-  virtual void scheduleAction (NclSimpleAction *action) {}
-  virtual void actionProcessed (bool start) {}
+  virtual void scheduleAction (NclSimpleAction *action) {(void) action;}
+  virtual void actionProcessed (bool start) {(void) start;}
 };
 
 class NclAction
@@ -78,9 +78,8 @@ public:
 
   virtual vector<NclEvent *> getEvents () override;
   virtual vector<NclAction *> getImplicitRefRoleActions () override;
-
-  void setRepetitions (int repetitions, GingaTime repetitionInterval = -1);
-
+  void setRepetitions (int repetitions,
+                       GingaTime repetitionInterval = GINGA_TIME_NONE);
 protected:
   NclEvent *_event;
   SimpleAction::Type _actType;
