@@ -390,6 +390,8 @@ void stop_button_callback(void){
     GtkWidget *play_icon = gtk_image_new_from_file (
     g_strconcat (ginga_gui.executable_folder, "icons/light-theme/play-icon.png", NULL));
     gtk_button_set_image (GTK_BUTTON (ginga_gui.play_button), play_icon);
+    gtk_widget_set_sensitive (ginga_gui.file_entry, true);
+    gtk_widget_set_sensitive (ginga_gui.open_button, true);
     stop_application();
 }
 
@@ -405,7 +407,14 @@ play_pause_button_callback (void)
       play_icon = gtk_image_new_from_file (
           g_strconcat (ginga_gui.executable_folder,
                        "icons/light-theme/pause-icon.png", NULL));
+      gtk_widget_set_sensitive (ginga_gui.file_entry, false);  
+      gtk_widget_set_sensitive (ginga_gui.open_button, false);               
       start_application ();
     }
+   else
+   {
+       gtk_widget_set_sensitive (ginga_gui.file_entry, true);
+       gtk_widget_set_sensitive (ginga_gui.open_button, true);
+   } 
   gtk_button_set_image (GTK_BUTTON (ginga_gui.play_button), play_icon);
 }

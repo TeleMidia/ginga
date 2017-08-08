@@ -50,7 +50,9 @@ public:
   void registerPlayer (Player *);
   void unregisterPlayer (Player *);
 
-  void insertKeyEvent(SDL_Keycode);
+  void insertKeyEvent(SDL_Keycode, bool press);
+  gint setFullScreen(Uint32);
+  void changeWindow(SDL_Window*, int, int);
 
   SDL_Surface* getSurface (void);
 

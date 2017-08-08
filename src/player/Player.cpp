@@ -528,6 +528,7 @@ Player::setDuration (GingaTime duration)
 void
 Player::redraw (SDL_Renderer *renderer)
 {
+
   g_assert (_state != PL_SLEEPING);
 
   _animator.update (&_rect, &_bgColor, &_alpha);
