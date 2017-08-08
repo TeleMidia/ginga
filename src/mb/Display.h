@@ -50,6 +50,8 @@ public:
   void registerPlayer (Player *);
   void unregisterPlayer (Player *);
 
+  void insertKeyEvent(SDL_Keycode);
+
   SDL_Surface* getSurface (void);
 
 private:

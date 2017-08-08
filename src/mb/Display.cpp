@@ -100,8 +100,8 @@ Display::Display (int width, int height, double fps, bool fullscreen,
       _screen = window;    
   g_assert_nonnull (_screen);
 
-  // flags = SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED;
-  flags = SDL_RENDERER_SOFTWARE;
+ // flags = SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED;
+    flags = SDL_RENDERER_SOFTWARE;
 
   _renderer = SDL_CreateRenderer (_screen, -1, flags);
   g_assert_nonnull (_renderer);
@@ -431,9 +431,15 @@ Display::notifyKeyListeners (const string &key, bool press)
 SDL_Surface *
 Display::getSurface (void)
 {
-  SDL_HideWindow(_screen);
-  SDL_UpdateWindowSurface(_screen);
+ /* SDL_HideWindow(_screen);
+  SDL_UpdateWindowSurface(_screen); */
   return SDL_GetWindowSurface (_screen);
+}
+
+void 
+Display::insertKeyEvent(SDL_Keycode key)
+{
+   
 }
 
 GINGA_MB_END

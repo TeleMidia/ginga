@@ -89,7 +89,8 @@ void create_main_window(void);
 void destroy_main_window(void);
 void enable_disable_debug(void);
 void select_ncl_file_callback(GtkWidget *widget, gpointer data);
-void play_pause_ginga(void);
+void play_pause_button_callback(void);
+void stop_button_callback(void);
 void resize_main_window_canvas (void);
 
 /* View/TvControlWindow */
@@ -118,6 +119,7 @@ void draw_callback(GtkWidget *widget, cairo_t *cr, arg_unused (gpointer data));
 /* Controller/KeyEvent */
 void key_press_event_callback(GtkWidget *widget, GdkEventKey *event);
 void key_release_event_callback(GtkWidget *widget, GdkEventKey *event);
+void key_tvremote_press_event_callback(GtkWidget *widget, gpointer data);
 
 /* Controller/AppController */
 void start_application(void);
