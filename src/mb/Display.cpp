@@ -47,7 +47,6 @@ win_cmp_z (Player *p1, Player *p2)
   return 0;
 }
 
-
 // Public methods.
 
 /**
@@ -57,7 +56,8 @@ win_cmp_z (Player *p1, Player *p2)
  * @param fullscreen Full-screen mode.
  * @param fps Target FPS rate.
  */
-Display::Display (int width, int height, double fps, bool fullscreen)
+Display::Display (int width, int height, double fps, bool fullscreen,
+                  bool masterwindow, SDL_Window * window)
 {
   guint flags;
   SDL_RendererInfo info;
@@ -66,35 +66,49 @@ Display::Display (int width, int height, double fps, bool fullscreen)
   _height = height;
   _fps = fps;
   _fullscreen = fullscreen;
+  _masterwindow = masterwindow;
   _quit = false;
 
   _listeners = nullptr;
   _players = nullptr;
 
-  g_assert (!SDL_WasInit (0));
+  epoch = ginga_gettime ();
+  last = epoch;
+  
+  if(window == NULL) 
+     g_assert (!SDL_WasInit (0));
+
   if (unlikely (SDL_Init (0) != 0))
     CRITICAL ("cannot initialize SDL: %s", SDL_GetError ());
 
-#if SDL_VERSION_ATLEAST (2,0,4)
+#if SDL_VERSION_ATLEAST(2, 0, 4)
   SDL_SetHint (SDL_HINT_NO_SIGNAL_HANDLERS, "1");
 #endif
   SDL_SetHint (SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
-  flags = SDL_WINDOW_SHOWN;
+ // if (_masterwindow)
+    flags = SDL_WINDOW_SHOWN;
+ // else
+  //  flags = SDL_WINDOW_HIDDEN;
   if (_fullscreen)
     flags |= SDL_WINDOW_FULLSCREEN;
 
   _dashboard = new Dashboard ();
-  _screen = SDL_CreateWindow ("ginga", 0, 0, width, height, flags);
+  if(window == NULL) 
+      _screen = SDL_CreateWindow ("ginga", 0, 0, width, height, flags);
+  else 
+      _screen = window;    
   g_assert_nonnull (_screen);
 
-  flags = SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED;
+  // flags = SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED;
+  flags = SDL_RENDERER_SOFTWARE;
+
   _renderer = SDL_CreateRenderer (_screen, -1, flags);
   g_assert_nonnull (_renderer);
 
   SDLx_GetRendererInfo (_renderer, &info);
-  TRACE ("Renderer info: %s (%dx%d), flags: %s %s\n",
-         info.name, info.max_texture_width, info.max_texture_height,
+  TRACE ("Renderer info: %s (%dx%d), flags: %s %s\n", info.name,
+         info.max_texture_width, info.max_texture_height,
          (info.flags & SDL_RENDERER_PRESENTVSYNC) ? "vsync" : "",
          (info.flags & SDL_RENDERER_ACCELERATED) ? "accelerated" : "");
 }
@@ -258,8 +272,6 @@ Display::unregisterPlayer (Player *player)
 void
 Display::renderLoop ()
 {
-  GingaTime epoch = ginga_gettime ();
-  GingaTime last = epoch;
   int frameno = 1;
 
   // Render loop.
@@ -268,7 +280,7 @@ Display::renderLoop ()
       SDL_Event evt;
       GList *l;
 
-      GingaTime framedur = (GingaTime)(1 * GINGA_SECOND / _fps);
+      GingaTime framedur = (GingaTime) (1 * GINGA_SECOND / _fps);
       GingaTime now = ginga_gettime ();
       GingaTime elapsed = now - last;
 
@@ -283,7 +295,7 @@ Display::renderLoop ()
       // Handle input.
       while (SDL_PollEvent (&evt))
         {
-          SDL_EventType type = (SDL_EventType) evt.type;
+          SDL_EventType type = (SDL_EventType)evt.type;
           switch (type)
             {
             case SDL_KEYDOWN:
@@ -312,15 +324,15 @@ Display::renderLoop ()
         }
 
       // Draw players.
-      SDL_SetRenderDrawColor (_renderer, 255, 0, 255, 255);
+      SDL_SetRenderDrawColor (_renderer, 255, 0, 255, 10);
       SDL_RenderClear (_renderer);
 
-      _players = g_list_sort (_players, (GCompareFunc) win_cmp_z);
-      l =  _players;
-      while (l != NULL)         // can be modified while being traversed
+      _players = g_list_sort (_players, (GCompareFunc)win_cmp_z);
+      l = _players;
+      while (l != NULL) // can be modified while being traversed
         {
           GList *next = l->next;
-          Player *pl = (Player *) l->data;
+          Player *pl = (Player *)l->data;
           if (pl == NULL)
             _players = g_list_remove_link (_players, l);
           else
@@ -337,13 +349,16 @@ Display::renderLoop ()
 
       // Step Glib's context (required by GStreamer pipeline bus).
       g_main_context_iteration (NULL, false);
+
+      if (!_masterwindow) // if is not in masterwindow mode, execute only 1
+                          // time
+        return;
     }
 
   TRACE ("quitting");
   SDL_Quit ();
 }
 
-
 // Private methods.
 
 bool
@@ -358,7 +373,7 @@ Display::add (GList **list, gpointer data)
       goto done;
     }
   *list = g_list_append (*list, data);
- done:
+done:
   return !found;
 }
 
@@ -386,31 +401,39 @@ Display::remove (GList **list, gpointer data)
 
 // The gymnastics below is necessary to ensure that the list can be safely
 // modified while it is being traversed.
-#define NOTIFY_LISTENERS(list, Type, method, ...)               \
-  G_STMT_START                                                  \
-  {                                                             \
-    guint n = g_list_length ((list));                           \
-    for (guint i = 0; i < n; i++)                               \
-      {                                                         \
-        Type *obj = (Type *) g_list_nth_data ((list), i);       \
-        if (obj == NULL)                                        \
-          return;                                               \
-        obj->method (__VA_ARGS__);                              \
-      }                                                         \
-  }                                                             \
+#define NOTIFY_LISTENERS(list, Type, method, ...)                          \
+  G_STMT_START                                                             \
+  {                                                                        \
+    guint n = g_list_length ((list));                                      \
+    for (guint i = 0; i < n; i++)                                          \
+      {                                                                    \
+        Type *obj = (Type *)g_list_nth_data ((list), i);                   \
+        if (obj == NULL)                                                   \
+          return;                                                          \
+        obj->method (__VA_ARGS__);                                         \
+      }                                                                    \
+  }                                                                        \
   G_STMT_END
 
 void
 Display::notifyTickListeners (GingaTime total, GingaTime diff, int frameno)
 {
-  NOTIFY_LISTENERS (_listeners, IEventListener, handleTickEvent,
-                    total, diff, frameno);
+  NOTIFY_LISTENERS (_listeners, IEventListener, handleTickEvent, total,
+                    diff, frameno);
 }
 
 void
 Display::notifyKeyListeners (const string &key, bool press)
 {
   NOTIFY_LISTENERS (_listeners, IEventListener, handleKeyEvent, key, press);
+}
+
+SDL_Surface *
+Display::getSurface (void)
+{
+  SDL_HideWindow(_screen);
+  SDL_UpdateWindowSurface(_screen);
+  return SDL_GetWindowSurface (_screen);
 }
 
 GINGA_MB_END

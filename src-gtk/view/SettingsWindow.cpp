@@ -171,11 +171,11 @@ create_presentation_page (GtkWidget *notebook)
   GtkWidget *combo_box = gtk_combo_box_text_new ();
   g_assert_nonnull (combo_box);
   gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (combo_box), -1,
-                                  "TV 4:3");
+                                  "TV (4:3)");
   gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (combo_box), -1,
-                                  "HDTV 16:9");
+                                  "HDTV (16:9)");
   gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (combo_box), -1,
-                                  "LCD 16:10");
+                                  "LCD (16:10)");
   gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box),
                             presentationAttributes.aspectRatio);
   g_signal_connect (combo_box, "changed",

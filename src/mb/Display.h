@@ -30,7 +30,7 @@ GINGA_MB_BEGIN
 class Display
 {
 public:
-  Display (int, int, double, bool);
+  Display (int, int, double, bool, bool,SDL_Window*);
   ~Display ();
 
   double getFPS ();
@@ -50,13 +50,19 @@ public:
   void registerPlayer (Player *);
   void unregisterPlayer (Player *);
 
+  SDL_Surface* getSurface (void);
+
 private:
   int _width;                   // display width in pixels
   int _height;                  // display height in pixels
   double _fps;                  // target frame-rate
   bool _fullscreen;             // full-screen mode
+  bool _masterwindow;           // master-window 
   bool _quit;                   // true if render thread should quit
-  Dashboard *_dashboard;        // control panel
+  Dashboard *_dashboard;        // control panel 
+
+  GingaTime epoch;
+  GingaTime last;
 
   GList *_listeners;            // list of listeners to be notified
   GList *_players;              // list of players to be ticked
@@ -69,6 +75,7 @@ private:
 
   void notifyTickListeners (GingaTime, GingaTime, int);
   void notifyKeyListeners (const string &, bool);
+
 };
 
 // Global display.

@@ -25,6 +25,9 @@ Ginga_GUI ginga_gui;
 int
 main (int argc, char **argv)
 {
+  check_updates();
+  
+  SDL_Init(SDL_INIT_VIDEO);     
 
   ginga_gui.executable_folder = g_strconcat (
       g_get_current_dir (), g_path_get_dirname (argv[0]) + 1, "/", NULL);

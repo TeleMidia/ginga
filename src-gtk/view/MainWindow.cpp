@@ -53,8 +53,9 @@ create_main_window (void)
   ginga_gui.fixed_layout = gtk_fixed_new ();
   g_assert_nonnull (ginga_gui.fixed_layout);
 
-  GtkWidget *icon = gtk_image_new_from_icon_name ("document-open",
-                                                  GTK_ICON_SIZE_BUTTON);
+  GtkWidget *icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/openfile-icon.png", NULL));
   ginga_gui.open_button = gtk_button_new ();
   g_assert_nonnull (ginga_gui.open_button);
   gtk_button_set_image (GTK_BUTTON (ginga_gui.open_button), icon);
@@ -89,6 +90,10 @@ create_main_window (void)
   gtk_widget_set_size_request (ginga_gui.canvas,
                                presentationAttributes.resolutionWidth,
                                presentationAttributes.resolutionHeight);
+
+
+  g_timeout_add (1000 / 60, (GSourceFunc) update_draw_callback, ginga_gui.canvas);
+
 
   ginga_gui.canvas_separator_bottom
       = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
@@ -180,8 +185,9 @@ create_main_window (void)
 
   // ----- top-menu end
 
-  GtkWidget *play_icon = gtk_image_new_from_icon_name (
-      "media-playback-start", GTK_ICON_SIZE_BUTTON);
+  GtkWidget *play_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/play-icon.png", NULL));
   g_assert_nonnull (play_icon);
   ginga_gui.play_button = gtk_button_new ();
   g_assert_nonnull (ginga_gui.play_button);
@@ -193,8 +199,9 @@ create_main_window (void)
                  ginga_gui.controll_area_rect.y
                      + presentationAttributes.resolutionHeight);
 
-  GtkWidget *stop_icon = gtk_image_new_from_icon_name (
-      "media-playback-stop", GTK_ICON_SIZE_BUTTON);
+  GtkWidget *stop_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/stop-icon.png", NULL));
   g_assert_nonnull (stop_icon);
   ginga_gui.stop_button = gtk_button_new ();
   g_assert_nonnull (ginga_gui.stop_button);
@@ -215,8 +222,9 @@ create_main_window (void)
                  presentationAttributes.resolutionHeight + MENU_BOX_HEIGHT
                      + (BUTTON_SIZE / 2));
 
-  GtkWidget *fullscreen_icon = gtk_image_new_from_icon_name (
-      "view-fullscreen", GTK_ICON_SIZE_BUTTON);
+  GtkWidget *fullscreen_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/fullscreen-icon.png", NULL));
   g_assert_nonnull (fullscreen_icon);
   ginga_gui.fullscreen_button = gtk_button_new ();
   g_assert_nonnull (ginga_gui.fullscreen_button);
@@ -230,8 +238,9 @@ create_main_window (void)
                  ginga_gui.controll_area_rect.y
                      + presentationAttributes.resolutionHeight);
 
-  GtkWidget *config_icon = gtk_image_new_from_icon_name (
-      "emblem-system", GTK_ICON_SIZE_BUTTON);
+  GtkWidget *config_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/settings-icon.png", NULL));
   g_assert_nonnull (config_icon);
   ginga_gui.config_button = gtk_button_new ();
   g_assert_nonnull (ginga_gui.config_button);
@@ -269,6 +278,7 @@ create_main_window (void)
 void
 destroy_main_window (void)
 {
+  stop_application();  
   gtk_widget_destroy (ginga_gui.toplevel_window);
   ginga_gui.toplevel_window = NULL;
   if (!destroyWindowToResize)
@@ -370,10 +380,15 @@ void
 play_pause_ginga (void)
 {
   ginga_gui.playMode = !ginga_gui.playMode;
-  GtkWidget *play_icon = gtk_image_new_from_icon_name (
-      "media-playback-start", GTK_ICON_SIZE_BUTTON);
+  GtkWidget *play_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/play-icon.png", NULL));
   if (ginga_gui.playMode)
-    play_icon = gtk_image_new_from_icon_name ("media-playback-pause",
-                                              GTK_ICON_SIZE_BUTTON);
+    {
+      play_icon = gtk_image_new_from_file (
+          g_strconcat (ginga_gui.executable_folder,
+                       "icons/light-theme/pause-icon.png", NULL));
+      start_application ();
+    }
   gtk_button_set_image (GTK_BUTTON (ginga_gui.play_button), play_icon);
 }

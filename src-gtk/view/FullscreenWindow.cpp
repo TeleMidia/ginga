@@ -52,6 +52,10 @@ create_fullscreen_window (void)
   gtk_container_add (GTK_CONTAINER (fullscreenWindow), canvas);
 
   gtk_window_fullscreen (GTK_WINDOW (fullscreenWindow));
+
+  g_signal_connect (fullscreenWindow, "destroy",
+                    G_CALLBACK (destroy_fullscreen_window), NULL);
+
   gtk_widget_show_all (fullscreenWindow);
 }
 void
