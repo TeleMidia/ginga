@@ -437,9 +437,33 @@ Display::getSurface (void)
 }
 
 void 
-Display::insertKeyEvent(SDL_Keycode key)
+Display::insertKeyEvent(SDL_Keycode key,  bool press)
 {
-   
+  string str_key;
+  ginga_key_table_index (key, &str_key);
+  this->notifyKeyListeners (str_key, press);
+}
+
+gint 
+Display::setFullScreen(Uint32 flags)
+{
+  return SDL_SetWindowFullscreen(_screen, flags);
+}
+
+void
+Display::changeWindow(SDL_Window* window, int width, int height)
+{ 
+  _width = width;
+  _height = height;
+  SDL_DestroyRenderer(_renderer);
+  Uint32 flags = SDL_RENDERER_SOFTWARE;
+
+  if(window==NULL)
+     _renderer = SDL_CreateRenderer (_screen, -1, flags);
+  else 
+     _renderer = SDL_CreateRenderer (window, -1, flags);   
+ 
+  g_assert_nonnull (_renderer); 
 }
 
 GINGA_MB_END

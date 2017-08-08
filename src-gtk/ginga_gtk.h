@@ -24,6 +24,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include <string.h>
 
+
 #define DEFAULT_WINDOW_WIDTH 800
 #define DEFAULT_WINDOW_HEIGHT 600
 
@@ -75,7 +76,7 @@ typedef struct{
 }PresentationAttributes;  
 
 extern Ginga_GUI ginga_gui;
-
+//extern Scheduler *scheduler; /* Ginga Scheduler */
 extern GtkWidget *tvcontrolWindow;
 extern GtkWidget *fullscreenWindow;
 extern GtkWidget *settingsWindow;
