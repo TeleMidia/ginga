@@ -193,7 +193,7 @@ create_main_window (void)
   g_assert_nonnull (ginga_gui.play_button);
   gtk_button_set_image (GTK_BUTTON (ginga_gui.play_button), play_icon);
   g_signal_connect (ginga_gui.play_button, "clicked",
-                    G_CALLBACK (play_pause_ginga), NULL);
+                    G_CALLBACK (play_pause_button_callback), NULL);
   gtk_fixed_put (GTK_FIXED (ginga_gui.fixed_layout), ginga_gui.play_button,
                  0,
                  ginga_gui.controll_area_rect.y
@@ -206,6 +206,8 @@ create_main_window (void)
   ginga_gui.stop_button = gtk_button_new ();
   g_assert_nonnull (ginga_gui.stop_button);
   gtk_button_set_image (GTK_BUTTON (ginga_gui.stop_button), stop_icon);
+  g_signal_connect (ginga_gui.stop_button, "clicked",
+                    G_CALLBACK (stop_button_callback), NULL);
   gtk_fixed_put (GTK_FIXED (ginga_gui.fixed_layout), ginga_gui.stop_button,
                  BUTTON_SIZE,
                  ginga_gui.controll_area_rect.y
@@ -376,8 +378,16 @@ select_ncl_file_callback (GtkWidget *widget, gpointer data)
   gtk_widget_destroy (dialog);
 }
 
+void stop_button_callback(void){
+    ginga_gui.playMode = false;
+    GtkWidget *play_icon = gtk_image_new_from_file (
+    g_strconcat (ginga_gui.executable_folder, "icons/light-theme/play-icon.png", NULL));
+    gtk_button_set_image (GTK_BUTTON (ginga_gui.play_button), play_icon);
+    stop_application();
+}
+
 void
-play_pause_ginga (void)
+play_pause_button_callback (void)
 {
   ginga_gui.playMode = !ginga_gui.playMode;
   GtkWidget *play_icon = gtk_image_new_from_file (
