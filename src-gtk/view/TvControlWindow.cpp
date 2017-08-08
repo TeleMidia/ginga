@@ -43,7 +43,7 @@ create_tvcontrol_window (void)
 
   GtkWidget *fixed_layout = gtk_fixed_new ();
   g_assert_nonnull (fixed_layout);
-  
+
   GtkWidget *button_icon = gtk_image_new_from_file (
       g_strconcat (ginga_gui.executable_folder,
                    "icons/light-theme/number_one.png", NULL));
@@ -148,8 +148,9 @@ create_tvcontrol_window (void)
   gtk_fixed_put (GTK_FIXED (fixed_layout), button_0, middle_button_pos,
                  (BUTTON_SIZE * 3));
 
-  button_icon = gtk_image_new_from_icon_name ("dialog-information",
-                                              GTK_ICON_SIZE_BUTTON);
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/info-icon.png", NULL));
   GtkWidget *button_info = gtk_button_new ();
   g_assert_nonnull (button_info);
   gtk_button_set_image (GTK_BUTTON (button_info), button_icon);
@@ -158,8 +159,9 @@ create_tvcontrol_window (void)
 
   //
 
-  button_icon
-      = gtk_image_new_from_icon_name ("go-top", GTK_ICON_SIZE_BUTTON);
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/uparrow-icon.png", NULL));
   GtkWidget *button_up = gtk_button_new ();
   g_assert_nonnull (button_up);
   gtk_button_set_image (GTK_BUTTON (button_up), button_icon);
@@ -168,8 +170,9 @@ create_tvcontrol_window (void)
 
   //
 
-  button_icon
-      = gtk_image_new_from_icon_name ("go-first", GTK_ICON_SIZE_BUTTON);
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/leftarrow-icon.png", NULL));
   GtkWidget *button_left = gtk_button_new ();
   g_assert_nonnull (button_left);
   gtk_button_set_image (GTK_BUTTON (button_left), button_icon);
@@ -178,15 +181,16 @@ create_tvcontrol_window (void)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/ok_button.png", NULL));
+                   "icons/light-theme/ok-icon.png", NULL));
   GtkWidget *button_ok = gtk_button_new ();
   g_assert_nonnull (button_ok);
   gtk_button_set_image (GTK_BUTTON (button_ok), button_icon);
   gtk_fixed_put (GTK_FIXED (fixed_layout), button_ok, middle_button_pos,
                  10 + (BUTTON_SIZE * 5));
 
-  button_icon
-      = gtk_image_new_from_icon_name ("go-last", GTK_ICON_SIZE_BUTTON);
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/rightarrow-icon.png", NULL));
   GtkWidget *button_right = gtk_button_new ();
   g_assert_nonnull (button_right);
   gtk_button_set_image (GTK_BUTTON (button_right), button_icon);
@@ -195,8 +199,9 @@ create_tvcontrol_window (void)
 
   //
 
-  button_icon
-      = gtk_image_new_from_icon_name ("go-bottom", GTK_ICON_SIZE_BUTTON);
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/downarrow-icon.png", NULL));
   GtkWidget *button_down = gtk_button_new ();
   g_assert_nonnull (button_down);
   gtk_button_set_image (GTK_BUTTON (button_down), button_icon);
@@ -207,7 +212,7 @@ create_tvcontrol_window (void)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/settings-icon.png", NULL));
+                   "icons/light-theme/volup-icon.png", NULL));
   GtkWidget *button_vol_up = gtk_button_new ();
   g_assert_nonnull (button_vol_up);
   gtk_button_set_image (GTK_BUTTON (button_vol_up), button_icon);
@@ -215,7 +220,7 @@ create_tvcontrol_window (void)
                  20 + (BUTTON_SIZE * 7));
 
   button_icon = gtk_image_new_from_file (g_strconcat (
-      ginga_gui.executable_folder, "icons/light-theme/menu.png", NULL));
+      ginga_gui.executable_folder, "icons/light-theme/menu-icon.png", NULL));
   GtkWidget *button_menu = gtk_button_new ();
   g_assert_nonnull (button_menu);
   gtk_button_set_image (GTK_BUTTON (button_menu), button_icon);
@@ -223,7 +228,7 @@ create_tvcontrol_window (void)
                  20 + (BUTTON_SIZE * 7));
 
   button_icon = gtk_image_new_from_file (g_strconcat (
-      ginga_gui.executable_folder, "icons/light-theme/close.png", NULL));
+      ginga_gui.executable_folder, "icons/light-theme/close-icon.png", NULL));
   GtkWidget *button_close = gtk_button_new ();
   g_assert_nonnull (button_close);
   gtk_button_set_image (GTK_BUTTON (button_close), button_icon);
@@ -232,7 +237,7 @@ create_tvcontrol_window (void)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/settings-icon.png", NULL));
+                   "icons/light-theme/chup-icon.png", NULL));
   GtkWidget *button_ch_up = gtk_button_new ();
   g_assert_nonnull (button_ch_up);
   gtk_button_set_image (GTK_BUTTON (button_ch_up), button_icon);
@@ -243,7 +248,7 @@ create_tvcontrol_window (void)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/settings-icon.png", NULL));
+                   "icons/light-theme/voldown-icon.png", NULL));
   GtkWidget *button_vol_down = gtk_button_new ();
   g_assert_nonnull (button_vol_down);
   gtk_button_set_image (GTK_BUTTON (button_vol_down), button_icon);
@@ -270,7 +275,7 @@ create_tvcontrol_window (void)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/settings-icon.png", NULL));
+                   "icons/light-theme/chdown-icon.png", NULL));
   GtkWidget *button_ch_down = gtk_button_new ();
   g_assert_nonnull (button_ch_down);
   gtk_button_set_image (GTK_BUTTON (button_ch_down), button_icon);
@@ -280,7 +285,7 @@ create_tvcontrol_window (void)
   //
 
   button_icon = gtk_image_new_from_file (g_strconcat (
-      ginga_gui.executable_folder, "icons/common/red_icon.png", NULL));
+      ginga_gui.executable_folder, "icons/common/red-icon.png", NULL));
   GtkWidget *button_red = gtk_button_new ();
   g_assert_nonnull (button_red);
   gtk_button_set_image (GTK_BUTTON (button_red), button_icon);
@@ -288,7 +293,7 @@ create_tvcontrol_window (void)
                  20 + (BUTTON_SIZE * 9));
 
   button_icon = gtk_image_new_from_file (g_strconcat (
-      ginga_gui.executable_folder, "icons/common/green_icon.png", NULL));
+      ginga_gui.executable_folder, "icons/common/green-icon.png", NULL));
   GtkWidget *button_green = gtk_button_new ();
   g_assert_nonnull (button_green);
   gtk_button_set_image (GTK_BUTTON (button_green), button_icon);
@@ -296,7 +301,7 @@ create_tvcontrol_window (void)
                  20 + (BUTTON_SIZE * 9));
 
   button_icon = gtk_image_new_from_file (g_strconcat (
-      ginga_gui.executable_folder, "icons/common/yellow_icon.png", NULL));
+      ginga_gui.executable_folder, "icons/common/yellow-icon.png", NULL));
   GtkWidget *button_yellow = gtk_button_new ();
   g_assert_nonnull (button_yellow);
   gtk_button_set_image (GTK_BUTTON (button_yellow), button_icon);
@@ -304,7 +309,7 @@ create_tvcontrol_window (void)
                  20 + (BUTTON_SIZE * 9));
 
   button_icon = gtk_image_new_from_file (g_strconcat (
-      ginga_gui.executable_folder, "icons/common/blue_icon.png", NULL));
+      ginga_gui.executable_folder, "icons/common/blue-icon.png", NULL));
   GtkWidget *button_blue = gtk_button_new ();
   g_assert_nonnull (button_blue);
   gtk_button_set_image (GTK_BUTTON (button_blue), button_icon);
@@ -317,6 +322,10 @@ create_tvcontrol_window (void)
                  20 + (BUTTON_SIZE * 10));
 
   gtk_container_add (GTK_CONTAINER (tvcontrolWindow), fixed_layout);
+  
+  g_signal_connect (tvcontrolWindow, "destroy",
+                    G_CALLBACK (destroy_tvcontrol_window ), NULL);
+
   gtk_widget_show_all (tvcontrolWindow);
 }
 

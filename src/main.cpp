@@ -163,7 +163,7 @@ main (int argc, char **argv)
   g_strfreev (ginga_argv);
 
   _Ginga_Display = new ginga::mb::Display (opt_width, opt_height,
-                                           opt_fps, opt_fullscreen);
+                                           opt_fps, opt_fullscreen, true, NULL);
   scheduler = new Scheduler ();
   scheduler->startDocument (file);
   _Ginga_Display->renderLoop ();

@@ -112,14 +112,25 @@ void destroy_about_window(void);
 
 /* View/Draw */
 SDL_Window* create_sdl_window_from_gtk_widget(GtkWidget *gtk_widget);
+gboolean update_draw_callback(arg_unused (GtkWidget *widget));
 void draw_callback(GtkWidget *widget, cairo_t *cr, arg_unused (gpointer data));
 
-/* Control/KeyEvent */
+/* Controller/KeyEvent */
 void key_press_event_callback(GtkWidget *widget, GdkEventKey *event);
 void key_release_event_callback(GtkWidget *widget, GdkEventKey *event);
+
+/* Controller/AppController */
+void start_application(void);
+void stop_application(void);
+void pause_application(void);
 
 /* Model/SaveLoadSettings */
 void save_settings(void);
 void load_settings(void);
+
+/* Model/CheckUpdates */
+void check_updates(void);
+
+
 
 #endif /* GINGA_GTK_H */
