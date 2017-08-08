@@ -69,8 +69,13 @@ create_main_window (void)
   gtk_widget_set_size_request (
       ginga_gui.file_entry,
       presentationAttributes.resolutionWidth - BUTTON_SIZE, BUTTON_SIZE);
-  gtk_entry_set_text (GTK_ENTRY (ginga_gui.file_entry),
+
+  if(presentationAttributes.lastFileName == NULL)    
+    gtk_entry_set_text (GTK_ENTRY (ginga_gui.file_entry),
                       g_get_user_special_dir (G_USER_DIRECTORY_DOCUMENTS));
+  else 
+    gtk_entry_set_text (GTK_ENTRY (ginga_gui.file_entry), presentationAttributes.lastFileName);
+
   gtk_fixed_put (GTK_FIXED (ginga_gui.fixed_layout), ginga_gui.file_entry,
                  BUTTON_SIZE, MENU_BOX_HEIGHT - 38);
 
@@ -92,7 +97,7 @@ create_main_window (void)
                                presentationAttributes.resolutionHeight);
 
 
-  g_timeout_add (1000 / 60, (GSourceFunc) update_draw_callback, ginga_gui.canvas);
+  g_timeout_add (1000 / 600, (GSourceFunc) update_draw_callback, ginga_gui.canvas);
 
 
   ginga_gui.canvas_separator_bottom
@@ -370,12 +375,14 @@ select_ncl_file_callback (GtkWidget *widget, gpointer data)
       else
         {
           gtk_entry_set_text (GTK_ENTRY (ginga_gui.file_entry), filename);
+          presentationAttributes.lastFileName = filename;
         }
 
       g_free (filename);
     }
 
   gtk_widget_destroy (dialog);
+  save_settings();
 }
 
 void stop_button_callback(void){

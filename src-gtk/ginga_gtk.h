@@ -71,6 +71,7 @@ typedef struct{
   guint16 resolutionWidth = DEFAULT_WINDOW_WIDTH;
   guint16 resolutionHeight = DEFAULT_WINDOW_HEIGHT;
   guint8 frameRate = 0; /* 0=30 1=60 2=Free  */
+  gchar *lastFileName = NULL;
 }PresentationAttributes;  
 
 extern Ginga_GUI ginga_gui;
