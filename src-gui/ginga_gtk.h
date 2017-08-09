@@ -61,9 +61,6 @@ typedef struct{
   GtkWidget *open_button = NULL;
   GtkWidget *canvas_separator_bottom = NULL;
   gchar *executable_folder = NULL;
-  SDL_Rect window_rect = {0,0, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT+30};
-  SDL_Rect canvas_rect = {0,MENU_BOX_HEIGHT, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT};
-  SDL_Rect controll_area_rect = {0,MENU_BOX_HEIGHT+10, DEFAULT_WINDOW_WIDTH,20}; 
   gboolean playMode = FALSE;
 }Ginga_GUI; 
 
@@ -76,7 +73,7 @@ typedef struct{
 }PresentationAttributes;  
 
 extern Ginga_GUI ginga_gui;
-//extern Scheduler *scheduler; /* Ginga Scheduler */
+extern Ginga *GINGA; /* Ginga Scheduler */
 extern GtkWidget *tvcontrolWindow;
 extern GtkWidget *fullscreenWindow;
 extern GtkWidget *settingsWindow;
@@ -114,9 +111,8 @@ void create_about_window(void);
 void destroy_about_window(void);
 
 /* View/Draw */
-SDL_Window* create_sdl_window_from_gtk_widget(GtkWidget *gtk_widget);
-gboolean update_draw_callback(arg_unused (GtkWidget *widget));
-void draw_callback(GtkWidget *widget, cairo_t *cr, arg_unused (gpointer data));
+gboolean update_draw_callback(GtkWidget *widget);
+void draw_callback(GtkWidget *widget, cairo_t *cr, gpointer data);
 
 /* Controller/KeyEvent */
 void key_press_event_callback(GtkWidget *widget, GdkEventKey *event);

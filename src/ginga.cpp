@@ -18,6 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <config.h>
 #include <cairo.h>
 #include <glib.h>
+#include <stdlib.h>
 #include <glib/gstdio.h>
 #include <gtk/gtk.h>
 
