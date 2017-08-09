@@ -28,14 +28,14 @@ public:
   Region (const string &_id);
   virtual ~Region ();
 
-  SDL_Rect getRect ();
-  void setRect (SDL_Rect);
+  GingaRect getRect ();
+  void setRect (GingaRect);
 
   void getZ (int *, int *);
   void setZ (int, int);
 
 private:
-  SDL_Rect _rect;
+  GingaRect _rect;
   int _z;
   int _zorder;
 };

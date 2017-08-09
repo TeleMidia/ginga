@@ -30,19 +30,13 @@ GINGA_MB_BEGIN
 class Display
 {
 public:
-  Display (int, int, double, bool, bool,SDL_Window*);
+  Display (int, int, bool);
   ~Display ();
 
-  double getFPS ();
-  void setFPS (double);
   bool getFullscreen ();
   void setFullscreen (bool);
   void getSize (int *, int *);
   void setSize (int, int);
-
-  void quit ();
-  bool hasQuitted ();
-  void renderLoop (void);
 
   bool registerEventListener (IEventListener *);
   bool unregisterEventListener (IEventListener *);
@@ -50,36 +44,21 @@ public:
   void registerPlayer (Player *);
   void unregisterPlayer (Player *);
 
-  void insertKeyEvent(SDL_Keycode, bool press);
-  gint setFullScreen(Uint32);
-  void changeWindow(SDL_Window*, int, int);
-
-  SDL_Surface* getSurface (void);
+  void redraw (cairo_t *);
+  void notifyTickListeners (GingaTime, GingaTime, int);
+  void notifyKeyListeners (const string &, bool);
 
 private:
   int _width;                   // display width in pixels
   int _height;                  // display height in pixels
-  double _fps;                  // target frame-rate
   bool _fullscreen;             // full-screen mode
-  bool _masterwindow;           // master-window 
-  bool _quit;                   // true if render thread should quit
-  Dashboard *_dashboard;        // control panel 
-
-  GingaTime epoch;
-  GingaTime last;
+  Dashboard _dashboard;         // control panel
 
   GList *_listeners;            // list of listeners to be notified
   GList *_players;              // list of players to be ticked
 
-  SDL_Window *_screen;          // display screen
-  SDL_Renderer *_renderer;      // display renderer
-
   bool add (GList **, gpointer);
   bool remove (GList **, gpointer);
-
-  void notifyTickListeners (GingaTime, GingaTime, int);
-  void notifyKeyListeners (const string &, bool);
-
 };
 
 // Global display.

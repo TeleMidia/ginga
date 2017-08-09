@@ -32,21 +32,21 @@ SvgPlayer::setProperty (const string &name, const string &value)
 }
 
 void
-SvgPlayer::redraw (SDL_Renderer *renderer)
+SvgPlayer::redraw (cairo_t *cr)
 {
   if (this->dirty)
     {
-      this->reload (renderer);
+      this->reload ();
       this->dirty = false;
     }
-  Player::redraw (renderer);
+  Player::redraw (cr);
 }
 
 
 // Private.
 
 void
-SvgPlayer::reload (SDL_Renderer *renderer)
+SvgPlayer::reload ()
 {
   RsvgHandle* svg;
   RsvgDimensionData dim;
@@ -56,9 +56,7 @@ SvgPlayer::reload (SDL_Renderer *renderer)
   int width;
   int height;
 
-  SDL_Surface *sfc;
-
-  cairo_surface_t *cr_sfc;
+  cairo_surface_t *sfc;
   cairo_t *cr;
 
   g_assert (_state != PL_SLEEPING);
@@ -67,38 +65,30 @@ SvgPlayer::reload (SDL_Renderer *renderer)
   if (unlikely (svg == NULL))
     ERROR ("cannot load SVG file %s: %s", _uri.c_str (), err->message);
 
-  g_assert (_rect.w > 0 && _rect.h > 0);
+  g_assert_cmpint (_rect.width, >, 0);
+  g_assert_cmpint (_rect.height, >, 0);
   rsvg_handle_get_dimensions (svg, &dim);
 
   scale = (dim.width > dim.height)
-    ? (double) _rect.w / dim.width
-    : (double) _rect.h / dim.height;
+    ? (double) _rect.width / dim.width
+    : (double) _rect.height / dim.height;
 
   width = (int)(floor (dim.width * scale) + 1);
   height = (int)(floor (dim.height * scale) + 1);
-  SDLx_CreateSurfaceARGB32 (width, height, &sfc);
 
-  SDLx_LockSurface (sfc);
-  cr_sfc = cairo_image_surface_create_for_data ((guchar*) sfc->pixels,
-                                                CAIRO_FORMAT_ARGB32,
-                                                sfc->w, sfc->h, sfc->pitch);
-  g_assert_nonnull (cr_sfc);
-  cr = cairo_create (cr_sfc);
+  sfc = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
+  g_assert_nonnull (sfc);
+
+  cr = cairo_create (sfc);
   g_assert_nonnull (cr);
   cairo_scale (cr, scale, scale);
   rsvg_handle_render_cairo (svg, cr);
-  SDLx_UnlockSurface (sfc);
-
   cairo_destroy (cr);
-  cairo_surface_destroy (cr_sfc);
 
-  if (_texture != nullptr)
-    SDL_DestroyTexture (_texture);
+  if (_surface != nullptr)
+    cairo_surface_destroy (_surface);
 
-  _texture = SDL_CreateTextureFromSurface (renderer, sfc);
-  g_assert_nonnull (_texture);
-
-  SDL_FreeSurface (sfc);
+  _surface = sfc;
 }
 
 GINGA_PLAYER_END

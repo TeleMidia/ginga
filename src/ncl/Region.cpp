@@ -46,7 +46,7 @@ Region::~Region ()
 /**
  * @brief Gets region rectangle.
  */
-SDL_Rect
+GingaRect
 Region::getRect (void)
 {
   return this->_rect;
@@ -57,7 +57,7 @@ Region::getRect (void)
  * @param rect Rectangle.
  */
 void
-Region::setRect (SDL_Rect rect)
+Region::setRect (GingaRect rect)
 {
   _rect = rect;
 }

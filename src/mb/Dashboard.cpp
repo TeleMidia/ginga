@@ -33,32 +33,42 @@ Dashboard::~Dashboard()
 }
 
 void
-Dashboard::redraw (SDL_Renderer *renderer, GingaTime total, double fps,
-                   int frameno)
+Dashboard::redraw2 (cairo_t *cr)
 {
-  static SDL_Color fg = {255, 255, 255, 255};
-  static SDL_Color bg = {0, 0, 0, 0};
-  static SDL_Rect rect = {0, 0, 0, 0};
+  static GingaColor fg = {1., 1., 1., 1.};
+  static GingaColor bg = {0, 0, 0, 0};
+  static GingaRect rect = {0, 0, 0, 0};
 
   string info;
-  SDL_Texture *debug;
-  SDL_Rect ink;
+  cairo_surface_t *debug;
+  GingaRect ink;
 
   info = xstrbuild ("#%d %" GINGA_TIME_FORMAT "  %.1ffps",
-                    frameno, GINGA_TIME_ARGS (total), fps);
+                    _frameno, GINGA_TIME_ARGS (_total),
+                    1 * GINGA_SECOND / (double) _diff);
 
-  Ginga_Display->getSize (&rect.w, &rect.h);
-  debug = TextPlayer::renderTexture
-    (renderer, info, "monospace", "", "bold", "9", fg, bg,
-     rect, "center", "", false, &ink);
+  Ginga_Display->getSize (&rect.width, &rect.height);
+  debug = TextPlayer::renderSurface
+    (info, "monospace", "", "bold", "9", fg, bg,
+     rect, "center", "", true, &ink);
+  ink = {0, 0, rect.width, ink.height - ink.y + 4};
 
-  SDLx_SetTextureBlendMode (debug, SDL_BLENDMODE_BLEND);
-  ink = {0, 0, rect.w, ink.h - ink.y + 4};
-  SDLx_SetRenderDrawBlendMode (renderer, SDL_BLENDMODE_BLEND);
-  SDLx_SetRenderDrawColor (renderer, 255, 0, 0, 127);
-  SDLx_RenderFillRect (renderer, &ink);
-  SDLx_RenderCopy (renderer, debug, nullptr, &rect);
-  SDL_DestroyTexture (debug);
+  cairo_save (cr);
+  cairo_set_source_rgba (cr, 1., 0., 0., .5);
+  cairo_rectangle (cr, 0, 0, ink.width, ink.height);
+  cairo_fill (cr);
+  cairo_set_source_surface (cr, debug, 0, 0);
+  cairo_paint (cr);
+  cairo_restore (cr);
+  cairo_surface_destroy (debug);
+}
+
+void
+Dashboard::handleTickEvent (GingaTime total, GingaTime diff, int frameno)
+{
+  _total = total;
+  _diff = diff;
+  _frameno = frameno;
 }
 
 GINGA_MB_END

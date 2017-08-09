@@ -19,7 +19,7 @@
     <port id="start3" component="text3"/>
     <port id="start4" component="text4"/>
     <media id="text" src="samples/text.txt" descriptor="desc1">
-      <property name="fontColor" value="#0" />
+      <property name="fontColor" value="#000000" />
       <property name="backgroundColor" value="rgb(255,255,0)" />
       <property name="fontFamily" value="Courier" />
       <property name="horzAlign" value="center" />
@@ -52,8 +52,8 @@
       <property name="fontVariant" value="small-caps" />
     </media>
     <media id="text4" src="samples/text.txt" descriptor="desc4">
-      <property name="fontColor" value="#000000FF" />
-      <property name="backgroundColor" value="#e5e5e555" />
+      <property name="fontColor" value="#000000" />
+      <property name="backgroundColor" value="#e5e5e5" />
       <property name="fontFamily" value="Georgia" />
       <property name="horzAlign" value="right" />
       <property name="vertAlign" value="middle" />

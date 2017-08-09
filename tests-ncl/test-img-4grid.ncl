@@ -16,14 +16,22 @@
 <body>
   <port id="start1" component="img1"/>
   <port id="start2" component="img2"/>
-  <media id="img1" src="samples/gnu.png" descriptor="desc1"/>
-  <media id="img2" src="samples/gnu.png" descriptor="desc2"/>
+  <media id="img1" src="samples/gnu.png" descriptor="desc1">
+    <property name="background" value="red"/>
+  </media>
+  <media id="img2" src="samples/gnu.png" descriptor="desc2">
+    <property name="background" value="green"/>
+  </media>
   <port id="startctx" component="ctx"/>
   <context id="ctx">
     <port id="start3" component="img3"/>
     <port id="start4" component="img4"/>
-    <media id="img3" src="samples/gnu.png" descriptor="desc3"/>
-    <media id="img4" src="samples/gnu.png" descriptor="desc4"/>
+    <media id="img3" src="samples/gnu.png" descriptor="desc3">
+      <property name="background" value="blue"/>
+    </media>
+    <media id="img4" src="samples/gnu.png" descriptor="desc4">
+      <property name="background" value="yellow"/>
+    </media>
   </context>
 </body>
 </ncl>

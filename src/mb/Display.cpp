@@ -54,63 +54,17 @@ win_cmp_z (Player *p1, Player *p2)
  * @param width Width in pixels.
  * @param height Height in pixels.
  * @param fullscreen Full-screen mode.
- * @param fps Target FPS rate.
  */
-Display::Display (int width, int height, double fps, bool fullscreen,
-                  bool masterwindow, SDL_Window * window)
+Display::Display (int width, int height, bool fullscreen)
 {
-  guint flags;
-  SDL_RendererInfo info;
-
   _width = width;
   _height = height;
-  _fps = fps;
   _fullscreen = fullscreen;
-  _masterwindow = masterwindow;
-  _quit = false;
 
   _listeners = nullptr;
   _players = nullptr;
 
-  epoch = ginga_gettime ();
-  last = epoch;
-  
-  if(window == NULL) 
-     g_assert (!SDL_WasInit (0));
-
-  if (unlikely (SDL_Init (0) != 0))
-    CRITICAL ("cannot initialize SDL: %s", SDL_GetError ());
-
-#if SDL_VERSION_ATLEAST(2, 0, 4)
-  SDL_SetHint (SDL_HINT_NO_SIGNAL_HANDLERS, "1");
-#endif
-  SDL_SetHint (SDL_HINT_RENDER_SCALE_QUALITY, "1");
-
- // if (_masterwindow)
-    flags = SDL_WINDOW_SHOWN;
- // else
-  //  flags = SDL_WINDOW_HIDDEN;
-  if (_fullscreen)
-    flags |= SDL_WINDOW_FULLSCREEN;
-
-  _dashboard = new Dashboard ();
-  if(window == NULL) 
-      _screen = SDL_CreateWindow ("ginga", 0, 0, width, height, flags);
-  else 
-      _screen = window;    
-  g_assert_nonnull (_screen);
-
- // flags = SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED;
-    flags = SDL_RENDERER_SOFTWARE;
-
-  _renderer = SDL_CreateRenderer (_screen, -1, flags);
-  g_assert_nonnull (_renderer);
-
-  SDLx_GetRendererInfo (_renderer, &info);
-  TRACE ("Renderer info: %s (%dx%d), flags: %s %s\n", info.name,
-         info.max_texture_width, info.max_texture_height,
-         (info.flags & SDL_RENDERER_PRESENTVSYNC) ? "vsync" : "",
-         (info.flags & SDL_RENDERER_ACCELERATED) ? "accelerated" : "");
+  this->registerEventListener (&_dashboard);
 }
 
 /**
@@ -118,34 +72,8 @@ Display::Display (int width, int height, double fps, bool fullscreen,
  */
 Display::~Display ()
 {
-  this->quit ();
-
   g_list_free (_listeners);
   g_list_free (_players);
-
-  SDL_DestroyRenderer (_renderer);
-  SDL_DestroyWindow (_screen);
-  delete _dashboard;
-}
-
-/**
- * @brief Gets the target FPS rate.
- * @return Target FPS rate.
- */
-double
-Display::getFPS ()
-{
-  return _fps;
-}
-
-/**
- * @brief Sets the target FPS rate.
- * @param fps Target FPS rate.
- */
-void
-Display::setFPS (double fps)
-{
-  _fps = MAX (fps, 0);
 }
 
 /**
@@ -165,17 +93,6 @@ Display::getFullscreen ()
 void
 Display::setFullscreen (bool fullscreen)
 {
-  int status;
-  guint flags;
-
-  flags = (fullscreen) ? SDL_WINDOW_FULLSCREEN : 0;
-  status = SDL_SetWindowFullscreen (_screen, flags);
-  if (unlikely (status != 0))
-    {
-      WARNING ("cannot set full-screen mode to %s: %s",
-               (fullscreen) ? "true" : "false", SDL_GetError ());
-      return;
-    }
   _fullscreen = fullscreen;
 }
 
@@ -200,28 +117,8 @@ void
 Display::setSize (int width, int height)
 {
   g_assert (width > 0 && height > 0);
-  SDL_SetWindowSize (_screen, width, height);
   _width = width;
   _height = height;
-}
-
-/**
- * @brief Quits render loop.
- */
-void
-Display::quit ()
-{
-  _quit = true;
-}
-
-/**
- * @brief Tests whether display has quitted.
- * @return True if display has quitted.
- */
-bool
-Display::hasQuitted ()
-{
-  return _quit;
 }
 
 /**
@@ -267,98 +164,71 @@ Display::unregisterPlayer (Player *player)
 }
 
 /**
- * @brief Enters render loop.
+ * @brief Redraws everything.
  */
 void
-Display::renderLoop ()
+Display::redraw (cairo_t *cr)
 {
-  int frameno = 1;
+  GList *l;
 
-  // Render loop.
-  while (!this->hasQuitted ())
+  _players = g_list_sort (_players, (GCompareFunc) win_cmp_z);
+  l = _players;
+  while (l != NULL)             // can be modified while being traversed
     {
-      SDL_Event evt;
-      GList *l;
-
-      GingaTime framedur = (GingaTime) (1 * GINGA_SECOND / _fps);
-      GingaTime now = ginga_gettime ();
-      GingaTime elapsed = now - last;
-
-      if (_fps > 0 && elapsed < framedur)
-        g_usleep ((framedur - elapsed) / 1000);
-
-      now = ginga_gettime ();
-      elapsed = now - last;
-      last = now;
-      this->notifyTickListeners (now - epoch, elapsed, frameno++);
-
-      // Handle input.
-      while (SDL_PollEvent (&evt))
+      GList *next = l->next;
+      Player *pl = (Player *)l->data;
+      if (pl == NULL)
         {
-          SDL_EventType type = (SDL_EventType)evt.type;
-          switch (type)
-            {
-            case SDL_KEYDOWN:
-            case SDL_KEYUP:
-              {
-                string key;
-
-                if (evt.key.keysym.sym == SDLK_ESCAPE)
-                  this->quit ();
-
-                if (ginga_key_table_index (evt.key.keysym.sym, &key))
-                  this->notifyKeyListeners (key, type == SDL_KEYDOWN);
-
-                break;
-              }
-            case SDL_MOUSEBUTTONDOWN:
-            case SDL_MOUSEBUTTONUP:
-              // TODO
-              break;
-            case SDL_QUIT:
-              this->quit ();
-              break;
-            default:
-              break;
-            }
+          _players = g_list_remove_link (_players, l);
         }
-
-      // Draw players.
-      SDL_SetRenderDrawColor (_renderer, 255, 0, 255, 10);
-      SDL_RenderClear (_renderer);
-
-      _players = g_list_sort (_players, (GCompareFunc)win_cmp_z);
-      l = _players;
-      while (l != NULL) // can be modified while being traversed
+      else
         {
-          GList *next = l->next;
-          Player *pl = (Player *)l->data;
-          if (pl == NULL)
-            _players = g_list_remove_link (_players, l);
-          else
-            pl->redraw (_renderer);
-          l = next;
+          cairo_save (cr);
+          pl->redraw (cr);
+          cairo_restore (cr);
         }
-
-      // Draw dashboard.
-      _dashboard->redraw (_renderer, now - epoch,
-                          ceil ((double)(1 * GINGA_SECOND / elapsed)),
-                          frameno);
-
-      SDL_RenderPresent (_renderer);
-
-      // Step Glib's context (required by GStreamer pipeline bus).
-      g_main_context_iteration (NULL, false);
-
-      if (!_masterwindow) // if is not in masterwindow mode, execute only 1
-                          // time
-        return;
+      l = next;
     }
 
-  TRACE ("quitting");
-  SDL_Quit ();
+  _dashboard.redraw2 (cr);
 }
 
+// The gymnastics below is necessary to ensure that the list can be safely
+// modified while it is being traversed.
+#define NOTIFY_LISTENERS(list, Type, method, ...)                          \
+  G_STMT_START                                                             \
+  {                                                                        \
+    guint n = g_list_length ((list));                                      \
+    for (guint i = 0; i < n; i++)                                          \
+      {                                                                    \
+        Type *obj = (Type *)g_list_nth_data ((list), i);                   \
+        if (obj == NULL)                                                   \
+          return;                                                          \
+        obj->method (__VA_ARGS__);                                         \
+      }                                                                    \
+  }                                                                        \
+  G_STMT_END
+
+/**
+ * @brief Post tick event to listeners.
+ */
+void
+Display::notifyTickListeners (GingaTime total, GingaTime diff, int frameno)
+{
+  NOTIFY_LISTENERS (_listeners, IEventListener, handleTickEvent, total,
+                    diff, frameno);
+}
+
+/**
+ * @brief Post key event to listeners.
+ */
+void
+Display::notifyKeyListeners (const string &key, bool press)
+{
+  NOTIFY_LISTENERS (_listeners, IEventListener, handleKeyEvent, key, press);
+}
+
+
 // Private methods.
 
 bool
@@ -397,73 +267,6 @@ Display::remove (GList **list, gpointer data)
     }
   WARNING ("object %p not in list %p", data, *list);
   return false;
-}
-
-// The gymnastics below is necessary to ensure that the list can be safely
-// modified while it is being traversed.
-#define NOTIFY_LISTENERS(list, Type, method, ...)                          \
-  G_STMT_START                                                             \
-  {                                                                        \
-    guint n = g_list_length ((list));                                      \
-    for (guint i = 0; i < n; i++)                                          \
-      {                                                                    \
-        Type *obj = (Type *)g_list_nth_data ((list), i);                   \
-        if (obj == NULL)                                                   \
-          return;                                                          \
-        obj->method (__VA_ARGS__);                                         \
-      }                                                                    \
-  }                                                                        \
-  G_STMT_END
-
-void
-Display::notifyTickListeners (GingaTime total, GingaTime diff, int frameno)
-{
-  NOTIFY_LISTENERS (_listeners, IEventListener, handleTickEvent, total,
-                    diff, frameno);
-}
-
-void
-Display::notifyKeyListeners (const string &key, bool press)
-{
-  NOTIFY_LISTENERS (_listeners, IEventListener, handleKeyEvent, key, press);
-}
-
-SDL_Surface *
-Display::getSurface (void)
-{
- /* SDL_HideWindow(_screen);
-  SDL_UpdateWindowSurface(_screen); */
-  return SDL_GetWindowSurface (_screen);
-}
-
-void 
-Display::insertKeyEvent(SDL_Keycode key,  bool press)
-{
-  string str_key;
-  ginga_key_table_index (key, &str_key);
-  this->notifyKeyListeners (str_key, press);
-}
-
-gint 
-Display::setFullScreen(Uint32 flags)
-{
-  return SDL_SetWindowFullscreen(_screen, flags);
-}
-
-void
-Display::changeWindow(SDL_Window* window, int width, int height)
-{ 
-  _width = width;
-  _height = height;
-  SDL_DestroyRenderer(_renderer);
-  Uint32 flags = SDL_RENDERER_SOFTWARE;
-
-  if(window==NULL)
-     _renderer = SDL_CreateRenderer (_screen, -1, flags);
-  else 
-     _renderer = SDL_CreateRenderer (window, -1, flags);   
- 
-  g_assert_nonnull (_renderer); 
 }
 
 GINGA_MB_END

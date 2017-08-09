@@ -66,9 +66,12 @@ GINGA_BEGIN_DECLS
 #include <stdlib.h>
 
 // External C libraries.
+#include <cairo.h>
+#include <gdk/gdk.h>
 #include <glib.h>
 #include <glib/gstdio.h>
-#include <cairo.h>
+#include <gtk/gtk.h>
+#include <ncluaw.h>
 #include <pango/pangocairo.h>
 
 GINGA_PRAGMA_DIAG_PUSH ()
@@ -78,9 +81,6 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
 #include <gst/app/gstappsink.h>
 #include <gst/video/video.h>
 GINGA_PRAGMA_DIAG_POP ()
-
-#include <ncluaw.h>
-#include "ginga-sdlx.h"
 
 #if defined WITH_LIBRSVG && WITH_LIBRSVG
 # include <librsvg/rsvg.h>
@@ -159,10 +159,13 @@ string __ginga_strfunc (const string &);
 #define ERROR_NOT_IMPLEMENTED(fmt, ...)\
   ERROR ("not implemented: " fmt, ## __VA_ARGS__)
 
-// Time.
+// Aliases.
+typedef GdkRGBA GingaColor;
+typedef GdkRectangle GingaRect;
 typedef GstClockTime GingaTime;
-#define ginga_gettime() ((GingaTime)(g_get_monotonic_time () * 1000))
 
+// Time macros and functions.
+#define ginga_gettime() ((GingaTime)(g_get_monotonic_time () * 1000))
 #define GINGA_TIME_NONE            GST_CLOCK_TIME_NONE
 #define GINGA_TIME_IS_VALID(t)     GST_CLOCK_TIME_IS_VALID ((t))
 #define GINGA_STIME_NONE           GST_CLOCK_STIME_NONE
@@ -181,16 +184,11 @@ typedef GstClockTime GingaTime;
 #define GINGA_STIME_FORMAT         GST_STIME_FORMAT
 #define GINGA_STIME_ARGS(t)        GST_STIME_ARGS ((t))
 
-// Conversion tables.
-bool ginga_color_table_index (const string &, SDL_Color *);
-bool ginga_key_table_index (SDL_Keycode, string *);
-bool ginga_mime_table_index (string, string *);
-
 // Parsing and evaluation functions.
 bool _ginga_parse_bool (const string &, bool *);
 bool ginga_parse_bool (const string &);
-bool _ginga_parse_color (const string &, SDL_Color *);
-SDL_Color ginga_parse_color (const string &);
+bool _ginga_parse_color (const string &, GingaColor *);
+GingaColor ginga_parse_color (const string &);
 bool _ginga_parse_list (const string &, char, size_t, size_t, vector<string> *);
 vector<string> ginga_parse_list (const string &, char, size_t, size_t);
 int ginga_parse_percent (const string &, int, int, int);

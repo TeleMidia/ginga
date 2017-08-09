@@ -59,23 +59,23 @@ public:
 public:
   Transition (const string &, int);
   virtual ~Transition ();
-  SDL_Color getBorderColor ();
+  GingaColor getBorderColor ();
   int getBorderWidth ();
   short getDirection ();
   GingaTime getDuration ();
   double getEndProgress ();
-  SDL_Color getFadeColor ();
+  GingaColor getFadeColor ();
   int getHorzRepeat ();
   double getStartProgress ();
   int getSubtype ();
   int getType ();
   int getVertRepeat ();
-  void setBorderColor (SDL_Color);
+  void setBorderColor (GingaColor);
   void setBorderWidth (int);
   void setDirection (short);
   void setDuration (GingaTime);
   void setEndProgress (double);
-  void setFadeColor (SDL_Color);
+  void setFadeColor (GingaColor);
   void setHorzRepeat (int);
   void setStartProgress (double);
   void setSubtype (int);
@@ -89,10 +89,10 @@ private:
   double _startProgress;
   double _endProgress;
   short _direction;
-  SDL_Color _fadeColor;
+  GingaColor _fadeColor;
   int _horzRepeat;
   int _vertRepeat;
-  SDL_Color _borderColor;
+  GingaColor _borderColor;
   int _borderWidth;
 };
 

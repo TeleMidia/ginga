@@ -19,15 +19,25 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define DASHBOARD_H
 
 #include "ginga.h"
+#include "IEventListener.h"
 
 GINGA_MB_BEGIN
 
-class Dashboard
+class Dashboard : public IEventListener
 {
 public:
   Dashboard ();
   ~Dashboard ();
-  void redraw (SDL_Renderer *, GingaTime, double, int);
+  void redraw2 (cairo_t *);
+
+  // IEventListener.
+  void handleTickEvent (GingaTime, GingaTime, int) override;
+  void handleKeyEvent (const string &, bool) override {};
+
+private:
+  GingaTime _total;
+  GingaTime _diff;
+  int _frameno;
 };
 
 GINGA_MB_END

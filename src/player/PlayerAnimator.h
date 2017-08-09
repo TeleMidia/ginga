@@ -57,7 +57,7 @@ public:
   ~PlayerAnimator();
   void clear ();
   void schedule (const string &, const string &, const string &, GingaTime);
-  void update (SDL_Rect *, SDL_Color *, guint8 *);
+  void update (GingaRect *, GingaColor *, guint8 *);
 
 private:
   list <AnimInfo *> _scheduled; // scheduled animations

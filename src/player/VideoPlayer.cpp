@@ -52,7 +52,6 @@ VideoPlayer::VideoPlayer (const string &id, const string &uri)
   GstElement *elt_sink;
   GstPad *pad;
 
-  _texture = nullptr;
   _playbin = nullptr;
   _capsfilter = nullptr;
   _appsink = nullptr;
@@ -137,9 +136,9 @@ VideoPlayer::start ()
 
   st = gst_structure_new_empty ("video/x-raw");
   gst_structure_set (st,
-                     "format", G_TYPE_STRING, "ARGB",
-                     "width", G_TYPE_INT, _rect.w,
-                     "height", G_TYPE_INT, _rect.h,
+                     "format", G_TYPE_STRING, "BGRA",
+                     "width", G_TYPE_INT, _rect.width,
+                     "height", G_TYPE_INT, _rect.height,
                      nullptr);
 
   caps = gst_caps_new_full (st, nullptr);
@@ -189,7 +188,7 @@ VideoPlayer::resume ()
 }
 
 void
-VideoPlayer::redraw (SDL_Renderer *renderer)
+VideoPlayer::redraw (cairo_t *cr)
 {
   GstSample *sample;
   GstVideoFrame v_frame;
@@ -197,7 +196,12 @@ VideoPlayer::redraw (SDL_Renderer *renderer)
   GstBuffer *buf;
   GstCaps *caps;
   guint8 *pixels;
+  int width;
+  int height;
   int stride;
+
+  static cairo_user_data_key_t key;
+  cairo_status_t status;
 
   g_assert (_state != PL_SLEEPING);
 
@@ -211,16 +215,6 @@ VideoPlayer::redraw (SDL_Renderer *renderer)
   if (sample == nullptr)
     goto done;
 
-  if (_texture == nullptr)
-    {
-      _texture = SDL_CreateTexture (renderer,
-                                    SDL_PIXELFORMAT_ARGB32,
-                                    SDL_TEXTUREACCESS_TARGET,
-                                    _rect.w,
-                                    _rect.h);
-      g_assert_nonnull (_texture);
-    }
-
   buf = gst_sample_get_buffer (sample);
   g_assert_nonnull (buf);
 
@@ -231,14 +225,25 @@ VideoPlayer::redraw (SDL_Renderer *renderer)
   g_assert (gst_video_frame_map (&v_frame, &v_info, buf, GST_MAP_READ));
 
   pixels = (guint8 *) GST_VIDEO_FRAME_PLANE_DATA (&v_frame, 0);
+  width = GST_VIDEO_FRAME_WIDTH (&v_frame);
+  height = GST_VIDEO_FRAME_HEIGHT (&v_frame);
   stride = (int) GST_VIDEO_FRAME_PLANE_STRIDE (&v_frame, 0);
-  g_assert (SDL_UpdateTexture (_texture, nullptr, pixels, stride) == 0);
 
+  if (_surface != nullptr)
+    cairo_surface_destroy (_surface);
+
+  _surface = cairo_image_surface_create_for_data
+    (pixels, CAIRO_FORMAT_ARGB32, width, height, stride);
+  g_assert_nonnull (_surface);
   gst_video_frame_unmap (&v_frame);
-  gst_sample_unref (sample);
+
+  status = cairo_surface_set_user_data
+    (_surface, &key, (void *) sample,
+     (cairo_destroy_func_t) gst_sample_unref);
+  g_assert (status == CAIRO_STATUS_SUCCESS);
 
  done:
-  Player::redraw (renderer);
+  Player::redraw (cr);
 }
 
 

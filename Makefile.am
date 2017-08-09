@@ -20,9 +20,6 @@ include $(top_srcdir)/build-aux/Makefile.am.common
 
 ACLOCAL_AMFLAGS= -I build-aux ${ACLOCAL_FLAGS}
 SUBDIRS= src tests
-if WITH_GINGA_GTK
-SUBDIRS+= src-gtk
-endif
 
 # Setup code coverage.
 include $(top_srcdir)/build-aux/Makefile.am.coverage
