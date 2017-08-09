@@ -92,18 +92,18 @@ PlayerAnimator::schedule (const string &name, const string &from,
     }
   else if (name == "background")
     {
-      SDL_Color _pos;
+      GingaColor _pos;
       if (from != "")
         {
-          SDL_Color _pre = ginga_parse_color (from);
-          pre = {xstrbuild ("%d", _pre.r),
-                 xstrbuild ("%d", _pre.g),
-                 xstrbuild ("%d", _pre.b)};
+          GingaColor _pre = ginga_parse_color (from);
+          pre = {xstrbuild ("%d", (int) CLAMP (_pre.red * 255, 0, 255)),
+                 xstrbuild ("%d", (int) CLAMP (_pre.green * 255, 0, 255)),
+                 xstrbuild ("%d", (int) CLAMP (_pre.blue * 255, 0, 255))};
         }
       _pos = ginga_parse_color (to);
-      pos = {xstrbuild ("%d", _pos.r),
-             xstrbuild ("%d", _pos.g),
-             xstrbuild ("%d", _pos.b)};
+      pos = {xstrbuild ("%d", (int) CLAMP (_pos.red * 255, 0, 255)),
+             xstrbuild ("%d", (int) CLAMP (_pos.green * 255, 0, 255)),
+             xstrbuild ("%d", (int) CLAMP (_pos.blue * 255, 0, 255))};
       this->doSchedule ("background:r", pre[0], pos[0], dur);
       this->doSchedule ("background:g", pre[1], pos[1], dur);
       this->doSchedule ("background:b", pre[2], pos[2], dur);
@@ -127,7 +127,7 @@ isDone (AnimInfo *info)
  * @param alpha Variable to store the resulting duration.
  */
 void
-PlayerAnimator::update (SDL_Rect *rect, SDL_Color *bgColor, guint8 *alpha)
+PlayerAnimator::update (GingaRect *rect, GingaColor *bgColor, guint8 *alpha)
 {
 
 #define UPDATE(info, Type, var, min, max)                               \
@@ -162,23 +162,23 @@ PlayerAnimator::update (SDL_Rect *rect, SDL_Color *bgColor, guint8 *alpha)
         }
       else if (name == "width")
         {
-          UPDATE (info, int, rect->w, G_MININT, G_MAXINT);
+          UPDATE (info, int, rect->width, G_MININT, G_MAXINT);
         }
       else if (name == "height")
         {
-          UPDATE (info, int, rect->h, G_MININT, G_MAXINT);
+          UPDATE (info, int, rect->height, G_MININT, G_MAXINT);
         }
       else if (name == "background:r")
         {
-          UPDATE (info, guint8, bgColor->r, 0, 255);
+          UPDATE (info, double, bgColor->red, 0., 1.);
         }
       else if (name == "background:g")
         {
-          UPDATE (info, guint8, bgColor->g, 0, 255);
+          UPDATE (info, double, bgColor->green, 0., 1.);
         }
       else if (name == "background:b")
         {
-          UPDATE (info, guint8, bgColor->b, 0, 255);
+          UPDATE (info, double, bgColor->blue, 0., 1.);
         }
       else if (name == "transparency")
         {
@@ -351,7 +351,7 @@ AnimInfo::update (void)
   g_assert (_init);
   g_assert (!_done);
 
-  fps = (double) Ginga_Display->getFPS ();
+  fps = (double) 60.;
   dir = (_current < _target) ? 1 : -1;
   _current += dir * (_speed / fps);
 

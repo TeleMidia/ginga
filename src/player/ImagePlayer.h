@@ -29,9 +29,9 @@ class ImagePlayer : public Player
 public:
   ImagePlayer (const string &id, const string &uri) : Player (id, uri) {}
   ~ImagePlayer (void) {}
-  void redraw (SDL_Renderer *) override;
+  void redraw (cairo_t *) override;
 };
 
 GINGA_PLAYER_END
 
-#endif /* IMAGE_PLAYER_H */
+#endif // IMAGE_PLAYER_H

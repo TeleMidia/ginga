@@ -45,8 +45,6 @@ m4_define([gstreamer_required_version],  [1.4.0])
 m4_define([gtk_required_version],        [3.4.2])
 m4_define([nclua_required_version],      [1.0])
 m4_define([pango_required_version],      [1.30.0])
-m4_define([sdl2_image_require_version],  [2.0])
-m4_define([sdl2_required_version],       [2.0])
 m4_define([xercesc_required_version],    [2.7])
 AC_SUBST([CAIRO_REQUIRED_VERSION],       cairo_required_version)
 AC_SUBST([GLIB_REQUIRED_VERSION],        glib_required_version)
@@ -54,8 +52,6 @@ AC_SUBST([GSTREAMER_REQUIRED_VERSION],   gstreamer_required_version)
 AC_SUBST([GTK_REQUIRED_VERSION],         gtk_required_version)
 AC_SUBST([NCLUA_REQUIRED_VERSION],       nclua_required_version)
 AC_SUBST([PANGO_REQUIRED_VERSION],       pango_required_version)
-AC_SUBST([SDL2_IMAGE_REQUIRE_VERSION],   sdl2_image_require_version)
-AC_SUBST([SDL2_REQUIRED_VERSION],        sdl2_required_version)
 AC_SUBST([XERCESC_REQUIRED_VERSION],     xercesc_required_version)
 
 # Optional dependencies version.
@@ -160,18 +156,15 @@ gst_init (0, 0);
 gst_video_info_from_caps (0, 0);
  ]])])
 
+AU_CHECK_PKG([GTK],
+ [gtk+-3.0 >= gtk_required_version])
+
 AU_CHECK_PKG([NCLUA],
  [nclua >= nclua_required_version])
 
 AU_CHECK_PKG([PANGO],
  [pango >= pango_required_version
   pangocairo >= pango_required_version])
-
-AU_CHECK_PKG([SDL2],
- [sdl2 >= sdl2_required_version])
-
-AU_CHECK_PKG([SDL2IMAGE],
- [SDL2_image >= sdl2_image_require_version])
 
 AU_CHECK_PKG([XERCESC],
  [xerces-c >= xercesc_required_version])
@@ -211,31 +204,16 @@ AU_CHECK_OPTIONAL_PKG([librsvg], [build with LibRsvg support], [],
  [LIBRSVG],
  [librsvg-2.0 >= librsvg_required_version])
 
-AU_VERSION_BREAK([gtk], gtk_required_version)
-AU_CHECK_OPTIONAL_PKG([ginga-gtk], [build the GTK gui], [],
- [GTK], gtk+-3.0 >= gtk_required_version,
- [AC_LANG_PROGRAM([[
-#include <gtk/gtk.h>
-#if !GTK_CHECK_VERSION  \
-    (GTK_REQUIRED_MAJOR,\
-     GTK_REQUIRED_MINOR,\
-     GTK_REQUIRED_MICRO)
-# error "gtk is too old"
-#endif
- ]])],
- [AC_LANG_PROGRAM([[]], [[gtk_init (0, 0);]])])
-
 # Aliases for compiler flags.
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $WARN_CFLAGS $WERROR_CFLAGS "])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $CAIRO_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $CEF_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $GLIB_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $GSTREAMER_CFLAGS"])
+AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $GTK_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $LIBRSVG_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $NCLUA_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $PANGO_CFLAGS"])
-AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $SDL2IMAGE_CFLAGS"])
-AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $SDL2_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $XERCESC_CFLAGS"])
 AC_SUBST([GINGA_ALL_CXXFLAGS])
 
@@ -243,11 +221,10 @@ AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $CAIRO_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $CEF_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $GLIB_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $GSTREAMER_LIBS"])
+AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $GTK_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $LIBRSVG_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $NCLUA_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $PANGO_LIBS"])
-AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $SDL2IMAGE_LIBS"])
-AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $SDL2_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $XERCESC_LIBS"])
 AC_SUBST([GINGA_ALL_LDFLAGS])
 
@@ -272,5 +249,4 @@ AC_MSG_NOTICE([summary of main build options:
 
   build html player: ${with_cef_result}
   build svg player:  ${with_librsvg_result}
-  build ginga-gtk:   ${with_ginga_gtk_result}
 ])

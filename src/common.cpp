@@ -83,67 +83,6 @@ _ginga_parse_bool (const string &s, bool *result)
     }
 }
 
-static string
-ginga_parse_color_normalize_hex (string hex)
-{
-  if (hex[0] == '#')
-    hex.erase (0, 1);
-
-  switch (hex.length ())
-    {
-    case 1:
-      // 16 colors gray-scale.
-      hex.insert (1, string (1, hex[0]));
-      hex.insert (2, string (1, hex[0]));
-      hex.insert (3, string (1, hex[0]));
-      hex.insert (4, string (1, hex[0]));
-      hex.insert (5, string (1, hex[0]));
-      hex.append("FF");
-      break;
-    case 2:
-      // 256 colors gray scale.
-      hex.insert (2, string (1, hex[0]));
-      hex.insert (3, string (1, hex[1]));
-      hex.insert (4, string (1, hex[0]));
-      hex.insert (5, string (1, hex[1]));
-      hex.append("FF");
-      break;
-    case 3:
-      // RGB 16 colors per channel.
-      hex.insert(3, string (1, hex[2]));
-      hex.insert(2, string (1, hex[1]));
-      hex.insert(1, string (1, hex[0]));
-      hex.append("FF");
-      break;
-    case 4:
-      // RGB 16 colors per channel and A with 16 levels.
-      hex.insert (4, string (1, hex[3]));
-      hex.insert (3, string (1, hex[2]));
-      hex.insert (2, string (1, hex[1]));
-      hex.insert (1, string (1, hex[0]));
-      break;
-    case 5:
-      // RGB 256 colors per channel and A with 16 levels.
-      hex.insert (5, string (1, hex[4]));
-      hex.append("FF");
-      break;
-    case 6:
-      // RGB 256 colors per channel.
-      hex.append("FF");
-      break;
-    case 7:
-      // RGB 256 colors per channel and A with 16 levels.
-      hex.insert (7, string (1, hex[6]));
-      break;
-    case 8:
-    default:
-      // RGBA 256.
-      break;
-   }
-  hex.assign (hex.substr (0,8));
-  return hex;
-}
-
 /**
  * @brief Parses color string.
  * @param s Color string.
@@ -151,60 +90,9 @@ ginga_parse_color_normalize_hex (string hex)
  * @return True if successful, or false otherwise.
  */
 bool
-_ginga_parse_color (const string &s, SDL_Color *result)
+_ginga_parse_color (const string &s, GingaColor *result)
 {
-  SDL_Color color = {0, 0, 0, 255}; // black
-  string str;
-
-  str = xstrstrip (s);
-  if (str[0] == '#')
-    {
-      str = ginga_parse_color_normalize_hex (str);
-      color.r = xstrtouint8 (str.substr (0,2), 16);
-      color.g = xstrtouint8 (str.substr (2,2), 16);
-      color.b = xstrtouint8 (str.substr (4,2), 16);
-      color.a = xstrtouint8 (str.substr (6,2), 16);
-      goto success;
-    }
-
-  if (str.substr (0, 3) == "rgb")
-    {
-      vector<string> v;
-      size_t first, last;
-
-      first = str.find ("(");
-      if (first == string::npos)
-        goto failure;
-
-      last = str.find (")");
-      if (last == string::npos)
-        goto failure;
-
-      v = xstrsplit (str.substr (first + 1, last - first), ',');
-      switch (v.size ())
-        {
-        case 4:
-          color.a = ginga_parse_pixel (v[3]);
-          // fall-through
-        case 3:
-          color.r = ginga_parse_pixel (v[0]);
-          color.g = ginga_parse_pixel (v[1]);
-          color.b = ginga_parse_pixel (v[2]);
-          goto success;
-        default:
-          goto failure;
-        }
-    }
-
-  if (!ginga_color_table_index (s, &color))
-    goto failure;
-
- success:
-  set_if_nonnull (result, color);
-  return true;
-
- failure:
-  return false;
+  return gdk_rgba_parse (result, s.c_str ());
 }
 
 /**
@@ -317,7 +205,7 @@ _ginga_parse_time (const string &s, GingaTime *result)
   }
 
 _GINGA_PARSE_DEFN (bool, bool, "boolean")
-_GINGA_PARSE_DEFN (SDL_Color, color, "color")
+_GINGA_PARSE_DEFN (GingaColor, color, "color")
 _GINGA_PARSE_DEFN (GingaTime, time, "time")
 
 vector<string>

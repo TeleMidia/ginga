@@ -26,12 +26,12 @@ Transition::Transition (const string &id, int type) : Entity (id)
   setType (type);
 
   this->_duration = 1 * GINGA_SECOND;
-  this->_startProgress = 0.0;
-  this->_endProgress = 1.0;
+  this->_startProgress = 0.;
+  this->_endProgress = 1.;
   this->_direction = Transition::DIRECTION_FORWARD;
   this->_horzRepeat = 1;
   this->_vertRepeat = 1;
-  this->_fadeColor = {0, 0, 0, 255};
+  this->_fadeColor = {0, 0, 0, 1.};
   this->_borderColor = {0, 0, 0, 0};
   this->_borderWidth = 0;
 }
@@ -40,7 +40,7 @@ Transition::~Transition ()
 {
 }
 
-SDL_Color
+GingaColor
 Transition::getBorderColor ()
 {
   return _borderColor;
@@ -70,7 +70,7 @@ Transition::getEndProgress ()
   return _endProgress;
 }
 
-SDL_Color
+GingaColor
 Transition::getFadeColor ()
 {
   return _fadeColor;
@@ -107,7 +107,7 @@ Transition::getVertRepeat ()
 }
 
 void
-Transition::setBorderColor (SDL_Color color)
+Transition::setBorderColor (GingaColor color)
 {
   this->_borderColor = color;
 }
@@ -147,7 +147,7 @@ Transition::setEndProgress (double ep)
 }
 
 void
-Transition::setFadeColor (SDL_Color color)
+Transition::setFadeColor (GingaColor color)
 {
   this->_fadeColor = color;
 }

@@ -102,7 +102,7 @@ Player::Player (const string &id, const string &uri)
   _state = PL_SLEEPING;
   _time = 0;
   _eos = false;
-  _texture = nullptr;
+  _surface = nullptr;
 
   // Properties
   _debug = true;
@@ -121,8 +121,8 @@ Player::Player (const string &id, const string &uri)
  */
 Player::~Player ()
 {
-  if (_texture != nullptr)
-    SDL_DestroyTexture (_texture);
+  if (_surface != nullptr)
+    cairo_surface_destroy (_surface);
   _properties.clear ();
 }
 
@@ -330,8 +330,8 @@ Player::setProperty (const string &name, const string &value)
     {
       int width;
       Ginga_Display->getSize (&width, nullptr);
-      _rect.x = width - _rect.w
-        - ginga_parse_percent (value, _rect.w, 0, G_MAXINT);
+      _rect.x = width - _rect.width
+        - ginga_parse_percent (value, _rect.width, 0, G_MAXINT);
     }
   else if (name == "top")
     {
@@ -343,20 +343,20 @@ Player::setProperty (const string &name, const string &value)
     {
       int height;
       Ginga_Display->getSize (nullptr, &height);
-      _rect.y = height - _rect.h
-        - ginga_parse_percent (value, _rect.h, 0, G_MAXINT);
+      _rect.y = height - _rect.height
+        - ginga_parse_percent (value, _rect.height, 0, G_MAXINT);
     }
   else if (name == "width")
     {
       int width;
       Ginga_Display->getSize (&width, nullptr);
-      _rect.w = ginga_parse_percent (value, width, 0, G_MAXINT);
+      _rect.width = ginga_parse_percent (value, width, 0, G_MAXINT);
     }
   else if (name == "height")
     {
       int height;
       Ginga_Display->getSize (nullptr, &height);
-      _rect.h = ginga_parse_percent (value, height, 0, G_MAXINT);
+      _rect.height = ginga_parse_percent (value, height, 0, G_MAXINT);
     }
   else if (name == "zIndex")
     {
@@ -394,7 +394,7 @@ Player::setProperty (const string &name, const string &value)
 /**
  * @brief Gets player output rectangle.
  */
-SDL_Rect
+GingaRect
 Player::getRect ()
 {
   return _rect;
@@ -404,7 +404,7 @@ Player::getRect ()
  * @brief Sets player output rectangle.
  */
 void
-Player::setRect (SDL_Rect rect)
+Player::setRect (GingaRect rect)
 {
   _rect = rect;
 }
@@ -450,7 +450,7 @@ Player::setAlpha (double alpha)
 /**
  * @brief Gets player background color.
  */
-SDL_Color
+GingaColor
 Player::getBgColor ()
 {
   return _bgColor;
@@ -460,7 +460,7 @@ Player::getBgColor ()
  * @brief Sets player background color.
  */
 void
-Player::setBgColor (SDL_Color color)
+Player::setBgColor (GingaColor color)
 {
   _bgColor = color;
 }
@@ -523,50 +523,54 @@ Player::setDuration (GingaTime duration)
 // Public: Callbacks.
 
 /**
- * @brief Redraws player onto renderer.
+ * @brief Redraws player.
  */
 void
-Player::redraw (SDL_Renderer *renderer)
+Player::redraw (cairo_t *cr)
 {
-
   g_assert (_state != PL_SLEEPING);
-
   _animator.update (&_rect, &_bgColor, &_alpha);
 
-  if (!_visible)
+  if (!_visible || !(_rect.width > 0 && _rect.height > 0))
     return;                     // nothing to do
 
-  if (!(_rect.w > 0 && _rect.h > 0))
-    return;                     // nothing to do
-
-  if (_bgColor.a > 0)
+  if (_bgColor.alpha > 0)
     {
-      SDLx_SetRenderDrawBlendMode (renderer, SDL_BLENDMODE_BLEND);
-      SDLx_SetRenderDrawColor
-        (renderer, _bgColor.r, _bgColor.g, _bgColor.b, _alpha);
-      SDLx_RenderFillRect (renderer, &_rect);
+      cairo_set_source_rgba
+        (cr, _bgColor.red, _bgColor.green, _bgColor.blue, _alpha / 255.);
+      cairo_rectangle (cr, _rect.x, _rect.y, _rect.width, _rect.height);
+      cairo_fill (cr);
     }
 
-  if (_texture != nullptr)
+  if (_surface != nullptr)
     {
-      SDLx_SetTextureBlendMode (_texture, SDL_BLENDMODE_BLEND);
-      SDLx_SetTextureAlphaMod (_texture, _alpha);
-      SDLx_RenderCopy (renderer, _texture, nullptr, &_rect);
+      double sx, sy;
+      sx = (double) _rect.width
+        / cairo_image_surface_get_width (_surface);
+      sy = (double) _rect.height
+        / cairo_image_surface_get_height (_surface);
+      cairo_save (cr);
+      cairo_translate (cr, _rect.x, _rect.y);
+      cairo_scale (cr, sx, sy);
+      cairo_set_source_surface (cr, _surface, 0., 0.);
+      cairo_paint_with_alpha (cr, _alpha / 255.);
+      cairo_restore (cr);
     }
 
   if (_debug)
-    this->redrawDebuggingInfo (renderer);
+    this->redrawDebuggingInfo (cr);
 }
 
 
 // Private.
 
 void
-Player::redrawDebuggingInfo (SDL_Renderer *renderer)
+Player::redrawDebuggingInfo (cairo_t *cr)
 {
-  SDL_Texture *debug;
+  cairo_surface_t *debug;
   string id;
   string str;
+  double sx, sy;
 
   id = _id;
   if (id.find ("/") != std::string::npos)
@@ -580,20 +584,24 @@ Player::redrawDebuggingInfo (SDL_Renderer *renderer)
   str = xstrbuild ("%s:%.1fs\n%dx%d:(%d,%d):%d",
                    id.c_str (),
                    ((double) GINGA_TIME_AS_MSECONDS (_time)) / 1000.,
-                   _rect.w, _rect.h, _rect.x, _rect.y, _z);
+                   _rect.width, _rect.height, _rect.x, _rect.y, _z);
 
-  debug = TextPlayer::renderTexture
-    (renderer, str, "monospace", "", "", "7", {255,0,0,255}, {0,0,0,200},
-     _rect, "center", "middle", false, nullptr);
+  debug = TextPlayer::renderSurface
+    (str, "monospace", "", "", "7", {1.,0,0,1.}, {0,0,0,.75},
+     _rect, "center", "middle", true, nullptr);
+  g_assert_nonnull (debug);
 
-  SDLx_SetTextureBlendMode (debug, SDL_BLENDMODE_BLEND);
-  SDLx_RenderCopy (renderer, debug, nullptr, &_rect);
-  SDL_DestroyTexture (debug);
+  sx = (double) _rect.width / cairo_image_surface_get_width (debug);
+  sy = (double) _rect.height / cairo_image_surface_get_height (debug);
 
-  // Draw border.
-  SDLx_SetRenderDrawBlendMode (renderer, SDL_BLENDMODE_BLEND);
-  SDLx_SetRenderDrawColor (renderer, 255, 0, 0, 127);
-  SDLx_RenderDrawRect (renderer, &_rect);
+  cairo_save (cr);
+  cairo_translate (cr, _rect.x, _rect.y);
+  cairo_scale (cr, sx, sy);
+  cairo_set_source_surface (cr, debug, 0., 0.);
+  cairo_paint (cr);
+  cairo_restore (cr);
+
+  cairo_surface_destroy (debug);
 }
 
 GINGA_PLAYER_END

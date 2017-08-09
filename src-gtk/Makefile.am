@@ -21,12 +21,20 @@ include $(top_srcdir)/build-aux/Makefile.am.common
 AM_CXXFLAGS= -I$(top_srcdir)/src $(GINGA_ALL_CXXFLAGS)
 AM_LDFLAGS= $(GINGA_ALL_LDFLAGS)
 
-bin_PROGRAMS=
-if WITH_GINGA_GTK
-bin_PROGRAMS+= ginga-gtk
-endif
-ginga_gtk_CXXFLAGS= $(AM_CXXFLAGS) $(GTK_CFLAGS)
-ginga_gtk_LDADD= $(top_builddir)/src/libginga.la
-ginga_gtk_LDFLAGS= $(AM_LDFLAGS) $(GTK_LIBS)
-ginga_gtk_SOURCES= view/MainWindow.cpp view/FullscreenWindow.cpp view/SettingsWindow.cpp view/TvControlWindow.cpp view/AboutWindow.cpp view/Draw.cpp controller/KeyEvent.cpp controller/AppController.cpp model/SaveLoadSettings.cpp model/CheckUpdates.cpp ginga-gtk.cpp
-
+bin_PROGRAMS= gingagui
+gingagui_CXXFLAGS= $(AM_CXXFLAGS) $(GTK_CFLAGS)
+gingagui_LDADD= $(top_builddir)/src/libginga.la
+gingagui_LDFLAGS= $(AM_LDFLAGS) $(GTK_LIBS)
+gingagui_SOURCES=\
+  controller/AppController.cpp\
+  controller/KeyEvent.cpp\
+  ginga-gtk.cpp\
+  model/CheckUpdates.cpp\
+  model/SaveLoadSettings.cpp\
+  view/AboutWindow.cpp\
+  view/Draw.cpp\
+  view/FullscreenWindow.cpp\
+  view/MainWindow.cpp\
+  view/SettingsWindow.cpp\
+  view/TvControlWindow.cpp\
+  $(NULL)

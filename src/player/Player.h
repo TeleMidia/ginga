@@ -57,8 +57,8 @@ public:
   virtual string getProperty (const string &);
   virtual void setProperty (const string &, const string &);
 
-  SDL_Rect getRect ();
-  void setRect (SDL_Rect);
+  GingaRect getRect ();
+  void setRect (GingaRect);
 
   void getZ (int *, int *);
   void setZ (int, int);
@@ -66,8 +66,8 @@ public:
   double getAlpha ();
   void setAlpha (double);
 
-  SDL_Color getBgColor ();
-  void setBgColor (SDL_Color);
+  GingaColor getBgColor ();
+  void setBgColor (GingaColor);
 
   bool getVisible ();
   void setVisible (bool);
@@ -79,7 +79,7 @@ public:
   void setDuration (GingaTime);
 
   // Callbacks.
-  virtual void redraw (SDL_Renderer *);
+  virtual void redraw (cairo_t *);
 
 protected:
   string _id;                      // associated object id
@@ -87,22 +87,22 @@ protected:
   PlayerState _state;              // current state
   GingaTime _time;                 // playback time
   bool _eos;                       // true if content was exhausted
-  SDL_Texture *_texture;           // player texture
+  cairo_surface_t *_surface;       // player surface
   PlayerAnimator _animator;        // associated animator
 
   map<string, string> _properties; // property table
   bool _debug;                     // true if debugging mode is on
-  SDL_Rect _rect;                  // x, y, w, h in pixels
+  GingaRect _rect;                 // x, y, w, h in pixels
   int _z;                          // z-index
   int _zorder;                     // z-order
   guint8 _alpha;                   // alpha
-  SDL_Color _bgColor;              // background color
+  GingaColor _bgColor;             // background color
   bool _visible;                   // true if visible
   bool _focused;                   // true if focused
   GingaTime _duration;             // explicit duration
 
 private:
-  void redrawDebuggingInfo (SDL_Renderer *);
+  void redrawDebuggingInfo (cairo_t *);
 };
 
 GINGA_PLAYER_END

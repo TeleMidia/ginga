@@ -26,8 +26,7 @@ GINGA_PLAYER_BEGIN
 // Public.
 
 /**
- * @brief Creates a texture from text.
- * @param renderer SDL renderer.
+ * @brief Creates a surface from text.
  * @param text Text to be rendered.
  * @param family Font family.
  * @param weight Font weight ("normal" or "bold").
@@ -35,26 +34,24 @@ GINGA_PLAYER_BEGIN
  * @param size Font size
  * @param fg Text color.
  * @param bg Background color.
- * @param rect Dimensions of the resulting texture.
+ * @param rect Dimensions of the resulting surface.
  * @param halign Horizontal alignment
  *        ("left", "center", "right", or "justified").
  * @param valign Vertical alignment ("bottom", "middle", or "top").
  * @param antialias Whether to use antialias.
  * @param ink Variable to store the inked rectangle.
- * @return The resulting texture.
+ * @return The resulting surface.
  */
-SDL_Texture *
-TextPlayer::renderTexture (SDL_Renderer *renderer, const string &text,
+cairo_surface_t *
+TextPlayer::renderSurface (const string &text,
                            const string &family, const string &weight,
                            const string &style, const string &size,
-                           SDL_Color fg, SDL_Color bg, SDL_Rect rect,
+                           GingaColor fg, GingaColor bg, GingaRect rect,
                            const string &halign, const string &valign,
-                           bool antialias, SDL_Rect *ink)
+                           bool antialias, GingaRect *ink)
 {
-  void *pixels;
-  int pitch;
   cairo_t *cr;
-  cairo_surface_t *sfc_cr;
+  cairo_surface_t *sfc;         // result
 
   PangoLayout *layout;
   cairo_font_options_t *opts;
@@ -64,32 +61,22 @@ TextPlayer::renderTexture (SDL_Renderer *renderer, const string &text,
   int height;
   PangoRectangle r;
 
-  SDL_Texture *texture;         // result
+  g_assert_cmpint (rect.width, >, 0);
+  g_assert_cmpint (rect.height, >, 0);
 
-  g_assert_cmpint (rect.w, >, 0);
-  g_assert_cmpint (rect.h, >, 0);
-  texture = SDL_CreateTexture (renderer, SDL_PIXELFORMAT_ARGB8888,
-                               SDL_TEXTUREACCESS_STREAMING,
-                               rect.w, rect.h);
-  g_assert_nonnull (texture);
-  SDLx_LockTexture (texture, NULL, &pixels, &pitch);
+  sfc = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
+                                    rect.width, rect.height);
+  g_assert_nonnull (sfc);
 
-  sfc_cr = cairo_image_surface_create_for_data
-    ((guchar *) pixels, CAIRO_FORMAT_ARGB32,
-     rect.w, rect.h, pitch);
-
-  cr = cairo_create (sfc_cr);
+  cr = cairo_create (sfc);
   g_assert_nonnull (cr);
 
   layout = pango_cairo_create_layout (cr);
   g_assert_nonnull (layout);
 
   opts = cairo_font_options_create ();
-  if (antialias)
-    cairo_font_options_set_antialias (opts, CAIRO_ANTIALIAS_GOOD);
-  else
+  if (!antialias)
     cairo_font_options_set_antialias (opts, CAIRO_ANTIALIAS_NONE);
-  cairo_font_options_set_hint_style (opts, CAIRO_HINT_STYLE_FULL);
 
   pango_cairo_context_set_font_options
     (pango_layout_get_context (layout), opts);
@@ -119,17 +106,17 @@ TextPlayer::renderTexture (SDL_Renderer *renderer, const string &text,
   else
     ERROR ("bad horizontal alignment: %s", halign.c_str ());
 
-  pango_layout_set_width (layout, rect.w * PANGO_SCALE);
+  pango_layout_set_width (layout, rect.width * PANGO_SCALE);
   pango_layout_set_wrap (layout, PANGO_WRAP_WORD);
   pango_layout_get_size (layout, NULL, &height);
 
-  cairo_set_source_rgba (cr, fg.r/255., fg.g/255., fg.b/255., fg.a/255.);
+  cairo_set_source_rgba (cr, fg.red, fg.green, fg.blue, fg.alpha);
   pango_cairo_update_layout (cr, layout);
 
   if (valign == "bottom")
-    align = rect.h - (height / PANGO_SCALE);
+    align = rect.height - (height / PANGO_SCALE);
   else if (valign == "middle")
-    align = (rect.h / 2) - ((height / PANGO_SCALE) / 2);
+    align = (rect.height / 2) - ((height / PANGO_SCALE) / 2);
   else if (valign == "" || valign == "top")
     align = 0;
   else
@@ -140,15 +127,14 @@ TextPlayer::renderTexture (SDL_Renderer *renderer, const string &text,
     {
       ink->x = r.x;
       ink->y = r.y;
-      ink->w = r.width;
-      ink->h = r.height;
+      ink->width = r.width;
+      ink->height = r.height;
     }
 
-  if (bg.a > 0)
+  if (bg.alpha > 0.)
     {
       cairo_save (cr);
-      cairo_set_source_rgba (cr, bg.r/255., bg.g/255.,
-                             bg.b/255., bg.a/255.);
+      cairo_set_source_rgba (cr, bg.red, bg.green, bg.blue, bg.alpha);
       r.x -= 2;
       r.y -= 2;
       r.width += 4;
@@ -163,19 +149,17 @@ TextPlayer::renderTexture (SDL_Renderer *renderer, const string &text,
 
   g_object_unref (layout);
   cairo_destroy (cr);
-  cairo_surface_destroy (sfc_cr);
 
-  SDL_UnlockTexture (texture);
-  return texture;
+  return sfc;
 }
 
 TextPlayer::TextPlayer (const string &id, const string &uri)
   : Player (id, uri)
 {
-  _fontColor = {0, 0, 0, 255};  // black
+  _fontColor = {0, 0, 0, 1.};   // black
   _fontBgColor = {0, 0, 0, 0};  // transparent
   _fontFamily = "sans";
-  _fontSize = "18px";
+  _fontSize = "12";
   _fontStyle = "";
   _fontVariant = "";
   _fontWeight = "";
@@ -259,21 +243,21 @@ TextPlayer::setProperty (const string &name, const string &value)
 }
 
 void
-TextPlayer::redraw (SDL_Renderer *renderer)
+TextPlayer::redraw (cairo_t *cr)
 {
   if (this->dirty)
     {
-      this->reload (renderer);
+      this->reload ();
       this->dirty = false;
     }
-  Player::redraw (renderer);
+  Player::redraw (cr);
 }
 
 
 // Private.
 
 void
-TextPlayer::reload (SDL_Renderer *renderer)
+TextPlayer::reload ()
 {
   const char *path;
   gchar *contents = NULL;
@@ -292,14 +276,14 @@ TextPlayer::reload (SDL_Renderer *renderer)
   text = string (contents);
   g_free (contents);
 
-  if (_texture != nullptr)
-    SDL_DestroyTexture (_texture);
+  if (_surface != nullptr)
+    cairo_surface_destroy (_surface);
 
-  _texture = TextPlayer::renderTexture
-    (renderer, text, _fontFamily, _fontWeight, _fontStyle, _fontSize,
+  _surface = TextPlayer::renderSurface
+    (text, _fontFamily, _fontWeight, _fontStyle, _fontSize,
      _fontColor, _fontBgColor, _rect, _horzAlign, _vertAlign, true,
      nullptr);
-  g_assert_nonnull (_texture);
+  g_assert_nonnull (_surface);
 }
 
 GINGA_PLAYER_END

@@ -783,8 +783,8 @@ Parser::parseRegion (DOMElement *elt, RegionBase *base,
   string id;
   string value;
 
-  SDL_Rect parent_rect;
-  SDL_Rect rect;
+  GingaRect parent_rect;
+  GingaRect rect;
   int z;
   int zorder;
   static int last_zorder = 0;
@@ -801,35 +801,37 @@ Parser::parseRegion (DOMElement *elt, RegionBase *base,
     {
       parent_rect.x = 0;
       parent_rect.y = 0;
-      parent_rect.w = _width;
-      parent_rect.h = _height;
+      parent_rect.width = _width;
+      parent_rect.height = _height;
     }
 
   rect = parent_rect;
   z = zorder = 0;
 
   if (dom_elt_try_get_attribute (value, elt, "left"))
-    rect.x += ginga_parse_percent (value, parent_rect.w, 0, G_MAXINT);
+    rect.x += ginga_parse_percent (value, parent_rect.width, 0, G_MAXINT);
 
   if (dom_elt_try_get_attribute (value, elt, "top"))
-    rect.y += ginga_parse_percent (value, parent_rect.h, 0, G_MAXINT);
+    rect.y += ginga_parse_percent (value, parent_rect.height, 0, G_MAXINT);
 
   if (dom_elt_try_get_attribute (value, elt, "width"))
-    rect.w = ginga_parse_percent (value, parent_rect.w, 0, G_MAXINT);
+    rect.width = ginga_parse_percent
+      (value, parent_rect.width, 0, G_MAXINT);
 
   if (dom_elt_try_get_attribute (value, elt, "height"))
-    rect.h = ginga_parse_percent (value, parent_rect.h, 0, G_MAXINT);
+    rect.height = ginga_parse_percent
+      (value, parent_rect.height, 0, G_MAXINT);
 
   if (dom_elt_try_get_attribute (value, elt, "right"))
     {
-    rect.x += parent_rect.w - rect.w
-      - ginga_parse_percent (value, parent_rect.w, 0, G_MAXINT);
+      rect.x += parent_rect.width - rect.width
+        - ginga_parse_percent (value, parent_rect.width, 0, G_MAXINT);
     }
 
   if (dom_elt_try_get_attribute (value, elt, "bottom"))
     {
-      rect.y += parent_rect.h - rect.h
-        - ginga_parse_percent (value, parent_rect.h, 0, G_MAXINT);
+      rect.y += parent_rect.height - rect.height
+        - ginga_parse_percent (value, parent_rect.height, 0, G_MAXINT);
     }
 
   if (dom_elt_try_get_attribute (value, elt, "zIndex"))

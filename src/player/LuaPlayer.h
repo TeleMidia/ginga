@@ -35,7 +35,7 @@ public:
   void pause (void) override;
   void resume (void) override;
   virtual void setProperty (const string &, const string &) override;
-  void redraw (SDL_Renderer *) override;
+  void redraw (cairo_t *) override;
 
   // IEventListener.
   void handleTickEvent (GingaTime, GingaTime, int) override {};
@@ -43,7 +43,7 @@ public:
 
 private:
   ncluaw_t *_nw;                // the NCLua state
-  SDL_Rect _init_rect;          // initial output rectangle
+  GingaRect _init_rect;         // initial output rectangle
 };
 
 GINGA_PLAYER_END

@@ -71,7 +71,8 @@ LuaPlayer::start (void)
   TRACE ("starting");
 
   _init_rect = _rect;
-  _nw = ncluaw_open (_uri.c_str (), _init_rect.w, _init_rect.h, &errmsg);
+  _nw = ncluaw_open
+    (_uri.c_str (), _init_rect.width, _init_rect.height, &errmsg);
   if (unlikely (_nw == NULL))
     ERROR ("cannot load NCLua file %s: %s", _uri.c_str (), errmsg);
 
@@ -131,29 +132,18 @@ LuaPlayer::handleKeyEvent (string const &key, bool press)
 }
 
 void
-LuaPlayer::redraw (SDL_Renderer *renderer)
+LuaPlayer::redraw (cairo_t *cr)
 {
-  void *pixels;
-  int pitch;
-
   g_assert (_state != PL_SLEEPING);
   g_assert_nonnull (_nw);
 
   ncluaw_cycle (_nw);
 
-  if (_texture == nullptr)
-    {
-      _texture = SDL_CreateTexture
-        (renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
-         _rect.w, _rect.h);
-      g_assert_nonnull (_texture);
-    }
+  _surface = (cairo_surface_t *) ncluaw_debug_get_surface (_nw);
+  g_assert_nonnull (_surface);
 
-  SDLx_LockTexture (_texture, NULL, &pixels, &pitch);
-  ncluaw_paint (_nw, (guchar *) pixels, "ARGB32", _rect.w, _rect.h, pitch);
-  SDLx_UnlockTexture (_texture);
-
-  Player::redraw (renderer);
+  Player::redraw (cr);
+  _surface = nullptr;
 }
 
 GINGA_PLAYER_END

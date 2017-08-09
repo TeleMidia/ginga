@@ -20,6 +20,63 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
+static map<string, string> mimetab =
+{
+  {"ac3", "audio/ac3"},
+  {"avi", "video/x-msvideo"},
+  {"bmp", "image/bmp"},
+  {"bpg", "image/x-bpg"},
+  {"class", "application/x-ginga-NCLet"},
+  {"css", "text/css"},
+  {"gif", "image/gif"},
+  {"htm", "text/html"},
+  {"html", "text/html"},
+  {"jpeg", "image/jpeg"},
+  {"jpg", "image/jpeg"},
+  {"lua", "application/x-ginga-NCLua"},
+  {"mov", "video/quicktime"},
+  {"mp2", "audio/mp2"},
+  {"mp3", "audio/mp3"},
+  {"mp4", "video/mp4"},
+  {"mpa", "audio/mpa"},
+  {"mpeg", "video/mpeg"},
+  {"mpg", "video/mpeg"},
+  {"mpv", "video/mpv"},
+  {"ncl", "application/x-ginga-ncl"},
+  {"oga", "audio/ogg"},
+  {"ogg", "audio/ogg"},
+  {"ogv", "video/ogg"},
+  {"opus", "audio/ogg"},
+  {"png", "image/png"},
+  {"smil", "application/smil"},
+  {"spx", "audio/ogg"},
+  {"srt", "text/srt"},
+  {"ssml", "application/ssml+xml"},
+  {"svg", "image/svg+xml"},
+  {"svgz", "image/svg+xml"},
+  {"ts", "video/mpeg"},
+  {"txt", "text/plain"},
+  {"wav", "audio/basic"},
+  {"webp", "image/x-webp"},
+  {"wmv", "video/x-ms-wmv"},
+  {"xlet", "application/x-ginga-NCLet"},
+  {"xlt", "application/x-ginga-NCLet"},
+  {"xml", "text/xml"},
+};
+
+static bool
+mime_table_index (string key, string *result)
+{
+  map<string, string>::iterator it;
+  if ((it = mimetab.find (key)) == mimetab.end ())
+    return false;
+  set_if_nonnull (result, it->second);
+  return true;
+}
+
+
+// Public.
+
 /**
  * @brief Creates a new media.
  * @param id Media id.
@@ -93,7 +150,7 @@ Media::setSrc (const string &src)
         {
           extension = src.substr (index, (len - index));
           if (extension != "")
-            ginga_mime_table_index (extension, &type);
+            mime_table_index (extension, &type);
         }
     }
 

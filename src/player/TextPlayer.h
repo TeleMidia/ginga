@@ -28,20 +28,21 @@ GINGA_PLAYER_BEGIN
 class TextPlayer : public Player
 {
 public:
-  static SDL_Texture *renderTexture (SDL_Renderer *, const string &,
-                                     const string &, const string &,
-                                     const string &, const string &,
-                                     SDL_Color, SDL_Color, SDL_Rect,
-                                     const string &, const string &,
-                                     bool, SDL_Rect *);
+  static cairo_surface_t *renderSurface (const string &,
+                                         const string &, const string &,
+                                         const string &, const string &,
+                                         GingaColor, GingaColor, GingaRect,
+                                         const string &, const string &,
+                                         bool, GingaRect *);
+
   TextPlayer (const string &, const string &);
   virtual ~TextPlayer (void) {}
   void setProperty (const string &, const string &) override;
-  void redraw (SDL_Renderer *) override;
+  void redraw (cairo_t *) override;
 
 private:
-  SDL_Color _fontColor;
-  SDL_Color _fontBgColor;
+  GingaColor _fontColor;
+  GingaColor _fontBgColor;
   string _fontFamily;
   string _fontSize;
   string _fontStyle;
@@ -50,8 +51,8 @@ private:
   string _horzAlign;
   string _vertAlign;
 
-  bool dirty = true;            // true if texture should be reloaded
-  void reload (SDL_Renderer *);
+  bool dirty = true;            // true if surface should be reloaded
+  void reload ();
 };
 
 GINGA_PLAYER_END

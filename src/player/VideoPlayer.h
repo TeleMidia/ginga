@@ -31,7 +31,7 @@ public:
   void stop () override;
   void pause () override;
   void resume () override;
-  void redraw (SDL_Renderer *) override;
+  void redraw (cairo_t *) override;
   void setProperty (const string &, const string &) override;
 
 private:
