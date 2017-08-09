@@ -18,13 +18,14 @@
 
 include $(top_srcdir)/build-aux/Makefile.am.common
 
-AM_CXXFLAGS= -I$(top_srcdir)/src $(GINGA_ALL_CXXFLAGS)
-AM_LDFLAGS= $(GINGA_ALL_LDFLAGS)
+AM_CPPFLAGS= -I$(top_srcdir)/lib -I$(top_builddir)/lib
+AM_CXXFLAGS= $(CAIRO_CFLAGS) $(GLIB_CFLAGS) $(GTK_CFLAGS)
+AM_LDFLAGS= $(CAIRO_LIBS) $(GLIB_LIBS) $(GTK_LIBS)
 
 bin_PROGRAMS= gingagui
-gingagui_CXXFLAGS= $(AM_CXXFLAGS) $(GTK_CFLAGS)
-gingagui_LDADD= $(top_builddir)/src/libginga.la
-gingagui_LDFLAGS= $(AM_LDFLAGS) $(GTK_LIBS)
+gingagui_CXXFLAGS= $(AM_CXXFLAGS)
+gingagui_LDADD= $(top_builddir)/lib/libginga.la
+gingagui_LDFLAGS= $(AM_LDFLAGS)
 gingagui_SOURCES=\
   controller/AppController.cpp\
   controller/KeyEvent.cpp\
