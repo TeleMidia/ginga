@@ -130,13 +130,13 @@ void
 PlayerAnimator::update (GingaRect *rect, GingaColor *bgColor, guint8 *alpha)
 {
 
-#define UPDATE(info, Type, var, min, max)                               \
+#define UPDATE(info, Type, var, rnd, min, max)                          \
   G_STMT_START                                                          \
     {                                                                   \
       if (!(info)->isInit ())                                           \
         (info)->init (var);                                             \
       (info)->update ();                                                \
-      var = (Type) CLAMP (lround ((info)->getCurrent ()), min, max);    \
+      var = (Type) CLAMP (rnd ((info)->getCurrent ()), min, max);       \
     }                                                                   \
   G_STMT_END
 
@@ -154,35 +154,35 @@ PlayerAnimator::update (GingaRect *rect, GingaColor *bgColor, guint8 *alpha)
       name = info->getName ();
       if (name == "top")
         {
-          UPDATE (info, int, rect->y, G_MININT, G_MAXINT);
+          UPDATE (info, int, rect->y, lround, G_MININT, G_MAXINT);
         }
       else if (name == "left")
         {
-          UPDATE (info, int, rect->x, G_MININT, G_MAXINT);
+          UPDATE (info, int, rect->x, lround, G_MININT, G_MAXINT);
         }
       else if (name == "width")
         {
-          UPDATE (info, int, rect->width, G_MININT, G_MAXINT);
+          UPDATE (info, int, rect->width, lround, G_MININT, G_MAXINT);
         }
       else if (name == "height")
         {
-          UPDATE (info, int, rect->height, G_MININT, G_MAXINT);
+          UPDATE (info, int, rect->height, lround, G_MININT, G_MAXINT);
         }
       else if (name == "background:r")
         {
-          UPDATE (info, double, bgColor->red, 0., 1.);
+          UPDATE (info, double, bgColor->red, round, 0., 1.);
         }
       else if (name == "background:g")
         {
-          UPDATE (info, double, bgColor->green, 0., 1.);
+          UPDATE (info, double, bgColor->green, round, 0., 1.);
         }
       else if (name == "background:b")
         {
-          UPDATE (info, double, bgColor->blue, 0., 1.);
+          UPDATE (info, double, bgColor->blue, round, 0., 1.);
         }
       else if (name == "transparency")
         {
-          UPDATE (info, guint8, *alpha, 0, 255);
+          UPDATE (info, guint8, *alpha, lround, 0, 255);
         }
       else
         {
