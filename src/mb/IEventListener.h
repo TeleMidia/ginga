@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef I_EVENT_LISTENER_H
 #define I_EVENT_LISTENER_H
 
-#include "ginga.h"
+#include "ginga-internal.h"
 
 GINGA_MB_BEGIN
 

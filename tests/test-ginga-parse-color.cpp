@@ -15,18 +15,20 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga.h"
+#include "ginga-internal.h"
+
+GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-equal)
 
 #define CHECK_COLOR(c,_r,_g,_b,_a)              \
-  g_assert ((c).r == (_r)                       \
-            && (c).g == (_g)                    \
-            && (c).b == (_b)                    \
-            && (c).a == (_a))
+  g_assert ((c).red * 255 == (_r)               \
+            && (c).green * 255 == (_g)          \
+            && (c).blue * 255 == (_b)           \
+            && (c).alpha * 255 == (_a))
 
 int
 main (void)
 {
-  SDL_Color c;
+  GingaColor c;
 
   // unknown color
   g_assert (!_ginga_parse_color ("*** unknown ***", &c));

@@ -15,14 +15,20 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga.h"
+#include <config.h>
+#include <cairo.h>
+#include <glib.h>
+#include <glib/gstdio.h>
 #include <gtk/gtk.h>
 
-#include "formatter/Scheduler.h"
-using namespace ::ginga::formatter;
+#include "ginga.h"
 
-#include "mb/Display.h"
-using namespace ::ginga::mb;
+#define deconst(t, x) ((t)(ptrdiff_t)(const void *)(x))
+#define gpointerof(p) ((gpointer)((ptrdiff_t)(p)))
+
+
+// Global formatter.
+static Ginga *GINGA = nullptr;
 
 
 // Options.
@@ -39,12 +45,16 @@ static gint opt_height = 600;           // initial window height
 static gdouble opt_fps = 60;            // initial target frame-rate
 
 static gboolean
-opt_size (arg_unused (const gchar *opt), const gchar *arg,
-          arg_unused (gpointer data), GError **err)
+opt_size (const gchar *opt, const gchar *arg,
+          gpointer data, GError **err)
 {
   gint64 width;
   gint64 height;
   gchar *end;
+
+  (void) opt;
+  (void) arg;
+  (void) data;
 
   width = g_ascii_strtoll (arg, &end, 10);
   if (width == 0)
@@ -74,7 +84,6 @@ opt_version (void)
   exit (EXIT_SUCCESS);
 }
 
-#define gpointerof(p) ((gpointer)((ptrdiff_t)(p)))
 static GOptionEntry options[] = {
   {"size", 's', 0, G_OPTION_ARG_CALLBACK,
    gpointerof (opt_size), "Set initial window size", "WIDTHxHEIGHT"},
@@ -85,7 +94,7 @@ static GOptionEntry options[] = {
    {"fps", 'f', 0, G_OPTION_ARG_DOUBLE,
    &opt_fps, "Set display FPS rate", NULL},
   {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
-   pointerof (opt_version), "Print version information and exit", NULL},
+   gpointerof (opt_version), "Print version information and exit", NULL},
   {NULL, 0, 0, G_OPTION_ARG_NONE, NULL, NULL, NULL}
 };
 
@@ -114,13 +123,15 @@ _error (gboolean try_help, const gchar *format, ...)
 // Callbacks.
 
 static gboolean
-draw_callback (arg_unused (GtkWidget *widget), cairo_t *cr,
-               arg_unused (gpointer data))
+draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
 {
+  (void) widget;
+  (void) data;
+
   cairo_set_source_rgb (cr, 1., 0., 1.);
   cairo_rectangle (cr, 0, 0, opt_width, opt_height);
   cairo_fill (cr);
-  _Ginga_Display->redraw (cr);
+  GINGA->redraw (cr);
   return TRUE;
 }
 
@@ -136,7 +147,7 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
       gtk_widget_destroy (widget);
       return TRUE;
     case GDK_KEY_F11:          /* toggle full-screen */
-      if (streq ((const char *) type, "release"))
+      if (g_strcmp0 ((const char *) type, "release") == 0)
         return TRUE;
       opt_fullscreen = !opt_fullscreen;
       if (opt_fullscreen)
@@ -190,8 +201,8 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
       break;
     }
 
-  _Ginga_Display->notifyKeyListeners (string (key),
-                                      streq ((const char *) type, "press"));
+  GINGA->send_key (std::string (key),
+                   g_strcmp0 ((const char *) type, "press") == 0);
   if (free_key)
     g_free (deconst (char *, key));
 
@@ -201,20 +212,20 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
 #if GTK_CHECK_VERSION(3,8,0)
 static gboolean
 tick_callback (GtkWidget *widget, GdkFrameClock *frame_clock,
-               arg_unused (gpointer data))
+               G_GNUC_UNUSED gpointer data)
 #else
 static gboolean
 cycle_callback (GtkWidget *widget)
 #endif
 {
-  GingaTime time;
-  static int frame = -1;
-  static GingaTime last;
-  static GingaTime first;
+  guint64 time;
+  static guint64 frame = (guint64) -1;
+  static guint64 last;
+  static guint64 first;
 
 #if GTK_CHECK_VERSION(3,8,0)
-  time = (GingaTime)(gdk_frame_clock_get_frame_time (frame_clock) * 1000);
-  frame = (int) gdk_frame_clock_get_frame_counter (frame_clock);
+  time = (guint64)(gdk_frame_clock_get_frame_time (frame_clock) * 1000);
+  frame = (guint64) gdk_frame_clock_get_frame_counter (frame_clock);
 #else
   time = ginga_gettime ();
   frame++;
@@ -225,9 +236,7 @@ cycle_callback (GtkWidget *widget)
       first = time;
       last = time;
     }
-  _Ginga_Display->notifyTickListeners ((GingaTime)(time - first),
-                                       (GingaTime)(time - last),
-                                       (int) frame);
+  GINGA->send_tick (time - first, time - last, frame);
   last = time;
   gtk_widget_queue_draw (widget);
   return G_SOURCE_CONTINUE;
@@ -239,41 +248,28 @@ cycle_callback (GtkWidget *widget)
 int
 main (int argc, char **argv)
 {
-  int ginga_argc;
-  char **ginga_argv;
-  string file;
-
-  ginga_argc = argc;
-  ginga_argv = g_strdupv (argv);
-
-#if defined WITH_CEF && WITH_CEF
-  CefMainArgs args (argc, argv);
-  CefSettings settings;
-
-  int pstatus = CefExecuteProcess (args, nullptr, nullptr);
-  if (pstatus >= 0)
-    return pstatus;
-
-  if (unlikely (!CefInitialize (args, settings, nullptr, nullptr)))
-    exit (EXIT_FAILURE);
-#endif
+  int saved_argc;
+  char **saved_argv;
+  std::string file;
 
   GtkWidget *app;
   GOptionContext *ctx;
   gboolean status;
   GError *error = NULL;
 
-  gtk_init (&ginga_argc, &ginga_argv);
+  saved_argc = argc;
+  saved_argv = g_strdupv (argv);
+  gtk_init (&saved_argc, &saved_argv);
 
   // Parse command-line options.
   ctx = g_option_context_new (OPTION_LINE);
   g_assert_nonnull (ctx);
   g_option_context_set_description (ctx, OPTION_DESC);
   g_option_context_add_main_entries (ctx, options, NULL);
-  status = g_option_context_parse (ctx, &ginga_argc, &ginga_argv, &error);
+  status = g_option_context_parse (ctx, &saved_argc, &saved_argv, &error);
   g_option_context_free (ctx);
 
-  if (unlikely (!status))
+  if (!status)
     {
       g_assert_nonnull (error);
       usage_error ("%s", error->message);
@@ -281,14 +277,17 @@ main (int argc, char **argv)
       exit (EXIT_FAILURE);
     }
 
-  if (unlikely (ginga_argc < 2))
+  if (saved_argc < 2)
     {
       usage_error ("Missing file operand");
       exit (EXIT_FAILURE);
     }
 
-  file = string (ginga_argv[1]);
-  g_strfreev (ginga_argv);
+  file = std::string (saved_argv[1]);
+  g_strfreev (saved_argv);
+
+  // Create Ginga handle width the original args.
+  GINGA = new Ginga (argc, argv, opt_width, opt_height, opt_fullscreen);
 
   // Create application window.
   app = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -317,21 +316,14 @@ main (int argc, char **argv)
 #endif
 
   // Start Ginga.
-  Scheduler *scheduler = new Scheduler ();
-  _Ginga_Display = new ginga::mb::Display (opt_width, opt_height,
-                                           opt_fullscreen);
-  scheduler->startDocument (file);
-
-  // FIXME: This causes a segfault.
-  // delete scheduler;
+  GINGA->start (file);
 
   // Show window and enter event loop.
   gtk_widget_show_all (app);
   gtk_main ();
 
-#if defined WITH_CEF && WITH_CEF
-  CefShutdown ();
-#endif
+  // Cleanup.
+  // delete GINGA;      FIXME!!!
 
   exit (EXIT_SUCCESS);
 }

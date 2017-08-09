@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef DASHBOARD_H
 #define DASHBOARD_H
 
-#include "ginga.h"
+#include "ginga-internal.h"
 #include "IEventListener.h"
 
 GINGA_MB_BEGIN

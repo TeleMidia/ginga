@@ -34,6 +34,7 @@ libginga_la_LDFLAGS= -static $(AM_LDFLAGS)
 libginga_la_SOURCES= $(src)
 src=
 src+= common.cpp
+src+= ginga.cpp
 src+= formatter/Converter.cpp
 src+= formatter/ExecutionObject.cpp
 src+= formatter/ExecutionObjectContext.cpp

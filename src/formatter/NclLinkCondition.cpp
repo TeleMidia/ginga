@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclLinkCondition.h"
 #include "NclLinkStatement.h"
-#include "ginga.h"
+#include "ginga-internal.h"
 
 #include "mb/Display.h"
 using namespace ginga::mb;

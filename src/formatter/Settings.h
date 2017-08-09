@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include "ginga.h"
+#include "ginga-internal.h"
 
 GINGA_FORMATTER_BEGIN
 

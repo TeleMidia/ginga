@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PLAYER_ANIMATOR_H
 #define PLAYER_ANIMATOR_H
 
-#include "ginga.h"
+#include "ginga-internal.h"
 
 GINGA_PLAYER_BEGIN
 
