@@ -68,7 +68,7 @@ Ginga::start (const string &file)
   started = true;
 }
 
-void
+void G_GNUC_NORETURN
 Ginga::stop ()
 {
   ERROR_NOT_IMPLEMENTED ("stop is not supported");
