@@ -107,7 +107,9 @@ nw="$nw -Wshadow"                        # too many warnings
 nw="$nw -Wsign-compare"                  # too many warnings
 nw="$nw -Wsign-conversion"               # too many warnings
 nw="$nw -Wsystem-headers"                # too many warnings
+AC_LANG_PUSH([C])
 AU_ARG_ENABLE_WARNINGS([$nw])
+AC_LANG_POP
 
 # Required dependencies.
 AU_VERSION_BREAK([cairo], cairo_required_version)
