@@ -297,7 +297,6 @@ main (int argc, char **argv)
   g_assert_nonnull (app);
   gtk_window_set_title (GTK_WINDOW (app), PACKAGE_STRING);
   gtk_window_set_default_size (GTK_WINDOW (app), opt_width, opt_height);
-  gtk_window_set_resizable (GTK_WINDOW (app), false);
   gtk_widget_set_app_paintable (app, TRUE);
   if (opt_fullscreen)
     gtk_window_fullscreen (GTK_WINDOW (app));
