@@ -20,7 +20,7 @@ include $(top_srcdir)/build-aux/Makefile.am.common
 
 AM_CXXFLAGS= $(GINGA_ALL_CXXFLAGS)
 AM_LDFLAGS= -static $(GINGA_ALL_LDFLAGS)
-LDADD= $(top_builddir)/src/libginga.la
+LDADD= $(top_builddir)/lib/libginga.la
 
 # Auxiliary programs.
 noinst_PROGRAMS=

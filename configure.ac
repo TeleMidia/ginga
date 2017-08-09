@@ -26,8 +26,8 @@ AC_INIT([Ginga],
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([build-aux])
 AC_USE_SYSTEM_EXTENSIONS
-AC_CONFIG_SRCDIR([src/ginga.h])
-AC_CONFIG_HEADERS([src/config.h])
+AC_CONFIG_SRCDIR([lib/ginga.h])
+AC_CONFIG_HEADERS([lib/config.h])
 
 AM_INIT_AUTOMAKE([1.14 -Wall -Werror gnu subdir-objects])
 AM_SILENT_RULES([yes])
@@ -231,8 +231,9 @@ AC_SUBST([GINGA_ALL_LDFLAGS])
 # Epilogue.
 AC_CONFIG_FILES([
 Makefile
-src-gtk/Makefile
+lib/Makefile
 src/Makefile
+src-gui/Makefile
 tests/Makefile
 ])
 
