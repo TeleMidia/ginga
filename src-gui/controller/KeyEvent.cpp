@@ -17,9 +17,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga_gtk.h"
 
-#include "mb/Display.h"
-using namespace ::ginga::mb;
-
 gboolean isCrtlModifierActive = FALSE;
 
 void
