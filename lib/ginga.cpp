@@ -87,7 +87,7 @@ Ginga::send_key (const string &key, bool press)
 }
 
 void
-Ginga::send_tick (guint64 total, guint64 diff, guint64 frameno)
+Ginga::send_tick (uint64_t total, uint64_t diff, uint64_t frameno)
 {
   DISPLAY (this)->notifyTickListeners (total, diff, (int) frameno);
 }

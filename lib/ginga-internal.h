@@ -61,6 +61,7 @@ GINGA_BEGIN_DECLS
 
 // External C libraries.
 #include <glib/gstdio.h>
+#include <gtk/gtk.h>
 #include <ncluaw.h>
 #include <pango/pangocairo.h>
 
@@ -149,8 +150,12 @@ string __ginga_strfunc (const string &);
 #define ERROR_NOT_IMPLEMENTED(fmt, ...)\
   ERROR ("not implemented: " fmt, ## __VA_ARGS__)
 
-// Time alias, macros and functions.
+// Aliases.
+typedef GdkRGBA GingaColor;
+typedef GdkRectangle GingaRect;
 typedef GstClockTime GingaTime;
+
+// Time macros and functions.
 #define ginga_gettime() ((GingaTime)(g_get_monotonic_time () * 1000))
 #define GINGA_TIME_NONE            GST_CLOCK_TIME_NONE
 #define GINGA_TIME_IS_VALID(t)     GST_CLOCK_TIME_IS_VALID ((t))

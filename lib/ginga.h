@@ -28,15 +28,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_BEGIN_DECLS
 #include <cairo.h>
-#include <glib.h>
-#include <gdk/gdk.h>
 GINGA_END_DECLS
 
+#include <cstdint>
 #include <string>
-
-// Aliases.
-typedef GdkRGBA GingaColor;
-typedef GdkRectangle GingaRect;
 
 class Ginga
 {
@@ -49,7 +44,7 @@ class Ginga
 
   void redraw (cairo_t *);
   void send_key (const std::string &, bool);
-  void send_tick (guint64, guint64, guint64);
+  void send_tick (uint64_t, uint64_t, uint64_t);
 
  private:
   bool started;
