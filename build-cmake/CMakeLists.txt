@@ -23,7 +23,7 @@ add_definitions(-DWITH_PANGO=1 -DWITH_GSTREAMER=1)
 
 find_package(GTK3)
 if (GTK3_FOUND)
-  set (WITH_GINGA_GTK ON)
+  set (WITH_GINGA_GTK OFF)
 endif()
 
 # NCLUA download/configure/build/install
@@ -83,96 +83,89 @@ else()
 
 endif()
 
-set (GINGA_SOURCES
-  ../src/ginga.h
+set (LIBGINGA_SOURCES
+  ../lib/ginga-internal.cpp
+  ../lib/ginga.cpp
 
-  ../src/common-color-table.cpp
-  ../src/common-key-table.cpp
-  ../src/common-mime-table.cpp
-  ../src/common.cpp
+  ../lib/formatter/Converter.cpp
+  ../lib/formatter/ExecutionObject.cpp
+  ../lib/formatter/ExecutionObjectContext.cpp
+  ../lib/formatter/ExecutionObjectSwitch.cpp
+  ../lib/formatter/NclActions.cpp
+  ../lib/formatter/NclEvents.cpp
+  ../lib/formatter/NclEventTransitionManager.cpp
+  ../lib/formatter/NclFormatterLink.cpp
+  ../lib/formatter/NclLinkAssessment.cpp
+  ../lib/formatter/NclLinkCondition.cpp
+  ../lib/formatter/NclLinkStatement.cpp
+  ../lib/formatter/NclNodeNesting.cpp
+  ../lib/formatter/RuleAdapter.cpp
+  ../lib/formatter/Settings.cpp
+  ../lib/formatter/Scheduler.cpp
 
-  ../src/formatter/Converter.cpp
-  ../src/formatter/ExecutionObject.cpp
-  ../src/formatter/ExecutionObjectContext.cpp
-  ../src/formatter/ExecutionObjectSwitch.cpp
-  ../src/formatter/NclActions.cpp
-  ../src/formatter/NclEvents.cpp
-  ../src/formatter/NclEventTransitionManager.cpp
-  ../src/formatter/NclFormatterLink.cpp
-  ../src/formatter/NclLinkAssessment.cpp
-  ../src/formatter/NclLinkCondition.cpp
-  ../src/formatter/NclLinkStatement.cpp
-  ../src/formatter/NclNodeNesting.cpp
-  ../src/formatter/RuleAdapter.cpp
-  ../src/formatter/Settings.cpp
-  ../src/formatter/Scheduler.cpp
+  ../lib/mb/Display.cpp
+  ../lib/mb/Dashboard.cpp
 
-  ../src/mb/Display.cpp
-  ../src/mb/Dashboard.cpp
+  ../lib/ncl/Area.cpp
+  ../lib/ncl/AreaLabeled.cpp
+  ../lib/ncl/AssessmentStatement.cpp
+  ../lib/ncl/AttributeAssessment.cpp
+  ../lib/ncl/Base.cpp
+  ../lib/ncl/Bind.cpp
+  ../lib/ncl/CompositeRule.cpp
+  ../lib/ncl/Composition.cpp
+  ../lib/ncl/CompoundAction.cpp
+  ../lib/ncl/CompoundCondition.cpp
+  ../lib/ncl/CompoundStatement.cpp
+  ../lib/ncl/Connector.cpp
+  ../lib/ncl/ConnectorBase.cpp
+  ../lib/ncl/Context.cpp
+  ../lib/ncl/Descriptor.cpp
+  ../lib/ncl/DescriptorBase.cpp
+  ../lib/ncl/Entity.cpp
+  ../lib/ncl/EventUtil.cpp
+  ../lib/ncl/Link.cpp
+  ../lib/ncl/Media.cpp
+  ../lib/ncl/NclDocument.cpp
+  ../lib/ncl/Node.cpp
+  ../lib/ncl/Parameter.cpp
+  ../lib/ncl/Parser.cpp
+  ../lib/ncl/Port.cpp
+  ../lib/ncl/Property.cpp
+  ../lib/ncl/Refer.cpp
+  ../lib/ncl/Region.cpp
+  ../lib/ncl/RegionBase.cpp
+  ../lib/ncl/Role.cpp
+  ../lib/ncl/RuleBase.cpp
+  ../lib/ncl/SimpleAction.cpp
+  ../lib/ncl/SimpleCondition.cpp
+  ../lib/ncl/SimpleRule.cpp
+  ../lib/ncl/Switch.cpp
+  ../lib/ncl/SwitchPort.cpp
+  ../lib/ncl/Transition.cpp
+  ../lib/ncl/TransitionBase.cpp
+  ../lib/ncl/TransitionUtil.cpp
+  ../lib/ncl/TriggerExpression.cpp
+  ../lib/ncl/ValueAssessment.cpp
 
-  ../src/ncl/Area.cpp
-  ../src/ncl/AreaLabeled.cpp
-  ../src/ncl/AssessmentStatement.cpp
-  ../src/ncl/AttributeAssessment.cpp
-  ../src/ncl/Base.cpp
-  ../src/ncl/Bind.cpp
-  ../src/ncl/CompositeRule.cpp
-  ../src/ncl/Composition.cpp
-  ../src/ncl/CompoundAction.cpp
-  ../src/ncl/CompoundCondition.cpp
-  ../src/ncl/CompoundStatement.cpp
-  ../src/ncl/Connector.cpp
-  ../src/ncl/ConnectorBase.cpp
-  ../src/ncl/Context.cpp
-  ../src/ncl/Descriptor.cpp
-  ../src/ncl/DescriptorBase.cpp
-  ../src/ncl/Entity.cpp
-  ../src/ncl/EventUtil.cpp
-  ../src/ncl/Link.cpp
-  ../src/ncl/Media.cpp
-  ../src/ncl/NclDocument.cpp
-  ../src/ncl/Node.cpp
-  ../src/ncl/Parameter.cpp
-  ../src/ncl/Parser.cpp
-  ../src/ncl/Port.cpp
-  ../src/ncl/Property.cpp
-  ../src/ncl/Refer.cpp
-  ../src/ncl/Region.cpp
-  ../src/ncl/RegionBase.cpp
-  ../src/ncl/Role.cpp
-  ../src/ncl/RuleBase.cpp
-  ../src/ncl/SimpleAction.cpp
-  ../src/ncl/SimpleCondition.cpp
-  ../src/ncl/SimpleRule.cpp
-  ../src/ncl/Switch.cpp
-  ../src/ncl/SwitchPort.cpp
-  ../src/ncl/Transition.cpp
-  ../src/ncl/TransitionBase.cpp
-  ../src/ncl/TransitionUtil.cpp
-  ../src/ncl/TriggerExpression.cpp
-  ../src/ncl/ValueAssessment.cpp
-
-  ../src/player/ImagePlayer.cpp
-  ../src/player/LuaPlayer.cpp
-  ../src/player/Player.cpp
-  ../src/player/PlayerAnimator.cpp
-  ../src/player/TextPlayer.cpp
-  ../src/player/VideoPlayer.cpp
+  ../lib/player/ImagePlayer.cpp
+  ../lib/player/LuaPlayer.cpp
+  ../lib/player/Player.cpp
+  ../lib/player/PlayerAnimator.cpp
+  ../lib/player/TextPlayer.cpp
+  ../lib/player/VideoPlayer.cpp
 
 #if WITH_LIBRSVG
-  ../src/player/SvgPlayer.cpp
+  ../lib/player/SvgPlayer.cpp
 #WITH_LIBRSVG
-
-#  main
-  ../src/main.cpp
 )
 
 set (GINGA_GUI_GTK_SOURCES
-  ../src-gtk/ginga-gtk.cpp
+  ../src-gui/ginga-gtk.cpp
 )
 
-set (GINGA_INCLUDE_DIRS
-  ../src
+set (LIBGINGA_INCLUDE_DIRS
+  ../lib
 
   ${CMAKE_BINARY_DIR}
 
@@ -186,13 +179,14 @@ set (GINGA_INCLUDE_DIRS
   ${RSVG_INCLUDE_DIRS}
   ${GSTREAMER_INCLUDE_DIRS}
   ${GSTREAMER_BASE_INCLUDE_DIRS}
+  ${GTK3_INCLUDE_DIRS}
 
   ${LinuxDVB_INCLUDE_DIRS}
 
   ${NCLUA_INCLUDE_DIRS}
 )
 
-set (GINGA_LIBS
+set (LIBGINGA_LIBS
   pthread
 
   ${XercesC_LIBRARIES}
@@ -207,6 +201,7 @@ set (GINGA_LIBS
   ${GSTREAMER_LIBRARIES}
   ${GSTREAMER_APP_LIBRARIES}
   ${GSTREAMER_VIDEO_LIBRARIES}
+  ${GTK3_LIBRARIES}
 
   ${CAIRO_LIBRARIES}
   ${PANGO_LIBRARIES}
@@ -216,8 +211,8 @@ set (GINGA_LIBS
 )
 
 if (WITH_CEF)
-  list (APPEND GINGA_SOURCES
-    ../src/player/HTMLPlayer.cpp
+  list (APPEND LIBGINGA_SOURCES
+    ../lib/player/HTMLPlayer.cpp
   )
   list (APPEND GINGA_INCLUDE_DIRS
     ${CEF_ROOT}
@@ -230,10 +225,17 @@ if (WITH_CEF)
   )
 endif()
 
-add_executable(ginga ${GINGA_SOURCES})
-add_dependencies(ginga nclua_build)
-target_include_directories(ginga PRIVATE ${GINGA_INCLUDE_DIRS})
-target_link_libraries(ginga PRIVATE ${GINGA_LIBS})
+add_library (libginga STATIC ${LIBGINGA_SOURCES})
+add_dependencies (libginga nclua_build)
+target_include_directories (libginga PUBLIC ${LIBGINGA_INCLUDE_DIRS})
+target_link_libraries (libginga PUBLIC ${LIBGINGA_LIBS})
+set_target_properties (libginga PROPERTIES OUTPUT_NAME "libginga")
+
+add_executable (ginga ../src/ginga.cpp)
+target_include_directories (ginga PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories (ginga PRIVATE ${LIBGINGA_INCLUDE_DIRS})
+target_link_libraries (ginga PRIVATE libginga)
+
 
 if (WITH_GINGA_GTK)
   add_executable (ginga-gtk ${GINGA_GUI_GTK_SOURCES})
@@ -263,7 +265,7 @@ if (WITH_CEF)
   SET_LINUX_SUID_PERMISSIONS(ginga "${CEF_TARGET_OUT_DIR}/chrome-sandbox")
 endif()
 
-configure_file(${CMAKE_SOURCE_DIR}/config.h.in config.h)
+configure_file (${CMAKE_SOURCE_DIR}/config.h.in config.h)
 
 # add a target to generate API documentation with Doxygen
 find_package(Doxygen)
@@ -299,6 +301,6 @@ set (CPACK_PACKAGE_NAME ginga-idtv)
 set (CPACK_PACKAGE_CONTACT robertogerson@telemidia.puc-rio.br)
 
 install (DIRECTORY Release/ DESTINATION bin)
-install(TARGETS ginga DESTINATION bin)
+# install (TARGETS iginga DESTINATION bin)
 include (CPack)
 
