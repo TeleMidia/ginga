@@ -8,8 +8,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_INCLUDE_CURRENTDIR ON)
 
 find_package(GLIB 2.32 REQUIRED)
-find_package(SDL2 REQUIRED)
-find_package(SDL2_image REQUIRED)
 find_package(CURL REQUIRED)
 
 find_package(XercesC 2.7 REQUIRED)
@@ -172,8 +170,6 @@ set (LIBGINGA_INCLUDE_DIRS
   ${GLIB_INCLUDE_DIRS}
   ${GDKPIXBUF_INCLUDE_DIR}
 
-  ${SDL2_INCLUDE_DIR}
-
   ${CAIRO_INCLUDE_DIRS}
   ${PANGO_INCLUDE_DIRS}
   ${RSVG_INCLUDE_DIRS}
@@ -192,10 +188,6 @@ set (LIBGINGA_LIBS
   ${XercesC_LIBRARIES}
   expat
 
-  ${SDL2_LIBRARY}
-  ${SDL2_IMAGE_LIBRARIES}
-  ${SDL2_TTF_LIBRARIES}
-  
   ${CURL_LIBRARIES}
   ${GLIB_LIBRARIES}
   ${GSTREAMER_LIBRARIES}
@@ -229,7 +221,7 @@ add_library (libginga STATIC ${LIBGINGA_SOURCES})
 add_dependencies (libginga nclua_build)
 target_include_directories (libginga PUBLIC ${LIBGINGA_INCLUDE_DIRS})
 target_link_libraries (libginga PUBLIC ${LIBGINGA_LIBS})
-set_target_properties (libginga PROPERTIES OUTPUT_NAME "libginga")
+set_target_properties (libginga PROPERTIES OUTPUT_NAME "ginga")
 
 add_executable (ginga ../src/ginga.cpp)
 target_include_directories (ginga PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
@@ -301,6 +293,6 @@ set (CPACK_PACKAGE_NAME ginga-idtv)
 set (CPACK_PACKAGE_CONTACT robertogerson@telemidia.puc-rio.br)
 
 install (DIRECTORY Release/ DESTINATION bin)
-# install (TARGETS iginga DESTINATION bin)
+install (TARGETS ginga DESTINATION bin)
 include (CPack)
 
