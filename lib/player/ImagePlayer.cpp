@@ -78,10 +78,8 @@ ImagePlayer::redraw (cairo_t *cr)
       status = cairox_surface_create_from_file (_uri.c_str (), &_surface);
       if (unlikely (status != CAIRO_STATUS_SUCCESS))
         {
-          if (unlikely (status != CAIRO_STATUS_FILE_NOT_FOUND
-                        && status != CAIRO_STATUS_READ_ERROR))
-            ERROR ("cannot load image file %s: %s",
-                   _uri.c_str (), cairo_status_to_string (status));
+          ERROR ("cannot load image file %s: %s",
+                 _uri.c_str (), cairo_status_to_string (status));
         }
       g_assert_nonnull (_surface);
     }
