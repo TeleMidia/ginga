@@ -17,8 +17,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga_gtk.h"
 
-#include "mb/Display.h"
-using namespace ::ginga::mb;
 
 GtkWidget *fullscreenWindow = NULL;
 gboolean isFullScreenMode = FALSE;
@@ -33,15 +31,15 @@ create_fullscreen_window (void)
   isFullScreenMode = TRUE;
 
   GdkScreen *screen = gdk_screen_get_default ();
-  
+
   guint32 width = gdk_screen_get_width (screen);
   guint32 height = gdk_screen_get_height (screen);
 
   fullscreenWindow = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   g_assert_nonnull (fullscreenWindow);
-  gtk_window_set_title (GTK_WINDOW (fullscreenWindow), PACKAGE_STRING);
-  gtk_window_set_default_size (GTK_WINDOW (fullscreenWindow),
-                               width, height);
+  gtk_window_set_title (GTK_WINDOW (fullscreenWindow), "Ginga");
+  gtk_window_set_default_size (GTK_WINDOW (fullscreenWindow), width,
+                               height);
   gtk_window_set_position (GTK_WINDOW (fullscreenWindow),
                            GTK_WIN_POS_CENTER);
   g_signal_connect (fullscreenWindow, "key-press-event",
@@ -62,10 +60,6 @@ create_fullscreen_window (void)
                     G_CALLBACK (destroy_fullscreen_window), NULL);
 
   gtk_widget_show_all (fullscreenWindow);
-
-  if(_Ginga_Display!=NULL){
-    _Ginga_Display->changeWindow(create_sdl_window_from_gtk_widget (fullscreenWindow),width, height);
-  }
 }
 void
 destroy_fullscreen_window (void)

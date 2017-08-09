@@ -34,13 +34,11 @@ resize_main_window_canvas (void)
 void
 create_main_window (void)
 {
-  load_settings ();
-
   // Create application window.
   ginga_gui.toplevel_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   g_assert_nonnull (ginga_gui.toplevel_window);
   gtk_window_set_title (GTK_WINDOW (ginga_gui.toplevel_window),
-                        PACKAGE_STRING);
+                        "Ginga");
   gtk_window_set_default_size (GTK_WINDOW (ginga_gui.toplevel_window),
                                presentationAttributes.resolutionWidth,
                                presentationAttributes.resolutionHeight);
@@ -49,6 +47,8 @@ create_main_window (void)
   gtk_window_set_resizable (GTK_WINDOW (ginga_gui.toplevel_window), FALSE);
   gtk_container_set_border_width (GTK_CONTAINER (ginga_gui.toplevel_window),
                                   ginga_gui.default_margin);
+
+  /*                                
 
   ginga_gui.fixed_layout = gtk_fixed_new ();
   g_assert_nonnull (ginga_gui.fixed_layout);
@@ -96,8 +96,12 @@ create_main_window (void)
                                presentationAttributes.resolutionWidth,
                                presentationAttributes.resolutionHeight);
 
-
-  g_timeout_add (1000 / 600, (GSourceFunc) update_draw_callback, ginga_gui.canvas);
+#if GTK_CHECK_VERSION(3,8,0)
+  gtk_widget_add_tick_callback (ginga_gui.canvas, (GtkTickCallback) update_draw_callback,
+                                NULL, NULL);
+#else
+  g_timeout_add (1000 / 60, (GSourceFunc) update_draw_callback, ginga_gui.canvas);
+#endif
 
 
   ginga_gui.canvas_separator_bottom
@@ -278,7 +282,7 @@ create_main_window (void)
                     G_CALLBACK (key_release_event_callback), NULL);
   g_signal_connect (ginga_gui.toplevel_window, "destroy",
                     G_CALLBACK (destroy_main_window), NULL);
-
+  */
   gtk_widget_show_all (ginga_gui.toplevel_window);
 }
 
@@ -297,6 +301,7 @@ destroy_main_window (void)
 void
 enable_disable_debug (void)
 {
+    /*
   isDebugMode = !isDebugMode;
   guint offset = 0;
   gtk_notebook_set_current_page (GTK_NOTEBOOK (ginga_gui.notebook), 0);
@@ -383,6 +388,7 @@ select_ncl_file_callback (GtkWidget *widget, gpointer data)
 
   gtk_widget_destroy (dialog);
   save_settings();
+  */
 }
 
 void stop_button_callback(void){

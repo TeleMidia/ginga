@@ -27,7 +27,7 @@ create_about_window (void)
 
   aboutWindow = gtk_about_dialog_new ();
   gtk_about_dialog_set_program_name (GTK_ABOUT_DIALOG (aboutWindow),
-                                     PACKAGE_STRING);
+                                     "Ginga");
   gtk_about_dialog_set_copyright (
       GTK_ABOUT_DIALOG (aboutWindow),
       "Copyright (C) 2006-2017 PUC-Rio/TeleMidia Lab");
