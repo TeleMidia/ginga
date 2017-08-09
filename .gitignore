@@ -57,9 +57,9 @@
 /doc/Doxyfile
 /doc/html
 /libtool
-/src-gtk/Makefile
-/src-gtk/Makefile.in
-/src-gtk/ginga-gtk
+/src-gui/Makefile
+/src-gui/Makefile.in
+/src-gui/gingagui
 /src/Makefile
 /src/Makefile.in
 /src/config.h
