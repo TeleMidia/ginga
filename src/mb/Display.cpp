@@ -15,13 +15,13 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga.h"
+#include "ginga-internal.h"
 #include "Display.h"
 #include "Dashboard.h"
 
 GINGA_MB_BEGIN
 
-// Global display; initialized by main().
+// Global display; initialized by Ginga class constructor.
 Display *_Ginga_Display = NULL;
 
 // Compares the z-index and z-order of two players.

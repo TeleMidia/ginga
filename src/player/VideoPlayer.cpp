@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga.h"
+#include "ginga-internal.h"
 #include "VideoPlayer.h"
 
 #define gstx_element_get_state(elt, st, pend, tout)             \

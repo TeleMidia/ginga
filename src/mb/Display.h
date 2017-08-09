@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#include "ginga.h"
+#include "ginga-internal.h"
 #include "Dashboard.h"
 #include "IEventListener.h"
 
