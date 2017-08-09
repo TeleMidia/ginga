@@ -22,10 +22,9 @@ Required:
 * cairo >= 1.10
 * glib >= 2.32
 * gstreamer >= 1.8
+* GTK+ >= 3.4
 * nclua >= 1.0, http://github.com/gflima/nclua
 * pango >= 1.30
-* SDL2 >= 2.0
-* SDL2_image >= 2.0
 * xercesc >= 2.7
 
 Optional:
