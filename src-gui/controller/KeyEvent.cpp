@@ -39,10 +39,10 @@ key_press_event_callback (GtkWidget *widget, GdkEventKey *event)
     set_fullscreen_mode ();
   else if (!g_strcmp0 (key_name, "Escape") && isFullScreenMode)
     set_unfullscreen_mode ();
-  
+   /*
   if(_Ginga_Display==NULL)
      return;
-  
+ 
   if (!g_strcmp0 (key_name, "1"))
     _Ginga_Display->insertKeyEvent(SDLK_1, true);
   else if (!g_strcmp0 (key_name, "2"))
@@ -93,7 +93,7 @@ key_press_event_callback (GtkWidget *widget, GdkEventKey *event)
     _Ginga_Display->insertKeyEvent(SDLK_F11, true); 
   else if (!g_strcmp0 (key_name, "F12"))
     _Ginga_Display->insertKeyEvent(SDLK_F12, true);    
-
+ */
 }
 
 void
@@ -105,7 +105,7 @@ key_release_event_callback (GtkWidget *widget, GdkEventKey *event)
       || !g_strcmp0 (key_name, "Control_R")
       || !g_strcmp0 (key_name, "Meta_R") || !g_strcmp0 (key_name, "Meta_L"))
     isCrtlModifierActive = FALSE;
-
+/*
   if(_Ginga_Display==NULL)
      return;
   
@@ -159,18 +159,15 @@ key_release_event_callback (GtkWidget *widget, GdkEventKey *event)
     _Ginga_Display->insertKeyEvent(SDLK_F11, false); 
   else if (!g_strcmp0 (key_name, "F12"))
     _Ginga_Display->insertKeyEvent(SDLK_F12, false);
-
+*/
 }
 
 
 void
 key_tvremote_press_event_callback(GtkWidget *widget, gpointer data){
    
-   if (_Ginga_Display == NULL)
-      return;
-
    const gchar * widget_name = gtk_widget_get_name(widget);
-   
+   /*
    if(strcmp(widget_name, "b_1")==0)
      _Ginga_Display->insertKeyEvent(SDLK_1, true);
    else  if(strcmp(widget_name, "b_2")==0)
@@ -209,6 +206,6 @@ key_tvremote_press_event_callback(GtkWidget *widget, gpointer data){
      _Ginga_Display->insertKeyEvent(SDLK_DOWN, true);
    else  if(strcmp(widget_name, "b_info")==0)
      _Ginga_Display->insertKeyEvent(SDLK_F5, true);
-
+ */
 
 }

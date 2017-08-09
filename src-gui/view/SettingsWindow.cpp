@@ -27,7 +27,7 @@ void
 apply_settings_callback (void)
 {
   original_presentationAttributes = presentationAttributes;
-  resize_main_window_canvas ();
+  //resize_main_window_canvas ();
 }
 
 void
@@ -165,6 +165,7 @@ preedit_changed_callback (GtkEditable *edit, gchar *new_text,
 void
 create_presentation_page (GtkWidget *notebook)
 {
+  /*
   GtkWidget *fixed_layout_presentation = gtk_fixed_new ();
   g_assert_nonnull (fixed_layout_presentation);
 
@@ -262,11 +263,13 @@ create_presentation_page (GtkWidget *notebook)
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
                             fixed_layout_presentation,
                             gtk_label_new ("Presentation"));
+                            */
 }
 
 void
 create_settings_window (void)
 {
+  /*
   if (settingsWindow != NULL)
     return;
 
@@ -293,18 +296,7 @@ create_settings_window (void)
 
   GtkWidget *fixed_layout_controls = gtk_fixed_new ();
   g_assert_nonnull (fixed_layout_controls);
-  /*
-    GtkWidget *red_icon = gtk_image_new_from_file (
-        g_strconcat (ginga_gui.executable_folder,
-                     "icons/light-theme/settings-icon.png", NULL));
-    gtk_fixed_put (GTK_FIXED (fixed_layout_controls), button_icon, 0, 0);
-
-    GtkWidget *combo_box = gtk_combo_box_text_new ();
-    g_assert_nonnull (combo_box);
-    create_key_combobox (combo_box);
-    gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), 0);
-    gtk_fixed_put (GTK_FIXED (fixed_layout_controls), combo_box, 50, 0);
-   */
+  
 
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook), fixed_layout_controls,
                             gtk_label_new ("Controls"));
@@ -327,7 +319,7 @@ create_settings_window (void)
   g_signal_connect (settingsWindow, "destroy",
                     G_CALLBACK (destroy_settings_window), NULL);
 
-  gtk_widget_show_all (settingsWindow);
+  gtk_widget_show_all (settingsWindow);  */
 }
 
 void

@@ -25,7 +25,7 @@ create_tvcontrol_window (void)
 
   if (tvcontrolWindow != NULL)
     return;
-
+/*
   guint16 control_width = (BUTTON_SIZE * 4);
   guint16 control_height = (BUTTON_SIZE * 11);
   guint16 middle_button_pos = (control_width / 2) - (BUTTON_SIZE / 2);
@@ -414,6 +414,7 @@ create_tvcontrol_window (void)
                     G_CALLBACK (destroy_tvcontrol_window ), NULL);
 
   gtk_widget_show_all (tvcontrolWindow);
+  */
 }
 
 void

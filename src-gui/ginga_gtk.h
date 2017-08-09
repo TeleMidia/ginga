@@ -21,26 +21,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
-
+#include <stdlib.h>
 #include <string.h>
 
-
-#define DEFAULT_WINDOW_WIDTH 800
-#define DEFAULT_WINDOW_HEIGHT 600
-
-#if defined (GDK_WINDOWING_X11)
-#include <gdk/gdkx.h>
-#define MENU_BOX_HEIGHT 38
-#define BUTTON_SIZE 30
-#elif defined (GDK_WINDOWING_WIN32)
-#include <gdk/gdkwin32.h>
-#define MENU_BOX_HEIGHT 30
-#define BUTTON_SIZE 30
-#elif defined (GDK_WINDOWING_QUARTZ)
-#include <gdk/gdkquartz.h>
-#define MENU_BOX_HEIGHT 65
-#define BUTTON_SIZE 35
-#endif
 
 typedef struct{
   GtkWidget *toplevel_window = NULL;
@@ -66,14 +49,15 @@ typedef struct{
 
 typedef struct{
   guint8 aspectRatio = 0; /* 0=(4:3) 1=(16:9) 2=(16:10) */
-  guint16 resolutionWidth = DEFAULT_WINDOW_WIDTH;
-  guint16 resolutionHeight = DEFAULT_WINDOW_HEIGHT;
+  guint16 resolutionWidth = 850;
+  guint16 resolutionHeight = 500;
   guint8 frameRate = 0; /* 0=30 1=60 2=Free  */
   gchar *lastFileName = NULL;
 }PresentationAttributes;  
 
 extern Ginga_GUI ginga_gui;
 extern Ginga *GINGA; /* Ginga Scheduler */
+extern GtkWidget *mainWindow;
 extern GtkWidget *tvcontrolWindow;
 extern GtkWidget *fullscreenWindow;
 extern GtkWidget *settingsWindow;
@@ -89,8 +73,7 @@ void destroy_main_window(void);
 void enable_disable_debug(void);
 void select_ncl_file_callback(GtkWidget *widget, gpointer data);
 void play_pause_button_callback(void);
-void stop_button_callback(void);
-void resize_main_window_canvas (void);
+void stop_button_callback(void); 
 
 /* View/TvControlWindow */
 void create_tvcontrol_window(void);
