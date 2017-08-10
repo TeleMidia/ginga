@@ -19,6 +19,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GtkWidget *mainWindow = NULL;
 
+GtkWidget *sideFrame = NULL;
+GtkWidget *debugView = NULL;
+GtkWidget *sideView = NULL;
+
 gboolean isDebugMode = FALSE;
 gboolean destroyWindowToResize = FALSE;
 gboolean isCrtlModifierActive = FALSE;
@@ -213,8 +217,8 @@ create_main_window (void)
   GtkWidget *debug_button = gtk_button_new ();
   g_assert_nonnull (debug_button);
   gtk_button_set_image (GTK_BUTTON (debug_button), debug_icon);
-  /* g_signal_connect (debug_button, "clicked",
-                     G_CALLBACK (create_tvcontrol_window), NULL);   */
+  g_signal_connect (debug_button, "clicked",
+                    G_CALLBACK (enable_disable_debug), NULL);
 
   GtkWidget *hist_button = gtk_menu_button_new ();
 
@@ -290,20 +294,46 @@ create_main_window (void)
                  ginga_gui.canvas);
 #endif
 
-  /* ginga_gui.log_view = gtk_text_view_new ();
-   g_assert_nonnull (ginga_gui.log_view);
-   gtk_widget_set_size_request (ginga_gui.log_view,
-                                presentationAttributes.resolutionWidth,
-   100);
+  GtkWidget *textArea = gtk_text_view_new ();
+  g_assert_nonnull (textArea);
+  GtkWidget *scrolledWLog = gtk_scrolled_window_new (NULL, NULL);
+  g_assert_nonnull (scrolledWLog);
+  gtk_container_add (GTK_CONTAINER (scrolledWLog), textArea);
 
-  */
+  GtkWidget *scrolledWTimeLine = gtk_scrolled_window_new (NULL, NULL);
+  g_assert_nonnull (scrolledWTimeLine);
+
+  debugView = gtk_notebook_new ();
+  g_assert_nonnull (debugView);
+  gtk_widget_set_size_request (debugView,
+                               presentationAttributes.resolutionWidth, 120);
+  gtk_widget_set_margin_top (debugView,5);
+
+  gtk_notebook_append_page (GTK_NOTEBOOK (debugView), scrolledWLog,
+                            gtk_label_new ("Log"));
+  gtk_notebook_append_page (GTK_NOTEBOOK (debugView), scrolledWTimeLine,
+                            gtk_label_new ("Timeline"));
+
+  GtkWidget *sideView = gtk_notebook_new ();
+  g_assert_nonnull (sideView); 
+  gtk_widget_set_size_request (sideView, 200, -1);
+  gtk_widget_set_margin_start (sideView,5);
+  gtk_notebook_append_page (GTK_NOTEBOOK (sideView), create_tvremote_buttons(20,40),
+                            gtk_label_new ("Control"));
+
+  GtkWidget *hpaned = gtk_paned_new (GTK_ORIENTATION_HORIZONTAL);
+  g_assert_nonnull (hpaned);
+  gtk_widget_set_size_request (hpaned, 200, -1);
+
+  gtk_paned_pack1 (GTK_PANED (hpaned), ginga_gui.canvas, true, true);
+  gtk_paned_pack2 (GTK_PANED (hpaned), sideView, false, false);
 
   GtkWidget *vpaned = gtk_paned_new (GTK_ORIENTATION_VERTICAL);
-
+  g_assert_nonnull (vpaned);
   gtk_widget_set_size_request (vpaned, 200, -1);
 
-  gtk_paned_pack1 (GTK_PANED (vpaned), ginga_gui.canvas, true, true);
-  // gtk_paned_pack2 (GTK_PANED (vpaned), ginga_gui.log_view, true, false);
+  gtk_paned_pack1 (GTK_PANED (vpaned), hpaned, true, true);
+  gtk_paned_pack2 (GTK_PANED (vpaned), debugView , true, false);
 
   gtk_container_add (GTK_CONTAINER (mainWindow), vpaned);
 
@@ -317,12 +347,15 @@ create_main_window (void)
                     NULL);
 
   gtk_widget_show_all (mainWindow);
+
+  gtk_widget_hide (debugView);
+  gtk_widget_hide (sideView);
 }
 
 void
 destroy_main_window (void)
 {
-//  stop_application ();
+  //  stop_application ();
   gtk_widget_destroy (mainWindow);
   mainWindow = NULL;
   if (!destroyWindowToResize)
@@ -334,6 +367,12 @@ destroy_main_window (void)
 void
 enable_disable_debug (void)
 {
+  isDebugMode = !isDebugMode;
+  
+  if (isDebugMode)
+    gtk_widget_show (GTK_WIDGET(debugView ));
+  else
+    gtk_widget_hide (GTK_WIDGET(debugView ));
 }
 
 void

@@ -62,8 +62,13 @@ extern GtkWidget *tvcontrolWindow;
 extern GtkWidget *fullscreenWindow;
 extern GtkWidget *settingsWindow;
 extern GtkWidget *aboutWindow;
+
+extern GtkWidget *debugView;
+extern GtkWidget *sideView;
+
 extern gboolean isFullScreenMode;
 extern gboolean isDebugMode;
+extern gboolean tvcontrolAsSidebar;
 extern gboolean isCrtlModifierActive;
 extern PresentationAttributes presentationAttributes;
 
@@ -79,6 +84,7 @@ void keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type);
 /* View/TvControlWindow */
 void create_tvcontrol_window(void);
 void destroy_tvcontrol_window(void);
+GtkWidget *create_tvremote_buttons (guint, guint);
 
 /* View/FullscreenWindow */
 void create_fullscreen_window(void);
