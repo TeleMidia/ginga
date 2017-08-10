@@ -18,6 +18,10 @@
       <property name="height" value="50%"/>
       <property name="background" value="red"/>
       <property name="focusIndex" value="0"/>
+      <property name="moveUp" value="1"/>
+      <property name="moveDown" value="1"/>
+      <property name="moveLeft" value="1"/>
+      <property name="moveRight" value="1"/>
     </media>
     <media id="time2">
       <property name="width" value="50%"/>
@@ -26,6 +30,10 @@
       <property name="right" value="0"/>
       <property name="background" value="green"/>
       <property name="focusIndex" value="1"/>
+      <property name="moveUp" value="0"/>
+      <property name="moveDown" value="0"/>
+      <property name="moveLeft" value="0"/>
+      <property name="moveRight" value="0"/>
     </media>
     <media id="time3">
       <area id="a1" begin="1s"/>

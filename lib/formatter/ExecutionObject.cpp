@@ -83,7 +83,6 @@ ExecutionObject::~ExecutionObject ()
   _nodeParentTable.clear ();
 
   _parentTable.clear ();
-  _objects.insert (this);
   TRACE ("destroying exec object '%s' (%p)", _id.c_str (), this);
 }
 
@@ -731,6 +730,24 @@ ExecutionObject::abort ()
 
 // -----------------------------------
 
+void
+ExecutionObject::refreshCurrentFocus (void)
+{
+  string next = "";
+  for (auto obj: _objects)
+    {
+      string i;
+      if (obj->isOccurring ()
+          && obj->_player != NULL
+          && (i = obj->_player->getProperty ("focusIndex")) != ""
+          && (next == "" || g_strcmp0 (i.c_str (), next.c_str ()) < 0))
+        {
+          next = i;
+        }
+    }
+  Player::setCurrentFocus (next);
+}
+
 /**
  * @brief Sets property.
  * @param name Property name.
@@ -744,6 +761,15 @@ ExecutionObject::setProperty (const string &name,
                               const string &to,
                               GingaTime dur)
 {
+  Node *node = this->getNode ();
+  g_assert_nonnull (node);
+
+  if (instanceof (Media *, node) && cast (Media *, node)->isSettings ()
+      && name == "service.currentFocus")
+    {
+      Player::setCurrentFocus (to);
+    }
+
   if (_player == nullptr)
     return;                     // nothing to do
 
@@ -832,7 +858,24 @@ ExecutionObject::handleKeyEvent (const string &key, bool press)
     return;                     // nothing to do
 
   g_assert (this->isOccurring ());
+  g_assert (this->_player);
   g_assert (instanceof (PresentationEvent *, _mainEvent));
+
+  if (xstrhasprefix (key, "CURSOR_") && this->_player->isFocused ())
+    {
+      string next;
+      if ((key == "CURSOR_UP"
+           && (next = this->_player->getProperty ("moveUp")) != "")
+          || ((key == "CURSOR_DOWN"
+               && (next = this->_player->getProperty ("moveDown")) != ""))
+          || ((key == "CURSOR_LEFT"
+               && (next = this->_player->getProperty ("moveLeft")) != ""))
+          || ((key == "CURSOR_RIGHT"
+               && (next = this->_player->getProperty ("moveRight")) != "")))
+        {
+          Player::scheduleFocusChange (next);
+        }
+    }
 
   if (_selectionEvents.empty ())
     return;                     // nothing to do
@@ -869,8 +912,8 @@ ExecutionObject::handleKeyEvent (const string &key, bool press)
     {
       if (_seListener != nullptr)
         {
-          NclSimpleAction *fakeAct = new NclSimpleAction (evt,
-                                                          SimpleAction::START);
+          NclSimpleAction *fakeAct =
+            new NclSimpleAction (evt, SimpleAction::START);
           _seListener->scheduleAction (fakeAct);
         }
     }
