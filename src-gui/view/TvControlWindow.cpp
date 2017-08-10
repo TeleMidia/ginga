@@ -18,6 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga_gtk.h"
 
 GtkWidget *tvcontrolWindow = NULL;
+gboolean tvcontrolAsSidebar = FALSE;
 
 #define BUTTON_SIZE 40
 
@@ -28,16 +29,428 @@ key_tvremote_press_event_callback (GtkWidget *widget, gpointer data)
   GINGA->send_key (std::string (widget_name), true);
 }
 
+GtkWidget *
+create_tvremote_buttons (guint offSetX, guint offSetY)
+{
+  guint16 control_width = (BUTTON_SIZE * 4);
+  guint16 control_height = (BUTTON_SIZE * 11);
+  guint16 middle_button_pos = (control_width / 2) - (BUTTON_SIZE / 2);
+
+  GtkWidget *fixed_layout = gtk_fixed_new ();
+  g_assert_nonnull (fixed_layout);
+
+  GtkWidget *button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/number_one.png", NULL));
+  GtkWidget *button_1 = gtk_button_new ();
+  g_assert_nonnull (button_1);
+  gtk_button_set_image (GTK_BUTTON (button_1), button_icon);
+  gtk_widget_set_name (button_1, "1");
+  g_signal_connect (button_1, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_1,
+                 offSetX + middle_button_pos - BUTTON_SIZE, offSetY + 0);
+
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/number_two.png", NULL));
+  GtkWidget *button_2 = gtk_button_new ();
+  g_assert_nonnull (button_2);
+  gtk_button_set_image (GTK_BUTTON (button_2), button_icon);
+  gtk_widget_set_name (button_2, "2");
+  g_signal_connect (button_2, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_2,
+                 offSetX + middle_button_pos, offSetY + 0);
+
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/number_three.png", NULL));
+  GtkWidget *button_3 = gtk_button_new ();
+  g_assert_nonnull (button_3);
+  gtk_button_set_image (GTK_BUTTON (button_3), button_icon);
+  gtk_widget_set_name (button_3, "3");
+  g_signal_connect (button_3, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_3,
+                 offSetX + middle_button_pos + BUTTON_SIZE, offSetY + 0);
+
+  //
+
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/number_four.png", NULL));
+  GtkWidget *button_4 = gtk_button_new ();
+  g_assert_nonnull (button_4);
+  gtk_button_set_image (GTK_BUTTON (button_4), button_icon);
+  gtk_widget_set_name (button_4, "4");
+  g_signal_connect (button_4, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_4,
+                 offSetX + middle_button_pos - BUTTON_SIZE,
+                 offSetY + BUTTON_SIZE);
+
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/number_five.png", NULL));
+  GtkWidget *button_5 = gtk_button_new ();
+  g_assert_nonnull (button_5);
+  gtk_button_set_image (GTK_BUTTON (button_5), button_icon);
+  gtk_widget_set_name (button_5, "5");
+  g_signal_connect (button_5, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_5,
+                 offSetX + middle_button_pos, offSetY + BUTTON_SIZE);
+
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/number_six.png", NULL));
+  GtkWidget *button_6 = gtk_button_new ();
+  g_assert_nonnull (button_6);
+  gtk_button_set_image (GTK_BUTTON (button_6), button_icon);
+  gtk_widget_set_name (button_6, "6");
+  g_signal_connect (button_6, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_6,
+                 offSetX + middle_button_pos + BUTTON_SIZE,
+                 offSetY + BUTTON_SIZE);
+
+  //
+
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/number_seven.png", NULL));
+  GtkWidget *button_7 = gtk_button_new ();
+  g_assert_nonnull (button_7);
+  gtk_button_set_image (GTK_BUTTON (button_7), button_icon);
+  gtk_widget_set_name (button_7, "7");
+  g_signal_connect (button_7, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_7,
+                 offSetX + middle_button_pos - BUTTON_SIZE,
+                 offSetY + (BUTTON_SIZE * 2));
+
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/number_eight.png", NULL));
+  GtkWidget *button_8 = gtk_button_new ();
+  g_assert_nonnull (button_8);
+  gtk_button_set_image (GTK_BUTTON (button_8), button_icon);
+  gtk_widget_set_name (button_8, "8");
+  g_signal_connect (button_8, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_8,
+                 offSetX + middle_button_pos, offSetY + (BUTTON_SIZE * 2));
+
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/number_nine.png", NULL));
+  GtkWidget *button_9 = gtk_button_new ();
+  g_assert_nonnull (button_9);
+  gtk_button_set_image (GTK_BUTTON (button_9), button_icon);
+  gtk_widget_set_name (button_9, "9");
+  g_signal_connect (button_9, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_9,
+                 offSetX + middle_button_pos + BUTTON_SIZE,
+                 offSetY + (BUTTON_SIZE * 2));
+
+  //
+
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/back_arrow.png", NULL));
+  GtkWidget *button_back = gtk_button_new ();
+  g_assert_nonnull (button_back);
+  gtk_button_set_image (GTK_BUTTON (button_back), button_icon);
+  gtk_widget_set_name (button_back, "RETURN");
+  g_signal_connect (button_back, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_back,
+                 offSetX + middle_button_pos - BUTTON_SIZE,
+                 offSetY + (BUTTON_SIZE * 3));
+
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/number_zero.png", NULL));
+  GtkWidget *button_0 = gtk_button_new ();
+  g_assert_nonnull (button_0);
+  gtk_button_set_image (GTK_BUTTON (button_0), button_icon);
+  gtk_widget_set_name (button_0, "0");
+  g_signal_connect (button_0, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_0,
+                 offSetX + middle_button_pos, offSetY + (BUTTON_SIZE * 3));
+
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/info-icon.png", NULL));
+  GtkWidget *button_info = gtk_button_new ();
+  g_assert_nonnull (button_info);
+  gtk_button_set_image (GTK_BUTTON (button_info), button_icon);
+  gtk_widget_set_name (button_info, "INFO");
+  g_signal_connect (button_info, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_info,
+                 offSetX + middle_button_pos + BUTTON_SIZE,
+                 offSetY + (BUTTON_SIZE * 3));
+
+  //
+
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/uparrow-icon.png", NULL));
+  GtkWidget *button_up = gtk_button_new ();
+  g_assert_nonnull (button_up);
+  gtk_button_set_image (GTK_BUTTON (button_up), button_icon);
+  gtk_widget_set_name (button_up, "CURSOR_UP");
+  g_signal_connect (button_up, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_up,
+                 offSetX + middle_button_pos,
+                 offSetY + 10 + (BUTTON_SIZE * 4));
+
+  //
+
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/leftarrow-icon.png", NULL));
+  GtkWidget *button_left = gtk_button_new ();
+  g_assert_nonnull (button_left);
+  gtk_button_set_image (GTK_BUTTON (button_left), button_icon);
+  gtk_widget_set_name (button_left, "CURSOR_LEFT");
+  g_signal_connect (button_left, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_left,
+                 offSetX + middle_button_pos - BUTTON_SIZE,
+                 offSetY + 10 + (BUTTON_SIZE * 5));
+
+  button_icon = gtk_image_new_from_file (g_strconcat (
+      ginga_gui.executable_folder, "icons/light-theme/ok-icon.png", NULL));
+  GtkWidget *button_ok = gtk_button_new ();
+  g_assert_nonnull (button_ok);
+  gtk_button_set_image (GTK_BUTTON (button_ok), button_icon);
+  gtk_widget_set_name (button_ok, "OK");
+  g_signal_connect (button_ok, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_ok,
+                 offSetX + middle_button_pos,
+                 offSetY + 10 + (BUTTON_SIZE * 5));
+
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/rightarrow-icon.png", NULL));
+  GtkWidget *button_right = gtk_button_new ();
+  g_assert_nonnull (button_right);
+  gtk_button_set_image (GTK_BUTTON (button_right), button_icon);
+  gtk_widget_set_name (button_right, "CURSOR_RIGHT");
+  g_signal_connect (button_right, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_right,
+                 offSetX + middle_button_pos + BUTTON_SIZE,
+                 offSetY + 10 + (BUTTON_SIZE * 5));
+
+  //
+
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/downarrow-icon.png", NULL));
+  GtkWidget *button_down = gtk_button_new ();
+  g_assert_nonnull (button_down);
+  gtk_button_set_image (GTK_BUTTON (button_down), button_icon);
+  gtk_widget_set_name (button_down, "CURSOR_DOWN");
+  g_signal_connect (button_down, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_down,
+                 offSetX + middle_button_pos,
+                 offSetY + 10 + (BUTTON_SIZE * 6));
+
+  //
+
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/volup-icon.png", NULL));
+  GtkWidget *button_vol_up = gtk_button_new ();
+  g_assert_nonnull (button_vol_up);
+  gtk_button_set_image (GTK_BUTTON (button_vol_up), button_icon);
+  gtk_widget_set_name (button_vol_up, "b_vol_up");
+  g_signal_connect (button_vol_up, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_vol_up, offSetX + 0,
+                 offSetY + 20 + (BUTTON_SIZE * 7));
+
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/menu-icon.png", NULL));
+  GtkWidget *button_menu = gtk_button_new ();
+  g_assert_nonnull (button_menu);
+  gtk_button_set_image (GTK_BUTTON (button_menu), button_icon);
+  gtk_widget_set_name (button_menu, "b_menu");
+  g_signal_connect (button_menu, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_menu,
+                 offSetX + BUTTON_SIZE, offSetY + 20 + (BUTTON_SIZE * 7));
+
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/close-icon.png", NULL));
+  GtkWidget *button_close = gtk_button_new ();
+  g_assert_nonnull (button_close);
+  gtk_button_set_image (GTK_BUTTON (button_close), button_icon);
+  gtk_widget_set_name (button_close, "b_close");
+  g_signal_connect (button_close, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_close,
+                 offSetX + (BUTTON_SIZE * 2),
+                 offSetY + 20 + (BUTTON_SIZE * 7));
+
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/chup-icon.png", NULL));
+  GtkWidget *button_ch_up = gtk_button_new ();
+  g_assert_nonnull (button_ch_up);
+  gtk_button_set_image (GTK_BUTTON (button_ch_up), button_icon);
+  gtk_widget_set_name (button_ch_up, "b_ch_up");
+  g_signal_connect (button_ch_up, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_ch_up,
+                 offSetX + (BUTTON_SIZE * 3),
+                 offSetY + 20 + (BUTTON_SIZE * 7));
+
+  //
+
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/voldown-icon.png", NULL));
+  GtkWidget *button_vol_down = gtk_button_new ();
+  g_assert_nonnull (button_vol_down);
+  gtk_button_set_image (GTK_BUTTON (button_vol_down), button_icon);
+  gtk_widget_set_name (button_vol_down, "b_vol_down");
+  g_signal_connect (button_vol_down, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_vol_down, offSetX + 0,
+                 offSetY + 20 + (BUTTON_SIZE * 8));
+
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/settings-icon.png", NULL));
+  GtkWidget *button_menu2 = gtk_button_new ();
+  g_assert_nonnull (button_menu2);
+  gtk_button_set_image (GTK_BUTTON (button_menu2), button_icon);
+  gtk_widget_set_name (button_menu2, "b_menu2");
+  g_signal_connect (button_menu2, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_menu2,
+                 offSetX + BUTTON_SIZE, offSetY + 20 + (BUTTON_SIZE * 8));
+
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/settings-icon.png", NULL));
+  GtkWidget *button_info2 = gtk_button_new ();
+  g_assert_nonnull (button_info2);
+  gtk_button_set_image (GTK_BUTTON (button_info2), button_icon);
+  gtk_widget_set_name (button_info2, "b_info2");
+  g_signal_connect (button_info2, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_info2,
+                 offSetX + (BUTTON_SIZE * 2),
+                 offSetY + 20 + (BUTTON_SIZE * 8));
+
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/chdown-icon.png", NULL));
+  GtkWidget *button_ch_down = gtk_button_new ();
+  g_assert_nonnull (button_ch_down);
+  gtk_button_set_image (GTK_BUTTON (button_ch_down), button_icon);
+  gtk_widget_set_name (button_ch_down, "b_ch_down");
+  g_signal_connect (button_ch_down, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_ch_down,
+                 offSetX + (BUTTON_SIZE * 3),
+                 offSetY + 20 + (BUTTON_SIZE * 8));
+
+  //
+
+  button_icon = gtk_image_new_from_file (g_strconcat (
+      ginga_gui.executable_folder, "icons/common/red-icon.png", NULL));
+  GtkWidget *button_red = gtk_button_new ();
+  g_assert_nonnull (button_red);
+  gtk_button_set_image (GTK_BUTTON (button_red), button_icon);
+  gtk_widget_set_name (button_red, "RED");
+  g_signal_connect (button_red, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_red, offSetX + 0,
+                 offSetY + 20 + (BUTTON_SIZE * 9));
+
+  button_icon = gtk_image_new_from_file (g_strconcat (
+      ginga_gui.executable_folder, "icons/common/green-icon.png", NULL));
+  GtkWidget *button_green = gtk_button_new ();
+  g_assert_nonnull (button_green);
+  gtk_button_set_image (GTK_BUTTON (button_green), button_icon);
+  gtk_widget_set_name (button_green, "GREEN");
+  g_signal_connect (button_green, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_green,
+                 offSetX + BUTTON_SIZE, offSetY + 20 + (BUTTON_SIZE * 9));
+
+  button_icon = gtk_image_new_from_file (g_strconcat (
+      ginga_gui.executable_folder, "icons/common/yellow-icon.png", NULL));
+  GtkWidget *button_yellow = gtk_button_new ();
+  g_assert_nonnull (button_yellow);
+  gtk_button_set_image (GTK_BUTTON (button_yellow), button_icon);
+  gtk_widget_set_name (button_yellow, "YELLOW");
+  g_signal_connect (button_yellow, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_yellow,
+                 offSetX + (BUTTON_SIZE * 2),
+                 offSetY + 20 + (BUTTON_SIZE * 9));
+
+  button_icon = gtk_image_new_from_file (g_strconcat (
+      ginga_gui.executable_folder, "icons/common/blue-icon.png", NULL));
+  GtkWidget *button_blue = gtk_button_new ();
+  g_assert_nonnull (button_blue);
+  gtk_button_set_image (GTK_BUTTON (button_blue), button_icon);
+  gtk_widget_set_name (button_blue, "BLUE");
+  g_signal_connect (button_blue, "clicked",
+                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), button_blue,
+                 offSetX + (BUTTON_SIZE * 3),
+                 offSetY + 20 + (BUTTON_SIZE * 9));
+
+  GtkWidget *label = gtk_label_new ("...");
+  g_assert_nonnull (label);
+  gtk_fixed_put (GTK_FIXED (fixed_layout), label,
+                 offSetX + middle_button_pos + 10,
+                 offSetY + 20 + (BUTTON_SIZE * 10));
+
+  return fixed_layout;
+}
+
+void
+show_tvremote_sidebar ()
+{
+  tvcontrolAsSidebar = TRUE;
+  destroy_tvcontrol_window ();
+  gtk_widget_show_all (mainWindow);
+  if (!isDebugMode)
+    gtk_widget_hide (debugView);
+}
+
 void
 create_tvcontrol_window (void)
 {
+
+  if (tvcontrolAsSidebar)
+    {
+      show_tvremote_sidebar ();
+      return;
+    }
 
   if (tvcontrolWindow != NULL)
     return;
 
   guint16 control_width = (BUTTON_SIZE * 4);
   guint16 control_height = (BUTTON_SIZE * 11);
-  guint16 middle_button_pos = (control_width / 2) - (BUTTON_SIZE / 2);
 
   GtkWidget *header_bar = gtk_header_bar_new ();
   gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header_bar), true);
@@ -57,375 +470,20 @@ create_tvcontrol_window (void)
                             GDK_WINDOW_TYPE_HINT_DIALOG);
   gtk_header_bar_set_title (GTK_HEADER_BAR (header_bar), "Control");
 
-  GtkWidget *fixed_layout = gtk_fixed_new ();
-  g_assert_nonnull (fixed_layout);
-
   GtkWidget *button_icon = gtk_image_new_from_file (
       g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/number_one.png", NULL));
-  GtkWidget *button_1 = gtk_button_new ();
-  g_assert_nonnull (button_1);
-  gtk_button_set_image (GTK_BUTTON (button_1), button_icon);
-  gtk_widget_set_name (button_1, "1");
-  g_signal_connect (button_1, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_1,
-                 middle_button_pos - BUTTON_SIZE, 0);
+                   "icons/light-theme/sidebar-icon.png", NULL));
+  g_assert_nonnull (button_icon);
+  GtkWidget *sidebar_button = gtk_button_new ();
+  g_assert_nonnull (sidebar_button);
+  gtk_button_set_image (GTK_BUTTON (sidebar_button), button_icon);
+  g_signal_connect (sidebar_button, "clicked",
+                    G_CALLBACK (show_tvremote_sidebar), NULL);
+  gtk_header_bar_pack_start (GTK_HEADER_BAR (header_bar), sidebar_button);
 
-  button_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/number_two.png", NULL));
-  GtkWidget *button_2 = gtk_button_new ();
-  g_assert_nonnull (button_2);
-  gtk_button_set_image (GTK_BUTTON (button_2), button_icon);
-  gtk_widget_set_name (button_2, "2");
-  g_signal_connect (button_2, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_2, middle_button_pos, 0);
+  GtkWidget *layout = create_tvremote_buttons (0, 0);
 
-  button_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/number_three.png", NULL));
-  GtkWidget *button_3 = gtk_button_new ();
-  g_assert_nonnull (button_3);
-  gtk_button_set_image (GTK_BUTTON (button_3), button_icon);
-  gtk_widget_set_name (button_3, "3");
-  g_signal_connect (button_3, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_3,
-                 middle_button_pos + BUTTON_SIZE, 0);
-
-  //
-
-  button_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/number_four.png", NULL));
-  GtkWidget *button_4 = gtk_button_new ();
-  g_assert_nonnull (button_4);
-  gtk_button_set_image (GTK_BUTTON (button_4), button_icon);
-  gtk_widget_set_name (button_4, "4");
-  g_signal_connect (button_4, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_4,
-                 middle_button_pos - BUTTON_SIZE, BUTTON_SIZE);
-
-  button_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/number_five.png", NULL));
-  GtkWidget *button_5 = gtk_button_new ();
-  g_assert_nonnull (button_5);
-  gtk_button_set_image (GTK_BUTTON (button_5), button_icon);
-  gtk_widget_set_name (button_5, "5");
-  g_signal_connect (button_5, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_5, middle_button_pos,
-                 BUTTON_SIZE);
-
-  button_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/number_six.png", NULL));
-  GtkWidget *button_6 = gtk_button_new ();
-  g_assert_nonnull (button_6);
-  gtk_button_set_image (GTK_BUTTON (button_6), button_icon);
-  gtk_widget_set_name (button_6, "6");
-  g_signal_connect (button_6, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_6,
-                 middle_button_pos + BUTTON_SIZE, BUTTON_SIZE);
-
-  //
-
-  button_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/number_seven.png", NULL));
-  GtkWidget *button_7 = gtk_button_new ();
-  g_assert_nonnull (button_7);
-  gtk_button_set_image (GTK_BUTTON (button_7), button_icon);
-  gtk_widget_set_name (button_7, "7");
-  g_signal_connect (button_7, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_7,
-                 middle_button_pos - BUTTON_SIZE, (BUTTON_SIZE * 2));
-
-  button_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/number_eight.png", NULL));
-  GtkWidget *button_8 = gtk_button_new ();
-  g_assert_nonnull (button_8);
-  gtk_button_set_image (GTK_BUTTON (button_8), button_icon);
-  gtk_widget_set_name (button_8, "8");
-  g_signal_connect (button_8, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_8, middle_button_pos,
-                 (BUTTON_SIZE * 2));
-
-  button_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/number_nine.png", NULL));
-  GtkWidget *button_9 = gtk_button_new ();
-  g_assert_nonnull (button_9);
-  gtk_button_set_image (GTK_BUTTON (button_9), button_icon);
-  gtk_widget_set_name (button_9, "9");
-  g_signal_connect (button_9, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_9,
-                 middle_button_pos + BUTTON_SIZE, (BUTTON_SIZE * 2));
-
-  //
-
-  button_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/back_arrow.png", NULL));
-  GtkWidget *button_back = gtk_button_new ();
-  g_assert_nonnull (button_back);
-  gtk_button_set_image (GTK_BUTTON (button_back), button_icon);
-  gtk_widget_set_name (button_back, "RETURN");
-  g_signal_connect (button_back, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_back,
-                 middle_button_pos - BUTTON_SIZE, (BUTTON_SIZE * 3));
-
-  button_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/number_zero.png", NULL));
-  GtkWidget *button_0 = gtk_button_new ();
-  g_assert_nonnull (button_0);
-  gtk_button_set_image (GTK_BUTTON (button_0), button_icon);
-  gtk_widget_set_name (button_0, "0");
-  g_signal_connect (button_0, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_0, middle_button_pos,
-                 (BUTTON_SIZE * 3));
-
-  button_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/info-icon.png", NULL));
-  GtkWidget *button_info = gtk_button_new ();
-  g_assert_nonnull (button_info);
-  gtk_button_set_image (GTK_BUTTON (button_info), button_icon);
-  gtk_widget_set_name (button_info, "INFO");
-  g_signal_connect (button_info, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_info,
-                 middle_button_pos + BUTTON_SIZE, (BUTTON_SIZE * 3));
-
-  //
-
-  button_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/uparrow-icon.png", NULL));
-  GtkWidget *button_up = gtk_button_new ();
-  g_assert_nonnull (button_up);
-  gtk_button_set_image (GTK_BUTTON (button_up), button_icon);
-  gtk_widget_set_name (button_up, "CURSOR_UP");
-  g_signal_connect (button_up, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_up, middle_button_pos,
-                 10 + (BUTTON_SIZE * 4));
-
-  //
-
-  button_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/leftarrow-icon.png", NULL));
-  GtkWidget *button_left = gtk_button_new ();
-  g_assert_nonnull (button_left);
-  gtk_button_set_image (GTK_BUTTON (button_left), button_icon);
-  gtk_widget_set_name (button_left, "CURSOR_LEFT");
-  g_signal_connect (button_left, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_left,
-                 middle_button_pos - BUTTON_SIZE, 10 + (BUTTON_SIZE * 5));
-
-  button_icon = gtk_image_new_from_file (g_strconcat (
-      ginga_gui.executable_folder, "icons/light-theme/ok-icon.png", NULL));
-  GtkWidget *button_ok = gtk_button_new ();
-  g_assert_nonnull (button_ok);
-  gtk_button_set_image (GTK_BUTTON (button_ok), button_icon);
-  gtk_widget_set_name (button_ok, "OK");
-  g_signal_connect (button_ok, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_ok, middle_button_pos,
-                 10 + (BUTTON_SIZE * 5));
-
-  button_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/rightarrow-icon.png", NULL));
-  GtkWidget *button_right = gtk_button_new ();
-  g_assert_nonnull (button_right);
-  gtk_button_set_image (GTK_BUTTON (button_right), button_icon);
-  gtk_widget_set_name (button_right, "CURSOR_RIGHT");
-  g_signal_connect (button_right, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_right,
-                 middle_button_pos + BUTTON_SIZE, 10 + (BUTTON_SIZE * 5));
-
-  //
-
-  button_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/downarrow-icon.png", NULL));
-  GtkWidget *button_down = gtk_button_new ();
-  g_assert_nonnull (button_down);
-  gtk_button_set_image (GTK_BUTTON (button_down), button_icon);
-  gtk_widget_set_name (button_down, "CURSOR_DOWN");
-  g_signal_connect (button_down, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_down, middle_button_pos,
-                 10 + (BUTTON_SIZE * 6));
-
-  //
-
-  button_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/volup-icon.png", NULL));
-  GtkWidget *button_vol_up = gtk_button_new ();
-  g_assert_nonnull (button_vol_up);
-  gtk_button_set_image (GTK_BUTTON (button_vol_up), button_icon);
-  gtk_widget_set_name (button_vol_up, "b_vol_up");
-  g_signal_connect (button_vol_up, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_vol_up, 0,
-                 20 + (BUTTON_SIZE * 7));
-
-  button_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/menu-icon.png", NULL));
-  GtkWidget *button_menu = gtk_button_new ();
-  g_assert_nonnull (button_menu);
-  gtk_button_set_image (GTK_BUTTON (button_menu), button_icon);
-  gtk_widget_set_name (button_menu, "b_menu");
-  g_signal_connect (button_menu, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_menu, BUTTON_SIZE,
-                 20 + (BUTTON_SIZE * 7));
-
-  button_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/close-icon.png", NULL));
-  GtkWidget *button_close = gtk_button_new ();
-  g_assert_nonnull (button_close);
-  gtk_button_set_image (GTK_BUTTON (button_close), button_icon);
-  gtk_widget_set_name (button_close, "b_close");
-  g_signal_connect (button_close, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_close, (BUTTON_SIZE * 2),
-                 20 + (BUTTON_SIZE * 7));
-
-  button_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/chup-icon.png", NULL));
-  GtkWidget *button_ch_up = gtk_button_new ();
-  g_assert_nonnull (button_ch_up);
-  gtk_button_set_image (GTK_BUTTON (button_ch_up), button_icon);
-  gtk_widget_set_name (button_ch_up, "b_ch_up");
-  g_signal_connect (button_ch_up, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_ch_up, (BUTTON_SIZE * 3),
-                 20 + (BUTTON_SIZE * 7));
-
-  //
-
-  button_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/voldown-icon.png", NULL));
-  GtkWidget *button_vol_down = gtk_button_new ();
-  g_assert_nonnull (button_vol_down);
-  gtk_button_set_image (GTK_BUTTON (button_vol_down), button_icon);
-  gtk_widget_set_name (button_vol_down, "b_vol_down");
-  g_signal_connect (button_vol_down, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_vol_down, 0,
-                 20 + (BUTTON_SIZE * 8));
-
-  button_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/settings-icon.png", NULL));
-  GtkWidget *button_menu2 = gtk_button_new ();
-  g_assert_nonnull (button_menu2);
-  gtk_button_set_image (GTK_BUTTON (button_menu2), button_icon);
-  gtk_widget_set_name (button_menu2, "b_menu2");
-  g_signal_connect (button_menu2, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_menu2, BUTTON_SIZE,
-                 20 + (BUTTON_SIZE * 8));
-
-  button_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/settings-icon.png", NULL));
-  GtkWidget *button_info2 = gtk_button_new ();
-  g_assert_nonnull (button_info2);
-  gtk_button_set_image (GTK_BUTTON (button_info2), button_icon);
-  gtk_widget_set_name (button_info2, "b_info2");
-  g_signal_connect (button_info2, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_info2, (BUTTON_SIZE * 2),
-                 20 + (BUTTON_SIZE * 8));
-
-  button_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
-                   "icons/light-theme/chdown-icon.png", NULL));
-  GtkWidget *button_ch_down = gtk_button_new ();
-  g_assert_nonnull (button_ch_down);
-  gtk_button_set_image (GTK_BUTTON (button_ch_down), button_icon);
-  gtk_widget_set_name (button_ch_down, "b_ch_down");
-  g_signal_connect (button_ch_down, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_ch_down,
-                 (BUTTON_SIZE * 3), 20 + (BUTTON_SIZE * 8));
-
-  //
-
-  button_icon = gtk_image_new_from_file (g_strconcat (
-      ginga_gui.executable_folder, "icons/common/red-icon.png", NULL));
-  GtkWidget *button_red = gtk_button_new ();
-  g_assert_nonnull (button_red);
-  gtk_button_set_image (GTK_BUTTON (button_red), button_icon);
-  gtk_widget_set_name (button_red, "RED");
-  g_signal_connect (button_red, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_red, 0,
-                 20 + (BUTTON_SIZE * 9));
-
-  button_icon = gtk_image_new_from_file (g_strconcat (
-      ginga_gui.executable_folder, "icons/common/green-icon.png", NULL));
-  GtkWidget *button_green = gtk_button_new ();
-  g_assert_nonnull (button_green);
-  gtk_button_set_image (GTK_BUTTON (button_green), button_icon);
-  gtk_widget_set_name (button_green, "GREEN");
-  g_signal_connect (button_green, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_green, BUTTON_SIZE,
-                 20 + (BUTTON_SIZE * 9));
-
-  button_icon = gtk_image_new_from_file (g_strconcat (
-      ginga_gui.executable_folder, "icons/common/yellow-icon.png", NULL));
-  GtkWidget *button_yellow = gtk_button_new ();
-  g_assert_nonnull (button_yellow);
-  gtk_button_set_image (GTK_BUTTON (button_yellow), button_icon);
-  gtk_widget_set_name (button_yellow, "YELLOW");
-  g_signal_connect (button_yellow, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_yellow, (BUTTON_SIZE * 2),
-                 20 + (BUTTON_SIZE * 9));
-
-  button_icon = gtk_image_new_from_file (g_strconcat (
-      ginga_gui.executable_folder, "icons/common/blue-icon.png", NULL));
-  GtkWidget *button_blue = gtk_button_new ();
-  g_assert_nonnull (button_blue);
-  gtk_button_set_image (GTK_BUTTON (button_blue), button_icon);
-  gtk_widget_set_name (button_blue, "BLUE");
-  g_signal_connect (button_blue, "clicked",
-                    G_CALLBACK (key_tvremote_press_event_callback), NULL);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), button_blue, (BUTTON_SIZE * 3),
-                 20 + (BUTTON_SIZE * 9));
-
-  GtkWidget *label = gtk_label_new ("...");
-  g_assert_nonnull (label);
-  gtk_fixed_put (GTK_FIXED (fixed_layout), label, middle_button_pos + 10,
-                 20 + (BUTTON_SIZE * 10));
-
-  gtk_container_add (GTK_CONTAINER (tvcontrolWindow), fixed_layout);
+  gtk_container_add (GTK_CONTAINER (tvcontrolWindow), layout);
 
   g_signal_connect (tvcontrolWindow, "destroy",
                     G_CALLBACK (destroy_tvcontrol_window), NULL);
