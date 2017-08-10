@@ -81,7 +81,20 @@ NclLinkAttributeAssessment::getValue ()
       break;
 
     case AttributeType::STATE:
-      value = EventUtil::getStateName (_event->getCurrentState ());
+      switch (_event->getCurrentState ())
+        {
+        case EventState::OCCURRING:
+          value = "occurring";
+          break;
+        case EventState::PAUSED:
+          value = "paused";
+          break;
+        case EventState::SLEEPING:
+          value = "sleeping";
+          break;
+        default:
+          value = "unknown";
+        }
       break;
 
     case AttributeType::OCCURRENCES:
