@@ -57,6 +57,8 @@ public:
   virtual string getProperty (const string &);
   virtual void setProperty (const string &, const string &);
 
+  bool isFocused ();
+
   GingaRect getRect ();
   void setRect (GingaRect);
 
@@ -72,14 +74,16 @@ public:
   bool getVisible ();
   void setVisible (bool);
 
-  bool getFocus ();
-  void setFocus (bool);
-
   GingaTime getDuration ();
   void setDuration (GingaTime);
 
   // Callbacks.
   virtual void redraw (cairo_t *);
+
+  // Static.
+  static string getCurrentFocus ();
+  static void setCurrentFocus (const string &);
+  static void scheduleFocusChange (const string &);
 
 protected:
   string _id;                      // associated object id
@@ -92,17 +96,22 @@ protected:
 
   map<string, string> _properties; // property table
   bool _debug;                     // true if debugging mode is on
+  string _focusIndex;              // focus index
   GingaRect _rect;                 // x, y, w, h in pixels
   int _z;                          // z-index
   int _zorder;                     // z-order
   guint8 _alpha;                   // alpha
   GingaColor _bgColor;             // background color
   bool _visible;                   // true if visible
-  bool _focused;                   // true if focused
   GingaTime _duration;             // explicit duration
 
 private:
   void redrawDebuggingInfo (cairo_t *);
+
+  // Static.
+  static string _currentFocus;  // current (global) focus index
+  static string _nextFocus;     // next focus index
+  static bool _hasNextFocus;    // true if a focus change is scheduled
 };
 
 GINGA_PLAYER_END

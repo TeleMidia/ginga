@@ -118,7 +118,8 @@ Scheduler::startDocument (const string &file)
             continue;           // nothing to do
 
           TRACE ("settings: %s='%s'", name.c_str (), value.c_str ());
-          //this->settings->set (name, value);
+          if (name == "service.currentFocus")
+            Player::setCurrentFocus (value);
         }
     }
   delete settings;
@@ -133,6 +134,8 @@ Scheduler::startDocument (const string &file)
       delete fakeAction;
     }
   delete entryevts;
+
+  ExecutionObject::refreshCurrentFocus ();
 }
 
 
