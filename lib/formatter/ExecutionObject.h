@@ -110,6 +110,8 @@ private:
   // ------------------------------------------
 
 public:
+  static void refreshCurrentFocus ();
+
   void setProperty (const string &, const string &,
                     const string &, GingaTime);
 
@@ -122,9 +124,8 @@ protected:
 
 private:
   static set<ExecutionObject *> _objects; // set of all objects
-
-  Player *_player;              // associated player
-  GingaTime _time;              // playback time
+  Player *_player;                        // associated player
+  GingaTime _time;                        // playback time
 };
 
 GINGA_FORMATTER_END
