@@ -106,13 +106,13 @@ Player::Player (const string &id, const string &uri)
 
   // Properties
   _debug = true;
+  _focusIndex = "";
   _rect = {0, 0, 0, 0};
   _z = 0;
   _zorder = 0;
   _alpha = 255;                 // opaque
   _bgColor = {0, 0, 0, 0};      // none
   _visible = true;
-  _focused = false;
   _duration = GINGA_TIME_NONE;
 }
 
@@ -196,7 +196,7 @@ void
 Player::start ()
 {
   g_assert (_state != PL_OCCURRING);
-  TRACE ("starting");
+  TRACE ("starting %s", _id.c_str ());
 
   _state = PL_OCCURRING;
   _time = 0;
@@ -211,7 +211,7 @@ void
 Player::stop ()
 {
   g_assert (_state != PL_SLEEPING);
-  TRACE ("stopping");
+  TRACE ("stopping %s", _id.c_str ());
 
   _state = PL_SLEEPING;
   _animator.clear ();
@@ -225,7 +225,7 @@ void
 Player::pause ()
 {
   g_assert (_state != PL_PAUSED && _state != PL_SLEEPING);
-  TRACE ("pausing");
+  TRACE ("pausing %s", _id.c_str ());
 
   _state = PL_PAUSED;
 }
@@ -237,7 +237,7 @@ void
 Player::resume ()
 {
   g_assert (_state == PL_PAUSED);
-  TRACE ("resuming");
+  TRACE ("resuming %s", _id.c_str ());
 
   _state = PL_OCCURRING;
 }
@@ -253,8 +253,8 @@ void
 Player::schedulePropertyAnimation (const string &name, const string &from,
                                    const string &to, GingaTime dur)
 {
-  TRACE ("animating %p.%s from '%s' to '%s' in %" GINGA_TIME_FORMAT,
-         this, name.c_str (), from.c_str (), to.c_str (),
+  TRACE ("animating %s.%s from '%s' to '%s' in %" GINGA_TIME_FORMAT,
+         _id.c_str (), name.c_str (), from.c_str (), to.c_str (),
          GINGA_TIME_ARGS (dur));
   _animator.schedule (name, from, to, dur);
 }
@@ -279,7 +279,8 @@ Player::setProperty (const string &name, const string &value)
 {
   vector<string> params;
 
-  TRACE ("setting %p.%s to '%s'", this, name.c_str (), value.c_str ());
+  TRACE ("setting %s.%s to '%s'", _id.c_str (),
+         name.c_str (), value.c_str ());
 
   if (value == "")
     goto done;
@@ -287,6 +288,10 @@ Player::setProperty (const string &name, const string &value)
   if (name == "debug")
     {
       _debug = ginga_parse_bool (value);
+    }
+  else if (name == "focusIndex")
+    {
+      _focusIndex = value;
     }
   else if (name == "bounds")
     {
@@ -392,6 +397,16 @@ Player::setProperty (const string &name, const string &value)
 }
 
 /**
+ * @brief Tests whether player is focused.
+ * @return True if successful, or false otherwise.
+ */
+bool
+Player::isFocused ()
+{
+  return _focusIndex != "" && _focusIndex == _currentFocus;
+}
+
+/**
  * @brief Gets player output rectangle.
  */
 GingaRect
@@ -484,24 +499,6 @@ Player::setVisible (bool visible)
 }
 
 /**
- * @brief Gets player focus flag.
- */
-bool
-Player::getFocus (void)
-{
-  return _focused;
-}
-
-/**
- * @brief Sets player focus flag.
- */
-void
-Player::setFocus (bool focus)
-{
-  _focused = focus;
-}
-
-/**
  * @brief Gets player explicit duration.
  */
 GingaTime
@@ -529,6 +526,13 @@ void
 Player::redraw (cairo_t *cr)
 {
   g_assert (_state != PL_SLEEPING);
+
+  if (_hasNextFocus)            // effectuate pending focus index change
+    {
+      Player::setCurrentFocus (_nextFocus);
+      _hasNextFocus = false;
+    }
+
   _animator.update (&_rect, &_bgColor, &_alpha);
 
   if (!_visible || !(_rect.width > 0 && _rect.height > 0))
@@ -557,8 +561,57 @@ Player::redraw (cairo_t *cr)
       cairo_restore (cr);
     }
 
+  if (this->isFocused ())
+    {
+      cairo_set_source_rgba (cr, 1., 1., 0., 1.);
+      cairo_rectangle (cr, _rect.x, _rect.y, _rect.width, _rect.height);
+      cairo_stroke (cr);
+    }
+
   if (_debug)
     this->redrawDebuggingInfo (cr);
+}
+
+
+// Public: Static.
+
+/**
+ * @brief Current focus index value.
+ */
+string Player::_currentFocus = "";
+string Player::_nextFocus = "";
+bool Player::_hasNextFocus = false;
+
+/**
+ * @brief Gets current focus index.
+ * @return Current focus index.
+ */
+string
+Player::getCurrentFocus ()
+{
+  return _currentFocus;
+}
+
+/**
+ * @brief Sets current focus index.
+ * @param index Focus index.
+ */
+void
+Player::setCurrentFocus (const string &index)
+{
+  TRACE ("setting current focus to '%s'", index.c_str ());
+  _currentFocus = index;
+}
+
+/**
+ * @brief Schedules focus index change.
+ * @param next Next focus index.
+ */
+void
+Player::scheduleFocusChange (const string &next)
+{
+  _hasNextFocus = true;
+  _nextFocus = next;
 }
 
 
