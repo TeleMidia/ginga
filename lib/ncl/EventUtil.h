@@ -59,9 +59,6 @@ public:
   static string
     getStateName (EventState state);
 
-  static AttributeType
-    getAttributeTypeCode (const string &attTypeName);
-
   static EventStateTransition
     getTransition (EventState previousState, EventState nextState);
 

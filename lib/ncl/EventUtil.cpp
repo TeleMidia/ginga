@@ -20,48 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-string
-EventUtil::getStateName (EventState state)
-{
-  switch (state)
-    {
-    case EventState::OCCURRING:
-      return "occurring";
-
-    case EventState::PAUSED:
-      return "paused";
-
-    case EventState::SLEEPING:
-      return "sleeping";
-
-    default:
-      g_assert_not_reached ();
-    }
-}
-
-AttributeType
-EventUtil::getAttributeTypeCode (const string &attTypeName)
-{
-  if (attTypeName == "occurrences")
-    {
-      return AttributeType::OCCURRENCES;
-    }
-  else if (attTypeName == "nodeProperty")
-    {
-      return AttributeType::NODE_PROPERTY;
-    }
-  else if (attTypeName == "repetitions")
-    {
-      return AttributeType::REPETITIONS;
-    }
-  else if (attTypeName == "state")
-    {
-      return AttributeType::STATE;
-    }
-
-  g_assert_not_reached ();
-}
-
 EventStateTransition
 EventUtil::getTransition (EventState previous, EventState next)
 {
