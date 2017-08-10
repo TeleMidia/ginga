@@ -18,9 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga_gtk.h"
 
 GtkWidget *tvcontrolWindow = NULL;
-gboolean tvcontrolAsSidebar = FALSE;
-
-#define BUTTON_SIZE 40
+gboolean tvcontrolAsSidebar = TRUE;
 
 void
 key_tvremote_press_event_callback (GtkWidget *widget, gpointer data)
@@ -430,7 +428,8 @@ void
 show_tvremote_sidebar ()
 {
   tvcontrolAsSidebar = TRUE;
-  destroy_tvcontrol_window ();
+  if(tvcontrolWindow!=NULL)
+      destroy_tvcontrol_window ();
   gtk_widget_show_all (mainWindow);
   if (!isDebugMode)
     gtk_widget_hide (debugView);

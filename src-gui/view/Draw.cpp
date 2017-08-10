@@ -16,14 +16,38 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga_gtk.h"
-
 #include <cairo.h>
 
+#if GTK_CHECK_VERSION(3,8,0)
+gboolean
+update_draw_callback (GtkWidget *widget, GdkFrameClock *frame_clock,
+               G_GNUC_UNUSED gpointer data)
+#else
 gboolean
 update_draw_callback (GtkWidget *widget)
+#endif
 {
-  gtk_widget_queue_draw (widget);
+  guint64 time;
+  static guint64 frame = (guint64) -1;
+  static guint64 last;
+  static guint64 first;
 
+#if GTK_CHECK_VERSION(3,8,0)
+  time = (guint64)(gdk_frame_clock_get_frame_time (frame_clock) * 1000);
+  frame = (guint64) gdk_frame_clock_get_frame_counter (frame_clock);
+#else
+  time = ginga_gettime ();
+  frame++;
+#endif
+
+  if (frame == 0)
+    {
+      first = time;
+      last = time;
+    }
+  GINGA->send_tick (time - first, time - last, frame);
+  last = time;
+  gtk_widget_queue_draw (widget);
   return G_SOURCE_CONTINUE;
 }
 

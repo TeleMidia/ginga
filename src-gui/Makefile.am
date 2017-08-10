@@ -28,7 +28,6 @@ gingagui_LDADD= $(top_builddir)/lib/libginga.la
 gingagui_LDFLAGS= $(AM_LDFLAGS)
 gingagui_SOURCES=\
   ginga-gtk.cpp\
-  model/CheckUpdates.cpp\
   model/SaveLoadSettings.cpp\
   view/AboutWindow.cpp\
   view/Draw.cpp\
