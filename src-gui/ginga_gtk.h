@@ -74,6 +74,7 @@ void enable_disable_debug(void);
 void select_ncl_file_callback(GtkWidget *widget, gpointer data);
 void play_pause_button_callback(void);
 void stop_button_callback(void); 
+void keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type);
 
 /* View/TvControlWindow */
 void create_tvcontrol_window(void);
@@ -98,8 +99,6 @@ gboolean update_draw_callback(GtkWidget *widget);
 void draw_callback(GtkWidget *widget, cairo_t *cr, gpointer data);
 
 /* Controller/KeyEvent */
-void key_press_event_callback(GtkWidget *widget, GdkEventKey *event);
-void key_release_event_callback(GtkWidget *widget, GdkEventKey *event);
 void key_tvremote_press_event_callback(GtkWidget *widget, gpointer data);
 
 /* Controller/AppController */
