@@ -68,6 +68,7 @@ extern GtkWidget *aboutWindow;
 
 extern GtkWidget *debugView;
 extern GtkWidget *sideView;
+extern GtkWidget *infoBar;
 
 extern gboolean isFullScreenMode;
 extern gboolean isDebugMode;

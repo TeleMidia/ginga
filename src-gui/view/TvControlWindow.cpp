@@ -30,6 +30,9 @@ key_tvremote_press_event_callback (GtkWidget *widget, gpointer data)
 GtkWidget *
 create_tvremote_buttons (guint offSetX, guint offSetY)
 {
+
+  
+
   guint16 control_width = (BUTTON_SIZE * 4);
   guint16 control_height = (BUTTON_SIZE * 11);
   guint16 middle_button_pos = (control_width / 2) - (BUTTON_SIZE / 2);
@@ -433,6 +436,7 @@ show_tvremote_sidebar ()
   gtk_widget_show_all (mainWindow);
   if (!isDebugMode)
     gtk_widget_hide (debugView);
+   gtk_widget_hide (infoBar);  
 }
 
 void
