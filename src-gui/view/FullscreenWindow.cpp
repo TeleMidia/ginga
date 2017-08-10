@@ -43,7 +43,9 @@ create_fullscreen_window (void)
   gtk_window_set_position (GTK_WINDOW (fullscreenWindow),
                            GTK_WIN_POS_CENTER);
   g_signal_connect (fullscreenWindow, "key-press-event",
-                    G_CALLBACK (key_press_event_callback), NULL);
+                    G_CALLBACK (keyboard_callback), (void *) "press");
+  g_signal_connect (fullscreenWindow, "key-release-event",
+                    G_CALLBACK (keyboard_callback), (void *) "release");
   gtk_container_set_border_width (GTK_CONTAINER (fullscreenWindow), 0);
 
   // Create Drawing area
