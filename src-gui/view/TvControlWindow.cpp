@@ -22,6 +22,13 @@ GtkWidget *tvcontrolWindow = NULL;
 #define BUTTON_SIZE 40
 
 void
+key_tvremote_press_event_callback (GtkWidget *widget, gpointer data)
+{
+  const gchar *widget_name = gtk_widget_get_name (widget);
+  GINGA->send_key (std::string (widget_name), true);
+}
+
+void
 create_tvcontrol_window (void)
 {
 
@@ -59,7 +66,7 @@ create_tvcontrol_window (void)
   GtkWidget *button_1 = gtk_button_new ();
   g_assert_nonnull (button_1);
   gtk_button_set_image (GTK_BUTTON (button_1), button_icon);
-  gtk_widget_set_name (button_1, "b_1");
+  gtk_widget_set_name (button_1, "1");
   g_signal_connect (button_1, "clicked",
                     G_CALLBACK (key_tvremote_press_event_callback), NULL);
   gtk_fixed_put (GTK_FIXED (fixed_layout), button_1,
@@ -71,7 +78,7 @@ create_tvcontrol_window (void)
   GtkWidget *button_2 = gtk_button_new ();
   g_assert_nonnull (button_2);
   gtk_button_set_image (GTK_BUTTON (button_2), button_icon);
-  gtk_widget_set_name (button_2, "b_2");
+  gtk_widget_set_name (button_2, "2");
   g_signal_connect (button_2, "clicked",
                     G_CALLBACK (key_tvremote_press_event_callback), NULL);
   gtk_fixed_put (GTK_FIXED (fixed_layout), button_2, middle_button_pos, 0);
@@ -82,7 +89,7 @@ create_tvcontrol_window (void)
   GtkWidget *button_3 = gtk_button_new ();
   g_assert_nonnull (button_3);
   gtk_button_set_image (GTK_BUTTON (button_3), button_icon);
-  gtk_widget_set_name (button_3, "b_3");
+  gtk_widget_set_name (button_3, "3");
   g_signal_connect (button_3, "clicked",
                     G_CALLBACK (key_tvremote_press_event_callback), NULL);
   gtk_fixed_put (GTK_FIXED (fixed_layout), button_3,
@@ -96,7 +103,7 @@ create_tvcontrol_window (void)
   GtkWidget *button_4 = gtk_button_new ();
   g_assert_nonnull (button_4);
   gtk_button_set_image (GTK_BUTTON (button_4), button_icon);
-  gtk_widget_set_name (button_4, "b_4");
+  gtk_widget_set_name (button_4, "4");
   g_signal_connect (button_4, "clicked",
                     G_CALLBACK (key_tvremote_press_event_callback), NULL);
   gtk_fixed_put (GTK_FIXED (fixed_layout), button_4,
@@ -108,7 +115,7 @@ create_tvcontrol_window (void)
   GtkWidget *button_5 = gtk_button_new ();
   g_assert_nonnull (button_5);
   gtk_button_set_image (GTK_BUTTON (button_5), button_icon);
-  gtk_widget_set_name (button_5, "b_5");
+  gtk_widget_set_name (button_5, "5");
   g_signal_connect (button_5, "clicked",
                     G_CALLBACK (key_tvremote_press_event_callback), NULL);
   gtk_fixed_put (GTK_FIXED (fixed_layout), button_5, middle_button_pos,
@@ -120,7 +127,7 @@ create_tvcontrol_window (void)
   GtkWidget *button_6 = gtk_button_new ();
   g_assert_nonnull (button_6);
   gtk_button_set_image (GTK_BUTTON (button_6), button_icon);
-  gtk_widget_set_name (button_6, "b_6");
+  gtk_widget_set_name (button_6, "6");
   g_signal_connect (button_6, "clicked",
                     G_CALLBACK (key_tvremote_press_event_callback), NULL);
   gtk_fixed_put (GTK_FIXED (fixed_layout), button_6,
@@ -134,7 +141,7 @@ create_tvcontrol_window (void)
   GtkWidget *button_7 = gtk_button_new ();
   g_assert_nonnull (button_7);
   gtk_button_set_image (GTK_BUTTON (button_7), button_icon);
-  gtk_widget_set_name (button_7, "b_7");
+  gtk_widget_set_name (button_7, "7");
   g_signal_connect (button_7, "clicked",
                     G_CALLBACK (key_tvremote_press_event_callback), NULL);
   gtk_fixed_put (GTK_FIXED (fixed_layout), button_7,
@@ -146,7 +153,7 @@ create_tvcontrol_window (void)
   GtkWidget *button_8 = gtk_button_new ();
   g_assert_nonnull (button_8);
   gtk_button_set_image (GTK_BUTTON (button_8), button_icon);
-  gtk_widget_set_name (button_8, "b_8");
+  gtk_widget_set_name (button_8, "8");
   g_signal_connect (button_8, "clicked",
                     G_CALLBACK (key_tvremote_press_event_callback), NULL);
   gtk_fixed_put (GTK_FIXED (fixed_layout), button_8, middle_button_pos,
@@ -158,7 +165,7 @@ create_tvcontrol_window (void)
   GtkWidget *button_9 = gtk_button_new ();
   g_assert_nonnull (button_9);
   gtk_button_set_image (GTK_BUTTON (button_9), button_icon);
-  gtk_widget_set_name (button_9, "b_9");
+  gtk_widget_set_name (button_9, "9");
   g_signal_connect (button_9, "clicked",
                     G_CALLBACK (key_tvremote_press_event_callback), NULL);
   gtk_fixed_put (GTK_FIXED (fixed_layout), button_9,
@@ -172,7 +179,7 @@ create_tvcontrol_window (void)
   GtkWidget *button_back = gtk_button_new ();
   g_assert_nonnull (button_back);
   gtk_button_set_image (GTK_BUTTON (button_back), button_icon);
-  gtk_widget_set_name (button_back, "b_back");
+  gtk_widget_set_name (button_back, "RETURN");
   g_signal_connect (button_back, "clicked",
                     G_CALLBACK (key_tvremote_press_event_callback), NULL);
   gtk_fixed_put (GTK_FIXED (fixed_layout), button_back,
@@ -184,7 +191,7 @@ create_tvcontrol_window (void)
   GtkWidget *button_0 = gtk_button_new ();
   g_assert_nonnull (button_0);
   gtk_button_set_image (GTK_BUTTON (button_0), button_icon);
-  gtk_widget_set_name (button_0, "b_0");
+  gtk_widget_set_name (button_0, "0");
   g_signal_connect (button_0, "clicked",
                     G_CALLBACK (key_tvremote_press_event_callback), NULL);
   gtk_fixed_put (GTK_FIXED (fixed_layout), button_0, middle_button_pos,
@@ -196,7 +203,7 @@ create_tvcontrol_window (void)
   GtkWidget *button_info = gtk_button_new ();
   g_assert_nonnull (button_info);
   gtk_button_set_image (GTK_BUTTON (button_info), button_icon);
-  gtk_widget_set_name (button_info, "b_info");
+  gtk_widget_set_name (button_info, "INFO");
   g_signal_connect (button_info, "clicked",
                     G_CALLBACK (key_tvremote_press_event_callback), NULL);
   gtk_fixed_put (GTK_FIXED (fixed_layout), button_info,
@@ -210,7 +217,7 @@ create_tvcontrol_window (void)
   GtkWidget *button_up = gtk_button_new ();
   g_assert_nonnull (button_up);
   gtk_button_set_image (GTK_BUTTON (button_up), button_icon);
-  gtk_widget_set_name (button_up, "b_up");
+  gtk_widget_set_name (button_up, "CURSOR_UP");
   g_signal_connect (button_up, "clicked",
                     G_CALLBACK (key_tvremote_press_event_callback), NULL);
   gtk_fixed_put (GTK_FIXED (fixed_layout), button_up, middle_button_pos,
@@ -224,7 +231,7 @@ create_tvcontrol_window (void)
   GtkWidget *button_left = gtk_button_new ();
   g_assert_nonnull (button_left);
   gtk_button_set_image (GTK_BUTTON (button_left), button_icon);
-  gtk_widget_set_name (button_left, "b_left");
+  gtk_widget_set_name (button_left, "CURSOR_LEFT");
   g_signal_connect (button_left, "clicked",
                     G_CALLBACK (key_tvremote_press_event_callback), NULL);
   gtk_fixed_put (GTK_FIXED (fixed_layout), button_left,
@@ -235,7 +242,7 @@ create_tvcontrol_window (void)
   GtkWidget *button_ok = gtk_button_new ();
   g_assert_nonnull (button_ok);
   gtk_button_set_image (GTK_BUTTON (button_ok), button_icon);
-  gtk_widget_set_name (button_ok, "b_ok");
+  gtk_widget_set_name (button_ok, "OK");
   g_signal_connect (button_ok, "clicked",
                     G_CALLBACK (key_tvremote_press_event_callback), NULL);
   gtk_fixed_put (GTK_FIXED (fixed_layout), button_ok, middle_button_pos,
@@ -247,7 +254,7 @@ create_tvcontrol_window (void)
   GtkWidget *button_right = gtk_button_new ();
   g_assert_nonnull (button_right);
   gtk_button_set_image (GTK_BUTTON (button_right), button_icon);
-  gtk_widget_set_name (button_right, "b_right");
+  gtk_widget_set_name (button_right, "CURSOR_RIGHT");
   g_signal_connect (button_right, "clicked",
                     G_CALLBACK (key_tvremote_press_event_callback), NULL);
   gtk_fixed_put (GTK_FIXED (fixed_layout), button_right,
@@ -261,7 +268,7 @@ create_tvcontrol_window (void)
   GtkWidget *button_down = gtk_button_new ();
   g_assert_nonnull (button_down);
   gtk_button_set_image (GTK_BUTTON (button_down), button_icon);
-  gtk_widget_set_name (button_down, "b_down");
+  gtk_widget_set_name (button_down, "CURSOR_DOWN");
   g_signal_connect (button_down, "clicked",
                     G_CALLBACK (key_tvremote_press_event_callback), NULL);
   gtk_fixed_put (GTK_FIXED (fixed_layout), button_down, middle_button_pos,
@@ -374,7 +381,7 @@ create_tvcontrol_window (void)
   GtkWidget *button_red = gtk_button_new ();
   g_assert_nonnull (button_red);
   gtk_button_set_image (GTK_BUTTON (button_red), button_icon);
-  gtk_widget_set_name (button_red, "b_red");
+  gtk_widget_set_name (button_red, "RED");
   g_signal_connect (button_red, "clicked",
                     G_CALLBACK (key_tvremote_press_event_callback), NULL);
   gtk_fixed_put (GTK_FIXED (fixed_layout), button_red, 0,
@@ -385,7 +392,7 @@ create_tvcontrol_window (void)
   GtkWidget *button_green = gtk_button_new ();
   g_assert_nonnull (button_green);
   gtk_button_set_image (GTK_BUTTON (button_green), button_icon);
-  gtk_widget_set_name (button_green, "b_green");
+  gtk_widget_set_name (button_green, "GREEN");
   g_signal_connect (button_green, "clicked",
                     G_CALLBACK (key_tvremote_press_event_callback), NULL);
   gtk_fixed_put (GTK_FIXED (fixed_layout), button_green, BUTTON_SIZE,
@@ -396,7 +403,7 @@ create_tvcontrol_window (void)
   GtkWidget *button_yellow = gtk_button_new ();
   g_assert_nonnull (button_yellow);
   gtk_button_set_image (GTK_BUTTON (button_yellow), button_icon);
-  gtk_widget_set_name (button_yellow, "b_yellow");
+  gtk_widget_set_name (button_yellow, "YELLOW");
   g_signal_connect (button_yellow, "clicked",
                     G_CALLBACK (key_tvremote_press_event_callback), NULL);
   gtk_fixed_put (GTK_FIXED (fixed_layout), button_yellow, (BUTTON_SIZE * 2),
@@ -407,7 +414,7 @@ create_tvcontrol_window (void)
   GtkWidget *button_blue = gtk_button_new ();
   g_assert_nonnull (button_blue);
   gtk_button_set_image (GTK_BUTTON (button_blue), button_icon);
-  gtk_widget_set_name (button_blue, "b_blue");
+  gtk_widget_set_name (button_blue, "BLUE");
   g_signal_connect (button_blue, "clicked",
                     G_CALLBACK (key_tvremote_press_event_callback), NULL);
   gtk_fixed_put (GTK_FIXED (fixed_layout), button_blue, (BUTTON_SIZE * 3),

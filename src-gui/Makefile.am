@@ -27,8 +27,6 @@ gingagui_CXXFLAGS= $(AM_CXXFLAGS)
 gingagui_LDADD= $(top_builddir)/lib/libginga.la
 gingagui_LDFLAGS= $(AM_LDFLAGS)
 gingagui_SOURCES=\
-  controller/AppController.cpp\
-  controller/KeyEvent.cpp\
   ginga-gtk.cpp\
   model/CheckUpdates.cpp\
   model/SaveLoadSettings.cpp\
