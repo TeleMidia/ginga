@@ -98,13 +98,6 @@ void destroy_about_window(void);
 gboolean update_draw_callback(GtkWidget *widget);
 void draw_callback(GtkWidget *widget, cairo_t *cr, gpointer data);
 
-/* Controller/KeyEvent */
-void key_tvremote_press_event_callback(GtkWidget *widget, gpointer data);
-
-/* Controller/AppController */
-void start_application(void);
-void stop_application(void);
-void pause_application(void);
 
 /* Model/SaveLoadSettings */
 void save_settings(void);
