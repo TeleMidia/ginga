@@ -22,6 +22,7 @@ GtkWidget *mainWindow = NULL;
 GtkWidget *sideFrame = NULL;
 GtkWidget *debugView = NULL;
 GtkWidget *sideView = NULL;
+GtkWidget *infoBar = NULL;
 
 gboolean isDebugMode = FALSE;
 gboolean destroyWindowToResize = FALSE;
@@ -48,6 +49,12 @@ hide_debugview ()
 {
   isDebugMode = FALSE;
   gtk_widget_hide (debugView);
+}
+
+void
+hide_infobar ()
+{
+  gtk_widget_hide (infoBar);
 }
 
 void
@@ -149,6 +156,18 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
 void
 create_main_window (void)
 {
+
+  GError *error = NULL;
+  GtkCssProvider *css_provider = gtk_css_provider_get_default ( );
+  GFile *file = g_file_new_for_path (
+      g_strconcat (ginga_gui.executable_folder, "style/dark.css", NULL));
+  if (g_file_query_exists (file, NULL))
+    {
+      gtk_css_provider_load_from_file (css_provider, file, &error);
+      if(error==NULL)
+         printf("CARREGOU DE BOAS! \n");
+    }
+
   // Create application window.
   mainWindow = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   g_assert_nonnull (mainWindow);
@@ -410,7 +429,24 @@ create_main_window (void)
   GtkWidget *h_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   g_assert_nonnull (h_box);
 
-  gtk_box_pack_start (GTK_BOX (h_box), ginga_gui.canvas, true, true, 0);
+  infoBar = gtk_info_bar_new ();
+  g_assert_nonnull (infoBar);
+  GtkWidget *content_area
+      = gtk_info_bar_get_content_area (GTK_INFO_BAR (infoBar));
+  gtk_container_add (GTK_CONTAINER (content_area),
+                     gtk_label_new ("Invalid file extension"));
+  gtk_info_bar_set_show_close_button (GTK_INFO_BAR (infoBar), true);
+  gtk_info_bar_set_message_type (GTK_INFO_BAR (infoBar), GTK_MESSAGE_ERROR);
+  g_signal_connect (GTK_INFO_BAR (infoBar), "response",
+                    G_CALLBACK (hide_infobar), NULL);
+
+  GtkWidget *v_box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  g_assert_nonnull (v_box);
+
+  gtk_box_pack_start (GTK_BOX (v_box), infoBar, false, true, 0);
+  gtk_box_pack_start (GTK_BOX (v_box), ginga_gui.canvas, true, true, 0);
+
+  gtk_box_pack_start (GTK_BOX (h_box), v_box, true, true, 0);
   gtk_box_pack_start (GTK_BOX (h_box), sideView, false, true, 0);
 
   GtkWidget *vpaned = gtk_paned_new (GTK_ORIENTATION_VERTICAL);
@@ -435,6 +471,7 @@ create_main_window (void)
 
   gtk_widget_hide (debugView);
   gtk_widget_hide (sideView);
+  gtk_widget_hide (infoBar);
 }
 
 void
@@ -509,6 +546,8 @@ stop_button_callback (void)
   gtk_button_set_image (GTK_BUTTON (ginga_gui.play_button), play_icon);
   gtk_widget_set_sensitive (ginga_gui.file_entry, true);
   gtk_widget_set_sensitive (ginga_gui.open_button, true);
+
+  gtk_widget_show_now (infoBar);
 }
 
 void
