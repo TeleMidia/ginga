@@ -38,6 +38,27 @@ resize_main_window_callback (GtkWidget *widget, gpointer data)
 }
 
 void
+hide_sideview ()
+{
+  gtk_widget_hide (sideView);
+}
+
+void
+hide_debugview ()
+{
+  isDebugMode = FALSE;
+  gtk_widget_hide (debugView);
+}
+
+void
+change_tvcontrol_to_window_mode ()
+{
+  gtk_widget_hide (sideView);
+  tvcontrolAsSidebar = FALSE;
+  create_tvcontrol_window ();
+}
+
+void
 keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
 {
   const char *key;
@@ -294,46 +315,110 @@ create_main_window (void)
                  ginga_gui.canvas);
 #endif
 
+  /* begin debug view   */
+
   GtkWidget *textArea = gtk_text_view_new ();
   g_assert_nonnull (textArea);
   GtkWidget *scrolledWLog = gtk_scrolled_window_new (NULL, NULL);
   g_assert_nonnull (scrolledWLog);
   gtk_container_add (GTK_CONTAINER (scrolledWLog), textArea);
 
-  GtkWidget *scrolledWTimeLine = gtk_scrolled_window_new (NULL, NULL);
-  g_assert_nonnull (scrolledWTimeLine);
-
   debugView = gtk_notebook_new ();
   g_assert_nonnull (debugView);
   gtk_widget_set_size_request (debugView,
-                               presentationAttributes.resolutionWidth, 120);
-  gtk_widget_set_margin_top (debugView,5);
+                               presentationAttributes.resolutionWidth, 160);
+  gtk_notebook_set_show_tabs (GTK_NOTEBOOK (debugView), false);
+  gtk_widget_set_margin_top (debugView, 5);
 
-  gtk_notebook_append_page (GTK_NOTEBOOK (debugView), scrolledWLog,
-                            gtk_label_new ("Log"));
-  gtk_notebook_append_page (GTK_NOTEBOOK (debugView), scrolledWTimeLine,
-                            gtk_label_new ("Timeline"));
+  GtkWidget *button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/bottomhide-icon.png", NULL));
+  g_assert_nonnull (button_icon);
+  GtkWidget *debug_hide_button = gtk_button_new ();
+  g_assert_nonnull (debug_hide_button);
+  gtk_button_set_image (GTK_BUTTON (debug_hide_button), button_icon);
+  g_signal_connect (debug_hide_button, "clicked",
+                    G_CALLBACK (hide_debugview), NULL);
 
-  GtkWidget *sideView = gtk_notebook_new ();
-  g_assert_nonnull (sideView); 
-  gtk_widget_set_size_request (sideView, 200, -1);
-  gtk_widget_set_margin_start (sideView,5);
-  gtk_notebook_append_page (GTK_NOTEBOOK (sideView), create_tvremote_buttons(20,40),
+  GtkWidget *debug_headbar = gtk_header_bar_new ();
+  g_assert_nonnull (debug_headbar);
+  gtk_header_bar_pack_start (GTK_HEADER_BAR (debug_headbar),
+                             gtk_label_new ("Console"));
+  gtk_header_bar_pack_end (GTK_HEADER_BAR (debug_headbar),
+                           debug_hide_button);
+  gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (debug_headbar),
+                                        false);
+
+  GtkWidget *debug_box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  g_assert_nonnull (debug_box);
+
+  gtk_box_pack_start (GTK_BOX (debug_box), debug_headbar, false, true, 0);
+  gtk_box_pack_start (GTK_BOX (debug_box), scrolledWLog, true, true, 0);
+
+  gtk_notebook_append_page (GTK_NOTEBOOK (debugView), debug_box,
+                            gtk_label_new ("Console"));
+
+  /* end debug view */
+
+  sideView = gtk_notebook_new ();
+  g_assert_nonnull (sideView);
+  gtk_widget_set_size_request (sideView, (BUTTON_SIZE * 4) + 15, -1);
+  gtk_widget_set_margin_start (sideView, 5);
+  gtk_notebook_set_show_tabs (GTK_NOTEBOOK (sideView), false);
+
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/window-icon.png", NULL));
+  g_assert_nonnull (button_icon);
+  GtkWidget *sidebar_win_button = gtk_button_new ();
+  g_assert_nonnull (sidebar_win_button);
+  gtk_button_set_image (GTK_BUTTON (sidebar_win_button), button_icon);
+  g_signal_connect (sidebar_win_button, "clicked",
+                    G_CALLBACK (change_tvcontrol_to_window_mode), NULL);
+
+  button_icon = gtk_image_new_from_file (
+      g_strconcat (ginga_gui.executable_folder,
+                   "icons/light-theme/rightride-icon.png", NULL));
+  g_assert_nonnull (button_icon);
+  GtkWidget *sidebar_hide_button = gtk_button_new ();
+  g_assert_nonnull (sidebar_hide_button);
+  gtk_button_set_image (GTK_BUTTON (sidebar_hide_button), button_icon);
+  g_signal_connect (sidebar_hide_button, "clicked",
+                    G_CALLBACK (hide_sideview), NULL);
+
+  GtkWidget *tvcontrol_headbar = gtk_header_bar_new ();
+  g_assert_nonnull (tvcontrol_headbar);
+  gtk_header_bar_pack_start (GTK_HEADER_BAR (tvcontrol_headbar),
+                             sidebar_win_button);
+  gtk_header_bar_pack_end (GTK_HEADER_BAR (tvcontrol_headbar),
+                           sidebar_hide_button);
+  gtk_header_bar_set_title (GTK_HEADER_BAR (tvcontrol_headbar), "Control");
+  gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (tvcontrol_headbar),
+                                        false);
+
+  GtkWidget *tvcontrol_box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  g_assert_nonnull (tvcontrol_box);
+
+  gtk_box_pack_start (GTK_BOX (tvcontrol_box), tvcontrol_headbar, false,
+                      true, 0);
+  gtk_box_pack_start (GTK_BOX (tvcontrol_box),
+                      create_tvremote_buttons (10, 10), false, true, 0);
+
+  gtk_notebook_append_page (GTK_NOTEBOOK (sideView), tvcontrol_box,
                             gtk_label_new ("Control"));
 
-  GtkWidget *hpaned = gtk_paned_new (GTK_ORIENTATION_HORIZONTAL);
-  g_assert_nonnull (hpaned);
-  gtk_widget_set_size_request (hpaned, 200, -1);
+  GtkWidget *h_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  g_assert_nonnull (h_box);
 
-  gtk_paned_pack1 (GTK_PANED (hpaned), ginga_gui.canvas, true, true);
-  gtk_paned_pack2 (GTK_PANED (hpaned), sideView, false, false);
+  gtk_box_pack_start (GTK_BOX (h_box), ginga_gui.canvas, true, true, 0);
+  gtk_box_pack_start (GTK_BOX (h_box), sideView, false, true, 0);
 
   GtkWidget *vpaned = gtk_paned_new (GTK_ORIENTATION_VERTICAL);
   g_assert_nonnull (vpaned);
   gtk_widget_set_size_request (vpaned, 200, -1);
 
-  gtk_paned_pack1 (GTK_PANED (vpaned), hpaned, true, true);
-  gtk_paned_pack2 (GTK_PANED (vpaned), debugView , true, false);
+  gtk_paned_pack1 (GTK_PANED (vpaned), h_box, true, true);
+  gtk_paned_pack2 (GTK_PANED (vpaned), debugView, true, false);
 
   gtk_container_add (GTK_CONTAINER (mainWindow), vpaned);
 
@@ -368,11 +453,11 @@ void
 enable_disable_debug (void)
 {
   isDebugMode = !isDebugMode;
-  
+
   if (isDebugMode)
-    gtk_widget_show (GTK_WIDGET(debugView ));
+    gtk_widget_show (GTK_WIDGET (debugView));
   else
-    gtk_widget_hide (GTK_WIDGET(debugView ));
+    gtk_widget_hide (GTK_WIDGET (debugView));
 }
 
 void
