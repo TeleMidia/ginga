@@ -858,20 +858,20 @@ ExecutionObject::handleKeyEvent (const string &key, bool press)
     return;                     // nothing to do
 
   g_assert (this->isOccurring ());
-  g_assert (this->_player);
+  g_assert (_player);
   g_assert (instanceof (PresentationEvent *, _mainEvent));
 
-  if (xstrhasprefix (key, "CURSOR_") && this->_player->isFocused ())
+  if (xstrhasprefix (key, "CURSOR_") && _player->isFocused ())
     {
       string next;
       if ((key == "CURSOR_UP"
-           && (next = this->_player->getProperty ("moveUp")) != "")
+           && (next = _player->getProperty ("moveUp")) != "")
           || ((key == "CURSOR_DOWN"
-               && (next = this->_player->getProperty ("moveDown")) != ""))
+               && (next = _player->getProperty ("moveDown")) != ""))
           || ((key == "CURSOR_LEFT"
-               && (next = this->_player->getProperty ("moveLeft")) != ""))
+               && (next = _player->getProperty ("moveLeft")) != ""))
           || ((key == "CURSOR_RIGHT"
-               && (next = this->_player->getProperty ("moveRight")) != "")))
+               && (next = _player->getProperty ("moveRight")) != "")))
         {
           Player::scheduleFocusChange (next);
         }
@@ -886,9 +886,13 @@ ExecutionObject::handleKeyEvent (const string &key, bool press)
       string expected;
 
       expected = evt->getSelectionCode ();
-      if (key != expected)
-        continue;
 
+      if (!((expected == "NO_CODE" && key == "ENTER"
+             && _player->isFocused ())
+            || (expected != "NO_CODE" && key == expected)))
+        {
+          continue;
+        }
       anchor = evt->getAnchor ();
       g_assert_nonnull (anchor);
 
