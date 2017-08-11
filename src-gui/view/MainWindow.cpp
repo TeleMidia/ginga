@@ -157,17 +157,6 @@ void
 create_main_window (void)
 {
 
-  GError *error = NULL;
-  GtkCssProvider *css_provider = gtk_css_provider_get_default ( );
-  GFile *file = g_file_new_for_path (
-      g_strconcat (ginga_gui.executable_folder, "style/dark.css", NULL));
-  if (g_file_query_exists (file, NULL))
-    {
-      gtk_css_provider_load_from_file (css_provider, file, &error);
-      if(error==NULL)
-         printf("CARREGOU DE BOAS! \n");
-    }
-
   // Create application window.
   mainWindow = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   g_assert_nonnull (mainWindow);
@@ -179,6 +168,22 @@ create_main_window (void)
   gtk_window_set_resizable (GTK_WINDOW (mainWindow), true);
   gtk_container_set_border_width (GTK_CONTAINER (mainWindow),
                                   ginga_gui.default_margin);
+
+  GError *error = NULL;
+  GtkCssProvider *css_provider = gtk_css_provider_get_default ();
+  GFile *file = g_file_new_for_path (
+      g_strconcat (ginga_gui.executable_folder, "style/light.css", NULL));
+  if (g_file_query_exists (file, NULL))
+    {
+      gtk_css_provider_load_from_file (css_provider, file, &error);
+      if (error == NULL)
+        {
+          gtk_style_context_add_provider_for_screen (
+              gdk_display_get_default_screen (gdk_display_get_default ()),
+              GTK_STYLE_PROVIDER (css_provider),
+              GTK_STYLE_PROVIDER_PRIORITY_USER);
+        }
+    }
 
   GtkWidget *header_bar = gtk_header_bar_new ();
   gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header_bar), true);
@@ -381,7 +386,7 @@ create_main_window (void)
 
   sideView = gtk_notebook_new ();
   g_assert_nonnull (sideView);
-  gtk_widget_set_size_request (sideView, (BUTTON_SIZE * 4) + 15, -1);
+  gtk_widget_set_size_request (sideView, (BUTTON_SIZE * 4) + 15, 100);
   gtk_widget_set_margin_start (sideView, 5);
   gtk_notebook_set_show_tabs (GTK_NOTEBOOK (sideView), false);
 
@@ -451,7 +456,7 @@ create_main_window (void)
 
   GtkWidget *vpaned = gtk_paned_new (GTK_ORIENTATION_VERTICAL);
   g_assert_nonnull (vpaned);
-  gtk_widget_set_size_request (vpaned, 200, -1);
+ // gtk_widget_set_size_request (vpaned, 200, -1);
 
   gtk_paned_pack1 (GTK_PANED (vpaned), h_box, true, true);
   gtk_paned_pack2 (GTK_PANED (vpaned), debugView, true, false);

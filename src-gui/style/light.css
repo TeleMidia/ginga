@@ -1,0 +1,52 @@
+/*@define-color bg_color #444444; */
+
+*{
+  border-radius: 0px;  
+  box-shadow: none;
+  border-width:0px;
+}
+
+window{  
+  background-color: #E8E8E7;  
+}
+
+entry{
+  border: 1px solid #888888;
+  border-radius: 0px; 
+}
+
+button{
+  background: #EEEEEE;
+  color: #333333;
+  border: 1px solid #888888;
+  border-radius: 0px;
+  
+}
+
+headerbar {
+  background-image: none;
+  background-color: #F4F4F4;
+  border-bottom: 1px solid #888888;
+  box-shadow: none;
+}
+
+notebook{
+  border: 1px solid #888888;  
+}
+
+headerbar separator{
+  background-color: #888888;  
+}
+
+infobar{
+   background-color: #EE2222;   
+}
+
+infobar button{
+   background: transparent;
+   border-width: 0px;
+   color: #EEEEEE;   
+}
+
+
+
