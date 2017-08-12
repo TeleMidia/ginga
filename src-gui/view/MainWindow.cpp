@@ -18,25 +18,25 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga_gtk.h"
 
 GtkWidget *mainWindow = NULL;
-
+GtkWidget *gingaView = NULL;
 GtkWidget *sideFrame = NULL;
+GtkWidget *fileEntry = NULL;
+GtkWidget *playButton = NULL;
+GtkWidget *stopButton = NULL;
+GtkWidget *openButton = NULL;
+GtkWidget *fullscreenButton = NULL;
+GtkWidget *volumeButton = NULL;
+GtkWidget *settingsButton = NULL;
 GtkWidget *debugView = NULL;
 GtkWidget *sideView = NULL;
 GtkWidget *infoBar = NULL;
+GtkWidget *toolBoxPopOver = NULL;
+GtkWidget *optBoxPopOver = NULL;
 
 gboolean isDebugMode = FALSE;
+gboolean inPlayMode = FALSE;
 gboolean destroyWindowToResize = FALSE;
 gboolean isCrtlModifierActive = FALSE;
-
-void
-resize_main_window_callback (GtkWidget *widget, gpointer data)
-{
-  /* int w, h;
-   w = gtk_widget_get_allocated_width (widget);
-   h = gtk_widget_get_allocated_height (ginga_gui.canvas);
-
-   gtk_widget_set_size_request (ginga_gui.canvas, w - 10, h); */
-}
 
 void
 hide_sideview ()
@@ -55,6 +55,18 @@ void
 hide_infobar ()
 {
   gtk_widget_hide (infoBar);
+}
+
+void
+show_toolbox ()
+{
+  gtk_popover_popup (GTK_POPOVER (toolBoxPopOver));
+}
+
+void
+show_optbox ()
+{
+  gtk_popover_popup (GTK_POPOVER (optBoxPopOver));
 }
 
 void
@@ -167,12 +179,12 @@ create_main_window (void)
   gtk_window_set_position (GTK_WINDOW (mainWindow), GTK_WIN_POS_CENTER);
   gtk_window_set_resizable (GTK_WINDOW (mainWindow), true);
   gtk_container_set_border_width (GTK_CONTAINER (mainWindow),
-                                  ginga_gui.default_margin);
+                                  5);
 
   GError *error = NULL;
   GtkCssProvider *css_provider = gtk_css_provider_get_default ();
   GFile *file = g_file_new_for_path (
-      g_strconcat (ginga_gui.executable_folder, "style/light.css", NULL));
+      g_strconcat (executableFolder, "style/light.css", NULL));
   if (g_file_query_exists (file, NULL))
     {
       gtk_css_provider_load_from_file (css_provider, file, &error);
@@ -188,90 +200,191 @@ create_main_window (void)
   GtkWidget *header_bar = gtk_header_bar_new ();
   gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header_bar), true);
 
-  ginga_gui.file_entry = gtk_entry_new ();
-  g_assert_nonnull (ginga_gui.file_entry);
-  gtk_widget_set_size_request (ginga_gui.file_entry, 400, 32);
+  fileEntry = gtk_entry_new ();
+  g_assert_nonnull (fileEntry);
+  gtk_widget_set_size_request (fileEntry, 400, 32);
 
   GtkWidget *open_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
+      g_strconcat (executableFolder,
                    "icons/light-theme/openfile-icon.png", NULL));
-  ginga_gui.open_button = gtk_button_new ();
-  g_assert_nonnull (ginga_gui.open_button);
-  gtk_button_set_image (GTK_BUTTON (ginga_gui.open_button), open_icon);
-  g_signal_connect (ginga_gui.open_button, "clicked",
+  openButton = gtk_button_new ();
+  g_assert_nonnull (openButton);
+  gtk_button_set_image (GTK_BUTTON (openButton), open_icon);
+  gtk_widget_set_has_tooltip(openButton, true);
+  gtk_widget_set_tooltip_text (openButton, "Open file");
+  g_signal_connect (openButton, "clicked",
                     G_CALLBACK (select_ncl_file_callback), NULL);
 
   GtkWidget *play_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
+      g_strconcat (executableFolder,
                    "icons/light-theme/play-icon.png", NULL));
   g_assert_nonnull (play_icon);
-  ginga_gui.play_button = gtk_button_new ();
-  g_assert_nonnull (ginga_gui.play_button);
-  gtk_button_set_image (GTK_BUTTON (ginga_gui.play_button), play_icon);
-  g_signal_connect (ginga_gui.play_button, "clicked",
+  playButton = gtk_button_new ();
+  g_assert_nonnull (playButton);
+  gtk_button_set_image (GTK_BUTTON (playButton), play_icon);
+  g_signal_connect (playButton, "clicked",
                     G_CALLBACK (play_pause_button_callback), NULL);
 
   GtkWidget *stop_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
+      g_strconcat (executableFolder,
                    "icons/light-theme/stop-icon.png", NULL));
   g_assert_nonnull (stop_icon);
-  ginga_gui.stop_button = gtk_button_new ();
-  g_assert_nonnull (ginga_gui.stop_button);
-  gtk_button_set_image (GTK_BUTTON (ginga_gui.stop_button), stop_icon);
-  g_signal_connect (ginga_gui.stop_button, "clicked",
+  stopButton = gtk_button_new ();
+  g_assert_nonnull (stopButton);
+  gtk_button_set_image (GTK_BUTTON (stopButton), stop_icon);
+  g_signal_connect (stopButton, "clicked",
                     G_CALLBACK (stop_button_callback), NULL);
 
   GtkWidget *fullscreen_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
+      g_strconcat (executableFolder,
                    "icons/light-theme/fullscreen-icon.png", NULL));
   g_assert_nonnull (fullscreen_icon);
-  ginga_gui.fullscreen_button = gtk_button_new ();
-  g_assert_nonnull (ginga_gui.fullscreen_button);
-  gtk_button_set_image (GTK_BUTTON (ginga_gui.fullscreen_button),
+  fullscreenButton = gtk_button_new ();
+  g_assert_nonnull (fullscreenButton);
+  gtk_button_set_image (GTK_BUTTON (fullscreenButton),
                         fullscreen_icon);
-  g_signal_connect (ginga_gui.fullscreen_button, "clicked",
+  gtk_widget_set_has_tooltip(fullscreenButton, true);
+  gtk_widget_set_tooltip_text (fullscreenButton, "Fullscreen");                      
+  g_signal_connect (fullscreenButton, "clicked",
                     G_CALLBACK (set_fullscreen_mode), NULL);
 
-  ginga_gui.volume_button = gtk_volume_button_new ();
-  g_assert_nonnull (ginga_gui.volume_button);
+  volumeButton = gtk_volume_button_new ();
+  g_assert_nonnull (volumeButton);
 
   GtkWidget *config_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
+      g_strconcat (executableFolder,
                    "icons/light-theme/settings-icon.png", NULL));
   g_assert_nonnull (config_icon);
-  ginga_gui.config_button = gtk_button_new ();
-  g_assert_nonnull (ginga_gui.config_button);
-  gtk_button_set_image (GTK_BUTTON (ginga_gui.config_button), config_icon);
-  g_signal_connect (ginga_gui.config_button, "clicked",
-                    G_CALLBACK (create_settings_window), NULL);
+  settingsButton = gtk_button_new ();
+  g_assert_nonnull (settingsButton);
+  gtk_button_set_image (GTK_BUTTON (settingsButton), config_icon);
+  gtk_widget_set_has_tooltip(settingsButton, true);
+  gtk_widget_set_tooltip_text (settingsButton, "Preferences"); 
+  g_signal_connect (settingsButton, "clicked",
+                    G_CALLBACK (show_optbox), NULL);
 
   GtkWidget *remote_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
+      g_strconcat (executableFolder,
                    "icons/light-theme/remote-icon.png", NULL));
   g_assert_nonnull (remote_icon);
   GtkWidget *remote_button = gtk_button_new ();
   g_assert_nonnull (remote_button);
   gtk_button_set_image (GTK_BUTTON (remote_button), remote_icon);
+  gtk_widget_set_has_tooltip(remote_button, true);
+  gtk_widget_set_tooltip_text (remote_button, "Remote Control"); 
   g_signal_connect (remote_button, "clicked",
                     G_CALLBACK (create_tvcontrol_window), NULL);
 
+  GtkWidget *tools_icon = gtk_image_new_from_file (
+      g_strconcat (executableFolder,
+                   "icons/light-theme/tools-icon.png", NULL));
+  g_assert_nonnull (tools_icon);
+  GtkWidget *tools_button = gtk_button_new ();
+  g_assert_nonnull (tools_button);
+  gtk_button_set_image (GTK_BUTTON (tools_button), tools_icon);
+  gtk_widget_set_has_tooltip(tools_button, true);
+  gtk_widget_set_tooltip_text (tools_button, "Tools");
+  g_signal_connect (tools_button, "clicked", G_CALLBACK (show_toolbox),
+                    NULL);
+
   GtkWidget *debug_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
+      g_strconcat (executableFolder,
                    "icons/light-theme/debug-icon.png", NULL));
   g_assert_nonnull (debug_icon);
   GtkWidget *debug_button = gtk_button_new ();
   g_assert_nonnull (debug_button);
   gtk_button_set_image (GTK_BUTTON (debug_button), debug_icon);
+  gtk_widget_set_has_tooltip(debug_button, true);
+  gtk_widget_set_tooltip_text (debug_button, "Debug");
   g_signal_connect (debug_button, "clicked",
                     G_CALLBACK (enable_disable_debug), NULL);
 
-  GtkWidget *hist_button = gtk_menu_button_new ();
+  /* begin tool box */
+  GtkWidget *tool_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
+  g_assert_nonnull (tool_box);
 
-  /*gtk_menu_button_set_popup ( GTK_MENU_BUTTON(hist_button),
-                          menu_file); */
+  gtk_box_pack_start (GTK_BOX (tool_box), remote_button, false, false, 0);
+  gtk_box_pack_start (GTK_BOX (tool_box), debug_button, false, false, 0);
+  toolBoxPopOver = gtk_popover_new (tools_button);
+  g_assert_nonnull (toolBoxPopOver);
 
-  gtk_menu_button_set_direction (GTK_MENU_BUTTON (hist_button),
-                                 GTK_ARROW_DOWN);
+  gtk_container_add (GTK_CONTAINER (toolBoxPopOver), tool_box);
+  g_object_set (tool_box, "margin", 5, NULL);
+  gtk_widget_show_all (tool_box);
+  /* end tool box */
+
+  GtkWidget *hist_icon = gtk_image_new_from_file (
+      g_strconcat (executableFolder,
+                   "icons/light-theme/history-icon.png", NULL));
+  GtkWidget *hist_button = gtk_button_new ();
+  gtk_button_set_image (GTK_BUTTON (hist_button), hist_icon);
+    gtk_widget_set_has_tooltip(hist_button, true);
+  gtk_widget_set_tooltip_text (hist_button, "Historic");
+  g_assert_nonnull (hist_button);
+  /*g_signal_connect (hist_button, "clicked",
+                    G_CALLBACK (show_toolbox), NULL);  */
+
+  /* begin option box */
+
+  GtkWidget *aspect_combobox = gtk_combo_box_text_new ();
+  g_assert_nonnull (aspect_combobox);
+  gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (aspect_combobox), -1,
+                                  "TV (4:3)");
+  gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (aspect_combobox), -1,
+                                  "HDTV (16:9)");
+  gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (aspect_combobox), -1,
+                                  "LCD (16:10)");
+  gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (aspect_combobox), -1,
+                                  "Free");                                
+  gtk_combo_box_set_active (GTK_COMBO_BOX (aspect_combobox),
+                            presentationAttributes.aspectRatio);
+
+  GtkWidget *fps_combobox = gtk_combo_box_text_new ();
+  g_assert_nonnull (fps_combobox);
+  gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (fps_combobox), -1,
+                                  "30");
+  gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (fps_combobox), -1,
+                                  "60");
+  gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (fps_combobox), -1,
+                                  "Go Horse!");
+  gtk_combo_box_set_active (GTK_COMBO_BOX (fps_combobox), 0);
+
+  GtkWidget *theme_combobox = gtk_combo_box_text_new ();
+  g_assert_nonnull (theme_combobox);
+  gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (theme_combobox), -1,
+                                  "Light");
+  gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (theme_combobox), -1,
+                                  "Dark");
+  gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (theme_combobox), -1,
+                                  "Marine");
+  gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (theme_combobox), -1,
+                                  "Crystal");                                
+  gtk_combo_box_set_active (GTK_COMBO_BOX (theme_combobox), 0);
+  /* g_signal_connect (aspect_combobox, "changed",
+                     G_CALLBACK (aspect_combobox_changed), NULL); */
+
+  GtkWidget *opt_box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
+  g_assert_nonnull (opt_box);
+
+  gtk_box_pack_start (GTK_BOX (opt_box), gtk_label_new ("Aspect Ratio:"),
+                      false, false, 0);
+  gtk_box_pack_start (GTK_BOX (opt_box), aspect_combobox, false, true, 0);
+  gtk_box_pack_start (GTK_BOX (opt_box), gtk_label_new ("Frame Ratte:"),
+                      false, false, 0);
+  gtk_box_pack_start (GTK_BOX (opt_box), fps_combobox, false, true, 0);
+  gtk_box_pack_start (GTK_BOX (opt_box), gtk_label_new ("GUI Theme:"),
+                      false, false, 0);
+  gtk_box_pack_start (GTK_BOX (opt_box), theme_combobox, false, true, 0);
+
+  optBoxPopOver = gtk_popover_new (settingsButton);
+  g_assert_nonnull (optBoxPopOver);
+  // gtk_widget_set_size_request (toolBoxPopOver, 200, 100);
+
+  gtk_container_add (GTK_CONTAINER (optBoxPopOver), opt_box);
+  g_object_set (opt_box, "margin", 5, NULL);
+  gtk_widget_show_all (opt_box);
+
+  /* end option box */
 
   GtkWidget *sep1 = gtk_separator_new (GTK_ORIENTATION_VERTICAL);
   gtk_widget_set_size_request (sep1, 1, 30);
@@ -284,10 +397,10 @@ create_main_window (void)
 
   GtkWidget *file_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
 
-  gtk_box_pack_start (GTK_BOX (file_box), ginga_gui.open_button, false,
+  gtk_box_pack_start (GTK_BOX (file_box), openButton, false,
                       false, 0);
 
-  gtk_box_pack_start (GTK_BOX (file_box), ginga_gui.file_entry, false,
+  gtk_box_pack_start (GTK_BOX (file_box), fileEntry, false,
                       false, 0);
 
   gtk_box_pack_start (GTK_BOX (file_box), hist_button, false, false, 0);
@@ -295,48 +408,46 @@ create_main_window (void)
   gtk_header_bar_set_custom_title (GTK_HEADER_BAR (header_bar), file_box);
 
   gtk_header_bar_pack_end (GTK_HEADER_BAR (header_bar),
-                           ginga_gui.config_button);
+                           settingsButton);
 
   gtk_header_bar_pack_end (GTK_HEADER_BAR (header_bar),
-                           ginga_gui.fullscreen_button);
-
-  gtk_header_bar_pack_end (GTK_HEADER_BAR (header_bar),
-                           ginga_gui.volume_button);
+                           fullscreenButton);
 
   gtk_header_bar_pack_end (GTK_HEADER_BAR (header_bar), sep1);
 
   gtk_header_bar_pack_start (GTK_HEADER_BAR (header_bar),
-                             ginga_gui.play_button);
+                             playButton);
 
   gtk_header_bar_pack_start (GTK_HEADER_BAR (header_bar),
-                             ginga_gui.stop_button);
+                             stopButton);
 
   gtk_header_bar_pack_start (GTK_HEADER_BAR (header_bar), sep2);
 
-  gtk_header_bar_pack_start (GTK_HEADER_BAR (header_bar), remote_button);
+  gtk_header_bar_pack_start (GTK_HEADER_BAR (header_bar),
+                             volumeButton);
 
-  gtk_header_bar_pack_start (GTK_HEADER_BAR (header_bar), debug_button);
+  gtk_header_bar_pack_start (GTK_HEADER_BAR (header_bar), tools_button);
 
   gtk_header_bar_pack_start (GTK_HEADER_BAR (header_bar), sep3);
 
   gtk_window_set_titlebar (GTK_WINDOW (mainWindow), header_bar);
 
   // Create Drawing area
-  ginga_gui.canvas = gtk_drawing_area_new ();
-  g_assert_nonnull (ginga_gui.canvas);
-  gtk_widget_set_app_paintable (ginga_gui.canvas, TRUE);
-  g_signal_connect (ginga_gui.canvas, "draw", G_CALLBACK (draw_callback),
+  gingaView = gtk_drawing_area_new ();
+  g_assert_nonnull (gingaView);
+  gtk_widget_set_app_paintable (gingaView, TRUE);
+  g_signal_connect (gingaView, "draw", G_CALLBACK (draw_callback),
                     NULL);
-  gtk_widget_set_size_request (ginga_gui.canvas,
+  gtk_widget_set_size_request (gingaView,
                                presentationAttributes.resolutionWidth,
                                presentationAttributes.resolutionHeight);
 
 #if GTK_CHECK_VERSION(3, 8, 0)
   gtk_widget_add_tick_callback (
-      ginga_gui.canvas, (GtkTickCallback)update_draw_callback, NULL, NULL);
+      gingaView, (GtkTickCallback)update_draw_callback, NULL, NULL);
 #else
   g_timeout_add (1000 / 60, (GSourceFunc)update_draw_callback,
-                 ginga_gui.canvas);
+                 gingaView);
 #endif
 
   /* begin debug view   */
@@ -350,12 +461,12 @@ create_main_window (void)
   debugView = gtk_notebook_new ();
   g_assert_nonnull (debugView);
   gtk_widget_set_size_request (debugView,
-                               presentationAttributes.resolutionWidth, 160);
+                               presentationAttributes.resolutionWidth, 140);
   gtk_notebook_set_show_tabs (GTK_NOTEBOOK (debugView), false);
   gtk_widget_set_margin_top (debugView, 5);
 
   GtkWidget *button_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
+      g_strconcat (executableFolder,
                    "icons/light-theme/bottomhide-icon.png", NULL));
   g_assert_nonnull (button_icon);
   GtkWidget *debug_hide_button = gtk_button_new ();
@@ -384,6 +495,8 @@ create_main_window (void)
 
   /* end debug view */
 
+  /* begin side view */
+
   sideView = gtk_notebook_new ();
   g_assert_nonnull (sideView);
   gtk_widget_set_size_request (sideView, (BUTTON_SIZE * 4) + 15, 100);
@@ -391,7 +504,7 @@ create_main_window (void)
   gtk_notebook_set_show_tabs (GTK_NOTEBOOK (sideView), false);
 
   button_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
+      g_strconcat (executableFolder,
                    "icons/light-theme/window-icon.png", NULL));
   g_assert_nonnull (button_icon);
   GtkWidget *sidebar_win_button = gtk_button_new ();
@@ -401,7 +514,7 @@ create_main_window (void)
                     G_CALLBACK (change_tvcontrol_to_window_mode), NULL);
 
   button_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
+      g_strconcat (executableFolder,
                    "icons/light-theme/rightride-icon.png", NULL));
   g_assert_nonnull (button_icon);
   GtkWidget *sidebar_hide_button = gtk_button_new ();
@@ -449,14 +562,16 @@ create_main_window (void)
   g_assert_nonnull (v_box);
 
   gtk_box_pack_start (GTK_BOX (v_box), infoBar, false, true, 0);
-  gtk_box_pack_start (GTK_BOX (v_box), ginga_gui.canvas, true, true, 0);
+  gtk_box_pack_start (GTK_BOX (v_box), gingaView, true, true, 0);
 
   gtk_box_pack_start (GTK_BOX (h_box), v_box, true, true, 0);
   gtk_box_pack_start (GTK_BOX (h_box), sideView, false, true, 0);
 
+  /* end side view */
+
   GtkWidget *vpaned = gtk_paned_new (GTK_ORIENTATION_VERTICAL);
   g_assert_nonnull (vpaned);
- // gtk_widget_set_size_request (vpaned, 200, -1);
+  // gtk_widget_set_size_request (vpaned, 200, -1);
 
   gtk_paned_pack1 (GTK_PANED (vpaned), h_box, true, true);
   gtk_paned_pack2 (GTK_PANED (vpaned), debugView, true, false);
@@ -530,7 +645,7 @@ select_ncl_file_callback (GtkWidget *widget, gpointer data)
         }
       else
         {
-          gtk_entry_set_text (GTK_ENTRY (ginga_gui.file_entry), filename);
+          gtk_entry_set_text (GTK_ENTRY (fileEntry), filename);
           presentationAttributes.lastFileName = filename;
         }
 
@@ -544,13 +659,13 @@ select_ncl_file_callback (GtkWidget *widget, gpointer data)
 void
 stop_button_callback (void)
 {
-  ginga_gui.playMode = false;
+  inPlayMode = false;
   GtkWidget *play_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
+      g_strconcat (executableFolder,
                    "icons/light-theme/play-icon.png", NULL));
-  gtk_button_set_image (GTK_BUTTON (ginga_gui.play_button), play_icon);
-  gtk_widget_set_sensitive (ginga_gui.file_entry, true);
-  gtk_widget_set_sensitive (ginga_gui.open_button, true);
+  gtk_button_set_image (GTK_BUTTON (playButton), play_icon);
+  gtk_widget_set_sensitive (fileEntry, true);
+  gtk_widget_set_sensitive (openButton, true);
 
   gtk_widget_show_now (infoBar);
 }
@@ -558,26 +673,26 @@ stop_button_callback (void)
 void
 play_pause_button_callback (void)
 {
-  ginga_gui.playMode = !ginga_gui.playMode;
+  inPlayMode = !inPlayMode;
   GtkWidget *play_icon = gtk_image_new_from_file (
-      g_strconcat (ginga_gui.executable_folder,
+      g_strconcat (executableFolder,
                    "icons/light-theme/play-icon.png", NULL));
-  if (ginga_gui.playMode)
+  if (inPlayMode)
     {
       play_icon = gtk_image_new_from_file (
-          g_strconcat (ginga_gui.executable_folder,
+          g_strconcat (executableFolder,
                        "icons/light-theme/pause-icon.png", NULL));
-      gtk_widget_set_sensitive (ginga_gui.file_entry, false);
-      gtk_widget_set_sensitive (ginga_gui.open_button, false);
+      gtk_widget_set_sensitive (fileEntry, false);
+      gtk_widget_set_sensitive (openButton, false);
       const gchar *file
-          = gtk_entry_get_text (GTK_ENTRY (ginga_gui.file_entry));
+          = gtk_entry_get_text (GTK_ENTRY (fileEntry));
       // Start Ginga.
       GINGA->start (file);
     }
   else
     {
-      gtk_widget_set_sensitive (ginga_gui.file_entry, true);
-      gtk_widget_set_sensitive (ginga_gui.open_button, true);
+      gtk_widget_set_sensitive (fileEntry, true);
+      gtk_widget_set_sensitive (openButton, true);
     }
-  gtk_button_set_image (GTK_BUTTON (ginga_gui.play_button), play_icon);
+  gtk_button_set_image (GTK_BUTTON (playButton), play_icon);
 }

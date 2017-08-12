@@ -28,29 +28,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 typedef struct
 {
-  GtkWidget *toplevel_window = NULL;
-  GtkWidget *fixed_layout = NULL;
-  GtkWidget *notebook = NULL;
-  guint16 default_margin = 5;
-  GtkWidget *canvas = NULL;
-  GtkWidget *log_view = NULL;
-  GtkWidget *menu_bar = NULL;
-  guint16 controller_container_height = 48;
-  GtkWidget *file_entry = NULL;
-  GtkWidget *play_button = NULL;
-  GtkWidget *stop_button = NULL;
-  GtkWidget *time_label = NULL;
-  GtkWidget *config_button = NULL;
-  GtkWidget *fullscreen_button = NULL;
-  GtkWidget *volume_button = NULL;
-  GtkWidget *open_button = NULL;
-  GtkWidget *canvas_separator_bottom = NULL;
-  gchar *executable_folder = NULL;
-  gboolean playMode = FALSE;
-} Ginga_GUI;
-
-typedef struct
-{
   guint8 aspectRatio = 0; /* 0=(4:3) 1=(16:9) 2=(16:10) */
   guint16 resolutionWidth = 850;
   guint16 resolutionHeight = 500;
@@ -58,7 +35,6 @@ typedef struct
   gchar *lastFileName = NULL;
 } PresentationAttributes;
 
-extern Ginga_GUI ginga_gui;
 extern Ginga *GINGA; /* Ginga Scheduler */
 extern GtkWidget *mainWindow;
 extern GtkWidget *tvcontrolWindow;
@@ -69,7 +45,8 @@ extern GtkWidget *aboutWindow;
 extern GtkWidget *debugView;
 extern GtkWidget *sideView;
 extern GtkWidget *infoBar;
-
+extern GtkWidget *gingaView;
+extern gchar* executableFolder;
 extern gboolean isFullScreenMode;
 extern gboolean isDebugMode;
 extern gboolean tvcontrolAsSidebar;

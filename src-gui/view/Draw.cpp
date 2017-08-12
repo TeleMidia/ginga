@@ -59,9 +59,9 @@ draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
   w = gtk_widget_get_allocated_width (widget);
   h = gtk_widget_get_allocated_height (widget);
 
-  cairo_set_source_rgb (cr, 1., 0., 1.);
+  cairo_set_source_rgb (cr, 0., 0., 0.);
   cairo_rectangle (cr, 0, 0, w, h);
   cairo_fill (cr);
 
-  GINGA->redraw (cr);
+ // GINGA->redraw (cr);
 }
