@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 // Global formatter.
 Ginga *GINGA = nullptr;
 
-Ginga_GUI ginga_gui;
+gchar* executableFolder;
 
 int
 main (int argc, char **argv)
@@ -30,14 +30,14 @@ main (int argc, char **argv)
   // Create Ginga handle width the original args.
   GINGA = new Ginga (argc, argv, presentationAttributes.resolutionWidth, presentationAttributes.resolutionHeight, false); 
   
-  ginga_gui.executable_folder = g_strconcat (
+  executableFolder = g_strconcat (
       g_get_current_dir (), g_path_get_dirname (argv[0]) + 1, "/", NULL);
-  printf ("PATH: %s \n", ginga_gui.executable_folder);
+ // printf ("PATH: %s \n", executableFolder);
 
   gtk_init (&argc, &argv);
   
   GError **error;
-  gtk_window_set_default_icon_from_file (g_strconcat (ginga_gui.executable_folder,
+  gtk_window_set_default_icon_from_file (g_strconcat (executableFolder,
                    "icons/common/ginga_icon.png", NULL), error);
 
   create_main_window ();

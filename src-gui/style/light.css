@@ -1,51 +1,70 @@
 /*@define-color bg_color #444444; */
 
 *{
-  border-radius: 0px;  
-  box-shadow: none;
+  border-radius: 2px;  
   border-width:0px;
 }
 
-window{  
+window, .window{  
   background-color: #E8E8E7;  
+  border-top-right-radius: 0px;
+  border-top-left-radius: 0px;
 }
 
-entry{
+entry, .entry{
   border: 1px solid #888888;
-  border-radius: 0px; 
 }
 
-button{
+button, .button{
   background: #EEEEEE;
   color: #333333;
   border: 1px solid #888888;
-  border-radius: 0px;
-  
+  box-shadow: none;
 }
 
-headerbar {
+popover{
+  border: 1px solid #333333;
+}
+
+popover label{
+  font-weight: bold;
+}
+
+slider{
+  border: 1px solid #888888;
+}
+
+button:hover, .button:hover{
+  background: #DFDFDF;
+}
+
+headerbar, .header-bar{
   background-image: none;
   background-color: #F4F4F4;
   border-bottom: 1px solid #888888;
   box-shadow: none;
 }
 
-notebook{
+notebook, .notebook{
   border: 1px solid #888888;  
 }
 
-headerbar separator{
+headerbar separator, .header-bar .separator{
   background-color: #888888;  
 }
 
-infobar{
-   background-color: #EE2222;   
+infobar, .infobar{
+  background-color: #EE2222;   
 }
 
-infobar button{
-   background: transparent;
-   border-width: 0px;
-   color: #EEEEEE;   
+infobar button, .infobar .button{
+  background: transparent;
+  border-width: 0px;
+  color: #EEEEEE;   
+}
+
+infobar button:hover, .infobar .button:hover{
+  background: transparent;
 }
 
 
