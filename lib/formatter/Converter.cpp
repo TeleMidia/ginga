@@ -63,10 +63,16 @@ Converter::~Converter ()
   _settingsObjects.clear ();
 }
 
+RuleAdapter *
+Converter::getRuleAdapter ()
+{
+  return _ruleAdapter;
+}
+
 void
 Converter::setLinkActionListener (INclActionListener *actListener)
 {
-  this->_actionListener = actListener;
+  _actionListener = actListener;
 }
 
 ExecutionObject *
@@ -144,16 +150,14 @@ Converter::getEvent (ExecutionObject *exeObj,
             {
               event = new AttributionEvent (
                     id, exeObj,
-                    (Property *)interfacePoint,
-                    _ruleAdapter->getSettings ());
+                    (Property *)interfacePoint);
             }
           else
             {
               WARNING ("NCM event type is attribution, but interface point "
                        "isn't");
 
-              event = new AttributionEvent (
-                    id, exeObj, nullptr, _ruleAdapter->getSettings ());
+              event = new AttributionEvent (id, exeObj, nullptr);
             }
         }
     }
@@ -166,9 +170,7 @@ Converter::getEvent (ExecutionObject *exeObj,
             auto propAnchor = cast (Property *, interfacePoint);
             if (propAnchor)
               {
-                event = new AttributionEvent (
-                      id, exeObj, propAnchor,
-                      _ruleAdapter->getSettings ());
+                event = new AttributionEvent (id, exeObj, propAnchor);
               }
             else
               {
@@ -388,7 +390,6 @@ Converter::createExecutionObject (
   ExecutionObject *exeObj;
   PresentationEvent *compositeEvt;
 
-
   node = perspective->getAnchorNode ();
 
   Node *nodeEntity = cast (Node *, node->derefer ());
@@ -473,7 +474,24 @@ Converter::createExecutionObject (
   else
     {
       g_assert_nonnull (node);
-      exeObj = new ExecutionObject (id, node, _actionListener);
+      if (contentNode->isSettings ())
+        {
+          if ((exeObj = _ruleAdapter->getSettings ()) != nullptr)
+            {
+              return exeObj;
+            }
+          else
+            {
+              exeObj = new ExecutionObjectSettings
+                (id, node, _actionListener);
+              _ruleAdapter->setSettings (exeObj);
+              return exeObj;
+            }
+        }
+      else
+        {
+          return new ExecutionObject (id, node, _actionListener);
+        }
     }
 
   return exeObj;
