@@ -526,13 +526,6 @@ void
 Player::redraw (cairo_t *cr)
 {
   g_assert (_state != PL_SLEEPING);
-
-  if (_hasNextFocus)            // effectuate pending focus index change
-    {
-      Player::setCurrentFocus (_nextFocus);
-      _hasNextFocus = false;
-    }
-
   _animator.update (&_rect, &_bgColor, &_alpha);
 
   if (!_visible || !(_rect.width > 0 && _rect.height > 0))
@@ -540,10 +533,12 @@ Player::redraw (cairo_t *cr)
 
   if (_bgColor.alpha > 0)
     {
+      cairo_save (cr);
       cairo_set_source_rgba
         (cr, _bgColor.red, _bgColor.green, _bgColor.blue, _alpha / 255.);
       cairo_rectangle (cr, _rect.x, _rect.y, _rect.width, _rect.height);
       cairo_fill (cr);
+      cairo_restore (cr);
     }
 
   if (_surface != nullptr)
@@ -563,9 +558,12 @@ Player::redraw (cairo_t *cr)
 
   if (this->isFocused ())
     {
+      cairo_save (cr);
       cairo_set_source_rgba (cr, 1., 1., 0., 1.);
+      cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
       cairo_rectangle (cr, _rect.x, _rect.y, _rect.width, _rect.height);
       cairo_stroke (cr);
+      cairo_restore (cr);
     }
 
   if (_debug)
@@ -579,8 +577,6 @@ Player::redraw (cairo_t *cr)
  * @brief Current focus index value.
  */
 string Player::_currentFocus = "";
-string Player::_nextFocus = "";
-bool Player::_hasNextFocus = false;
 
 /**
  * @brief Gets current focus index.
@@ -601,17 +597,6 @@ Player::setCurrentFocus (const string &index)
 {
   TRACE ("setting current focus to '%s'", index.c_str ());
   _currentFocus = index;
-}
-
-/**
- * @brief Schedules focus index change.
- * @param next Next focus index.
- */
-void
-Player::scheduleFocusChange (const string &next)
-{
-  _hasNextFocus = true;
-  _nextFocus = next;
 }
 
 

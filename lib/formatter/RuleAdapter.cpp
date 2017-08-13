@@ -20,9 +20,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-RuleAdapter::RuleAdapter (Settings *settings)
+RuleAdapter::RuleAdapter ()
 {
-  this->_settings = settings;
+  _settings = nullptr;
 }
 
 RuleAdapter::~RuleAdapter ()
@@ -55,10 +55,16 @@ RuleAdapter::reset ()
   _entityListenMap.clear ();
 }
 
-Settings *
+ExecutionObject *
 RuleAdapter::getSettings ()
 {
-  return this->_settings;
+  return _settings;
+}
+
+void
+RuleAdapter::setSettings (ExecutionObject *settings)
+{
+  _settings = settings;
 }
 
 void
@@ -176,7 +182,7 @@ RuleAdapter::evaluateSimpleRule (SimpleRule *rule)
 {
   string attr = rule->getAttribute ();
   string ruleValue = rule->getValue ();
-  string attrValue = _settings->get (attr);
+  string attrValue = _settings->getProperty (attr);
   string op = rule->getOperator ();
 
   return ginga_eval_comparator (op, attrValue, ruleValue);

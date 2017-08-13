@@ -20,6 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ExecutionObject.h"
 #include "ExecutionObjectContext.h"
+#include "ExecutionObjectSettings.h"
 #include "ExecutionObjectSwitch.h"
 #include "NclActions.h"
 #include "NclEvents.h"
@@ -59,6 +60,9 @@ public:
 
   NclEvent *insertContext (NclNodeNesting *contextPerspective,
                            Port *port);
+
+  RuleAdapter *getRuleAdapter ();
+
 
 private:
   static int _dummyCount;

@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NCL_EVENTS_H
 #define NCL_EVENTS_H
 
-#include "Settings.h"
-
 #include "ncl/Ncl.h"
 using namespace ::ginga::ncl;
 
@@ -127,8 +125,7 @@ class AttributionEvent : public NclEvent
 public:
   AttributionEvent (const string &id,
                     ExecutionObject *exeObj,
-                    Property *anchor,
-                    Settings *settings);
+                    Property *anchor);
 
   virtual ~AttributionEvent ();
   string getCurrentValue ();
@@ -141,10 +138,6 @@ public:
 
 protected:
   map<string, NclEvent *> _assessments;
-  Settings *_settings;
-
-private:
-  bool _settingsNode;
 };
 
 class SwitchEvent : public NclEvent, public INclEventListener
