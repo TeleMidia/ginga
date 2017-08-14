@@ -33,6 +33,6 @@ gingagui_SOURCES=\
   view/Draw.cpp\
   view/FullscreenWindow.cpp\
   view/MainWindow.cpp\
-  view/SettingsWindow.cpp\
+  view/BigPictureWindow.cpp\
   view/TvControlWindow.cpp\
   $(NULL)

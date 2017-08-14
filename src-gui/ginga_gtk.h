@@ -46,9 +46,10 @@ extern GtkWidget *debugView;
 extern GtkWidget *sideView;
 extern GtkWidget *infoBar;
 extern GtkWidget *gingaView;
-extern gchar* executableFolder;
+extern gchar *executableFolder;
 extern gboolean isFullScreenMode;
 extern gboolean isDebugMode;
+extern gboolean inBigPictureMode;
 extern gboolean tvcontrolAsSidebar;
 extern gboolean isCrtlModifierActive;
 extern PresentationAttributes presentationAttributes;
@@ -73,9 +74,10 @@ void destroy_fullscreen_window (void);
 void set_fullscreen_mode (void);
 void set_unfullscreen_mode (void);
 
-/* View/SettingsWindow */
-void create_settings_window (void);
-void destroy_settings_window (void);
+/* View/BigPictureWindow */
+void create_bigpicture_window (void);
+void destroy_bigpicture_window (void);
+void carrousel_rotate (gint);
 
 /* View/AboutWindow */
 void create_about_window (void);
@@ -84,8 +86,8 @@ void destroy_about_window (void);
 /* View/Draw */
 #if GTK_CHECK_VERSION(3, 8, 0)
 gboolean update_draw_callback (GtkWidget *widget,
-                                      GdkFrameClock *frame_clock,
-                                      G_GNUC_UNUSED gpointer data);
+                               GdkFrameClock *frame_clock,
+                               G_GNUC_UNUSED gpointer data);
 #else
 gboolean update_draw_callback (GtkWidget *widget);
 #endif
