@@ -38,6 +38,8 @@ gboolean inPlayMode = FALSE;
 gboolean destroyWindowToResize = FALSE;
 gboolean isCrtlModifierActive = FALSE;
 
+PresentationAttributes presentationAttributes;
+
 void
 hide_sideview ()
 {
@@ -96,9 +98,9 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
   switch (e->keyval)
     {
     case GDK_KEY_Escape: /* quit */
-      if (isFullScreenMode)
+      if (isFullScreenMode  && (g_strcmp0 ((const char *)type, "press") != 0))
         set_unfullscreen_mode ();
-      return;
+      break;
     case GDK_KEY_Meta_L:
     case GDK_KEY_Meta_R:
     case GDK_KEY_Control_R:
@@ -107,22 +109,27 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
         isCrtlModifierActive = TRUE;
       else
         isCrtlModifierActive = FALSE;
-      return;
+      break;
     case GDK_KEY_F:
     case GDK_KEY_f:
       if (isCrtlModifierActive && !isFullScreenMode)
         set_fullscreen_mode ();
-      return;
+      break;
     case GDK_KEY_R:
     case GDK_KEY_r:
-      if (isCrtlModifierActive)
+      if (isCrtlModifierActive && (g_strcmp0 ((const char *)type, "press") != 0))
         create_tvcontrol_window ();
-      return;
+      break;
+    case GDK_KEY_B:
+    case GDK_KEY_b:
+      if (isCrtlModifierActive && (g_strcmp0 ((const char *)type, "press") != 0))
+         create_bigpicture_window();
+      break;  
     case GDK_KEY_D:
     case GDK_KEY_d:
-      if (isCrtlModifierActive)
+      if (isCrtlModifierActive && (g_strcmp0 ((const char *)type, "press") != 0))
         enable_disable_debug ();
-      return;
+      break;
     case GDK_KEY_asterisk:
       key = "*";
       break;
@@ -152,9 +159,15 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
       break;
     case GDK_KEY_Left:
       key = "CURSOR_LEFT";
+      if (inBigPictureMode
+          && (g_strcmp0 ((const char *)type, "press") != 0))
+        carrousel_rotate (1);
       break;
     case GDK_KEY_Right:
       key = "CURSOR_RIGHT";
+      if (inBigPictureMode
+          && (g_strcmp0 ((const char *)type, "press") != 0))
+        carrousel_rotate (-1);
       break;
     case GDK_KEY_Up:
       key = "CURSOR_UP";
@@ -178,7 +191,6 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
 void
 create_main_window (void)
 {
-
   // Create application window.
   mainWindow = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   g_assert_nonnull (mainWindow);
@@ -188,8 +200,7 @@ create_main_window (void)
                                presentationAttributes.resolutionHeight);
   gtk_window_set_position (GTK_WINDOW (mainWindow), GTK_WIN_POS_CENTER);
   gtk_window_set_resizable (GTK_WINDOW (mainWindow), true);
-  gtk_container_set_border_width (GTK_CONTAINER (mainWindow),
-                                  5);
+  gtk_container_set_border_width (GTK_CONTAINER (mainWindow), 5);
 
   GError *error = NULL;
   GtkCssProvider *css_provider = gtk_css_provider_get_default ();
@@ -214,20 +225,18 @@ create_main_window (void)
   g_assert_nonnull (fileEntry);
   gtk_widget_set_size_request (fileEntry, 400, 32);
 
-  GtkWidget *open_icon = gtk_image_new_from_file (
-      g_strconcat (executableFolder,
-                   "icons/light-theme/openfile-icon.png", NULL));
+  GtkWidget *open_icon = gtk_image_new_from_file (g_strconcat (
+      executableFolder, "icons/light-theme/openfile-icon.png", NULL));
   openButton = gtk_button_new ();
   g_assert_nonnull (openButton);
   gtk_button_set_image (GTK_BUTTON (openButton), open_icon);
-  gtk_widget_set_has_tooltip(openButton, true);
+  gtk_widget_set_has_tooltip (openButton, true);
   gtk_widget_set_tooltip_text (openButton, "Open file");
   g_signal_connect (openButton, "clicked",
                     G_CALLBACK (select_ncl_file_callback), NULL);
 
-  GtkWidget *play_icon = gtk_image_new_from_file (
-      g_strconcat (executableFolder,
-                   "icons/light-theme/play-icon.png", NULL));
+  GtkWidget *play_icon = gtk_image_new_from_file (g_strconcat (
+      executableFolder, "icons/light-theme/play-icon.png", NULL));
   g_assert_nonnull (play_icon);
   playButton = gtk_button_new ();
   g_assert_nonnull (playButton);
@@ -235,9 +244,8 @@ create_main_window (void)
   g_signal_connect (playButton, "clicked",
                     G_CALLBACK (play_pause_button_callback), NULL);
 
-  GtkWidget *stop_icon = gtk_image_new_from_file (
-      g_strconcat (executableFolder,
-                   "icons/light-theme/stop-icon.png", NULL));
+  GtkWidget *stop_icon = gtk_image_new_from_file (g_strconcat (
+      executableFolder, "icons/light-theme/stop-icon.png", NULL));
   g_assert_nonnull (stop_icon);
   stopButton = gtk_button_new ();
   g_assert_nonnull (stopButton);
@@ -245,66 +253,60 @@ create_main_window (void)
   g_signal_connect (stopButton, "clicked",
                     G_CALLBACK (stop_button_callback), NULL);
 
-  GtkWidget *fullscreen_icon = gtk_image_new_from_file (
-      g_strconcat (executableFolder,
-                   "icons/light-theme/fullscreen-icon.png", NULL));
+  GtkWidget *fullscreen_icon = gtk_image_new_from_file (g_strconcat (
+      executableFolder, "icons/light-theme/fullscreen-icon.png", NULL));
   g_assert_nonnull (fullscreen_icon);
   fullscreenButton = gtk_button_new ();
   g_assert_nonnull (fullscreenButton);
-  gtk_button_set_image (GTK_BUTTON (fullscreenButton),
-                        fullscreen_icon);
-  gtk_widget_set_has_tooltip(fullscreenButton, true);
-  gtk_widget_set_tooltip_text (fullscreenButton, "Fullscreen");                      
+  gtk_button_set_image (GTK_BUTTON (fullscreenButton), fullscreen_icon);
+  gtk_widget_set_has_tooltip (fullscreenButton, true);
+  gtk_widget_set_tooltip_text (fullscreenButton, "Fullscreen");
   g_signal_connect (fullscreenButton, "clicked",
                     G_CALLBACK (set_fullscreen_mode), NULL);
 
   volumeButton = gtk_volume_button_new ();
   g_assert_nonnull (volumeButton);
 
-  GtkWidget *config_icon = gtk_image_new_from_file (
-      g_strconcat (executableFolder,
-                   "icons/light-theme/settings-icon.png", NULL));
+  GtkWidget *config_icon = gtk_image_new_from_file (g_strconcat (
+      executableFolder, "icons/light-theme/settings-icon.png", NULL));
   g_assert_nonnull (config_icon);
   settingsButton = gtk_button_new ();
   g_assert_nonnull (settingsButton);
   gtk_button_set_image (GTK_BUTTON (settingsButton), config_icon);
-  gtk_widget_set_has_tooltip(settingsButton, true);
-  gtk_widget_set_tooltip_text (settingsButton, "Preferences"); 
-  g_signal_connect (settingsButton, "clicked",
-                    G_CALLBACK (show_optbox), NULL);
+  gtk_widget_set_has_tooltip (settingsButton, true);
+  gtk_widget_set_tooltip_text (settingsButton, "Preferences");
+  g_signal_connect (settingsButton, "clicked", G_CALLBACK (show_optbox),
+                    NULL);
 
-  GtkWidget *remote_icon = gtk_image_new_from_file (
-      g_strconcat (executableFolder,
-                   "icons/light-theme/remote-icon.png", NULL));
+  GtkWidget *remote_icon = gtk_image_new_from_file (g_strconcat (
+      executableFolder, "icons/light-theme/remote-icon.png", NULL));
   g_assert_nonnull (remote_icon);
   GtkWidget *remote_button = gtk_button_new ();
   g_assert_nonnull (remote_button);
   gtk_button_set_image (GTK_BUTTON (remote_button), remote_icon);
-  gtk_widget_set_has_tooltip(remote_button, true);
-  gtk_widget_set_tooltip_text (remote_button, "Remote Control"); 
+  gtk_widget_set_has_tooltip (remote_button, true);
+  gtk_widget_set_tooltip_text (remote_button, "Remote Control");
   g_signal_connect (remote_button, "clicked",
                     G_CALLBACK (create_tvcontrol_window), NULL);
 
-  GtkWidget *tools_icon = gtk_image_new_from_file (
-      g_strconcat (executableFolder,
-                   "icons/light-theme/tools-icon.png", NULL));
+  GtkWidget *tools_icon = gtk_image_new_from_file (g_strconcat (
+      executableFolder, "icons/light-theme/tools-icon.png", NULL));
   g_assert_nonnull (tools_icon);
   GtkWidget *tools_button = gtk_button_new ();
   g_assert_nonnull (tools_button);
   gtk_button_set_image (GTK_BUTTON (tools_button), tools_icon);
-  gtk_widget_set_has_tooltip(tools_button, true);
+  gtk_widget_set_has_tooltip (tools_button, true);
   gtk_widget_set_tooltip_text (tools_button, "Tools");
   g_signal_connect (tools_button, "clicked", G_CALLBACK (show_toolbox),
                     NULL);
 
-  GtkWidget *debug_icon = gtk_image_new_from_file (
-      g_strconcat (executableFolder,
-                   "icons/light-theme/debug-icon.png", NULL));
+  GtkWidget *debug_icon = gtk_image_new_from_file (g_strconcat (
+      executableFolder, "icons/light-theme/debug-icon.png", NULL));
   g_assert_nonnull (debug_icon);
   GtkWidget *debug_button = gtk_button_new ();
   g_assert_nonnull (debug_button);
   gtk_button_set_image (GTK_BUTTON (debug_button), debug_icon);
-  gtk_widget_set_has_tooltip(debug_button, true);
+  gtk_widget_set_has_tooltip (debug_button, true);
   gtk_widget_set_tooltip_text (debug_button, "Debug");
   g_signal_connect (debug_button, "clicked",
                     G_CALLBACK (enable_disable_debug), NULL);
@@ -323,12 +325,11 @@ create_main_window (void)
   gtk_widget_show_all (tool_box);
   /* end tool box */
 
-  GtkWidget *hist_icon = gtk_image_new_from_file (
-      g_strconcat (executableFolder,
-                   "icons/light-theme/history-icon.png", NULL));
+  GtkWidget *hist_icon = gtk_image_new_from_file (g_strconcat (
+      executableFolder, "icons/light-theme/history-icon.png", NULL));
   GtkWidget *hist_button = gtk_button_new ();
   gtk_button_set_image (GTK_BUTTON (hist_button), hist_icon);
-    gtk_widget_set_has_tooltip(hist_button, true);
+  gtk_widget_set_has_tooltip (hist_button, true);
   gtk_widget_set_tooltip_text (hist_button, "Historic");
   g_assert_nonnull (hist_button);
   /*g_signal_connect (hist_button, "clicked",
@@ -345,7 +346,7 @@ create_main_window (void)
   gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (aspect_combobox), -1,
                                   "LCD (16:10)");
   gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (aspect_combobox), -1,
-                                  "Free");                                
+                                  "Free");
   gtk_combo_box_set_active (GTK_COMBO_BOX (aspect_combobox),
                             presentationAttributes.aspectRatio);
 
@@ -368,7 +369,7 @@ create_main_window (void)
   gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (theme_combobox), -1,
                                   "Marine");
   gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (theme_combobox), -1,
-                                  "Crystal");                                
+                                  "Crystal");
   gtk_combo_box_set_active (GTK_COMBO_BOX (theme_combobox), 0);
   /* g_signal_connect (aspect_combobox, "changed",
                      G_CALLBACK (aspect_combobox_changed), NULL); */
@@ -407,34 +408,27 @@ create_main_window (void)
 
   GtkWidget *file_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
 
-  gtk_box_pack_start (GTK_BOX (file_box), openButton, false,
-                      false, 0);
+  gtk_box_pack_start (GTK_BOX (file_box), openButton, false, false, 0);
 
-  gtk_box_pack_start (GTK_BOX (file_box), fileEntry, false,
-                      false, 0);
+  gtk_box_pack_start (GTK_BOX (file_box), fileEntry, false, false, 0);
 
   gtk_box_pack_start (GTK_BOX (file_box), hist_button, false, false, 0);
 
   gtk_header_bar_set_custom_title (GTK_HEADER_BAR (header_bar), file_box);
 
-  gtk_header_bar_pack_end (GTK_HEADER_BAR (header_bar),
-                           settingsButton);
+  gtk_header_bar_pack_end (GTK_HEADER_BAR (header_bar), settingsButton);
 
-  gtk_header_bar_pack_end (GTK_HEADER_BAR (header_bar),
-                           fullscreenButton);
+  gtk_header_bar_pack_end (GTK_HEADER_BAR (header_bar), fullscreenButton);
 
   gtk_header_bar_pack_end (GTK_HEADER_BAR (header_bar), sep1);
 
-  gtk_header_bar_pack_start (GTK_HEADER_BAR (header_bar),
-                             playButton);
+  gtk_header_bar_pack_start (GTK_HEADER_BAR (header_bar), playButton);
 
-  gtk_header_bar_pack_start (GTK_HEADER_BAR (header_bar),
-                             stopButton);
+  gtk_header_bar_pack_start (GTK_HEADER_BAR (header_bar), stopButton);
 
   gtk_header_bar_pack_start (GTK_HEADER_BAR (header_bar), sep2);
 
-  gtk_header_bar_pack_start (GTK_HEADER_BAR (header_bar),
-                             volumeButton);
+  gtk_header_bar_pack_start (GTK_HEADER_BAR (header_bar), volumeButton);
 
   gtk_header_bar_pack_start (GTK_HEADER_BAR (header_bar), tools_button);
 
@@ -446,8 +440,7 @@ create_main_window (void)
   gingaView = gtk_drawing_area_new ();
   g_assert_nonnull (gingaView);
   gtk_widget_set_app_paintable (gingaView, TRUE);
-  g_signal_connect (gingaView, "draw", G_CALLBACK (draw_callback),
-                    NULL);
+  g_signal_connect (gingaView, "draw", G_CALLBACK (draw_callback), NULL);
   gtk_widget_set_size_request (gingaView,
                                presentationAttributes.resolutionWidth,
                                presentationAttributes.resolutionHeight);
@@ -456,8 +449,7 @@ create_main_window (void)
   gtk_widget_add_tick_callback (
       gingaView, (GtkTickCallback)update_draw_callback, NULL, NULL);
 #else
-  g_timeout_add (1000 / 60, (GSourceFunc)update_draw_callback,
-                 gingaView);
+  g_timeout_add (1000 / 60, (GSourceFunc)update_draw_callback, gingaView);
 #endif
 
   /* begin debug view   */
@@ -475,9 +467,8 @@ create_main_window (void)
   gtk_notebook_set_show_tabs (GTK_NOTEBOOK (debugView), false);
   gtk_widget_set_margin_top (debugView, 5);
 
-  GtkWidget *button_icon = gtk_image_new_from_file (
-      g_strconcat (executableFolder,
-                   "icons/light-theme/bottomhide-icon.png", NULL));
+  GtkWidget *button_icon = gtk_image_new_from_file (g_strconcat (
+      executableFolder, "icons/light-theme/bottomhide-icon.png", NULL));
   g_assert_nonnull (button_icon);
   GtkWidget *debug_hide_button = gtk_button_new ();
   g_assert_nonnull (debug_hide_button);
@@ -513,9 +504,8 @@ create_main_window (void)
   gtk_widget_set_margin_start (sideView, 5);
   gtk_notebook_set_show_tabs (GTK_NOTEBOOK (sideView), false);
 
-  button_icon = gtk_image_new_from_file (
-      g_strconcat (executableFolder,
-                   "icons/light-theme/window-icon.png", NULL));
+  button_icon = gtk_image_new_from_file (g_strconcat (
+      executableFolder, "icons/light-theme/window-icon.png", NULL));
   g_assert_nonnull (button_icon);
   GtkWidget *sidebar_win_button = gtk_button_new ();
   g_assert_nonnull (sidebar_win_button);
@@ -523,9 +513,8 @@ create_main_window (void)
   g_signal_connect (sidebar_win_button, "clicked",
                     G_CALLBACK (change_tvcontrol_to_window_mode), NULL);
 
-  button_icon = gtk_image_new_from_file (
-      g_strconcat (executableFolder,
-                   "icons/light-theme/rightride-icon.png", NULL));
+  button_icon = gtk_image_new_from_file (g_strconcat (
+      executableFolder, "icons/light-theme/rightride-icon.png", NULL));
   g_assert_nonnull (button_icon);
   GtkWidget *sidebar_hide_button = gtk_button_new ();
   g_assert_nonnull (sidebar_hide_button);
@@ -670,9 +659,8 @@ void
 stop_button_callback (void)
 {
   inPlayMode = false;
-  GtkWidget *play_icon = gtk_image_new_from_file (
-      g_strconcat (executableFolder,
-                   "icons/light-theme/play-icon.png", NULL));
+  GtkWidget *play_icon = gtk_image_new_from_file (g_strconcat (
+      executableFolder, "icons/light-theme/play-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (playButton), play_icon);
   gtk_widget_set_sensitive (fileEntry, true);
   gtk_widget_set_sensitive (openButton, true);
@@ -684,18 +672,15 @@ void
 play_pause_button_callback (void)
 {
   inPlayMode = !inPlayMode;
-  GtkWidget *play_icon = gtk_image_new_from_file (
-      g_strconcat (executableFolder,
-                   "icons/light-theme/play-icon.png", NULL));
+  GtkWidget *play_icon = gtk_image_new_from_file (g_strconcat (
+      executableFolder, "icons/light-theme/play-icon.png", NULL));
   if (inPlayMode)
     {
-      play_icon = gtk_image_new_from_file (
-          g_strconcat (executableFolder,
-                       "icons/light-theme/pause-icon.png", NULL));
+      play_icon = gtk_image_new_from_file (g_strconcat (
+          executableFolder, "icons/light-theme/pause-icon.png", NULL));
       gtk_widget_set_sensitive (fileEntry, false);
       gtk_widget_set_sensitive (openButton, false);
-      const gchar *file
-          = gtk_entry_get_text (GTK_ENTRY (fileEntry));
+      const gchar *file = gtk_entry_get_text (GTK_ENTRY (fileEntry));
       // Start Ginga.
       GINGA->start (file);
     }
