@@ -21,7 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ExecutionObject.h"
 #include "ExecutionObjectContext.h"
 #include "ExecutionObjectSwitch.h"
-#include "Settings.h"
 
 #include "ncl/Ncl.h"
 using namespace ::ginga::ncl;
@@ -31,14 +30,15 @@ GINGA_FORMATTER_BEGIN
 class RuleAdapter
 {
 public:
-  RuleAdapter (Settings *);
+  RuleAdapter ();
   virtual ~RuleAdapter ();
 
   void reset ();
 
-  Settings *getSettings ();
+  ExecutionObject *getSettings ();
+  void setSettings (ExecutionObject *);
 
-  void adapt (ExecutionObjectContext *compositeObject, bool force);
+  void adapt (ExecutionObjectContext *, bool force);
   void initializeAttributeRuleRelation (Rule *topRule, Rule *rule);
 
   void initializeRuleObjectRelation (ExecutionObjectSwitch *object);
@@ -49,7 +49,7 @@ public:
   bool evaluateRule (Rule *rule);
 
 private:
-  Settings *_settings;
+  ExecutionObject *_settings;
   map<string, vector<Rule *> *> _ruleListenMap;
   map<Rule *, vector<ExecutionObjectSwitch *> *> _entityListenMap;
 

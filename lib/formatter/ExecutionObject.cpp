@@ -19,6 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ExecutionObject.h"
 #include "ExecutionObjectContext.h"
+#include "ExecutionObjectSettings.h"
+#include "ExecutionObjectSwitch.h"
 #include "NclEvents.h"
 
 #include "player/Player.h"
@@ -30,19 +32,25 @@ using namespace ::ginga::mb;
 GINGA_FORMATTER_BEGIN
 
 /**
+ * @brief Settings object.
+ */
+ExecutionObjectSettings *ExecutionObject::_settings = nullptr;
+
+/**
  * @brief Set containing all execution objects.
  */
 set<ExecutionObject *> ExecutionObject::_objects;
+
 
 ExecutionObject::ExecutionObject (const string &id,
                                   Node *node,
                                   INclActionListener *seListener)
 {
-  this->_seListener = seListener;
-  this->_node = node;
-  this->_wholeContent = nullptr;
-  this->_isCompiled = false;
-  this->_mainEvent = nullptr;
+  _seListener = seListener;
+  _node = node;
+  _wholeContent = nullptr;
+  _isCompiled = false;
+  _mainEvent = nullptr;
 
   _id = id;
   _player = nullptr;
@@ -306,51 +314,6 @@ bool
 ExecutionObject::containsEvent (NclEvent *event)
 {
   return (_events.count (event->getId ()) != 0);
-}
-
-NclEvent *
-ExecutionObject::getEventFromAnchorId (const string &anchorId)
-{
-  map<string, NclEvent *>::iterator i;
-  NclEvent *event;
-
-  if (anchorId == "")
-    {
-      if (_wholeContent != nullptr)
-        {
-          return _wholeContent;
-        }
-    }
-  else
-    {
-      if (_wholeContent != nullptr)
-        {
-          if (NclEvent::hasNcmId (_wholeContent, anchorId))
-            {
-              return _wholeContent;
-            }
-        }
-
-      i = _events.begin ();
-      clog << "NclExecutionObject::getEventFromAnchorId searching '";
-      clog << anchorId << "' for '" << _id;
-      clog << "' with following events = ";
-      while (i != _events.end ())
-        {
-          event = i->second;
-          if (event != nullptr)
-            {
-              if (NclEvent::hasNcmId (event, anchorId))
-                {
-                  return event;
-                }
-            }
-          ++i;
-        }
-      clog << endl;
-    }
-
-  return nullptr;
 }
 
 NclEvent *
@@ -730,22 +693,48 @@ ExecutionObject::abort ()
 
 // -----------------------------------
 
-void
-ExecutionObject::refreshCurrentFocus (void)
+// static
+ExecutionObjectSettings *
+ExecutionObject::getSettings (void)
 {
-  string next = "";
-  for (auto obj: _objects)
+  return _settings;
+}
+
+// static
+void
+ExecutionObject::setSettings (ExecutionObjectSettings *obj)
+{
+  g_assert_null (_settings);
+  g_assert_nonnull (obj);
+  _settings = obj;
+}
+
+/**
+ * @brief Tests whether object is focused.
+ * @return True if successful, or false otherwise.
+ */
+bool
+ExecutionObject::isFocused ()
+{
+  if (instanceof (ExecutionObjectContext *, this)
+      || instanceof (ExecutionObjectSettings *, this)
+      || instanceof (ExecutionObjectSwitch *, this)
+      || _player == nullptr)
     {
-      string i;
-      if (obj->isOccurring ()
-          && obj->_player != NULL
-          && (i = obj->_player->getProperty ("focusIndex")) != ""
-          && (next == "" || g_strcmp0 (i.c_str (), next.c_str ()) < 0))
-        {
-          next = i;
-        }
+      return false;
     }
-  Player::setCurrentFocus (next);
+  return _player->isFocused ();
+}
+
+/**
+ * @brief Gets property.
+ * @param name Property name.
+ * @return Property value.
+ */
+string
+ExecutionObject::getProperty (const string &name)
+{
+  return (_player) ? _player->getProperty (name) : "";
 }
 
 /**
@@ -761,15 +750,6 @@ ExecutionObject::setProperty (const string &name,
                               const string &to,
                               GingaTime dur)
 {
-  Node *node = this->getNode ();
-  g_assert_nonnull (node);
-
-  if (instanceof (Media *, node) && cast (Media *, node)->isSettings ()
-      && name == "service.currentFocus")
-    {
-      Player::setCurrentFocus (to);
-    }
-
   if (_player == nullptr)
     return;                     // nothing to do
 
@@ -785,6 +765,10 @@ ExecutionObject::setProperty (const string &name,
     {
       _player->setProperty (name, to);
     }
+
+  if (instanceof (ExecutionObjectSettings *, this))
+    cast (ExecutionObjectSettings *, this)
+      ->setProperty (name, from, to, dur);
 }
 
 void
@@ -873,7 +857,9 @@ ExecutionObject::handleKeyEvent (const string &key, bool press)
           || ((key == "CURSOR_RIGHT"
                && (next = _player->getProperty ("moveRight")) != "")))
         {
-          Player::scheduleFocusChange (next);
+          g_assert_nonnull (_settings);
+          cast (ExecutionObjectSettings *, _settings)
+            ->scheduleFocusUpdate (next);
         }
     }
 

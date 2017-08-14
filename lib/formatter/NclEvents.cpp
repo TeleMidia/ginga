@@ -304,21 +304,15 @@ SelectionEvent::start ()
 
 AttributionEvent::AttributionEvent (const string &id,
                                     ExecutionObject *exeObj,
-                                    Property *anchor,
-                                    Settings *settings)
+                                    Property *anchor)
   : NclEvent (id, exeObj)
 {
   _type = EventType::ATTRIBUTION;
   this->_anchor = anchor;
   this->_player = nullptr;
-  this->_settingsNode = false;
-  this->_settings = settings;
 
   Node *node = exeObj->getNode ();
   g_assert_nonnull (node);
-
-  if (instanceof (Media *, node) && cast (Media *, node)->isSettings ())
-    _settingsNode = true;
 }
 
 AttributionEvent::~AttributionEvent ()
@@ -338,25 +332,14 @@ AttributionEvent::getCurrentValue ()
              _id.c_str ());
     }
 
-  if (_settingsNode)
+  if (_player)
     {
-      propName = _anchor->getName ();
-      if (propName != "")
-        {
-          value = _settings->get (propName);
-        }
+      value = _player->getProperty (this->getAnchor ()->getName ());
     }
-  else
-    {
-      if (_player)
-        {
-          value = _player->getProperty (this->getAnchor ()->getName ());
-        }
 
-      if (value == "")
-        {
-          value = _anchor->getValue ();
-        }
+  if (value == "")
+    {
+      value = _anchor->getValue ();
     }
 
   return value;

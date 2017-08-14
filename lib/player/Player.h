@@ -83,7 +83,6 @@ public:
   // Static.
   static string getCurrentFocus ();
   static void setCurrentFocus (const string &);
-  static void scheduleFocusChange (const string &);
 
 protected:
   string _id;                      // associated object id
@@ -110,8 +109,6 @@ private:
 
   // Static.
   static string _currentFocus;  // current (global) focus index
-  static string _nextFocus;     // next focus index
-  static bool _hasNextFocus;    // true if a focus change is scheduled
 };
 
 GINGA_PLAYER_END
