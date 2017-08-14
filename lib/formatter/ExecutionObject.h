@@ -35,6 +35,7 @@ using namespace ::ginga::mb;
 GINGA_FORMATTER_BEGIN
 
 class ExecutionObjectContext;
+class ExecutionObjectSettings;
 
 class ExecutionObject : public IEventListener
 {
@@ -62,7 +63,6 @@ public:
   virtual bool addEvent (NclEvent *event);
   void addPresentationEvent (PresentationEvent *event);
   bool containsEvent (NclEvent *event);
-  NclEvent *getEventFromAnchorId (const string &anchorId);
 
   NclEvent *getEvent (const string &id);
   vector<NclEvent *> getEvents ();
@@ -89,7 +89,6 @@ protected:
   PresentationEvent *_wholeContent;
   INclActionListener *_seListener;
 
-
   map<Node *, ExecutionObjectContext *> _parentTable;
   map<string, NclEvent *> _events;
   vector<PresentationEvent *> _presEvents;
@@ -110,8 +109,11 @@ private:
   // ------------------------------------------
 
 public:
-  static void refreshCurrentFocus ();
+  static ExecutionObjectSettings *getSettings ();
+  static void setSettings (ExecutionObjectSettings *);
 
+  bool isFocused ();
+  string getProperty (const string &);
   void setProperty (const string &, const string &,
                     const string &, GingaTime);
 
@@ -120,12 +122,12 @@ public:
   virtual void handleTickEvent (GingaTime, GingaTime, int) override;
 
 protected:
-  string _id;                   // object id
+  static ExecutionObjectSettings *_settings; // settings object
+  static set<ExecutionObject *> _objects;    // set of all objects
 
-private:
-  static set<ExecutionObject *> _objects; // set of all objects
-  Player *_player;                        // associated player
-  GingaTime _time;                        // playback time
+  string _id;                   // object id
+  Player *_player;              // associated player
+  GingaTime _time;              // playback time
 };
 
 GINGA_FORMATTER_END

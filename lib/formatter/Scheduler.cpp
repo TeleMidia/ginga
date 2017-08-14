@@ -29,7 +29,7 @@ GINGA_FORMATTER_BEGIN
 
 Scheduler::Scheduler ()
 {
-  _converter = new Converter (new RuleAdapter (new Settings ()));
+  _converter = new Converter (new RuleAdapter ());
   _converter->setLinkActionListener (this);
 }
 
@@ -65,6 +65,13 @@ Scheduler::startDocument (const string &file)
   if (unlikely (body == nullptr))
     ERROR_SYNTAX ("document has no body");
 
+  // Insert dummy settings node.
+  Media *dummy =  new Media ("__dummy_settings__", true);
+  body->addNode (dummy);
+  Property *prop = new Property ("service.currentFocus");
+  prop->setValue ("");
+  dummy->addAnchor (prop);
+
   // Get entry events (i.e., those mapped by ports).
   ports = body->getPorts ();
   if (unlikely (ports == nullptr))
@@ -88,18 +95,24 @@ Scheduler::startDocument (const string &file)
     }
 
   // Create execution object for settings node and initialize it.
-  vector <Node *> *settings = _doc->getSettingsNodes ();
-  for (auto node: *settings)
+  ExecutionObjectSettings *settings = nullptr;
+  vector <Node *> *nodes = _doc->getSettingsNodes ();
+  for (auto node: *nodes)
     {
       Media *content;
-      ExecutionObject *execobj;
 
-      persp = new NclNodeNesting (node->getPerspective ());
-      execobj = _converter->getExecutionObjectFromPerspective (persp, nullptr);
-      g_assert_nonnull (execobj);
+      if (settings == nullptr)
+        {
+          ExecutionObject *obj;
+          persp = new NclNodeNesting (node->getPerspective ());
+          obj = _converter
+            ->getExecutionObjectFromPerspective (persp, nullptr);
+          g_assert_nonnull (obj);
+          delete persp;
 
-      TRACE ("processing '%s'", persp->getId ().c_str ());
-      delete persp;
+          settings = cast (ExecutionObjectSettings *, obj);
+          g_assert_nonnull (settings);
+        }
 
       content = (Media *) node;
       for (auto anchor: *content->getAnchors ())
@@ -117,12 +130,14 @@ Scheduler::startDocument (const string &file)
           if (value == "")
             continue;           // nothing to do
 
-          TRACE ("settings: %s='%s'", name.c_str (), value.c_str ());
-          if (name == "service.currentFocus")
-            Player::setCurrentFocus (value);
+          cast (ExecutionObject *, settings)
+            ->setProperty (name, "", value, 0);
         }
     }
-  delete settings;
+  delete nodes;
+
+  // Set global settings object.
+  ExecutionObject::setSettings (settings);
 
   // Start entry events.
   for (auto event: *entryevts)
@@ -135,7 +150,8 @@ Scheduler::startDocument (const string &file)
     }
   delete entryevts;
 
-  ExecutionObject::refreshCurrentFocus ();
+  // Refresh current focus.
+  settings->updateCurrentFocus ("");
 }
 
 
