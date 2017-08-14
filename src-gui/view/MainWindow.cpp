@@ -60,13 +60,23 @@ hide_infobar ()
 void
 show_toolbox ()
 {
+#if !defined (GDK_WINDOWING_X11)
   gtk_popover_popup (GTK_POPOVER (toolBoxPopOver));
+#else
+ gtk_widget_show(toolBoxPopOver);
+#endif
+ 
 }
 
 void
 show_optbox ()
 {
-  gtk_popover_popup (GTK_POPOVER (optBoxPopOver));
+#if !defined (GDK_WINDOWING_X11)
+ gtk_popover_popup (GTK_POPOVER (optBoxPopOver));
+#else
+ gtk_widget_show(optBoxPopOver);
+#endif
+ 
 }
 
 void
