@@ -89,6 +89,7 @@ set (LIBGINGA_SOURCES
   ../lib/formatter/ExecutionObject.cpp
   ../lib/formatter/ExecutionObjectContext.cpp
   ../lib/formatter/ExecutionObjectSwitch.cpp
+  ../lib/formatter/ExecutionObjectSettings.cpp
   ../lib/formatter/NclActions.cpp
   ../lib/formatter/NclEvents.cpp
   ../lib/formatter/NclEventTransitionManager.cpp
@@ -98,7 +99,6 @@ set (LIBGINGA_SOURCES
   ../lib/formatter/NclLinkStatement.cpp
   ../lib/formatter/NclNodeNesting.cpp
   ../lib/formatter/RuleAdapter.cpp
-  ../lib/formatter/Settings.cpp
   ../lib/formatter/Scheduler.cpp
 
   ../lib/mb/Display.cpp
