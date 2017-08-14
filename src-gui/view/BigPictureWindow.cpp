@@ -22,6 +22,8 @@ GList *cards_list = NULL;
 gboolean inBigPictureMode = FALSE;
 GtkWidget *bigPictureWindow = NULL;
 
+cairo_pattern_t *background_pattern;
+
 gint currentCard = 0;
 gint carrouselDir = 0;
 gdouble mid = 0;
@@ -30,7 +32,7 @@ gdouble frameRate = 1.000 / 60.0;
 
 gint numCards = 20;
 gdouble cardWidth = 300;
-gdouble cardHeight = 140;
+gdouble cardHeight = 169;
 
 gint
 comp_card_list (gconstpointer a, gconstpointer b)
@@ -83,10 +85,9 @@ draw_bigpicture_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
   w = gtk_widget_get_allocated_width (widget);
   h = gtk_widget_get_allocated_height (widget);
 
-  // clear
-  cairo_set_source_rgb (cr, 0., 0., 0.);
-  cairo_rectangle (cr, 0, 0, w, h);
-  cairo_fill (cr);
+  // clear with pattern
+  cairo_set_source (cr, background_pattern);
+  cairo_paint(cr);
 
   GList *l;
   for (l = cards_list; l != NULL; l = l->next)
@@ -100,19 +101,22 @@ draw_bigpicture_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
       gdouble scale = 1.4 - (fa / mid);
       // gdouble scale = 1.0;
 
-      gdouble posX = card->position - ((cardWidth * scale) / 2);
-      gdouble posY = (h - cardHeight - 100) - ((cardHeight * scale) / 2);
+      //gdouble posX = card->position - ((cardWidth * scale) / 2);
+      gdouble posX = card->position - (cardWidth/2);
+      //gdouble posY = (h - cardHeight - 100) - ((cardHeight * scale) / 2);
+      gdouble posY = (h - cardHeight - 100);
 
       // printf ("x: %f, w: %f, p %f, s: %f \n",  x, 400.0*scale, posX,
       // scale);
 
       cairo_set_source_rgba (cr, card->r, card->g, card->b, scale - 0.3);
-      cairo_rectangle (cr, posX, posY, cardWidth * scale,
-                       cardHeight * scale);
-      cairo_fill (cr);
+      // cairo_scale(cr, scale, scale);
+      cairo_set_source_surface (cr, card->surface, posX, posY);
+     
+   //  cairo_rectangle (cr, posX, posY, cardWidth * scale,  cardHeight * scale);
+     cairo_paint (cr);
 
       cairo_text_extents_t extents;
-
       cairo_select_font_face (cr, "Arial", CAIRO_FONT_SLANT_NORMAL,
                               CAIRO_FONT_WEIGHT_BOLD);
 
@@ -122,7 +126,7 @@ draw_bigpicture_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
           gdouble info_height = h / 2;
           gdouble info_weight = h * 1.2;
 
-          cairo_set_source_rgba (cr, 0.3, 0.3, 0.3, scale - 0.5);
+          cairo_set_source_rgba (cr, 0.3, 0.3, 0.3, 1.0);
 
           cairo_rectangle (cr, mid - (info_weight / 2), 100, info_weight,
                            info_height);
@@ -139,13 +143,13 @@ draw_bigpicture_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
                                   ((info_weight / 2) - 20) * PANGO_SCALE);
           pango_layout_set_wrap (layout, PANGO_WRAP_WORD);
           pango_cairo_update_layout (cr, layout);
-          cairo_move_to (cr, mid - (info_weight / 2) + 10,
-                         (h / 2) - (info_height / 2) + 110);
+          cairo_move_to (cr, mid - (info_weight / 2) + 50,
+                         (h / 2) - (info_height / 2) + 100);
           pango_cairo_show_layout (cr, layout);
 
           cairo_set_font_size (cr, 50);
           cairo_text_extents (cr, card->appName, &extents);
-          cairo_move_to (cr, mid - (info_weight / 2) + 10, 150);
+          cairo_move_to (cr, mid - (info_weight / 2) + 50, 200);
           cairo_show_text (cr, card->appName);
 
           g_object_unref (layout);
@@ -185,7 +189,7 @@ carrousel_rotate (gint dir)
       else
         card->drawOrder = card->index;
 
-      card->destPosition = mid + (card->index * 200.0);
+      card->destPosition = mid + (card->index * cardWidth) + (card->index * 20);
       card->animate = TRUE;
     }
 
@@ -195,12 +199,21 @@ carrousel_rotate (gint dir)
 void
 create_bigpicture_window ()
 {
+  
+  if(bigPictureWindow != NULL)
+    return;
+
+  cairo_surface_t *image_p = cairo_image_surface_create_from_png ( g_strconcat (
+      executableFolder, "icons/common/pattern_1.png", NULL));
+  g_assert_nonnull (image_p);
+  background_pattern = cairo_pattern_create_for_surface (image_p);
+  cairo_pattern_set_extend (background_pattern, CAIRO_EXTEND_REPEAT);
+
   inBigPictureMode = TRUE;
   GdkScreen *screen = gdk_screen_get_default ();
   guint32 width = gdk_screen_get_width (screen);
   guint32 height = gdk_screen_get_height (screen);
 
-  width = 1700;
   mid = (width / 2.0);
 
   BigPictureCard *bigPictureCard
@@ -213,6 +226,9 @@ create_bigpicture_window ()
       bigPictureCard[i].drawOrder = i;
       bigPictureCard[i].position = mid + (bigPictureCard[i].index * 200.0);
       bigPictureCard[i].animate = FALSE;
+
+      bigPictureCard[i].surface = cairo_image_surface_create_from_png ( g_strconcat (
+      executableFolder, "icons/cover.png", NULL));
 
       if (i % 5 == 0)
         {

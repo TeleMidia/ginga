@@ -98,8 +98,10 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
   switch (e->keyval)
     {
     case GDK_KEY_Escape: /* quit */
-      if (isFullScreenMode  && (g_strcmp0 ((const char *)type, "press") != 0))
+      if (isFullScreenMode)
         set_unfullscreen_mode ();
+      else if(inBigPictureMode)
+        destroy_bigpicture_window (); 
       break;
     case GDK_KEY_Meta_L:
     case GDK_KEY_Meta_R:
@@ -117,17 +119,17 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
       break;
     case GDK_KEY_R:
     case GDK_KEY_r:
-      if (isCrtlModifierActive && (g_strcmp0 ((const char *)type, "press") != 0))
+      if (isCrtlModifierActive )
         create_tvcontrol_window ();
       break;
     case GDK_KEY_B:
     case GDK_KEY_b:
-      if (isCrtlModifierActive && (g_strcmp0 ((const char *)type, "press") != 0))
+      if (isCrtlModifierActive)
          create_bigpicture_window();
       break;  
     case GDK_KEY_D:
     case GDK_KEY_d:
-      if (isCrtlModifierActive && (g_strcmp0 ((const char *)type, "press") != 0))
+      if (isCrtlModifierActive)
         enable_disable_debug ();
       break;
     case GDK_KEY_asterisk:
@@ -219,11 +221,13 @@ create_main_window (void)
     }
 
   GtkWidget *header_bar = gtk_header_bar_new ();
+  g_assert_nonnull (header_bar);
   gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header_bar), true);
+  gtk_header_bar_set_decoration_layout (GTK_HEADER_BAR (header_bar),"menu:minimize,maximize,close");
 
   fileEntry = gtk_entry_new ();
   g_assert_nonnull (fileEntry);
-  gtk_widget_set_size_request (fileEntry, 400, 32);
+  gtk_widget_set_size_request (fileEntry, 400, -1);
 
   GtkWidget *open_icon = gtk_image_new_from_file (g_strconcat (
       executableFolder, "icons/light-theme/openfile-icon.png", NULL));

@@ -19,6 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 typedef struct{
    gint index;
    gint drawOrder; 
+   cairo_surface_t *surface;
    gdouble position;
    gdouble scale; 
    gdouble destPosition;
