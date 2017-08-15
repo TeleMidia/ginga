@@ -139,8 +139,8 @@ draw_bigpicture_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
                                   ((info_weight / 2) - 20) * PANGO_SCALE);
           pango_layout_set_wrap (layout, PANGO_WRAP_WORD);
           pango_cairo_update_layout (cr, layout);
-          cairo_move_to (cr, mid - (info_weight / 2) + 10,
-                         (h / 2) - (info_height / 2) + 110);
+          cairo_move_to (cr, mid - (info_weight / 2) + 30,
+                         (h / 2) - (info_height / 2) + 130);
           pango_cairo_show_layout (cr, layout);
 
           cairo_set_font_size (cr, 50);
