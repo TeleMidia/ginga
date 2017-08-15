@@ -119,6 +119,18 @@ Display::setSize (int width, int height)
   g_assert (width > 0 && height > 0);
   _width = width;
   _height = height;
+
+  for (GList *l = _players; l != nullptr; l = l->next)
+    {
+      Player *pl = (Player *) l->data;
+      g_assert_nonnull (pl);
+      pl->setProperty ("top", pl->getProperty ("top"));
+      pl->setProperty ("left", pl->getProperty ("left"));
+      pl->setProperty ("bottom", pl->getProperty ("bottom"));
+      pl->setProperty ("right", pl->getProperty ("right"));
+      pl->setProperty ("width", pl->getProperty ("width"));
+      pl->setProperty ("height", pl->getProperty ("height"));
+    }
 }
 
 /**
@@ -176,7 +188,7 @@ Display::redraw (cairo_t *cr)
   while (l != NULL)             // can be modified while being traversed
     {
       GList *next = l->next;
-      Player *pl = (Player *)l->data;
+      Player *pl = (Player *) l->data;
       if (pl == NULL)
         {
           _players = g_list_remove_link (_players, l);

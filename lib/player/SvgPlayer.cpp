@@ -20,31 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PLAYER_BEGIN
 
-
-// Public.
-
-void
-SvgPlayer::setProperty (const string &name, const string &value)
-{
-  Player::setProperty (name, value);
-  if (_state == PL_OCCURRING)
-    this->dirty = true;
-}
-
-void
-SvgPlayer::redraw (cairo_t *cr)
-{
-  if (this->dirty)
-    {
-      this->reload ();
-      this->dirty = false;
-    }
-  Player::redraw (cr);
-}
-
-
-// Private.
-
 void
 SvgPlayer::reload ()
 {
@@ -89,6 +64,8 @@ SvgPlayer::reload ()
     cairo_surface_destroy (_surface);
 
   _surface = sfc;
+
+  Player::reload ();
 }
 
 GINGA_PLAYER_END

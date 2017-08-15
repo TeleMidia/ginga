@@ -18,12 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga-internal.h"
 #include "TextPlayer.h"
 
-using namespace ::ginga::mb;
-
 GINGA_PLAYER_BEGIN
-
-
-// Public.
 
 /**
  * @brief Creates a surface from text.
@@ -233,28 +228,12 @@ TextPlayer::setProperty (const string &name, const string &value)
       _vertAlign = value;
     }
 
-  if (_state == PL_OCCURRING)
-    this->dirty = true;
   return;
 
  syntax_error:
   ERROR_SYNTAX ("property '%s': bad value '%s'",
                 name.c_str (), value.c_str ());
 }
-
-void
-TextPlayer::redraw (cairo_t *cr)
-{
-  if (this->dirty)
-    {
-      this->reload ();
-      this->dirty = false;
-    }
-  Player::redraw (cr);
-}
-
-
-// Private.
 
 void
 TextPlayer::reload ()
@@ -284,6 +263,8 @@ TextPlayer::reload ()
      _fontColor, _fontBgColor, _rect, _horzAlign, _vertAlign, true,
      nullptr);
   g_assert_nonnull (_surface);
+
+  Player::reload ();
 }
 
 GINGA_PLAYER_END

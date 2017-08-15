@@ -30,7 +30,7 @@ using namespace ::ginga::mb;
 Ginga::Ginga (arg_unused (int argc), arg_unused (char **argv),
               int width, int height, bool fullscreen)
 {
-  started = false;
+  _started = false;
   _scheduler = new Scheduler ();
   _display = new ginga::mb::Display (width, height, fullscreen);
   _Ginga_Display = DISPLAY (this);
@@ -61,17 +61,23 @@ Ginga::~Ginga ()
 void
 Ginga::start (const string &file)
 {
-  if (started)
+  if (_started)
     return;                     // nothing to do
 
   SCHEDULER (this)->startDocument (file);
-  started = true;
+  _started = true;
 }
 
 void G_GNUC_NORETURN
 Ginga::stop ()
 {
   ERROR_NOT_IMPLEMENTED ("stop is not supported");
+}
+
+void
+Ginga::resize (int width, int height)
+{
+  DISPLAY (this)->setSize (width, height);
 }
 
 void
