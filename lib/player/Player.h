@@ -78,6 +78,7 @@ public:
   void setDuration (GingaTime);
 
   // Callbacks.
+  virtual void reload ();
   virtual void redraw (cairo_t *);
 
   // Static.
@@ -91,6 +92,7 @@ protected:
   GingaTime _time;                 // playback time
   bool _eos;                       // true if content was exhausted
   cairo_surface_t *_surface;       // player surface
+  bool _dirty;                     // true if surface should be reloaded
   PlayerAnimator _animator;        // associated animator
 
   map<string, string> _properties; // property table

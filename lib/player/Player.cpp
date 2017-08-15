@@ -102,6 +102,7 @@ Player::Player (const string &id, const string &uri)
   _state = PL_SLEEPING;
   _time = 0;
   _eos = false;
+  _dirty = true;
   _surface = nullptr;
 
   // Properties
@@ -330,6 +331,7 @@ Player::setProperty (const string &name, const string &value)
       int width;
       Ginga_Display->getSize (&width, nullptr);
       _rect.x = ginga_parse_percent (value, width, 0, G_MAXINT);
+      _dirty = true;
     }
   else if (name == "right")
     {
@@ -337,12 +339,14 @@ Player::setProperty (const string &name, const string &value)
       Ginga_Display->getSize (&width, nullptr);
       _rect.x = width - _rect.width
         - ginga_parse_percent (value, _rect.width, 0, G_MAXINT);
+      _dirty = true;
     }
   else if (name == "top")
     {
       int height;
       Ginga_Display->getSize (nullptr, &height);
       _rect.y = ginga_parse_percent (value, height, 0, G_MAXINT);
+      _dirty = true;
     }
   else if (name == "bottom")
     {
@@ -350,18 +354,21 @@ Player::setProperty (const string &name, const string &value)
       Ginga_Display->getSize (nullptr, &height);
       _rect.y = height - _rect.height
         - ginga_parse_percent (value, _rect.height, 0, G_MAXINT);
+      _dirty = true;
     }
   else if (name == "width")
     {
       int width;
       Ginga_Display->getSize (&width, nullptr);
       _rect.width = ginga_parse_percent (value, width, 0, G_MAXINT);
+      _dirty = true;
     }
   else if (name == "height")
     {
       int height;
       Ginga_Display->getSize (nullptr, &height);
       _rect.height = ginga_parse_percent (value, height, 0, G_MAXINT);
+      _dirty = true;
     }
   else if (name == "zIndex")
     {
@@ -520,6 +527,16 @@ Player::setDuration (GingaTime duration)
 // Public: Callbacks.
 
 /**
+ * @brief Reloads player texture.
+ */
+void
+Player::reload (void)
+{
+  TRACE ("reloading %s", _id.c_str ());
+  _dirty = false;
+}
+
+/**
  * @brief Redraws player.
  */
 void
@@ -530,6 +547,11 @@ Player::redraw (cairo_t *cr)
 
   if (!_visible || !(_rect.width > 0 && _rect.height > 0))
     return;                     // nothing to do
+
+  if (_dirty)
+    {
+      this->reload ();
+    }
 
   if (_bgColor.alpha > 0)
     {

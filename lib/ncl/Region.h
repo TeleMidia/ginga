@@ -31,11 +31,30 @@ public:
   GingaRect getRect ();
   void setRect (GingaRect);
 
+  string getTop ();
+  void setTop (const string &);
+  string getLeft ();
+  void setLeft (const string &);
+  string getBottom ();
+  void setBottom (const string &);
+  string getRight ();
+  void setRight (const string &);
+  string getWidth ();
+  void setWidth (const string &);
+  string getHeight ();
+  void setHeight (const string &);
+
   void getZ (int *, int *);
   void setZ (int, int);
 
 private:
   GingaRect _rect;
+  string _top;
+  string _left;
+  string _bottom;
+  string _right;
+  string _height;
+  string _width;
   int _z;
   int _zorder;
 };

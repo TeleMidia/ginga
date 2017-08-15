@@ -39,6 +39,7 @@ class Ginga
   Ginga (int, char **, int, int, bool);
   ~Ginga ();
 
+  void resize (int, int);
   void start (const std::string &);
   void stop ();
 
@@ -47,7 +48,7 @@ class Ginga
   void send_tick (uint64_t, uint64_t, uint64_t);
 
  private:
-  bool started;
+  bool _started;
   void *_scheduler;
   void *_display;
 };

@@ -32,6 +32,12 @@ Region::Region (const string &id) : Entity (id)
   int w, h;
   Ginga_Display->getSize (&w, &h);
   _rect = {0, 0, w, h};
+  _top = "0%";
+  _left = "0%";
+  _bottom = "";
+  _right = "";
+  _width = "100%";
+  _height = "100%";
   _z = 0;
   _zorder = 0;
 }
@@ -60,6 +66,120 @@ void
 Region::setRect (GingaRect rect)
 {
   _rect = rect;
+}
+
+/**
+ * @brief Gets region top position.
+ */
+string
+Region::getTop (void)
+{
+  return _top;
+}
+
+/**
+ * @brief Sets region top position.
+ * @param top Top position.
+ */
+void
+Region::setTop (const string &top)
+{
+  _top = top;
+}
+
+/**
+ * @brief Gets region left position.
+ */
+string
+Region::getLeft ()
+{
+  return _left;
+}
+
+/**
+ * @brief Sets region left position.
+ * @param left Left position.
+ */
+void
+Region::setLeft (const string &left)
+{
+  _left = left;
+}
+
+/**
+ * @brief Gets region bottom position.
+ */
+string
+Region::getBottom ()
+{
+  return _bottom;
+}
+
+/**
+ * @brief Sets region bottom position.
+ * @param bottom Bottom position.
+ */
+void
+Region::setBottom (const string &bottom)
+{
+  _bottom = bottom;
+}
+
+/**
+ * @brief Gets region right position.
+ */
+string
+Region::getRight ()
+{
+  return _right;
+}
+
+/**
+ * @brief Sets region right position.
+ * @param right Right position.
+ */
+void
+Region::setRight (const string &right)
+{
+  _right = right;
+}
+
+/**
+ * @brief Gets region width.
+ */
+string
+Region::getWidth ()
+{
+  return _width;
+}
+
+/**
+ * @brief Sets region width.
+ * @param width Region width.
+ */
+void
+Region::setWidth (const string &width)
+{
+  _width = width;
+}
+
+/**
+ * @brief Gets region height.
+ */
+string
+Region::getHeight ()
+{
+  return _height;
+}
+
+/**
+ * @brief Sets region height
+ * @param height Region height.
+ */
+void
+Region::setHeight (const string &height)
+{
+  _height = height;
 }
 
 /**
