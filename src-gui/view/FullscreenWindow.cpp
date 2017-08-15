@@ -30,16 +30,18 @@ create_fullscreen_window (void)
 
   isFullScreenMode = TRUE;
 
-  GdkScreen *screen = gdk_screen_get_default ();
-
-  guint32 width = gdk_screen_get_width (screen);
-  guint32 height = gdk_screen_get_height (screen);
+  GdkRectangle rect;
+  GdkDisplay *display = gdk_display_get_default ();
+  g_assert_nonnull (display);
+  GdkMonitor *monitor = gdk_display_get_monitor (GDK_DISPLAY (display), 0);
+  g_assert_nonnull (monitor);
+  gdk_monitor_get_geometry (GDK_MONITOR (monitor), &rect);
 
   fullscreenWindow = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   g_assert_nonnull (fullscreenWindow);
   gtk_window_set_title (GTK_WINDOW (fullscreenWindow), "Ginga");
-  gtk_window_set_default_size (GTK_WINDOW (fullscreenWindow), width,
-                               height);
+  gtk_window_set_default_size (GTK_WINDOW (fullscreenWindow), rect.width,
+                               rect.height);
   gtk_window_set_position (GTK_WINDOW (fullscreenWindow),
                            GTK_WIN_POS_CENTER);
   g_signal_connect (fullscreenWindow, "key-press-event",
@@ -53,7 +55,7 @@ create_fullscreen_window (void)
   g_assert_nonnull (canvas);
   gtk_widget_set_app_paintable (canvas, TRUE);
   g_signal_connect (canvas, "draw", G_CALLBACK (draw_callback), NULL);
-  gtk_widget_set_size_request (canvas, width, height);
+  gtk_widget_set_size_request (canvas, rect.width, rect.height);
   gtk_container_add (GTK_CONTAINER (fullscreenWindow), canvas);
 
   gtk_window_fullscreen (GTK_WINDOW (fullscreenWindow));
