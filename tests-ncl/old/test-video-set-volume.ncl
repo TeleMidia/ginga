@@ -162,25 +162,25 @@
     <!-- <port id='start4' component='video'/> -->
     <!-- <port id='start7' component='audio2'/> -->
 
-    <media id='audio' src='samples/bunny.mp3' descriptor='desc'>
+    <media id='audio' src='../samples/bunny.mp3' descriptor='desc'>
       <property name='soundLevel' value='1'/>
     </media>
 
-    <media id='audio2' src='samples/arcade.mp3'>
+    <media id='audio2' src='../samples/arcade.mp3'>
       <property name='soundLevel' value='0.8'/>
     </media>
     
-    <media id='img' src='samples/gnu.png' descriptor='desc4'>
+    <media id='img' src='../samples/gnu.png' descriptor='desc4'>
       <property name='top'/>
     </media>
     
-    <media id='video' src='samples/bunny.ogg' descriptor='desc' >
+    <media id='video' src='../samples/bunny.ogg' descriptor='desc' >
       <property name='soundLevel' value="1"/>
       <area id='area1' begin='5s'/>
       <area id='area4' begin='10s'/>
     </media>
 
-    <media id='video3' src='samples/animGar.mp4' descriptor='desc3' >
+    <media id='video3' src='../samples/animGar.mp4' descriptor='desc3' >
       <property name='soundLevel' value="1"/>
       <area id='area1' begin='5s'/>
       <area id='area4' begin='10s'/>

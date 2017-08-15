@@ -27,6 +27,6 @@
   </head>
   <body>
     <port id='start' component='vid1'/>
-      <media id='vid1' src='samples/small.mp4' descriptor='desc' type='video/x-new-video-player' />
+      <media id='vid1' src='../samples/small.mp4' descriptor='desc' />
     </body>
 </ncl>
