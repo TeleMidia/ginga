@@ -139,6 +139,22 @@ draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
 }
 
 static gboolean
+resize_callback (GtkWidget *widget, GdkEventConfigure *e, gpointer data)
+{
+  (void) widget;
+  (void) data;
+
+  opt_width = e->width;
+  opt_height = e->height;
+
+  GINGA->resize (opt_width, opt_height);
+
+  // We must return FALSE here, otherwise the new geometry is not propagated
+  // to draw_callback().
+  return FALSE;
+}
+
+static gboolean
 keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
 {
   const char *key;
@@ -301,9 +317,14 @@ main (int argc, char **argv)
   if (opt_fullscreen)
     gtk_window_fullscreen (GTK_WINDOW (app));
 
+  // Start Ginga.
+  GINGA->start (file);
+
   // Setup GTK+ callbacks.
   g_signal_connect (app, "destroy", G_CALLBACK (gtk_main_quit), NULL);
   g_signal_connect (app, "draw", G_CALLBACK (draw_callback), NULL);
+  g_signal_connect (app, "configure-event",
+                    G_CALLBACK (resize_callback), NULL);
   g_signal_connect (app, "key-press-event",
                     G_CALLBACK (keyboard_callback),
                     deconst (void *, "press"));
@@ -316,9 +337,6 @@ main (int argc, char **argv)
 #else
   g_timeout_add (1000 / opt_fps, (GSourceFunc) tick_callback, app);
 #endif
-
-  // Start Ginga.
-  GINGA->start (file);
 
   // Show window and enter event loop.
   gtk_widget_show_all (app);

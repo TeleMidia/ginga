@@ -19,9 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define TEXT_PLAYER_H
 
 #include "Player.h"
-#include "mb/Display.h"
-
-using namespace ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
@@ -38,7 +35,7 @@ public:
   TextPlayer (const string &, const string &);
   virtual ~TextPlayer (void) {}
   void setProperty (const string &, const string &) override;
-  void redraw (cairo_t *) override;
+  void reload () override;
 
 private:
   GingaColor _fontColor;
@@ -50,9 +47,6 @@ private:
   string _fontWeight;
   string _horzAlign;
   string _vertAlign;
-
-  bool dirty = true;            // true if surface should be reloaded
-  void reload ();
 };
 
 GINGA_PLAYER_END

@@ -809,27 +809,41 @@ Parser::parseRegion (DOMElement *elt, RegionBase *base,
   z = zorder = 0;
 
   if (dom_elt_try_get_attribute (value, elt, "left"))
-    rect.x += ginga_parse_percent (value, parent_rect.width, 0, G_MAXINT);
+    {
+      region->setLeft (value);
+      rect.x += ginga_parse_percent (value, parent_rect.width, 0, G_MAXINT);
+    }
 
   if (dom_elt_try_get_attribute (value, elt, "top"))
-    rect.y += ginga_parse_percent (value, parent_rect.height, 0, G_MAXINT);
+    {
+      region->setTop (value);
+      rect.y += ginga_parse_percent (value, parent_rect.height, 0, G_MAXINT);
+    }
 
   if (dom_elt_try_get_attribute (value, elt, "width"))
-    rect.width = ginga_parse_percent
-      (value, parent_rect.width, 0, G_MAXINT);
+    {
+      region->setWidth (value);
+      rect.width = ginga_parse_percent
+        (value, parent_rect.width, 0, G_MAXINT);
+    }
 
   if (dom_elt_try_get_attribute (value, elt, "height"))
-    rect.height = ginga_parse_percent
-      (value, parent_rect.height, 0, G_MAXINT);
+    {
+      region->setHeight (value);
+      rect.height = ginga_parse_percent
+        (value, parent_rect.height, 0, G_MAXINT);
+    }
 
   if (dom_elt_try_get_attribute (value, elt, "right"))
     {
+      region->setRight (value);
       rect.x += parent_rect.width - rect.width
         - ginga_parse_percent (value, parent_rect.width, 0, G_MAXINT);
     }
 
   if (dom_elt_try_get_attribute (value, elt, "bottom"))
     {
+      region->setBottom (value);
       rect.y += parent_rect.height - rect.height
         - ginga_parse_percent (value, parent_rect.height, 0, G_MAXINT);
     }

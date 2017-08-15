@@ -29,7 +29,7 @@ class ImagePlayer : public Player
 public:
   ImagePlayer (const string &id, const string &uri) : Player (id, uri) {}
   ~ImagePlayer (void) {}
-  void redraw (cairo_t *) override;
+  void reload () override;
 };
 
 GINGA_PLAYER_END
