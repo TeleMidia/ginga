@@ -63,5 +63,5 @@ draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
   cairo_rectangle (cr, 0, 0, w, h);
   cairo_fill (cr);
 
- // GINGA->redraw (cr);
+  GINGA->redraw (cr);
 }

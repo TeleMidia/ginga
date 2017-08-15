@@ -28,8 +28,12 @@ popover, .popover{
   border: 1px solid #333333;
 }
 
+frame, .frame {
+  border: 1px solid #888888;
+}
+
 popover label, .popover .label{
-  font-weight: bold;
+  font-weight: normal;
 }
 
 slider{
@@ -52,7 +56,7 @@ notebook, GtkNotebook{
   border: 1px solid #888888;  
 }
 
-separator, .separator{
+headerbar separator, .header-bar .separator{
   background-color: #888888;  
   color: #888888; 
 }

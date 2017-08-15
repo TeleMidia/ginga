@@ -41,6 +41,25 @@ gboolean isCrtlModifierActive = FALSE;
 
 PresentationAttributes presentationAttributes;
 
+
+void
+press_about_button_callback()
+{
+  create_about_window();
+}
+
+void
+press_help_button_callback()
+{
+
+}
+
+void
+press_bigpicture_button_callback()
+{
+  create_bigpicture_window ();
+}
+
 void
 hide_sideview ()
 {
@@ -236,7 +255,7 @@ create_main_window (void)
                                         "menu:minimize,maximize,close");
 
   /* begin hist box */
-  GtkWidget *hist_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
+  GtkWidget *hist_box = gtk_list_box_new ();
   g_assert_nonnull (hist_box);
 
   fileEntry = gtk_entry_new ();
@@ -252,6 +271,27 @@ create_main_window (void)
   g_assert_nonnull (hist_button);
   g_signal_connect (hist_button, "clicked", G_CALLBACK (show_historicbox),
                     NULL);
+
+  gtk_list_box_insert (GTK_LIST_BOX (hist_box),
+                       gtk_label_new ("https://developer.gnome.org/gtk3/"
+                                      "stable/GtkLabel.html#gtk-label-new"),
+                       -1);
+  gtk_list_box_insert (GTK_LIST_BOX (hist_box),
+                       gtk_label_new ("https://developer.gnome.org/gtk3/"
+                                      "stable/GtkLabel.html#gtk-label-new"),
+                       -1);
+  gtk_list_box_insert (GTK_LIST_BOX (hist_box),
+                       gtk_label_new ("https://developer.gnome.org/gtk3/"
+                                      "stable/GtkLabel.html#gtk-label-new"),
+                       -1);
+  gtk_list_box_insert (GTK_LIST_BOX (hist_box),
+                       gtk_label_new ("https://developer.gnome.org/gtk3/"
+                                      "stable/GtkLabel.html#gtk-label-new"),
+                       -1);
+  gtk_list_box_insert (GTK_LIST_BOX (hist_box),
+                       gtk_label_new ("https://developer.gnome.org/gtk3/"
+                                      "stable/GtkLabel.html#gtk-label-new"),
+                       -1);
 
   histBoxPopOver = gtk_popover_new (fileEntry);
   g_assert_nonnull (histBoxPopOver);
@@ -363,9 +403,18 @@ create_main_window (void)
   /* end tool box */
 
   /* begin option box */
+  GtkWidget *opt_video_frame = gtk_frame_new ("Video");
+  g_assert_nonnull (opt_video_frame);
+  gtk_frame_set_label_align (GTK_FRAME (opt_video_frame), 0, 1.0);
+  //  gtk_frame_set_label ( GTK_FRAME(opt_video_frame), "Video");
+
+  GtkWidget *opt_gui_frame = gtk_frame_new ("GUI Theme");
+  g_assert_nonnull (opt_gui_frame);
 
   GtkWidget *aspect_combobox = gtk_combo_box_text_new ();
   g_assert_nonnull (aspect_combobox);
+  g_object_set (aspect_combobox, "margin", 5, NULL);
+
   gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (aspect_combobox), -1,
                                   "TV (4:3)");
   gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (aspect_combobox), -1,
@@ -379,6 +428,8 @@ create_main_window (void)
 
   GtkWidget *fps_combobox = gtk_combo_box_text_new ();
   g_assert_nonnull (fps_combobox);
+  g_object_set (fps_combobox, "margin", 5, NULL);
+
   gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (fps_combobox), -1,
                                   "30");
   gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (fps_combobox), -1,
@@ -389,6 +440,8 @@ create_main_window (void)
 
   GtkWidget *theme_combobox = gtk_combo_box_text_new ();
   g_assert_nonnull (theme_combobox);
+  g_object_set (theme_combobox, "margin", 5, NULL);
+
   gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (theme_combobox), -1,
                                   "Light");
   gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (theme_combobox), -1,
@@ -398,6 +451,7 @@ create_main_window (void)
   gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (theme_combobox), -1,
                                   "Crystal");
   gtk_combo_box_set_active (GTK_COMBO_BOX (theme_combobox), 0);
+
   /* g_signal_connect (aspect_combobox, "changed",
                      G_CALLBACK (aspect_combobox_changed), NULL); */
 
@@ -410,17 +464,67 @@ create_main_window (void)
   gtk_box_pack_start (GTK_BOX (opt_box), gtk_label_new ("Frame Ratte:"),
                       false, false, 0);
   gtk_box_pack_start (GTK_BOX (opt_box), fps_combobox, false, true, 0);
-  gtk_box_pack_start (GTK_BOX (opt_box), gtk_label_new ("GUI Theme:"),
-                      false, false, 0);
-  gtk_box_pack_start (GTK_BOX (opt_box), theme_combobox, false, true, 0);
+  // gtk_box_pack_start (GTK_BOX (opt_box), theme_combobox, false, true, 0);
+
+  GtkWidget *about_icon = gtk_image_new_from_file (g_strconcat (
+      executableFolder, "icons/light-theme/info-icon.png", NULL));
+  g_assert_nonnull (about_icon);
+  GtkWidget *about_button = gtk_button_new ();
+  g_assert_nonnull (about_button);
+  gtk_button_set_image (GTK_BUTTON (about_button), about_icon);
+  gtk_widget_set_has_tooltip (about_button, true);
+  gtk_widget_set_tooltip_text (about_button, "About");
+  g_signal_connect (about_button, "clicked",
+                    G_CALLBACK (press_about_button_callback), NULL);
+
+  GtkWidget *help_icon = gtk_image_new_from_file (g_strconcat (
+      executableFolder, "icons/light-theme/question-icon.png", NULL));
+  g_assert_nonnull (help_icon);
+  GtkWidget *help_button = gtk_button_new ();
+  g_assert_nonnull (help_button);
+  gtk_button_set_image (GTK_BUTTON (help_button), help_icon);
+  gtk_widget_set_has_tooltip (help_button, true);
+  gtk_widget_set_tooltip_text (help_button, "Help");
+  g_signal_connect (help_button, "clicked",
+                    G_CALLBACK (press_help_button_callback), NULL);
+
+  GtkWidget *bigpicture_icon = gtk_image_new_from_file (g_strconcat (
+      executableFolder, "icons/light-theme/screen-icon.png", NULL));
+  g_assert_nonnull (bigpicture_icon);
+  GtkWidget *bigpicture_button = gtk_button_new ();
+  g_assert_nonnull (bigpicture_button);
+  gtk_button_set_image (GTK_BUTTON (bigpicture_button), bigpicture_icon);
+  gtk_widget_set_has_tooltip (bigpicture_button, true);
+  gtk_widget_set_tooltip_text (bigpicture_button, "Presentation Mode");
+  g_signal_connect (bigpicture_button, "clicked",
+                    G_CALLBACK (press_bigpicture_button_callback), NULL);
+
+  GtkWidget *info_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
+  g_assert_nonnull (info_box);
+  gtk_box_set_homogeneous (GTK_BOX (info_box), true);
+
+  gtk_box_pack_start (GTK_BOX (info_box), about_button, false, false, 0);
+  gtk_box_pack_start (GTK_BOX (info_box), help_button, false, false, 0);
+  gtk_box_pack_start (GTK_BOX (info_box), bigpicture_button, false, false,
+                      0);
 
   optBoxPopOver = gtk_popover_new (settingsButton);
   g_assert_nonnull (optBoxPopOver);
   // gtk_widget_set_size_request (toolBoxPopOver, 200, 100);
 
-  gtk_container_add (GTK_CONTAINER (optBoxPopOver), opt_box);
-  g_object_set (opt_box, "margin", 5, NULL);
-  gtk_widget_show_all (opt_box);
+  gtk_container_add (GTK_CONTAINER (opt_video_frame), opt_box);
+  gtk_container_add (GTK_CONTAINER (opt_gui_frame), theme_combobox);
+
+  GtkWidget *opt_hbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
+  g_assert_nonnull (opt_hbox);
+
+  gtk_box_pack_start (GTK_BOX (opt_hbox), opt_video_frame, false, false, 0);
+  gtk_box_pack_start (GTK_BOX (opt_hbox), opt_gui_frame, false, false, 0);
+  gtk_box_pack_start (GTK_BOX (opt_hbox), info_box, false, false, 0);
+
+  gtk_container_add (GTK_CONTAINER (optBoxPopOver), opt_hbox);
+  g_object_set (opt_hbox, "margin", 5, NULL);
+  gtk_widget_show_all (opt_hbox);
 
   /* end option box */
 
