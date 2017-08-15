@@ -1,4 +1,5 @@
-<ncl>
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ncl id="menuEx" xmlns="http://www.ncl.org.br/NCL3.0/EDTVProfile">
   <head>
     <regionBase>
       <region id='reg' width='640' height='480'/>
@@ -22,7 +23,7 @@
   <body>
     <port id='start' component='video'/>
     
-    <media id='video' src='samples/bunny.ogg' descriptor='desc' type='video/x-new-video-player' >
+    <media id='video' src='../samples/bunny.ogg' descriptor='desc' >
       <area id='area1' begin='3s' />
     </media>
     <link xconnector="onBeginPause">
