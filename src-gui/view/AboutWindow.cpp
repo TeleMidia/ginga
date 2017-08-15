@@ -33,7 +33,7 @@ create_about_window (void)
       "Copyright (C) 2006-2017 PUC-Rio/TeleMidia Lab");
   gtk_about_dialog_set_license (
       GTK_ABOUT_DIALOG (aboutWindow),
-      "GNU General Public License v2.0 (GPL-2.0) \n"
+      "\nGNU General Public License v2.0 (GPL-2.0) \n"
       "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html");
   gtk_about_dialog_set_comments (GTK_ABOUT_DIALOG (aboutWindow),
                                  "The iDTV middleware.");

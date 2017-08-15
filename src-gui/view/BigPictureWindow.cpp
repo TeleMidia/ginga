@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GList *cards_list = NULL;
 gboolean inBigPictureMode = FALSE;
 GtkWidget *bigPictureWindow = NULL;
-
+guint timeOutTag = 0;
 cairo_pattern_t *background_pattern;
 
 gint currentCard = 0;
@@ -33,6 +33,7 @@ gdouble frameRate = 1.000 / 60.0;
 gint numCards = 20;
 gdouble cardWidth = 300;
 gdouble cardHeight = 169;
+
 
 gint
 comp_card_list (gconstpointer a, gconstpointer b)
@@ -329,7 +330,7 @@ create_bigpicture_window ()
                     NULL);
   gtk_widget_set_size_request (canvas, rect.width, rect.height);
   gtk_container_add (GTK_CONTAINER (bigPictureWindow), canvas);
-  g_timeout_add (1000 / 60, (GSourceFunc)update_bigpicture_callback,
+  timeOutTag = g_timeout_add (1000 / 60, (GSourceFunc)update_bigpicture_callback,
                  canvas);
 
   gtk_window_fullscreen (GTK_WINDOW (bigPictureWindow));
@@ -341,9 +342,20 @@ create_bigpicture_window ()
 }
 
 void
+destroy_card_list(gpointer data)
+{
+   BigPictureCard *card = (BigPictureCard *)data;
+   g_free(card->appName);
+   g_free(card->appDesc);
+   cairo_surface_destroy (card->surface);
+}
+void
 destroy_bigpicture_window ()
 {
   inBigPictureMode = FALSE;
+  g_source_remove(timeOutTag);
   gtk_widget_destroy (bigPictureWindow);
   bigPictureWindow = NULL;
+  g_list_free_full (cards_list, destroy_card_list);
+  cards_list = NULL;
 }

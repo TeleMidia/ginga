@@ -35,6 +35,8 @@ typedef struct
   gchar *lastFileName = NULL;
 } PresentationAttributes;
 
+extern GList *historic_list;
+
 extern Ginga *GINGA; /* Ginga Scheduler */
 extern GtkWidget *mainWindow;
 extern GtkWidget *tvcontrolWindow;
