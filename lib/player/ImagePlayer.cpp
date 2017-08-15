@@ -70,20 +70,22 @@ cairox_surface_create_from_file (const char *path, cairo_surface_t **dup)
 // Public.
 
 void
-ImagePlayer::redraw (cairo_t *cr)
+ImagePlayer::reload ()
 {
-  if (_surface == nullptr)
+  cairo_status_t status;
+
+  if (_surface != nullptr)
+    cairo_surface_destroy (_surface);
+
+  status = cairox_surface_create_from_file (_uri.c_str (), &_surface);
+  if (unlikely (status != CAIRO_STATUS_SUCCESS))
     {
-      cairo_status_t status;
-      status = cairox_surface_create_from_file (_uri.c_str (), &_surface);
-      if (unlikely (status != CAIRO_STATUS_SUCCESS))
-        {
-          ERROR ("cannot load image file %s: %s",
-                 _uri.c_str (), cairo_status_to_string (status));
-        }
-      g_assert_nonnull (_surface);
+      ERROR ("cannot load image file %s: %s",
+             _uri.c_str (), cairo_status_to_string (status));
     }
-  Player::redraw (cr);
+  g_assert_nonnull (_surface);
+
+  Player::reload ();
 }
 
 GINGA_PLAYER_END

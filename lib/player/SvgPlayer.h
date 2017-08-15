@@ -28,13 +28,8 @@ class SvgPlayer : public Player
 {
 public:
   SvgPlayer (const string &id, const string &uri) : Player (id, uri) {}
-  ~SvgPlayer (void) {}
-  void setProperty (const string &, const string &) override;
-  void redraw (cairo_t *) override;
-
-private:
-  bool dirty = true;            // true if surface should be reloaded
-  void reload ();
+  ~SvgPlayer () {}
+  void reload () override;
 };
 
 GINGA_PLAYER_END

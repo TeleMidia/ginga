@@ -17,19 +17,10 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <ncl>
-  <head>
-    <regionBase>
-      <region id='rgLua' top='0' left='0' width='100%' height='100%' zIndex='1' />
-    </regionBase>
-    <descriptorBase>
-      <descriptor id='dLua' region='rgLua' focusIndex='0' />
-    </descriptorBase>
-  </head>
   <body>
     <port id='start' component='lua' />
-    <media type='application/x-ginga-settings' id='settings'>
-      <property name='service.currentKeyMaster' value='lua'/>
+    <media id='lua' src='game.lua'>
+      <property name="size" value="100%,100%"/>
     </media>
-    <media id='lua' src='game.lua' descriptor='dLua' />
   </body>
 </ncl>
