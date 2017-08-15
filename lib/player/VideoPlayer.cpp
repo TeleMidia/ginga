@@ -180,11 +180,12 @@ VideoPlayer::pause ()
   Player::pause ();
 }
 
-void G_GNUC_NORETURN
+void //G_GNUC_NORETURN
 VideoPlayer::resume ()
 {
   g_assert (_state == PL_PAUSED);
-  ERROR_NOT_IMPLEMENTED ("resume action is not supported");
+  gstx_element_set_state_sync (_playbin, GST_STATE_PLAYING);
+  Player::resume ();
 }
 
 void
@@ -246,7 +247,6 @@ VideoPlayer::redraw (cairo_t *cr)
   Player::redraw (cr);
 }
 
-
 // Public: Properties.
 
 void
@@ -268,7 +268,6 @@ VideoPlayer::setProperty (const string &name, const string &value)
     }
 }
 
-
 // Private.
 
 gboolean
