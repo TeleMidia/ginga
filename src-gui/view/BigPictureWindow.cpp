@@ -87,7 +87,7 @@ draw_bigpicture_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
 
   // clear with pattern
   cairo_set_source (cr, background_pattern);
-  cairo_paint(cr);
+  cairo_paint (cr);
 
   GList *l;
   for (l = cards_list; l != NULL; l = l->next)
@@ -101,9 +101,9 @@ draw_bigpicture_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
       gdouble scale = 1.4 - (fa / mid);
       // gdouble scale = 1.0;
 
-      //gdouble posX = card->position - ((cardWidth * scale) / 2);
-      gdouble posX = card->position - (cardWidth/2);
-      //gdouble posY = (h - cardHeight - 100) - ((cardHeight * scale) / 2);
+      // gdouble posX = card->position - ((cardWidth * scale) / 2);
+      gdouble posX = card->position - (cardWidth / 2);
+      // gdouble posY = (h - cardHeight - 100) - ((cardHeight * scale) / 2);
       gdouble posY = (h - cardHeight - 100);
 
       // printf ("x: %f, w: %f, p %f, s: %f \n",  x, 400.0*scale, posX,
@@ -112,9 +112,10 @@ draw_bigpicture_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
       cairo_set_source_rgba (cr, card->r, card->g, card->b, scale - 0.3);
       // cairo_scale(cr, scale, scale);
       cairo_set_source_surface (cr, card->surface, posX, posY);
-     
-   //  cairo_rectangle (cr, posX, posY, cardWidth * scale,  cardHeight * scale);
-     cairo_paint (cr);
+
+      //  cairo_rectangle (cr, posX, posY, cardWidth * scale,  cardHeight *
+      //  scale);
+      cairo_paint (cr);
 
       cairo_text_extents_t extents;
       cairo_select_font_face (cr, "Arial", CAIRO_FONT_SLANT_NORMAL,
@@ -189,7 +190,8 @@ carrousel_rotate (gint dir)
       else
         card->drawOrder = card->index;
 
-      card->destPosition = mid + (card->index * cardWidth) + (card->index * 20);
+      card->destPosition
+          = mid + (card->index * cardWidth) + (card->index * 20);
       card->animate = TRUE;
     }
 
@@ -199,22 +201,26 @@ carrousel_rotate (gint dir)
 void
 create_bigpicture_window ()
 {
-  
-  if(bigPictureWindow != NULL)
+
+  if (bigPictureWindow != NULL)
     return;
 
-  cairo_surface_t *image_p = cairo_image_surface_create_from_png ( g_strconcat (
-      executableFolder, "icons/common/pattern_1.png", NULL));
+  cairo_surface_t *image_p = cairo_image_surface_create_from_png (
+      g_strconcat (executableFolder, "icons/common/pattern_1.png", NULL));
   g_assert_nonnull (image_p);
   background_pattern = cairo_pattern_create_for_surface (image_p);
   cairo_pattern_set_extend (background_pattern, CAIRO_EXTEND_REPEAT);
 
   inBigPictureMode = TRUE;
-  GdkScreen *screen = gdk_screen_get_default ();
-  guint32 width = gdk_screen_get_width (screen);
-  guint32 height = gdk_screen_get_height (screen);
 
-  mid = (width / 2.0);
+  GdkRectangle rect;
+  GdkDisplay *display = gdk_display_get_default ();
+  g_assert_nonnull (display);
+  GdkMonitor *monitor = gdk_display_get_monitor (GDK_DISPLAY (display), 0);
+  g_assert_nonnull (monitor);
+  gdk_monitor_get_geometry (GDK_MONITOR (monitor), &rect);
+
+  mid = (rect.width / 2.0);
 
   BigPictureCard *bigPictureCard
       = (BigPictureCard *)malloc (sizeof (BigPictureCard) * numCards);
@@ -227,8 +233,8 @@ create_bigpicture_window ()
       bigPictureCard[i].position = mid + (bigPictureCard[i].index * 200.0);
       bigPictureCard[i].animate = FALSE;
 
-      bigPictureCard[i].surface = cairo_image_surface_create_from_png ( g_strconcat (
-      executableFolder, "icons/cover.png", NULL));
+      bigPictureCard[i].surface = cairo_image_surface_create_from_png (
+          g_strconcat (executableFolder, "icons/cover.png", NULL));
 
       if (i % 5 == 0)
         {
@@ -305,8 +311,8 @@ create_bigpicture_window ()
   bigPictureWindow = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   g_assert_nonnull (bigPictureWindow);
   gtk_window_set_title (GTK_WINDOW (bigPictureWindow), "Ginga");
-  gtk_window_set_default_size (GTK_WINDOW (bigPictureWindow), width,
-                               height);
+  gtk_window_set_default_size (GTK_WINDOW (bigPictureWindow), rect.width,
+                               rect.height);
   gtk_window_set_position (GTK_WINDOW (bigPictureWindow),
                            GTK_WIN_POS_CENTER);
   g_signal_connect (bigPictureWindow, "key-press-event",
@@ -321,7 +327,7 @@ create_bigpicture_window ()
   gtk_widget_set_app_paintable (canvas, TRUE);
   g_signal_connect (canvas, "draw", G_CALLBACK (draw_bigpicture_callback),
                     NULL);
-  gtk_widget_set_size_request (canvas, width, height);
+  gtk_widget_set_size_request (canvas, rect.width, rect.height);
   gtk_container_add (GTK_CONTAINER (bigPictureWindow), canvas);
   g_timeout_add (1000 / 60, (GSourceFunc)update_bigpicture_callback,
                  canvas);
