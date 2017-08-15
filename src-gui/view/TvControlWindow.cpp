@@ -456,7 +456,9 @@ create_tvcontrol_window (void)
   guint16 control_height = (BUTTON_SIZE * 11);
 
   GtkWidget *header_bar = gtk_header_bar_new ();
+  g_assert_nonnull (header_bar);
   gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header_bar), true);
+  gtk_header_bar_set_decoration_layout (GTK_HEADER_BAR (header_bar),"menu:minimize,maximize,close");
 
   tvcontrolWindow = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   g_assert_nonnull (tvcontrolWindow);

@@ -5,14 +5,16 @@
   border-width:0px;
 }
 
-window, .window{  
+window, .GtkWindow{  
   background-color: #E8E8E7;  
   border-top-right-radius: 0px;
   border-top-left-radius: 0px;
 }
 
-entry, .entry{
+entry, .entry, GtkEntry{
   border: 1px solid #888888;
+  background-color: #FFFFFF;
+ 
 }
 
 button, .button{
@@ -22,11 +24,11 @@ button, .button{
   box-shadow: none;
 }
 
-popover{
+popover, .popover{
   border: 1px solid #333333;
 }
 
-popover label{
+popover label, .popover .label{
   font-weight: bold;
 }
 
@@ -43,14 +45,16 @@ headerbar, .header-bar{
   background-color: #F4F4F4;
   border-bottom: 1px solid #888888;
   box-shadow: none;
+  color: #333333;
 }
 
-notebook, .notebook{
+notebook, GtkNotebook{
   border: 1px solid #888888;  
 }
 
-headerbar separator, .header-bar .separator{
+separator, .separator{
   background-color: #888888;  
+  color: #888888; 
 }
 
 infobar, .infobar{

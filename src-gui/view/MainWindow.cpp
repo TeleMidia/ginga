@@ -63,19 +63,31 @@ hide_infobar ()
 void
 show_toolbox ()
 {
+#if !defined(GDK_WINDOWING_X11)
   gtk_popover_popup (GTK_POPOVER (toolBoxPopOver));
+#else
+  gtk_widget_show (toolBoxPopOver);
+#endif
 }
 
 void
-show_historicbox()
+show_historicbox ()
 {
+#if !defined(GDK_WINDOWING_X11)
   gtk_popover_popup (GTK_POPOVER (histBoxPopOver));
+#else
+  gtk_widget_show (histBoxPopOver);
+#endif
 }
 
 void
 show_optbox ()
 {
+#if !defined(GDK_WINDOWING_X11)
   gtk_popover_popup (GTK_POPOVER (optBoxPopOver));
+#else
+  gtk_widget_show (optBoxPopOver);
+#endif
 }
 
 void
@@ -95,9 +107,10 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
   switch (e->keyval)
     {
     case GDK_KEY_Escape: /* quit */
-      if (isFullScreenMode
-          && (g_strcmp0 ((const char *)type, "press") != 0))
+      if (isFullScreenMode)
         set_unfullscreen_mode ();
+      else if (inBigPictureMode)
+        destroy_bigpicture_window ();
       break;
     case GDK_KEY_Meta_L:
     case GDK_KEY_Meta_R:
@@ -115,20 +128,17 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
       break;
     case GDK_KEY_R:
     case GDK_KEY_r:
-      if (isCrtlModifierActive
-          && (g_strcmp0 ((const char *)type, "press") != 0))
+      if (isCrtlModifierActive)
         create_tvcontrol_window ();
       break;
     case GDK_KEY_B:
     case GDK_KEY_b:
-      if (isCrtlModifierActive
-          && (g_strcmp0 ((const char *)type, "press") != 0))
+      if (isCrtlModifierActive)
         create_bigpicture_window ();
       break;
     case GDK_KEY_D:
     case GDK_KEY_d:
-      if (isCrtlModifierActive
-          && (g_strcmp0 ((const char *)type, "press") != 0))
+      if (isCrtlModifierActive)
         enable_disable_debug ();
       break;
     case GDK_KEY_asterisk:
@@ -220,7 +230,10 @@ create_main_window (void)
     }
 
   GtkWidget *header_bar = gtk_header_bar_new ();
+  g_assert_nonnull (header_bar);
   gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header_bar), true);
+  gtk_header_bar_set_decoration_layout (GTK_HEADER_BAR (header_bar),
+                                        "menu:minimize,maximize,close");
 
   /* begin hist box */
   GtkWidget *hist_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
@@ -228,7 +241,7 @@ create_main_window (void)
 
   fileEntry = gtk_entry_new ();
   g_assert_nonnull (fileEntry);
-  gtk_widget_set_size_request (fileEntry, 400, 32);
+  gtk_widget_set_size_request (fileEntry, 400, -1);
 
   GtkWidget *hist_icon = gtk_image_new_from_file (g_strconcat (
       executableFolder, "icons/light-theme/history-icon.png", NULL));
@@ -237,14 +250,13 @@ create_main_window (void)
   gtk_widget_set_has_tooltip (hist_button, true);
   gtk_widget_set_tooltip_text (hist_button, "Historic");
   g_assert_nonnull (hist_button);
-  g_signal_connect (hist_button, "clicked",
-                    G_CALLBACK (show_historicbox), NULL);  
-  
-  
+  g_signal_connect (hist_button, "clicked", G_CALLBACK (show_historicbox),
+                    NULL);
+
   histBoxPopOver = gtk_popover_new (fileEntry);
   g_assert_nonnull (histBoxPopOver);
- // gtk_popover_set_modal(GTK_POPOVER(histBoxPopOver), true);
-//  gtk_popover_set_pointing_to(GTK_POPOVER(histBoxPopOver), NULL);
+  // gtk_popover_set_modal(GTK_POPOVER(histBoxPopOver), true);
+  //  gtk_popover_set_pointing_to(GTK_POPOVER(histBoxPopOver), NULL);
   gtk_container_add (GTK_CONTAINER (histBoxPopOver), hist_box);
   g_object_set (hist_box, "margin", 5, NULL);
   gtk_widget_show_all (hist_box);
