@@ -31,7 +31,7 @@
   </head>
   <body>
     <port id='start' component='video'/>
-    <port id='start1' component='video2'/>
+    <port id='start2' component='video2'/>
     <media id='video' src='../samples/bunny.ogg' descriptor='desc' />
     <media id='video2' src='../samples/animGar.mp4' descriptor='desc2'>
       <area id='area1' begin='5s' />
@@ -50,8 +50,15 @@
       <bind role="resume" component="video" />
     </link>
 
-    <link xconnector="onBeginResume">
+   <!--  <link xconnector="onBeginResume">
       <bind role="onBegin" component="video2" interface="area1" />
+      <bind role="resume" component="video" />
+    </link> -->
+
+    <link xconnector="onKeySelectionResume">
+      <bind role='onSelection' component='video2'>
+        <bindParam name='keyCode' value='BLUE'/>
+      </bind>
       <bind role="resume" component="video" />
     </link>
   </body>
