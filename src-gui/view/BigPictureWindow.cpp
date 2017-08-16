@@ -199,7 +199,7 @@ carrousel_rotate (gint dir)
   cards_list = g_list_sort (cards_list, (GCompareFunc)comp_card_list);
 }
 
-void
+/*void
 create_bigpicture_window ()
 {
 
@@ -339,7 +339,7 @@ create_bigpicture_window ()
                     G_CALLBACK (destroy_bigpicture_window), NULL);
 
   gtk_widget_show_all (bigPictureWindow);
-}
+}*/
 
 void
 destroy_card_list(gpointer data)
