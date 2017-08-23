@@ -234,7 +234,7 @@ tick_callback (GtkWidget *widget, GdkFrameClock *frame_clock,
                G_GNUC_UNUSED gpointer data)
 #else
 static gboolean
-cycle_callback (GtkWidget *widget)
+tick_callback (GtkWidget *widget)
 #endif
 {
   guint64 time;

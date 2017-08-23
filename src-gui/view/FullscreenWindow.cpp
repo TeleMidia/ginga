@@ -33,9 +33,16 @@ create_fullscreen_window (void)
   GdkRectangle rect;
   GdkDisplay *display = gdk_display_get_default ();
   g_assert_nonnull (display);
+
+#if !GTK_CHECK_VERSION(3, 8, 0)
+  GdkScreen *screen = gdk_display_get_screen(GDK_DISPLAY (display), 0);
+  g_assert_nonnull(screen);
+  gdk_screen_get_monitor_geometry(GDK_SCREEN(screen), 0, &rect); 
+#else
   GdkMonitor *monitor = gdk_display_get_monitor (GDK_DISPLAY (display), 0);
   g_assert_nonnull (monitor);
   gdk_monitor_get_geometry (GDK_MONITOR (monitor), &rect);
+#endif
 
   fullscreenWindow = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   g_assert_nonnull (fullscreenWindow);
