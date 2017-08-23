@@ -83,7 +83,7 @@ hide_infobar ()
 void
 hide_historicbox ()
 {
-#if !defined(GDK_WINDOWING_X11)
+#if GTK_CHECK_VERSION(3, 22, 0)
   gtk_popover_popdown (GTK_POPOVER (historicBoxPopOver));
 #else
   gtk_widget_hide (historicBoxPopOver);
@@ -93,7 +93,7 @@ hide_historicbox ()
 void
 show_toolbox ()
 {
-#if !defined(GDK_WINDOWING_X11)
+#if GTK_CHECK_VERSION(3, 22, 0)
   gtk_popover_popup (GTK_POPOVER (toolBoxPopOver));
 #else
   gtk_widget_show (toolBoxPopOver);
@@ -103,7 +103,11 @@ show_toolbox ()
 void
 show_historicbox ()
 {
-#if !defined(GDK_WINDOWING_X11)
+
+if( g_list_length( gtk_container_get_children( GTK_CONTAINER(historicBox))) == 0)
+  return;
+
+#if GTK_CHECK_VERSION(3, 22, 0)
   gtk_popover_popup (GTK_POPOVER (historicBoxPopOver));
 #else
   gtk_widget_show (historicBoxPopOver);
@@ -117,7 +121,7 @@ show_historicbox ()
 void
 show_optbox ()
 {
-#if !defined(GDK_WINDOWING_X11)
+#if GTK_CHECK_VERSION(3, 22, 0)
   gtk_popover_popup (GTK_POPOVER (optBoxPopOver));
 #else
   gtk_widget_show (optBoxPopOver);
@@ -152,11 +156,25 @@ populate_historic_box ()
 void
 insert_historicbox (gchar *filename)
 {
+  GList* childs = gtk_container_get_children( GTK_CONTAINER(historicBox));
+   
+    for (GList* l = childs; l != NULL; l = l->next)
+    {
+      GtkWidget *row = (GtkWidget*)l->data; 
+      GtkWidget *label = gtk_bin_get_child(GTK_BIN(row)); 
+      if(strcmp(filename, gtk_label_get_text( GTK_LABEL(label))) == 0)  {
+        gtk_container_remove (GTK_CONTAINER (historicBox), GTK_WIDGET (row));
+      }
+      if(l->next == NULL && g_list_length(childs) > 5){
+        gtk_container_remove (GTK_CONTAINER (historicBox), GTK_WIDGET (row));
+      }
+    }
+
+  
   gtk_list_box_prepend (GTK_LIST_BOX (historicBox),
                         gtk_label_new (filename));
   gtk_widget_show_all (historicBox);
   
-  save_settings();
 }
 
 void
@@ -167,8 +185,6 @@ select_historic_line (GtkListBox *box, GtkListBoxRow *row,
   gchar *label_text = g_strdup (gtk_label_get_text (label));
   gtk_entry_set_text (GTK_ENTRY (fileEntry), gtk_label_get_text (label));
   gtk_container_remove (GTK_CONTAINER (box), GTK_WIDGET (row));
-
-  printf ("VOU ADD %s \n", label_text);
 
   gtk_list_box_insert (GTK_LIST_BOX (historicBox),
                        gtk_label_new (label_text), 0);
@@ -315,8 +331,10 @@ create_main_window (void)
                                         "menu:minimize,maximize,close");
 
   /* begin hist box */
-  historicBox = gtk_list_box_new ();
-  g_assert_nonnull (historicBox);
+ if(historicBox == NULL){
+       historicBox = gtk_list_box_new ();
+       g_assert_nonnull (historicBox);
+  }
 
   fileEntry = gtk_entry_new ();
   g_assert_nonnull (fileEntry);
@@ -332,7 +350,7 @@ create_main_window (void)
   g_signal_connect (hist_button, "clicked", G_CALLBACK (show_historicbox),
                     NULL);
 
-  populate_historic_box ();
+ // populate_historic_box ();
 
   gtk_list_box_unselect_all (GTK_LIST_BOX (historicBox));
   g_signal_connect (historicBox, "row-activated",
@@ -824,14 +842,13 @@ select_ncl_file_callback (GtkWidget *widget, gpointer data)
         {
           gtk_entry_set_text (GTK_ENTRY (fileEntry), filename);
           insert_historicbox (filename);
-          presentationAttributes.lastFileName = filename;
+          save_settings ();
         }
 
       g_free (filename);
     }
 
   gtk_widget_destroy (dialog);
-  save_settings ();
 }
 
 void

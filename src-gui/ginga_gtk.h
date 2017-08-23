@@ -28,11 +28,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 typedef struct
 {
-  guint8 aspectRatio = 0; /* 0=(4:3) 1=(16:9) 2=(16:10) */
-  guint16 resolutionWidth = 850;
-  guint16 resolutionHeight = 500;
-  guint8 frameRate = 0; /* 0=30 1=60 2=Free  */
-  gchar *lastFileName = NULL;
+  guint aspectRatio = 0; /* 0=(4:3) 1=(16:9) 2=(16:10) */
+  guint resolutionWidth = 850;
+  guint resolutionHeight = 500;
+  guint frameRate = 0; /* 0=30 1=60 2=Free  */
+  guint guiTheme = 0; /* 0=30 1=60 2=Free  */
 } PresentationAttributes;
 
 extern GList *historic_list;
@@ -48,6 +48,7 @@ extern GtkWidget *debugView;
 extern GtkWidget *sideView;
 extern GtkWidget *infoBar;
 extern GtkWidget *gingaView;
+extern GtkWidget *historicBox;
 extern gchar *executableFolder;
 extern gboolean isFullScreenMode;
 extern gboolean isDebugMode;
