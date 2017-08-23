@@ -196,7 +196,7 @@ carrousel_rotate (gint dir)
   cards_list = g_list_sort (cards_list, (GCompareFunc)comp_card_list);
 }
 
-/*void
+void
 create_bigpicture_window ()
 {
 
@@ -215,7 +215,7 @@ create_bigpicture_window ()
   GdkDisplay *display = gdk_display_get_default ();
   g_assert_nonnull (display);
 
-#if !GTK_CHECK_VERSION(3, 8, 0)
+#if defined(GDK_WINDOWING_X11)
   GdkScreen *screen = gdk_display_get_screen(GDK_DISPLAY (display), 0);
   g_assert_nonnull(screen);
   gdk_screen_get_monitor_geometry(GDK_SCREEN(screen), 0, &rect); 
@@ -343,7 +343,7 @@ create_bigpicture_window ()
                     G_CALLBACK (destroy_bigpicture_window), NULL);
 
   gtk_widget_show_all (bigPictureWindow);
-}*/
+}
 
 void
 destroy_card_list(gpointer data)
