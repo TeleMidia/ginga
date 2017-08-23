@@ -24,30 +24,45 @@ void
 save_settings (void)
 {
  GError *error = NULL;
-// gchar * file_path = g_strconcat ( g_get_user_config_dir(),"/", SETTINGS_FILENAME, NULL);
-
-
+ gchar * file_path =  g_build_path(G_DIR_SEPARATOR_S, g_get_user_config_dir(), SETTINGS_FILENAME, NULL);
  GKeyFile *key_file =	g_key_file_new ();
  g_key_file_set_value (key_file,
                       "ginga-gui",
                       "aspect-ratio",
-                      g_markup_printf_escaped("%d",presentationAttributes.aspectRatio));
+                      g_markup_printf_escaped("%d", presentationAttributes.aspectRatio));
 
  g_key_file_set_value (key_file,
                       "ginga-gui",
-                      "frame-rate",
-                      g_markup_printf_escaped("%d",0));   
+                      "frame-rate", 
+                      g_markup_printf_escaped("%d", presentationAttributes.frameRate));   
 
  g_key_file_set_value (key_file,
                       "ginga-gui",
                       "gui-theme",
-                      g_markup_printf_escaped("%d",2));                                        
+                      g_markup_printf_escaped("%d", presentationAttributes.guiTheme));                                        
 
-  if( g_key_file_save_to_file(key_file, SETTINGS_FILENAME, &error) ){
-    printf("SALVOU !!!");
+ 
+  
+  gchar *hist_str = g_markup_printf_escaped(" ");
+  GList* childs = gtk_container_get_children( GTK_CONTAINER(historicBox));
+  for (GList* l = childs; l != NULL; l = l->next)
+   {
+        GtkWidget *row = (GtkWidget*)l->data; 
+        GtkWidget *label = gtk_bin_get_child(GTK_BIN(row)); 
+        hist_str = g_strconcat (hist_str,"##",gtk_label_get_text( GTK_LABEL(label)), NULL);
+   }
+  
+  g_key_file_set_value (key_file,
+                      "ginga-gui",
+                      "historic",
+                      hist_str);
+
+  if( g_key_file_save_to_file(key_file, file_path, &error) ){
+    printf("File saved \n");
   }                     
   
- // g_free(file_path);
+  g_free(hist_str);
+  g_free(file_path);
 
 }
 
@@ -55,14 +70,39 @@ void
 load_settings (void)
 {
   GError *error = NULL;
-  GKeyFile *key_file;
-  /*
-  if(!g_key_file_load_from_file(key_file, SETTINGS_FILENAME, G_KEY_FILE_NONE, &error) ){
-    printf("NN CARREGOU !!!");
+  gchar *file_path = g_build_path(G_DIR_SEPARATOR_S, g_get_user_config_dir(), SETTINGS_FILENAME, NULL);
+  GKeyFile *key_file = g_key_file_new();
+  
+  if(g_key_file_load_from_file(key_file, file_path, G_KEY_FILE_NONE, &error) ){
+    printf("File loaded from %s \n", file_path);
   }
-  */
+  else
+    return;
 
- // g_free(file_path);
+  presentationAttributes.aspectRatio = atoi( g_key_file_get_value(key_file, "ginga-gui", "aspect-ratio", &error) );
+  presentationAttributes.frameRate = atoi( g_key_file_get_value(key_file, "ginga-gui", "frame-rate", &error) );
+  presentationAttributes.guiTheme = atoi( g_key_file_get_value(key_file, "ginga-gui", "gui-theme", &error) );
+
+  gchar *hist_str =  g_key_file_get_value(key_file, "ginga-gui", "historic", &error);
+  
+  if(hist_str!=NULL){
+     if(historicBox == NULL){
+       historicBox = gtk_list_box_new ();
+       g_assert_nonnull (historicBox);
+     }
+     gchar **str_split = g_strsplit(hist_str,"##",-1);
+     guint str_v_len = g_strv_length(str_split);
+     for(guint i=1; i < str_v_len; i++ ){
+        gtk_list_box_insert (GTK_LIST_BOX (historicBox), gtk_label_new (str_split[i]),
+                           -1);
+     }
+     g_strfreev(str_split);
+   }
+  
+ 
+  g_free(hist_str);
+  g_free(file_path);
+
 
   /*
   GError *error = NULL;
