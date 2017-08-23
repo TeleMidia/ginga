@@ -190,10 +190,10 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
       key = "GREEN";
       break;
     case GDK_KEY_F3:
-      key = "BLUE";
+      key = "YELLOW";
       break;
     case GDK_KEY_F4:
-      key = "YELLOW";
+      key = "BLUE";
       break;
     case GDK_KEY_F5:
       key = "INFO";
