@@ -22,7 +22,7 @@ GtkWidget *fullscreenWindow = NULL;
 gboolean isFullScreenMode = FALSE;
 
 /* Windows */
-void
+/*void
 create_fullscreen_window (void)
 {
   if (fullscreenWindow != NULL)
@@ -71,7 +71,7 @@ create_fullscreen_window (void)
                     G_CALLBACK (destroy_fullscreen_window), NULL);
 
   gtk_widget_show_all (fullscreenWindow);
-}
+}*/
 void
 destroy_fullscreen_window (void)
 {
