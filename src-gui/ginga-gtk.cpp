@@ -25,8 +25,7 @@ gchar* executableFolder;
 int
 main (int argc, char **argv)
 {
- // check_updates();
-  load_settings ();
+
   // Create Ginga handle width the original args.
   GINGA = new Ginga (argc, argv, presentationAttributes.resolutionWidth, presentationAttributes.resolutionHeight, false); 
   
@@ -39,6 +38,8 @@ main (int argc, char **argv)
   GError **error;
   gtk_window_set_default_icon_from_file (g_strconcat (executableFolder,
                    "icons/common/ginga_icon.png", NULL), error);
+  
+  load_settings ();
 
   create_main_window ();
 

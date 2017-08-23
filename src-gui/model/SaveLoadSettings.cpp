@@ -18,44 +18,53 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga_gtk.h"
 #include <glib/gstdio.h>
 
-#define SETTINGS_FILENAME "ginga-gtk6.settings"
+#define SETTINGS_FILENAME "ginga-gtk.settings"
 
 void
 save_settings (void)
 {
-  GFile *file = NULL;
-  GError *error = NULL;
-  gsize *length = NULL;
-  GFileOutputStream *outputStream = NULL;
+ GError *error = NULL;
+// gchar * file_path = g_strconcat ( g_get_user_config_dir(),"/", SETTINGS_FILENAME, NULL);
 
-  file = g_file_new_for_path (SETTINGS_FILENAME);
-  if (g_file_query_exists (file, NULL))
-    g_remove (SETTINGS_FILENAME);
 
-  outputStream = g_file_create (file, G_FILE_CREATE_REPLACE_DESTINATION,
-                                NULL, &error);
-  g_assert_nonnull (outputStream);
-  GDataOutputStream *data
-      = g_data_output_stream_new ((GOutputStream *)outputStream);
+ GKeyFile *key_file =	g_key_file_new ();
+ g_key_file_set_value (key_file,
+                      "ginga-gui",
+                      "aspect-ratio",
+                      g_markup_printf_escaped("%d",presentationAttributes.aspectRatio));
 
- // if(presentationAttributes.lastFileName==NULL)
- //     strcpy( presentationAttributes.lastFileName ," ");
+ g_key_file_set_value (key_file,
+                      "ginga-gui",
+                      "frame-rate",
+                      g_markup_printf_escaped("%d",0));   
 
-  gchar *str = g_markup_printf_escaped (
-      "%d#%d#%d#%d", presentationAttributes.aspectRatio,
-      presentationAttributes.resolutionWidth,
-      presentationAttributes.resolutionHeight,
-      presentationAttributes.frameRate);
+ g_key_file_set_value (key_file,
+                      "ginga-gui",
+                      "gui-theme",
+                      g_markup_printf_escaped("%d",2));                                        
 
-  g_data_output_stream_put_string (data, str, NULL, &error);
+  if( g_key_file_save_to_file(key_file, SETTINGS_FILENAME, &error) ){
+    printf("SALVOU !!!");
+  }                     
+  
+ // g_free(file_path);
 
-  g_object_unref (outputStream);
-  g_object_unref (file);
 }
 
 void
 load_settings (void)
 {
+  GError *error = NULL;
+  GKeyFile *key_file;
+  /*
+  if(!g_key_file_load_from_file(key_file, SETTINGS_FILENAME, G_KEY_FILE_NONE, &error) ){
+    printf("NN CARREGOU !!!");
+  }
+  */
+
+ // g_free(file_path);
+
+  /*
   GError *error = NULL;
   gsize *length = NULL;
   GFile *file = g_file_new_for_path (SETTINGS_FILENAME);
@@ -80,4 +89,5 @@ load_settings (void)
   g_object_unref (data);
   g_object_unref (inputStream);
   g_object_unref (file);
+  */
 }

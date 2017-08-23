@@ -124,16 +124,13 @@ draw_bigpicture_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
 
       if (card->index == 0)
         {
-
           gdouble info_height = h / 2;
           gdouble info_weight = h * 1.2;
 
           cairo_set_source_rgba (cr, 0.3, 0.3, 0.3, 1.0);
-
           cairo_rectangle (cr, mid - (info_weight / 2), 100, info_weight,
                            info_height);
           cairo_fill (cr);
-
           cairo_set_source_rgba (cr, 1.0, 1.0, 1.0, scale - 0.5);
 
           PangoLayout *layout = pango_cairo_create_layout (cr);
@@ -217,9 +214,16 @@ create_bigpicture_window ()
   GdkRectangle rect;
   GdkDisplay *display = gdk_display_get_default ();
   g_assert_nonnull (display);
+
+#if !GTK_CHECK_VERSION(3, 8, 0)
+  GdkScreen *screen = gdk_display_get_screen(GDK_DISPLAY (display), 0);
+  g_assert_nonnull(screen);
+  gdk_screen_get_monitor_geometry(GDK_SCREEN(screen), 0, &rect); 
+#else
   GdkMonitor *monitor = gdk_display_get_monitor (GDK_DISPLAY (display), 0);
   g_assert_nonnull (monitor);
   gdk_monitor_get_geometry (GDK_MONITOR (monitor), &rect);
+#endif
 
   mid = (rect.width / 2.0);
 

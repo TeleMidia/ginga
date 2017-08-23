@@ -27,12 +27,15 @@ GtkWidget *openButton = NULL;
 GtkWidget *fullscreenButton = NULL;
 GtkWidget *volumeButton = NULL;
 GtkWidget *settingsButton = NULL;
+GtkWidget *historicBox = NULL;
 GtkWidget *debugView = NULL;
 GtkWidget *sideView = NULL;
 GtkWidget *infoBar = NULL;
 GtkWidget *toolBoxPopOver = NULL;
 GtkWidget *optBoxPopOver = NULL;
-GtkWidget *histBoxPopOver = NULL;
+GtkWidget *historicBoxPopOver = NULL;
+
+GList *historic_list = NULL;
 
 gboolean isDebugMode = FALSE;
 gboolean inPlayMode = FALSE;
@@ -41,21 +44,19 @@ gboolean isCrtlModifierActive = FALSE;
 
 PresentationAttributes presentationAttributes;
 
-
 void
-press_about_button_callback()
+press_about_button_callback ()
 {
-  create_about_window();
+  create_about_window ();
 }
 
 void
-press_help_button_callback()
+press_help_button_callback ()
 {
-
 }
 
 void
-press_bigpicture_button_callback()
+press_bigpicture_button_callback ()
 {
   create_bigpicture_window ();
 }
@@ -80,6 +81,16 @@ hide_infobar ()
 }
 
 void
+hide_historicbox ()
+{
+#if !defined(GDK_WINDOWING_X11)
+  gtk_popover_popdown (GTK_POPOVER (historicBoxPopOver));
+#else
+  gtk_widget_hide (historicBoxPopOver);
+#endif
+}
+
+void
 show_toolbox ()
 {
 #if !defined(GDK_WINDOWING_X11)
@@ -93,10 +104,14 @@ void
 show_historicbox ()
 {
 #if !defined(GDK_WINDOWING_X11)
-  gtk_popover_popup (GTK_POPOVER (histBoxPopOver));
+  gtk_popover_popup (GTK_POPOVER (historicBoxPopOver));
 #else
-  gtk_widget_show (histBoxPopOver);
+  gtk_widget_show (historicBoxPopOver);
 #endif
+
+  GtkListBoxRow *row
+      = gtk_list_box_get_selected_row (GTK_LIST_BOX (historicBox));
+  gtk_list_box_unselect_row (GTK_LIST_BOX (historicBox), row);
 }
 
 void
@@ -115,6 +130,51 @@ change_tvcontrol_to_window_mode ()
   gtk_widget_hide (sideView);
   tvcontrolAsSidebar = FALSE;
   create_tvcontrol_window ();
+}
+
+void
+destroy_historic_list (gpointer data)
+{
+  g_free (data);
+}
+
+void
+populate_historic_box ()
+{
+  for (GList *l = historic_list; l != NULL; l = l->next)
+    {
+      gchar *str = (gchar *)l->data;
+      gtk_list_box_insert (GTK_LIST_BOX (historicBox), gtk_label_new (str),
+                           -1);
+    }
+}
+
+void
+insert_historicbox (gchar *filename)
+{
+  gtk_list_box_prepend (GTK_LIST_BOX (historicBox),
+                        gtk_label_new (filename));
+  gtk_widget_show_all (historicBox);
+  
+  save_settings();
+}
+
+void
+select_historic_line (GtkListBox *box, GtkListBoxRow *row,
+                      gpointer user_data)
+{
+  GtkLabel *label = (GtkLabel *)gtk_bin_get_child (GTK_BIN (row));
+  gchar *label_text = g_strdup (gtk_label_get_text (label));
+  gtk_entry_set_text (GTK_ENTRY (fileEntry), gtk_label_get_text (label));
+  gtk_container_remove (GTK_CONTAINER (box), GTK_WIDGET (row));
+
+  printf ("VOU ADD %s \n", label_text);
+
+  gtk_list_box_insert (GTK_LIST_BOX (historicBox),
+                       gtk_label_new (label_text), 0);
+
+  gtk_widget_show_all (historicBox);
+  hide_historicbox ();
 }
 
 void
@@ -255,8 +315,8 @@ create_main_window (void)
                                         "menu:minimize,maximize,close");
 
   /* begin hist box */
-  GtkWidget *hist_box = gtk_list_box_new ();
-  g_assert_nonnull (hist_box);
+  historicBox = gtk_list_box_new ();
+  g_assert_nonnull (historicBox);
 
   fileEntry = gtk_entry_new ();
   g_assert_nonnull (fileEntry);
@@ -272,34 +332,21 @@ create_main_window (void)
   g_signal_connect (hist_button, "clicked", G_CALLBACK (show_historicbox),
                     NULL);
 
-  gtk_list_box_insert (GTK_LIST_BOX (hist_box),
-                       gtk_label_new ("https://developer.gnome.org/gtk3/"
-                                      "stable/GtkLabel.html#gtk-label-new"),
-                       -1);
-  gtk_list_box_insert (GTK_LIST_BOX (hist_box),
-                       gtk_label_new ("https://developer.gnome.org/gtk3/"
-                                      "stable/GtkLabel.html#gtk-label-new"),
-                       -1);
-  gtk_list_box_insert (GTK_LIST_BOX (hist_box),
-                       gtk_label_new ("https://developer.gnome.org/gtk3/"
-                                      "stable/GtkLabel.html#gtk-label-new"),
-                       -1);
-  gtk_list_box_insert (GTK_LIST_BOX (hist_box),
-                       gtk_label_new ("https://developer.gnome.org/gtk3/"
-                                      "stable/GtkLabel.html#gtk-label-new"),
-                       -1);
-  gtk_list_box_insert (GTK_LIST_BOX (hist_box),
-                       gtk_label_new ("https://developer.gnome.org/gtk3/"
-                                      "stable/GtkLabel.html#gtk-label-new"),
-                       -1);
+  populate_historic_box ();
 
-  histBoxPopOver = gtk_popover_new (fileEntry);
-  g_assert_nonnull (histBoxPopOver);
-  // gtk_popover_set_modal(GTK_POPOVER(histBoxPopOver), true);
-  //  gtk_popover_set_pointing_to(GTK_POPOVER(histBoxPopOver), NULL);
-  gtk_container_add (GTK_CONTAINER (histBoxPopOver), hist_box);
-  g_object_set (hist_box, "margin", 5, NULL);
-  gtk_widget_show_all (hist_box);
+  gtk_list_box_unselect_all (GTK_LIST_BOX (historicBox));
+  g_signal_connect (historicBox, "row-activated",
+                    G_CALLBACK (select_historic_line), NULL);
+  gtk_list_box_set_activate_on_single_click (GTK_LIST_BOX (historicBox),
+                                             true);
+
+  historicBoxPopOver = gtk_popover_new (fileEntry);
+  g_assert_nonnull (historicBoxPopOver);
+  // gtk_popover_set_modal(GTK_POPOVER(historicBoxPopOver), true);
+  //  gtk_popover_set_pointing_to(GTK_POPOVER(historicBoxPopOver), NULL);
+  gtk_container_add (GTK_CONTAINER (historicBoxPopOver), historicBox);
+  g_object_set (historicBox, "margin", 5, NULL);
+  gtk_widget_show_all (historicBox);
   /* end hist box */
 
   GtkWidget *open_icon = gtk_image_new_from_file (g_strconcat (
@@ -776,6 +823,7 @@ select_ncl_file_callback (GtkWidget *widget, gpointer data)
       else
         {
           gtk_entry_set_text (GTK_ENTRY (fileEntry), filename);
+          insert_historicbox (filename);
           presentationAttributes.lastFileName = filename;
         }
 
