@@ -88,7 +88,7 @@
         <simpleAction role="abort" max="unbounded" qualifier="par"/>
       </causalConnector>
 
-      <causalConnector id="onResumeStart">
+      <!-- <causalConnector id="onResumeStart">
         <simpleCondition role="onResume"/>
         <simpleAction role="start" max="unbounded" qualifier="par"/>
       </causalConnector>
@@ -107,7 +107,7 @@
       <causalConnector id="onResumeAbort">
         <simpleCondition role="onResume"/>
         <simpleAction role="abort" max="unbounded" qualifier="par"/>
-      </causalConnector>
+      </causalConnector> -->
       
       <causalConnector id="onKeySelectionStart">
         <connectorParam name="keyCode"/>
@@ -157,62 +157,49 @@
     </connectorBase>
   </head>
   <body>    
-    <port id='start1' component='audio2'/>
+    <port id='start1' component='audio'/>
     <!-- <port id='start2' component='img'/> -->
     <!-- <port id='start4' component='video'/> -->
     <!-- <port id='start7' component='audio2'/> -->
 
-    <media id='audio' src='../samples/bunny.mp3' descriptor='desc'>
-      <!-- <property name='soundLevel' value='1'/> -->
+    <media id='audio' src='../samples/arcade.mp3' descriptor='desc'>
+      <property name='soundLevel' value='0'/>
     </media>
 
-    <media id='audio2' src='../samples/arcade.mp3'>
-      <!-- <property name='soundLevel' value='0.8'/> -->
+    <media id='audio2' src='../samples/bunny.mp3'>
+      <property name='soundLevel' value='1'/>
     </media>
     
     <media id='img' src='../samples/gnu.png' descriptor='desc4'>
       <property name='top'/>
     </media>
     
-    <media id='video' src='../samples/bunny.ogg' descriptor='desc' >
+    <media id='video' src='../samples/bunny.ogg' descriptor='desc' > <!-- Video com audio -->
       <property name='soundLevel' value="1"/>
-      <area id='area1' begin='5s'/>
-      <area id='area4' begin='10s'/>
+      <area id='videoArea1' begin='5s'/>
+      <area id='videoArea2' begin='10s'/>
     </media>
 
-    <media id='video3' src='../samples/animGar.mp4' descriptor='desc3' >
+    <media id='video2' src='../samples/animGar.mp4' descriptor='desc3' > <!-- Video sem audio -->
       <property name='soundLevel' value="1"/>
-      <area id='area1' begin='5s'/>
-      <area id='area4' begin='10s'/>
+      <area id='video2Area1' begin='5s'/>
+      <area id='video2Area2' begin='10s'/>
     </media>
        
     <link xconnector="onBeginStart">
-      <bind role="onBegin" component="audio2" />
-      <!-- <bind role="start" component="video3" /> -->
+      <bind role="onBegin" component="audio" />
+      <bind role="start" component="video" /> <!-- Video com audio -->
+      <bind role="start" component="video2" /> <!-- Video sem audio -->
       <bind role="start" component="img" />
       <!-- <bind role="start" component="audio" /> -->
     </link>
 
-
-    <!-- <link xconnector="onKeySelectionPause">
-      <bind role='onSelection' component='video'>
-        <bindParam name='keyCode' value='RED'/>        
-      </bind>
-      <bind role="pause" component="video" />
-    </link> -->
-    
-    <!-- <link xconnector="onBeginSet">
-      <bind role='onBegin' component='video' interface='area1'/>
-      <bind role="set" component="audio" interface="soundLevel">
-        <bindParam name="var" value="0.5"/>
-      </bind>
-    </link> -->
-    
+    <!-- Set soundLevel audio. RED: 0; GREEN: 0.5; YELLOW: 1. -->
     <link xconnector="onKeySelectionSet">
       <bind role='onSelection' component='img'>
         <bindParam name='keyCode' value='RED'/>        
       </bind>
-      <bind role="set" component="audio2" interface="soundLevel">
+      <bind role="set" component="audio" interface="soundLevel">
         <bindParam name="var" value="0%"/>
       </bind>
     </link>
@@ -221,7 +208,7 @@
       <bind role='onSelection' component='img'>
         <bindParam name='keyCode' value='GREEN'/>        
       </bind>
-      <bind role="set" component="audio2" interface="soundLevel">
+      <bind role="set" component="audio" interface="soundLevel">
         <bindParam name="var" value="0.5"/>
       </bind>
     </link>
@@ -230,17 +217,35 @@
       <bind role='onSelection' component='img'>
         <bindParam name='keyCode' value='YELLOW'/>        
       </bind>
-      <bind role="set" component="audio2" interface="soundLevel">
+      <bind role="set" component="audio" interface="soundLevel">
         <bindParam name="var" value="100%"/>
       </bind>
     </link>
 
-    <link xconnector="onKeySelectionSet">
-      <bind role='onSelection' component='img'>
+
+    <!-- Set pause and resume video. BLUE: pause; ENTER: resume. -->
+    <link xconnector="onKeySelectionPause">
+      <bind role='onSelection' component='video'> <!-- Video com audio -->
+      <!-- <bind role='onSelection' component='img'> -->
         <bindParam name='keyCode' value='BLUE'/>        
       </bind>
-      <bind role="set" component="audio2" interface="soundLevel">
-        <bindParam name="var" value="0.1"/>
+      <bind role="pause" component="video" />
+    </link>
+
+    <link xconnector="onKeySelectionResume">
+      <!-- <bind role='onSelection' component='video'> --> <!-- Video com audio -->
+      <bind role='onSelection' component='img'> 
+        <bindParam name='keyCode' value='ENTER'/>        
+      </bind>
+      <bind role="resume" component="video" />
+    </link>
+    
+    
+    <!-- Set soundLevel audio to 0.5 when video is 10s. -->
+    <link xconnector="onBeginSet">
+      <bind role='onBegin' component='video' interface='videoArea2'/> <!-- Video sem audio -->
+      <bind role="set" component="audio" interface="soundLevel">
+        <bindParam name="var" value="0.5"/>
       </bind>
     </link>
 
