@@ -28,6 +28,16 @@ create_about_window (void)
   aboutWindow = gtk_about_dialog_new ();
   gtk_about_dialog_set_program_name (GTK_ABOUT_DIALOG (aboutWindow),
                                      "Ginga");
+
+  GtkWidget *header_bar = gtk_header_bar_new ();
+  g_assert_nonnull (header_bar);
+  gtk_header_bar_set_title(GTK_HEADER_BAR (header_bar), "About Ginga");
+  gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header_bar), true);
+  gtk_header_bar_set_decoration_layout (GTK_HEADER_BAR (header_bar),
+                                        "menu:close"); 
+
+  gtk_window_set_titlebar (GTK_WINDOW (aboutWindow), header_bar);                                      
+
   gtk_about_dialog_set_copyright (
       GTK_ABOUT_DIALOG (aboutWindow),
       "Copyright (C) 2006-2017 PUC-Rio/TeleMidia Lab");

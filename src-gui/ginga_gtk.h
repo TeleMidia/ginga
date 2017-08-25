@@ -35,8 +35,6 @@ typedef struct
   guint guiTheme = 0; /* 0=30 1=60 2=Free  */
 } PresentationAttributes;
 
-extern GList *historic_list;
-
 extern Ginga *GINGA; /* Ginga Scheduler */
 extern GtkWidget *mainWindow;
 extern GtkWidget *tvcontrolWindow;
@@ -52,6 +50,8 @@ extern GtkWidget *historicBox;
 extern gchar *executableFolder;
 extern gboolean isFullScreenMode;
 extern gboolean isDebugMode;
+extern gboolean needShowSideBar;
+extern gboolean needShowErrorBar;
 extern gboolean inBigPictureMode;
 extern gboolean tvcontrolAsSidebar;
 extern gboolean isCrtlModifierActive;
@@ -85,6 +85,10 @@ void carrousel_rotate (gint);
 /* View/AboutWindow */
 void create_about_window (void);
 void destroy_about_window (void);
+
+/*View/HelpWindow */
+void create_help_window(void);
+void destroy_help_window(void);
 
 /* View/Draw */
 #if GTK_CHECK_VERSION(3, 8, 0)
