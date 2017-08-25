@@ -17,7 +17,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga_gtk.h"
 
-
 GtkWidget *fullscreenWindow = NULL;
 gboolean isFullScreenMode = FALSE;
 
@@ -39,9 +38,9 @@ create_fullscreen_window (void)
   g_assert_nonnull (monitor);
   gdk_monitor_get_geometry (GDK_MONITOR (monitor), &rect);
 #else
-  GdkScreen *screen = gdk_display_get_screen(GDK_DISPLAY (display), 0);
-  g_assert_nonnull(screen);
-  gdk_screen_get_monitor_geometry(GDK_SCREEN(screen), 0, &rect); 
+  GdkScreen *screen = gdk_display_get_screen (GDK_DISPLAY (display), 0);
+  g_assert_nonnull (screen);
+  gdk_screen_get_monitor_geometry (GDK_SCREEN (screen), 0, &rect);
 #endif
 
   fullscreenWindow = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -52,9 +51,9 @@ create_fullscreen_window (void)
   gtk_window_set_position (GTK_WINDOW (fullscreenWindow),
                            GTK_WIN_POS_CENTER);
   g_signal_connect (fullscreenWindow, "key-press-event",
-                    G_CALLBACK (keyboard_callback), (void *) "press");
+                    G_CALLBACK (keyboard_callback), (void *)"press");
   g_signal_connect (fullscreenWindow, "key-release-event",
-                    G_CALLBACK (keyboard_callback), (void *) "release");
+                    G_CALLBACK (keyboard_callback), (void *)"release");
   gtk_container_set_border_width (GTK_CONTAINER (fullscreenWindow), 0);
 
   // Create Drawing area
