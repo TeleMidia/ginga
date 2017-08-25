@@ -34,7 +34,6 @@ gint numCards = 20;
 gdouble cardWidth = 300;
 gdouble cardHeight = 169;
 
-
 gint
 comp_card_list (gconstpointer a, gconstpointer b)
 {
@@ -215,14 +214,14 @@ create_bigpicture_window ()
   GdkDisplay *display = gdk_display_get_default ();
   g_assert_nonnull (display);
 
-#if defined(GDK_WINDOWING_X11)
-  GdkScreen *screen = gdk_display_get_screen(GDK_DISPLAY (display), 0);
-  g_assert_nonnull(screen);
-  gdk_screen_get_monitor_geometry(GDK_SCREEN(screen), 0, &rect); 
-#else
+#if GTK_CHECK_VERSION(3, 22, 0)
   GdkMonitor *monitor = gdk_display_get_monitor (GDK_DISPLAY (display), 0);
   g_assert_nonnull (monitor);
   gdk_monitor_get_geometry (GDK_MONITOR (monitor), &rect);
+#else
+  GdkScreen *screen = gdk_display_get_screen (GDK_DISPLAY (display), 0);
+  g_assert_nonnull (screen);
+  gdk_screen_get_monitor_geometry (GDK_SCREEN (screen), 0, &rect);
 #endif
 
   mid = (rect.width / 2.0);
@@ -334,8 +333,8 @@ create_bigpicture_window ()
                     NULL);
   gtk_widget_set_size_request (canvas, rect.width, rect.height);
   gtk_container_add (GTK_CONTAINER (bigPictureWindow), canvas);
-  timeOutTag = g_timeout_add (1000 / 60, (GSourceFunc)update_bigpicture_callback,
-                 canvas);
+  timeOutTag = g_timeout_add (
+      1000 / 60, (GSourceFunc)update_bigpicture_callback, canvas);
 
   gtk_window_fullscreen (GTK_WINDOW (bigPictureWindow));
 
@@ -346,18 +345,18 @@ create_bigpicture_window ()
 }
 
 void
-destroy_card_list(gpointer data)
+destroy_card_list (gpointer data)
 {
-   BigPictureCard *card = (BigPictureCard *)data;
-   g_free(card->appName);
-   g_free(card->appDesc);
-   cairo_surface_destroy (card->surface);
+  BigPictureCard *card = (BigPictureCard *)data;
+  g_free (card->appName);
+  g_free (card->appDesc);
+  cairo_surface_destroy (card->surface);
 }
 void
 destroy_bigpicture_window ()
 {
   inBigPictureMode = FALSE;
-  g_source_remove(timeOutTag);
+  g_source_remove (timeOutTag);
   gtk_widget_destroy (bigPictureWindow);
   bigPictureWindow = NULL;
   g_list_free_full (cards_list, destroy_card_list);
