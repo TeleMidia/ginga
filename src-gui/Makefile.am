@@ -30,6 +30,7 @@ gingagui_SOURCES=\
   ginga-gtk.cpp\
   model/SaveLoadSettings.cpp\
   view/AboutWindow.cpp\
+  view/HelpWindow.cpp\
   view/Draw.cpp\
   view/FullscreenWindow.cpp\
   view/MainWindow.cpp\

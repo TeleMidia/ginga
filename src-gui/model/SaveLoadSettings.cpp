@@ -23,71 +23,90 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 void
 save_settings (void)
 {
- GError *error = NULL;
-// gchar * file_path = g_strconcat ( g_get_user_config_dir(),"/", SETTINGS_FILENAME, NULL);
+  GError *error = NULL;
+  gchar *file_path = g_build_path (
+      G_DIR_SEPARATOR_S, g_get_user_config_dir (), SETTINGS_FILENAME, NULL);
+  GKeyFile *key_file = g_key_file_new ();
+  g_key_file_set_value (
+      key_file, "ginga-gui", "aspect-ratio",
+      g_markup_printf_escaped ("%d", presentationAttributes.aspectRatio));
 
+  g_key_file_set_value (
+      key_file, "ginga-gui", "frame-rate",
+      g_markup_printf_escaped ("%d", presentationAttributes.frameRate));
 
- GKeyFile *key_file =	g_key_file_new ();
- g_key_file_set_value (key_file,
-                      "ginga-gui",
-                      "aspect-ratio",
-                      g_markup_printf_escaped("%d",presentationAttributes.aspectRatio));
+  g_key_file_set_value (
+      key_file, "ginga-gui", "gui-theme",
+      g_markup_printf_escaped ("%d", presentationAttributes.guiTheme));
 
- g_key_file_set_value (key_file,
-                      "ginga-gui",
-                      "frame-rate",
-                      g_markup_printf_escaped("%d",0));   
+  gchar *hist_str = g_markup_printf_escaped (" ");
+  GList *childs = gtk_container_get_children (GTK_CONTAINER (historicBox));
+  for (GList *l = childs; l != NULL; l = l->next)
+    {
+      GtkWidget *row = (GtkWidget *)l->data;
+      GtkWidget *label = gtk_bin_get_child (GTK_BIN (row));
+      hist_str = g_strconcat (hist_str, "##",
+                              gtk_label_get_text (GTK_LABEL (label)), NULL);
+    }
 
- g_key_file_set_value (key_file,
-                      "ginga-gui",
-                      "gui-theme",
-                      g_markup_printf_escaped("%d",2));                                        
+  g_key_file_set_value (key_file, "ginga-gui", "historic", hist_str);
 
-  if( g_key_file_save_to_file(key_file, SETTINGS_FILENAME, &error) ){
-    printf("SALVOU !!!");
-  }                     
-  
- // g_free(file_path);
+  if (g_key_file_save_to_file (key_file, file_path, &error))
+    {
+      printf ("File saved \n");
+    }
 
+  g_free (hist_str);
+  g_free (file_path);
 }
 
 void
 load_settings (void)
 {
   GError *error = NULL;
-  GKeyFile *key_file;
-  /*
-  if(!g_key_file_load_from_file(key_file, SETTINGS_FILENAME, G_KEY_FILE_NONE, &error) ){
-    printf("NN CARREGOU !!!");
-  }
-  */
+  gchar *file_path = g_build_path (
+      G_DIR_SEPARATOR_S, g_get_user_config_dir (), SETTINGS_FILENAME, NULL);
+  GKeyFile *key_file = g_key_file_new ();
 
- // g_free(file_path);
-
-  /*
-  GError *error = NULL;
-  gsize *length = NULL;
-  GFile *file = g_file_new_for_path (SETTINGS_FILENAME);
-  if (!g_file_query_exists (file, NULL))
+  if (g_key_file_load_from_file (key_file, file_path, G_KEY_FILE_NONE,
+                                 &error))
+    {
+      printf ("File loaded from %s \n", file_path);
+    }
+  else
     return;
 
-  GFileInputStream *inputStream = g_file_read (file, NULL, &error);
-  g_assert_nonnull (inputStream);
-  GDataInputStream *data
-      = g_data_input_stream_new ((GInputStream *)inputStream);
-  g_assert_nonnull (data);
-  gchar *line = g_data_input_stream_read_line (data, length, NULL, &error);
+  presentationAttributes.aspectRatio = atoi (
+      g_key_file_get_value (key_file, "ginga-gui", "aspect-ratio", &error));
+  presentationAttributes.frameRate = atoi (
+      g_key_file_get_value (key_file, "ginga-gui", "frame-rate", &error));
+  presentationAttributes.guiTheme = atoi (
+      g_key_file_get_value (key_file, "ginga-gui", "gui-theme", &error));
 
-  gchar **str_split = g_strsplit(line,"#",-1);
-  presentationAttributes.aspectRatio = atoi(str_split[0]); 
-  presentationAttributes.resolutionWidth = atoi(str_split[1]); 
-  presentationAttributes.resolutionHeight = atoi(str_split[2]); 
-  presentationAttributes.frameRate = atoi(str_split[3]);
- // strcpy( presentationAttributes.lastFileName ,str_split[4]);
-  
-  g_strfreev(str_split);
-  g_object_unref (data);
-  g_object_unref (inputStream);
-  g_object_unref (file);
-  */
+  gchar *hist_str
+      = g_key_file_get_value (key_file, "ginga-gui", "historic", &error);
+
+  if (hist_str != NULL)
+    {
+      if (historicBox == NULL)
+        {
+          historicBox = gtk_list_box_new ();
+          g_assert_nonnull (historicBox);
+        }
+      gchar **str_split = g_strsplit (hist_str, "##", -1);
+      guint str_v_len = g_strv_length (str_split);
+      for (guint i = 1; i < str_v_len; i++)
+        {
+          
+          GtkWidget * label = gtk_label_new (str_split[i]);
+          gtk_widget_set_halign(label, GTK_ALIGN_START);
+          gtk_list_box_insert (GTK_LIST_BOX (historicBox),
+                               label, -1);
+        }
+      g_strfreev (str_split);
+    }
+
+  g_free (hist_str);
+  g_free (file_path);
+
 }
