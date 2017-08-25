@@ -163,11 +163,11 @@
     <!-- <port id='start7' component='audio2'/> -->
 
     <media id='audio' src='../samples/bunny.mp3' descriptor='desc'>
-      <property name='soundLevel' value='1'/>
+      <!-- <property name='soundLevel' value='1'/> -->
     </media>
 
     <media id='audio2' src='../samples/arcade.mp3'>
-      <property name='soundLevel' value='0.8'/>
+      <!-- <property name='soundLevel' value='0.8'/> -->
     </media>
     
     <media id='img' src='../samples/gnu.png' descriptor='desc4'>
