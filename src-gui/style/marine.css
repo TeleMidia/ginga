@@ -2,36 +2,37 @@
 
 window *, .GtkWindow *{
   border-radius: 2px;  
-  border-width: 0px;
+  border-width:0px;
 }
 
 window, .GtkWindow{  
-  background-color: #E8E8E7;  
-  border: 1px solid #888888;
+  background-color: #000e57;  
+  border: 1px solid #000055;
   border-top-width: 0px;
-  color: #333333;
+  color: #DDDDDD;
 }
 
 entry, .entry, GtkEntry{
-  border: 1px solid #888888;
+  border: 1px solid #000055;
   background-color: #FFFFFF;
  
 }
 
 window button, .GtkWindow .button{
-  background: #EEEEEE;
-  color: #333333;
-  border: 1px solid #888888;
+  background: #010932;
+  color: #DDDDDD;
+  border: 1px solid #2c3563;
   box-shadow: none;
 }
 
 window popover, .GtkWindow  .popover{
-  border: 1px solid #333333;
-  background-color: #E8E8E7; 
+  border: 1px solid #444444;
+  background-color: #000e57;  
+  color:#DDDDDD;
 }
 
 window frame, .GtkWindow .frame{
-  border: 1px solid #888888;
+  border: 1px solid #2c3563;
 }
 
 popover label, .popover .label{
@@ -39,28 +40,27 @@ popover label, .popover .label{
 }
 
 slider{
-  border: 1px solid #888888;
+  border: 1px solid #2c3563;
 }
 
 button:hover, .button:hover{
-  background: #DFDFDF;
+  background: #000026;
 }
 
-headerbar, .header-bar{
+window headerbar, .GtkWindow .header-bar{
   background-image: none;
-  background-color: #F4F4F4;
-  border: 1px solid #888888;
+  background-color: #00014d;
+  border: 1px solid #2c3563;
   box-shadow: none;
-  color: #333333;
+  color: #CCCCCC;
 }
 
 notebook, GtkNotebook{
-  border: 1px solid #888888;  
+  border: 1px solid #2c3563;  
 }
 
 headerbar separator, .header-bar .separator{
-  background-color: #888888;  
-  color: #888888; 
+  background-color: #2c3563;  
 }
 
 infobar, .infobar{
@@ -70,12 +70,13 @@ infobar, .infobar{
 infobar button, .infobar .button{
   background: transparent;
   border-width: 0px;
-  color: #EEEEEE;   
+  color: #010932;   
 }
 
 infobar button:hover, .infobar .button:hover{
   background: transparent;
 }
+
 
 
 

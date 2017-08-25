@@ -39,7 +39,7 @@ create_tvremote_buttons (guint offSetX, guint offSetY)
 
   GtkWidget *button_icon = gtk_image_new_from_file (
       g_strconcat (executableFolder,
-                   "icons/light-theme/number_one.png", NULL));
+                   "icons/dark-theme/number_one.png", NULL));
   GtkWidget *button_1 = gtk_button_new ();
   g_assert_nonnull (button_1);
   gtk_button_set_image (GTK_BUTTON (button_1), button_icon);
@@ -51,7 +51,7 @@ create_tvremote_buttons (guint offSetX, guint offSetY)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (executableFolder,
-                   "icons/light-theme/number_two.png", NULL));
+                   "icons/dark-theme/number_two.png", NULL));
   GtkWidget *button_2 = gtk_button_new ();
   g_assert_nonnull (button_2);
   gtk_button_set_image (GTK_BUTTON (button_2), button_icon);
@@ -63,7 +63,7 @@ create_tvremote_buttons (guint offSetX, guint offSetY)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (executableFolder,
-                   "icons/light-theme/number_three.png", NULL));
+                   "icons/dark-theme/number_three.png", NULL));
   GtkWidget *button_3 = gtk_button_new ();
   g_assert_nonnull (button_3);
   gtk_button_set_image (GTK_BUTTON (button_3), button_icon);
@@ -77,7 +77,7 @@ create_tvremote_buttons (guint offSetX, guint offSetY)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (executableFolder,
-                   "icons/light-theme/number_four.png", NULL));
+                   "icons/dark-theme/number_four.png", NULL));
   GtkWidget *button_4 = gtk_button_new ();
   g_assert_nonnull (button_4);
   gtk_button_set_image (GTK_BUTTON (button_4), button_icon);
@@ -90,7 +90,7 @@ create_tvremote_buttons (guint offSetX, guint offSetY)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (executableFolder,
-                   "icons/light-theme/number_five.png", NULL));
+                   "icons/dark-theme/number_five.png", NULL));
   GtkWidget *button_5 = gtk_button_new ();
   g_assert_nonnull (button_5);
   gtk_button_set_image (GTK_BUTTON (button_5), button_icon);
@@ -102,7 +102,7 @@ create_tvremote_buttons (guint offSetX, guint offSetY)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (executableFolder,
-                   "icons/light-theme/number_six.png", NULL));
+                   "icons/dark-theme/number_six.png", NULL));
   GtkWidget *button_6 = gtk_button_new ();
   g_assert_nonnull (button_6);
   gtk_button_set_image (GTK_BUTTON (button_6), button_icon);
@@ -117,7 +117,7 @@ create_tvremote_buttons (guint offSetX, guint offSetY)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (executableFolder,
-                   "icons/light-theme/number_seven.png", NULL));
+                   "icons/dark-theme/number_seven.png", NULL));
   GtkWidget *button_7 = gtk_button_new ();
   g_assert_nonnull (button_7);
   gtk_button_set_image (GTK_BUTTON (button_7), button_icon);
@@ -130,7 +130,7 @@ create_tvremote_buttons (guint offSetX, guint offSetY)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (executableFolder,
-                   "icons/light-theme/number_eight.png", NULL));
+                   "icons/dark-theme/number_eight.png", NULL));
   GtkWidget *button_8 = gtk_button_new ();
   g_assert_nonnull (button_8);
   gtk_button_set_image (GTK_BUTTON (button_8), button_icon);
@@ -142,7 +142,7 @@ create_tvremote_buttons (guint offSetX, guint offSetY)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (executableFolder,
-                   "icons/light-theme/number_nine.png", NULL));
+                   "icons/dark-theme/number_nine.png", NULL));
   GtkWidget *button_9 = gtk_button_new ();
   g_assert_nonnull (button_9);
   gtk_button_set_image (GTK_BUTTON (button_9), button_icon);
@@ -157,7 +157,7 @@ create_tvremote_buttons (guint offSetX, guint offSetY)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (executableFolder,
-                   "icons/light-theme/back_arrow.png", NULL));
+                   "icons/dark-theme/back_arrow.png", NULL));
   GtkWidget *button_back = gtk_button_new ();
   g_assert_nonnull (button_back);
   gtk_button_set_image (GTK_BUTTON (button_back), button_icon);
@@ -170,7 +170,7 @@ create_tvremote_buttons (guint offSetX, guint offSetY)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (executableFolder,
-                   "icons/light-theme/number_zero.png", NULL));
+                   "icons/dark-theme/number_zero.png", NULL));
   GtkWidget *button_0 = gtk_button_new ();
   g_assert_nonnull (button_0);
   gtk_button_set_image (GTK_BUTTON (button_0), button_icon);
@@ -182,7 +182,7 @@ create_tvremote_buttons (guint offSetX, guint offSetY)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (executableFolder,
-                   "icons/light-theme/info-icon.png", NULL));
+                   "icons/dark-theme/info-icon.png", NULL));
   GtkWidget *button_info = gtk_button_new ();
   g_assert_nonnull (button_info);
   gtk_button_set_image (GTK_BUTTON (button_info), button_icon);
@@ -197,7 +197,7 @@ create_tvremote_buttons (guint offSetX, guint offSetY)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (executableFolder,
-                   "icons/light-theme/uparrow-icon.png", NULL));
+                   "icons/dark-theme/uparrow-icon.png", NULL));
   GtkWidget *button_up = gtk_button_new ();
   g_assert_nonnull (button_up);
   gtk_button_set_image (GTK_BUTTON (button_up), button_icon);
@@ -212,7 +212,7 @@ create_tvremote_buttons (guint offSetX, guint offSetY)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (executableFolder,
-                   "icons/light-theme/leftarrow-icon.png", NULL));
+                   "icons/dark-theme/leftarrow-icon.png", NULL));
   GtkWidget *button_left = gtk_button_new ();
   g_assert_nonnull (button_left);
   gtk_button_set_image (GTK_BUTTON (button_left), button_icon);
@@ -224,7 +224,7 @@ create_tvremote_buttons (guint offSetX, guint offSetY)
                  offSetY + 10 + (BUTTON_SIZE * 5));
 
   button_icon = gtk_image_new_from_file (g_strconcat (
-      executableFolder, "icons/light-theme/ok-icon.png", NULL));
+      executableFolder, "icons/dark-theme/ok-icon.png", NULL));
   GtkWidget *button_ok = gtk_button_new ();
   g_assert_nonnull (button_ok);
   gtk_button_set_image (GTK_BUTTON (button_ok), button_icon);
@@ -237,7 +237,7 @@ create_tvremote_buttons (guint offSetX, guint offSetY)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (executableFolder,
-                   "icons/light-theme/rightarrow-icon.png", NULL));
+                   "icons/dark-theme/rightarrow-icon.png", NULL));
   GtkWidget *button_right = gtk_button_new ();
   g_assert_nonnull (button_right);
   gtk_button_set_image (GTK_BUTTON (button_right), button_icon);
@@ -252,7 +252,7 @@ create_tvremote_buttons (guint offSetX, guint offSetY)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (executableFolder,
-                   "icons/light-theme/downarrow-icon.png", NULL));
+                   "icons/dark-theme/downarrow-icon.png", NULL));
   GtkWidget *button_down = gtk_button_new ();
   g_assert_nonnull (button_down);
   gtk_button_set_image (GTK_BUTTON (button_down), button_icon);
@@ -267,7 +267,7 @@ create_tvremote_buttons (guint offSetX, guint offSetY)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (executableFolder,
-                   "icons/light-theme/volup-icon.png", NULL));
+                   "icons/dark-theme/volup-icon.png", NULL));
   GtkWidget *button_vol_up = gtk_button_new ();
   g_assert_nonnull (button_vol_up);
   gtk_button_set_image (GTK_BUTTON (button_vol_up), button_icon);
@@ -279,7 +279,7 @@ create_tvremote_buttons (guint offSetX, guint offSetY)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (executableFolder,
-                   "icons/light-theme/menu-icon.png", NULL));
+                   "icons/dark-theme/menu-icon.png", NULL));
   GtkWidget *button_menu = gtk_button_new ();
   g_assert_nonnull (button_menu);
   gtk_button_set_image (GTK_BUTTON (button_menu), button_icon);
@@ -291,7 +291,7 @@ create_tvremote_buttons (guint offSetX, guint offSetY)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (executableFolder,
-                   "icons/light-theme/close-icon.png", NULL));
+                   "icons/dark-theme/close-icon.png", NULL));
   GtkWidget *button_close = gtk_button_new ();
   g_assert_nonnull (button_close);
   gtk_button_set_image (GTK_BUTTON (button_close), button_icon);
@@ -304,7 +304,7 @@ create_tvremote_buttons (guint offSetX, guint offSetY)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (executableFolder,
-                   "icons/light-theme/chup-icon.png", NULL));
+                   "icons/dark-theme/chup-icon.png", NULL));
   GtkWidget *button_ch_up = gtk_button_new ();
   g_assert_nonnull (button_ch_up);
   gtk_button_set_image (GTK_BUTTON (button_ch_up), button_icon);
@@ -319,7 +319,7 @@ create_tvremote_buttons (guint offSetX, guint offSetY)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (executableFolder,
-                   "icons/light-theme/voldown-icon.png", NULL));
+                   "icons/dark-theme/voldown-icon.png", NULL));
   GtkWidget *button_vol_down = gtk_button_new ();
   g_assert_nonnull (button_vol_down);
   gtk_button_set_image (GTK_BUTTON (button_vol_down), button_icon);
@@ -331,7 +331,7 @@ create_tvremote_buttons (guint offSetX, guint offSetY)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (executableFolder,
-                   "icons/light-theme/settings-icon.png", NULL));
+                   "icons/dark-theme/settings-icon.png", NULL));
   GtkWidget *button_menu2 = gtk_button_new ();
   g_assert_nonnull (button_menu2);
   gtk_button_set_image (GTK_BUTTON (button_menu2), button_icon);
@@ -343,7 +343,7 @@ create_tvremote_buttons (guint offSetX, guint offSetY)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (executableFolder,
-                   "icons/light-theme/settings-icon.png", NULL));
+                   "icons/dark-theme/settings-icon.png", NULL));
   GtkWidget *button_info2 = gtk_button_new ();
   g_assert_nonnull (button_info2);
   gtk_button_set_image (GTK_BUTTON (button_info2), button_icon);
@@ -356,7 +356,7 @@ create_tvremote_buttons (guint offSetX, guint offSetY)
 
   button_icon = gtk_image_new_from_file (
       g_strconcat (executableFolder,
-                   "icons/light-theme/chdown-icon.png", NULL));
+                   "icons/dark-theme/chdown-icon.png", NULL));
   GtkWidget *button_ch_down = gtk_button_new ();
   g_assert_nonnull (button_ch_down);
   gtk_button_set_image (GTK_BUTTON (button_ch_down), button_icon);
@@ -480,7 +480,7 @@ create_tvcontrol_window (void)
 
   GtkWidget *button_icon = gtk_image_new_from_file (
       g_strconcat (executableFolder,
-                   "icons/light-theme/sidebar-icon.png", NULL));
+                   "icons/dark-theme/sidebar-icon.png", NULL));
   g_assert_nonnull (button_icon);
   GtkWidget *sidebar_button = gtk_button_new ();
   g_assert_nonnull (sidebar_button);
