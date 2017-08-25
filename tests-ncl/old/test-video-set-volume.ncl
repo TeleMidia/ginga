@@ -167,7 +167,7 @@
     </media>
 
     <media id='audio2' src='../samples/bunny.mp3'>
-      <property name='soundLevel' value='1'/>
+      <property name='soundLevel' value='0'/>
     </media>
     
     <media id='img' src='../samples/gnu.png' descriptor='desc4'>
@@ -175,13 +175,13 @@
     </media>
     
     <media id='video' src='../samples/bunny.ogg' descriptor='desc' > <!-- Video com audio -->
-      <property name='soundLevel' value="1"/>
+      <property name='soundLevel' value="0"/>
       <area id='videoArea1' begin='5s'/>
       <area id='videoArea2' begin='10s'/>
     </media>
 
     <media id='video2' src='../samples/animGar.mp4' descriptor='desc3' > <!-- Video sem audio -->
-      <property name='soundLevel' value="1"/>
+      <property name='soundLevel' value="0"/>
       <area id='video2Area1' begin='5s'/>
       <area id='video2Area2' begin='10s'/>
     </media>
@@ -245,7 +245,7 @@
     <link xconnector="onBeginSet">
       <bind role='onBegin' component='video' interface='videoArea2'/> <!-- Video sem audio -->
       <bind role="set" component="audio" interface="soundLevel">
-        <bindParam name="var" value="0.5"/>
+        <bindParam name="var" value="0.4"/>
       </bind>
     </link>
 
