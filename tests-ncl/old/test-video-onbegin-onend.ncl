@@ -41,7 +41,7 @@
     <link xconnector="onEndStart">
         <bind role="onEnd" component="vid1"  />
         <bind role="start" component="vid2"  />
-    </link>
+    </link> 
 
   </body>
 </ncl>
