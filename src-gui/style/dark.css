@@ -9,7 +9,10 @@ window, .GtkWindow{
   background-color: #303030;  
   border: 1px solid #555555;
   border-top-width: 0px;
-  color: #DDDDDD;
+}
+
+window label, .GtkWindow .label{
+   color: #DDDDDD;
 }
 
 entry, .entry, GtkEntry{
@@ -43,7 +46,7 @@ slider{
   border: 1px solid #555555;
 }
 
-button:hover, .button:hover{
+window button:hover, .GtkWindow .button:hover{
   background: #262626;
 }
 
@@ -67,10 +70,14 @@ infobar, .infobar{
   background-color: #EE2222;   
 }
 
+infobar label, .infobar .label{
+  color: #EEEEEE;  
+}
+
 infobar button, .infobar .button{
   background: transparent;
   border-width: 0px;
-  color: #111111;   
+  color: #EEEEEE;    
 }
 
 infobar button:hover, .infobar .button:hover{
