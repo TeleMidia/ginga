@@ -12,16 +12,18 @@ find_package(CURL REQUIRED)
 
 find_package(XercesC 2.7 REQUIRED)
 
+find_package(GDKPixBuf REQUIRED)
+find_package(GDK3 REQUIRED)
+
 find_package(Cairo REQUIRED)
 find_package(Pango REQUIRED)
-find_package(GDKPixBuf REQUIRED)
 find_package(RSVG REQUIRED)
 find_package(GStreamer REQUIRED)
 add_definitions(-DWITH_PANGO=1 -DWITH_GSTREAMER=1)
 
 find_package(GTK3)
 if (GTK3_FOUND)
-  set (WITH_GINGA_GTK OFF)
+  set (WITH_GINGA_GTK ON)
 endif()
 
 # NCLUA download/configure/build/install
@@ -33,7 +35,10 @@ ExternalProject_Add(nclua_build
 
   PREFIX ${CMAKE_CURRENT_BINARY_DIR}/3rdparty/nclua
 
-  CONFIGURE_COMMAND <SOURCE_DIR>/bootstrap && <SOURCE_DIR>/configure --prefix=<INSTALL_DIR> --without-nclua-gst
+  CONFIGURE_COMMAND <SOURCE_DIR>/bootstrap &&
+                    <SOURCE_DIR>/configure --prefix=<INSTALL_DIR>
+                                           --without-nclua-gst
+
   BUILD_COMMAND make
   INSTALL_COMMAND make install
 )
@@ -158,26 +163,20 @@ set (LIBGINGA_SOURCES
 #WITH_LIBRSVG
 )
 
-set (GINGA_GUI_GTK_SOURCES
-  ../src-gui/ginga-gtk.cpp
-)
-
 set (LIBGINGA_INCLUDE_DIRS
-  ../lib
+  ${CMAKE_CURRENT_SOURCE_DIR}/../lib
 
   ${CMAKE_BINARY_DIR}
 
   ${GLIB_INCLUDE_DIRS}
-  ${GDKPIXBUF_INCLUDE_DIR}
+  ${GDKPIXBUF_INCLUDE_DIRS}
+  ${GDK3_INCLUDE_DIRS}
 
   ${CAIRO_INCLUDE_DIRS}
   ${PANGO_INCLUDE_DIRS}
   ${RSVG_INCLUDE_DIRS}
   ${GSTREAMER_INCLUDE_DIRS}
   ${GSTREAMER_BASE_INCLUDE_DIRS}
-  ${GTK3_INCLUDE_DIRS}
-
-  ${LinuxDVB_INCLUDE_DIRS}
 
   ${NCLUA_INCLUDE_DIRS}
 )
@@ -190,14 +189,15 @@ set (LIBGINGA_LIBS
 
   ${CURL_LIBRARIES}
   ${GLIB_LIBRARIES}
-  ${GSTREAMER_LIBRARIES}
-  ${GSTREAMER_APP_LIBRARIES}
-  ${GSTREAMER_VIDEO_LIBRARIES}
-  ${GTK3_LIBRARIES}
+  ${GDKPIXBUF_LIBRARIES}
+  ${GDK3_LIBRARIES}
 
   ${CAIRO_LIBRARIES}
   ${PANGO_LIBRARIES}
   ${RSVG_LIBRARIES}
+  ${GSTREAMER_LIBRARIES}
+  ${GSTREAMER_APP_LIBRARIES}
+  ${GSTREAMER_VIDEO_LIBRARIES}
 
   nclua
 )
@@ -217,24 +217,49 @@ if (WITH_CEF)
   )
 endif()
 
+set (GINGAGUI_GTK_SOURCES
+  ../src-gui/ginga-gtk.cpp
+  ../src-gui/model/SaveLoadSettings.cpp
+  ../src-gui/view/AboutWindow.cpp
+  ../src-gui/view/BigPictureWindow.cpp
+  ../src-gui/view/Draw.cpp
+  ../src-gui/view/FullscreenWindow.cpp
+  ../src-gui/view/MainWindow.cpp
+  ../src-gui/view/TvControlWindow.cpp
+)
+
+set (GINGAGUI_GTK_INCLUDE_DIRS
+  ../src-gui/
+  ../src-gui/model/
+  ../src-gui/view/
+
+  ${LIBGINGA_INCLUDE_DIRS}
+  ${GTK3_INCLUDE_DIRS}
+)
+
+# libginga target
 add_library (libginga STATIC ${LIBGINGA_SOURCES})
 add_dependencies (libginga nclua_build)
 target_include_directories (libginga PUBLIC ${LIBGINGA_INCLUDE_DIRS})
 target_link_libraries (libginga PUBLIC ${LIBGINGA_LIBS})
 set_target_properties (libginga PROPERTIES OUTPUT_NAME "ginga")
 
+# ginga target
 add_executable (ginga ../src/ginga.cpp)
-target_include_directories (ginga PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-target_include_directories (ginga PRIVATE ${LIBGINGA_INCLUDE_DIRS})
-target_link_libraries (ginga PRIVATE libginga)
+target_include_directories (ginga PRIVATE ${GTK3_INCLUDE_DIRS})
+target_link_libraries (ginga PRIVATE libginga ${GTK3_LIBRARIES})
 
-
+# ginga-gtk target
 if (WITH_GINGA_GTK)
-  add_executable (ginga-gtk ${GINGA_GUI_GTK_SOURCES})
-  target_include_directories (ginga-gtk PRIVATE ${GINGA_INCLUDE_DIRS} ${GTK3_INCLUDE_DIRS})
-  target_link_libraries (ginga-gtk PRIVATE ${GTK3_LIBRARIES} ${GINGA_LIBS})
+  add_executable (ginga-gtk ${GINGAGUI_GTK_SOURCES})
+  target_include_directories (ginga-gtk PRIVATE ${GINGAGUI_GTK_INCLUDE_DIRS})
+  target_link_libraries (ginga-gtk PRIVATE libginga ${GTK3_LIBRARIES})
   set_target_properties(ginga-gtk PROPERTIES RUNTIME_OUTPUT_DIRECTORY bin/)
 endif()
+
+if (WITH_RUNVIEW)
+  include (runview.cmake)
+endif ()
 
 # Copy datafiles to build dir
 add_custom_target (copy-data-files ALL
@@ -246,7 +271,6 @@ add_custom_target (copy-data-files ALL
 set_target_properties(ginga PROPERTIES INSTALL_RPATH "$ORIGIN")
 set_target_properties(ginga PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
 set_target_properties(ginga PROPERTIES RUNTIME_OUTPUT_DIRECTORY bin/)
-
 
 if (WITH_CEF)
   # Copy binary and resource files to the target output directory.
