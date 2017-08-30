@@ -50,11 +50,7 @@ save_settings (void)
     }
 
   g_key_file_set_value (key_file, "ginga-gui", "historic", hist_str);
-
-  if (g_key_file_save_to_file (key_file, file_path, &error))
-    {
-      printf ("File saved \n");
-    }
+  g_key_file_save_to_file (key_file, file_path, &error);
 
   g_free (hist_str);
   g_free (file_path);
@@ -64,17 +60,14 @@ void
 load_settings (void)
 {
   GError *error = NULL;
+  gchar *hist_str = NULL;
   gchar *file_path = g_build_path (
       G_DIR_SEPARATOR_S, g_get_user_config_dir (), SETTINGS_FILENAME, NULL);
   GKeyFile *key_file = g_key_file_new ();
 
-  if (g_key_file_load_from_file (key_file, file_path, G_KEY_FILE_NONE,
-                                 &error))
-    {
-      printf ("File loaded from %s \n", file_path);
-    }
-  else
-    return;
+  if (!g_key_file_load_from_file (key_file, file_path, G_KEY_FILE_NONE,
+                                  &error))
+    goto endload;
 
   presentationAttributes.aspectRatio = atoi (
       g_key_file_get_value (key_file, "ginga-gui", "aspect-ratio", &error));
@@ -83,7 +76,7 @@ load_settings (void)
   presentationAttributes.guiTheme = atoi (
       g_key_file_get_value (key_file, "ginga-gui", "gui-theme", &error));
 
-  gchar *hist_str
+  hist_str
       = g_key_file_get_value (key_file, "ginga-gui", "historic", &error);
 
   if (hist_str != NULL)
@@ -97,16 +90,15 @@ load_settings (void)
       guint str_v_len = g_strv_length (str_split);
       for (guint i = 1; i < str_v_len; i++)
         {
-          
-          GtkWidget * label = gtk_label_new (str_split[i]);
-          gtk_widget_set_halign(label, GTK_ALIGN_START);
-          gtk_list_box_insert (GTK_LIST_BOX (historicBox),
-                               label, -1);
+
+          GtkWidget *label = gtk_label_new (str_split[i]);
+          gtk_widget_set_halign (label, GTK_ALIGN_START);
+          gtk_list_box_insert (GTK_LIST_BOX (historicBox), label, -1);
         }
       g_strfreev (str_split);
     }
 
+endload:
   g_free (hist_str);
   g_free (file_path);
-
 }

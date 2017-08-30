@@ -9,6 +9,9 @@ window, .GtkWindow{
   background-color: #E8E8E7;  
   border: 1px solid #888888;
   border-top-width: 0px;
+}
+
+window label, .GtkWindow .label{
   color: #333333;
 }
 
@@ -42,7 +45,7 @@ slider{
   border: 1px solid #888888;
 }
 
-button:hover, .button:hover{
+window button:hover, .GtkWindow .button:hover{
   background: #DFDFDF;
 }
 
@@ -65,6 +68,10 @@ headerbar separator, .header-bar .separator{
 
 infobar, .infobar{
   background-color: #EE2222;   
+}
+
+infobar label, .infobar .label{
+  color: #EEEEEE;  
 }
 
 infobar button, .infobar .button{

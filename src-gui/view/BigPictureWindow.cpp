@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GList *cards_list = NULL;
 gboolean inBigPictureMode = FALSE;
 GtkWidget *bigPictureWindow = NULL;
-guint timeOutTag = 0;
+guint timeOutTagB = 0;
 cairo_pattern_t *background_pattern;
 
 gint currentCard = 0;
@@ -333,7 +333,7 @@ create_bigpicture_window ()
                     NULL);
   gtk_widget_set_size_request (canvas, rect.width, rect.height);
   gtk_container_add (GTK_CONTAINER (bigPictureWindow), canvas);
-  timeOutTag = g_timeout_add (
+  timeOutTagB = g_timeout_add (
       1000 / 60, (GSourceFunc)update_bigpicture_callback, canvas);
 
   gtk_window_fullscreen (GTK_WINDOW (bigPictureWindow));
@@ -356,7 +356,7 @@ void
 destroy_bigpicture_window ()
 {
   inBigPictureMode = FALSE;
-  g_source_remove (timeOutTag);
+  g_source_remove (timeOutTagB);
   gtk_widget_destroy (bigPictureWindow);
   bigPictureWindow = NULL;
   g_list_free_full (cards_list, destroy_card_list);

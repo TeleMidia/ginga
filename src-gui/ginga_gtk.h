@@ -65,6 +65,8 @@ void select_ncl_file_callback (GtkWidget *widget, gpointer data);
 void play_pause_button_callback (void);
 void stop_button_callback (void);
 void keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type);
+void create_window_components (void);
+gchar* get_icon_folder(void);
 
 /* View/TvControlWindow */
 void create_tvcontrol_window (void);
