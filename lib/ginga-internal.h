@@ -61,7 +61,7 @@ GINGA_BEGIN_DECLS
 
 // External C libraries.
 #include <glib/gstdio.h>
-#include <gtk/gtk.h>
+#include <gdk/gdk.h>
 #include <ncluaw.h>
 #include <pango/pangocairo.h>
 
