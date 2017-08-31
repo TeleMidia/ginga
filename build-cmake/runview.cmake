@@ -36,3 +36,5 @@ target_include_directories(runview PRIVATE
   ${LIBGINGA_INCLUDE_DIRS}
 )
 
+set_target_properties(runview PROPERTIES RUNTIME_OUTPUT_DIRECTORY bin/)
+
