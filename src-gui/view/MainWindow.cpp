@@ -970,7 +970,7 @@ play_pause_button_callback (void)
   if (inPlayMode)
     {
       const gchar *file = gtk_entry_get_text (GTK_ENTRY (fileEntry));
-      gchar *ext = strrchr (file, '.');
+      const gchar *ext = strrchr (file, '.');
       if (g_strcmp0 (ext, ".ncl"))
         {
           show_infobar (g_markup_printf_escaped (
