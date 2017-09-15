@@ -197,19 +197,6 @@ AC_ARG_WITH(AS_TR_SH([$1]),
    [AC_MSG_ERROR([bad value '][$]AS_TR_SH([with_$1])[' for --with-$1 option])])],
  [AS_TR_SH([with_$1])=check])])
 
-# AU_CHECK_MACROS_H
-# -----------------
-# Checks for the functions used by macros.h, namely, lround and round.
-#
-# Defines the pre-processor macros:
-# - HAVE_LROUND    have the lround function
-# - HAVE_ROUND     have the round function
-#
-AC_DEFUN([AU_CHECK_MACROS_H],[dnl
-AC_REQUIRE([AC_CHECK_LIBM])
-AU_LANG_C([], [], [$LIBM],
- [AC_CHECK_FUNCS([lround round])])])
-
 # AU_CHECK_LUA([MIN-VERSION], [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
 # ---------------------------------------------------------------------
 # Checks if Lua >= MIN-VERSION (defaults to 5.1) exists.

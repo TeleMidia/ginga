@@ -68,11 +68,7 @@ REMOTE_SCRIPTS+= $(NCLUA_SCRIPTS)
 .PHONY: fetch-remote-local-nclua
 fetch-remote-local-nclua:
 	$(V_at)for path in $(NCLUA_FILES) $(NCLUA_SCRIPTS); do\
-	  if test "$$path" = "lib/luax-macros.h"; then\
-	    dir=play;\
-	  else\
-	    dir=`dirname "$$path"`;\
-	  fi;\
+	  dir=`dirname "$$path"`;\
 	  $(FETCH) -dir="$$dir" "$(nclua)/$$path" || exit 1;\
 	done
 
