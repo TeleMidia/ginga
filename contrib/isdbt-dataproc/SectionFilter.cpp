@@ -316,7 +316,7 @@ SectionFilter::receiveSection (char *buf, int len, IFrontendFilter *filter)
 }
 
 void
-SectionFilter::receivePes (arg_unused (char *buf), arg_unused (int len), arg_unused (IFrontendFilter *filter))
+SectionFilter::receivePes (unused (char *buf), unused (int len), unused (IFrontendFilter *filter))
 {
 }
 
@@ -333,7 +333,7 @@ SectionFilter::getSectionHandler (unsigned int pid)
 
 // Process and frees SECTION.
 void
-SectionFilter::process (arg_unused (ITransportSection *section), unsigned int pid)
+SectionFilter::process (unused (ITransportSection *section), unsigned int pid)
 {
   SectionHandler *handler;
 

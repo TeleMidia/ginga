@@ -20,36 +20,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-#if defined __GNUC__ && defined __GNUC_MINOR__
-# define GINGA_GNUC_PREREQ(major, minor)\
-   ((__GNUC__ << 16) + __GNUC_MINOR__ >= ((major) << 16) + (minor))
-#else
-# define GINGA_GNUC_PREREQ(major, minor) 0
-#endif
-
-#if GINGA_GNUC_PREREQ(4,2)
-# define _GCC_PRAGMA(x) _Pragma (#x)
-# define GINGA_PRAGMA_DIAG(x) _GCC_PRAGMA (GCC diagnostic x)
-#elif defined (__clang__)
-# define _CLANG_PRAGMA(x) _Pragma (#x))
-# define GINGA_PRAGMA_DIAG(x) _CLANG_PRAGMA (clang diagnostic x)
-#else
-# define GINGA_PRAGMA_DIAG(x)
-#endif
-
-#if GINGA_GNUC_PREREQ(4,6) || defined (__clang__)
-# define GINGA_PRAGMA_DIAG_PUSH()    GINGA_PRAGMA_DIAG (push)
-# define GINGA_PRAGMA_DIAG_POP()     GINGA_PRAGMA_DIAG (pop)
-#else
-# define GINGA_PRAGMA_DIAG_PUSH()
-# define GINGA_PRAGMA_DIAG_POP()
-#endif
-#define GINGA_PRAGMA_DIAG_IGNORE(x)  GINGA_PRAGMA_DIAG (ignored #x)
-#define GINGA_PRAGMA_DIAG_WARNING(x) GINGA_PRAGMA_DIAG (warning #x))
-
 GINGA_BEGIN_DECLS
 
 #include <config.h>
+#include "aux-glib.h"
+
+#define GINGA_PRAGMA_DIAG         PRAGMA_DIAG
+#define GINGA_PRAGMA_DIAG_PUSH    PRAGMA_DIAG_PUSH
+#define GINGA_PRAGMA_DIAG_POP     PRAGMA_DIAG_POP
+#define GINGA_PRAGMA_DIAG_IGNORE  PRAGMA_DIAG_IGNORE
+#define GINGA_PRAGMA_DIAG_WARNING PRAGMA_DIAG_WARNING
 
 // C library.
 #include <assert.h>
@@ -60,7 +40,6 @@ GINGA_BEGIN_DECLS
 #include <stdlib.h>
 
 // External C libraries.
-#include <glib/gstdio.h>
 #include <gdk/gdk.h>
 #include <ncluaw.h>
 #include <pango/pangocairo.h>
@@ -114,14 +93,7 @@ using namespace std;
              "global variable %s is null", G_STRINGIFY (G)),    \
       ((Type) NULL)))
 
-#define arg_unused(...)  G_GNUC_UNUSED __VA_ARGS__
-#define set_if_nonnull(a, x) G_STMT_START {if (a) *(a) = (x); } G_STMT_END
-#define likely(cond)     G_LIKELY ((cond))
-#define unlikely(cond)   G_UNLIKELY ((cond))
-#define deconst(t, x)    ((t)(ptrdiff_t)(const void *)(x))
-#define pointerof(p)     ((void *)((ptrdiff_t)(p)))
-#define streq(a, b)      (g_strcmp0 ((a),(b)) == 0)
-
+#undef cast
 #define cast(a, b)       (dynamic_cast<a>((b)))
 #define instanceof(a, b) (cast (a,(b)) != nullptr)
 

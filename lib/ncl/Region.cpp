@@ -188,8 +188,8 @@ Region::setHeight (const string &height)
 void
 Region::getZ (int *z, int *zorder)
 {
-  set_if_nonnull (z, _z);
-  set_if_nonnull (zorder, _zorder);
+  tryset (z, _z);
+  tryset (zorder, _zorder);
 }
 
 /**

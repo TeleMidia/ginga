@@ -66,13 +66,13 @@ FileSystemProvider::getCurrentChannel ()
 }
 
 bool
-FileSystemProvider::getSTCValue (arg_unused (guint64 *stc), arg_unused (int *valueType))
+FileSystemProvider::getSTCValue (unused (guint64 *stc), unused (int *valueType))
 {
   return false;
 }
 
 bool
-FileSystemProvider::changeChannel (arg_unused (int factor))
+FileSystemProvider::changeChannel (unused (int factor))
 {
   return false;
 }
@@ -85,8 +85,8 @@ FileSystemProvider::setChannel (const string &channelValue)
 }
 
 int
-FileSystemProvider::createPesFilter (arg_unused (int pid), arg_unused (int pesType),
-                                     arg_unused (bool compositeFiler))
+FileSystemProvider::createPesFilter (unused (int pid), unused (int pesType),
+                                     unused (bool compositeFiler))
 {
   return -1;
 }

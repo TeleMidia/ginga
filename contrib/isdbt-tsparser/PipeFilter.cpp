@@ -112,12 +112,12 @@ PipeFilter::receiveTSPacket (ITSPacket *pack)
 }
 
 void
-PipeFilter::receiveSection (arg_unused (char *buf), arg_unused (int len), arg_unused (IFrontendFilter *filter))
+PipeFilter::receiveSection (unused (char *buf), unused (int len), unused (IFrontendFilter *filter))
 {
 }
 
 void
-PipeFilter::receivePes (arg_unused (char *buf), arg_unused (int len), arg_unused (IFrontendFilter *filter))
+PipeFilter::receivePes (unused (char *buf), unused (int len), unused (IFrontendFilter *filter))
 {
 }
 

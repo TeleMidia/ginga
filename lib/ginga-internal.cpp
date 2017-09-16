@@ -69,12 +69,12 @@ _ginga_parse_bool (const string &s, bool *result)
 {
   if (xstrcaseeq (s, "true"))
     {
-      set_if_nonnull (result, true);
+      tryset (result, true);
       return true;
     }
   else if (xstrcaseeq (s, "false"))
     {
-      set_if_nonnull (result, false);
+      tryset (result, false);
       return true;
     }
   else
@@ -119,7 +119,7 @@ _ginga_parse_list (const string &s, char sep, size_t min, size_t max,
   for (size_t i = 0; i < n; i++)
     items[i] = xstrstrip (items[i]);
 
-  set_if_nonnull (result, items);
+  tryset (result, items);
   return true;
 }
 
@@ -167,7 +167,7 @@ _ginga_parse_time (const string &s, GingaTime *result)
   g_strchomp (dup);
 
   secs = g_strtod (dup, &end);
-  if (*end == '\0' || streq (end, "s"))
+  if (*end == '\0' || g_str_equal (end, "s"))
     goto success;
 
   if (*end != ':')
@@ -185,7 +185,7 @@ _ginga_parse_time (const string &s, GingaTime *result)
 
  success:
   g_free (dup);
-  set_if_nonnull (result, (GingaTime)(secs * GINGA_SECOND));
+  tryset (result, (GingaTime)(secs * GINGA_SECOND));
   return true;
 
  failure:
@@ -233,7 +233,7 @@ _ginga_parse_comparator (const string &s, string *result)
       || xstrcaseeq (s, "gt")
       || xstrcaseeq (s, "gte"))
     {
-      set_if_nonnull (result, xstrdown (s));
+      tryset (result, xstrdown (s));
       return true;
     }
   else
@@ -312,7 +312,7 @@ _xstrtod (const string &s, double *dp)
   if (endptr == c_str)
     return false;
 
-  set_if_nonnull (dp, d);
+  tryset (dp, d);
   return true;
 }
 
@@ -335,7 +335,7 @@ _xstrtoll (const string &s, gint64 *ip, guint base)
   if (endptr == c_str)
     return false;
 
-  set_if_nonnull (ip, i);
+  tryset (ip, i);
   return true;
 }
 
@@ -358,7 +358,7 @@ _xstrtoull (const string &s, guint64 *ip, guint base)
   if (endptr == c_str)
     return false;
 
-  set_if_nonnull (ip, u);
+  tryset (ip, u);
   return true;
 }
 
@@ -430,12 +430,12 @@ xstrtodorpercent (const string &s, bool *perc)
   gdouble x = g_ascii_strtod (s.c_str (), &end);
   if (*end == '%')
     {
-      set_if_nonnull (perc, true);
+      tryset (perc, true);
       return x / 100.;
     }
   else
     {
-      set_if_nonnull (perc, false);
+      tryset (perc, false);
       return x;
     }
 }

@@ -129,7 +129,7 @@ NCLSectionProcessor::addDataToProcess (char *stream, int streamSize)
 }
 
 void
-NCLSectionProcessor::processDataFile (char *stream, arg_unused (int streamSize))
+NCLSectionProcessor::processDataFile (char *stream, unused (int streamSize))
 {
   int structId;
   FILE *fd;
@@ -253,7 +253,7 @@ vector<StreamData *> *
 NCLSectionProcessor::createNCLSections (const string &componentTag, const string &name,
                                         const string &baseUri,
                                         vector<string> *files,
-                                        arg_unused (map<int, string> *eventMap))
+                                        unused (map<int, string> *eventMap))
 {
   vector<StreamData *> *streams;
   vector<string>::iterator i;

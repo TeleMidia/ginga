@@ -475,7 +475,7 @@ DataProcessor::receiveSection (ITransportSection *section)
 }
 
 void
-DataProcessor::updateChannelStatus (short newStatus, arg_unused (Channel *channel))
+DataProcessor::updateChannelStatus (short newStatus, unused (Channel *channel))
 {
   if (newStatus == TS_LOOP_DETECTED)
     {
