@@ -903,7 +903,7 @@ Converter::insertContext (NclNodeNesting *contextPerspective,
 void
 Converter::eventStateChanged (NclEvent *event,
                               EventStateTransition transition,
-                              arg_unused (EventState previousState))
+                              unused (EventState previousState))
 {
   ExecutionObject *exeObj = event->getExecutionObject ();
   auto exeCompositeObj = cast (ExecutionObjectContext *, exeObj);
@@ -1428,7 +1428,7 @@ Converter::createStatement (
 
 NclLinkAttributeAssessment *
 Converter::createAttributeAssessment (
-    arg_unused (AttributeAssessment *attributeAssessment), Bind *bind, Link *ncmLink,
+    unused (AttributeAssessment *attributeAssessment), Bind *bind, Link *ncmLink,
     ExecutionObjectContext *parentObj)
 {
   NclEvent *event = createEvent (bind, ncmLink, parentObj);

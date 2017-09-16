@@ -32,7 +32,7 @@ NclLinkTriggerCondition::NclLinkTriggerCondition () : NclLinkCondition ()
 
 void
 NclLinkTriggerCondition::conditionSatisfied (
-    arg_unused (NclLinkCondition *condition))
+    unused (NclLinkCondition *condition))
 {
   if (_delay > 0)
     ERROR_NOT_IMPLEMENTED ("condition delays are not supported");
@@ -257,8 +257,8 @@ NclLinkTransitionTriggerCondition::getBind ()
 
 void
 NclLinkTransitionTriggerCondition::eventStateChanged (
-    arg_unused (NclEvent *_event), EventStateTransition transition,
-    arg_unused (EventState previousState))
+    unused (NclEvent *_event), EventStateTransition transition,
+    unused (EventState previousState))
 {
   if (this->_transition == transition)
     {

@@ -800,7 +800,7 @@ Demuxer::addPidFilter (unsigned int pid, ITSFilter *filter)
 }
 
 void
-Demuxer::addSectionFilter (unsigned arg_unused (int tid), arg_unused (ITSFilter *filter))
+Demuxer::addSectionFilter (unsigned unused (int tid), unused (ITSFilter *filter))
 {
 }
 
@@ -914,7 +914,7 @@ Demuxer::processDemuxData (char *buff, unsigned int size)
 }
 
 void
-Demuxer::updateChannelStatus (short newStatus, arg_unused (Channel *channel))
+Demuxer::updateChannelStatus (short newStatus, unused (Channel *channel))
 {
   NetworkInterface *ni;
 

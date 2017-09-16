@@ -32,7 +32,7 @@ bool terminateSpeak;
 // Callback method which delivers the synthetized audio samples and the
 // events.
 static int
-SynthCallback (arg_unused (short *wav), arg_unused (int numsamples), arg_unused (espeak_EVENT *events))
+SynthCallback (unused (short *wav), unused (int numsamples), unused (espeak_EVENT *events))
 {
   if (terminateSpeak == true)
     return 1;

@@ -108,8 +108,8 @@ Base::getHashBase (const string &id, string *prefixp, string *suffixp)
       base = _locations[prefix]; // found
     }
 
-  set_if_nonnull (prefixp, prefix);
-  set_if_nonnull (suffixp, suffix);
+  tryset (prefixp, prefix);
+  tryset (suffixp, suffix);
   return base;
 }
 

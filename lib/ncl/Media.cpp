@@ -70,7 +70,7 @@ mime_table_index (string key, string *result)
   map<string, string>::iterator it;
   if ((it = mimetab.find (key)) == mimetab.end ())
     return false;
-  set_if_nonnull (result, it->second);
+  tryset (result, it->second);
   return true;
 }
 

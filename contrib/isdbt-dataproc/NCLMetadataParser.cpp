@@ -212,7 +212,7 @@ NCLMetadataParser::parseData (void *data, const XML_Char **attrs)
 }
 
 INCLDataFile *
-NCLMetadataParser::createObject (arg_unused (void *data), const XML_Char **attrs)
+NCLMetadataParser::createObject (unused (void *data), const XML_Char **attrs)
 {
   INCLDataFile *dataObject = NULL;
   int structureId = -1;

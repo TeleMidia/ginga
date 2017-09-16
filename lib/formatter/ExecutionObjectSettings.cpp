@@ -42,9 +42,9 @@ ExecutionObjectSettings::ExecutionObjectSettings (const string &id,
 
 void
 ExecutionObjectSettings::setProperty (const string &name,
-                                      arg_unused (const string &from),
+                                      unused (const string &from),
                                       const string &to,
-                                      arg_unused (GingaTime dur))
+                                      unused (GingaTime dur))
 {
   if (name == "service.currentFocus")
     Player::setCurrentFocus (to);
@@ -120,15 +120,15 @@ ExecutionObjectSettings::scheduleFocusUpdate (const string &next)
 }
 
 void
-ExecutionObjectSettings::handleKeyEvent (arg_unused (const string &key),
-                                         arg_unused (bool press))
+ExecutionObjectSettings::handleKeyEvent (unused (const string &key),
+                                         unused (bool press))
 {
 }
 
 void
-ExecutionObjectSettings::handleTickEvent (arg_unused (GingaTime total),
-                                          arg_unused (GingaTime diff),
-                                          arg_unused (int frame))
+ExecutionObjectSettings::handleTickEvent (unused (GingaTime total),
+                                          unused (GingaTime diff),
+                                          unused (int frame))
 {
   if (_hasNextFocus)            // effectuate pending focus index update
     {

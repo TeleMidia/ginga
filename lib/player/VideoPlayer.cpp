@@ -316,7 +316,7 @@ VideoPlayer::cb_Bus (GstBus *bus, GstMessage *msg, VideoPlayer *player)
 }
 
 GstFlowReturn
-VideoPlayer::cb_NewSample (arg_unused (GstAppSink *appsink), gpointer data)
+VideoPlayer::cb_NewSample (unused (GstAppSink *appsink), gpointer data)
 {
 
   VideoPlayer *player = (VideoPlayer *) data;

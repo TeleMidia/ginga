@@ -772,9 +772,9 @@ ExecutionObject::setProperty (const string &name,
 }
 
 void
-ExecutionObject::handleTickEvent (arg_unused (GingaTime total),
+ExecutionObject::handleTickEvent (unused (GingaTime total),
                                   GingaTime diff,
-                                  arg_unused (int frame))
+                                  unused (int frame))
 {
   EventTransition *next;
   NclEvent *evt;

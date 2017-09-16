@@ -104,8 +104,8 @@ Display::setFullscreen (bool fullscreen)
 void
 Display::getSize (int *width, int *height)
 {
-  set_if_nonnull (width, _width);
-  set_if_nonnull (height, _height);
+  tryset (width, _width);
+  tryset (height, _height);
 }
 
 /**

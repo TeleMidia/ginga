@@ -38,9 +38,9 @@ protected:
 public:
   NetworkProvider (const string &address, int port, const string &protocol);
   ~NetworkProvider ();
-  virtual void setListener (arg_unused (ITProviderListener *listener)){};
-  virtual void attachFilter (arg_unused (IFrontendFilter *filter)){};
-  virtual void removeFilter (arg_unused (IFrontendFilter *filter)){};
+  virtual void setListener (unused (ITProviderListener *listener)){};
+  virtual void attachFilter (unused (IFrontendFilter *filter)){};
+  virtual void removeFilter (unused (IFrontendFilter *filter)){};
   virtual short
   getCaps ()
   {
@@ -59,23 +59,23 @@ public:
     return NULL;
   }
   virtual bool
-  getSTCValue (arg_unused (guint64 *stc), arg_unused (int *valueType))
+  getSTCValue (unused (guint64 *stc), unused (int *valueType))
   {
     return false;
   }
   virtual bool
-  changeChannel (arg_unused (int factor))
+  changeChannel (unused (int factor))
   {
     return false;
   }
   bool
-  setChannel (arg_unused (const string &channelValue))
+  setChannel (unused (const string &channelValue))
   {
     return false;
   }
   virtual int
-  createPesFilter (arg_unused (int pid), arg_unused (int pesType),
-                   arg_unused (bool compositeFiler))
+  createPesFilter (unused (int pid), unused (int pesType),
+                   unused (bool compositeFiler))
   {
     return -1;
   }

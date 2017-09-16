@@ -422,9 +422,9 @@ SwitchEvent::setMappedEvent (NclEvent *evt)
 
 void
 SwitchEvent::eventStateChanged (
-    arg_unused (NclEvent *evt),
+    unused (NclEvent *evt),
     EventStateTransition trans,
-    arg_unused (EventState prevState))
+    unused (EventState prevState))
 {
   changeState (EventUtil::getNextState (trans), trans);
 }

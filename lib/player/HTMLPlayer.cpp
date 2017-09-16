@@ -79,7 +79,7 @@ HTMLPlayer::displayJobCallbackWrapper(DisplayJob* job, SDL_Renderer* renderer,
 }
 
 bool
-HTMLPlayer::displayJobCallback (arg_unused (DisplayJob *job),
+HTMLPlayer::displayJobCallback (unused (DisplayJob *job),
                                 SDL_Renderer *renderer)
 {
   if (!_isPlaying)
@@ -371,7 +371,7 @@ GingaCefHandler::getTexture()
 }
 
 bool
-GingaCefHandler::GetViewRect(arg_unused (CefRefPtr<CefBrowser> browser),
+GingaCefHandler::GetViewRect(unused (CefRefPtr<CefBrowser> browser),
                              CefRect &rect)
 {
   rect = CefRect (0, 0, _width, _height);
@@ -379,9 +379,9 @@ GingaCefHandler::GetViewRect(arg_unused (CefRefPtr<CefBrowser> browser),
 }
 
 void
-GingaCefHandler::OnPaint (arg_unused (CefRefPtr<CefBrowser> browser),
-                          arg_unused (PaintElementType type),
-                          arg_unused (const RectList &dirtyRects),
+GingaCefHandler::OnPaint (unused (CefRefPtr<CefBrowser> browser),
+                          unused (PaintElementType type),
+                          unused (const RectList &dirtyRects),
                           const void * buffer,
                           int w, int h)
 {

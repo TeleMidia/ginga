@@ -143,7 +143,7 @@ __error_elt (const DOMElement *elt)
     if (unlikely (result != expect))                                    \
       ERROR_SYNTAX_ELT ((elt), "bad tagname '%s' (expected '%s')",      \
                         result.c_str (), (expect).c_str ());            \
-    set_if_nonnull ((string *)(pvalue), result);                        \
+    tryset ((string *)(pvalue), result);                        \
   }                                                                     \
   G_STMT_END
 
@@ -153,7 +153,7 @@ __error_elt (const DOMElement *elt)
     string result;                                                      \
     if (unlikely (!dom_elt_try_get_attribute (result, (elt), (name))))  \
       ERROR_SYNTAX_ELT_MISSING_ATTRIBUTE ((elt), (name));               \
-    set_if_nonnull ((pvalue), result);                                  \
+    tryset ((pvalue), result);                                  \
   }                                                                     \
   G_STMT_END
 
@@ -173,7 +173,7 @@ __error_elt (const DOMElement *elt)
     string result;                                              \
     if (!dom_elt_try_get_attribute (result, (elt), (name)))     \
       result = (default);                                       \
-    set_if_nonnull ((pvalue), result);                          \
+    tryset ((pvalue), result);                          \
   }                                                             \
   G_STMT_END
 
@@ -185,7 +185,7 @@ __error_elt (const DOMElement *elt)
       ERROR_SYNTAX_ELT_MISSING_ID ((elt));                              \
     if (unlikely (_doc->getNode (result) != nullptr))                   \
       ERROR_SYNTAX_ELT_DUPLICATED_ID ((elt), result);                   \
-    set_if_nonnull ((pvalue), result);                                  \
+    tryset ((pvalue), result);                                  \
   }                                                                     \
   G_STMT_END
 
@@ -202,7 +202,7 @@ __error_elt (const DOMElement *elt)
       {                                                         \
         result = (default);                                     \
       }                                                         \
-    set_if_nonnull ((pvalue), result);                          \
+    tryset ((pvalue), result);                          \
   }                                                             \
   G_STMT_END
 

@@ -93,7 +93,7 @@ NCLEventDescriptor::getPrivateDataPayload (const string &event)
 }
 
 bool
-NCLEventDescriptor::checkFCS (arg_unused (const string &event))
+NCLEventDescriptor::checkFCS (unused (const string &event))
 {
   return true;
 }

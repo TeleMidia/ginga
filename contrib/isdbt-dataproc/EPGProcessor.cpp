@@ -156,7 +156,7 @@ EPGProcessor::setDataProcessor (void *dataProcessor)
  */
 
 void
-EPGProcessor::addEPGListener (IEPGListener *listener, arg_unused (const string &request),
+EPGProcessor::addEPGListener (IEPGListener *listener, unused (const string &request),
                               unsigned char type)
 {
   // TODO: handle request properly.

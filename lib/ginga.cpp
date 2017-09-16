@@ -27,7 +27,7 @@ using namespace ::ginga::mb;
 #define SCHEDULER(me) ((Scheduler *)(me)->_scheduler)
 #define DISPLAY(me)   ((Display *)(me)->_display)
 
-Ginga::Ginga (arg_unused (int argc), arg_unused (char **argv),
+Ginga::Ginga (unused (int argc), unused (char **argv),
               int width, int height, bool fullscreen)
 {
   _started = false;

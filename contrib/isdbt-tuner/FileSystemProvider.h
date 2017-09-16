@@ -41,8 +41,8 @@ public:
   FileSystemProvider (const string &fileName);
   virtual ~FileSystemProvider ();
   void setListener (ITProviderListener *listener);
-  void attachFilter (arg_unused (IFrontendFilter *filter)){};
-  void removeFilter (arg_unused (IFrontendFilter *filter)){};
+  void attachFilter (unused (IFrontendFilter *filter)){};
+  void removeFilter (unused (IFrontendFilter *filter)){};
   short getCaps ();
   bool tune ();
   Channel *getCurrentChannel ();
