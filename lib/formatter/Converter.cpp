@@ -28,11 +28,10 @@ int Converter::_dummyCount = 0;
 
 static const string SEPARATOR = "/";
 
-Converter::Converter (RuleAdapter *ruleAdapter)
+Converter::Converter (INclActionListener *actlist, RuleAdapter *ruleAdapter)
 {
-  this->_actionListener = nullptr;
+  this->_actionListener = actlist;
   this->_ruleAdapter = ruleAdapter;
-  this->_handling = false;
 }
 
 Converter::~Converter ()
@@ -67,12 +66,6 @@ RuleAdapter *
 Converter::getRuleAdapter ()
 {
   return _ruleAdapter;
-}
-
-void
-Converter::setLinkActionListener (INclActionListener *actListener)
-{
-  _actionListener = actListener;
 }
 
 ExecutionObject *

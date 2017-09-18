@@ -29,8 +29,7 @@ GINGA_FORMATTER_BEGIN
 
 Scheduler::Scheduler ()
 {
-  _converter = new Converter (new RuleAdapter ());
-  _converter->setLinkActionListener (this);
+  _converter = new Converter (this, new RuleAdapter ());
 }
 
 Scheduler::~Scheduler ()
