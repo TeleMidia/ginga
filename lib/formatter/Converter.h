@@ -40,12 +40,10 @@ class Scheduler;
 class Converter : public INclEventListener
 {
 public:
-  explicit Converter (RuleAdapter *);
+  explicit Converter (INclActionListener *, RuleAdapter *);
   virtual ~Converter ();
 
   void setHandlingStatus (bool handling);
-
-  void setLinkActionListener (INclActionListener *actionListener);
 
   ExecutionObject *getExecutionObjectFromPerspective (
       NclNodeNesting *perspec, Descriptor *desc);
