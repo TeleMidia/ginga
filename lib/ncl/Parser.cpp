@@ -776,8 +776,7 @@ Parser::parseRegionBase (DOMElement *elt)
 }
 
 Region *
-Parser::parseRegion (DOMElement *elt, RegionBase *base,
-                        Region *parent)
+Parser::parseRegion (DOMElement *elt, RegionBase *base, Region *parent)
 {
   Region *region;
   string id;
@@ -851,6 +850,16 @@ Parser::parseRegion (DOMElement *elt, RegionBase *base,
   if (dom_elt_try_get_attribute (value, elt, "zIndex"))
     z = xstrtoint (value, 10);
   zorder = last_zorder++;
+
+  string left = xstrbuild ("%.2f%%", ((double) rect.x / _width) * 100.);
+  string top = xstrbuild ("%.2f%%", ((double) rect.y / _height) * 100.);
+  string width = xstrbuild ("%.2f%%", ((double) rect.width / _width) * 100.);
+  string height = xstrbuild ("%.2f%%", ((double) rect.height / _height) * 100.);
+
+  region->setLeft (left);
+  region->setTop (top);
+  region->setWidth (width);
+  region->setHeight (height);
 
   region->setRect (rect);
   region->setZ (z, zorder);

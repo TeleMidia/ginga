@@ -575,8 +575,15 @@ ExecutionObject::start ()
       Region *region = desc->getRegion ();
       if (region != nullptr)
         {
+          string bounds;
           int z, zorder;
-          _player->setRect (region->getRect ());
+
+          bounds = xstrbuild ("%s,%s,%s,%s",
+                              region->getLeft ().c_str (),
+                              region->getTop ().c_str (),
+                              region->getWidth ().c_str (),
+                              region->getHeight ().c_str ());
+          _player->setProperty ("bounds", bounds);
           region->getZ (&z, &zorder);
           _player->setZ (z, zorder);
         }

@@ -202,6 +202,7 @@ Player::start ()
   _state = PL_OCCURRING;
   _time = 0;
   _eos = false;
+  this->reload ();
   Ginga_Display->registerPlayer (this);
 }
 
