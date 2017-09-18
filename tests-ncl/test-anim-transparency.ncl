@@ -1,7 +1,7 @@
 <ncl>
   <head>
     <regionBase>
-      <region id="reg" width="640" height="480"/>
+      <region id="reg" width="100%" height="100%"/>
     </regionBase>
     <descriptorBase>
       <descriptor id="desc" region="reg"/>
