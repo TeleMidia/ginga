@@ -29,7 +29,7 @@ using namespace ::ginga::mb;
 class GingaPrivate : public Ginga
 {
  public:
-  GingaPrivate (int, char **, int, int, bool);
+  GingaPrivate (int, char **, GingaOptions *);
   virtual ~GingaPrivate ();
 
   void resize (int, int) ;
@@ -41,7 +41,8 @@ class GingaPrivate : public Ginga
   void send_tick (uint64_t, uint64_t, uint64_t);
 
  private:
-  bool _started;
+  GingaOptions *_opts;          // current options
+  bool _started;                // true if formatter was started
   Scheduler *_scheduler;
   Display *_display;
 };

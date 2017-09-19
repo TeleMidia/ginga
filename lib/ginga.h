@@ -33,10 +33,18 @@ GINGA_END_DECLS
 #include <cstdint>
 #include <string>
 
+struct GingaOptions
+{
+  int width;
+  int height;
+  bool fullscreen;
+  bool debug;
+};
+
 class Ginga
 {
 public:
-  Ginga (int, char **, int, int, bool);
+  Ginga (int, char **, GingaOptions *);
   virtual ~Ginga () = 0;
 
   virtual void resize (int, int) = 0;
@@ -48,7 +56,7 @@ public:
   virtual void send_tick (uint64_t, uint64_t, uint64_t) = 0;
 
 public:
-  static Ginga *create (int, char **, int, int, bool);
+  static Ginga *create (int, char **, GingaOptions *);
   static std::string version ();
 };
 

@@ -268,6 +268,7 @@ main (int argc, char **argv)
   char **saved_argv;
   std::string file;
 
+  GingaOptions opts;
   GtkWidget *app;
   GOptionContext *ctx;
   gboolean status;
@@ -303,7 +304,12 @@ main (int argc, char **argv)
   g_strfreev (saved_argv);
 
   // Create Ginga handle width the original args.
-  GINGA = Ginga::create (argc, argv, opt_width, opt_height, opt_fullscreen);
+  opts.width = opt_width;
+  opts.height = opt_height;
+  opts.fullscreen = opt_fullscreen;
+  opts.debug = false;
+  GINGA = Ginga::create (argc, argv, &opts);
+  g_assert_nonnull (GINGA);
 
   // Create application window.
   app = gtk_window_new (GTK_WINDOW_TOPLEVEL);
