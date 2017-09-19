@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef EXECUTION_OBJECT_H
 #define EXECUTION_OBJECT_H
 
-#include "GingaPrivate.h"
+#include "GingaState.h"
 #include "NclEvents.h"
 #include "NclEventTransitionManager.h"
 #include "NclActions.h"
@@ -35,10 +35,10 @@ GINGA_FORMATTER_BEGIN
 class ExecutionObjectContext;
 class ExecutionObjectSettings;
 
-class ExecutionObject : public IGingaPrivateEventListener
+class ExecutionObject : public IGingaStateEventListener
 {
 public:
-  ExecutionObject (GingaPrivate *,
+  ExecutionObject (GingaState *,
                    const string &, Node *, INclActionListener *);
   virtual ~ExecutionObject ();
 
@@ -116,7 +116,7 @@ public:
   void setProperty (const string &, const string &,
                     const string &, GingaTime);
 
-  // From IGingaPrivateEventListener.
+  // From IGingaStateEventListener.
   virtual void handleKeyEvent (const string &, bool) override;
   virtual void handleTickEvent (GingaTime, GingaTime, int) override;
 
@@ -124,7 +124,7 @@ protected:
   static ExecutionObjectSettings *_settings; // settings object
   static set<ExecutionObject *> _objects;    // set of all objects
 
-  GingaPrivate *_ginga;         // library handle
+  GingaState *_ginga;           // ginga state
   string _id;                   // object id
   Player *_player;              // associated player
   GingaTime _time;              // playback time

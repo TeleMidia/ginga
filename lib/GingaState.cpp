@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga-internal.h"
-#include "GingaPrivate.h"
+#include "GingaState.h"
 
 #include "formatter/Scheduler.h"
 using namespace ::ginga::formatter;
@@ -42,7 +42,7 @@ typedef struct GingaOptionData
 #define OPTS_ENTRY(name,type,func)                              \
   {G_STRINGIFY (name),                                          \
       {(type), offsetof (GingaOptions, name),                   \
-         pointerof (G_PASTE (GingaPrivate::setOption, func))}}
+         pointerof (G_PASTE (GingaState::setOption, func))}}
 
 // Option table.
 static map<string, GingaOptionData> opts_table =
@@ -94,7 +94,7 @@ win_cmp_z (Player *p1, Player *p2)
  * @param file Path to NCL file.
  */
 void
-GingaPrivate::start (const string &file)
+GingaState::start (const string &file)
 {
   if (_started)
     return;                     // nothing to do
@@ -108,7 +108,7 @@ GingaPrivate::start (const string &file)
  * @brief Stops NCL.
  */
 void G_GNUC_NORETURN
-GingaPrivate::stop ()
+GingaState::stop ()
 {
   ERROR_NOT_IMPLEMENTED ("stop is not supported");
 }
@@ -119,7 +119,7 @@ GingaPrivate::stop ()
  * @param height New height (in pixels).
  */
 void
-GingaPrivate::resize (int width, int height)
+GingaState::resize (int width, int height)
 {
   g_assert (width > 0 && height > 0);
   _opts->width = width;
@@ -142,7 +142,7 @@ GingaPrivate::resize (int width, int height)
  * @param cr Target cairo context.
  */
 void
-GingaPrivate::redraw (cairo_t *cr)
+GingaState::redraw (cairo_t *cr)
 {
   GList *l;
 
@@ -222,9 +222,9 @@ GingaPrivate::redraw (cairo_t *cr)
  * @param press True if press, False if release.
  */
 void
-GingaPrivate::sendKeyEvent (const string &key, bool press)
+GingaState::sendKeyEvent (const string &key, bool press)
 {
-  NOTIFY_LISTENERS (_listeners, IGingaPrivateEventListener,
+  NOTIFY_LISTENERS (_listeners, IGingaStateEventListener,
                     handleKeyEvent, key, press);
 }
 
@@ -235,13 +235,13 @@ GingaPrivate::sendKeyEvent (const string &key, bool press)
  * @param frameno Current frame number.
  */
 void
-GingaPrivate::sendTickEvent (uint64_t total, uint64_t diff,
+GingaState::sendTickEvent (uint64_t total, uint64_t diff,
                              uint64_t frameno)
 {
   _last_tick_total = total;
   _last_tick_diff = diff;
   _last_tick_frameno = frameno;
-  NOTIFY_LISTENERS (_listeners, IGingaPrivateEventListener,
+  NOTIFY_LISTENERS (_listeners, IGingaStateEventListener,
                     handleTickEvent, total, diff, (int) frameno);
 }
 
@@ -250,14 +250,14 @@ GingaPrivate::sendTickEvent (uint64_t total, uint64_t diff,
  * @return A copy of the current options.
  */
 GingaOptions
-GingaPrivate::getOptions ()
+GingaState::getOptions ()
 {
   return *_opts;
 }
 
 #define GET_SET_OPTION_DEFN(Name, Type, GType, Msg)                     \
   Type                                                                  \
-  GingaPrivate::getOption##Name (const string &name)                    \
+  GingaState::getOption##Name (const string &name)                      \
   {                                                                     \
     GingaOptionData *opt;                                               \
     if (unlikely (!opts_table_index (name, &opt)))                      \
@@ -271,7 +271,7 @@ GingaPrivate::getOptions ()
     return *((Type *)(((ptrdiff_t) _opts) + opt->offset));              \
   }                                                                     \
   void                                                                  \
-  GingaPrivate::setOption##Name (const string &name, Type value)        \
+  GingaState::setOption##Name (const string &name, Type value)          \
   {                                                                     \
     GingaOptionData *opt;                                               \
     if (unlikely (!opts_table_index (name, &opt)))                      \
@@ -285,7 +285,7 @@ GingaPrivate::getOptions ()
     *((Type *)(((ptrdiff_t) _opts) + opt->offset)) = value;             \
     if (opt->func)                                                      \
       {                                                                 \
-        ((void (*) (GingaPrivate *, const string &, Type)) opt->func)   \
+        ((void (*) (GingaState *, const string &, Type)) opt->func)     \
           (this, name, value);                                          \
       }                                                                 \
   }
@@ -299,7 +299,7 @@ GET_SET_OPTION_DEFN (Int, int, G_TYPE_INT, "an int")
 /**
  * @brief Creates a new instance.
  */
-GingaPrivate::GingaPrivate (unused (int argc), unused (char **argv),
+GingaState::GingaState (unused (int argc), unused (char **argv),
                             GingaOptions *opts)
   : Ginga (argc, argv, opts)
 {
@@ -328,7 +328,7 @@ GingaPrivate::GingaPrivate (unused (int argc), unused (char **argv),
 /**
  * @brief Destroys instance.
  */
-GingaPrivate::~GingaPrivate ()
+GingaState::~GingaState ()
 {
   delete _scheduler;
   g_list_free (_listeners);
@@ -343,7 +343,7 @@ GingaPrivate::~GingaPrivate ()
  * @param obj Event listener.
  */
 bool
-GingaPrivate::registerEventListener (IGingaPrivateEventListener *obj)
+GingaState::registerEventListener (IGingaStateEventListener *obj)
 {
   g_assert_nonnull (obj);
   return this->add (&_listeners, obj);
@@ -353,7 +353,7 @@ GingaPrivate::registerEventListener (IGingaPrivateEventListener *obj)
  * @brief Removes event listener.
  */
 bool
-GingaPrivate::unregisterEventListener (IGingaPrivateEventListener *obj)
+GingaState::unregisterEventListener (IGingaStateEventListener *obj)
 {
   g_assert_nonnull (obj);
   return this->remove (&_listeners, obj);
@@ -364,7 +364,7 @@ GingaPrivate::unregisterEventListener (IGingaPrivateEventListener *obj)
  * @param player Player.
  */
 void
-GingaPrivate::registerPlayer (Player *player)
+GingaState::registerPlayer (Player *player)
 {
   g_assert_nonnull (player);
   g_assert (this->add (&_players, player));
@@ -374,7 +374,7 @@ GingaPrivate::registerPlayer (Player *player)
  * @brief Removes handled player.
  */
 void
-GingaPrivate::unregisterPlayer (Player *player)
+GingaState::unregisterPlayer (Player *player)
 {
   g_assert_nonnull (player);
   g_assert (this->remove (&_players, player));
@@ -384,7 +384,7 @@ GingaPrivate::unregisterPlayer (Player *player)
  * @brief Updates debug option.
  */
 void
-GingaPrivate::setOptionDebug (unused (GingaPrivate *self),
+GingaState::setOptionDebug (unused (GingaState *self),
                               const string &name, bool value)
 {
   TRACE ("setting option %s to %s", name.c_str (), strbool (value));
@@ -394,7 +394,7 @@ GingaPrivate::setOptionDebug (unused (GingaPrivate *self),
  * @brief Updates size option.
  */
 void
-GingaPrivate::setOptionSize (GingaPrivate *self,
+GingaState::setOptionSize (GingaState *self,
                              const string &name,
                              int value)
 {
@@ -409,7 +409,7 @@ GingaPrivate::setOptionSize (GingaPrivate *self,
 // Private methods.
 
 bool
-GingaPrivate::add (GList **list, gpointer data)
+GingaState::add (GList **list, gpointer data)
 {
   bool found;
 
@@ -425,7 +425,7 @@ done:
 }
 
 bool
-GingaPrivate::remove (GList **list, gpointer data)
+GingaState::remove (GList **list, gpointer data)
 {
   GList *l;
 

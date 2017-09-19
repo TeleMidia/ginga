@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-ExecutionObjectSettings::ExecutionObjectSettings (GingaPrivate *ginga,
+ExecutionObjectSettings::ExecutionObjectSettings (GingaState *ginga,
                                                   const string &id,
                                                   Node *node,
                                                   INclActionListener *lst)

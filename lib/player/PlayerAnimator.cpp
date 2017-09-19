@@ -26,7 +26,7 @@ GINGA_PLAYER_BEGIN
 /**
  * @brief Creates a new player animator.
  */
-PlayerAnimator::PlayerAnimator (GingaPrivate *ginga)
+PlayerAnimator::PlayerAnimator (GingaState *ginga)
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;

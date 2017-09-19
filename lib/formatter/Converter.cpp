@@ -28,7 +28,7 @@ int Converter::_dummyCount = 0;
 
 static const string SEPARATOR = "/";
 
-Converter::Converter (GingaPrivate *ginga,
+Converter::Converter (GingaState *ginga,
                       INclActionListener *actlist,
                       RuleAdapter *ruleAdapter)
 {

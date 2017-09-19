@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "ginga-internal.h"
-#include "GingaPrivate.h"
+#include "GingaState.h"
 
 Ginga::Ginga (int, char **, GingaOptions *)
 {
@@ -40,7 +40,7 @@ Ginga::~Ginga ()
 Ginga *
 Ginga::create (int argc, char **argv, GingaOptions *opts)
 {
-  return new GingaPrivate (argc, argv, opts);
+  return new GingaState (argc, argv, opts);
 }
 
 /**

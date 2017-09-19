@@ -24,7 +24,7 @@ GINGA_FORMATTER_BEGIN
 
 // Public.
 
-Scheduler::Scheduler (GingaPrivate *ginga)
+Scheduler::Scheduler (GingaState *ginga)
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;
