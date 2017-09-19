@@ -15,40 +15,35 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
+#ifndef GINGA_PRIVATE_H
+#define GINGA_PRIVATE_H
+
 #include "ginga.h"
-#include "ginga-internal.h"
-#include "GingaPrivate.h"
 
-Ginga::Ginga (int, char **, int, int, bool)
+#include "formatter/Scheduler.h"
+using namespace ::ginga::formatter;
+
+#include "mb/Display.h"
+using namespace ::ginga::mb;
+
+class GingaPrivate : public Ginga
 {
-}
+ public:
+  GingaPrivate (int, char **, int, int, bool);
+  virtual ~GingaPrivate ();
 
-Ginga::~Ginga ()
-{
-}
+  void resize (int, int) ;
+  void start (const std::string &);
+  void stop ();
 
-
-// Class methods.
+  void redraw (cairo_t *);
+  void send_key (const std::string &, bool);
+  void send_tick (uint64_t, uint64_t, uint64_t);
 
-/**
- * @brief Creates a new formatter handle.
- * @param argc Number arguments passed to main.
- * @param argv Arguments passed to main.
- * @return A new formatter handle.
- */
-Ginga *
-Ginga::create (int argc, char **argv, int width, int height,
-               bool fullscreen)
-{
-  return new GingaPrivate (argc, argv, width, height, fullscreen);
-}
+ private:
+  bool _started;
+  Scheduler *_scheduler;
+  Display *_display;
+};
 
-/**
- * @brief Gets libginga version string.
- * @return libginga version string.
- */
-string
-Ginga::version ()
-{
-  return PACKAGE_VERSION;
-}
+#endif // GINGA_PRIVATE_H

@@ -35,22 +35,21 @@ GINGA_END_DECLS
 
 class Ginga
 {
- public:
+public:
   Ginga (int, char **, int, int, bool);
-  ~Ginga ();
+  virtual ~Ginga () = 0;
 
-  void resize (int, int);
-  void start (const std::string &);
-  void stop ();
+  virtual void resize (int, int) = 0;
+  virtual void start (const std::string &) = 0;
+  virtual void stop () = 0;
 
-  void redraw (cairo_t *);
-  void send_key (const std::string &, bool);
-  void send_tick (uint64_t, uint64_t, uint64_t);
+  virtual void redraw (cairo_t *) = 0;
+  virtual void send_key (const std::string &, bool) = 0;
+  virtual void send_tick (uint64_t, uint64_t, uint64_t) = 0;
 
- private:
-  bool _started;
-  void *_scheduler;
-  void *_display;
+public:
+  static Ginga *create (int, char **, int, int, bool);
+  static std::string version ();
 };
 
 #endif // GINGA_H

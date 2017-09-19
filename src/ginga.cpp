@@ -303,7 +303,7 @@ main (int argc, char **argv)
   g_strfreev (saved_argv);
 
   // Create Ginga handle width the original args.
-  GINGA = new Ginga (argc, argv, opt_width, opt_height, opt_fullscreen);
+  GINGA = Ginga::create (argc, argv, opt_width, opt_height, opt_fullscreen);
 
   // Create application window.
   app = gtk_window_new (GTK_WINDOW_TOPLEVEL);
