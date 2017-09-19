@@ -21,23 +21,21 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ExecutionObjectContext.h"
 #include "ExecutionObjectSwitch.h"
 
-#include "mb/Display.h"
-using namespace ::ginga::mb;
-
 GINGA_FORMATTER_BEGIN
 
-ExecutionObjectSettings::ExecutionObjectSettings (const string &id,
+ExecutionObjectSettings::ExecutionObjectSettings (GingaPrivate *ginga,
+                                                  const string &id,
                                                   Node *node,
                                                   INclActionListener *lst)
-  : ExecutionObject (id, node, lst)
+  : ExecutionObject (ginga, id, node, lst)
 {
   Node *nodeEntity = cast (Node *, node->derefer ());
   g_assert_nonnull (nodeEntity);
   auto media = cast (Media *, nodeEntity);
   g_assert_nonnull (media);
   g_assert (media->isSettings ());
-  _player = Player::createPlayer (_id, "", media->getMimeType ());
-  g_assert (Ginga_Display->registerEventListener (this));
+  _player = Player::createPlayer (_ginga, _id, "", media->getMimeType ());
+  g_assert (_ginga->registerEventListener (this));
 }
 
 void

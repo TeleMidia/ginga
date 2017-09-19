@@ -28,10 +28,14 @@ int Converter::_dummyCount = 0;
 
 static const string SEPARATOR = "/";
 
-Converter::Converter (INclActionListener *actlist, RuleAdapter *ruleAdapter)
+Converter::Converter (GingaPrivate *ginga,
+                      INclActionListener *actlist,
+                      RuleAdapter *ruleAdapter)
 {
-  this->_actionListener = actlist;
-  this->_ruleAdapter = ruleAdapter;
+  g_assert_nonnull (ginga);
+  _ginga = ginga;
+  _actionListener = actlist;
+  _ruleAdapter = ruleAdapter;
 }
 
 Converter::~Converter ()
@@ -409,14 +413,14 @@ Converter::createExecutionObject (
                 {
                   g_assert_nonnull (nodeEntity);
                   exeObj  = new ExecutionObject
-                    (id, nodeEntity, _actionListener);
+                    (_ginga, id, nodeEntity, _actionListener);
                 }
             }
           else
             {
               g_assert_nonnull (nodeEntity);
               exeObj = new ExecutionObject
-                (id, nodeEntity, _actionListener);
+                (_ginga, id, nodeEntity, _actionListener);
             }
 
           delete nodePerspective;
@@ -433,8 +437,7 @@ Converter::createExecutionObject (
     {
       string s;
       g_assert_nonnull (node);
-      exeObj = new ExecutionObjectSwitch (id, node,
-                                          _actionListener);
+      exeObj = new ExecutionObjectSwitch (_ginga, id, node, _actionListener);
       xstrassign (s, "%d", (int) EventType::PRESENTATION);
       compositeEvt = new PresentationEvent (
             nodeEntity->getLambda ()->getId () + "_" + s,
@@ -451,7 +454,7 @@ Converter::createExecutionObject (
     {
       string s;
       g_assert_nonnull (node);
-      exeObj = new ExecutionObjectContext (id, node, _actionListener);
+      exeObj = new ExecutionObjectContext (_ginga, id, node, _actionListener);
 
       xstrassign (s, "%d", (int) EventType::PRESENTATION);
       compositeEvt = new PresentationEvent (
@@ -476,14 +479,14 @@ Converter::createExecutionObject (
           else
             {
               exeObj = new ExecutionObjectSettings
-                (id, node, _actionListener);
+                (_ginga, id, node, _actionListener);
               _ruleAdapter->setSettings (exeObj);
               return exeObj;
             }
         }
       else
         {
-          return new ExecutionObject (id, node, _actionListener);
+          return new ExecutionObject (_ginga, id, node, _actionListener);
         }
     }
 

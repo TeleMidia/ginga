@@ -34,9 +34,9 @@ class ExecutionObjectContext : public ExecutionObject,
     public INclEventListener
 {
 public:
-  ExecutionObjectContext (const string &id,
-                          Node *dataObject,
-                          INclActionListener *seListener);
+  ExecutionObjectContext (GingaPrivate *, const string &,
+                          Node *,
+                          INclActionListener *);
 
   virtual ~ExecutionObjectContext ();
 

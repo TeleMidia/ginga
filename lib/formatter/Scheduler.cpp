@@ -19,17 +19,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Scheduler.h"
 #include "Converter.h"
 
-#include "mb/Display.h"
-using namespace ::ginga::mb;
-
 GINGA_FORMATTER_BEGIN
 
 
 // Public.
 
-Scheduler::Scheduler ()
+Scheduler::Scheduler (GingaPrivate *ginga)
 {
-  _converter = new Converter (this, new RuleAdapter ());
+  g_assert_nonnull (ginga);
+  _ginga = ginga;
+  _converter = new Converter (ginga, this, new RuleAdapter ());
 }
 
 Scheduler::~Scheduler ()
@@ -55,7 +54,8 @@ Scheduler::startDocument (const string &file)
   int w, h;
 
   // Parse document.
-  Ginga_Display->getSize (&w, &h);
+  w = _ginga->getOptionInt ("width");
+  h = _ginga->getOptionInt ("width");
   _doc = Parser::parse (file, w, h);
   g_assert_nonnull (_doc);
 

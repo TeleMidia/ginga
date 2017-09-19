@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga-internal.h"
 #include "LuaPlayer.h"
 
-#include "mb/Display.h"
-using namespace ::ginga::mb;
-
 GINGA_PRAGMA_DIAG_IGNORE (-Wunused-macros)
 
 GINGA_PLAYER_BEGIN
@@ -41,8 +38,9 @@ GINGA_PLAYER_BEGIN
 
 // Public methods.
 
-LuaPlayer::LuaPlayer (const string &id, const string &uri)
-  : Player (id, uri)
+LuaPlayer::LuaPlayer (GingaPrivate *ginga, const string &id,
+                      const string &uri)
+  : Player (ginga, id, uri)
 {
   gchar *dir;
 
@@ -77,7 +75,7 @@ LuaPlayer::start (void)
     ERROR ("cannot load NCLua file %s: %s", _uri.c_str (), errmsg);
 
   evt_ncl_send_presentation (_nw, "start", "");
-  g_assert (Ginga_Display->registerEventListener (this));
+  g_assert (_ginga->registerEventListener (this));
 
   Player::start ();
 }
@@ -91,7 +89,7 @@ LuaPlayer::stop (void)
   evt_ncl_send_presentation (_nw, "stop", "");
   ncluaw_cycle (_nw);
   ncluaw_close (_nw);
-  g_assert (Ginga_Display->unregisterEventListener (this));
+  g_assert (_ginga->unregisterEventListener (this));
   _nw = NULL;
 
   Player::stop ();

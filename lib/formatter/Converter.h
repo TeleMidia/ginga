@@ -18,6 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef CONVERTER_H
 #define CONVERTER_H
 
+#include "GingaPrivate.h"
 #include "ExecutionObject.h"
 #include "ExecutionObjectContext.h"
 #include "ExecutionObjectSettings.h"
@@ -33,20 +34,21 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/Ncl.h"
 using namespace ::ginga::ncl;
 
+class GingaPrivate;
+
 GINGA_FORMATTER_BEGIN
 
 class Scheduler;
-
 class Converter : public INclEventListener
 {
 public:
-  explicit Converter (INclActionListener *, RuleAdapter *);
+  explicit Converter (GingaPrivate *, INclActionListener *, RuleAdapter *);
   virtual ~Converter ();
 
   void setHandlingStatus (bool handling);
 
-  ExecutionObject *getExecutionObjectFromPerspective (
-      NclNodeNesting *perspec, Descriptor *desc);
+  ExecutionObject *getExecutionObjectFromPerspective
+  (NclNodeNesting *, Descriptor *);
 
   NclEvent *getEvent (ExecutionObject *exeObj,
                       Anchor *interfacePoint,
@@ -63,6 +65,7 @@ public:
 
 
 private:
+  GingaPrivate *_ginga;
   static int _dummyCount;
   map<string, ExecutionObject *> _exeObjects;
   set<NclEvent *> _listening;

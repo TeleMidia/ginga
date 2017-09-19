@@ -39,8 +39,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PLAYER_BEGIN
 
-VideoPlayer::VideoPlayer (const string &id, const string &uri)
-  : Player (id, uri)
+VideoPlayer::VideoPlayer (GingaPrivate *ginga, const string &id,
+                          const string &uri)
+  : Player (ginga, id, uri)
 {
   GstBus *bus;
   gulong ret;

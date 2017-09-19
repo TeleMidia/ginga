@@ -19,15 +19,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define IMAGE_PLAYER_H
 
 #include "Player.h"
-#include "mb/Display.h"
-using namespace ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
 class ImagePlayer : public Player
 {
 public:
-  ImagePlayer (const string &id, const string &uri) : Player (id, uri) {}
+  ImagePlayer (GingaPrivate *ginga, const string &id, const string &uri)
+    : Player (ginga, id, uri) {}
   ~ImagePlayer (void) {}
   void reload () override;
 };

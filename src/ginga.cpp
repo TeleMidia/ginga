@@ -41,10 +41,10 @@ static Ginga *GINGA = nullptr;
   "Report bugs to: " PACKAGE_BUGREPORT "\n"     \
   "Ginga home page: " PACKAGE_URL
 
+static gboolean opt_debug = FALSE;      // true if --debug was given
 static gboolean opt_fullscreen = FALSE; // true if --fullscreen was given
 static gint opt_width = 800;            // initial window width
 static gint opt_height = 600;           // initial window height
-static gdouble opt_fps = 60;            // initial target frame-rate
 
 static gboolean
 opt_size (const gchar *opt, const gchar *arg,
@@ -87,12 +87,12 @@ opt_version (void)
 }
 
 static GOptionEntry options[] = {
+  {"debug", 'd', 0, G_OPTION_ARG_NONE,
+   &opt_debug, "Enable debugging", NULL},
+  {"fullscreen", 'f', 0, G_OPTION_ARG_NONE,
+   &opt_fullscreen, "Enable full-screen mode", NULL},
   {"size", 's', 0, G_OPTION_ARG_CALLBACK,
    gpointerof (opt_size), "Set initial window size", "WIDTHxHEIGHT"},
-  {"fullscreen", 'S', 0, G_OPTION_ARG_NONE,
-   &opt_fullscreen, "Enable full-screen mode", NULL},
-   {"fps", 'f', 0, G_OPTION_ARG_DOUBLE,
-   &opt_fps, "Set display FPS rate", NULL},
   {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
    gpointerof (opt_version), "Print version information and exit", NULL},
   {NULL, 0, 0, G_OPTION_ARG_NONE, NULL, NULL, NULL}
@@ -162,8 +162,14 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
     case GDK_KEY_Escape:        /* quit */
       gtk_widget_destroy (widget);
       return TRUE;
-    case GDK_KEY_F11:          /* toggle full-screen */
-      if (g_strcmp0 ((const char *) type, "release") == 0)
+    case GDK_KEY_F10:           /* toggle debugging */
+      if (g_str_equal ((const char *) type, "release"))
+        return TRUE;
+      opt_debug = !opt_debug;
+      GINGA->setOptionBool ("debug", opt_debug);
+      return TRUE;
+    case GDK_KEY_F11:           /* toggle full-screen */
+      if (g_str_equal ((const char *) type, "release"))
         return TRUE;
       opt_fullscreen = !opt_fullscreen;
       if (opt_fullscreen)
@@ -306,7 +312,7 @@ main (int argc, char **argv)
   // Create Ginga handle width the original args.
   opts.width = opt_width;
   opts.height = opt_height;
-  opts.debug = false;
+  opts.debug = opt_debug;
   GINGA = Ginga::create (argc, argv, &opts);
   g_assert_nonnull (GINGA);
 

@@ -19,9 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclLinkStatement.h"
 #include "ginga-internal.h"
 
-#include "mb/Display.h"
-using namespace ginga::mb;
-
 GINGA_FORMATTER_BEGIN
 
 NclLinkTriggerCondition::NclLinkTriggerCondition () : NclLinkCondition ()
