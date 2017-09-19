@@ -18,13 +18,21 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga-internal.h"
 #include "GingaPrivate.h"
 
+static GingaOptions default_opts = {
+  800,                          // width
+  600,                          // height
+  false,                        // fullscreen
+  false,                        // boolean
+};
+
 GingaPrivate::GingaPrivate (unused (int argc), unused (char **argv),
-                            int width, int height, bool fullscreen)
-  : Ginga (argc, argv, width, height, fullscreen)
+                            GingaOptions *opts)
+  : Ginga (argc, argv, opts)
 {
+  _opts = (opts) ? opts : &default_opts;
   _started = false;
   _scheduler = new Scheduler ();
-  _display = new ginga::mb::Display (width, height, fullscreen);
+  _display = new ginga::mb::Display (opts->width, opts->height, opts->fullscreen);
   _Ginga_Display = _display;
 
 #if defined WITH_CEF && WITH_CEF

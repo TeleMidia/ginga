@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga-internal.h"
 #include "GingaPrivate.h"
 
-Ginga::Ginga (int, char **, int, int, bool)
+Ginga::Ginga (int, char **, GingaOptions *)
 {
 }
 
@@ -34,13 +34,13 @@ Ginga::~Ginga ()
  * @brief Creates a new formatter handle.
  * @param argc Number arguments passed to main.
  * @param argv Arguments passed to main.
+ * @param opts Formatter options.
  * @return A new formatter handle.
  */
 Ginga *
-Ginga::create (int argc, char **argv, int width, int height,
-               bool fullscreen)
+Ginga::create (int argc, char **argv, GingaOptions *opts)
 {
-  return new GingaPrivate (argc, argv, width, height, fullscreen);
+  return new GingaPrivate (argc, argv, opts);
 }
 
 /**

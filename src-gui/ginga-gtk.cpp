@@ -25,9 +25,14 @@ gchar* executableFolder;
 int
 main (int argc, char **argv)
 {
+  GingaOptions opts;
 
-  // Create Ginga handle width the original args.
-  GINGA = Ginga::create (argc, argv, presentationAttributes.resolutionWidth, presentationAttributes.resolutionHeight, false); 
+  opts.width = presentationAttributes.resolutionWidth;
+  opts.height = presentationAttributes.resolutionHeight;
+  opts.fullscreen = false;
+  opts.debug = false;
+  GINGA = Ginga::create (argc, argv, &opts);
+  g_assert_nonnull (GINGA);
   
   executableFolder = g_strconcat (
       g_get_current_dir (), g_path_get_dirname (argv[0]) + 1, NULL);
