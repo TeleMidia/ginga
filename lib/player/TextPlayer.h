@@ -32,7 +32,7 @@ public:
                                          const string &, const string &,
                                          bool, GingaRect *);
 
-  TextPlayer (GingaPrivate *, const string &, const string &);
+  TextPlayer (GingaState *, const string &, const string &);
   virtual ~TextPlayer (void) {}
   void setProperty (const string &, const string &) override;
   void reload () override;

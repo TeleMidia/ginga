@@ -42,7 +42,7 @@ GINGA_PLAYER_BEGIN
  * @return A new player to exhibit source.
  */
 Player *
-Player::createPlayer (GingaPrivate *ginga, const string &id,
+Player::createPlayer (GingaState *ginga, const string &id,
                       const string &uri, const string &mime)
 {
   Player *player = nullptr;
@@ -93,7 +93,7 @@ Player::createPlayer (GingaPrivate *ginga, const string &id,
 /**
  * @brief Creates player for the given URI.
  */
-Player::Player (GingaPrivate *ginga, const string &id, const string &uri)
+Player::Player (GingaState *ginga, const string &id, const string &uri)
 {
   // Internal data.
   g_assert_nonnull (ginga);

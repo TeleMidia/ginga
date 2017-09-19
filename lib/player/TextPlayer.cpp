@@ -148,7 +148,7 @@ TextPlayer::renderSurface (const string &text,
   return sfc;
 }
 
-TextPlayer::TextPlayer (GingaPrivate *ginga,
+TextPlayer::TextPlayer (GingaState *ginga,
                         const string &id, const string &uri)
   : Player (ginga, id, uri)
 {

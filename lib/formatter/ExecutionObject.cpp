@@ -39,7 +39,7 @@ ExecutionObjectSettings *ExecutionObject::_settings = nullptr;
 set<ExecutionObject *> ExecutionObject::_objects;
 
 
-ExecutionObject::ExecutionObject (GingaPrivate *ginga,
+ExecutionObject::ExecutionObject (GingaState *ginga,
                                   const string &id,
                                   Node *node,
                                   INclActionListener *seListener)

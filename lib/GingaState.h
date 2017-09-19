@@ -31,14 +31,14 @@ class Scheduler;
 GINGA_FORMATTER_END
 using namespace ::ginga::formatter;
 
-class IGingaPrivateEventListener
+class IGingaStateEventListener
 {
 public:
   virtual void handleTickEvent (GingaTime, GingaTime, int) = 0;
   virtual void handleKeyEvent (const string &key, bool) = 0;
 };
 
-class GingaPrivate : public Ginga
+class GingaState : public Ginga
 {
  public:
   // External API.
@@ -57,16 +57,16 @@ class GingaPrivate : public Ginga
   void setOptionInt (const string &, int);
 
   // Internal API.
-  GingaPrivate (int, char **, GingaOptions *);
-  virtual ~GingaPrivate ();
+  GingaState (int, char **, GingaOptions *);
+  virtual ~GingaState ();
 
-  bool registerEventListener (IGingaPrivateEventListener *);
-  bool unregisterEventListener (IGingaPrivateEventListener *);
+  bool registerEventListener (IGingaStateEventListener *);
+  bool unregisterEventListener (IGingaStateEventListener *);
   void registerPlayer (Player *);
   void unregisterPlayer (Player *);
 
-  static void setOptionDebug (GingaPrivate *, const string &, bool);
-  static void setOptionSize (GingaPrivate *, const string &, int);
+  static void setOptionDebug (GingaState *, const string &, bool);
+  static void setOptionSize (GingaState *, const string &, int);
 
  private:
   GingaOptions *_opts;          // current options

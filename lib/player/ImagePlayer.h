@@ -25,7 +25,7 @@ GINGA_PLAYER_BEGIN
 class ImagePlayer : public Player
 {
 public:
-  ImagePlayer (GingaPrivate *ginga, const string &id, const string &uri)
+  ImagePlayer (GingaState *ginga, const string &id, const string &uri)
     : Player (ginga, id, uri) {}
   ~ImagePlayer (void) {}
   void reload () override;

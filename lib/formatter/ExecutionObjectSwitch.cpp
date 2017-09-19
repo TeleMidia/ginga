@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-ExecutionObjectSwitch::ExecutionObjectSwitch (GingaPrivate *ginga,
+ExecutionObjectSwitch::ExecutionObjectSwitch (GingaState *ginga,
                                               const string &id,
                                               Node *switchNode,
                                               INclActionListener *seListener)

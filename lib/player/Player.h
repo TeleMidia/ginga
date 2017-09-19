@@ -18,10 +18,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "GingaPrivate.h"
+#include "GingaState.h"
 #include "PlayerAnimator.h"
 
-class GingaPrivate;
+class GingaState;
 
 GINGA_PLAYER_BEGIN
 
@@ -35,9 +35,9 @@ public:
      PL_PAUSED,
     };
 
-  static Player *createPlayer (GingaPrivate *, const string &,
+  static Player *createPlayer (GingaState *, const string &,
                                const string &, const string &);
-  Player (GingaPrivate *, const string &, const string &);
+  Player (GingaState *, const string &, const string &);
   virtual ~Player ();
 
   string getId ();
@@ -90,7 +90,7 @@ public:
   static void setCurrentFocus (const string &);
 
 protected:
-  GingaPrivate *_ginga;            // ginga state
+  GingaState *_ginga;              // ginga state
   string _id;                      // associated object id
   string _uri;                     // source uri
   PlayerState _state;              // current state

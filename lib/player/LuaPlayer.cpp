@@ -38,7 +38,7 @@ GINGA_PLAYER_BEGIN
 
 // Public methods.
 
-LuaPlayer::LuaPlayer (GingaPrivate *ginga, const string &id,
+LuaPlayer::LuaPlayer (GingaState *ginga, const string &id,
                       const string &uri)
   : Player (ginga, id, uri)
 {

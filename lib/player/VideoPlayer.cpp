@@ -39,7 +39,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PLAYER_BEGIN
 
-VideoPlayer::VideoPlayer (GingaPrivate *ginga, const string &id,
+VideoPlayer::VideoPlayer (GingaState *ginga, const string &id,
                           const string &uri)
   : Player (ginga, id, uri)
 {
