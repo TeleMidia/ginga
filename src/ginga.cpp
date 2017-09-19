@@ -42,7 +42,6 @@ static Ginga *GINGA = nullptr;
   "Ginga home page: " PACKAGE_URL
 
 static gboolean opt_fullscreen = FALSE; // true if --fullscreen was given
-static gboolean opt_scale = FALSE;      // true if --scale was given
 static gint opt_width = 800;            // initial window width
 static gint opt_height = 600;           // initial window height
 static gdouble opt_fps = 60;            // initial target frame-rate
@@ -92,8 +91,6 @@ static GOptionEntry options[] = {
    gpointerof (opt_size), "Set initial window size", "WIDTHxHEIGHT"},
   {"fullscreen", 'S', 0, G_OPTION_ARG_NONE,
    &opt_fullscreen, "Enable full-screen mode", NULL},
-  {"scale", 'x', 0, G_OPTION_ARG_NONE,
-   &opt_scale, "Scale canvas to fit window", NULL},
    {"fps", 'f', 0, G_OPTION_ARG_DOUBLE,
    &opt_fps, "Set display FPS rate", NULL},
   {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
