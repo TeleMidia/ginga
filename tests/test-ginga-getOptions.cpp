@@ -21,7 +21,20 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  Ginga *ginga = Ginga::create (0, nullptr, nullptr);
+  GingaOptions out;
+  GingaOptions opts =
+    {
+     10,                        // width
+     20,                        // height
+     false,                     // debug
+    };
+  Ginga *ginga = Ginga::create (0, nullptr, &opts);
   g_assert_nonnull (ginga);
+
+  out = ginga->getOptions ();
+  g_assert (out.width == opts.width);
+  g_assert (out.height == opts.height);
+  g_assert (out.debug == opts.debug);
+
   exit (EXIT_SUCCESS);
 }

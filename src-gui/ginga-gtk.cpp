@@ -29,7 +29,6 @@ main (int argc, char **argv)
 
   opts.width = presentationAttributes.resolutionWidth;
   opts.height = presentationAttributes.resolutionHeight;
-  opts.fullscreen = false;
   opts.debug = false;
   GINGA = Ginga::create (argc, argv, &opts);
   g_assert_nonnull (GINGA);

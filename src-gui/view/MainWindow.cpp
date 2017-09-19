@@ -463,7 +463,7 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
       break;
     }
 
-  GINGA->send_key (std::string (key),
+  GINGA->sendKeyEvent (std::string (key),
                    g_strcmp0 ((const char *)type, "press") == 0);
   /*  if (free_key)
       g_free (key); */

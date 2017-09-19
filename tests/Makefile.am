@@ -151,6 +151,18 @@ test_ginga_version_SOURCES= test-ginga-version.cpp
 progs+= test-ginga-create
 test_ginga_create_SOURCES= test-ginga-create.cpp
 
+progs+= test-ginga-getOptions
+test_ginga_getOptions_SOURCES= test-ginga-getOptions.cpp
+
+progs+= test-ginga-getOptionBool
+test_ginga_getOptionBool_SOURCES= test-ginga-getOptionBool.cpp
+
+progs+= test-ginga-setOptionBool
+test_ginga_setOptionBool_SOURCES= test-ginga-setOptionBool.cpp
+
+progs+= test-ginga-setOptionInt
+test_ginga_setOptionInt_SOURCES= test-ginga-setOptionInt.cpp
+
 check_SCRIPTS= $(ncls)
 check_PROGRAMS= $(progs)
 TESTS= $(check_SCRIPTS) $(check_PROGRAMS)

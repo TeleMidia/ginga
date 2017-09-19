@@ -30,11 +30,9 @@ GINGA_MB_BEGIN
 class Display
 {
 public:
-  Display (int, int, bool);
+  Display (int, int);
   ~Display ();
 
-  bool getFullscreen ();
-  void setFullscreen (bool);
   void getSize (int *, int *);
   void setSize (int, int);
 
@@ -51,7 +49,6 @@ public:
 private:
   int _width;                   // display width in pixels
   int _height;                  // display height in pixels
-  bool _fullscreen;             // full-screen mode
   Dashboard _dashboard;         // control panel
 
   GList *_listeners;            // list of listeners to be notified

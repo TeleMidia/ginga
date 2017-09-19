@@ -23,5 +23,8 @@ main (void)
 {
   Ginga *ginga = Ginga::create (0, nullptr, nullptr);
   g_assert_nonnull (ginga);
+  g_assert_false (ginga->getOptionBool ("debug"));
+  ginga->setOptionBool ("debug", true);
+  g_assert_true (ginga->getOptionBool ("debug"));
   exit (EXIT_SUCCESS);
 }

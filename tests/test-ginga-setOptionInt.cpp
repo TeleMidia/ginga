@@ -23,5 +23,8 @@ main (void)
 {
   Ginga *ginga = Ginga::create (0, nullptr, nullptr);
   g_assert_nonnull (ginga);
+  g_assert (ginga->getOptionInt ("width") == 800);
+  ginga->setOptionInt ("width", 1024);
+  g_assert (ginga->getOptionInt ("width") == 1024);
   exit (EXIT_SUCCESS);
 }

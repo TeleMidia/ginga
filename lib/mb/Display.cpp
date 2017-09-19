@@ -53,13 +53,11 @@ win_cmp_z (Player *p1, Player *p2)
  * @brief Creates a new display.
  * @param width Width in pixels.
  * @param height Height in pixels.
- * @param fullscreen Full-screen mode.
  */
-Display::Display (int width, int height, bool fullscreen)
+Display::Display (int width, int height)
 {
   _width = width;
   _height = height;
-  _fullscreen = fullscreen;
 
   _listeners = nullptr;
   _players = nullptr;
@@ -74,26 +72,6 @@ Display::~Display ()
 {
   g_list_free (_listeners);
   g_list_free (_players);
-}
-
-/**
- * @brief Gets full-screen mode.
- * @return True if display is in full-screen.
- */
-bool
-Display::getFullscreen ()
-{
-  return _fullscreen;
-}
-
-/**
- * @brief Sets full-screen mode.
- * @param fullscreen Full-screen mode.
- */
-void
-Display::setFullscreen (bool fullscreen)
-{
-  _fullscreen = fullscreen;
 }
 
 /**

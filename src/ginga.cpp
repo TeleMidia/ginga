@@ -217,7 +217,7 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
       break;
     }
 
-  GINGA->send_key (std::string (key),
+  GINGA->sendKeyEvent (std::string (key),
                    g_strcmp0 ((const char *) type, "press") == 0);
   if (free_key)
     g_free (deconst (char *, key));
@@ -252,7 +252,7 @@ tick_callback (GtkWidget *widget)
       first = time;
       last = time;
     }
-  GINGA->send_tick (time - first, time - last, frame);
+  GINGA->sendTickEvent (time - first, time - last, frame);
   last = time;
   gtk_widget_queue_draw (widget);
   return G_SOURCE_CONTINUE;
@@ -306,7 +306,6 @@ main (int argc, char **argv)
   // Create Ginga handle width the original args.
   opts.width = opt_width;
   opts.height = opt_height;
-  opts.fullscreen = opt_fullscreen;
   opts.debug = false;
   GINGA = Ginga::create (argc, argv, &opts);
   g_assert_nonnull (GINGA);

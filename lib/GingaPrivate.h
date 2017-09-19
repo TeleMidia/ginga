@@ -33,12 +33,21 @@ class GingaPrivate : public Ginga
   virtual ~GingaPrivate ();
 
   void resize (int, int) ;
-  void start (const std::string &);
+  void start (const string &);
   void stop ();
 
   void redraw (cairo_t *);
-  void send_key (const std::string &, bool);
-  void send_tick (uint64_t, uint64_t, uint64_t);
+  void sendKeyEvent (const std::string &, bool);
+  void sendTickEvent (uint64_t, uint64_t, uint64_t);
+
+  GingaOptions getOptions ();
+  bool getOptionBool (const string &);
+  void setOptionBool (const string &, bool);
+  int getOptionInt (const string &);
+  void setOptionInt (const string &, int);
+
+  static void setOptionDebug (GingaPrivate *, const string &, bool);
+  static void setOptionSize (GingaPrivate *, const string &, int);
 
  private:
   GingaOptions *_opts;          // current options
