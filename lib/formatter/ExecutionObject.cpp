@@ -26,9 +26,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "player/Player.h"
 using namespace ::ginga::player;
 
-#include "mb/Display.h"
-using namespace ::ginga::mb;
-
 GINGA_FORMATTER_BEGIN
 
 /**
@@ -42,10 +39,13 @@ ExecutionObjectSettings *ExecutionObject::_settings = nullptr;
 set<ExecutionObject *> ExecutionObject::_objects;
 
 
-ExecutionObject::ExecutionObject (const string &id,
+ExecutionObject::ExecutionObject (GingaPrivate *ginga,
+                                  const string &id,
                                   Node *node,
                                   INclActionListener *seListener)
 {
+  g_assert_nonnull (ginga);
+  _ginga = ginga;
   _seListener = seListener;
   _node = node;
   _wholeContent = nullptr;
@@ -566,7 +566,7 @@ ExecutionObject::start ()
   // Allocate player.
   src = media->getSrc ();
   mime = media->getMimeType ();
-  _player = Player::createPlayer (_id, src, mime);
+  _player = Player::createPlayer (_ginga, _id, src, mime);
 
   // Initialize player properties.
   desc = media->getDescriptor ();
@@ -609,7 +609,7 @@ ExecutionObject::start ()
 
   _time = 0;
   _player->start ();
-  g_assert (Ginga_Display->registerEventListener (this));
+  g_assert (_ginga->registerEventListener (this));
 
  done:
   // Start main event.
@@ -666,7 +666,7 @@ ExecutionObject::stop ()
       delete _player;
       _player = nullptr;
       _time = GINGA_TIME_NONE;
-      g_assert (Ginga_Display->unregisterEventListener (this));
+      g_assert (_ginga->unregisterEventListener (this));
     }
 
   // Uninstall attribution events.

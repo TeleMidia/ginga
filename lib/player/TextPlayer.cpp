@@ -148,8 +148,9 @@ TextPlayer::renderSurface (const string &text,
   return sfc;
 }
 
-TextPlayer::TextPlayer (const string &id, const string &uri)
-  : Player (id, uri)
+TextPlayer::TextPlayer (GingaPrivate *ginga,
+                        const string &id, const string &uri)
+  : Player (ginga, id, uri)
 {
   _fontColor = {0, 0, 0, 1.};   // black
   _fontBgColor = {0, 0, 0, 0};  // transparent

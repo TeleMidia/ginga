@@ -20,15 +20,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Player.h"
 
-#include "mb/IEventListener.h"
-using namespace ::ginga::mb;
-
 GINGA_PLAYER_BEGIN
 
-class LuaPlayer : public Player, public IEventListener
+class LuaPlayer : public Player, public IGingaPrivateEventListener
 {
 public:
-  LuaPlayer (const string &, const string &);
+  LuaPlayer (GingaPrivate *, const string &, const string &);
   virtual ~LuaPlayer (void);
   void start (void) override;
   void stop (void) override;
@@ -37,7 +34,7 @@ public:
   virtual void setProperty (const string &, const string &) override;
   void redraw (cairo_t *) override;
 
-  // IEventListener.
+  // IGingaPrivateEventListener.
   void handleTickEvent (GingaTime, GingaTime, int) override {};
   void handleKeyEvent (const string &, bool) override;
 

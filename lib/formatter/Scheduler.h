@@ -18,11 +18,18 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FORMATTER_SCHEDULER_H
 #define FORMATTER_SCHEDULER_H
 
+#include "GingaPrivate.h"
+
+#include "ExecutionObject.h"
+#include "ExecutionObjectContext.h"
+#include "ExecutionObjectSwitch.h"
 #include "Converter.h"
 #include "NclActions.h"
 
 #include "ncl/Ncl.h"
 using namespace ::ginga::ncl;
+
+class GingaPrivate;
 
 GINGA_FORMATTER_BEGIN
 
@@ -30,13 +37,14 @@ class Converter;
 class Scheduler : public INclActionListener
 {
 public:
-  Scheduler ();
+  Scheduler (GingaPrivate *);
   virtual ~Scheduler ();
   void scheduleAction (NclSimpleAction *) override;
   void startDocument (const string &);
 
 private:
-  Converter *_converter;
+  GingaPrivate *_ginga;         // library handle
+  Converter *_converter;        // converter object
   string _file;                 // path to document file
   NclDocument *_doc;            // document tree
   vector<NclEvent *> _events;   // document events
