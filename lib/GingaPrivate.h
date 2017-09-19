@@ -37,7 +37,7 @@ class GingaPrivate : public Ginga
   void stop ();
 
   void redraw (cairo_t *);
-  void sendKeyEvent (const std::string &, bool);
+  void sendKeyEvent (const string &, bool);
   void sendTickEvent (uint64_t, uint64_t, uint64_t);
 
   GingaOptions getOptions ();

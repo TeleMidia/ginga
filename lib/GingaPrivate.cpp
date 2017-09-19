@@ -86,6 +86,10 @@ GingaPrivate::~GingaPrivate ()
 #endif
 }
 
+/**
+ * @brief Starts NCL from file.
+ * @param file Path to NCL file.
+ */
 void
 GingaPrivate::start (const string &file)
 {
@@ -96,12 +100,20 @@ GingaPrivate::start (const string &file)
   _started = true;
 }
 
+/**
+ * @brief Stops NCL.
+ */
 void G_GNUC_NORETURN
 GingaPrivate::stop ()
 {
   ERROR_NOT_IMPLEMENTED ("stop is not supported");
 }
 
+/**
+ * @brief Resize current surface.
+ * @param width New width (in pixels).
+ * @param height New height (in pixels).
+ */
 void
 GingaPrivate::resize (int width, int height)
 {
@@ -109,6 +121,10 @@ GingaPrivate::resize (int width, int height)
   _display->setSize (width, height);
 }
 
+/**
+ * @brief Draw current surface onto context.
+ * @param cr Target context.
+ */
 void
 GingaPrivate::redraw (cairo_t *cr)
 {
@@ -116,6 +132,11 @@ GingaPrivate::redraw (cairo_t *cr)
   _display->redraw (cr);
 }
 
+/**
+ * @brief Sends key event.
+ * @param key Key name.
+ * @param press True if press, False if release.
+ */
 void
 GingaPrivate::sendKeyEvent (const string &key, bool press)
 {
@@ -123,6 +144,12 @@ GingaPrivate::sendKeyEvent (const string &key, bool press)
   _display->notifyKeyListeners (key, press);
 }
 
+/**
+ * @brief Sends tick event.
+ * @param total Time passed since start (in microseconds).
+ * @param diff Time passed since last tick (in microseconds).
+ * @param frameno Current frame number.
+ */
 void
 GingaPrivate::sendTickEvent (uint64_t total, uint64_t diff,
                              uint64_t frameno)
@@ -134,6 +161,10 @@ GingaPrivate::sendTickEvent (uint64_t total, uint64_t diff,
 
 // Option handling.
 
+/**
+ * @brief Gets current options.
+ * @return A copy of the current options.
+ */
 GingaOptions
 GingaPrivate::getOptions ()
 {
