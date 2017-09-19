@@ -37,7 +37,6 @@ struct GingaOptions
 {
   int width;
   int height;
-  bool fullscreen;
   bool debug;
 };
 
@@ -52,8 +51,14 @@ public:
   virtual void stop () = 0;
 
   virtual void redraw (cairo_t *) = 0;
-  virtual void send_key (const std::string &, bool) = 0;
-  virtual void send_tick (uint64_t, uint64_t, uint64_t) = 0;
+  virtual void sendKeyEvent (const std::string &, bool) = 0;
+  virtual void sendTickEvent (uint64_t, uint64_t, uint64_t) = 0;
+
+  virtual GingaOptions getOptions () = 0;
+  virtual bool getOptionBool (const std::string &) = 0;
+  virtual void setOptionBool (const std::string &, bool) = 0;
+  virtual int getOptionInt (const std::string &) = 0;
+  virtual void setOptionInt (const std::string &, int) = 0;
 
 public:
   static Ginga *create (int, char **, GingaOptions *);

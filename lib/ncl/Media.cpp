@@ -65,7 +65,7 @@ static map<string, string> mimetab =
 };
 
 static bool
-mime_table_index (string key, string *result)
+mime_table_index (const string &key, string *result)
 {
   map<string, string>::iterator it;
   if ((it = mimetab.find (key)) == mimetab.end ())
