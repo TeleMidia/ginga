@@ -74,11 +74,13 @@
 /tests/env.sh
 /tests/gdb.cfg
 /tests/suppfile
+/tests/test-ginga-create
 /tests/test-ginga-parse-bool
 /tests/test-ginga-parse-color
 /tests/test-ginga-parse-list
 /tests/test-ginga-parse-percent
 /tests/test-ginga-parse-time
+/tests/test-ginga-version
 /tests/test-xpathbasename
 /tests/test-xpathbuild
 /tests/test-xpathbuildabs

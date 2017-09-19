@@ -145,6 +145,12 @@ test_xstrassign_SOURCES= test-xstrassign.cpp
 progs+= test-xstrbuild
 test_xstrbuild_SOURCES= test-xstrbuild.cpp
 
+progs+= test-ginga-version
+test_ginga_version_SOURCES= test-ginga-version.cpp
+
+progs+= test-ginga-create
+test_ginga_create_SOURCES= test-ginga-create.cpp
+
 check_SCRIPTS= $(ncls)
 check_PROGRAMS= $(progs)
 TESTS= $(check_SCRIPTS) $(check_PROGRAMS)

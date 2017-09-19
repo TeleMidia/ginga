@@ -15,35 +15,13 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga_gtk.h"
-
-// Global formatter.
-Ginga *GINGA = nullptr;
-
-gchar* executableFolder;
+#include "ginga-internal.h"
+#include "ginga.h"
 
 int
-main (int argc, char **argv)
+main (void)
 {
-
-  // Create Ginga handle width the original args.
-  GINGA = Ginga::create (argc, argv, presentationAttributes.resolutionWidth, presentationAttributes.resolutionHeight, false); 
-  
-  executableFolder = g_strconcat (
-      g_get_current_dir (), g_path_get_dirname (argv[0]) + 1, NULL);
-  printf ("PATH: %s \n", executableFolder);
-
-  gtk_init (&argc, &argv);
-  
-  GError **error;
-  gtk_window_set_default_icon_from_file (g_build_path ( G_DIR_SEPARATOR_S, executableFolder,
-                   "icons/common/ginga_icon.png", NULL), error);
-  
-  load_settings ();
-
-  create_main_window ();
-
-  gtk_main ();
-
+  Ginga *ginga = Ginga::create (0, nullptr, 0, 0, false);
+  g_assert_nonnull (ginga);
   exit (EXIT_SUCCESS);
 }
