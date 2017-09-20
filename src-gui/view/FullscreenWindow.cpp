@@ -50,6 +50,15 @@ create_fullscreen_window (void)
                                rect.height);
   gtk_window_set_position (GTK_WINDOW (fullscreenWindow),
                            GTK_WIN_POS_CENTER);
+
+#if GTK_CHECK_VERSION(3, 8, 0)
+  gtk_widget_add_tick_callback (
+      fullscreenWindow, (GtkTickCallback)update_draw_callback, NULL, NULL);
+#else
+  g_timeout_add (1000 / 60, (GSourceFunc)update_draw_callback,
+                 fullscreenWindow);
+#endif
+
   g_signal_connect (fullscreenWindow, "key-press-event",
                     G_CALLBACK (keyboard_callback), (void *)"press");
   g_signal_connect (fullscreenWindow, "key-release-event",
