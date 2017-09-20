@@ -190,6 +190,12 @@ xfail_test_ginga_getOptionString_SOURCES= xfail-test-ginga-getOptionString.cpp
 progs+= xfail-test-ginga-setOptionString
 xfail_test_ginga_setOptionString_SOURCES= xfail-test-ginga-setOptionString.cpp
 
+progs+= test-GingaState-getData
+test_GingaState_getData_SOURCES= test-GingaState-getData.cpp
+
+progs+= test-GingaState-setData
+test_GingaState_setData_SOURCES= test-GingaState-setData.cpp
+
 check_SCRIPTS= $(ncls)
 check_PROGRAMS= $(progs)
 TESTS= $(check_SCRIPTS) $(check_PROGRAMS)

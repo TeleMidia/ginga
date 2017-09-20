@@ -33,8 +33,6 @@ public:
   RuleAdapter ();
   virtual ~RuleAdapter ();
 
-  void reset ();
-
   ExecutionObject *getSettings ();
   void setSettings (ExecutionObject *);
 

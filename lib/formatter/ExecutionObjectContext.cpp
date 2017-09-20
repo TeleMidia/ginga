@@ -52,7 +52,7 @@ ExecutionObjectContext::ExecutionObjectContext (GingaState *ginga,
 
 ExecutionObjectContext::~ExecutionObjectContext ()
 {
-  ExecutionObject *object;
+  // ExecutionObject *object;
   NclFormatterLink *link;
   set<NclFormatterLink *>::iterator i;
   map<string, ExecutionObject *>::iterator j;
@@ -78,16 +78,16 @@ ExecutionObjectContext::~ExecutionObjectContext ()
   _links.clear ();
   _uncompiledLinks.clear ();
 
-  j = _execObjList.begin ();
-  while (j != _execObjList.end ())
-    {
-      object = j->second;
-      if (object != this)
-        {
-          object->removeParentObject (_node, this);
-        }
-      ++j;
-    }
+  // j = _execObjList.begin ();
+  // while (j != _execObjList.end ())
+  //   {
+  //     object = j->second;
+  //     if (object != this)
+  //       {
+  //         object->removeParentObject (_node, this);
+  //       }
+  //     ++j;
+  //   }
   _execObjList.clear ();
 }
 

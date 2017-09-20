@@ -48,19 +48,19 @@ Converter::~Converter ()
         }
     }
 
-  for (auto i = _exeObjects.begin (); i != _exeObjects.end (); )
-    {
-      ExecutionObject *object = i->second;
+  // for (auto i = _exeObjects.begin (); i != _exeObjects.end (); )
+  //   {
+  //     ExecutionObject *object = i->second;
 
-      if (!removeExecutionObject (object))
-        {
-          i = _exeObjects.erase (i);
-        }
-      else
-        {
-          ++i;
-        }
-    }
+  //     if (!removeExecutionObject (object))
+  //       {
+  //         i = _exeObjects.erase (i);
+  //       }
+  //     else
+  //       {
+  //         ++i;
+  //       }
+  //   }
 
   _exeObjects.clear ();
   _settingsObjects.clear ();

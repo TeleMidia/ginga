@@ -108,9 +108,6 @@ private:
   // ------------------------------------------
 
 public:
-  static ExecutionObjectSettings *getSettings ();
-  static void setSettings (ExecutionObjectSettings *);
-
   bool isFocused ();
   string getProperty (const string &);
   void setProperty (const string &, const string &,
@@ -121,9 +118,6 @@ public:
   virtual void handleTickEvent (GingaTime, GingaTime, int) override;
 
 protected:
-  static ExecutionObjectSettings *_settings; // settings object
-  static set<ExecutionObject *> _objects;    // set of all objects
-
   GingaState *_ginga;           // ginga state
   string _id;                   // object id
   Player *_player;              // associated player

@@ -74,6 +74,8 @@
 /tests/env.sh
 /tests/gdb.cfg
 /tests/suppfile
+/tests/test-GingaState-getData
+/tests/test-GingaState-setData
 /tests/test-ginga-create
 /tests/test-ginga-getOptionBool
 /tests/test-ginga-getOptionInt

@@ -37,7 +37,7 @@ static Ginga *GINGA = nullptr;
 
 // Options.
 
-#define OPTION_LINE "FILE"
+#define OPTION_LINE "FILE..."
 #define OPTION_DESC                             \
   "Report bugs to: " PACKAGE_BUGREPORT "\n"     \
   "Ginga home page: " PACKAGE_URL
@@ -161,7 +161,7 @@ resize_callback (GtkWidget *widget, GdkEventConfigure *e, gpointer data)
   GINGA->resize (opt_width, opt_height);
 
   // We must return FALSE here, otherwise the new geometry is not propagated
-  // to draw_callback().
+  // to the draw_callback().
   return FALSE;
 }
 
@@ -174,7 +174,9 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
   switch (e->keyval)
     {
     case GDK_KEY_Escape:        /* quit */
-      gtk_widget_destroy (widget);
+      if (g_str_equal ((const char *) type, "release"))
+        return TRUE;
+      gtk_main_quit ();
       return TRUE;
     case GDK_KEY_F10:           /* toggle debugging */
       if (g_str_equal ((const char *) type, "release"))
@@ -237,8 +239,8 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
       break;
     }
 
-  GINGA->sendKeyEvent (std::string (key),
-                   g_strcmp0 ((const char *) type, "press") == 0);
+  GINGA->sendKeyEvent
+    (string (key), g_str_equal ((const char *) type, "press") == 0);
   if (free_key)
     g_free (deconst (char *, key));
 
@@ -286,7 +288,6 @@ main (int argc, char **argv)
 {
   int saved_argc;
   char **saved_argv;
-  std::string file;
 
   GingaOptions opts;
   GtkWidget *app;
@@ -320,17 +321,6 @@ main (int argc, char **argv)
       exit (EXIT_FAILURE);
     }
 
-  file = std::string (saved_argv[1]);
-  g_strfreev (saved_argv);
-
-  // Create Ginga handle width the original args.
-  opts.width = opt_width;
-  opts.height = opt_height;
-  opts.debug = opt_debug;
-  opts.background = string (opt_background);
-  GINGA = Ginga::create (argc, argv, &opts);
-  g_assert_nonnull (GINGA);
-
   // Create application window.
   app = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   g_assert_nonnull (app);
@@ -339,9 +329,6 @@ main (int argc, char **argv)
   gtk_widget_set_app_paintable (app, TRUE);
   if (opt_fullscreen)
     gtk_window_fullscreen (GTK_WINDOW (app));
-
-  // Start Ginga.
-  GINGA->start (file);
 
   // Setup GTK+ callbacks.
   g_signal_connect (app, "destroy", G_CALLBACK (gtk_main_quit), NULL);
@@ -361,12 +348,25 @@ main (int argc, char **argv)
   g_timeout_add (1000 / opt_fps, (GSourceFunc) tick_callback, app);
 #endif
 
-  // Show window and enter event loop.
-  gtk_widget_show_all (app);
-  gtk_main ();
+  // Create Ginga handle width the original args.
+  opts.width = opt_width;
+  opts.height = opt_height;
+  opts.debug = opt_debug;
+  opts.background = string (opt_background);
+  GINGA = Ginga::create (argc, argv, &opts);
+  g_assert_nonnull (GINGA);
 
-  // Cleanup.
-  // delete GINGA;      FIXME!!!
+  // Run each NCL file, one after another.
+  for (int i = 1; i < saved_argc; i++)
+    {
+      GINGA->start (string (saved_argv[i]));
+      gtk_widget_show_all (app);
+      gtk_main ();
+      GINGA->stop ();
+    }
+
+  delete GINGA;
+  g_strfreev (saved_argv);
 
   exit (EXIT_SUCCESS);
 }

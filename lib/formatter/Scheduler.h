@@ -42,12 +42,17 @@ public:
   void scheduleAction (NclSimpleAction *) override;
   void startDocument (const string &);
 
+  set<ExecutionObject *> *getObjects ();
+  void addObject (ExecutionObject *);
+  void removeObject (ExecutionObject *);
+
 private:
-  GingaState *_ginga;           // ginga state
-  Converter *_converter;        // converter object
-  string _file;                 // path to document file
-  NclDocument *_doc;            // document tree
-  vector<NclEvent *> _events;   // document events
+  GingaState *_ginga;              // ginga state
+  Converter *_converter;           // converter object
+  string _file;                    // path to document file
+  NclDocument *_doc;               // document tree
+  vector<NclEvent *> _events;      // document events
+  set<ExecutionObject *> _objects; // managed objects
 
   void runAction (NclEvent *, NclSimpleAction *);
   void runActionOverComposition (ExecutionObjectContext *,

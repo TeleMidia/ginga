@@ -61,21 +61,26 @@ class GingaState : public Ginga
   // Internal API.
   GingaState (int, char **, GingaOptions *);
   virtual ~GingaState ();
+  Scheduler *getScheduler ();
 
   bool registerEventListener (IGingaStateEventListener *);
   bool unregisterEventListener (IGingaStateEventListener *);
   void registerPlayer (Player *);
   void unregisterPlayer (Player *);
 
+  void *getData (const string &);
+  void setData (const string &, void *);
+
   static void setOptionDebug (GingaState *, const string &, bool);
   static void setOptionSize (GingaState *, const string &, int);
   static void setOptionBackground (GingaState *, const string &, string);
 
  private:
-  GingaOptions _opts;           // current options
-  Scheduler *_scheduler;        // formatter core
-  GList *_listeners;            // list of listeners to be notified
-  GList *_players;              // list of players to be ticked
+  GingaOptions _opts;            // current options
+  Scheduler *_scheduler;         // formatter core
+  GList *_listeners;             // list of listeners to be notified
+  GList *_players;               // list of players to be ticked
+  map<string, void *> _userdata; // userdata attached to state
 
   bool _started;                // true if state was started
   string _ncl_file;             // path to current NCL file
