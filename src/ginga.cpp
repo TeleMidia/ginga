@@ -25,6 +25,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <gtk/gtk.h>
 
 #include "ginga.h"
+using namespace ::std;
 
 #define deconst(t, x) ((t)(ptrdiff_t)(const void *)(x))
 #define gpointerof(p) ((gpointer)((ptrdiff_t)(p)))
@@ -43,12 +44,26 @@ static Ginga *GINGA = nullptr;
 
 static gboolean opt_debug = FALSE;      // true if --debug was given
 static gboolean opt_fullscreen = FALSE; // true if --fullscreen was given
+static string opt_background = "";      // background color
 static gint opt_width = 800;            // initial window width
 static gint opt_height = 600;           // initial window height
 
 static gboolean
-opt_size (const gchar *opt, const gchar *arg,
-          gpointer data, GError **err)
+opt_background_cb (const gchar *opt, const gchar *arg,
+                   gpointer data, GError **err)
+{
+  (void) opt;
+  (void) data;
+  (void) err;
+
+  g_assert_nonnull (arg);
+  opt_background = string (arg);
+  return TRUE;
+}
+
+static gboolean
+opt_size_cb (const gchar *opt, const gchar *arg,
+             gpointer data, GError **err)
 {
   gint64 width;
   gint64 height;
@@ -80,21 +95,23 @@ opt_size (const gchar *opt, const gchar *arg,
 }
 
 static gboolean
-opt_version (void)
+opt_version_cb (void)
 {
   puts (PACKAGE_STRING);
   exit (EXIT_SUCCESS);
 }
 
 static GOptionEntry options[] = {
+  {"background", 'b', 0, G_OPTION_ARG_CALLBACK,
+   gpointerof (opt_background_cb), "Set background color", "COLOR"},
   {"debug", 'd', 0, G_OPTION_ARG_NONE,
    &opt_debug, "Enable debugging", NULL},
   {"fullscreen", 'f', 0, G_OPTION_ARG_NONE,
    &opt_fullscreen, "Enable full-screen mode", NULL},
   {"size", 's', 0, G_OPTION_ARG_CALLBACK,
-   gpointerof (opt_size), "Set initial window size", "WIDTHxHEIGHT"},
+   gpointerof (opt_size_cb), "Set initial window size", "WIDTHxHEIGHT"},
   {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
-   gpointerof (opt_version), "Print version information and exit", NULL},
+   gpointerof (opt_version_cb), "Print version information and exit", NULL},
   {NULL, 0, 0, G_OPTION_ARG_NONE, NULL, NULL, NULL}
 };
 
@@ -128,9 +145,6 @@ draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
   (void) widget;
   (void) data;
 
-  cairo_set_source_rgb (cr, 1., 0., 1.);
-  cairo_rectangle (cr, 0, 0, opt_width, opt_height);
-  cairo_fill (cr);
   GINGA->redraw (cr);
   return TRUE;
 }
@@ -313,6 +327,7 @@ main (int argc, char **argv)
   opts.width = opt_width;
   opts.height = opt_height;
   opts.debug = opt_debug;
+  opts.background = string (opt_background);
   GINGA = Ginga::create (argc, argv, &opts);
   g_assert_nonnull (GINGA);
 
