@@ -31,10 +31,10 @@ Ginga::~Ginga ()
 // Class methods.
 
 /**
- * @brief Creates a new formatter handle.
+ * @brief Creates a new Ginga state.
  * @param argc Number arguments passed to main.
  * @param argv Arguments passed to main.
- * @param opts Formatter options.
+ * @param opts State options.
  * @return A new formatter handle.
  */
 Ginga *
@@ -44,7 +44,7 @@ Ginga::create (int argc, char **argv, GingaOptions *opts)
 }
 
 /**
- * @brief Gets libginga version string.
+ * @brief Gets Ginga version string.
  * @return libginga version string.
  */
 string

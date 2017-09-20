@@ -50,11 +50,13 @@ class GingaState : public Ginga
   void sendKeyEvent (const string &, bool);
   void sendTickEvent (uint64_t, uint64_t, uint64_t);
 
-  GingaOptions getOptions ();
+  const GingaOptions *getOptions ();
   bool getOptionBool (const string &);
   void setOptionBool (const string &, bool);
   int getOptionInt (const string &);
   void setOptionInt (const string &, int);
+  string getOptionString (const string &);
+  void setOptionString (const string &, string);
 
   // Internal API.
   GingaState (int, char **, GingaOptions *);
@@ -67,15 +69,17 @@ class GingaState : public Ginga
 
   static void setOptionDebug (GingaState *, const string &, bool);
   static void setOptionSize (GingaState *, const string &, int);
+  static void setOptionBackground (GingaState *, const string &, string);
 
  private:
-  GingaOptions *_opts;          // current options
+  GingaOptions _opts;           // current options
   Scheduler *_scheduler;        // formatter core
   GList *_listeners;            // list of listeners to be notified
   GList *_players;              // list of players to be ticked
 
   bool _started;                // true if state was started
   string _ncl_file;             // path to current NCL file
+  GingaColor _background;       // current background color.
   uint64_t _last_tick_total;    // last total informed via sendTickEvent
   uint64_t _last_tick_diff;     // last diff informed via sendTickEvent
   uint64_t _last_tick_frameno;  // last frameno informed via sendTickEvent

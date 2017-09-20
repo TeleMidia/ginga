@@ -29,6 +29,7 @@ static GingaOptions opts_defaults = {
   800,                          // width
   600,                          // height
   false,                        // debug
+  "",                           // background ("" == none)
 };
 
 // Option data.
@@ -47,9 +48,10 @@ typedef struct GingaOptionData
 // Option table.
 static map<string, GingaOptionData> opts_table =
 {
- OPTS_ENTRY (debug,  G_TYPE_BOOLEAN, Debug),
- OPTS_ENTRY (height, G_TYPE_INT, Size),
- OPTS_ENTRY (width,  G_TYPE_INT, Size),
+ OPTS_ENTRY (debug,      G_TYPE_BOOLEAN, Debug),
+ OPTS_ENTRY (height,     G_TYPE_INT,     Size),
+ OPTS_ENTRY (width,      G_TYPE_INT,     Size),
+ OPTS_ENTRY (background, G_TYPE_STRING,  Background),
 };
 
 // Indexes option table.
@@ -122,8 +124,8 @@ void
 GingaState::resize (int width, int height)
 {
   g_assert (width > 0 && height > 0);
-  _opts->width = width;
-  _opts->height = height;
+  _opts.width = width;
+  _opts.height = height;
   for (GList *l = _players; l != nullptr; l = l->next)
     {
       Player *pl = (Player *) l->data;
@@ -146,6 +148,16 @@ GingaState::redraw (cairo_t *cr)
 {
   GList *l;
 
+  if (_background.alpha > 0)
+    {
+      GingaColor c = _background;
+      cairo_save (cr);
+      cairo_set_source_rgba (cr, c.red, c.green, c.blue, c.alpha);
+      cairo_rectangle (cr, 0, 0, _opts.width, _opts.height);
+      cairo_fill (cr);
+      cairo_restore (cr);
+    }
+
   _players = g_list_sort (_players, (GCompareFunc) win_cmp_z);
   l = _players;
   while (l != NULL)             // can be modified while being traversed
@@ -165,7 +177,7 @@ GingaState::redraw (cairo_t *cr)
       l = next;
     }
 
-  if (_opts->debug)
+  if (_opts.debug)
     {
       static GingaColor fg = {1., 1., 1., 1.};
       static GingaColor bg = {0, 0, 0, 0};
@@ -181,9 +193,8 @@ GingaState::redraw (cairo_t *cr)
                         GINGA_TIME_ARGS (_last_tick_total),
                         1 * GINGA_SECOND / (double) _last_tick_diff);
 
-
-      rect.width = _opts->width;
-      rect.height = _opts->height;
+      rect.width = _opts.width;
+      rect.height = _opts.height;
       debug = TextPlayer::renderSurface
         (info, "monospace", "", "bold", "9", fg, bg,
          rect, "center", "", true, &ink);
@@ -247,12 +258,12 @@ GingaState::sendTickEvent (uint64_t total, uint64_t diff,
 
 /**
  * @brief Gets current options.
- * @return A copy of the current options.
+ * @return The current options.
  */
-GingaOptions
+const GingaOptions *
 GingaState::getOptions ()
 {
-  return *_opts;
+  return &_opts;
 }
 
 #define GET_SET_OPTION_DEFN(Name, Type, GType, Msg)                     \
@@ -268,7 +279,7 @@ GingaState::getOptions ()
       {                                                                 \
         ERROR ("option '%s' is not %s", name.c_str (), Msg);            \
       }                                                                 \
-    return *((Type *)(((ptrdiff_t) _opts) + opt->offset));              \
+    return *((Type *)(((ptrdiff_t) &_opts) + opt->offset));             \
   }                                                                     \
   void                                                                  \
   GingaState::setOption##Name (const string &name, Type value)          \
@@ -282,7 +293,7 @@ GingaState::getOptions ()
       {                                                                 \
         ERROR ("option '%s' is not %s", name.c_str (), Msg);            \
       }                                                                 \
-    *((Type *)(((ptrdiff_t) _opts) + opt->offset)) = value;             \
+    *((Type *)(((ptrdiff_t) &_opts) + opt->offset)) = value;            \
     if (opt->func)                                                      \
       {                                                                 \
         ((void (*) (GingaState *, const string &, Type)) opt->func)     \
@@ -292,6 +303,7 @@ GingaState::getOptions ()
 
 GET_SET_OPTION_DEFN (Bool, bool, G_TYPE_BOOLEAN, "a boolean")
 GET_SET_OPTION_DEFN (Int, int, G_TYPE_INT, "an int")
+GET_SET_OPTION_DEFN (String, string, G_TYPE_STRING, "a string")
 
 
 // Internal API.
@@ -300,10 +312,10 @@ GET_SET_OPTION_DEFN (Int, int, G_TYPE_INT, "an int")
  * @brief Creates a new instance.
  */
 GingaState::GingaState (unused (int argc), unused (char **argv),
-                            GingaOptions *opts)
+                        GingaOptions *opts)
   : Ginga (argc, argv, opts)
 {
-  _opts = (opts) ? opts : &opts_defaults;
+  _opts = (opts) ? *opts : opts_defaults;
   _scheduler = new Scheduler (this);
   _listeners = nullptr;
   _players = nullptr;
@@ -313,6 +325,7 @@ GingaState::GingaState (unused (int argc), unused (char **argv),
   _last_tick_total = 0;
   _last_tick_diff = 0;
   _last_tick_frameno = 0;
+  setOptionBackground (this, "background", _opts.background);
 
 #if defined WITH_CEF && WITH_CEF
   CefMainArgs args (argc, argv);
@@ -385,9 +398,10 @@ GingaState::unregisterPlayer (Player *player)
  */
 void
 GingaState::setOptionDebug (unused (GingaState *self),
-                              const string &name, bool value)
+                            const string &name, bool value)
 {
-  TRACE ("setting option %s to %s", name.c_str (), strbool (value));
+  g_assert (name == "debug");
+  TRACE ("setting option '%s' to %s", name.c_str (), strbool (value));
 }
 
 /**
@@ -395,14 +409,30 @@ GingaState::setOptionDebug (unused (GingaState *self),
  */
 void
 GingaState::setOptionSize (GingaState *self,
-                             const string &name,
-                             int value)
+                           const string &name,
+                           int value)
 {
-  GingaOptions opts;
+  const GingaOptions *opts;
   g_assert (name == "width" || name == "height");
   opts = self->getOptions ();
-  self->resize (opts.width, opts.height);
-  TRACE ("setting option %s to %d", name.c_str (), value);
+  self->resize (opts->width, opts->height);
+  TRACE ("setting option '%s' to %d", name.c_str (), value);
+}
+
+/**
+ * @brief Updates background option.
+ */
+void
+GingaState::setOptionBackground (GingaState *self,
+                                 const string &name,
+                                 string value)
+{
+  g_assert (name == "background");
+  if (value == "")
+    self->_background = {0.,0.,0.,0.};
+  else
+    self->_background = ginga_parse_color (value);
+  TRACE ("setting option '%s' to '%s'", name.c_str (), value.c_str ());
 }
 
 
