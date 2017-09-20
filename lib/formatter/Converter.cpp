@@ -78,19 +78,30 @@ Converter::getEvent (ExecutionObject *exeObj,
                      const string &key)
 {
   string id;
+  string suffix;
+
   NclEvent *event;
   string type;
 
-  xstrassign (type, "%d", (int) ncmEventType);
+  switch (ncmEventType)
+    {
+    case EventType::SELECTION:
+      suffix = "<sel";
+      if (key != "")
+        suffix += "(" + key + ")";
+      suffix += ">";
+      break;
+    case EventType::PRESENTATION:
+      suffix = "<pres>";
+      break;
+    case EventType::ATTRIBUTION:
+      suffix = "<attr>";
+      break;
+    default:
+      g_assert_not_reached ();
+    }
 
-  if (key == "")
-    {
-      id = interfacePoint->getId () + "_" + type;
-    }
-  else
-    {
-      id = interfacePoint->getId () + "_" + type + "_" + key;
-    }
+  id = interfacePoint->getId () + suffix;
 
   event = exeObj->getEvent (id);
   if (event != nullptr)
@@ -210,24 +221,6 @@ Converter::addSameInstance (ExecutionObject *exeObj,
             referPerspective->getNode (referPerspective->getNumNodes () - 2));
 
       referParentObject->addExecutionObject (exeObj);
-
-      // A new entry for the execution object is inserted using
-      // the refer node id.  As a consequence, links referring to the
-      // refer node will generate events in the execution object.
-      // Descriptor *desc = exeObj->getDescriptor ();
-
-      // string objectId;
-      // if (desc)
-      //   {
-      //     objectId = (referPerspective->getId () + SEPARATOR
-      //                 + exeObj->getDescriptor ()->getId ());
-      //   }
-      // else
-      //   {
-      string objectId = referPerspective->getId ();
-        // }
-      TRACE (">>>>> Obj.id=%s persp=%s", exeObj->getId ().c_str (), objectId.c_str ());
-      //_exeObjects[objectId] = exeObj;
     }
 
   delete ncmPerspective;
@@ -240,8 +233,6 @@ void
 Converter::addExecutionObject (ExecutionObject *exeObj,
                                ExecutionObjectContext *parentObj)
 {
-  //_exeObjects[exeObj->getId ()] = exeObj;
-
   if (parentObj)
     {
       parentObj->addExecutionObject (exeObj);
@@ -250,18 +241,6 @@ Converter::addExecutionObject (ExecutionObject *exeObj,
   // Hanlde settings nodes.
   Node *dataObject = exeObj->getNode ();
   // auto contentNode = cast (Media *, dataObject);
-
-  // if (contentNode != nullptr && contentNode->isSettings ())
-  //   _settingsObjects.insert (exeObj);
-
-  // auto referNode = cast (Refer *, dataObject);
-  // if (referNode)
-  //   {
-  //     Media *media = referNode->getReferred ();
-  //     g_assert_nonnull (media);
-  //     if (media->isSettings ())
-  //       _settingsObjects.insert (exeObj);
-  //   }
 
   NclNodeNesting *nodePerspective = exeObj->getNodePerspective ();
   Node *headNode = nodePerspective->getHeadNode ();
@@ -379,12 +358,10 @@ Converter::createExecutionObject (
   auto switchNode = cast (Switch *, nodeEntity);
   if (switchNode)
     {
-      string s;
       g_assert_nonnull (node);
       exeObj = new ExecutionObjectSwitch (_ginga, id, node, _actionListener);
-      xstrassign (s, "%d", (int) EventType::PRESENTATION);
       compositeEvt = new PresentationEvent (_ginga,
-            nodeEntity->getLambda ()->getId () + "_" + s,
+            nodeEntity->getLambda ()->getId () + "<pres>",
             exeObj,
             (Area *)(nodeEntity->getLambda ()));
 
@@ -402,7 +379,7 @@ Converter::createExecutionObject (
 
       xstrassign (s, "%d", (int) EventType::PRESENTATION);
       compositeEvt = new PresentationEvent (_ginga,
-            nodeEntity->getLambda ()->getId () + "_" + s,
+            nodeEntity->getLambda ()->getId () + "<pres>",
             exeObj,
             (Area *)(nodeEntity->getLambda ()));
 
