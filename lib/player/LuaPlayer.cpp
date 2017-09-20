@@ -42,15 +42,6 @@ LuaPlayer::LuaPlayer (GingaState *ginga, const string &id,
                       const string &uri)
   : Player (ginga, id, uri)
 {
-  gchar *dir;
-
-  dir = g_path_get_dirname (uri.c_str ());
-  g_assert_nonnull (dir);
-
-  if (g_chdir (dir) < 0)
-    ERROR ("cannot chdir to '%s': %s", dir, g_strerror (errno));
-  g_free (dir);
-
   _nw = NULL;
   _init_rect = {0, 0, 0, 0};
 }
@@ -68,11 +59,13 @@ LuaPlayer::start (void)
   g_assert_null (_nw);
   TRACE ("starting");
 
+  this->pwdSave (_uri);
   _init_rect = _rect;
   _nw = ncluaw_open
     (_uri.c_str (), _init_rect.width, _init_rect.height, &errmsg);
   if (unlikely (_nw == NULL))
     ERROR ("cannot load NCLua file %s: %s", _uri.c_str (), errmsg);
+  this->pwdRestore ();
 
   evt_ncl_send_presentation (_nw, "start", "");
   g_assert (_ginga->registerEventListener (this));
@@ -87,7 +80,11 @@ LuaPlayer::stop (void)
   g_assert_nonnull (_nw);
 
   evt_ncl_send_presentation (_nw, "stop", "");
+
+  this->pwdSave ();
   ncluaw_cycle (_nw);
+  this->pwdRestore ();
+
   ncluaw_close (_nw);
   g_assert (_ginga->unregisterEventListener (this));
   _nw = NULL;
@@ -135,13 +132,57 @@ LuaPlayer::redraw (cairo_t *cr)
   g_assert (_state != PL_SLEEPING);
   g_assert_nonnull (_nw);
 
+  this->pwdSave ();
   ncluaw_cycle (_nw);
+  this->pwdRestore ();
 
   _surface = (cairo_surface_t *) ncluaw_debug_get_surface (_nw);
   g_assert_nonnull (_surface);
 
   Player::redraw (cr);
   _surface = nullptr;
+}
+
+
+// Private methods.
+
+static void
+do_chdir (string dir)
+{
+  if (g_chdir (dir.c_str ()) < 0)
+    ERROR ("cannot chdir to '%s': %s", dir.c_str (), g_strerror (errno));
+}
+
+void
+LuaPlayer::pwdSave (const string &path)
+{
+  gchar *cwd;
+  gchar *dir;
+
+  cwd = g_get_current_dir ();
+  g_assert_nonnull (cwd);
+
+  dir = g_path_get_dirname (path.c_str ());
+  g_assert_nonnull (dir);
+
+  _saved_pwd = string (cwd);
+  _pwd = string (dir);
+  do_chdir (_pwd);
+
+  g_free (cwd);
+  g_free (dir);
+}
+
+void
+LuaPlayer::pwdSave ()
+{
+  do_chdir (_pwd);
+}
+
+void
+LuaPlayer::pwdRestore ()
+{
+  do_chdir (_saved_pwd);
 }
 
 GINGA_PLAYER_END
