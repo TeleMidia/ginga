@@ -275,7 +275,7 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
       g_assert (obj->start ());
       break;
     case SimpleAction::STOP:
-      g_assert (obj->stop ());
+      obj->stop ();
       break;
     case SimpleAction::PAUSE:
       g_assert (obj->pause ());
