@@ -76,6 +76,8 @@
 /tests/suppfile
 /tests/test-ginga-create
 /tests/test-ginga-getOptionBool
+/tests/test-ginga-getOptionInt
+/tests/test-ginga-getOptionString
 /tests/test-ginga-getOptions
 /tests/test-ginga-parse-bool
 /tests/test-ginga-parse-color
@@ -84,6 +86,7 @@
 /tests/test-ginga-parse-time
 /tests/test-ginga-setOptionBool
 /tests/test-ginga-setOptionInt
+/tests/test-ginga-setOptionString
 /tests/test-ginga-version
 /tests/test-xpathbasename
 /tests/test-xpathbuild
@@ -106,4 +109,10 @@
 /tests/test-xstrtodorpercent
 /tests/test-xstrtoll
 /tests/test-xstrup
+/tests/xfail-test-ginga-getOptionBool
+/tests/xfail-test-ginga-getOptionInt
+/tests/xfail-test-ginga-getOptionString
+/tests/xfail-test-ginga-setOptionBool
+/tests/xfail-test-ginga-setOptionInt
+/tests/xfail-test-ginga-setOptionString
 /tests/xfail-test-xstrtod

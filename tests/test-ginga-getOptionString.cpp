@@ -21,22 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  const GingaOptions *out;
-  GingaOptions opts =
-    {
-     10,                        // width
-     20,                        // height
-     false,                     // debug
-     "green",                   // background
-    };
-  Ginga *ginga = Ginga::create (0, nullptr, &opts);
+  Ginga *ginga = Ginga::create (0, nullptr, nullptr);
   g_assert_nonnull (ginga);
-
-  out = ginga->getOptions ();
-  g_assert (out->width == opts.width);
-  g_assert (out->height == opts.height);
-  g_assert (out->debug == opts.debug);
-  g_assert (out->background == opts.background);
-
+  g_assert (ginga->getOptionString ("background") == "");
   exit (EXIT_SUCCESS);
 }
