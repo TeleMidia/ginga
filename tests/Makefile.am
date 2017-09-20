@@ -160,8 +160,35 @@ test_ginga_getOptionBool_SOURCES= test-ginga-getOptionBool.cpp
 progs+= test-ginga-setOptionBool
 test_ginga_setOptionBool_SOURCES= test-ginga-setOptionBool.cpp
 
+progs+= xfail-test-ginga-getOptionBool
+xfail_test_ginga_getOptionBool_SOURCES= xfail-test-ginga-getOptionBool.cpp
+
+progs+= xfail-test-ginga-setOptionBool
+xfail_test_ginga_setOptionBool_SOURCES= xfail-test-ginga-setOptionBool.cpp
+
+progs+= test-ginga-getOptionInt
+test_ginga_getOptionInt_SOURCES= test-ginga-getOptionInt.cpp
+
 progs+= test-ginga-setOptionInt
 test_ginga_setOptionInt_SOURCES= test-ginga-setOptionInt.cpp
+
+progs+= xfail-test-ginga-getOptionInt
+xfail_test_ginga_getOptionInt_SOURCES= xfail-test-ginga-getOptionInt.cpp
+
+progs+= xfail-test-ginga-setOptionInt
+xfail_test_ginga_setOptionInt_SOURCES= xfail-test-ginga-setOptionInt.cpp
+
+progs+= test-ginga-getOptionString
+test_ginga_getOptionString_SOURCES= test-ginga-getOptionString.cpp
+
+progs+= test-ginga-setOptionString
+test_ginga_setOptionString_SOURCES= test-ginga-setOptionString.cpp
+
+progs+= xfail-test-ginga-getOptionString
+xfail_test_ginga_getOptionString_SOURCES= xfail-test-ginga-getOptionString.cpp
+
+progs+= xfail-test-ginga-setOptionString
+xfail_test_ginga_setOptionString_SOURCES= xfail-test-ginga-setOptionString.cpp
 
 check_SCRIPTS= $(ncls)
 check_PROGRAMS= $(progs)
@@ -176,4 +203,10 @@ XFAIL_TESTS=\
   xfail-test-syntax-ncl-bad-tag.ncl\
   xfail-test-syntax-ncl-bad-child.ncl\
   xfail-test-xstrtod\
+  xfail-test-ginga-getOptionBool\
+  xfail-test-ginga-setOptionBool\
+  xfail-test-ginga-getOptionInt\
+  xfail-test-ginga-setOptionInt\
+  xfail-test-ginga-getOptionString\
+  xfail-test-ginga-setOptionString\
   $(NULL)
