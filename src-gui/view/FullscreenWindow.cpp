@@ -70,6 +70,8 @@ create_fullscreen_window (void)
                     G_CALLBACK (destroy_fullscreen_window), NULL);
 
   gtk_widget_show_all (fullscreenWindow);
+
+  GINGA->resize (rect.width, rect.height);
 }
 void
 destroy_fullscreen_window (void)
@@ -77,6 +79,9 @@ destroy_fullscreen_window (void)
   gtk_widget_destroy (fullscreenWindow);
   fullscreenWindow = NULL;
   isFullScreenMode = FALSE;
+
+  GINGA->resize (presentationAttributes.resolutionWidth,
+                 presentationAttributes.resolutionHeight);
 }
 
 /* Modes */

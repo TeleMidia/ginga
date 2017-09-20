@@ -29,8 +29,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 typedef struct
 {
   guint aspectRatio = 0; /* 0=(4:3) 1=(16:9) 2=(16:10) */
-  guint resolutionWidth = 850;
-  guint resolutionHeight = 500;
+  guint resolutionWidth = 640;
+  guint resolutionHeight = 480;
   guint frameRate = 0; /* 0=30 1=60 2=Free  */
   guint guiTheme = 0; /* 0=30 1=60 2=Free  */
 } PresentationAttributes;
