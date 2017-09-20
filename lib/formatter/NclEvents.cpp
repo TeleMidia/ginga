@@ -39,12 +39,14 @@ NclEvent::NclEvent (GingaState *ginga, const string &id,
   _state = EventState::SLEEPING;
   _occurrences = 0;
   _exeObj = exeObj;
+
+  TRACE ("creating event '%s'", _id.c_str ());
   _scheduler->addEvent (this);
 }
 
 NclEvent::~NclEvent ()
 {
-  _listeners.clear ();
+  TRACE ("destroying event '%s'", _id.c_str ());
 }
 
 bool
@@ -100,12 +102,6 @@ void
 NclEvent::addListener (INclEventListener *listener)
 {
   this->_listeners.insert (listener);
-}
-
-void
-NclEvent::removeListener (INclEventListener *listener)
-{
-  _listeners.erase (listener);
 }
 
 EventStateTransition
@@ -402,16 +398,7 @@ SwitchEvent::~SwitchEvent ()
 void
 SwitchEvent::setMappedEvent (NclEvent *evt)
 {
-  if (_mappedEvent != nullptr)
-    {
-      _mappedEvent->removeListener (this);
-    }
-
   _mappedEvent = evt;
-  if (_mappedEvent != nullptr)
-    {
-      _mappedEvent->addListener (this);
-    }
 }
 
 void

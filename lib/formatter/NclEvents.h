@@ -58,7 +58,6 @@ public:
   bool resume ();
   bool abort ();
   void addListener (INclEventListener *listener);
-  void removeListener (INclEventListener *listener);
   static bool hasNcmId (NclEvent *evt, const string &anchorId);
 
 protected:

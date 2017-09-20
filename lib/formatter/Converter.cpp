@@ -41,8 +41,6 @@ Converter::Converter (GingaState *ginga,
 
 Converter::~Converter ()
 {
-  for (NclEvent *evt: _listening)
-    evt->removeListener (this);
 }
 
 RuleAdapter *
