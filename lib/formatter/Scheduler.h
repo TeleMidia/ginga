@@ -39,6 +39,7 @@ class Scheduler : public INclActionListener
 public:
   Scheduler (GingaState *, const string &);
   virtual ~Scheduler ();
+  bool run (string *);
 
   set<ExecutionObject *> *getObjects ();
   ExecutionObject *getObjectById (const string &);

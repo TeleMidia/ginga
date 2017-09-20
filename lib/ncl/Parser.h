@@ -48,19 +48,23 @@ GINGA_NCL_BEGIN
 class Parser : public ErrorHandler
 {
 public:
-  static NclDocument *parse (const string &, int, int);
+  static NclDocument *parse (const string &, int, int, string *);
 
 private:
   NclDocument *_doc;            // NCL document
   string _path;                 // document's absolute path
   string _dirname;              // directory part of document's path
+  string _errmsg;               // last error
   int _width;                   // screen width (in pixels)
   int _height;                  // screen height (in pixels)
 
   Parser (int, int);
   ~Parser ();
-  NclDocument *parse0 (const string &);
 
+  string getErrMsg ();
+  void setErrMsg (const string &);
+
+  NclDocument *parse0 (const string &);
   void parseNcl (DOMElement *);
   void parseHead (DOMElement *);
 

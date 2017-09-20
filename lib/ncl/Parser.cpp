@@ -311,14 +311,30 @@ static map<string, SimpleAction::Type> event_action_type_table =
  * @return The resulting document.
  */
 NclDocument *
-Parser::parse (const string &path, int width, int height)
+Parser::parse (const string &path, int width, int height, string *errmsg)
 {
   Parser parser (width, height);
-  return parser.parse0 (path);
+  NclDocument *result;
+  result = parser.parse0 (path);
+  if (result == nullptr)
+    tryset (errmsg, parser.getErrMsg ());
+  return result;
 }
 
 
 // Private.
+
+string
+Parser::getErrMsg ()
+{
+  return _errmsg;
+}
+
+void
+Parser::setErrMsg (const string &msg)
+{
+  _errmsg = msg;
+}
 
 Parser::Parser (int width, int height)
 {
@@ -413,7 +429,7 @@ Parser::parseNcl (DOMElement *elt)
 }
 
 
-// Head.
+// Private: Head.
 
 void
 Parser::parseHead (DOMElement *elt)
@@ -1828,7 +1844,7 @@ Parser::parseSwitch (DOMElement *elt)
 
 Node *
 Parser::parseBindRule (DOMElement *elt, Composition *parent,
-                          Rule **rule)
+                       Rule **rule)
 {
   Node *node;
   string constituent;

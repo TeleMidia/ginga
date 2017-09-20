@@ -40,6 +40,7 @@ Ginga::~Ginga ()
 Ginga *
 Ginga::create (int argc, char **argv, GingaOptions *opts)
 {
+  setlocale (LC_ALL, "");
   return new GingaState (argc, argv, opts);
 }
 
