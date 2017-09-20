@@ -101,8 +101,7 @@ GingaState::start (const string &file)
   if (_started)
     return;                     // nothing to do
 
-  _scheduler = new Scheduler (this);
-  _scheduler->startDocument (file);
+  _scheduler = new Scheduler (this, file);
   _ncl_file = file;
   _started = true;
 }
@@ -365,7 +364,7 @@ GingaState::~GingaState ()
 Scheduler *
 GingaState::getScheduler ()
 {
-  return _scheduler;
+  return (Scheduler *) this->getData ("scheduler");
 }
 
 /**

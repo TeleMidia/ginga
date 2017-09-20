@@ -66,10 +66,9 @@ public:
 
 private:
   GingaState *_ginga;
-  static int _dummyCount;
-  map<string, ExecutionObject *> _exeObjects;
+  Scheduler *_scheduler;
+
   set<NclEvent *> _listening;
-  set<ExecutionObject *> _settingsObjects;
   INclActionListener *_actionListener;
   RuleAdapter *_ruleAdapter;
   bool _handling;
@@ -77,7 +76,6 @@ private:
   void addExecutionObject (ExecutionObject *exeObj,
                            ExecutionObjectContext *parentObj);
 
-  bool removeExecutionObject (ExecutionObject *exeObj);
 
   NclFormatterLink *
   createLink (Link *ncmLink,

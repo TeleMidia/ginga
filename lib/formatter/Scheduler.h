@@ -37,14 +37,15 @@ class Converter;
 class Scheduler : public INclActionListener
 {
 public:
-  Scheduler (GingaState *);
+  Scheduler (GingaState *, const string &);
   virtual ~Scheduler ();
-  void scheduleAction (NclSimpleAction *) override;
-  void startDocument (const string &);
 
   set<ExecutionObject *> *getObjects ();
+  ExecutionObject *getObjectById (const string &);
   void addObject (ExecutionObject *);
   void removeObject (ExecutionObject *);
+
+  void scheduleAction (NclSimpleAction *) override;
 
 private:
   GingaState *_ginga;              // ginga state

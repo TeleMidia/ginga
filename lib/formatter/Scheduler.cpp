@@ -24,32 +24,7 @@ GINGA_FORMATTER_BEGIN
 
 // Public.
 
-Scheduler::Scheduler (GingaState *ginga)
-{
-  g_assert_nonnull (ginga);
-  _ginga = ginga;
-  _converter = new Converter (ginga, this, new RuleAdapter ());
-}
-
-Scheduler::~Scheduler ()
-{
-  ExecutionObjectSettings *settings;
-  delete _converter;
-  settings = (ExecutionObjectSettings *) _ginga->getData ("settings");
-  if (settings != nullptr)
-    delete settings;
-  _events.clear ();
-  _objects.clear ();
-}
-
-void
-Scheduler::scheduleAction (NclSimpleAction *action)
-{
-  runAction (action->getEvent (), action);
-}
-
-void
-Scheduler::startDocument (const string &file)
+Scheduler::Scheduler (GingaState *ginga, const string &file)
 {
   string id;
   Context *body;
@@ -57,6 +32,11 @@ Scheduler::startDocument (const string &file)
   vector<NclEvent *> *entryevts;
   NclNodeNesting *persp;
   int w, h;
+
+  g_assert_nonnull (ginga);
+  _ginga = ginga;
+  _ginga->setData ("scheduler", this);
+  _converter = new Converter (ginga, this, new RuleAdapter ());
 
   // Parse document.
   w = _ginga->getOptionInt ("width");
@@ -158,10 +138,30 @@ Scheduler::startDocument (const string &file)
   settings->updateCurrentFocus ("");
 }
 
+Scheduler::~Scheduler ()
+{
+  ExecutionObjectSettings *settings;
+  delete _converter;
+  settings = (ExecutionObjectSettings *) _ginga->getData ("settings");
+  if (settings != nullptr)
+    delete settings;
+  _events.clear ();
+  _objects.clear ();
+}
+
 set<ExecutionObject *> *
 Scheduler::getObjects ()
 {
   return &_objects;
+}
+
+ExecutionObject *
+Scheduler::getObjectById (const string &id)
+{
+  for (auto *obj: _objects)
+    if (obj->getId () == id)
+      return obj;
+  return nullptr;
 }
 
 void
@@ -176,6 +176,12 @@ Scheduler::removeObject (ExecutionObject *obj)
 {
   g_assert_nonnull (obj);
   _objects.erase (obj);
+}
+
+void
+Scheduler::scheduleAction (NclSimpleAction *action)
+{
+  runAction (action->getEvent (), action);
 }
 
 
