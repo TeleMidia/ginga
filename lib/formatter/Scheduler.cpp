@@ -32,6 +32,7 @@ Scheduler::Scheduler (GingaState *ginga, const string &file)
   vector<NclEvent *> *entryevts;
   NclNodeNesting *persp;
   int w, h;
+  string errmsg;
 
   g_assert_nonnull (ginga);
   _ginga = ginga;
@@ -40,8 +41,8 @@ Scheduler::Scheduler (GingaState *ginga, const string &file)
 
   // Parse document.
   w = _ginga->getOptionInt ("width");
-  h = _ginga->getOptionInt ("width");
-  _doc = Parser::parse (file, w, h);
+  h = _ginga->getOptionInt ("height");
+  _doc = Parser::parse (file, w, h, &errmsg);
   g_assert_nonnull (_doc);
 
   id = _doc->getId ();
