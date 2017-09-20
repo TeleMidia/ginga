@@ -1,17 +1,17 @@
 /*@define-color bg_color #444444; */
 
-window *, .GtkWindow *{
+window *, GtkWindow *{
   border-radius: 2px;  
   border-width:0px;
 }
 
-window, .GtkWindow{  
+window, GtkWindow{  
   background-color: #303030;  
   border: 1px solid #555555;
   border-top-width: 0px;
 }
 
-window label, .GtkWindow .label{
+window label, GtkWindow .label{
    color: #DDDDDD;
 }
 
@@ -21,20 +21,20 @@ entry, .entry, GtkEntry{
  
 }
 
-window button, .GtkWindow .button{
+window button, GtkWindow .button{
   background: #111111;
   color: #DDDDDD;
   border: 1px solid #555555;
   box-shadow: none;
 }
 
-window popover, .GtkWindow  .popover{
+window popover, GtkWindow  .popover{
   border: 1px solid #444444;
   background-color: #303030;  
   color:#DDDDDD;
 }
 
-window frame, .GtkWindow .frame{
+window frame, GtkWindow .frame{
   border: 1px solid #555555;
 }
 
@@ -46,11 +46,11 @@ slider{
   border: 1px solid #555555;
 }
 
-window button:hover, .GtkWindow .button:hover{
+window button:hover, GtkWindow .button:hover{
   background: #262626;
 }
 
-window headerbar, .GtkWindow .header-bar{
+window headerbar, GtkWindow .header-bar{
   background-image: none;
   background-color: #202020;
   border: 1px solid #555555;
@@ -82,6 +82,10 @@ infobar button, .infobar .button{
 
 infobar button:hover, .infobar .button:hover{
   background: transparent;
+}
+
+GtkSeparator{
+  border: 1px solid #888888;
 }
 
 
