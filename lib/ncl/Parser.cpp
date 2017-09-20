@@ -398,7 +398,7 @@ Parser::parse0 (const string &path)
   return _doc;
 }
 
-void
+bool
 Parser::parseNcl (DOMElement *elt)
 {
   string id;
@@ -426,6 +426,7 @@ Parser::parseNcl (DOMElement *elt)
           ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
         }
     }
+  return true;
 }
 
 

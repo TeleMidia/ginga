@@ -226,24 +226,12 @@ NclLinkTransitionTriggerCondition::NclLinkTransitionTriggerCondition (
   this->_bind = bind;
   this->_event = nullptr;
   this->_transition = transition;
-
-  if (NclEvent::hasInstance (event, false))
-    {
-      this->_event = event;
-      this->_event->addListener (this);
-    }
-  else
-    {
-      ERROR ("Creating a link with null event.");
-    }
+  this->_event = event;
+  this->_event->addListener (this);
 }
 
 NclLinkTransitionTriggerCondition::~NclLinkTransitionTriggerCondition ()
 {
-  if (NclEvent::hasInstance (_event, false))
-    {
-      _event->removeListener (this);
-    }
 }
 
 Bind *
@@ -280,10 +268,7 @@ vector<NclEvent *>
 NclLinkTransitionTriggerCondition::getEvents ()
 {
   vector<NclEvent *> events;
-
-  if (NclEvent::hasInstance (_event, false))
-    events.push_back (_event);
-
+  events.push_back (_event);
   return events;
 }
 

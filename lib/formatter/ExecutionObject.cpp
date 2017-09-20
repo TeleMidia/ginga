@@ -36,6 +36,10 @@ ExecutionObject::ExecutionObject (GingaState *ginga,
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;
+
+  _scheduler = ginga->getScheduler ();
+  g_assert_nonnull (_scheduler);
+
   _seListener = seListener;
   _node = node;
   _wholeContent = nullptr;
@@ -45,93 +49,17 @@ ExecutionObject::ExecutionObject (GingaState *ginga,
   _id = id;
   _player = nullptr;
   _time = GINGA_TIME_NONE;
+  _destroying = false;
 
-  (_ginga->getScheduler ())->addObject (this); // fixme
+  TRACE ("creating object '%s'", _id.c_str ());
+  _scheduler->addObject (this);
 }
 
 ExecutionObject::~ExecutionObject ()
 {
-  map<Node *, ExecutionObjectContext *>::iterator j;
-
-  Node *parentNode;
-  ExecutionObjectContext *parentObject;
-
-  unsetParentsAsListeners ();
-
-  _seListener = nullptr;
-  _node = nullptr;
-  _wholeContent = nullptr;
-  _mainEvent = nullptr;
-
-  destroyEvents ();
-
-  for (auto i : _nodeParentTable)
-    {
-      parentNode = i.second;
-      j = _parentTable.find (parentNode);
-      if (j != _parentTable.end ())
-        {
-          parentObject = j->second;
-
-          parentObject->removeExecutionObject (this);
-        }
-    }
-
-  _nodeParentTable.clear ();
-  _parentTable.clear ();
-}
-
-void
-ExecutionObject::destroyEvents ()
-{
-  for (auto i : _events)
-    {
-      NclEvent *event = i.second;
-      if (NclEvent::hasInstance (event, true))
-        {
-          delete event;
-        }
-    }
-  _events.clear ();
-
-  _presEvents.clear ();
-  _selectionEvents.clear ();
-  _otherEvents.clear ();
-}
-
-void
-ExecutionObject::unsetParentsAsListeners ()
-{
-  removeParentListenersFromEvent (_mainEvent);
-  removeParentListenersFromEvent (_wholeContent);
-}
-
-void
-ExecutionObject::removeParentListenersFromEvent (
-    NclEvent *event)
-{
-  map<Node *, ExecutionObjectContext *>::iterator i;
-  ExecutionObjectContext *parentObject;
-
-  if (NclEvent::hasInstance (event, false))
-    {
-      i = _parentTable.begin ();
-      while (i != _parentTable.end ())
-        {
-          parentObject = (ExecutionObjectContext *)(i->second);
-
-          if (NclEvent::hasInstance (_mainEvent, false))
-            {
-              // register parent as a mainEvent listener
-              _mainEvent->removeListener (parentObject);
-            }
-          else
-            {
-              break;
-            }
-          ++i;
-        }
-    }
+  TRACE ("destroying object '%s'", _id.c_str ());
+  _destroying = true;
+  this->stop ();
 }
 
 bool
@@ -216,13 +144,7 @@ ExecutionObject::removeParentObject (Node *parentNode,
 
   i = _parentTable.find (parentNode);
   if (i != _parentTable.end () && i->second == parentObject)
-    {
-      if (_wholeContent != nullptr)
-        {
-          _wholeContent->removeListener (parentObject);
-        }
-      _parentTable.erase (i);
-    }
+    _parentTable.erase (i);
 }
 
 bool
@@ -642,14 +564,15 @@ ExecutionObject::stop ()
   PresentationEvent *event;
 
   if (this->isSleeping ())
-    return true;                // nothing to do
+    return false;               // nothing to do
 
-  TRACE ("stopping");
+  TRACE ("stopping %s", _id.c_str ());
 
   // Stop and destroy player.
   if (_player != nullptr)
     {
-      _player->stop ();
+      if (_player->getState () != Player::PL_SLEEPING)
+        _player->stop ();
       delete _player;
       _player = nullptr;
       _time = GINGA_TIME_NONE;
@@ -664,6 +587,9 @@ ExecutionObject::stop ()
         attevt->setPlayer (nullptr);
     }
 
+  if (_destroying)
+    return true;                // done
+
   // Stop main event.
   event = cast (PresentationEvent* , _mainEvent);
   if (event != nullptr)
@@ -673,7 +599,6 @@ ExecutionObject::stop ()
     }
 
   _transMan.resetTimeIndex ();
-  removeParentListenersFromEvent (_mainEvent);
 
   return true;
 }

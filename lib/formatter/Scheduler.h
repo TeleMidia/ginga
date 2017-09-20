@@ -41,10 +41,15 @@ public:
   virtual ~Scheduler ();
   bool run (string *);
 
+  set<NclEvent *> *getEvents ();
+  bool hasEvent (NclEvent *);
+  NclEvent *getEventById (const string &);
+  void addEvent (NclEvent *);
+
   set<ExecutionObject *> *getObjects ();
+  bool hasObject (ExecutionObject *);
   ExecutionObject *getObjectById (const string &);
   void addObject (ExecutionObject *);
-  void removeObject (ExecutionObject *);
 
   void scheduleAction (NclSimpleAction *) override;
 
@@ -53,8 +58,9 @@ private:
   Converter *_converter;           // converter object
   string _file;                    // path to document file
   NclDocument *_doc;               // document tree
-  vector<NclEvent *> _events;      // document events
-  set<ExecutionObject *> _objects; // managed objects
+
+  set<NclEvent *> _events;         // document events
+  set<ExecutionObject *> _objects; // document objects
 
   void runAction (NclEvent *, NclSimpleAction *);
   void runActionOverComposition (ExecutionObjectContext *,

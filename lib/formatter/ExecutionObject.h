@@ -97,10 +97,6 @@ protected:
   NclEvent *_mainEvent;
   NclEventTransitionManager _transMan;
 
-  void destroyEvents ();
-  virtual void unsetParentsAsListeners ();
-  virtual void removeParentListenersFromEvent (NclEvent *event);
-
 private:
   bool _isCompiled;
   map<Node *, Node *> _nodeParentTable;
@@ -119,9 +115,12 @@ public:
 
 protected:
   GingaState *_ginga;           // ginga state
+  Scheduler *_scheduler;        // scheduler
+
   string _id;                   // object id
   Player *_player;              // associated player
   GingaTime _time;              // playback time
+  bool _destroying;             // true if object is being destroyed
 };
 
 GINGA_FORMATTER_END
