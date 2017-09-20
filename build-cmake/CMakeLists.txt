@@ -89,6 +89,7 @@ endif()
 set (LIBGINGA_SOURCES
   ../lib/ginga-internal.cpp
   ../lib/ginga.cpp
+  ../lib/GingaState.cpp
 
   ../lib/formatter/Converter.cpp
   ../lib/formatter/ExecutionObject.cpp
@@ -105,9 +106,6 @@ set (LIBGINGA_SOURCES
   ../lib/formatter/NclNodeNesting.cpp
   ../lib/formatter/RuleAdapter.cpp
   ../lib/formatter/Scheduler.cpp
-
-  ../lib/mb/Display.cpp
-  ../lib/mb/Dashboard.cpp
 
   ../lib/ncl/Area.cpp
   ../lib/ncl/AreaLabeled.cpp
