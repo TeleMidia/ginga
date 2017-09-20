@@ -19,39 +19,32 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclEvents.h"
 
 #include "ExecutionObjectContext.h"
+#include "Scheduler.h"
 
 GINGA_FORMATTER_BEGIN
 
 
 // NclEvent.
 
-set<NclEvent *> NclEvent::_instances;
-
-NclEvent::NclEvent (const string &id, ExecutionObject *exeObj)
+NclEvent::NclEvent (GingaState *ginga, const string &id,
+                    ExecutionObject *exeObj)
 {
-  this->_id = id;
+  g_assert_nonnull (ginga);
+  _ginga = ginga;
+
+  _scheduler = ginga->getScheduler ();
+  g_assert_nonnull (_scheduler);
+
+  _id = id;
   _state = EventState::SLEEPING;
   _occurrences = 0;
   _exeObj = exeObj;
-  _instances.insert (this);
+  _scheduler->addEvent (this);
 }
 
 NclEvent::~NclEvent ()
 {
-  _instances.erase (this);
   _listeners.clear ();
-}
-
-bool
-NclEvent::hasInstance (NclEvent *evt, bool remove)
-{
-  bool has = _instances.find(evt) != _instances.end();
-
-  if (has && remove)
-    {
-      _instances.erase (evt);
-    }
-  return has;
 }
 
 bool
@@ -198,10 +191,10 @@ NclEvent::changeState (EventState newState,
 
 // AnchorEvent.
 
-AnchorEvent::AnchorEvent (const string &id,
+AnchorEvent::AnchorEvent (GingaState *ginga, const string &id,
                           ExecutionObject *executionObject,
                           Area *anchor)
-  : NclEvent (id, executionObject)
+  : NclEvent (ginga, id, executionObject)
 {
   this->_anchor = anchor;
 }
@@ -209,10 +202,11 @@ AnchorEvent::AnchorEvent (const string &id,
 
 // PresentationEvent.
 
-PresentationEvent::PresentationEvent (const string &id,
+PresentationEvent::PresentationEvent (GingaState *ginga,
+                                      const string &id,
                                       ExecutionObject *exeObj,
                                       Area *anchor)
-  : AnchorEvent (id, exeObj, anchor)
+  : AnchorEvent (ginga, id, exeObj, anchor)
 {
   _numPresentations = 1;
   _repetitionInterval = 0;
@@ -281,10 +275,11 @@ PresentationEvent::incOccurrences ()
 
 // SelectionEvent
 
-SelectionEvent::SelectionEvent (const string &id,
+SelectionEvent::SelectionEvent (GingaState *ginga,
+                                const string &id,
                                 ExecutionObject *exeObj,
                                 Area *anchor)
-  : AnchorEvent (id, exeObj, anchor)
+  : AnchorEvent (ginga, id, exeObj, anchor)
 {
   _type = EventType::SELECTION;
   _selCode.assign("NO_CODE");
@@ -302,10 +297,11 @@ SelectionEvent::start ()
 
 // AttributionEvent
 
-AttributionEvent::AttributionEvent (const string &id,
+AttributionEvent::AttributionEvent (GingaState *ginga,
+                                    const string &id,
                                     ExecutionObject *exeObj,
                                     Property *anchor)
-  : NclEvent (id, exeObj)
+  : NclEvent (ginga, id, exeObj)
 {
   _type = EventType::ATTRIBUTION;
   this->_anchor = anchor;
@@ -385,24 +381,22 @@ AttributionEvent::solveImplicitRefAssessment (const string &val)
 
 // SwitchEvent.
 
-SwitchEvent::SwitchEvent (const string &id,
+SwitchEvent::SwitchEvent (GingaState *ginga,
+                          const string &id,
                           ExecutionObject *exeObjSwitch,
                           Anchor *interface,
                           EventType type, const string &key)
-  : NclEvent (id, exeObjSwitch)
+  : NclEvent (ginga, id, exeObjSwitch)
 {
   this->_interface = interface;
   this->_type = type;
   this->_key = key;
-  this->_mappedEvent = nullptr;
+  _mappedEvent = nullptr;
 }
 
 SwitchEvent::~SwitchEvent ()
 {
-  if (NclEvent::hasInstance (_mappedEvent, false))
-    {
-      _mappedEvent->removeListener (this);
-    }
+  //_mappedEvent->removeListener (this);
 }
 
 void
