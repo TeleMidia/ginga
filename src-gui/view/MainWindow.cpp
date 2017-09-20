@@ -102,12 +102,9 @@ apply_theme ()
   if (presentationAttributes.guiTheme == 0)
     filename = g_build_path (G_DIR_SEPARATOR_S, executableFolder,
                              "style/light.css", NULL);
-  else if (presentationAttributes.guiTheme == 1)
+  else  
     filename = g_build_path (G_DIR_SEPARATOR_S, executableFolder,
                              "style/dark.css", NULL);
-  else
-    filename = g_build_path (G_DIR_SEPARATOR_S, executableFolder,
-                             "style/marine.css", NULL);
 
   GFile *file = g_file_new_for_path (filename);
   if (g_file_query_exists (file, NULL))
@@ -647,8 +644,6 @@ create_window_components ()
                                   "Light");
   gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (theme_combobox), -1,
                                   "Dark");
-  gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (theme_combobox), -1,
-                                  "Marine");
   gtk_combo_box_set_active (GTK_COMBO_BOX (theme_combobox),
                             presentationAttributes.guiTheme);
 
@@ -977,6 +972,7 @@ stop_button_callback (void)
   gtk_button_set_image (GTK_BUTTON (playButton), play_icon);
   gtk_widget_set_sensitive (fileEntry, true);
   gtk_widget_set_sensitive (openButton, true);
+  gtk_widget_set_sensitive (histButton, true);
 
   GINGA->stop ();
 }
@@ -1005,14 +1001,11 @@ play_pause_button_callback (void)
                         get_icon_folder (), "pause-icon.png", NULL));
       gtk_widget_set_sensitive (fileEntry, false);
       gtk_widget_set_sensitive (openButton, false);
+      gtk_widget_set_sensitive (histButton, false);
 
       // Start Ginga.
       GINGA->start (file);
     }
-  else
-    {
-      gtk_widget_set_sensitive (fileEntry, true);
-      gtk_widget_set_sensitive (openButton, true);
-    }
+ 
   gtk_button_set_image (GTK_BUTTON (playButton), play_icon);
 }
