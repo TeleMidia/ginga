@@ -232,7 +232,6 @@ NclLinkTransitionTriggerCondition::NclLinkTransitionTriggerCondition (
 
 NclLinkTransitionTriggerCondition::~NclLinkTransitionTriggerCondition ()
 {
-  _event->removeListener (this);
 }
 
 Bind *
