@@ -19,14 +19,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Converter.h"
 
 #include "NclActions.h"
-#include "NclLinkStatement.h"
 #include "NclLinkAssessment.h"
+#include "NclLinkStatement.h"
+#include "Scheduler.h"
 
 GINGA_FORMATTER_BEGIN
-
-int Converter::_dummyCount = 0;
-
-static const string SEPARATOR = "/";
 
 Converter::Converter (GingaState *ginga,
                       INclActionListener *actlist,
@@ -34,6 +31,10 @@ Converter::Converter (GingaState *ginga,
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;
+
+  _scheduler = ginga->getScheduler ();
+  g_assert_nonnull (_scheduler);
+
   _actionListener = actlist;
   _ruleAdapter = ruleAdapter;
 }
@@ -47,23 +48,6 @@ Converter::~Converter ()
           evt->removeListener (this);
         }
     }
-
-  // for (auto i = _exeObjects.begin (); i != _exeObjects.end (); )
-  //   {
-  //     ExecutionObject *object = i->second;
-
-  //     if (!removeExecutionObject (object))
-  //       {
-  //         i = _exeObjects.erase (i);
-  //       }
-  //     else
-  //       {
-  //         ++i;
-  //       }
-  //   }
-
-  _exeObjects.clear ();
-  _settingsObjects.clear ();
 }
 
 RuleAdapter *
@@ -79,14 +63,11 @@ Converter::getExecutionObjectFromPerspective (
   ExecutionObjectContext *parentObj;
   ExecutionObject *exeObj;
 
-  string id = perspective->getId () + SEPARATOR;
+  string id = perspective->getId () + "/";
 
-  auto i = _exeObjects.find (id);
-  if (i != _exeObjects.end ())
-    {
-      exeObj = i->second;
-      return exeObj;
-    }
+  exeObj = _scheduler->getObjectById (id);
+  if (exeObj != nullptr)
+    return exeObj;
 
   parentObj = getParentExecutionObject (perspective);
   exeObj = createExecutionObject (id, perspective, descriptor);
@@ -255,7 +236,8 @@ Converter::addSameInstance (ExecutionObject *exeObj,
       //   {
       string objectId = referPerspective->getId ();
         // }
-      _exeObjects[objectId] = exeObj;
+      TRACE (">>>>> Obj.id=%s persp=%s", exeObj->getId ().c_str (), objectId.c_str ());
+      //_exeObjects[objectId] = exeObj;
     }
 
   delete ncmPerspective;
@@ -268,7 +250,7 @@ void
 Converter::addExecutionObject (ExecutionObject *exeObj,
                                ExecutionObjectContext *parentObj)
 {
-  _exeObjects[exeObj->getId ()] = exeObj;
+  //_exeObjects[exeObj->getId ()] = exeObj;
 
   if (parentObj)
     {
@@ -277,20 +259,19 @@ Converter::addExecutionObject (ExecutionObject *exeObj,
 
   // Hanlde settings nodes.
   Node *dataObject = exeObj->getNode ();
-  auto contentNode = cast (Media *, dataObject);
+  // auto contentNode = cast (Media *, dataObject);
 
-  if (contentNode != nullptr && contentNode->isSettings ())
-    _settingsObjects.insert (exeObj);
+  // if (contentNode != nullptr && contentNode->isSettings ())
+  //   _settingsObjects.insert (exeObj);
 
-  auto referNode = cast (Refer *, dataObject);
-  if (referNode)
-    {
-
-      Media *media = referNode->getReferred ();
-      g_assert_nonnull (media);
-      if (media->isSettings ())
-        _settingsObjects.insert (exeObj);
-    }
+  // auto referNode = cast (Refer *, dataObject);
+  // if (referNode)
+  //   {
+  //     Media *media = referNode->getReferred ();
+  //     g_assert_nonnull (media);
+  //     if (media->isSettings ())
+  //       _settingsObjects.insert (exeObj);
+  //   }
 
   NclNodeNesting *nodePerspective = exeObj->getNodePerspective ();
   Node *headNode = nodePerspective->getHeadNode ();
@@ -324,33 +305,6 @@ Converter::addExecutionObject (ExecutionObject *exeObj,
 
       compileExecutionObjectLinks (exeObj, node, parent);
     }
-}
-
-bool
-Converter::removeExecutionObject (ExecutionObject *exeObj)
-{
-  bool removed = false;
-
-  auto i = _exeObjects.find (exeObj->getId ());
-
-  if (i != _exeObjects.end ())
-    {
-      _exeObjects.erase (i);
-      removed = true;
-    }
-
-  if (_settingsObjects.count (exeObj))
-    {
-      _settingsObjects.erase (_settingsObjects.find (exeObj));
-      removed = true;
-    }
-
-  if (removed)
-    {
-      delete exeObj;
-    }
-
-  return removed;
 }
 
 ExecutionObjectContext *
@@ -692,17 +646,15 @@ Converter::processExecutionObjectSwitch (
   selectedPerspective = switchObject->getNodePerspective ();
   selectedPerspective->insertAnchorNode (selectedNode);
 
-  id = selectedPerspective->getId () + SEPARATOR;
+  id = selectedPerspective->getId () + "/";
 
-  i = _exeObjects.find (id);
-  if (i != _exeObjects.end ())
+  ExecutionObject *obj = _scheduler->getObjectById (id);
+  if (obj != nullptr)
     {
-      selectedObject = i->second;
-      switchObject->select (selectedObject);
+      switchObject->select (obj);
       resolveSwitchEvents (switchObject);
       delete selectedPerspective;
-
-      return selectedObject;
+      return obj;
     }
 
   selectedObject = createExecutionObject (id, selectedPerspective, nullptr);
@@ -947,7 +899,7 @@ Converter::eventStateChanged (NclEvent *event,
       if (transition == EventStateTransition::STOPS
           || transition == EventStateTransition::ABORTS)
         {
-          removeExecutionObject (exeObj);
+          _scheduler->removeObject (exeObj);
         }
     }
 }
