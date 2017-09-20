@@ -16,28 +16,18 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga-internal.h"
-
 #include "ExecutionObject.h"
+
 #include "ExecutionObjectContext.h"
 #include "ExecutionObjectSettings.h"
 #include "ExecutionObjectSwitch.h"
 #include "NclEvents.h"
+#include "Scheduler.h"
 
 #include "player/Player.h"
 using namespace ::ginga::player;
 
 GINGA_FORMATTER_BEGIN
-
-/**
- * @brief Settings object.
- */
-ExecutionObjectSettings *ExecutionObject::_settings = nullptr;
-
-/**
- * @brief Set containing all execution objects.
- */
-set<ExecutionObject *> ExecutionObject::_objects;
-
 
 ExecutionObject::ExecutionObject (GingaState *ginga,
                                   const string &id,
@@ -56,8 +46,7 @@ ExecutionObject::ExecutionObject (GingaState *ginga,
   _player = nullptr;
   _time = GINGA_TIME_NONE;
 
-  _objects.insert (this);
-  TRACE ("creating exec object '%s' (%p)", _id.c_str (), this);
+  (_ginga->getScheduler ())->addObject (this); // fixme
 }
 
 ExecutionObject::~ExecutionObject ()
@@ -89,9 +78,7 @@ ExecutionObject::~ExecutionObject ()
     }
 
   _nodeParentTable.clear ();
-
   _parentTable.clear ();
-  TRACE ("destroying exec object '%s' (%p)", _id.c_str (), this);
 }
 
 void
@@ -700,22 +687,6 @@ ExecutionObject::abort ()
 
 // -----------------------------------
 
-// static
-ExecutionObjectSettings *
-ExecutionObject::getSettings (void)
-{
-  return _settings;
-}
-
-// static
-void
-ExecutionObject::setSettings (ExecutionObjectSettings *obj)
-{
-  g_assert_null (_settings);
-  g_assert_nonnull (obj);
-  _settings = obj;
-}
-
 /**
  * @brief Tests whether object is focused.
  * @return True if successful, or false otherwise.
@@ -840,6 +811,7 @@ ExecutionObject::handleTickEvent (unused (GingaTime total),
 void
 ExecutionObject::handleKeyEvent (const string &key, bool press)
 {
+  ExecutionObjectSettings *settings;
   list<SelectionEvent *> buf;
 
   if (!press)
@@ -864,9 +836,9 @@ ExecutionObject::handleKeyEvent (const string &key, bool press)
           || ((key == "CURSOR_RIGHT"
                && (next = _player->getProperty ("moveRight")) != "")))
         {
-          g_assert_nonnull (_settings);
-          cast (ExecutionObjectSettings *, _settings)
-            ->scheduleFocusUpdate (next);
+          settings = (ExecutionObjectSettings *) _ginga->getData ("settings");
+          g_assert_nonnull (settings);
+          settings->scheduleFocusUpdate (next);
         }
     }
 

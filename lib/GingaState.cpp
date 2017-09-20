@@ -35,7 +35,7 @@ static GingaOptions opts_defaults = {
 // Option data.
 typedef struct GingaOptionData
 {
-  GType type;                   // type
+  GType type;                   // option type
   int offset;                   // offset in GingaOption struct
   void *func;                   // update function
 } OptionTab;
@@ -100,7 +100,8 @@ GingaState::start (const string &file)
 {
   if (_started)
     return;                     // nothing to do
-  g_assert_nonnull (_scheduler);
+
+  _scheduler = new Scheduler (this);
   _scheduler->startDocument (file);
   _ncl_file = file;
   _started = true;
@@ -109,10 +110,17 @@ GingaState::start (const string &file)
 /**
  * @brief Stops NCL.
  */
-void G_GNUC_NORETURN
+void
 GingaState::stop ()
 {
-  ERROR_NOT_IMPLEMENTED ("stop is not supported");
+  TRACE ("STOPPING");
+  delete _scheduler;
+  _scheduler = nullptr;
+  g_list_free (_listeners);
+  _listeners = nullptr;
+  g_list_free (_players);
+  _players = nullptr;
+  _started = false;
 }
 
 /**
@@ -316,7 +324,7 @@ GingaState::GingaState (unused (int argc), unused (char **argv),
   : Ginga (argc, argv, opts)
 {
   _opts = (opts) ? *opts : opts_defaults;
-  _scheduler = new Scheduler (this);
+  _scheduler = nullptr;
   _listeners = nullptr;
   _players = nullptr;
 
@@ -343,12 +351,21 @@ GingaState::GingaState (unused (int argc), unused (char **argv),
  */
 GingaState::~GingaState ()
 {
-  delete _scheduler;
-  g_list_free (_listeners);
-  g_list_free (_players);
+  if (_started)
+    this->stop ();
 #if defined WITH_CEF && WITH_CEF
   CefShutdown ();
 #endif
+}
+
+/**
+ * @brief Gets associated scheduler.
+ * @return The associated scheduler.
+ */
+Scheduler *
+GingaState::getScheduler ()
+{
+  return _scheduler;
 }
 
 /**
@@ -391,6 +408,30 @@ GingaState::unregisterPlayer (Player *player)
 {
   g_assert_nonnull (player);
   g_assert (this->remove (&_players, player));
+}
+
+/**
+ * @brief Gets data previously attached to state.
+ * @param key Name of the key.
+ * @return Data associated with key.
+ */
+void *
+GingaState::getData (const string &key)
+{
+  map<string, void *>::iterator it;
+  return ((it = _userdata.find (key)) == _userdata.end ())
+    ? nullptr : it->second;
+}
+
+/**
+ * @brief Attaches data to state.
+ * @param key Name of the key.
+ * @param data Data to associate with key.
+ */
+void
+GingaState::setData (const string &key, void *data)
+{
+  _userdata[key] = data;
 }
 
 /**

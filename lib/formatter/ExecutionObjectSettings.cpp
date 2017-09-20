@@ -20,6 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ExecutionObjectContext.h"
 #include "ExecutionObjectSwitch.h"
+#include "Scheduler.h"
 
 GINGA_FORMATTER_BEGIN
 
@@ -60,11 +61,14 @@ ExecutionObjectSettings::updateCurrentFocus (const string &index)
     }
   else
     {
-      for (auto obj: _objects)
+      Scheduler *sched = _ginga->getScheduler ();
+      g_assert_nonnull (sched);
+
+      for (auto obj: *sched->getObjects ())
         if (obj->isFocused ())
           return;                   // nothing to do
 
-      for (auto obj: _objects)
+      for (auto obj: *sched->getObjects ())
         {
           if (!instanceof (ExecutionObjectContext *, obj)
               && !instanceof (ExecutionObjectSettings *, obj)

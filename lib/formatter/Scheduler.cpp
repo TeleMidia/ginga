@@ -33,8 +33,13 @@ Scheduler::Scheduler (GingaState *ginga)
 
 Scheduler::~Scheduler ()
 {
-  _events.clear ();
+  ExecutionObjectSettings *settings;
   delete _converter;
+  settings = (ExecutionObjectSettings *) _ginga->getData ("settings");
+  if (settings != nullptr)
+    delete settings;
+  _events.clear ();
+  _objects.clear ();
 }
 
 void
@@ -136,7 +141,7 @@ Scheduler::startDocument (const string &file)
   delete nodes;
 
   // Set global settings object.
-  ExecutionObject::setSettings (settings);
+  _ginga->setData ("settings", settings);
 
   // Start entry events.
   for (auto event: *entryevts)
@@ -151,6 +156,26 @@ Scheduler::startDocument (const string &file)
 
   // Refresh current focus.
   settings->updateCurrentFocus ("");
+}
+
+set<ExecutionObject *> *
+Scheduler::getObjects ()
+{
+  return &_objects;
+}
+
+void
+Scheduler::addObject (ExecutionObject *obj)
+{
+  g_assert_nonnull (obj);
+  _objects.insert (obj);
+}
+
+void
+Scheduler::removeObject (ExecutionObject *obj)
+{
+  g_assert_nonnull (obj);
+  _objects.erase (obj);
 }
 
 
