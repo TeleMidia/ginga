@@ -56,6 +56,20 @@ gboolean isCrtlModifierActive = FALSE;
 
 PresentationAttributes presentationAttributes;
 
+gboolean
+resize_callback (GtkWidget *widget, GdkEventConfigure *e, gpointer data)
+{
+  (void)widget;
+  (void)data;
+
+  presentationAttributes.resolutionWidth = e->width;
+  presentationAttributes.resolutionHeight = e->height;
+
+  GINGA->resize (e->width, e->height);
+
+  return FALSE;
+}
+
 void
 press_aboutButton_callback ()
 {
@@ -193,7 +207,7 @@ apply_theme ()
   tvRemoteView = create_tvremote_buttons (10, 10);
   gtk_box_pack_start (GTK_BOX (tvcontrolBox), tvRemoteView, false, true, 0);
 
-  update_window();
+  update_window ();
 }
 
 void
@@ -464,7 +478,7 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
     }
 
   GINGA->sendKeyEvent (std::string (key),
-                   g_strcmp0 ((const char *)type, "press") == 0);
+                       g_strcmp0 ((const char *)type, "press") == 0);
   /*  if (free_key)
       g_free (key); */
 }
@@ -851,15 +865,6 @@ create_window_components ()
 
   gtk_container_add (GTK_CONTAINER (mainWindow), vpaned);
 
-  /* g_signal_connect (flow_box, "check-resize",
-                     G_CALLBACK (resize_main_window_callback), NULL); */
-  g_signal_connect (mainWindow, "key-press-event",
-                    G_CALLBACK (keyboard_callback), (void *)"press");
-  g_signal_connect (mainWindow, "key-release-event",
-                    G_CALLBACK (keyboard_callback), (void *)"release");
-  g_signal_connect (mainWindow, "destroy", G_CALLBACK (destroy_main_window),
-                    NULL);
-
   apply_theme ();
 }
 
@@ -879,11 +884,25 @@ create_main_window ()
 
   create_window_components ();
 
+  g_signal_connect (mainWindow, "key-press-event",
+                    G_CALLBACK (keyboard_callback), (void *)"press");
+  g_signal_connect (mainWindow, "key-release-event",
+                    G_CALLBACK (keyboard_callback), (void *)"release");
+  g_signal_connect (mainWindow, "destroy", G_CALLBACK (destroy_main_window),
+                    NULL);
+  g_signal_connect (gingaView, "configure-event",
+                    G_CALLBACK (resize_callback), NULL);
+
   gtk_widget_show_all (mainWindow);
 
   gtk_widget_hide (debugView);
   gtk_widget_hide (sideView);
   gtk_widget_hide (infoBar);
+
+  /* GtkAllocation alloc;
+   gtk_widget_get_allocation (mainBox, &alloc);
+   GINGA->resize (alloc.width, alloc.height);
+   */
 }
 
 void
@@ -958,6 +977,8 @@ stop_button_callback (void)
   gtk_button_set_image (GTK_BUTTON (playButton), play_icon);
   gtk_widget_set_sensitive (fileEntry, true);
   gtk_widget_set_sensitive (openButton, true);
+
+  GINGA->stop ();
 }
 
 void
