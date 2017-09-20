@@ -112,7 +112,6 @@ GingaState::start (const string &file)
 void
 GingaState::stop ()
 {
-  TRACE ("STOPPING");
   delete _scheduler;
   _scheduler = nullptr;
   g_list_free (_listeners);
@@ -120,6 +119,9 @@ GingaState::stop ()
   g_list_free (_players);
   _players = nullptr;
   _started = false;
+  _last_tick_total = 0;
+  _last_tick_diff = 0;
+  _last_tick_frameno = 0;
 }
 
 /**
