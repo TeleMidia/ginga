@@ -41,13 +41,6 @@ Converter::Converter (GingaState *ginga,
 
 Converter::~Converter ()
 {
-  for (NclEvent *evt: _listening)
-    {
-      if (NclEvent::hasInstance (evt, false))
-        {
-          evt->removeListener (this);
-        }
-    }
 }
 
 RuleAdapter *
@@ -110,23 +103,22 @@ Converter::getEvent (ExecutionObject *exeObj,
 
   if (switchObj)
     {
-      event = new SwitchEvent (
+      event = new SwitchEvent (_ginga,
             id, switchObj, interfacePoint, ncmEventType, key);
     }
   else if (ncmEventType == EventType::PRESENTATION)
     {
-      event = new PresentationEvent (
+      event = new PresentationEvent (_ginga,
             id, exeObj, (Area *)interfacePoint);
     }
   else if (cObj)
     {
-      // TODO: eventos internos da composicao estao sendo tratados nos elos.
       if (ncmEventType == EventType::ATTRIBUTION)
         {
           auto propAnchor = cast (Property *, interfacePoint);
           if (propAnchor)
             {
-              event = new AttributionEvent (
+              event = new AttributionEvent (_ginga,
                     id, exeObj,
                     (Property *)interfacePoint);
             }
@@ -135,7 +127,7 @@ Converter::getEvent (ExecutionObject *exeObj,
               WARNING ("NCM event type is attribution, but interface point "
                        "isn't");
 
-              event = new AttributionEvent (id, exeObj, nullptr);
+              event = new AttributionEvent (_ginga, id, exeObj, nullptr);
             }
         }
     }
@@ -148,7 +140,7 @@ Converter::getEvent (ExecutionObject *exeObj,
             auto propAnchor = cast (Property *, interfacePoint);
             if (propAnchor)
               {
-                event = new AttributionEvent (id, exeObj, propAnchor);
+                event = new AttributionEvent (_ginga, id, exeObj, propAnchor);
               }
             else
               {
@@ -160,9 +152,7 @@ Converter::getEvent (ExecutionObject *exeObj,
                 if (intervalAnchor)
                   {
                     WARNING ("It was supposed to be a PRESENTATION EVENT");
-
-                    // TODO: find the correct way to solve this
-                    event = new PresentationEvent (
+                    event = new PresentationEvent (_ginga,
                           id, exeObj,
                           intervalAnchor);
                   }
@@ -174,7 +164,7 @@ Converter::getEvent (ExecutionObject *exeObj,
 
         case EventType::SELECTION:
           {
-            event = new SelectionEvent (
+            event = new SelectionEvent (_ginga,
                   id, exeObj, (Area *)interfacePoint);
 
             if (key != "")
@@ -393,7 +383,7 @@ Converter::createExecutionObject (
       g_assert_nonnull (node);
       exeObj = new ExecutionObjectSwitch (_ginga, id, node, _actionListener);
       xstrassign (s, "%d", (int) EventType::PRESENTATION);
-      compositeEvt = new PresentationEvent (
+      compositeEvt = new PresentationEvent (_ginga,
             nodeEntity->getLambda ()->getId () + "_" + s,
             exeObj,
             (Area *)(nodeEntity->getLambda ()));
@@ -411,7 +401,7 @@ Converter::createExecutionObject (
       exeObj = new ExecutionObjectContext (_ginga, id, node, _actionListener);
 
       xstrassign (s, "%d", (int) EventType::PRESENTATION);
-      compositeEvt = new PresentationEvent (
+      compositeEvt = new PresentationEvent (_ginga,
             nodeEntity->getLambda ()->getId () + "_" + s,
             exeObj,
             (Area *)(nodeEntity->getLambda ()));
@@ -899,7 +889,6 @@ Converter::eventStateChanged (NclEvent *event,
       if (transition == EventStateTransition::STOPS
           || transition == EventStateTransition::ABORTS)
         {
-          _scheduler->removeObject (exeObj);
         }
     }
 }

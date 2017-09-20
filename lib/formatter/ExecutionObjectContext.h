@@ -52,7 +52,6 @@ public:
   void removeLinkUncompiled (Link *ncmLink);
   void setLinkCompiled (NclFormatterLink *formatterLink);
   void setParentsAsListeners ();
-  void unsetParentsAsListeners () override;
   void eventStateChanged (NclEvent *event,
                           EventStateTransition transition,
                           EventState previousState) override;
