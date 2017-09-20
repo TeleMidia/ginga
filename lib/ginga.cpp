@@ -40,7 +40,7 @@ Ginga::~Ginga ()
 Ginga *
 Ginga::create (int argc, char **argv, GingaOptions *opts)
 {
-  setlocale (LC_ALL, "");
+  g_assert (g_setenv ("LC_ALL", "C", true)); // fixme
   return new GingaState (argc, argv, opts);
 }
 
