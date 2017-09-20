@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NCL_EVENTS_H
 #define NCL_EVENTS_H
 
+#include "GingaState.h"
+
 #include "ncl/Ncl.h"
 using namespace ::ginga::ncl;
 
@@ -47,9 +49,9 @@ class NclEvent
   PROPERTY_READONLY (EventState, _previousState, getPreviousState)
 
 public:
-  NclEvent (const string &, ExecutionObject *);
+  NclEvent (GingaState *, const string &, ExecutionObject *);
   virtual ~NclEvent ();
-  void setState (EventState newState);
+  void setState (EventState);
   virtual bool start ();
   virtual bool stop ();
   bool pause ();
@@ -57,17 +59,16 @@ public:
   bool abort ();
   void addListener (INclEventListener *listener);
   void removeListener (INclEventListener *listener);
-  static bool hasInstance (NclEvent *evt, bool remove);
   static bool hasNcmId (NclEvent *evt, const string &anchorId);
 
 protected:
+  GingaState *_ginga;           // ginga state
+  Scheduler *_scheduler;        // scheduler
+
   set<INclEventListener *> _listeners;
 
   EventStateTransition getTransition (EventState newState);
   bool changeState (EventState newState, EventStateTransition transition);
-
-  static set<NclEvent *> _instances;
-  static bool removeInstance (NclEvent *evt);
 };
 
 class INclEventListener
@@ -83,7 +84,7 @@ class AnchorEvent : public NclEvent
   PROPERTY_READONLY (Area *, _anchor, getAnchor)
 
 public:
-  AnchorEvent (const string &, ExecutionObject *, Area *);
+  AnchorEvent (GingaState *, const string &, ExecutionObject *, Area *);
   virtual ~AnchorEvent () {}
 };
 
@@ -94,7 +95,8 @@ class PresentationEvent : public AnchorEvent
   PROPERTY_READONLY (GingaTime, _repetitionInterval, getRepetitionInterval)
 
 public:
-  PresentationEvent (const string &, ExecutionObject *, Area *);
+  PresentationEvent (GingaState *, const string &,
+                     ExecutionObject *, Area *);
   virtual ~PresentationEvent () {}
   virtual bool stop () override;
   GingaTime getDuration ();
@@ -111,7 +113,7 @@ class SelectionEvent : public AnchorEvent
   PROPERTY (string, _selCode, getSelectionCode, setSelectionCode)
 
 public:
-  SelectionEvent (const string &, ExecutionObject *, Area *);
+  SelectionEvent (GingaState *, const string &, ExecutionObject *, Area *);
   virtual ~SelectionEvent () {}
 
   virtual bool start () override;
@@ -123,9 +125,10 @@ class AttributionEvent : public NclEvent
   PROPERTY_READONLY (Property *, _anchor, getAnchor)
 
 public:
-  AttributionEvent (const string &id,
-                    ExecutionObject *exeObj,
-                    Property *anchor);
+  AttributionEvent (GingaState *,
+                    const string &,
+                    ExecutionObject *,
+                    Property *);
 
   virtual ~AttributionEvent ();
   string getCurrentValue ();
@@ -149,11 +152,12 @@ private:
   NclEvent *_mappedEvent;
 
 public:
-  SwitchEvent (const string &id,
-               ExecutionObject *exeObjSwitch,
-               Anchor *interface,
-               EventType type,
-               const string &key);
+  SwitchEvent (GingaState *,
+               const string &,
+               ExecutionObject *,
+               Anchor *,
+               EventType ,
+               const string &);
 
   virtual ~SwitchEvent ();
 

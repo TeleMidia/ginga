@@ -65,7 +65,7 @@ private:
   void setErrMsg (const string &);
 
   NclDocument *parse0 (const string &);
-  void parseNcl (DOMElement *);
+  bool parseNcl (DOMElement *);
   void parseHead (DOMElement *);
 
   NclDocument *parse1 (const string &);
