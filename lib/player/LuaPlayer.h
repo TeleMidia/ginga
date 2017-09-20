@@ -41,6 +41,12 @@ public:
 private:
   ncluaw_t *_nw;                // the NCLua state
   GingaRect _init_rect;         // initial output rectangle
+  string _pwd;                  // script's working dir
+  string _saved_pwd;            // saved working dir
+
+  void pwdSave (const string &);
+  void pwdSave ();
+  void pwdRestore ();
 };
 
 GINGA_PLAYER_END
