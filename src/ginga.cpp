@@ -149,6 +149,12 @@ draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
   return TRUE;
 }
 
+static void
+exit_callback (void)
+{
+  exit (0);
+}
+
 static gboolean
 resize_callback (GtkWidget *widget, GdkEventConfigure *e, gpointer data)
 {
@@ -331,7 +337,7 @@ main (int argc, char **argv)
     gtk_window_fullscreen (GTK_WINDOW (app));
 
   // Setup GTK+ callbacks.
-  g_signal_connect (app, "destroy", G_CALLBACK (gtk_main_quit), NULL);
+  g_signal_connect (app, "destroy", G_CALLBACK (exit_callback), NULL);
   g_signal_connect (app, "draw", G_CALLBACK (draw_callback), NULL);
   g_signal_connect (app, "configure-event",
                     G_CALLBACK (resize_callback), NULL);
