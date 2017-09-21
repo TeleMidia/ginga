@@ -56,6 +56,20 @@ gboolean isCrtlModifierActive = FALSE;
 
 PresentationAttributes presentationAttributes;
 
+gboolean
+resize_callback (GtkWidget *widget, GdkEventConfigure *e, gpointer data)
+{
+  (void)widget;
+  (void)data;
+
+  presentationAttributes.resolutionWidth = e->width;
+  presentationAttributes.resolutionHeight = e->height;
+
+  GINGA->resize (e->width, e->height);
+
+  return FALSE;
+}
+
 void
 press_aboutButton_callback ()
 {
@@ -88,12 +102,9 @@ apply_theme ()
   if (presentationAttributes.guiTheme == 0)
     filename = g_build_path (G_DIR_SEPARATOR_S, executableFolder,
                              "style/light.css", NULL);
-  else if (presentationAttributes.guiTheme == 1)
+  else  
     filename = g_build_path (G_DIR_SEPARATOR_S, executableFolder,
                              "style/dark.css", NULL);
-  else
-    filename = g_build_path (G_DIR_SEPARATOR_S, executableFolder,
-                             "style/marine.css", NULL);
 
   GFile *file = g_file_new_for_path (filename);
   if (g_file_query_exists (file, NULL))
@@ -193,7 +204,7 @@ apply_theme ()
   tvRemoteView = create_tvremote_buttons (10, 10);
   gtk_box_pack_start (GTK_BOX (tvcontrolBox), tvRemoteView, false, true, 0);
 
-  update_window();
+  update_window ();
 }
 
 void
@@ -463,8 +474,8 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
       break;
     }
 
-  GINGA->send_key (std::string (key),
-                   g_strcmp0 ((const char *)type, "press") == 0);
+  GINGA->sendKeyEvent (std::string (key),
+                       g_strcmp0 ((const char *)type, "press") == 0);
   /*  if (free_key)
       g_free (key); */
 }
@@ -633,8 +644,6 @@ create_window_components ()
                                   "Light");
   gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (theme_combobox), -1,
                                   "Dark");
-  gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (theme_combobox), -1,
-                                  "Marine");
   gtk_combo_box_set_active (GTK_COMBO_BOX (theme_combobox),
                             presentationAttributes.guiTheme);
 
@@ -851,15 +860,6 @@ create_window_components ()
 
   gtk_container_add (GTK_CONTAINER (mainWindow), vpaned);
 
-  /* g_signal_connect (flow_box, "check-resize",
-                     G_CALLBACK (resize_main_window_callback), NULL); */
-  g_signal_connect (mainWindow, "key-press-event",
-                    G_CALLBACK (keyboard_callback), (void *)"press");
-  g_signal_connect (mainWindow, "key-release-event",
-                    G_CALLBACK (keyboard_callback), (void *)"release");
-  g_signal_connect (mainWindow, "destroy", G_CALLBACK (destroy_main_window),
-                    NULL);
-
   apply_theme ();
 }
 
@@ -879,11 +879,25 @@ create_main_window ()
 
   create_window_components ();
 
+  g_signal_connect (mainWindow, "key-press-event",
+                    G_CALLBACK (keyboard_callback), (void *)"press");
+  g_signal_connect (mainWindow, "key-release-event",
+                    G_CALLBACK (keyboard_callback), (void *)"release");
+  g_signal_connect (mainWindow, "destroy", G_CALLBACK (destroy_main_window),
+                    NULL);
+  g_signal_connect (gingaView, "configure-event",
+                    G_CALLBACK (resize_callback), NULL);
+
   gtk_widget_show_all (mainWindow);
 
   gtk_widget_hide (debugView);
   gtk_widget_hide (sideView);
   gtk_widget_hide (infoBar);
+
+  /* GtkAllocation alloc;
+   gtk_widget_get_allocation (mainBox, &alloc);
+   GINGA->resize (alloc.width, alloc.height);
+   */
 }
 
 void
@@ -958,6 +972,9 @@ stop_button_callback (void)
   gtk_button_set_image (GTK_BUTTON (playButton), play_icon);
   gtk_widget_set_sensitive (fileEntry, true);
   gtk_widget_set_sensitive (openButton, true);
+  gtk_widget_set_sensitive (histButton, true);
+
+  GINGA->stop ();
 }
 
 void
@@ -970,7 +987,7 @@ play_pause_button_callback (void)
   if (inPlayMode)
     {
       const gchar *file = gtk_entry_get_text (GTK_ENTRY (fileEntry));
-      gchar *ext = strrchr (file, '.');
+      const gchar *ext = strrchr (file, '.');
       if (g_strcmp0 (ext, ".ncl"))
         {
           show_infobar (g_markup_printf_escaped (
@@ -984,14 +1001,11 @@ play_pause_button_callback (void)
                         get_icon_folder (), "pause-icon.png", NULL));
       gtk_widget_set_sensitive (fileEntry, false);
       gtk_widget_set_sensitive (openButton, false);
+      gtk_widget_set_sensitive (histButton, false);
 
       // Start Ginga.
       GINGA->start (file);
     }
-  else
-    {
-      gtk_widget_set_sensitive (fileEntry, true);
-      gtk_widget_set_sensitive (openButton, true);
-    }
+ 
   gtk_button_set_image (GTK_BUTTON (playButton), play_icon);
 }

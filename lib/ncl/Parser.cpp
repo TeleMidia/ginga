@@ -143,7 +143,7 @@ __error_elt (const DOMElement *elt)
     if (unlikely (result != expect))                                    \
       ERROR_SYNTAX_ELT ((elt), "bad tagname '%s' (expected '%s')",      \
                         result.c_str (), (expect).c_str ());            \
-    set_if_nonnull ((string *)(pvalue), result);                        \
+    tryset ((string *)(pvalue), result);                        \
   }                                                                     \
   G_STMT_END
 
@@ -153,7 +153,7 @@ __error_elt (const DOMElement *elt)
     string result;                                                      \
     if (unlikely (!dom_elt_try_get_attribute (result, (elt), (name))))  \
       ERROR_SYNTAX_ELT_MISSING_ATTRIBUTE ((elt), (name));               \
-    set_if_nonnull ((pvalue), result);                                  \
+    tryset ((pvalue), result);                                  \
   }                                                                     \
   G_STMT_END
 
@@ -173,7 +173,7 @@ __error_elt (const DOMElement *elt)
     string result;                                              \
     if (!dom_elt_try_get_attribute (result, (elt), (name)))     \
       result = (default);                                       \
-    set_if_nonnull ((pvalue), result);                          \
+    tryset ((pvalue), result);                          \
   }                                                             \
   G_STMT_END
 
@@ -185,7 +185,7 @@ __error_elt (const DOMElement *elt)
       ERROR_SYNTAX_ELT_MISSING_ID ((elt));                              \
     if (unlikely (_doc->getNode (result) != nullptr))                   \
       ERROR_SYNTAX_ELT_DUPLICATED_ID ((elt), result);                   \
-    set_if_nonnull ((pvalue), result);                                  \
+    tryset ((pvalue), result);                                  \
   }                                                                     \
   G_STMT_END
 
@@ -202,7 +202,7 @@ __error_elt (const DOMElement *elt)
       {                                                         \
         result = (default);                                     \
       }                                                         \
-    set_if_nonnull ((pvalue), result);                          \
+    tryset ((pvalue), result);                          \
   }                                                             \
   G_STMT_END
 
@@ -311,14 +311,30 @@ static map<string, SimpleAction::Type> event_action_type_table =
  * @return The resulting document.
  */
 NclDocument *
-Parser::parse (const string &path, int width, int height)
+Parser::parse (const string &path, int width, int height, string *errmsg)
 {
   Parser parser (width, height);
-  return parser.parse0 (path);
+  NclDocument *result;
+  result = parser.parse0 (path);
+  if (result == nullptr)
+    tryset (errmsg, parser.getErrMsg ());
+  return result;
 }
 
 
 // Private.
+
+string
+Parser::getErrMsg ()
+{
+  return _errmsg;
+}
+
+void
+Parser::setErrMsg (const string &msg)
+{
+  _errmsg = msg;
+}
 
 Parser::Parser (int width, int height)
 {
@@ -382,7 +398,7 @@ Parser::parse0 (const string &path)
   return _doc;
 }
 
-void
+bool
 Parser::parseNcl (DOMElement *elt)
 {
   string id;
@@ -410,10 +426,11 @@ Parser::parseNcl (DOMElement *elt)
           ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
         }
     }
+  return true;
 }
 
 
-// Head.
+// Private: Head.
 
 void
 Parser::parseHead (DOMElement *elt)
@@ -776,8 +793,7 @@ Parser::parseRegionBase (DOMElement *elt)
 }
 
 Region *
-Parser::parseRegion (DOMElement *elt, RegionBase *base,
-                        Region *parent)
+Parser::parseRegion (DOMElement *elt, RegionBase *base, Region *parent)
 {
   Region *region;
   string id;
@@ -851,6 +867,16 @@ Parser::parseRegion (DOMElement *elt, RegionBase *base,
   if (dom_elt_try_get_attribute (value, elt, "zIndex"))
     z = xstrtoint (value, 10);
   zorder = last_zorder++;
+
+  string left = xstrbuild ("%.2f%%", ((double) rect.x / _width) * 100.);
+  string top = xstrbuild ("%.2f%%", ((double) rect.y / _height) * 100.);
+  string width = xstrbuild ("%.2f%%", ((double) rect.width / _width) * 100.);
+  string height = xstrbuild ("%.2f%%", ((double) rect.height / _height) * 100.);
+
+  region->setLeft (left);
+  region->setTop (top);
+  region->setWidth (width);
+  region->setHeight (height);
 
   region->setRect (rect);
   region->setZ (z, zorder);
@@ -1819,7 +1845,7 @@ Parser::parseSwitch (DOMElement *elt)
 
 Node *
 Parser::parseBindRule (DOMElement *elt, Composition *parent,
-                          Rule **rule)
+                       Rule **rule)
 {
   Node *node;
   string constituent;

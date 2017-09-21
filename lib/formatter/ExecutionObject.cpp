@@ -16,36 +16,30 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga-internal.h"
-
 #include "ExecutionObject.h"
+
 #include "ExecutionObjectContext.h"
 #include "ExecutionObjectSettings.h"
 #include "ExecutionObjectSwitch.h"
 #include "NclEvents.h"
+#include "Scheduler.h"
 
 #include "player/Player.h"
 using namespace ::ginga::player;
 
-#include "mb/Display.h"
-using namespace ::ginga::mb;
-
 GINGA_FORMATTER_BEGIN
 
-/**
- * @brief Settings object.
- */
-ExecutionObjectSettings *ExecutionObject::_settings = nullptr;
-
-/**
- * @brief Set containing all execution objects.
- */
-set<ExecutionObject *> ExecutionObject::_objects;
-
-
-ExecutionObject::ExecutionObject (const string &id,
+ExecutionObject::ExecutionObject (GingaState *ginga,
+                                  const string &id,
                                   Node *node,
                                   INclActionListener *seListener)
 {
+  g_assert_nonnull (ginga);
+  _ginga = ginga;
+
+  _scheduler = ginga->getScheduler ();
+  g_assert_nonnull (_scheduler);
+
   _seListener = seListener;
   _node = node;
   _wholeContent = nullptr;
@@ -55,96 +49,17 @@ ExecutionObject::ExecutionObject (const string &id,
   _id = id;
   _player = nullptr;
   _time = GINGA_TIME_NONE;
+  _destroying = false;
 
-  _objects.insert (this);
-  TRACE ("creating exec object '%s' (%p)", _id.c_str (), this);
+  TRACE ("creating object '%s'", _id.c_str ());
+  _scheduler->addObject (this);
 }
 
 ExecutionObject::~ExecutionObject ()
 {
-  map<Node *, ExecutionObjectContext *>::iterator j;
-
-  Node *parentNode;
-  ExecutionObjectContext *parentObject;
-
-  unsetParentsAsListeners ();
-
-  _seListener = nullptr;
-  _node = nullptr;
-  _wholeContent = nullptr;
-  _mainEvent = nullptr;
-
-  destroyEvents ();
-
-  for (auto i : _nodeParentTable)
-    {
-      parentNode = i.second;
-      j = _parentTable.find (parentNode);
-      if (j != _parentTable.end ())
-        {
-          parentObject = j->second;
-
-          parentObject->removeExecutionObject (this);
-        }
-    }
-
-  _nodeParentTable.clear ();
-
-  _parentTable.clear ();
-  TRACE ("destroying exec object '%s' (%p)", _id.c_str (), this);
-}
-
-void
-ExecutionObject::destroyEvents ()
-{
-  for (auto i : _events)
-    {
-      NclEvent *event = i.second;
-      if (NclEvent::hasInstance (event, true))
-        {
-          delete event;
-        }
-    }
-  _events.clear ();
-
-  _presEvents.clear ();
-  _selectionEvents.clear ();
-  _otherEvents.clear ();
-}
-
-void
-ExecutionObject::unsetParentsAsListeners ()
-{
-  removeParentListenersFromEvent (_mainEvent);
-  removeParentListenersFromEvent (_wholeContent);
-}
-
-void
-ExecutionObject::removeParentListenersFromEvent (
-    NclEvent *event)
-{
-  map<Node *, ExecutionObjectContext *>::iterator i;
-  ExecutionObjectContext *parentObject;
-
-  if (NclEvent::hasInstance (event, false))
-    {
-      i = _parentTable.begin ();
-      while (i != _parentTable.end ())
-        {
-          parentObject = (ExecutionObjectContext *)(i->second);
-
-          if (NclEvent::hasInstance (_mainEvent, false))
-            {
-              // register parent as a mainEvent listener
-              _mainEvent->removeListener (parentObject);
-            }
-          else
-            {
-              break;
-            }
-          ++i;
-        }
-    }
+  TRACE ("destroying object '%s'", _id.c_str ());
+  _destroying = true;
+  this->stop ();
 }
 
 bool
@@ -229,13 +144,7 @@ ExecutionObject::removeParentObject (Node *parentNode,
 
   i = _parentTable.find (parentNode);
   if (i != _parentTable.end () && i->second == parentObject)
-    {
-      if (_wholeContent != nullptr)
-        {
-          _wholeContent->removeListener (parentObject);
-        }
-      _parentTable.erase (i);
-    }
+    _parentTable.erase (i);
 }
 
 bool
@@ -566,7 +475,7 @@ ExecutionObject::start ()
   // Allocate player.
   src = media->getSrc ();
   mime = media->getMimeType ();
-  _player = Player::createPlayer (_id, src, mime);
+  _player = Player::createPlayer (_ginga, _id, src, mime);
 
   // Initialize player properties.
   desc = media->getDescriptor ();
@@ -575,8 +484,15 @@ ExecutionObject::start ()
       Region *region = desc->getRegion ();
       if (region != nullptr)
         {
+          string bounds;
           int z, zorder;
-          _player->setRect (region->getRect ());
+
+          bounds = xstrbuild ("%s,%s,%s,%s",
+                              region->getLeft ().c_str (),
+                              region->getTop ().c_str (),
+                              region->getWidth ().c_str (),
+                              region->getHeight ().c_str ());
+          _player->setProperty ("bounds", bounds);
           region->getZ (&z, &zorder);
           _player->setZ (z, zorder);
         }
@@ -602,7 +518,7 @@ ExecutionObject::start ()
 
   _time = 0;
   _player->start ();
-  g_assert (Ginga_Display->registerEventListener (this));
+  g_assert (_ginga->registerEventListener (this));
 
  done:
   // Start main event.
@@ -648,18 +564,19 @@ ExecutionObject::stop ()
   PresentationEvent *event;
 
   if (this->isSleeping ())
-    return true;                // nothing to do
+    return false;               // nothing to do
 
-  TRACE ("stopping");
+  TRACE ("stopping %s", _id.c_str ());
 
   // Stop and destroy player.
   if (_player != nullptr)
     {
-      _player->stop ();
+      if (_player->getState () != Player::PL_SLEEPING)
+        _player->stop ();
       delete _player;
       _player = nullptr;
       _time = GINGA_TIME_NONE;
-      g_assert (Ginga_Display->unregisterEventListener (this));
+      g_assert (_ginga->unregisterEventListener (this));
     }
 
   // Uninstall attribution events.
@@ -670,6 +587,9 @@ ExecutionObject::stop ()
         attevt->setPlayer (nullptr);
     }
 
+  if (_destroying)
+    return true;                // done
+
   // Stop main event.
   event = cast (PresentationEvent* , _mainEvent);
   if (event != nullptr)
@@ -679,7 +599,6 @@ ExecutionObject::stop ()
     }
 
   _transMan.resetTimeIndex ();
-  removeParentListenersFromEvent (_mainEvent);
 
   return true;
 }
@@ -692,22 +611,6 @@ ExecutionObject::abort ()
 
 
 // -----------------------------------
-
-// static
-ExecutionObjectSettings *
-ExecutionObject::getSettings (void)
-{
-  return _settings;
-}
-
-// static
-void
-ExecutionObject::setSettings (ExecutionObjectSettings *obj)
-{
-  g_assert_null (_settings);
-  g_assert_nonnull (obj);
-  _settings = obj;
-}
 
 /**
  * @brief Tests whether object is focused.
@@ -772,9 +675,9 @@ ExecutionObject::setProperty (const string &name,
 }
 
 void
-ExecutionObject::handleTickEvent (arg_unused (GingaTime total),
+ExecutionObject::handleTickEvent (unused (GingaTime total),
                                   GingaTime diff,
-                                  arg_unused (int frame))
+                                  unused (int frame))
 {
   EventTransition *next;
   NclEvent *evt;
@@ -833,6 +736,7 @@ ExecutionObject::handleTickEvent (arg_unused (GingaTime total),
 void
 ExecutionObject::handleKeyEvent (const string &key, bool press)
 {
+  ExecutionObjectSettings *settings;
   list<SelectionEvent *> buf;
 
   if (!press)
@@ -857,9 +761,9 @@ ExecutionObject::handleKeyEvent (const string &key, bool press)
           || ((key == "CURSOR_RIGHT"
                && (next = _player->getProperty ("moveRight")) != "")))
         {
-          g_assert_nonnull (_settings);
-          cast (ExecutionObjectSettings *, _settings)
-            ->scheduleFocusUpdate (next);
+          settings = (ExecutionObjectSettings *) _ginga->getData ("settings");
+          g_assert_nonnull (settings);
+          settings->scheduleFocusUpdate (next);
         }
     }
 

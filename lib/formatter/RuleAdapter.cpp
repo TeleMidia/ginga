@@ -27,12 +27,6 @@ RuleAdapter::RuleAdapter ()
 
 RuleAdapter::~RuleAdapter ()
 {
-  reset ();
-}
-
-void
-RuleAdapter::reset ()
-{
   for (auto i : _ruleListenMap)
     {
       vector<Rule *> *rules = i.second;
@@ -42,16 +36,6 @@ RuleAdapter::reset ()
         }
     }
   _ruleListenMap.clear ();
-
-  for (auto i : _entityListenMap)
-    {
-      vector<ExecutionObjectSwitch *> *objs = i.second;
-      if (objs != nullptr)
-        {
-          delete objs;
-        }
-
-    }
   _entityListenMap.clear ();
 }
 
@@ -70,25 +54,18 @@ RuleAdapter::setSettings (ExecutionObject *settings)
 void
 RuleAdapter::adapt (ExecutionObjectContext *compositeObject, bool force)
 {
-  map<string, ExecutionObject *> *objs =
-      compositeObject->getExecutionObjects ();
-
-  if (objs != nullptr)
+  for (auto i: *compositeObject->getExecutionObjects ())
     {
-      for (auto i : *objs)
+      ExecutionObject *obj = i.second;
+      if (instanceof (ExecutionObjectSwitch *, obj))
         {
-          ExecutionObject *obj = i.second;
-          if (instanceof (ExecutionObjectSwitch *, obj))
-            {
-              obj = ((ExecutionObjectSwitch *)obj)->getSelectedObject ();
-            }
-
-          if (instanceof (ExecutionObjectContext *, obj))
-            {
-              adapt ((ExecutionObjectContext *)obj, force);
-            }
+          obj = ((ExecutionObjectSwitch *)obj)->getSelectedObject ();
         }
-      delete objs;
+
+      if (instanceof (ExecutionObjectContext *, obj))
+        {
+          adapt ((ExecutionObjectContext *)obj, force);
+        }
     }
 }
 

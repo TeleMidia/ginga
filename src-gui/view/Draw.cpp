@@ -45,7 +45,7 @@ update_draw_callback (GtkWidget *widget)
       first = time;
       last = time;
     }
-  GINGA->send_tick (time - first, time - last, frame);
+  GINGA->sendTickEvent (time - first, time - last, frame);
   last = time;
   gtk_widget_queue_draw (widget);
   return G_SOURCE_CONTINUE;

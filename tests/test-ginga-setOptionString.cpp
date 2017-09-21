@@ -15,20 +15,16 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef I_EVENT_LISTENER_H
-#define I_EVENT_LISTENER_H
-
 #include "ginga-internal.h"
+#include "ginga.h"
 
-GINGA_MB_BEGIN
-
-class IEventListener
+int
+main (void)
 {
-public:
-  virtual void handleTickEvent (GingaTime, GingaTime, int) = 0;
-  virtual void handleKeyEvent (const string &key, bool) = 0;
-};
-
-GINGA_MB_END
-
-#endif // I_EVENT_LISTENER_H
+  Ginga *ginga = Ginga::create (0, nullptr, nullptr);
+  g_assert_nonnull (ginga);
+  g_assert (ginga->getOptionString ("background") == "");
+  ginga->setOptionString ("background", "gray");
+  g_assert (ginga->getOptionString ("background") == "gray");
+  exit (EXIT_SUCCESS);
+}

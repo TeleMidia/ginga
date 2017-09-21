@@ -30,9 +30,6 @@ UPDATE_COPYRIGHT_EXCLUDE= $(SC_COPYRIGHT_EXCLUDE)
 SC_COPYRIGHT_EXCLUDE=\
   $(REMOTE_FILES)\
   contrib/%\
-  src/nclconv/DOMTreeErrorReporter.h\
-  src/system/PracticalSocket.h\
-  src/util/Base64.h\
   $(NULL)
 
 SC_RULES+= sc-copyright
@@ -58,6 +55,7 @@ NCLUA_FILES+= build-aux/Makefile.am.env
 NCLUA_FILES+= build-aux/Makefile.am.gitlog
 NCLUA_FILES+= build-aux/Makefile.am.valgrind
 NCLUA_FILES+= build-aux/util.m4
+NCLUA_FILES+= lib/aux-glib.h
 NCLUA_FILES+= maint.mk
 NCLUA_SCRIPTS+= bootstrap
 NCLUA_SCRIPTS+= build-aux/syntax-check
@@ -68,11 +66,7 @@ REMOTE_SCRIPTS+= $(NCLUA_SCRIPTS)
 .PHONY: fetch-remote-local-nclua
 fetch-remote-local-nclua:
 	$(V_at)for path in $(NCLUA_FILES) $(NCLUA_SCRIPTS); do\
-	  if test "$$path" = "lib/luax-macros.h"; then\
-	    dir=play;\
-	  else\
-	    dir=`dirname "$$path"`;\
-	  fi;\
+	  dir=`dirname "$$path"`;\
 	  $(FETCH) -dir="$$dir" "$(nclua)/$$path" || exit 1;\
 	done
 

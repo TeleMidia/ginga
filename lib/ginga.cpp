@@ -17,83 +17,39 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "ginga-internal.h"
+#include "GingaState.h"
 
-#include "formatter/Scheduler.h"
-using namespace ::ginga::formatter;
-
-#include "mb/Display.h"
-using namespace ::ginga::mb;
-
-#define SCHEDULER(me) ((Scheduler *)(me)->_scheduler)
-#define DISPLAY(me)   ((Display *)(me)->_display)
-
-Ginga::Ginga (arg_unused (int argc), arg_unused (char **argv),
-              int width, int height, bool fullscreen)
+Ginga::Ginga (int, char **, GingaOptions *)
 {
-  _started = false;
-  _scheduler = new Scheduler ();
-  _display = new ginga::mb::Display (width, height, fullscreen);
-  _Ginga_Display = DISPLAY (this);
-
-#if defined WITH_CEF && WITH_CEF
-  CefMainArgs args (argc, argv);
-  CefSettings settings;
-
-  int pstatus = CefExecuteProcess (args, nullptr, nullptr);
-  if (pstatus >= 0)
-    return pstatus;
-
-  if (unlikely (!CefInitialize (args, settings, nullptr, nullptr)))
-    exit (EXIT_FAILURE);
-#endif
 }
 
 Ginga::~Ginga ()
 {
-  delete DISPLAY (this);
-  delete SCHEDULER (this);
-
-#if defined WITH_CEF && WITH_CEF
-  CefShutdown ();
-#endif
 }
 
-void
-Ginga::start (const string &file)
-{
-  if (_started)
-    return;                     // nothing to do
+
+// Class methods.
 
-  SCHEDULER (this)->startDocument (file);
-  _started = true;
+/**
+ * @brief Creates a new Ginga state.
+ * @param argc Number arguments passed to main.
+ * @param argv Arguments passed to main.
+ * @param opts State options.
+ * @return A new formatter handle.
+ */
+Ginga *
+Ginga::create (int argc, char **argv, GingaOptions *opts)
+{
+  g_assert (g_setenv ("LC_ALL", "C", true)); // fixme
+  return new GingaState (argc, argv, opts);
 }
 
-void G_GNUC_NORETURN
-Ginga::stop ()
+/**
+ * @brief Gets Ginga version string.
+ * @return libginga version string.
+ */
+string
+Ginga::version ()
 {
-  ERROR_NOT_IMPLEMENTED ("stop is not supported");
-}
-
-void
-Ginga::resize (int width, int height)
-{
-  DISPLAY (this)->setSize (width, height);
-}
-
-void
-Ginga::redraw (cairo_t *cr)
-{
-  DISPLAY (this)->redraw (cr);
-}
-
-void
-Ginga::send_key (const string &key, bool press)
-{
-  DISPLAY (this)->notifyKeyListeners (key, press);
-}
-
-void
-Ginga::send_tick (uint64_t total, uint64_t diff, uint64_t frameno)
-{
-  DISPLAY (this)->notifyTickListeners (total, diff, (int) frameno);
+  return PACKAGE_VERSION;
 }

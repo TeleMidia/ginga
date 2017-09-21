@@ -57,7 +57,7 @@ private:
 public:
   SectionFilter ();
   virtual ~SectionFilter ();
-  void addPid (arg_unused (int pid)){};
+  void addPid (unused (int pid)){};
 
 private:
   string
@@ -65,8 +65,8 @@ private:
   {
     return dstUri;
   };
-  void setSourceUri (arg_unused (const string &srcUri),
-                     arg_unused (bool isPipe)){};
+  void setSourceUri (unused (const string &srcUri),
+                     unused (bool isPipe)){};
   void resetHandler (SectionHandler *handler);
   void ignore (unsigned int pid);
   SectionHandler *getSectionHandler (unsigned int pid);

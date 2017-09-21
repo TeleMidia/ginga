@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga-internal.h"
 #include "Region.h"
 
-#include "mb/Display.h"
-using namespace ginga::mb;
-
 GINGA_NCL_BEGIN
 
 /**
@@ -29,9 +26,7 @@ GINGA_NCL_BEGIN
  */
 Region::Region (const string &id) : Entity (id)
 {
-  int w, h;
-  Ginga_Display->getSize (&w, &h);
-  _rect = {0, 0, w, h};
+  _rect = {0, 0, 0, 0};
   _top = "0%";
   _left = "0%";
   _bottom = "";
@@ -188,8 +183,8 @@ Region::setHeight (const string &height)
 void
 Region::getZ (int *z, int *zorder)
 {
-  set_if_nonnull (z, _z);
-  set_if_nonnull (zorder, _zorder);
+  tryset (z, _z);
+  tryset (zorder, _zorder);
 }
 
 /**

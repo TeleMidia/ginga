@@ -34,9 +34,9 @@ class ExecutionObjectContext : public ExecutionObject,
     public INclEventListener
 {
 public:
-  ExecutionObjectContext (const string &id,
-                          Node *dataObject,
-                          INclActionListener *seListener);
+  ExecutionObjectContext (GingaState *, const string &,
+                          Node *,
+                          INclActionListener *);
 
   virtual ~ExecutionObjectContext ();
 
@@ -52,7 +52,6 @@ public:
   void removeLinkUncompiled (Link *ncmLink);
   void setLinkCompiled (NclFormatterLink *formatterLink);
   void setParentsAsListeners ();
-  void unsetParentsAsListeners () override;
   void eventStateChanged (NclEvent *event,
                           EventStateTransition transition,
                           EventState previousState) override;

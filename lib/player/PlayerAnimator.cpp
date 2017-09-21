@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga-internal.h"
 #include "PlayerAnimator.h"
 
-#include "mb/Display.h"
-using namespace ::ginga::mb;
-
 GINGA_PLAYER_BEGIN
 
 
@@ -29,8 +26,10 @@ GINGA_PLAYER_BEGIN
 /**
  * @brief Creates a new player animator.
  */
-PlayerAnimator::PlayerAnimator ()
+PlayerAnimator::PlayerAnimator (GingaState *ginga)
 {
+  g_assert_nonnull (ginga);
+  _ginga = ginga;
 }
 
 /**
@@ -208,7 +207,9 @@ PlayerAnimator::doSchedule (const string &name, const string &from,
   int height;
 
   current = 0;
-  Ginga_Display->getSize (&width, &height);
+  width = _ginga->getOptionInt ("width");
+  height = _ginga->getOptionInt ("height");
+
   if (name == "top" || name == "height")
     {
       if (from != "")

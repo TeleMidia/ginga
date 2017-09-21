@@ -197,19 +197,6 @@ AC_ARG_WITH(AS_TR_SH([$1]),
    [AC_MSG_ERROR([bad value '][$]AS_TR_SH([with_$1])[' for --with-$1 option])])],
  [AS_TR_SH([with_$1])=check])])
 
-# AU_CHECK_MACROS_H
-# -----------------
-# Checks for the functions used by macros.h, namely, lround and round.
-#
-# Defines the pre-processor macros:
-# - HAVE_LROUND    have the lround function
-# - HAVE_ROUND     have the round function
-#
-AC_DEFUN([AU_CHECK_MACROS_H],[dnl
-AC_REQUIRE([AC_CHECK_LIBM])
-AU_LANG_C([], [], [$LIBM],
- [AC_CHECK_FUNCS([lround round])])])
-
 # AU_CHECK_LUA([MIN-VERSION], [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
 # ---------------------------------------------------------------------
 # Checks if Lua >= MIN-VERSION (defaults to 5.1) exists.
@@ -257,7 +244,7 @@ AS_IF([test -n "$au_lua_pc"],
 AS_IF([test -z "$au_lua_pc"],
  [PKG_CHECK_EXISTS([lua >= $au_lua_min_version], [au_lua_pc=lua], [:])
   AS_IF([test -z "$au_lua_pc"],
-   [for au_lua_min in `seq $au_lua_min_version_minor 3`; do
+   [for au_lua_min in `seq 3 -1 $au_lua_min_version_minor`; do
       for au_lua_prefix in lua5 lua5. lua-5 lua-5.; do
         PKG_CHECK_EXISTS(
          [${au_lua_prefix}${au_lua_min} >= $au_lua_min_version],
@@ -665,9 +652,9 @@ AC_MSG_RESULT([$au_os_win32])
 AM_CONDITIONAL([OS_WIN32], [test "$au_os_win32" = yes])
 dnl Find MinGW root.
 AS_IF([test "$au_os_win32" = yes && test -z "$MINGW_ROOT"],
- [MINGW_ROOT=`$SED -n 's,^\(.*\)[[ 	][ 	]]*/mingw$,\1,p' /etc/fstab`;
+ [MINGW_ROOT="$HOMEDRIVE$MINGW_PREFIX"
   AS_IF([test -z "$MINGW_ROOT"],
-   [MINGW_ROOT='C:/MinGW'])])
+   [MINGW_ROOT='C:/msys64'])])
 AC_SUBST([MINGW_ROOT])
 dnl Check if system is 64bit.
 AS_IF([test "$au_os_win32" = yes],

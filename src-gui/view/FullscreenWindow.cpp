@@ -50,6 +50,15 @@ create_fullscreen_window (void)
                                rect.height);
   gtk_window_set_position (GTK_WINDOW (fullscreenWindow),
                            GTK_WIN_POS_CENTER);
+
+#if GTK_CHECK_VERSION(3, 8, 0)
+  gtk_widget_add_tick_callback (
+      fullscreenWindow, (GtkTickCallback)update_draw_callback, NULL, NULL);
+#else
+  g_timeout_add (1000 / 60, (GSourceFunc)update_draw_callback,
+                 fullscreenWindow);
+#endif
+
   g_signal_connect (fullscreenWindow, "key-press-event",
                     G_CALLBACK (keyboard_callback), (void *)"press");
   g_signal_connect (fullscreenWindow, "key-release-event",
@@ -70,6 +79,8 @@ create_fullscreen_window (void)
                     G_CALLBACK (destroy_fullscreen_window), NULL);
 
   gtk_widget_show_all (fullscreenWindow);
+
+  GINGA->resize (rect.width, rect.height);
 }
 void
 destroy_fullscreen_window (void)
@@ -77,6 +88,9 @@ destroy_fullscreen_window (void)
   gtk_widget_destroy (fullscreenWindow);
   fullscreenWindow = NULL;
   isFullScreenMode = FALSE;
+
+  GINGA->resize (presentationAttributes.resolutionWidth,
+                 presentationAttributes.resolutionHeight);
 }
 
 /* Modes */

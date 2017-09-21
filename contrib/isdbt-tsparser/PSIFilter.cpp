@@ -80,7 +80,7 @@ PSIFilter::getDescriptor ()
 }
 
 void
-PSIFilter::receivePes (arg_unused (char *pes), arg_unused (int pesLen))
+PSIFilter::receivePes (unused (char *pes), unused (int pesLen))
 {
 }
 

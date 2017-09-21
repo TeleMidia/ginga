@@ -18,6 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef EXECUTION_OBJECT_H
 #define EXECUTION_OBJECT_H
 
+#include "GingaState.h"
 #include "NclEvents.h"
 #include "NclEventTransitionManager.h"
 #include "NclActions.h"
@@ -29,18 +30,16 @@ using namespace ::ginga::ncl;
 #include "player/Player.h"
 using namespace ::ginga::player;
 
-#include "mb/IEventListener.h"
-using namespace ::ginga::mb;
-
 GINGA_FORMATTER_BEGIN
 
 class ExecutionObjectContext;
 class ExecutionObjectSettings;
 
-class ExecutionObject : public IEventListener
+class ExecutionObject : public IGingaStateEventListener
 {
 public:
-  ExecutionObject (const string &, Node *, INclActionListener *);
+  ExecutionObject (GingaState *,
+                   const string &, Node *, INclActionListener *);
   virtual ~ExecutionObject ();
 
   virtual bool isSleeping ();
@@ -98,10 +97,6 @@ protected:
   NclEvent *_mainEvent;
   NclEventTransitionManager _transMan;
 
-  void destroyEvents ();
-  virtual void unsetParentsAsListeners ();
-  virtual void removeParentListenersFromEvent (NclEvent *event);
-
 private:
   bool _isCompiled;
   map<Node *, Node *> _nodeParentTable;
@@ -109,25 +104,23 @@ private:
   // ------------------------------------------
 
 public:
-  static ExecutionObjectSettings *getSettings ();
-  static void setSettings (ExecutionObjectSettings *);
-
   bool isFocused ();
   string getProperty (const string &);
   void setProperty (const string &, const string &,
                     const string &, GingaTime);
 
-  // From IEventListener.
+  // From IGingaStateEventListener.
   virtual void handleKeyEvent (const string &, bool) override;
   virtual void handleTickEvent (GingaTime, GingaTime, int) override;
 
 protected:
-  static ExecutionObjectSettings *_settings; // settings object
-  static set<ExecutionObject *> _objects;    // set of all objects
+  GingaState *_ginga;           // ginga state
+  Scheduler *_scheduler;        // scheduler
 
   string _id;                   // object id
   Player *_player;              // associated player
   GingaTime _time;              // playback time
+  bool _destroying;             // true if object is being destroyed
 };
 
 GINGA_FORMATTER_END

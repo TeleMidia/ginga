@@ -33,24 +33,39 @@ GINGA_END_DECLS
 #include <cstdint>
 #include <string>
 
+struct GingaOptions
+{
+  int width;
+  int height;
+  bool debug;
+  std::string background;
+};
+
 class Ginga
 {
- public:
-  Ginga (int, char **, int, int, bool);
-  ~Ginga ();
+public:
+  Ginga (int, char **, GingaOptions *);
+  virtual ~Ginga () = 0;
 
-  void resize (int, int);
-  void start (const std::string &);
-  void stop ();
+  virtual void resize (int, int) = 0;
+  virtual void start (const std::string &) = 0;
+  virtual void stop () = 0;
 
-  void redraw (cairo_t *);
-  void send_key (const std::string &, bool);
-  void send_tick (uint64_t, uint64_t, uint64_t);
+  virtual void redraw (cairo_t *) = 0;
+  virtual void sendKeyEvent (const std::string &, bool) = 0;
+  virtual void sendTickEvent (uint64_t, uint64_t, uint64_t) = 0;
 
- private:
-  bool _started;
-  void *_scheduler;
-  void *_display;
+  virtual const GingaOptions *getOptions () = 0;
+  virtual bool getOptionBool (const std::string &) = 0;
+  virtual void setOptionBool (const std::string &, bool) = 0;
+  virtual int getOptionInt (const std::string &) = 0;
+  virtual void setOptionInt (const std::string &, int) = 0;
+  virtual std::string getOptionString (const std::string &) = 0;
+  virtual void setOptionString (const std::string &, std::string) = 0;
+
+public:
+  static Ginga *create (int, char **, GingaOptions *);
+  static std::string version ();
 };
 
 #endif // GINGA_H

@@ -148,8 +148,9 @@ TextPlayer::renderSurface (const string &text,
   return sfc;
 }
 
-TextPlayer::TextPlayer (const string &id, const string &uri)
-  : Player (id, uri)
+TextPlayer::TextPlayer (GingaState *ginga,
+                        const string &id, const string &uri)
+  : Player (ginga, id, uri)
 {
   _fontColor = {0, 0, 0, 1.};   // black
   _fontBgColor = {0, 0, 0, 0};  // transparent
@@ -171,19 +172,23 @@ TextPlayer::setProperty (const string &name, const string &value)
     {
       if (value != "" && !_ginga_parse_color (value, &_fontColor))
         goto syntax_error;
+      _dirty = true;
     }
   if (name == "fontBgColor")
     {
       if (value != "" && !_ginga_parse_color (value, &_fontBgColor))
         goto syntax_error;
+      _dirty = true;
     }
   else if(name == "fontFamily")
     {
       _fontFamily = value;
+      _dirty = true;
     }
   else if (name == "fontSize")
     {
       _fontSize = value;
+      _dirty = true;
     }
   else if(name == "fontStyle")
     {
@@ -192,6 +197,7 @@ TextPlayer::setProperty (const string &name, const string &value)
           goto syntax_error;
         }
       _fontStyle = value;
+      _dirty = true;
     }
   else if(name == "fontVariant")
     {
@@ -200,6 +206,7 @@ TextPlayer::setProperty (const string &name, const string &value)
           goto syntax_error;
         }
       _fontVariant = value;
+      _dirty = true;
     }
   else if (name == "fontWeight")
     {
@@ -208,6 +215,7 @@ TextPlayer::setProperty (const string &name, const string &value)
           goto syntax_error;
         }
       _fontWeight = value;
+      _dirty = true;
     }
   else if (name == "horzAlign")
     {
@@ -217,6 +225,7 @@ TextPlayer::setProperty (const string &name, const string &value)
           goto syntax_error;
         }
       _horzAlign = value;
+      _dirty = true;
     }
   else if (name == "vertAlign")
     {
@@ -226,6 +235,7 @@ TextPlayer::setProperty (const string &name, const string &value)
           goto syntax_error;
         }
       _vertAlign = value;
+      _dirty = true;
     }
 
   return;

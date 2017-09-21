@@ -18,11 +18,18 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FORMATTER_SCHEDULER_H
 #define FORMATTER_SCHEDULER_H
 
+#include "GingaState.h"
+
+#include "ExecutionObject.h"
+#include "ExecutionObjectContext.h"
+#include "ExecutionObjectSwitch.h"
 #include "Converter.h"
 #include "NclActions.h"
 
 #include "ncl/Ncl.h"
 using namespace ::ginga::ncl;
+
+class GingaState;
 
 GINGA_FORMATTER_BEGIN
 
@@ -30,16 +37,30 @@ class Converter;
 class Scheduler : public INclActionListener
 {
 public:
-  Scheduler ();
+  Scheduler (GingaState *, const string &);
   virtual ~Scheduler ();
+  bool run (string *);
+
+  set<NclEvent *> *getEvents ();
+  bool hasEvent (NclEvent *);
+  NclEvent *getEventById (const string &);
+  void addEvent (NclEvent *);
+
+  set<ExecutionObject *> *getObjects ();
+  bool hasObject (ExecutionObject *);
+  ExecutionObject *getObjectById (const string &);
+  void addObject (ExecutionObject *);
+
   void scheduleAction (NclSimpleAction *) override;
-  void startDocument (const string &);
 
 private:
-  Converter *_converter;
-  string _file;                 // path to document file
-  NclDocument *_doc;            // document tree
-  vector<NclEvent *> _events;   // document events
+  GingaState *_ginga;              // ginga state
+  Converter *_converter;           // converter object
+  string _file;                    // path to document file
+  NclDocument *_doc;               // document tree
+
+  set<NclEvent *> _events;         // document events
+  set<ExecutionObject *> _objects; // document objects
 
   void runAction (NclEvent *, NclSimpleAction *);
   void runActionOverComposition (ExecutionObjectContext *,
