@@ -28,9 +28,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 # include "player/HTMLPlayer.h"
 #endif
 
-#include "mb/Display.h"
-using namespace ::ginga::mb;
-
 GINGA_PLAYER_BEGIN
 
 
@@ -38,48 +35,50 @@ GINGA_PLAYER_BEGIN
 
 /**
  * @brief Creates a player from a mime-type.
+ * @para ginga Ginga state.
  * @param id Object id.
  * @param uri Source URI.
  * @param mime Mime-type of content.
  * @return A new player to exhibit source.
  */
 Player *
-Player::createPlayer (const string &id, const string &uri,
-                      const string &mime)
+Player::createPlayer (GingaState *ginga, const string &id,
+                      const string &uri, const string &mime)
 {
   Player *player = nullptr;
+  g_assert_nonnull (ginga);
 
   if (xstrhasprefix (mime, "audio") || xstrhasprefix (mime, "video"))
     {
-      player = new VideoPlayer (id, uri);
+      player = new VideoPlayer (ginga, id, uri);
     }
 #if WITH_LIBRSVG && WITH_LIBRSVG
   else if (xstrhasprefix (mime, "image/svg"))
     {
-      player = new SvgPlayer (id, uri);
+      player = new SvgPlayer (ginga, id, uri);
     }
 #endif
   else if (xstrhasprefix (mime, "image"))
     {
-      player = new ImagePlayer (id, uri);
+      player = new ImagePlayer (ginga, id, uri);
     }
 #if defined WITH_CEF && WITH_CEF
   else if (xstrhasprefix (mime, "text/html"))
     {
-      player = new HTMLPlayer (id, uri);
+      player = new HTMLPlayer (ginga, id, uri);
     }
 #endif
   else if (mime == "text/plain")
     {
-      player = new TextPlayer (id, uri);
+      player = new TextPlayer (ginga, id, uri);
     }
   else if (mime == "application/x-ginga-NCLua")
     {
-      player = new LuaPlayer (id, uri);
+      player = new LuaPlayer (ginga, id, uri);
     }
   else
     {
-      player = new Player (id, uri);
+      player = new Player (ginga, id, uri);
       if (uri != "")
         {
           WARNING ("unknown mime '%s': creating an empty player",
@@ -94,19 +93,22 @@ Player::createPlayer (const string &id, const string &uri,
 /**
  * @brief Creates player for the given URI.
  */
-Player::Player (const string &id, const string &uri)
+Player::Player (GingaState *ginga, const string &id, const string &uri)
 {
   // Internal data.
+  g_assert_nonnull (ginga);
+  _ginga = ginga;
   _id = id;
   _uri = uri;
   _state = PL_SLEEPING;
   _time = 0;
   _eos = false;
   _dirty = true;
+  _animator = new PlayerAnimator (_ginga);
   _surface = nullptr;
 
   // Properties
-  _debug = true;
+  _debug = false;
   _focusIndex = "";
   _rect = {0, 0, 0, 0};
   _z = 0;
@@ -122,6 +124,7 @@ Player::Player (const string &id, const string &uri)
  */
 Player::~Player ()
 {
+  delete _animator;
   if (_surface != nullptr)
     cairo_surface_destroy (_surface);
   _properties.clear ();
@@ -202,7 +205,8 @@ Player::start ()
   _state = PL_OCCURRING;
   _time = 0;
   _eos = false;
-  Ginga_Display->registerPlayer (this);
+  this->reload ();
+  _ginga->registerPlayer (this);
 }
 
 /**
@@ -215,8 +219,7 @@ Player::stop ()
   TRACE ("stopping %s", _id.c_str ());
 
   _state = PL_SLEEPING;
-  _animator.clear ();
-  Ginga_Display->unregisterPlayer (this);
+  _ginga->unregisterPlayer (this);
 }
 
 /**
@@ -257,7 +260,7 @@ Player::schedulePropertyAnimation (const string &name, const string &from,
   TRACE ("animating %s.%s from '%s' to '%s' in %" GINGA_TIME_FORMAT,
          _id.c_str (), name.c_str (), from.c_str (), to.c_str (),
          GINGA_TIME_ARGS (dur));
-  _animator.schedule (name, from, to, dur);
+  _animator->schedule (name, from, to, dur);
 }
 
 
@@ -328,45 +331,39 @@ Player::setProperty (const string &name, const string &value)
     }
   else if (name == "left")
     {
-      int width;
-      Ginga_Display->getSize (&width, nullptr);
+      int width = _ginga->getOptionInt ("width");
       _rect.x = ginga_parse_percent (value, width, 0, G_MAXINT);
       _dirty = true;
     }
   else if (name == "right")
     {
-      int width;
-      Ginga_Display->getSize (&width, nullptr);
+      int width = _ginga->getOptionInt ("width");
       _rect.x = width - _rect.width
         - ginga_parse_percent (value, _rect.width, 0, G_MAXINT);
       _dirty = true;
     }
   else if (name == "top")
     {
-      int height;
-      Ginga_Display->getSize (nullptr, &height);
+      int height = _ginga->getOptionInt ("height");
       _rect.y = ginga_parse_percent (value, height, 0, G_MAXINT);
       _dirty = true;
     }
   else if (name == "bottom")
     {
-      int height;
-      Ginga_Display->getSize (nullptr, &height);
+      int height = _ginga->getOptionInt ("height");
       _rect.y = height - _rect.height
         - ginga_parse_percent (value, _rect.height, 0, G_MAXINT);
       _dirty = true;
     }
   else if (name == "width")
     {
-      int width;
-      Ginga_Display->getSize (&width, nullptr);
+      int width = _ginga->getOptionInt ("width");
       _rect.width = ginga_parse_percent (value, width, 0, G_MAXINT);
       _dirty = true;
     }
   else if (name == "height")
     {
-      int height;
-      Ginga_Display->getSize (nullptr, &height);
+      int height = _ginga->getOptionInt ("height");
       _rect.height = ginga_parse_percent (value, height, 0, G_MAXINT);
       _dirty = true;
     }
@@ -437,8 +434,8 @@ Player::setRect (GingaRect rect)
 void
 Player::getZ (int *z, int *zorder)
 {
-  set_if_nonnull (z , _z);
-  set_if_nonnull (zorder , _zorder);
+  tryset (z , _z);
+  tryset (zorder , _zorder);
 }
 
 /**
@@ -543,7 +540,7 @@ void
 Player::redraw (cairo_t *cr)
 {
   g_assert (_state != PL_SLEEPING);
-  _animator.update (&_rect, &_bgColor, &_alpha);
+  _animator->update (&_rect, &_bgColor, &_alpha);
 
   if (!_visible || !(_rect.width > 0 && _rect.height > 0))
     return;                     // nothing to do
@@ -588,7 +585,7 @@ Player::redraw (cairo_t *cr)
       cairo_restore (cr);
     }
 
-  if (_debug)
+  if (_debug || _ginga->getOptionBool ("debug"))
     this->redrawDebuggingInfo (cr);
 }
 

@@ -20,31 +20,30 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ExecutionObjectContext.h"
 #include "ExecutionObjectSwitch.h"
-
-#include "mb/Display.h"
-using namespace ::ginga::mb;
+#include "Scheduler.h"
 
 GINGA_FORMATTER_BEGIN
 
-ExecutionObjectSettings::ExecutionObjectSettings (const string &id,
+ExecutionObjectSettings::ExecutionObjectSettings (GingaState *ginga,
+                                                  const string &id,
                                                   Node *node,
                                                   INclActionListener *lst)
-  : ExecutionObject (id, node, lst)
+  : ExecutionObject (ginga, id, node, lst)
 {
   Node *nodeEntity = cast (Node *, node->derefer ());
   g_assert_nonnull (nodeEntity);
   auto media = cast (Media *, nodeEntity);
   g_assert_nonnull (media);
   g_assert (media->isSettings ());
-  _player = Player::createPlayer (_id, "", media->getMimeType ());
-  g_assert (Ginga_Display->registerEventListener (this));
+  _player = Player::createPlayer (_ginga, _id, "", media->getMimeType ());
+  g_assert (_ginga->registerEventListener (this));
 }
 
 void
 ExecutionObjectSettings::setProperty (const string &name,
-                                      arg_unused (const string &from),
+                                      unused (const string &from),
                                       const string &to,
-                                      arg_unused (GingaTime dur))
+                                      unused (GingaTime dur))
 {
   if (name == "service.currentFocus")
     Player::setCurrentFocus (to);
@@ -62,11 +61,14 @@ ExecutionObjectSettings::updateCurrentFocus (const string &index)
     }
   else
     {
-      for (auto obj: _objects)
+      Scheduler *sched = _ginga->getScheduler ();
+      g_assert_nonnull (sched);
+
+      for (auto obj: *sched->getObjects ())
         if (obj->isFocused ())
           return;                   // nothing to do
 
-      for (auto obj: _objects)
+      for (auto obj: *sched->getObjects ())
         {
           if (!instanceof (ExecutionObjectContext *, obj)
               && !instanceof (ExecutionObjectSettings *, obj)
@@ -120,15 +122,15 @@ ExecutionObjectSettings::scheduleFocusUpdate (const string &next)
 }
 
 void
-ExecutionObjectSettings::handleKeyEvent (arg_unused (const string &key),
-                                         arg_unused (bool press))
+ExecutionObjectSettings::handleKeyEvent (unused (const string &key),
+                                         unused (bool press))
 {
 }
 
 void
-ExecutionObjectSettings::handleTickEvent (arg_unused (GingaTime total),
-                                          arg_unused (GingaTime diff),
-                                          arg_unused (int frame))
+ExecutionObjectSettings::handleTickEvent (unused (GingaTime total),
+                                          unused (GingaTime diff),
+                                          unused (int frame))
 {
   if (_hasNextFocus)            // effectuate pending focus index update
     {

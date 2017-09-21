@@ -20,10 +20,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-ExecutionObjectContext::ExecutionObjectContext (
-    const string &id, Node *dataObject,
-    INclActionListener *seListener)
-    : ExecutionObject (id, dataObject, seListener)
+ExecutionObjectContext::ExecutionObjectContext (GingaState *ginga,
+                                                const string &id,
+                                                Node *dataObject,
+                                                INclActionListener *seListener)
+  : ExecutionObject (ginga, id, dataObject, seListener)
 {
   Context *context;
   Entity *entity;
@@ -51,13 +52,10 @@ ExecutionObjectContext::ExecutionObjectContext (
 
 ExecutionObjectContext::~ExecutionObjectContext ()
 {
-  ExecutionObject *object;
+  // ExecutionObject *object;
   NclFormatterLink *link;
   set<NclFormatterLink *>::iterator i;
   map<string, ExecutionObject *>::iterator j;
-
-
-  destroyEvents ();
 
   _runningEvents.clear ();
   _pausedEvents.clear ();
@@ -76,17 +74,6 @@ ExecutionObjectContext::~ExecutionObjectContext ()
     }
   _links.clear ();
   _uncompiledLinks.clear ();
-
-  j = _execObjList.begin ();
-  while (j != _execObjList.end ())
-    {
-      object = j->second;
-      if (object != this)
-        {
-          object->removeParentObject (_node, this);
-        }
-      ++j;
-    }
   _execObjList.clear ();
 }
 
@@ -266,31 +253,7 @@ ExecutionObjectContext::setParentsAsListeners ()
   i = _parentTable.begin ();
   while (i != _parentTable.end ())
     {
-      if (NclEvent::hasInstance (_wholeContent, false))
-        {
-          _wholeContent->addListener (i->second);
-        }
-      ++i;
-    }
-}
-
-void
-ExecutionObjectContext::unsetParentsAsListeners ()
-{
-  map<Node *,ExecutionObjectContext *>::iterator i;
-
-  i = _parentTable.begin ();
-  while (i != _parentTable.end ())
-    {
-      if (!NclEvent::hasInstance (_wholeContent, false))
-        {
-          return;
-        }
-
-      // unregister parent as a composite presentation listener
-      _wholeContent->removeListener (
-          (ExecutionObjectContext *)i->second);
-
+      _wholeContent->addListener (i->second);
       ++i;
     }
 }
@@ -303,11 +266,8 @@ ExecutionObjectContext::eventStateChanged (
 {
   set<NclEvent *>::iterator i;
 
-  if (!(instanceof (PresentationEvent *, event))
-      || !NclEvent::hasInstance (event, false))
-    {
-      return;
-    }
+  if (!instanceof (PresentationEvent *, event))
+    return;
 
   switch (transition)
     {
@@ -344,7 +304,6 @@ ExecutionObjectContext::eventStateChanged (
           && _pendingLinks.empty ())
         {
           _wholeContent->abort ();
-          unsetParentsAsListeners ();
         }
       break;
 
@@ -450,7 +409,6 @@ ExecutionObjectContext::linkEvaluationFinished (
               else if (!start)
                 {
                   _wholeContent->abort ();
-                  unsetParentsAsListeners ();
                 }
             }
         }
@@ -467,11 +425,9 @@ ExecutionObjectContext::checkLinkConditions ()
   if ((_runningEvents.empty () && _pausedEvents.empty ()
        && _pendingLinks.empty ()))
     {
-      if (_wholeContent != NULL &&
-          NclEvent::hasInstance (_wholeContent, false))
+      if (_wholeContent != NULL)
         {
           _wholeContent->stop ();
-          unsetParentsAsListeners ();
           if (this->getParentObject () == nullptr)
             TRACE ("*** ALL DONE ***");
         }

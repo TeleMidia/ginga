@@ -19,60 +19,34 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Converter.h"
 
 #include "NclActions.h"
-#include "NclLinkStatement.h"
 #include "NclLinkAssessment.h"
+#include "NclLinkStatement.h"
+#include "Scheduler.h"
 
 GINGA_FORMATTER_BEGIN
 
-int Converter::_dummyCount = 0;
-
-static const string SEPARATOR = "/";
-
-Converter::Converter (RuleAdapter *ruleAdapter)
+Converter::Converter (GingaState *ginga,
+                      INclActionListener *actlist,
+                      RuleAdapter *ruleAdapter)
 {
-  this->_actionListener = nullptr;
-  this->_ruleAdapter = ruleAdapter;
-  this->_handling = false;
+  g_assert_nonnull (ginga);
+  _ginga = ginga;
+
+  _scheduler = ginga->getScheduler ();
+  g_assert_nonnull (_scheduler);
+
+  _actionListener = actlist;
+  _ruleAdapter = ruleAdapter;
 }
 
 Converter::~Converter ()
 {
-  for (NclEvent *evt: _listening)
-    {
-      if (NclEvent::hasInstance (evt, false))
-        {
-          evt->removeListener (this);
-        }
-    }
-
-  for (auto i = _exeObjects.begin (); i != _exeObjects.end (); )
-    {
-      ExecutionObject *object = i->second;
-
-      if (!removeExecutionObject (object))
-        {
-          i = _exeObjects.erase (i);
-        }
-      else
-        {
-          ++i;
-        }
-    }
-
-  _exeObjects.clear ();
-  _settingsObjects.clear ();
 }
 
 RuleAdapter *
 Converter::getRuleAdapter ()
 {
   return _ruleAdapter;
-}
-
-void
-Converter::setLinkActionListener (INclActionListener *actListener)
-{
-  _actionListener = actListener;
 }
 
 ExecutionObject *
@@ -82,14 +56,11 @@ Converter::getExecutionObjectFromPerspective (
   ExecutionObjectContext *parentObj;
   ExecutionObject *exeObj;
 
-  string id = perspective->getId () + SEPARATOR;
+  string id = perspective->getId () + "/";
 
-  auto i = _exeObjects.find (id);
-  if (i != _exeObjects.end ())
-    {
-      exeObj = i->second;
-      return exeObj;
-    }
+  exeObj = _scheduler->getObjectById (id);
+  if (exeObj != nullptr)
+    return exeObj;
 
   parentObj = getParentExecutionObject (perspective);
   exeObj = createExecutionObject (id, perspective, descriptor);
@@ -107,19 +78,30 @@ Converter::getEvent (ExecutionObject *exeObj,
                      const string &key)
 {
   string id;
+  string suffix;
+
   NclEvent *event;
   string type;
 
-  xstrassign (type, "%d", (int) ncmEventType);
+  switch (ncmEventType)
+    {
+    case EventType::SELECTION:
+      suffix = "<sel";
+      if (key != "")
+        suffix += "(" + key + ")";
+      suffix += ">";
+      break;
+    case EventType::PRESENTATION:
+      suffix = "<pres>";
+      break;
+    case EventType::ATTRIBUTION:
+      suffix = "<attr>";
+      break;
+    default:
+      g_assert_not_reached ();
+    }
 
-  if (key == "")
-    {
-      id = interfacePoint->getId () + "_" + type;
-    }
-  else
-    {
-      id = interfacePoint->getId () + "_" + type + "_" + key;
-    }
+  id = interfacePoint->getId () + suffix;
 
   event = exeObj->getEvent (id);
   if (event != nullptr)
@@ -132,23 +114,22 @@ Converter::getEvent (ExecutionObject *exeObj,
 
   if (switchObj)
     {
-      event = new SwitchEvent (
+      event = new SwitchEvent (_ginga,
             id, switchObj, interfacePoint, ncmEventType, key);
     }
   else if (ncmEventType == EventType::PRESENTATION)
     {
-      event = new PresentationEvent (
+      event = new PresentationEvent (_ginga,
             id, exeObj, (Area *)interfacePoint);
     }
   else if (cObj)
     {
-      // TODO: eventos internos da composicao estao sendo tratados nos elos.
       if (ncmEventType == EventType::ATTRIBUTION)
         {
           auto propAnchor = cast (Property *, interfacePoint);
           if (propAnchor)
             {
-              event = new AttributionEvent (
+              event = new AttributionEvent (_ginga,
                     id, exeObj,
                     (Property *)interfacePoint);
             }
@@ -157,7 +138,7 @@ Converter::getEvent (ExecutionObject *exeObj,
               WARNING ("NCM event type is attribution, but interface point "
                        "isn't");
 
-              event = new AttributionEvent (id, exeObj, nullptr);
+              event = new AttributionEvent (_ginga, id, exeObj, nullptr);
             }
         }
     }
@@ -170,7 +151,7 @@ Converter::getEvent (ExecutionObject *exeObj,
             auto propAnchor = cast (Property *, interfacePoint);
             if (propAnchor)
               {
-                event = new AttributionEvent (id, exeObj, propAnchor);
+                event = new AttributionEvent (_ginga, id, exeObj, propAnchor);
               }
             else
               {
@@ -182,9 +163,7 @@ Converter::getEvent (ExecutionObject *exeObj,
                 if (intervalAnchor)
                   {
                     WARNING ("It was supposed to be a PRESENTATION EVENT");
-
-                    // TODO: find the correct way to solve this
-                    event = new PresentationEvent (
+                    event = new PresentationEvent (_ginga,
                           id, exeObj,
                           intervalAnchor);
                   }
@@ -196,7 +175,7 @@ Converter::getEvent (ExecutionObject *exeObj,
 
         case EventType::SELECTION:
           {
-            event = new SelectionEvent (
+            event = new SelectionEvent (_ginga,
                   id, exeObj, (Area *)interfacePoint);
 
             if (key != "")
@@ -242,23 +221,6 @@ Converter::addSameInstance (ExecutionObject *exeObj,
             referPerspective->getNode (referPerspective->getNumNodes () - 2));
 
       referParentObject->addExecutionObject (exeObj);
-
-      // A new entry for the execution object is inserted using
-      // the refer node id.  As a consequence, links referring to the
-      // refer node will generate events in the execution object.
-      // Descriptor *desc = exeObj->getDescriptor ();
-
-      // string objectId;
-      // if (desc)
-      //   {
-      //     objectId = (referPerspective->getId () + SEPARATOR
-      //                 + exeObj->getDescriptor ()->getId ());
-      //   }
-      // else
-      //   {
-      string objectId = referPerspective->getId ();
-        // }
-      _exeObjects[objectId] = exeObj;
     }
 
   delete ncmPerspective;
@@ -271,8 +233,6 @@ void
 Converter::addExecutionObject (ExecutionObject *exeObj,
                                ExecutionObjectContext *parentObj)
 {
-  _exeObjects[exeObj->getId ()] = exeObj;
-
   if (parentObj)
     {
       parentObj->addExecutionObject (exeObj);
@@ -280,20 +240,7 @@ Converter::addExecutionObject (ExecutionObject *exeObj,
 
   // Hanlde settings nodes.
   Node *dataObject = exeObj->getNode ();
-  auto contentNode = cast (Media *, dataObject);
-
-  if (contentNode != nullptr && contentNode->isSettings ())
-    _settingsObjects.insert (exeObj);
-
-  auto referNode = cast (Refer *, dataObject);
-  if (referNode)
-    {
-
-      Media *media = referNode->getReferred ();
-      g_assert_nonnull (media);
-      if (media->isSettings ())
-        _settingsObjects.insert (exeObj);
-    }
+  // auto contentNode = cast (Media *, dataObject);
 
   NclNodeNesting *nodePerspective = exeObj->getNodePerspective ();
   Node *headNode = nodePerspective->getHeadNode ();
@@ -327,33 +274,6 @@ Converter::addExecutionObject (ExecutionObject *exeObj,
 
       compileExecutionObjectLinks (exeObj, node, parent);
     }
-}
-
-bool
-Converter::removeExecutionObject (ExecutionObject *exeObj)
-{
-  bool removed = false;
-
-  auto i = _exeObjects.find (exeObj->getId ());
-
-  if (i != _exeObjects.end ())
-    {
-      _exeObjects.erase (i);
-      removed = true;
-    }
-
-  if (_settingsObjects.count (exeObj))
-    {
-      _settingsObjects.erase (_settingsObjects.find (exeObj));
-      removed = true;
-    }
-
-  if (removed)
-    {
-      delete exeObj;
-    }
-
-  return removed;
 }
 
 ExecutionObjectContext *
@@ -416,14 +336,14 @@ Converter::createExecutionObject (
                 {
                   g_assert_nonnull (nodeEntity);
                   exeObj  = new ExecutionObject
-                    (id, nodeEntity, _actionListener);
+                    (_ginga, id, nodeEntity, _actionListener);
                 }
             }
           else
             {
               g_assert_nonnull (nodeEntity);
               exeObj = new ExecutionObject
-                (id, nodeEntity, _actionListener);
+                (_ginga, id, nodeEntity, _actionListener);
             }
 
           delete nodePerspective;
@@ -438,13 +358,10 @@ Converter::createExecutionObject (
   auto switchNode = cast (Switch *, nodeEntity);
   if (switchNode)
     {
-      string s;
       g_assert_nonnull (node);
-      exeObj = new ExecutionObjectSwitch (id, node,
-                                          _actionListener);
-      xstrassign (s, "%d", (int) EventType::PRESENTATION);
-      compositeEvt = new PresentationEvent (
-            nodeEntity->getLambda ()->getId () + "_" + s,
+      exeObj = new ExecutionObjectSwitch (_ginga, id, node, _actionListener);
+      compositeEvt = new PresentationEvent (_ginga,
+            nodeEntity->getLambda ()->getId () + "<pres>",
             exeObj,
             (Area *)(nodeEntity->getLambda ()));
 
@@ -458,11 +375,11 @@ Converter::createExecutionObject (
     {
       string s;
       g_assert_nonnull (node);
-      exeObj = new ExecutionObjectContext (id, node, _actionListener);
+      exeObj = new ExecutionObjectContext (_ginga, id, node, _actionListener);
 
       xstrassign (s, "%d", (int) EventType::PRESENTATION);
-      compositeEvt = new PresentationEvent (
-            nodeEntity->getLambda ()->getId () + "_" + s,
+      compositeEvt = new PresentationEvent (_ginga,
+            nodeEntity->getLambda ()->getId () + "<pres>",
             exeObj,
             (Area *)(nodeEntity->getLambda ()));
 
@@ -483,14 +400,14 @@ Converter::createExecutionObject (
           else
             {
               exeObj = new ExecutionObjectSettings
-                (id, node, _actionListener);
+                (_ginga, id, node, _actionListener);
               _ruleAdapter->setSettings (exeObj);
               return exeObj;
             }
         }
       else
         {
-          return new ExecutionObject (id, node, _actionListener);
+          return new ExecutionObject (_ginga, id, node, _actionListener);
         }
     }
 
@@ -696,17 +613,15 @@ Converter::processExecutionObjectSwitch (
   selectedPerspective = switchObject->getNodePerspective ();
   selectedPerspective->insertAnchorNode (selectedNode);
 
-  id = selectedPerspective->getId () + SEPARATOR;
+  id = selectedPerspective->getId () + "/";
 
-  i = _exeObjects.find (id);
-  if (i != _exeObjects.end ())
+  ExecutionObject *obj = _scheduler->getObjectById (id);
+  if (obj != nullptr)
     {
-      selectedObject = i->second;
-      switchObject->select (selectedObject);
+      switchObject->select (obj);
       resolveSwitchEvents (switchObject);
       delete selectedPerspective;
-
-      return selectedObject;
+      return obj;
     }
 
   selectedObject = createExecutionObject (id, selectedPerspective, nullptr);
@@ -903,7 +818,7 @@ Converter::insertContext (NclNodeNesting *contextPerspective,
 void
 Converter::eventStateChanged (NclEvent *event,
                               EventStateTransition transition,
-                              arg_unused (EventState previousState))
+                              unused (EventState previousState))
 {
   ExecutionObject *exeObj = event->getExecutionObject ();
   auto exeCompositeObj = cast (ExecutionObjectContext *, exeObj);
@@ -951,7 +866,6 @@ Converter::eventStateChanged (NclEvent *event,
       if (transition == EventStateTransition::STOPS
           || transition == EventStateTransition::ABORTS)
         {
-          removeExecutionObject (exeObj);
         }
     }
 }
@@ -1428,7 +1342,7 @@ Converter::createStatement (
 
 NclLinkAttributeAssessment *
 Converter::createAttributeAssessment (
-    arg_unused (AttributeAssessment *attributeAssessment), Bind *bind, Link *ncmLink,
+    unused (AttributeAssessment *attributeAssessment), Bind *bind, Link *ncmLink,
     ExecutionObjectContext *parentObj)
 {
   NclEvent *event = createEvent (bind, ncmLink, parentObj);

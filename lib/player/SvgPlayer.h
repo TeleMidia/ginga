@@ -19,15 +19,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define SVG_PLAYER_H
 
 #include "Player.h"
-#include "mb/Display.h"
-using namespace ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
 class SvgPlayer : public Player
 {
 public:
-  SvgPlayer (const string &id, const string &uri) : Player (id, uri) {}
+  SvgPlayer (GingaState *ginga, const string &id, const string &uri)
+    : Player (ginga, id, uri) {}
   ~SvgPlayer () {}
   void reload () override;
 };

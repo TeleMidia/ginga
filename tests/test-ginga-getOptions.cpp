@@ -15,31 +15,28 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef DASHBOARD_H
-#define DASHBOARD_H
-
 #include "ginga-internal.h"
-#include "IEventListener.h"
+#include "ginga.h"
 
-GINGA_MB_BEGIN
-
-class Dashboard : public IEventListener
+int
+main (void)
 {
-public:
-  Dashboard ();
-  ~Dashboard ();
-  void redraw2 (cairo_t *);
+  const GingaOptions *out;
+  GingaOptions opts =
+    {
+     10,                        // width
+     20,                        // height
+     false,                     // debug
+     "green",                   // background
+    };
+  Ginga *ginga = Ginga::create (0, nullptr, &opts);
+  g_assert_nonnull (ginga);
 
-  // IEventListener.
-  void handleTickEvent (GingaTime, GingaTime, int) override;
-  void handleKeyEvent (const string &, bool) override {};
+  out = ginga->getOptions ();
+  g_assert (out->width == opts.width);
+  g_assert (out->height == opts.height);
+  g_assert (out->debug == opts.debug);
+  g_assert (out->background == opts.background);
 
-private:
-  GingaTime _total;
-  GingaTime _diff;
-  int _frameno;
-};
-
-GINGA_MB_END
-
-#endif // DASHBOARD_H
+  exit (EXIT_SUCCESS);
+}

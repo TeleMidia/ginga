@@ -1,39 +1,39 @@
 /*@define-color bg_color #444444; */
 
-window *, .GtkWindow *{
+window *, GtkWindow *{
   border-radius: 2px;  
   border-width: 0px;
 }
 
-window, .GtkWindow{  
+window, GtkWindow{  
   background-color: #E8E8E7;  
   border: 1px solid #888888;
   border-top-width: 0px;
 }
 
-window label, .GtkWindow .label{
+window label, GtkWindow .label{
   color: #333333;
 }
 
-entry, .entry, GtkEntry{
+entry, .entry, .GtkEntry{
   border: 1px solid #888888;
   background-color: #FFFFFF;
  
 }
 
-window button, .GtkWindow .button{
+window button, GtkWindow .button{
   background: #EEEEEE;
   color: #333333;
   border: 1px solid #888888;
   box-shadow: none;
 }
 
-window popover, .GtkWindow  .popover{
+window popover, GtkWindow  .popover{
   border: 1px solid #333333;
   background-color: #E8E8E7; 
 }
 
-window frame, .GtkWindow .frame{
+window frame, GtkWindow .frame{
   border: 1px solid #888888;
 }
 
@@ -45,7 +45,7 @@ slider{
   border: 1px solid #888888;
 }
 
-window button:hover, .GtkWindow .button:hover{
+window button:hover, GtkWindow .button:hover{
   background: #DFDFDF;
 }
 
@@ -82,6 +82,10 @@ infobar button, .infobar .button{
 
 infobar button:hover, .infobar .button:hover{
   background: transparent;
+}
+
+GtkSeparator{
+  border: 1px solid #BBBBBB;
 }
 
 

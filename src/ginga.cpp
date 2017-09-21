@@ -25,6 +25,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <gtk/gtk.h>
 
 #include "ginga.h"
+using namespace ::std;
 
 #define deconst(t, x) ((t)(ptrdiff_t)(const void *)(x))
 #define gpointerof(p) ((gpointer)((ptrdiff_t)(p)))
@@ -36,20 +37,33 @@ static Ginga *GINGA = nullptr;
 
 // Options.
 
-#define OPTION_LINE "FILE"
+#define OPTION_LINE "FILE..."
 #define OPTION_DESC                             \
   "Report bugs to: " PACKAGE_BUGREPORT "\n"     \
   "Ginga home page: " PACKAGE_URL
 
+static gboolean opt_debug = FALSE;      // true if --debug was given
 static gboolean opt_fullscreen = FALSE; // true if --fullscreen was given
-static gboolean opt_scale = FALSE;      // true if --scale was given
+static string opt_background = "";      // background color
 static gint opt_width = 800;            // initial window width
 static gint opt_height = 600;           // initial window height
-static gdouble opt_fps = 60;            // initial target frame-rate
 
 static gboolean
-opt_size (const gchar *opt, const gchar *arg,
-          gpointer data, GError **err)
+opt_background_cb (const gchar *opt, const gchar *arg,
+                   gpointer data, GError **err)
+{
+  (void) opt;
+  (void) data;
+  (void) err;
+
+  g_assert_nonnull (arg);
+  opt_background = string (arg);
+  return TRUE;
+}
+
+static gboolean
+opt_size_cb (const gchar *opt, const gchar *arg,
+             gpointer data, GError **err)
 {
   gint64 width;
   gint64 height;
@@ -81,23 +95,23 @@ opt_size (const gchar *opt, const gchar *arg,
 }
 
 static gboolean
-opt_version (void)
+opt_version_cb (void)
 {
   puts (PACKAGE_STRING);
   exit (EXIT_SUCCESS);
 }
 
 static GOptionEntry options[] = {
-  {"size", 's', 0, G_OPTION_ARG_CALLBACK,
-   gpointerof (opt_size), "Set initial window size", "WIDTHxHEIGHT"},
-  {"fullscreen", 'S', 0, G_OPTION_ARG_NONE,
+  {"background", 'b', 0, G_OPTION_ARG_CALLBACK,
+   gpointerof (opt_background_cb), "Set background color", "COLOR"},
+  {"debug", 'd', 0, G_OPTION_ARG_NONE,
+   &opt_debug, "Enable debugging", NULL},
+  {"fullscreen", 'f', 0, G_OPTION_ARG_NONE,
    &opt_fullscreen, "Enable full-screen mode", NULL},
-  {"scale", 'x', 0, G_OPTION_ARG_NONE,
-   &opt_scale, "Scale canvas to fit window", NULL},
-   {"fps", 'f', 0, G_OPTION_ARG_DOUBLE,
-   &opt_fps, "Set display FPS rate", NULL},
+  {"size", 's', 0, G_OPTION_ARG_CALLBACK,
+   gpointerof (opt_size_cb), "Set initial window size", "WIDTHxHEIGHT"},
   {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
-   gpointerof (opt_version), "Print version information and exit", NULL},
+   gpointerof (opt_version_cb), "Print version information and exit", NULL},
   {NULL, 0, 0, G_OPTION_ARG_NONE, NULL, NULL, NULL}
 };
 
@@ -131,11 +145,14 @@ draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
   (void) widget;
   (void) data;
 
-  cairo_set_source_rgb (cr, 1., 0., 1.);
-  cairo_rectangle (cr, 0, 0, opt_width, opt_height);
-  cairo_fill (cr);
   GINGA->redraw (cr);
   return TRUE;
+}
+
+static void
+exit_callback (void)
+{
+  exit (0);
 }
 
 static gboolean
@@ -150,7 +167,7 @@ resize_callback (GtkWidget *widget, GdkEventConfigure *e, gpointer data)
   GINGA->resize (opt_width, opt_height);
 
   // We must return FALSE here, otherwise the new geometry is not propagated
-  // to draw_callback().
+  // to the draw_callback().
   return FALSE;
 }
 
@@ -163,10 +180,18 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
   switch (e->keyval)
     {
     case GDK_KEY_Escape:        /* quit */
-      gtk_widget_destroy (widget);
+      if (g_str_equal ((const char *) type, "release"))
+        return TRUE;
+      gtk_main_quit ();
       return TRUE;
-    case GDK_KEY_F11:          /* toggle full-screen */
-      if (g_strcmp0 ((const char *) type, "release") == 0)
+    case GDK_KEY_F10:           /* toggle debugging */
+      if (g_str_equal ((const char *) type, "release"))
+        return TRUE;
+      opt_debug = !opt_debug;
+      GINGA->setOptionBool ("debug", opt_debug);
+      return TRUE;
+    case GDK_KEY_F11:           /* toggle full-screen */
+      if (g_str_equal ((const char *) type, "release"))
         return TRUE;
       opt_fullscreen = !opt_fullscreen;
       if (opt_fullscreen)
@@ -220,8 +245,8 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
       break;
     }
 
-  GINGA->send_key (std::string (key),
-                   g_strcmp0 ((const char *) type, "press") == 0);
+  GINGA->sendKeyEvent
+    (string (key), g_str_equal ((const char *) type, "press") == 0);
   if (free_key)
     g_free (deconst (char *, key));
 
@@ -255,7 +280,7 @@ tick_callback (GtkWidget *widget)
       first = time;
       last = time;
     }
-  GINGA->send_tick (time - first, time - last, frame);
+  GINGA->sendTickEvent (time - first, time - last, frame);
   last = time;
   gtk_widget_queue_draw (widget);
   return G_SOURCE_CONTINUE;
@@ -269,8 +294,8 @@ main (int argc, char **argv)
 {
   int saved_argc;
   char **saved_argv;
-  std::string file;
 
+  GingaOptions opts;
   GtkWidget *app;
   GOptionContext *ctx;
   gboolean status;
@@ -302,12 +327,6 @@ main (int argc, char **argv)
       exit (EXIT_FAILURE);
     }
 
-  file = std::string (saved_argv[1]);
-  g_strfreev (saved_argv);
-
-  // Create Ginga handle width the original args.
-  GINGA = new Ginga (argc, argv, opt_width, opt_height, opt_fullscreen);
-
   // Create application window.
   app = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   g_assert_nonnull (app);
@@ -317,11 +336,8 @@ main (int argc, char **argv)
   if (opt_fullscreen)
     gtk_window_fullscreen (GTK_WINDOW (app));
 
-  // Start Ginga.
-  GINGA->start (file);
-
   // Setup GTK+ callbacks.
-  g_signal_connect (app, "destroy", G_CALLBACK (gtk_main_quit), NULL);
+  g_signal_connect (app, "destroy", G_CALLBACK (exit_callback), NULL);
   g_signal_connect (app, "draw", G_CALLBACK (draw_callback), NULL);
   g_signal_connect (app, "configure-event",
                     G_CALLBACK (resize_callback), NULL);
@@ -338,12 +354,25 @@ main (int argc, char **argv)
   g_timeout_add (1000 / opt_fps, (GSourceFunc) tick_callback, app);
 #endif
 
-  // Show window and enter event loop.
-  gtk_widget_show_all (app);
-  gtk_main ();
+  // Create Ginga handle width the original args.
+  opts.width = opt_width;
+  opts.height = opt_height;
+  opts.debug = opt_debug;
+  opts.background = string (opt_background);
+  GINGA = Ginga::create (argc, argv, &opts);
+  g_assert_nonnull (GINGA);
 
-  // Cleanup.
-  // delete GINGA;      FIXME!!!
+  // Run each NCL file, one after another.
+  for (int i = 1; i < saved_argc; i++)
+    {
+      GINGA->start (string (saved_argv[i]));
+      gtk_widget_show_all (app);
+      gtk_main ();
+      GINGA->stop ();
+    }
+
+  delete GINGA;
+  g_strfreev (saved_argv);
 
   exit (EXIT_SUCCESS);
 }

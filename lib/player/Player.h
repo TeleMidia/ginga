@@ -18,7 +18,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include "GingaState.h"
 #include "PlayerAnimator.h"
+
+class GingaState;
 
 GINGA_PLAYER_BEGIN
 
@@ -32,8 +35,9 @@ public:
      PL_PAUSED,
     };
 
-  static Player *createPlayer (const string &, const string &, const string &);
-  Player (const string &, const string &);
+  static Player *createPlayer (GingaState *, const string &,
+                               const string &, const string &);
+  Player (GingaState *, const string &, const string &);
   virtual ~Player ();
 
   string getId ();
@@ -86,6 +90,7 @@ public:
   static void setCurrentFocus (const string &);
 
 protected:
+  GingaState *_ginga;              // ginga state
   string _id;                      // associated object id
   string _uri;                     // source uri
   PlayerState _state;              // current state
@@ -93,7 +98,7 @@ protected:
   bool _eos;                       // true if content was exhausted
   cairo_surface_t *_surface;       // player surface
   bool _dirty;                     // true if surface should be reloaded
-  PlayerAnimator _animator;        // associated animator
+  PlayerAnimator *_animator;       // associated animator
 
   map<string, string> _properties; // property table
   bool _debug;                     // true if debugging mode is on

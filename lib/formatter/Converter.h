@@ -18,6 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef CONVERTER_H
 #define CONVERTER_H
 
+#include "GingaState.h"
 #include "ExecutionObject.h"
 #include "ExecutionObjectContext.h"
 #include "ExecutionObjectSettings.h"
@@ -33,22 +34,21 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/Ncl.h"
 using namespace ::ginga::ncl;
 
+class GingaState;
+
 GINGA_FORMATTER_BEGIN
 
 class Scheduler;
-
 class Converter : public INclEventListener
 {
 public:
-  explicit Converter (RuleAdapter *);
+  explicit Converter (GingaState *, INclActionListener *, RuleAdapter *);
   virtual ~Converter ();
 
   void setHandlingStatus (bool handling);
 
-  void setLinkActionListener (INclActionListener *actionListener);
-
-  ExecutionObject *getExecutionObjectFromPerspective (
-      NclNodeNesting *perspec, Descriptor *desc);
+  ExecutionObject *getExecutionObjectFromPerspective
+  (NclNodeNesting *, Descriptor *);
 
   NclEvent *getEvent (ExecutionObject *exeObj,
                       Anchor *interfacePoint,
@@ -65,10 +65,10 @@ public:
 
 
 private:
-  static int _dummyCount;
-  map<string, ExecutionObject *> _exeObjects;
+  GingaState *_ginga;
+  Scheduler *_scheduler;
+
   set<NclEvent *> _listening;
-  set<ExecutionObject *> _settingsObjects;
   INclActionListener *_actionListener;
   RuleAdapter *_ruleAdapter;
   bool _handling;
@@ -76,7 +76,6 @@ private:
   void addExecutionObject (ExecutionObject *exeObj,
                            ExecutionObjectContext *parentObj);
 
-  bool removeExecutionObject (ExecutionObject *exeObj);
 
   NclFormatterLink *
   createLink (Link *ncmLink,

@@ -19,34 +19,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Scheduler.h"
 #include "Converter.h"
 
-#include "mb/Display.h"
-using namespace ::ginga::mb;
-
 GINGA_FORMATTER_BEGIN
 
 
 // Public.
 
-Scheduler::Scheduler ()
-{
-  _converter = new Converter (new RuleAdapter ());
-  _converter->setLinkActionListener (this);
-}
-
-Scheduler::~Scheduler ()
-{
-  _events.clear ();
-  delete _converter;
-}
-
-void
-Scheduler::scheduleAction (NclSimpleAction *action)
-{
-  runAction (action->getEvent (), action);
-}
-
-void
-Scheduler::startDocument (const string &file)
+Scheduler::Scheduler (GingaState *ginga, const string &file)
 {
   string id;
   Context *body;
@@ -54,10 +32,17 @@ Scheduler::startDocument (const string &file)
   vector<NclEvent *> *entryevts;
   NclNodeNesting *persp;
   int w, h;
+  string errmsg;
+
+  g_assert_nonnull (ginga);
+  _ginga = ginga;
+  _ginga->setData ("scheduler", this);
+  _converter = new Converter (ginga, this, new RuleAdapter ());
 
   // Parse document.
-  Ginga_Display->getSize (&w, &h);
-  _doc = Parser::parse (file, w, h);
+  w = _ginga->getOptionInt ("width");
+  h = _ginga->getOptionInt ("height");
+  _doc = Parser::parse (file, w, h, &errmsg);
   g_assert_nonnull (_doc);
 
   id = _doc->getId ();
@@ -137,13 +122,12 @@ Scheduler::startDocument (const string &file)
   delete nodes;
 
   // Set global settings object.
-  ExecutionObject::setSettings (settings);
+  _ginga->setData ("settings", settings);
 
   // Start entry events.
   for (auto event: *entryevts)
     {
       NclSimpleAction *fakeAction;
-      _events.push_back (event);
       fakeAction = new NclSimpleAction (event, SimpleAction::START);
       runAction (event, fakeAction);
       delete fakeAction;
@@ -152,6 +136,57 @@ Scheduler::startDocument (const string &file)
 
   // Refresh current focus.
   settings->updateCurrentFocus ("");
+}
+
+Scheduler::~Scheduler ()
+{
+  for (auto obj: _objects)
+    delete obj;
+  _objects.clear ();
+
+  for (auto evt: _events)
+    delete evt;
+  _events.clear ();
+
+  delete _converter;
+}
+
+#define SET_ACCESS_DEFN(Name, Type, Var)                \
+  set<Type *> *                                         \
+  Scheduler::get##Name##s ()                            \
+  {                                                     \
+    return &(Var);                                      \
+  }                                                     \
+  bool                                                  \
+  Scheduler::has##Name (Type *elt)                      \
+  {                                                     \
+    set<Type *>::iterator it;                           \
+    if ((it = (Var).find (elt)) == (Var).end ())        \
+      return false;                                     \
+    return true;                                        \
+  }                                                     \
+  Type *                                                \
+  Scheduler::get##Name##ById (const string &id)         \
+  {                                                     \
+    for (auto *elt: (Var))                              \
+      if (elt->getId () == id)                          \
+        return elt;                                     \
+    return nullptr;                                     \
+  }                                                     \
+  void                                                  \
+  Scheduler::add##Name (Type *elt)                      \
+  {                                                     \
+    g_assert_nonnull (elt);                             \
+    (Var).insert (elt);                                 \
+  }
+
+SET_ACCESS_DEFN (Object, ExecutionObject, _objects)
+SET_ACCESS_DEFN (Event, NclEvent, _events)
+
+void
+Scheduler::scheduleAction (NclSimpleAction *action)
+{
+  runAction (action->getEvent (), action);
 }
 
 
@@ -240,7 +275,7 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
       g_assert (obj->start ());
       break;
     case SimpleAction::STOP:
-      g_assert (obj->stop ());
+      obj->stop ();
       break;
     case SimpleAction::PAUSE:
       g_assert (obj->pause ());
@@ -359,7 +394,8 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
           evt = child->getMainEvent ();
           if (evt == nullptr)
             evt = child->getWholeContentPresentationEvent ();
-          g_assert_nonnull (evt);
+          if (evt == nullptr)
+            continue;
           runAction (evt, action);
         }
       ctxObj->suspendLinkEvaluation (false);

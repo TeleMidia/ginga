@@ -335,18 +335,18 @@ ISDBTFrontend::scanFrequencies (vector<Channel *> *channels)
 }
 
 void
-ISDBTFrontend::attachFilter (arg_unused (IFrontendFilter *filter))
+ISDBTFrontend::attachFilter (unused (IFrontendFilter *filter))
 {
 }
 
 int
-ISDBTFrontend::createPesFilter (arg_unused (int pid), arg_unused (int pesType), arg_unused (bool compositeFiler))
+ISDBTFrontend::createPesFilter (unused (int pid), unused (int pesType), unused (bool compositeFiler))
 {
   return -1;
 }
 
 void
-ISDBTFrontend::removeFilter (arg_unused (IFrontendFilter *filter))
+ISDBTFrontend::removeFilter (unused (IFrontendFilter *filter))
 {
 }
 

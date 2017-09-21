@@ -19,9 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclLinkStatement.h"
 #include "ginga-internal.h"
 
-#include "mb/Display.h"
-using namespace ginga::mb;
-
 GINGA_FORMATTER_BEGIN
 
 NclLinkTriggerCondition::NclLinkTriggerCondition () : NclLinkCondition ()
@@ -32,7 +29,7 @@ NclLinkTriggerCondition::NclLinkTriggerCondition () : NclLinkCondition ()
 
 void
 NclLinkTriggerCondition::conditionSatisfied (
-    arg_unused (NclLinkCondition *condition))
+    unused (NclLinkCondition *condition))
 {
   if (_delay > 0)
     ERROR_NOT_IMPLEMENTED ("condition delays are not supported");
@@ -229,24 +226,12 @@ NclLinkTransitionTriggerCondition::NclLinkTransitionTriggerCondition (
   this->_bind = bind;
   this->_event = nullptr;
   this->_transition = transition;
-
-  if (NclEvent::hasInstance (event, false))
-    {
-      this->_event = event;
-      this->_event->addListener (this);
-    }
-  else
-    {
-      ERROR ("Creating a link with null event.");
-    }
+  this->_event = event;
+  this->_event->addListener (this);
 }
 
 NclLinkTransitionTriggerCondition::~NclLinkTransitionTriggerCondition ()
 {
-  if (NclEvent::hasInstance (_event, false))
-    {
-      _event->removeListener (this);
-    }
 }
 
 Bind *
@@ -257,8 +242,8 @@ NclLinkTransitionTriggerCondition::getBind ()
 
 void
 NclLinkTransitionTriggerCondition::eventStateChanged (
-    arg_unused (NclEvent *_event), EventStateTransition transition,
-    arg_unused (EventState previousState))
+    unused (NclEvent *_event), EventStateTransition transition,
+    unused (EventState previousState))
 {
   if (this->_transition == transition)
     {
@@ -283,10 +268,7 @@ vector<NclEvent *>
 NclLinkTransitionTriggerCondition::getEvents ()
 {
   vector<NclEvent *> events;
-
-  if (NclEvent::hasInstance (_event, false))
-    events.push_back (_event);
-
+  events.push_back (_event);
   return events;
 }
 

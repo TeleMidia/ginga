@@ -24,7 +24,7 @@ void
 key_tvremote_press_event_callback (GtkWidget *widget, gpointer data)
 {
   const gchar *widget_name = gtk_widget_get_name (widget);
-  GINGA->send_key (std::string (widget_name), true);
+  GINGA->sendKeyEvent (std::string (widget_name), true);
 }
 
 GtkWidget *

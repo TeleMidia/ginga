@@ -25,7 +25,7 @@ GINGA_PLAYER_BEGIN
 class VideoPlayer : public Player
 {
 public:
-  VideoPlayer (const string &, const string &);
+  VideoPlayer (GingaState *, const string &, const string &);
   virtual ~VideoPlayer ();
   void start () override;
   void stop () override;
