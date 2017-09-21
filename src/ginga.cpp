@@ -179,18 +179,18 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
 
   switch (e->keyval)
     {
-    case GDK_KEY_Escape:        /* quit */
+    case GDK_KEY_Escape:        // quit
       if (g_str_equal ((const char *) type, "release"))
         return TRUE;
       gtk_main_quit ();
       return TRUE;
-    case GDK_KEY_F10:           /* toggle debugging */
+    case GDK_KEY_F10:           // toggle debugging
       if (g_str_equal ((const char *) type, "release"))
         return TRUE;
       opt_debug = !opt_debug;
       GINGA->setOptionBool ("debug", opt_debug);
       return TRUE;
-    case GDK_KEY_F11:           /* toggle full-screen */
+    case GDK_KEY_F11:           // toggle full-screen
       if (g_str_equal ((const char *) type, "release"))
         return TRUE;
       opt_fullscreen = !opt_fullscreen;
@@ -354,7 +354,7 @@ main (int argc, char **argv)
   g_timeout_add (1000 / opt_fps, (GSourceFunc) tick_callback, app);
 #endif
 
-  // Create Ginga handle width the original args.
+  // Create Ginga state.
   opts.width = opt_width;
   opts.height = opt_height;
   opts.debug = opt_debug;
@@ -365,12 +365,18 @@ main (int argc, char **argv)
   // Run each NCL file, one after another.
   for (int i = 1; i < saved_argc; i++)
     {
-      GINGA->start (string (saved_argv[i]));
+      string errmsg;
+      if (!GINGA->start (string (saved_argv[i]), &errmsg))
+        {
+          g_printerr ("error: %s\n", errmsg.c_str ());
+          exit (EXIT_FAILURE);
+        }
       gtk_widget_show_all (app);
       gtk_main ();
       GINGA->stop ();
     }
 
+  // Done.
   delete GINGA;
   g_strfreev (saved_argv);
 

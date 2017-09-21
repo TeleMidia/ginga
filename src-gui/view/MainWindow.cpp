@@ -1004,7 +1004,7 @@ play_pause_button_callback (void)
       gtk_widget_set_sensitive (histButton, false);
 
       // Start Ginga.
-      GINGA->start (file);
+      GINGA->start (file, nullptr);
     }
  
   gtk_button_set_image (GTK_BUTTON (playButton), play_icon);

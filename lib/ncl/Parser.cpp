@@ -101,6 +101,52 @@ dom_elt_get_children (DOMElement *elt)
 }
 
 
+// Syntax checks.
+
+// Element data.
+typedef struct EltData
+{
+  map<string,GType> required;   // required attributes
+  map<string,GType> optional;   // optional attributes
+} EltData;
+
+// Element table.
+static map<string, EltData> elt_table =
+{
+ {"ncl", {{},{
+  {"id",    G_TYPE_STRING},
+  {"title", G_TYPE_STRING},
+  {"xmlns", G_TYPE_STRING},
+ }}},
+};
+
+// Indexes element table.
+static G_GNUC_UNUSED bool
+elt_table_index (const string &tag, EltData **result)
+{
+  map<string, EltData>::iterator it;
+  if ((it = elt_table.find (tag)) == elt_table.end ())
+    return false;
+  tryset (result, &it->second);
+  return true;
+}
+
+static G_GNUC_UNUSED bool
+check_elt (const DOMElement *elt, string *errmsg)
+{
+  string tag;
+  EltData *data;
+
+  tag = dom_elt_get_tag (elt);
+  if (!elt_table_index (tag, &data))
+    {
+      tryset (errmsg, xstrbuild ("unknown element <%s>", tag.c_str ()));
+      return false;
+    }
+  return true;
+}
+
+
 // Common errors.
 
 static inline string
@@ -143,7 +189,7 @@ __error_elt (const DOMElement *elt)
     if (unlikely (result != expect))                                    \
       ERROR_SYNTAX_ELT ((elt), "bad tagname '%s' (expected '%s')",      \
                         result.c_str (), (expect).c_str ());            \
-    tryset ((string *)(pvalue), result);                        \
+    tryset ((string *)(pvalue), result);                                \
   }                                                                     \
   G_STMT_END
 
@@ -153,7 +199,7 @@ __error_elt (const DOMElement *elt)
     string result;                                                      \
     if (unlikely (!dom_elt_try_get_attribute (result, (elt), (name))))  \
       ERROR_SYNTAX_ELT_MISSING_ATTRIBUTE ((elt), (name));               \
-    tryset ((pvalue), result);                                  \
+    tryset ((pvalue), result);                                          \
   }                                                                     \
   G_STMT_END
 
@@ -173,7 +219,7 @@ __error_elt (const DOMElement *elt)
     string result;                                              \
     if (!dom_elt_try_get_attribute (result, (elt), (name)))     \
       result = (default);                                       \
-    tryset ((pvalue), result);                          \
+    tryset ((pvalue), result);                                  \
   }                                                             \
   G_STMT_END
 
@@ -185,7 +231,7 @@ __error_elt (const DOMElement *elt)
       ERROR_SYNTAX_ELT_MISSING_ID ((elt));                              \
     if (unlikely (_doc->getNode (result) != nullptr))                   \
       ERROR_SYNTAX_ELT_DUPLICATED_ID ((elt), result);                   \
-    tryset ((pvalue), result);                                  \
+    tryset ((pvalue), result);                                          \
   }                                                                     \
   G_STMT_END
 
@@ -202,7 +248,7 @@ __error_elt (const DOMElement *elt)
       {                                                         \
         result = (default);                                     \
       }                                                         \
-    tryset ((pvalue), result);                          \
+    tryset ((pvalue), result);                                  \
   }                                                             \
   G_STMT_END
 
@@ -390,8 +436,12 @@ Parser::parse0 (const string &path)
   g_assert_nonnull (elt);
 
   g_assert_null (_doc);
-  parseNcl (elt);               // fills _doc
-  g_assert_nonnull (_doc);
+  if (!unlikely (parseNcl (elt)))
+    {
+      if (_doc != nullptr)
+        delete _doc;
+      _doc = nullptr;
+    }
 
   delete parser;
 
@@ -402,6 +452,9 @@ bool
 Parser::parseNcl (DOMElement *elt)
 {
   string id;
+
+  if (unlikely (!check_elt (elt, &_errmsg)))
+    return false;
 
   CHECK_ELT_TAG (elt, "ncl", nullptr);
   CHECK_ELT_OPT_ATTRIBUTE (elt, "id", &id, "ncl");

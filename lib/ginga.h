@@ -48,7 +48,7 @@ public:
   virtual ~Ginga () = 0;
 
   virtual void resize (int, int) = 0;
-  virtual void start (const std::string &) = 0;
+  virtual bool start (const std::string &, std::string *) = 0;
   virtual void stop () = 0;
 
   virtual void redraw (cairo_t *) = 0;

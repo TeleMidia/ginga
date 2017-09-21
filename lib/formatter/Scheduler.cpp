@@ -24,7 +24,31 @@ GINGA_FORMATTER_BEGIN
 
 // Public.
 
-Scheduler::Scheduler (GingaState *ginga, const string &file)
+Scheduler::Scheduler (GingaState *ginga)
+{
+  g_assert_nonnull (ginga);
+  _ginga = ginga;
+  _ginga->setData ("scheduler", this);
+  _converter = nullptr;
+  _doc = nullptr;
+}
+
+Scheduler::~Scheduler ()
+{
+  for (auto obj: _objects)
+    delete obj;
+  _objects.clear ();
+
+  for (auto evt: _events)
+    delete evt;
+  _events.clear ();
+
+  if (_converter != nullptr)
+    delete _converter;
+}
+
+bool
+Scheduler::run (const string &file, string *errmsg)
 {
   string id;
   Context *body;
@@ -32,26 +56,20 @@ Scheduler::Scheduler (GingaState *ginga, const string &file)
   vector<NclEvent *> *entryevts;
   NclNodeNesting *persp;
   int w, h;
-  string errmsg;
-
-  g_assert_nonnull (ginga);
-  _ginga = ginga;
-  _ginga->setData ("scheduler", this);
-  _converter = new Converter (ginga, this, new RuleAdapter ());
 
   // Parse document.
   w = _ginga->getOptionInt ("width");
   h = _ginga->getOptionInt ("height");
-  _doc = Parser::parse (file, w, h, &errmsg);
-  g_assert_nonnull (_doc);
+  _doc = Parser::parse (file, w, h, errmsg);
+  if (unlikely (_doc == nullptr))
+    return false;               // syntax error
 
   id = _doc->getId ();
   body = _doc->getBody ();
-  if (unlikely (body == nullptr))
-    ERROR_SYNTAX ("document has no body");
+  g_assert_nonnull (body);
 
   // Insert dummy settings node.
-  Media *dummy =  new Media ("__dummy_settings__", true);
+  Media *dummy =  new Media ("__settings__", true);
   body->addNode (dummy);
   Property *prop = new Property ("service.currentFocus");
   prop->setValue ("");
@@ -59,9 +77,10 @@ Scheduler::Scheduler (GingaState *ginga, const string &file)
 
   // Get entry events (i.e., those mapped by ports).
   ports = body->getPorts ();
-  if (unlikely (ports == nullptr))
-    ERROR ("document has no ports");
+  g_assert_nonnull (ports);
 
+  // Create and load converter.
+  _converter = new Converter (_ginga, this, new RuleAdapter ());
   persp = new NclNodeNesting ();
   persp->insertAnchorNode (body);
   entryevts = new vector<NclEvent *>;
@@ -72,12 +91,7 @@ Scheduler::Scheduler (GingaState *ginga, const string &file)
       entryevts->push_back (evt);
     }
   delete persp;
-
-  if (unlikely (entryevts->empty ()))
-    {
-      WARNING ("document has no ports");
-      return;
-    }
+  g_assert_false (entryevts->empty ()); // doc has no ports
 
   // Create execution object for settings node and initialize it.
   ExecutionObjectSettings *settings = nullptr;
@@ -136,19 +150,9 @@ Scheduler::Scheduler (GingaState *ginga, const string &file)
 
   // Refresh current focus.
   settings->updateCurrentFocus ("");
-}
 
-Scheduler::~Scheduler ()
-{
-  for (auto obj: _objects)
-    delete obj;
-  _objects.clear ();
-
-  for (auto evt: _events)
-    delete evt;
-  _events.clear ();
-
-  delete _converter;
+  // Success.
+  return true;
 }
 
 #define SET_ACCESS_DEFN(Name, Type, Var)                \
