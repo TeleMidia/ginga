@@ -60,15 +60,15 @@ VideoPlayer::VideoPlayer (const string &id, const string &uri)
   _mute = false;
 
   if (!gst_is_initialized ())
+  {
+    GError *error = nullptr;
+    if (unlikely (!gst_init_check (nullptr, nullptr, &error)))
     {
-      GError *error = nullptr;
-      if (unlikely (!gst_init_check (nullptr, nullptr, &error)))
-        {
-          g_assert_nonnull (error);
-          ERROR ("%s", error->message);
-          g_error_free (error);
-        }
+      g_assert_nonnull (error);
+      ERROR ("%s", error->message);
+      g_error_free (error);
     }
+  }
 
   _playbin = gst_element_factory_make ("playbin", "playbin");
   g_assert_nonnull (_playbin);
@@ -176,6 +176,8 @@ void
 VideoPlayer::pause ()
 {
   g_assert (_state != PL_PAUSED && _state != PL_SLEEPING);
+  TRACE ("pausing");
+
   gstx_element_set_state_sync (_playbin, GST_STATE_PAUSED);
   Player::pause ();
 }
@@ -184,6 +186,8 @@ void //G_GNUC_NORETURN
 VideoPlayer::resume ()
 {
   g_assert (_state == PL_PAUSED);
+  TRACE ("resuming");
+
   gstx_element_set_state_sync (_playbin, GST_STATE_PLAYING);
   Player::resume ();
 }
@@ -318,7 +322,6 @@ VideoPlayer::cb_Bus (GstBus *bus, GstMessage *msg, VideoPlayer *player)
 GstFlowReturn
 VideoPlayer::cb_NewSample (arg_unused (GstAppSink *appsink), gpointer data)
 {
-
   VideoPlayer *player = (VideoPlayer *) data;
   g_assert_nonnull (player);
   g_atomic_int_compare_and_exchange (&player->_sample_flag, 0, 1);

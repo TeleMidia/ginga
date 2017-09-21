@@ -163,7 +163,7 @@
     <!-- <port id='start7' component='audio2'/> -->
 
     <media id='audio' src='../samples/arcade.mp3' descriptor='desc'>
-      <property name='soundLevel' value='0'/>
+      <property name='soundLevel' value='0.5'/>
     </media>
 
     <media id='audio2' src='../samples/bunny.mp3'>
@@ -194,7 +194,8 @@
       <!-- <bind role="start" component="audio" /> -->
     </link>
 
-    <!-- Set soundLevel audio. RED: 0; GREEN: 0.5; YELLOW: 1. -->
+    <!-- Set soundLevel audio. 
+         RED: 0; GREEN: 0.5; YELLOW: 1. -->
     <link xconnector="onKeySelectionSet">
       <bind role='onSelection' component='img'>
         <bindParam name='keyCode' value='RED'/>        
@@ -223,7 +224,8 @@
     </link>
 
 
-    <!-- Set pause and resume video. BLUE: pause; ENTER: resume. -->
+    <!-- Set pause and resume video. 
+         BLUE: pause; ENTER: resume. -->
     <link xconnector="onKeySelectionPause">
       <bind role='onSelection' component='video'> <!-- Video com audio -->
       <!-- <bind role='onSelection' component='img'> -->
@@ -241,11 +243,11 @@
     </link>
     
     
-    <!-- Set soundLevel audio to 0.5 when video is 10s. -->
+    <!-- Set soundLevel audio to 0.5 when video is 5s. -->
     <link xconnector="onBeginSet">
-      <bind role='onBegin' component='video' interface='videoArea2'/> <!-- Video sem audio -->
+      <bind role='onBegin' component='video' interface='videoArea1'/> <!-- Video sem audio -->
       <bind role="set" component="audio" interface="soundLevel">
-        <bindParam name="var" value="0.4"/>
+        <bindParam name="var" value="0.5"/>
       </bind>
     </link>
 
