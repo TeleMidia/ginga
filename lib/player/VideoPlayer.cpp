@@ -47,15 +47,19 @@ VideoPlayer::VideoPlayer (GingaState *ginga, const string &id,
   gulong ret;
   char *buf;
 
-  GstElement *bin;
+  GstElement *bin_video;
+  GstElement *bin_audio;
   GstElement *elt_filter;
   GstElement *elt_scale;
-  GstElement *elt_sink;
-  GstPad *pad;
+  GstElement *elt_video_sink;
+  GstElement *elt_volume;
+  GstElement *elt_audio_sink;
+  GstPad *pad_video;
+  GstPad *pad_audio;
 
   _playbin = nullptr;
   _capsfilter = nullptr;
-  _appsink = nullptr;
+  _app_videosink = nullptr;
 
   _volume = 1.0;
   _mute = false;
@@ -86,8 +90,11 @@ VideoPlayer::VideoPlayer (GingaState *ginga, const string &id,
   g_object_set (G_OBJECT (_playbin), "uri", buf, nullptr);
   g_free (buf);
 
-  bin = gst_bin_new ("videobin");
-  g_assert_nonnull (bin);
+  bin_video = gst_bin_new ("videobin");
+  g_assert_nonnull (bin_video);
+
+  bin_audio = gst_bin_new ("audiobin");
+  g_assert_nonnull (bin_audio);
 
   elt_filter = gst_element_factory_make ("capsfilter", "filter");
   g_assert_nonnull (elt_filter);
@@ -95,29 +102,44 @@ VideoPlayer::VideoPlayer (GingaState *ginga, const string &id,
   elt_scale = gst_element_factory_make ("videoscale", "scale");
   g_assert_nonnull (elt_scale);
 
-  elt_sink = gst_element_factory_make ("appsink", "sink");
-  g_assert_nonnull (elt_sink);
+  elt_video_sink = gst_element_factory_make ("appsink", "video_sink");
+  g_assert_nonnull (elt_video_sink);
 
-  g_assert (gst_bin_add (GST_BIN (bin), elt_filter));
-  g_assert (gst_bin_add (GST_BIN (bin), elt_scale));
-  g_assert (gst_bin_add (GST_BIN (bin), elt_sink));
+  elt_volume = gst_element_factory_make ("volume", "elt_volume");
+  g_assert_nonnull (elt_volume);
+
+  elt_audio_sink = gst_element_factory_make ("autoaudiosink", "audio_sink");
+  g_assert_nonnull (elt_audio_sink);
+
+  g_assert (gst_bin_add (GST_BIN (bin_video), elt_filter));
+  g_assert (gst_bin_add (GST_BIN (bin_video), elt_scale));
+  g_assert (gst_bin_add (GST_BIN (bin_video), elt_video_sink));
   g_assert (gst_element_link (elt_filter, elt_scale));
-  g_assert (gst_element_link (elt_scale, elt_sink));
+  g_assert (gst_element_link (elt_scale, elt_video_sink));
 
-  pad = gst_element_get_static_pad (elt_filter, "sink");
-  g_assert_nonnull (pad);
-  g_assert (gst_element_add_pad (bin, gst_ghost_pad_new ("sink", pad)));
-  g_object_set (G_OBJECT (_playbin), "video-sink", bin, nullptr);
+  g_assert (gst_bin_add (GST_BIN (bin_audio), elt_volume));
+  g_assert (gst_bin_add (GST_BIN (bin_audio), elt_audio_sink));
+  g_assert (gst_element_link (elt_volume,elt_audio_sink));
+
+  pad_video = gst_element_get_static_pad (elt_filter, "sink");
+  g_assert_nonnull (pad_video);
+  g_assert (gst_element_add_pad (bin_video, gst_ghost_pad_new ("sink", pad_video)));
+  g_object_set (G_OBJECT (_playbin), "video-sink", bin_video, nullptr);
+
+  pad_audio = gst_element_get_static_pad (elt_volume, "sink");
+  g_assert_nonnull (pad_audio);
+  g_assert (gst_element_add_pad (bin_audio, gst_ghost_pad_new ("sink", pad_audio)));
+  g_object_set (G_OBJECT (_playbin), "audio-sink", bin_audio, nullptr);
 
   // Aliases.
-  _appsink = elt_sink;
+  _app_videosink = elt_video_sink;
   _capsfilter = elt_filter;
 
   // Callbacks.
   _callbacks.eos = nullptr;
   _callbacks.new_preroll = nullptr;
   _callbacks.new_sample = cb_NewSample;
-  gst_app_sink_set_callbacks (GST_APP_SINK (_appsink),
+  gst_app_sink_set_callbacks (GST_APP_SINK (_app_videosink),
                               &_callbacks, this, nullptr);
 }
 
@@ -217,7 +239,7 @@ VideoPlayer::redraw (cairo_t *cr)
   if (!g_atomic_int_compare_and_exchange (&_sample_flag, 1, 0))
     goto done;
 
-  sample = gst_app_sink_pull_sample (GST_APP_SINK (_appsink));
+  sample = gst_app_sink_pull_sample (GST_APP_SINK (_app_videosink));
   if (sample == nullptr)
     goto done;
 
