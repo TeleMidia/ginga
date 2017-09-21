@@ -37,7 +37,8 @@ public:
 private:
   GstElement *_playbin;           // pipeline
   GstElement *_capsfilter;        // video filter
-  GstElement *_appsink;           // video sink
+  GstElement *_app_videosink;     // video sink
+  GstElement *_elt_volume;
   int _sample_flag;               // true if new sample is available
   GstAppSinkCallbacks _callbacks; // appsink callback data
 
