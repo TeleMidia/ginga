@@ -69,6 +69,7 @@ src+= ncl/NclDocument.cpp
 src+= ncl/Node.cpp
 src+= ncl/Parameter.cpp
 src+= ncl/Parser.cpp
+src+= ncl/ParserLibXML.cpp
 src+= ncl/Port.cpp
 src+= ncl/Property.cpp
 src+= ncl/Refer.cpp
