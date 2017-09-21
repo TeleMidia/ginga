@@ -37,9 +37,9 @@ class Converter;
 class Scheduler : public INclActionListener
 {
 public:
-  Scheduler (GingaState *, const string &);
+  Scheduler (GingaState *);
   virtual ~Scheduler ();
-  bool run (string *);
+  bool run (const string &, string *);
 
   set<NclEvent *> *getEvents ();
   bool hasEvent (NclEvent *);

@@ -94,16 +94,24 @@ win_cmp_z (Player *p1, Player *p2)
 /**
  * @brief Starts NCL from file.
  * @param file Path to NCL file.
+ * @param Address of a variable to store an error message.
+ * @return True if successfully, or false otherwise.
  */
-void
-GingaState::start (const string &file)
+bool
+GingaState::start (const string &file, string *errmsg)
 {
   if (_started)
-    return;                     // nothing to do
+    return false;               // nothing to do
 
-  _scheduler = new Scheduler (this, file);
+  _scheduler = new Scheduler (this);
   _ncl_file = file;
+  if (unlikely (!_scheduler->run (file, errmsg)))
+    {
+      delete _scheduler;
+      return false;
+    }
   _started = true;
+  return true;
 }
 
 /**

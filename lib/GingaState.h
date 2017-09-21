@@ -42,7 +42,7 @@ class GingaState : public Ginga
 {
  public:
   // External API.
-  void start (const string &);
+  bool start (const string &, string *);
   void stop ();
   void resize (int, int);
 
