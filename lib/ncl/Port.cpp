@@ -24,6 +24,16 @@ GINGA_NCL_BEGIN
 /**
  * @brief Creates a new port.
  * @param id Port id.
+ */
+Port::Port (const string &id) : Anchor (id)
+{
+  _node = nullptr;
+  _interface = nullptr;
+}
+
+/**
+ * @brief Creates a new port.
+ * @param id Port id.
  * @param node Port component.
  * @param iface Port interface.
  */
@@ -51,12 +61,34 @@ Port::getNode ()
 }
 
 /**
+ * @brief Sets port component.
+ */
+void
+Port::setNode (Node *comp)
+{
+  g_assert_null (_node);
+  g_assert_nonnull (comp);
+  _node = comp;
+}
+
+/**
  * @brief Gets port interface.
  */
 Anchor *
 Port::getInterface ()
 {
   return _interface;
+}
+
+/**
+ * @brief Sets port interface.
+ */
+void
+Port::setInterface (Anchor *iface)
+{
+  g_assert_null (_interface);
+  g_assert_nonnull (iface);
+  _interface = iface;
 }
 
 /**

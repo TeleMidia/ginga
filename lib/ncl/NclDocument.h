@@ -38,18 +38,18 @@ GINGA_NCL_BEGIN
 class NclDocument
 {
 public:
-  NclDocument (const string &_id, const string &_docLocation);
+  NclDocument (const string &, const string &);
   ~NclDocument ();
+  void setBody (Context *);
+
+  // -----------------------------------------------------------------------
 
   NclDocument *getParentDocument ();
-  void setParentDocument (NclDocument *_parentDocument);
+  void setParentDocument (NclDocument *);
   string getDocumentPerspective ();
-
   string getDocumentLocation ();
-
   bool addDocument (NclDocument *document, const string &alias,
                     const string &location);
-  void clearDocument ();
   Connector *getConnector (const string &connectorId);
   ConnectorBase *getConnectorBase ();
   Transition *getTransition (const string &transitionId);
@@ -77,7 +77,7 @@ public:
   void setTransitionBase (TransitionBase *_transitionBase);
   void setDescriptorBase (DescriptorBase *_descriptorBase);
   void setDocumentAlias (NclDocument *document, const string &alias);
-  void setBody (Context *node);
+
   void setDocumentLocation (NclDocument *document, const string &location);
   void setId (const string &_id);
   void addRegionBase (RegionBase *regionBase);

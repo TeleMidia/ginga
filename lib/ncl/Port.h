@@ -26,11 +26,15 @@ GINGA_NCL_BEGIN
 class Port : public Anchor
 {
 public:
+  Port (const string &);
   Port (const string &, Node *, Anchor *);
   ~Port ();
 
   Node *getNode ();
+  void setNode (Node *);
+
   Anchor *getInterface ();
+  void setInterface (Anchor *);
 
   Node *getFinalNode ();
   Anchor *getFinalInterface ();

@@ -18,23 +18,34 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga-internal.h"
 #include "NclDocument.h"
 
-GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
-
 GINGA_NCL_BEGIN
 
 NclDocument::NclDocument (const string &id, const string &location)
 {
   _id = id;
+  _docLocation = location;
+
+  _body = nullptr;
+  _connectorBase = nullptr;
+  _descriptorBase = nullptr;
+  _parentDocument = nullptr;
   _ruleBase = nullptr;
   _transitionBase = nullptr;
-  _descriptorBase = nullptr;
-  _connectorBase = nullptr;
-  _body = nullptr;
-  _parentDocument = nullptr;
-  _docLocation = location;
 }
 
-NclDocument::~NclDocument () { clearDocument (); }
+NclDocument::~NclDocument ()
+{
+  delete _body;
+}
+
+void
+NclDocument::setBody (Context *body)
+{
+  g_assert_nonnull (body);
+  _body = body;
+}
+
+// -------------------------------------------------------------------------
 
 NclDocument *
 NclDocument::getParentDocument ()
@@ -91,60 +102,6 @@ NclDocument::addDocument (NclDocument *document, const string &alias,
   return true;
 }
 
-void
-NclDocument::clearDocument ()
-{
-  vector<NclDocument *>::iterator i;
-  map<int, RegionBase *>::iterator j;
-
-  _id = "";
-
-  i = _documentBase.begin ();
-  while (i != _documentBase.end ())
-    {
-      delete *i;
-      ++i;
-    }
-
-  _documentBase.clear ();
-  _documentLocations.clear ();
-  _documentAliases.clear ();
-
-  j = _regionBases.begin ();
-  while (j != _regionBases.end ())
-    {
-      delete j->second;
-      ++j;
-    }
-  _regionBases.clear ();
-
-  if (_ruleBase != NULL)
-    {
-      delete _ruleBase;
-      _ruleBase = NULL;
-    }
-
-  if (_transitionBase != NULL)
-    {
-      delete _transitionBase;
-      _transitionBase = NULL;
-    }
-
-  if (_descriptorBase != NULL)
-    {
-      delete _descriptorBase;
-      _descriptorBase = NULL;
-    }
-
-  if (_connectorBase != NULL)
-    {
-      delete _connectorBase;
-      _connectorBase = NULL;
-    }
-
-  delete _body;
-}
-
 Connector *
 NclDocument::getConnector (const string &connectorId)
 {
@@ -182,7 +139,7 @@ Transition *
 NclDocument::getTransition (const string &transitionId)
 {
   Transition *transition;
-  int i, size;
+  size_t i, size;
   NclDocument *document;
 
   if (_transitionBase != NULL)
@@ -194,7 +151,7 @@ NclDocument::getTransition (const string &transitionId)
         }
     }
 
-  size = (int) _documentBase.size ();
+  size = _documentBase.size ();
   for (i = 0; i < size; i++)
     {
       document = _documentBase[i];
@@ -585,12 +542,6 @@ NclDocument::setDocumentAlias (NclDocument *document, const string &alias)
   oldAlias = getDocumentAlias (document);
   _documentAliases.erase (oldAlias);
   _documentAliases[alias] = document;
-}
-
-void
-NclDocument::setBody (Context *node)
-{
-  _body = node;
 }
 
 void
