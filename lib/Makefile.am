@@ -68,8 +68,7 @@ src+= ncl/Media.cpp
 src+= ncl/NclDocument.cpp
 src+= ncl/Node.cpp
 src+= ncl/Parameter.cpp
-src+= ncl/Parser.cpp
-src+= ncl/ParserLibXML.cpp
+src+= ncl/ParserXercesC.cpp
 src+= ncl/Port.cpp
 src+= ncl/Property.cpp
 src+= ncl/Refer.cpp
@@ -97,6 +96,10 @@ src+= player/VideoPlayer.cpp
 if WITH_LIBRSVG
 src+= player/SvgPlayer.cpp
 endif # WITH_LIBRSVG
+
+if WITH_LIBXML
+src+= ncl/ParserLibXML.cpp
+endif # WITH_LIBXML
 
 if WITH_CEF
 src+= player/HTMLPlayer.cpp

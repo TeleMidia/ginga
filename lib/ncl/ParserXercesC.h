@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef PARSER_H
-#define PARSER_H
+#ifndef PARSER_XERCES_C_H
+#define PARSER_XERCES_C_H
 
 GINGA_PRAGMA_DIAG_PUSH ()
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
@@ -45,7 +45,7 @@ GINGA_PRAGMA_DIAG_POP ()
 
 GINGA_NCL_BEGIN
 
-class Parser : public ErrorHandler
+class ParserXercesC : public ErrorHandler
 {
 public:
   static NclDocument *parse (const string &, int, int, string *);
@@ -58,8 +58,8 @@ private:
   int _width;                   // screen width (in pixels)
   int _height;                  // screen height (in pixels)
 
-  Parser (int, int);
-  ~Parser ();
+  ParserXercesC (int, int);
+  ~ParserXercesC ();
 
   string getErrMsg ();
   void setErrMsg (const string &);
@@ -129,4 +129,4 @@ private:
 
 GINGA_NCL_END
 
-#endif // PARSER_H
+#endif // PARSER_XERCESC_H

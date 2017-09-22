@@ -42,11 +42,12 @@ static Ginga *GINGA = nullptr;
   "Report bugs to: " PACKAGE_BUGREPORT "\n"     \
   "Ginga home page: " PACKAGE_URL
 
-static gboolean opt_debug = FALSE;      // true if --debug was given
-static gboolean opt_fullscreen = FALSE; // true if --fullscreen was given
-static string opt_background = "";      // background color
-static gint opt_width = 800;            // initial window width
-static gint opt_height = 600;           // initial window height
+static gboolean opt_debug = FALSE;        // toggle debug
+static gboolean opt_experimental = FALSE; // toggle experimental stuff
+static gboolean opt_fullscreen = FALSE;   // toggle fullscreen-mode
+static string opt_background = "";        // background color
+static gint opt_width = 800;              // initial window width
+static gint opt_height = 600;             // initial window height
 
 static gboolean
 opt_background_cb (const gchar *opt, const gchar *arg,
@@ -106,6 +107,8 @@ static GOptionEntry options[] = {
    gpointerof (opt_background_cb), "Set background color", "COLOR"},
   {"debug", 'd', 0, G_OPTION_ARG_NONE,
    &opt_debug, "Enable debugging", NULL},
+  {"experimental", 'x', 0, G_OPTION_ARG_NONE,
+   &opt_experimental, "Enable experimental stuff", NULL},
   {"fullscreen", 'f', 0, G_OPTION_ARG_NONE,
    &opt_fullscreen, "Enable full-screen mode", NULL},
   {"size", 's', 0, G_OPTION_ARG_CALLBACK,
@@ -358,6 +361,7 @@ main (int argc, char **argv)
   opts.width = opt_width;
   opts.height = opt_height;
   opts.debug = opt_debug;
+  opts.experimental = opt_experimental;
   opts.background = string (opt_background);
   GINGA = Ginga::create (argc, argv, &opts);
   g_assert_nonnull (GINGA);

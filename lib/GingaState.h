@@ -72,6 +72,7 @@ class GingaState : public Ginga
   void setData (const string &, void *);
 
   static void setOptionDebug (GingaState *, const string &, bool);
+  static void setOptionExperimental (GingaState *, const string &, bool);
   static void setOptionSize (GingaState *, const string &, int);
   static void setOptionBackground (GingaState *, const string &, string);
 
@@ -82,12 +83,13 @@ class GingaState : public Ginga
   GList *_players;               // list of players to be ticked
   map<string, void *> _userdata; // userdata attached to state
 
-  bool _started;                // true if state was started
-  string _ncl_file;             // path to current NCL file
-  GingaColor _background;       // current background color.
-  uint64_t _last_tick_total;    // last total informed via sendTickEvent
-  uint64_t _last_tick_diff;     // last diff informed via sendTickEvent
-  uint64_t _last_tick_frameno;  // last frameno informed via sendTickEvent
+  bool _started;                  // true if state was started
+  string _ncl_file;               // path to current NCL file
+  GingaColor _background;         // current background color.
+  uint64_t _last_tick_total;      // last total informed via sendTickEvent
+  uint64_t _last_tick_diff;       // last diff informed via sendTickEvent
+  uint64_t _last_tick_frameno;    // last frameno informed via sendTickEvent
+  string _saved_G_MESSAGES_DEBUG; // saved G_MESSAGES_DEBUG value
 
   bool add (GList **, gpointer);
   bool remove (GList **, gpointer);
