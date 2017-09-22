@@ -18,23 +18,23 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga_gtk.h"
 #include <cairo.h>
 
-#if GTK_CHECK_VERSION(3,8,0)
+#if GTK_CHECK_VERSION(3, 8, 0)
 gboolean
 update_draw_callback (GtkWidget *widget, GdkFrameClock *frame_clock,
-               G_GNUC_UNUSED gpointer data)
+                      G_GNUC_UNUSED gpointer data)
 #else
 gboolean
 update_draw_callback (GtkWidget *widget)
 #endif
 {
   guint64 time;
-  static guint64 frame = (guint64) -1;
+  static guint64 frame = (guint64)-1;
   static guint64 last;
   static guint64 first;
 
-#if GTK_CHECK_VERSION(3,8,0)
-  time = (guint64)(gdk_frame_clock_get_frame_time (frame_clock) * 1000);
-  frame = (guint64) gdk_frame_clock_get_frame_counter (frame_clock);
+#if GTK_CHECK_VERSION(3, 8, 0)
+  time = (guint64) (gdk_frame_clock_get_frame_time (frame_clock) * 1000);
+  frame = (guint64)gdk_frame_clock_get_frame_counter (frame_clock);
 #else
   time = ginga_gettime ();
   frame++;
@@ -58,10 +58,27 @@ draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
   int w, h;
   w = gtk_widget_get_allocated_width (widget);
   h = gtk_widget_get_allocated_height (widget);
+ 
 
   cairo_set_source_rgb (cr, 0., 0., 0.);
   cairo_rectangle (cr, 0, 0, w, h);
   cairo_fill (cr);
+
+  if (presentationAttributes.aspectRatio == 0)
+    {
+      cairo_translate (cr, (w - (w * 0.75)) / 2, 0);
+      cairo_scale (cr, 0.75, 1.0);
+    }
+  else if (presentationAttributes.aspectRatio == 1)
+    {
+      cairo_translate (cr, 0, (h - (h * 0.5625)) / 2);
+      cairo_scale (cr, 1.0, 0.5625);
+    }
+  else if (presentationAttributes.aspectRatio == 2)
+    {
+      cairo_translate (cr, 0, (h - (h * 0.625)) / 2);
+      cairo_scale (cr, 1.0, 0.625);
+    }
 
   GINGA->redraw (cr);
 }
