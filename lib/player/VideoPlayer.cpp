@@ -105,7 +105,7 @@ VideoPlayer::VideoPlayer (GingaState *ginga, const string &id,
   elt_video_sink = gst_element_factory_make ("appsink", "video_sink");
   g_assert_nonnull (elt_video_sink);
 
-  elt_volume = gst_element_factory_make ("volume", "elt_volume");
+  elt_volume = gst_element_factory_make ("volume", "volume");
   g_assert_nonnull (elt_volume);
 
   elt_audio_sink = gst_element_factory_make ("autoaudiosink", "audio_sink");
@@ -134,6 +134,8 @@ VideoPlayer::VideoPlayer (GingaState *ginga, const string &id,
   // Aliases.
   _app_videosink = elt_video_sink;
   _capsfilter = elt_filter;
+  _app_audiosink = elt_audio_sink;
+  _volumefilter = elt_volume;
 
   // Callbacks.
   _callbacks.eos = nullptr;
@@ -174,6 +176,9 @@ VideoPlayer::start ()
   g_atomic_int_set (&_sample_flag, 0);
 
   g_object_set (_playbin,       // effectuate properties
+                "volume", _volume,
+                "mute", _mute, NULL);
+  g_object_set (_volumefilter,
                 "volume", _volume,
                 "mute", _mute, NULL);
 
@@ -285,13 +290,15 @@ VideoPlayer::setProperty (const string &name, const string &value)
     {
       _volume = xstrtodorpercent (value, nullptr);
       if (_state != PL_SLEEPING)
-        g_object_set (_playbin, "volume", _volume, NULL);
+        //g_object_set (_playbin, "volume", _volume, NULL);
+        g_object_set (_volumefilter, "volume", _volume, NULL);
     }
   else if (name == "mute")
     {
       _mute = ginga_parse_bool (value);
       if (_state != PL_SLEEPING)
-        g_object_set (_playbin, "mute", _mute, NULL);
+        //g_object_set (_playbin, "mute", _mute, NULL);
+        g_object_set (_volumefilter, "mute", _mute, NULL);
     }
 }
 
