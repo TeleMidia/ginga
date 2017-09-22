@@ -47,7 +47,7 @@ private:
   // Properties.
   double _volume;               // sound level
   bool _mute;                   // true if mute is on
-  float _balance;               // balance level
+  double _balance;              // balance level
 
   // Callbacks.
   static gboolean cb_Bus (GstBus *, GstMessage *, VideoPlayer *);

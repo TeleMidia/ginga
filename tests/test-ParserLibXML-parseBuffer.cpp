@@ -23,33 +23,37 @@ int
 main (void)
 {
   NclDocument *ncl;
-  string errmsg;
 
   // XML error.
   {
+    string errmsg;
     const char *buf = "<a>";
     ncl = ParserLibXML::parseBuffer (buf, strlen (buf), 0, 0, &errmsg);
     g_assert_null (ncl);
-    g_debug ("%s", errmsg.c_str ());
+    g_assert (errmsg != "");
   }
 
-  // Unknown element.
+  // Error: Unknown element.
   {
+    string errmsg;
     const char *buf = "<unknown/>";
     ncl = ParserLibXML::parseBuffer (buf, strlen (buf), 0, 0, &errmsg);
     g_assert_null (ncl);
-    g_debug ("%s", errmsg.c_str ());
+    g_assert (errmsg != "");
   }
 
+  // Error: Bad parent.
   {
-    const char *buf = "<ncl id='hello'/>";
+    string errmsg;
+    const char *buf = "<head/>";
     ncl = ParserLibXML::parseBuffer (buf, strlen (buf), 0, 0, &errmsg);
-    g_assert_nonnull (ncl);
-    g_assert (ncl->getId () == "hello");
-    delete ncl;
+    g_assert_null (ncl);
+    g_assert (errmsg != "");
   }
 
+  // Empty document.
   {
+    string errmsg;
     const char *buf = "\
 <ncl>\n\
  <head/>\n\
@@ -58,8 +62,47 @@ main (void)
 ";
     ncl = ParserLibXML::parseBuffer (buf, strlen (buf), 0, 0, &errmsg);
     g_assert_nonnull (ncl);
+    g_assert (errmsg == "");
     g_assert (ncl->getId () == "ncl");
+    Context *body = ncl->getBody ();
+    g_assert_nonnull (body);
+    g_assert (body->getId () == ncl->getId ());
+    g_assert (body->getPorts ()->size () == 0);
+    g_assert (body->getNodes ()->size () == 0);
+    g_assert (body->getLinks ()->size () == 0);
     delete ncl;
+  }
+
+  // Error: Port: Missing id.
+  {
+    string errmsg;
+    const char *buf = "\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <port/>\n\
+ </body>\n\
+</ncl>\n\
+";
+    ncl = ParserLibXML::parseBuffer (buf, strlen (buf), 0, 0, &errmsg);
+    g_assert_null (ncl);
+    g_assert (errmsg != "");
+  }
+
+  // Error: Port: Missing component.
+  {
+    string errmsg;
+    const char *buf = "\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <port id='p'/>\n\
+ </body>\n\
+</ncl>\n\
+";
+    ncl = ParserLibXML::parseBuffer (buf, strlen (buf), 0, 0, &errmsg);
+    g_assert_null (ncl);
+    g_assert (errmsg != "");
   }
 
   exit (EXIT_SUCCESS);

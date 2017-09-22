@@ -33,6 +33,10 @@ Composition::Composition (const string &id) : Node (id)
  */
 Composition::~Composition ()
 {
+  for (auto node: _nodes)
+    delete node;
+  for (auto port: _ports)
+    delete port;
   _nodes.clear ();
   _ports.clear ();
 }

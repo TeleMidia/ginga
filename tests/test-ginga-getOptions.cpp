@@ -27,6 +27,7 @@ main (void)
      10,                        // width
      20,                        // height
      false,                     // debug
+     false,                     // experimental
      "green",                   // background
     };
   Ginga *ginga = Ginga::create (0, nullptr, &opts);

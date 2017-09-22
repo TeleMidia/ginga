@@ -192,8 +192,7 @@ VideoPlayer::start ()
                 "volume", _volume,
                 "mute", _mute, NULL);
 
-  g_object_set (_balancefilter,
-                "panorama", _balance, NULL);
+  g_object_set (_balancefilter, "panorama", _balance, NULL);
 
   ret = gst_element_set_state (_playbin, GST_STATE_PLAYING);
   if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
