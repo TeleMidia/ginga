@@ -47,8 +47,10 @@ GtkWidget *toolBoxPopOver = NULL;
 GtkWidget *optBoxPopOver = NULL;
 GtkWidget *historicBoxPopOver = NULL;
 GtkWidget *mainBox = NULL;
+GtkWidget *visualDebugSwitch = NULL;
 
 gboolean isDebugMode = FALSE;
+gboolean visualDebugEnabled = FALSE;
 gboolean needShowSideBar = FALSE;
 gboolean needShowErrorBar = FALSE;
 gboolean inPlayMode = FALSE;
@@ -102,7 +104,7 @@ apply_theme ()
   if (presentationAttributes.guiTheme == 0)
     filename = g_build_path (G_DIR_SEPARATOR_S, executableFolder,
                              "style/light.css", NULL);
-  else  
+  else
     filename = g_build_path (G_DIR_SEPARATOR_S, executableFolder,
                              "style/dark.css", NULL);
 
@@ -206,6 +208,13 @@ apply_theme ()
 
   update_window ();
 }
+void
+aspect_combobox_changed (GtkComboBox *widget, gpointer user_data)
+{
+  presentationAttributes.aspectRatio = gtk_combo_box_get_active (widget);
+
+  save_settings ();
+}
 
 void
 theme_combobox_changed (GtkComboBox *widget, gpointer user_data)
@@ -255,6 +264,13 @@ show_infobar (gchar *messageError)
   gtk_box_reorder_child (GTK_BOX (mainBox), infoBar, 0);
 
   update_window ();
+}
+
+void
+toggle_visual_debug_callback ()
+{
+  visualDebugEnabled = !visualDebugEnabled;
+  GINGA->setOptionBool ("debug", visualDebugEnabled);
 }
 
 void
@@ -620,21 +636,23 @@ create_window_components ()
   gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (aspect_combobox), -1,
                                   "LCD (16:10)");
   gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (aspect_combobox), -1,
-                                  "Free");
+                                  "Expand");
   gtk_combo_box_set_active (GTK_COMBO_BOX (aspect_combobox),
                             presentationAttributes.aspectRatio);
+  g_signal_connect (aspect_combobox, "changed",
+                    G_CALLBACK (aspect_combobox_changed), NULL);
 
-  GtkWidget *fps_combobox = gtk_combo_box_text_new ();
-  g_assert_nonnull (fps_combobox);
-  g_object_set (fps_combobox, "margin", 5, NULL);
+  /*  GtkWidget *fps_combobox = gtk_combo_box_text_new ();
+    g_assert_nonnull (fps_combobox);
+    g_object_set (fps_combobox, "margin", 5, NULL);
 
-  gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (fps_combobox), -1,
-                                  "30");
-  gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (fps_combobox), -1,
-                                  "60");
-  gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (fps_combobox), -1,
-                                  "Go Horse!");
-  gtk_combo_box_set_active (GTK_COMBO_BOX (fps_combobox), 0);
+    gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (fps_combobox), -1,
+                                    "30");
+    gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (fps_combobox), -1,
+                                    "60");
+    gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (fps_combobox), -1,
+                                    "Go Horse!");
+    gtk_combo_box_set_active (GTK_COMBO_BOX (fps_combobox), 0); */
 
   GtkWidget *theme_combobox = gtk_combo_box_text_new ();
   g_assert_nonnull (theme_combobox);
@@ -656,9 +674,9 @@ create_window_components ()
   gtk_box_pack_start (GTK_BOX (opt_box), gtk_label_new ("Aspect Ratio:"),
                       false, false, 0);
   gtk_box_pack_start (GTK_BOX (opt_box), aspect_combobox, false, true, 0);
-  gtk_box_pack_start (GTK_BOX (opt_box), gtk_label_new ("Frame Rate:"),
-                      false, false, 0);
-  gtk_box_pack_start (GTK_BOX (opt_box), fps_combobox, false, true, 0);
+  // gtk_box_pack_start (GTK_BOX (opt_box), gtk_label_new ("Frame Rate:"),
+  //                    false, false, 0);
+  // gtk_box_pack_start (GTK_BOX (opt_box), fps_combobox, false, true, 0);
   // gtk_box_pack_start (GTK_BOX (opt_box), theme_combobox, false, true, 0);
 
   aboutButton = gtk_button_new ();
@@ -772,6 +790,11 @@ create_window_components ()
   gtk_notebook_set_show_tabs (GTK_NOTEBOOK (debugView), false);
   gtk_widget_set_margin_top (debugView, 5);
 
+  visualDebugSwitch = gtk_check_button_new_with_label ("Visual Debug   ");
+  g_assert_nonnull (visualDebugSwitch);
+  g_signal_connect (visualDebugSwitch, "clicked",
+                    G_CALLBACK (toggle_visual_debug_callback), NULL);
+
   consoleHideButton = gtk_button_new ();
   g_assert_nonnull (consoleHideButton);
   g_signal_connect (consoleHideButton, "clicked",
@@ -780,9 +803,11 @@ create_window_components ()
   GtkWidget *debug_headbar = gtk_header_bar_new ();
   g_assert_nonnull (debug_headbar);
   gtk_header_bar_pack_start (GTK_HEADER_BAR (debug_headbar),
-                             gtk_label_new ("Console"));
+                             gtk_label_new ("  Console"));
   gtk_header_bar_pack_end (GTK_HEADER_BAR (debug_headbar),
                            consoleHideButton);
+  gtk_header_bar_pack_end (GTK_HEADER_BAR (debug_headbar),
+                           visualDebugSwitch);
   gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (debug_headbar),
                                         false);
 
@@ -1006,6 +1031,6 @@ play_pause_button_callback (void)
       // Start Ginga.
       GINGA->start (file, nullptr);
     }
- 
+
   gtk_button_set_image (GTK_BUTTON (playButton), play_icon);
 }

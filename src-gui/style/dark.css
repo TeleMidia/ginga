@@ -88,6 +88,20 @@ GtkSeparator{
   border: 1px solid #888888;
 }
 
+window check {
+  background: #FFFFFF;
+  color: #4444CC;
+  border: 1px solid #555555;
+  box-shadow: none;
+}
+
+window check:hover {
+  background: #FFFFFF;
+  color: #4444CC;
+  border: 1px solid #555555;
+  box-shadow: none;
+}
+
 
 
 
