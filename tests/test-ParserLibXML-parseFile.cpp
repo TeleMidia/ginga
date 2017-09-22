@@ -15,24 +15,16 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef ENTITY_H
-#define ENTITY_H
+#include "ncl/ParserLibXML.h"
+using namespace ginga::ncl;
 
-#include "ginga-internal.h"
-
-GINGA_NCL_BEGIN
-
-class Entity
+int
+main (void)
 {
-public:
-  Entity (const string &);
-  virtual ~Entity () = 0;
-  string getId ();
+  string errmsg;
 
-private:
-  string _id;
-};
+  g_assert_null (ParserLibXML::parseFile ("nonexistent", 0, 0, &errmsg));
+  g_debug ("%s", errmsg.c_str ());
 
-GINGA_NCL_END
-
-#endif
+  exit (EXIT_SUCCESS);
+}

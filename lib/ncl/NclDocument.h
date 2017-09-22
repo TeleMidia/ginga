@@ -18,26 +18,20 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NCLDOCUMENT_H_
 #define NCLDOCUMENT_H_
 
-#include "Rule.h"
-#include "RuleBase.h"
-
-#include "Context.h"
-#include "Media.h"
-#include "Node.h"
-
+#include "Base.h"
 #include "Connector.h"
 #include "ConnectorBase.h"
-
+#include "Context.h"
 #include "Descriptor.h"
 #include "DescriptorBase.h"
-
+#include "Media.h"
+#include "Node.h"
 #include "Region.h"
 #include "RegionBase.h"
-
+#include "Rule.h"
+#include "RuleBase.h"
 #include "Transition.h"
 #include "TransitionBase.h"
-
-#include "Base.h"
 
 GINGA_NCL_BEGIN
 
