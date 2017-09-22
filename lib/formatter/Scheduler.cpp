@@ -19,6 +19,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Scheduler.h"
 #include "Converter.h"
 
+#include "ncl/ParserXercesC.h"
+#include "ncl/ParserLibXML.h"
+using namespace ::ginga::ncl;
+
 GINGA_FORMATTER_BEGIN
 
 
@@ -60,7 +64,11 @@ Scheduler::run (const string &file, string *errmsg)
   // Parse document.
   w = _ginga->getOptionInt ("width");
   h = _ginga->getOptionInt ("height");
-  _doc = Parser::parse (file, w, h, errmsg);
+
+  if (!_ginga->getOptionBool ("experimental"))
+    _doc = ParserXercesC::parse (file, w, h, errmsg);
+  else
+    _doc = ParserLibXML::parseFile (file, w, h, errmsg);
   if (unlikely (_doc == nullptr))
     return false;               // syntax error
 

@@ -25,7 +25,8 @@ GINGA_NCL_BEGIN
 class ParserLibXML
 {
 public:
-  static NclDocument *parseBuffer (const void *, size_t, int, int, string *);
+  static NclDocument *parseBuffer (const void *, size_t, int, int,
+                                   string *);
   static NclDocument *parseFile (const string &, int, int, string *);
 };
 

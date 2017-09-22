@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga-internal.h"
-#include "Parser.h"
+#include "ParserXercesC.h"
 
 GINGA_PRAGMA_DIAG_PUSH ()
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
@@ -357,9 +357,10 @@ static map<string, SimpleAction::Type> event_action_type_table =
  * @return The resulting document.
  */
 NclDocument *
-Parser::parse (const string &path, int width, int height, string *errmsg)
+ParserXercesC::parse (const string &path, int width, int height,
+                      string *errmsg)
 {
-  Parser parser (width, height);
+  ParserXercesC parser (width, height);
   NclDocument *result;
   result = parser.parse0 (path);
   if (result == nullptr)
@@ -371,18 +372,18 @@ Parser::parse (const string &path, int width, int height, string *errmsg)
 // Private.
 
 string
-Parser::getErrMsg ()
+ParserXercesC::getErrMsg ()
 {
   return _errmsg;
 }
 
 void
-Parser::setErrMsg (const string &msg)
+ParserXercesC::setErrMsg (const string &msg)
 {
   _errmsg = msg;
 }
 
-Parser::Parser (int width, int height)
+ParserXercesC::ParserXercesC (int width, int height)
 {
   _doc = nullptr;
   g_assert_cmpint (width, >, 0);
@@ -391,14 +392,14 @@ Parser::Parser (int width, int height)
   _height = height;
 }
 
-Parser::~Parser ()
+ParserXercesC::~ParserXercesC ()
 {
   for (auto i: _switchMap)
     delete i.second;
 }
 
 NclDocument *
-Parser::parse0 (const string &path)
+ParserXercesC::parse0 (const string &path)
 {
   DOMDocument *dom;
   DOMElement *elt;
@@ -449,7 +450,7 @@ Parser::parse0 (const string &path)
 }
 
 bool
-Parser::parseNcl (DOMElement *elt)
+ParserXercesC::parseNcl (DOMElement *elt)
 {
   string id;
 
@@ -486,7 +487,7 @@ Parser::parseNcl (DOMElement *elt)
 // Private: Head.
 
 void
-Parser::parseHead (DOMElement *elt)
+ParserXercesC::parseHead (DOMElement *elt)
 {
   CHECK_ELT_TAG (elt, "head", nullptr);
 
@@ -538,15 +539,15 @@ Parser::parseHead (DOMElement *elt)
 // Private: Import.
 
 NclDocument *
-Parser::parse1 (const string &path)
+ParserXercesC::parse1 (const string &path)
 {
-  Parser parser (_width, _height);
+  ParserXercesC parser (_width, _height);
   return parser.parse0 ((!xpathisuri (path) && !xpathisabs (path))
                         ? xpathbuildabs (_dirname, path) : path);
 }
 
 NclDocument *
-Parser::parseImportNCL (DOMElement *elt, string *alias, string *uri)
+ParserXercesC::parseImportNCL (DOMElement *elt, string *alias, string *uri)
 {
   g_assert_nonnull (alias);
   g_assert_nonnull (uri);
@@ -557,7 +558,7 @@ Parser::parseImportNCL (DOMElement *elt, string *alias, string *uri)
 }
 
 Base *
-Parser::parseImportBase (DOMElement *elt, NclDocument **doc,
+ParserXercesC::parseImportBase (DOMElement *elt, NclDocument **doc,
                             string *alias, string *uri)
 {
   DOMElement *parent;
@@ -593,7 +594,7 @@ Parser::parseImportBase (DOMElement *elt, NclDocument **doc,
 }
 
 void
-Parser::parseImportedDocumentBase (DOMElement *elt)
+ParserXercesC::parseImportedDocumentBase (DOMElement *elt)
 {
   for (DOMElement *child: dom_elt_get_children (elt))
     {
@@ -617,7 +618,7 @@ Parser::parseImportedDocumentBase (DOMElement *elt)
 // Private: Rule.
 
 RuleBase *
-Parser::parseRuleBase (DOMElement *elt)
+ParserXercesC::parseRuleBase (DOMElement *elt)
 {
   RuleBase *base;
   string id;
@@ -656,7 +657,7 @@ Parser::parseRuleBase (DOMElement *elt)
 }
 
 CompositeRule *
-Parser::parseCompositeRule (DOMElement *elt)
+ParserXercesC::parseCompositeRule (DOMElement *elt)
 {
   CompositeRule *rule;
   string id;
@@ -693,7 +694,7 @@ Parser::parseCompositeRule (DOMElement *elt)
 }
 
 SimpleRule *
-Parser::parseRule (DOMElement *elt)
+ParserXercesC::parseRule (DOMElement *elt)
 {
   string id;
   string var;
@@ -712,7 +713,7 @@ Parser::parseRule (DOMElement *elt)
 // Private: Transition.
 
 TransitionBase *
-Parser::parseTransitionBase (DOMElement *elt)
+ParserXercesC::parseTransitionBase (DOMElement *elt)
 {
   TransitionBase *base;
   string id;
@@ -749,7 +750,7 @@ Parser::parseTransitionBase (DOMElement *elt)
 }
 
 Transition *
-Parser::parseTransition (DOMElement *elt)
+ParserXercesC::parseTransition (DOMElement *elt)
 {
   Transition *trans;
   string id;
@@ -809,7 +810,7 @@ Parser::parseTransition (DOMElement *elt)
 // Private: Region.
 
 RegionBase *
-Parser::parseRegionBase (DOMElement *elt)
+ParserXercesC::parseRegionBase (DOMElement *elt)
 {
   RegionBase *base;
   string id;
@@ -846,7 +847,7 @@ Parser::parseRegionBase (DOMElement *elt)
 }
 
 Region *
-Parser::parseRegion (DOMElement *elt, RegionBase *base, Region *parent)
+ParserXercesC::parseRegion (DOMElement *elt, RegionBase *base, Region *parent)
 {
   Region *region;
   string id;
@@ -950,7 +951,7 @@ Parser::parseRegion (DOMElement *elt, RegionBase *base, Region *parent)
 // Private: Descriptor.
 
 DescriptorBase *
-Parser::parseDescriptorBase (DOMElement *elt)
+ParserXercesC::parseDescriptorBase (DOMElement *elt)
 {
   DescriptorBase *base;
   string id;
@@ -1012,7 +1013,7 @@ Parser::parseDescriptorBase (DOMElement *elt)
 }
 
 Descriptor *
-Parser::parseDescriptor (DOMElement *elt)
+ParserXercesC::parseDescriptor (DOMElement *elt)
 {
   // List of attributes that should be collected as parameters.
   static vector<string> supported =
@@ -1107,7 +1108,7 @@ Parser::parseDescriptor (DOMElement *elt)
 // Private: Connector.
 
 ConnectorBase *
-Parser::parseConnectorBase (DOMElement *elt)
+ParserXercesC::parseConnectorBase (DOMElement *elt)
 {
   ConnectorBase *base;
   string id;
@@ -1144,7 +1145,7 @@ Parser::parseConnectorBase (DOMElement *elt)
 }
 
 Connector *
-Parser::parseCausalConnector (DOMElement *elt)
+ParserXercesC::parseCausalConnector (DOMElement *elt)
 {
   Connector *conn;
   string id;
@@ -1204,7 +1205,7 @@ Parser::parseCausalConnector (DOMElement *elt)
 }
 
 CompoundCondition *
-Parser::parseCompoundCondition (DOMElement *elt)
+ParserXercesC::parseCompoundCondition (DOMElement *elt)
 {
   CompoundCondition *cond;
   string op;
@@ -1257,7 +1258,7 @@ Parser::parseCompoundCondition (DOMElement *elt)
 }
 
 SimpleCondition *
-Parser::parseSimpleCondition (DOMElement *elt)
+ParserXercesC::parseSimpleCondition (DOMElement *elt)
 {
   string str;
   string role;
@@ -1329,7 +1330,7 @@ Parser::parseSimpleCondition (DOMElement *elt)
 }
 
 CompoundStatement *
-Parser::parseCompoundStatement (DOMElement *elt)
+ParserXercesC::parseCompoundStatement (DOMElement *elt)
 {
   CompoundStatement *stmt;
   string op;
@@ -1368,7 +1369,7 @@ Parser::parseCompoundStatement (DOMElement *elt)
 }
 
 AssessmentStatement *
-Parser::parseAssessmentStatement (DOMElement *elt)
+ParserXercesC::parseAssessmentStatement (DOMElement *elt)
 {
   AssessmentStatement *stmt;
   string comp;
@@ -1405,7 +1406,7 @@ Parser::parseAssessmentStatement (DOMElement *elt)
 }
 
 AttributeAssessment *
-Parser::parseAttributeAssessment (DOMElement *elt)
+ParserXercesC::parseAttributeAssessment (DOMElement *elt)
 {
   map<string, EventType>::iterator it;
   string role;
@@ -1427,7 +1428,7 @@ Parser::parseAttributeAssessment (DOMElement *elt)
 }
 
 ValueAssessment *
-Parser::parseValueAssessment (DOMElement *elt)
+ParserXercesC::parseValueAssessment (DOMElement *elt)
 {
   string value;
   CHECK_ELT_TAG (elt, "valueAssessment", nullptr);
@@ -1436,7 +1437,7 @@ Parser::parseValueAssessment (DOMElement *elt)
 }
 
 CompoundAction *
-Parser::parseCompoundAction (DOMElement *elt)
+ParserXercesC::parseCompoundAction (DOMElement *elt)
 {
   CompoundAction *action;
   string value;
@@ -1467,7 +1468,7 @@ Parser::parseCompoundAction (DOMElement *elt)
 }
 
 SimpleAction *
-Parser::parseSimpleAction (DOMElement *elt)
+ParserXercesC::parseSimpleAction (DOMElement *elt)
 {
   string str;
   string tag;
@@ -1546,7 +1547,7 @@ Parser::parseSimpleAction (DOMElement *elt)
 // Private: Body.
 
 Context *
-Parser::parseBody (DOMElement *elt)
+ParserXercesC::parseBody (DOMElement *elt)
 {
   Context *body;
   string id;
@@ -1593,7 +1594,7 @@ Parser::parseBody (DOMElement *elt)
 }
 
 void
-Parser::posCompileContext (DOMElement *elt, Context *context)
+ParserXercesC::posCompileContext (DOMElement *elt, Context *context)
 {
   Node *node;
   string id;
@@ -1631,7 +1632,7 @@ Parser::posCompileContext (DOMElement *elt, Context *context)
 }
 
 void
-Parser::posCompileSwitch (DOMElement *elt, Switch *swtch)
+ParserXercesC::posCompileSwitch (DOMElement *elt, Switch *swtch)
 {
   Node *node;
   string id;
@@ -1667,7 +1668,7 @@ Parser::posCompileSwitch (DOMElement *elt, Switch *swtch)
 }
 
 void
-Parser::solveNodeReferences (Composition *comp)
+ParserXercesC::solveNodeReferences (Composition *comp)
 {
   const vector<Node *> *nodes;
   bool del = false;
@@ -1724,7 +1725,7 @@ Parser::solveNodeReferences (Composition *comp)
 // Private: Context.
 
 Node *
-Parser::parseContext (DOMElement *elt)
+ParserXercesC::parseContext (DOMElement *elt)
 {
   Context *context;
   string id;
@@ -1770,7 +1771,7 @@ Parser::parseContext (DOMElement *elt)
 }
 
 Port *
-Parser::parsePort (DOMElement *elt, Composition *context)
+ParserXercesC::parsePort (DOMElement *elt, Composition *context)
 {
   string id;
   string comp;
@@ -1817,7 +1818,7 @@ Parser::parsePort (DOMElement *elt, Composition *context)
 // Private: Switch.
 
 Node *
-Parser::parseSwitch (DOMElement *elt)
+ParserXercesC::parseSwitch (DOMElement *elt)
 {
   Node *swtch;
   string id;
@@ -1897,7 +1898,7 @@ Parser::parseSwitch (DOMElement *elt)
 }
 
 Node *
-Parser::parseBindRule (DOMElement *elt, Composition *parent,
+ParserXercesC::parseBindRule (DOMElement *elt, Composition *parent,
                        Rule **rule)
 {
   Node *node;
@@ -1928,7 +1929,7 @@ Parser::parseBindRule (DOMElement *elt, Composition *parent,
 }
 
 SwitchPort *
-Parser::parseSwitchPort (DOMElement *elt, Switch *swtch)
+ParserXercesC::parseSwitchPort (DOMElement *elt, Switch *swtch)
 {
   SwitchPort *port;
   string id;
@@ -1955,7 +1956,7 @@ Parser::parseSwitchPort (DOMElement *elt, Switch *swtch)
 }
 
 Port *
-Parser::parseMapping (DOMElement *elt, Switch *swtch,
+ParserXercesC::parseMapping (DOMElement *elt, Switch *swtch,
                       SwitchPort *port)
 {
   Node *mapping;
@@ -1991,7 +1992,7 @@ Parser::parseMapping (DOMElement *elt, Switch *swtch,
 // Private: Media.
 
 Node *
-Parser::parseMedia (DOMElement *elt)
+ParserXercesC::parseMedia (DOMElement *elt)
 {
   Node *media;
   string id;
@@ -2063,7 +2064,7 @@ Parser::parseMedia (DOMElement *elt)
 }
 
 Property *
-Parser::parseProperty (DOMElement *elt)
+ParserXercesC::parseProperty (DOMElement *elt)
 {
   Property *prop;
   string name;
@@ -2079,7 +2080,7 @@ Parser::parseProperty (DOMElement *elt)
 }
 
 Anchor *
-Parser::parseArea (DOMElement *elt)
+ParserXercesC::parseArea (DOMElement *elt)
 {
   string id;
   string value;
@@ -2125,7 +2126,7 @@ Parser::parseArea (DOMElement *elt)
 // Private: Link.
 
 Link *
-Parser::parseLink (DOMElement *elt, Context *context)
+ParserXercesC::parseLink (DOMElement *elt, Context *context)
 {
   Link *link;
   string id;
@@ -2163,7 +2164,7 @@ Parser::parseLink (DOMElement *elt, Context *context)
 }
 
 Parameter *
-Parser::parseLinkParam (DOMElement *elt)
+ParserXercesC::parseLinkParam (DOMElement *elt)
 {
   string name;
   string value;
@@ -2174,7 +2175,7 @@ Parser::parseLinkParam (DOMElement *elt)
 }
 
 Bind *
-Parser::parseBind (DOMElement *elt, Link *link, Context *context)
+ParserXercesC::parseBind (DOMElement *elt, Link *link, Context *context)
 {
   Bind *bind;
   string label;
@@ -2300,7 +2301,7 @@ Parser::parseBind (DOMElement *elt, Link *link, Context *context)
 }
 
 Parameter *
-Parser::parseBindParam (DOMElement *elt)
+ParserXercesC::parseBindParam (DOMElement *elt)
 {
   string name;
   string value;
@@ -2314,7 +2315,7 @@ Parser::parseBindParam (DOMElement *elt)
 // Private: Error handlers.
 
 void
-Parser::warning (const SAXParseException &e)
+ParserXercesC::warning (const SAXParseException &e)
 {
   char *file = XMLString::transcode (e.getSystemId ());
   char *errmsg = XMLString::transcode (e.getMessage ());
@@ -2334,7 +2335,7 @@ Parser::warning (const SAXParseException &e)
 }
 
 void G_GNUC_NORETURN
-Parser::error (const SAXParseException &e)
+ParserXercesC::error (const SAXParseException &e)
 {
   char *file = XMLString::transcode (e.getSystemId ());
   char *errmsg = XMLString::transcode (e.getMessage ());
@@ -2354,7 +2355,7 @@ Parser::error (const SAXParseException &e)
 }
 
 void
-Parser::fatalError (const SAXParseException &e)
+ParserXercesC::fatalError (const SAXParseException &e)
 {
   this->error (e);
 }

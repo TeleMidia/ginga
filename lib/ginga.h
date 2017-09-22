@@ -33,14 +33,21 @@ GINGA_END_DECLS
 #include <cstdint>
 #include <string>
 
+/**
+ * @brief Ginga options.
+ */
 struct GingaOptions
 {
   int width;
   int height;
   bool debug;
+  bool experimental;
   std::string background;
 };
 
+/**
+ * @brief Ginga object.
+ */
 class Ginga
 {
 public:

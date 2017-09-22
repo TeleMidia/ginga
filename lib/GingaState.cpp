@@ -29,6 +29,7 @@ static GingaOptions opts_defaults = {
   800,                          // width
   600,                          // height
   false,                        // debug
+  false,                        // experimental
   "",                           // background ("" == none)
 };
 
@@ -48,10 +49,11 @@ typedef struct GingaOptionData
 // Option table.
 static map<string, GingaOptionData> opts_table =
 {
- OPTS_ENTRY (debug,      G_TYPE_BOOLEAN, Debug),
- OPTS_ENTRY (height,     G_TYPE_INT,     Size),
- OPTS_ENTRY (width,      G_TYPE_INT,     Size),
- OPTS_ENTRY (background, G_TYPE_STRING,  Background),
+ OPTS_ENTRY (background,   G_TYPE_STRING,  Background),
+ OPTS_ENTRY (debug,        G_TYPE_BOOLEAN, Debug),
+ OPTS_ENTRY (experimental, G_TYPE_BOOLEAN, Experimental),
+ OPTS_ENTRY (height,       G_TYPE_INT,     Size),
+ OPTS_ENTRY (width,        G_TYPE_INT,     Size),
 };
 
 // Indexes option table.
@@ -283,19 +285,20 @@ GingaState::getOptions ()
   return &_opts;
 }
 
-#define GET_SET_OPTION_DEFN(Name, Type, GType, Msg)                     \
+#define OPT_ERR_UNKNOWN(name)\
+  ERROR ("unknown GingaOption '%s'", (name))
+#define OPT_ERR_BAD_TYPE(name, typename)\
+  ERROR ("GingaOption '%s' is of type '%s'", (name), (typename))
+
+#define OPT_GETSET_DEFN(Name, Type, GType)                              \
   Type                                                                  \
   GingaState::getOption##Name (const string &name)                      \
   {                                                                     \
     GingaOptionData *opt;                                               \
     if (unlikely (!opts_table_index (name, &opt)))                      \
-      {                                                                 \
-        ERROR ("unknown option '%s'", name.c_str ());                   \
-      }                                                                 \
+      OPT_ERR_UNKNOWN (name.c_str ());                                  \
     if (unlikely (opt->type != (GType)))                                \
-      {                                                                 \
-        ERROR ("option '%s' is not %s", name.c_str (), Msg);            \
-      }                                                                 \
+      OPT_ERR_BAD_TYPE (name.c_str (), G_STRINGIFY (Type));             \
     return *((Type *)(((ptrdiff_t) &_opts) + opt->offset));             \
   }                                                                     \
   void                                                                  \
@@ -303,13 +306,9 @@ GingaState::getOptions ()
   {                                                                     \
     GingaOptionData *opt;                                               \
     if (unlikely (!opts_table_index (name, &opt)))                      \
-      {                                                                 \
-        ERROR ("unknown option '%s'", name.c_str ());                   \
-      }                                                                 \
+      OPT_ERR_UNKNOWN (name.c_str ());                                  \
     if (unlikely (opt->type != (GType)))                                \
-      {                                                                 \
-        ERROR ("option '%s' is not %s", name.c_str (), Msg);            \
-      }                                                                 \
+      OPT_ERR_BAD_TYPE (name.c_str (), G_STRINGIFY (Type));             \
     *((Type *)(((ptrdiff_t) &_opts) + opt->offset)) = value;            \
     if (opt->func)                                                      \
       {                                                                 \
@@ -318,9 +317,9 @@ GingaState::getOptions ()
       }                                                                 \
   }
 
-GET_SET_OPTION_DEFN (Bool, bool, G_TYPE_BOOLEAN, "a boolean")
-GET_SET_OPTION_DEFN (Int, int, G_TYPE_INT, "an int")
-GET_SET_OPTION_DEFN (String, string, G_TYPE_STRING, "a string")
+OPT_GETSET_DEFN (Bool, bool, G_TYPE_BOOLEAN)
+OPT_GETSET_DEFN (Int, int, G_TYPE_INT)
+OPT_GETSET_DEFN (String, string, G_TYPE_STRING)
 
 
 // Internal API.
@@ -332,6 +331,8 @@ GingaState::GingaState (unused (int argc), unused (char **argv),
                         GingaOptions *opts)
   : Ginga (argc, argv, opts)
 {
+  const char *s;
+
   _opts = (opts) ? *opts : opts_defaults;
   _scheduler = nullptr;
   _listeners = nullptr;
@@ -342,7 +343,12 @@ GingaState::GingaState (unused (int argc), unused (char **argv),
   _last_tick_total = 0;
   _last_tick_diff = 0;
   _last_tick_frameno = 0;
+  _saved_G_MESSAGES_DEBUG = (s = g_getenv ("G_MESSAGES_DEBUG"))
+    ? string (s) : "";
+
   setOptionBackground (this, "background", _opts.background);
+  setOptionDebug (this, "debug", _opts.debug);
+  setOptionExperimental (this, "experimental", _opts.experimental);
 
 #if defined WITH_CEF && WITH_CEF
   CefMainArgs args (argc, argv);
@@ -447,11 +453,35 @@ GingaState::setData (const string &key, void *data)
  * @brief Updates debug option.
  */
 void
-GingaState::setOptionDebug (unused (GingaState *self),
-                            const string &name, bool value)
+GingaState::setOptionDebug (GingaState *self, const string &name,
+                            bool value)
 {
   g_assert (name == "debug");
-  TRACE ("setting option '%s' to %s", name.c_str (), strbool (value));
+  if (value)
+    {
+      const char *curr = g_getenv ("G_MESSAGES_DEBUG");
+      if (curr != nullptr)
+        self->_saved_G_MESSAGES_DEBUG = string (curr);
+      g_assert (g_setenv ("G_MESSAGES_DEBUG", "all", true));
+    }
+  else
+    {
+      g_assert (g_setenv ("G_MESSAGES_DEBUG",
+                          self->_saved_G_MESSAGES_DEBUG.c_str (), true));
+    }
+  TRACE ("setting GingaOption '%s' to %s", name.c_str (), strbool (value));
+}
+
+/**
+ * @brief Updates experimental option.
+ */
+
+void
+GingaState::setOptionExperimental (unused (GingaState *self),
+                                   const string &name, bool value)
+{
+  g_assert (name == "experimental");
+  TRACE ("setting GingaOption '%s' to %s", name.c_str (), strbool (value));
 }
 
 /**
@@ -466,7 +496,7 @@ GingaState::setOptionSize (GingaState *self,
   g_assert (name == "width" || name == "height");
   opts = self->getOptions ();
   self->resize (opts->width, opts->height);
-  TRACE ("setting option '%s' to %d", name.c_str (), value);
+  TRACE ("setting GingaOption '%s' to %d", name.c_str (), value);
 }
 
 /**
@@ -482,7 +512,7 @@ GingaState::setOptionBackground (GingaState *self,
     self->_background = {0.,0.,0.,0.};
   else
     self->_background = ginga_parse_color (value);
-  TRACE ("setting option '%s' to '%s'", name.c_str (), value.c_str ());
+  TRACE ("setting GingaOption '%s' to '%s'", name.c_str (), value.c_str ());
 }
 
 
