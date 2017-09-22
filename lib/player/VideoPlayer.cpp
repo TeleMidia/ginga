@@ -53,6 +53,7 @@ VideoPlayer::VideoPlayer (GingaState *ginga, const string &id,
   GstElement *elt_scale;
   GstElement *elt_video_sink;
   GstElement *elt_volume;
+  GstElement *elt_panorama;
   GstElement *elt_audio_sink;
   GstPad *pad_video;
   GstPad *pad_audio;
@@ -63,6 +64,7 @@ VideoPlayer::VideoPlayer (GingaState *ginga, const string &id,
 
   _volume = 1.0;
   _mute = false;
+  _balance = 0;
 
   if (!gst_is_initialized ())
   {
@@ -105,8 +107,11 @@ VideoPlayer::VideoPlayer (GingaState *ginga, const string &id,
   elt_video_sink = gst_element_factory_make ("appsink", "video_sink");
   g_assert_nonnull (elt_video_sink);
 
-  elt_volume = gst_element_factory_make ("volume", "elt_volume");
+  elt_volume = gst_element_factory_make ("volume", "volume");
   g_assert_nonnull (elt_volume);
+
+  elt_panorama = gst_element_factory_make ("audiopanorama", "audiopanorama");
+  g_assert_nonnull (elt_panorama);
 
   elt_audio_sink = gst_element_factory_make ("autoaudiosink", "audio_sink");
   g_assert_nonnull (elt_audio_sink);
@@ -118,8 +123,11 @@ VideoPlayer::VideoPlayer (GingaState *ginga, const string &id,
   g_assert (gst_element_link (elt_scale, elt_video_sink));
 
   g_assert (gst_bin_add (GST_BIN (bin_audio), elt_volume));
+  g_assert (gst_bin_add (GST_BIN (bin_audio), elt_panorama));
   g_assert (gst_bin_add (GST_BIN (bin_audio), elt_audio_sink));
-  g_assert (gst_element_link (elt_volume,elt_audio_sink));
+  //g_assert (gst_element_link (elt_volume, elt_audio_sink));
+  g_assert (gst_element_link (elt_volume, elt_panorama));
+  g_assert (gst_element_link (elt_panorama, elt_audio_sink));
 
   pad_video = gst_element_get_static_pad (elt_filter, "sink");
   g_assert_nonnull (pad_video);
@@ -134,6 +142,9 @@ VideoPlayer::VideoPlayer (GingaState *ginga, const string &id,
   // Aliases.
   _app_videosink = elt_video_sink;
   _capsfilter = elt_filter;
+  _app_audiosink = elt_audio_sink;
+  _volumefilter = elt_volume;
+  _balancefilter = elt_panorama;
 
   // Callbacks.
   _callbacks.eos = nullptr;
@@ -176,6 +187,13 @@ VideoPlayer::start ()
   g_object_set (_playbin,       // effectuate properties
                 "volume", _volume,
                 "mute", _mute, NULL);
+
+  g_object_set (_volumefilter,
+                "volume", _volume,
+                "mute", _mute, NULL);
+
+  g_object_set (_balancefilter,
+                "panorama", _balance, NULL);
 
   ret = gst_element_set_state (_playbin, GST_STATE_PLAYING);
   if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
@@ -285,13 +303,19 @@ VideoPlayer::setProperty (const string &name, const string &value)
     {
       _volume = xstrtodorpercent (value, nullptr);
       if (_state != PL_SLEEPING)
-        g_object_set (_playbin, "volume", _volume, NULL);
+        g_object_set (_volumefilter, "volume", _volume, NULL);
     }
   else if (name == "mute")
     {
       _mute = ginga_parse_bool (value);
       if (_state != PL_SLEEPING)
-        g_object_set (_playbin, "mute", _mute, NULL);
+        g_object_set (_volumefilter, "mute", _mute, NULL);
+    }
+  else if (name == "balanceLevel")
+    {
+      _balance = xstrtodorpercent (value, nullptr);
+      if (_state != PL_SLEEPING)
+        g_object_set (_balancefilter, "panorama", _balance, NULL);
     }
 }
 
