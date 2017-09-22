@@ -22,18 +22,16 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_NCL_BEGIN
 
-NclDocument::NclDocument (const string &id, const string &docLocation)
+NclDocument::NclDocument (const string &id, const string &location)
 {
-  this->_id = id;
-
-  _ruleBase = NULL;
-  _transitionBase = NULL;
-  _descriptorBase = NULL;
-  _connectorBase = NULL;
-  _body = NULL;
-
-  _parentDocument = NULL;
-  this->_docLocation = docLocation;
+  _id = id;
+  _ruleBase = nullptr;
+  _transitionBase = nullptr;
+  _descriptorBase = nullptr;
+  _connectorBase = nullptr;
+  _body = nullptr;
+  _parentDocument = nullptr;
+  _docLocation = location;
 }
 
 NclDocument::~NclDocument () { clearDocument (); }

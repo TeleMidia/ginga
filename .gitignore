@@ -76,6 +76,8 @@
 /tests/suppfile
 /tests/test-GingaState-getData
 /tests/test-GingaState-setData
+/tests/test-ParserLibXML-parseBuffer
+/tests/test-ParserLibXML-parseFile
 /tests/test-ginga-create
 /tests/test-ginga-getOptionBool
 /tests/test-ginga-getOptionInt

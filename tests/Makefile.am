@@ -190,6 +190,12 @@ xfail_test_ginga_getOptionString_SOURCES= xfail-test-ginga-getOptionString.cpp
 progs+= xfail-test-ginga-setOptionString
 xfail_test_ginga_setOptionString_SOURCES= xfail-test-ginga-setOptionString.cpp
 
+progs+= test-ParserLibXML-parseFile
+test_ParserLibXML_parseFile_SOURCES= test-ParserLibXML-parseFile.cpp
+
+progs+= test-ParserLibXML-parseBuffer
+test_ParserLibXML_parseBuffer_SOURCES= test-ParserLibXML-parseBuffer.cpp
+
 progs+= test-GingaState-getData
 test_GingaState_getData_SOURCES= test-GingaState-getData.cpp
 
