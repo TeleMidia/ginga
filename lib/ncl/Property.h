@@ -25,7 +25,7 @@ GINGA_NCL_BEGIN
 class Property : public Anchor
 {
 public:
-  Property (const string &);
+  Property (NclDocument *, const string &);
   ~Property ();
   string getName ();
   string getValue ();

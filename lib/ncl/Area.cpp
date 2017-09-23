@@ -15,18 +15,19 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
 #include "Area.h"
 
 GINGA_NCL_BEGIN
 
 /**
  * @brief Creates a new area.
+ * @param ncl Parent document.
  * @param id Area id.
  * @param begin Area begin time.
  * @param end Area end time.
  */
-Area::Area (const string &id, GingaTime begin, GingaTime end) : Anchor (id)
+Area::Area (NclDocument *ncl, const string &id,
+            GingaTime begin, GingaTime end) : Anchor (ncl, id)
 {
   _begin = begin;
   _end = end;

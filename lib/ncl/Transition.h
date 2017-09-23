@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef TRANSITION_H_
-#define TRANSITION_H_
+#ifndef TRANSITION_H
+#define TRANSITION_H
 
 #include "Entity.h"
 
@@ -57,7 +57,7 @@ public:
   static const short DIRECTION_REVERSE = 1;
 
 public:
-  Transition (const string &, int);
+  Transition (NclDocument *, const string &, int);
   virtual ~Transition ();
   GingaColor getBorderColor ();
   int getBorderWidth ();

@@ -22,10 +22,12 @@ GINGA_NCL_BEGIN
 
 /**
  * @brief Creates a new composite rule.
+ * @param ncl Parent document.
  * @param id Rule id.
  * @param conj True if composite rule is a conjunction.
  */
-CompositeRule::CompositeRule (const string &id, bool conj) : Rule (id)
+CompositeRule::CompositeRule (NclDocument *ncl, const string &id, bool conj)
+  : Rule (ncl, id)
 {
   _conjunction = conj;
 }

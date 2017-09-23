@@ -26,7 +26,7 @@ GINGA_NCL_BEGIN
 class ConnectorBase : public Base
 {
 public:
-  ConnectorBase (const string &);
+  ConnectorBase (NclDocument *, const string &);
   virtual ~ConnectorBase ();
 
   void addConnector (Connector *);

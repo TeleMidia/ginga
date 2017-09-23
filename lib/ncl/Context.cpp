@@ -22,9 +22,11 @@ GINGA_NCL_BEGIN
 
 /**
  * @brief Creates a new context.
+ * @param ncl Parent document.
  * @param id Context id.
  */
-Context::Context (const string &id) : Composition (id)
+Context::Context (NclDocument *ncl, const string &id)
+  : Composition (ncl, id)
 {
 }
 

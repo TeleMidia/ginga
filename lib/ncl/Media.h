@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Descriptor.h"
 #include "Node.h"
-#include "Refer.h"
 
 GINGA_NCL_BEGIN
 
@@ -28,7 +27,7 @@ class Refer;
 class Media : public Node
 {
 public:
-  Media (const string &, bool);
+  Media (NclDocument *, const string &, bool);
   virtual ~Media ();
 
   bool isSettings ();

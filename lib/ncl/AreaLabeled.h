@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef LABELED_ANCHOR_H
-#define LABELED_ANCHOR_H
+#ifndef AREA_LABELED_H
+#define AREA_LABELED_H
 
 #include "Anchor.h"
 
@@ -25,7 +25,7 @@ GINGA_NCL_BEGIN
 class AreaLabeled : public Anchor
 {
 public:
-  AreaLabeled (const string &, const string &);
+  AreaLabeled (NclDocument *, const string &, const string &);
   string getLabel ();
 
 private:
@@ -34,4 +34,4 @@ private:
 
 GINGA_NCL_END
 
-#endif // LABELED_ANCHOR_H
+#endif // AREA_LABELED_H

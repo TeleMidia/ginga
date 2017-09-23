@@ -29,7 +29,7 @@ GINGA_NCL_BEGIN
 class Connector : public Entity
 {
 public:
-  Connector (const string &);
+  Connector (NclDocument *, const string &);
   virtual ~Connector ();
 
   void addParameter (Parameter *);

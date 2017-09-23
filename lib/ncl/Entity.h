@@ -22,17 +22,23 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
+class NclDocument;
 class Entity
 {
 public:
-  Entity (const string &);
+  Entity (NclDocument *, const string &);
   virtual ~Entity () = 0;
   string getId ();
+  NclDocument *getDocument ();
+  void *getData (const string &);
+  void setData (const string &, void *);
 
 private:
   string _id;
+  NclDocument *_ncl;
+  map<string, void *> _userdata;
 };
 
 GINGA_NCL_END
 
-#endif
+#endif // ENTITY_H

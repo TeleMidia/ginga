@@ -105,5 +105,39 @@ main (void)
     g_assert (errmsg != "");
   }
 
+  // Error: Media: Missing id.
+  {
+    string errmsg;
+    const char *buf = "\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <media/>\n\
+ </body>\n\
+</ncl>\n\
+";
+    ncl = ParserLibXML::parseBuffer (buf, strlen (buf), 0, 0, &errmsg);
+    g_assert_null (ncl);
+    g_assert (errmsg != "");
+  }
+
+  // Success.
+  {
+    string errmsg;
+    const char *buf = "\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <port id='p' component='m'/>\n\
+  <media id='m'/>\n\
+ </body>\n\
+</ncl>\n\
+";
+    ncl = ParserLibXML::parseBuffer (buf, strlen (buf), 0, 0, &errmsg);
+    g_assert_nonnull (ncl);
+    g_assert (errmsg == "");
+    delete ncl;
+  }
+
   exit (EXIT_SUCCESS);
 }

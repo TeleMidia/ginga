@@ -26,7 +26,7 @@ GINGA_NCL_BEGIN
 class TransitionBase : public Base
 {
 public:
-  TransitionBase (const string &);
+  TransitionBase (NclDocument *, const string &);
   virtual ~TransitionBase ();
 
   void addTransition (Transition *);

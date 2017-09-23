@@ -25,7 +25,7 @@ GINGA_NCL_BEGIN
 class Region : public Entity
 {
 public:
-  Region (const string &_id);
+  Region (NclDocument *, const string &);
   virtual ~Region ();
 
   GingaRect getRect ();

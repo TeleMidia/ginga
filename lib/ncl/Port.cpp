@@ -23,25 +23,13 @@ GINGA_NCL_BEGIN
 
 /**
  * @brief Creates a new port.
+ * @param ncl Parent document.
  * @param id Port id.
  */
-Port::Port (const string &id) : Anchor (id)
+Port::Port (NclDocument *ncl, const string &id) : Anchor (ncl, id)
 {
   _node = nullptr;
   _interface = nullptr;
-}
-
-/**
- * @brief Creates a new port.
- * @param id Port id.
- * @param node Port component.
- * @param iface Port interface.
- */
-Port::Port (const string &id, Node *node, Anchor *iface) : Anchor (id)
-{
-  g_assert_nonnull (node);
-  _node = node;
-  _interface = iface;
 }
 
 /**

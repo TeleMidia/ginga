@@ -22,9 +22,11 @@ GINGA_NCL_BEGIN
 
 /**
  * @brief Creates a new descriptor.
+ * @param ncl Parent document.
  * @param id Descriptor id.
  */
-Descriptor::Descriptor (const string &id) : Entity (id)
+Descriptor::Descriptor (NclDocument *ncl, const string &id)
+  : Entity (ncl, id)
 {
   _region = nullptr;
 }

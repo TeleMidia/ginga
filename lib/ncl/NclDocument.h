@@ -15,22 +15,14 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef NCLDOCUMENT_H_
-#define NCLDOCUMENT_H_
+#ifndef NCL_DOCUMENT_H
+#define NCL_DOCUMENT_H
 
-#include "Base.h"
-#include "Connector.h"
 #include "ConnectorBase.h"
 #include "Context.h"
-#include "Descriptor.h"
 #include "DescriptorBase.h"
-#include "Media.h"
-#include "Node.h"
-#include "Region.h"
 #include "RegionBase.h"
-#include "Rule.h"
 #include "RuleBase.h"
-#include "Transition.h"
 #include "TransitionBase.h"
 
 GINGA_NCL_BEGIN
@@ -105,4 +97,4 @@ private:
 
 GINGA_NCL_END
 
-#endif /*NCLDOCUMENT_H_*/
+#endif // NCL_DOCUMENT_H

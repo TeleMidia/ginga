@@ -27,12 +27,13 @@ GINGA_NCL_BEGIN
 
 /**
  * @brief Creates a new link.
+ * @param ncl Parent document.
  * @param id Link id.
  * @param ctx Parent context.
  * @param conn Associated connector.
  */
-Link::Link (const string &id, Context *ctx, Connector *conn)
-  : Entity (id)
+Link::Link (NclDocument *ncl, const string &id, Context *ctx,
+            Connector *conn) : Entity (ncl, id)
 {
   g_assert_nonnull (conn);
   _connector = conn;

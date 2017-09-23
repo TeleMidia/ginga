@@ -22,9 +22,10 @@ GINGA_NCL_BEGIN
 
 /**
  * @brief Creates a new region.
+ * @param ncl Parent document.
  * @param id Region id.
  */
-Region::Region (const string &id) : Entity (id)
+Region::Region (NclDocument *ncl, const string &id) : Entity (ncl, id)
 {
   _rect = {0, 0, 0, 0};
   _top = "0%";

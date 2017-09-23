@@ -26,7 +26,7 @@ GINGA_NCL_BEGIN
 class RegionBase : public Base
 {
 public:
-  RegionBase (const string &);
+  RegionBase (NclDocument *, const string &);
   virtual ~RegionBase ();
 
   void addRegion (Region *);

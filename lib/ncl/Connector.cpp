@@ -31,9 +31,10 @@ GINGA_NCL_BEGIN
 
 /**
  * @brief Creates a new connector.
+ * @param ncl Parent document.
  * @param id Connector id.
  */
-Connector::Connector (const string &id) : Entity (id)
+Connector::Connector (NclDocument *ncl, const string &id) : Entity (ncl, id)
 {
   _condition = nullptr;
   _action = nullptr;

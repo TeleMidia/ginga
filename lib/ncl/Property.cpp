@@ -22,8 +22,11 @@ GINGA_NCL_BEGIN
 
 /**
  * @brief Creates a new property.
+ * @param ncl Parent document.
+ * @param name Property name.
  */
-Property::Property (const string &name) : Anchor (name)
+Property::Property (NclDocument *ncl, const string &name)
+  : Anchor (ncl, name)
 {
   _value = "";
 }
