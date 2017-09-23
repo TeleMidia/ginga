@@ -21,7 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-Transition::Transition (const string &id, int type) : Entity (id)
+Transition::Transition (NclDocument *ncl, const string &id, int type)
+  : Entity (ncl, id)
 {
   setType (type);
 

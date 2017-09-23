@@ -26,7 +26,7 @@ GINGA_NCL_BEGIN
 class Switch : public Composition
 {
 public:
-  Switch (const string &);
+  Switch (NclDocument *, const string &);
   virtual ~Switch ();
 
   void addNode (Node *, Rule *);

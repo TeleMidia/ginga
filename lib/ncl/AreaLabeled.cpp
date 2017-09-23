@@ -22,11 +22,13 @@ GINGA_NCL_BEGIN
 
 /**
  * @brief Creates a new labeled area.
- * @param id area id.
- * @param label area label.
+ * @param ncl Parent document.
+ * @param id Area id.
+ * @param label Area label.
  */
-AreaLabeled::AreaLabeled (const string &id, const string &label)
-  : Anchor (id)
+AreaLabeled::AreaLabeled (NclDocument *ncl, const string &id,
+                          const string &label)
+  : Anchor (ncl, id)
 {
   g_assert (label != "");
   _label = label;

@@ -26,7 +26,7 @@ class Switch;
 class SwitchPort : public Port
 {
 public:
-  SwitchPort (const string &, Switch *);
+  SwitchPort (NclDocument *, const string &);
   virtual ~SwitchPort ();
   void addPort (Port *);
   const vector<Port *> *getPorts ();

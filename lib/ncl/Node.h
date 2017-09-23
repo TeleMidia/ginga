@@ -26,7 +26,7 @@ class Composition;
 class Node : public Entity
 {
 public:
-  Node (const string &);
+  Node (NclDocument *, const string &);
   virtual ~Node ();
 
   void setParent (Composition *);

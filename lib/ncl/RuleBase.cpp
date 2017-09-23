@@ -22,9 +22,10 @@ GINGA_NCL_BEGIN
 
 /**
  * @brief Creates a new rule base.
+ * @param ncl Parent document.
  * @param id Base id.
  */
-RuleBase::RuleBase (const string &id) : Base (id)
+RuleBase::RuleBase (NclDocument *ncl, const string &id) : Base (ncl, id)
 {
 }
 

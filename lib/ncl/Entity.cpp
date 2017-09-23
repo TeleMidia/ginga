@@ -15,19 +15,20 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
 #include "Entity.h"
 
 GINGA_NCL_BEGIN
 
 /**
  * @brief Creates a new entity.
+ * @param ncl Parent document.
  * @param id Entity id.
  */
-Entity::Entity (const string &id)
+Entity::Entity (NclDocument *ncl, const string &id)
 {
   g_assert (id != "");
   _id = id;
+  _ncl = ncl;
 }
 
 /**
@@ -44,6 +45,39 @@ string
 Entity::getId ()
 {
   return _id;
+}
+
+/**
+ * @brief Gets entity document.
+ */
+NclDocument *
+Entity::getDocument ()
+{
+  return _ncl;
+}
+
+/**
+ * @brief Gets data previously attached to entity.
+ * @param key Name of the key.
+ * @return Data associated with key.
+ */
+void *
+Entity::getData (const string &key)
+{
+  map<string, void *>::iterator it;
+  return ((it = _userdata.find (key)) == _userdata.end ())
+    ? nullptr : it->second;
+}
+
+/**
+ * @brief Attaches data to entity.
+ * @param key Name of the key.
+ * @param data Data to associate with key.
+ */
+void
+Entity::setData (const string &key, void *data)
+{
+  _userdata[key] = data;
 }
 
 GINGA_NCL_END

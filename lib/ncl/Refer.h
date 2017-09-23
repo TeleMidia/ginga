@@ -18,17 +18,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef REFER_H
 #define REFER_H
 
-#include "Media.h"
 #include "Node.h"
+#include "Media.h"
 
 GINGA_NCL_BEGIN
 
-class Media;
 class Node;
 class Refer : public Node
 {
 public:
-  Refer (const string &);
+  Refer (NclDocument *, const string &);
   Media *getReferred ();
   void setReferred (Media *);
 

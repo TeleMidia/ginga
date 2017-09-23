@@ -77,9 +77,9 @@ Scheduler::run (const string &file, string *errmsg)
   g_assert_nonnull (body);
 
   // Insert dummy settings node.
-  Media *dummy =  new Media ("__settings__", true);
+  Media *dummy =  new Media (_doc, "__settings__", true);
   body->addNode (dummy);
-  Property *prop = new Property ("service.currentFocus");
+  Property *prop = new Property (_doc, "service.currentFocus");
   prop->setValue ("");
   dummy->addAnchor (prop);
 

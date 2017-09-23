@@ -25,7 +25,7 @@ GINGA_NCL_BEGIN
 class Base : public Entity
 {
 public:
-  Base (const string &);
+  Base (NclDocument *, const string &);
   virtual ~Base ();
   void addBase (Base *, const string &, const string &);
 

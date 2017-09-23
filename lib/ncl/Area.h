@@ -25,7 +25,7 @@ GINGA_NCL_BEGIN
 class Area : public Anchor
 {
 public:
-  Area (const string &, GingaTime, GingaTime);
+  Area (NclDocument *, const string &, GingaTime, GingaTime);
   GingaTime getBegin ();
   GingaTime getEnd ();
 
@@ -37,7 +37,8 @@ protected:
 class AreaLambda : public Area
 {
 public:
-  AreaLambda (const string &id) : Area (id, 0, GINGA_TIME_NONE) {};
+  AreaLambda (NclDocument *doc, const string &id)
+    : Area (doc, id, 0, GINGA_TIME_NONE) {};
 };
 
 GINGA_NCL_END

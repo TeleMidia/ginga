@@ -79,11 +79,12 @@ mime_table_index (const string &key, string *result)
 
 /**
  * @brief Creates a new media.
+ * @param ncl Parent document.
  * @param id Media id.
  * @param settings True if media is settings node.
  */
-Media::Media (const string &id, bool settings)
-  : Node (id)
+Media::Media (NclDocument *ncl, const string &id, bool settings)
+  : Node (ncl, id)
 {
   _isSettings = settings;
   _src = "";

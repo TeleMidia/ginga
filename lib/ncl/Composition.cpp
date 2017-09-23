@@ -22,9 +22,11 @@ GINGA_NCL_BEGIN
 
 /**
  * @brief Creates a new composition.
+ * @param ncl Parent document.
  * @param id Composition id.
  */
-Composition::Composition (const string &id) : Node (id)
+Composition::Composition (NclDocument *ncl, const string &id)
+  : Node (ncl, id)
 {
 }
 

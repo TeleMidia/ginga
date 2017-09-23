@@ -22,9 +22,10 @@ GINGA_NCL_BEGIN
 
 /**
  * @brief Creates a new refer node.
+ * @param ncl Parent document.
  * @param id Refer node id.
  */
-Refer::Refer (const string &id) : Node (id)
+Refer::Refer (NclDocument *ncl, const string &id) : Node (ncl, id)
 {
   _referred = nullptr;
 }

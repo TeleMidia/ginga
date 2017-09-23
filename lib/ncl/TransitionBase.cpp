@@ -22,9 +22,11 @@ GINGA_NCL_BEGIN
 
 /**
  * @brief Creates a new transition base.
+ * @param ncl Parent document.
  * @param id Base id.
  */
-TransitionBase::TransitionBase (const string &id) : Base (id)
+TransitionBase::TransitionBase (NclDocument *ncl, const string &id)
+  : Base (ncl, id)
 {
 }
 

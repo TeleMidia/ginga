@@ -26,7 +26,7 @@ GINGA_NCL_BEGIN
 class Composition : public Node
 {
 public:
-  Composition (const string &);
+  Composition (NclDocument *, const string &);
   ~Composition ();
 
   void addNode (Node *);

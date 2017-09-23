@@ -25,7 +25,7 @@ GINGA_NCL_BEGIN
 class CompositeRule : public Rule
 {
 public:
-  CompositeRule (const string &, bool);
+  CompositeRule (NclDocument *, const string &, bool);
   virtual ~CompositeRule ();
   bool isConjunction ();
   void addRule (Rule *);

@@ -26,12 +26,13 @@ GINGA_NCL_BEGIN
 
 /**
  * @brief Creates a new component.
+ * @param ncl Parent document.
  * @param id Component id.
  */
-Node::Node (const string &id) : Entity (id)
+Node::Node (NclDocument *ncl, const string &id) : Entity (ncl, id)
 {
   _parent = nullptr;
-  _lambda = new AreaLambda (id);
+  _lambda = new AreaLambda (ncl, id);
   this->addAnchor (_lambda);
 }
 

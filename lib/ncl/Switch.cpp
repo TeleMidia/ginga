@@ -23,9 +23,10 @@ GINGA_NCL_BEGIN
 
 /**
  * @brief Creates a new switch.
+ * @param ncl Parent document.
  * @param id Switch id.
  */
-Switch::Switch (const string &id) : Composition (id)
+Switch::Switch (NclDocument *ncl, const string &id) : Composition (ncl, id)
 {
   _default = nullptr;
 }

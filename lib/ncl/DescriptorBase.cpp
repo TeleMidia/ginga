@@ -22,9 +22,11 @@ GINGA_NCL_BEGIN
 
 /**
  * @brief Creates a new descriptor base.
+ * @param ncl Parent document.
  * @param id Base id.
  */
-DescriptorBase::DescriptorBase (const string &id) : Base (id)
+DescriptorBase::DescriptorBase (NclDocument *ncl, const string &id)
+  : Base (ncl, id)
 {
 }
 

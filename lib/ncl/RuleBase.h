@@ -26,7 +26,7 @@ GINGA_NCL_BEGIN
 class RuleBase : public Base
 {
 public:
-  RuleBase (const string &);
+  RuleBase (NclDocument *, const string &);
   virtual ~RuleBase ();
 
   void addRule (Rule *);

@@ -25,7 +25,7 @@ GINGA_NCL_BEGIN
 class Rule : public Entity
 {
 public:
-  Rule (const string &id) : Entity (id) {};
+  Rule (NclDocument *doc, const string &id) : Entity (doc, id) {};
   ~Rule () {};
 };
 

@@ -19,15 +19,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define PORT_H
 
 #include "Anchor.h"
-#include "Node.h"
 
 GINGA_NCL_BEGIN
 
+class Node;
 class Port : public Anchor
 {
 public:
-  Port (const string &);
-  Port (const string &, Node *, Anchor *);
+  Port (NclDocument *, const string &);
   ~Port ();
 
   Node *getNode ();

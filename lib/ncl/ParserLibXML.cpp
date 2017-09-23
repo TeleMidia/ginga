@@ -17,6 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga-internal.h"
 #include "ParserLibXML.h"
+#include "Ncl.h"
 
 #include <libxml/tree.h>
 #include <libxml/parser.h>
@@ -88,19 +89,20 @@ _st_err (ParserLibXML_State *st, const char *fmt, ...)
 #define ST_ERR_ELT_BAD_CHILD(st, etl, child)\
   ST_ERR_ELT ((st), (elt), "Unexpected child <%s>", (child))
 
-#define ST_ERR_ELT_DUPLICATED_CHILD(st, elt, child)\
-  ST_ERR_ELT ((st), (elt), "Duplicated child <%s>", (child))
-
 
 // NCL syntax.
 
 // Element push function.
-typedef bool (NclEltPushFunc) (ParserLibXML_State *, xmlNode *,
-                               const string &, map<string, GValue> *);
+typedef bool (NclEltPushFunc) (ParserLibXML_State *,
+                               xmlNode *,
+                               map<string, GValue> *,
+                               Entity **);
 // Element pop function.
-typedef bool (NclEltPopFunc) (ParserLibXML_State *, xmlNode *,
-                              const string &, map<string, GValue> *,
-                              vector<xmlNode *> *);
+typedef bool (NclEltPopFunc) (ParserLibXML_State *,
+                              xmlNode *,
+                              map<string, GValue> *,
+                              vector<xmlNode *> *,
+                              Entity *);
 // Attribute info.
 typedef struct NclAttrInfo
 {
@@ -119,21 +121,22 @@ typedef struct NclEltInfo
 } NclEltInfo;
 
 // Forward declarations.
-#define NCL_ELT_PUSH_DECL(elt)                          \
-  static bool G_PASTE (ncl_push_, elt)                  \
-    (ParserLibXML_State *, xmlNode *, const string &,   \
-     map<string, GValue> *);
+#define NCL_ELT_PUSH_DECL(elt)                  \
+  static bool G_PASTE (ncl_push_, elt)          \
+    (ParserLibXML_State *, xmlNode *,           \
+     map<string, GValue> *, Entity **);
 
-#define NCL_ELT_POP_DECL(elt)                           \
-  static bool G_PASTE (ncl_pop_, elt)                   \
-    (ParserLibXML_State *, xmlNode *, const string &,   \
-     map<string, GValue> *, vector<xmlNode *> *);
+#define NCL_ELT_POP_DECL(elt)                                   \
+  static bool G_PASTE (ncl_pop_, elt)                           \
+    (ParserLibXML_State *, xmlNode *,                           \
+     map<string, GValue> *, vector<xmlNode *> *, Entity *);
 
 NCL_ELT_PUSH_DECL (ncl)
 NCL_ELT_POP_DECL  (ncl)
 NCL_ELT_PUSH_DECL (body)
 NCL_ELT_POP_DECL  (body)
 NCL_ELT_PUSH_DECL (port)
+NCL_ELT_PUSH_DECL (media)
 
 // Element map.
 static map<string, NclEltInfo> ncl_eltmap =
@@ -157,6 +160,10 @@ static map<string, NclEltInfo> ncl_eltmap =
     {"component", G_TYPE_STRING, true},
     {"interface", G_TYPE_STRING, false}}},
  },
+ {"media",
+  {ncl_push_media, nullptr, {"body", "context"},
+   {{"id", G_TYPE_STRING, true},
+    {"src", G_TYPE_STRING, false}}}},
 };
 
 // Indexes element map.
@@ -219,8 +226,8 @@ ncl_attrmap_get_opt_string (map<string, GValue> *attr,
 static bool
 ncl_push_ncl (ParserLibXML_State *st,
               unused (xmlNode *elt),
-              unused (const string &tag),
-              map<string, GValue> *attr)
+              map<string, GValue> *attr,
+              unused (Entity **entity))
 {
   string id = ncl_attrmap_get_opt_string (attr, "id", "ncl");
   string  url = (st->doc->URL) ? toString (st->doc->URL) : "";
@@ -229,89 +236,71 @@ ncl_push_ncl (ParserLibXML_State *st,
 }
 
 static bool
-ncl_pop_ncl (ParserLibXML_State *st,
+ncl_pop_ncl (unused (ParserLibXML_State *st),
              unused (xmlNode *elt),
-             unused (const string &tag),
-             G_GNUC_UNUSED map<string, GValue> *attr,
-             vector<xmlNode *> *children)
+             unused (map<string, GValue> *attr),
+             unused (vector<xmlNode *> *children),
+             unused (Entity *entity))
 {
-  bool found_head = false;
-  bool found_body = false;
-  for (auto child: *children)
-    {
-      if (toString (child->name) == "head")
-        {
-          if (unlikely (found_head))
-            return ST_ERR_ELT_DUPLICATED_CHILD (st, elt, child->name);
-          found_head = true;
-        }
-      else if (toString (child->name) == "body")
-        {
-          if (unlikely (found_body))
-            return ST_ERR_ELT_DUPLICATED_CHILD (st, elt, child->name);
-          found_body = true;
-        }
-      else
-        {
-          g_assert_not_reached ();
-        }
-    }
-  if (unlikely (!found_head))
-    return ST_ERR_ELT_MISSING_CHILD (st, elt, "head");
-  if (unlikely (!found_body))
-    return ST_ERR_ELT_MISSING_CHILD (st, elt, "body");
   return true;
 }
 
 static bool
 ncl_push_body (ParserLibXML_State *st,
                unused (xmlNode *elt),
-               unused (const string &tag),
-               map<string, GValue> *attr)
+               map<string, GValue> *attr,
+               Entity **entity)
 {
   Context *body;
   string id;
 
   id = ncl_attrmap_get_opt_string (attr, "id", st->ncl->getId ());
-  body = new Context (id);
+  body = new Context (st->ncl, id);
   st->ncl->setBody (body);
-  st->stack.push_back (body);
+  *entity = body;
 
   return true;
 }
 
 static bool
-ncl_pop_body (ParserLibXML_State *st,
+ncl_pop_body (unused (ParserLibXML_State *st),
               unused (xmlNode *elt),
-              unused (const string &tag),
-              G_GNUC_UNUSED map<string, GValue> *attr,
-              unused (vector<xmlNode *> *children))
+              unused (map<string, GValue> *attr),
+              unused (vector<xmlNode *> *children),
+              unused (Entity *entity))
 {
-  st->stack.pop_back ();
   return true;
 }
 
 static bool
 ncl_push_port (ParserLibXML_State *st,
                unused (xmlNode *elt),
-               unused (const string &tag),
-               map<string, GValue> *attr)
+               map<string, GValue> *attr,
+               unused (Entity **entity))
 {
-  Context *context;
   Port *port;
-  string id;
-  string comp;
-  string iface;
+  Context *context;
 
-  id = ncl_attrmap_get_string (attr, "id");
-  comp = ncl_attrmap_get_string (attr, "component");
-  iface = ncl_attrmap_get_opt_string (attr, "interface", "");
-
-  port = new Port (id);
+  port = new Port (st->ncl, ncl_attrmap_get_string (attr, "id"));
   context = cast (Context *, st->stack.back ());
   g_assert_nonnull (context);
   context->addPort (port);
+  return true;
+}
 
+static bool
+ncl_push_media (ParserLibXML_State *st,
+                unused (xmlNode *elt),
+                map<string, GValue> *attr,
+                unused (Entity **entity))
+{
+  Media *media;
+  Composition *comp;
+
+  media = new Media (st->ncl, ncl_attrmap_get_string (attr, "id"), false);
+  comp = cast (Composition *, st->stack.back ());
+  g_assert_nonnull (comp);
+  comp->addNode (media);
   return true;
 }
 
@@ -325,6 +314,7 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
   NclEltInfo *einfo;
 
   map<string, GValue> attr;
+  Entity *entity;
   map<string, bool> possible;
   vector<xmlNode *> children;
 
@@ -387,8 +377,13 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
     }
 
   // Push element.
-  if (unlikely (einfo->push && !einfo->push (st, elt, tag, &attr)))
+  entity = nullptr;
+  if (unlikely (einfo->push && !einfo->push (st, elt, &attr, &entity)))
     return false;
+
+  // Push newly created entity onto stack.
+  if (entity != nullptr)
+    st->stack.push_back (entity);
 
   // Collect children.
   possible = ncl_eltmap_get_possible_children (tag);
@@ -409,7 +404,7 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
 
   // Pop element.
   if (einfo->pop)
-    return einfo->pop (st, elt, tag, &attr, &children);
+    return einfo->pop (st, elt, &attr, &children, entity);
 
   return true;
 }

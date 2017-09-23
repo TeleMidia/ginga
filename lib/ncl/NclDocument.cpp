@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga-internal.h"
 #include "NclDocument.h"
 
+#include "Media.h"
+
 GINGA_NCL_BEGIN
 
 NclDocument::NclDocument (const string &id, const string &location)
@@ -315,11 +317,7 @@ NclDocument::getNode (const string &nodeId)
       document = _documentAliases[prefix];
       return document->getNode (suffix);
 
-    } /* else if (documentLocations.find(prefix) !=
-                     documentLocations.end()) {
-             document = documentLocations[prefix];
-             return document->getNode(suffix);
-     }*/
+    }
   else
     {
       return NULL;

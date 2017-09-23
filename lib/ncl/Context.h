@@ -23,11 +23,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-class Link;
 class Context : public Composition
 {
 public:
-  Context (const string &);
+  Context (NclDocument *, const string &);
   virtual ~Context ();
   void addLink (Link *);
   const vector<Link *> *getLinks ();

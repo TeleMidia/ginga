@@ -25,7 +25,7 @@ GINGA_NCL_BEGIN
 class SimpleRule : public Rule
 {
 public:
-  SimpleRule (const string &, const string &,
+  SimpleRule (NclDocument *, const string &, const string &,
               const string &, const string &);
   ~SimpleRule ();
   string getAttribute ();

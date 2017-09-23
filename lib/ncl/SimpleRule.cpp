@@ -22,14 +22,16 @@ GINGA_NCL_BEGIN
 
 /**
  * @brief Creates a new simple rule.
+ * @param ncl Parent document.
  * @param id Rule id.
  * @param attr Attribute.
  * @param op Operator.
  * @param value Value.
  */
-SimpleRule::SimpleRule (const string &id, const string &attr,
-                        const string &op, const string &value)
-  : Rule (id)
+SimpleRule::SimpleRule (NclDocument *ncl, const string &id,
+                        const string &attr, const string &op,
+                        const string &value)
+  : Rule (ncl, id)
 {
   _attribute = attr;
   _operator = op;

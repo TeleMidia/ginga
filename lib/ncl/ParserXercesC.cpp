@@ -17,6 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga-internal.h"
 #include "ParserXercesC.h"
+#include "Ncl.h"
 
 GINGA_PRAGMA_DIAG_PUSH ()
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
@@ -626,7 +627,7 @@ ParserXercesC::parseRuleBase (DOMElement *elt)
   CHECK_ELT_TAG (elt, "ruleBase", nullptr);
   CHECK_ELT_OPT_ID_AUTO (elt, &id, ruleBase);
 
-  base = new RuleBase (id);
+  base = new RuleBase (_doc, id);
   for (DOMElement *child: dom_elt_get_children (elt))
     {
       string tag = dom_elt_get_tag (child);
@@ -668,9 +669,9 @@ ParserXercesC::parseCompositeRule (DOMElement *elt)
 
   CHECK_ELT_ATTRIBUTE (elt, "operator", &value);
   if (value == "and")
-    rule = new CompositeRule (id, true);
+    rule = new CompositeRule (_doc, id, true);
   else if (value == "or")
-    rule = new CompositeRule (id, false);
+    rule = new CompositeRule (_doc, id, false);
   else
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "operator");
 
@@ -707,7 +708,7 @@ ParserXercesC::parseRule (DOMElement *elt)
   CHECK_ELT_ATTRIBUTE (elt, "comparator", &comp);
   if (unlikely (!_ginga_parse_comparator (comp, &comp)))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "comparator");
-  return new SimpleRule (id, var, comp, value);
+  return new SimpleRule (_doc, id, var, comp, value);
 }
 
 // Private: Transition.
@@ -721,7 +722,7 @@ ParserXercesC::parseTransitionBase (DOMElement *elt)
   CHECK_ELT_TAG (elt, "transitionBase", nullptr);
   CHECK_ELT_OPT_ID_AUTO (elt, &id, transitionBase);
 
-  base = new TransitionBase (id);
+  base = new TransitionBase (_doc, id);
   for(DOMElement *child: dom_elt_get_children (elt))
     {
       string tag = dom_elt_get_tag (child);
@@ -765,7 +766,7 @@ ParserXercesC::parseTransition (DOMElement *elt)
   if (unlikely (type < 0))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "type");
 
-  trans = new Transition (id, type);
+  trans = new Transition (_doc, id, type);
 
   if (dom_elt_try_get_attribute (value, elt, "subtype"))
     {
@@ -818,7 +819,7 @@ ParserXercesC::parseRegionBase (DOMElement *elt)
   CHECK_ELT_TAG (elt, "regionBase", nullptr);
   CHECK_ELT_OPT_ID_AUTO (elt, &id, regionBase);
 
-  base = new RegionBase (id);
+  base = new RegionBase (_doc, id);
   for (DOMElement *child: dom_elt_get_children (elt))
     {
       string tag = dom_elt_get_tag (child);
@@ -862,7 +863,7 @@ ParserXercesC::parseRegion (DOMElement *elt, RegionBase *base, Region *parent)
   CHECK_ELT_TAG (elt, "region", nullptr);
   CHECK_ELT_ID (elt, &id);
 
-  region = new Region (id);
+  region = new Region (_doc, id);
   if (parent != NULL)
     {
       parent_rect = parent->getRect ();
@@ -959,7 +960,7 @@ ParserXercesC::parseDescriptorBase (DOMElement *elt)
   CHECK_ELT_TAG (elt, "descriptorBase", nullptr);
   CHECK_ELT_OPT_ID_AUTO (elt, &id, descriptorBase);
 
-  base = new DescriptorBase (id);
+  base = new DescriptorBase (_doc, id);
   for (DOMElement *child: dom_elt_get_children (elt))
     {
       string tag = dom_elt_get_tag (child);
@@ -978,7 +979,7 @@ ParserXercesC::parseDescriptorBase (DOMElement *elt)
           RegionBase *regionBase = _doc->getRegionBase (0);
           if (regionBase == nullptr)
             {
-              regionBase = new RegionBase ("");
+              regionBase = new RegionBase (_doc, "");
               _doc->addRegionBase (regionBase);
             }
           for (auto item: *doc->getRegionBases ())
@@ -988,7 +989,7 @@ ParserXercesC::parseDescriptorBase (DOMElement *elt)
           RuleBase *ruleBase = _doc->getRuleBase ();
           if (ruleBase == nullptr)
             {
-              ruleBase = new RuleBase ("");
+              ruleBase = new RuleBase (_doc, "");
               _doc->setRuleBase (ruleBase);
             }
           ruleBase->addBase (doc->getRuleBase (), alias, uri);
@@ -1044,7 +1045,7 @@ ParserXercesC::parseDescriptor (DOMElement *elt)
   CHECK_ELT_TAG (elt, "descriptor", nullptr);
   CHECK_ELT_ID (elt, &id);
 
-  desc = new Descriptor (id);
+  desc = new Descriptor (_doc, id);
   if (dom_elt_try_get_attribute (value, elt, "region"))
     {
       Region *region = _doc->getRegion (value);
@@ -1116,7 +1117,7 @@ ParserXercesC::parseConnectorBase (DOMElement *elt)
   CHECK_ELT_TAG (elt, "connectorBase", nullptr);
   CHECK_ELT_OPT_ID_AUTO (elt, &id, connectorBase);
 
-  base = new ConnectorBase (id);
+  base = new ConnectorBase (_doc, id);
   for (DOMElement *child: dom_elt_get_children (elt))
     {
       string tag = dom_elt_get_tag (child);
@@ -1158,7 +1159,7 @@ ParserXercesC::parseCausalConnector (DOMElement *elt)
   ncond = 0;
   nact = 0;
 
-  conn = new Connector (id);
+  conn = new Connector (_doc, id);
   for (DOMElement *child: dom_elt_get_children (elt))
     {
       string tag = dom_elt_get_tag (child);
@@ -1555,7 +1556,7 @@ ParserXercesC::parseBody (DOMElement *elt)
   CHECK_ELT_TAG (elt, "body", nullptr);
   CHECK_ELT_OPT_ID (elt, &id, _doc->getId ());
 
-  body = new Context (id);
+  body = new Context (_doc, id);
   _doc->setBody (body);
 
   for (DOMElement *child: dom_elt_get_children (elt))
@@ -1734,7 +1735,7 @@ ParserXercesC::parseContext (DOMElement *elt)
   CHECK_ELT_ID (elt, &id);
   CHECK_ELT_ATTRIBUTE_NOT_SUPPORTED (elt, "refer");
 
-  context = new Context (id);
+  context = new Context (_doc, id);
   for (DOMElement *child: dom_elt_get_children (elt))
     {
       Node *node;
@@ -1811,7 +1812,10 @@ ParserXercesC::parsePort (DOMElement *elt, Composition *context)
   if (unlikely (iface == nullptr))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "interface");
 
-  return new Port (id, target, iface);
+  Port *port = new Port (_doc, id);
+  port->setNode (target);
+  port->setInterface (iface);
+  return port;
 }
 
 
@@ -1827,7 +1831,7 @@ ParserXercesC::parseSwitch (DOMElement *elt)
   CHECK_ELT_ID (elt, &id);
   CHECK_ELT_ATTRIBUTE_NOT_SUPPORTED (elt, "refer");
 
-  swtch = new Switch (id);
+  swtch = new Switch (_doc, id);
   _switchMap[id] = new map<string, Node *>;
 
   // Collect children.
@@ -1939,7 +1943,8 @@ ParserXercesC::parseSwitchPort (DOMElement *elt, Switch *swtch)
   CHECK_ELT_TAG (elt, "switchPort", nullptr);
   CHECK_ELT_ID (elt, &id);
 
-  port = new SwitchPort (id, swtch);
+  port = new SwitchPort (_doc, id);
+  port->setNode (swtch);
   for (DOMElement *child: dom_elt_get_children (elt))
     {
       string tag = dom_elt_get_tag (child);
@@ -1985,7 +1990,10 @@ ParserXercesC::parseMapping (DOMElement *elt, Switch *swtch,
       iface = mapping->getLambda ();
       g_assert_nonnull (iface);
     }
-  return new Port (port->getId (), mapping, iface);
+  Port *node = new Port (_doc, port->getId ());
+  node->setNode (mapping);
+  node->setInterface (iface);
+  return node;
 }
 
 
@@ -2010,7 +2018,7 @@ ParserXercesC::parseMedia (DOMElement *elt)
       refer = cast (Media *, _doc->getNode (value));
       g_assert_nonnull (refer);
 
-      media = new Refer (id);
+      media = new Refer (_doc, id);
       ((Refer *) media)->setReferred (refer);
     }
   else
@@ -2018,11 +2026,11 @@ ParserXercesC::parseMedia (DOMElement *elt)
       if (dom_elt_try_get_attribute (value, elt, "type")
           && value == "application/x-ginga-settings") // settings?
         {
-          media = new Media (id, true);
+          media = new Media (_doc, id, true);
         }
       else
         {
-          media = new Media (id, false);
+          media = new Media (_doc, id, false);
         }
 
       CHECK_ELT_OPT_ATTRIBUTE (elt, "src", &src, "");
@@ -2074,7 +2082,7 @@ ParserXercesC::parseProperty (DOMElement *elt)
   CHECK_ELT_ATTRIBUTE (elt, "name", &name);
   CHECK_ELT_OPT_ATTRIBUTE (elt, "value", &value, "");
 
-  prop = new Property (name);
+  prop = new Property (_doc, name);
   prop->setValue (value);
   return prop;
 }
@@ -2108,13 +2116,13 @@ ParserXercesC::parseArea (DOMElement *elt)
       else
         end = GINGA_TIME_NONE;
 
-      return new Area (id, begin, end);
+      return new Area (_doc, id, begin, end);
     }
   else if (dom_elt_has_attribute (elt, "label"))
     {
       string label;
       CHECK_ELT_ATTRIBUTE (elt, "label", &label);
-      return new AreaLabeled (id, label);
+      return new AreaLabeled (_doc, id, label);
     }
   else
     {
@@ -2141,7 +2149,7 @@ ParserXercesC::parseLink (DOMElement *elt, Context *context)
   if (unlikely (conn == nullptr))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "xconnector");
 
-  link = new Link (id, context, conn);
+  link = new Link (_doc, id, context, conn);
 
   // Collect children.
   for (DOMElement *child: dom_elt_get_children (elt))

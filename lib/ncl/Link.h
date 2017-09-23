@@ -27,7 +27,7 @@ class Context;
 class Link : public Entity
 {
 public:
-  Link (const string &, Context *, Connector *);
+  Link (NclDocument *, const string &, Context *, Connector *);
   virtual ~Link ();
 
   Connector *getConnector ();

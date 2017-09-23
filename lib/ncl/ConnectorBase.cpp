@@ -22,9 +22,11 @@ GINGA_NCL_BEGIN
 
 /**
  * @brief Creates a new connector base.
+ * @param ncl Parent document.
  * @param id Base id.
  */
-ConnectorBase::ConnectorBase (const string &id) : Base (id)
+ConnectorBase::ConnectorBase (NclDocument *ncl, const string &id)
+  : Base (ncl, id)
 {
 }
 

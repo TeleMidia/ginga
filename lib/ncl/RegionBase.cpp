@@ -22,9 +22,10 @@ GINGA_NCL_BEGIN
 
 /**
  * @brief Creates a new region base.
+ * @param ncl Parent document.
  * @param id Base id.
  */
-RegionBase::RegionBase (const string &id) : Base (id)
+RegionBase::RegionBase (NclDocument *ncl, const string &id) : Base (ncl, id)
 {
 }
 

@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef DESCRIPTOR_H
 #define DESCRIPTOR_H
 
-#include "Entity.h"
 #include "Parameter.h"
 #include "Region.h"
 #include "Transition.h"
@@ -28,7 +27,7 @@ GINGA_NCL_BEGIN
 class Descriptor : public Entity
 {
 public:
-  Descriptor (const string &);
+  Descriptor (NclDocument *, const string &);
   virtual ~Descriptor ();
 
   Region *getRegion ();

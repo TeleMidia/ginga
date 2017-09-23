@@ -25,9 +25,10 @@ GINGA_NCL_BEGIN
 
 /**
  * @brief Creates a new base.
+ * @param ncl Parent document.
  * @param id Base id.
  */
-Base::Base (const string &id) : Entity (id)
+Base::Base (NclDocument *ncl, const string &id) : Entity (ncl, id)
 {
 }
 

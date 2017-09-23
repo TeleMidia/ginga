@@ -26,7 +26,7 @@ GINGA_NCL_BEGIN
 class DescriptorBase : public Base
 {
 public:
-  DescriptorBase (const string &);
+  DescriptorBase (NclDocument *, const string &);
   virtual ~DescriptorBase ();
 
   void addDescriptor (Descriptor *);
