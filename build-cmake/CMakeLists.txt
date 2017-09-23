@@ -10,6 +10,7 @@ set(CMAKE_INCLUDE_CURRENTDIR ON)
 find_package(GLIB 2.32 REQUIRED)
 find_package(CURL REQUIRED)
 
+find_package(LibXml2 REQUIRED)
 find_package(XercesC 2.7 REQUIRED)
 
 find_package(GDKPixBuf REQUIRED)
@@ -130,7 +131,8 @@ set (LIBGINGA_SOURCES
   ../lib/ncl/NclDocument.cpp
   ../lib/ncl/Node.cpp
   ../lib/ncl/Parameter.cpp
-  ../lib/ncl/Parser.cpp
+  ../lib/ncl/ParserXercesC.cpp
+  ../lib/ncl/ParserLibXML.cpp
   ../lib/ncl/Port.cpp
   ../lib/ncl/Property.cpp
   ../lib/ncl/Refer.cpp
@@ -166,6 +168,7 @@ set (LIBGINGA_INCLUDE_DIRS
 
   ${CMAKE_BINARY_DIR}
 
+  ${LIBXML2_INCLUDE_DIR}
   ${GLIB_INCLUDE_DIRS}
   ${GDKPIXBUF_INCLUDE_DIRS}
   ${GDK3_INCLUDE_DIRS}
@@ -187,6 +190,8 @@ set (LIBGINGA_LIBS
 
   ${CURL_LIBRARIES}
   ${GLIB_LIBRARIES}
+
+  ${LIBXML2_LIBRARIES}
   ${GDKPIXBUF_LIBRARIES}
   ${GDK3_LIBRARIES}
 
