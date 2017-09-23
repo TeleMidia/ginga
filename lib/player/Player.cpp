@@ -30,6 +30,60 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PLAYER_BEGIN
 
+// Player properties.
+typedef enum
+{
+ PROP_BACKGROUND,
+ PROP_BOTTOM,
+ PROP_BOUNDS,
+ PROP_DEBUG,
+ PROP_DURATION,
+ PROP_EXPLICIT_DUR,
+ PROP_FOCUS_INDEX,
+ PROP_HEIGHT,
+ PROP_LEFT,
+ PROP_LOCATION,
+ PROP_RIGHT,
+ PROP_SIZE,
+ PROP_TOP,
+ PROP_TRANSPARENCY,
+ PROP_VISIBLE,
+ PROP_WIDTH,
+ PROP_Z_INDEX,
+} PlayerPropertyCode;
+
+typedef struct PlayerPropertyInfo
+{
+  PlayerPropertyCode code;
+  string defval;
+} PlayerPropertyInfo;
+
+static map<string, PlayerPropertyInfo> player_property_map =
+{
+ {"background",   {PROP_BACKGROUND,   ""}},
+ {"bottom",       {PROP_BOTTOM,       ""}},
+ {"bounds",       {PROP_BOUNDS,       "0,0,100%,100%"}},
+ {"debug",        {PROP_DEBUG,        "false"}},
+ {"duration",     {PROP_DURATION,     "indefinite"}},
+ {"focusIndex",   {PROP_FOCUS_INDEX,  ""}},
+ {"height",       {PROP_HEIGHT,       "100%"}},
+ {"left",         {PROP_LEFT,         "0"}},
+ {"location",     {PROP_LOCATION,     "0,0"}},
+ {"right",        {PROP_RIGHT,        ""}},
+ {"size",         {PROP_SIZE,         "100%,100%"}},
+ {"top",          {PROP_TOP,          "0"}},
+ {"transparency", {PROP_TRANSPARENCY, "0%"}},
+ {"visible",      {PROP_VISIBLE,      "true"}},
+ {"width",        {PROP_WIDTH,        "100%"}},
+ {"zIndex",       {PROP_Z_INDEX,      "0"}},
+};
+
+static map<string, string> player_property_aliases =
+{
+ {"backgroundColor", "background"},
+ {"explicitDur",     "duration"},
+};
+
 
 // Public.
 
@@ -110,7 +164,10 @@ Player::Player (GingaState *ginga, const string &id, const string &uri)
   // Properties
   _debug = false;
   _focusIndex = "";
-  _rect = {0, 0, 0, 0};
+  _rect.x = 0;
+  _rect.y = 0;
+  _rect.width = 0;
+  _rect.height = 0;
   _z = 0;
   _zorder = 0;
   _alpha = 255;                 // opaque
@@ -279,119 +336,152 @@ Player::getProperty (string const &name)
  * @brief Sets player property.
  */
 void
-Player::setProperty (const string &name, const string &value)
+Player::setProperty (const string &_name, const string &_value)
 {
-  vector<string> params;
+  string name = _name;
+  string value = _value;
 
-  TRACE ("setting %s.%s to '%s'", _id.c_str (),
-         name.c_str (), value.c_str ());
+  map<string, PlayerPropertyInfo>::iterator it;
+  PlayerPropertyInfo *info;
+  bool use_defval = false;
 
-  if (value == "")
-    goto done;
-
-  if (name == "debug")
+  if ((it = player_property_map.find (name)) == player_property_map.end ())
     {
+      map<string, string>::iterator italias;
+      if ((italias = player_property_aliases.find (name))
+          == player_property_aliases.end ())
+        {
+          goto done;            // unknown property
+        }
+      name = italias->second;
+      it = player_property_map.find (name);
+      g_assert (it != player_property_map.end ());
+    }
+
+  info = &it->second;
+  if (value == "")              // try to use the default
+    {
+      if (info->defval == "")
+        goto done;
+      use_defval = true;
+      value = info->defval;
+    }
+
+  switch (info->code)
+    {
+    case PROP_DEBUG:
       _debug = ginga_parse_bool (value);
-    }
-  else if (name == "focusIndex")
-    {
+      break;
+    case PROP_FOCUS_INDEX:
       _focusIndex = value;
-    }
-  else if (name == "bounds")
-    {
-      vector<string> v;
-
-      if (unlikely (!_ginga_parse_list (value, ',', 4, 4, &v)))
-        goto syntax_error;
-
-      this->setProperty ("left", v[0]);
-      this->setProperty ("top", v[1]);
-      this->setProperty ("width", v[2]);
-      this->setProperty ("height", v[3]);
-    }
-  else if (name == "location")
-    {
-      vector<string> v;
-
-      if (unlikely (!_ginga_parse_list (value, ',', 2, 2, &v)))
-        goto syntax_error;
-
-      this->setProperty ("left", v[0]);
-      this->setProperty ("top", v[1]);
-    }
-  else if (name == "size")
-    {
-      vector<string> v;
-
-      if (unlikely (!_ginga_parse_list (value, ',', 2, 2, &v)))
-        goto syntax_error;
-
-      this->setProperty ("width", v[0]);
-      this->setProperty ("height", v[1]);
-    }
-  else if (name == "left")
-    {
-      int width = _ginga->getOptionInt ("width");
-      _rect.x = ginga_parse_percent (value, width, 0, G_MAXINT);
-      _dirty = true;
-    }
-  else if (name == "right")
-    {
-      int width = _ginga->getOptionInt ("width");
-      _rect.x = width - _rect.width
-        - ginga_parse_percent (value, _rect.width, 0, G_MAXINT);
-      _dirty = true;
-    }
-  else if (name == "top")
-    {
-      int height = _ginga->getOptionInt ("height");
-      _rect.y = ginga_parse_percent (value, height, 0, G_MAXINT);
-      _dirty = true;
-    }
-  else if (name == "bottom")
-    {
-      int height = _ginga->getOptionInt ("height");
-      _rect.y = height - _rect.height
-        - ginga_parse_percent (value, _rect.height, 0, G_MAXINT);
-      _dirty = true;
-    }
-  else if (name == "width")
-    {
-      int width = _ginga->getOptionInt ("width");
-      _rect.width = ginga_parse_percent (value, width, 0, G_MAXINT);
-      _dirty = true;
-    }
-  else if (name == "height")
-    {
-      int height = _ginga->getOptionInt ("height");
-      _rect.height = ginga_parse_percent (value, height, 0, G_MAXINT);
-      _dirty = true;
-    }
-  else if (name == "zIndex")
-    {
+      break;
+    case PROP_BOUNDS:
+      {
+        vector<string> v;
+        if (unlikely (!_ginga_parse_list (value, ',', 4, 4, &v)))
+          goto syntax_error;
+        this->setProperty ("left", v[0]);
+        this->setProperty ("top", v[1]);
+        this->setProperty ("width", v[2]);
+        this->setProperty ("height", v[3]);
+        break;
+      }
+    case PROP_LOCATION:
+      {
+        vector<string> v;
+        if (unlikely (!_ginga_parse_list (value, ',', 2, 2, &v)))
+          goto syntax_error;
+        this->setProperty ("left", v[0]);
+        this->setProperty ("top", v[1]);
+        break;
+      }
+    case PROP_SIZE:
+      {
+        vector<string> v;
+        if (unlikely (!_ginga_parse_list (value, ',', 2, 2, &v)))
+          goto syntax_error;
+        this->setProperty ("width", v[0]);
+        this->setProperty ("height", v[1]);
+        break;
+      }
+    case PROP_LEFT:
+      {
+        int width = _ginga->getOptionInt ("width");
+        _rect.x = ginga_parse_percent (value, width, 0, G_MAXINT);
+        _dirty = true;
+        break;
+      }
+    case PROP_RIGHT:
+      {
+        int width = _ginga->getOptionInt ("width");
+        _rect.x = width - _rect.width
+          - ginga_parse_percent (value, _rect.width, 0, G_MAXINT);
+        _dirty = true;
+        break;
+      }
+    case PROP_TOP:
+      {
+        int height = _ginga->getOptionInt ("height");
+        _rect.y = ginga_parse_percent (value, height, 0, G_MAXINT);
+        _dirty = true;
+        break;
+      }
+    case PROP_BOTTOM:
+      {
+        int height = _ginga->getOptionInt ("height");
+        _rect.y = height - _rect.height
+          - ginga_parse_percent (value, _rect.height, 0, G_MAXINT);
+        _dirty = true;
+        break;
+      }
+    case PROP_WIDTH:
+      {
+        int width = _ginga->getOptionInt ("width");
+        _rect.width = ginga_parse_percent (value, width, 0, G_MAXINT);
+        _dirty = true;
+        break;
+      }
+    case PROP_HEIGHT:
+      {
+        int height = _ginga->getOptionInt ("height");
+        _rect.height = ginga_parse_percent (value, height, 0, G_MAXINT);
+        _dirty = true;
+        break;
+      }
+    case PROP_Z_INDEX:
       this->setZ (xstrtoint (value, 10), _zorder);
-    }
-  else if (name == "transparency")
-    {
+      break;
+    case PROP_TRANSPARENCY:
       _alpha = (guint8) CLAMP (255 - ginga_parse_pixel (value), 0, 255);
-    }
-  else if (name == "background" || name == "backgroundColor")
-    {
+      break;
+    case PROP_BACKGROUND:
       _bgColor = ginga_parse_color (value);
-    }
-  else if (name == "visible")
-    {
+      break;
+    case PROP_VISIBLE:
       _visible = ginga_parse_bool (value);
+      break;
+    case PROP_DURATION:
+      {
+        if (value == "indefinite")
+          _duration = GINGA_TIME_NONE;
+        else
+          _duration = ginga_parse_time (value);
+        break;
+      }
+    default:
+      g_assert_not_reached ();
     }
-  else if (name == "explicitDur" || name == "duration")
-    {
-      if (value == "indefinite")
-        _duration = GINGA_TIME_NONE;
-      else
-        _duration = ginga_parse_time (value);
-    }
+
+  if (use_defval)               // restore value
+    value = "";
 
  done:
+  TRACE ("%s.%s:='%s'%s",
+         _id.c_str (),
+         name.c_str (),
+         value.c_str (),
+         (use_defval) ? (" (default: " + info->defval + ")").c_str () : "");
+
   _properties[name] = value;
   return;
 
