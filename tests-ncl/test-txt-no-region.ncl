@@ -11,6 +11,8 @@
   </head>
   <body>
     <port id="start" component="txt"/>
-    <media id="txt" src="samples/text.txt" descriptor="desc"/>
+    <media id="txt" src="samples/text.txt" descriptor="desc">
+      <property name="fontColor" value="yellow"/>
+    </media>
   </body>
 </ncl>

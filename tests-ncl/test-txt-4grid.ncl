@@ -14,16 +14,24 @@
   </descriptorBase>
 </head>
 <body>
-  <port id="start1" component="img1"/>
-  <port id="start2" component="img2"/>
-  <media id="img1" src="samples/text.txt" descriptor="desc1"/>
-  <media id="img2" src="samples/text.txt" descriptor="desc2"/>
+  <port id="start1" component="txt1"/>
+  <port id="start2" component="txt2"/>
+  <media id="txt1" src="samples/text.txt" descriptor="desc1">
+    <property name="fontColor" value="red"/>
+  </media>
+  <media id="txt2" src="samples/text.txt" descriptor="desc2">
+    <property name="fontColor" value="green"/>
+  </media>
   <port id="startctx" component="ctx"/>
   <context id="ctx">
-    <port id="start3" component="img3"/>
-    <port id="start4" component="img4"/>
-    <media id="img3" src="samples/text.txt" descriptor="desc3"/>
-    <media id="img4" src="samples/text.txt" descriptor="desc4"/>
+    <port id="start3" component="txt3"/>
+    <port id="start4" component="txt4"/>
+    <media id="txt3" src="samples/text.txt" descriptor="desc3">
+      <property name="fontColor" value="blue"/>
+    </media>
+    <media id="txt4" src="samples/text.txt" descriptor="desc4">
+      <property name="fontColor" value="yellow"/>
+    </media>
   </context>
 </body>
 </ncl>
