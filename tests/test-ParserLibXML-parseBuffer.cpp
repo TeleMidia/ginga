@@ -17,52 +17,60 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include <string.h>
 #include "ncl/ParserLibXML.h"
+#include "ncl/Ncl.h"
 using namespace ginga::ncl;
+
+static bool
+check_failure (const string &buf)
+{
+  NclDocument *ncl;
+  string msg = "";
+
+  ncl = ParserLibXML::parseBuffer (buf.c_str (), buf.length (), 0, 0, &msg);
+  if (unlikely (ncl != nullptr))
+    return false;
+  if (unlikely (msg != ""))
+    return false;
+
+  return true;
+}
+
+static NclDocument *
+check_success (const string &buf)
+{
+  NclDocument *ncl;
+  string msg = "";
+
+  ncl = ParserLibXML::parseBuffer (buf.c_str (), buf.length (), 0, 0, &msg);
+  if (unlikely (msg != ""))
+    {
+      g_printerr ("Unexpected error: %s", msg.c_str ());
+      g_assert_not_reached ();
+    }
+  return ncl;
+}
 
 int
 main (void)
 {
-  NclDocument *ncl;
-
-  // XML error.
-  {
-    string errmsg;
-    const char *buf = "<a>";
-    ncl = ParserLibXML::parseBuffer (buf, strlen (buf), 0, 0, &errmsg);
-    g_assert_null (ncl);
-    g_assert (errmsg != "");
-  }
+  // Error: XML error.
+  g_assert_false (check_failure ("<a>"));
 
   // Error: Unknown element.
-  {
-    string errmsg;
-    const char *buf = "<unknown/>";
-    ncl = ParserLibXML::parseBuffer (buf, strlen (buf), 0, 0, &errmsg);
-    g_assert_null (ncl);
-    g_assert (errmsg != "");
-  }
+  g_assert_false (check_failure ("<unknown/>"));
 
   // Error: Bad parent.
-  {
-    string errmsg;
-    const char *buf = "<head/>";
-    ncl = ParserLibXML::parseBuffer (buf, strlen (buf), 0, 0, &errmsg);
-    g_assert_null (ncl);
-    g_assert (errmsg != "");
-  }
+  g_assert_false (check_failure ("<head/>"));
 
   // Empty document.
   {
-    string errmsg;
-    const char *buf = "\
+    NclDocument *ncl = check_success ("\
 <ncl>\n\
  <head/>\n\
  <body/>\n\
 </ncl>\n\
-";
-    ncl = ParserLibXML::parseBuffer (buf, strlen (buf), 0, 0, &errmsg);
+");
     g_assert_nonnull (ncl);
-    g_assert (errmsg == "");
     g_assert (ncl->getId () == "ncl");
     Context *body = ncl->getRoot ();
     g_assert_nonnull (body);
@@ -74,66 +82,40 @@ main (void)
   }
 
   // Error: ncl: Bad id.
-  {
-    string errmsg;
-    const char *buf = "<ncl id='@'/>";
-    ncl = ParserLibXML::parseBuffer (buf, strlen (buf), 0, 0, &errmsg);
-    g_assert_null (ncl);
-    g_assert (errmsg != "");
-  }
+  g_assert_false (check_failure ("<ncl id='@'/>"));
 
   // Error: Port: Missing id.
-  {
-    string errmsg;
-    const char *buf = "\
+  g_assert_false (check_failure ("\
 <ncl>\n\
  <head/>\n\
  <body>\n\
   <port/>\n\
  </body>\n\
 </ncl>\n\
-";
-    ncl = ParserLibXML::parseBuffer (buf, strlen (buf), 0, 0, &errmsg);
-    g_assert_null (ncl);
-    g_assert (errmsg != "");
-  }
+"));
 
   // Error: Port: Missing component.
-  {
-    string errmsg;
-    const char *buf = "\
+  g_assert_false (check_failure ("\
 <ncl>\n\
  <head/>\n\
  <body>\n\
   <port id='p'/>\n\
  </body>\n\
 </ncl>\n\
-";
-    ncl = ParserLibXML::parseBuffer (buf, strlen (buf), 0, 0, &errmsg);
-    g_assert_null (ncl);
-    g_assert (errmsg != "");
-  }
+"));
 
   // Error: Media: Missing id.
-  {
-    string errmsg;
-    const char *buf = "\
+  g_assert_false (check_failure ("\
 <ncl>\n\
  <head/>\n\
  <body>\n\
   <media/>\n\
  </body>\n\
 </ncl>\n\
-";
-    ncl = ParserLibXML::parseBuffer (buf, strlen (buf), 0, 0, &errmsg);
-    g_assert_null (ncl);
-    g_assert (errmsg != "");
-  }
+"));
 
   // Error: Media: Duplicated id.
-  {
-    string errmsg;
-    const char *buf = "\
+  g_assert_false (check_failure ("\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -141,30 +123,52 @@ main (void)
   <media id='a'/>\n\
  </body>\n\
 </ncl>\n\
-";
-    ncl = ParserLibXML::parseBuffer (buf, strlen (buf), 0, 0, &errmsg);
-    g_assert_null (ncl);
-    g_assert (errmsg != "");
-  }
+"));
 
   // Success.
   {
-    string errmsg;
-    const char *buf = "\
+    NclDocument *ncl = check_success ("\
 <ncl>\n\
  <head/>\n\
  <body>\n\
   <port id='p' component='m'/>\n\
+  <port id='q' component='m' interface='background'/>\n\
   <media id='m'>\n\
    <property name='background' value='red'/>\n\
    <property name='size' value='100%,100%'/>\n\
   </media>\n\
  </body>\n\
 </ncl>\n\
-";
-    ncl = ParserLibXML::parseBuffer (buf, strlen (buf), 0, 0, &errmsg);
+");
     g_assert_nonnull (ncl);
-    g_assert (errmsg == "");
+    g_assert (ncl->getId () == "ncl");
+    Context *body = ncl->getRoot ();
+    g_assert_nonnull (body);
+    g_assert (body->getId () == ncl->getId ());
+    g_assert (body->getPorts ()->size () == 2);
+    g_assert (body->getNodes ()->size () == 1);
+    g_assert (body->getLinks ()->size () == 0);
+
+    Entity *port = ncl->getEntityById ("p");
+    g_assert (instanceof (Port *, port));
+    Port *p = cast (Port *, port);
+    g_assert (p->getId () == "p");
+
+    port = ncl->getEntityById ("q");
+    g_assert (instanceof (Port *, port));
+    Port *q = cast (Port *, port);
+    g_assert (q->getId () == "q");
+
+    Entity *media = ncl->getEntityById ("m");
+    g_assert (instanceof (Media *, media));
+    Media *m = cast (Media *, media);
+    g_assert (m->getId () == "m");
+
+    g_assert (p->getNode () == m);
+    g_assert (p->getInterface ()->getId () == "m@lambda");
+    g_assert (q->getNode () == m);
+    g_assert (q->getInterface ()->getId () == "background");
+
     delete ncl;
   }
 
