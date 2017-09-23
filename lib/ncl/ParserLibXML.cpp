@@ -57,7 +57,7 @@ _st_err (ParserLibXML_State *st, const char *fmt, ...)
   g_assert (n >= 0);
   g_assert_nonnull (c_str);
   st->errmsg.assign (c_str);
-  WARNING ("%s", c_str);
+  WARNING ("%s", c_str);        // fixme: remove
   g_free (c_str);
 }
 
@@ -402,13 +402,13 @@ ncl_push_property (ParserLibXML_State *st,
                    map<string, GValue> *attr,
                    unused (Entity **entity))
 {
-  Node *parent;
   Property *prop;
-  string name;
+  Node *parent;
 
-  parent = cast (Node *, st->stack.back ());
   prop = new Property (st->ncl, ncl_attrmap_get_string (attr, "name"));
   prop->setValue (ncl_attrmap_get_string (attr, "value"));
+
+  parent = cast (Node *, st->stack.back ());
   g_assert_nonnull (parent);
   parent->addAnchor (prop);
   return true;
@@ -535,7 +535,7 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
       goto done;
     }
 
-  // Push newly created entity onto stack.
+  // Push newly created entity onto entity stack.
   if (entity != nullptr)
     st->stack.push_back (entity);
 
@@ -565,6 +565,10 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
   // Pop element.
   if (einfo->pop)
     status = einfo->pop (st, elt, &attr, &children, entity);
+
+  // Pop entity stack.
+  if (entity != nullptr)
+    st->stack.pop_back ();
 
  done:
   // Clear attribute map.
