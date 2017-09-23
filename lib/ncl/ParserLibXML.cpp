@@ -88,9 +88,6 @@ _st_err (ParserLibXML_State *st, const char *fmt, ...)
               (val), (attr), (explain != nullptr)                       \
               ? (" (" + string (explain) + ")").c_str () : "")
 
-#define ST_ERR_ELT_MISSING_CHILD(st, elt, child)\
-  ST_ERR_ELT ((st), (elt), "Missing child <%s>", (child))
-
 #define ST_ERR_ELT_UNKNOWN_CHILD(st, etl, child)\
   ST_ERR_ELT ((st), (elt), "Unknown child <%s>", (child))
 
