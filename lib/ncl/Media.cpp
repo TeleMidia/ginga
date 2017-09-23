@@ -104,7 +104,6 @@ Media::~Media ()
 
 /**
  * @brief Tests if media is settings node.
- * @return True if successful, or false otherwise.
  */
 bool
 Media::isSettings ()
@@ -114,7 +113,6 @@ Media::isSettings ()
 
 /**
  * @brief Gets media mime-type.
- * @return Mime-type.
  */
 string
 Media::getMimeType ()
@@ -124,7 +122,6 @@ Media::getMimeType ()
 
 /**
  * @brief Gets media source.
- * @return Content source URI.
  */
 string
 Media::getSrc ()
@@ -133,8 +130,7 @@ Media::getSrc ()
 }
 
 /**
- * @brief Sets media source.  Tries to guess its mime-type.
- * @param src Content source URI.
+ * @brief Sets media source.
  */
 void
 Media::setSrc (const string &src)
@@ -162,70 +158,6 @@ Media::setSrc (const string &src)
  done:
   _src = src;
   _mimetype = type;
-}
-
-/**
- * @brief Sets media source with explicit mime-type.
- * @param src Content source URI.
- * @param mimetype Mime-type.
- */
-void
-Media::setSrc (const string &src, const string &mimetype)
-{
-  if (mimetype == "")
-    {
-      this->setSrc (src, mimetype);
-    }
-  else
-    {
-      _src = src;
-      _mimetype = mimetype;
-    }
-}
-
-/**
- * @brief Gets property map.
- * @return Property map.
- */
-const map<string, string> *
-Media::getProperties ()
-{
-  return &_properties;
-}
-
-/**
- * @brief Tests whether property is set.
- * @param name Property name.
- * @return True if successful, or false otherwise.
- */
-bool
-Media::hasProperty (const string &name)
-{
-  return _properties.find (name) != _properties.end ();
-}
-
-/**
- * @brief Gets property.
- * @param name Property name.
- * @return The property value.
- */
-string
-Media::getProperty (const string &name)
-{
-  map<string, string>::iterator it;
-  return ((it = _properties.find (name)) == _properties.end ())
-    ? "" : it->second;
-}
-
-/**
- * @brief Sets property.
- * @param name Property name.
- * @param value Property value.
- */
-void
-Media::setProperty (const string &name, const string &value)
-{
-  _properties[name] = value;
 }
 
 /**
