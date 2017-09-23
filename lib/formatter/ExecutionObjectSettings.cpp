@@ -82,8 +82,6 @@ ExecutionObjectSettings::updateCurrentFocus (const string &index)
         }
     }
 
-  TRACE ("UPDATING CURRENT FOCUS TO %s", next.c_str ());
-
   // Do the actual attribution.
   string name = "service.currentFocus";
   string from = this->getProperty (name);

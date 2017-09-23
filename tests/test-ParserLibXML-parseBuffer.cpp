@@ -64,13 +64,22 @@ main (void)
     g_assert_nonnull (ncl);
     g_assert (errmsg == "");
     g_assert (ncl->getId () == "ncl");
-    Context *body = ncl->getBody ();
+    Context *body = ncl->getRoot ();
     g_assert_nonnull (body);
     g_assert (body->getId () == ncl->getId ());
     g_assert (body->getPorts ()->size () == 0);
     g_assert (body->getNodes ()->size () == 0);
     g_assert (body->getLinks ()->size () == 0);
     delete ncl;
+  }
+
+  // Error: ncl: Bad id.
+  {
+    string errmsg;
+    const char *buf = "<ncl id='@'/>";
+    ncl = ParserLibXML::parseBuffer (buf, strlen (buf), 0, 0, &errmsg);
+    g_assert_null (ncl);
+    g_assert (errmsg != "");
   }
 
   // Error: Port: Missing id.
@@ -121,6 +130,23 @@ main (void)
     g_assert (errmsg != "");
   }
 
+  // Error: Media: Duplicated id.
+  {
+    string errmsg;
+    const char *buf = "\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <media id='a'/>\n\
+  <media id='a'/>\n\
+ </body>\n\
+</ncl>\n\
+";
+    ncl = ParserLibXML::parseBuffer (buf, strlen (buf), 0, 0, &errmsg);
+    g_assert_null (ncl);
+    g_assert (errmsg != "");
+  }
+
   // Success.
   {
     string errmsg;
@@ -129,7 +155,10 @@ main (void)
  <head/>\n\
  <body>\n\
   <port id='p' component='m'/>\n\
-  <media id='m'/>\n\
+  <media id='m'>\n\
+   <property name='background' value='red'/>\n\
+   <property name='size' value='100%,100%'/>\n\
+  </media>\n\
  </body>\n\
 </ncl>\n\
 ";

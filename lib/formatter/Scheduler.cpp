@@ -73,8 +73,17 @@ Scheduler::run (const string &file, string *errmsg)
     return false;               // syntax error
 
   id = _doc->getId ();
-  body = _doc->getBody ();
+  body = _doc->getRoot ();
   g_assert_nonnull (body);
+
+  // Get entry events (i.e., those mapped by ports).
+  ports = body->getPorts ();
+  g_assert_nonnull (ports);
+  if (unlikely (ports->size () == 0))
+    {
+      *errmsg = "document has no ports";
+      return false;
+    }
 
   // Insert dummy settings node.
   Media *dummy =  new Media (_doc, "__settings__", true);
@@ -82,10 +91,6 @@ Scheduler::run (const string &file, string *errmsg)
   Property *prop = new Property (_doc, "service.currentFocus");
   prop->setValue ("");
   dummy->addAnchor (prop);
-
-  // Get entry events (i.e., those mapped by ports).
-  ports = body->getPorts ();
-  g_assert_nonnull (ports);
 
   // Create and load converter.
   _converter = new Converter (_ginga, this, new RuleAdapter ());
@@ -144,6 +149,7 @@ Scheduler::run (const string &file, string *errmsg)
   delete nodes;
 
   // Set global settings object.
+  g_assert_nonnull (settings);
   _ginga->setData ("settings", settings);
 
   // Start entry events.

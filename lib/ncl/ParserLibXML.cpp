@@ -83,11 +83,16 @@ _st_err (ParserLibXML_State *st, const char *fmt, ...)
 #define ST_ERR_ELT_MISSING_ATTR(st, elt, attr)\
   ST_ERR_ELT ((st), (elt), "Missing attribute '%s'", (attr))
 
+#define ST_ERR_ELT_BAD_ATTR(st, elt, attr, val, explain)                \
+  ST_ERR_ELT ((st), (elt), "Bad value '%s' for attribute '%s'%s",       \
+              (val), (attr), (explain != nullptr)                       \
+              ? (" (" + string (explain) + ")").c_str () : "")
+
 #define ST_ERR_ELT_MISSING_CHILD(st, elt, child)\
   ST_ERR_ELT ((st), (elt), "Missing child <%s>", (child))
 
-#define ST_ERR_ELT_BAD_CHILD(st, etl, child)\
-  ST_ERR_ELT ((st), (elt), "Unexpected child <%s>", (child))
+#define ST_ERR_ELT_UNKNOWN_CHILD(st, etl, child)\
+  ST_ERR_ELT ((st), (elt), "Unknown child <%s>", (child))
 
 
 // NCL syntax.
@@ -137,6 +142,7 @@ NCL_ELT_PUSH_DECL (body)
 NCL_ELT_POP_DECL  (body)
 NCL_ELT_PUSH_DECL (port)
 NCL_ELT_PUSH_DECL (media)
+NCL_ELT_PUSH_DECL (property)
 
 // Element map.
 static map<string, NclEltInfo> ncl_eltmap =
@@ -163,7 +169,13 @@ static map<string, NclEltInfo> ncl_eltmap =
  {"media",
   {ncl_push_media, nullptr, {"body", "context"},
    {{"id", G_TYPE_STRING, true},
-    {"src", G_TYPE_STRING, false}}}},
+    {"src", G_TYPE_STRING, false}}}
+ },
+ {"property",
+  {ncl_push_property, nullptr, {"body", "context", "media"},
+  {{"name", G_TYPE_STRING, true},
+   {"value", G_TYPE_STRING, false}}},
+ },
 };
 
 // Indexes element map.
@@ -255,10 +267,9 @@ ncl_push_body (ParserLibXML_State *st,
   string id;
 
   id = ncl_attrmap_get_opt_string (attr, "id", st->ncl->getId ());
-  body = new Context (st->ncl, id);
-  st->ncl->setBody (body);
-  *entity = body;
-
+  body = st->ncl->getRoot ();
+  g_assert_nonnull (body);
+  *entity = body;               // push onto stack
   return true;
 }
 
@@ -269,6 +280,66 @@ ncl_pop_body (unused (ParserLibXML_State *st),
               unused (vector<xmlNode *> *children),
               unused (Entity *entity))
 {
+  Context *context;
+
+  context = cast (Context *, entity);
+  g_assert_nonnull (context);
+
+  for (auto port: *context->getPorts ())
+    {
+      bool status;
+      xmlNode *portelt;
+      string *comp;
+      string *iface;
+      Node *node;
+      Anchor *anchor;
+
+      status = true;
+
+      portelt = (xmlNode *) port->getData ("xmlElt");
+      port->setData ("xmlElt", NULL);
+
+      comp = (string *) port->getData ("component");
+      port->setData ("component", NULL);
+
+      iface = (string *) port->getData ("interface");
+      port->setData ("interface", NULL);
+
+      node = cast (Node *, st->ncl->getEntityById (*comp));
+      if (unlikely (node == nullptr))
+        {
+          status = ST_ERR_ELT_BAD_ATTR
+            (st, portelt, "component", comp->c_str (), "no such element");
+          goto done;
+        }
+      port->setNode (node);
+
+      anchor = nullptr;
+      if (iface != nullptr)
+        {
+          anchor = node->getAnchor (*iface);
+          if (unlikely (anchor == nullptr))
+            {
+              status = ST_ERR_ELT_BAD_ATTR
+                (st, portelt, "interface", comp->c_str (),
+                 "no such interface");
+              goto done;
+            }
+        }
+      else
+        {
+          anchor = node->getLambda ();
+        }
+      port->setInterface (anchor);
+
+    done:
+      delete comp;
+      if (iface != nullptr)
+        delete iface;
+
+      if (!status)
+        return false;
+    }
   return true;
 }
 
@@ -280,8 +351,20 @@ ncl_push_port (ParserLibXML_State *st,
 {
   Port *port;
   Context *context;
+  string comp;
+  string iface;
 
   port = new Port (st->ncl, ncl_attrmap_get_string (attr, "id"));
+  port->setData ("xmlElt", elt);
+
+  comp = ncl_attrmap_get_string (attr, "component");
+  port->setData ("component", new string (comp));
+  if (ncl_attrmap_index (attr, "interface", nullptr))
+    {
+      iface = ncl_attrmap_get_string (attr, "interface");
+      port->setData ("component", new string (iface));
+    }
+
   context = cast (Context *, st->stack.back ());
   g_assert_nonnull (context);
   context->addPort (port);
@@ -298,9 +381,36 @@ ncl_push_media (ParserLibXML_State *st,
   Composition *comp;
 
   media = new Media (st->ncl, ncl_attrmap_get_string (attr, "id"), false);
+  if (ncl_attrmap_index (attr, "src", nullptr))
+    {
+      string src = ncl_attrmap_get_string (attr, "src");
+      if (!xpathisuri (src) && !xpathisabs (src))
+        src = xpathbuildabs (xpathdirname (toString (st->doc->URL)), src);
+      media->setSrc (src);
+    }
+
   comp = cast (Composition *, st->stack.back ());
   g_assert_nonnull (comp);
   comp->addNode (media);
+  *entity = media;              // push onto stack
+  return true;
+}
+
+static bool
+ncl_push_property (ParserLibXML_State *st,
+                   unused (xmlNode *elt),
+                   map<string, GValue> *attr,
+                   unused (Entity **entity))
+{
+  Node *parent;
+  Property *prop;
+  string name;
+
+  parent = cast (Node *, st->stack.back ());
+  prop = new Property (st->ncl, ncl_attrmap_get_string (attr, "name"));
+  prop->setValue (ncl_attrmap_get_string (attr, "value"));
+  g_assert_nonnull (parent);
+  parent->addAnchor (prop);
   return true;
 }
 
@@ -312,15 +422,20 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
 {
   string tag;
   NclEltInfo *einfo;
+  bool status;
 
   map<string, GValue> attr;
   Entity *entity;
   map<string, bool> possible;
   vector<xmlNode *> children;
 
+  status = true;
   tag = toString (elt->name);
   if (unlikely (!ncl_eltmap_index (tag, &einfo)))
-    return ST_ERR_ELT_UNKNOWN (st, elt);
+    {
+      status = ST_ERR_ELT_UNKNOWN (st, elt);
+      goto done;
+    }
 
   // Check parent.
   g_assert_nonnull (elt->parent);
@@ -330,7 +445,10 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
       bool found;
 
       if (unlikely (elt->parent->type != XML_ELEMENT_NODE))
-        return ST_ERR_ELT_MISSING_PARENT (st, elt);
+        {
+          status = ST_ERR_ELT_MISSING_PARENT (st, elt);
+          goto done;
+        }
 
       parent = toString (elt->parent->name);
       found = false;
@@ -343,8 +461,11 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
             }
         }
       if (unlikely (!found))
-        return ST_ERR_ELT_BAD_PARENT
-          (st, elt, toCString (elt->parent->name));
+        {
+          status = ST_ERR_ELT_BAD_PARENT
+            (st, elt, toCString (elt->parent->name));
+          goto done;
+        }
     }
 
   // Collect attributes.
@@ -358,7 +479,10 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
       hasprop = xmlHasProp (elt, name);
 
       if (unlikely (ainfo.required && !hasprop))
-        return ST_ERR_ELT_MISSING_ATTR (st, elt, ainfo.name.c_str ());
+        {
+          status = ST_ERR_ELT_MISSING_ATTR (st, elt, ainfo.name.c_str ());
+          goto done;
+        }
 
       if (!hasprop)
         continue;
@@ -373,13 +497,43 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
           g_assert_not_reached ();
         }
       attr[ainfo.name] = value;
-      g_value_unset (&value);
+    }
+
+  // Check if id is valid and unique.
+  if (ncl_attrmap_index (&attr, "id", nullptr))
+    {
+      string id;
+      const char *str;
+      char c;
+
+      id = ncl_attrmap_get_string (&attr, "id");
+      str = id.c_str ();
+      while ((c = *str++) != '\0')
+        {
+          if (unlikely (!(isalnum (c) || c == '-' || c == '_'
+                          || c == ':' || c == '.')))
+            {
+              string explain = xstrbuild ("must not contain '%c'", c);
+              status = ST_ERR_ELT_BAD_ATTR
+                (st, elt, "id", id.c_str (), explain.c_str ());
+              goto done;
+            }
+        }
+      if (unlikely (st->ncl->getEntityById (id) != nullptr))
+        {
+          status = ST_ERR_ELT_BAD_ATTR
+            (st, elt, "id", id.c_str (), "duplicated id");
+          goto done;
+        }
     }
 
   // Push element.
   entity = nullptr;
   if (unlikely (einfo->push && !einfo->push (st, elt, &attr, &entity)))
-    return false;
+    {
+      status = false;
+      goto done;
+    }
 
   // Push newly created entity onto stack.
   if (entity != nullptr)
@@ -393,20 +547,31 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
         continue;
 
       if (unlikely (!processElt (st, child)))
-        return false;
+        {
+         status = false;
+         goto done;
+        }
 
       string child_tag = toString (child->name);
       if (unlikely (possible.find (child_tag)) == possible.end ())
-        return ST_ERR_ELT_BAD_CHILD (st, elt, child->name);
+        {
+          status = ST_ERR_ELT_UNKNOWN_CHILD (st, elt, child->name);
+          goto done;
+        }
 
       children.push_back (child);
     }
 
   // Pop element.
   if (einfo->pop)
-    return einfo->pop (st, elt, &attr, &children, entity);
+    status = einfo->pop (st, elt, &attr, &children, entity);
 
-  return true;
+ done:
+  // Clear attribute map.
+  for (auto it: attr)
+    g_value_unset (&it.second);
+
+  return status;
 }
 
 static NclDocument *

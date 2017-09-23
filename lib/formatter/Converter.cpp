@@ -770,49 +770,39 @@ Converter::insertNode (NclNodeNesting *perspective,
 }
 
 NclEvent *
-Converter::insertContext (NclNodeNesting *contextPerspective,
+Converter::insertContext (NclNodeNesting *persp,
                           Port *port)
 {
+  Anchor *anchor;
   vector<Node *> nestedSeq;
   NclNodeNesting *perspective;
   NclEvent *newEvent;
-  bool error = false;
 
-  if (contextPerspective == nullptr || port == nullptr)
+  g_assert_nonnull (persp);
+  g_assert_nonnull (port);
+
+  anchor = port->getFinalInterface ();
+
+  if (!(instanceof (Area *, anchor)
+        || instanceof (AreaLabeled *, anchor)
+        || instanceof (Property *, anchor)
+        || instanceof (SwitchPort *, anchor)
+        || !(instanceof (Context *,
+                         persp->getAnchorNode ()))))
     {
-      error = true;
+      ERROR ("invalid interface point for port");
     }
 
-  if (!(instanceof (Area *, port->getFinalInterface ())
-        || instanceof (AreaLabeled *, port->getFinalInterface ())
-        || instanceof (Property *, port->getFinalInterface ())
-        || instanceof (SwitchPort *, port->getFinalInterface ()))
-      || !(instanceof (Context *,
-                       contextPerspective->getAnchorNode ())))
-    {
-      error = true;
-    }
+  nestedSeq = port->getMapNodeNesting ();
+  perspective = new NclNodeNesting (persp);
+  perspective->append (&nestedSeq);
 
-  if (error)
-    {
-      WARNING ("Can't find a valid interface point in '%s'.",
-               contextPerspective->getId ().c_str());
+  newEvent = insertNode (perspective,
+                         port->getFinalInterface (),
+                         nullptr);
+  delete perspective;
 
-      return nullptr;
-    }
-  else
-    {
-      nestedSeq = port->getMapNodeNesting ();
-      perspective = new NclNodeNesting (contextPerspective);
-      perspective->append (&nestedSeq);
-
-      newEvent = insertNode (perspective,
-                             port->getFinalInterface (),
-                             nullptr);
-      delete perspective;
-
-      return newEvent;
-    }
+  return newEvent;
 }
 
 void

@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Entity.h"
+#include "NclDocument.h"
+#include "Property.h"
 
 GINGA_NCL_BEGIN
 
@@ -29,6 +31,9 @@ Entity::Entity (NclDocument *ncl, const string &id)
   g_assert (id != "");
   _id = id;
   _ncl = ncl;
+
+  if (!instanceof (Property *, this))
+    ncl->registerEntity (this); // fixme: assert
 }
 
 /**
