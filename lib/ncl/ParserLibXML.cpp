@@ -359,7 +359,7 @@ ncl_push_port (ParserLibXML_State *st,
   if (ncl_attrmap_index (attr, "interface", nullptr))
     {
       iface = ncl_attrmap_get_string (attr, "interface");
-      port->setData ("component", new string (iface));
+      port->setData ("interface", new string (iface));
     }
 
   context = cast (Context *, st->stack.back ());
