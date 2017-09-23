@@ -35,12 +35,16 @@ GINGA_NCL_BEGIN
 
 // Parser internal state.
 
+typedef map<string, map<string, string> *> ParserLibXML_Cache;
 typedef struct ParserLibXML_State
 {
   xmlDoc *doc;                  // DOM tree
   NclDocument *ncl;             // NCL tree
   vector<Entity *> stack;       // NCL entity stack
   string errmsg;                // last error message
+
+  ParserLibXML_Cache descriptors; // descriptors
+  ParserLibXML_Cache regions;     // regions
 } ParserLibXML_State;
 
 static inline G_GNUC_PRINTF (2,3) void
@@ -90,6 +94,17 @@ _st_err (ParserLibXML_State *st, const char *fmt, ...)
 
 #define ST_ERR_ELT_UNKNOWN_CHILD(st, etl, child)\
   ST_ERR_ELT ((st), (elt), "Unknown child <%s>", (child))
+
+static G_GNUC_UNUSED bool
+st_cache_index (ParserLibXML_Cache *cache, const string &key,
+                map<string, string> **result)
+{
+  ParserLibXML_Cache::iterator it;
+  if ((it = cache->find (key)) == cache->end ())
+    return false;
+  tryset (result, it->second);
+  return true;
+}
 
 
 // NCL syntax.
@@ -150,9 +165,6 @@ static map<string, NclEltInfo> ncl_eltmap =
     {"title", G_TYPE_STRING, false},
     {"xmlns", G_TYPE_STRING, false}}},
  },
- {"head",
-  {nullptr, nullptr, {"ncl"}, {}},
- },
  {"body",
   {ncl_push_body, ncl_pop_body, {"ncl"},
    {{"id", G_TYPE_STRING, false}}},
@@ -172,6 +184,23 @@ static map<string, NclEltInfo> ncl_eltmap =
   {ncl_push_property, nullptr, {"body", "context", "media"},
   {{"name", G_TYPE_STRING, true},
    {"value", G_TYPE_STRING, false}}},
+ },
+ // Elements with no external representation:
+ {"head",
+  {nullptr, nullptr, {"ncl"}, {}},
+ },
+ {"descriptorBase",
+  {nullptr, nullptr, {"head"},
+   {{"id", G_TYPE_STRING, false}}},
+ },
+ {"descriptor",
+  {nullptr, nullptr, {"descriptorBase"},
+   {{"id", G_TYPE_STRING, true}}}
+ },
+ {"descriptorParam",
+  {nullptr, nullptr, {"descriptor"},
+   {{"name", G_TYPE_STRING, true},
+    {"value", G_TYPE_STRING, true}}},
  },
 };
 
