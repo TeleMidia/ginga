@@ -32,14 +32,27 @@ class NclDocument
 public:
   NclDocument (const string &, const string &);
   ~NclDocument ();
-  void setBody (Context *);
+
+  string getId ();
+  string getLocation ();
+  Context *getRoot ();
+
+  Entity *getEntityById (const string &);
+  bool registerEntity (Entity *);
+  bool unregisterEntity (Entity *);
+
+private:
+  string _id;                       // document id
+  string _location;                 // document location
+  Context *_root;                   // document root
+  map<string, Entity *> _entities;  // entity map
 
   // -----------------------------------------------------------------------
-
+public:
   NclDocument *getParentDocument ();
   void setParentDocument (NclDocument *);
   string getDocumentPerspective ();
-  string getDocumentLocation ();
+
   bool addDocument (NclDocument *document, const string &alias,
                     const string &location);
   Connector *getConnector (const string &connectorId);
@@ -50,10 +63,9 @@ public:
   DescriptorBase *getDescriptorBase ();
   NclDocument *getDocument (const string &documentId);
   string getDocumentAlias (NclDocument *document);
-  Context *getBody ();
   string getDocumentLocation (NclDocument *document);
   vector<NclDocument *> *getDocuments ();
-  string getId ();
+
 
   Node *getNode (const string &nodeId);
   Region *getRegion (const string &regionId);
@@ -77,18 +89,16 @@ public:
   void removeRegionBase (const string &regionBaseId);
 
 private:
-  Context *_body;
   ConnectorBase *_connectorBase;
   DescriptorBase *_descriptorBase;
   map<string, NclDocument *> _documentAliases;
   vector<NclDocument *> _documentBase;
   map<string, NclDocument *> _documentLocations;
-  string _id;
+
   map<int, RegionBase *> _regionBases;
   RuleBase *_ruleBase;
   TransitionBase *_transitionBase;
 
-  string _docLocation;
   NclDocument *_parentDocument;
 
   Node *getNodeLocally (const string &nodeId);

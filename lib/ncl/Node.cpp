@@ -32,7 +32,7 @@ GINGA_NCL_BEGIN
 Node::Node (NclDocument *ncl, const string &id) : Entity (ncl, id)
 {
   _parent = nullptr;
-  _lambda = new AreaLambda (ncl, id);
+  _lambda = new AreaLambda (ncl, id + "@lambda");
   this->addAnchor (_lambda);
 }
 

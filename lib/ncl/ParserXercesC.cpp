@@ -1556,8 +1556,7 @@ ParserXercesC::parseBody (DOMElement *elt)
   CHECK_ELT_TAG (elt, "body", nullptr);
   CHECK_ELT_OPT_ID (elt, &id, _doc->getId ());
 
-  body = new Context (_doc, id);
-  _doc->setBody (body);
+  body = _doc->getRoot ();
 
   for (DOMElement *child: dom_elt_get_children (elt))
     {

@@ -63,8 +63,8 @@ LuaPlayer::start (void)
   _init_rect = _rect;
   _nw = ncluaw_open
     (_uri.c_str (), _init_rect.width, _init_rect.height, &errmsg);
-  if (unlikely (_nw == NULL))
-    ERROR ("cannot load NCLua file %s: %s", _uri.c_str (), errmsg);
+  if (unlikely (_nw == nullptr))
+    ERROR ("%s", errmsg);
   this->pwdRestore ();
 
   evt_ncl_send_presentation (_nw, "start", "");
@@ -87,7 +87,7 @@ LuaPlayer::stop (void)
 
   ncluaw_close (_nw);
   g_assert (_ginga->unregisterEventListener (this));
-  _nw = NULL;
+  _nw = nullptr;
 
   Player::stop ();
 }

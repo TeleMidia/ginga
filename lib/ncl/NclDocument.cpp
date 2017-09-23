@@ -22,12 +22,17 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
+/**
+ * @brief Creates a new document.
+ * @param id Document id.
+ * @param location Document location.
+ */
 NclDocument::NclDocument (const string &id, const string &location)
 {
   _id = id;
-  _docLocation = location;
+  _location = location;
+  _root = new Context (this, id);
 
-  _body = nullptr;
   _connectorBase = nullptr;
   _descriptorBase = nullptr;
   _parentDocument = nullptr;
@@ -35,19 +40,86 @@ NclDocument::NclDocument (const string &id, const string &location)
   _transitionBase = nullptr;
 }
 
+/**
+ * @brief Destroys document.
+ */
 NclDocument::~NclDocument ()
 {
-  delete _body;
+  delete _root;
 }
 
-void
-NclDocument::setBody (Context *body)
+/**
+ * @brief Gets document id.
+ */
+string
+NclDocument::getId ()
 {
-  g_assert_nonnull (body);
-  _body = body;
+  return _id;
+}
+
+/**
+ * @brief Gets document location.
+ */
+string
+NclDocument::getLocation ()
+{
+  return _location;
+}
+
+/**
+ * @brief Gets document body.
+ */
+Context *
+NclDocument::getRoot ()
+{
+  return _root;
+}
+
+/**
+ * @brief Gets entity.
+ * @param id Entity id.
+ * @return Entity.
+ */
+Entity *
+NclDocument::getEntityById (const string &id)
+{
+  map<string, Entity *>::iterator it;
+  return ((it = _entities.find (id)) == _entities.end ())
+    ? nullptr : it->second;
+}
+
+/**
+ * @brief Registers entity.
+ * @param entity Entity.
+ * @return True if successful, or false otherwise.
+ */
+bool
+NclDocument::registerEntity (Entity *entity)
+{
+  string id = entity->getId ();
+  if (this->getEntityById (id))
+    return false;
+  _entities[id] = entity;
+  return true;
+}
+
+/**
+ * @brief Unregisters entity.
+ * @param entity Entity.
+ * @return True if successful, or false otherwise.
+ */
+bool
+NclDocument::unregisterEntity (Entity *entity)
+{
+  string id = entity->getId ();
+  if (!this->getEntityById (id))
+    return false;
+  _entities[id] = nullptr;
+  return true;
 }
 
 // -------------------------------------------------------------------------
+
 
 NclDocument *
 NclDocument::getParentDocument ()
@@ -79,11 +151,6 @@ NclDocument::setParentDocument (NclDocument *parentDocument)
   this->_parentDocument = parentDocument;
 }
 
-string
-NclDocument::getDocumentLocation ()
-{
-  return _docLocation;
-}
 
 bool
 NclDocument::addDocument (NclDocument *document, const string &alias,
@@ -238,12 +305,6 @@ NclDocument::getDocumentAlias (NclDocument *document)
   return "";
 }
 
-Context *
-NclDocument::getBody ()
-{
-  return _body;
-}
-
 string
 NclDocument::getDocumentLocation (NclDocument *document)
 {
@@ -266,24 +327,19 @@ NclDocument::getDocuments ()
   return &_documentBase;
 }
 
-string
-NclDocument::getId ()
-{
-  return _id;
-}
 
 Node *
 NclDocument::getNodeLocally (const string &nodeId)
 {
-  if (_body != NULL)
+  if (_root != NULL)
     {
-      if (_body->getId () == nodeId)
+      if (_root->getId () == nodeId)
         {
-          return _body;
+          return _root;
         }
       else
         {
-          return _body->getNestedNode (nodeId);
+          return _root->getNestedNode (nodeId);
         }
     }
   else
@@ -456,7 +512,7 @@ NclDocument::getSettingsNodes ()
   const vector<Node *> *nodes;
   vector<Node *> *settings;
 
-  body = this->getBody ();
+  body = this->getRoot ();
   g_assert_nonnull (body);
 
   settings = new vector<Node *>;
