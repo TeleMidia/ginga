@@ -41,8 +41,8 @@ Node::Node (NclDocument *ncl, const string &id) : Entity (ncl, id)
  */
 Node::~Node ()
 {
-  _anchors.clear ();
-  delete _lambda;
+  for (auto anchor: _anchors)
+    delete anchor;
 }
 
 /**
