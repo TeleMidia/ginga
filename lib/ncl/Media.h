@@ -31,10 +31,16 @@ public:
   virtual ~Media ();
 
   bool isSettings ();
-
   string getMimeType ();
+
   string getSrc ();
   void setSrc (const string &);
+  void setSrc (const string &, const string &);
+
+  const map<string, string> *getProperties ();
+  bool hasProperty (const string &);
+  string getProperty (const string &);
+  void setProperty (const string &, const string &);
 
   Descriptor *getDescriptor ();
   void setDescriptor (Descriptor *);
@@ -43,9 +49,11 @@ public:
   const set<Refer *> *getInstSameInstances ();
 
 private:
-  bool _isSettings;
-  string _src;
-  string _mimetype;
+  bool _isSettings;                // whether is a settings node
+  string _src;                     // content source URI
+  string _mimetype;                // mime-type
+  map<string, string> _properties; // property map
+
   Descriptor *_descriptor;
   set<Refer *> _instances;
 };
