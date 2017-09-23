@@ -6,6 +6,7 @@
       <property name="left" value="25%"/>
       <property name="width" value="50%"/>
       <property name="height" value="50%"/>
+      <property name="fontColor" value="yellow"/>
     </media>
   </body>
 </ncl>
