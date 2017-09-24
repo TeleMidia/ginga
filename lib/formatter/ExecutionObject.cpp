@@ -210,12 +210,6 @@ ExecutionObject::addPresentationEvent (PresentationEvent *event)
 
       _presEvents.insert ((_presEvents.begin () + posBeg), event);
     }
-
-  clog << "NclExecutionObject::addPresentationEvent in '";
-  clog << getId () << "'. Call transition ";
-  clog << "manager addPresentationEvent for '" << event->getId ();
-  clog << "' begin = '" << event->getBegin () << "'; end = '";
-  clog << event->getEnd () << "' position = '" << posBeg << "'" << endl;
   _transMan.addPresentationEvent (event);
 }
 
@@ -266,9 +260,6 @@ ExecutionObject::removeEvent (NclEvent *event)
     {
       return false;
     }
-
-  clog << "NclExecutionObject::removeEvent '" << event->getId () << "'";
-  clog << "from '" << getId () << "'" << endl;
 
   if (instanceof (PresentationEvent *, event))
     {

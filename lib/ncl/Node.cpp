@@ -20,6 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Area.h"
 #include "Composition.h"
+#include "Property.h"
 #include "Refer.h"
 
 GINGA_NCL_BEGIN
@@ -107,6 +108,68 @@ Node::getLambda ()
 {
   g_assert_nonnull (_lambda);
   return _lambda;
+}
+
+/**
+ * @brief Tests whether node has property anchor.
+ * @param name Property name.
+ * @return True if successful, or false otherwise.
+ */
+bool
+Node::hasProperty (const string &name)
+{
+  for (auto anchor: _anchors)
+    {
+      Property *prop = cast (Property *, anchor);
+      if (prop == nullptr)
+        continue;
+      if (prop->getId () == name)
+        return true;
+    }
+  return false;
+}
+
+/**
+ * @brief Gets property anchor.
+ * @param name Property name.
+ * @return Property value.
+ */
+string
+Node::getProperty (const string &name)
+{
+  for (auto anchor: _anchors)
+    {
+      Property *prop = cast (Property *, anchor);
+      if (prop == nullptr)
+        continue;
+      if (prop->getId () != name)
+        continue;
+      return prop->getValue ();
+    }
+  return "";
+}
+
+/**
+ * @brief Sets property anchor.  Creates it if it doesn't exist.
+ * @param name Property name.
+ * @param value Property value.
+ */
+void
+Node::setProperty (const string &name, const string &value)
+{
+  Property *prop;
+  for (auto anchor: _anchors)
+    {
+      prop = cast (Property *, anchor);
+      if (prop == nullptr)
+        continue;
+      if (prop->getId () == name)
+        goto tail;
+    }
+  prop = new Property (this->getDocument (), name);
+  this->addAnchor (prop);
+ tail:
+  prop->setValue (value);
 }
 
 

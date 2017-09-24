@@ -37,6 +37,10 @@ public:
   Anchor *getAnchor (const string &);
   Anchor *getLambda ();
 
+  bool hasProperty (const string &);
+  void setProperty (const string &, const string &);
+  string getProperty (const string &);
+
   vector<Node *> *getPerspective (); // fixme
   Node *derefer ();                  // fixme
 

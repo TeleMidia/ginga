@@ -20,29 +20,29 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/Ncl.h"
 using namespace ginga::ncl;
 
-static bool
+static G_GNUC_UNUSED bool
 check_failure (const string &buf)
 {
   NclDocument *ncl;
   string msg = "";
 
   ncl = ParserLibXML::parseBuffer (buf.c_str (), buf.length (), 0, 0, &msg);
-  if (unlikely (ncl != nullptr))
-    return false;
-  if (unlikely (msg != ""))
-    return false;
-
-  return true;
+  if (ncl == nullptr && msg != "")
+    {
+      g_printerr ("%s\n", msg.c_str ());
+      return true;
+    }
+  return false;
 }
 
-static NclDocument *
+static G_GNUC_UNUSED NclDocument *
 check_success (const string &buf)
 {
   NclDocument *ncl;
   string msg = "";
 
   ncl = ParserLibXML::parseBuffer (buf.c_str (), buf.length (), 0, 0, &msg);
-  if (unlikely (msg != ""))
+  if (msg != "")
     {
       g_printerr ("Unexpected error: %s", msg.c_str ());
       g_assert_not_reached ();
@@ -54,13 +54,13 @@ int
 main (void)
 {
   // Error: XML error.
-  g_assert_false (check_failure ("<a>"));
+  g_assert (check_failure ("<a>"));
 
   // Error: Unknown element.
-  g_assert_false (check_failure ("<unknown/>"));
+  g_assert (check_failure ("<unknown/>"));
 
   // Error: Bad parent.
-  g_assert_false (check_failure ("<head/>"));
+  g_assert (check_failure ("<head/>"));
 
   // Empty document.
   {
@@ -82,10 +82,10 @@ main (void)
   }
 
   // Error: ncl: Bad id.
-  g_assert_false (check_failure ("<ncl id='@'/>"));
+  g_assert (check_failure ("<ncl id='@'/>"));
 
   // Error: Port: Missing id.
-  g_assert_false (check_failure ("\
+  g_assert (check_failure ("\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -95,7 +95,7 @@ main (void)
 "));
 
   // Error: Port: Missing component.
-  g_assert_false (check_failure ("\
+  g_assert (check_failure ("\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -105,7 +105,7 @@ main (void)
 "));
 
   // Error: Media: Missing id.
-  g_assert_false (check_failure ("\
+  g_assert (check_failure ("\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -115,7 +115,7 @@ main (void)
 "));
 
   // Error: Media: Duplicated id.
-  g_assert_false (check_failure ("\
+  g_assert (check_failure ("\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -125,17 +125,38 @@ main (void)
 </ncl>\n\
 "));
 
+  // Error: Media: Bad descriptor.
+  g_assert (check_failure ("\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <media id='a' descriptor='nonexistent'/>\n\
+ </body>\n\
+</ncl>\n\
+"));
+
   // Success.
   {
     NclDocument *ncl = check_success ("\
 <ncl>\n\
- <head/>\n\
+ <head>\n\
+  <regionBase>\n\
+   <region id='r' top='100%' right='25%'/>\n\
+  </regionBase>\n\
+  <descriptorBase>\n\
+   <descriptor id='d' left='50%' top='0%' region='r'>\n\
+    <descriptorParam name='top' value='50%'/>\n\
+    <descriptorParam name='zIndex' value='2'/>\n\
+   </descriptor>\n\
+  </descriptorBase>\n\
+ </head>\n\
  <body>\n\
   <port id='p' component='m'/>\n\
   <port id='q' component='m' interface='background'/>\n\
-  <media id='m'>\n\
+  <media id='m' descriptor='d'>\n\
    <property name='background' value='red'/>\n\
    <property name='size' value='100%,100%'/>\n\
+   <property name='zIndex' value='3'/>\n\
   </media>\n\
  </body>\n\
 </ncl>\n\
@@ -169,8 +190,16 @@ main (void)
     g_assert (q->getNode () == m);
     g_assert (q->getInterface ()->getId () == "background");
 
+    g_assert (m->getProperty ("background") == "red");
+    g_assert (m->getProperty ("size") == "100%,100%");
+    g_assert (m->getProperty ("left") == "50%");
+    g_assert (m->getProperty ("right") == "25%");
+    g_assert (m->getProperty ("top") == "50%");
+    g_assert (m->getProperty ("zIndex") == "3");
+
     delete ncl;
   }
+
 
   exit (EXIT_SUCCESS);
 }

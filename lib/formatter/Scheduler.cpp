@@ -81,7 +81,7 @@ Scheduler::run (const string &file, string *errmsg)
   g_assert_nonnull (ports);
   if (unlikely (ports->size () == 0))
     {
-      *errmsg = "document has no ports";
+      *errmsg = "Document has no ports";
       return false;
     }
 
