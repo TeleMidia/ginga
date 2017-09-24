@@ -697,7 +697,7 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
         }
 
       string child_tag = toString (child->name);
-      if (unlikely (possible.find (child_tag)) == possible.end ())
+      if (unlikely (possible.find (child_tag) == possible.end ()))
         {
           status = ST_ERR_ELT_UNKNOWN_CHILD (st, elt, child->name);
           goto done;
