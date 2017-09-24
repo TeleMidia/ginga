@@ -191,10 +191,6 @@ ExecutionObjectContext::removeExecutionObject (ExecutionObject *obj)
 set<Link *> *
 ExecutionObjectContext::getUncompiledLinks ()
 {
-  clog << "ExecutionObjectContext::getUncompiledLinks '" << getId ();
-  clog << "' has '" << _uncompiledLinks.size () << "' uncompiled links";
-  clog << endl;
-
   set<Link *> *uLinks = new set<Link *> (_uncompiledLinks);
   return uLinks;
 }

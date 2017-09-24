@@ -29,29 +29,37 @@ GINGA_NCL_BEGIN
 #define toXmlChar(s) (xmlChar *)(deconst (char *, (s).c_str ()))
 #define toString(s)  string (deconst (char *, (s)))
 
-#define xmlGetPropCString(elt, name)\
-  toCString (xmlGetProp ((elt), (name)))
+static inline bool
+xmlGetPropAsString (xmlNode *node, const string &name, string *result)
+{
+  xmlChar *str = xmlGetProp (node, toXmlChar (name));
+  if (str == nullptr)
+    return false;
+  tryset (result, toString (str));
+  g_free (str);
+  return true;
+}
 
 
 // Parser internal state.
 
-typedef map<string, map<string, string> *> ParserLibXML_Cache;
+typedef map<string, map<string, string>> ParserLibXML_Cache;
 typedef struct ParserLibXML_State
 {
-  xmlDoc *doc;                  // DOM tree
-  NclDocument *ncl;             // NCL tree
-  vector<Entity *> stack;       // NCL entity stack
-  string errmsg;                // last error message
-
-  ParserLibXML_Cache descriptors; // descriptors
-  ParserLibXML_Cache regions;     // regions
+  xmlDoc *doc;                          // DOM tree
+  NclDocument *ncl;                     // NCL tree
+  vector<Entity *> stack;               // NCL entity stack
+  string errmsg;                        // last error message
+  ParserLibXML_Cache cache;             // attr-maps indexed by ids
+  map<string, xmlNode *> cacheelt;      // xml-nodes indexed by ids
+  map<string, set<string>> cacheset;    // cached ids indexed by tag
 } ParserLibXML_State;
 
 static inline G_GNUC_PRINTF (2,3) void
 _st_err (ParserLibXML_State *st, const char *fmt, ...)
 {
   va_list args;
-  char *c_str = NULL;
+  char *c_str = nullptr;
   int n;
 
   va_start (args, fmt);
@@ -61,7 +69,6 @@ _st_err (ParserLibXML_State *st, const char *fmt, ...)
   g_assert (n >= 0);
   g_assert_nonnull (c_str);
   st->errmsg.assign (c_str);
-  WARNING ("%s", c_str);        // fixme: remove
   g_free (c_str);
 }
 
@@ -84,6 +91,9 @@ _st_err (ParserLibXML_State *st, const char *fmt, ...)
 #define ST_ERR_ELT_BAD_PARENT(st, elt, parent)\
   ST_ERR_ELT ((st), (elt), "Bad parent <%s>", (parent))
 
+#define ST_ERR_ELT_UNKNOWN_ATTR(st, elt, attr)\
+  ST_ERR_ELT ((st), (elt), "Unknown attribute '%s'", (attr))
+
 #define ST_ERR_ELT_MISSING_ATTR(st, elt, attr)\
   ST_ERR_ELT ((st), (elt), "Missing attribute '%s'", (attr))
 
@@ -96,13 +106,13 @@ _st_err (ParserLibXML_State *st, const char *fmt, ...)
   ST_ERR_ELT ((st), (elt), "Unknown child <%s>", (child))
 
 static G_GNUC_UNUSED bool
-st_cache_index (ParserLibXML_Cache *cache, const string &key,
+st_cache_index (ParserLibXML_State *st, const string &key,
                 map<string, string> **result)
 {
   ParserLibXML_Cache::iterator it;
-  if ((it = cache->find (key)) == cache->end ())
+  if ((it = st->cache.find (key)) == st->cache.end ())
     return false;
-  tryset (result, it->second);
+  tryset (result, &it->second);
   return true;
 }
 
@@ -112,19 +122,18 @@ st_cache_index (ParserLibXML_Cache *cache, const string &key,
 // Element push function.
 typedef bool (NclEltPushFunc) (ParserLibXML_State *,
                                xmlNode *,
-                               map<string, GValue> *,
+                               map<string, string> *,
                                Entity **);
 // Element pop function.
 typedef bool (NclEltPopFunc) (ParserLibXML_State *,
                               xmlNode *,
-                              map<string, GValue> *,
+                              map<string, string> *,
                               vector<xmlNode *> *,
                               Entity *);
 // Attribute info.
 typedef struct NclAttrInfo
 {
   string name;                  // attribute name
-  GType type;                   // attribute type
   bool required;                // whether attribute is required
 } NclAttrInfo;
 
@@ -133,6 +142,7 @@ typedef struct NclEltInfo
 {
   NclEltPushFunc *push;           // push function
   NclEltPopFunc *pop;             // pop function
+  bool cache;                     // whether to cache attr-map
   vector<string> parents;         // possible parents
   vector<NclAttrInfo> attributes; // attributes
 } NclEltInfo;
@@ -141,12 +151,12 @@ typedef struct NclEltInfo
 #define NCL_ELT_PUSH_DECL(elt)                  \
   static bool G_PASTE (ncl_push_, elt)          \
     (ParserLibXML_State *, xmlNode *,           \
-     map<string, GValue> *, Entity **);
+     map<string, string> *, Entity **);
 
 #define NCL_ELT_POP_DECL(elt)                                   \
   static bool G_PASTE (ncl_pop_, elt)                           \
     (ParserLibXML_State *, xmlNode *,                           \
-     map<string, GValue> *, vector<xmlNode *> *, Entity *);
+     map<string, string> *, vector<xmlNode *> *, Entity *);
 
 NCL_ELT_PUSH_DECL (ncl)
 NCL_ELT_POP_DECL  (ncl)
@@ -155,70 +165,80 @@ NCL_ELT_POP_DECL  (body)
 NCL_ELT_PUSH_DECL (port)
 NCL_ELT_PUSH_DECL (media)
 NCL_ELT_PUSH_DECL (property)
+NCL_ELT_PUSH_DECL (descriptorParam)
 
 // Element map.
 static map<string, NclEltInfo> ncl_eltmap =
 {
  {"ncl",
-  {ncl_push_ncl, ncl_pop_ncl, {},
-   {{"id", G_TYPE_STRING, false},
-    {"title", G_TYPE_STRING, false},
-    {"xmlns", G_TYPE_STRING, false}}},
+  {ncl_push_ncl, ncl_pop_ncl, false, {},
+   {{"id", false},
+    {"title", false},
+    {"xmlns", false}}},
  },
  {"body",
-  {ncl_push_body, ncl_pop_body, {"ncl"},
-   {{"id", G_TYPE_STRING, false}}},
+  {ncl_push_body, ncl_pop_body, false, {"ncl"},
+   {{"id", false}}},
  },
  {"port",
-  {ncl_push_port, nullptr, {"body", "context"},
-   {{"id", G_TYPE_STRING, true},
-    {"component", G_TYPE_STRING, true},
-    {"interface", G_TYPE_STRING, false}}},
+  {ncl_push_port, nullptr, false, {"body", "context"},
+   {{"id", true},
+    {"component", true},
+    {"interface", false}}},
  },
  {"media",
-  {ncl_push_media, nullptr, {"body", "context"},
-   {{"id", G_TYPE_STRING, true},
-    {"src", G_TYPE_STRING, false}}}
+  {ncl_push_media, nullptr, true, {"body", "context"},
+   {{"id", true},
+    {"src", false},
+    {"descriptor", false}}},
  },
  {"property",
-  {ncl_push_property, nullptr, {"body", "context", "media"},
-  {{"name", G_TYPE_STRING, true},
-   {"value", G_TYPE_STRING, false}}},
+  {ncl_push_property, nullptr, false, {"body", "context", "media"},
+  {{"name", true},
+   {"value", false}}},
  },
  // Elements with no external representation:
  {"head",
-  {nullptr, nullptr, {"ncl"}, {}},
+  {nullptr, nullptr, false, {"ncl"}, {}},
  },
  {"regionBase",
-  {nullptr, nullptr, {"head"},
-   {{"id", G_TYPE_STRING, false},
-    {"device", G_TYPE_STRING, false},
-    {"region", G_TYPE_STRING, false}}},
+  {nullptr, nullptr, false, {"head"},
+   {{"id", false},
+    {"device", false},
+    {"region", false}}},
  },
  {"region",
-  {nullptr, nullptr, {"region", "regionBase"},
-   {{"id", G_TYPE_STRING, true},
-    {"title", G_TYPE_STRING, false},
-    {"left", G_TYPE_STRING, false},
-    {"right", G_TYPE_STRING, false},
-    {"top", G_TYPE_STRING, false},
-    {"bottom", G_TYPE_STRING, false},
-    {"height", G_TYPE_STRING, false},
-    {"width", G_TYPE_STRING, false},
-    {"zIndex", G_TYPE_STRING, false}}},
+  {nullptr, nullptr, true, {"region", "regionBase"},
+   {{"id", true},
+    {"title", false},
+    {"left", false},
+    {"right", false},
+    {"top", false},
+    {"bottom", false},
+    {"height", false},
+    {"width", false},
+    {"zIndex", false}}},
  },
  {"descriptorBase",
-  {nullptr, nullptr, {"head"},
-   {{"id", G_TYPE_STRING, false}}},
+  {nullptr, nullptr, false, {"head"},
+   {{"id", false}}},
  },
  {"descriptor",
-  {nullptr, nullptr, {"descriptorBase"},
-   {{"id", G_TYPE_STRING, true}}}
+  {nullptr, nullptr, true, {"descriptorBase"},
+   {{"id", true},
+    {"left", false},
+    {"right", false},
+    {"top", false},
+    {"bottom", false},
+    {"width", false},
+    {"height", false},
+    {"zIndex", false},
+    {"region", false}}},
  },
  {"descriptorParam",
-  {nullptr, nullptr, {"descriptor"},
-   {{"name", G_TYPE_STRING, true},
-    {"value", G_TYPE_STRING, true}}},
+  {ncl_push_descriptorParam, nullptr, false, {"descriptor"},
+   {{"name", true},
+    {"value", true}}},
  },
 };
 
@@ -248,32 +268,31 @@ ncl_eltmap_get_possible_children (const string &tag)
 
 // NCL attribute map helper functions.
 
-static bool
-ncl_attrmap_index (map<string, GValue> *attr, const string &name,
-                   GValue **result)
+static inline bool
+ncl_attrmap_index (map<string, string> *attr, const string &name,
+                   string *result)
 {
-  map<string, GValue>::iterator it;
+  map<string, string>::iterator it;
   if ((it = attr->find (name)) == attr->end ())
     return false;
-  tryset (result, &it->second);
+  tryset (result, it->second);
   return true;
 }
 
-static string
-ncl_attrmap_get_string (map<string, GValue> *attr, const string &name)
+static inline string
+ncl_attrmap_get (map<string, string> *attr, const string &name)
 {
-  GValue *value;
+  string value;
   g_assert (ncl_attrmap_index (attr, name, &value));
-  g_assert (G_VALUE_TYPE (value) == G_TYPE_STRING);
-  return string (g_value_get_string (value));
+  return value;
 }
 
-static string
-ncl_attrmap_get_opt_string (map<string, GValue> *attr,
-                            const string &name, const string &defvalue)
+static inline string
+ncl_attrmap_opt_get (map<string, string> *attr,
+                     const string &name, const string &defvalue)
 {
-  return ncl_attrmap_index (attr, name, nullptr)
-    ? ncl_attrmap_get_string (attr, name) : defvalue;
+  string result;
+  return ncl_attrmap_index (attr, name, &result) ? result : defvalue;
 }
 
 
@@ -282,10 +301,10 @@ ncl_attrmap_get_opt_string (map<string, GValue> *attr,
 static bool
 ncl_push_ncl (ParserLibXML_State *st,
               unused (xmlNode *elt),
-              map<string, GValue> *attr,
+              map<string, string> *attr,
               unused (Entity **entity))
 {
-  string id = ncl_attrmap_get_opt_string (attr, "id", "ncl");
+  string id = ncl_attrmap_opt_get (attr, "id", "ncl");
   string  url = (st->doc->URL) ? toString (st->doc->URL) : "";
   st->ncl = new NclDocument (id, url);
   return true;
@@ -294,23 +313,96 @@ ncl_push_ncl (ParserLibXML_State *st,
 static bool
 ncl_pop_ncl (unused (ParserLibXML_State *st),
              unused (xmlNode *elt),
-             unused (map<string, GValue> *attr),
+             unused (map<string, string> *attr),
              unused (vector<xmlNode *> *children),
              unused (Entity *entity))
 {
-  return true;
+  bool status = true;
+
+  // Resolve references to regions.
+  for (auto desc_id: st->cacheset["descriptor"])
+    {
+      map<string, string> *desc_attr;
+      xmlNode *desc_elt;
+
+      map<string, string> *reg_attr;
+      string reg_id;
+
+      g_assert (st_cache_index (st, desc_id, &desc_attr));
+      if (!ncl_attrmap_index (desc_attr, "region", &reg_id))
+        continue;               // nothing to do
+
+      desc_elt = st->cacheelt[desc_id];
+      g_assert_nonnull (desc_elt);
+
+      if (unlikely (!st_cache_index (st, reg_id, &reg_attr)))
+        {
+          status = ST_ERR_ELT_BAD_ATTR
+            (st, desc_elt, "region", reg_id.c_str (), "no such region");
+          goto done;
+        }
+
+      for (auto it: *reg_attr)
+        {
+          if (it.first == "id")
+            continue;           // nothing to do
+          if (ncl_attrmap_index (desc_attr, it.first, nullptr))
+            continue;           // already defined
+          (*desc_attr)[it.first] = it.second;
+        }
+    }
+
+  // Resolve references to descriptors.
+  for (auto media_id: st->cacheset["media"])
+    {
+      map<string, string> *media_attr;
+      Media *media;
+      xmlNode *media_elt;
+
+      map<string, string> *desc_attr;
+      string desc_id;
+
+      g_assert (st_cache_index (st, media_id, &media_attr));
+      if (!ncl_attrmap_index (media_attr, "descriptor", &desc_id))
+        continue;               // nothing to do
+
+      media = cast (Media *, st->ncl->getEntityById (media_id));
+      g_assert_nonnull (media);
+
+      media_elt = st->cacheelt[media_id];
+      g_assert_nonnull (media_elt);
+
+      if (unlikely (!st_cache_index (st, desc_id, &desc_attr)))
+        {
+          status = ST_ERR_ELT_BAD_ATTR
+            (st, media_elt, "descriptor", desc_id.c_str (),
+             "no such descriptor");
+          goto done;
+        }
+
+      for (auto it: *desc_attr)
+        {
+          if (it.first == "id" && it.first == "region")
+            continue;           // nothing to do
+          if (media->hasProperty (it.first))
+            continue;           // already defined
+          media->setProperty (it.first, it.second);
+        }
+    }
+ done:
+  return status;
 }
 
 static bool
 ncl_push_body (ParserLibXML_State *st,
                unused (xmlNode *elt),
-               map<string, GValue> *attr,
+               map<string, string> *attr,
                Entity **entity)
 {
   Context *body;
   string id;
 
-  id = ncl_attrmap_get_opt_string (attr, "id", st->ncl->getId ());
+  id = ncl_attrmap_opt_get (attr, "id", st->ncl->getId ());
   body = st->ncl->getRoot ();
   g_assert_nonnull (body);
   *entity = body;               // push onto stack
@@ -320,7 +412,7 @@ ncl_push_body (ParserLibXML_State *st,
 static bool
 ncl_pop_body (unused (ParserLibXML_State *st),
               unused (xmlNode *elt),
-              unused (map<string, GValue> *attr),
+              unused (map<string, string> *attr),
               unused (vector<xmlNode *> *children),
               unused (Entity *entity))
 {
@@ -341,13 +433,13 @@ ncl_pop_body (unused (ParserLibXML_State *st),
       status = true;
 
       portelt = (xmlNode *) port->getData ("xmlElt");
-      port->setData ("xmlElt", NULL);
+      port->setData ("xmlElt", nullptr);
 
       comp = (string *) port->getData ("component");
-      port->setData ("component", NULL);
+      port->setData ("component", nullptr);
 
       iface = (string *) port->getData ("interface");
-      port->setData ("interface", NULL);
+      port->setData ("interface", nullptr);
 
       node = cast (Node *, st->ncl->getEntityById (*comp));
       if (unlikely (node == nullptr))
@@ -390,7 +482,7 @@ ncl_pop_body (unused (ParserLibXML_State *st),
 static bool
 ncl_push_port (ParserLibXML_State *st,
                unused (xmlNode *elt),
-               map<string, GValue> *attr,
+               map<string, string> *attr,
                unused (Entity **entity))
 {
   Port *port;
@@ -398,14 +490,14 @@ ncl_push_port (ParserLibXML_State *st,
   string comp;
   string iface;
 
-  port = new Port (st->ncl, ncl_attrmap_get_string (attr, "id"));
+  port = new Port (st->ncl, ncl_attrmap_get (attr, "id"));
   port->setData ("xmlElt", elt);
 
-  comp = ncl_attrmap_get_string (attr, "component");
+  comp = ncl_attrmap_get (attr, "component");
   port->setData ("component", new string (comp));
   if (ncl_attrmap_index (attr, "interface", nullptr))
     {
-      iface = ncl_attrmap_get_string (attr, "interface");
+      iface = ncl_attrmap_get (attr, "interface");
       port->setData ("interface", new string (iface));
     }
 
@@ -418,16 +510,16 @@ ncl_push_port (ParserLibXML_State *st,
 static bool
 ncl_push_media (ParserLibXML_State *st,
                 unused (xmlNode *elt),
-                map<string, GValue> *attr,
+                map<string, string> *attr,
                 unused (Entity **entity))
 {
   Media *media;
   Composition *comp;
 
-  media = new Media (st->ncl, ncl_attrmap_get_string (attr, "id"), false);
+  media = new Media (st->ncl, ncl_attrmap_get (attr, "id"), false);
   if (ncl_attrmap_index (attr, "src", nullptr))
     {
-      string src = ncl_attrmap_get_string (attr, "src");
+      string src = ncl_attrmap_get (attr, "src");
       if (!xpathisuri (src) && !xpathisabs (src))
         src = xpathbuildabs (xpathdirname (toString (st->doc->URL)), src);
       media->setSrc (src);
@@ -443,18 +535,32 @@ ncl_push_media (ParserLibXML_State *st,
 static bool
 ncl_push_property (ParserLibXML_State *st,
                    unused (xmlNode *elt),
-                   map<string, GValue> *attr,
+                   map<string, string> *attr,
                    unused (Entity **entity))
 {
-  Property *prop;
-  Node *parent;
-
-  prop = new Property (st->ncl, ncl_attrmap_get_string (attr, "name"));
-  prop->setValue (ncl_attrmap_get_string (attr, "value"));
-
-  parent = cast (Node *, st->stack.back ());
+  Node *parent = cast (Node *, st->stack.back ());
   g_assert_nonnull (parent);
-  parent->addAnchor (prop);
+  parent->setProperty (ncl_attrmap_get (attr, "name"),
+                       ncl_attrmap_get (attr, "value"));
+  return true;
+}
+
+static bool
+ncl_push_descriptorParam (ParserLibXML_State *st,
+                          xmlNode *elt,
+                          map<string, string> *attr,
+                          unused (Entity **entity))
+{
+  string desc_id;
+  map<string, string> *desc;
+  string name;
+  string value;
+
+  g_assert (xmlGetPropAsString (elt->parent, "id", &desc_id));
+  g_assert (st_cache_index (st, desc_id, &desc));
+  name = ncl_attrmap_get (attr, "name");
+  value = ncl_attrmap_get (attr, "value");
+  (*desc)[name] = value;
   return true;
 }
 
@@ -468,7 +574,7 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
   NclEltInfo *einfo;
   bool status;
 
-  map<string, GValue> attr;
+  map<string, string> attr;
   Entity *entity;
   map<string, bool> possible;
   vector<xmlNode *> children;
@@ -512,45 +618,42 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
         }
     }
 
-  // Collect attributes.
+  // Store attributes in attr-map.
   for (auto ainfo: einfo->attributes)
     {
-      xmlChar *name;
-      bool hasprop;
-      GValue value = G_VALUE_INIT;
-
-      name = toXmlChar (ainfo.name);
-      hasprop = xmlHasProp (elt, name);
-
-      if (unlikely (ainfo.required && !hasprop))
+      string value;
+      if (!xmlGetPropAsString (elt, ainfo.name, &value))
         {
+          if (!ainfo.required)
+            continue;
+
           status = ST_ERR_ELT_MISSING_ATTR (st, elt, ainfo.name.c_str ());
           goto done;
-        }
-
-      if (!hasprop)
-        continue;
-
-      g_value_init (&value, ainfo.type);
-      switch (ainfo.type)
-        {
-        case G_TYPE_STRING:
-          g_value_take_string (&value, xmlGetPropCString (elt, name));
-          break;
-        default:
-          g_assert_not_reached ();
         }
       attr[ainfo.name] = value;
     }
 
-  // Check if id is valid and unique.
+  // Check for unknown attributes.
+  for (xmlAttr *prop = elt->properties; prop != nullptr; prop = prop->next)
+    {
+      string name = toString (prop->name);
+      if (unlikely (attr.find (name) == attr.end ()))
+        {
+          status = ST_ERR_ELT_UNKNOWN_ATTR (st, elt, name.c_str ());
+          goto done;
+        }
+    }
+
+  // Collect id.
   if (ncl_attrmap_index (&attr, "id", nullptr))
     {
       string id;
       const char *str;
       char c;
 
-      id = ncl_attrmap_get_string (&attr, "id");
+      id = ncl_attrmap_get (&attr, "id");
+
+      // Check if id is valid.
       str = id.c_str ();
       while ((c = *str++) != '\0')
         {
@@ -563,12 +666,27 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
               goto done;
             }
         }
-      if (unlikely (st->ncl->getEntityById (id) != nullptr))
+
+      // Check if id is unique.
+      if (unlikely (st->ncl != nullptr
+                    && st->ncl->getEntityById (id) != nullptr))
         {
           status = ST_ERR_ELT_BAD_ATTR
             (st, elt, "id", id.c_str (), "duplicated id");
           goto done;
         }
+
+      // Insert attr-map and element's node into cache.
+      if (einfo->cache)
+        {
+          st->cache[id] = map<string, string> (attr);
+          st->cacheelt[id] = elt;
+          st->cacheset[tag].insert (id);
+        }
+    }
+  else
+    {
+      g_assert_false (einfo->cache);
     }
 
   // Push element.
@@ -615,10 +733,6 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
     st->stack.pop_back ();
 
  done:
-  // Clear attribute map.
-  for (auto it: attr)
-    g_value_unset (&it.second);
-
   return status;
 }
 
@@ -657,7 +771,7 @@ ParserLibXML::parseBuffer (const void *buf,
   xmlDoc *doc;
   NclDocument *ncl;
 
-  doc = xmlReadMemory ((const char *) buf, (int) size, NULL, NULL, FLAGS);
+  doc = xmlReadMemory ((const char *) buf, (int) size, nullptr, nullptr, FLAGS);
   if (unlikely (doc == nullptr))
     {
       xmlError *err = xmlGetLastError ();
@@ -680,7 +794,7 @@ ParserLibXML::parseFile (const string &path,
   xmlDoc *doc;
   NclDocument *ncl;
 
-  doc = xmlReadFile (path.c_str (), NULL, FLAGS);
+  doc = xmlReadFile (path.c_str (), nullptr, FLAGS);
   if (unlikely (doc == nullptr))
     {
       xmlError *err = xmlGetLastError ();

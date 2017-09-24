@@ -372,8 +372,11 @@ main (int argc, char **argv)
       string errmsg;
       if (!GINGA->start (string (saved_argv[i]), &errmsg))
         {
-          g_printerr ("error: %s\n", errmsg.c_str ());
-          exit (EXIT_FAILURE);
+          g_printerr ("error: ");
+          if (saved_argc > 2)
+            g_printerr ("%s: ", saved_argv[i]);
+          g_printerr ("%s\n", errmsg.c_str ());
+          continue;
         }
       gtk_widget_show_all (app);
       gtk_main ();
