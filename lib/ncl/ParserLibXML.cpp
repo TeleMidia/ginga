@@ -46,13 +46,15 @@ xmlGetPropAsString (xmlNode *node, const string &name, string *result)
 typedef map<string, map<string, string>> ParserLibXML_Cache;
 typedef struct ParserLibXML_State
 {
-  xmlDoc *doc;                          // DOM tree
-  NclDocument *ncl;                     // NCL tree
-  vector<Entity *> stack;               // NCL entity stack
-  string errmsg;                        // last error message
-  ParserLibXML_Cache cache;             // attrmap indexed by id
-  map<string, xmlNode *> cacheelt;      // xmlNode indexed by id
-  map<string, set<string>> cacheset;    // cached ids indexed by tag
+  GingaRect rect;                    // screen dimensions
+  xmlDoc *doc;                       // DOM tree
+  NclDocument *ncl;                  // NCL tree
+  vector<Entity *> stack;            // NCL entity stack
+  string errmsg;                     // last error message
+  ParserLibXML_Cache cache;          // attrmap indexed by id
+  map<string, xmlNode *> cacheelt;   // xmlNode indexed by id
+  map<string, set<string>> cacheset; // cached ids indexed by tag
+  map<string, void *> userdata;      // userdata attached to state
 } ParserLibXML_State;
 
 static inline G_GNUC_PRINTF (2,3) void
@@ -105,6 +107,7 @@ _st_err (ParserLibXML_State *st, const char *fmt, ...)
 #define ST_ERR_ELT_UNKNOWN_CHILD(st, etl, child)\
   ST_ERR_ELT ((st), (elt), "Unknown child <%s>", (child))
 
+// Index state cache.
 static G_GNUC_UNUSED bool
 st_cache_index (ParserLibXML_State *st, const string &key,
                 map<string, string> **result)
@@ -114,6 +117,22 @@ st_cache_index (ParserLibXML_State *st, const string &key,
     return false;
   tryset (result, &it->second);
   return true;
+}
+
+// Gets userdata attached to state.
+static void *
+st_get_data (ParserLibXML_State *st, const string &key)
+{
+  if (st->userdata.find (key) == st->userdata.end ())
+    return nullptr;
+  return st->userdata[key];
+}
+
+// Attaches userdata to state.
+static void
+st_set_data (ParserLibXML_State *st, const string &key, void *value)
+{
+  st->userdata[key] = value;
 }
 
 
@@ -165,6 +184,8 @@ NCL_ELT_POP_DECL  (body)
 NCL_ELT_PUSH_DECL (port)
 NCL_ELT_PUSH_DECL (media)
 NCL_ELT_PUSH_DECL (property)
+NCL_ELT_PUSH_DECL (region)
+NCL_ELT_POP_DECL  (region)
 NCL_ELT_PUSH_DECL (descriptorParam)
 
 // Element map.
@@ -213,7 +234,7 @@ static map<string, NclEltInfo> ncl_eltmap =
     {"region", false}}},
  },
  {"region",
-  {nullptr, nullptr, true, {"region", "regionBase"},
+  {ncl_push_region, ncl_pop_region, true, {"region", "regionBase"},
    {{"id", true},
     {"title", false},
     {"left", false},
@@ -528,6 +549,95 @@ ncl_push_property (ParserLibXML_State *st,
 }
 
 static bool
+ncl_push_region (ParserLibXML_State *st,
+                 unused (xmlNode *elt),
+                 map<string, string> *attr,
+                 unused (Entity **entity))
+{
+  static int last_zorder = 0;
+  GingaRect screen_rect;
+  GingaRect parent_rect;
+  GingaRect rect;
+  string value;
+
+  g_assert_nonnull (elt->parent);
+  if (toString (elt->parent->name) != "region") // root region
+    {
+      GingaRect *saved_rect = new GingaRect;
+      *saved_rect = screen_rect = st->rect;
+      st_set_data (st, "saved_rect", saved_rect);
+    }
+  else
+    {
+      GingaRect *saved_rect = (GingaRect *) st_get_data (st, "saved_rect");
+      screen_rect = *saved_rect;
+    }
+
+  rect = parent_rect = st->rect;
+  if (ncl_attrmap_index (attr, "left", &value))
+    {
+      rect.x += ginga_parse_percent (value, parent_rect.width, 0, G_MAXINT);
+    }
+  if (ncl_attrmap_index (attr, "top", &value))
+    {
+      rect.y += ginga_parse_percent
+        (value, parent_rect.height, 0, G_MAXINT);
+    }
+  if (ncl_attrmap_index (attr, "width", &value))
+    {
+      rect.width = ginga_parse_percent
+        (value, parent_rect.width, 0, G_MAXINT);
+    }
+  if (ncl_attrmap_index (attr, "height", &value))
+    {
+      rect.height = ginga_parse_percent
+        (value, parent_rect.height, 0, G_MAXINT);
+    }
+  if (ncl_attrmap_index (attr, "right", &value))
+    {
+      rect.x += parent_rect.width - rect.width
+        - ginga_parse_percent (value, parent_rect.width, 0, G_MAXINT);
+    }
+  if (ncl_attrmap_index (attr, "bottom", &value))
+    {
+      rect.y += parent_rect.height - rect.height
+        - ginga_parse_percent (value, parent_rect.height, 0, G_MAXINT);
+    }
+
+  st->rect = rect;
+  (*attr)["zorder"] = xstrbuild ("%d", last_zorder++);
+  (*attr)["left"] = xstrbuild
+    ("%.2f%%", ((double) rect.x / screen_rect.width) * 100.);
+  (*attr)["top"] = xstrbuild
+    ("%.2f%%", ((double) rect.y / screen_rect.height) * 100.);
+  (*attr)["width"] = xstrbuild
+    ("%.2f%%", ((double) rect.width / screen_rect.width) * 100.);
+  (*attr)["height"] = xstrbuild
+    ("%.2f%%", ((double) rect.height / screen_rect.height) * 100.);
+
+  return true;
+}
+
+static bool
+ncl_pop_region (ParserLibXML_State *st,
+                unused (xmlNode *elt),
+                unused (map<string, string> *attr),
+                unused (vector<xmlNode *> *children),
+                unused (Entity *entity))
+{
+  g_assert_nonnull (elt->parent);
+  if (toString (elt->parent->name) != "region") // root region
+    {
+      GingaRect *saved_rect;
+      saved_rect = (GingaRect *) st_get_data (st, "saved_rect");
+      g_assert_nonnull (saved_rect);
+      st->rect = *saved_rect;
+      delete saved_rect;
+    }
+  return true;
+}
+
+static bool
 ncl_push_descriptorParam (ParserLibXML_State *st,
                           xmlNode *elt,
                           map<string, string> *attr,
@@ -556,7 +666,8 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
   NclEltInfo *einfo;
   bool status;
 
-  map<string, string> attr;
+  map<string, string> _attr;
+  map<string, string> *attr = &_attr;
   Entity *entity;
   map<string, bool> possible;
   vector<xmlNode *> children;
@@ -612,14 +723,14 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
           status = ST_ERR_ELT_MISSING_ATTR (st, elt, ainfo.name.c_str ());
           goto done;
         }
-      attr[ainfo.name] = value;
+      (*attr)[ainfo.name] = value;
     }
 
   // Check for unknown attributes.
   for (xmlAttr *prop = elt->properties; prop != nullptr; prop = prop->next)
     {
       string name = toString (prop->name);
-      if (unlikely (attr.find (name) == attr.end ()))
+      if (unlikely (attr->find (name) == attr->end ()))
         {
           status = ST_ERR_ELT_UNKNOWN_ATTR (st, elt, name.c_str ());
           goto done;
@@ -627,13 +738,13 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
     }
 
   // Collect id.
-  if (ncl_attrmap_index (&attr, "id", nullptr))
+  if (ncl_attrmap_index (attr, "id", nullptr))
     {
       string id;
       const char *str;
       char c;
 
-      id = ncl_attrmap_get (&attr, "id");
+      id = ncl_attrmap_get (attr, "id");
 
       // Check if id is valid.
       str = id.c_str ();
@@ -661,9 +772,10 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
       // Insert attr-map and element's node into cache.
       if (einfo->cache)
         {
-          st->cache[id] = map<string, string> (attr);
+          st->cache[id] = map<string, string> (_attr);
           st->cacheelt[id] = elt;
           st->cacheset[tag].insert (id);
+          attr = &st->cache[id];
         }
     }
   else
@@ -673,7 +785,7 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
 
   // Push element.
   entity = nullptr;
-  if (unlikely (einfo->push && !einfo->push (st, elt, &attr, &entity)))
+  if (unlikely (einfo->push && !einfo->push (st, elt, attr, &entity)))
     {
       status = false;
       goto done;
@@ -708,7 +820,7 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
 
   // Pop element.
   if (einfo->pop)
-    status = einfo->pop (st, elt, &attr, &children, entity);
+    status = einfo->pop (st, elt, attr, &children, entity);
 
   // Pop entity stack.
   if (entity != nullptr)
@@ -719,11 +831,12 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
 }
 
 static NclDocument *
-processDoc (xmlDoc *doc, string *errmsg)
+processDoc (xmlDoc *doc, int width, int height, string *errmsg)
 {
   ParserLibXML_State st;
   xmlNode *root;
 
+  st.rect = {0, 0, width, height};
   st.ncl = nullptr;
   st.doc = doc;
 
@@ -743,11 +856,8 @@ processDoc (xmlDoc *doc, string *errmsg)
 }
 
 NclDocument *
-ParserLibXML::parseBuffer (const void *buf,
-                           size_t size,
-                           unused (int width),
-                           unused (int height),
-                           string *errmsg)
+ParserLibXML::parseBuffer (const void *buf, size_t size,
+                           int width, int height, string *errmsg)
 {
 # define FLAGS (XML_PARSE_NOERROR | XML_PARSE_NOWARNING)
   xmlDoc *doc;
@@ -763,15 +873,13 @@ ParserLibXML::parseBuffer (const void *buf,
       return nullptr;
     }
 
-  ncl = processDoc (doc, errmsg);
+  ncl = processDoc (doc, width, height, errmsg);
   xmlFreeDoc (doc);
   return ncl;
 }
 
 NclDocument *
-ParserLibXML::parseFile (const string &path,
-                         unused (int width),
-                         unused (int height),
+ParserLibXML::parseFile (const string &path, int width, int height,
                          string *errmsg)
 {
   xmlDoc *doc;
@@ -786,7 +894,7 @@ ParserLibXML::parseFile (const string &path,
       return nullptr;
     }
 
-  ncl = processDoc (doc, errmsg);
+  ncl = processDoc (doc, width, height, errmsg);
   xmlFreeDoc (doc);
   return ncl;
 }
