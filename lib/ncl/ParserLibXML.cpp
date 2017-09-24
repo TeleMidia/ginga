@@ -50,8 +50,8 @@ typedef struct ParserLibXML_State
   NclDocument *ncl;                     // NCL tree
   vector<Entity *> stack;               // NCL entity stack
   string errmsg;                        // last error message
-  ParserLibXML_Cache cache;             // attr-maps indexed by ids
-  map<string, xmlNode *> cacheelt;      // xml-nodes indexed by ids
+  ParserLibXML_Cache cache;             // attrmap indexed by id
+  map<string, xmlNode *> cacheelt;      // xmlNode indexed by id
   map<string, set<string>> cacheset;    // cached ids indexed by tag
 } ParserLibXML_State;
 
@@ -142,7 +142,7 @@ typedef struct NclEltInfo
 {
   NclEltPushFunc *push;           // push function
   NclEltPopFunc *pop;             // pop function
-  bool cache;                     // whether to cache attr-map
+  bool cache;                     // whether to cache it
   vector<string> parents;         // possible parents
   vector<NclAttrInfo> attributes; // attributes
 } NclEltInfo;
@@ -170,6 +170,9 @@ NCL_ELT_PUSH_DECL (descriptorParam)
 // Element map.
 static map<string, NclEltInfo> ncl_eltmap =
 {
+ //
+ // Elements that are converted to entities.
+ //
  {"ncl",
   {ncl_push_ncl, ncl_pop_ncl, false, {},
    {{"id", false},
@@ -181,7 +184,7 @@ static map<string, NclEltInfo> ncl_eltmap =
    {{"id", false}}},
  },
  {"port",
-  {ncl_push_port, nullptr, false, {"body", "context"},
+  {ncl_push_port, nullptr, true, {"body", "context"},
    {{"id", true},
     {"component", true},
     {"interface", false}}},
@@ -197,7 +200,9 @@ static map<string, NclEltInfo> ncl_eltmap =
   {{"name", true},
    {"value", false}}},
  },
- // Elements with no external representation:
+ //
+ // Elements that are not converted to entities:
+ //
  {"head",
   {nullptr, nullptr, false, {"ncl"}, {}},
  },
@@ -253,7 +258,7 @@ ncl_eltmap_index (const string &tag, NclEltInfo **result)
   return true;
 }
 
-// Gets possible children for a given element.
+// Gets possible children of a given element.
 static map<string, bool>
 ncl_eltmap_get_possible_children (const string &tag)
 {
@@ -319,7 +324,7 @@ ncl_pop_ncl (unused (ParserLibXML_State *st),
 {
   bool status = true;
 
-  // Resolve references to regions.
+  // Resolve descriptor's references to regions.
   for (auto desc_id: st->cacheset["descriptor"])
     {
       map<string, string> *desc_attr;
@@ -352,7 +357,7 @@ ncl_pop_ncl (unused (ParserLibXML_State *st),
         }
     }
 
-  // Resolve references to descriptors.
+  // Resolve media's references to descriptors.
   for (auto media_id: st->cacheset["media"])
     {
       map<string, string> *media_attr;
@@ -421,45 +426,42 @@ ncl_pop_body (unused (ParserLibXML_State *st),
   context = cast (Context *, entity);
   g_assert_nonnull (context);
 
+  // Resolve port's references.
   for (auto port: *context->getPorts ())
     {
-      bool status;
-      xmlNode *portelt;
-      string *comp;
-      string *iface;
+      map<string, string> *port_attr;
+      xmlNode *port_elt;
+      string port_id;
+      string comp;
+      string iface;
+
       Node *node;
       Anchor *anchor;
 
-      status = true;
+      port_id = port->getId ();
+      g_assert (st_cache_index (st, port_id, &port_attr));
 
-      portelt = (xmlNode *) port->getData ("xmlElt");
-      port->setData ("xmlElt", nullptr);
+      port_elt = st->cacheelt[port_id];
+      g_assert_nonnull (port_elt);
 
-      comp = (string *) port->getData ("component");
-      port->setData ("component", nullptr);
-
-      iface = (string *) port->getData ("interface");
-      port->setData ("interface", nullptr);
-
-      node = cast (Node *, st->ncl->getEntityById (*comp));
+      comp = ncl_attrmap_get (port_attr, "component");
+      node = cast (Node *, st->ncl->getEntityById (comp));
       if (unlikely (node == nullptr))
         {
-          status = ST_ERR_ELT_BAD_ATTR
-            (st, portelt, "component", comp->c_str (), "no such element");
-          goto done;
+          return ST_ERR_ELT_BAD_ATTR
+            (st, port_elt, "component", comp.c_str (), "no such element");
         }
       port->setNode (node);
 
       anchor = nullptr;
-      if (iface != nullptr)
+      if (ncl_attrmap_index (port_attr, "interface", &iface))
         {
-          anchor = node->getAnchor (*iface);
+          anchor = node->getAnchor (iface);
           if (unlikely (anchor == nullptr))
             {
-              status = ST_ERR_ELT_BAD_ATTR
-                (st, portelt, "interface", comp->c_str (),
+              return ST_ERR_ELT_BAD_ATTR
+                (st, port_elt, "interface", comp.c_str (),
                  "no such interface");
-              goto done;
             }
         }
       else
@@ -467,14 +469,6 @@ ncl_pop_body (unused (ParserLibXML_State *st),
           anchor = node->getLambda ();
         }
       port->setInterface (anchor);
-
-    done:
-      delete comp;
-      if (iface != nullptr)
-        delete iface;
-
-      if (!status)
-        return false;
     }
   return true;
 }
@@ -487,20 +481,8 @@ ncl_push_port (ParserLibXML_State *st,
 {
   Port *port;
   Context *context;
-  string comp;
-  string iface;
 
   port = new Port (st->ncl, ncl_attrmap_get (attr, "id"));
-  port->setData ("xmlElt", elt);
-
-  comp = ncl_attrmap_get (attr, "component");
-  port->setData ("component", new string (comp));
-  if (ncl_attrmap_index (attr, "interface", nullptr))
-    {
-      iface = ncl_attrmap_get (attr, "interface");
-      port->setData ("interface", new string (iface));
-    }
-
   context = cast (Context *, st->stack.back ());
   g_assert_nonnull (context);
   context->addPort (port);
@@ -771,7 +753,8 @@ ParserLibXML::parseBuffer (const void *buf,
   xmlDoc *doc;
   NclDocument *ncl;
 
-  doc = xmlReadMemory ((const char *) buf, (int) size, nullptr, nullptr, FLAGS);
+  doc = xmlReadMemory ((const char *) buf, (int) size,
+                       nullptr, nullptr, FLAGS);
   if (unlikely (doc == nullptr))
     {
       xmlError *err = xmlGetLastError ();
