@@ -1,10 +1,10 @@
-#include "widget.h"
+#include "runview.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
   QApplication a(argc, argv);
-  Widget w;
+  RunView w;
   w.show();
 
   return a.exec();
