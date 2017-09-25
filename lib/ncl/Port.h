@@ -22,12 +22,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
+class Composition;
 class Node;
 class Port : public Anchor
 {
 public:
   Port (NclDocument *, const string &);
   ~Port ();
+
+  void setParent (Composition *);
+  Composition *getParent ();
 
   Node *getNode ();
   void setNode (Node *);
@@ -41,6 +45,7 @@ public:
   vector<Node *> getMapNodeNesting ();
 
 protected:
+  Composition *_parent;
   Node *_node;
   Anchor *_interface;
 };

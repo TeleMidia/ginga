@@ -26,9 +26,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NCL_BEGIN
 
 /**
- * @brief Creates a new component.
+ * @brief Creates a new node.
  * @param ncl Parent document.
- * @param id Component id.
+ * @param id Node id.
  */
 Node::Node (NclDocument *ncl, const string &id) : Entity (ncl, id)
 {
@@ -38,7 +38,7 @@ Node::Node (NclDocument *ncl, const string &id) : Entity (ncl, id)
 }
 
 /**
- * @brief Destroys component.
+ * @brief Destroys node.
  */
 Node::~Node ()
 {
@@ -47,7 +47,8 @@ Node::~Node ()
 }
 
 /**
- * @brief Gets component parent.
+ * @brief Gets node parent.
+ * @return Parent composition.
  */
 Composition *
 Node::getParent ()
@@ -56,7 +57,8 @@ Node::getParent ()
 }
 
 /**
- * @brief Sets component parent.  (Can only be called once.)
+ * @brief Sets node parent.  (Can only be called once.)
+ * @param param Parent composition.
  */
 void
 Node::setParent (Composition *parent)
@@ -67,7 +69,7 @@ Node::setParent (Composition *parent)
 }
 
 /**
- * @brief Adds anchor to component.
+ * @brief Adds anchor to node.
  * @param anchor Anchor.
  */
 void
@@ -78,7 +80,8 @@ Node::addAnchor (Anchor *anchor)
 }
 
 /**
- * @brief Gets all anchors.
+ * @brief Gets node anchors.
+ * @return Node anchors.
  */
 const vector<Anchor *> *
 Node::getAnchors ()
@@ -102,6 +105,7 @@ Node::getAnchor (const string &id)
 
 /**
  * @brief Gets lambda anchor.
+ * @return Lambda anchor.
  */
 Anchor *
 Node::getLambda ()

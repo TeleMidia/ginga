@@ -108,7 +108,7 @@ _st_err (ParserLibXML_State *st, const char *fmt, ...)
   ST_ERR_ELT ((st), (elt), "Unknown child <%s>", (child))
 
 // Index state cache.
-static G_GNUC_UNUSED bool
+static bool
 st_cache_index (ParserLibXML_State *st, const string &key,
                 map<string, string> **result)
 {
@@ -133,6 +133,28 @@ static void
 st_set_data (ParserLibXML_State *st, const string &key, void *value)
 {
   st->userdata[key] = value;
+}
+
+// Resolve id-ref in current state.
+static bool
+st_resolve_idref (ParserLibXML_State *st, const string &id,
+                  set<string> tags, xmlNode **result_elt,
+                  map<string,string> **result_cache)
+{
+  xmlNode *elt = st->cacheelt[id];
+  if (elt == nullptr
+      || elt->type != XML_ELEMENT_NODE
+      || tags.find (toString (elt->name)) == tags.end ())
+    {
+      return false;
+    }
+  else
+    {
+      tryset (result_elt, elt);
+      if (result_cache)
+        g_assert (st_cache_index (st, id, result_cache));
+      return true;
+    }
 }
 
 
@@ -179,8 +201,8 @@ typedef struct NclEltInfo
 
 NCL_ELT_PUSH_DECL (ncl)
 NCL_ELT_POP_DECL  (ncl)
-NCL_ELT_PUSH_DECL (body)
-NCL_ELT_POP_DECL  (body)
+NCL_ELT_PUSH_DECL (context)
+NCL_ELT_POP_DECL  (context)
 NCL_ELT_PUSH_DECL (port)
 NCL_ELT_PUSH_DECL (media)
 NCL_ELT_PUSH_DECL (property)
@@ -201,8 +223,12 @@ static map<string, NclEltInfo> ncl_eltmap =
     {"xmlns", false}}},
  },
  {"body",
-  {ncl_push_body, ncl_pop_body, false, {"ncl"},
+  {ncl_push_context, ncl_pop_context, false, {"ncl"},
    {{"id", false}}},
+ },
+ {"context",
+  {ncl_push_context, ncl_pop_context, true, {"body", "context"},
+   {{"id", true}}},
  },
  {"port",
   {ncl_push_port, nullptr, true, {"body", "context"},
@@ -361,7 +387,8 @@ ncl_pop_ncl (unused (ParserLibXML_State *st),
       desc_elt = st->cacheelt[desc_id];
       g_assert_nonnull (desc_elt);
 
-      if (unlikely (!st_cache_index (st, reg_id, &reg_attr)))
+      if (unlikely (!st_resolve_idref (st, reg_id, {"region"},
+                                       nullptr, &reg_attr)))
         {
           status = ST_ERR_ELT_BAD_ATTR
             (st, desc_elt, "region", reg_id.c_str (), "no such region");
@@ -384,7 +411,6 @@ ncl_pop_ncl (unused (ParserLibXML_State *st),
       map<string, string> *media_attr;
       Media *media;
       xmlNode *media_elt;
-
       map<string, string> *desc_attr;
       string desc_id;
 
@@ -398,7 +424,8 @@ ncl_pop_ncl (unused (ParserLibXML_State *st),
       media_elt = st->cacheelt[media_id];
       g_assert_nonnull (media_elt);
 
-      if (unlikely (!st_cache_index (st, desc_id, &desc_attr)))
+      if (unlikely (!st_resolve_idref (st, desc_id, {"descriptor"},
+                                       nullptr, &desc_attr)))
         {
           status = ST_ERR_ELT_BAD_ATTR
             (st, media_elt, "descriptor", desc_id.c_str (),
@@ -420,27 +447,37 @@ ncl_pop_ncl (unused (ParserLibXML_State *st),
 }
 
 static bool
-ncl_push_body (ParserLibXML_State *st,
-               unused (xmlNode *elt),
-               map<string, string> *attr,
-               Entity **entity)
+ncl_push_context (ParserLibXML_State *st,
+                  xmlNode *elt,
+                  map<string, string> *attr,
+                  Entity **entity)
 {
-  Context *body;
+  Context *context;
   string id;
 
   id = ncl_attrmap_opt_get (attr, "id", st->ncl->getId ());
-  body = st->ncl->getRoot ();
-  g_assert_nonnull (body);
-  *entity = body;               // push onto stack
+  if (toString (elt->name) == "body")
+    {
+      context = st->ncl->getRoot ();
+    }
+  else
+    {
+      Composition *parent = cast (Composition *, st->stack.back ());
+      g_assert_nonnull (parent);
+      context = new Context (st->ncl, id);
+      parent->addNode (context);
+    }
+  g_assert_nonnull (context);
+  *entity = context;            // push onto stack
   return true;
 }
 
 static bool
-ncl_pop_body (unused (ParserLibXML_State *st),
-              unused (xmlNode *elt),
-              unused (map<string, string> *attr),
-              unused (vector<xmlNode *> *children),
-              unused (Entity *entity))
+ncl_pop_context (unused (ParserLibXML_State *st),
+                 unused (xmlNode *elt),
+                 unused (map<string, string> *attr),
+                 unused (vector<xmlNode *> *children),
+                 unused (Entity *entity))
 {
   Context *context;
 
@@ -453,8 +490,8 @@ ncl_pop_body (unused (ParserLibXML_State *st),
       map<string, string> *port_attr;
       xmlNode *port_elt;
       string port_id;
-      string comp;
-      string iface;
+      string comp_id;
+      string iface_id;
 
       Node *node;
       Anchor *anchor;
@@ -465,23 +502,33 @@ ncl_pop_body (unused (ParserLibXML_State *st),
       port_elt = st->cacheelt[port_id];
       g_assert_nonnull (port_elt);
 
-      comp = ncl_attrmap_get (port_attr, "component");
-      node = cast (Node *, st->ncl->getEntityById (comp));
-      if (unlikely (node == nullptr))
+      comp_id = ncl_attrmap_get (port_attr, "component");
+      if (unlikely (!st_resolve_idref (st, comp_id, {"context", "media"},
+                                       nullptr, nullptr)))
         {
           return ST_ERR_ELT_BAD_ATTR
-            (st, port_elt, "component", comp.c_str (), "no such element");
+            (st, port_elt, "component", comp_id.c_str (),
+             "no such component");
+        }
+
+      node = cast (Node *, st->ncl->getEntityById (comp_id));
+      g_assert_nonnull (node);
+      if (unlikely (node->getParent () != port->getParent ()))
+        {
+          return ST_ERR_ELT_BAD_ATTR
+            (st, port_elt, "component", comp_id.c_str (),
+             "no such component in scope");
         }
       port->setNode (node);
 
       anchor = nullptr;
-      if (ncl_attrmap_index (port_attr, "interface", &iface))
+      if (ncl_attrmap_index (port_attr, "interface", &iface_id))
         {
-          anchor = node->getAnchor (iface);
+          anchor = node->getAnchor (iface_id);
           if (unlikely (anchor == nullptr))
             {
               return ST_ERR_ELT_BAD_ATTR
-                (st, port_elt, "interface", comp.c_str (),
+                (st, port_elt, "interface", iface_id.c_str (),
                  "no such interface");
             }
         }

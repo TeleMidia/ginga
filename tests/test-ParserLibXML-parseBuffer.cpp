@@ -53,6 +53,12 @@ check_success (const string &buf)
 int
 main (void)
 {
+
+
+// -------------------------------------------------------------------------
+// General errors.
+// -------------------------------------------------------------------------
+
   // Error: XML error.
   g_assert (check_failure ("<a>"));
 
@@ -62,27 +68,13 @@ main (void)
   // Error: Bad parent.
   g_assert (check_failure ("<head/>"));
 
-  // Empty document.
-  {
-    NclDocument *ncl = check_success ("\
-<ncl>\n\
- <head/>\n\
- <body/>\n\
-</ncl>\n\
-");
-    g_assert_nonnull (ncl);
-    g_assert (ncl->getId () == "ncl");
-    Context *body = ncl->getRoot ();
-    g_assert_nonnull (body);
-    g_assert (body->getId () == ncl->getId ());
-    g_assert (body->getPorts ()->size () == 0);
-    g_assert (body->getNodes ()->size () == 0);
-    g_assert (body->getLinks ()->size () == 0);
-    delete ncl;
-  }
-
   // Error: ncl: Bad id.
   g_assert (check_failure ("<ncl id='@'/>"));
+
+
+// -------------------------------------------------------------------------
+// Port.
+// -------------------------------------------------------------------------
 
   // Error: Port: Missing id.
   g_assert (check_failure ("\
@@ -103,6 +95,65 @@ main (void)
  </body>\n\
 </ncl>\n\
 "));
+
+  // Error: Port: Bad component.
+  g_assert (check_failure ("\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <port id='p' component='p'/>\n\
+ </body>\n\
+</ncl>\n\
+"));
+
+  g_assert (check_failure ("\
+<ncl>\n\
+ <head>\n\
+  <regionBase id='r'/>\n\
+ </head>\n\
+ <body>\n\
+  <port id='p' component='r'/>\n\
+ </body>\n\
+</ncl>\n\
+"));
+
+  g_print ("AAAAAAAAAAAAAAAAAA\n");
+  g_assert (check_failure ("\
+<ncl>\n\
+ <body>\n\
+  <port id='p' component='b'/>\n\
+  <context id='a'>\n\
+   <context id='b'/>\n\
+  </context>\n\
+ </body>\n\
+</ncl>\n\
+"));
+
+  // Error: Port: Bad interface.
+  g_assert (check_failure ("\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <port id='p' component='r' interface='i'/>\n\
+ </body>\n\
+</ncl>\n\
+"));
+
+  g_assert (check_failure ("\
+<ncl>\n\
+ <head>\n\
+  <regionBase id='r'/>\n\
+ </head>\n\
+ <body>\n\
+  <port id='p' component='r' interface='r'/>\n\
+ </body>\n\
+</ncl>\n\
+"));
+
+
+// -------------------------------------------------------------------------
+// Media.
+// -------------------------------------------------------------------------
 
   // Error: Media: Missing id.
   g_assert (check_failure ("\
@@ -135,7 +186,73 @@ main (void)
 </ncl>\n\
 "));
 
-  // Success.
+  g_assert (check_failure ("\
+<ncl>\n\
+ <head>\n\
+  <regionBase>\n\
+   <region id='r'/>\n\
+  </regionBase>\n\
+ </head>\n\
+ <body>\n\
+  <media id='a' descriptor='r'/>\n\
+ </body>\n\
+</ncl>\n\
+"));
+
+
+// -------------------------------------------------------------------------
+// Descriptor.
+// -------------------------------------------------------------------------
+
+  // Error: Descriptor: Bad region.
+  g_assert (check_failure ("\
+<ncl>\n\
+ <head>\n\
+  <descriptorBase>\n\
+   <descriptor id='d' region='nonexistent'/>\n\
+  </descriptorBase>\n\
+ </head>\n\
+ <body/>\n\
+</ncl>\n\
+"));
+
+  g_assert (check_failure ("\
+<ncl>\n\
+ <head>\n\
+  <descriptorBase>\n\
+   <descriptor id='r'/>\n\
+   <descriptor id='d' region='r'/>\n\
+  </descriptorBase>\n\
+ </head>\n\
+ <body/>\n\
+</ncl>\n\
+"));
+
+
+// -------------------------------------------------------------------------
+// Sanity checks.
+// -------------------------------------------------------------------------
+
+  // Success: Empty document.
+  {
+    NclDocument *ncl = check_success ("\
+<ncl>\n\
+ <head/>\n\
+ <body/>\n\
+</ncl>\n\
+");
+    g_assert_nonnull (ncl);
+    g_assert (ncl->getId () == "ncl");
+    Context *body = ncl->getRoot ();
+    g_assert_nonnull (body);
+    g_assert (body->getId () == ncl->getId ());
+    g_assert (body->getPorts ()->size () == 0);
+    g_assert (body->getNodes ()->size () == 0);
+    g_assert (body->getLinks ()->size () == 0);
+    delete ncl;
+  }
+
+  // Success: Misc checks.
   {
     NclDocument *ncl = check_success ("\
 <ncl>\n\
@@ -158,6 +275,12 @@ main (void)
    <property name='size' value='100%,100%'/>\n\
    <property name='zIndex' value='3'/>\n\
   </media>\n\
+  <port id='p2' component='c'/>\n\
+  <context id='c'>\n\
+   <port id='p3' component='m2'/>\n\
+   <media id='m2'>\n\
+   </media>\n\
+  </context>\n\
  </body>\n\
 </ncl>\n\
 ");
@@ -166,8 +289,8 @@ main (void)
     Context *body = ncl->getRoot ();
     g_assert_nonnull (body);
     g_assert (body->getId () == ncl->getId ());
-    g_assert (body->getPorts ()->size () == 2);
-    g_assert (body->getNodes ()->size () == 1);
+    g_assert (body->getPorts ()->size () == 3);
+    g_assert (body->getNodes ()->size () == 2);
     g_assert (body->getLinks ()->size () == 0);
 
     Entity *port = ncl->getEntityById ("p");
