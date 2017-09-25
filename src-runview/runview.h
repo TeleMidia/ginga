@@ -19,7 +19,7 @@ public:
   void start (const std::string &);
 
 protected:
-  void paintEvent(QPaintEvent *);
+  void paintEvent (QPaintEvent *);
 
 private:
   Ui::RunView *_ui;
