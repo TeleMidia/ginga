@@ -28,6 +28,7 @@ GINGA_NCL_BEGIN
  */
 Port::Port (NclDocument *ncl, const string &id) : Anchor (ncl, id)
 {
+  _parent = nullptr;
   _node = nullptr;
   _interface = nullptr;
 }
@@ -37,6 +38,28 @@ Port::Port (NclDocument *ncl, const string &id) : Anchor (ncl, id)
  */
 Port::~Port ()
 {
+}
+
+/**
+ * @brief Gets port parent.
+ * @return Parent composition.
+ */
+Composition *
+Port::getParent ()
+{
+  return _parent;
+}
+
+/**
+ * @brief Sets port parent.  (Can only be called once.)
+ * @param param Parent composition.
+ */
+void
+Port::setParent (Composition *parent)
+{
+  g_assert_null (_parent);
+  g_assert_nonnull (parent);
+  _parent = parent;
 }
 
 /**

@@ -105,7 +105,9 @@ Composition::getNestedNode (const string &id)
 void
 Composition::addPort (Port *port)
 {
+  g_assert_nonnull (port);
   _ports.push_back (port);
+  port->setParent (this);
 }
 
 /**
