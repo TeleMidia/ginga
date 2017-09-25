@@ -193,7 +193,6 @@ set (LIBGINGA_LIBS
 
   ${LIBXML2_LIBRARIES}
   ${GDKPIXBUF_LIBRARIES}
-  ${GDK3_LIBRARIES}
 
   ${CAIRO_LIBRARIES}
   ${PANGO_LIBRARIES}
@@ -260,8 +259,39 @@ if (WITH_GINGA_GTK)
   set_target_properties(ginga-gtk PROPERTIES RUNTIME_OUTPUT_DIRECTORY bin/)
 endif()
 
+# nclcomposer's run-view target
 if (WITH_RUNVIEW)
-  include (runview.cmake)
+  set(CMAKE_INCLUDE_CURRENTDIR ON)
+  set(CMAKE_AUTOMOC ON)
+  set(CMAKE_AUTORCC ON)
+  set(CMAKE_AUTOUIC ON)
+
+  # Find the QtWidgets library
+  find_package (Qt5 REQUIRED COMPONENTS Core Widgets)
+
+  add_executable (runview
+    ../src-runview/main.cpp
+    ../src-runview/runview.cpp
+    ../src-runview/runview.h
+
+    ../src-runview/runview.ui
+  )
+
+  target_link_libraries (runview
+    Qt5::Core
+    Qt5::Widgets
+
+    libginga
+  )
+
+  target_include_directories(runview PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_BINARY_DIR}
+
+    ${LIBGINGA_INCLUDE_DIRS}
+  )
+
+  set_target_properties(runview PROPERTIES RUNTIME_OUTPUT_DIRECTORY bin/)
 endif ()
 
 # Copy datafiles to build dir
