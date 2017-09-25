@@ -23,9 +23,9 @@ cairo_t *cr;
 
 int abc = 0;
 
-RunView::RunView(QWidget *parent) :
-  QWidget(parent),
-  _ui(new Ui::RunView)
+RunView::RunView (QWidget *parent) :
+  QWidget (parent),
+  _ui (new Ui::RunView)
 {
   _ui->setupUi(this);
 
@@ -36,7 +36,7 @@ RunView::RunView(QWidget *parent) :
   opts.width = 800;
   opts.height = 600;
   opts.experimental = FALSE;
-  opts.background = "";
+  opts.background = "black";
 
   char **argv;
   GINGA = Ginga::create (0, argv, &opts);
@@ -69,23 +69,13 @@ RunView::paintEvent(QPaintEvent *e)
 {
   GINGA->redraw (cr);
 
-  QImage img(cairo_image_surface_get_data (surface),
-             cairo_image_surface_get_width (surface),
-             cairo_image_surface_get_height (surface),
-             QImage::Format_ARGB32_Premultiplied);
+  QImage img (cairo_image_surface_get_data (surface),
+              cairo_image_surface_get_width (surface),
+              cairo_image_surface_get_height (surface),
+              QImage::Format_ARGB32_Premultiplied);
 
   g_assert_cmpuint(img.bytesPerLine(), ==, cairo_image_surface_get_stride(surface));
 
-  img.save (QString("/tmp/image") + abc + ".png");
-  QPainter painter;
-  painter.begin(this);
-  painter.setBackgroundMode(Qt::TransparentMode);
-  painter.setRenderHint(QPainter::Antialiasing);
-
-  const QRect & rect = e->rect();
-  painter.eraseRect(rect);
-  painter.setRenderHint(QPainter::Antialiasing);
-
+  QPainter painter (this);
   painter.drawImage(10,10, img);
-  painter.end();
 }
