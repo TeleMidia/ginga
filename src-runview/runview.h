@@ -17,12 +17,17 @@ public:
   virtual ~RunView();
 
   void start (const std::string &);
+  void stop ();
 
 protected:
   void paintEvent (QPaintEvent *);
 
+protected Q_SLOTS:
+  void redrawGinga ();
+
 private:
   Ui::RunView *_ui;
+  QImage img;
 };
 
 #endif // WIDGET_H
