@@ -174,6 +174,10 @@ Player::Player (GingaState *ginga, const string &id, const string &uri)
   _bgColor = {0, 0, 0, 0};      // none
   _visible = true;
   _duration = GINGA_TIME_NONE;
+
+  // Initializes player rectangle.
+  this->setProperty ("width", "100%");
+  this->setProperty ("height", "100%");
 }
 
 /**
