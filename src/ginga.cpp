@@ -367,6 +367,7 @@ main (int argc, char **argv)
   g_assert_nonnull (GINGA);
 
   // Run each NCL file, one after another.
+  int fail_count = 0;
   for (int i = 1; i < saved_argc; i++)
     {
       string errmsg;
@@ -376,6 +377,7 @@ main (int argc, char **argv)
           if (saved_argc > 2)
             g_printerr ("%s: ", saved_argv[i]);
           g_printerr ("%s\n", errmsg.c_str ());
+          fail_count++;
           continue;
         }
       gtk_widget_show_all (app);
@@ -387,5 +389,5 @@ main (int argc, char **argv)
   delete GINGA;
   g_strfreev (saved_argv);
 
-  exit (EXIT_SUCCESS);
+  exit (fail_count);
 }
