@@ -24,7 +24,7 @@ add_definitions(-DWITH_PANGO=1 -DWITH_GSTREAMER=1)
 
 find_package(GTK3)
 if (GTK3_FOUND)
-  set (WITH_GINGA_GTK ON)
+  set (WITH_GINGAGUI_GTK ON)
 endif()
 
 # NCLUA download/configure/build/install
@@ -227,6 +227,7 @@ set (GINGAGUI_GTK_SOURCES
   ../src-gui/view/BigPictureWindow.cpp
   ../src-gui/view/Draw.cpp
   ../src-gui/view/FullscreenWindow.cpp
+  ../src-gui/view/HelpWindow.cpp
   ../src-gui/view/MainWindow.cpp
   ../src-gui/view/TvControlWindow.cpp
 )
@@ -252,20 +253,20 @@ add_executable (ginga ../src/ginga.cpp)
 target_include_directories (ginga PRIVATE ${GTK3_INCLUDE_DIRS})
 target_link_libraries (ginga PRIVATE libginga ${GTK3_LIBRARIES})
 
-# ginga-gtk target
-if (WITH_GINGA_GTK)
-  add_executable (ginga-gtk ${GINGAGUI_GTK_SOURCES})
-  target_include_directories (ginga-gtk PRIVATE ${GINGAGUI_GTK_INCLUDE_DIRS})
-  target_link_libraries (ginga-gtk PRIVATE libginga ${GTK3_LIBRARIES})
-  set_target_properties(ginga-gtk PROPERTIES RUNTIME_OUTPUT_DIRECTORY bin/)
+# gingagui target
+if (WITH_GINGAGUI_GTK)
+  add_executable (gingagui ${GINGAGUI_GTK_SOURCES})
+  target_include_directories (gingagui PRIVATE ${GINGAGUI_GTK_INCLUDE_DIRS})
+  target_link_libraries (gingagui PRIVATE libginga ${GTK3_LIBRARIES})
+  set_target_properties(gingagui PROPERTIES RUNTIME_OUTPUT_DIRECTORY bin/)
 endif()
 
 # nclcomposer's run-view target
 if (WITH_RUNVIEW)
-  set(CMAKE_INCLUDE_CURRENTDIR ON)
-  set(CMAKE_AUTOMOC ON)
-  set(CMAKE_AUTORCC ON)
-  set(CMAKE_AUTOUIC ON)
+  set (CMAKE_INCLUDE_CURRENTDIR ON)
+  set (CMAKE_AUTOMOC ON)
+  set (CMAKE_AUTORCC ON)
+  set (CMAKE_AUTOUIC ON)
 
   # Find the QtWidgets library
   find_package (Qt5 REQUIRED COMPONENTS Core Widgets)
@@ -346,7 +347,10 @@ CMAKE_CXX_FLAGS:	${CMAKE_CXX_FLAGS}
 
 Optional dependencies:
 with cef:		${WITH_CEF}
-with ginga-gtk:		${WITH_GINGA_GTK}
+
+Optional executables:
+ginga-gui (gtk):	${WITH_GINGAGUI_GTK}
+ginga-runview:          ${WITH_RUNVIEW}
 ")
  
 set (CPACK_PACKAGE_NAME ginga-idtv)
