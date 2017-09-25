@@ -13,11 +13,7 @@
   <property name="windowTitle">
    <string>Widget</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
-   <item>
-    <widget class="QGraphicsView" name="graphicsView"/>
-   </item>
-  </layout>
+  <layout class="QHBoxLayout" name="horizontalLayout"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
