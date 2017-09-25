@@ -18,6 +18,8 @@ Ginga TODO                                                     -*-outline-*-
   + Focus navigation is not supported.
   + NCL media objects are not supported.
   + Element <descriptorSwitch> is not supported.
+  + In Debian Stretch (Pulseaudio version 10.0-1+deb9u1), Ginga sets the
+  system volume to 100%. A workaround is to use Alsa output in Ginga.
 
 
 Local Variables:
