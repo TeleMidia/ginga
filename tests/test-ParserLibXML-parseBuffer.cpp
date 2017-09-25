@@ -26,7 +26,7 @@ check_failure (const string &buf)
   NclDocument *ncl;
   string msg = "";
 
-  ncl = ParserLibXML::parseBuffer (buf.c_str (), buf.length (), 0, 0, &msg);
+  ncl = ParserLibXML::parseBuffer (buf.c_str (), buf.length (), 100, 100, &msg);
   if (ncl == nullptr && msg != "")
     {
       g_printerr ("%s\n", msg.c_str ());
@@ -41,7 +41,7 @@ check_success (const string &buf)
   NclDocument *ncl;
   string msg = "";
 
-  ncl = ParserLibXML::parseBuffer (buf.c_str (), buf.length (), 0, 0, &msg);
+  ncl = ParserLibXML::parseBuffer (buf.c_str (), buf.length (), 100, 100, &msg);
   if (msg != "")
     {
       g_printerr ("Unexpected error: %s", msg.c_str ());
@@ -67,6 +67,15 @@ main (void)
 
   // Error: Bad parent.
   g_assert (check_failure ("<head/>"));
+
+  // Error: Bad child.
+  g_assert (check_failure ("<ncl><media/></ncl>"));
+
+  // Error: Unknown child.
+  g_assert (check_failure ("<ncl><unknown/></ncl>"));
+
+  // Error: Unknown attribute.
+  g_assert (check_failure ("<ncl unknown='unknown'/>"));
 
   // Error: ncl: Bad id.
   g_assert (check_failure ("<ncl id='@'/>"));
@@ -117,7 +126,6 @@ main (void)
 </ncl>\n\
 "));
 
-  g_print ("AAAAAAAAAAAAAAAAAA\n");
   g_assert (check_failure ("\
 <ncl>\n\
  <body>\n\
@@ -132,20 +140,21 @@ main (void)
   // Error: Port: Bad interface.
   g_assert (check_failure ("\
 <ncl>\n\
- <head/>\n\
+ <head>\n\
+  <regionBase id='r'/>\n\
+ </head>\n\
  <body>\n\
-  <port id='p' component='r' interface='i'/>\n\
+  <port id='p' component='m' interface='r'/>\n\
+  <media id='m'/>\n\
  </body>\n\
 </ncl>\n\
 "));
 
   g_assert (check_failure ("\
 <ncl>\n\
- <head>\n\
-  <regionBase id='r'/>\n\
- </head>\n\
  <body>\n\
-  <port id='p' component='r' interface='r'/>\n\
+  <port id='p' component='m' interface='nonexistent'/>\n\
+  <media id='m'/>\n\
  </body>\n\
 </ncl>\n\
 "));
@@ -258,13 +267,20 @@ main (void)
 <ncl>\n\
  <head>\n\
   <regionBase>\n\
-   <region id='r' top='100%' right='25%'/>\n\
+   <region id='r' top='100%' left='25%'>\n\
+    <region id='r1' width='30%'>\n\
+     <region id='r2' bottom='25%' right='25%'>\n\
+      <region id='r3' height='15%' width='50%' zIndex='1'/>\n\
+     </region>\n\
+    </region>\n\
+   </region>\n\
   </regionBase>\n\
   <descriptorBase>\n\
-   <descriptor id='d' left='50%' top='0%' region='r'>\n\
+   <descriptor id='d' left='50%' top='0%' region='r3'>\n\
     <descriptorParam name='top' value='50%'/>\n\
     <descriptorParam name='zIndex' value='2'/>\n\
    </descriptor>\n\
+   <descriptor id='d1'/>\n\
   </descriptorBase>\n\
  </head>\n\
  <body>\n\
@@ -278,7 +294,7 @@ main (void)
   <port id='p2' component='c'/>\n\
   <context id='c'>\n\
    <port id='p3' component='m2'/>\n\
-   <media id='m2'>\n\
+   <media id='m2' src='samples/gnu.png'>\n\
    </media>\n\
   </context>\n\
  </body>\n\
@@ -314,10 +330,10 @@ main (void)
     g_assert (q->getInterface ()->getId () == "background");
 
     g_assert (m->getProperty ("background") == "red");
-    g_assert (m->getProperty ("size") == "100%,100%");
-    g_assert (m->getProperty ("left") == "50%");
-    g_assert (m->getProperty ("right") == "25%");
     g_assert (m->getProperty ("top") == "50%");
+    g_assert (m->getProperty ("left") == "50%");
+    g_assert (m->getProperty ("width") == "15.00%");
+    g_assert (m->getProperty ("height") == "15.00%");
     g_assert (m->getProperty ("zIndex") == "3");
 
     delete ncl;

@@ -571,7 +571,14 @@ ncl_push_media (ParserLibXML_State *st,
     {
       string src = ncl_attrmap_get (attr, "src");
       if (!xpathisuri (src) && !xpathisabs (src))
-        src = xpathbuildabs (xpathdirname (toString (st->doc->URL)), src);
+        {
+          string dir;
+          if (st->doc->URL == nullptr)
+            dir = "";
+          else
+            dir = xpathdirname (toString (st->doc->URL));
+          src = xpathbuildabs (dir, src);
+        }
       media->setSrc (src);
     }
 
@@ -849,17 +856,17 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
       if (child->type != XML_ELEMENT_NODE)
         continue;
 
-      if (unlikely (!processElt (st, child)))
-        {
-         status = false;
-         goto done;
-        }
-
       string child_tag = toString (child->name);
       if (unlikely (possible.find (child_tag) == possible.end ()))
         {
           status = ST_ERR_ELT_UNKNOWN_CHILD (st, elt, child->name);
           goto done;
+        }
+
+      if (unlikely (!processElt (st, child)))
+        {
+         status = false;
+         goto done;
         }
 
       children.push_back (child);
@@ -883,6 +890,8 @@ processDoc (xmlDoc *doc, int width, int height, string *errmsg)
   ParserLibXML_State st;
   xmlNode *root;
 
+  g_assert_cmpint (width, >, 0);
+  g_assert_cmpint (height, >, 0);
   st.rect = {0, 0, width, height};
   st.ncl = nullptr;
   st.doc = doc;

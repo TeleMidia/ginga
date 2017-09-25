@@ -22,9 +22,37 @@ int
 main (void)
 {
   string errmsg;
+  GDir *dir;
+  string path;
+  const gchar *entry;
 
-  g_assert_null (ParserLibXML::parseFile ("nonexistent", 0, 0, &errmsg));
-  g_debug ("%s", errmsg.c_str ());
+  path = xpathbuildabs (TOP_SRCDIR, "tests-ncl");
+  dir = g_dir_open (path.c_str (), 0, nullptr);
+  g_assert_nonnull (dir);
 
+  while ((entry = g_dir_read_name (dir)) != nullptr)
+    {
+      string entry_path;
+      NclDocument *doc;
+      string errmsg;
+
+      entry_path = xpathbuildabs (path, string (entry));
+      if (!xstrhassuffix (entry_path, ".ncl"))
+        continue;
+
+      errmsg = "";
+      doc = ParserLibXML::parseFile (entry_path, 100, 100, &errmsg);
+      if (doc == nullptr)
+        {
+          g_printerr ("%s: %s\n", entry, errmsg.c_str ());
+          g_assert_not_reached ();
+        }
+      else
+        {
+          g_assert (errmsg == "");
+        }
+    }
+
+  g_dir_close (dir);
   exit (EXIT_SUCCESS);
 }
