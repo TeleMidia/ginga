@@ -192,6 +192,7 @@ set (LIBGINGA_LIBS
   ${GLIB_LIBRARIES}
 
   ${LIBXML2_LIBRARIES}
+  ${GDK3_LIBRARIES}
   ${GDKPIXBUF_LIBRARIES}
 
   ${CAIRO_LIBRARIES}
@@ -283,6 +284,8 @@ if (WITH_RUNVIEW)
 
     libginga
   )
+
+  target_compile_definitions(runview PRIVATE -DQT_NO_KEYWORDS)
 
   target_include_directories(runview PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
