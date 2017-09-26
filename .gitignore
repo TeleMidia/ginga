@@ -68,6 +68,17 @@
 /src/Makefile
 /src/Makefile.in
 /src/ginga
+/tests-ncl/Makefile
+/tests-ncl/Makefile.in
+/tests-ncl/test-media-*-4grid.ncl
+/tests-ncl/test-media-*-dimensions.ncl
+/tests-ncl/test-media-*-empty.ncl
+/tests-ncl/test-media-*-explicitDur.ncl
+/tests-ncl/test-media-*-focusIndex.ncl
+/tests-ncl/test-media-*-no-desc.ncl
+/tests-ncl/test-media-*-no-region.ncl
+/tests-ncl/test-media-*-stop-self.ncl
+/tests-ncl/test-media-*-transparency.ncl
 /tests/Makefile
 /tests/Makefile.in
 /tests/env.csh

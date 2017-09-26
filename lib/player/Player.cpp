@@ -176,6 +176,8 @@ Player::Player (GingaState *ginga, const string &id, const string &uri)
   _duration = GINGA_TIME_NONE;
 
   // Initializes player rectangle.
+  this->setProperty ("left", "0%");
+  this->setProperty ("top", "0%");
   this->setProperty ("width", "100%");
   this->setProperty ("height", "100%");
 }
