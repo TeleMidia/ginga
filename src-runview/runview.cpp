@@ -15,12 +15,13 @@ RunView::RunView (QWidget *parent) :
 {
   _ui->setupUi(this);
 
-  _ginga_surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, 800, 600);
+  _ginga_surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
+                                               width (), height ());
   _cr = cairo_create (_ginga_surface);
 
-  _ginga_opts.debug = FALSE;
-  _ginga_opts.width = 800;
-  _ginga_opts.height = 600;
+  _ginga_opts.debug = TRUE;
+  _ginga_opts.width = width ();
+  _ginga_opts.height = height ();
   _ginga_opts.experimental = FALSE;
   _ginga_opts.background = "black";
 
@@ -46,6 +47,14 @@ RunView::start (const string &file)
 }
 
 void
+RunView::resizeEvent(QResizeEvent* event)
+{
+  QWidget::resizeEvent(event);
+
+//  _ginga->resize (width(), height());
+}
+
+void
 RunView::stop ()
 {
   _ginga->stop ();
@@ -56,18 +65,26 @@ RunView::~RunView()
 {
   delete _ui;
   delete _ginga;
+
+  cairo_destroy (_cr);
+  cairo_surface_destroy (_ginga_surface);
 }
 
 void
 RunView::redrawGinga ()
 {
   _ginga->redraw (_cr);
-  _img = QImage (cairo_image_surface_get_data (_ginga_surface),
-                cairo_image_surface_get_width (_ginga_surface),
-                cairo_image_surface_get_height (_ginga_surface),
-                QImage::Format_ARGB32_Premultiplied);
-  g_assert_cmpuint(_img.bytesPerLine(), ==, cairo_image_surface_get_stride(_ginga_surface));
 
+  _img = QImage (cairo_image_surface_get_data (_ginga_surface),
+                 cairo_image_surface_get_width (_ginga_surface),
+                 cairo_image_surface_get_height (_ginga_surface),
+                 QImage::Format_ARGB32_Premultiplied);
+
+  g_assert_cmpuint(_img.bytesPerLine(),
+                   ==,
+                   cairo_image_surface_get_stride(_ginga_surface));
+
+  _img = _img.scaled(width (), height ());
   update ();
 }
 

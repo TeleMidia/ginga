@@ -24,6 +24,7 @@ public:
 
 protected:
   void paintEvent (QPaintEvent *);
+  void resizeEvent(QResizeEvent* event);
 
 protected Q_SLOTS:
   void redrawGinga ();
