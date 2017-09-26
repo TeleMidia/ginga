@@ -7,7 +7,8 @@ int main(int argc, char **argv)
   RunView w;
   w.show();
 
-  w.start ("/home/roberto/workspaces/cpp/ginga/tests-ncl/test-lua-4grid.ncl");
+  if (argc)
+    w.start (argv[1]);
 
   return a.exec();
 }
