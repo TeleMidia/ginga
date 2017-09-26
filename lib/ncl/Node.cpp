@@ -58,7 +58,7 @@ Node::getParent ()
 
 /**
  * @brief Sets node parent.  (Can only be called once.)
- * @param param Parent composition.
+ * @param parent Parent composition.
  */
 void
 Node::setParent (Composition *parent)

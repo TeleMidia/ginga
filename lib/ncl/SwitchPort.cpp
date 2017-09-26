@@ -25,7 +25,6 @@ GINGA_NCL_BEGIN
  * @brief Creates a new switch port.
  * @param ncl Parent document.
  * @param id Switch port id.
- * @param node Parent switch.
  */
 SwitchPort::SwitchPort (NclDocument *ncl, const string &id)
   : Port (ncl, id)

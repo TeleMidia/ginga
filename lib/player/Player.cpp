@@ -89,7 +89,7 @@ static map<string, string> player_property_aliases =
 
 /**
  * @brief Creates a player from a mime-type.
- * @para ginga Ginga state.
+ * @param ginga Ginga state.
  * @param id Object id.
  * @param uri Source URI.
  * @param mime Mime-type of content.

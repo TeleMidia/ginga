@@ -96,7 +96,7 @@ win_cmp_z (Player *p1, Player *p2)
 /**
  * @brief Starts NCL from file.
  * @param file Path to NCL file.
- * @param Address of a variable to store an error message.
+ * @param errmsg Address of a variable to store an error message.
  * @return True if successfully, or false otherwise.
  */
 bool
