@@ -1,11 +1,5 @@
 <ncl>
   <head>
-    <regionBase>
-      <region id="reg" width="100%" height="100%"/>
-    </regionBase>
-    <descriptorBase>
-      <descriptor id="desc" region="reg"/>
-    </descriptorBase>
     <connectorBase>
       <causalConnector id="onBeginSet">
         <connectorParam name="var"/>
@@ -15,8 +9,12 @@
     </connectorBase>
   </head>
   <body>
-    <port id="start" component="image"/>
-    <media id="image" src="samples/vector.svg" descriptor="desc">
+    <port id="start-b" component="b"/>
+    <media id="b">
+      <property name="background" value="pink"/>
+    </media>
+    <port id="start-m" component="m"/>
+    <media id="m" src="@SRC@">
       <area id="a1" begin="1s"/>
       <area id="a2" begin="2s"/>
       <area id="a3" begin="3s"/>
@@ -25,32 +23,32 @@
       <property name="transparency"/>
     </media>
     <link xconnector="onBeginSet">
-      <bind role="onBegin" component="image" interface="a1"/>
-      <bind role="set" component="image" interface="transparency">
+      <bind role="onBegin" component="m" interface="a1"/>
+      <bind role="set" component="m" interface="transparency">
         <bindParam name="var" value="50%"/>
       </bind>
     </link>
     <link xconnector="onBeginSet">
-      <bind role="onBegin" component="image" interface="a2"/>
-      <bind role="set" component="image" interface="transparency">
+      <bind role="onBegin" component="m" interface="a2"/>
+      <bind role="set" component="m" interface="transparency">
         <bindParam name="var" value="75%"/>
       </bind>
     </link>
     <link xconnector="onBeginSet">
-      <bind role="onBegin" component="image" interface="a3"/>
-      <bind role="set" component="image" interface="transparency">
+      <bind role="onBegin" component="m" interface="a3"/>
+      <bind role="set" component="m" interface="transparency">
         <bindParam name="var" value="255"/>
       </bind>
     </link>
     <link xconnector="onBeginSet">
-      <bind role="onBegin" component="image" interface="a4"/>
-      <bind role="set" component="image" interface="transparency">
+      <bind role="onBegin" component="m" interface="a4"/>
+      <bind role="set" component="m" interface="transparency">
         <bindParam name="var" value="127"/>
       </bind>
     </link>
     <link xconnector="onBeginSet">
-      <bind role="onBegin" component="image" interface="a5"/>
-      <bind role="set" component="image" interface="transparency">
+      <bind role="onBegin" component="m" interface="a5"/>
+      <bind role="set" component="m" interface="transparency">
         <bindParam name="var" value="0%"/>
       </bind>
     </link>

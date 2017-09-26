@@ -244,6 +244,7 @@ Makefile
 lib/Makefile
 src/Makefile
 src-gui/Makefile
+tests-ncl/Makefile
 tests/Makefile
 ])
 

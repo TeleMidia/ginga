@@ -15,8 +15,8 @@
     </connectorBase>
   </head>
   <body>
-    <port id="start" component="image"/>
-    <media id="image" src="samples/vector.svg" descriptor="desc">
+    <port id="start" component="m"/>
+    <media id="m" src="@SRC@" descriptor="desc">
       <area id="a1" begin="1s"/>
       <area id="a2" begin="2s"/>
       <area id="a3" begin="3s"/>
@@ -31,46 +31,47 @@
       <property name="bounds"/>
       <property name="location"/>
       <property name="size"/>
+      <property name="background" value="red"/>
     </media>
     <link xconnector="onBeginSet">
-      <bind role="onBegin" component="image" interface="a1"/>
-      <bind role="set" component="image" interface="width">
+      <bind role="onBegin" component="m" interface="a1"/>
+      <bind role="set" component="m" interface="width">
         <bindParam name="var" value="50%"/>
       </bind>
-      <bind role="set" component="image" interface="height">
+      <bind role="set" component="m" interface="height">
         <bindParam name="var" value="50%"/>
       </bind>
-      <bind role="set" component="image" interface="top">
+      <bind role="set" component="m" interface="top">
         <bindParam name="var" value="50%"/>
       </bind>
-      <bind role="set" component="image" interface="left">
+      <bind role="set" component="m" interface="left">
         <bindParam name="var" value="50%"/>
       </bind>
     </link>
     <link xconnector="onBeginSet">
-      <bind role="onBegin" component="image" interface="a2"/>
-      <bind role="set" component="image" interface="bottom">
+      <bind role="onBegin" component="m" interface="a2"/>
+      <bind role="set" component="m" interface="bottom">
         <bindParam name="var" value="50%"/>
       </bind>
-      <bind role="set" component="image" interface="right">
+      <bind role="set" component="m" interface="right">
         <bindParam name="var" value="0%"/>
       </bind>
     </link>
     <link xconnector="onBeginSet">
-      <bind role="onBegin" component="image" interface="a3"/>
-      <bind role="set" component="image" interface="bounds">
+      <bind role="onBegin" component="m" interface="a3"/>
+      <bind role="set" component="m" interface="bounds">
         <bindParam name="var" value="200,200px,200,200px"/>
       </bind>
     </link>
     <link xconnector="onBeginSet">
-      <bind role="onBegin" component="image" interface="a4"/>
-      <bind role="set" component="image" interface="location">
+      <bind role="onBegin" component="m" interface="a4"/>
+      <bind role="set" component="m" interface="location">
         <bindParam name="var" value="50%,50%"/>
       </bind>
     </link>
     <link xconnector="onBeginSet">
-      <bind role="onBegin" component="image" interface="a5"/>
-      <bind role="set" component="image" interface="size">
+      <bind role="onBegin" component="m" interface="a5"/>
+      <bind role="set" component="m" interface="size">
         <bindParam name="var" value="100%,100%"/>
       </bind>
     </link>

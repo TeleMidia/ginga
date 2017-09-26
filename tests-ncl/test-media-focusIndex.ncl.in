@@ -10,10 +10,10 @@
     </connectorBase>
   </head>
   <body>
-    <port id="start1" component="time1"/>
-    <port id="start2" component="time2"/>
-    <port id="start3" component="time3"/>
-    <media id="time1">
+    <port id="start1" component="m1"/>
+    <port id="start2" component="m2"/>
+    <port id="start3" component="m3"/>
+    <media id="m1" src="@SRC@">
       <property name="width" value="50%"/>
       <property name="height" value="50%"/>
       <property name="background" value="red"/>
@@ -23,7 +23,7 @@
       <property name="moveLeft" value="1"/>
       <property name="moveRight" value="1"/>
     </media>
-    <media id="time2">
+    <media id="m2" src="@SRC@">
       <property name="width" value="50%"/>
       <property name="height" value="50%"/>
       <property name="bottom" value="0"/>
@@ -35,7 +35,7 @@
       <property name="moveLeft" value="0"/>
       <property name="moveRight" value="0"/>
     </media>
-    <media id="time3">
+    <media id="m3">
       <area id="a1" begin="1s"/>
       <area id="a2" begin="2s"/>
       <area id="a3" begin="3s"/>
@@ -45,25 +45,25 @@
       <property name="service.currentFocus" value="1" />
     </media>
     <link xconnector="onBeginSet">
-      <bind role="onBegin" component="time3" interface="a1"/>
+      <bind role="onBegin" component="m3" interface="a1"/>
       <bind role="set" component="settings" interface="service.currentFocus">
         <bindParam name="var" value="0"/>
       </bind>
     </link>
     <link xconnector="onBeginSet">
-      <bind role="onBegin" component="time3" interface="a2"/>
+      <bind role="onBegin" component="m3" interface="a2"/>
       <bind role="set" component="settings" interface="service.currentFocus">
         <bindParam name="var" value="1"/>
       </bind>
     </link>
     <link xconnector="onBeginSet">
-      <bind role="onBegin" component="time3" interface="a3"/>
+      <bind role="onBegin" component="m3" interface="a3"/>
       <bind role="set" component="settings" interface="service.currentFocus">
         <bindParam name="var" value="0"/>
       </bind>
     </link>
     <link xconnector="onBeginSet">
-      <bind role="onBegin" component="time3" interface="a4"/>
+      <bind role="onBegin" component="m3" interface="a4"/>
       <bind role="set" component="settings" interface="service.currentFocus">
         <bindParam name="var" value="1"/>
       </bind>
