@@ -355,6 +355,7 @@ static map<string, SimpleAction::Type> event_action_type_table =
  * @param path Document path.
  * @param width Initial screen width (in pixels).
  * @param height Initial screen width (in pixels).
+ * @param errmsg Address of the variable to store error message.
  * @return The resulting document.
  */
 NclDocument *

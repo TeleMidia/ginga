@@ -52,7 +52,7 @@ Port::getParent ()
 
 /**
  * @brief Sets port parent.  (Can only be called once.)
- * @param param Parent composition.
+ * @param parent Parent composition.
  */
 void
 Port::setParent (Composition *parent)
