@@ -18,23 +18,23 @@
     </connectorBase>
   </head>
   <body>
-    <port id="start" component="img"/>
-    <media id="img" src="samples/gnu.png" descriptor="desc">
-      <property name="transparency"/>
+    <port id="start" component="m"/>
+    <media id="m" src="@SRC@" descriptor="desc">
+      <property name="background" value="green"/>
       <area id="a1" begin="1s"/>
       <area id="a2" begin="3s"/>
     </media>
     <link xconnector="onBeginSet">
-      <bind role="onBegin" component="img" interface="a1"/>
-      <bind role="set" component="img" interface="transparency">
-        <bindParam name="var" value="0%"/>
+      <bind role="onBegin" component="m" interface="a1"/>
+      <bind role="set" component="m" interface="background">
+        <bindParam name="var" value="blue"/>
         <bindParam name="duration" value="1s"/>
       </bind>
     </link>
     <link xconnector="onBeginSet">
-      <bind role="onBegin" component="img" interface="a2"/>
-      <bind role="set" component="img" interface="transparency">
-        <bindParam name="var" value="100%"/>
+      <bind role="onBegin" component="m" interface="a2"/>
+      <bind role="set" component="m" interface="background">
+        <bindParam name="var" value="red"/>
         <bindParam name="duration" value="1s"/>
       </bind>
     </link>

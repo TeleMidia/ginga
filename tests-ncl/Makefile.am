@@ -18,6 +18,21 @@
 
 include $(top_srcdir)/build-aux/Makefile.am.common
 
+BUILT_SOURCES= $(TESTS_MIME) $(TESTS)
+
+TESTS_MIME=
+TESTS_MIME+= test-mime-avi.ncl
+TESTS_MIME+= test-mime-nil.ncl
+TESTS_MIME+= test-mime-jpg.ncl
+TESTS_MIME+= test-mime-lua.ncl
+TESTS_MIME+= test-mime-mp3.ncl
+TESTS_MIME+= test-mime-mp4.ncl
+TESTS_MIME+= test-mime-ogg.ncl
+TESTS_MIME+= test-mime-ogv.ncl
+TESTS_MIME+= test-mime-png.ncl
+TESTS_MIME+= test-mime-svg.ncl
+TESTS_MIME+= test-mime-txt.ncl
+
 TESTS=
 # empty
 TESTS+= test-media-aud-empty.ncl
@@ -35,6 +50,14 @@ TESTS+= test-media-nil-no-region.ncl
 TESTS+= test-media-svg-no-region.ncl
 TESTS+= test-media-txt-no-region.ncl
 TESTS+= test-media-vid-no-region.ncl
+# nested region
+TESTS+= test-media-aud-nested-region.ncl
+TESTS+= test-media-img-nested-region.ncl
+TESTS+= test-media-lua-nested-region.ncl
+TESTS+= test-media-nil-nested-region.ncl
+TESTS+= test-media-svg-nested-region.ncl
+TESTS+= test-media-txt-nested-region.ncl
+TESTS+= test-media-vid-nested-region.ncl
 # no descriptor
 TESTS+= test-media-aud-no-desc.ncl
 TESTS+= test-media-img-no-desc.ncl
@@ -82,6 +105,30 @@ TESTS+= test-media-nil-transparency.ncl
 TESTS+= test-media-svg-transparency.ncl
 TESTS+= test-media-txt-transparency.ncl
 TESTS+= test-media-vid-transparency.ncl
+# property: visible
+TESTS+= test-media-aud-visible.ncl
+TESTS+= test-media-img-visible.ncl
+TESTS+= test-media-lua-visible.ncl
+TESTS+= test-media-nil-visible.ncl
+TESTS+= test-media-svg-visible.ncl
+TESTS+= test-media-txt-visible.ncl
+TESTS+= test-media-vid-visible.ncl
+# property: visible
+TESTS+= test-media-aud-zIndex.ncl
+TESTS+= test-media-img-zIndex.ncl
+TESTS+= test-media-lua-zIndex.ncl
+TESTS+= test-media-nil-zIndex.ncl
+TESTS+= test-media-svg-zIndex.ncl
+TESTS+= test-media-txt-zIndex.ncl
+TESTS+= test-media-vid-zIndex.ncl
+# link: loop
+TESTS+= test-media-aud-loop.ncl
+TESTS+= test-media-img-loop.ncl
+TESTS+= test-media-lua-loop.ncl
+TESTS+= test-media-nil-loop.ncl
+TESTS+= test-media-svg-loop.ncl
+TESTS+= test-media-txt-loop.ncl
+TESTS+= test-media-vid-loop.ncl
 # link: stop self
 TESTS+= test-media-aud-stop-self.ncl
 TESTS+= test-media-img-stop-self.ncl
@@ -90,13 +137,56 @@ TESTS+= test-media-nil-stop-self.ncl
 TESTS+= test-media-svg-stop-self.ncl
 TESTS+= test-media-txt-stop-self.ncl
 TESTS+= test-media-vid-stop-self.ncl
-BUILT_SOURCES= $(TESTS)
+# link: animation on background color
+TESTS+= test-media-aud-anim-background.ncl
+TESTS+= test-media-img-anim-background.ncl
+TESTS+= test-media-lua-anim-background.ncl
+TESTS+= test-media-nil-anim-background.ncl
+TESTS+= test-media-svg-anim-background.ncl
+TESTS+= test-media-txt-anim-background.ncl
+TESTS+= test-media-vid-anim-background.ncl
+# link: animation on width and height
+TESTS+= test-media-aud-anim-dimensions.ncl
+TESTS+= test-media-img-anim-dimensions.ncl
+TESTS+= test-media-lua-anim-dimensions.ncl
+TESTS+= test-media-nil-anim-dimensions.ncl
+TESTS+= test-media-svg-anim-dimensions.ncl
+TESTS+= test-media-txt-anim-dimensions.ncl
+TESTS+= test-media-vid-anim-dimensions.ncl
+# link: animation on transparency
+TESTS+= test-media-aud-anim-transparency.ncl
+TESTS+= test-media-img-anim-transparency.ncl
+TESTS+= test-media-lua-anim-transparency.ncl
+TESTS+= test-media-nil-anim-transparency.ncl
+TESTS+= test-media-svg-anim-transparency.ncl
+TESTS+= test-media-txt-anim-transparency.ncl
+TESTS+= test-media-vid-anim-transparency.ncl
+
+CLEANFILES+= $(TESTS_MIME)
+$(TESTS_MIME): test-mime*.ncl.in
+	$(AM_V_GEN)\
+	type=`basename $@ | sed 's,test-mime-\([a-z0-9]*\)\.ncl,\1,g'`;\
+	case $$type in\
+	  avi) src="samples/night.avi";;\
+	  jpg) src="samples/felis.jpg";;\
+	  lua) src="samples/fps.lua";;\
+	  mp3) src="samples/bunny.mp3";;\
+	  nil) src="";;\
+	  mp4) src="samples/small.mp4";;\
+	  ogg) src="samples/bunny.ogg";;\
+	  ogv) src="samples/clock.ogv";;\
+	  png) src="samples/gnu.png";;\
+	  svg) src="samples/vector.svg";;\
+	  txt) src="samples/text.txt";;\
+	    *) exit 1;;\
+	esac;\
+	sed -e "s,@SRC@,$$src,g" "test-mime.ncl.in" >$@
 
 CLEANFILES+= $(TESTS)
-$(TESTS): *.in
+$(TESTS): test-media-*.ncl.in
 	$(AM_V_GEN)\
-	type=`basename $@ | sed 's,test-media-\([a-z]*\).*,\1,g'`;\
-	suffix=`basename $@ | sed 's,test-media-[a-z]*-\(.*\)\.ncl,\1,g'`;\
+	type=`basename $@ | sed 's,test-media-\([a-z0-9]*\).*,\1,g'`;\
+	suffix=`basename $@ | sed 's,test-media-[a-z0-9]*-\(.*\)\.ncl,\1,g'`;\
 	case $$type in\
 	  aud) src="samples/arcade.mp3";;\
 	  img) src="samples/gnu.png";;\

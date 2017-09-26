@@ -14,11 +14,11 @@
     </connectorBase>
   </head>
   <body>
-    <port id="start" component="vid"/>
-    <media id="vid" src="samples/clock.ogv" descriptor="desc"/>
+    <port id="start" component="m"/>
+    <media id="m" src="@SRC@" descriptor="desc"/>
     <link xconnector="onEndStart">
-      <bind role="onEnd" component="vid"/>
-      <bind role="start" component="vid"/>
+      <bind role="onEnd" component="m"/>
+      <bind role="start" component="m"/>
     </link>
   </body>
 </ncl>
