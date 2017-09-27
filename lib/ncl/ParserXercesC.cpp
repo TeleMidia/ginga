@@ -600,7 +600,7 @@ ParserXercesC::parseImportedDocumentBase (DOMElement *elt)
 {
   for (DOMElement *child: dom_elt_get_children (elt))
     {
-      string tag = dom_elt_get_tag (elt);
+      string tag = dom_elt_get_tag (child);
       if (tag == "importNCL")
         {
           NclDocument *imported;
