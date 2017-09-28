@@ -4,6 +4,7 @@
 #include <string>
 #include <QWidget>
 #include <QTimer>
+#include <QElapsedTimer>
 
 #include "ginga.h"
 
@@ -39,6 +40,7 @@ private:
   Ui::RunView *_ui;
   QImage _img;
   QTimer _timer;
+  QElapsedTimer _elapsedTime;
 };
 
 #endif // WIDGET_H

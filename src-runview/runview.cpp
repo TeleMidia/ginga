@@ -44,6 +44,7 @@ RunView::start (const string &file)
     }
 
   _timer.start (33);
+  _elapsedTime.start ();
 }
 
 void
@@ -73,6 +74,21 @@ RunView::~RunView()
 void
 RunView::redrawGinga ()
 {
+  static guint64 frame = (guint64) -1;
+  static guint64 last;
+  static guint64 first;
+  guint64 time = _elapsedTime.elapsed () * 1000000;
+
+  frame++;
+  if (frame == 0)
+    {
+      first = time;
+      last = time;
+    }
+
+  _ginga->sendTickEvent (time - first, time - last, frame);
+  last = time;
+
   _ginga->redraw (_cr);
 
   _img = QImage (cairo_image_surface_get_data (_ginga_surface),
