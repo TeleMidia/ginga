@@ -27,7 +27,7 @@
       <property name="bounds" value="25%,25%,50%,50%"/>
       <property name="debug" value="true"/>
       <property name="soundLevel" value="50%"/>
-      <property name="volume"/>
+      <property name="volume" value="50%"/>
     </media>
     <link xconnector="onBeginSet">
       <bind role="onBegin" component="audio" interface="a1"/>
