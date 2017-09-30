@@ -20,6 +20,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PLAYER_BEGIN
 
+
+// Public.
+
 void
 SvgPlayer::reload ()
 {
@@ -34,19 +37,19 @@ SvgPlayer::reload ()
   cairo_surface_t *sfc;
   cairo_t *cr;
 
-  g_assert (_state != PL_SLEEPING);
+  g_assert (_state != SLEEPING);
 
   svg = rsvg_handle_new_from_file (_uri.c_str (), &err);
   if (unlikely (svg == NULL))
     ERROR ("cannot load SVG file %s: %s", _uri.c_str (), err->message);
 
-  g_assert_cmpint (_rect.width, >, 0);
-  g_assert_cmpint (_rect.height, >, 0);
+  g_assert_cmpint (_prop.rect.width, >, 0);
+  g_assert_cmpint (_prop.rect.height, >, 0);
   rsvg_handle_get_dimensions (svg, &dim);
 
   scale = (dim.width > dim.height)
-    ? (double) _rect.width / dim.width
-    : (double) _rect.height / dim.height;
+    ? (double) _prop.rect.width / dim.width
+    : (double) _prop.rect.height / dim.height;
 
   width = (int)(floor (dim.width * scale) + 1);
   height = (int)(floor (dim.height * scale) + 1);

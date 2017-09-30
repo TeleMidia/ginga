@@ -107,6 +107,8 @@ GingaState::start (const string &file, string *errmsg)
 
   _scheduler = new Scheduler (this);
   _ncl_file = file;
+  TRACE ("starting %s", file.c_str ());
+
   if (unlikely (!_scheduler->run (file, errmsg)))
     {
       delete _scheduler;

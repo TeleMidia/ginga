@@ -36,7 +36,7 @@ GINGA_PLAYER_BEGIN
 #define evt_pointer_send ncluaw_send_pointer_event
 
 
-// Public methods.
+// Public.
 
 LuaPlayer::LuaPlayer (GingaState *ginga, const string &id,
                       const string &uri)
@@ -55,12 +55,12 @@ LuaPlayer::start (void)
 {
   char *errmsg;
 
-  g_assert (_state != PL_OCCURRING);
+  g_assert (_state != OCCURRING);
   g_assert_null (_nw);
   TRACE ("starting");
 
   this->pwdSave (_uri);
-  _init_rect = _rect;
+  _init_rect = _prop.rect;
   _nw = ncluaw_open
     (_uri.c_str (), _init_rect.width, _init_rect.height, &errmsg);
   if (unlikely (_nw == nullptr))
@@ -76,7 +76,7 @@ LuaPlayer::start (void)
 void
 LuaPlayer::stop (void)
 {
-  g_assert (_state != PL_SLEEPING);
+  g_assert (_state != SLEEPING);
   g_assert_nonnull (_nw);
 
   evt_ncl_send_presentation (_nw, "stop", "");
@@ -95,28 +95,15 @@ LuaPlayer::stop (void)
 void G_GNUC_NORETURN
 LuaPlayer::pause (void)
 {
-  g_assert (_state != PL_PAUSED && _state != PL_SLEEPING);
+  g_assert (_state != PAUSED && _state != SLEEPING);
   ERROR_NOT_IMPLEMENTED ("pause action is not supported");
 }
 
 void G_GNUC_NORETURN
 LuaPlayer::resume (void)
 {
-  g_assert (_state != PL_PAUSED && _state != PL_SLEEPING);
+  g_assert (_state != PAUSED && _state != SLEEPING);
   ERROR_NOT_IMPLEMENTED ("resume action is not supported");
-}
-
-void
-LuaPlayer::setProperty (const string &name, const string &value)
-{
-  if (_nw != nullptr && _state == PL_OCCURRING)
-    {
-      const char *k = name.c_str ();
-      const char *v = value.c_str ();
-      evt_ncl_send_attribution (_nw, "start", k, v);
-      evt_ncl_send_attribution (_nw, "stop", k, v);
-    }
-  Player::setProperty (name, value);
 }
 
 void
@@ -129,7 +116,7 @@ LuaPlayer::handleKeyEvent (string const &key, bool press)
 void
 LuaPlayer::redraw (cairo_t *cr)
 {
-  g_assert (_state != PL_SLEEPING);
+  g_assert (_state != SLEEPING);
   g_assert_nonnull (_nw);
 
   this->pwdSave ();
@@ -144,7 +131,24 @@ LuaPlayer::redraw (cairo_t *cr)
 }
 
 
-// Private methods.
+// Protected.
+
+bool
+LuaPlayer::doSetProperty (PlayerProperty code, const string &name,
+                          const string &value)
+{
+  if (_nw != nullptr && _state == OCCURRING)
+    {
+      const char *k = name.c_str ();
+      const char *v = value.c_str ();
+      evt_ncl_send_attribution (_nw, "start", k, v);
+      evt_ncl_send_attribution (_nw, "stop", k, v);
+    }
+  return Player::doSetProperty (code, name, value);
+}
+
+
+// Private.
 
 static void
 do_chdir (string dir)

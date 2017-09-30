@@ -20,8 +20,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PLAYER_BEGIN
 
+
+// Public: Static.
+
 /**
- * @brief Creates a surface from text.
+ * @brief Creates surface from text.
  * @param text Text to be rendered.
  * @param family Font family.
  * @param weight Font weight ("normal" or "bold").
@@ -148,101 +151,22 @@ TextPlayer::renderSurface (const string &text,
   return sfc;
 }
 
+
+// Public.
+
 TextPlayer::TextPlayer (GingaState *ginga,
                         const string &id, const string &uri)
   : Player (ginga, id, uri)
 {
-  _fontColor = {0, 0, 0, 1.};   // black
-  _fontBgColor = {0, 0, 0, 0};  // transparent
-  _fontFamily = "sans";
-  _fontSize = "12";
-  _fontStyle = "";
-  _fontVariant = "";
-  _fontWeight = "";
-  _horzAlign = "left";
-  _vertAlign = "top";
-}
-
-void
-TextPlayer::setProperty (const string &name, const string &value)
-{
-  Player::setProperty (name, value);
-
-  if (name == "fontColor")
-    {
-      if (value != "" && !_ginga_parse_color (value, &_fontColor))
-        goto syntax_error;
-      _dirty = true;
-    }
-  if (name == "fontBgColor")
-    {
-      if (value != "" && !_ginga_parse_color (value, &_fontBgColor))
-        goto syntax_error;
-      _dirty = true;
-    }
-  else if(name == "fontFamily")
-    {
-      _fontFamily = value;
-      _dirty = true;
-    }
-  else if (name == "fontSize")
-    {
-      _fontSize = value;
-      _dirty = true;
-    }
-  else if(name == "fontStyle")
-    {
-      if (value != "" && value != "normal" && value != "italic")
-        {
-          goto syntax_error;
-        }
-      _fontStyle = value;
-      _dirty = true;
-    }
-  else if(name == "fontVariant")
-    {
-      if (value != "" && value != "small-caps")
-        {
-          goto syntax_error;
-        }
-      _fontVariant = value;
-      _dirty = true;
-    }
-  else if (name == "fontWeight")
-    {
-      if (value != "" && value != "normal" && value != "bold")
-        {
-          goto syntax_error;
-        }
-      _fontWeight = value;
-      _dirty = true;
-    }
-  else if (name == "horzAlign")
-    {
-      if (value != "" && value != "left" && value != "right"
-          && value != "center" && value != "justified")
-        {
-          goto syntax_error;
-        }
-      _horzAlign = value;
-      _dirty = true;
-    }
-  else if (name == "vertAlign")
-    {
-      if (value != "" && value != "top"
-          && value != "middle" && value != "bottom")
-        {
-          goto syntax_error;
-        }
-      _vertAlign = value;
-      _dirty = true;
-    }
-
-  return;
-
- syntax_error:
-  ERROR_SYNTAX ("property '%s': bad value '%s'",
-                name.c_str (), value.c_str ());
+  _prop.fontColor = {0, 0, 0, 1.};   // black
+  _prop.fontBgColor = {0, 0, 0, 0};  // transparent
+  _prop.fontFamily = "sans";
+  _prop.fontSize = "12";
+  _prop.fontStyle = "";
+  _prop.fontVariant = "";
+  _prop.fontWeight = "";
+  _prop.horzAlign = "left";
+  _prop.vertAlign = "top";
 }
 
 void
@@ -268,13 +192,89 @@ TextPlayer::reload ()
   if (_surface != nullptr)
     cairo_surface_destroy (_surface);
 
-  _surface = TextPlayer::renderSurface
-    (text, _fontFamily, _fontWeight, _fontStyle, _fontSize,
-     _fontColor, _fontBgColor, _rect, _horzAlign, _vertAlign, true,
-     nullptr);
+  _surface = TextPlayer::renderSurface (text,
+                                        _prop.fontFamily,
+                                        _prop.fontWeight,
+                                        _prop.fontStyle,
+                                        _prop.fontSize,
+                                        _prop.fontColor,
+                                        _prop.fontBgColor,
+                                        Player::_prop.rect,
+                                        _prop.horzAlign,
+                                        _prop.vertAlign,
+                                        true,
+                                        nullptr);
   g_assert_nonnull (_surface);
-
   Player::reload ();
+}
+
+
+// Protected.
+
+bool
+TextPlayer::doSetProperty (PlayerProperty code, unused (const string &name),
+                           const string &value)
+{
+  switch (code)
+    {
+    case PROP_FONT_COLOR:
+      if (value != "" && !_ginga_parse_color (value, &_prop.fontColor))
+        return false;
+      _dirty = true;
+      break;
+    case PROP_FONT_BG_COLOR:
+      if (value != "" && !_ginga_parse_color (value, &_prop.fontBgColor))
+        return false;
+      _dirty = true;
+      break;
+    case PROP_FONT_FAMILY:
+      _prop.fontFamily = value;
+      _dirty = true;
+      break;
+    case PROP_FONT_SIZE:
+      _prop.fontSize = value;
+      _dirty = true;
+      break;
+    case PROP_FONT_STYLE:
+      if (value != "" && value != "normal" && value != "italic")
+        return false;
+      _prop.fontStyle = value;
+      _dirty = true;
+      break;
+    case PROP_FONT_VARIANT:
+      if (value != "" && value != "small-caps")
+        return false;
+      _prop.fontVariant = value;
+      _dirty = true;
+      break;
+    case PROP_FONT_WEIGHT:
+      if (value != "" && value != "normal" && value != "bold")
+        return false;
+      _prop.fontWeight = value;
+      _dirty = true;
+      break;
+    case PROP_HORZ_ALIGN:
+      if (value != "" && value != "left" && value != "right"
+          && value != "center" && value != "justified")
+        {
+          return false;
+        }
+      _prop.horzAlign = value;
+      _dirty = true;
+      break;
+    case PROP_VERT_ALIGN:
+      if (value != "" && value != "top"
+          && value != "middle" && value != "bottom")
+        {
+          return false;
+        }
+      _prop.vertAlign = value;
+      _dirty = true;
+      break;
+    default:
+      return Player::doSetProperty (code, name, value);
+    }
+  return true;
 }
 
 GINGA_PLAYER_END

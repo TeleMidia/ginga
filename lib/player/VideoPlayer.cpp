@@ -39,6 +39,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PLAYER_BEGIN
 
+
+// Public.
+
 VideoPlayer::VideoPlayer (GingaState *ginga, const string &id,
                           const string &uri)
   : Player (ginga, id, uri)
@@ -59,9 +62,9 @@ VideoPlayer::VideoPlayer (GingaState *ginga, const string &id,
   _video.caps = nullptr;
   _video.sink = nullptr;
 
-  _balance = 0.0;
-  _mute = false;
-  _volume = 1.0;
+  _prop.balance = 0.0;
+  _prop.mute = false;
+  _prop.volume = 1.0;
 
   if (!gst_is_initialized ())
     {
@@ -164,14 +167,14 @@ VideoPlayer::start ()
   GstStructure *st;
   GstStateChangeReturn ret;
 
-  g_assert (_state != PL_OCCURRING);
+  g_assert (_state != OCCURRING);
   TRACE ("starting");
 
   st = gst_structure_new_empty ("video/x-raw");
   gst_structure_set (st,
                      "format", G_TYPE_STRING, "BGRA",
-                     "width", G_TYPE_INT, _rect.width,
-                     "height", G_TYPE_INT, _rect.height,
+                     "width", G_TYPE_INT, Player::_prop.rect.width,
+                     "height", G_TYPE_INT, Player::_prop.rect.height,
                      nullptr);
 
   caps = gst_caps_new_full (st, nullptr);
@@ -185,12 +188,12 @@ VideoPlayer::start ()
 
   // Initialize properties.
   g_object_set (_audio.volume,
-                "volume", _volume,
-                "mute", _mute,
+                "volume", _prop.volume,
+                "mute", _prop.mute,
                 NULL);
 
   g_object_set (_audio.pan,
-                "panorama", _balance,
+                "panorama", _prop.balance,
                 NULL);
 
   ret = gst_element_set_state (_playbin, GST_STATE_PLAYING);
@@ -203,7 +206,7 @@ VideoPlayer::start ()
 void
 VideoPlayer::stop ()
 {
-  g_assert (_state != PL_SLEEPING);
+  g_assert (_state != SLEEPING);
   TRACE ("stopping");
 
   gstx_element_set_state_sync (_playbin, GST_STATE_NULL);
@@ -214,7 +217,7 @@ VideoPlayer::stop ()
 void
 VideoPlayer::pause ()
 {
-  g_assert (_state != PL_PAUSED && _state != PL_SLEEPING);
+  g_assert (_state != PAUSED && _state != SLEEPING);
   TRACE ("pausing");
 
   gstx_element_set_state_sync (_playbin, GST_STATE_PAUSED);
@@ -224,7 +227,7 @@ VideoPlayer::pause ()
 void
 VideoPlayer::resume ()
 {
-  g_assert (_state == PL_PAUSED);
+  g_assert (_state == PAUSED);
   TRACE ("resuming");
 
   gstx_element_set_state_sync (_playbin, GST_STATE_PLAYING);
@@ -247,7 +250,7 @@ VideoPlayer::redraw (cairo_t *cr)
   static cairo_user_data_key_t key;
   cairo_status_t status;
 
-  g_assert (_state != PL_SLEEPING);
+  g_assert (_state != SLEEPING);
 
   if (Player::getEOS ())
     goto done;
@@ -290,34 +293,39 @@ VideoPlayer::redraw (cairo_t *cr)
   Player::redraw (cr);
 }
 
-// Public: Properties.
+
+// Protected.
 
-void
-VideoPlayer::setProperty (const string &name, const string &value)
+bool
+VideoPlayer::doSetProperty (PlayerProperty code,
+                            unused (const string &name),
+                            const string &value)
 {
-  Player::setProperty (name, value);
-
-  if (name == "volume" || name == "soundLevel")
+  switch (code)
     {
-      _volume = xstrtodorpercent (value, nullptr);
-      if (_state != PL_SLEEPING)
-        g_object_set (_audio.volume, "volume", _volume, NULL);
+      case PROP_BALANCE:
+        _prop.balance = xstrtodorpercent (value, nullptr);
+        if (_state != SLEEPING)
+          g_object_set (_audio.pan, "panorama", _prop.balance, NULL);
+        break;
+      case PROP_MUTE:
+        _prop.mute = ginga_parse_bool (value);
+        if (_state != SLEEPING)
+          g_object_set (_audio.volume, "mute", _prop.mute, NULL);
+        break;
+      case PROP_VOLUME:
+        _prop.volume = xstrtodorpercent (value, nullptr);
+        if (_state != SLEEPING)
+          g_object_set (_audio.volume, "volume", _prop.volume, NULL);
+        break;
+      default:
+        return Player::doSetProperty (code, name, value);
     }
-  else if (name == "mute")
-    {
-      _mute = ginga_parse_bool (value);
-      if (_state != PL_SLEEPING)
-        g_object_set (_audio.volume, "mute", _mute, NULL);
-    }
-  else if (name == "balanceLevel")
-    {
-      _balance = xstrtodorpercent (value, nullptr);
-      if (_state != PL_SLEEPING)
-        g_object_set (_audio.pan, "panorama", _balance, NULL);
-    }
+  return true;
 }
 
-// Private.
+
+// Private: Static (GStreamer callbacks).
 
 gboolean
 VideoPlayer::cb_Bus (GstBus *bus, GstMessage *msg, VideoPlayer *player)

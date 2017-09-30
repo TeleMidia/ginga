@@ -32,7 +32,10 @@ public:
   void pause () override;
   void resume () override;
   void redraw (cairo_t *) override;
-  void setProperty (const string &, const string &) override;
+
+protected:
+  bool doSetProperty (PlayerProperty, const string &,
+                      const string &) override;
 
 private:
   GstElement *_playbin;         // pipeline
@@ -51,12 +54,14 @@ private:
   int _sample_flag;               // true if new sample is available
   GstAppSinkCallbacks _callbacks; // video app-sink callback data
 
-  // Properties.
-  bool _mute;                   // true if mute is on
-  double _balance;              // balance sound level
-  double _volume;               // sound level
+  struct
+  {
+    bool mute;                  // true if mute is on
+    double balance;             // balance sound level
+    double volume;              // sound level
+  } _prop;
 
-  // Callbacks.
+  // GStreamer callbacks.
   static gboolean cb_Bus (GstBus *, GstMessage *, VideoPlayer *);
   static GstFlowReturn cb_NewSample (GstAppSink *, gpointer);
 };
