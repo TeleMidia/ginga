@@ -76,15 +76,8 @@ CompoundCondition::getConditions ()
 void
 CompoundCondition::addCondition (Condition *condition)
 {
-  if (condition == NULL)
-    {
-      clog << "CompoundCondition::addCondition ";
-      clog << "Warning! Trying to add a NULL condition." << endl;
-    }
-  else
-    {
-      _expressions->push_back (condition);
-    }
+  g_assert_nonnull (condition);
+  _expressions->push_back (condition);
 }
 
 void

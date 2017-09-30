@@ -207,9 +207,6 @@ void
 ExecutionObjectContext::removeLinkUncompiled (Link *ncmLink)
 {
   set<Link *>::iterator i;
-
-  clog << "ExecutionObjectContext::removeLinkUncompiled '";
-  clog << ncmLink->getId () << "'" << endl;
   i = _uncompiledLinks.find (ncmLink);
   if (i != _uncompiledLinks.end ())
     {
@@ -221,23 +218,7 @@ ExecutionObjectContext::removeLinkUncompiled (Link *ncmLink)
 void
 ExecutionObjectContext::setLinkCompiled (NclFormatterLink *link)
 {
-  if (link == NULL)
-    {
-      clog << "ExecutionObjectContext::setLinkCompiled Warning! ";
-      clog << "trying to compile a NULL link" << endl;
-      return;
-    }
-
-  Link *compiledLink;
-  compiledLink = link->getNcmLink ();
-
-  if (compiledLink == NULL)
-    {
-      clog << "ExecutionObjectContext::setLinkCompiled Warning! ";
-      clog << "formatterLink has returned a NULL ncmLink" << endl;
-      return;
-    }
-
+  g_assert_nonnull (link);
   _links.insert (link);
 }
 
