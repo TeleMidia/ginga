@@ -93,6 +93,8 @@ public:
 
   virtual string getProperty (const string &);
   virtual void setProperty (const string &, const string &);
+  void resetProperties ();
+  void resetProperties (set<string> *);
   void schedulePropertyAnimation (const string &, const string &,
                                   const string &, GingaTime);
   virtual void reload ();
@@ -132,7 +134,6 @@ protected:
 protected:
   virtual bool doSetProperty (PlayerProperty, const string &,
                               const string &);
-
 private:
   void redrawDebuggingInfo (cairo_t *);
 

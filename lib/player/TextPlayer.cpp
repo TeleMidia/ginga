@@ -158,15 +158,20 @@ TextPlayer::TextPlayer (GingaState *ginga,
                         const string &id, const string &uri)
   : Player (ginga, id, uri)
 {
-  _prop.fontColor = {0, 0, 0, 1.};   // black
-  _prop.fontBgColor = {0, 0, 0, 0};  // transparent
-  _prop.fontFamily = "sans";
-  _prop.fontSize = "12";
-  _prop.fontStyle = "";
-  _prop.fontVariant = "";
-  _prop.fontWeight = "";
-  _prop.horzAlign = "left";
-  _prop.vertAlign = "top";
+  // Initialize handled properties.
+  static set<string> handled =
+    {
+     "fontColor",
+     "bgColor",
+     "fontFamily",
+     "fontSize",
+     "fontStyle",
+     "fontVariant",
+     "fontWeight",
+     "horzAlign",
+     "vertAlign",
+    };
+  this->resetProperties (&handled);
 }
 
 void
@@ -218,12 +223,12 @@ TextPlayer::doSetProperty (PlayerProperty code, unused (const string &name),
   switch (code)
     {
     case PROP_FONT_COLOR:
-      if (value != "" && !_ginga_parse_color (value, &_prop.fontColor))
+      if (unlikely (!_ginga_parse_color (value, &_prop.fontColor)))
         return false;
       _dirty = true;
       break;
     case PROP_FONT_BG_COLOR:
-      if (value != "" && !_ginga_parse_color (value, &_prop.fontBgColor))
+      if (unlikely (!_ginga_parse_color (value, &_prop.fontBgColor)))
         return false;
       _dirty = true;
       break;
@@ -236,26 +241,26 @@ TextPlayer::doSetProperty (PlayerProperty code, unused (const string &name),
       _dirty = true;
       break;
     case PROP_FONT_STYLE:
-      if (value != "" && value != "normal" && value != "italic")
+      if (unlikely (value != "" && value != "normal" && value != "italic"))
         return false;
       _prop.fontStyle = value;
       _dirty = true;
       break;
     case PROP_FONT_VARIANT:
-      if (value != "" && value != "small-caps")
+      if (unlikely (value != "" && value != "small-caps"))
         return false;
       _prop.fontVariant = value;
       _dirty = true;
       break;
     case PROP_FONT_WEIGHT:
-      if (value != "" && value != "normal" && value != "bold")
+      if (unlikely (value != "" && value != "normal" && value != "bold"))
         return false;
       _prop.fontWeight = value;
       _dirty = true;
       break;
     case PROP_HORZ_ALIGN:
-      if (value != "" && value != "left" && value != "right"
-          && value != "center" && value != "justified")
+      if (unlikely (value != "" && value != "left" && value != "right"
+                    && value != "center" && value != "justified"))
         {
           return false;
         }
@@ -263,8 +268,8 @@ TextPlayer::doSetProperty (PlayerProperty code, unused (const string &name),
       _dirty = true;
       break;
     case PROP_VERT_ALIGN:
-      if (value != "" && value != "top"
-          && value != "middle" && value != "bottom")
+      if (unlikely (value != "" && value != "top"
+                    && value != "middle" && value != "bottom"))
         {
           return false;
         }
