@@ -153,8 +153,6 @@ GingaState::resize (int width, int height)
       g_assert_nonnull (pl);
       pl->setProperty ("top", pl->getProperty ("top"));
       pl->setProperty ("left", pl->getProperty ("left"));
-      pl->setProperty ("bottom", pl->getProperty ("bottom"));
-      pl->setProperty ("right", pl->getProperty ("right"));
       pl->setProperty ("width", pl->getProperty ("width"));
       pl->setProperty ("height", pl->getProperty ("height"));
     }

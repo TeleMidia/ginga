@@ -62,10 +62,6 @@ VideoPlayer::VideoPlayer (GingaState *ginga, const string &id,
   _video.caps = nullptr;
   _video.sink = nullptr;
 
-  _prop.balance = 0.0;
-  _prop.mute = false;
-  _prop.volume = 1.0;
-
   if (!gst_is_initialized ())
     {
       GError *error = nullptr;
@@ -154,6 +150,10 @@ VideoPlayer::VideoPlayer (GingaState *ginga, const string &id,
   _callbacks.new_sample = cb_NewSample;
   gst_app_sink_set_callbacks (GST_APP_SINK (_video.sink),
                               &_callbacks, this, nullptr);
+
+  // Initialize handled properties.
+  static set<string> handled = {"balance", "mute", "volume"};
+  this->resetProperties (&handled);
 }
 
 VideoPlayer::~VideoPlayer ()

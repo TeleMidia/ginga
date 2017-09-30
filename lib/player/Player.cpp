@@ -32,40 +32,41 @@ GINGA_PLAYER_BEGIN
 
 typedef struct PlayerPropertyInfo
 {
-  Player::PlayerProperty code;
-  string defval;
+  Player::PlayerProperty code;  // property code
+  bool init;                    // whether it should be initialized
+  string defval;                // default value
 } PlayerPropertyInfo;
 
 static map<string, PlayerPropertyInfo> player_property_map =
 {
- {"background",   {Player::PROP_BACKGROUND,   ""}},
- {"balance",      {Player::PROP_BALANCE,      "0.0"}},
- {"bottom",       {Player::PROP_BOTTOM,       ""}},
- {"bounds",       {Player::PROP_BOUNDS,       "0,0,100%,100%"}},
- {"debug",        {Player::PROP_DEBUG,        "false"}},
- {"duration",     {Player::PROP_DURATION,     "indefinite"}},
- {"focusIndex",   {Player::PROP_FOCUS_INDEX,  ""}},
- {"fontBgColor",  {Player::PROP_FONT_BG_COLOR, ""}},
- {"fontColor",    {Player::PROP_FONT_COLOR,   "black"}},
- {"fontFamily",   {Player::PROP_FONT_FAMILY,  "sans"}},
- {"fontSize",     {Player::PROP_FONT_SIZE,    "12"}},
- {"fontStyle",    {Player::PROP_FONT_STYLE,   ""}},
- {"fontVariant",  {Player::PROP_FONT_VARIANT, ""}},
- {"fontWeight",   {Player::PROP_FONT_WEIGHT,  ""}},
- {"height",       {Player::PROP_HEIGHT,       "100%"}},
- {"horzAlign",    {Player::PROP_HORZ_ALIGN,   "left"}},
- {"left",         {Player::PROP_LEFT,         "0"}},
- {"location",     {Player::PROP_LOCATION,     "0,0"}},
- {"mute",         {Player::PROP_MUTE,         "false"}},
- {"right",        {Player::PROP_RIGHT,        ""}},
- {"size",         {Player::PROP_SIZE,         "100%,100%"}},
- {"top",          {Player::PROP_TOP,          "0"}},
- {"transparency", {Player::PROP_TRANSPARENCY, "0%"}},
- {"vertAlign",    {Player::PROP_VERT_ALIGN,   "top"}},
- {"visible",      {Player::PROP_VISIBLE,      "true"}},
- {"volume",       {Player::PROP_VOLUME,       "1.0"}},
- {"width",        {Player::PROP_WIDTH,        "100%"}},
- {"zIndex",       {Player::PROP_Z_INDEX,      "0"}},
+ {"background",   {Player::PROP_BACKGROUND,    true,  ""}},
+ {"balance",      {Player::PROP_BALANCE,       true,  "0.0"}},
+ {"bottom",       {Player::PROP_BOTTOM,        false, "0%"}},
+ {"bounds",       {Player::PROP_BOUNDS,        false, "0%,0%,100%,100%"}},
+ {"debug",        {Player::PROP_DEBUG,         true,  "false"}},
+ {"duration",     {Player::PROP_DURATION,      true,  "indefinite"}},
+ {"focusIndex",   {Player::PROP_FOCUS_INDEX,   true,  ""}},
+ {"fontBgColor",  {Player::PROP_FONT_BG_COLOR, true,  ""}},
+ {"fontColor",    {Player::PROP_FONT_COLOR,    true,  "black"}},
+ {"fontFamily",   {Player::PROP_FONT_FAMILY,   true,  "sans"}},
+ {"fontSize",     {Player::PROP_FONT_SIZE,     true,  "12"}},
+ {"fontStyle",    {Player::PROP_FONT_STYLE,    true,  ""}},
+ {"fontVariant",  {Player::PROP_FONT_VARIANT,  true,  ""}},
+ {"fontWeight",   {Player::PROP_FONT_WEIGHT,   true,  ""}},
+ {"height",       {Player::PROP_HEIGHT,        true,  "100%"}},
+ {"horzAlign",    {Player::PROP_HORZ_ALIGN,    true,  "left"}},
+ {"left",         {Player::PROP_LEFT,          true,  "0"}},
+ {"location",     {Player::PROP_LOCATION,      false, "0,0"}},
+ {"mute",         {Player::PROP_MUTE,          true,  "false"}},
+ {"right",        {Player::PROP_RIGHT,         false, "0%"}},
+ {"size",         {Player::PROP_SIZE,          false, "100%,100%"}},
+ {"top",          {Player::PROP_TOP,           true,  "0"}},
+ {"transparency", {Player::PROP_TRANSPARENCY,  true,  "0%"}},
+ {"vertAlign",    {Player::PROP_VERT_ALIGN,    true,  "top"}},
+ {"visible",      {Player::PROP_VISIBLE,       true,  "true"}},
+ {"volume",       {Player::PROP_VOLUME,        true,  "100%"}},
+ {"width",        {Player::PROP_WIDTH,         true,  "100%"}},
+ {"zIndex",       {Player::PROP_Z_INDEX,       true,  "0"}},
 };
 
 static map<string, string> player_property_aliases =
@@ -98,26 +99,7 @@ Player::Player (GingaState *ginga, const string &id, const string &uri)
   _dirty = true;
   _animator = new PlayerAnimator (_ginga);
   _surface = nullptr;
-
-  // Properties
-  _prop.debug = false;
-  _prop.focusIndex = "";
-  _prop.rect.x = 0;
-  _prop.rect.y = 0;
-  _prop.rect.width = 0;
-  _prop.rect.height = 0;
-  _prop.z = 0;
-  _prop.zorder = 0;
-  _prop.alpha = 255;            // opaque
-  _prop.bgColor = {0, 0, 0, 0}; // none
-  _prop.visible = true;
-  _prop.duration = GINGA_TIME_NONE;
-
-  // Initializes player rectangle.
-  this->setProperty ("left", "0%");
-  this->setProperty ("top", "0%");
-  this->setProperty ("width", "100%");
-  this->setProperty ("height", "100%");
+  this->resetProperties ();
 }
 
 /**
@@ -262,6 +244,7 @@ Player::stop ()
 
   _state = SLEEPING;
   _ginga->unregisterPlayer (this);
+  this->resetProperties ();
 }
 
 /**
@@ -286,23 +269,6 @@ Player::resume ()
   TRACE ("resuming %s", _id.c_str ());
 
   _state = OCCURRING;
-}
-
-/**
- * @brief Schedules linear animation of property value.
- * @param name Property name.
- * @param from Current value.
- * @param to Target value.
- * @param dur Duration of the animation.
- */
-void
-Player::schedulePropertyAnimation (const string &name, const string &from,
-                                   const string &to, GingaTime dur)
-{
-  TRACE ("animating %s.%s from '%s' to '%s' in %" GINGA_TIME_FORMAT,
-         _id.c_str (), name.c_str (), from.c_str (), to.c_str (),
-         GINGA_TIME_ARGS (dur));
-  _animator->schedule (name, from, to, dur);
 }
 
 /**
@@ -338,8 +304,6 @@ Player::setProperty (const string &name, const string &value)
 
   if (_value == "")
     {
-      if (defval == "")
-        goto done;
       use_defval = true;
       _value = defval;
     }
@@ -358,6 +322,46 @@ Player::setProperty (const string &name, const string &value)
          (use_defval) ? (" (default: " + defval + ")").c_str () : "");
   _properties[name] = _value;
   return;
+}
+
+/**
+ * @brief Reset all player properties to their default values.
+ */
+void
+Player::resetProperties ()
+{
+  for (auto it: player_property_map)
+    if (it.second.init)
+      this->setProperty (it.first, "");
+  _properties.clear ();
+}
+
+/**
+ * @brief Reset the given player properties.
+ * @param props Properties to reset.
+ */
+void
+Player::resetProperties (set<string> *props)
+{
+  for (auto name: *props)
+    this->setProperty (name, "");
+}
+
+/**
+ * @brief Schedules linear animation of property value.
+ * @param name Property name.
+ * @param from Current value.
+ * @param to Target value.
+ * @param dur Duration of the animation.
+ */
+void
+Player::schedulePropertyAnimation (const string &name, const string &from,
+                                   const string &to, GingaTime dur)
+{
+  TRACE ("animating %s.%s from '%s' to '%s' in %" GINGA_TIME_FORMAT,
+         _id.c_str (), name.c_str (), from.c_str (), to.c_str (),
+         GINGA_TIME_ARGS (dur));
+  _animator->schedule (name, from, to, dur);
 }
 
 /**
@@ -651,7 +655,10 @@ Player::doSetProperty (PlayerProperty code, unused (const string &name),
         (255 - ginga_parse_pixel (value), 0, 255);
       break;
     case PROP_BACKGROUND:
-      _prop.bgColor = ginga_parse_color (value);
+      if (value == "")
+        _prop.bgColor = {0, 0, 0, 0};
+      else
+        _prop.bgColor = ginga_parse_color (value);
       break;
     case PROP_VISIBLE:
       _prop.visible = ginga_parse_bool (value);
