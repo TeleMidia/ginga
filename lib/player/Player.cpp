@@ -473,27 +473,27 @@ Player::setCurrentFocus (const string &index)
 /**
  * @brief Gets the property code of property.
  * @param name Property name.
- * @param devfal Address of variable to store property default value.
+ * @param defval Address of variable to store property default value.
  * @return Property code.
  */
 Player::PlayerProperty
-Player::getPlayerProperty (const string &_name, string *defval)
+Player::getPlayerProperty (const string &name, string *defval)
 {
   map<string, PlayerPropertyInfo>::iterator it;
   PlayerPropertyInfo *info;
-  string name = _name;
+  string _name = name;
 
-  if ((it = player_property_map.find (name)) == player_property_map.end ())
+  if ((it = player_property_map.find (_name)) == player_property_map.end ())
     {
       map<string, string>::iterator italias;
-      if ((italias = player_property_aliases.find (name))
+      if ((italias = player_property_aliases.find (_name))
           == player_property_aliases.end ())
         {
           tryset (defval, "");
           return PROP_UNKNOWN;
         }
-      name = italias->second;
-      it = player_property_map.find (name);
+      _name = italias->second;
+      it = player_property_map.find (_name);
       g_assert (it != player_property_map.end ());
     }
   info = &it->second;
