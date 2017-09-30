@@ -34,19 +34,24 @@ public:
 
   TextPlayer (GingaState *, const string &, const string &);
   virtual ~TextPlayer (void) {}
-  void setProperty (const string &, const string &) override;
   void reload () override;
 
+protected:
+  bool doSetProperty (PlayerProperty, const string &,
+                      const string &) override;
 private:
-  GingaColor _fontColor;
-  GingaColor _fontBgColor;
-  string _fontFamily;
-  string _fontSize;
-  string _fontStyle;
-  string _fontVariant;
-  string _fontWeight;
-  string _horzAlign;
-  string _vertAlign;
+  struct
+  {
+    GingaColor fontColor;
+    GingaColor fontBgColor;
+    string fontFamily;
+    string fontSize;
+    string fontStyle;
+    string fontVariant;
+    string fontWeight;
+    string horzAlign;
+    string vertAlign;
+  } _prop;
 };
 
 GINGA_PLAYER_END

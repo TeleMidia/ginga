@@ -31,13 +31,15 @@ public:
   void stop (void) override;
   void pause (void) override;
   void resume (void) override;
-  virtual void setProperty (const string &, const string &) override;
   void redraw (cairo_t *) override;
 
   // IGingaStateEventListener.
   void handleTickEvent (GingaTime, GingaTime, int) override {};
   void handleKeyEvent (const string &, bool) override;
 
+protected:
+  virtual bool doSetProperty (PlayerProperty, const string &,
+                              const string &) override;
 private:
   ncluaw_t *_nw;                // the NCLua state
   GingaRect _init_rect;         // initial output rectangle

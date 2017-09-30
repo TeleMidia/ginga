@@ -213,42 +213,65 @@ NCL_ELT_PUSH_DECL (descriptorParam)
 // Element map.
 static map<string, NclEltInfo> ncl_eltmap =
 {
- //
- // Elements that are converted to entities.
- //
+ // Root.
  {"ncl",
   {ncl_push_ncl, ncl_pop_ncl, false, {},
    {{"id", false},
     {"title", false},
     {"xmlns", false}}},
  },
- {"body",
+ //
+ // Body.
+ //
+ {"body",                       // -> Context
   {ncl_push_context, ncl_pop_context, false, {"ncl"},
    {{"id", false}}},
  },
- {"context",
+ {"context",                    // -> Context
   {ncl_push_context, ncl_pop_context, true, {"body", "context"},
    {{"id", true}}},
  },
- {"port",
+ {"port",                       // -> Port
   {ncl_push_port, nullptr, true, {"body", "context"},
    {{"id", true},
     {"component", true},
     {"interface", false}}},
  },
- {"media",
+ {"media",                      // -> Media
   {ncl_push_media, nullptr, true, {"body", "context"},
    {{"id", true},
     {"src", false},
     {"descriptor", false}}},
  },
- {"property",
+ {"area",
+  {nullptr, nullptr, false, {"media"},
+   {{"id", true},
+    {"begin", false},
+    {"end", false}}},
+ },
+ {"property",                   // -> Property
   {ncl_push_property, nullptr, false, {"body", "context", "media"},
   {{"name", true},
    {"value", false}}},
  },
+ {"link",
+  {nullptr, nullptr, false, {"body", "context"},
+   {{"id", false},
+    {"xconnector", true}}},
+ },
+ {"bind",
+  {nullptr, nullptr, false, {"link"},
+   {{"role", true},
+    {"component", false},
+    {"interface", false}}},
+ },
+ {"bindParam",
+  {nullptr, nullptr, false, {"bind"},
+   {{"name", true},
+    {"value", true}}},
+ },
  //
- // Elements that are not converted to entities:
+ // Head.
  //
  {"head",
   {nullptr, nullptr, false, {"ncl"}, {}},
@@ -291,6 +314,55 @@ static map<string, NclEltInfo> ncl_eltmap =
   {ncl_push_descriptorParam, nullptr, false, {"descriptor"},
    {{"name", true},
     {"value", true}}},
+ },
+ {"connectorBase",
+  {nullptr, nullptr, false, {"head"},
+   {{"id", false}}},
+ },
+ {"causalConnector",
+  {nullptr, nullptr, false, {"connectorBase"},
+   {{"id", true}}},
+ },
+ {"connectorParam",
+  {nullptr, nullptr, false, {"causalConnector"},
+   {{"name", true}}},
+ },
+ {"compoundCondition",
+  {nullptr, nullptr, false, {"causalConnector", "compoundCondition"},
+   {{"operator", true},
+    {"delay", false}}},
+ },
+ {"simpleCondition",
+  {nullptr, nullptr, false, {"causalConnector", "compoundCondition"},
+   {{"role", true},
+    {"delay", false},
+    {"eventtype", false},
+    {"key", false},
+    {"transition", false},
+    {"min", false},
+    {"max", false},
+    {"qualifier", false}}},
+ },
+ {"compoundAction",
+  {nullptr, nullptr, false, {"causalConnector", "compoundAction"},
+   {{"operator", false},
+    {"delay", false}}},
+ },
+ {"simpleAction",
+  {nullptr, nullptr, false, {"causalConnector", "compoundAction"},
+   {{"role", true},
+    {"delay", false},
+    {"eventType", false},
+    {"actionType", false},
+    {"value", false},
+    {"min", false},
+    {"max", false},
+    {"min", false},
+    {"qualifier", false},
+    {"repeat", false},
+    {"repeatDelay", false},
+    {"duration", false},
+    {"by", false}}},
  },
 };
 
@@ -335,6 +407,7 @@ static inline string
 ncl_attrmap_get (map<string, string> *attr, const string &name)
 {
   string value;
+  g_printerr (">>> %s\n", name.c_str ());
   g_assert (ncl_attrmap_index (attr, name, &value));
   return value;
 }
