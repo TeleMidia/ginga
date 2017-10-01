@@ -2,7 +2,7 @@ FROM ubuntu:16.04
 
 RUN apt-get update -y
 RUN apt-get install -y apt-utils | true
-RUN apt-get install -y python-software-properties
+RUN apt-get install -y software-properties-common python-software-properties
 RUN apt-get update -y
 
 RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test
