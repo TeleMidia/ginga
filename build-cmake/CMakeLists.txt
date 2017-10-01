@@ -8,7 +8,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_INCLUDE_CURRENTDIR ON)
 
 find_package(GLIB 2.32 REQUIRED)
-find_package(CURL REQUIRED)
 
 find_package(LibXml2 REQUIRED)
 find_package(XercesC 2.7 REQUIRED)
@@ -188,7 +187,6 @@ set (LIBGINGA_LIBS
   ${XercesC_LIBRARIES}
   expat
 
-  ${CURL_LIBRARIES}
   ${GLIB_LIBRARIES}
 
   ${LIBXML2_LIBRARIES}
