@@ -92,7 +92,16 @@ _ginga_parse_bool (const string &s, bool *result)
 bool
 _ginga_parse_color (const string &s, GingaColor *result)
 {
-  return gdk_rgba_parse (result, s.c_str ());
+  if (s == "")
+    {
+      GingaColor none = {0,0,0,0};
+      tryset (result, none);
+      return true;
+    }
+  else
+    {
+      return gdk_rgba_parse (result, s.c_str ());
+    }
 }
 
 /**

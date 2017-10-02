@@ -562,7 +562,7 @@ ExecutionObject::stop ()
   // Stop and destroy player.
   if (_player != nullptr)
     {
-      if (_player->getState () != Player::PL_SLEEPING)
+      if (_player->getState () != Player::SLEEPING)
         _player->stop ();
       delete _player;
       _player = nullptr;

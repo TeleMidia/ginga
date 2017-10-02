@@ -32,26 +32,36 @@ public:
   void pause () override;
   void resume () override;
   void redraw (cairo_t *) override;
-  void setProperty (const string &, const string &) override;
+
+protected:
+  bool doSetProperty (PlayerProperty, const string &,
+                      const string &) override;
 
 private:
-  GstElement *_playbin;           // pipeline
-  GstElement *_capsfilter;        // video filter
-  GstElement *_app_videosink;     // video sink
-  GstElement *_buffer_audio;      // buffer audio
-  GstElement *_volumefilter;      // volume filter
-  GstElement *_balancefilter;     // balance filter
-  GstElement *_app_audiosink;     // audio sink  
-
+  GstElement *_playbin;         // pipeline
+  struct {                      // audio pipeline
+    GstElement *bin;            // audio bin
+    GstElement *volume;         // volume filter
+    GstElement *pan;            // balance filter
+    GstElement *sink;           // audio sink
+  } _audio;
+  struct {                      // video pipeline
+    GstElement *bin;            // video bin
+    GstElement *caps;           // caps filter
+    GstElement *scale;          // scale filter
+    GstElement *sink;           // app sink
+  } _video;
   int _sample_flag;               // true if new sample is available
-  GstAppSinkCallbacks _callbacks; // appsink callback data
+  GstAppSinkCallbacks _callbacks; // video app-sink callback data
 
-  // Properties.
-  double _volume;               // sound level
-  bool _mute;                   // true if mute is on
-  double _balance;              // balance sound level
+  struct
+  {
+    bool mute;                  // true if mute is on
+    double balance;             // balance sound level
+    double volume;              // sound level
+  } _prop;
 
-  // Callbacks.
+  // GStreamer callbacks.
   static gboolean cb_Bus (GstBus *, GstMessage *, VideoPlayer *);
   static GstFlowReturn cb_NewSample (GstAppSink *, gpointer);
 };
