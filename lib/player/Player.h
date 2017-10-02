@@ -24,71 +24,88 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 class GingaState;
 
 GINGA_PLAYER_BEGIN
-
 class Player
 {
 public:
   enum PlayerState
     {
-     PL_SLEEPING = 1,
-     PL_OCCURRING,
-     PL_PAUSED,
+     SLEEPING = 1,              // stopped
+     OCCURRING,                 // playing
+     PAUSED,                    // paused
     };
 
-  static Player *createPlayer (GingaState *, const string &,
-                               const string &, const string &);
+  enum PlayerProperty           // known properties
+    {
+     PROP_UNKNOWN = 0,
+     PROP_BACKGROUND,
+     PROP_BALANCE,
+     PROP_BOTTOM,
+     PROP_BOUNDS,
+     PROP_DEBUG,
+     PROP_DURATION,
+     PROP_EXPLICIT_DUR,
+     PROP_FOCUS_INDEX,
+     PROP_FONT_BG_COLOR,
+     PROP_FONT_COLOR,
+     PROP_FONT_FAMILY,
+     PROP_FONT_SIZE,
+     PROP_FONT_STYLE,
+     PROP_FONT_VARIANT,
+     PROP_FONT_WEIGHT,
+     PROP_HEIGHT,
+     PROP_HORZ_ALIGN,
+     PROP_LEFT,
+     PROP_LOCATION,
+     PROP_MUTE,
+     PROP_RIGHT,
+     PROP_SIZE,
+     PROP_TOP,
+     PROP_TRANSPARENCY,
+     PROP_VERT_ALIGN,
+     PROP_VISIBLE,
+     PROP_VOLUME,
+     PROP_WIDTH,
+     PROP_Z_INDEX,
+    };
+
   Player (GingaState *, const string &, const string &);
   virtual ~Player ();
 
-  string getId ();
-  string getURI ();
   PlayerState getState ();
+  bool isFocused ();
 
   GingaTime getTime ();
   void incTime (GingaTime);
 
+  GingaTime getDuration ();
+  void setDuration (GingaTime);
+
   bool getEOS ();
   void setEOS (bool);
+
+  void getZ (int *, int *);
+  void setZ (int, int);
 
   virtual void start ();
   virtual void stop ();
   virtual void pause ();
   virtual void resume ();
 
-  void schedulePropertyAnimation (const string &, const string &,
-                                  const string &, GingaTime);
-  // Properties.
   virtual string getProperty (const string &);
   virtual void setProperty (const string &, const string &);
-
-  bool isFocused ();
-
-  GingaRect getRect ();
-  void setRect (GingaRect);
-
-  void getZ (int *, int *);
-  void setZ (int, int);
-
-  double getAlpha ();
-  void setAlpha (double);
-
-  GingaColor getBgColor ();
-  void setBgColor (GingaColor);
-
-  bool getVisible ();
-  void setVisible (bool);
-
-  GingaTime getDuration ();
-  void setDuration (GingaTime);
-
-  // Callbacks.
+  void resetProperties ();
+  void resetProperties (set<string> *);
+  void schedulePropertyAnimation (const string &, const string &,
+                                  const string &, GingaTime);
   virtual void reload ();
   virtual void redraw (cairo_t *);
 
   // Static.
   static string getCurrentFocus ();
   static void setCurrentFocus (const string &);
-
+  static PlayerProperty getPlayerProperty (const string &, string *);
+  static Player *createPlayer (GingaState *, const string &,
+                               const string &, const string &);
 protected:
   GingaState *_ginga;              // ginga state
   string _id;                      // associated object id
@@ -101,16 +118,22 @@ protected:
   PlayerAnimator *_animator;       // associated animator
 
   map<string, string> _properties; // property table
-  bool _debug;                     // true if debugging mode is on
-  string _focusIndex;              // focus index
-  GingaRect _rect;                 // x, y, w, h in pixels
-  int _z;                          // z-index
-  int _zorder;                     // z-order
-  guint8 _alpha;                   // alpha
-  GingaColor _bgColor;             // background color
-  bool _visible;                   // true if visible
-  GingaTime _duration;             // explicit duration
+  struct
+  {
+    bool debug;                 // true if debugging mode is on
+    string focusIndex;          // focus index
+    GingaRect rect;             // x, y, w, h in pixels
+    int z;                      // z-index
+    int zorder;                 // z-order
+    guint8 alpha;               // alpha
+    GingaColor bgColor;         // background color
+    bool visible;               // true if visible
+    GingaTime duration;         // explicit duration
+  } _prop;
 
+protected:
+  virtual bool doSetProperty (PlayerProperty, const string &,
+                              const string &);
 private:
   void redrawDebuggingInfo (cairo_t *);
 
