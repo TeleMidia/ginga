@@ -59,6 +59,9 @@ private:
     bool mute;                  // true if mute is on
     double balance;             // balance sound level
     double volume;              // sound level
+    double treble;
+    double bass;
+    bool freeze;                // true if freeze is on
   } _prop;
 
   // GStreamer callbacks.
