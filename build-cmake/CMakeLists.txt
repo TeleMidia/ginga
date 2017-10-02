@@ -87,9 +87,9 @@ else()
 endif()
 
 set (LIBGINGA_SOURCES
-  ../lib/ginga-internal.cpp
-  ../lib/ginga.cpp
-  ../lib/GingaState.cpp
+  ../lib/aux-ginga.cpp
+  ../lib/Ginga.cpp
+  ../lib/GingaInternal.cpp
 
   ../lib/formatter/Converter.cpp
   ../lib/formatter/ExecutionObject.cpp
