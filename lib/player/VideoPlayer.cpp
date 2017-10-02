@@ -336,6 +336,22 @@ VideoPlayer::setProperty (const string &name, const string &value)
       if (_state != PL_SLEEPING)
         g_object_set (_balancefilter, "panorama", _balance, NULL);
     }
+  else if (name == "trebleLevel")
+    {
+      
+    }
+  else if (name == "bassLevel")
+    {
+
+    }
+   else if (name == "freeze")
+    {
+
+    }
+   else if (name == "")
+    {
+
+    }
 }
 
 // Private.
