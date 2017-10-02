@@ -34,7 +34,7 @@ class ExecutionObjectContext : public ExecutionObject,
     public INclEventListener
 {
 public:
-  ExecutionObjectContext (GingaState *, const string &,
+  ExecutionObjectContext (GingaInternal *, const string &,
                           Node *,
                           INclActionListener *);
 

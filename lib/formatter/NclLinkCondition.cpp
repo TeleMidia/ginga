@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclLinkCondition.h"
 #include "NclLinkStatement.h"
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 
 GINGA_FORMATTER_BEGIN
 

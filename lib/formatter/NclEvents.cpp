@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "NclEvents.h"
 
 #include "ExecutionObjectContext.h"
@@ -26,7 +26,7 @@ GINGA_FORMATTER_BEGIN
 
 // NclEvent.
 
-NclEvent::NclEvent (GingaState *ginga, const string &id,
+NclEvent::NclEvent (GingaInternal *ginga, const string &id,
                     ExecutionObject *exeObj)
 {
   g_assert_nonnull (ginga);
@@ -187,7 +187,7 @@ NclEvent::changeState (EventState newState,
 
 // AnchorEvent.
 
-AnchorEvent::AnchorEvent (GingaState *ginga, const string &id,
+AnchorEvent::AnchorEvent (GingaInternal *ginga, const string &id,
                           ExecutionObject *executionObject,
                           Area *anchor)
   : NclEvent (ginga, id, executionObject)
@@ -198,7 +198,7 @@ AnchorEvent::AnchorEvent (GingaState *ginga, const string &id,
 
 // PresentationEvent.
 
-PresentationEvent::PresentationEvent (GingaState *ginga,
+PresentationEvent::PresentationEvent (GingaInternal *ginga,
                                       const string &id,
                                       ExecutionObject *exeObj,
                                       Area *anchor)
@@ -271,7 +271,7 @@ PresentationEvent::incOccurrences ()
 
 // SelectionEvent
 
-SelectionEvent::SelectionEvent (GingaState *ginga,
+SelectionEvent::SelectionEvent (GingaInternal *ginga,
                                 const string &id,
                                 ExecutionObject *exeObj,
                                 Area *anchor)
@@ -293,7 +293,7 @@ SelectionEvent::start ()
 
 // AttributionEvent
 
-AttributionEvent::AttributionEvent (GingaState *ginga,
+AttributionEvent::AttributionEvent (GingaInternal *ginga,
                                     const string &id,
                                     ExecutionObject *exeObj,
                                     Property *anchor)
@@ -377,7 +377,7 @@ AttributionEvent::solveImplicitRefAssessment (const string &val)
 
 // SwitchEvent.
 
-SwitchEvent::SwitchEvent (GingaState *ginga,
+SwitchEvent::SwitchEvent (GingaInternal *ginga,
                           const string &id,
                           ExecutionObject *exeObjSwitch,
                           Anchor *interface,

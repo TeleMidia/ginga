@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "Scheduler.h"
 #include "Converter.h"
 
@@ -28,7 +28,7 @@ GINGA_FORMATTER_BEGIN
 
 // Public.
 
-Scheduler::Scheduler (GingaState *ginga)
+Scheduler::Scheduler (GingaInternal *ginga)
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;

@@ -15,11 +15,11 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef GINGA_PRIVATE_H
-#define GINGA_PRIVATE_H
+#ifndef GINGA_INTERNAL_H
+#define GINGA_INTERNAL_H
 
 #include "ginga.h"
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 
 GINGA_PLAYER_BEGIN
 class Player;
@@ -31,14 +31,14 @@ class Scheduler;
 GINGA_FORMATTER_END
 using namespace ::ginga::formatter;
 
-class IGingaStateEventListener
+class IGingaInternalEventListener
 {
 public:
   virtual void handleTickEvent (GingaTime, GingaTime, int) = 0;
   virtual void handleKeyEvent (const string &key, bool) = 0;
 };
 
-class GingaState : public Ginga
+class GingaInternal : public Ginga
 {
  public:
   // External API.
@@ -59,22 +59,22 @@ class GingaState : public Ginga
   void setOptionString (const string &, string);
 
   // Internal API.
-  GingaState (int, char **, GingaOptions *);
-  virtual ~GingaState ();
+  GingaInternal (int, char **, GingaOptions *);
+  virtual ~GingaInternal ();
   Scheduler *getScheduler ();
 
-  bool registerEventListener (IGingaStateEventListener *);
-  bool unregisterEventListener (IGingaStateEventListener *);
+  bool registerEventListener (IGingaInternalEventListener *);
+  bool unregisterEventListener (IGingaInternalEventListener *);
   void registerPlayer (Player *);
   void unregisterPlayer (Player *);
 
   void *getData (const string &);
   void setData (const string &, void *);
 
-  static void setOptionDebug (GingaState *, const string &, bool);
-  static void setOptionExperimental (GingaState *, const string &, bool);
-  static void setOptionSize (GingaState *, const string &, int);
-  static void setOptionBackground (GingaState *, const string &, string);
+  static void setOptionDebug (GingaInternal *, const string &, bool);
+  static void setOptionExperimental (GingaInternal *, const string &, bool);
+  static void setOptionSize (GingaInternal *, const string &, int);
+  static void setOptionBackground (GingaInternal *, const string &, string);
 
  private:
   GingaOptions _opts;            // current options

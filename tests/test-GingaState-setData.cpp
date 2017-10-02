@@ -15,12 +15,12 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "GingaState.h"
+#include "GingaInternal.h"
 
 int
 main (void)
 {
-  GingaState *ginga = new GingaState (0, nullptr, nullptr);
+  GingaInternal *ginga = new GingaInternal (0, nullptr, nullptr);
   g_assert_null (ginga->getData ("nothing"));
   ginga->setData ("data", nullptr);
   g_assert_null (ginga->getData ("data"));

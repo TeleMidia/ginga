@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
-#include "GingaState.h"
+#include "aux-ginga.h"
+#include "GingaInternal.h"
 
 #include "formatter/Scheduler.h"
 using namespace ::ginga::formatter;
@@ -44,7 +44,7 @@ typedef struct GingaOptionData
 #define OPTS_ENTRY(name,type,func)                              \
   {G_STRINGIFY (name),                                          \
       {(type), offsetof (GingaOptions, name),                   \
-         pointerof (G_PASTE (GingaState::setOption, func))}}
+         pointerof (G_PASTE (GingaInternal::setOption, func))}}
 
 // Option table.
 static map<string, GingaOptionData> opts_table =
@@ -100,7 +100,7 @@ win_cmp_z (Player *p1, Player *p2)
  * @return True if successfully, or false otherwise.
  */
 bool
-GingaState::start (const string &file, string *errmsg)
+GingaInternal::start (const string &file, string *errmsg)
 {
   if (_started)
     return false;               // nothing to do
@@ -122,7 +122,7 @@ GingaState::start (const string &file, string *errmsg)
  * @brief Stops NCL.
  */
 void
-GingaState::stop ()
+GingaInternal::stop ()
 {
   delete _scheduler;
   _scheduler = nullptr;
@@ -142,7 +142,7 @@ GingaState::stop ()
  * @param height New height (in pixels).
  */
 void
-GingaState::resize (int width, int height)
+GingaInternal::resize (int width, int height)
 {
   g_assert (width > 0 && height > 0);
   _opts.width = width;
@@ -163,7 +163,7 @@ GingaState::resize (int width, int height)
  * @param cr Target cairo context.
  */
 void
-GingaState::redraw (cairo_t *cr)
+GingaInternal::redraw (cairo_t *cr)
 {
   GList *l;
 
@@ -252,9 +252,9 @@ GingaState::redraw (cairo_t *cr)
  * @param press True if press, False if release.
  */
 void
-GingaState::sendKeyEvent (const string &key, bool press)
+GingaInternal::sendKeyEvent (const string &key, bool press)
 {
-  NOTIFY_LISTENERS (_listeners, IGingaStateEventListener,
+  NOTIFY_LISTENERS (_listeners, IGingaInternalEventListener,
                     handleKeyEvent, key, press);
 }
 
@@ -265,13 +265,13 @@ GingaState::sendKeyEvent (const string &key, bool press)
  * @param frameno Current frame number.
  */
 void
-GingaState::sendTickEvent (uint64_t total, uint64_t diff,
+GingaInternal::sendTickEvent (uint64_t total, uint64_t diff,
                            uint64_t frameno)
 {
   _last_tick_total = total;
   _last_tick_diff = diff;
   _last_tick_frameno = frameno;
-  NOTIFY_LISTENERS (_listeners, IGingaStateEventListener,
+  NOTIFY_LISTENERS (_listeners, IGingaInternalEventListener,
                     handleTickEvent, total, diff, (int) frameno);
 }
 
@@ -280,7 +280,7 @@ GingaState::sendTickEvent (uint64_t total, uint64_t diff,
  * @return The current options.
  */
 const GingaOptions *
-GingaState::getOptions ()
+GingaInternal::getOptions ()
 {
   return &_opts;
 }
@@ -292,7 +292,7 @@ GingaState::getOptions ()
 
 #define OPT_GETSET_DEFN(Name, Type, GType)                              \
   Type                                                                  \
-  GingaState::getOption##Name (const string &name)                      \
+  GingaInternal::getOption##Name (const string &name)                      \
   {                                                                     \
     GingaOptionData *opt;                                               \
     if (unlikely (!opts_table_index (name, &opt)))                      \
@@ -302,7 +302,7 @@ GingaState::getOptions ()
     return *((Type *)(((ptrdiff_t) &_opts) + opt->offset));             \
   }                                                                     \
   void                                                                  \
-  GingaState::setOption##Name (const string &name, Type value)          \
+  GingaInternal::setOption##Name (const string &name, Type value)          \
   {                                                                     \
     GingaOptionData *opt;                                               \
     if (unlikely (!opts_table_index (name, &opt)))                      \
@@ -312,7 +312,7 @@ GingaState::getOptions ()
     *((Type *)(((ptrdiff_t) &_opts) + opt->offset)) = value;            \
     if (opt->func)                                                      \
       {                                                                 \
-        ((void (*) (GingaState *, const string &, Type)) opt->func)     \
+        ((void (*) (GingaInternal *, const string &, Type)) opt->func)     \
           (this, name, value);                                          \
       }                                                                 \
   }
@@ -327,7 +327,7 @@ OPT_GETSET_DEFN (String, string, G_TYPE_STRING)
 /**
  * @brief Creates a new instance.
  */
-GingaState::GingaState (unused (int argc), unused (char **argv),
+GingaInternal::GingaInternal (unused (int argc), unused (char **argv),
                         GingaOptions *opts)
   : Ginga (argc, argv, opts)
 {
@@ -364,7 +364,7 @@ GingaState::GingaState (unused (int argc), unused (char **argv),
 /**
  * @brief Destroys instance.
  */
-GingaState::~GingaState ()
+GingaInternal::~GingaInternal ()
 {
   if (_started)
     this->stop ();
@@ -378,7 +378,7 @@ GingaState::~GingaState ()
  * @return The associated scheduler.
  */
 Scheduler *
-GingaState::getScheduler ()
+GingaInternal::getScheduler ()
 {
   return (Scheduler *) this->getData ("scheduler");
 }
@@ -388,7 +388,7 @@ GingaState::getScheduler ()
  * @param obj Event listener.
  */
 bool
-GingaState::registerEventListener (IGingaStateEventListener *obj)
+GingaInternal::registerEventListener (IGingaInternalEventListener *obj)
 {
   g_assert_nonnull (obj);
   return this->add (&_listeners, obj);
@@ -398,7 +398,7 @@ GingaState::registerEventListener (IGingaStateEventListener *obj)
  * @brief Removes event listener.
  */
 bool
-GingaState::unregisterEventListener (IGingaStateEventListener *obj)
+GingaInternal::unregisterEventListener (IGingaInternalEventListener *obj)
 {
   g_assert_nonnull (obj);
   return this->remove (&_listeners, obj);
@@ -409,7 +409,7 @@ GingaState::unregisterEventListener (IGingaStateEventListener *obj)
  * @param player Player.
  */
 void
-GingaState::registerPlayer (Player *player)
+GingaInternal::registerPlayer (Player *player)
 {
   g_assert_nonnull (player);
   g_assert (this->add (&_players, player));
@@ -419,7 +419,7 @@ GingaState::registerPlayer (Player *player)
  * @brief Removes handled player.
  */
 void
-GingaState::unregisterPlayer (Player *player)
+GingaInternal::unregisterPlayer (Player *player)
 {
   g_assert_nonnull (player);
   g_assert (this->remove (&_players, player));
@@ -431,7 +431,7 @@ GingaState::unregisterPlayer (Player *player)
  * @return Data associated with key.
  */
 void *
-GingaState::getData (const string &key)
+GingaInternal::getData (const string &key)
 {
   map<string, void *>::iterator it;
   return ((it = _userdata.find (key)) == _userdata.end ())
@@ -444,7 +444,7 @@ GingaState::getData (const string &key)
  * @param data Data to associate with key.
  */
 void
-GingaState::setData (const string &key, void *data)
+GingaInternal::setData (const string &key, void *data)
 {
   _userdata[key] = data;
 }
@@ -453,7 +453,7 @@ GingaState::setData (const string &key, void *data)
  * @brief Updates debug option.
  */
 void
-GingaState::setOptionDebug (GingaState *self, const string &name,
+GingaInternal::setOptionDebug (GingaInternal *self, const string &name,
                             bool value)
 {
   g_assert (name == "debug");
@@ -477,7 +477,7 @@ GingaState::setOptionDebug (GingaState *self, const string &name,
  */
 
 void
-GingaState::setOptionExperimental (unused (GingaState *self),
+GingaInternal::setOptionExperimental (unused (GingaInternal *self),
                                    const string &name, bool value)
 {
   g_assert (name == "experimental");
@@ -488,7 +488,7 @@ GingaState::setOptionExperimental (unused (GingaState *self),
  * @brief Updates size option.
  */
 void
-GingaState::setOptionSize (GingaState *self,
+GingaInternal::setOptionSize (GingaInternal *self,
                            const string &name,
                            int value)
 {
@@ -503,7 +503,7 @@ GingaState::setOptionSize (GingaState *self,
  * @brief Updates background option.
  */
 void
-GingaState::setOptionBackground (GingaState *self,
+GingaInternal::setOptionBackground (GingaInternal *self,
                                  const string &name,
                                  string value)
 {
@@ -519,7 +519,7 @@ GingaState::setOptionBackground (GingaState *self,
 // Private methods.
 
 bool
-GingaState::add (GList **list, gpointer data)
+GingaInternal::add (GList **list, gpointer data)
 {
   bool found;
 
@@ -535,7 +535,7 @@ done:
 }
 
 bool
-GingaState::remove (GList **list, gpointer data)
+GingaInternal::remove (GList **list, gpointer data)
 {
   GList *l;
 

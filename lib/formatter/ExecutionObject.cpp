@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "ExecutionObject.h"
 
 #include "ExecutionObjectContext.h"
@@ -29,7 +29,7 @@ using namespace ::ginga::player;
 
 GINGA_FORMATTER_BEGIN
 
-ExecutionObject::ExecutionObject (GingaState *ginga,
+ExecutionObject::ExecutionObject (GingaInternal *ginga,
                                   const string &id,
                                   Node *node,
                                   INclActionListener *seListener)

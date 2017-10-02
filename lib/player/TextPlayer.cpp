@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "TextPlayer.h"
 
 GINGA_PLAYER_BEGIN
@@ -154,7 +154,7 @@ TextPlayer::renderSurface (const string &text,
 
 // Public.
 
-TextPlayer::TextPlayer (GingaState *ginga,
+TextPlayer::TextPlayer (GingaInternal *ginga,
                         const string &id, const string &uri)
   : Player (ginga, id, uri)
 {

@@ -16,8 +16,8 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "ginga-internal.h"
-#include "GingaState.h"
+#include "aux-ginga.h"
+#include "GingaInternal.h"
 
 Ginga::Ginga (int, char **, GingaOptions *)
 {
@@ -41,7 +41,7 @@ Ginga *
 Ginga::create (int argc, char **argv, GingaOptions *opts)
 {
   setlocale (LC_ALL, "C");
-  return new GingaState (argc, argv, opts);
+  return new GingaInternal (argc, argv, opts);
 }
 
 /**

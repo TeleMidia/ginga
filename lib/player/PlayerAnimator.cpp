@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "PlayerAnimator.h"
 
 GINGA_PLAYER_BEGIN
@@ -26,7 +26,7 @@ GINGA_PLAYER_BEGIN
 /**
  * @brief Creates a new player animator.
  */
-PlayerAnimator::PlayerAnimator (GingaState *ginga)
+PlayerAnimator::PlayerAnimator (GingaInternal *ginga)
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;
