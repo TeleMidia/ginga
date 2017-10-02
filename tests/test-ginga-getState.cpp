@@ -15,41 +15,14 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga.h"
 #include "aux-ginga.h"
-#include "GingaInternal.h"
+#include "ginga.h"
 
-Ginga::Ginga (int, char **, GingaOptions *)
+int
+main (void)
 {
-}
-
-Ginga::~Ginga ()
-{
-}
-
-
-// Class methods.
-
-/**
- * @brief Creates a new Ginga handle.
- * @param argc Number arguments passed to main.
- * @param argv Arguments passed to main.
- * @param opts State options.
- * @return A new formatter handle.
- */
-Ginga *
-Ginga::create (int argc, char **argv, GingaOptions *opts)
-{
-  setlocale (LC_ALL, "C");
-  return new GingaInternal (argc, argv, opts);
-}
-
-/**
- * @brief Gets Ginga version string.
- * @return libginga version string.
- */
-string
-Ginga::version ()
-{
-  return PACKAGE_VERSION;
+  Ginga *ginga = Ginga::create (0, nullptr, nullptr);
+  g_assert_nonnull (ginga);
+  g_assert (ginga->getState () == GINGA_STATE_STOPPED);
+  exit (EXIT_SUCCESS);
 }

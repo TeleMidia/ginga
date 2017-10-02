@@ -153,6 +153,9 @@ test_ginga_version_SOURCES= test-ginga-version.cpp
 progs+= test-ginga-create
 test_ginga_create_SOURCES= test-ginga-create.cpp
 
+progs+= test-ginga-getState
+test_ginga_getState_SOURCES= test-ginga-getState.cpp
+
 progs+= test-ginga-getOptions
 test_ginga_getOptions_SOURCES= test-ginga-getOptions.cpp
 

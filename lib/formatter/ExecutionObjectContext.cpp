@@ -406,7 +406,10 @@ ExecutionObjectContext::checkLinkConditions ()
         {
           _wholeContent->stop ();
           if (this->getParentObject () == nullptr)
-            TRACE ("*** ALL DONE ***");
+            {
+              TRACE ("*** ALL DONE ***");
+              _ginga->setEOS (true);
+            }
         }
     }
 }

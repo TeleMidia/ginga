@@ -110,15 +110,15 @@ public:
   static Player *createPlayer (GingaInternal *, const string &,
                                const string &, const string &);
 protected:
-  GingaInternal *_ginga;              // ginga state
-  string _id;                      // associated object id
-  string _uri;                     // source uri
-  PlayerState _state;              // current state
-  GingaTime _time;                 // playback time
-  bool _eos;                       // true if content was exhausted
-  cairo_surface_t *_surface;       // player surface
-  bool _dirty;                     // true if surface should be reloaded
-  PlayerAnimator *_animator;       // associated animator
+  GingaInternal *_ginga;        // ginga handle
+  string _id;                   // associated object id
+  string _uri;                  // source uri
+  PlayerState _state;           // current state
+  GingaTime _time;              // playback time
+  bool _eos;                    // true if content was exhausted
+  cairo_surface_t *_surface;    // player surface
+  bool _dirty;                  // true if surface should be reloaded
+  PlayerAnimator *_animator;    // associated animator
 
   map<string, string> _properties; // property table
   struct

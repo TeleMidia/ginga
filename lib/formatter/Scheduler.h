@@ -54,10 +54,10 @@ public:
   void scheduleAction (NclSimpleAction *) override;
 
 private:
-  GingaInternal *_ginga;              // ginga state
-  Converter *_converter;           // converter object
-  string _file;                    // path to document file
-  NclDocument *_doc;               // document tree
+  GingaInternal *_ginga;        // ginga handle
+  Converter *_converter;        // converter object
+  string _file;                 // path to document file
+  NclDocument *_doc;            // document tree
 
   set<NclEvent *> _events;         // document events
   set<ExecutionObject *> _objects; // document objects

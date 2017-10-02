@@ -114,7 +114,7 @@ public:
   virtual void handleTickEvent (GingaTime, GingaTime, int) override;
 
 protected:
-  GingaInternal *_ginga;           // ginga state
+  GingaInternal *_ginga;        // ginga handle
   Scheduler *_scheduler;        // scheduler
 
   string _id;                   // object id

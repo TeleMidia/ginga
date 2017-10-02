@@ -61,7 +61,7 @@ public:
   static bool hasNcmId (NclEvent *evt, const string &anchorId);
 
 protected:
-  GingaInternal *_ginga;           // ginga state
+  GingaInternal *_ginga;        // ginga handle
   Scheduler *_scheduler;        // scheduler
 
   set<INclEventListener *> _listeners;
