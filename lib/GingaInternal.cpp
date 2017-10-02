@@ -94,6 +94,16 @@ win_cmp_z (Player *p1, Player *p2)
 // External API.
 
 /**
+ * @brief Get current state.
+ * @return Current state.
+ */
+GingaState
+GingaInternal::getState ()
+{
+  return _state;
+}
+
+/**
  * @brief Starts NCL from file.
  * @param file Path to NCL file.
  * @param errmsg Address of a variable to store an error message.
@@ -102,38 +112,43 @@ win_cmp_z (Player *p1, Player *p2)
 bool
 GingaInternal::start (const string &file, string *errmsg)
 {
-  if (_started)
+  if (_state != GINGA_STATE_STOPPED)
     return false;               // nothing to do
 
   _scheduler = new Scheduler (this);
   _ncl_file = file;
-  TRACE ("starting %s", file.c_str ());
+  _eos = false;
+  _last_tick_total = 0;
+  _last_tick_diff = 0;
+  _last_tick_frameno = 0;
 
   if (unlikely (!_scheduler->run (file, errmsg)))
     {
       delete _scheduler;
       return false;
     }
-  _started = true;
+
+  _state = GINGA_STATE_PLAYING;
   return true;
 }
 
 /**
  * @brief Stops NCL.
  */
-void
+bool
 GingaInternal::stop ()
 {
+  if (_state == GINGA_STATE_STOPPED)
+    return false;               // nothing to do
+
   delete _scheduler;
   _scheduler = nullptr;
   g_list_free (_listeners);
   _listeners = nullptr;
   g_list_free (_players);
   _players = nullptr;
-  _started = false;
-  _last_tick_total = 0;
-  _last_tick_diff = 0;
-  _last_tick_frameno = 0;
+  _state = GINGA_STATE_STOPPED;
+  return true;
 }
 
 /**
@@ -230,49 +245,74 @@ GingaInternal::redraw (cairo_t *cr)
     }
 }
 
+// Stop formatter if EOS has been seen.
+#define _GINGA_CHECK_EOS(ginga)                                 \
+  G_STMT_START                                                  \
+  {                                                             \
+    if ((ginga)->getEOS ())                                     \
+      {                                                         \
+        g_assert ((ginga)->_state == GINGA_STATE_PLAYING);      \
+        (ginga)->setEOS (false);                                \
+        g_assert ((ginga)->stop ());                            \
+        g_assert ((ginga)->_state == GINGA_STATE_STOPPED);      \
+      }                                                         \
+  }                                                             \
+  G_STMT_END
+
 // This gymnastics is necessary to ensure that the list can be safely
 // modified while it is being traversed.
-#define NOTIFY_LISTENERS(list, Type, method, ...)                          \
-  G_STMT_START                                                             \
-  {                                                                        \
-    guint n = g_list_length ((list));                                      \
-    for (guint i = 0; i < n; i++)                                          \
-      {                                                                    \
-        Type *obj = (Type *)g_list_nth_data ((list), i);                   \
-        if (obj == NULL)                                                   \
-          return;                                                          \
-        obj->method (__VA_ARGS__);                                         \
-      }                                                                    \
-  }                                                                        \
+#define _GINGA_NOTIFY_LISTENERS(list, Type, method, ...)        \
+  G_STMT_START                                                  \
+  {                                                             \
+    guint n = g_list_length ((list));                           \
+    for (guint i = 0; i < n; i++)                               \
+      {                                                         \
+        Type *obj = (Type *) g_list_nth_data ((list), i);       \
+        if (obj == NULL)                                        \
+          break;                                                \
+        obj->method (__VA_ARGS__);                              \
+      }                                                         \
+  }                                                             \
   G_STMT_END
 
 /**
  * @brief Sends key event.
  * @param key Key name.
  * @param press True if press, False if release.
+ * @return True if successful, or false otherwise.
  */
-void
+bool
 GingaInternal::sendKeyEvent (const string &key, bool press)
 {
-  NOTIFY_LISTENERS (_listeners, IGingaInternalEventListener,
-                    handleKeyEvent, key, press);
+  _GINGA_CHECK_EOS (this);
+  if (_state != GINGA_STATE_PLAYING)
+    return false;               // nothing to do
+
+  _GINGA_NOTIFY_LISTENERS (_listeners, IGingaInternalEventListener,
+                           handleKeyEvent, key, press);
+  return true;
 }
 
 /**
  * @brief Sends tick event.
  * @param total Time passed since start (in microseconds).
  * @param diff Time passed since last tick (in microseconds).
- * @param frameno Current frame number.
+ * @param frame Current frame number.
+ * @return True if successful, or false otherwise.
  */
-void
-GingaInternal::sendTickEvent (uint64_t total, uint64_t diff,
-                           uint64_t frameno)
+bool
+GingaInternal::sendTickEvent (uint64_t total, uint64_t diff, uint64_t frame)
 {
+  _GINGA_CHECK_EOS (this);
+  if (_state != GINGA_STATE_PLAYING)
+    return false;               // nothing to do
+
   _last_tick_total = total;
   _last_tick_diff = diff;
-  _last_tick_frameno = frameno;
-  NOTIFY_LISTENERS (_listeners, IGingaInternalEventListener,
-                    handleTickEvent, total, diff, (int) frameno);
+  _last_tick_frameno = frame;
+  _GINGA_NOTIFY_LISTENERS (_listeners, IGingaInternalEventListener,
+                           handleTickEvent, total, diff, (int) frame);
+  return true;
 }
 
 /**
@@ -292,7 +332,7 @@ GingaInternal::getOptions ()
 
 #define OPT_GETSET_DEFN(Name, Type, GType)                              \
   Type                                                                  \
-  GingaInternal::getOption##Name (const string &name)                      \
+  GingaInternal::getOption##Name (const string &name)                   \
   {                                                                     \
     GingaOptionData *opt;                                               \
     if (unlikely (!opts_table_index (name, &opt)))                      \
@@ -302,7 +342,7 @@ GingaInternal::getOptions ()
     return *((Type *)(((ptrdiff_t) &_opts) + opt->offset));             \
   }                                                                     \
   void                                                                  \
-  GingaInternal::setOption##Name (const string &name, Type value)          \
+  GingaInternal::setOption##Name (const string &name, Type value)       \
   {                                                                     \
     GingaOptionData *opt;                                               \
     if (unlikely (!opts_table_index (name, &opt)))                      \
@@ -312,7 +352,7 @@ GingaInternal::getOptions ()
     *((Type *)(((ptrdiff_t) &_opts) + opt->offset)) = value;            \
     if (opt->func)                                                      \
       {                                                                 \
-        ((void (*) (GingaInternal *, const string &, Type)) opt->func)     \
+        ((void (*) (GingaInternal *, const string &, Type)) opt->func)  \
           (this, name, value);                                          \
       }                                                                 \
   }
@@ -328,18 +368,18 @@ OPT_GETSET_DEFN (String, string, G_TYPE_STRING)
  * @brief Creates a new instance.
  */
 GingaInternal::GingaInternal (unused (int argc), unused (char **argv),
-                        GingaOptions *opts)
-  : Ginga (argc, argv, opts)
+                              GingaOptions *opts) : Ginga (argc, argv, opts)
 {
   const char *s;
 
+  _state = GINGA_STATE_STOPPED;
   _opts = (opts) ? *opts : opts_defaults;
   _scheduler = nullptr;
   _listeners = nullptr;
   _players = nullptr;
 
-  _started = false;
   _ncl_file = "";
+  _eos = false;
   _last_tick_total = 0;
   _last_tick_diff = 0;
   _last_tick_frameno = 0;
@@ -366,7 +406,7 @@ GingaInternal::GingaInternal (unused (int argc), unused (char **argv),
  */
 GingaInternal::~GingaInternal ()
 {
-  if (_started)
+  if (_state != GINGA_STATE_STOPPED)
     this->stop ();
 #if defined WITH_CEF && WITH_CEF
   CefShutdown ();
@@ -384,8 +424,29 @@ GingaInternal::getScheduler ()
 }
 
 /**
+ * @brief Gets EOS flag value.
+ * @return EOS flag value.
+ */
+bool
+GingaInternal::getEOS ()
+{
+  return _eos;
+}
+
+/**
+ * @brief Sets EOS flag.
+ * @param eos Flag value.
+ */
+void
+GingaInternal::setEOS (bool eos)
+{
+  _eos = eos;
+}
+
+/**
  * @brief Adds event listener.
  * @param obj Event listener.
+ * @return True if successful, or false otherwise.
  */
 bool
 GingaInternal::registerEventListener (IGingaInternalEventListener *obj)
@@ -396,6 +457,8 @@ GingaInternal::registerEventListener (IGingaInternalEventListener *obj)
 
 /**
  * @brief Removes event listener.
+ * @param obj Event listener.
+ * @return True if successful, or false otherwise.
  */
 bool
 GingaInternal::unregisterEventListener (IGingaInternalEventListener *obj)
@@ -454,7 +517,7 @@ GingaInternal::setData (const string &key, void *data)
  */
 void
 GingaInternal::setOptionDebug (GingaInternal *self, const string &name,
-                            bool value)
+                               bool value)
 {
   g_assert (name == "debug");
   if (value)
@@ -478,7 +541,7 @@ GingaInternal::setOptionDebug (GingaInternal *self, const string &name,
 
 void
 GingaInternal::setOptionExperimental (unused (GingaInternal *self),
-                                   const string &name, bool value)
+                                      const string &name, bool value)
 {
   g_assert (name == "experimental");
   TRACE ("setting GingaOption '%s' to %s", name.c_str (), strbool (value));
@@ -488,9 +551,8 @@ GingaInternal::setOptionExperimental (unused (GingaInternal *self),
  * @brief Updates size option.
  */
 void
-GingaInternal::setOptionSize (GingaInternal *self,
-                           const string &name,
-                           int value)
+GingaInternal::setOptionSize (GingaInternal *self, const string &name,
+                              int value)
 {
   const GingaOptions *opts;
   g_assert (name == "width" || name == "height");
@@ -503,9 +565,8 @@ GingaInternal::setOptionSize (GingaInternal *self,
  * @brief Updates background option.
  */
 void
-GingaInternal::setOptionBackground (GingaInternal *self,
-                                 const string &name,
-                                 string value)
+GingaInternal::setOptionBackground (GingaInternal *self, const string &name,
+                                    string value)
 {
   g_assert (name == "background");
   if (value == "")

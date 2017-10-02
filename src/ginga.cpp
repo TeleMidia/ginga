@@ -166,7 +166,6 @@ resize_callback (GtkWidget *widget, GdkEventConfigure *e, gpointer data)
 
   opt_width = e->width;
   opt_height = e->height;
-
   GINGA->resize (opt_width, opt_height);
 
   // We must return FALSE here, otherwise the new geometry is not propagated
@@ -178,7 +177,7 @@ static gboolean
 keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
 {
   const char *key;
-  gboolean free_key = FALSE;
+  bool free_key = false;
 
   switch (e->keyval)
     {
@@ -243,17 +242,24 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
       if (strlen (key) > 1)
         {
           key = g_utf8_strup (key, -1);
-          free_key = TRUE;
+          free_key = true;
         }
       break;
     }
 
-  GINGA->sendKeyEvent
+  bool status = GINGA->sendKeyEvent
     (string (key), g_str_equal ((const char *) type, "press") == 0);
+
   if (free_key)
     g_free (deconst (char *, key));
 
-  return TRUE;
+  if (!status)
+    {
+      g_assert (GINGA->getState () == GINGA_STATE_STOPPED);
+      gtk_main_quit ();         // all done
+    }
+
+  return status;
 }
 
 #if GTK_CHECK_VERSION(3,8,0)
@@ -283,7 +289,14 @@ tick_callback (GtkWidget *widget)
       first = time;
       last = time;
     }
-  GINGA->sendTickEvent (time - first, time - last, frame);
+
+  if (!GINGA->sendTickEvent (time - first, time - last, frame))
+    {
+      g_assert (GINGA->getState () == GINGA_STATE_STOPPED);
+      gtk_main_quit ();         // all done
+      return G_SOURCE_REMOVE;
+    }
+
   last = time;
   gtk_widget_queue_draw (widget);
   return G_SOURCE_CONTINUE;
@@ -357,7 +370,7 @@ main (int argc, char **argv)
   g_timeout_add (1000 / opt_fps, (GSourceFunc) tick_callback, app);
 #endif
 
-  // Create Ginga state.
+  // Create Ginga handle.
   opts.width = opt_width;
   opts.height = opt_height;
   opts.debug = opt_debug;

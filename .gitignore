@@ -102,6 +102,7 @@
 /tests/test-ginga-getOptionInt
 /tests/test-ginga-getOptionString
 /tests/test-ginga-getOptions
+/tests/test-ginga-getState
 /tests/test-ginga-parse-bool
 /tests/test-ginga-parse-color
 /tests/test-ginga-parse-list

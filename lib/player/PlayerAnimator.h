@@ -60,7 +60,7 @@ public:
   void update (GingaRect *, GingaColor *, guint8 *);
 
 private:
-  GingaInternal *_ginga;           // ginga state
+  GingaInternal *_ginga;        // ginga handle
   list <AnimInfo *> _scheduled; // scheduled animations
   void doSchedule (const string &, const string &,
                    const string &, GingaTime);

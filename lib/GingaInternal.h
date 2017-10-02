@@ -42,13 +42,16 @@ class GingaInternal : public Ginga
 {
  public:
   // External API.
-  bool start (const string &, string *);
-  void stop ();
-  void resize (int, int);
+  GingaState getState ();
 
+  bool start (const string &, string *);
+  bool stop ();
+
+  void resize (int, int);
   void redraw (cairo_t *);
-  void sendKeyEvent (const string &, bool);
-  void sendTickEvent (uint64_t, uint64_t, uint64_t);
+
+  bool sendKeyEvent (const string &, bool);
+  bool sendTickEvent (uint64_t, uint64_t, uint64_t);
 
   const GingaOptions *getOptions ();
   bool getOptionBool (const string &);
@@ -63,8 +66,12 @@ class GingaInternal : public Ginga
   virtual ~GingaInternal ();
   Scheduler *getScheduler ();
 
+  bool getEOS ();
+  void setEOS (bool);
+
   bool registerEventListener (IGingaInternalEventListener *);
   bool unregisterEventListener (IGingaInternalEventListener *);
+
   void registerPlayer (Player *);
   void unregisterPlayer (Player *);
 
@@ -77,15 +84,16 @@ class GingaInternal : public Ginga
   static void setOptionBackground (GingaInternal *, const string &, string);
 
  private:
+  GingaState _state;             // current state
   GingaOptions _opts;            // current options
   Scheduler *_scheduler;         // formatter core
   GList *_listeners;             // list of listeners to be notified
   GList *_players;               // list of players to be ticked
   map<string, void *> _userdata; // userdata attached to state
 
-  bool _started;                  // true if state was started
   string _ncl_file;               // path to current NCL file
-  GingaColor _background;         // current background color.
+  bool _eos;                      // true if EOS was reached
+  GingaColor _background;         // current background color
   uint64_t _last_tick_total;      // last total informed via sendTickEvent
   uint64_t _last_tick_diff;       // last diff informed via sendTickEvent
   uint64_t _last_tick_frameno;    // last frameno informed via sendTickEvent

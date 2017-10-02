@@ -87,7 +87,7 @@ static map<string, string> player_property_aliases =
 
 /**
  * @brief Creates player for the given URI.
- * @param ginga Ginga state.
+ * @param ginga Ginga handle.
  * @param id Media object id.
  * @param uri Content URI.
  */
@@ -508,7 +508,7 @@ Player::getPlayerProperty (const string &name, string *defval)
 
 /**
  * @brief Creates a player from a mime-type.
- * @param ginga Ginga state.
+ * @param ginga Ginga handle.
  * @param id Object id.
  * @param uri Source URI.
  * @param mime Mime-type of content.
