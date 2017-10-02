@@ -266,7 +266,7 @@ GingaState::sendKeyEvent (const string &key, bool press)
  */
 void
 GingaState::sendTickEvent (uint64_t total, uint64_t diff,
-                             uint64_t frameno)
+                           uint64_t frameno)
 {
   _last_tick_total = total;
   _last_tick_diff = diff;
