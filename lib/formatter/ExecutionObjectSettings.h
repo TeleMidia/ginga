@@ -26,7 +26,7 @@ class ExecutionObject;
 class ExecutionObjectSettings : public ExecutionObject
 {
 public:
-  ExecutionObjectSettings (GingaState *,
+  ExecutionObjectSettings (GingaInternal *,
                            const string &, Node *, INclActionListener *);
   virtual ~ExecutionObjectSettings () {};
 

@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef GINGA_INTERNAL_H
-#define GINGA_INTERNAL_H
+#ifndef AUX_GINGA_H
+#define AUX_GINGA_H
 
 #include "ginga.h"
 
@@ -222,4 +222,4 @@ xvectremove (vector<T> &v1, vector<T> &v2)
   v1.erase (begin, v1.end());
 }
 
-#endif // GINGA_INTERNAL_H
+#endif // AUX_GINGA_H

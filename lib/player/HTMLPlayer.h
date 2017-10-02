@@ -29,7 +29,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef HTML_PLAYER_H
 #define HTML_PLAYER_H
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 
 #include "Player.h"
 

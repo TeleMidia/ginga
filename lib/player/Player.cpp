@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "Player.h"
 #include "player/ImagePlayer.h"
 #include "player/LuaPlayer.h"
@@ -91,7 +91,7 @@ static map<string, string> player_property_aliases =
  * @param id Media object id.
  * @param uri Content URI.
  */
-Player::Player (GingaState *ginga, const string &id, const string &uri)
+Player::Player (GingaInternal *ginga, const string &id, const string &uri)
 {
   // Internal data.
   g_assert_nonnull (ginga);
@@ -515,7 +515,7 @@ Player::getPlayerProperty (const string &name, string *defval)
  * @return New player.
  */
 Player *
-Player::createPlayer (GingaState *ginga, const string &id,
+Player::createPlayer (GingaInternal *ginga, const string &id,
                       const string &uri, const string &mime)
 {
   Player *player = nullptr;

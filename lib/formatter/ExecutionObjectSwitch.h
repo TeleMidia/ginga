@@ -29,7 +29,7 @@ GINGA_FORMATTER_BEGIN
 class ExecutionObjectSwitch : public ExecutionObjectContext
 {
 public:
-  ExecutionObjectSwitch (GingaState *, const string &, Node *,
+  ExecutionObjectSwitch (GingaInternal *, const string &, Node *,
                          INclActionListener *);
 
   virtual ~ExecutionObjectSwitch (){}
