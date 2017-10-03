@@ -222,4 +222,16 @@ xvectremove (vector<T> &v1, vector<T> &v2)
   v1.erase (begin, v1.end());
 }
 
+#if WITH_OPENGL
+#include <GL/gl.h>
+void
+gl_create_texture (GLuint *);
+
+void
+gl_delete_texture (GLuint *);
+
+void
+gl_update_texture (GLuint, cairo_surface_t *);
+#endif
+
 #endif // AUX_GINGA_H

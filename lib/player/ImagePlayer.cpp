@@ -78,10 +78,7 @@ ImagePlayer::reload ()
     {
       cairo_surface_destroy (_surface);
 #if WITH_OPENGL
-      if (gltexture != -1)
-        {
-          glDeleteTextures (1, &gltexture);
-        }
+      gl_delete_texture (&gltexture);
 #endif
     }
 
@@ -94,18 +91,8 @@ ImagePlayer::reload ()
   g_assert_nonnull (_surface);
 
 #if WITH_OPENGL
-  int tex_w = cairo_image_surface_get_width (_surface);
-  int tex_h = cairo_image_surface_get_height (_surface);
-  unsigned char* data = cairo_image_surface_get_data (_surface);
-
-  glGenTextures (1, &gltexture);
-  glBindTexture (GL_TEXTURE_2D, gltexture);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-  glTexImage2D (GL_TEXTURE_2D, 0, 4, tex_w, tex_h, 0,GL_BGRA, GL_UNSIGNED_BYTE, data);
+  gl_create_texture (&gltexture);
+  gl_update_texture (gltexture, _surface);
 #endif
   Player::reload ();
 }

@@ -663,3 +663,38 @@ xpathbuildabs (const string &a, const string &b)
 {
   return xpathmakeabs (xpathbuild (a, b));
 }
+
+#if WITH_OPENGL
+void
+gl_create_texture (GLuint *gltex)
+{
+  glGenTextures (1, gltex);
+  glBindTexture (GL_TEXTURE_2D, gltex);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+}
+
+void
+gl_delete_texture (GLuint *gltex)
+{
+  if (*gltex != -1)
+    {
+      glDeleteTextures (1, gltex);
+    }
+}
+
+void
+gl_update_texture (GLuint gltex, cairo_surface_t *surf)
+{
+  int tex_w = cairo_image_surface_get_width (surf);
+  int tex_h = cairo_image_surface_get_height (surf);
+  unsigned char* data = cairo_image_surface_get_data (surf);
+
+  glBindTexture (GL_TEXTURE_2D, gltex);
+  glTexImage2D (GL_TEXTURE_2D, 0, 4,
+                tex_w, tex_h, 0,GL_BGRA, GL_UNSIGNED_BYTE, data);
+}
+#endif
+
