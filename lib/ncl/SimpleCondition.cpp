@@ -20,6 +20,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
+
+// Public.
+
 /**
  * @brief Creates a new simple condition.
  * @param type Event type.
@@ -77,6 +80,57 @@ string
 SimpleCondition::getKey ()
 {
   return _key;
+}
+
+
+// Public: Static.
+
+// Reserved conditions.
+static map<string, pair<int,int>> reserved =
+  {
+   {"onBegin",
+    {(int) EventType::PRESENTATION,
+     (int) EventStateTransition::STARTS}},
+   {"onEnd",
+    {(int) EventType::PRESENTATION,
+     (int) EventStateTransition::STOPS}},
+   {"onAbort",
+    {(int) EventType::PRESENTATION,
+     (int) EventStateTransition::ABORTS}},
+   {"onPause",
+    {(int) EventType::PRESENTATION,
+     (int) EventStateTransition::PAUSES}},
+   {"onResumes",
+    {(int) EventType::PRESENTATION,
+     (int) EventStateTransition::RESUMES}},
+   {"onBeginAttribution",
+    {(int) EventType::ATTRIBUTION,
+     (int) EventStateTransition::STARTS}},
+   {"onEndAttribution",
+    {(int) EventType::SELECTION,
+     (int) EventStateTransition::STOPS}},
+   {"onSelection",
+    {(int) EventType::SELECTION,
+     (int) EventStateTransition::STARTS}},
+  };
+
+/**
+ * @brief Tests whether role is a reserved condition role.
+ * @param type Address of variable to store role type.
+ * @param trans Address of variable to store role transition.
+ * @return True if successful, or false otherwise.
+ */
+bool
+SimpleCondition::isReserved (const string &role,
+                             EventType *type,
+                             EventStateTransition *trans)
+{
+  map<string, pair<int,int>>::iterator it;
+  if ((it = reserved.find (role)) == reserved.end ())
+    return false;
+  tryset (type, (EventType) it->second.first);
+  tryset (trans, (EventStateTransition) it->second.second);
+  return true;
 }
 
 GINGA_NCL_END
