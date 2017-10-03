@@ -287,13 +287,12 @@ main (int argc, char **argv)
     }
 
   GINGA->stop ();
-  // Close and destroy the window
-  SDL_DestroyWindow(window);
-  SDL_Quit();
 
   // Done.
   delete GINGA;
   g_strfreev (saved_argv);
+  SDL_DestroyWindow(window);
+  SDL_Quit();
 
   exit (0);
 }

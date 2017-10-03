@@ -232,6 +232,9 @@ gl_delete_texture (GLuint *);
 
 void
 gl_update_texture (GLuint, cairo_surface_t *);
+
+void
+gl_update_texture (GLuint, int, int, unsigned char*);
 #endif
 
 #endif // AUX_GINGA_H
