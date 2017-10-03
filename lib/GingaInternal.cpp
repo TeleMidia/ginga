@@ -247,7 +247,7 @@ GingaInternal::redraw (cairo_t *cr)
     }
 }
 
-#if WITH_OPENGL
+#if defined WITH_OPENGL && WITH_OPENGL
 /**
  * @brief Draw current surface onto current opengl context.
  */
