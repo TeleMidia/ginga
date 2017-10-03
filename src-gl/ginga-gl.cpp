@@ -29,6 +29,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <GLES2/gl2.h>
 
 #include "ginga.h"
+#include "aux-ginga.h"
 
 using namespace ::std;
 
@@ -149,6 +150,32 @@ _error (gboolean try_help, const gchar *format, ...)
     g_fprintf (stderr, "Try '%s --help' for more information.\n", me);
 }
 
+void
+sendTickEvent ()
+{
+  guint64 time;
+  static guint64 frame = (guint64) -1;
+  static guint64 last;
+  static guint64 first;
+
+  time = ginga_gettime ();
+  frame++;
+
+  if (frame == 0)
+    {
+      first = time;
+      last = time;
+    }
+
+  if (!GINGA->sendTickEvent (time - first, time - last, frame))
+    {
+      g_assert (GINGA->getState () == GINGA_STATE_STOPPED);
+      // all done
+      return;
+    }
+
+  last = time;
+}
 
 // Main.
 
@@ -252,6 +279,7 @@ main (int argc, char **argv)
             }
         }
 
+      sendTickEvent ();
       GINGA->redraw_gl ();
 
       SDL_GL_SwapWindow (window);

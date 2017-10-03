@@ -254,10 +254,15 @@ GingaInternal::redraw_gl ()
 {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  glViewport (0, 0, _opts.width, _opts.height);
-  glOrtho (0, _opts.width, 0, _opts.height, -1.0, 1.0);
+  glViewport (0.0f, 0.0f, _opts.width, _opts.height);
+  glOrtho (0.0f, _opts.width, _opts.height, 0.0f, 0.0f, 1.0f);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
+
+  glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  glEnable (GL_BLEND); glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   GList *l;
 
