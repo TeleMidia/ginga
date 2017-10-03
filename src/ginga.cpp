@@ -16,19 +16,15 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include <config.h>
+#include <stdio.h>
 #include <string.h>
 
+#include "aux-glib.h"
 #include <cairo.h>
-#include <glib.h>
-#include <stdlib.h>
-#include <glib/gstdio.h>
 #include <gtk/gtk.h>
 
 #include "ginga.h"
 using namespace ::std;
-
-#define deconst(t, x) ((t)(ptrdiff_t)(const void *)(x))
-#define gpointerof(p) ((gpointer)((ptrdiff_t)(p)))
 
 
 // Global formatter.
@@ -104,7 +100,7 @@ opt_version_cb (void)
 
 static GOptionEntry options[] = {
   {"background", 'b', 0, G_OPTION_ARG_CALLBACK,
-   gpointerof (opt_background_cb), "Set background color", "COLOR"},
+   pointerof (opt_background_cb), "Set background color", "COLOR"},
   {"debug", 'd', 0, G_OPTION_ARG_NONE,
    &opt_debug, "Enable debugging", NULL},
   {"experimental", 'x', 0, G_OPTION_ARG_NONE,
@@ -112,9 +108,9 @@ static GOptionEntry options[] = {
   {"fullscreen", 'f', 0, G_OPTION_ARG_NONE,
    &opt_fullscreen, "Enable full-screen mode", NULL},
   {"size", 's', 0, G_OPTION_ARG_CALLBACK,
-   gpointerof (opt_size_cb), "Set initial window size", "WIDTHxHEIGHT"},
+   pointerof (opt_size_cb), "Set initial window size", "WIDTHxHEIGHT"},
   {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
-   gpointerof (opt_version_cb), "Print version information and exit", NULL},
+   pointerof (opt_version_cb), "Print version information and exit", NULL},
   {NULL, 0, 0, G_OPTION_ARG_NONE, NULL, NULL, NULL}
 };
 
@@ -384,7 +380,7 @@ main (int argc, char **argv)
   for (int i = 1; i < saved_argc; i++)
     {
       string errmsg;
-      if (!GINGA->start (string (saved_argv[i]), &errmsg))
+      if (!unlikely (GINGA->start (string (saved_argv[i]), &errmsg)))
         {
           g_printerr ("error: ");
           if (saved_argc > 2)
