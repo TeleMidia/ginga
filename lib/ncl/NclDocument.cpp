@@ -23,32 +23,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NCL_BEGIN
 
 /**
- * @brief Creates a new document.
- * @param id Document id.
- * @param location Document location.
- */
-NclDocument::NclDocument (const string &id, const string &location)
-{
-  _id = id;
-  _location = location;
-  _root = new Context (this, id);
-
-  _connectorBase = nullptr;
-  _descriptorBase = nullptr;
-  _parentDocument = nullptr;
-  _ruleBase = nullptr;
-  _transitionBase = nullptr;
-}
-
-/**
- * @brief Destroys document.
- */
-NclDocument::~NclDocument ()
-{
-  delete _root;
-}
-
-/**
  * @brief Gets document id.
  */
 string
@@ -61,9 +35,9 @@ NclDocument::getId ()
  * @brief Gets document location.
  */
 string
-NclDocument::getLocation ()
+NclDocument::getURI ()
 {
-  return _location;
+  return _uri;
 }
 
 /**
@@ -118,8 +92,34 @@ NclDocument::unregisterEntity (Entity *entity)
   return true;
 }
 
-// -------------------------------------------------------------------------
+
+// INSANITY BEGINS HERE ----------------------------------------------------
 
+/**
+ * @brief Creates a new document.
+ * @param id Document id.
+ * @param uri Document URI.
+ */
+NclDocument::NclDocument (const string &id, const string &uri)
+{
+  _id = id;
+  _uri = uri;
+  _root = new Context (this, id);
+
+  _connectorBase = nullptr;
+  _descriptorBase = nullptr;
+  _parentDocument = nullptr;
+  _ruleBase = nullptr;
+  _transitionBase = nullptr;
+}
+
+/**
+ * @brief Destroys document.
+ */
+NclDocument::~NclDocument ()
+{
+  delete _root;
+}
 
 NclDocument *
 NclDocument::getParentDocument ()

@@ -45,43 +45,9 @@ Connector::Connector (NclDocument *ncl, const string &id) : Entity (ncl, id)
  */
 Connector::~Connector ()
 {
-  _parameters.clear ();
+  //_parameters.clear ();
   delete _condition;
   delete _action;
-}
-
-/**
- * @brief Adds parameter to connector.
- * @param parameter Parameter.
- */
-void
-Connector::addParameter (Parameter *parameter)
-{
-  g_assert_nonnull (parameter);
-  _parameters.push_back (parameter);
-}
-
-/**
- * @brief Gets all connector parameters.
- */
-const vector<Parameter *> *
-Connector::getParameters ()
-{
-  return &_parameters;
-}
-
-/**
- * @brief Gets connector parameter.
- * @param name Parameter name.
- * @return Parameter if successful, or null otherwise.
- */
-Parameter *
-Connector::getParameter (const string &name)
-{
-  for (auto param: _parameters)
-    if (param->getName () == name)
-      return param;
-  return nullptr;
 }
 
 /**

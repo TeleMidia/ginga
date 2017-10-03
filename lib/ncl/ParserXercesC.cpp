@@ -1192,7 +1192,8 @@ ParserXercesC::parseCausalConnector (DOMElement *elt)
           string type;
           CHECK_ELT_ATTRIBUTE (child, "name", &name);
           CHECK_ELT_OPT_ATTRIBUTE (child, "type", &type, "");
-          conn->addParameter (new Parameter (name, type));
+          // This is useless:
+          // conn->addParameter (new Parameter (name, type));
         }
       else
         {

@@ -209,13 +209,15 @@ NCL_ELT_PUSH_DECL (property)
 NCL_ELT_PUSH_DECL (region)
 NCL_ELT_POP_DECL  (region)
 NCL_ELT_PUSH_DECL (descriptorParam)
+NCL_ELT_PUSH_DECL (causalConnector)
 
 // Element map.
 static map<string, NclEltInfo> ncl_eltmap =
 {
  // Root.
  {"ncl",
-  {ncl_push_ncl, ncl_pop_ncl, false, {},
+  {ncl_push_ncl, ncl_pop_ncl, false,
+   {},
    {{"id", false},
     {"title", false},
     {"xmlns", false}}},
@@ -224,49 +226,59 @@ static map<string, NclEltInfo> ncl_eltmap =
  // Body.
  //
  {"body",                       // -> Context
-  {ncl_push_context, ncl_pop_context, false, {"ncl"},
+  {ncl_push_context, ncl_pop_context, false,
+   {"ncl"},
    {{"id", false}}},
  },
  {"context",                    // -> Context
-  {ncl_push_context, ncl_pop_context, true, {"body", "context"},
+  {ncl_push_context, ncl_pop_context, true,
+   {"body", "context"},
    {{"id", true}}},
  },
  {"port",                       // -> Port
-  {ncl_push_port, nullptr, true, {"body", "context"},
+  {ncl_push_port, nullptr, true,
+   {"body", "context"},
    {{"id", true},
     {"component", true},
     {"interface", false}}},
  },
  {"media",                      // -> Media
-  {ncl_push_media, nullptr, true, {"body", "context"},
+  {ncl_push_media, nullptr, true,
+   {"body", "context"},
    {{"id", true},
     {"src", false},
+    {"type", false},
     {"descriptor", false}}},
  },
  {"area",
-  {nullptr, nullptr, false, {"media"},
+  {nullptr, nullptr, false,
+   {"media"},
    {{"id", true},
     {"begin", false},
     {"end", false}}},
  },
  {"property",                   // -> Property
-  {ncl_push_property, nullptr, false, {"body", "context", "media"},
+  {ncl_push_property, nullptr, false,
+   {"body", "context", "media"},
   {{"name", true},
    {"value", false}}},
  },
  {"link",
-  {nullptr, nullptr, false, {"body", "context"},
+  {nullptr, nullptr, false,
+   {"body", "context"},
    {{"id", false},
     {"xconnector", true}}},
  },
  {"bind",
-  {nullptr, nullptr, false, {"link"},
+  {nullptr, nullptr, false,
+   {"link"},
    {{"role", true},
     {"component", false},
     {"interface", false}}},
  },
  {"bindParam",
-  {nullptr, nullptr, false, {"bind"},
+  {nullptr, nullptr, false,
+   {"bind"},
    {{"name", true},
     {"value", true}}},
  },
@@ -274,16 +286,19 @@ static map<string, NclEltInfo> ncl_eltmap =
  // Head.
  //
  {"head",
-  {nullptr, nullptr, false, {"ncl"}, {}},
+  {nullptr, nullptr, false,
+   {"ncl"}, {}},
  },
  {"regionBase",
-  {nullptr, nullptr, false, {"head"},
+  {nullptr, nullptr, false,
+   {"head"},
    {{"id", false},
     {"device", false},
     {"region", false}}},
  },
  {"region",
-  {ncl_push_region, ncl_pop_region, true, {"region", "regionBase"},
+  {ncl_push_region, ncl_pop_region, true,
+   {"region", "regionBase"},
    {{"id", true},
     {"title", false},
     {"left", false},
@@ -295,11 +310,13 @@ static map<string, NclEltInfo> ncl_eltmap =
     {"zIndex", false}}},
  },
  {"descriptorBase",
-  {nullptr, nullptr, false, {"head"},
+  {nullptr, nullptr, false,
+   {"head"},
    {{"id", false}}},
  },
  {"descriptor",
-  {nullptr, nullptr, true, {"descriptorBase"},
+  {nullptr, nullptr, true,
+   {"descriptorBase"},
    {{"id", true},
     {"left", false},
     {"right", false},
@@ -311,7 +328,8 @@ static map<string, NclEltInfo> ncl_eltmap =
     {"region", false}}},
  },
  {"descriptorParam",
-  {ncl_push_descriptorParam, nullptr, false, {"descriptor"},
+  {ncl_push_descriptorParam, nullptr, false,
+   {"descriptor"},
    {{"name", true},
     {"value", true}}},
  },
@@ -320,20 +338,24 @@ static map<string, NclEltInfo> ncl_eltmap =
    {{"id", false}}},
  },
  {"causalConnector",
-  {nullptr, nullptr, false, {"connectorBase"},
+  {ncl_push_causalConnector, nullptr, false,
+   {"connectorBase"},
    {{"id", true}}},
  },
  {"connectorParam",
-  {nullptr, nullptr, false, {"causalConnector"},
+  {nullptr, nullptr, false,
+   {"causalConnector"},
    {{"name", true}}},
  },
  {"compoundCondition",
-  {nullptr, nullptr, false, {"causalConnector", "compoundCondition"},
+  {nullptr, nullptr, false,
+   {"causalConnector", "compoundCondition"},
    {{"operator", true},
     {"delay", false}}},
  },
  {"simpleCondition",
-  {nullptr, nullptr, false, {"causalConnector", "compoundCondition"},
+  {nullptr, nullptr, false,
+   {"causalConnector", "compoundCondition"},
    {{"role", true},
     {"delay", false},
     {"eventtype", false},
@@ -344,12 +366,14 @@ static map<string, NclEltInfo> ncl_eltmap =
     {"qualifier", false}}},
  },
  {"compoundAction",
-  {nullptr, nullptr, false, {"causalConnector", "compoundAction"},
+  {nullptr, nullptr, false,
+   {"causalConnector", "compoundAction"},
    {{"operator", false},
     {"delay", false}}},
  },
  {"simpleAction",
-  {nullptr, nullptr, false, {"causalConnector", "compoundAction"},
+  {nullptr, nullptr, false,
+   {"causalConnector", "compoundAction"},
    {{"role", true},
     {"delay", false},
     {"eventType", false},
@@ -407,7 +431,6 @@ static inline string
 ncl_attrmap_get (map<string, string> *attr, const string &name)
 {
   string value;
-  g_printerr (">>> %s\n", name.c_str ());
   g_assert (ncl_attrmap_index (attr, name, &value));
   return value;
 }
@@ -668,10 +691,10 @@ ncl_push_property (ParserLibXML_State *st,
                    map<string, string> *attr,
                    unused (Entity **entity))
 {
-  Node *parent = cast (Node *, st->stack.back ());
+  Node *parent= cast (Node *, st->stack.back ());
   g_assert_nonnull (parent);
   parent->setProperty (ncl_attrmap_get (attr, "name"),
-                       ncl_attrmap_get (attr, "value"));
+                       ncl_attrmap_opt_get (attr, "value", ""));
   return true;
 }
 
@@ -780,6 +803,18 @@ ncl_push_descriptorParam (ParserLibXML_State *st,
   name = ncl_attrmap_get (attr, "name");
   value = ncl_attrmap_get (attr, "value");
   (*desc)[name] = value;
+  return true;
+}
+
+static bool
+ncl_push_causalConnector (ParserLibXML_State *st,
+                          unused (xmlNode *elt),
+                          map<string, string> *attr,
+                          Entity **entity)
+{
+  Connector *conn;
+  conn = new Connector (st->ncl, ncl_attrmap_get (attr, "id"));
+  *entity = conn;               // push onto stack
   return true;
 }
 
