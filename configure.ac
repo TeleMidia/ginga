@@ -212,6 +212,9 @@ AU_CHECK_OPTIONAL_PKG([libxml], [build with LibXML support], [],
  [LIBXML],
  [libxml-2.0 >= libxml_required_version])
 
+# TODO: Replace this with proper OpenGL checks.
+AC_DEFINE([WITH_OPENGL], [0], [Define to 1 if you have OpenGL])
+
 # Aliases for compiler flags.
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $WARN_CFLAGS $WERROR_CFLAGS "])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $CAIRO_CFLAGS"])

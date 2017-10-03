@@ -69,7 +69,8 @@ public:
 
   virtual void resize (int, int) = 0;
   virtual void redraw (cairo_t *) = 0;
-#if WITH_OPENGL
+
+#if defined WITH_OPENGL && WITH_OPENGL
   virtual void redraw_gl () = 0;
 #endif
 
