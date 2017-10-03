@@ -1,12 +1,18 @@
 cmake_minimum_required(VERSION 3.2)
 project(ginga)
 
+option (WITH_CEF "Build with chromium embedded support." OFF)
+option (WITH_OPENGL "Build Ginga with opengl." ON)
+option (WITH_RUNVIEW "Build nclcomposer's ginga plugin." ON)
+
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 
+# Defaul C++ params
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 set (CMAKE_INCLUDE_CURRENTDIR ON)
 
+# Find dependencies
 find_package (GLIB 2.32 REQUIRED)
 
 find_package (LibXml2 REQUIRED)
@@ -26,8 +32,9 @@ find_package (SDL2_image)
 find_package (OpenGL)
 
 if (OPENGL_FOUND)
-  set (WITH_GINGA_OPENGL ON)
   add_definitions (-DWITH_OPENGL=1)
+else ()
+  set (WITH_OPENGL OFF) # OpenGL not found, turn it off
 endif()
 
 find_package(GTK3)
@@ -56,8 +63,6 @@ ExternalProject_Get_Property(nclua_build install_dir)
 set(NCLUA_INCLUDE_DIRS "${install_dir}/include")
 link_directories("${install_dir}/lib")
 #end NCLUA
-
-option (WITH_CEF "Build with chromium embedded support" ON)
 
 if (WITH_CEF) # Download, link, build with CEF
   set(CEF_VERSION cef_binary_3.3029.1619.geeeb5d7_linux64_minimal)
@@ -91,7 +96,7 @@ if (WITH_CEF) # Download, link, build with CEF
   SET (CEF_TARGET_OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/bin/")
 
 else()
-  add_definitions(-DWITH_CEF=0)
+  add_definitions (-DWITH_CEF=0)
 
 endif()
 
@@ -189,9 +194,6 @@ set (LIBGINGA_INCLUDE_DIRS
   ${GSTREAMER_BASE_INCLUDE_DIRS}
 
   ${NCLUA_INCLUDE_DIRS}
-
-  # OpenGL-related
-  ${OPENGL_INCLUDE_DIR}
 )
 
 set (LIBGINGA_LIBS
@@ -213,11 +215,13 @@ set (LIBGINGA_LIBS
   ${GSTREAMER_APP_LIBRARIES}
   ${GSTREAMER_VIDEO_LIBRARIES}
 
-  # OpenGL-related
-  ${OPENGL_LIBRARIES}
-
   nclua
 )
+
+if (WITH_OPENGL)
+  list (APPEND LIBGINGA_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
+  list (APPEND LIBGINGA_LIBS ${OPENGL_LIBRARIES})
+endif ()
 
 if (WITH_CEF)
   list (APPEND LIBGINGA_SOURCES
@@ -268,7 +272,7 @@ target_include_directories (ginga PRIVATE ${GTK3_INCLUDE_DIRS})
 target_link_libraries (ginga PRIVATE libginga ${GTK3_LIBRARIES})
 
 # gingagl target
-if (WITH_GINGA_OPENGL)
+if (WITH_OPENGL)
   add_executable (gingagl ../src-gl/ginga-gl.cpp)
 
   target_include_directories (gingagl PRIVATE
@@ -381,7 +385,7 @@ with cef:		${WITH_CEF}
 Optional executables:
 ginga-gui (gtk):	${WITH_GINGAGUI_GTK}
 ginga-runview:          ${WITH_RUNVIEW}
-ginga-gl:               ${WITH_GINGA_OPENGL}
+ginga-gl:               ${WITH_OPENGL}
 ")
  
 set (CPACK_PACKAGE_NAME ginga-idtv)
