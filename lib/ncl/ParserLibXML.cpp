@@ -104,8 +104,11 @@ _st_err (ParserLibXML_State *st, const char *fmt, ...)
               (val), (attr), (explain != nullptr)                       \
               ? (" (" + string (explain) + ")").c_str () : "")
 
-#define ST_ERR_ELT_UNKNOWN_CHILD(st, etl, child)\
+#define ST_ERR_ELT_UNKNOWN_CHILD(st, elt, child)\
   ST_ERR_ELT ((st), (elt), "Unknown child <%s>", (child))
+
+#define ST_ERR_ELT_MISSING_CHILD(st, elt, child)\
+  ST_ERR_ELT ((st), (elt), "Missing child <%s>", (child))
 
 // Index state cache.
 static bool
@@ -210,6 +213,8 @@ NCL_ELT_PUSH_DECL (region)
 NCL_ELT_POP_DECL  (region)
 NCL_ELT_PUSH_DECL (descriptorParam)
 NCL_ELT_PUSH_DECL (causalConnector)
+NCL_ELT_POP_DECL  (causalConnector)
+NCL_ELT_PUSH_DECL (simpleCondition)
 
 // Element map.
 static map<string, NclEltInfo> ncl_eltmap =
@@ -338,7 +343,7 @@ static map<string, NclEltInfo> ncl_eltmap =
    {{"id", false}}},
  },
  {"causalConnector",
-  {ncl_push_causalConnector, nullptr, false,
+  {ncl_push_causalConnector, ncl_pop_causalConnector, false,
    {"connectorBase"},
    {{"id", true}}},
  },
@@ -354,7 +359,7 @@ static map<string, NclEltInfo> ncl_eltmap =
     {"delay", false}}},
  },
  {"simpleCondition",
-  {nullptr, nullptr, false,
+  {ncl_push_simpleCondition, nullptr, false,
    {"causalConnector", "compoundCondition"},
    {{"role", true},
     {"delay", false},
@@ -815,6 +820,57 @@ ncl_push_causalConnector (ParserLibXML_State *st,
   Connector *conn;
   conn = new Connector (st->ncl, ncl_attrmap_get (attr, "id"));
   *entity = conn;               // push onto stack
+  return true;
+}
+
+static bool
+ncl_pop_causalConnector (unused (ParserLibXML_State *st),
+                         xmlNode *elt,
+                         unused (map<string, string> *attr),
+                         unused (vector<xmlNode *> *children),
+                         Entity *entity)
+{
+  Connector *conn;
+
+  conn = cast (Connector *, entity);
+  g_assert_nonnull (conn);
+
+  if (unlikely (conn->getCondition () == nullptr))
+    return ST_ERR_ELT_MISSING_CHILD (st, elt, "simpleCondition");
+  if (unlikely (conn->getAction () == nullptr))
+    return ST_ERR_ELT_MISSING_CHILD (st, elt, "simpleAction");
+
+  return true;
+}
+
+static bool
+ncl_push_simpleCondition (ParserLibXML_State *st,
+                          xmlNode *elt,
+                          map<string, string> *attr,
+                          unused (Entity **entity))
+{
+  string role;
+  EventType type;
+  EventStateTransition trans;
+
+  role = ncl_attrmap_get (attr, "role");
+  if (SimpleCondition::isReserved (role, &type, &trans))
+    {
+      string str;
+      if (unlikely (ncl_attrmap_index (attr, "eventType", &str)))
+        return ST_ERR_ELT_BAD_ATTR
+          (st, elt, "eventType", str.c_str (), "reserved role");
+      if (unlikely (ncl_attrmap_index (attr, "transition", &str)))
+        return ST_ERR_ELT_BAD_ATTR
+          (st, elt, "transition", str.c_str (), "reserved role");
+    }
+  else
+    {
+      string str;
+      if (unlikely (!ncl_attrmap_index (attr, "eventType", &str)))
+        return ST_ERR_ELT_MISSING_ATTR (st, elt, "eventType");
+    }
+
   return true;
 }
 

@@ -267,35 +267,6 @@ __error_elt (const DOMElement *elt)
 
 // Translation tables.
 
-// Reserved conditions.
-static map<string, pair<int,int>> reserved_condition_table =
-  {
-   {"onBegin",
-    {(int) EventType::PRESENTATION,
-     (int) EventStateTransition::STARTS}},
-   {"onEnd",
-    {(int) EventType::PRESENTATION,
-     (int) EventStateTransition::STOPS}},
-   {"onAbort",
-    {(int) EventType::PRESENTATION,
-     (int) EventStateTransition::ABORTS}},
-   {"onPause",
-    {(int) EventType::PRESENTATION,
-     (int) EventStateTransition::PAUSES}},
-   {"onResumes",
-    {(int) EventType::PRESENTATION,
-     (int) EventStateTransition::RESUMES}},
-   {"onBeginAttribution",
-    {(int) EventType::ATTRIBUTION,
-     (int) EventStateTransition::STARTS}},
-   {"onEndAttribution",
-    {(int) EventType::SELECTION,
-     (int) EventStateTransition::STOPS}},
-   {"onSelection",
-    {(int) EventType::SELECTION,
-     (int) EventStateTransition::STARTS}},
-  };
-
 // Reserved actions.
 static map<string, pair<int,int>> reserved_action_table =
   {
@@ -1282,12 +1253,7 @@ ParserXercesC::parseSimpleCondition (DOMElement *elt)
   type = (EventType) -1;
   trans = (EventStateTransition) -1;
 
-  if ((it = reserved_condition_table.find (role))
-      != reserved_condition_table.end ())
-    {
-      type = (EventType) it->second.first;
-      trans = (EventStateTransition) it->second.second;
-    }
+  SimpleCondition::isReserved (role, &type, &trans);
 
   if (dom_elt_try_get_attribute (str, elt, "eventType"))
     {

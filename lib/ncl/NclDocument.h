@@ -46,7 +46,6 @@ private:
   string _uri;                      // document uri
   Context *_root;                   // document root
   map<string, Entity *> _entities;  // entity map
-  set<Connector *> _connectors;     // connectors
 
   // -----------------------------------------------------------------------
 public:
