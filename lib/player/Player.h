@@ -102,6 +102,9 @@ public:
                                   const string &, GingaTime);
   virtual void reload ();
   virtual void redraw (cairo_t *);
+#if WITH_OPENGL
+  virtual void redraw_gl ();
+#endif
 
   // Static.
   static string getCurrentFocus ();
@@ -133,6 +136,10 @@ protected:
     bool visible;               // true if visible
     GingaTime duration;         // explicit duration
   } _prop;
+
+#if WITH_OPENGL
+  GLuint gltexture = -1;
+#endif
 
 protected:
   virtual bool doSetProperty (PlayerProperty, const string &,
