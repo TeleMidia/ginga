@@ -3,7 +3,7 @@ project(ginga)
 
 option (WITH_CEF "Build with chromium embedded support." OFF)
 option (WITH_OPENGL "Build Ginga with opengl." ON)
-option (WITH_RUNVIEW "Build nclcomposer's ginga plugin." ON)
+option (WITH_RUNVIEW "Build nclcomposer's ginga plugin." OFF)
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 
