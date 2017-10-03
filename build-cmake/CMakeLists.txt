@@ -3,23 +3,32 @@ project(ginga)
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_INCLUDE_CURRENTDIR ON)
+set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD_REQUIRED ON)
+set (CMAKE_INCLUDE_CURRENTDIR ON)
 
-find_package(GLIB 2.32 REQUIRED)
+find_package (GLIB 2.32 REQUIRED)
 
-find_package(LibXml2 REQUIRED)
-find_package(XercesC 2.7 REQUIRED)
+find_package (LibXml2 REQUIRED)
+find_package (XercesC 2.7 REQUIRED)
 
-find_package(GDKPixBuf REQUIRED)
-find_package(GDK3 REQUIRED)
+find_package (GDKPixBuf REQUIRED)
+find_package (GDK3 REQUIRED)
 
-find_package(Cairo REQUIRED)
-find_package(Pango REQUIRED)
-find_package(RSVG REQUIRED)
-find_package(GStreamer REQUIRED)
-add_definitions(-DWITH_PANGO=1 -DWITH_GSTREAMER=1)
+find_package (Cairo REQUIRED)
+find_package (Pango REQUIRED)
+find_package (RSVG REQUIRED)
+find_package (GStreamer REQUIRED)
+add_definitions (-DWITH_PANGO=1 -DWITH_GSTREAMER=1)
+
+find_package (SDL2)
+find_package (SDL2_image)
+find_package (OpenGL)
+
+if (OPENGL_FOUND)
+  set (WITH_GINGA_OPENGL ON)
+  add_definitions (-DWITH_OPENGL=1)
+endif()
 
 find_package(GTK3)
 if (GTK3_FOUND)
@@ -87,6 +96,7 @@ else()
 endif()
 
 set (LIBGINGA_SOURCES
+  ../lib/ginga.h
   ../lib/aux-ginga.cpp
   ../lib/Ginga.cpp
   ../lib/GingaInternal.cpp
@@ -179,6 +189,9 @@ set (LIBGINGA_INCLUDE_DIRS
   ${GSTREAMER_BASE_INCLUDE_DIRS}
 
   ${NCLUA_INCLUDE_DIRS}
+
+  # OpenGL-related
+  ${OPENGL_INCLUDE_DIR}
 )
 
 set (LIBGINGA_LIBS
@@ -199,6 +212,9 @@ set (LIBGINGA_LIBS
   ${GSTREAMER_LIBRARIES}
   ${GSTREAMER_APP_LIBRARIES}
   ${GSTREAMER_VIDEO_LIBRARIES}
+
+  # OpenGL-related
+  ${OPENGL_LIBRARIES}
 
   nclua
 )
@@ -250,6 +266,22 @@ set_target_properties (libginga PROPERTIES OUTPUT_NAME "ginga")
 add_executable (ginga ../src/ginga.cpp)
 target_include_directories (ginga PRIVATE ${GTK3_INCLUDE_DIRS})
 target_link_libraries (ginga PRIVATE libginga ${GTK3_LIBRARIES})
+
+# gingagl target
+if (WITH_GINGA_OPENGL)
+  add_executable (gingagl ../src-gl/ginga-gl.cpp)
+
+  target_include_directories (gingagl PRIVATE
+    ${SDL2_INCLUDE_DIR}
+  )
+
+  target_link_libraries (gingagl PRIVATE
+    libginga
+    ${SDL2_LIBRARY}
+    ${SDL2_IMAGE_LIBRARIES}
+  )
+  set_target_properties (gingagl PROPERTIES RUNTIME_OUTPUT_DIRECTORY bin/)
+endif ()
 
 # gingagui target
 if (WITH_GINGAGUI_GTK)
@@ -303,9 +335,9 @@ add_custom_target (copy-data-files ALL
 )
 
 # Set rpath so that libraries can be placed next to the executable.
-set_target_properties(ginga PROPERTIES INSTALL_RPATH "$ORIGIN")
-set_target_properties(ginga PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
-set_target_properties(ginga PROPERTIES RUNTIME_OUTPUT_DIRECTORY bin/)
+set_target_properties (ginga PROPERTIES INSTALL_RPATH "$ORIGIN")
+set_target_properties (ginga PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
+set_target_properties (ginga PROPERTIES RUNTIME_OUTPUT_DIRECTORY bin/)
 
 if (WITH_CEF)
   # Copy binary and resource files to the target output directory.
@@ -349,6 +381,7 @@ with cef:		${WITH_CEF}
 Optional executables:
 ginga-gui (gtk):	${WITH_GINGAGUI_GTK}
 ginga-runview:          ${WITH_RUNVIEW}
+ginga-gl:               ${WITH_GINGA_OPENGL}
 ")
  
 set (CPACK_PACKAGE_NAME ginga-idtv)

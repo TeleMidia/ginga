@@ -245,6 +245,41 @@ GingaInternal::redraw (cairo_t *cr)
     }
 }
 
+#if WITH_OPENGL
+/**
+ * @brief Draw current surface onto current opengl context.
+ */
+void
+GingaInternal::redraw_gl ()
+{
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glViewport (0, 0, _opts.width, _opts.height);
+  glOrtho (0, _opts.width, 0, _opts.height, -1.0, 1.0);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+
+  GList *l;
+
+  _players = g_list_sort (_players, (GCompareFunc) win_cmp_z);
+  l = _players;
+  while (l != NULL)             // can be modified while being traversed
+    {
+      GList *next = l->next;
+      Player *pl = (Player *) l->data;
+      if (pl == NULL)
+        {
+          _players = g_list_remove_link (_players, l);
+        }
+      else
+        {
+          pl->redraw_gl ();
+        }
+      l = next;
+    }
+}
+#endif
+
 // Stop formatter if EOS has been seen.
 #define _GINGA_CHECK_EOS(ginga)                                 \
   G_STMT_START                                                  \
