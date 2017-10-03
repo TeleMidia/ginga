@@ -276,11 +276,21 @@ VideoPlayer::redraw (cairo_t *cr)
   stride = (int) GST_VIDEO_FRAME_PLANE_STRIDE (&v_frame, 0);
 
   if (_surface != nullptr)
-    cairo_surface_destroy (_surface);
+    {
+      cairo_surface_destroy (_surface);
+#if WITH_OPENGL
+      gl_delete_texture (&gltexture);
+#endif
+    }
 
   _surface = cairo_image_surface_create_for_data
     (pixels, CAIRO_FORMAT_ARGB32, width, height, stride);
   g_assert_nonnull (_surface);
+
+#if WITH_OPENGL
+  gl_create_texture (&gltexture);
+#endif
+
   gst_video_frame_unmap (&v_frame);
 
   status = cairo_surface_set_user_data
@@ -288,9 +298,68 @@ VideoPlayer::redraw (cairo_t *cr)
      (cairo_destroy_func_t) gst_sample_unref);
   g_assert (status == CAIRO_STATUS_SUCCESS);
 
+#if WITH_OPENGL
+  gl_update_texture (gltexture, _surface);
+#endif
+
  done:
   Player::redraw (cr);
 }
+
+#if WITH_OPENGL
+void
+VideoPlayer::redraw_gl ()
+{
+  GstSample *sample;
+  GstVideoFrame v_frame;
+  GstVideoInfo v_info;
+  GstBuffer *buf;
+  GstCaps *caps;
+  guint8 *pixels;
+  int width;
+  int height;
+  int stride;
+
+  g_assert (_state != SLEEPING);
+
+  if (Player::getEOS ())
+    goto done;
+
+  if (!g_atomic_int_compare_and_exchange (&_sample_flag, 1, 0))
+    goto done;
+
+  sample = gst_app_sink_pull_sample (GST_APP_SINK (_video.sink));
+  if (sample == nullptr)
+    goto done;
+
+  buf = gst_sample_get_buffer (sample);
+  g_assert_nonnull (buf);
+
+  caps = gst_sample_get_caps (sample);
+  g_assert_nonnull (caps);
+
+  g_assert (gst_video_info_from_caps (&v_info, caps));
+  g_assert (gst_video_frame_map (&v_frame, &v_info, buf, GST_MAP_READ));
+
+  pixels = (guint8 *) GST_VIDEO_FRAME_PLANE_DATA (&v_frame, 0);
+  width = GST_VIDEO_FRAME_WIDTH (&v_frame);
+  height = GST_VIDEO_FRAME_HEIGHT (&v_frame);
+  stride = (int) GST_VIDEO_FRAME_PLANE_STRIDE (&v_frame, 0);
+
+  if (gltexture != -1)
+    {
+      gl_delete_texture (&gltexture);
+    }
+
+  gl_create_texture (&gltexture);
+  gl_update_texture (gltexture, width, height, pixels);
+
+  gst_video_frame_unmap (&v_frame);
+
+ done:
+  Player::redraw_gl ();
+}
+#endif
 
 // Protected.
 

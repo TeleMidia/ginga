@@ -669,7 +669,8 @@ void
 gl_create_texture (GLuint *gltex)
 {
   glGenTextures (1, gltex);
-  glBindTexture (GL_TEXTURE_2D, gltex);
+  glBindTexture (GL_TEXTURE_2D, *gltex);
+
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -686,15 +687,21 @@ gl_delete_texture (GLuint *gltex)
 }
 
 void
+gl_update_texture (GLuint gltex, int tex_w, int tex_h, unsigned char *data)
+{
+  glActiveTexture (gltex);
+  glTexImage2D (GL_TEXTURE_2D, 0, 4,
+                tex_w, tex_h, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
+}
+
+void
 gl_update_texture (GLuint gltex, cairo_surface_t *surf)
 {
   int tex_w = cairo_image_surface_get_width (surf);
   int tex_h = cairo_image_surface_get_height (surf);
   unsigned char* data = cairo_image_surface_get_data (surf);
 
-  glBindTexture (GL_TEXTURE_2D, gltex);
-  glTexImage2D (GL_TEXTURE_2D, 0, 4,
-                tex_w, tex_h, 0,GL_BGRA, GL_UNSIGNED_BYTE, data);
+  gl_update_texture (gltex, tex_w, tex_h, data);
 }
 #endif
 
