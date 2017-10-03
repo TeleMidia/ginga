@@ -78,6 +78,7 @@ LuaPlayer::stop (void)
 {
   g_assert (_state != SLEEPING);
   g_assert_nonnull (_nw);
+  TRACE ("stopping");
 
   evt_ncl_send_presentation (_nw, "stop", "");
 
@@ -96,6 +97,7 @@ void G_GNUC_NORETURN
 LuaPlayer::pause (void)
 {
   g_assert (_state != PAUSED && _state != SLEEPING);
+  TRACE ("pausing");
   ERROR_NOT_IMPLEMENTED ("pause action is not supported");
 }
 
@@ -103,6 +105,7 @@ void G_GNUC_NORETURN
 LuaPlayer::resume (void)
 {
   g_assert (_state != PAUSED && _state != SLEEPING);
+  TRACE ("resuming");
   ERROR_NOT_IMPLEMENTED ("resume action is not supported");
 }
 

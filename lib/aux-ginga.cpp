@@ -31,7 +31,7 @@ string
 __ginga_strfunc (const string &strfunc)
 {
   string result;
-  size_t i, j;
+  size_t i;
 
   i = strfunc.find ("(");
   g_assert (i != std::string::npos);
@@ -41,17 +41,6 @@ __ginga_strfunc (const string &strfunc)
   if (i != std::string::npos)
     result = result.substr (i + 1);
 
-  i = result.rfind ("::");
-  if (i == std::string::npos)
-    goto done;
-
-  j = (result.substr (0, i + 1)).rfind ("::");
-  if (i == std::string::npos)
-    goto done;
-
-  result = result.substr (j + 2, i + 1);
-
- done:
   return result + "()";
 }
 

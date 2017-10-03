@@ -308,10 +308,7 @@ NclCompoundAction::run ()
   NclAction *action = nullptr;
 
   if (_actions.empty ())
-    {
-      TRACE ("There is no action to run.");
-      return;
-    }
+    return;
 
   size = _actions.size ();
   _pendingActions = (int) size;

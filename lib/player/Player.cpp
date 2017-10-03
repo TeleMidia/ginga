@@ -229,7 +229,7 @@ void
 Player::start ()
 {
   g_assert (_state != OCCURRING);
-  TRACE ("starting %s", _id.c_str ());
+  TRACE ("%s", _id.c_str ());
 
   _state = OCCURRING;
   _time = 0;
@@ -245,7 +245,7 @@ void
 Player::stop ()
 {
   g_assert (_state != SLEEPING);
-  TRACE ("stopping %s", _id.c_str ());
+  TRACE ("%s", _id.c_str ());
 
   _state = SLEEPING;
   _ginga->unregisterPlayer (this);
@@ -259,7 +259,7 @@ void
 Player::pause ()
 {
   g_assert (_state != PAUSED && _state != SLEEPING);
-  TRACE ("pausing %s", _id.c_str ());
+  TRACE ("%s", _id.c_str ());
 
   _state = PAUSED;
 }
@@ -271,7 +271,7 @@ void
 Player::resume ()
 {
   g_assert (_state == PAUSED);
-  TRACE ("resuming %s", _id.c_str ());
+  TRACE ("%s", _id.c_str ());
 
   _state = OCCURRING;
 }
@@ -323,8 +323,9 @@ Player::setProperty (const string &name, const string &value)
     _value = "";
 
  done:
-  TRACE ("%s.%s:='%s'%s", _id.c_str (), name.c_str (), _value.c_str (),
-         (use_defval) ? (" (default: " + defval + ")").c_str () : "");
+  TRACE ("%s.%s:='%s'%s",
+         _id.c_str (), name.c_str (), _value.c_str (),
+         (use_defval) ? (" (default: '" + defval + "')").c_str () : "");
   _properties[name] = _value;
   return;
 }
@@ -363,7 +364,7 @@ void
 Player::schedulePropertyAnimation (const string &name, const string &from,
                                    const string &to, GingaTime dur)
 {
-  TRACE ("animating %s.%s from '%s' to '%s' in %" GINGA_TIME_FORMAT,
+  TRACE ("%s.%s from '%s' to '%s' in %" GINGA_TIME_FORMAT,
          _id.c_str (), name.c_str (), from.c_str (), to.c_str (),
          GINGA_TIME_ARGS (dur));
   _animator->schedule (name, from, to, dur);
@@ -375,7 +376,7 @@ Player::schedulePropertyAnimation (const string &name, const string &from,
 void
 Player::reload (void)
 {
-  TRACE ("reloading %s", _id.c_str ());
+  TRACE ("%s", _id.c_str ());
   _dirty = false;
 }
 
@@ -471,7 +472,7 @@ Player::getCurrentFocus ()
 void
 Player::setCurrentFocus (const string &index)
 {
-  TRACE ("setting current focus to '%s'", index.c_str ());
+  TRACE ("from '%s' to '%s'", _currentFocus.c_str (), index.c_str ());
   _currentFocus = index;
 }
 
