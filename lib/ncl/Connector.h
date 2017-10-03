@@ -32,10 +32,6 @@ public:
   Connector (NclDocument *, const string &);
   virtual ~Connector ();
 
-  void addParameter (Parameter *);
-  const vector<Parameter *> *getParameters ();
-  Parameter *getParameter (const string &);
-
   Condition *getCondition ();
   void setCondition (Condition *);
 
@@ -45,7 +41,7 @@ public:
   Role *getRole (const string &);
 
 private:
-  vector<Parameter *> _parameters;
+  map<string,string> _param;
   Condition *_condition;
   Action *_action;
 
