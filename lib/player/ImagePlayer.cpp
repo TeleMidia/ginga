@@ -75,7 +75,15 @@ ImagePlayer::reload ()
   cairo_status_t status;
 
   if (_surface != nullptr)
-    cairo_surface_destroy (_surface);
+    {
+      cairo_surface_destroy (_surface);
+#if WITH_OPENGL
+      if (gltexture != -1)
+        {
+          glDeleteTextures (1, &gltexture);
+        }
+#endif
+    }
 
   status = cairox_surface_create_from_file (_uri.c_str (), &_surface);
   if (unlikely (status != CAIRO_STATUS_SUCCESS))
@@ -85,6 +93,20 @@ ImagePlayer::reload ()
     }
   g_assert_nonnull (_surface);
 
+#if WITH_OPENGL
+  int tex_w = cairo_image_surface_get_width (_surface);
+  int tex_h = cairo_image_surface_get_height (_surface);
+  unsigned char* data = cairo_image_surface_get_data (_surface);
+
+  glGenTextures (1, &gltexture);
+  glBindTexture (GL_TEXTURE_2D, gltexture);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+  glTexImage2D (GL_TEXTURE_2D, 0, 4, tex_w, tex_h, 0,GL_BGRA, GL_UNSIGNED_BYTE, data);
+#endif
   Player::reload ();
 }
 

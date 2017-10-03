@@ -446,6 +446,39 @@ Player::redraw (cairo_t *cr)
     this->redrawDebuggingInfo (cr);
 }
 
+#if WITH_OPENGL
+/**
+ * @brief Redraws player using OpenGL.
+ */
+void
+Player::redraw_gl ()
+{
+  static int i = 0;
+
+  i += 1;
+  g_assert (_state != SLEEPING);
+  _animator->update (&_prop.rect, &_prop.bgColor, &_prop.alpha);
+
+  glColor3f ( 1.0f, 1.0f, 1.0f );
+
+  if (gltexture != -1)
+    {
+      glEnable (GL_TEXTURE_2D);
+      glBindTexture (GL_TEXTURE_2D, gltexture);
+    }
+
+  // Render quad
+  glBegin( GL_QUADS );
+    glTexCoord2f (0.0f,1.0f); glVertex2f( _prop.rect.x, _prop.rect.y);
+    glTexCoord2f (1.0f,1.0f); glVertex2f( _prop.rect.x + _prop.rect.width, _prop.rect.y);
+    glTexCoord2f (1.0f,0.0f); glVertex2f( _prop.rect.x + _prop.rect.width, _prop.rect.y + _prop.rect.height);
+    glTexCoord2f (0.0f,0.0f); glVertex2f( _prop.rect.x, _prop.rect.y + _prop.rect.height);
+  glEnd();
+
+  if (gltexture != -1)
+    glDisable (GL_TEXTURE_2D);
+}
+#endif
 
 // Public: Static.
 
