@@ -40,13 +40,13 @@ NclEvent::NclEvent (GingaInternal *ginga, const string &id,
   _occurrences = 0;
   _exeObj = exeObj;
 
-  TRACE ("creating event '%s'", _id.c_str ());
+  TRACE ("%s", _id.c_str ());
   _scheduler->addEvent (this);
 }
 
 NclEvent::~NclEvent ()
 {
-  TRACE ("destroying event '%s'", _id.c_str ());
+  TRACE ("%s", _id.c_str ());
 }
 
 bool

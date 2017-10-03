@@ -214,14 +214,34 @@ void
 Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
 {
   ExecutionObject *obj;
+  string name;
 
   obj = event->getExecutionObject ();
   g_assert_nonnull (obj);
 
-  TRACE ("running action '%d' over event '%s' (object '%s')",
-         action->getType (),
-         event->getId ().c_str (),
-         obj->getId ().c_str ());
+  switch (action->getType ())   // fixme
+    {
+    case SimpleAction::START:
+      name = "start";
+      break;
+    case SimpleAction::PAUSE:
+      name = "pause";
+      break;
+    case SimpleAction::RESUME:
+      name = "resume";
+      break;
+    case SimpleAction::STOP:
+      name = "stop";
+      break;
+    case SimpleAction::ABORT:
+      name = "abort";
+      break;
+    default:
+      g_assert_not_reached ();
+    }
+
+  TRACE ("running %s over %s",
+         name.c_str (), obj->getId ().c_str ());
 
   if (instanceof (SelectionEvent *, event))
     {

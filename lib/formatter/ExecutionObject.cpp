@@ -51,15 +51,15 @@ ExecutionObject::ExecutionObject (GingaInternal *ginga,
   _time = GINGA_TIME_NONE;
   _destroying = false;
 
-  TRACE ("creating object '%s'", _id.c_str ());
+  TRACE ("%s", _id.c_str ());
   _scheduler->addObject (this);
 }
 
 ExecutionObject::~ExecutionObject ()
 {
-  TRACE ("destroying object '%s'", _id.c_str ());
   _destroying = true;
   this->stop ();
+  TRACE ("%s", _id.c_str ());
 }
 
 bool
@@ -455,7 +455,7 @@ ExecutionObject::start ()
   if (this->isOccurring ())
     return true;              // nothing to do
 
-  TRACE ("starting");
+  TRACE ("%s", _id.c_str ());
 
   if (instanceof (ExecutionObjectContext *, this))
     goto done;
@@ -557,7 +557,7 @@ ExecutionObject::stop ()
   if (this->isSleeping ())
     return false;               // nothing to do
 
-  TRACE ("stopping %s", _id.c_str ());
+  TRACE ("%s", _id.c_str ());
 
   // Stop and destroy player.
   if (_player != nullptr)
@@ -648,7 +648,7 @@ ExecutionObject::setProperty (const string &name,
     return;                     // nothing to do
 
   g_assert (GINGA_TIME_IS_VALID (dur));
-  TRACE ("updating '%s.%s' from '%s' to '%s'",
+  TRACE ("%s.%s:='%s' (previous '%s')",
          _id.c_str (), name.c_str (), from.c_str (), to.c_str ());
 
   if (dur > 0)
@@ -717,9 +717,8 @@ ExecutionObject::handleTickEvent (unused (GingaTime total),
   evt = cast (NclEvent *, next->getEvent ());
   g_assert_nonnull (evt);
 
-  TRACE ("anchor '%s' timed out at %" GINGA_TIME_FORMAT
-         ", updating transition table",
-         evt->getId ().c_str(), GINGA_TIME_ARGS (now));
+  TRACE ("%s.%s timed-out at %" GINGA_TIME_FORMAT,
+         _id.c_str(), evt->getId ().c_str (), GINGA_TIME_ARGS (now));
 
   _transMan.updateTransitionTable (now, _player, _mainEvent);
 }
@@ -806,8 +805,8 @@ ExecutionObject::handleKeyEvent (const string &key, bool press)
   if (buf.size () == 0)
     return;
 
-  TRACE ("object '%s' (%p) selected via key '%s'",
-         _id.c_str (), this, key.c_str ());
+  TRACE ("%s selected via '%s'",
+         _id.c_str (), key.c_str ());
 }
 
 GINGA_FORMATTER_END

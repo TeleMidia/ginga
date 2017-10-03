@@ -25,7 +25,8 @@ using namespace ::ginga::formatter;
 using namespace ::ginga::player;
 
 // Option defaults.
-static GingaOptions opts_defaults = {
+static GingaOptions opts_defaults =
+{
   800,                          // width
   600,                          // height
   false,                        // debug
@@ -122,6 +123,7 @@ GingaInternal::start (const string &file, string *errmsg)
   _last_tick_diff = 0;
   _last_tick_frameno = 0;
 
+  TRACE ("%s", file.c_str ());
   if (unlikely (!_scheduler->run (file, errmsg)))
     {
       delete _scheduler;
@@ -532,7 +534,7 @@ GingaInternal::setOptionDebug (GingaInternal *self, const string &name,
       g_assert (g_setenv ("G_MESSAGES_DEBUG",
                           self->_saved_G_MESSAGES_DEBUG.c_str (), true));
     }
-  TRACE ("setting GingaOption '%s' to %s", name.c_str (), strbool (value));
+  TRACE ("%s:=%s", name.c_str (), strbool (value));
 }
 
 /**
@@ -544,7 +546,7 @@ GingaInternal::setOptionExperimental (unused (GingaInternal *self),
                                       const string &name, bool value)
 {
   g_assert (name == "experimental");
-  TRACE ("setting GingaOption '%s' to %s", name.c_str (), strbool (value));
+  TRACE ("%s:=%s", name.c_str (), strbool (value));
 }
 
 /**
@@ -558,7 +560,7 @@ GingaInternal::setOptionSize (GingaInternal *self, const string &name,
   g_assert (name == "width" || name == "height");
   opts = self->getOptions ();
   self->resize (opts->width, opts->height);
-  TRACE ("setting GingaOption '%s' to %d", name.c_str (), value);
+  TRACE ("%s:=%d", name.c_str (), value);
 }
 
 /**
@@ -573,7 +575,7 @@ GingaInternal::setOptionBackground (GingaInternal *self, const string &name,
     self->_background = {0.,0.,0.,0.};
   else
     self->_background = ginga_parse_color (value);
-  TRACE ("setting GingaOption '%s' to '%s'", name.c_str (), value.c_str ());
+  TRACE ("%s:='%s'", name.c_str (), value.c_str ());
 }
 
 
