@@ -116,7 +116,7 @@ bool
 NclEvent::abort ()
 {
   if (_state == EventState::OCCURRING || _state == EventState::PAUSED)
-    return changeState (EventState::SLEEPING, EventStateTransition::ABORTS);
+    return changeState (EventState::SLEEPING, EventStateTransition::ABORT);
   else
     return false;
 }
@@ -125,7 +125,7 @@ bool
 NclEvent::start ()
 {
   if (_state == EventState::SLEEPING)
-    return changeState (EventState::OCCURRING, EventStateTransition::STARTS);
+    return changeState (EventState::OCCURRING, EventStateTransition::START);
   else
     return false;
 }
@@ -134,7 +134,7 @@ bool
 NclEvent::stop ()
 {
   if (_state == EventState::OCCURRING || _state == EventState::PAUSED)
-    return changeState (EventState::SLEEPING, EventStateTransition::STOPS);
+    return changeState (EventState::SLEEPING, EventStateTransition::STOP);
   else
     return false;
 }
@@ -143,7 +143,7 @@ bool
 NclEvent::pause ()
 {
   if (_state == EventState::OCCURRING)
-    return changeState (EventState::PAUSED, EventStateTransition::PAUSES);
+    return changeState (EventState::PAUSED, EventStateTransition::PAUSE);
   else
     return false;
 }
@@ -152,7 +152,7 @@ bool
 NclEvent::resume ()
 {
   if (_state == EventState::PAUSED)
-    return changeState (EventState::OCCURRING, EventStateTransition::RESUMES);
+    return changeState (EventState::OCCURRING, EventStateTransition::RESUME);
   else
     return false;
 }
@@ -168,7 +168,7 @@ bool
 NclEvent::changeState (EventState newState,
                        EventStateTransition transition)
 {
-  if (transition == EventStateTransition::STOPS)
+  if (transition == EventStateTransition::STOP)
     {
       _occurrences++;
     }

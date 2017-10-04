@@ -794,7 +794,7 @@ Converter::eventStateChanged (NclEvent *event,
 
   if (exeSwitch)
     {
-      if (transition == EventStateTransition::STARTS)
+      if (transition == EventStateTransition::START)
         {
           for (NclEvent *e: exeSwitch->getEvents())
             {
@@ -823,16 +823,16 @@ Converter::eventStateChanged (NclEvent *event,
             }
         }
 
-      if (transition == EventStateTransition::STOPS
-          || transition == EventStateTransition::ABORTS)
+      if (transition == EventStateTransition::STOP
+          || transition == EventStateTransition::ABORT)
         {
           exeSwitch->select (NULL);
         }
     }
   else if (exeCompositeObj)
     {
-      if (transition == EventStateTransition::STOPS
-          || transition == EventStateTransition::ABORTS)
+      if (transition == EventStateTransition::STOP
+          || transition == EventStateTransition::ABORT)
         {
         }
     }
@@ -1308,7 +1308,7 @@ Converter::createSimpleAction (
 
   switch (actionType)
     {
-    case EventStateTransition::STARTS:
+    case EventStateTransition::START:
       if (eventType == EventType::PRESENTATION)
         {
           action = new NclSimpleAction (event, actionType);
@@ -1410,10 +1410,10 @@ Converter::createSimpleAction (
         }
       break;
 
-    case EventStateTransition::STOPS:
-    case EventStateTransition::PAUSES:
-    case EventStateTransition::RESUMES:
-    case EventStateTransition::ABORTS:
+    case EventStateTransition::STOP:
+    case EventStateTransition::PAUSE:
+    case EventStateTransition::RESUME:
+    case EventStateTransition::ABORT:
       action = new NclSimpleAction (event, actionType);
       break;
 

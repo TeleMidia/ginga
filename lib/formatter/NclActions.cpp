@@ -160,7 +160,7 @@ NclSimpleAction::run ()
       _listener->scheduleAction (this);
     }
 
-  if (_actType == EventStateTransition::STARTS)
+  if (_actType == EventStateTransition::START)
     {
       notifyProgressListeners (true);
     }

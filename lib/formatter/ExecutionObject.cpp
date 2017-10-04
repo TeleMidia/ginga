@@ -797,7 +797,7 @@ ExecutionObject::handleKeyEvent (const string &key, bool press)
       if (_seListener != nullptr)
         {
           NclSimpleAction *fakeAct =
-            new NclSimpleAction (evt, EventStateTransition::STARTS);
+            new NclSimpleAction (evt, EventStateTransition::START);
           _seListener->scheduleAction (fakeAct);
         }
     }
