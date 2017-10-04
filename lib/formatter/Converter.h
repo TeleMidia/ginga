@@ -129,7 +129,7 @@ private:
                    ExecutionObjectContext *parentObject);
 
   NclLinkCompoundTriggerCondition *createCompoundTriggerCondition (
-      short op, GingaTime delay,
+      GingaTime delay,
       const vector<Condition *> *ncmChildConditions,
       Link *ncmLink, ExecutionObjectContext *parentObject);
 
