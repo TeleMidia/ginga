@@ -52,7 +52,9 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
 #include <gst/video/video.h>
 GINGA_PRAGMA_DIAG_POP ()
 
-#if defined WITH_LIBRSVG && WITH_LIBRSVG
+#define ENABLED(X) ((defined(WITH_ ## X) && WITH_ ## X))
+
+#if ENABLED (LIBRSVG)
 # include <librsvg/rsvg.h>
 #endif
 
@@ -222,7 +224,7 @@ xvectremove (vector<T> &v1, vector<T> &v2)
   v1.erase (begin, v1.end());
 }
 
-#if defined WITH_OPENGL && WITH_OPENGL
+#if ENABLED (OPENGL)
 #include <GL/gl.h>
 void
 gl_create_texture (GLuint *);
