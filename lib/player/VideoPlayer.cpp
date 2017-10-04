@@ -298,7 +298,7 @@ VideoPlayer::redraw (cairo_t *cr)
 void
 VideoPlayer::redrawGL ()
 {
-#if !(defined WITH_OPENGL && WITH_OPENGL)
+#if !(ENABLED (OPENGL))
   WARNING_NOT_IMPLEMENTED ("not compiled with OpenGL support");
 #else
   GstSample *sample;

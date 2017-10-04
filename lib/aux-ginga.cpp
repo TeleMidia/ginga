@@ -667,7 +667,7 @@ xpathbuildabs (const string &a, const string &b)
 
 // OpenGL ------------------------------------------------------------------
 
-#if defined WITH_OPENGL && WITH_OPENGL
+#if ENABLED (OPENGL)
 
 void
 gl_create_texture (GLuint *gltex)
