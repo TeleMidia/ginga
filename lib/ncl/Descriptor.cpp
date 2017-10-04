@@ -51,11 +51,11 @@ Descriptor::getRegion ()
 }
 
 /**
- * @brief Sets descriptor region.  (Can only be called once.)
+ * @brief Initializes descriptor region.
  * @param region Region.
  */
 void
-Descriptor::setRegion (Region *region)
+Descriptor::initRegion (Region *region)
 {
   g_assert_null (_region);
   g_assert_nonnull (region);

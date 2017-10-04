@@ -27,11 +27,11 @@ class Context;
 class Link : public Entity
 {
 public:
-  Link (NclDocument *, const string &, Context *, Connector *);
+  Link (NclDocument *, const string &);
   virtual ~Link ();
 
   Connector *getConnector ();
-  Context *getContext ();
+  bool initConnector (Connector *);
 
   void addParameter (Parameter *);
   const vector<Parameter *> *getParameters ();
@@ -43,7 +43,6 @@ public:
   bool contains (Node *, bool);
 
 private:
-  Context *_context;
   Connector *_connector;
   vector<Bind *> _binds;
   vector<Parameter *> _parameters;

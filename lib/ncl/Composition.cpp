@@ -51,7 +51,7 @@ Composition::addNode (Node *node)
 {
   g_assert_nonnull (node);
   _nodes.push_back (node);
-  node->setParent (this);
+  node->initParent (this);
 }
 
 /**
@@ -107,7 +107,7 @@ Composition::addPort (Port *port)
 {
   g_assert_nonnull (port);
   _ports.push_back (port);
-  port->setParent (this);
+  port->initParent (this);
 }
 
 /**

@@ -40,12 +40,11 @@ Refer::getReferred ()
 }
 
 /**
- * @brief Sets the media referenced by refer node.
- * (Can only be called once.)
+ * @brief Initializes the media referenced by refer node.
  * @param media Media.
  */
 void
-Refer::setReferred (Media *media)
+Refer::initReferred (Media *media)
 {
   g_assert_nonnull (media);
   g_assert (_referred == nullptr || _referred == media);

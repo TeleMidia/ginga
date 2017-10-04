@@ -29,16 +29,10 @@ GINGA_NCL_BEGIN
  * @brief Creates a new link.
  * @param ncl Parent document.
  * @param id Link id.
- * @param ctx Parent context.
- * @param conn Associated connector.
  */
-Link::Link (NclDocument *ncl, const string &id, Context *ctx,
-            Connector *conn) : Entity (ncl, id)
+Link::Link (NclDocument *ncl, const string &id) : Entity (ncl, id)
 {
-  g_assert_nonnull (conn);
-  _connector = conn;
-  g_assert_nonnull (ctx);
-  _context = ctx;
+  _connector = nullptr;
 }
 
 /**
@@ -52,6 +46,7 @@ Link::~Link ()
 
 /**
  * @brief Gets link connector.
+ * @return Link connector.
  */
 Connector *
 Link::getConnector ()
@@ -60,12 +55,16 @@ Link::getConnector ()
 }
 
 /**
- * @brief Gets link context.
+ * @brief Initializes link connector.
+ * @return True if successful, or false otherwise.
  */
-Context *
-Link::getContext ()
+bool
+Link::initConnector (Connector *conn)
 {
-  return _context;
+  g_assert_nonnull (conn);
+  g_assert_null (_connector);
+  _connector = conn;
+  return true;
 }
 
 /**

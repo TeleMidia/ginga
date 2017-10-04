@@ -30,8 +30,8 @@ public:
   Port (NclDocument *, const string &);
   ~Port ();
 
-  void setParent (Composition *);
   Composition *getParent ();
+  void initParent (Composition *);
 
   Node *getNode ();
   void setNode (Node *);

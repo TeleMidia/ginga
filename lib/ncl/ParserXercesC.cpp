@@ -1000,7 +1000,7 @@ ParserXercesC::parseDescriptor (DOMElement *elt)
       Region *region = _doc->getRegion (value);
       if (unlikely (region == nullptr))
         ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "region");
-      desc->setRegion (region);
+      desc->initRegion (region);
     }
 
   for (auto attr: supported)
@@ -1114,24 +1114,23 @@ ParserXercesC::parseCausalConnector (DOMElement *elt)
       string tag = dom_elt_get_tag (child);
       if (tag == "simpleCondition")
         {
-          conn->setCondition
+          conn->initCondition
             (this->parseSimpleCondition (child));
           ncond++;
         }
       else if (tag == "compoundCondition")
         {
-          conn->setCondition
-            (this->parseCompoundCondition (child));
+          conn->initCondition (this->parseCompoundCondition (child));
           ncond++;
         }
       else if (tag == "simpleAction")
         {
-          conn->setAction (this->parseSimpleAction (child));
+          conn->initAction (this->parseSimpleAction (child));
           nact++;
         }
       else if (tag == "compoundAction")
         {
-          conn->setAction (this->parseCompoundAction (child));
+          conn->initAction (this->parseCompoundAction (child));
           nact++;
         }
       else if (tag == "connectorParam")
@@ -1648,7 +1647,7 @@ ParserXercesC::solveNodeReferences (Composition *comp)
         refNode = cast (Media *, _doc->getNode (ref->getId ()));
         g_assert_nonnull (refNode);
 
-        ((Refer *) node)->setReferred (refNode);
+        ((Refer *) node)->initReferred (refNode);
       }
     else if (instanceof (Composition *, node))
       {
@@ -1957,7 +1956,7 @@ ParserXercesC::parseMedia (DOMElement *elt)
       g_assert_nonnull (refer);
 
       media = new Refer (_doc, id);
-      ((Refer *) media)->setReferred (refer);
+      ((Refer *) media)->initReferred (refer);
     }
   else
     {
@@ -1981,7 +1980,7 @@ ParserXercesC::parseMedia (DOMElement *elt)
           Descriptor *desc = _doc->getDescriptor (value);
           if (unlikely (desc == nullptr))
             ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "descriptor");
-          ((Media *) media)->setDescriptor (desc);
+          ((Media *) media)->initDescriptor (desc);
         }
     }
 
@@ -2087,7 +2086,9 @@ ParserXercesC::parseLink (DOMElement *elt, Context *context)
   if (unlikely (conn == nullptr))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "xconnector");
 
-  link = new Link (_doc, id, context, conn);
+  link = new Link (_doc, id);
+  link->initConnector (conn);
+  context->addLink (link);
 
   // Collect children.
   for (DOMElement *child: dom_elt_get_children (elt))
@@ -2220,7 +2221,7 @@ ParserXercesC::parseBind (DOMElement *elt, Link *link, Context *context)
         }
       else
         {
-          conn->setCondition
+          conn->initCondition
             (new CompoundCondition (cond, stmt, CompoundCondition::OP_OR));
         }
       role = (Role *) assess;

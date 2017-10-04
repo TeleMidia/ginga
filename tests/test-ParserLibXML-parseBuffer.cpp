@@ -207,6 +207,48 @@ main (void)
 
 
 // -------------------------------------------------------------------------
+// Link.
+// -------------------------------------------------------------------------
+
+  XFAIL ("link: Missing xconnector", "\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <link>\n\
+  </link>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("link: No such xconnector", "\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <link xconnector='c'>\n\
+  </link>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("link: Link does not match connector", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+  <link xconnector='c'>\n\
+  </link>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+
+// -------------------------------------------------------------------------
 // Region.
 // -------------------------------------------------------------------------
 
@@ -555,7 +597,6 @@ main (void)
  </body>\n\
 </ncl>\n\
 ");
-
 
 
 // -------------------------------------------------------------------------

@@ -60,10 +60,10 @@ Connector::getCondition ()
 }
 
 /**
- * @brief Sets connector condition.  (Can only be called once.)
+ * @brief Initializes connector condition.
  */
 void
-Connector::setCondition (Condition *condition)
+Connector::initCondition (Condition *condition)
 {
   g_assert_nonnull (condition);
   g_assert_null (_condition);
@@ -80,10 +80,10 @@ Connector::getAction ()
 }
 
 /**
- * @brief Sets connector action.  (Can only be called once.)
+ * @brief Initializes connector action.
  */
 void
-Connector::setAction (Action *action)
+Connector::initAction (Action *action)
 {
   g_assert_nonnull (action);
   g_assert_null (_action);
