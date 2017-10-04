@@ -162,7 +162,6 @@ set (LIBGINGA_SOURCES
   ../lib/ncl/Transition.cpp
   ../lib/ncl/TransitionBase.cpp
   ../lib/ncl/TransitionUtil.cpp
-  ../lib/ncl/TriggerExpression.cpp
   ../lib/ncl/ValueAssessment.cpp
 
   ../lib/player/ImagePlayer.cpp
