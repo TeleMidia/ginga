@@ -247,17 +247,19 @@ GingaInternal::redraw (cairo_t *cr)
     }
 }
 
-#if defined WITH_OPENGL && WITH_OPENGL
 /**
  * @brief Draw current surface onto current opengl context.
  */
 void
-GingaInternal::redraw_gl ()
+GingaInternal::redrawGL ()
 {
+#if !(defined WITH_OPENGL && WITH_OPENGL)
+  ERROR_NOT_IMPLEMENTED ("you must compile with OpenGL support");
+#else
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  glViewport (0.0f, 0.0f, _opts.width, _opts.height);
-  glOrtho (0.0f, _opts.width, _opts.height, 0.0f, 0.0f, 1.0f);
+  glViewport (0.0, 0.0, _opts.width, _opts.height);
+  glOrtho (0.0, _opts.width, _opts.height, 0.0, 0.0, 1.0);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
@@ -284,8 +286,9 @@ GingaInternal::redraw_gl ()
         }
       l = next;
     }
-}
 #endif
+}
+
 
 // Stop formatter if EOS has been seen.
 #define _GINGA_CHECK_EOS(ginga)                                 \
@@ -345,6 +348,7 @@ GingaInternal::sendKeyEvent (const string &key, bool press)
 bool
 GingaInternal::sendTickEvent (uint64_t total, uint64_t diff, uint64_t frame)
 {
+  TRACE ("AAAAAAAAAAAAAAAAAAA");
   _GINGA_CHECK_EOS (this);
   if (_state != GINGA_STATE_PLAYING)
     return false;               // nothing to do

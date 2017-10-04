@@ -68,6 +68,7 @@
 /src/Makefile
 /src/Makefile.in
 /src/ginga
+/src/ginga-gl
 /tests-ncl/Makefile
 /tests-ncl/Makefile.in
 /tests-ncl/test-media-*-4grid.ncl

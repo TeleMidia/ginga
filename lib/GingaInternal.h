@@ -21,10 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "aux-ginga.h"
 
-#if WITH_OPENGL
-# include <GL/gl.h>
-#endif
-
 GINGA_PLAYER_BEGIN
 class Player;
 GINGA_PLAYER_END
@@ -53,9 +49,7 @@ class GingaInternal : public Ginga
 
   void resize (int, int);
   void redraw (cairo_t *);
-#if WITH_OPENGL
-  void redraw_gl ();
-#endif
+  void redrawGL ();
 
   bool sendKeyEvent (const string &, bool);
   bool sendTickEvent (uint64_t, uint64_t, uint64_t);

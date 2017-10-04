@@ -462,19 +462,19 @@ Player::redraw_gl ()
 
   if (_prop.bgColor.alpha > 0)
     {
-      glColor4f (_prop.bgColor.red,
+      glColor4d (_prop.bgColor.red,
                  _prop.bgColor.green,
                  _prop.bgColor.blue,
                  _prop.alpha / 255.);
       glBegin( GL_QUADS );
-        glVertex2f( _prop.rect.x, _prop.rect.y);
-        glVertex2f( _prop.rect.x + _prop.rect.width, _prop.rect.y);
-        glVertex2f( _prop.rect.x + _prop.rect.width, _prop.rect.y + _prop.rect.height);
-        glVertex2f( _prop.rect.x, _prop.rect.y + _prop.rect.height);
+        glVertex2d( _prop.rect.x, _prop.rect.y);
+        glVertex2d( _prop.rect.x + _prop.rect.width, _prop.rect.y);
+        glVertex2d( _prop.rect.x + _prop.rect.width, _prop.rect.y + _prop.rect.height);
+        glVertex2d( _prop.rect.x, _prop.rect.y + _prop.rect.height);
       glEnd();
     }
 
-  if (gltexture != -1)
+  if (gltexture != (GLuint) -1)
     {
       glEnable (GL_TEXTURE_2D);
       glBindTexture (GL_TEXTURE_2D, gltexture);
@@ -484,16 +484,17 @@ Player::redraw_gl ()
 
   // Render quad
   glBegin( GL_QUADS );
-    glTexCoord2f (0.0f,0.0f); glVertex2f( _prop.rect.x, _prop.rect.y);
-    glTexCoord2f (1.0f,0.0f); glVertex2f( _prop.rect.x + _prop.rect.width, _prop.rect.y);
-    glTexCoord2f (1.0f,1.0f); glVertex2f( _prop.rect.x + _prop.rect.width, _prop.rect.y + _prop.rect.height);
-    glTexCoord2f (0.0f,1.0f); glVertex2f( _prop.rect.x, _prop.rect.y + _prop.rect.height);
+    glTexCoord2d (0.0,0.0); glVertex2d( _prop.rect.x, _prop.rect.y);
+    glTexCoord2d (1.0,0.0); glVertex2d( _prop.rect.x + _prop.rect.width, _prop.rect.y);
+    glTexCoord2d (1.0,1.0); glVertex2d( _prop.rect.x + _prop.rect.width, _prop.rect.y + _prop.rect.height);
+    glTexCoord2d (0.0,1.0); glVertex2d( _prop.rect.x, _prop.rect.y + _prop.rect.height);
   glEnd();
 
-  if (gltexture != -1)
+  if (gltexture != (GLuint) -1)
     glDisable (GL_TEXTURE_2D);
 }
 #endif
+
 
 // Public: Static.
 

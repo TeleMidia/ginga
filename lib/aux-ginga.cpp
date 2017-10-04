@@ -664,7 +664,11 @@ xpathbuildabs (const string &a, const string &b)
   return xpathmakeabs (xpathbuild (a, b));
 }
 
-#if WITH_OPENGL
+
+// OpenGL ------------------------------------------------------------------
+
+#if defined WITH_OPENGL && WITH_OPENGL
+
 void
 gl_create_texture (GLuint *gltex)
 {
@@ -681,7 +685,7 @@ gl_create_texture (GLuint *gltex)
 void
 gl_delete_texture (GLuint *gltex)
 {
-  if (*gltex != -1)
+  if (*gltex != (GLuint) -1)
     {
       glDeleteTextures (1, gltex);
     }

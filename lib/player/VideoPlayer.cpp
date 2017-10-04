@@ -318,7 +318,6 @@ VideoPlayer::redraw_gl ()
   guint8 *pixels;
   int width;
   int height;
-  int stride;
 
   g_assert (_state != SLEEPING);
 
@@ -344,9 +343,8 @@ VideoPlayer::redraw_gl ()
   pixels = (guint8 *) GST_VIDEO_FRAME_PLANE_DATA (&v_frame, 0);
   width = GST_VIDEO_FRAME_WIDTH (&v_frame);
   height = GST_VIDEO_FRAME_HEIGHT (&v_frame);
-  stride = (int) GST_VIDEO_FRAME_PLANE_STRIDE (&v_frame, 0);
 
-  if (gltexture != -1)
+  if (gltexture != (GLuint) -1)
     {
       gl_delete_texture (&gltexture);
     }
