@@ -278,18 +278,11 @@ VideoPlayer::redraw (cairo_t *cr)
   if (_surface != nullptr)
     {
       cairo_surface_destroy (_surface);
-#if defined WITH_OPENGL && WITH_OPENGL
-      gl_delete_texture (&_gltexture);
-#endif
     }
 
   _surface = cairo_image_surface_create_for_data
     (pixels, CAIRO_FORMAT_ARGB32, width, height, stride);
   g_assert_nonnull (_surface);
-
-#if defined WITH_OPENGL && WITH_OPENGL
-  gl_create_texture (&_gltexture);
-#endif
 
   gst_video_frame_unmap (&v_frame);
 
@@ -297,10 +290,6 @@ VideoPlayer::redraw (cairo_t *cr)
     (_surface, &key, (void *) sample,
      (cairo_destroy_func_t) gst_sample_unref);
   g_assert (status == CAIRO_STATUS_SUCCESS);
-
-#if defined WITH_OPENGL && WITH_OPENGL
-  gl_update_texture (_gltexture, _surface);
-#endif
 
  done:
   Player::redraw (cr);
@@ -351,8 +340,7 @@ VideoPlayer::redrawGL ()
       gl_delete_texture (&_gltexture);
     }
 
-  gl_create_texture (&_gltexture);
-  gl_update_texture (_gltexture, width, height, pixels);
+  gl_create_texture (&_gltexture, width, height, pixels);
 
   gst_video_frame_unmap (&v_frame);
 
