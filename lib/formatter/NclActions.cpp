@@ -20,23 +20,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclAction::NclAction (GingaTime delay)
+NclAction::NclAction ()
 {
   _satisfiedCondition = nullptr;
-  this->_delay = delay;
 }
 
 void
 NclAction::run (NclLinkCondition *satisfiedCondition)
 {
-  this->_satisfiedCondition = satisfiedCondition;
+  _satisfiedCondition = satisfiedCondition;
   run ();
-}
-
-void
-NclAction::setDelay (GingaTime delay)
-{
-  this->_delay = delay;
 }
 
 void
@@ -55,12 +48,6 @@ NclAction::addProgressListener (INclActionListener *listener)
 }
 
 void
-NclAction::removeProgressListener (INclActionListener *listener)
-{
-  xvectremove (_listeners, listener);
-}
-
-void
 NclAction::notifyProgressListeners (bool start)
 {
   vector<INclActionListener *> notifyList (_listeners);
@@ -72,13 +59,11 @@ NclAction::notifyProgressListeners (bool start)
 }
 
 NclSimpleAction::NclSimpleAction (NclEvent *event, EventStateTransition type)
-  : NclAction (0.)
+  : NclAction ()
 {
-  this->_event = event;
-  this->_actType = type;
-  this->_listener = nullptr;
-  this->_repetitions = 0;
-  this->_repetitionInterval = 0;
+  _event = event;
+  _actType = type;
+  _listener = nullptr;
 }
 
 NclEvent *
@@ -104,10 +89,8 @@ vector<NclEvent *>
 NclSimpleAction::getEvents ()
 {
   vector<NclEvent *> events;
-
   if (_event)
     events.push_back (_event);
-
   return events;
 }
 
@@ -140,20 +123,6 @@ NclSimpleAction::getImplicitRefRoleActions ()
 void
 NclSimpleAction::run ()
 {
-  if (_event != nullptr)
-    {
-      auto presentationEvt = cast (PresentationEvent *, _event);
-      if (presentationEvt)
-        {
-          presentationEvt->setRepetitionSettings (_repetitions,
-                                                  _repetitionInterval);
-        }
-    }
-  else
-    {
-      g_assert_not_reached ();
-    }
-
   if (_listener != nullptr)
     {
       g_assert_nonnull (_satisfiedCondition);
@@ -168,15 +137,6 @@ NclSimpleAction::run ()
     {
       notifyProgressListeners (false);
     }
-}
-
-void
-NclSimpleAction::setRepetitions (int repetitions, GingaTime repetitionInterval)
-{
-  this->_repetitions = repetitions;
-
-  if (repetitionInterval != GINGA_TIME_NONE)
-    this->_repetitionInterval = repetitionInterval;
 }
 
 // NclAssignmentAction
@@ -203,7 +163,7 @@ NclAssignmentAction::getDuration ()
   return _duration;
 }
 
-NclCompoundAction::NclCompoundAction () : NclAction (0.)
+NclCompoundAction::NclCompoundAction () : NclAction ()
 {
   _hasStart = false;
   _listener = nullptr;
@@ -212,11 +172,7 @@ NclCompoundAction::NclCompoundAction () : NclAction (0.)
 NclCompoundAction::~NclCompoundAction ()
 {
   for (NclAction *action : _actions)
-    {
-      action->removeProgressListener (this);
-      delete action;
-    }
-
+    delete action;
   _actions.clear ();
 }
 
@@ -262,7 +218,7 @@ void
 NclCompoundAction::setCompoundActionListener (
     INclActionListener *listener)
 {
-  this->_listener = listener;
+  _listener = listener;
 }
 
 vector<NclEvent *>

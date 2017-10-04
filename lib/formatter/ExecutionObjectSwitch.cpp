@@ -33,7 +33,7 @@ void
 ExecutionObjectSwitch::select (ExecutionObject *exeObj)
 {
   if (exeObj != nullptr
-      && containsExecutionObject (exeObj->getId ()))
+      && getExecutionObject (exeObj->getId ()) != nullptr)
     {
       _selectedObj = exeObj;
     }

@@ -127,18 +127,8 @@ Converter::getEvent (ExecutionObject *exeObj,
       if (ncmEventType == EventType::ATTRIBUTION)
         {
           auto propAnchor = cast (Property *, interfacePoint);
-          if (propAnchor)
-            {
-              event = new AttributionEvent (_ginga,
-                    id, exeObj,
-                    (Property *)interfacePoint);
-            }
-          else
-            {
-              // WARNING ("NCM event type is attribution, but interface point "
-              //          "isn't");
-              event = new AttributionEvent (_ginga, id, exeObj, nullptr);
-            }
+          g_assert_nonnull (propAnchor);
+          event = new AttributionEvent (_ginga, id, exeObj, propAnchor);
         }
     }
   else
@@ -148,55 +138,28 @@ Converter::getEvent (ExecutionObject *exeObj,
         case EventType::ATTRIBUTION:
           {
             auto propAnchor = cast (Property *, interfacePoint);
-            if (propAnchor)
-              {
-                event = new AttributionEvent (_ginga, id, exeObj, propAnchor);
-              }
-            else
-              {
-                // WARNING ("NCM event type is attribution, but interface point "
-                //          "isn't.");
-                auto intervalAnchor
-                    = cast (Area *, interfacePoint);
-                if (intervalAnchor)
-                  {
-                    // WARNING ("It was supposed to be a PRESENTATION EVENT");
-                    event = new PresentationEvent (_ginga,
-                          id, exeObj,
-                          intervalAnchor);
-                  }
+            g_assert_nonnull (propAnchor);
+            event = new AttributionEvent (_ginga, id, exeObj, propAnchor);
 
-                return nullptr;
-              }
+            break;
           }
-          break;
-
         case EventType::SELECTION:
           {
             event = new SelectionEvent (_ginga,
-                  id, exeObj, (Area *)interfacePoint);
-
+                                        id, exeObj, (Area *)interfacePoint);
             if (key != "")
               {
                 ((SelectionEvent *)event)->setSelectionCode (key);
               }
+            break;
           }
-          break;
-
         default:
           g_assert_not_reached ();
         }
     }
 
-
-  if (event != nullptr)
-    {
-      exeObj->addEvent (event);
-    }
-  else
-    {
-      ERROR ("Returning a nullptr event for '%s'", id.c_str ());
-    }
+  g_assert_nonnull (event);
+  exeObj->addEvent (event);
 
   return event;
 }
@@ -232,14 +195,10 @@ Converter::addExecutionObject (ExecutionObject *exeObj,
                                ExecutionObjectContext *parentObj)
 {
   if (parentObj)
-    {
-      parentObj->addExecutionObject (exeObj);
-    }
+    parentObj->addExecutionObject (exeObj);
 
   // Hanlde settings nodes.
   Node *dataObject = exeObj->getNode ();
-  // auto contentNode = cast (Media *, dataObject);
-
   NclNodeNesting *nodePerspective = exeObj->getNodePerspective ();
   Node *headNode = nodePerspective->getHeadNode ();
 
@@ -279,7 +238,7 @@ Converter::getParentExecutionObject (NclNodeNesting *perspective)
       parentPerspective = perspective->copy ();
       parentPerspective->removeAnchorNode ();
 
-      auto cObj = cast (ExecutionObjectContext*, 
+      auto cObj = cast (ExecutionObjectContext *,
             this->getExecutionObjectFromPerspective (
               parentPerspective, nullptr));
 
@@ -418,74 +377,41 @@ Converter::processLink (Link *ncmLink,
   bool contains = false;
 
   if (executionObject->getNode () != nullptr)
+    nodeEntity = cast (Node *, executionObject->getNode ());
+
+  if (!parentObject->containsUncompiledLink (ncmLink))
+    return;
+
+  auto causalLink = cast (Link *, ncmLink);
+  g_assert_nonnull (causalLink);
+
+  if (nodeEntity != nullptr && instanceof (Media *, nodeEntity))
     {
-      nodeEntity
-          = cast (Node *, executionObject->getNode ());
-    }
-
-  // Since the link may be removed in a deepest compilation it is necessary to
-  // check that the link was not compiled.
-  if (parentObject->containsUncompiledLink (ncmLink))
-    {
-      auto causalLink = cast (Link *, ncmLink);
-      if (causalLink)
+      sameInstances = cast (Media *, nodeEntity)
+        ->getInstSameInstances ();
+      for (Refer *referNode: *sameInstances)
         {
-          if (nodeEntity != nullptr && instanceof (Media *, nodeEntity))
-            {
-              sameInstances = cast (Media *, nodeEntity)
-                ->getInstSameInstances ();
-              for (Refer *referNode: *sameInstances)
-                {
-                  contains = causalLink->contains (referNode, true);
-                  if (contains)
-                    {
-                      break;
-                    }
-                }
-            }
-
-          // Checks if execution object is part of link conditions.
-          if (causalLink->contains (dataObject, true)
-              || contains)
-            {
-              // Compile causal link.
-              parentObject->removeLinkUncompiled (ncmLink);
-              NclFormatterLink *formatterLink
-                  = createLink (causalLink, parentObject);
-
-              if (formatterLink != NULL)
-                {
-                  setActionListener (
-                        ((NclFormatterLink *)formatterLink)
-                        ->getAction ());
-
-                  parentObject->setLinkCompiled (formatterLink);
-                }
-            }
-          else
-            {
-              // WARNING ("cannot process ncmLink '%s' inside '%s' "
-              //          "because '%s' does not contain '%s' src",
-              //          ncmLink->getId ().c_str(),
-              //          parentObject->getId ().c_str(),
-              //          ncmLink->getId ().c_str(),
-              //          dataObject->getId ().c_str());
-            }
-        }
-      else
-        {
-          // WARNING ("cannot process ncmLink '%s' inside '%s' "
-          //          "because it isn't a causal link",
-          //          ncmLink->getId ().c_str (),
-          //          parentObject->getId ().c_str ());
+          contains = causalLink->contains (referNode, true);
+          if (contains)
+            break;
         }
     }
-  else
+
+  // Checks if execution object is part of link conditions.
+  if (causalLink->contains (dataObject, true) || contains)
     {
-      // WARNING ("cannot process ncmLink '%s' inside '%s' "
-      //          "because link may be removed in a deepest compilation.",
-      //          ncmLink->getId ().c_str (),
-      //          parentObject->getId ().c_str());
+      parentObject->removeLinkUncompiled (ncmLink);
+      NclFormatterLink *formatterLink
+        = createLink (causalLink, parentObject);
+
+      if (formatterLink != NULL)
+        {
+          setActionListener (
+                             ((NclFormatterLink *)formatterLink)
+                             ->getAction ());
+
+          parentObject->setLinkCompiled (formatterLink);
+        }
     }
 }
 
@@ -501,9 +427,7 @@ Converter::compileExecutionObjectLinks (
   exeObj->setCompiled (true);
 
   if (parentObj == nullptr)
-    {
-      return;
-    }
+    return;
 
   execDataObject = exeObj->getNode ();
   if (execDataObject != dataObject)
@@ -574,7 +498,7 @@ Converter::setActionListener (NclAction *action)
     }
   else
     {
-      g_assert_not_reached();
+      g_assert_not_reached ();
     }
 }
 
@@ -593,13 +517,7 @@ Converter::processExecutionObjectSwitch (
   g_assert_nonnull (switchNode);
 
   selectedNode = _ruleAdapter->adaptSwitch (switchNode);
-  if (selectedNode == NULL)
-    {
-      // WARNING ("Cannot process '%s'. Selected NODE is nullptr.",
-      //          switchObject->getId ().c_str());
-
-      return nullptr;
-    }
+  g_assert_nonnull (selectedNode);
 
   selectedPerspective = switchObject->getNodePerspective ();
   selectedPerspective->insertAnchorNode (selectedNode);
@@ -649,11 +567,7 @@ Converter::resolveSwitchEvents (
   NclEvent *mappedEvent;
 
   selectedObject = switchObject->getSelectedObject ();
-  if (selectedObject == nullptr)
-    {
-      // WARNING ("Selected object is nullptr");
-      return;
-    }
+  g_assert_nonnull (selectedObject);
 
   selectedNode = selectedObject->getNode ();
   selectedNode = cast (Node *, selectedNode);
@@ -789,7 +703,6 @@ Converter::eventStateChanged (NclEvent *event,
                               unused (EventState previousState))
 {
   ExecutionObject *exeObj = event->getExecutionObject ();
-  auto exeCompositeObj = cast (ExecutionObjectContext *, exeObj);
   auto exeSwitch = cast (ExecutionObjectSwitch *, exeObj);
 
   if (exeSwitch)
@@ -829,24 +742,6 @@ Converter::eventStateChanged (NclEvent *event,
           exeSwitch->select (NULL);
         }
     }
-  else if (exeCompositeObj)
-    {
-      if (transition == EventStateTransition::STOP
-          || transition == EventStateTransition::ABORT)
-        {
-        }
-    }
-}
-
-bool
-Converter::hasDescriptorPropName (const string &name)
-{
-  static const set <string> words = { "left", "top", "width", "height",
-                                      "right", "bottom", "explicitDur",
-                                      "size", "bounds", "location",
-                                      "zIndex" };
-
-  return words.count(name);
 }
 
 NclFormatterLink *
@@ -863,8 +758,7 @@ Converter::createLink (Link *ncmLink,
   string value;
   NclEvent *event;
 
-  if (ncmLink == nullptr)
-    return nullptr;
+  g_assert_nonnull (ncmLink);
 
   // compile link condition and verify if it is a trigger condition
   connector = cast (Connector *, ncmLink->getConnector ());
@@ -1026,7 +920,7 @@ Converter::createAction (Action *actionExp,
     }
   else if (cae) // CompundAction
     {
-      return createCompoundAction (0, cae->getActions (), ncmLink,
+      return createCompoundAction (cae->getActions (), ncmLink,
                                    parentObj);
     }
   else
@@ -1067,9 +961,7 @@ Converter::createCompoundTriggerCondition (GingaTime delay,
   condition = new NclLinkCompoundTriggerCondition ();
 
   if (delay > 0)
-    {
-      condition->setDelay (delay);
-    }
+    condition->setDelay (delay);
 
   for (auto cond: *ncmChildConditions)
     {
@@ -1268,7 +1160,6 @@ Converter::createSimpleAction (
   Parameter *connParam;
   Parameter *param;
   string paramValue;
-  GingaTime delay;
 
   action = nullptr;
 
@@ -1357,28 +1248,17 @@ Converter::createSimpleAction (
     }
 
   g_assert_nonnull (action);
-
-  paramValue = sae->getDelay ();
-  delay = compileDelay (ncmLink, paramValue, bind);
-  action->setDelay (delay);
-
   return action;
 }
 
 NclCompoundAction *
-Converter::createCompoundAction (
-    GingaTime delay, const vector<Action *> *ncmChildActions,
+Converter::createCompoundAction (const vector<Action *> *ncmChildActions,
     Link *ncmLink, ExecutionObjectContext *parentObj)
 {
   NclCompoundAction *action;
   NclAction *childAction;
 
   action = new NclCompoundAction ();
-  if (delay > 0)
-    {
-      action->setDelay (delay);
-    }
-
   if (ncmChildActions != nullptr)
     {
       for (Action *ncmChildAction: *ncmChildActions)

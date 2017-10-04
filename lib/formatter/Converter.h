@@ -153,8 +153,7 @@ private:
   createSimpleAction (SimpleAction *sae, Bind *bind, Link *ncmLink,
                       ExecutionObjectContext *parentObject);
 
-  NclCompoundAction *createCompoundAction (
-      GingaTime delay, const vector<Action *> *ncmChildActions,
+  NclCompoundAction *createCompoundAction (const vector<Action *> *ncmChildActions,
       Link *ncmLink, ExecutionObjectContext *parentObject);
 
   NclLinkTriggerCondition *createSimpleCondition (
