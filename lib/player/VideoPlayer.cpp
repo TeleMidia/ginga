@@ -278,8 +278,8 @@ VideoPlayer::redraw (cairo_t *cr)
   if (_surface != nullptr)
     {
       cairo_surface_destroy (_surface);
-#if WITH_OPENGL
-      gl_delete_texture (&gltexture);
+#if defined WITH_OPENGL && WITH_OPENGL
+      gl_delete_texture (&_gltexture);
 #endif
     }
 
@@ -287,8 +287,8 @@ VideoPlayer::redraw (cairo_t *cr)
     (pixels, CAIRO_FORMAT_ARGB32, width, height, stride);
   g_assert_nonnull (_surface);
 
-#if WITH_OPENGL
-  gl_create_texture (&gltexture);
+#if defined WITH_OPENGL && WITH_OPENGL
+  gl_create_texture (&_gltexture);
 #endif
 
   gst_video_frame_unmap (&v_frame);
@@ -298,18 +298,20 @@ VideoPlayer::redraw (cairo_t *cr)
      (cairo_destroy_func_t) gst_sample_unref);
   g_assert (status == CAIRO_STATUS_SUCCESS);
 
-#if WITH_OPENGL
-  gl_update_texture (gltexture, _surface);
+#if defined WITH_OPENGL && WITH_OPENGL
+  gl_update_texture (_gltexture, _surface);
 #endif
 
  done:
   Player::redraw (cr);
 }
 
-#if WITH_OPENGL
 void
-VideoPlayer::redraw_gl ()
+VideoPlayer::redrawGL ()
 {
+#if !(defined WITH_OPENGL && WITH_OPENGL)
+  WARNING_NOT_IMPLEMENTED ("not compiled with OpenGL support");
+#else
   GstSample *sample;
   GstVideoFrame v_frame;
   GstVideoInfo v_info;
@@ -344,21 +346,22 @@ VideoPlayer::redraw_gl ()
   width = GST_VIDEO_FRAME_WIDTH (&v_frame);
   height = GST_VIDEO_FRAME_HEIGHT (&v_frame);
 
-  if (gltexture != (GLuint) -1)
+  if (_gltexture != (GLuint) -1)
     {
-      gl_delete_texture (&gltexture);
+      gl_delete_texture (&_gltexture);
     }
 
-  gl_create_texture (&gltexture);
-  gl_update_texture (gltexture, width, height, pixels);
+  gl_create_texture (&_gltexture);
+  gl_update_texture (_gltexture, width, height, pixels);
 
   gst_video_frame_unmap (&v_frame);
 
  done:
-  Player::redraw_gl ();
-}
+  Player::redrawGL ();
 #endif
+}
 
+
 // Protected.
 
 bool

@@ -102,9 +102,7 @@ public:
                                   const string &, GingaTime);
   virtual void reload ();
   virtual void redraw (cairo_t *);
-#if WITH_OPENGL
-  virtual void redraw_gl ();
-#endif
+  virtual void redrawGL ();
 
   // Static.
   static string getCurrentFocus ();
@@ -120,6 +118,7 @@ protected:
   GingaTime _time;              // playback time
   bool _eos;                    // true if content was exhausted
   cairo_surface_t *_surface;    // player surface
+  uint _gltexture;              // OpenGL texture (if OpenGL is used)
   bool _dirty;                  // true if surface should be reloaded
   PlayerAnimator *_animator;    // associated animator
 
@@ -136,10 +135,6 @@ protected:
     bool visible;               // true if visible
     GingaTime duration;         // explicit duration
   } _prop;
-
-#if WITH_OPENGL
-  GLuint gltexture = -1;
-#endif
 
 protected:
   virtual bool doSetProperty (PlayerProperty, const string &,

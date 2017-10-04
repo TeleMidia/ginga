@@ -77,8 +77,8 @@ ImagePlayer::reload ()
   if (_surface != nullptr)
     {
       cairo_surface_destroy (_surface);
-#if WITH_OPENGL
-      gl_delete_texture (&gltexture);
+#if defined WITH_OPENGL && WITH_OPENGL
+      gl_delete_texture (&_gltexture);
 #endif
     }
 
@@ -90,10 +90,11 @@ ImagePlayer::reload ()
     }
   g_assert_nonnull (_surface);
 
-#if WITH_OPENGL
-  gl_create_texture (&gltexture);
-  gl_update_texture (gltexture, _surface);
+#if defined WITH_OPENGL && WITH_OPENGL
+  gl_create_texture (&_gltexture);
+  gl_update_texture (_gltexture, _surface);
 #endif
+
   Player::reload ();
 }
 
