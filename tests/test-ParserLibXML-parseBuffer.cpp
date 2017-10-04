@@ -345,6 +345,110 @@ main (void)
 
 
 // -------------------------------------------------------------------------
+// simpleCondition.
+// -------------------------------------------------------------------------
+
+  XFAIL ("simpleCondition: Missing role", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleCondition: Reserved role", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin' eventType='presentation'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleCondition: Reserved role", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin' transition='starts'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleCondition: Missing eventType", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='x'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleCondition: Bad eventType", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='x' eventType='unknown'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleCondition: Missing transition", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='x' eventType='presentation'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleCondition: Bad transition", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='x' eventType='presentation' transition='unknown'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+
+
+// -------------------------------------------------------------------------
 // Sanity checks.
 // -------------------------------------------------------------------------
 

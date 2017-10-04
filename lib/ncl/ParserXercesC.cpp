@@ -272,22 +272,22 @@ static map<string, pair<int,int>> reserved_action_table =
   {
    {"start",
     {(int) EventType::PRESENTATION,
-     (int) SimpleAction::START}},
+     (int) EventStateTransition::STARTS}},
    {"stop",
     {(int) EventType::PRESENTATION,
-     (int) SimpleAction::STOP}},
+     (int) EventStateTransition::STOPS}},
    {"abort",
     {(int) EventType::PRESENTATION,
-     (int) SimpleAction::ABORT}},
+     (int) EventStateTransition::ABORTS}},
    {"pause",
     {(int) EventType::PRESENTATION,
-     (int) SimpleAction::PAUSE}},
+     (int) EventStateTransition::PAUSES}},
    {"resume",
     {(int) EventType::PRESENTATION,
-     (int) SimpleAction::RESUME}},
+     (int) EventStateTransition::RESUMES}},
    {"set",
     {(int) EventType::ATTRIBUTION,
-     (int) SimpleAction::START}},
+     (int) EventStateTransition::STARTS}},
   };
 
 // Maps event type name to event type code.
@@ -309,13 +309,13 @@ static map<string, EventStateTransition> event_transition_table =
   };
 
 // Maps action name to action code.
-static map<string, SimpleAction::Type> event_action_type_table =
+static map<string, EventStateTransition> event_action_type_table =
   {
-   {"start", SimpleAction::START},
-   {"stop", SimpleAction::STOP},
-   {"abort", SimpleAction::ABORT},
-   {"pause", SimpleAction::PAUSE},
-   {"resume", SimpleAction::RESUME},
+   {"start", EventStateTransition::STARTS},
+   {"stop", EventStateTransition::STOPS},
+   {"abort", EventStateTransition::ABORTS},
+   {"pause", EventStateTransition::PAUSES},
+   {"resume", EventStateTransition::RESUMES},
   };
 
 
@@ -1273,7 +1273,7 @@ ParserXercesC::parseSimpleCondition (DOMElement *elt)
 
   if (dom_elt_try_get_attribute (str, elt, "transition"))
     {
-      if (unlikely (trans != EventStateTransition::UNKNOWN))
+      if (unlikely (trans != (EventStateTransition) -1))
         {
           ERROR_SYNTAX_ELT (elt, "transition of '%s' cannot be overridden",
                             role.c_str ());
@@ -1450,7 +1450,7 @@ ParserXercesC::parseSimpleAction (DOMElement *elt)
   string by;
 
   EventType type;
-  int acttype;
+  EventStateTransition acttype;
   map<string, pair<int,int>>::iterator it;
 
   CHECK_ELT_TAG (elt, "simpleAction", nullptr);
@@ -1463,13 +1463,13 @@ ParserXercesC::parseSimpleAction (DOMElement *elt)
   CHECK_ELT_OPT_ATTRIBUTE (elt, "by", &by, "0");
 
   type = (EventType) -1;
-  acttype = -1;
+  acttype = (EventStateTransition) -1;
 
   if ((it = reserved_action_table.find (role))
       != reserved_action_table.end ())
     {
       type = (EventType) it->second.first;
-      acttype = (SimpleAction::Type) it->second.second;
+      acttype = (EventStateTransition) it->second.second;
     }
 
   if (dom_elt_try_get_attribute (str, elt, "eventType"))
@@ -1490,12 +1490,12 @@ ParserXercesC::parseSimpleAction (DOMElement *elt)
 
   if (dom_elt_try_get_attribute (str, elt, "actionType"))
     {
-      if (unlikely (acttype != -1))
+      if (unlikely (acttype != (EventStateTransition) -1))
         {
           ERROR_SYNTAX_ELT (elt, "actionType of '%s' cannot be overridden",
                             role.c_str ());
         }
-      map<string, SimpleAction::Type>::iterator it;
+      map<string, EventStateTransition>::iterator it;
       if ((it = event_action_type_table.find (str))
           == event_action_type_table.end ())
         {
@@ -1505,9 +1505,9 @@ ParserXercesC::parseSimpleAction (DOMElement *elt)
     }
 
   g_assert (type != (EventType) -1);
-  g_assert (acttype != -1);
+  g_assert (acttype != (EventStateTransition) -1);
 
-  return new SimpleAction ((EventType) type, (SimpleAction::Type) acttype,
+  return new SimpleAction ((EventType) type, (EventStateTransition) acttype,
                            role, delay, repeat, repeatDelay, value,
                            duration, by);
 }

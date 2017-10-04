@@ -107,7 +107,9 @@ NclEvent::addListener (INclEventListener *listener)
 EventStateTransition
 NclEvent::getTransition (EventState newState)
 {
-  return EventUtil::getTransition (_state, newState);
+  EventStateTransition trans;
+  g_assert (EventUtil::getTransition (_state, newState, &trans));
+  return trans;
 }
 
 bool

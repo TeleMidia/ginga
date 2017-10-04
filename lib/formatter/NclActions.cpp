@@ -71,7 +71,7 @@ NclAction::notifyProgressListeners (bool start)
     }
 }
 
-NclSimpleAction::NclSimpleAction (NclEvent *event, SimpleAction::Type type)
+NclSimpleAction::NclSimpleAction (NclEvent *event, EventStateTransition type)
   : NclAction (0.)
 {
   this->_event = event;
@@ -87,7 +87,7 @@ NclSimpleAction::getEvent ()
   return _event;
 }
 
-SimpleAction::Type
+EventStateTransition
 NclSimpleAction::getType ()
 {
   return _actType;
@@ -160,7 +160,7 @@ NclSimpleAction::run ()
       _listener->scheduleAction (this);
     }
 
-  if (_actType == SimpleAction::START)
+  if (_actType == EventStateTransition::STARTS)
     {
       notifyProgressListeners (true);
     }
@@ -182,7 +182,7 @@ NclSimpleAction::setRepetitions (int repetitions, GingaTime repetitionInterval)
 // NclAssignmentAction
 
 NclAssignmentAction::NclAssignmentAction (NclEvent *evt,
-                                          SimpleAction::Type actType,
+                                          EventStateTransition actType,
                                           const string &value,
                                           const string &duration)
   : NclSimpleAction (evt, actType)

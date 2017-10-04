@@ -215,6 +215,7 @@ NCL_ELT_PUSH_DECL (descriptorParam)
 NCL_ELT_PUSH_DECL (causalConnector)
 NCL_ELT_POP_DECL  (causalConnector)
 NCL_ELT_PUSH_DECL (simpleCondition)
+NCL_ELT_PUSH_DECL (simpleAction)
 
 // Element map.
 static map<string, NclEltInfo> ncl_eltmap =
@@ -363,7 +364,7 @@ static map<string, NclEltInfo> ncl_eltmap =
    {"causalConnector", "compoundCondition"},
    {{"role", true},
     {"delay", false},
-    {"eventtype", false},
+    {"eventType", false},
     {"key", false},
     {"transition", false},
     {"min", false},
@@ -377,7 +378,7 @@ static map<string, NclEltInfo> ncl_eltmap =
     {"delay", false}}},
  },
  {"simpleAction",
-  {nullptr, nullptr, false,
+  {ncl_push_simpleAction, nullptr, false,
    {"causalConnector", "compoundAction"},
    {{"role", true},
     {"delay", false},
@@ -416,6 +417,46 @@ ncl_eltmap_get_possible_children (const string &tag)
       if (parent == tag)
         result[it.first] = true;
   return result;
+}
+
+
+// Attribute parsing functions.
+
+#define _NCL_ATTR_PARSE(Type, tab, str, result)         \
+  G_STMT_START                                          \
+  {                                                     \
+    map<string, Type>::iterator it;                     \
+    if ((it = (tab).find ((str))) == (tab).end ())      \
+      return false;                                     \
+    tryset ((result), it->second);                      \
+    return true;                                        \
+  }                                                     \
+  G_STMT_END
+
+static bool
+ncl_attr_parse_eventType (string str, EventType *result)
+{
+  static map<string, EventType> tab =
+    {
+     {"presentation", EventType::PRESENTATION},
+     {"attribution", EventType::ATTRIBUTION},
+     {"selection", EventType::SELECTION},
+    };
+  _NCL_ATTR_PARSE (EventType, tab, str, result);
+}
+
+static bool
+ncl_attr_parse_transition (string str, EventStateTransition *result)
+{
+  static map<string, EventStateTransition> tab =
+    {
+     {"starts", EventStateTransition::STARTS},
+     {"stops", EventStateTransition::STOPS},
+     {"aborts", EventStateTransition::ABORTS},
+     {"pauses", EventStateTransition::PAUSES},
+     {"resumes", EventStateTransition::RESUMES},
+    };
+  _NCL_ATTR_PARSE (EventStateTransition, tab, str, result);
 }
 
 
@@ -696,7 +737,7 @@ ncl_push_property (ParserLibXML_State *st,
                    map<string, string> *attr,
                    unused (Entity **entity))
 {
-  Node *parent= cast (Node *, st->stack.back ());
+  Node *parent = cast (Node *, st->stack.back ());
   g_assert_nonnull (parent);
   parent->setProperty (ncl_attrmap_get (attr, "name"),
                        ncl_attrmap_opt_get (attr, "value", ""));
@@ -853,13 +894,16 @@ ncl_push_simpleCondition (ParserLibXML_State *st,
   EventType type;
   EventStateTransition trans;
 
+  Connector *parent;
+  SimpleCondition *cond;
+
   role = ncl_attrmap_get (attr, "role");
   if (SimpleCondition::isReserved (role, &type, &trans))
     {
       string str;
       if (unlikely (ncl_attrmap_index (attr, "eventType", &str)))
         return ST_ERR_ELT_BAD_ATTR
-          (st, elt, "eventType", str.c_str (), "reserved role");
+          (st, elt, "eventType", str.c_str (), "reserved role" );
       if (unlikely (ncl_attrmap_index (attr, "transition", &str)))
         return ST_ERR_ELT_BAD_ATTR
           (st, elt, "transition", str.c_str (), "reserved role");
@@ -869,8 +913,38 @@ ncl_push_simpleCondition (ParserLibXML_State *st,
       string str;
       if (unlikely (!ncl_attrmap_index (attr, "eventType", &str)))
         return ST_ERR_ELT_MISSING_ATTR (st, elt, "eventType");
+      if (unlikely (!ncl_attr_parse_eventType (str, &type)))
+        return ST_ERR_ELT_BAD_ATTR
+          (st, elt, "eventType", str.c_str (), "invalid type");
+
+      if (unlikely (!ncl_attrmap_index (attr, "transition", &str)))
+        return ST_ERR_ELT_MISSING_ATTR (st, elt, "transition");
+      if (unlikely (!ncl_attr_parse_transition (str, &trans)))
+        return ST_ERR_ELT_BAD_ATTR
+          (st, elt, "transition", str.c_str (), "invalid transition");
     }
 
+  parent = cast (Connector *, st->stack.back ());
+  g_assert_nonnull (parent);
+
+  cond = new SimpleCondition (type, trans, role, false, "",
+                              ncl_attrmap_opt_get (attr, "key", ""));
+  parent->setCondition (cond);
+  return true;
+}
+
+static bool
+ncl_push_simpleAction (unused (ParserLibXML_State *st),
+                       unused (xmlNode *elt),
+                       unused (map<string, string> *attr),
+                       unused (Entity **entity))
+{
+  // string role;
+  // EventType type;
+  // EventStateTransition action;
+
+  // role = ncl_attrmap_get (attr, "role");
+  // if (SimpleAction::isReserved (role, &type, &action);
   return true;
 }
 
