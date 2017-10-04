@@ -30,24 +30,16 @@ GINGA_NCL_BEGIN
 class CompoundCondition : public TriggerExpression
 {
 public:
-  static const short OP_AND = 0;
-  static const short OP_OR = 1;
-
-public:
   CompoundCondition ();
-  CompoundCondition (Condition *c1, Condition *c2,
-                     short op);
+  CompoundCondition (Condition *c1, Condition *c2);
 
   virtual ~CompoundCondition ();
-  void setOperator (short op);
-  short getOperator ();
   const vector<Condition *> *getConditions ();
   void addCondition (Condition *condition);
   void removeCondition (Condition *condition);
 
 private:
   vector<Condition *> *_expressions;
-  short _myOperator;
 };
 
 GINGA_NCL_END

@@ -954,7 +954,7 @@ Converter::setImplicitRefAssessment (const string &roleId,
                   delete ncmPerspective;
 
                   refObject = this->getExecutionObjectFromPerspective (
-                        refPerspective, bind->getDescriptor ());
+                        refPerspective, nullptr);
 
                   delete refPerspective;
 
@@ -1057,22 +1057,14 @@ Converter::createCondition (
 }
 
 NclLinkCompoundTriggerCondition *
-Converter::createCompoundTriggerCondition (
-    short op, GingaTime delay,
+Converter::createCompoundTriggerCondition (GingaTime delay,
     const vector<Condition *> *ncmChildConditions, Link *ncmLink,
     ExecutionObjectContext *parentObj)
 {
   NclLinkCompoundTriggerCondition *condition;
   NclLinkCondition *childCondition;
 
-  if (op == CompoundCondition::OP_AND)
-    {
-      condition = new NclLinkAndCompoundTriggerCondition ();
-    }
-  else
-    {
-      condition = new NclLinkCompoundTriggerCondition ();
-    }
+  condition = new NclLinkCompoundTriggerCondition ();
 
   if (delay > 0)
     {
@@ -1129,7 +1121,7 @@ Converter::createCondition (
       string delayObject = condition->getDelay ();
       GingaTime delay = compileDelay (ncmLink, delayObject, nullptr);
 
-      return createCompoundTriggerCondition (cte->getOperator (), delay,
+      return createCompoundTriggerCondition (delay,
                                              cte->getConditions (), ncmLink,
                                              parentObj);
     }
@@ -1512,7 +1504,7 @@ Converter::createEvent (Bind *bind, Link *ncmLink,
   delete endPointNodeSequence;
 
   executionObject = getExecutionObjectFromPerspective (
-        endPointPerspective, bind->getDescriptor ());
+        endPointPerspective, nullptr);
 
   if (executionObject == nullptr)
     {

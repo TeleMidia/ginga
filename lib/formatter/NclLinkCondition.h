@@ -85,21 +85,6 @@ protected:
   vector<NclLinkCondition *> _conditions;
 };
 
-class NclLinkAndCompoundTriggerCondition
-    : public NclLinkCompoundTriggerCondition
-{
-public:
-  NclLinkAndCompoundTriggerCondition ();
-  virtual ~NclLinkAndCompoundTriggerCondition ();
-  void addCondition (NclLinkCondition *condition);
-  void conditionSatisfied (NclLinkCondition *condition);
-  vector<NclEvent *> getEvents ();
-
-private:
-  vector<NclLinkCondition *> _unsatisfiedConditions;
-  vector<NclLinkCondition *> _statements;
-};
-
 class NclLinkTransitionTriggerCondition : public NclLinkTriggerCondition,
                                           public INclEventListener
 {
