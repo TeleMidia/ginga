@@ -273,7 +273,7 @@ target_link_libraries (ginga PRIVATE libginga ${GTK3_LIBRARIES})
 
 # gingagl target
 if (WITH_OPENGL)
-  add_executable (gingagl ../src-gl/ginga-gl.cpp)
+  add_executable (gingagl ../src/ginga-gl.cpp)
 
   target_include_directories (gingagl PRIVATE
     ${SDL2_INCLUDE_DIR}
