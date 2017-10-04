@@ -2135,7 +2135,6 @@ ParserXercesC::parseBind (DOMElement *elt, Link *link, Context *context)
   Node *target;
   Node *derefer;
   Anchor *iface;
-  Descriptor *desc;
 
   CHECK_ELT_TAG (elt, "bind", nullptr);
   CHECK_ELT_ATTRIBUTE (elt, "role", &label);
@@ -2160,7 +2159,6 @@ ParserXercesC::parseBind (DOMElement *elt, Link *link, Context *context)
   g_assert_nonnull (derefer);
 
   iface = nullptr;
-  desc = nullptr;
 
   if (dom_elt_try_get_attribute (value, elt, "interface"))
     {
@@ -2196,9 +2194,6 @@ ParserXercesC::parseBind (DOMElement *elt, Link *link, Context *context)
   if (unlikely (iface == nullptr))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "interface");
 
-  if (dom_elt_try_get_attribute (value, elt, "descriptor"))
-    desc = _doc->getDescriptor (value);
-
   conn = cast (Connector *, link->getConnector ());
   g_assert_nonnull (conn);
 
@@ -2228,7 +2223,7 @@ ParserXercesC::parseBind (DOMElement *elt, Link *link, Context *context)
     }
   g_assert_nonnull (role);
 
-  bind = new Bind (role, target, iface, desc);
+  bind = new Bind (role, target, iface);
   link->addBind (bind);
 
   // Collect children.
