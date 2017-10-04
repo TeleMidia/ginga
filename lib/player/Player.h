@@ -118,7 +118,7 @@ protected:
   GingaTime _time;              // playback time
   bool _eos;                    // true if content was exhausted
   cairo_surface_t *_surface;    // player surface
-  uint _gltexture;              // OpenGL texture (if OpenGL is used)
+  guint _gltexture;             // OpenGL texture (if OpenGL is used)
   bool _dirty;                  // true if surface should be reloaded
   PlayerAnimator *_animator;    // associated animator
 
