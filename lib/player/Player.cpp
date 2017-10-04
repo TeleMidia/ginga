@@ -104,6 +104,7 @@ Player::Player (GingaInternal *ginga, const string &id, const string &uri)
   _dirty = true;
   _animator = new PlayerAnimator (_ginga);
   _surface = nullptr;
+  _gltexture = (guint) -1;
   this->resetProperties ();
 }
 
@@ -447,13 +448,15 @@ Player::redraw (cairo_t *cr)
     this->redrawDebuggingInfo (cr);
 }
 
-#if WITH_OPENGL
 /**
  * @brief Redraws player using OpenGL.
  */
 void
-Player::redraw_gl ()
+Player::redrawGL ()
 {
+#if !(defined WITH_OPENGL && WITH_OPENGL)
+  WARNING_NOT_IMPLEMENTED ("not compiled with OpenGL support");
+#else
   static int i = 0;
 
   i += 1;
@@ -474,10 +477,10 @@ Player::redraw_gl ()
       glEnd();
     }
 
-  if (gltexture != (GLuint) -1)
+  if (_gltexture != (GLuint) -1)
     {
       glEnable (GL_TEXTURE_2D);
-      glBindTexture (GL_TEXTURE_2D, gltexture);
+      glBindTexture (GL_TEXTURE_2D, _gltexture);
     }
 
   glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
@@ -490,10 +493,11 @@ Player::redraw_gl ()
     glTexCoord2d (0.0,1.0); glVertex2d( _prop.rect.x, _prop.rect.y + _prop.rect.height);
   glEnd();
 
-  if (gltexture != (GLuint) -1)
+  if (_gltexture != (GLuint) -1)
     glDisable (GL_TEXTURE_2D);
-}
 #endif
+}
+
 
 
 // Public: Static.

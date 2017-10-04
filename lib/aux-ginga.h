@@ -222,7 +222,7 @@ xvectremove (vector<T> &v1, vector<T> &v2)
   v1.erase (begin, v1.end());
 }
 
-#if WITH_OPENGL
+#if defined WITH_OPENGL && WITH_OPENGL
 #include <GL/gl.h>
 void
 gl_create_texture (GLuint *);
