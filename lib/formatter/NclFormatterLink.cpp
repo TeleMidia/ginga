@@ -44,18 +44,14 @@ NclFormatterLink::NclFormatterLink (
 NclFormatterLink::~NclFormatterLink ()
 {
   if (_condition != nullptr)
-    {
-      delete _condition;
-    }
+    delete _condition;
 
   if (_action != nullptr)
-    {
-      delete _action;
-    }
+    delete _action;
 }
 
 void
-NclFormatterLink::  suspendLinkEvaluation (bool suspend)
+NclFormatterLink::suspendLinkEvaluation (bool suspend)
 {
   this->_suspended = suspend;
 }

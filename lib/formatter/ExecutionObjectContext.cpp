@@ -134,19 +134,6 @@ ExecutionObjectContext::addExecutionObject (ExecutionObject *obj)
   return true;
 }
 
-bool
-ExecutionObjectContext::containsExecutionObject (const string &execObjId)
-{
-  if (getExecutionObject (execObjId) != NULL)
-    {
-      return true;
-    }
-  else
-    {
-      return false;
-    }
-}
-
 ExecutionObject *
 ExecutionObjectContext::getExecutionObject (const string &id)
 {
@@ -223,19 +210,6 @@ ExecutionObjectContext::setLinkCompiled (NclFormatterLink *link)
 }
 
 void
-ExecutionObjectContext::setParentsAsListeners ()
-{
-  map<Node *, ExecutionObjectContext *>::iterator i;
-
-  i = _parentTable.begin ();
-  while (i != _parentTable.end ())
-    {
-      _wholeContent->addListener (i->second);
-      ++i;
-    }
-}
-
-void
 ExecutionObjectContext::eventStateChanged (
     NclEvent *event,
     EventStateTransition transition,
@@ -251,7 +225,8 @@ ExecutionObjectContext::eventStateChanged (
     case EventStateTransition::START:
       if (_runningEvents.empty () && _pausedEvents.empty ())
         {
-          setParentsAsListeners ();
+          for (auto it: _parentTable)
+            _wholeContent->addListener (it.second);
           _wholeContent->start ();
         }
 

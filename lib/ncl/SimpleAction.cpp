@@ -26,30 +26,22 @@ GINGA_NCL_BEGIN
  * @param actType Action type.
  * @param label Role.
  * @param delay Delay.
- * @param repeat Repeat.
- * @param repeatDelay Repeat delay.
  * @param value Value.
  * @param duration Duration.
- * @param by By.
  */
 SimpleAction::SimpleAction (EventType type,
                             EventStateTransition actType,
                             const string &label,
                             const string &delay,
-                            const string &repeat,
-                            const string &repeatDelay,
                             const string &value,
-                            const string &duration,
-                            const string &by)
+                            const string &duration)
+
   : Action (), Role (type, label)
 {
   _actionType = actType;
   _delay = delay;
-  _repeat = repeat;
-  _repeatDelay = repeatDelay;
   _value = value;
   _duration = duration;
-  _by = by;
 }
 
 /**
@@ -78,24 +70,6 @@ SimpleAction::getDelay ()
 }
 
 /**
- * @brief Gets simple action repeat.
- */
-string
-SimpleAction::getRepeat ()
-{
-  return _repeat;
-}
-
-/**
- * @brief Gets simple action repeat delay.
- */
-string
-SimpleAction::getRepeatDelay ()
-{
-  return _repeatDelay;
-}
-
-/**
  * @brief Gets simple action value.
  */
 string
@@ -111,15 +85,6 @@ string
 SimpleAction::getDuration ()
 {
   return _duration;
-}
-
-/**
- * @brief Gets simple action by.
- */
-string
-SimpleAction::getBy ()
-{
-  return _by;
 }
 
 

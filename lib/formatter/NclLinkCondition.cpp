@@ -23,41 +23,15 @@ GINGA_FORMATTER_BEGIN
 
 NclLinkTriggerCondition::NclLinkTriggerCondition () : NclLinkCondition ()
 {
-  _delay = 0;
   _listener = nullptr;
 }
 
 void
-NclLinkTriggerCondition::conditionSatisfied (
-    unused (NclLinkCondition *condition))
+NclLinkTriggerCondition::conditionSatisfied (unused (NclLinkCondition *condition))
 {
-  if (_delay > 0)
-    ERROR_NOT_IMPLEMENTED ("condition delays are not supported");
-
-  notifyListeners (NclLinkConditionStatus::CONDITION_SATISFIED);
+  _listener->conditionSatisfied (this);
 }
 
-void
-NclLinkTriggerCondition::notifyListeners (NclLinkConditionStatus status)
-{
-  switch (status)
-    {
-    case NclLinkConditionStatus::CONDITION_SATISFIED:
-      _listener->conditionSatisfied (this);
-      break;
-
-    case NclLinkConditionStatus::EVALUATION_STARTED:
-      _listener->evaluationStarted ();
-      break;
-
-    case NclLinkConditionStatus::EVALUATION_ENDED:
-      _listener->evaluationEnded ();
-      break;
-
-    default:
-      g_assert_not_reached ();
-    }
-}
 
 NclLinkCompoundTriggerCondition::NclLinkCompoundTriggerCondition ()
     : NclLinkTriggerCondition ()
@@ -109,37 +83,17 @@ NclLinkCompoundTriggerCondition::getEvents ()
   return events;
 }
 
-void
-NclLinkCompoundTriggerCondition::evaluationStarted ()
-{
-  notifyListeners (NclLinkConditionStatus::EVALUATION_STARTED);
-}
-
-void
-NclLinkCompoundTriggerCondition::evaluationEnded ()
-{
-  notifyListeners (NclLinkConditionStatus::EVALUATION_ENDED);
-}
-
 NclLinkTransitionTriggerCondition::NclLinkTransitionTriggerCondition (
-    NclEvent *event, EventStateTransition transition, Bind *bind)
+    NclEvent *event, EventStateTransition transition)
     : NclLinkTriggerCondition ()
 {
-  this->_bind = bind;
-  this->_event = nullptr;
-  this->_transition = transition;
-  this->_event = event;
-  this->_event->addListener (this);
+  _transition = transition;
+  _event = event;
+  _event->addListener (this);
 }
 
 NclLinkTransitionTriggerCondition::~NclLinkTransitionTriggerCondition ()
 {
-}
-
-Bind *
-NclLinkTransitionTriggerCondition::getBind ()
-{
-  return _bind;
 }
 
 void
@@ -148,22 +102,7 @@ NclLinkTransitionTriggerCondition::eventStateChanged (
     unused (EventState previousState))
 {
   if (this->_transition == transition)
-    {
-      notifyListeners (NclLinkConditionStatus::EVALUATION_STARTED);
-      NclLinkTriggerCondition::conditionSatisfied (this);
-    }
-}
-
-NclEvent *
-NclLinkTransitionTriggerCondition::getEvent ()
-{
-  return _event;
-}
-
-EventStateTransition
-NclLinkTransitionTriggerCondition::getTransition ()
-{
-  return _transition;
+    NclLinkTriggerCondition::conditionSatisfied (this);
 }
 
 vector<NclEvent *>
