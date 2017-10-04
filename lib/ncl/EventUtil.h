@@ -29,7 +29,6 @@ enum class EventType
 
 enum class EventState
 {
-  UNKNOWN = -1,
   SLEEPING = 0,
   OCCURRING,
   PAUSED
