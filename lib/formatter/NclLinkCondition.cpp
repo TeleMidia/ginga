@@ -84,24 +84,16 @@ NclLinkCompoundTriggerCondition::getEvents ()
 }
 
 NclLinkTransitionTriggerCondition::NclLinkTransitionTriggerCondition (
-    NclEvent *event, EventStateTransition transition, Bind *bind)
+    NclEvent *event, EventStateTransition transition)
     : NclLinkTriggerCondition ()
 {
-  this->_bind = bind;
-  this->_event = nullptr;
-  this->_transition = transition;
-  this->_event = event;
-  this->_event->addListener (this);
+  _transition = transition;
+  _event = event;
+  _event->addListener (this);
 }
 
 NclLinkTransitionTriggerCondition::~NclLinkTransitionTriggerCondition ()
 {
-}
-
-Bind *
-NclLinkTransitionTriggerCondition::getBind ()
-{
-  return _bind;
 }
 
 void
@@ -111,18 +103,6 @@ NclLinkTransitionTriggerCondition::eventStateChanged (
 {
   if (this->_transition == transition)
     NclLinkTriggerCondition::conditionSatisfied (this);
-}
-
-NclEvent *
-NclLinkTransitionTriggerCondition::getEvent ()
-{
-  return _event;
-}
-
-EventStateTransition
-NclLinkTransitionTriggerCondition::getTransition ()
-{
-  return _transition;
 }
 
 vector<NclEvent *>

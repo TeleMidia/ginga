@@ -72,19 +72,14 @@ class NclLinkTransitionTriggerCondition : public NclLinkTriggerCondition,
 {
 public:
   NclLinkTransitionTriggerCondition (NclEvent *ev,
-                                     EventStateTransition trans,
-                                     Bind *bind);
+                                     EventStateTransition trans);
 
   virtual ~NclLinkTransitionTriggerCondition ();
-
-  Bind *getBind ();
 
   virtual void eventStateChanged (NclEvent *_event,
                                   EventStateTransition _transition,
                                   EventState previousState) override;
 
-  NclEvent *getEvent ();
-  EventStateTransition getTransition ();
   virtual vector<NclEvent *> getEvents () override;
 
 protected:

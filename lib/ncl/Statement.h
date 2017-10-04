@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _STATEMENT_H_
-#define _STATEMENT_H_
+#ifndef STATEMENT_H
+#define STATEMENT_H
 
 #include "Condition.h"
 
@@ -31,4 +31,4 @@ public:
 
 GINGA_NCL_END
 
-#endif //_STATEMENT_H_
+#endif // STATEMENT_H
