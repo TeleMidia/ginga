@@ -954,7 +954,7 @@ Converter::setImplicitRefAssessment (const string &roleId,
                   delete ncmPerspective;
 
                   refObject = this->getExecutionObjectFromPerspective (
-                        refPerspective, bind->getDescriptor ());
+                        refPerspective, nullptr);
 
                   delete refPerspective;
 
@@ -1512,7 +1512,7 @@ Converter::createEvent (Bind *bind, Link *ncmLink,
   delete endPointNodeSequence;
 
   executionObject = getExecutionObjectFromPerspective (
-        endPointPerspective, bind->getDescriptor ());
+        endPointPerspective, nullptr);
 
   if (executionObject == nullptr)
     {
