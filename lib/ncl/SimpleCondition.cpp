@@ -28,20 +28,17 @@ GINGA_NCL_BEGIN
  * @param type Event type.
  * @param transition Condition type.
  * @param label Role.
- * @param conj True if multiple binds are to be interpreted as conjunctions.
  * @param delay Delay.
  * @param key Key.
  */
 SimpleCondition::SimpleCondition (EventType type,
                                   EventStateTransition transition,
                                   const string &label,
-                                  bool conj,
                                   const string &delay,
                                   const string &key)
   : TriggerExpression (), Role (type, label)
 {
   _transition = transition;
-  _conjunction = conj;
   _delay = delay;
   _key = key;
 }
@@ -54,16 +51,6 @@ EventStateTransition
 SimpleCondition::getTransition ()
 {
   return _transition;
-}
-
-/**
- * @brief Tests whether simple condition is a conjunction.
- * @return True if successful, or false otherwise.
- */
-bool
-SimpleCondition::isConjunction ()
-{
-  return _conjunction;
 }
 
 /**

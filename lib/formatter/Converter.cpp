@@ -1110,17 +1110,7 @@ Converter::createCondition (
         }
       else if (size > 1)
         {
-          if (ste->isConjunction ())
-            {
-              compoundCondition
-                = new NclLinkAndCompoundTriggerCondition ();
-            }
-          else
-            {
-              compoundCondition
-                = new NclLinkCompoundTriggerCondition ();
-            }
-
+          compoundCondition = new NclLinkCompoundTriggerCondition ();
           for (size_t i = 0; i < size; i++)
             {
               simpleCondition = createSimpleCondition (ste, binds[i], ncmLink, parentObj);

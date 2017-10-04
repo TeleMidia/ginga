@@ -362,13 +362,13 @@ static map<string, NclEltInfo> ncl_eltmap =
   {ncl_push_simpleConditionOrAction, nullptr, false,
    {"causalConnector", "compoundCondition"},
    {{"role", true},
-    {"delay", false},
     {"eventType", false},
     {"key", false},
     {"transition", false},
-    {"min", false},
-    {"max", false},
-    {"qualifier", false}}},
+    {"delay", false},           // ignored
+    {"min", false},             // ignored
+    {"max", false},             // ignored
+    {"qualifier", false}}},     // ignored
  },
  {"compoundAction",
   {nullptr, nullptr, false,
@@ -384,14 +384,14 @@ static map<string, NclEltInfo> ncl_eltmap =
     {"eventType", false},
     {"actionType", false},
     {"value", false},
-    {"min", false},
-    {"max", false},
-    {"min", false},
-    {"qualifier", false},
-    {"repeat", false},
-    {"repeatDelay", false},
-    {"duration", false},
-    {"by", false}}},
+    {"min", false},             // ignored
+    {"max", false},             // ignored
+    {"min", false},             // ignored
+    {"qualifier", false},       // ignored
+    {"repeat", false},          // ignored
+    {"repeatDelay", false},     // ignored
+    {"duration", false},        // ignored
+    {"by", false}}},            // ignored
  },
 };
 
@@ -967,7 +967,7 @@ ncl_push_simpleConditionOrAction (ParserLibXML_State *st,
       string key;
       SimpleCondition *cond;
       key = ncl_attrmap_opt_get (attr, "key", "");
-      cond = new SimpleCondition (type, trans, role, false, "", key);
+      cond = new SimpleCondition (type, trans, role, "", key);
       parent->setCondition (cond);
     }
   else
