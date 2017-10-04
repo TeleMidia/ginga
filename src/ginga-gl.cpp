@@ -15,6 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
+#define __GL_SYNC_TO_VBLANK=1
+
 #include <config.h>
 #include <string.h>
 #include <stdio.h>
@@ -152,7 +154,7 @@ sendTickEvent ()
   static guint64 last;
   static guint64 first;
 
-  time = g_get_monotonic_time ();
+  time = g_get_monotonic_time () * 1000;
   frame++;
 
   if (frame == 0)
@@ -222,9 +224,11 @@ main (int argc, char **argv)
 
   SDL_Init(SDL_INIT_VIDEO);              // Initialize SDL2
 
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
   // Create an application window with the following settings:
   window = SDL_CreateWindow (
-        "An SDL2 window",                  // window title
+        PACKAGE_STRING " (OpenGL)",        // window title
         SDL_WINDOWPOS_UNDEFINED,           // initial x position
         SDL_WINDOWPOS_UNDEFINED,           // initial y position
         opt_width,                         // width, in pixels
@@ -280,7 +284,6 @@ main (int argc, char **argv)
       GINGA->redrawGL ();
 
       SDL_GL_SwapWindow (window);
-      SDL_Delay (33);
     }
 
   GINGA->stop ();

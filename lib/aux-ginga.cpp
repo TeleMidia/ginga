@@ -677,9 +677,16 @@ gl_create_texture (GLuint *gltex)
 
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-  glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+}
+
+void
+gl_create_texture (GLuint *gltex, int tex_w, int tex_h, unsigned char *data)
+{
+  gl_create_texture (gltex);
+  glTexImage2D (GL_TEXTURE_2D, 0, 4,
+                tex_w, tex_h, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
 }
 
 void
@@ -695,8 +702,27 @@ void
 gl_update_texture (GLuint gltex, int tex_w, int tex_h, unsigned char *data)
 {
   glActiveTexture (gltex);
+
   glTexImage2D (GL_TEXTURE_2D, 0, 4,
-                tex_w, tex_h, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
+                tex_w, tex_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+}
+
+void
+gl_update_subtexture (GLuint gltex,
+                      int xoffset, int yoffset, int width, int height,
+                      unsigned char *data)
+{
+  glBindTexture (GL_TEXTURE_2D, gltex);
+  glTexSubImage2D ( GL_TEXTURE_2D,
+                    0,
+                    xoffset,
+                    yoffset,
+                    width,
+                    height,
+                    GL_BGRA,
+                    GL_UNSIGNED_BYTE,
+                    data );
+
 }
 
 void
@@ -706,7 +732,7 @@ gl_update_texture (GLuint gltex, cairo_surface_t *surf)
   int tex_h = cairo_image_surface_get_height (surf);
   unsigned char* data = cairo_image_surface_get_data (surf);
 
-  gl_update_texture (gltex, tex_w, tex_h, data);
+  gl_update_subtexture (gltex, 0, 0, tex_w, tex_h, data);
 }
 #endif
 

@@ -91,8 +91,10 @@ ImagePlayer::reload ()
   g_assert_nonnull (_surface);
 
 #if defined WITH_OPENGL && WITH_OPENGL
-  gl_create_texture (&_gltexture);
-  gl_update_texture (_gltexture, _surface);
+  gl_create_texture (&_gltexture,
+                     cairo_image_surface_get_width (_surface),
+                     cairo_image_surface_get_height (_surface),
+                     cairo_image_surface_get_data (_surface));
 #endif
 
   Player::reload ();

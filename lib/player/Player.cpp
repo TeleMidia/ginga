@@ -485,7 +485,7 @@ Player::redrawGL ()
 
   glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
 
-  // Render quad
+  // Render the surface
   glBegin( GL_QUADS );
     glTexCoord2d (0.0,0.0); glVertex2d( _prop.rect.x, _prop.rect.y);
     glTexCoord2d (1.0,0.0); glVertex2d( _prop.rect.x + _prop.rect.width, _prop.rect.y);
