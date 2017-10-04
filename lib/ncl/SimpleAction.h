@@ -28,28 +28,21 @@ class SimpleAction : public Action, public Role
 {
 public:
   SimpleAction (EventType, EventStateTransition, const string &,
-                const string &, const string &, const string &,
                 const string &, const string &, const string &);
   virtual ~SimpleAction ();
 
   EventStateTransition getActionType ();
   string getDelay ();
-  string getRepeat ();
-  string getRepeatDelay ();
   string getValue ();
   string getDuration ();
-  string getBy ();
 
   static bool isReserved (const string &, EventType *,
                           EventStateTransition *);
 private:
   EventStateTransition _actionType;
   string _delay;
-  string _repeat;
-  string _repeatDelay;
   string _value;
   string _duration;
-  string _by;
 };
 
 GINGA_NCL_END

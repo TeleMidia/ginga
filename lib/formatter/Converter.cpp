@@ -1268,7 +1268,6 @@ Converter::createSimpleAction (
   Parameter *connParam;
   Parameter *param;
   string paramValue;
-  int repeat;
   GingaTime delay;
 
   action = nullptr;
@@ -1291,43 +1290,6 @@ Converter::createSimpleAction (
       if (eventType == EventType::PRESENTATION)
         {
           action = new NclSimpleAction (event, actionType);
-
-          // repeat
-          paramValue = sae->getRepeat ();
-          if (paramValue == "")
-            {
-              repeat = 0;
-            }
-          else if (paramValue[0] == '$')
-            {
-              connParam = new Parameter (
-                    paramValue.substr (1, paramValue.length () - 1), "");
-
-              param = bind->getParameter (connParam->getName ());
-              if (param == nullptr)
-                {
-                  param = ncmLink->getParameter (connParam->getName ());
-                }
-
-              if (param == nullptr)
-                {
-                  repeat = 0;
-                }
-              else
-                {
-                  repeat = xstrtoint (param->getValue (), 10);
-                }
-            }
-          else
-            {
-              repeat = xstrtoint (paramValue, 10);
-            }
-
-          // repeatDelay
-          paramValue = sae->getRepeatDelay ();
-          delay = compileDelay (ncmLink, paramValue, bind);
-
-          action->setRepetitions (repeat, delay);
         }
       else if (eventType == EventType::ATTRIBUTION)
         {
