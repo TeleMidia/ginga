@@ -48,6 +48,7 @@ SimpleCondition::SimpleCondition (EventType type,
 
 /**
  * @brief Gets transition.
+ * @return Transition value.
  */
 EventStateTransition
 SimpleCondition::getTransition ()
@@ -57,6 +58,7 @@ SimpleCondition::getTransition ()
 
 /**
  * @brief Tests whether simple condition is a conjunction.
+ * @return True if successful, or false otherwise.
  */
 bool
 SimpleCondition::isConjunction ()
@@ -66,6 +68,7 @@ SimpleCondition::isConjunction ()
 
 /**
  * @brief Gets delay.
+ * @return Delay value.
  */
 string
 SimpleCondition::getDelay ()
@@ -75,6 +78,7 @@ SimpleCondition::getDelay ()
 
 /**
  * @brief Gets key.
+ * @return Key value.
  */
 string
 SimpleCondition::getKey ()
@@ -84,35 +88,6 @@ SimpleCondition::getKey ()
 
 
 // Public: Static.
-
-// Reserved conditions.
-static map<string, pair<int,int>> reserved =
-  {
-   {"onBegin",
-    {(int) EventType::PRESENTATION,
-     (int) EventStateTransition::START}},
-   {"onEnd",
-    {(int) EventType::PRESENTATION,
-     (int) EventStateTransition::STOP}},
-   {"onAbort",
-    {(int) EventType::PRESENTATION,
-     (int) EventStateTransition::ABORT}},
-   {"onPause",
-    {(int) EventType::PRESENTATION,
-     (int) EventStateTransition::PAUSE}},
-   {"onResumes",
-    {(int) EventType::PRESENTATION,
-     (int) EventStateTransition::RESUME}},
-   {"onBeginAttribution",
-    {(int) EventType::ATTRIBUTION,
-     (int) EventStateTransition::START}},
-   {"onEndAttribution",
-    {(int) EventType::SELECTION,
-     (int) EventStateTransition::STOP}},
-   {"onSelection",
-    {(int) EventType::SELECTION,
-     (int) EventStateTransition::START}},
-  };
 
 /**
  * @brief Tests whether role is a reserved condition role.
@@ -125,6 +100,33 @@ SimpleCondition::isReserved (const string &role,
                              EventType *type,
                              EventStateTransition *trans)
 {
+  static map<string, pair<int,int>> reserved =
+    {
+     {"onBegin",
+      {(int) EventType::PRESENTATION,
+       (int) EventStateTransition::START}},
+     {"onEnd",
+      {(int) EventType::PRESENTATION,
+       (int) EventStateTransition::STOP}},
+     {"onAbort",
+      {(int) EventType::PRESENTATION,
+       (int) EventStateTransition::ABORT}},
+     {"onPause",
+      {(int) EventType::PRESENTATION,
+       (int) EventStateTransition::PAUSE}},
+     {"onResumes",
+      {(int) EventType::PRESENTATION,
+       (int) EventStateTransition::RESUME}},
+     {"onBeginAttribution",
+      {(int) EventType::ATTRIBUTION,
+       (int) EventStateTransition::START}},
+     {"onEndAttribution",
+      {(int) EventType::SELECTION,
+       (int) EventStateTransition::STOP}},
+     {"onSelection",
+      {(int) EventType::SELECTION,
+       (int) EventStateTransition::START}},
+    };
   map<string, pair<int,int>>::iterator it;
   if ((it = reserved.find (role)) == reserved.end ())
     return false;
