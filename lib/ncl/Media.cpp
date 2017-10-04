@@ -170,10 +170,10 @@ Media::getDescriptor ()
 }
 
 /**
- * @brief Sets media descriptor.  (Can only be called once.)
+ * @brief Initializes media descriptor.
  */
 void
-Media::setDescriptor (Descriptor *descriptor)
+Media::initDescriptor (Descriptor *descriptor)
 {
   g_assert_null (_descriptor);
   g_assert_nonnull (descriptor);

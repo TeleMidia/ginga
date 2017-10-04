@@ -33,10 +33,10 @@ public:
   virtual ~Connector ();
 
   Condition *getCondition ();
-  void setCondition (Condition *);
+  void initCondition (Condition *);
 
   Action *getAction ();
-  void setAction (Action *);
+  void initAction (Action *);
 
   Role *getRole (const string &);
 

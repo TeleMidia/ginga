@@ -29,8 +29,8 @@ public:
   Node (NclDocument *, const string &);
   virtual ~Node ();
 
-  void setParent (Composition *);
   Composition *getParent ();
+  void initParent (Composition *);
 
   void addAnchor (Anchor *);
   const vector<Anchor *> *getAnchors ();

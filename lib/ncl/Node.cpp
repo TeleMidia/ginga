@@ -57,11 +57,11 @@ Node::getParent ()
 }
 
 /**
- * @brief Sets node parent.  (Can only be called once.)
+ * @brief Initializes node parent.
  * @param parent Parent composition.
  */
 void
-Node::setParent (Composition *parent)
+Node::initParent (Composition *parent)
 {
   g_assert_null (_parent);
   g_assert_nonnull (parent);

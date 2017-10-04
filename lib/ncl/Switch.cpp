@@ -52,7 +52,7 @@ Switch::addNode (Node *node, Rule *rule)
   _nodes.push_back (node);
   g_assert_nonnull (rule);
   _rules.push_back (rule);
-  node->setParent (this);
+  node->initParent (this);
 }
 
 /**

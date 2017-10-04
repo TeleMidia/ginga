@@ -51,11 +51,11 @@ Port::getParent ()
 }
 
 /**
- * @brief Sets port parent.  (Can only be called once.)
+ * @brief initializes port parent.
  * @param parent Parent composition.
  */
 void
-Port::setParent (Composition *parent)
+Port::initParent (Composition *parent)
 {
   g_assert_null (_parent);
   g_assert_nonnull (parent);
