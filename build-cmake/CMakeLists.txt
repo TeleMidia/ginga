@@ -367,6 +367,25 @@ if(DOXYGEN_FOUND)
   )
 endif(DOXYGEN_FOUND)
 
+
+enable_testing ()
+macro (add_ginga_test target)
+  add_executable (${target} ${ARGN})
+  target_link_libraries (${target} libginga)
+  set_target_properties (${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY tests/)
+
+  add_test (${target} tests/${target})
+endmacro ()
+
+file(GLOB GINGA_TESTS_SRC
+  "../tests/*.cpp")
+
+add_definitions (-DTOP_SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}/../")
+foreach (SRC ${GINGA_TESTS_SRC})
+  get_filename_component (TEST_NAME ${SRC} NAME_WE)
+  add_ginga_test (${TEST_NAME} ${SRC})
+endforeach ()
+
 message ( "
 ---
 summary of main build options:
