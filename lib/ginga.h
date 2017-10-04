@@ -69,10 +69,7 @@ public:
 
   virtual void resize (int, int) = 0;
   virtual void redraw (cairo_t *) = 0;
-
-#if defined WITH_OPENGL && WITH_OPENGL
-  virtual void redraw_gl () = 0;
-#endif
+  virtual void redrawGL () = 0;
 
   virtual bool sendKeyEvent (const std::string &, bool) = 0;
   virtual bool sendTickEvent (uint64_t, uint64_t, uint64_t) = 0;

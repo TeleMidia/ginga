@@ -24,7 +24,16 @@ AM_CXXFLAGS= $(WARN_CFLAGS) $(WERROR_CFLAGS)\
 AM_LDFLAGS= $(CAIRO_LIBS) $(GLIB_LIBS) $(GTK_LIBS)
 
 bin_PROGRAMS= ginga
+if WITH_OPENGL
+bin_PROGRAMS+= ginga-gl
+endif
+
 ginga_CXXFLAGS= $(AM_CXXFLAGS)
 ginga_LDFLAGS= -static $(AM_LDFLAGS)
 ginga_SOURCES= ginga.cpp
 ginga_LDADD= $(top_builddir)/lib/libginga.la
+
+ginga_gl_CXXFLAGS= $(AM_CXXFLAGS)
+ginga_gl_LDFLAGS= -static $(AM_LDFLAGS)
+ginga_gl_SOURCES= ginga-gl.cpp
+ginga_gl_LDADD= $(top_builddir)/lib/libginga.la

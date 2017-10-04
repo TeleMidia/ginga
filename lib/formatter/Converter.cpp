@@ -1395,8 +1395,7 @@ Converter::createSimpleAction (
         }
       else
         {
-          ERROR ("Unknown event type '%d' for action type '%d'.",
-                 (int) eventType, actionType);
+          g_assert_not_reached ();
         }
       break;
 

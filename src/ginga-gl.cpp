@@ -17,19 +17,17 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include <config.h>
 #include <string.h>
-
-#include <cairo.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <glib/gstdio.h>
-#include <glib.h>
+
+#include "aux-glib.h"
+#include <cairo.h>
 #include <SDL2/SDL.h>
 
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 
 #include "ginga.h"
-#include "aux-ginga.h"
 
 using namespace ::std;
 
@@ -38,10 +36,6 @@ void createAndShowWindow (int width, int height,
                           Window* window,
                           cairo_device_t** cairoDevice,
                           cairo_surface_t** windowSurface);
-
-#define deconst(t, x) ((t)(ptrdiff_t)(const void *)(x))
-#define gpointerof(p) ((gpointer)((ptrdiff_t)(p)))
-
 
 // Global formatter.
 static Ginga *GINGA = nullptr;
@@ -115,7 +109,7 @@ opt_version_cb (void)
 
 static GOptionEntry options[] = {
   {"background", 'b', 0, G_OPTION_ARG_CALLBACK,
-   gpointerof (opt_background_cb), "Set background color", "COLOR"},
+   pointerof (opt_background_cb), "Set background color", "COLOR"},
   {"debug", 'd', 0, G_OPTION_ARG_NONE,
    &opt_debug, "Enable debugging", NULL},
   {"experimental", 'x', 0, G_OPTION_ARG_NONE,
@@ -123,9 +117,9 @@ static GOptionEntry options[] = {
   {"fullscreen", 'f', 0, G_OPTION_ARG_NONE,
    &opt_fullscreen, "Enable full-screen mode", NULL},
   {"size", 's', 0, G_OPTION_ARG_CALLBACK,
-   gpointerof (opt_size_cb), "Set initial window size", "WIDTHxHEIGHT"},
+   pointerof (opt_size_cb), "Set initial window size", "WIDTHxHEIGHT"},
   {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
-   gpointerof (opt_version_cb), "Print version information and exit", NULL},
+   pointerof (opt_version_cb), "Print version information and exit", NULL},
   {NULL, 0, 0, G_OPTION_ARG_NONE, NULL, NULL, NULL}
 };
 
@@ -150,7 +144,7 @@ _error (gboolean try_help, const gchar *format, ...)
     g_fprintf (stderr, "Try '%s --help' for more information.\n", me);
 }
 
-void
+static void
 sendTickEvent ()
 {
   guint64 time;
@@ -158,7 +152,7 @@ sendTickEvent ()
   static guint64 last;
   static guint64 first;
 
-  time = ginga_gettime ();
+  time = g_get_monotonic_time ();
   frame++;
 
   if (frame == 0)
@@ -245,7 +239,7 @@ main (int argc, char **argv)
       return 1;
     }
 
-  SDL_GLContext glcontext = SDL_GL_CreateContext (window);
+  SDL_GL_CreateContext (window);
   SDL_GL_SetSwapInterval (1);
   string errmsg;
 
@@ -275,12 +269,15 @@ main (int argc, char **argv)
                 {
                 case SDL_WINDOWEVENT_RESIZED:
                   GINGA->resize (event.window.data1, event.window.data2);
+                  break;
+                default:
+                  break;
                 }
             }
         }
 
       sendTickEvent ();
-      GINGA->redraw_gl ();
+      GINGA->redrawGL ();
 
       SDL_GL_SwapWindow (window);
       SDL_Delay (33);
