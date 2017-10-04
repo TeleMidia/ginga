@@ -28,13 +28,12 @@ CompoundCondition::CompoundCondition () : TriggerExpression ()
 }
 
 CompoundCondition::CompoundCondition (Condition *c1,
-                                      Condition *c2, short op)
+                                      Condition *c2)
     : TriggerExpression ()
 {
   _expressions = new vector<Condition *>;
   _expressions->push_back (c1);
   _expressions->push_back (c2);
-  _myOperator = op;
 }
 
 CompoundCondition::~CompoundCondition ()
@@ -53,18 +52,6 @@ CompoundCondition::~CompoundCondition ()
       delete _expressions;
       _expressions = NULL;
     }
-}
-
-void
-CompoundCondition::setOperator (short op)
-{
-  _myOperator = op;
-}
-
-short
-CompoundCondition::getOperator ()
-{
-  return _myOperator;
 }
 
 const vector<Condition *> *

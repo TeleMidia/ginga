@@ -1165,11 +1165,7 @@ ParserXercesC::parseCompoundCondition (DOMElement *elt)
   CHECK_ELT_ATTRIBUTE (elt, "operator", &op);
 
   cond = new CompoundCondition ();
-  if (op == "and")
-      cond->setOperator (CompoundCondition::OP_AND);
-  else if (op == "or")
-    cond->setOperator (CompoundCondition::OP_OR);
-  else
+  if (op != "and" and op != "or")
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "operator");
 
   if (dom_elt_try_get_attribute (value, elt, "delay"))
@@ -2216,8 +2212,7 @@ ParserXercesC::parseBind (DOMElement *elt, Link *link, Context *context)
         }
       else
         {
-          conn->initCondition
-            (new CompoundCondition (cond, stmt, CompoundCondition::OP_OR));
+          conn->initCondition (new CompoundCondition (cond, stmt));
         }
       role = (Role *) assess;
     }
