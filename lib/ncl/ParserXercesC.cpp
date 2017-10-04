@@ -1271,8 +1271,7 @@ ParserXercesC::parseSimpleCondition (DOMElement *elt)
   if (qualifier != "and" && qualifier != "or")
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "qualifier");
 
-  return new SimpleCondition (type, trans, role, qualifier == "and",
-                              delay, key);
+  return new SimpleCondition (type, trans, role, delay, key);
 }
 
 CompoundStatement *
