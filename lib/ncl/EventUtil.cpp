@@ -41,8 +41,6 @@ EventUtil::getEventStateAsString (EventState state)
 {
   switch (state)
     {
-    case EventState::UNKNOWN:
-      return "unknown";
     case EventState::SLEEPING:
       return "sleeping";
     case EventState::OCCURRING:
@@ -117,25 +115,21 @@ EventUtil::getTransition (EventState prev, EventState next,
 }
 
 EventState
-EventUtil::getNextState (EventStateTransition transition)
+EventUtil::getNextState (EventStateTransition trans)
 {
-  switch (transition)
+  switch (trans)
     {
     case EventStateTransition::STOPS:
       return EventState::SLEEPING;
-
-    case EventStateTransition::STARTS:
+    case EventStateTransition::STARTS: // fall-through
     case EventStateTransition::RESUMES:
       return EventState::OCCURRING;
-
     case EventStateTransition::PAUSES:
       return EventState::PAUSED;
-
     case EventStateTransition::ABORTS:
       return EventState::SLEEPING;
-
     default:
-      return EventState::UNKNOWN;
+      g_assert_not_reached ();
     }
 }
 
