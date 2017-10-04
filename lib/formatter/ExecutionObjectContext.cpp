@@ -248,7 +248,7 @@ ExecutionObjectContext::eventStateChanged (
 
   switch (transition)
     {
-    case EventStateTransition::STARTS:
+    case EventStateTransition::START:
       if (_runningEvents.empty () && _pausedEvents.empty ())
         {
           setParentsAsListeners ();
@@ -258,7 +258,7 @@ ExecutionObjectContext::eventStateChanged (
       _runningEvents.insert (event);
       break;
 
-    case EventStateTransition::ABORTS:
+    case EventStateTransition::ABORT:
       lastTransition = transition;
       if (previousState == EventState::OCCURRING)
         {
@@ -284,7 +284,7 @@ ExecutionObjectContext::eventStateChanged (
         }
       break;
 
-    case EventStateTransition::STOPS:
+    case EventStateTransition::STOP:
       if (((PresentationEvent *)event)->getRepetitions () == 0)
         {
           lastTransition = transition;
@@ -313,7 +313,7 @@ ExecutionObjectContext::eventStateChanged (
         }
       break;
 
-    case EventStateTransition::PAUSES:
+    case EventStateTransition::PAUSE:
       i = _runningEvents.find (event);
       if (i != _runningEvents.end ())
         {
@@ -327,7 +327,7 @@ ExecutionObjectContext::eventStateChanged (
         }
       break;
 
-    case EventStateTransition::RESUMES:
+    case EventStateTransition::RESUME:
       i = _pausedEvents.find (event);
       if (i != _pausedEvents.end ())
         {
@@ -379,7 +379,7 @@ ExecutionObjectContext::linkEvaluationFinished (
           if (_runningEvents.empty () && _pausedEvents.empty ()
               && _pendingLinks.empty ())
             {
-              if (lastTransition == EventStateTransition::STOPS)
+              if (lastTransition == EventStateTransition::STOP)
                 {
                   checkLinkConditions ();
                 }

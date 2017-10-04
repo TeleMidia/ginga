@@ -36,11 +36,11 @@ enum class EventState
 
 enum class EventStateTransition
 {
-  STARTS = 0,
-  PAUSES,
-  RESUMES,
-  STOPS,
-  ABORTS
+  START = 0,
+  PAUSE,
+  RESUME,
+  STOP,
+  ABORT
 };
 
 enum class AttributeType

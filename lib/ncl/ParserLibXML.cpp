@@ -450,11 +450,11 @@ ncl_attr_parse_transition (string str, EventStateTransition *result)
 {
   static map<string, EventStateTransition> tab =
     {
-     {"starts", EventStateTransition::STARTS},
-     {"stops", EventStateTransition::STOPS},
-     {"aborts", EventStateTransition::ABORTS},
-     {"pauses", EventStateTransition::PAUSES},
-     {"resumes", EventStateTransition::RESUMES},
+     {"starts", EventStateTransition::START},
+     {"stops", EventStateTransition::STOP},
+     {"aborts", EventStateTransition::ABORT},
+     {"pauses", EventStateTransition::PAUSE},
+     {"resumes", EventStateTransition::RESUME},
     };
   _NCL_ATTR_PARSE (EventStateTransition, tab, str, result);
 }

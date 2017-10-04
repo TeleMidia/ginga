@@ -272,22 +272,22 @@ static map<string, pair<int,int>> reserved_action_table =
   {
    {"start",
     {(int) EventType::PRESENTATION,
-     (int) EventStateTransition::STARTS}},
+     (int) EventStateTransition::START}},
    {"stop",
     {(int) EventType::PRESENTATION,
-     (int) EventStateTransition::STOPS}},
+     (int) EventStateTransition::STOP}},
    {"abort",
     {(int) EventType::PRESENTATION,
-     (int) EventStateTransition::ABORTS}},
+     (int) EventStateTransition::ABORT}},
    {"pause",
     {(int) EventType::PRESENTATION,
-     (int) EventStateTransition::PAUSES}},
+     (int) EventStateTransition::PAUSE}},
    {"resume",
     {(int) EventType::PRESENTATION,
-     (int) EventStateTransition::RESUMES}},
+     (int) EventStateTransition::RESUME}},
    {"set",
     {(int) EventType::ATTRIBUTION,
-     (int) EventStateTransition::STARTS}},
+     (int) EventStateTransition::START}},
   };
 
 // Maps event type name to event type code.
@@ -301,21 +301,21 @@ static map<string, EventType> event_type_table =
 // Maps condition name to condition code.
 static map<string, EventStateTransition> event_transition_table =
   {
-   {"starts", EventStateTransition::STARTS},
-   {"stops", EventStateTransition::STOPS},
-   {"aborts", EventStateTransition::ABORTS},
-   {"pauses", EventStateTransition::PAUSES},
-   {"resumes", EventStateTransition::RESUMES},
+   {"starts", EventStateTransition::START},
+   {"stops", EventStateTransition::STOP},
+   {"aborts", EventStateTransition::ABORT},
+   {"pauses", EventStateTransition::PAUSE},
+   {"resumes", EventStateTransition::RESUME},
   };
 
 // Maps action name to action code.
 static map<string, EventStateTransition> event_action_type_table =
   {
-   {"start", EventStateTransition::STARTS},
-   {"stop", EventStateTransition::STOPS},
-   {"abort", EventStateTransition::ABORTS},
-   {"pause", EventStateTransition::PAUSES},
-   {"resume", EventStateTransition::RESUMES},
+   {"start", EventStateTransition::START},
+   {"stop", EventStateTransition::STOP},
+   {"abort", EventStateTransition::ABORT},
+   {"pause", EventStateTransition::PAUSE},
+   {"resume", EventStateTransition::RESUME},
   };
 
 

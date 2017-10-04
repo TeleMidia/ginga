@@ -57,15 +57,15 @@ EventUtil::getEventStateTransitionAsString (EventStateTransition trans)
 {
   switch (trans)
     {
-    case EventStateTransition::STARTS:
+    case EventStateTransition::START:
       return "starts";
-    case EventStateTransition::PAUSES:
+    case EventStateTransition::PAUSE:
       return "pauses";
-    case EventStateTransition::RESUMES:
+    case EventStateTransition::RESUME:
       return "resumes";
-    case EventStateTransition::STOPS:
+    case EventStateTransition::STOP:
       return "stops";
-    case EventStateTransition::ABORTS:
+    case EventStateTransition::ABORT:
       return "aborts";
     default:
       g_assert_not_reached ();
@@ -98,19 +98,19 @@ EventUtil::getTransition (EventState prev, EventState next,
   return false;
 
  trans_start:
-  tryset (trans, EventStateTransition::STARTS);
+  tryset (trans, EventStateTransition::START);
   return true;
 
  trans_pause:
-  tryset (trans, EventStateTransition::PAUSES);
+  tryset (trans, EventStateTransition::PAUSE);
   return true;
 
  trans_resume:
-  tryset (trans, EventStateTransition::RESUMES);
+  tryset (trans, EventStateTransition::RESUME);
   return true;
 
  trans_stop:
-  tryset (trans, EventStateTransition::STOPS);
+  tryset (trans, EventStateTransition::STOP);
   return true;
 }
 
@@ -119,14 +119,14 @@ EventUtil::getNextState (EventStateTransition trans)
 {
   switch (trans)
     {
-    case EventStateTransition::STOPS:
+    case EventStateTransition::STOP:
       return EventState::SLEEPING;
-    case EventStateTransition::STARTS: // fall-through
-    case EventStateTransition::RESUMES:
+    case EventStateTransition::START: // fall-through
+    case EventStateTransition::RESUME:
       return EventState::OCCURRING;
-    case EventStateTransition::PAUSES:
+    case EventStateTransition::PAUSE:
       return EventState::PAUSED;
-    case EventStateTransition::ABORTS:
+    case EventStateTransition::ABORT:
       return EventState::SLEEPING;
     default:
       g_assert_not_reached ();

@@ -156,7 +156,7 @@ Scheduler::run (const string &file, string *errmsg)
   for (auto event: *entryevts)
     {
       NclSimpleAction *fakeAction;
-      fakeAction = new NclSimpleAction (event, EventStateTransition::STARTS);
+      fakeAction = new NclSimpleAction (event, EventStateTransition::START);
       runAction (event, fakeAction);
       delete fakeAction;
     }
@@ -221,19 +221,19 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
 
   switch (action->getType ())   // fixme
     {
-    case EventStateTransition::STARTS:
+    case EventStateTransition::START:
       name = "start";
       break;
-    case EventStateTransition::PAUSES:
+    case EventStateTransition::PAUSE:
       name = "pause";
       break;
-    case EventStateTransition::RESUMES:
+    case EventStateTransition::RESUME:
       name = "resume";
       break;
-    case EventStateTransition::STOPS:
+    case EventStateTransition::STOP:
       name = "stop";
       break;
-    case EventStateTransition::ABORTS:
+    case EventStateTransition::ABORT:
       name = "abort";
       break;
     default:
@@ -278,7 +278,7 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
       GingaTime dur;
 
       g_assert (instanceof (NclAssignmentAction *, action));
-      g_assert (action->getType () == EventStateTransition::STARTS);
+      g_assert (action->getType () == EventStateTransition::START);
 
       attevt = (AttributionEvent *) event;
       attact = (NclAssignmentAction *) action;
@@ -308,20 +308,20 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
 
   switch (action->getType ())
     {
-    case EventStateTransition::STARTS:
+    case EventStateTransition::START:
       obj->prepare (event);
       g_assert (obj->start ());
       break;
-    case EventStateTransition::STOPS:
+    case EventStateTransition::STOP:
       obj->stop ();
       break;
-    case EventStateTransition::PAUSES:
+    case EventStateTransition::PAUSE:
       g_assert (obj->pause ());
       break;
-    case EventStateTransition::RESUMES:
+    case EventStateTransition::RESUME:
       g_assert (obj->resume ());
       break;
-    case EventStateTransition::ABORTS:
+    case EventStateTransition::ABORT:
       g_assert (obj->abort ());
       break;
     default:
@@ -381,7 +381,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
     }
 
   acttype = action->getType ();
-  if (acttype == EventStateTransition::STARTS) // start all ports
+  if (acttype == EventStateTransition::START) // start all ports
     {
       ctxObj->suspendLinkEvaluation (false);
       for (auto port: *compNode->getPorts ())
@@ -420,7 +420,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
           delete persp;
         }
     }
-  else if (acttype == EventStateTransition::STOPS) // stop all children
+  else if (acttype == EventStateTransition::STOP) // stop all children
     {
       ctxObj->suspendLinkEvaluation (true);
       for (const auto pair: *ctxObj->getExecutionObjects ())
@@ -438,15 +438,15 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
         }
       ctxObj->suspendLinkEvaluation (false);
     }
-  else if (acttype == EventStateTransition::ABORTS)
+  else if (acttype == EventStateTransition::ABORT)
     {
       ERROR_NOT_IMPLEMENTED ("action 'abort' is not supported");
     }
-  else if (acttype == EventStateTransition::PAUSES)
+  else if (acttype == EventStateTransition::PAUSE)
     {
       ERROR_NOT_IMPLEMENTED ("action 'pause' is not supported");
     }
-  else if (acttype == EventStateTransition::RESUMES)
+  else if (acttype == EventStateTransition::RESUME)
     {
       ERROR_NOT_IMPLEMENTED ("action 'resume' is not supported");
     }
@@ -486,8 +486,8 @@ Scheduler::runActionOverSwitch (ExecutionObjectSwitch *switchObj,
       runSwitchEvent (switchObj, event, selectedObject, action);
     }
 
-  if (action->getType () == EventStateTransition::STOPS
-      || action->getType () == EventStateTransition::ABORTS)
+  if (action->getType () == EventStateTransition::STOP
+      || action->getType () == EventStateTransition::ABORT)
     {
       switchObj->select (nullptr);
     }
