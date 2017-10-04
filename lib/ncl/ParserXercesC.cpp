@@ -1409,11 +1409,8 @@ ParserXercesC::parseSimpleAction (DOMElement *elt)
   string tag;
   string role;
   string delay;
-  string repeat;
-  string repeatDelay;
   string value;
   string duration;
-  string by;
 
   EventType type;
   EventStateTransition acttype;
@@ -1422,11 +1419,8 @@ ParserXercesC::parseSimpleAction (DOMElement *elt)
   CHECK_ELT_TAG (elt, "simpleAction", nullptr);
   CHECK_ELT_ATTRIBUTE (elt, "role", &role);
   CHECK_ELT_OPT_ATTRIBUTE (elt, "delay", &delay, "0s");
-  CHECK_ELT_OPT_ATTRIBUTE (elt, "repeat", &repeat, "0");
-  CHECK_ELT_OPT_ATTRIBUTE (elt, "repeatDelay", &repeatDelay, "0s");
   CHECK_ELT_OPT_ATTRIBUTE (elt, "value", &value, "0s");
   CHECK_ELT_OPT_ATTRIBUTE (elt, "duration", &duration, "0s");
-  CHECK_ELT_OPT_ATTRIBUTE (elt, "by", &by, "0");
 
   type = (EventType) -1;
   acttype = (EventStateTransition) -1;
@@ -1469,8 +1463,7 @@ ParserXercesC::parseSimpleAction (DOMElement *elt)
   g_assert (acttype != (EventStateTransition) -1);
 
   return new SimpleAction ((EventType) type, (EventStateTransition) acttype,
-                           role, delay, repeat, repeatDelay, value,
-                           duration, by);
+                           role, delay, value, duration);
 }
 
 

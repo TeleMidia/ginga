@@ -420,9 +420,10 @@ static map<string, NclEltInfo> ncl_eltmap =
    0,
    {"causalConnector", "compoundAction"},
    {{"role", true},
-    {"delay", false},
     {"eventType", false},
     {"actionType", false},
+    {"delay", false},
+    {"duration", false},
     {"value", false},
     {"min", false},             // ignored
     {"max", false},             // ignored
@@ -430,7 +431,6 @@ static map<string, NclEltInfo> ncl_eltmap =
     {"qualifier", false},       // ignored
     {"repeat", false},          // ignored
     {"repeatDelay", false},     // ignored
-    {"duration", false},        // ignored
     {"by", false}}},            // ignored
  },
 };
@@ -1067,10 +1067,14 @@ ncl_push_simpleConditionOrAction (ParserLibXML_State *st,
     }
   else
     {
+      string delay;
       string value;
+      string duration;
       SimpleAction *act;
-      value = ncl_attrmap_opt_get (attr, "key", "value");
-      act = new SimpleAction (type, trans, role, "", "", "", value, "", "");
+      delay = ncl_attrmap_opt_get (attr, "delay", "");
+      value = ncl_attrmap_opt_get (attr, "key", "");
+      duration = ncl_attrmap_opt_get (attr, "duration", "");
+      act = new SimpleAction (type, trans, role, delay, value, duration);
       parent->initAction (act);
     }
   return true;
