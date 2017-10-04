@@ -1091,7 +1091,7 @@ Converter::createCondition (
   auto ste = cast (SimpleCondition *, condition);
   auto cte = cast (CompoundCondition *, condition);
 
-  if (ste) // SimpleCondition
+  if (ste)                      // SimpleCondition
     {
       vector<Bind *> binds = ncmLink->getBinds (ste);
       size_t size = binds.size ();
@@ -1116,7 +1116,7 @@ Converter::createCondition (
           return nullptr;
         }
     }
-  else if (cte) // CompoundCondition
+  else if (cte)                 // CompoundCondition
     {
       return createCompoundTriggerCondition (0,
                                              cte->getConditions (), ncmLink,
@@ -1146,10 +1146,10 @@ Converter::createAssessmentStatement (
         assessmentStatement->getMainAssessment (), bind, ncmLink,
         parentObj);
 
-  auto valueAssessment = cast (ValueAssessment *, 
+  auto valueAssessment = cast (ValueAssessment *,
         assessmentStatement->getOtherAssessment ());
 
-  auto attrAssessment = cast (AttributeAssessment *, 
+  auto attrAssessment = cast (AttributeAssessment *,
         assessmentStatement->getOtherAssessment ());
 
   if (valueAssessment)
@@ -1271,19 +1271,14 @@ Converter::createSimpleAction (
   GingaTime delay;
 
   action = nullptr;
+
   event = createEvent (bind, ncmLink, parentObj);
+  g_assert_nonnull (event);
 
   actionType = sae->getActionType ();
-  if (event != nullptr)
-    {
-      eventType = bind->getRole ()->getEventType ();
-      event->setType (eventType);
-    }
-  else
-    {
-      ERROR ("Trying to create a simple action with a nullptr event");
-    }
 
+  eventType = bind->getRole ()->getEventType ();
+  event->setType (eventType);
   switch (actionType)
     {
     case EventStateTransition::START:
@@ -1408,7 +1403,7 @@ Converter::createSimpleCondition (
 
   event = createEvent (bind, ncmLink, parentObj);
   condition = new NclLinkTransitionTriggerCondition (
-        event, simpleCondition->getTransition (), bind);
+        event, simpleCondition->getTransition ());
 
   return condition;
 }
