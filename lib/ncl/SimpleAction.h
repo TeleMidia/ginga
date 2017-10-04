@@ -27,20 +27,12 @@ GINGA_NCL_BEGIN
 class SimpleAction : public Action, public Role
 {
 public:
-  enum Type
-    {
-     START = 1,
-     PAUSE,
-     RESUME,
-     STOP,
-     ABORT,
-    };
-  SimpleAction (EventType, Type, const string &, const string &,
+  SimpleAction (EventType, EventStateTransition, const string &,
                 const string &, const string &, const string &,
-                const string &, const string &);
+                const string &, const string &, const string &);
   virtual ~SimpleAction ();
 
-  Type getActionType ();
+  EventStateTransition getActionType ();
   string getDelay ();
   string getRepeat ();
   string getRepeatDelay ();
@@ -48,8 +40,10 @@ public:
   string getDuration ();
   string getBy ();
 
+  // static bool isReserved (const string &, EventType *,
+  //                         SimpleAction::EventStateTransition *);
 private:
-  Type _actionType;
+  EventStateTransition _actionType;
   string _delay;
   string _repeat;
   string _repeatDelay;

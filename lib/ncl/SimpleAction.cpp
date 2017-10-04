@@ -33,7 +33,7 @@ GINGA_NCL_BEGIN
  * @param by By.
  */
 SimpleAction::SimpleAction (EventType type,
-                            SimpleAction::Type actType,
+                            EventStateTransition actType,
                             const string &label,
                             const string &delay,
                             const string &repeat,
@@ -62,7 +62,7 @@ SimpleAction::~SimpleAction ()
 /**
  * @brief Gets simple action type.
  */
-SimpleAction::Type
+EventStateTransition
 SimpleAction::getActionType ()
 {
   return _actionType;

@@ -66,13 +66,13 @@ private:
 class NclSimpleAction : public NclAction
 {
 public:
-  NclSimpleAction (NclEvent *event, SimpleAction::Type type);
+  NclSimpleAction (NclEvent *event, EventStateTransition type);
   virtual ~NclSimpleAction () {}
 
   virtual void run () override;
 
   NclEvent *getEvent ();
-  SimpleAction::Type getType ();
+  EventStateTransition getType ();
 
   void setSimpleActionListener (INclActionListener *_listener);
 
@@ -82,7 +82,7 @@ public:
                        GingaTime repetitionInterval = GINGA_TIME_NONE);
 protected:
   NclEvent *_event;
-  SimpleAction::Type _actType;
+  EventStateTransition _actType;
 
 private:
   INclActionListener *_listener;
@@ -95,7 +95,7 @@ class NclAssignmentAction : public NclSimpleAction
 {
 public:
   NclAssignmentAction (NclEvent *evt,
-                       SimpleAction::Type actType,
+                       EventStateTransition actType,
                        const string &value,
                        const string &duration);
 

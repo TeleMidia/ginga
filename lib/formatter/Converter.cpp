@@ -1283,7 +1283,7 @@ Converter::createSimpleAction (
     ExecutionObjectContext *parentObj)
 {
   NclEvent *event;
-  SimpleAction::Type actionType;
+  EventStateTransition actionType;
   EventType eventType;
   NclSimpleAction *action;
   Parameter *connParam;
@@ -1308,7 +1308,7 @@ Converter::createSimpleAction (
 
   switch (actionType)
     {
-    case SimpleAction::START:
+    case EventStateTransition::STARTS:
       if (eventType == EventType::PRESENTATION)
         {
           action = new NclSimpleAction (event, actionType);
@@ -1410,10 +1410,10 @@ Converter::createSimpleAction (
         }
       break;
 
-    case SimpleAction::STOP:
-    case SimpleAction::PAUSE:
-    case SimpleAction::RESUME:
-    case SimpleAction::ABORT:
+    case EventStateTransition::STOPS:
+    case EventStateTransition::PAUSES:
+    case EventStateTransition::RESUMES:
+    case EventStateTransition::ABORTS:
       action = new NclSimpleAction (event, actionType);
       break;
 
