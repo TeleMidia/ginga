@@ -25,17 +25,16 @@ GINGA_NCL_BEGIN
 
 /**
  * @brief Creates a new bind.
+ * @param role Role.
  * @param comp Component.
  * @param iface Interface.
- * @param desc Descriptor.
- * @param role Role.
+
  */
-Bind::Bind (Role *role, Node *comp, Anchor *iface, Descriptor *desc)
+Bind::Bind (Role *role, Node *comp, Anchor *iface)
 {
   _role = role;
   _node = comp;
   _interface = iface;
-  _descriptor = desc;
 }
 
 /**
@@ -71,15 +70,6 @@ Anchor *
 Bind::getInterface ()
 {
   return _interface;
-}
-
-/**
- * @brief Gets descriptor.
- */
-Descriptor *
-Bind::getDescriptor ()
-{
-  return _descriptor;
 }
 
 /**
