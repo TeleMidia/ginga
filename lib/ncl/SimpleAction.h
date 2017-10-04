@@ -40,8 +40,8 @@ public:
   string getDuration ();
   string getBy ();
 
-  // static bool isReserved (const string &, EventType *,
-  //                         SimpleAction::EventStateTransition *);
+  static bool isReserved (const string &, EventType *,
+                          EventStateTransition *);
 private:
   EventStateTransition _actionType;
   string _delay;

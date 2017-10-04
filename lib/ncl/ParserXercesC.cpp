@@ -267,29 +267,6 @@ __error_elt (const DOMElement *elt)
 
 // Translation tables.
 
-// Reserved actions.
-static map<string, pair<int,int>> reserved_action_table =
-  {
-   {"start",
-    {(int) EventType::PRESENTATION,
-     (int) EventStateTransition::START}},
-   {"stop",
-    {(int) EventType::PRESENTATION,
-     (int) EventStateTransition::STOP}},
-   {"abort",
-    {(int) EventType::PRESENTATION,
-     (int) EventStateTransition::ABORT}},
-   {"pause",
-    {(int) EventType::PRESENTATION,
-     (int) EventStateTransition::PAUSE}},
-   {"resume",
-    {(int) EventType::PRESENTATION,
-     (int) EventStateTransition::RESUME}},
-   {"set",
-    {(int) EventType::ATTRIBUTION,
-     (int) EventStateTransition::START}},
-  };
-
 // Maps event type name to event type code.
 static map<string, EventType> event_type_table =
   {
@@ -1465,12 +1442,7 @@ ParserXercesC::parseSimpleAction (DOMElement *elt)
   type = (EventType) -1;
   acttype = (EventStateTransition) -1;
 
-  if ((it = reserved_action_table.find (role))
-      != reserved_action_table.end ())
-    {
-      type = (EventType) it->second.first;
-      acttype = (EventStateTransition) it->second.second;
-    }
+  SimpleAction::isReserved (role, &type, &acttype);
 
   if (dom_elt_try_get_attribute (str, elt, "eventType"))
     {
