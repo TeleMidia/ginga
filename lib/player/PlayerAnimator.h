@@ -45,6 +45,7 @@ private:
   double _current;               // current value
   double _target;                // target value
   GingaTime _duration;           // animation duration
+  GingaTime _last_update;        // time of the last update
   double _speed;                 // animation speed
   bool _done;                    // true if animation is done
   bool _init;                    // true if animation is initialized
