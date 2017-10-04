@@ -1168,9 +1168,6 @@ ParserXercesC::parseCompoundCondition (DOMElement *elt)
   if (op != "and" and op != "or")
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "operator");
 
-  if (dom_elt_try_get_attribute (value, elt, "delay"))
-    cond->setDelay (value);
-
   // Collect children.
   for (DOMElement *child: dom_elt_get_children (elt))
     {
@@ -1209,7 +1206,6 @@ ParserXercesC::parseSimpleCondition (DOMElement *elt)
   string str;
   string role;
   string key;
-  string delay;
   string qualifier;
 
   EventType type;
@@ -1219,7 +1215,6 @@ ParserXercesC::parseSimpleCondition (DOMElement *elt)
   CHECK_ELT_TAG (elt, "simpleCondition", nullptr);
   CHECK_ELT_ATTRIBUTE (elt, "role", &role);
   CHECK_ELT_OPT_ATTRIBUTE (elt, "qualifier", &qualifier, "or");
-  CHECK_ELT_OPT_ATTRIBUTE (elt, "delay", &delay, "0");
   CHECK_ELT_OPT_ATTRIBUTE (elt, "key", &key, "");
 
   type = (EventType) -1;
@@ -1266,7 +1261,7 @@ ParserXercesC::parseSimpleCondition (DOMElement *elt)
   if (qualifier != "and" && qualifier != "or")
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "qualifier");
 
-  return new SimpleCondition (type, trans, role, delay, key);
+  return new SimpleCondition (type, trans, role, key);
 }
 
 CompoundStatement *

@@ -1062,7 +1062,7 @@ ncl_push_simpleConditionOrAction (ParserLibXML_State *st,
       string key;
       SimpleCondition *cond;
       key = ncl_attrmap_opt_get (attr, "key", "");
-      cond = new SimpleCondition (type, trans, role, "", key);
+      cond = new SimpleCondition (type, trans, role, key);
       parent->initCondition (cond);
     }
   else

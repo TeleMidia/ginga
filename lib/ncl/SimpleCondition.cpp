@@ -34,12 +34,10 @@ GINGA_NCL_BEGIN
 SimpleCondition::SimpleCondition (EventType type,
                                   EventStateTransition transition,
                                   const string &label,
-                                  const string &delay,
                                   const string &key)
   : TriggerExpression (), Role (type, label)
 {
   _transition = transition;
-  _delay = delay;
   _key = key;
 }
 
@@ -51,16 +49,6 @@ EventStateTransition
 SimpleCondition::getTransition ()
 {
   return _transition;
-}
-
-/**
- * @brief Gets delay.
- * @return Delay value.
- */
-string
-SimpleCondition::getDelay ()
-{
-  return _delay;
 }
 
 /**

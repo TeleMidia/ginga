@@ -47,7 +47,6 @@ class NclLinkCondition
 public:
   NclLinkCondition () {}
   virtual ~NclLinkCondition () {}
-
   virtual vector<NclEvent *> getEvents () = 0;
 };
 

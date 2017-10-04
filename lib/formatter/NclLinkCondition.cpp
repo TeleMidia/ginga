@@ -23,17 +23,12 @@ GINGA_FORMATTER_BEGIN
 
 NclLinkTriggerCondition::NclLinkTriggerCondition () : NclLinkCondition ()
 {
-  _delay = 0;
   _listener = nullptr;
 }
 
 void
-NclLinkTriggerCondition::conditionSatisfied (
-    unused (NclLinkCondition *condition))
+NclLinkTriggerCondition::conditionSatisfied (unused (NclLinkCondition *condition))
 {
-  if (_delay > 0)
-    ERROR_NOT_IMPLEMENTED ("condition delays are not supported");
-
   notifyListeners (NclLinkConditionStatus::CONDITION_SATISFIED);
 }
 

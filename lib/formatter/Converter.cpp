@@ -1118,10 +1118,7 @@ Converter::createCondition (
     }
   else if (cte) // CompoundCondition
     {
-      string delayObject = condition->getDelay ();
-      GingaTime delay = compileDelay (ncmLink, delayObject, nullptr);
-
-      return createCompoundTriggerCondition (delay,
+      return createCompoundTriggerCondition (0,
                                              cte->getConditions (), ncmLink,
                                              parentObj);
     }
@@ -1444,7 +1441,6 @@ Converter::createSimpleCondition (
     ExecutionObjectContext *parentObj)
 {
   NclEvent *event;
-  GingaTime delay;
   string delayObject;
   NclLinkTriggerCondition *condition;
 
@@ -1452,12 +1448,6 @@ Converter::createSimpleCondition (
   condition = new NclLinkTransitionTriggerCondition (
         event, simpleCondition->getTransition (), bind);
 
-  delayObject = simpleCondition->getDelay ();
-  delay = compileDelay (ncmLink, delayObject, bind);
-  if (delay > 0)
-    {
-      condition->setDelay (delay);
-    }
   return condition;
 }
 

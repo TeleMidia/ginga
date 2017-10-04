@@ -84,7 +84,6 @@ src+= ncl/SwitchPort.cpp
 src+= ncl/Transition.cpp
 src+= ncl/TransitionBase.cpp
 src+= ncl/TransitionUtil.cpp
-src+= ncl/TriggerExpression.cpp
 src+= ncl/ValueAssessment.cpp
 src+= player/ImagePlayer.cpp
 src+= player/LuaPlayer.cpp
