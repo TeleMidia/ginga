@@ -669,6 +669,9 @@ xpathbuildabs (const string &a, const string &b)
 
 #if ENABLED (OPENGL)
 
+/**
+ * @brief gl_create_texture Creates a new uninitialized OpenGL texture
+ */
 void
 gl_create_texture (GLuint *gltex)
 {
@@ -677,18 +680,28 @@ gl_create_texture (GLuint *gltex)
 
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+  CHECK_GL_ERROR
 }
 
+/**
+ * @brief gl_create_texture Creates a new OpenGL texture and initializes it with
+ */
 void
 gl_create_texture (GLuint *gltex, int tex_w, int tex_h, unsigned char *data)
 {
   gl_create_texture (gltex);
   glTexImage2D (GL_TEXTURE_2D, 0, 4,
                 tex_w, tex_h, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
+
+  CHECK_GL_ERROR
 }
 
+/**
+ * @brief gl_delete_texture Deletes the
+ */
 void
 gl_delete_texture (GLuint *gltex)
 {
@@ -696,15 +709,18 @@ gl_delete_texture (GLuint *gltex)
     {
       glDeleteTextures (1, gltex);
     }
+
+  CHECK_GL_ERROR
 }
 
 void
 gl_update_texture (GLuint gltex, int tex_w, int tex_h, unsigned char *data)
 {
   glActiveTexture (gltex);
-
   glTexImage2D (GL_TEXTURE_2D, 0, 4,
                 tex_w, tex_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+  CHECK_GL_ERROR
 }
 
 void
@@ -713,16 +729,17 @@ gl_update_subtexture (GLuint gltex,
                       unsigned char *data)
 {
   glBindTexture (GL_TEXTURE_2D, gltex);
-  glTexSubImage2D ( GL_TEXTURE_2D,
-                    0,
-                    xoffset,
-                    yoffset,
-                    width,
-                    height,
-                    GL_BGRA,
-                    GL_UNSIGNED_BYTE,
-                    data );
+  glTexSubImage2D (GL_TEXTURE_2D,
+                   0,
+                   xoffset,
+                   yoffset,
+                   width,
+                   height,
+                   GL_BGRA,
+                   GL_UNSIGNED_BYTE,
+                   data);
 
+  CHECK_GL_ERROR
 }
 
 void
@@ -734,5 +751,6 @@ gl_update_texture (GLuint gltex, cairo_surface_t *surf)
 
   gl_update_subtexture (gltex, 0, 0, tex_w, tex_h, data);
 }
+
 #endif
 
