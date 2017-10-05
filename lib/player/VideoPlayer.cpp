@@ -165,13 +165,19 @@ VideoPlayer::start ()
   GstCaps *caps;
   GstStructure *st;
   GstStateChangeReturn ret;
+  static const char *format;
+#if defined WITH_OPENGL && WITH_OPENGL
+  format = "RGBA";
+#else
+  format = "BGRA";
+#endif
 
   g_assert (_state != OCCURRING);
   TRACE ("starting");
 
   st = gst_structure_new_empty ("video/x-raw");
   gst_structure_set (st,
-                     "format", G_TYPE_STRING, "BGRA",
+                     "format", G_TYPE_STRING, format,
                      "width", G_TYPE_INT, Player::_prop.rect.width,
                      "height", G_TYPE_INT, Player::_prop.rect.height,
                      nullptr);
@@ -340,6 +346,7 @@ VideoPlayer::redrawGL ()
       gl_delete_texture (&_gltexture);
     }
 
+  // fixme: There is no need for recreating the texture to each frame.
   gl_create_texture (&_gltexture, width, height, pixels);
 
   gst_video_frame_unmap (&v_frame);

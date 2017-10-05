@@ -223,7 +223,15 @@ xvectremove (vector<T> &v1, vector<T> &v2)
 }
 
 #if defined WITH_OPENGL && WITH_OPENGL
+
+#define WITH_OPENGLES2 0
+
+#if WITH_OPENGLES2
+# include <GLES2/gl2.h>
+# include <GLES2/gl2ext.h>
+#else
 #include <GL/gl.h>
+#endif
 
 #define CHECK_GL_ERROR                          \
   GLenum glerror;                               \
@@ -231,6 +239,12 @@ xvectremove (vector<T> &v1, vector<T> &v2)
     {                                           \
       ERROR ("OpenGL error (%d) in %s:%d.", glerror, __FILE__, __LINE__); \
     }
+
+void
+gl_init ();
+
+void
+gl_clear_scene (int w, int h);
 
 void
 gl_create_texture (GLuint *);
