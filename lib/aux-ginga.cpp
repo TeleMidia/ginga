@@ -670,7 +670,7 @@ xpathbuildabs (const string &a, const string &b)
 #if defined WITH_OPENGL && WITH_OPENGL
 
 /**
- * @brief gl_create_texture Creates a new uninitialized OpenGL texture
+ * @brief gl_create_texture Creates a new uninitialized OpenGL texture.
  */
 void
 gl_create_texture (GLuint *gltex)
@@ -688,6 +688,7 @@ gl_create_texture (GLuint *gltex)
 
 /**
  * @brief gl_create_texture Creates a new OpenGL texture and initializes it with
+ *  the data content.
  */
 void
 gl_create_texture (GLuint *gltex, int tex_w, int tex_h, unsigned char *data)
@@ -700,7 +701,7 @@ gl_create_texture (GLuint *gltex, int tex_w, int tex_h, unsigned char *data)
 }
 
 /**
- * @brief gl_delete_texture Deletes the
+ * @brief gl_delete_texture Deletes the texture.
  */
 void
 gl_delete_texture (GLuint *gltex)
@@ -713,6 +714,9 @@ gl_delete_texture (GLuint *gltex)
   CHECK_GL_ERROR ();
 }
 
+/**
+ * @brief gl_update_texture Updates texture with the data content.
+ */
 void
 gl_update_texture (GLuint gltex, int tex_w, int tex_h, unsigned char *data)
 {
@@ -723,6 +727,9 @@ gl_update_texture (GLuint gltex, int tex_w, int tex_h, unsigned char *data)
   CHECK_GL_ERROR ();
 }
 
+/**
+ * @brief gl_update_subtexture Updates subtexture with the data content.
+ */
 void
 gl_update_subtexture (GLuint gltex,
                       int xoffset, int yoffset, int width, int height,
@@ -743,13 +750,36 @@ gl_update_subtexture (GLuint gltex,
 }
 
 void
-gl_update_texture (GLuint gltex, cairo_surface_t *surf)
+gl_draw_quad (int x, int y, int w, int h, GLuint gltex, GLfloat alpha)
 {
-  int tex_w = cairo_image_surface_get_width (surf);
-  int tex_h = cairo_image_surface_get_height (surf);
-  unsigned char* data = cairo_image_surface_get_data (surf);
+  g_assert (gltex > 0);
 
-  gl_update_subtexture (gltex, 0, 0, tex_w, tex_h, data);
+  glBindTexture (GL_TEXTURE_2D, gltex);
+  glColor4f (1.0f, 1.0f, 1.0f, alpha);
+  glBegin( GL_QUADS );
+    glTexCoord2d (0.0,0.0); glVertex2d( x, y);
+    glTexCoord2d (1.0,0.0); glVertex2d( x + w, y);
+    glTexCoord2d (1.0,1.0); glVertex2d( x + w, y + h);
+    glTexCoord2d (0.0,1.0); glVertex2d( x, y + h);
+  glEnd();
+  glBindTexture (GL_TEXTURE_2D, 0);
+
+  CHECK_GL_ERROR
+}
+
+void
+gl_draw_quad (int x, int y, int w, int h,
+              GLfloat r, GLfloat g, GLfloat b, GLfloat a)
+{
+  glColor4f (r, g, b, a);
+  glBegin( GL_QUADS );
+    glVertex2d( x, y);
+    glVertex2d( x + w, y);
+    glVertex2d( x + w, y + h);
+    glVertex2d( x, y + h);
+  glEnd();
+
+  CHECK_GL_ERROR
 }
 
 #endif

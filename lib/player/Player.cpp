@@ -465,36 +465,22 @@ Player::redrawGL ()
 
   if (_prop.bgColor.alpha > 0)
     {
-      glColor4d (_prop.bgColor.red,
-                 _prop.bgColor.green,
-                 _prop.bgColor.blue,
-                 _prop.alpha / 255.);
-      glBegin( GL_QUADS );
-        glVertex2d( _prop.rect.x, _prop.rect.y);
-        glVertex2d( _prop.rect.x + _prop.rect.width, _prop.rect.y);
-        glVertex2d( _prop.rect.x + _prop.rect.width, _prop.rect.y + _prop.rect.height);
-        glVertex2d( _prop.rect.x, _prop.rect.y + _prop.rect.height);
-      glEnd();
+      gl_draw_quad (_prop.rect.x, _prop.rect.y,
+                    _prop.rect.width, _prop.rect.height,
+                    // Color
+                    _prop.bgColor.red,
+                    _prop.bgColor.green,
+                    _prop.bgColor.blue,
+                    _prop.alpha / 255.);
     }
 
-  if (_gltexture != (GLuint) -1)
+  if (_gltexture != -1)
     {
-      glEnable (GL_TEXTURE_2D);
-      glBindTexture (GL_TEXTURE_2D, _gltexture);
+      gl_draw_quad (_prop.rect.x, _prop.rect.y,
+                    _prop.rect.width, _prop.rect.height,
+                    _gltexture, _prop.alpha / 255.);
     }
 
-  glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
-
-  // Render the surface
-  glBegin( GL_QUADS );
-    glTexCoord2d (0.0,0.0); glVertex2d( _prop.rect.x, _prop.rect.y);
-    glTexCoord2d (1.0,0.0); glVertex2d( _prop.rect.x + _prop.rect.width, _prop.rect.y);
-    glTexCoord2d (1.0,1.0); glVertex2d( _prop.rect.x + _prop.rect.width, _prop.rect.y + _prop.rect.height);
-    glTexCoord2d (0.0,1.0); glVertex2d( _prop.rect.x, _prop.rect.y + _prop.rect.height);
-  glEnd();
-
-  if (_gltexture != (GLuint) -1)
-    glDisable (GL_TEXTURE_2D);
 #endif
 }
 
