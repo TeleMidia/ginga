@@ -778,9 +778,7 @@ Converter::createLink (Link *ncmLink,
 
   // compile link action
   formatterAction = createAction (connector, ncmLink, parentObj);
-
-  if (formatterAction == nullptr)
-    return nullptr;
+  g_assert_nonnull (formatterAction);
 
   // create formatter causal link
   formatterLink = new NclFormatterLink (
