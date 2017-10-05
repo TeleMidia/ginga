@@ -253,7 +253,7 @@ GingaInternal::redraw (cairo_t *cr)
 void
 GingaInternal::redrawGL ()
 {
-#if !(ENABLED (OPENGL))
+#if !(defined WITH_OPENGL && WITH_OPENGL)
   WARNING_NOT_IMPLEMENTED ("not compiled with OpenGL support");
 #else
   glMatrixMode(GL_PROJECTION);

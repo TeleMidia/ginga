@@ -77,7 +77,7 @@ ImagePlayer::reload ()
   if (_surface != nullptr)
     {
       cairo_surface_destroy (_surface);
-#if ENABLED (OPENGL)
+#if defined WITH_OPENGL && WITH_OPENGL
       gl_delete_texture (&_gltexture);
 #endif
     }
@@ -90,7 +90,7 @@ ImagePlayer::reload ()
     }
   g_assert_nonnull (_surface);
 
-#if ENABLED (OPENGL)
+#if defined WITH_OPENGL && WITH_OPENGL
   gl_create_texture (&_gltexture,
                      cairo_image_surface_get_width (_surface),
                      cairo_image_surface_get_height (_surface),

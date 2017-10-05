@@ -667,7 +667,7 @@ xpathbuildabs (const string &a, const string &b)
 
 // OpenGL ------------------------------------------------------------------
 
-#if ENABLED (OPENGL)
+#if defined WITH_OPENGL && WITH_OPENGL
 
 /**
  * @brief gl_create_texture Creates a new uninitialized OpenGL texture
