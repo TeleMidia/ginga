@@ -144,24 +144,21 @@ private:
                    ExecutionObjectContext *parentObject);
 
   NclLinkAttributeAssessment *createAttributeAssessment (
-      AttributeAssessment *attributeAssessment, Bind *bind, Link *ncmLink,
+      AttributeAssessment *attributeAssessment, Bind *bind,
       ExecutionObjectContext *parentObject);
 
   NclSimpleAction *
-  createSimpleAction (Action *, Bind *, Link *,
+  createSimpleAction (Action *, Bind *,
                       ExecutionObjectContext *);
 
   NclLinkTriggerCondition *createSimpleCondition (
-      SimpleCondition *condition, Bind *bind, Link *ncmLink,
+      SimpleCondition *condition, Bind *bind,
       ExecutionObjectContext *parentObject);
 
-  NclEvent *createEvent (Bind *bind, Link *ncmLink,
+  NclEvent *createEvent (Bind *bind,
                          ExecutionObjectContext *parentObject);
 
-  GingaTime getDelayParameter (Link *ncmLink, Parameter *connParam,
-                               Bind *ncmBind);
-
-  string getBindKey (Link *ncmLink, Bind *ncmBind);
+  string getBindKey (Bind *ncmBind);
 };
 
 GINGA_FORMATTER_END

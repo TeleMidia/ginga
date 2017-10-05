@@ -116,8 +116,7 @@ private:
   Anchor *parseArea (DOMElement *);
 
   Link *parseLink (DOMElement *, Context *);
-  Parameter *parseLinkParam (DOMElement *);
-  Bind *parseBind (DOMElement *, Link *, Context *);
+  Bind *parseBind (DOMElement *, Link *, map<string, string> *, Context *);
   Parameter *parseBindParam (DOMElement *);
 
   // From ErrorHandler.
