@@ -413,7 +413,8 @@ ginga-gl:               ${WITH_OPENGL}
 set (CPACK_PACKAGE_NAME ginga-idtv)
 set (CPACK_PACKAGE_CONTACT robertogerson@telemidia.puc-rio.br)
 
-install (DIRECTORY Release/ DESTINATION bin)
+install (DIRECTORY ${CMAKE_BINARY_OUTPUT_DIR} DESTINATION bin)
 install (TARGETS ginga DESTINATION bin)
+install (TARGETS gingagui DESTINATION bin)
 include (CPack)
 
