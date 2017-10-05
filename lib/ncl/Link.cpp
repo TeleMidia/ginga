@@ -18,9 +18,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "Link.h"
 
+#include "Action.h"
 #include "AttributeAssessment.h"
 #include "Port.h"
-#include "SimpleAction.h"
 #include "SimpleCondition.h"
 
 GINGA_NCL_BEGIN
@@ -158,8 +158,7 @@ Link::contains (Node *node, bool condition)
           continue;             // skip
         }
 
-      if (instanceof (SimpleAction *, role)
-          && condition)
+      if (instanceof (Action *, role) && condition)
         {
           continue;             // skip
         }
