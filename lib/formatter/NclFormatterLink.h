@@ -35,9 +35,9 @@ class NclFormatterLink :
     public INclActionListener
 {
 public:
-  NclFormatterLink (NclLinkTriggerCondition *condition,
-                    NclAction *_action, Link *ncmLink,
-                    ExecutionObjectContext *parentObj);
+  NclFormatterLink (NclLinkTriggerCondition *,
+                    NclAction *, Link *,
+                    ExecutionObjectContext *);
 
   virtual ~NclFormatterLink ();
 
@@ -61,7 +61,6 @@ private:
   NclLinkTriggerCondition *_condition;
   NclAction *_action;
 };
-
 
 GINGA_FORMATTER_END
 

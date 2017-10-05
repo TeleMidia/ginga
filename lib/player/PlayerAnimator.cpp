@@ -347,7 +347,7 @@ AnimInfo::init (double current)
 void
 AnimInfo::update (void)
 {
-  double _current_time = ginga_gettime ();
+  GingaTime _current_time = ginga_gettime ();
   int dir;
 
   g_assert (_init);

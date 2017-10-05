@@ -35,18 +35,17 @@ public:
   Condition *getCondition ();
   void initCondition (Condition *);
 
-  Action *getAction ();
-  void initAction (Action *);
+  const vector<Action *> *getActions ();
+  bool addAction (Action *);
 
   Role *getRole (const string &);
 
 private:
-  map<string,string> _param;
+  map<string, string> _param;
   Condition *_condition;
-  Action *_action;
+  vector<Action *> _actions;
 
   Role *searchRole (Condition *, const string &);
-  Role *searchRole (Action *, const string &);
 };
 
 GINGA_NCL_END

@@ -750,7 +750,6 @@ Converter::createLink (Link *ncmLink,
 {
   Connector *connector;
   Condition *conditionExpression;
-  Action *actionExp;
   NclLinkCondition *formatterCondition;
   NclAction *formatterAction;
   NclFormatterLink *formatterLink;
@@ -778,11 +777,8 @@ Converter::createLink (Link *ncmLink,
     }
 
   // compile link action
-  actionExp = connector->getAction ();
-  formatterAction = createAction (actionExp, ncmLink, parentObj);
-
-  if (formatterAction == nullptr)
-    return nullptr;
+  formatterAction = createAction (connector, ncmLink, parentObj);
+  g_assert_nonnull (formatterAction);
 
   // create formatter causal link
   formatterLink = new NclFormatterLink (
@@ -869,66 +865,28 @@ Converter::setImplicitRefAssessment (const string &roleId,
 }
 
 NclAction *
-Converter::createAction (Action *actionExp,
-                         Link *ncmLink,
-                         ExecutionObjectContext *parentObj)
+Converter::createAction (Connector *connector,
+                         Link *link,
+                         ExecutionObjectContext *context)
 {
-  vector<Bind *> binds;
-  size_t i, size;
-  string delayObject;
-  NclSimpleAction *simpleAction;
-  NclCompoundAction *compoundAction;
+  NclCompoundAction *compact;
 
-  if (actionExp == nullptr)
-    return nullptr;
+  g_assert_nonnull (connector);
+  g_assert_nonnull (link);
+  g_assert_nonnull (context);
 
-  auto sae = cast (SimpleAction *, actionExp);
-  auto cae = cast (CompoundAction *, actionExp);
-  if (sae) // SimpleAction
+  compact = new NclCompoundAction ();
+  for (auto act: *connector->getActions ())
     {
-      binds = ncmLink->getBinds (sae);
-      size = binds.size ();
-      if (size == 1)
+      for (auto bind: link->getBinds (act))
         {
-          return createSimpleAction (sae, binds[0], ncmLink,
-                                     parentObj);
+          NclSimpleAction *simpleAction;
+          simpleAction = createSimpleAction (act, bind, link, context);
+          g_assert_nonnull (simpleAction);
+          compact->addAction (simpleAction);
         }
-      else if (size > 1)
-        {
-          compoundAction
-            = new NclCompoundAction ();
-
-          for (i = 0; i < size; i++)
-            {
-              simpleAction = createSimpleAction (sae, binds[i], ncmLink, parentObj);
-
-              if (simpleAction == NULL)
-                {
-                  delete compoundAction;
-                  return nullptr;
-                }
-              compoundAction->addAction (simpleAction);
-            }
-
-          return compoundAction;
-        }
-      else
-        {
-          return nullptr;
-        }
-
     }
-  else if (cae) // CompundAction
-    {
-      return createCompoundAction (cae->getActions (), ncmLink,
-                                   parentObj);
-    }
-  else
-    {
-      g_assert_not_reached ();
-    }
-
-  return nullptr;
+  return compact;
 }
 
 NclLinkCondition *
@@ -1150,7 +1108,7 @@ Converter::createAttributeAssessment (
 
 NclSimpleAction *
 Converter::createSimpleAction (
-    SimpleAction *sae, Bind *bind, Link *ncmLink,
+    Action *sae, Bind *bind, Link *ncmLink,
     ExecutionObjectContext *parentObj)
 {
   NclEvent *event;
@@ -1248,27 +1206,6 @@ Converter::createSimpleAction (
     }
 
   g_assert_nonnull (action);
-  return action;
-}
-
-NclCompoundAction *
-Converter::createCompoundAction (const vector<Action *> *ncmChildActions,
-    Link *ncmLink, ExecutionObjectContext *parentObj)
-{
-  NclCompoundAction *action;
-  NclAction *childAction;
-
-  action = new NclCompoundAction ();
-  if (ncmChildActions != nullptr)
-    {
-      for (Action *ncmChildAction: *ncmChildActions)
-        {
-          childAction = createAction (ncmChildAction, ncmLink, parentObj);
-          if (childAction != nullptr)
-            action->addAction (childAction);
-        }
-    }
-
   return action;
 }
 
@@ -1463,40 +1400,6 @@ Converter::getBindKey (Link *ncmLink, Bind *ncmBind)
     }
 
   return key;
-}
-
-GingaTime
-Converter::compileDelay (Link *ncmLink,
-                         const string &delayObject,
-                         Bind *bind)
-{
-  GingaTime delay;
-  string::size_type pos;
-  Parameter *param;
-  string delayValue;
-
-  if (delayObject == "")
-    {
-      delay = 0;
-    }
-  else
-    {
-      pos = delayObject.find ("$");
-      if (pos != std::string::npos && pos == 0)
-        {
-          // instanceof Parameter
-          delayValue = delayObject.substr (1, delayObject.length () - 1);
-          param = new Parameter (delayValue, "");
-          delay = getDelayParameter (ncmLink, param, bind);
-          delete param;
-        }
-      else
-        {
-          delay = (GingaTime)(xstrtod (delayObject) * GINGA_NSECOND);
-        }
-    }
-
-  return delay;
 }
 
 GINGA_FORMATTER_END
