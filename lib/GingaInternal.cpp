@@ -256,21 +256,8 @@ GingaInternal::redrawGL ()
 #if !(defined WITH_OPENGL && WITH_OPENGL)
   WARNING_NOT_IMPLEMENTED ("not compiled with OpenGL support");
 #else
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glViewport (0.0, 0.0, _opts.width, _opts.height);
-  glOrtho (0.0, _opts.width, _opts.height, 0.0, 0.0, 1.0);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
 
-  glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  glEnable (GL_BLEND);
-  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glBlendEquation (GL_FUNC_ADD);
-
-  glEnable (GL_TEXTURE_2D);
+  gl_clear_scene (_opts.width, _opts.height);
 
   GList *l;
 

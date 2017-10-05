@@ -25,6 +25,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-glib.h"
 #include <cairo.h>
 #include <SDL2/SDL.h>
+#define GL_GLEXT_PROTOTYPES 1
+#include <SDL2/SDL_opengles2.h>
 
 PRAGMA_DIAG_PUSH ()
 PRAGMA_DIAG_IGNORE (-Wvariadic-macros)
@@ -33,6 +35,7 @@ PRAGMA_DIAG_IGNORE (-Wvariadic-macros)
 PRAGMA_DIAG_POP ()
 
 #include "ginga.h"
+#include "aux-ginga.h"
 
 using namespace ::std;
 
@@ -248,8 +251,8 @@ main (int argc, char **argv)
 
   SDL_GL_CreateContext (window);
   SDL_GL_SetSwapInterval (1);
-  string errmsg;
 
+  string errmsg;
   if (!GINGA->start (string (saved_argv[1]), &errmsg))
     {
       g_printerr ("error: ");
@@ -258,6 +261,8 @@ main (int argc, char **argv)
 
       g_printerr ("%s\n", errmsg.c_str ());
     }
+
+  gl_init ();
 
   SDL_Event event;
   bool quit = false;
@@ -287,6 +292,7 @@ main (int argc, char **argv)
       GINGA->redrawGL ();
 
       SDL_GL_SwapWindow (window);
+      SDL_Delay (11);
     }
 
   GINGA->stop ();
