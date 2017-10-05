@@ -94,8 +94,9 @@ private:
   AssessmentStatement *parseAssessmentStatement (DOMElement *);
   AttributeAssessment *parseAttributeAssessment (DOMElement *);
   ValueAssessment *parseValueAssessment (DOMElement *);
-  CompoundAction *parseCompoundAction (DOMElement *);
-  SimpleAction *parseSimpleAction (DOMElement *);
+
+  void parseCompoundAction (Connector *, DOMElement *);
+  void parseSimpleAction (Connector *, DOMElement *);
 
   Context *parseBody (DOMElement *);
   void solveNodeReferences (Composition *);
