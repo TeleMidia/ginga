@@ -372,12 +372,14 @@ if(DOXYGEN_FOUND)
 endif(DOXYGEN_FOUND)
 
 enable_testing ()
+add_custom_target (check COMMAND ${CMAKE_CTEST_COMMAND})
 macro (add_ginga_test target)
-  add_executable (${target} ${ARGN})
-  target_link_libraries (${target} libginga)
+  add_executable (${target} EXCLUDE_FROM_ALL ${ARGN})
+  target_link_libraries (${target} PRIVATE libginga)
   set_target_properties (${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY
                          ${GINGA_BINARY_TESTS_DIR})
   add_test (${target} tests/${target})
+  add_dependencies (check ${target})
 endmacro ()
 
 file(GLOB GINGA_TESTS_SRC
