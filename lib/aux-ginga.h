@@ -236,21 +236,22 @@ void
 gl_create_texture (GLuint *);
 
 void
-gl_create_texture (GLuint *gltex, int tex_w, int tex_h, unsigned char *data);
+gl_create_texture (GLuint *, int, int, unsigned char *);
 
 void
 gl_delete_texture (GLuint *);
 
 void
-gl_update_texture (GLuint, cairo_surface_t *);
-
-void
 gl_update_texture (GLuint, int, int, unsigned char*);
 
 void
-gl_update_subtexture (GLuint gltex,
-                      int xoffset, int yoffset, int width, int height,
-                      unsigned char *data);
+gl_update_subtexture (GLuint, int, int, int, int, unsigned char *);
+
+void
+gl_draw_quad (int, int, int, int, GLuint, GLfloat a = 1.0f);
+
+void
+gl_draw_quad (int, int, int, int, GLfloat, GLfloat, GLfloat, GLfloat);
 #endif
 
 #endif // AUX_GINGA_H
