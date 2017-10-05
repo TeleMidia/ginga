@@ -34,15 +34,15 @@ public:
   Node *getNode ();
   Anchor *getInterface ();
 
-  void addParameter (Parameter *);
-  const vector<Parameter *> *getParameters ();
-  Parameter *getParameter (const string &);
+  const map<string, string> *getParameters ();
+  string getParameter (const string &);
+  void setParameter (const string &, const string &);
 
 private:
   Role *_role;
   Node *_node;
   Anchor *_interface;
-  vector<Parameter *> _parameters;
+  map<string, string> _params;
 };
 
 GINGA_NCL_END

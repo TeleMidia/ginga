@@ -1820,7 +1820,7 @@ ParserXercesC::parseSwitch (DOMElement *elt)
 
 Node *
 ParserXercesC::parseBindRule (DOMElement *elt, Composition *parent,
-                       Rule **rule)
+                              Rule **rule)
 {
   Node *node;
   string constituent;
@@ -2057,6 +2057,7 @@ ParserXercesC::parseLink (DOMElement *elt, Context *context)
   string id;
   string xconn;
   Connector *conn;
+  map<string, string> params;
 
   CHECK_ELT_TAG (elt, "link", nullptr);
   CHECK_ELT_OPT_ID_AUTO (elt, &id, link);
@@ -2067,8 +2068,8 @@ ParserXercesC::parseLink (DOMElement *elt, Context *context)
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "xconnector");
 
   link = new Link (_doc, id);
-  link->initConnector (conn);
   context->addLink (link);
+  g_assert (link->initConnector (conn));
 
   // Collect children.
   for (DOMElement *child: dom_elt_get_children (elt))
@@ -2076,11 +2077,15 @@ ParserXercesC::parseLink (DOMElement *elt, Context *context)
       string tag = dom_elt_get_tag (child);
       if (tag == "linkParam")
         {
-          link->addParameter (this->parseLinkParam (child));
+          string name, value;
+          CHECK_ELT_TAG (elt, "linkParam", nullptr);
+          CHECK_ELT_ATTRIBUTE (elt, "name", &name);
+          CHECK_ELT_ATTRIBUTE (elt, "value", &value);
+          params[name] = value;
         }
       else if (tag == "bind")
         {
-          g_assert_nonnull (this->parseBind (child, link, context));
+          g_assert_nonnull (this->parseBind (child, link, &params, context));
         }
       else
         {
@@ -2090,19 +2095,9 @@ ParserXercesC::parseLink (DOMElement *elt, Context *context)
   return link;
 }
 
-Parameter *
-ParserXercesC::parseLinkParam (DOMElement *elt)
-{
-  string name;
-  string value;
-  CHECK_ELT_TAG (elt, "linkParam", nullptr);
-  CHECK_ELT_ATTRIBUTE (elt, "name", &name);
-  CHECK_ELT_ATTRIBUTE (elt, "value", &value);
-  return new Parameter (name, value);
-}
-
 Bind *
-ParserXercesC::parseBind (DOMElement *elt, Link *link, Context *context)
+ParserXercesC::parseBind (DOMElement *elt, Link *link,
+                          map<string, string> *params, Context *context)
 {
   Bind *bind;
   string label;
@@ -2203,6 +2198,8 @@ ParserXercesC::parseBind (DOMElement *elt, Link *link, Context *context)
   g_assert_nonnull (role);
 
   bind = new Bind (role, target, iface);
+  for (auto it: *params)
+    bind->setParameter (it.first, it.second);
   link->addBind (bind);
 
   // Collect children.
@@ -2211,7 +2208,8 @@ ParserXercesC::parseBind (DOMElement *elt, Link *link, Context *context)
       string tag = dom_elt_get_tag (child);
       if (tag == "bindParam")
         {
-          bind->addParameter (this->parseBindParam (child));
+          Parameter *par = this->parseBindParam (child);
+          bind->setParameter (par->getName (), par->getValue ());
         }
       else
         {

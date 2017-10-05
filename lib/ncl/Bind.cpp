@@ -42,11 +42,11 @@ Bind::Bind (Role *role, Node *comp, Anchor *iface)
  */
 Bind::~Bind ()
 {
-  _parameters.clear ();
 }
 
 /**
  * @brief Gets role.
+ * @return Role.
  */
 Role *
 Bind::getRole ()
@@ -56,6 +56,7 @@ Bind::getRole ()
 
 /**
  * @brief Gets component.
+ * @return Component.
  */
 Node *
 Bind::getNode ()
@@ -65,6 +66,7 @@ Bind::getNode ()
 
 /**
  * @brief Gets interface.
+ * @return Interface.
  */
 Anchor *
 Bind::getInterface ()
@@ -73,37 +75,37 @@ Bind::getInterface ()
 }
 
 /**
- * @brief Adds parameter to bind.
- * @param parameter Parameter.
+ * @brief Gets parameters.
+ * @return Parameters.
  */
-void
-Bind::addParameter (Parameter *parameter)
-{
-  g_assert_nonnull (parameter);
-  _parameters.push_back (parameter);
-}
-
-/**
- * @brief Gets all parameters.
- */
-const vector<Parameter *> *
+const map<string, string> *
 Bind::getParameters ()
 {
-  return &_parameters;
+  return &_params;
 }
 
 /**
  * @brief Gets parameter.
  * @param name Parameter name.
- * @return Parameter if successful, or null if not found.
+ * @return Parameter value.
  */
-Parameter *
+string
 Bind::getParameter (const string &name)
 {
-  for (auto param: _parameters)
-    if (param->getName () == name)
-      return param;
-  return nullptr;
+  map<string, string>::iterator it;
+  return ((it = _params.find (name)) != _params.end ())
+    ? it->second : "";
+}
+
+/**
+ * @brief Sets parameter.
+ * @param name Parameter name.
+ * @param value Parameter value.
+ */
+void
+Bind::setParameter (const string &name, const string &value)
+{
+  _params[name] = value;
 }
 
 GINGA_NCL_END
