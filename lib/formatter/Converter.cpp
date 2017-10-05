@@ -1110,7 +1110,7 @@ Converter::createAttributeAssessment (
 
 NclSimpleAction *
 Converter::createSimpleAction (
-    SimpleAction *sae, Bind *bind, Link *ncmLink,
+    Action *sae, Bind *bind, Link *ncmLink,
     ExecutionObjectContext *parentObj)
 {
   NclEvent *event;

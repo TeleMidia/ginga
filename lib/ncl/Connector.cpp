@@ -18,10 +18,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "Connector.h"
 
+#include "Action.h"
 #include "AssessmentStatement.h"
-#include "CompoundAction.h"
 #include "CompoundCondition.h"
-#include "SimpleAction.h"
 #include "SimpleCondition.h"
 
 GINGA_NCL_BEGIN
@@ -71,7 +70,7 @@ Connector::initCondition (Condition *condition)
  * @brief Gets connector actions.
  * @return Connector actions.
  */
-const vector<SimpleAction *> *
+const vector<Action *> *
 Connector::getActions ()
 {
   return &_actions;
@@ -83,7 +82,7 @@ Connector::getActions ()
  * @return True if successful, or false otherwise.
  */
 bool
-Connector::addAction (SimpleAction *action)
+Connector::addAction (Action *action)
 {
   for (auto act: _actions)
     if (act == action)

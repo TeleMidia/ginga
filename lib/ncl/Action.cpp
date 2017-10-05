@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
-#include "SimpleAction.h"
+#include "Action.h"
 
 GINGA_NCL_BEGIN
 
@@ -29,14 +29,14 @@ GINGA_NCL_BEGIN
  * @param value Value.
  * @param duration Duration.
  */
-SimpleAction::SimpleAction (EventType type,
-                            EventStateTransition actType,
-                            const string &label,
-                            const string &delay,
-                            const string &value,
-                            const string &duration)
+Action::Action (EventType type,
+                EventStateTransition actType,
+                const string &label,
+                const string &delay,
+                const string &value,
+                const string &duration)
 
-  : Action (), Role (type, label)
+  : Role (type, label)
 {
   _actionType = actType;
   _delay = delay;
@@ -47,7 +47,7 @@ SimpleAction::SimpleAction (EventType type,
 /**
  * @brief Destroys simple action.
  */
-SimpleAction::~SimpleAction ()
+Action::~Action ()
 {
 }
 
@@ -55,7 +55,7 @@ SimpleAction::~SimpleAction ()
  * @brief Gets simple action type.
  */
 EventStateTransition
-SimpleAction::getActionType ()
+Action::getActionType ()
 {
   return _actionType;
 }
@@ -64,7 +64,7 @@ SimpleAction::getActionType ()
  * @brief Gets simple action delay.
  */
 string
-SimpleAction::getDelay ()
+Action::getDelay ()
 {
   return _delay;
 }
@@ -73,7 +73,7 @@ SimpleAction::getDelay ()
  * @brief Gets simple action value.
  */
 string
-SimpleAction::getValue ()
+Action::getValue ()
 {
   return _value;
 }
@@ -82,7 +82,7 @@ SimpleAction::getValue ()
  * @brief Gets simple action duration.
  */
 string
-SimpleAction::getDuration ()
+Action::getDuration ()
 {
   return _duration;
 }
@@ -97,9 +97,9 @@ SimpleAction::getDuration ()
  * @return True if successful, or false otherwise.
  */
 bool
-SimpleAction::isReserved (const string &role,
-                          EventType *type,
-                          EventStateTransition *trans)
+Action::isReserved (const string &role,
+                    EventType *type,
+                    EventStateTransition *trans)
 {
   static map<string, pair<int,int>> reserved =
     {

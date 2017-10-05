@@ -148,8 +148,8 @@ private:
       ExecutionObjectContext *parentObject);
 
   NclSimpleAction *
-  createSimpleAction (SimpleAction *sae, Bind *bind, Link *ncmLink,
-                      ExecutionObjectContext *parentObject);
+  createSimpleAction (Action *, Bind *, Link *,
+                      ExecutionObjectContext *);
 
   NclLinkTriggerCondition *createSimpleCondition (
       SimpleCondition *condition, Bind *bind, Link *ncmLink,

@@ -1421,7 +1421,7 @@ ParserXercesC::parseSimpleAction (Connector *conn, DOMElement *elt)
   type = (EventType) -1;
   acttype = (EventStateTransition) -1;
 
-  SimpleAction::isReserved (role, &type, &acttype);
+  Action::isReserved (role, &type, &acttype);
 
   if (dom_elt_try_get_attribute (str, elt, "eventType"))
     {
@@ -1458,8 +1458,7 @@ ParserXercesC::parseSimpleAction (Connector *conn, DOMElement *elt)
   g_assert (type != (EventType) -1);
   g_assert (acttype != (EventStateTransition) -1);
 
-  SimpleAction *act = new SimpleAction
-    (type, acttype, role, delay, value, duration);
+  Action *act = new Action (type, acttype, role, delay, value, duration);
   g_assert (conn->addAction (act));
 }
 

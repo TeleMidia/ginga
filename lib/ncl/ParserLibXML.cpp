@@ -1017,7 +1017,7 @@ ncl_push_simpleConditionOrAction (ParserLibXML_State *st,
     }
   else
     {
-      reserved = SimpleAction::isReserved (role, &type, &trans);
+      reserved = Action::isReserved (role, &type, &trans);
       transname = "actionType";
     }
 
@@ -1070,11 +1070,11 @@ ncl_push_simpleConditionOrAction (ParserLibXML_State *st,
       string delay;
       string value;
       string duration;
-      SimpleAction *act;
+      Action *act;
       delay = ncl_attrmap_opt_get (attr, "delay", "");
       value = ncl_attrmap_opt_get (attr, "key", "");
       duration = ncl_attrmap_opt_get (attr, "duration", "");
-      act = new SimpleAction (type, trans, role, delay, value, duration);
+      act = new Action (type, trans, role, delay, value, duration);
       parent->addAction (act);
     }
   return true;
