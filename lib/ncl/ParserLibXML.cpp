@@ -986,7 +986,7 @@ ncl_pop_causalConnector (unused (ParserLibXML_State *st),
 
   if (unlikely (conn->getCondition () == nullptr))
     return ST_ERR_ELT_MISSING_CHILD (st, elt, "simpleCondition");
-  if (unlikely (conn->getAction () == nullptr))
+  if (unlikely ((conn->getActions ())->size ()  == 0))
     return ST_ERR_ELT_MISSING_CHILD (st, elt, "simpleAction");
 
   return true;
@@ -1075,7 +1075,7 @@ ncl_push_simpleConditionOrAction (ParserLibXML_State *st,
       value = ncl_attrmap_opt_get (attr, "key", "");
       duration = ncl_attrmap_opt_get (attr, "duration", "");
       act = new SimpleAction (type, trans, role, delay, value, duration);
-      parent->initAction (act);
+      parent->addAction (act);
     }
   return true;
 }

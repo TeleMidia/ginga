@@ -46,7 +46,7 @@ public:
   virtual vector<NclEvent *> getEvents () = 0;
   virtual vector<NclAction *> getImplicitRefRoleActions () = 0;
 
-  void run (NclLinkCondition *satisfiedCondition);
+  void run (NclLinkCondition *);
 
   virtual void run () = 0;
 

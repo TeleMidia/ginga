@@ -1125,12 +1125,12 @@ ParserXercesC::parseCausalConnector (DOMElement *elt)
         }
       else if (tag == "simpleAction")
         {
-          conn->initAction (this->parseSimpleAction (child));
+          this->parseSimpleAction (conn, child);
           nact++;
         }
       else if (tag == "compoundAction")
         {
-          conn->initAction (this->parseCompoundAction (child));
+          this->parseCompoundAction (conn, child);
           nact++;
         }
       else if (tag == "connectorParam")
@@ -1371,16 +1371,13 @@ ParserXercesC::parseValueAssessment (DOMElement *elt)
   return new ValueAssessment (value);
 }
 
-CompoundAction *
-ParserXercesC::parseCompoundAction (DOMElement *elt)
+void
+ParserXercesC::parseCompoundAction (Connector *conn, DOMElement *elt)
 {
-  CompoundAction *action;
   string value;
 
   CHECK_ELT_TAG (elt, "compoundAction", nullptr);
   CHECK_ELT_ATTRIBUTE_NOT_SUPPORTED (elt, "delay");
-
-  action = new CompoundAction ();
 
   // Collect children.
   for (DOMElement *child: dom_elt_get_children (elt))
@@ -1388,22 +1385,21 @@ ParserXercesC::parseCompoundAction (DOMElement *elt)
       string tag = dom_elt_get_tag (child);
       if (tag == "simpleAction")
         {
-          action->addAction (this->parseSimpleAction (child));
+          this->parseSimpleAction (conn, child);
         }
       else if (tag == "compoundAction")
         {
-          action->addAction (this->parseCompoundAction (child));
+          this->parseCompoundAction (conn, child);
         }
       else
         {
           ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
         }
     }
-  return action;
 }
 
-SimpleAction *
-ParserXercesC::parseSimpleAction (DOMElement *elt)
+void
+ParserXercesC::parseSimpleAction (Connector *conn, DOMElement *elt)
 {
   string str;
   string tag;
@@ -1462,8 +1458,9 @@ ParserXercesC::parseSimpleAction (DOMElement *elt)
   g_assert (type != (EventType) -1);
   g_assert (acttype != (EventStateTransition) -1);
 
-  return new SimpleAction ((EventType) type, (EventStateTransition) acttype,
-                           role, delay, value, duration);
+  SimpleAction *act = new SimpleAction
+    (type, acttype, role, delay, value, duration);
+  g_assert (conn->addAction (act));
 }
 
 

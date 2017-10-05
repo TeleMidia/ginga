@@ -120,9 +120,7 @@ private:
   void setImplicitRefAssessment (const string &roleId, Link *ncmLink,
                                  NclEvent *event);
 
-  NclAction *createAction (Action *actionExpression,
-                               Link *ncmLink,
-                               ExecutionObjectContext *parentObject);
+  NclAction *createAction (Connector *, Link *, ExecutionObjectContext *);
 
   NclLinkCondition *
   createCondition (Condition *ncmExpression, Link *ncmLink,
@@ -153,9 +151,6 @@ private:
   createSimpleAction (SimpleAction *sae, Bind *bind, Link *ncmLink,
                       ExecutionObjectContext *parentObject);
 
-  NclCompoundAction *createCompoundAction (const vector<Action *> *ncmChildActions,
-      Link *ncmLink, ExecutionObjectContext *parentObject);
-
   NclLinkTriggerCondition *createSimpleCondition (
       SimpleCondition *condition, Bind *bind, Link *ncmLink,
       ExecutionObjectContext *parentObject);
@@ -167,9 +162,6 @@ private:
                                Bind *ncmBind);
 
   string getBindKey (Link *ncmLink, Bind *ncmBind);
-
-  GingaTime
-  compileDelay (Link *ncmLink, const string &delayObject,Bind *bind);
 };
 
 GINGA_FORMATTER_END

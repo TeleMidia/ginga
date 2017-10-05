@@ -37,7 +37,6 @@ GINGA_NCL_BEGIN
 Connector::Connector (NclDocument *ncl, const string &id) : Entity (ncl, id)
 {
   _condition = nullptr;
-  _action = nullptr;
 }
 
 /**
@@ -45,9 +44,7 @@ Connector::Connector (NclDocument *ncl, const string &id) : Entity (ncl, id)
  */
 Connector::~Connector ()
 {
-  //_parameters.clear ();
   delete _condition;
-  delete _action;
 }
 
 /**
@@ -71,23 +68,28 @@ Connector::initCondition (Condition *condition)
 }
 
 /**
- * @brief Gets connector action.
+ * @brief Gets connector actions.
+ * @return Connector actions.
  */
-Action *
-Connector::getAction ()
+const vector<SimpleAction *> *
+Connector::getActions ()
 {
-  return _action;
+  return &_actions;
 }
 
 /**
- * @brief Initializes connector action.
+ * @brief Adds action to connector.
+ * @param action Action to add.
+ * @return True if successful, or false otherwise.
  */
-void
-Connector::initAction (Action *action)
+bool
+Connector::addAction (SimpleAction *action)
 {
-  g_assert_nonnull (action);
-  g_assert_null (_action);
-  _action = action;
+  for (auto act: _actions)
+    if (act == action)
+      return false;
+  _actions.push_back (action);
+  return true;
 }
 
 /**
@@ -101,7 +103,10 @@ Connector::getRole (const string &label)
   Role *role = this->searchRole (_condition, label);
   if (role != nullptr)
     return role;
-  return this->searchRole (_action, label);
+  for (auto act: _actions)
+    if (act->getLabel () == label)
+      return act;
+  return nullptr;
 }
 
 
@@ -157,38 +162,6 @@ Connector::searchRole (Condition *cond, const string &label)
       CompoundStatement *parent = cast (CompoundStatement *, cond);
       g_assert_nonnull (parent);
       for (auto child: *parent->getStatements ())
-        {
-          role = this->searchRole (child, label);
-          if (role != nullptr)
-            return role;
-        }
-    }
-  else
-    {
-      g_assert_not_reached ();
-    }
-
-  return nullptr;               // not found
-}
-
-Role *
-Connector::searchRole (Action *act, const string &label)
-{
-  Role *role;
-
-  g_assert (instanceof (Action *, act));
-
-  if (instanceof (SimpleAction *, act))
-    {
-      role = cast (Role *, act);
-      g_assert_nonnull (role);
-      if (role->getLabel () == label)
-        return role;
-    }
-  else if (instanceof (CompoundAction *, act))
-    {
-      CompoundAction *parent = cast (CompoundAction *, act);
-      for (auto child: *parent->getActions ())
         {
           role = this->searchRole (child, label);
           if (role != nullptr)
