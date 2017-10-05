@@ -128,6 +128,7 @@ set (LIBGINGA_SOURCES
   ../lib/formatter/RuleAdapter.cpp
   ../lib/formatter/Scheduler.cpp
 
+  ../lib/ncl/Action.cpp
   ../lib/ncl/Area.cpp
   ../lib/ncl/AreaLabeled.cpp
   ../lib/ncl/AssessmentStatement.cpp
@@ -136,7 +137,6 @@ set (LIBGINGA_SOURCES
   ../lib/ncl/Bind.cpp
   ../lib/ncl/CompositeRule.cpp
   ../lib/ncl/Composition.cpp
-  ../lib/ncl/CompoundAction.cpp
   ../lib/ncl/CompoundCondition.cpp
   ../lib/ncl/CompoundStatement.cpp
   ../lib/ncl/Connector.cpp
@@ -160,7 +160,6 @@ set (LIBGINGA_SOURCES
   ../lib/ncl/RegionBase.cpp
   ../lib/ncl/Role.cpp
   ../lib/ncl/RuleBase.cpp
-  ../lib/ncl/SimpleAction.cpp
   ../lib/ncl/SimpleCondition.cpp
   ../lib/ncl/SimpleRule.cpp
   ../lib/ncl/Switch.cpp
