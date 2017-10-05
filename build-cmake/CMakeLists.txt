@@ -11,6 +11,12 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 set (CMAKE_INCLUDE_CURRENTDIR ON)
+if (UNIX)
+  add_definitions(-Wextra -Wall)
+endif()
+
+set (GINGA_BINARY_DIR ${CMAKE_BINARY_DIR}/bin)
+set (GINGA_BINARY_TESTS_DIR ${CMAKE_BINARY_DIR}/tests)
 
 # Find dependencies
 find_package (GLIB 2.32 REQUIRED)
@@ -258,6 +264,8 @@ set (GINGAGUI_GTK_INCLUDE_DIRS
   ${GTK3_INCLUDE_DIRS}
 )
 
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${GINGA_BINARY_DIR})
+
 # libginga target
 add_library (libginga STATIC ${LIBGINGA_SOURCES})
 add_dependencies (libginga nclua_build)
@@ -283,7 +291,7 @@ if (WITH_OPENGL)
     ${SDL2_LIBRARY}
     ${SDL2_IMAGE_LIBRARIES}
   )
-  set_target_properties (gingagl PROPERTIES RUNTIME_OUTPUT_DIRECTORY bin/)
+
 endif ()
 
 # gingagui target
@@ -291,7 +299,6 @@ if (WITH_GINGAGUI_GTK)
   add_executable (gingagui ${GINGAGUI_GTK_SOURCES})
   target_include_directories (gingagui PRIVATE ${GINGAGUI_GTK_INCLUDE_DIRS})
   target_link_libraries (gingagui PRIVATE libginga ${GTK3_LIBRARIES})
-  set_target_properties(gingagui PROPERTIES RUNTIME_OUTPUT_DIRECTORY bin/)
 endif()
 
 # nclcomposer's run-view target
@@ -327,8 +334,6 @@ if (WITH_RUNVIEW)
 
     ${LIBGINGA_INCLUDE_DIRS}
   )
-
-  set_target_properties(runview PROPERTIES RUNTIME_OUTPUT_DIRECTORY bin/)
 endif ()
 
 # Copy datafiles to build dir
@@ -340,7 +345,6 @@ add_custom_target (copy-data-files ALL
 # Set rpath so that libraries can be placed next to the executable.
 set_target_properties (ginga PROPERTIES INSTALL_RPATH "$ORIGIN")
 set_target_properties (ginga PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
-set_target_properties (ginga PROPERTIES RUNTIME_OUTPUT_DIRECTORY bin/)
 
 if (WITH_CEF)
   # Copy binary and resource files to the target output directory.
@@ -367,13 +371,12 @@ if(DOXYGEN_FOUND)
   )
 endif(DOXYGEN_FOUND)
 
-
 enable_testing ()
 macro (add_ginga_test target)
   add_executable (${target} ${ARGN})
   target_link_libraries (${target} libginga)
-  set_target_properties (${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY tests/)
-
+  set_target_properties (${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY
+                         ${GINGA_BINARY_TESTS_DIR})
   add_test (${target} tests/${target})
 endmacro ()
 
