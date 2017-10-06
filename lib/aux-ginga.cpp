@@ -865,10 +865,11 @@ gl_delete_texture (GLuint *gltex)
 void
 gl_update_texture (GLuint gltex, int tex_w, int tex_h, unsigned char *data)
 {
-  glActiveTexture (gltex);
+  g_assert (gltex > 0);
+  glBindTexture (GL_TEXTURE_2D, gltex);
   glTexImage2D (GL_TEXTURE_2D, 0, 4,
                 tex_w, tex_h, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, data);
-
+  glBindTexture (GL_TEXTURE_2D, 0);
   CHECK_GL_ERROR ();
 }
 
