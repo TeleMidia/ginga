@@ -66,161 +66,170 @@ ncls+= xfail-test-syntax-ncl-bad-child.ncl
 # Test programs.
 progs=
 
-progs+= xfail-test-xstrtod
-xfail_test_xstrtod_SOURCES= xfail-test-xstrtod.cpp
+# lib/aux-ginga.h ----------------------------------------------------------
+progs+= xfail-test-aux-xstrtod
+xfail_test_aux_xstrtod_SOURCES= xfail-test-aux-xstrtod.cpp
 
-progs+= test-ginga-parse-bool
-test_ginga_parse_bool_SOURCES= test-ginga-parse-bool.cpp
+progs+= test-aux-ginga-parse-bool
+test_aux_ginga_parse_bool_SOURCES= test-aux-ginga-parse-bool.cpp
 
-progs+= test-ginga-parse-color
-test_ginga_parse_color_SOURCES= test-ginga-parse-color.cpp
+progs+= test-aux-ginga-parse-color
+test_aux_ginga_parse_color_SOURCES= test-aux-ginga-parse-color.cpp
 
-progs+= test-ginga-parse-list
-test_ginga_parse_list_SOURCES= test-ginga-parse-list.cpp
+progs+= test-aux-ginga-parse-list
+test_aux_ginga_parse_list_SOURCES= test-aux-ginga-parse-list.cpp
 
-progs+= test-ginga-parse-percent
-test_ginga_parse_percent_SOURCES= test-ginga-parse-percent.cpp
+progs+= test-aux-ginga-parse-percent
+test_aux_ginga_parse_percent_SOURCES= test-aux-ginga-parse-percent.cpp
 
-progs+= test-ginga-parse-time
-test_ginga_parse_time_SOURCES= test-ginga-parse-time.cpp
+progs+= test-aux-ginga-parse-time
+test_aux_ginga_parse_time_SOURCES= test-aux-ginga-parse-time.cpp
 
-progs+= test-xstrispercent
-test_xstrispercent_SOURCES= test-xstrispercent.cpp
+progs+= test-aux-xstrispercent
+test_aux_xstrispercent_SOURCES= test-aux-xstrispercent.cpp
 
-progs+= test-xstrtodorpercent
-test_xstrtodorpercent_SOURCES= test-xstrtodorpercent.cpp
+progs+= test-aux-xstrtodorpercent
+test_aux_xstrtodorpercent_SOURCES= test-aux-xstrtodorpercent.cpp
 
-progs+= test-xstrcasecmp
-test_xstrcasecmp_SOURCES= test-xstrcasecmp.cpp
+progs+= test-aux-xstrcasecmp
+test_aux_xstrcasecmp_SOURCES= test-aux-xstrcasecmp.cpp
 
-progs+= test-xstrcaseeq
-test_xstrcaseeq_SOURCES= test-xstrcaseeq.cpp
+progs+= test-aux-xstrcaseeq
+test_aux_xstrcaseeq_SOURCES= test-aux-xstrcaseeq.cpp
 
-progs+= test-xstrhasprefix
-test_xstrhasprefix_SOURCES= test-xstrhasprefix.cpp
+progs+= test-aux-xstrhasprefix
+test_aux_xstrhasprefix_SOURCES= test-aux-xstrhasprefix.cpp
 
-progs+= test-xstrhassuffix
-test_xstrhassuffix_SOURCES= test-xstrhassuffix.cpp
+progs+= test-aux-xstrhassuffix
+test_aux_xstrhassuffix_SOURCES= test-aux-xstrhassuffix.cpp
 
-progs+= test-xstrup
-test_xstrup_SOURCES= test-xstrup.cpp
+progs+= test-aux-xstrup
+test_aux_xstrup_SOURCES= test-aux-xstrup.cpp
 
-progs+= test-xstrdown
-test_xstrdown_SOURCES= test-xstrdown.cpp
+progs+= test-aux-xstrdown
+test_aux_xstrdown_SOURCES= test-aux-xstrdown.cpp
 
-progs+= test-xstrstrip
-test_xstrstrip_SOURCES= test-xstrstrip.cpp
+progs+= test-aux-xstrstrip
+test_aux_xstrstrip_SOURCES= test-aux-xstrstrip.cpp
 
-progs+= test-xstrsplit
-test_xstrsplit_SOURCES= test-xstrsplit.cpp
+progs+= test-aux-xstrsplit
+test_aux_xstrsplit_SOURCES= test-aux-xstrsplit.cpp
 
-progs+= test-xpathbasename
-test_xpathbasename_SOURCES= test-xpathbasename.cpp
+progs+= test-aux-xpathbasename
+test_aux_xpathbasename_SOURCES= test-aux-xpathbasename.cpp
 
-progs+= test-xpathdirname
-test_xpathdirname_SOURCES= test-xpathdirname.cpp
+progs+= test-aux-xpathdirname
+test_aux_xpathdirname_SOURCES= test-aux-xpathdirname.cpp
 
-progs+= test-xpathisabs
-test_xpathisabs_SOURCES= test-xpathisabs.cpp
+progs+= test-aux-xpathisabs
+test_aux_xpathisabs_SOURCES= test-aux-xpathisabs.cpp
 
-progs+= test-xpathisuri
-test_xpathisuri_SOURCES= test-xpathisuri.cpp
+progs+= test-aux-xpathisuri
+test_aux_xpathisuri_SOURCES= test-aux-xpathisuri.cpp
 
-progs+= test-xpathmakeabs
-test_xpathmakeabs_SOURCES= test-xpathmakeabs.cpp
+progs+= test-aux-xpathmakeabs
+test_aux_xpathmakeabs_SOURCES= test-aux-xpathmakeabs.cpp
 
-progs+= test-xpathbuild
-test_xpathbuild_SOURCES= test-xpathbuild.cpp
+progs+= test-aux-xpathbuild
+test_aux_xpathbuild_SOURCES= test-aux-xpathbuild.cpp
 
-progs+= test-xpathbuildabs
-test_xpathbuildabs_SOURCES= test-xpathbuildabs.cpp
+progs+= test-aux-xpathbuildabs
+test_aux_xpathbuildabs_SOURCES= test-aux-xpathbuildabs.cpp
 
-progs+= test-xstrtod
-test_xstrtod_SOURCES= test-xstrtod.cpp
+progs+= test-aux-xstrtod
+test_aux_xstrtod_SOURCES= test-aux-xstrtod.cpp
 
-progs+= test-xstrtoll
-test_xstrtoll_SOURCES= test-xstrtoll.cpp
+progs+= test-aux-xstrtoll
+test_aux_xstrtoll_SOURCES= test-aux-xstrtoll.cpp
 
-progs+= test-xstrassign
-test_xstrassign_SOURCES= test-xstrassign.cpp
+progs+= test-aux-xstrassign
+test_aux_xstrassign_SOURCES= test-aux-xstrassign.cpp
 
-progs+= test-xstrbuild
-test_xstrbuild_SOURCES= test-xstrbuild.cpp
+progs+= test-aux-xstrbuild
+test_aux_xstrbuild_SOURCES= test-aux-xstrbuild.cpp
 
-progs+= test-ginga-version
-test_ginga_version_SOURCES= test-ginga-version.cpp
+# lib/GingaInternal.h ------------------------------------------------------
+progs+= test-GingaInternal-getData
+test_GingaInternal_getData_SOURCES= test-GingaInternal-getData.cpp
 
-progs+= test-ginga-create
-test_ginga_create_SOURCES= test-ginga-create.cpp
+progs+= test-GingaInternal-setData
+test_GingaInternal_setData_SOURCES= test-GingaInternal-setData.cpp
 
-progs+= test-ginga-getOptions
-test_ginga_getOptions_SOURCES= test-ginga-getOptions.cpp
-
-progs+= test-ginga-getOptionBool
-test_ginga_getOptionBool_SOURCES= test-ginga-getOptionBool.cpp
-
-progs+= test-ginga-setOptionBool
-test_ginga_setOptionBool_SOURCES= test-ginga-setOptionBool.cpp
-
-progs+= xfail-test-ginga-getOptionBool
-xfail_test_ginga_getOptionBool_SOURCES= xfail-test-ginga-getOptionBool.cpp
-
-progs+= xfail-test-ginga-setOptionBool
-xfail_test_ginga_setOptionBool_SOURCES= xfail-test-ginga-setOptionBool.cpp
-
-progs+= test-ginga-getOptionInt
-test_ginga_getOptionInt_SOURCES= test-ginga-getOptionInt.cpp
-
-progs+= test-ginga-setOptionInt
-test_ginga_setOptionInt_SOURCES= test-ginga-setOptionInt.cpp
-
-progs+= xfail-test-ginga-getOptionInt
-xfail_test_ginga_getOptionInt_SOURCES= xfail-test-ginga-getOptionInt.cpp
-
-progs+= xfail-test-ginga-setOptionInt
-xfail_test_ginga_setOptionInt_SOURCES= xfail-test-ginga-setOptionInt.cpp
-
-progs+= test-ginga-getOptionString
-test_ginga_getOptionString_SOURCES= test-ginga-getOptionString.cpp
-
-progs+= test-ginga-setOptionString
-test_ginga_setOptionString_SOURCES= test-ginga-setOptionString.cpp
-
-progs+= xfail-test-ginga-getOptionString
-xfail_test_ginga_getOptionString_SOURCES= xfail-test-ginga-getOptionString.cpp
-
-progs+= xfail-test-ginga-setOptionString
-xfail_test_ginga_setOptionString_SOURCES= xfail-test-ginga-setOptionString.cpp
-
+# lib/ncl/ParserLibXML.h ---------------------------------------------------
 progs+= test-ParserLibXML-parseFile
 test_ParserLibXML_parseFile_SOURCES= test-ParserLibXML-parseFile.cpp
 
 progs+= test-ParserLibXML-parseBuffer
 test_ParserLibXML_parseBuffer_SOURCES= test-ParserLibXML-parseBuffer.cpp
 
-progs+= test-GingaState-getData
-test_GingaState_getData_SOURCES= test-GingaState-getData.cpp
+# lib/ginga.h (Ginga Library API) ------------------------------------------
+progs+= test-Ginga-version
+test_Ginga_version_SOURCES= test-Ginga-version.cpp
 
-progs+= test-GingaState-setData
-test_GingaState_setData_SOURCES= test-GingaState-setData.cpp
+progs+= test-Ginga-create
+test_Ginga_create_SOURCES= test-Ginga-create.cpp
+
+progs+= test-Ginga-getState
+test_Ginga_getState_SOURCES= test-Ginga-getState.cpp
+
+progs+= test-Ginga-getOptions
+test_Ginga_getOptions_SOURCES= test-Ginga-getOptions.cpp
+
+progs+= test-Ginga-getOptionBool
+test_Ginga_getOptionBool_SOURCES= test-Ginga-getOptionBool.cpp
+
+progs+= test-Ginga-setOptionBool
+test_Ginga_setOptionBool_SOURCES= test-Ginga-setOptionBool.cpp
+
+progs+= xfail-test-Ginga-getOptionBool
+xfail_test_Ginga_getOptionBool_SOURCES= xfail-test-Ginga-getOptionBool.cpp
+
+progs+= xfail-test-Ginga-setOptionBool
+xfail_test_Ginga_setOptionBool_SOURCES= xfail-test-Ginga-setOptionBool.cpp
+
+progs+= test-Ginga-getOptionInt
+test_Ginga_getOptionInt_SOURCES= test-Ginga-getOptionInt.cpp
+
+progs+= test-Ginga-setOptionInt
+test_Ginga_setOptionInt_SOURCES= test-Ginga-setOptionInt.cpp
+
+progs+= xfail-test-Ginga-getOptionInt
+xfail_test_Ginga_getOptionInt_SOURCES= xfail-test-Ginga-getOptionInt.cpp
+
+progs+= xfail-test-Ginga-setOptionInt
+xfail_test_Ginga_setOptionInt_SOURCES= xfail-test-Ginga-setOptionInt.cpp
+
+progs+= test-Ginga-getOptionString
+test_Ginga_getOptionString_SOURCES= test-Ginga-getOptionString.cpp
+
+progs+= test-Ginga-setOptionString
+test_Ginga_setOptionString_SOURCES= test-Ginga-setOptionString.cpp
+
+progs+= xfail-test-Ginga-getOptionString
+xfail_test_Ginga_getOptionString_SOURCES=\
+  xfail-test-Ginga-getOptionString.cpp
+
+progs+= xfail-test-Ginga-setOptionString
+xfail_test_Ginga_setOptionString_SOURCES=\
+  xfail-test-Ginga-setOptionString.cpp
 
 check_SCRIPTS= $(ncls)
 check_PROGRAMS= $(progs)
 TESTS= $(check_SCRIPTS) $(check_PROGRAMS)
 XFAIL_TESTS=\
-  xfail-test-img-open.ncl\
-  xfail-test-svg-open.ncl\
-  xfail-test-txt-open.ncl\
-  xfail-test-lua-open.ncl\
+  xfail-test-Ginga-getOptionBool\
+  xfail-test-Ginga-getOptionInt\
+  xfail-test-Ginga-getOptionString\
+  xfail-test-Ginga-setOptionBool\
+  xfail-test-Ginga-setOptionInt\
+  xfail-test-Ginga-setOptionString\
   xfail-test-aud-open.ncl\
-  xfail-test-vid-open.ncl\
-  xfail-test-syntax-ncl-bad-tag.ncl\
+  xfail-test-aux-xstrtod\
+  xfail-test-img-open.ncl\
+  xfail-test-lua-open.ncl\
+  xfail-test-svg-open.ncl\
   xfail-test-syntax-ncl-bad-child.ncl\
-  xfail-test-xstrtod\
-  xfail-test-ginga-getOptionBool\
-  xfail-test-ginga-setOptionBool\
-  xfail-test-ginga-getOptionInt\
-  xfail-test-ginga-setOptionInt\
-  xfail-test-ginga-getOptionString\
-  xfail-test-ginga-setOptionString\
+  xfail-test-syntax-ncl-bad-tag.ncl\
+  xfail-test-txt-open.ncl\
+  xfail-test-vid-open.ncl\
   $(NULL)

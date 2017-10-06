@@ -15,13 +15,12 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "Connector.h"
 
+#include "Action.h"
 #include "AssessmentStatement.h"
-#include "CompoundAction.h"
 #include "CompoundCondition.h"
-#include "SimpleAction.h"
 #include "SimpleCondition.h"
 
 GINGA_NCL_BEGIN
@@ -37,7 +36,6 @@ GINGA_NCL_BEGIN
 Connector::Connector (NclDocument *ncl, const string &id) : Entity (ncl, id)
 {
   _condition = nullptr;
-  _action = nullptr;
 }
 
 /**
@@ -45,43 +43,7 @@ Connector::Connector (NclDocument *ncl, const string &id) : Entity (ncl, id)
  */
 Connector::~Connector ()
 {
-  _parameters.clear ();
   delete _condition;
-  delete _action;
-}
-
-/**
- * @brief Adds parameter to connector.
- * @param parameter Parameter.
- */
-void
-Connector::addParameter (Parameter *parameter)
-{
-  g_assert_nonnull (parameter);
-  _parameters.push_back (parameter);
-}
-
-/**
- * @brief Gets all connector parameters.
- */
-const vector<Parameter *> *
-Connector::getParameters ()
-{
-  return &_parameters;
-}
-
-/**
- * @brief Gets connector parameter.
- * @param name Parameter name.
- * @return Parameter if successful, or null otherwise.
- */
-Parameter *
-Connector::getParameter (const string &name)
-{
-  for (auto param: _parameters)
-    if (param->getName () == name)
-      return param;
-  return nullptr;
 }
 
 /**
@@ -94,10 +56,10 @@ Connector::getCondition ()
 }
 
 /**
- * @brief Sets connector condition.  (Can only be called once.)
+ * @brief Initializes connector condition.
  */
 void
-Connector::setCondition (Condition *condition)
+Connector::initCondition (Condition *condition)
 {
   g_assert_nonnull (condition);
   g_assert_null (_condition);
@@ -105,23 +67,28 @@ Connector::setCondition (Condition *condition)
 }
 
 /**
- * @brief Gets connector action.
+ * @brief Gets connector actions.
+ * @return Connector actions.
  */
-Action *
-Connector::getAction ()
+const vector<Action *> *
+Connector::getActions ()
 {
-  return _action;
+  return &_actions;
 }
 
 /**
- * @brief Sets connector action.  (Can only be called once.)
+ * @brief Adds action to connector.
+ * @param action Action to add.
+ * @return True if successful, or false otherwise.
  */
-void
-Connector::setAction (Action *action)
+bool
+Connector::addAction (Action *action)
 {
-  g_assert_nonnull (action);
-  g_assert_null (_action);
-  _action = action;
+  for (auto act: _actions)
+    if (act == action)
+      return false;
+  _actions.push_back (action);
+  return true;
 }
 
 /**
@@ -135,7 +102,10 @@ Connector::getRole (const string &label)
   Role *role = this->searchRole (_condition, label);
   if (role != nullptr)
     return role;
-  return this->searchRole (_action, label);
+  for (auto act: _actions)
+    if (act->getLabel () == label)
+      return act;
+  return nullptr;
 }
 
 
@@ -191,38 +161,6 @@ Connector::searchRole (Condition *cond, const string &label)
       CompoundStatement *parent = cast (CompoundStatement *, cond);
       g_assert_nonnull (parent);
       for (auto child: *parent->getStatements ())
-        {
-          role = this->searchRole (child, label);
-          if (role != nullptr)
-            return role;
-        }
-    }
-  else
-    {
-      g_assert_not_reached ();
-    }
-
-  return nullptr;               // not found
-}
-
-Role *
-Connector::searchRole (Action *act, const string &label)
-{
-  Role *role;
-
-  g_assert (instanceof (Action *, act));
-
-  if (instanceof (SimpleAction *, act))
-    {
-      role = cast (Role *, act);
-      g_assert_nonnull (role);
-      if (role->getLabel () == label)
-        return role;
-    }
-  else if (instanceof (CompoundAction *, act))
-    {
-      CompoundAction *parent = cast (CompoundAction *, act);
-      for (auto child: *parent->getActions ())
         {
           role = this->searchRole (child, label);
           if (role != nullptr)

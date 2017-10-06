@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "Scheduler.h"
 #include "Converter.h"
 
@@ -28,7 +28,7 @@ GINGA_FORMATTER_BEGIN
 
 // Public.
 
-Scheduler::Scheduler (GingaState *ginga)
+Scheduler::Scheduler (GingaInternal *ginga)
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;
@@ -156,7 +156,7 @@ Scheduler::run (const string &file, string *errmsg)
   for (auto event: *entryevts)
     {
       NclSimpleAction *fakeAction;
-      fakeAction = new NclSimpleAction (event, SimpleAction::START);
+      fakeAction = new NclSimpleAction (event, EventStateTransition::START);
       runAction (event, fakeAction);
       delete fakeAction;
     }
@@ -214,14 +214,34 @@ void
 Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
 {
   ExecutionObject *obj;
+  string name;
 
   obj = event->getExecutionObject ();
   g_assert_nonnull (obj);
 
-  TRACE ("running action '%d' over event '%s' (object '%s')",
-         action->getType (),
-         event->getId ().c_str (),
-         obj->getId ().c_str ());
+  switch (action->getType ())   // fixme
+    {
+    case EventStateTransition::START:
+      name = "start";
+      break;
+    case EventStateTransition::PAUSE:
+      name = "pause";
+      break;
+    case EventStateTransition::RESUME:
+      name = "resume";
+      break;
+    case EventStateTransition::STOP:
+      name = "stop";
+      break;
+    case EventStateTransition::ABORT:
+      name = "abort";
+      break;
+    default:
+      g_assert_not_reached ();
+    }
+
+  TRACE ("running %s over %s",
+         name.c_str (), obj->getId ().c_str ());
 
   if (instanceof (SelectionEvent *, event))
     {
@@ -258,7 +278,7 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
       GingaTime dur;
 
       g_assert (instanceof (NclAssignmentAction *, action));
-      g_assert (action->getType () == SimpleAction::START);
+      g_assert (action->getType () == EventStateTransition::START);
 
       attevt = (AttributionEvent *) event;
       attact = (NclAssignmentAction *) action;
@@ -288,20 +308,20 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
 
   switch (action->getType ())
     {
-    case SimpleAction::START:
+    case EventStateTransition::START:
       obj->prepare (event);
       g_assert (obj->start ());
       break;
-    case SimpleAction::STOP:
+    case EventStateTransition::STOP:
       obj->stop ();
       break;
-    case SimpleAction::PAUSE:
+    case EventStateTransition::PAUSE:
       g_assert (obj->pause ());
       break;
-    case SimpleAction::RESUME:
+    case EventStateTransition::RESUME:
       g_assert (obj->resume ());
       break;
-    case SimpleAction::ABORT:
+    case EventStateTransition::ABORT:
       g_assert (obj->abort ());
       break;
     default:
@@ -315,7 +335,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
 {
   NclEvent *event;
   EventType type;
-  SimpleAction::Type acttype;
+  EventStateTransition acttype;
 
   Node *node;
   Entity *entity;
@@ -361,7 +381,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
     }
 
   acttype = action->getType ();
-  if (acttype == SimpleAction::START)     // start all ports
+  if (acttype == EventStateTransition::START) // start all ports
     {
       ctxObj->suspendLinkEvaluation (false);
       for (auto port: *compNode->getPorts ())
@@ -400,7 +420,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
           delete persp;
         }
     }
-  else if (acttype == SimpleAction::STOP) // stop all children
+  else if (acttype == EventStateTransition::STOP) // stop all children
     {
       ctxObj->suspendLinkEvaluation (true);
       for (const auto pair: *ctxObj->getExecutionObjects ())
@@ -418,15 +438,15 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
         }
       ctxObj->suspendLinkEvaluation (false);
     }
-  else if (acttype == SimpleAction::ABORT)
+  else if (acttype == EventStateTransition::ABORT)
     {
       ERROR_NOT_IMPLEMENTED ("action 'abort' is not supported");
     }
-  else if (acttype == SimpleAction::PAUSE)
+  else if (acttype == EventStateTransition::PAUSE)
     {
       ERROR_NOT_IMPLEMENTED ("action 'pause' is not supported");
     }
-  else if (acttype == SimpleAction::RESUME)
+  else if (acttype == EventStateTransition::RESUME)
     {
       ERROR_NOT_IMPLEMENTED ("action 'resume' is not supported");
     }
@@ -466,8 +486,8 @@ Scheduler::runActionOverSwitch (ExecutionObjectSwitch *switchObj,
       runSwitchEvent (switchObj, event, selectedObject, action);
     }
 
-  if (action->getType () == SimpleAction::STOP
-      || action->getType () == SimpleAction::ABORT)
+  if (action->getType () == EventStateTransition::STOP
+      || action->getType () == EventStateTransition::ABORT)
     {
       switchObj->select (nullptr);
     }

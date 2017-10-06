@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NCL_EVENTS_H
 #define NCL_EVENTS_H
 
-#include "GingaState.h"
+#include "GingaInternal.h"
 
 #include "ncl/Ncl.h"
 using namespace ::ginga::ncl;
@@ -49,7 +49,7 @@ class NclEvent
   PROPERTY_READONLY (EventState, _previousState, getPreviousState)
 
 public:
-  NclEvent (GingaState *, const string &, ExecutionObject *);
+  NclEvent (GingaInternal *, const string &, ExecutionObject *);
   virtual ~NclEvent ();
   void setState (EventState);
   virtual bool start ();
@@ -61,7 +61,7 @@ public:
   static bool hasNcmId (NclEvent *evt, const string &anchorId);
 
 protected:
-  GingaState *_ginga;           // ginga state
+  GingaInternal *_ginga;        // ginga handle
   Scheduler *_scheduler;        // scheduler
 
   set<INclEventListener *> _listeners;
@@ -83,7 +83,7 @@ class AnchorEvent : public NclEvent
   PROPERTY_READONLY (Area *, _anchor, getAnchor)
 
 public:
-  AnchorEvent (GingaState *, const string &, ExecutionObject *, Area *);
+  AnchorEvent (GingaInternal *, const string &, ExecutionObject *, Area *);
   virtual ~AnchorEvent () {}
 };
 
@@ -94,7 +94,7 @@ class PresentationEvent : public AnchorEvent
   PROPERTY_READONLY (GingaTime, _repetitionInterval, getRepetitionInterval)
 
 public:
-  PresentationEvent (GingaState *, const string &,
+  PresentationEvent (GingaInternal *, const string &,
                      ExecutionObject *, Area *);
   virtual ~PresentationEvent () {}
   virtual bool stop () override;
@@ -112,7 +112,7 @@ class SelectionEvent : public AnchorEvent
   PROPERTY (string, _selCode, getSelectionCode, setSelectionCode)
 
 public:
-  SelectionEvent (GingaState *, const string &, ExecutionObject *, Area *);
+  SelectionEvent (GingaInternal *, const string &, ExecutionObject *, Area *);
   virtual ~SelectionEvent () {}
 
   virtual bool start () override;
@@ -124,7 +124,7 @@ class AttributionEvent : public NclEvent
   PROPERTY_READONLY (Property *, _anchor, getAnchor)
 
 public:
-  AttributionEvent (GingaState *,
+  AttributionEvent (GingaInternal *,
                     const string &,
                     ExecutionObject *,
                     Property *);
@@ -151,7 +151,7 @@ private:
   NclEvent *_mappedEvent;
 
 public:
-  SwitchEvent (GingaState *,
+  SwitchEvent (GingaInternal *,
                const string &,
                ExecutionObject *,
                Anchor *,

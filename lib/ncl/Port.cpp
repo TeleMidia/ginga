@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "Port.h"
 #include "SwitchPort.h"
 
@@ -51,11 +51,11 @@ Port::getParent ()
 }
 
 /**
- * @brief Sets port parent.  (Can only be called once.)
+ * @brief initializes port parent.
  * @param parent Parent composition.
  */
 void
-Port::setParent (Composition *parent)
+Port::initParent (Composition *parent)
 {
   g_assert_null (_parent);
   g_assert_nonnull (parent);

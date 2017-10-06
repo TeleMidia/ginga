@@ -9,11 +9,9 @@
     <connectorBase>
       <causalConnector id="onBeginSet">
         <connectorParam name="var"/>
-        <connectorParam name="delay"/>
         <connectorParam name="duration"/>
         <simpleCondition role="onBegin" key="$var"/>
-        <simpleAction role="set" value="$var" delay="$delay"
-                      duration="$duration"/>
+        <simpleAction role="set" value="$var" duration="$duration"/>
       </causalConnector>
     </connectorBase>
   </head>

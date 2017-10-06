@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "ParserLibXML.h"
 #include "Ncl.h"
 
@@ -51,6 +51,7 @@ typedef struct ParserLibXML_State
   NclDocument *ncl;                  // NCL tree
   vector<Entity *> stack;            // NCL entity stack
   string errmsg;                     // last error message
+  int genid;                         // last generated id
   ParserLibXML_Cache cache;          // attrmap indexed by id
   map<string, xmlNode *> cacheelt;   // xmlNode indexed by id
   map<string, set<string>> cacheset; // cached ids indexed by tag
@@ -104,8 +105,11 @@ _st_err (ParserLibXML_State *st, const char *fmt, ...)
               (val), (attr), (explain != nullptr)                       \
               ? (" (" + string (explain) + ")").c_str () : "")
 
-#define ST_ERR_ELT_UNKNOWN_CHILD(st, etl, child)\
+#define ST_ERR_ELT_UNKNOWN_CHILD(st, elt, child)\
   ST_ERR_ELT ((st), (elt), "Unknown child <%s>", (child))
+
+#define ST_ERR_ELT_MISSING_CHILD(st, elt, child)\
+  ST_ERR_ELT ((st), (elt), "Missing child <%s>", (child))
 
 // Index state cache.
 static bool
@@ -133,6 +137,13 @@ static void
 st_set_data (ParserLibXML_State *st, const string &key, void *value)
 {
   st->userdata[key] = value;
+}
+
+// Generates unique id.
+static string
+st_gen_id (ParserLibXML_State *st)
+{
+  return xstrbuild (".unamed-%d", st->genid++);
 }
 
 // Resolve id-ref in current state.
@@ -183,10 +194,17 @@ typedef struct NclEltInfo
 {
   NclEltPushFunc *push;           // push function
   NclEltPopFunc *pop;             // pop function
-  bool cache;                     // whether to cache it
+  int flags;                      // processing flags
   vector<string> parents;         // possible parents
   vector<NclAttrInfo> attributes; // attributes
 } NclEltInfo;
+
+// Element processing flags.
+typedef enum
+{
+  NCL_ELT_FLAG_CACHE  = 1<<0,   // cache element
+  NCL_ELT_FLAG_GEN_ID = 2<<0,   // generate id if not present
+} NclEltFlag;
 
 // Forward declarations.
 #define NCL_ELT_PUSH_DECL(elt)                  \
@@ -206,17 +224,23 @@ NCL_ELT_POP_DECL  (context)
 NCL_ELT_PUSH_DECL (port)
 NCL_ELT_PUSH_DECL (media)
 NCL_ELT_PUSH_DECL (property)
+NCL_ELT_PUSH_DECL (link)
 NCL_ELT_PUSH_DECL (region)
 NCL_ELT_POP_DECL  (region)
 NCL_ELT_PUSH_DECL (descriptorParam)
+NCL_ELT_PUSH_DECL (causalConnector)
+NCL_ELT_POP_DECL  (causalConnector)
+NCL_ELT_PUSH_DECL (simpleConditionOrAction)
 
 // Element map.
 static map<string, NclEltInfo> ncl_eltmap =
 {
  // Root.
- {"ncl",
-  {ncl_push_ncl, ncl_pop_ncl, false, {},
-   {{"id", false},
+ {"ncl",                        // name
+  {ncl_push_ncl, ncl_pop_ncl,   // push & pop functions
+   0,                           // flags
+   {},                          // possible parents
+   {{"id", false},              // attributes
     {"title", false},
     {"xmlns", false}}},
  },
@@ -224,49 +248,68 @@ static map<string, NclEltInfo> ncl_eltmap =
  // Body.
  //
  {"body",                       // -> Context
-  {ncl_push_context, ncl_pop_context, false, {"ncl"},
+  {ncl_push_context, ncl_pop_context,
+   0,
+   {"ncl"},
    {{"id", false}}},
  },
  {"context",                    // -> Context
-  {ncl_push_context, ncl_pop_context, true, {"body", "context"},
+  {ncl_push_context, ncl_pop_context,
+   NCL_ELT_FLAG_CACHE,
+   {"body", "context"},
    {{"id", true}}},
  },
  {"port",                       // -> Port
-  {ncl_push_port, nullptr, true, {"body", "context"},
+  {ncl_push_port, nullptr,
+   NCL_ELT_FLAG_CACHE,
+   {"body", "context"},
    {{"id", true},
     {"component", true},
     {"interface", false}}},
  },
  {"media",                      // -> Media
-  {ncl_push_media, nullptr, true, {"body", "context"},
+  {ncl_push_media, nullptr,
+   NCL_ELT_FLAG_CACHE,
+   {"body", "context"},
    {{"id", true},
     {"src", false},
+    {"type", false},
     {"descriptor", false}}},
  },
  {"area",
-  {nullptr, nullptr, false, {"media"},
+  {nullptr, nullptr,
+   0,
+   {"media"},
    {{"id", true},
     {"begin", false},
     {"end", false}}},
  },
  {"property",                   // -> Property
-  {ncl_push_property, nullptr, false, {"body", "context", "media"},
+  {ncl_push_property, nullptr,
+   0,
+   {"body", "context", "media"},
   {{"name", true},
    {"value", false}}},
  },
- {"link",
-  {nullptr, nullptr, false, {"body", "context"},
+ {"link",                       // -> Link
+  {ncl_push_link, nullptr,
+   NCL_ELT_FLAG_CACHE | NCL_ELT_FLAG_GEN_ID,
+   {"body", "context"},
    {{"id", false},
     {"xconnector", true}}},
  },
  {"bind",
-  {nullptr, nullptr, false, {"link"},
+  {nullptr, nullptr,
+   0,
+   {"link"},
    {{"role", true},
     {"component", false},
     {"interface", false}}},
  },
  {"bindParam",
-  {nullptr, nullptr, false, {"bind"},
+  {nullptr, nullptr,
+   0,
+   {"bind"},
    {{"name", true},
     {"value", true}}},
  },
@@ -274,16 +317,22 @@ static map<string, NclEltInfo> ncl_eltmap =
  // Head.
  //
  {"head",
-  {nullptr, nullptr, false, {"ncl"}, {}},
+  {nullptr, nullptr,
+   0,
+   {"ncl"}, {}},
  },
  {"regionBase",
-  {nullptr, nullptr, false, {"head"},
+  {nullptr, nullptr,
+   0,
+   {"head"},
    {{"id", false},
     {"device", false},
     {"region", false}}},
  },
  {"region",
-  {ncl_push_region, ncl_pop_region, true, {"region", "regionBase"},
+  {ncl_push_region, ncl_pop_region,
+   NCL_ELT_FLAG_CACHE,
+   {"region", "regionBase"},
    {{"id", true},
     {"title", false},
     {"left", false},
@@ -295,11 +344,15 @@ static map<string, NclEltInfo> ncl_eltmap =
     {"zIndex", false}}},
  },
  {"descriptorBase",
-  {nullptr, nullptr, false, {"head"},
+  {nullptr, nullptr,
+   0,
+   {"head"},
    {{"id", false}}},
  },
  {"descriptor",
-  {nullptr, nullptr, true, {"descriptorBase"},
+  {nullptr, nullptr,
+   NCL_ELT_FLAG_CACHE,
+   {"descriptorBase"},
    {{"id", true},
     {"left", false},
     {"right", false},
@@ -311,58 +364,74 @@ static map<string, NclEltInfo> ncl_eltmap =
     {"region", false}}},
  },
  {"descriptorParam",
-  {ncl_push_descriptorParam, nullptr, false, {"descriptor"},
+  {ncl_push_descriptorParam, nullptr,
+   0,
+   {"descriptor"},
    {{"name", true},
     {"value", true}}},
  },
  {"connectorBase",
-  {nullptr, nullptr, false, {"head"},
+  {nullptr, nullptr,
+   0,
+   {"head"},
    {{"id", false}}},
  },
  {"causalConnector",
-  {nullptr, nullptr, false, {"connectorBase"},
+  {ncl_push_causalConnector, ncl_pop_causalConnector,
+   NCL_ELT_FLAG_CACHE,
+   {"connectorBase"},
    {{"id", true}}},
  },
  {"connectorParam",
-  {nullptr, nullptr, false, {"causalConnector"},
+  {nullptr, nullptr,
+   0,
+   {"causalConnector"},
    {{"name", true}}},
  },
  {"compoundCondition",
-  {nullptr, nullptr, false, {"causalConnector", "compoundCondition"},
+  {nullptr, nullptr,
+   0,
+   {"causalConnector", "compoundCondition"},
    {{"operator", true},
     {"delay", false}}},
  },
  {"simpleCondition",
-  {nullptr, nullptr, false, {"causalConnector", "compoundCondition"},
+  {ncl_push_simpleConditionOrAction, nullptr,
+   0,
+   {"causalConnector", "compoundCondition"},
    {{"role", true},
-    {"delay", false},
-    {"eventtype", false},
+    {"eventType", false},
     {"key", false},
     {"transition", false},
-    {"min", false},
-    {"max", false},
-    {"qualifier", false}}},
+    {"delay", false},           // ignored
+    {"min", false},             // ignored
+    {"max", false},             // ignored
+    {"qualifier", false}}},     // ignored
  },
  {"compoundAction",
-  {nullptr, nullptr, false, {"causalConnector", "compoundAction"},
+  {nullptr, nullptr,
+   0,
+   {"causalConnector", "compoundAction"},
    {{"operator", false},
     {"delay", false}}},
  },
  {"simpleAction",
-  {nullptr, nullptr, false, {"causalConnector", "compoundAction"},
+  {ncl_push_simpleConditionOrAction, nullptr,
+   0,
+   {"causalConnector", "compoundAction"},
    {{"role", true},
-    {"delay", false},
     {"eventType", false},
     {"actionType", false},
-    {"value", false},
-    {"min", false},
-    {"max", false},
-    {"min", false},
-    {"qualifier", false},
-    {"repeat", false},
-    {"repeatDelay", false},
+    {"delay", false},
     {"duration", false},
-    {"by", false}}},
+    {"value", false},
+    {"min", false},             // ignored
+    {"max", false},             // ignored
+    {"min", false},             // ignored
+    {"qualifier", false},       // ignored
+    {"repeat", false},          // ignored
+    {"repeatDelay", false},     // ignored
+    {"by", false}}},            // ignored
  },
 };
 
@@ -390,6 +459,60 @@ ncl_eltmap_get_possible_children (const string &tag)
 }
 
 
+// Attribute parsing functions.
+
+#define _NCL_ATTR_PARSE(Type, tab, str, result)         \
+  G_STMT_START                                          \
+  {                                                     \
+    map<string, Type>::iterator it;                     \
+    if ((it = (tab).find ((str))) == (tab).end ())      \
+      return false;                                     \
+    tryset ((result), it->second);                      \
+    return true;                                        \
+  }                                                     \
+  G_STMT_END
+
+static bool
+ncl_attr_parse_eventType (string str, EventType *result)
+{
+  static map<string, EventType> tab =
+    {
+     {"presentation", EventType::PRESENTATION},
+     {"attribution", EventType::ATTRIBUTION},
+     {"selection", EventType::SELECTION},
+    };
+  _NCL_ATTR_PARSE (EventType, tab, str, result);
+}
+
+static bool
+ncl_attr_parse_transition (string str, EventStateTransition *result)
+{
+  static map<string, EventStateTransition> tab =
+    {
+     {"starts", EventStateTransition::START},
+     {"stops", EventStateTransition::STOP},
+     {"aborts", EventStateTransition::ABORT},
+     {"pauses", EventStateTransition::PAUSE},
+     {"resumes", EventStateTransition::RESUME},
+    };
+  _NCL_ATTR_PARSE (EventStateTransition, tab, str, result);
+}
+
+static bool
+ncl_attr_parse_actionType (string str, EventStateTransition *result)
+{
+  static map<string, EventStateTransition> tab =
+    {
+     {"start", EventStateTransition::START},
+     {"stop", EventStateTransition::STOP},
+     {"abort", EventStateTransition::ABORT},
+     {"pause", EventStateTransition::PAUSE},
+     {"resume", EventStateTransition::RESUME},
+    };
+  _NCL_ATTR_PARSE (EventStateTransition, tab, str, result);
+}
+
+
 // NCL attribute map helper functions.
 
 static inline bool
@@ -407,7 +530,6 @@ static inline string
 ncl_attrmap_get (map<string, string> *attr, const string &name)
 {
   string value;
-  g_printerr (">>> %s\n", name.c_str ());
   g_assert (ncl_attrmap_index (attr, name, &value));
   return value;
 }
@@ -444,7 +566,7 @@ ncl_pop_ncl (unused (ParserLibXML_State *st),
 {
   bool status = true;
 
-  // Resolve descriptor's references to regions.
+  // Resolve descriptor's reference to region.
   for (auto desc_id: st->cacheset["descriptor"])
     {
       map<string, string> *desc_attr;
@@ -478,7 +600,44 @@ ncl_pop_ncl (unused (ParserLibXML_State *st),
         }
     }
 
-  // Resolve media's references to descriptors.
+  // Resolve link's reference to connector.
+  for (auto link_id: st->cacheset["link"])
+    {
+      map<string, string> *link_attr;
+      xmlNode *link_elt;
+      Link *link;
+
+      string conn_id;
+      Connector *conn;
+
+      g_assert (st_cache_index (st, link_id, &link_attr));
+      link_elt = st->cacheelt[link_id];
+      g_assert_nonnull (link_elt);
+      link = cast (Link *, st->ncl->getEntityById (link_id));
+      g_assert_nonnull (link);
+
+      conn_id = ncl_attrmap_get (link_attr, "xconnector");
+      if (unlikely (!st_resolve_idref (st, conn_id, {"causalConnector"},
+                                       nullptr, nullptr)))
+        {
+          status = ST_ERR_ELT_BAD_ATTR
+            (st, link_elt, "xconnector", conn_id.c_str (),
+             "no such connector");
+          goto done;
+        }
+
+      conn = cast (Connector *, st->ncl->getEntityById (conn_id));
+      g_assert_nonnull (conn);
+      if (unlikely (!link->initConnector (conn)))
+        {
+          status = ST_ERR_ELT_BAD_ATTR
+            (st, link_elt, "xconnector", conn_id.c_str (),
+             "link does not match connector");
+          goto done;
+        }
+    }
+
+  // Resolve media's reference to descriptor.
   for (auto media_id: st->cacheset["media"])
     {
       map<string, string> *media_attr;
@@ -515,6 +674,7 @@ ncl_pop_ncl (unused (ParserLibXML_State *st),
           media->setProperty (it.first, it.second);
         }
     }
+
  done:
   return status;
 }
@@ -671,7 +831,24 @@ ncl_push_property (ParserLibXML_State *st,
   Node *parent = cast (Node *, st->stack.back ());
   g_assert_nonnull (parent);
   parent->setProperty (ncl_attrmap_get (attr, "name"),
-                       ncl_attrmap_get (attr, "value"));
+                       ncl_attrmap_opt_get (attr, "value", ""));
+  return true;
+}
+
+static bool
+ncl_push_link (ParserLibXML_State *st,
+               unused (xmlNode *elt),
+               map<string, string> *attr,
+               Entity **entity)
+{
+  Link *link;
+  Context *ctx;
+
+  link = new Link (st->ncl, ncl_attrmap_get (attr, "id"));
+  ctx = cast (Context *, st->stack.back ());
+  g_assert_nonnull (ctx);
+  ctx->addLink (link);
+  *entity = link;               // push onto stack
   return true;
 }
 
@@ -783,6 +960,126 @@ ncl_push_descriptorParam (ParserLibXML_State *st,
   return true;
 }
 
+static bool
+ncl_push_causalConnector (ParserLibXML_State *st,
+                          unused (xmlNode *elt),
+                          map<string, string> *attr,
+                          Entity **entity)
+{
+  Connector *conn;
+  conn = new Connector (st->ncl, ncl_attrmap_get (attr, "id"));
+  *entity = conn;               // push onto stack
+  return true;
+}
+
+static bool
+ncl_pop_causalConnector (unused (ParserLibXML_State *st),
+                         xmlNode *elt,
+                         unused (map<string, string> *attr),
+                         unused (vector<xmlNode *> *children),
+                         Entity *entity)
+{
+  Connector *conn;
+
+  conn = cast (Connector *, entity);
+  g_assert_nonnull (conn);
+
+  if (unlikely (conn->getCondition () == nullptr))
+    return ST_ERR_ELT_MISSING_CHILD (st, elt, "simpleCondition");
+  if (unlikely ((conn->getActions ())->size ()  == 0))
+    return ST_ERR_ELT_MISSING_CHILD (st, elt, "simpleAction");
+
+  return true;
+}
+
+static bool
+ncl_push_simpleConditionOrAction (ParserLibXML_State *st,
+                                  xmlNode *elt,
+                                  map<string, string> *attr,
+                                  unused (Entity **entity))
+{
+  string role;
+  EventType type;
+  EventStateTransition trans;
+  Connector *parent;
+
+  bool is_cond;
+  bool reserved;
+  string transname;
+
+  role = ncl_attrmap_get (attr, "role");
+  is_cond = (toString (elt->name) == "simpleCondition") ? true : false;
+
+  if (is_cond)
+    {
+      reserved = SimpleCondition::isReserved (role, &type, &trans);
+      transname = "transition";
+    }
+  else
+    {
+      reserved = Action::isReserved (role, &type, &trans);
+      transname = "actionType";
+    }
+
+  if (reserved)
+    {
+      string str;
+      if (unlikely (ncl_attrmap_index (attr, "eventType", &str)))
+        return ST_ERR_ELT_BAD_ATTR
+          (st, elt, "eventType", str.c_str (), "reserved role" );
+      if (unlikely (ncl_attrmap_index (attr, transname, &str)))
+        return ST_ERR_ELT_BAD_ATTR
+          (st, elt, transname.c_str (), str.c_str (), "reserved role");
+    }
+  else
+    {
+      string str;
+      if (unlikely (!ncl_attrmap_index (attr, "eventType", &str)))
+        return ST_ERR_ELT_MISSING_ATTR (st, elt, "eventType");
+      if (unlikely (!ncl_attr_parse_eventType (str, &type)))
+        return ST_ERR_ELT_BAD_ATTR
+          (st, elt, "eventType", str.c_str (), "invalid eventType");
+      if (unlikely (!ncl_attrmap_index (attr, transname, &str)))
+        return ST_ERR_ELT_MISSING_ATTR (st, elt, transname.c_str ());
+      if (is_cond)
+        {
+          if (unlikely (!ncl_attr_parse_transition (str, &trans)))
+            return ST_ERR_ELT_BAD_ATTR
+              (st, elt, "transition", str.c_str (), "invalid transition");
+        }
+      else
+        {
+          if (unlikely (!ncl_attr_parse_actionType (str, &trans)))
+            return ST_ERR_ELT_BAD_ATTR
+              (st, elt, "actionType", str.c_str (), "invalid actionType");
+        }
+    }
+
+  parent = cast (Connector *, st->stack.back ());
+  g_assert_nonnull (parent);
+  if (is_cond)
+    {
+      string key;
+      SimpleCondition *cond;
+      key = ncl_attrmap_opt_get (attr, "key", "");
+      cond = new SimpleCondition (type, trans, role, key);
+      parent->initCondition (cond);
+    }
+  else
+    {
+      string delay;
+      string value;
+      string duration;
+      Action *act;
+      delay = ncl_attrmap_opt_get (attr, "delay", "");
+      value = ncl_attrmap_opt_get (attr, "key", "");
+      duration = ncl_attrmap_opt_get (attr, "duration", "");
+      act = new Action (type, trans, role, delay, value, duration);
+      parent->addAction (act);
+    }
+  return true;
+}
+
 
 // External API.
 
@@ -844,9 +1141,15 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
       string value;
       if (!xmlGetPropAsString (elt, ainfo.name, &value))
         {
+          if (ainfo.name == "id" && einfo->flags & NCL_ELT_FLAG_GEN_ID)
+            {
+              (*attr)["id"] = st_gen_id (st);
+              continue;
+            }
           if (!ainfo.required)
-            continue;
-
+            {
+              continue;
+            }
           status = ST_ERR_ELT_MISSING_ATTR (st, elt, ainfo.name.c_str ());
           goto done;
         }
@@ -897,7 +1200,7 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
         }
 
       // Insert attr-map and element's node into cache.
-      if (einfo->cache)
+      if (einfo->flags & NCL_ELT_FLAG_CACHE)
         {
           st->cache[id] = map<string, string> (_attr);
           st->cacheelt[id] = elt;
@@ -907,7 +1210,7 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
     }
   else
     {
-      g_assert_false (einfo->cache);
+      g_assert_false (einfo->flags & NCL_ELT_FLAG_CACHE);
     }
 
   // Push element.
@@ -968,6 +1271,7 @@ processDoc (xmlDoc *doc, int width, int height, string *errmsg)
   st.rect = {0, 0, width, height};
   st.ncl = nullptr;
   st.doc = doc;
+  st.genid = 0;
 
   root = xmlDocGetRootElement (doc);
   g_assert_nonnull (root);

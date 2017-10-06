@@ -34,7 +34,7 @@ class ExecutionObjectContext : public ExecutionObject,
     public INclEventListener
 {
 public:
-  ExecutionObjectContext (GingaState *, const string &,
+  ExecutionObjectContext (GingaInternal *, const string &,
                           Node *,
                           INclActionListener *);
 
@@ -43,7 +43,6 @@ public:
   ExecutionObjectContext *getParentFromDataObject (Node *dataObject);
   void suspendLinkEvaluation (bool suspend);
   bool addExecutionObject (ExecutionObject *execObj);
-  bool containsExecutionObject (const string &execObjId);
   ExecutionObject *getExecutionObject (const string &execObjId);
   map<string, ExecutionObject *> *getExecutionObjects ();
   bool removeExecutionObject (ExecutionObject *execObj);
@@ -51,7 +50,6 @@ public:
   bool containsUncompiledLink (Link *dataLink);
   void removeLinkUncompiled (Link *ncmLink);
   void setLinkCompiled (NclFormatterLink *formatterLink);
-  void setParentsAsListeners ();
   void eventStateChanged (NclEvent *event,
                           EventStateTransition transition,
                           EventState previousState) override;
@@ -60,10 +58,8 @@ public:
   void linkEvaluationFinished (NclFormatterLink *, bool) override;
 
 private:
-  static const short _mSleepTime = 800;
   set<NclFormatterLink *> _links;
   set<Link *> _uncompiledLinks;
-
   set<NclEvent *> _runningEvents; // child events occurring
   set<NclEvent *> _pausedEvents;  // child events paused
   EventStateTransition lastTransition;

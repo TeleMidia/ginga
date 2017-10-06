@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "NclFormatterLink.h"
 
 #include "ExecutionObject.h"
@@ -44,18 +44,14 @@ NclFormatterLink::NclFormatterLink (
 NclFormatterLink::~NclFormatterLink ()
 {
   if (_condition != nullptr)
-    {
-      delete _condition;
-    }
+    delete _condition;
 
   if (_action != nullptr)
-    {
-      delete _action;
-    }
+    delete _action;
 }
 
 void
-NclFormatterLink::  suspendLinkEvaluation (bool suspend)
+NclFormatterLink::suspendLinkEvaluation (bool suspend)
 {
   this->_suspended = suspend;
 }

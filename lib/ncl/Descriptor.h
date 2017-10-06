@@ -31,7 +31,7 @@ public:
   virtual ~Descriptor ();
 
   Region *getRegion ();
-  void setRegion (Region *);
+  void initRegion (Region *);
 
   void addParameter (Parameter *);
   const vector<Parameter *> *getParameters ();

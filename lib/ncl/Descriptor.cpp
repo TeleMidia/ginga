@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "Descriptor.h"
 
 GINGA_NCL_BEGIN
@@ -51,11 +51,11 @@ Descriptor::getRegion ()
 }
 
 /**
- * @brief Sets descriptor region.  (Can only be called once.)
+ * @brief Initializes descriptor region.
  * @param region Region.
  */
 void
-Descriptor::setRegion (Region *region)
+Descriptor::initRegion (Region *region)
 {
   g_assert_null (_region);
   g_assert_nonnull (region);

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef CONVERTER_H
 #define CONVERTER_H
 
-#include "GingaState.h"
+#include "GingaInternal.h"
 #include "ExecutionObject.h"
 #include "ExecutionObjectContext.h"
 #include "ExecutionObjectSettings.h"
@@ -34,7 +34,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/Ncl.h"
 using namespace ::ginga::ncl;
 
-class GingaState;
+class GingaInternal;
 
 GINGA_FORMATTER_BEGIN
 
@@ -42,7 +42,7 @@ class Scheduler;
 class Converter : public INclEventListener
 {
 public:
-  explicit Converter (GingaState *, INclActionListener *, RuleAdapter *);
+  explicit Converter (GingaInternal *, INclActionListener *, RuleAdapter *);
   virtual ~Converter ();
 
   void setHandlingStatus (bool handling);
@@ -65,7 +65,7 @@ public:
 
 
 private:
-  GingaState *_ginga;
+  GingaInternal *_ginga;
   Scheduler *_scheduler;
 
   set<NclEvent *> _listening;
@@ -120,16 +120,14 @@ private:
   void setImplicitRefAssessment (const string &roleId, Link *ncmLink,
                                  NclEvent *event);
 
-  NclAction *createAction (Action *actionExpression,
-                               Link *ncmLink,
-                               ExecutionObjectContext *parentObject);
+  NclAction *createAction (Connector *, Link *, ExecutionObjectContext *);
 
   NclLinkCondition *
   createCondition (Condition *ncmExpression, Link *ncmLink,
                    ExecutionObjectContext *parentObject);
 
   NclLinkCompoundTriggerCondition *createCompoundTriggerCondition (
-      short op, GingaTime delay,
+      GingaTime delay,
       const vector<Condition *> *ncmChildConditions,
       Link *ncmLink, ExecutionObjectContext *parentObject);
 
@@ -146,31 +144,21 @@ private:
                    ExecutionObjectContext *parentObject);
 
   NclLinkAttributeAssessment *createAttributeAssessment (
-      AttributeAssessment *attributeAssessment, Bind *bind, Link *ncmLink,
+      AttributeAssessment *attributeAssessment, Bind *bind,
       ExecutionObjectContext *parentObject);
 
   NclSimpleAction *
-  createSimpleAction (SimpleAction *sae, Bind *bind, Link *ncmLink,
-                      ExecutionObjectContext *parentObject);
-
-  NclCompoundAction *createCompoundAction (
-      GingaTime delay, const vector<Action *> *ncmChildActions,
-      Link *ncmLink, ExecutionObjectContext *parentObject);
+  createSimpleAction (Action *, Bind *,
+                      ExecutionObjectContext *);
 
   NclLinkTriggerCondition *createSimpleCondition (
-      SimpleCondition *condition, Bind *bind, Link *ncmLink,
+      SimpleCondition *condition, Bind *bind,
       ExecutionObjectContext *parentObject);
 
-  NclEvent *createEvent (Bind *bind, Link *ncmLink,
+  NclEvent *createEvent (Bind *bind,
                          ExecutionObjectContext *parentObject);
 
-  GingaTime getDelayParameter (Link *ncmLink, Parameter *connParam,
-                               Bind *ncmBind);
-
-  string getBindKey (Link *ncmLink, Bind *ncmBind);
-
-  GingaTime
-  compileDelay (Link *ncmLink, const string &delayObject,Bind *bind);
+  string getBindKey (Bind *ncmBind);
 };
 
 GINGA_FORMATTER_END

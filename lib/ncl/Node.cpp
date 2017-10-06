@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "Node.h"
 
 #include "Area.h"
@@ -57,11 +57,11 @@ Node::getParent ()
 }
 
 /**
- * @brief Sets node parent.  (Can only be called once.)
+ * @brief Initializes node parent.
  * @param parent Parent composition.
  */
 void
-Node::setParent (Composition *parent)
+Node::initParent (Composition *parent)
 {
   g_assert_null (_parent);
   g_assert_nonnull (parent);

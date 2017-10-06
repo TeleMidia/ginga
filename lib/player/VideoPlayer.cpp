@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "VideoPlayer.h"
 
 #define gstx_element_get_state(elt, st, pend, tout)             \
@@ -41,7 +41,7 @@ GINGA_PLAYER_BEGIN
 
 // Public.
 
-VideoPlayer::VideoPlayer (GingaState *ginga, const string &id,
+VideoPlayer::VideoPlayer (GingaInternal *ginga, const string &id,
                           const string &uri)
   : Player (ginga, id, uri)
 {
@@ -123,17 +123,12 @@ VideoPlayer::VideoPlayer (GingaState *ginga, const string &id,
   _video.caps = gst_element_factory_make ("capsfilter", "video.filter");
   g_assert_nonnull (_video.caps);
 
-  _video.scale = gst_element_factory_make ("videoscale", "video.scale");
-  g_assert_nonnull (_video.scale);
-
   _video.sink = gst_element_factory_make ("appsink", "video.sink");
   g_assert_nonnull (_video.sink);
 
   g_assert (gst_bin_add (GST_BIN (_video.bin), _video.caps));
-  g_assert (gst_bin_add (GST_BIN (_video.bin), _video.scale));
   g_assert (gst_bin_add (GST_BIN (_video.bin), _video.sink));
-  g_assert (gst_element_link (_video.caps, _video.scale));
-  g_assert (gst_element_link (_video.scale, _video.sink));
+  g_assert (gst_element_link (_video.caps, _video.sink));
 
   pad = gst_element_get_static_pad (_video.caps, "sink");
   g_assert_nonnull (pad);
@@ -172,8 +167,6 @@ VideoPlayer::start ()
   st = gst_structure_new_empty ("video/x-raw");
   gst_structure_set (st,
                      "format", G_TYPE_STRING, "BGRA",
-                     "width", G_TYPE_INT, Player::_prop.rect.width,
-                     "height", G_TYPE_INT, Player::_prop.rect.height,
                      nullptr);
 
   caps = gst_caps_new_full (st, nullptr);
@@ -276,11 +269,14 @@ VideoPlayer::redraw (cairo_t *cr)
   stride = (int) GST_VIDEO_FRAME_PLANE_STRIDE (&v_frame, 0);
 
   if (_surface != nullptr)
-    cairo_surface_destroy (_surface);
+    {
+      cairo_surface_destroy (_surface);
+    }
 
   _surface = cairo_image_surface_create_for_data
     (pixels, CAIRO_FORMAT_ARGB32, width, height, stride);
   g_assert_nonnull (_surface);
+
   gst_video_frame_unmap (&v_frame);
 
   status = cairo_surface_set_user_data
@@ -292,6 +288,63 @@ VideoPlayer::redraw (cairo_t *cr)
   Player::redraw (cr);
 }
 
+void
+VideoPlayer::redrawGL ()
+{
+#if !(defined WITH_OPENGL && WITH_OPENGL)
+  WARNING_NOT_IMPLEMENTED ("not compiled with OpenGL support");
+#else
+  GstSample *sample;
+  GstVideoFrame v_frame;
+  GstVideoInfo v_info;
+  GstBuffer *buf;
+  GstCaps *caps;
+  guint8 *pixels;
+  int width;
+  int height;
+
+  g_assert (_state != SLEEPING);
+
+  if (Player::getEOS ())
+    goto done;
+
+  if (!g_atomic_int_compare_and_exchange (&_sample_flag, 1, 0))
+    goto done;
+
+  sample = gst_app_sink_pull_sample (GST_APP_SINK (_video.sink));
+  if (sample == nullptr)
+    goto done;
+
+  buf = gst_sample_get_buffer (sample);
+  g_assert_nonnull (buf);
+
+  caps = gst_sample_get_caps (sample);
+  g_assert_nonnull (caps);
+
+  g_assert (gst_video_info_from_caps (&v_info, caps));
+  g_assert (gst_video_frame_map (&v_frame, &v_info, buf, GST_MAP_READ));
+
+  pixels = (guint8 *) GST_VIDEO_FRAME_PLANE_DATA (&v_frame, 0);
+  width = GST_VIDEO_FRAME_WIDTH (&v_frame);
+  height = GST_VIDEO_FRAME_HEIGHT (&v_frame);
+
+  if (_gltexture)
+    {
+      gl_delete_texture (&_gltexture);
+    }
+
+  // fixme: There is no need for recreating the texture in each frame.
+  gl_create_texture (&_gltexture, width, height, pixels);
+
+  gst_video_frame_unmap (&v_frame);
+  gst_sample_unref (sample);
+
+ done:
+  Player::redrawGL ();
+#endif
+}
+
+
 // Protected.
 
 bool

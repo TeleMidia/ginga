@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef TRIGGEREXPRESSION_H_
-#define TRIGGEREXPRESSION_H_
+#ifndef TRIGGER_EXPRESSION_H
+#define TRIGGER_EXPRESSION_H
 
 #include "Condition.h"
 
@@ -25,15 +25,10 @@ GINGA_NCL_BEGIN
 class TriggerExpression : public Condition
 {
 public:
-  TriggerExpression ();
-  virtual ~TriggerExpression (){}
-  string getDelay ();
-  void setDelay (const string &delay);
-
-protected:
-  string _delay;
+  TriggerExpression () {};
+  virtual ~TriggerExpression () {};
 };
 
 GINGA_NCL_END
 
-#endif // TRIGGEREXPRESSION_H_
+#endif // TRIGGER_EXPRESSION_H

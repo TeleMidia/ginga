@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "Refer.h"
 
 GINGA_NCL_BEGIN
@@ -40,12 +40,11 @@ Refer::getReferred ()
 }
 
 /**
- * @brief Sets the media referenced by refer node.
- * (Can only be called once.)
+ * @brief Initializes the media referenced by refer node.
  * @param media Media.
  */
 void
-Refer::setReferred (Media *media)
+Refer::initReferred (Media *media)
 {
   g_assert_nonnull (media);
   g_assert (_referred == nullptr || _referred == media);

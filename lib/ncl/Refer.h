@@ -28,8 +28,9 @@ class Refer : public Node
 {
 public:
   Refer (NclDocument *, const string &);
+
   Media *getReferred ();
-  void setReferred (Media *);
+  void initReferred (Media *);
 
 private:
   Media *_referred;

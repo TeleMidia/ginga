@@ -32,25 +32,20 @@ public:
   Connector (NclDocument *, const string &);
   virtual ~Connector ();
 
-  void addParameter (Parameter *);
-  const vector<Parameter *> *getParameters ();
-  Parameter *getParameter (const string &);
-
   Condition *getCondition ();
-  void setCondition (Condition *);
+  void initCondition (Condition *);
 
-  Action *getAction ();
-  void setAction (Action *);
+  const vector<Action *> *getActions ();
+  bool addAction (Action *);
 
   Role *getRole (const string &);
 
 private:
-  vector<Parameter *> _parameters;
+  map<string, string> _param;
   Condition *_condition;
-  Action *_action;
+  vector<Action *> _actions;
 
   Role *searchRole (Condition *, const string &);
-  Role *searchRole (Action *, const string &);
 };
 
 GINGA_NCL_END

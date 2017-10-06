@@ -15,12 +15,12 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "ExecutionObjectSwitch.h"
 
 GINGA_FORMATTER_BEGIN
 
-ExecutionObjectSwitch::ExecutionObjectSwitch (GingaState *ginga,
+ExecutionObjectSwitch::ExecutionObjectSwitch (GingaInternal *ginga,
                                               const string &id,
                                               Node *switchNode,
                                               INclActionListener *seListener)
@@ -33,7 +33,7 @@ void
 ExecutionObjectSwitch::select (ExecutionObject *exeObj)
 {
   if (exeObj != nullptr
-      && containsExecutionObject (exeObj->getId ()))
+      && getExecutionObject (exeObj->getId ()) != nullptr)
     {
       _selectedObj = exeObj;
     }

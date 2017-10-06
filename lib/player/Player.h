@@ -18,10 +18,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "GingaState.h"
+#include "GingaInternal.h"
 #include "PlayerAnimator.h"
 
-class GingaState;
+class GingaInternal;
 
 GINGA_PLAYER_BEGIN
 class Player
@@ -71,7 +71,7 @@ public:
      PROP_Z_INDEX,
     };
 
-  Player (GingaState *, const string &, const string &);
+  Player (GingaInternal *, const string &, const string &);
   virtual ~Player ();
 
   PlayerState getState ();
@@ -102,23 +102,25 @@ public:
                                   const string &, GingaTime);
   virtual void reload ();
   virtual void redraw (cairo_t *);
+  virtual void redrawGL ();
 
   // Static.
   static string getCurrentFocus ();
   static void setCurrentFocus (const string &);
   static PlayerProperty getPlayerProperty (const string &, string *);
-  static Player *createPlayer (GingaState *, const string &,
+  static Player *createPlayer (GingaInternal *, const string &,
                                const string &, const string &);
 protected:
-  GingaState *_ginga;              // ginga state
-  string _id;                      // associated object id
-  string _uri;                     // source uri
-  PlayerState _state;              // current state
-  GingaTime _time;                 // playback time
-  bool _eos;                       // true if content was exhausted
-  cairo_surface_t *_surface;       // player surface
-  bool _dirty;                     // true if surface should be reloaded
-  PlayerAnimator *_animator;       // associated animator
+  GingaInternal *_ginga;        // ginga handle
+  string _id;                   // associated object id
+  string _uri;                  // source uri
+  PlayerState _state;           // current state
+  GingaTime _time;              // playback time
+  bool _eos;                    // true if content was exhausted
+  cairo_surface_t *_surface;    // player surface
+  guint _gltexture;             // OpenGL texture (if OpenGL is used)
+  bool _dirty;                  // true if surface should be reloaded
+  PlayerAnimator *_animator;    // associated animator
 
   map<string, string> _properties; // property table
   struct

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PARAMETER_H
 #define PARAMETER_H
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 
 GINGA_NCL_BEGIN
 

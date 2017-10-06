@@ -27,24 +27,22 @@ GINGA_NCL_BEGIN
 class Bind
 {
 public:
-  Bind (Role *, Node *, Anchor *, Descriptor *);
+  Bind (Role *, Node *, Anchor *);
   virtual ~Bind ();
 
   Role *getRole ();
   Node *getNode ();
   Anchor *getInterface ();
-  Descriptor *getDescriptor ();
 
-  void addParameter (Parameter *);
-  const vector<Parameter *> *getParameters ();
-  Parameter *getParameter (const string &);
+  const map<string, string> *getParameters ();
+  string getParameter (const string &);
+  void setParameter (const string &, const string &);
 
 private:
   Role *_role;
   Node *_node;
   Anchor *_interface;
-  Descriptor *_descriptor;
-  vector<Parameter *> _parameters;
+  map<string, string> _params;
 };
 
 GINGA_NCL_END

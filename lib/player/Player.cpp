@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "Player.h"
 #include "player/ImagePlayer.h"
 #include "player/LuaPlayer.h"
@@ -87,11 +87,11 @@ static map<string, string> player_property_aliases =
 
 /**
  * @brief Creates player for the given URI.
- * @param ginga Ginga state.
+ * @param ginga Ginga handle.
  * @param id Media object id.
  * @param uri Content URI.
  */
-Player::Player (GingaState *ginga, const string &id, const string &uri)
+Player::Player (GingaInternal *ginga, const string &id, const string &uri)
 {
   // Internal data.
   g_assert_nonnull (ginga);
@@ -104,6 +104,7 @@ Player::Player (GingaState *ginga, const string &id, const string &uri)
   _dirty = true;
   _animator = new PlayerAnimator (_ginga);
   _surface = nullptr;
+  _gltexture = 0;
   this->resetProperties ();
 }
 
@@ -229,7 +230,7 @@ void
 Player::start ()
 {
   g_assert (_state != OCCURRING);
-  TRACE ("starting %s", _id.c_str ());
+  TRACE ("%s", _id.c_str ());
 
   _state = OCCURRING;
   _time = 0;
@@ -245,7 +246,7 @@ void
 Player::stop ()
 {
   g_assert (_state != SLEEPING);
-  TRACE ("stopping %s", _id.c_str ());
+  TRACE ("%s", _id.c_str ());
 
   _state = SLEEPING;
   _ginga->unregisterPlayer (this);
@@ -259,7 +260,7 @@ void
 Player::pause ()
 {
   g_assert (_state != PAUSED && _state != SLEEPING);
-  TRACE ("pausing %s", _id.c_str ());
+  TRACE ("%s", _id.c_str ());
 
   _state = PAUSED;
 }
@@ -271,7 +272,7 @@ void
 Player::resume ()
 {
   g_assert (_state == PAUSED);
-  TRACE ("resuming %s", _id.c_str ());
+  TRACE ("%s", _id.c_str ());
 
   _state = OCCURRING;
 }
@@ -323,8 +324,9 @@ Player::setProperty (const string &name, const string &value)
     _value = "";
 
  done:
-  TRACE ("%s.%s:='%s'%s", _id.c_str (), name.c_str (), _value.c_str (),
-         (use_defval) ? (" (default: " + defval + ")").c_str () : "");
+  TRACE ("%s.%s:='%s'%s",
+         _id.c_str (), name.c_str (), _value.c_str (),
+         (use_defval) ? (" (default: '" + defval + "')").c_str () : "");
   _properties[name] = _value;
   return;
 }
@@ -363,7 +365,7 @@ void
 Player::schedulePropertyAnimation (const string &name, const string &from,
                                    const string &to, GingaTime dur)
 {
-  TRACE ("animating %s.%s from '%s' to '%s' in %" GINGA_TIME_FORMAT,
+  TRACE ("%s.%s from '%s' to '%s' in %" GINGA_TIME_FORMAT,
          _id.c_str (), name.c_str (), from.c_str (), to.c_str (),
          GINGA_TIME_ARGS (dur));
   _animator->schedule (name, from, to, dur);
@@ -375,7 +377,7 @@ Player::schedulePropertyAnimation (const string &name, const string &from,
 void
 Player::reload (void)
 {
-  TRACE ("reloading %s", _id.c_str ());
+  TRACE ("%s", _id.c_str ());
   _dirty = false;
 }
 
@@ -446,6 +448,43 @@ Player::redraw (cairo_t *cr)
     this->redrawDebuggingInfo (cr);
 }
 
+/**
+ * @brief Redraws player using OpenGL.
+ */
+void
+Player::redrawGL ()
+{
+#if !(defined WITH_OPENGL && WITH_OPENGL)
+  WARNING_NOT_IMPLEMENTED ("not compiled with OpenGL support");
+#else
+  static int i = 0;
+
+  i += 1;
+  g_assert (_state != SLEEPING);
+  _animator->update (&_prop.rect, &_prop.bgColor, &_prop.alpha);
+
+  if (_prop.bgColor.alpha > 0)
+    {
+      gl_draw_quad (_prop.rect.x, _prop.rect.y,
+                    _prop.rect.width, _prop.rect.height,
+                    // Color
+                    (GLfloat) _prop.bgColor.red,
+                    (GLfloat) _prop.bgColor.green,
+                    (GLfloat) _prop.bgColor.blue,
+                    (GLfloat)(_prop.alpha / 255.));
+    }
+
+  if (_gltexture)
+    {
+      gl_draw_quad (_prop.rect.x, _prop.rect.y,
+                    _prop.rect.width, _prop.rect.height,
+                    _gltexture, (GLfloat)(_prop.alpha / 255.));
+    }
+
+#endif
+}
+
+
 
 // Public: Static.
 
@@ -471,7 +510,7 @@ Player::getCurrentFocus ()
 void
 Player::setCurrentFocus (const string &index)
 {
-  TRACE ("setting current focus to '%s'", index.c_str ());
+  TRACE ("from '%s' to '%s'", _currentFocus.c_str (), index.c_str ());
   _currentFocus = index;
 }
 
@@ -508,14 +547,14 @@ Player::getPlayerProperty (const string &name, string *defval)
 
 /**
  * @brief Creates a player from a mime-type.
- * @param ginga Ginga state.
+ * @param ginga Ginga handle.
  * @param id Object id.
  * @param uri Source URI.
  * @param mime Mime-type of content.
  * @return New player.
  */
 Player *
-Player::createPlayer (GingaState *ginga, const string &id,
+Player::createPlayer (GingaInternal *ginga, const string &id,
                       const string &uri, const string &mime)
 {
   Player *player = nullptr;

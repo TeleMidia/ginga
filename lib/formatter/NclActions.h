@@ -38,18 +38,15 @@ public:
 class NclAction
 {
 public:
-  explicit NclAction (GingaTime _delay);
-
+  explicit NclAction ();
   virtual ~NclAction () {}
-  void setDelay (GingaTime delay);
 
   void addProgressListener (INclActionListener *listener);
-  void removeProgressListener (INclActionListener *listener);
 
   virtual vector<NclEvent *> getEvents () = 0;
   virtual vector<NclAction *> getImplicitRefRoleActions () = 0;
 
-  void run (NclLinkCondition *satisfiedCondition);
+  void run (NclLinkCondition *);
 
   virtual void run () = 0;
 
@@ -59,43 +56,38 @@ protected:
   void notifyProgressListeners (bool start);
 
 private:
-  GingaTime _delay;
   vector<INclActionListener *> _listeners;
 };
 
 class NclSimpleAction : public NclAction
 {
 public:
-  NclSimpleAction (NclEvent *event, SimpleAction::Type type);
+  NclSimpleAction (NclEvent *event, EventStateTransition type);
   virtual ~NclSimpleAction () {}
 
   virtual void run () override;
 
   NclEvent *getEvent ();
-  SimpleAction::Type getType ();
+  EventStateTransition getType ();
 
   void setSimpleActionListener (INclActionListener *_listener);
 
   virtual vector<NclEvent *> getEvents () override;
   virtual vector<NclAction *> getImplicitRefRoleActions () override;
-  void setRepetitions (int repetitions,
-                       GingaTime repetitionInterval = GINGA_TIME_NONE);
+
 protected:
   NclEvent *_event;
-  SimpleAction::Type _actType;
+  EventStateTransition _actType;
 
 private:
   INclActionListener *_listener;
-
-  int _repetitions;
-  GingaTime _repetitionInterval;
 };
 
 class NclAssignmentAction : public NclSimpleAction
 {
 public:
   NclAssignmentAction (NclEvent *evt,
-                       SimpleAction::Type actType,
+                       EventStateTransition actType,
                        const string &value,
                        const string &duration);
 
@@ -117,7 +109,7 @@ public:
 
   virtual void run () override;
 
-  void addAction (NclAction *action);
+  void addAction (NclAction *);
 
   void setCompoundActionListener (INclActionListener *listener);
 

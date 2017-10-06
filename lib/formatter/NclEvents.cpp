@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "NclEvents.h"
 
 #include "ExecutionObjectContext.h"
@@ -26,7 +26,7 @@ GINGA_FORMATTER_BEGIN
 
 // NclEvent.
 
-NclEvent::NclEvent (GingaState *ginga, const string &id,
+NclEvent::NclEvent (GingaInternal *ginga, const string &id,
                     ExecutionObject *exeObj)
 {
   g_assert_nonnull (ginga);
@@ -40,13 +40,13 @@ NclEvent::NclEvent (GingaState *ginga, const string &id,
   _occurrences = 0;
   _exeObj = exeObj;
 
-  TRACE ("creating event '%s'", _id.c_str ());
+  TRACE ("%s", _id.c_str ());
   _scheduler->addEvent (this);
 }
 
 NclEvent::~NclEvent ()
 {
-  TRACE ("destroying event '%s'", _id.c_str ());
+  TRACE ("%s", _id.c_str ());
 }
 
 bool
@@ -107,14 +107,16 @@ NclEvent::addListener (INclEventListener *listener)
 EventStateTransition
 NclEvent::getTransition (EventState newState)
 {
-  return EventUtil::getTransition (_state, newState);
+  EventStateTransition trans;
+  g_assert (EventUtil::getTransition (_state, newState, &trans));
+  return trans;
 }
 
 bool
 NclEvent::abort ()
 {
   if (_state == EventState::OCCURRING || _state == EventState::PAUSED)
-    return changeState (EventState::SLEEPING, EventStateTransition::ABORTS);
+    return changeState (EventState::SLEEPING, EventStateTransition::ABORT);
   else
     return false;
 }
@@ -123,7 +125,7 @@ bool
 NclEvent::start ()
 {
   if (_state == EventState::SLEEPING)
-    return changeState (EventState::OCCURRING, EventStateTransition::STARTS);
+    return changeState (EventState::OCCURRING, EventStateTransition::START);
   else
     return false;
 }
@@ -132,7 +134,7 @@ bool
 NclEvent::stop ()
 {
   if (_state == EventState::OCCURRING || _state == EventState::PAUSED)
-    return changeState (EventState::SLEEPING, EventStateTransition::STOPS);
+    return changeState (EventState::SLEEPING, EventStateTransition::STOP);
   else
     return false;
 }
@@ -141,7 +143,7 @@ bool
 NclEvent::pause ()
 {
   if (_state == EventState::OCCURRING)
-    return changeState (EventState::PAUSED, EventStateTransition::PAUSES);
+    return changeState (EventState::PAUSED, EventStateTransition::PAUSE);
   else
     return false;
 }
@@ -150,7 +152,7 @@ bool
 NclEvent::resume ()
 {
   if (_state == EventState::PAUSED)
-    return changeState (EventState::OCCURRING, EventStateTransition::RESUMES);
+    return changeState (EventState::OCCURRING, EventStateTransition::RESUME);
   else
     return false;
 }
@@ -166,7 +168,7 @@ bool
 NclEvent::changeState (EventState newState,
                        EventStateTransition transition)
 {
-  if (transition == EventStateTransition::STOPS)
+  if (transition == EventStateTransition::STOP)
     {
       _occurrences++;
     }
@@ -187,7 +189,7 @@ NclEvent::changeState (EventState newState,
 
 // AnchorEvent.
 
-AnchorEvent::AnchorEvent (GingaState *ginga, const string &id,
+AnchorEvent::AnchorEvent (GingaInternal *ginga, const string &id,
                           ExecutionObject *executionObject,
                           Area *anchor)
   : NclEvent (ginga, id, executionObject)
@@ -198,7 +200,7 @@ AnchorEvent::AnchorEvent (GingaState *ginga, const string &id,
 
 // PresentationEvent.
 
-PresentationEvent::PresentationEvent (GingaState *ginga,
+PresentationEvent::PresentationEvent (GingaInternal *ginga,
                                       const string &id,
                                       ExecutionObject *exeObj,
                                       Area *anchor)
@@ -271,7 +273,7 @@ PresentationEvent::incOccurrences ()
 
 // SelectionEvent
 
-SelectionEvent::SelectionEvent (GingaState *ginga,
+SelectionEvent::SelectionEvent (GingaInternal *ginga,
                                 const string &id,
                                 ExecutionObject *exeObj,
                                 Area *anchor)
@@ -293,7 +295,7 @@ SelectionEvent::start ()
 
 // AttributionEvent
 
-AttributionEvent::AttributionEvent (GingaState *ginga,
+AttributionEvent::AttributionEvent (GingaInternal *ginga,
                                     const string &id,
                                     ExecutionObject *exeObj,
                                     Property *anchor)
@@ -377,7 +379,7 @@ AttributionEvent::solveImplicitRefAssessment (const string &val)
 
 // SwitchEvent.
 
-SwitchEvent::SwitchEvent (GingaState *ginga,
+SwitchEvent::SwitchEvent (GingaInternal *ginga,
                           const string &id,
                           ExecutionObject *exeObjSwitch,
                           Anchor *interface,

@@ -34,7 +34,7 @@ public:
   ~NclDocument ();
 
   string getId ();
-  string getLocation ();
+  string getURI ();
   Context *getRoot ();
 
   Entity *getEntityById (const string &);
@@ -43,7 +43,7 @@ public:
 
 private:
   string _id;                       // document id
-  string _location;                 // document location
+  string _uri;                      // document uri
   Context *_root;                   // document root
   map<string, Entity *> _entities;  // entity map
 

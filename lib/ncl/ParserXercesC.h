@@ -27,16 +27,15 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wundef)
 XERCES_CPP_NAMESPACE_USE
 GINGA_PRAGMA_DIAG_POP ()
 
+#include "Action.h"
 #include "Area.h"
 #include "AreaLabeled.h"
 #include "CompositeRule.h"
-#include "CompoundAction.h"
 #include "CompoundCondition.h"
 #include "Descriptor.h"
 #include "NclDocument.h"
 #include "Property.h"
 #include "Rule.h"
-#include "SimpleAction.h"
 #include "SimpleRule.h"
 #include "Switch.h"
 #include "SwitchPort.h"
@@ -94,8 +93,9 @@ private:
   AssessmentStatement *parseAssessmentStatement (DOMElement *);
   AttributeAssessment *parseAttributeAssessment (DOMElement *);
   ValueAssessment *parseValueAssessment (DOMElement *);
-  CompoundAction *parseCompoundAction (DOMElement *);
-  SimpleAction *parseSimpleAction (DOMElement *);
+
+  void parseCompoundAction (Connector *, DOMElement *);
+  void parseSimpleAction (Connector *, DOMElement *);
 
   Context *parseBody (DOMElement *);
   void solveNodeReferences (Composition *);
@@ -116,8 +116,7 @@ private:
   Anchor *parseArea (DOMElement *);
 
   Link *parseLink (DOMElement *, Context *);
-  Parameter *parseLinkParam (DOMElement *);
-  Bind *parseBind (DOMElement *, Link *, Context *);
+  Bind *parseBind (DOMElement *, Link *, map<string, string> *, Context *);
   Parameter *parseBindParam (DOMElement *);
 
   // From ErrorHandler.

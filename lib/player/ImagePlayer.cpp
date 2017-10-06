@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "ImagePlayer.h"
 
 GINGA_PLAYER_BEGIN
@@ -75,7 +75,12 @@ ImagePlayer::reload ()
   cairo_status_t status;
 
   if (_surface != nullptr)
-    cairo_surface_destroy (_surface);
+    {
+      cairo_surface_destroy (_surface);
+#if defined WITH_OPENGL && WITH_OPENGL
+      gl_delete_texture (&_gltexture);
+#endif
+    }
 
   status = cairox_surface_create_from_file (_uri.c_str (), &_surface);
   if (unlikely (status != CAIRO_STATUS_SUCCESS))
@@ -84,6 +89,13 @@ ImagePlayer::reload ()
              _uri.c_str (), cairo_status_to_string (status));
     }
   g_assert_nonnull (_surface);
+
+#if defined WITH_OPENGL && WITH_OPENGL
+  gl_create_texture (&_gltexture,
+                     cairo_image_surface_get_width (_surface),
+                     cairo_image_surface_get_height (_surface),
+                     cairo_image_surface_get_data (_surface));
+#endif
 
   Player::reload ();
 }

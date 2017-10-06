@@ -25,13 +25,14 @@ GINGA_PLAYER_BEGIN
 class VideoPlayer : public Player
 {
 public:
-  VideoPlayer (GingaState *, const string &, const string &);
+  VideoPlayer (GingaInternal *, const string &, const string &);
   virtual ~VideoPlayer ();
   void start () override;
   void stop () override;
   void pause () override;
   void resume () override;
   void redraw (cairo_t *) override;
+  void redrawGL () override;
 
 protected:
   bool doSetProperty (PlayerProperty, const string &,
@@ -48,7 +49,6 @@ private:
   struct {                      // video pipeline
     GstElement *bin;            // video bin
     GstElement *caps;           // caps filter
-    GstElement *scale;          // scale filter
     GstElement *sink;           // app sink
   } _video;
   int _sample_flag;               // true if new sample is available

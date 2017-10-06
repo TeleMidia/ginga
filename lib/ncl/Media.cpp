@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "Media.h"
 
 GINGA_NCL_BEGIN
@@ -170,10 +170,10 @@ Media::getDescriptor ()
 }
 
 /**
- * @brief Sets media descriptor.  (Can only be called once.)
+ * @brief Initializes media descriptor.
  */
 void
-Media::setDescriptor (Descriptor *descriptor)
+Media::initDescriptor (Descriptor *descriptor)
 {
   g_assert_null (_descriptor);
   g_assert_nonnull (descriptor);
