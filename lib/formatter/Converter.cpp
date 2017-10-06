@@ -881,7 +881,7 @@ Converter::createAction (Connector *connector,
       for (auto bind: link->getBinds (act))
         {
           NclSimpleAction *simpleAction;
-          simpleAction = createSimpleAction (act, bind, link, context);
+          simpleAction = createSimpleAction (act, bind, context);
           g_assert_nonnull (simpleAction);
           compact->addAction (simpleAction);
         }
@@ -947,15 +947,14 @@ Converter::createCondition (
       size_t size = binds.size ();
       if (size == 1)
         {
-          return createSimpleCondition (ste, binds[0], ncmLink,
-                                        parentObj);
+          return createSimpleCondition (ste, binds[0], parentObj);
         }
       else if (size > 1)
         {
           compoundCondition = new NclLinkCompoundTriggerCondition ();
           for (size_t i = 0; i < size; i++)
             {
-              simpleCondition = createSimpleCondition (ste, binds[i], ncmLink, parentObj);
+              simpleCondition = createSimpleCondition (ste, binds[i], parentObj);
 
               compoundCondition->addCondition (simpleCondition);
             }
@@ -989,11 +988,11 @@ Converter::createAssessmentStatement (
   NclLinkAssessment *otherAssessment;
   NclLinkAssessmentStatement *statement;
   string paramValue;
-  Parameter *connParam, *param;
+  Parameter *connParam;
   vector<Bind *> otherBinds;
 
   mainAssessment = createAttributeAssessment (
-        assessmentStatement->getMainAssessment (), bind, ncmLink,
+        assessmentStatement->getMainAssessment (), bind,
         parentObj);
 
   auto valueAssessment = cast (ValueAssessment *,
@@ -1010,16 +1009,7 @@ Converter::createAssessmentStatement (
           connParam = new Parameter (
                 paramValue.substr (1, paramValue.length () - 1), "");
 
-          param = bind->getParameter (connParam->getName ());
-          if (param == nullptr)
-            {
-              param = ncmLink->getParameter (connParam->getName ());
-            }
-
-          if (param != nullptr)
-            {
-              paramValue = param->getValue ();
-            }
+          paramValue = bind->getParameter (connParam->getName ());
         }
 
       otherAssessment = new NclLinkValueAssessment (paramValue);
@@ -1030,12 +1020,12 @@ Converter::createAssessmentStatement (
       if (!otherBinds.empty ())
         {
           otherAssessment = createAttributeAssessment (
-                attrAssessment, otherBinds[0], ncmLink, parentObj);
+                attrAssessment, otherBinds[0], parentObj);
         }
       else
         {
           otherAssessment = createAttributeAssessment (
-                attrAssessment, nullptr, ncmLink, parentObj);
+                attrAssessment, nullptr, parentObj);
         }
     }
   else
@@ -1097,10 +1087,10 @@ Converter::createStatement (
 
 NclLinkAttributeAssessment *
 Converter::createAttributeAssessment (
-    unused (AttributeAssessment *attributeAssessment), Bind *bind, Link *ncmLink,
+    unused (AttributeAssessment *attributeAssessment), Bind *bind,
     ExecutionObjectContext *parentObj)
 {
-  NclEvent *event = createEvent (bind, ncmLink, parentObj);
+  NclEvent *event = createEvent (bind, parentObj);
 
   return new NclLinkAttributeAssessment
     (event, AttributeType::NODE_PROPERTY);
@@ -1108,7 +1098,7 @@ Converter::createAttributeAssessment (
 
 NclSimpleAction *
 Converter::createSimpleAction (
-    Action *sae, Bind *bind, Link *ncmLink,
+    Action *sae, Bind *bind,
     ExecutionObjectContext *parentObj)
 {
   NclEvent *event;
@@ -1116,12 +1106,11 @@ Converter::createSimpleAction (
   EventType eventType;
   NclSimpleAction *action;
   Parameter *connParam;
-  Parameter *param;
   string paramValue;
 
   action = nullptr;
 
-  event = createEvent (bind, ncmLink, parentObj);
+  event = createEvent (bind, parentObj);
   g_assert_nonnull (event);
 
   actionType = sae->getActionType ();
@@ -1143,23 +1132,7 @@ Converter::createSimpleAction (
               connParam = new Parameter (
                     paramValue.substr (1, paramValue.length () - 1), "");
 
-              param = bind->getParameter (connParam->getName ());
-              if (param == nullptr)
-                {
-                  param = ncmLink->getParameter (connParam->getName ());
-                }
-
-              delete connParam;
-              connParam = nullptr;
-
-              if (param != nullptr)
-                {
-                  paramValue = param->getValue ();
-                }
-              else
-                {
-                  paramValue = "";
-                }
+              paramValue = bind->getParameter (connParam->getName ());
             }
 
           string paramDur;
@@ -1170,19 +1143,7 @@ Converter::createSimpleAction (
               connParam = new Parameter
                 (paramDur.substr (1, paramDur.length () - 1), "");
 
-              param = bind->getParameter (connParam->getName ());
-              if (param == nullptr)
-                {
-                  param = ncmLink->getParameter (connParam->getName ());
-                }
-
-              delete connParam;
-              connParam = nullptr;
-
-              if (param != nullptr)
-                {
-                  paramDur = param->getValue ();
-                }
+              paramDur = bind->getParameter (connParam->getName ());
             }
 
           action = new NclAssignmentAction (event, actionType,
@@ -1211,14 +1172,14 @@ Converter::createSimpleAction (
 
 NclLinkTriggerCondition *
 Converter::createSimpleCondition (
-    SimpleCondition *simpleCondition, Bind *bind, Link *ncmLink,
+    SimpleCondition *simpleCondition, Bind *bind,
     ExecutionObjectContext *parentObj)
 {
   NclEvent *event;
   string delayObject;
   NclLinkTriggerCondition *condition;
 
-  event = createEvent (bind, ncmLink, parentObj);
+  event = createEvent (bind, parentObj);
   condition = new NclLinkTransitionTriggerCondition (
         event, simpleCondition->getTransition ());
 
@@ -1226,8 +1187,7 @@ Converter::createSimpleCondition (
 }
 
 NclEvent *
-Converter::createEvent (Bind *bind, Link *ncmLink,
-                        ExecutionObjectContext *parentObject)
+Converter::createEvent (Bind *bind, ExecutionObjectContext *parentObject)
 {
   NclNodeNesting *endPointNodeSequence;
   NclNodeNesting *endPointPerspective;
@@ -1296,7 +1256,7 @@ Converter::createEvent (Bind *bind, Link *ncmLink,
       interfacePoint = comp->getMapInterface (port);
     }
 
-  key = getBindKey (ncmLink, bind);
+  key = getBindKey (bind);
   event = getEvent (executionObject, interfacePoint,
                     bind->getRole ()->getEventType (), key);
 
@@ -1304,49 +1264,12 @@ Converter::createEvent (Bind *bind, Link *ncmLink,
   return event;
 }
 
-GingaTime
-Converter::getDelayParameter (Link *ncmLink,
-                              Parameter *connParam,
-                              Bind *ncmBind)
-{
-  Parameter *parameter;
-  string param;
-
-  parameter = nullptr;
-  if (ncmBind != nullptr)
-    {
-      parameter = ncmBind->getParameter (connParam->getName ());
-    }
-
-  if (parameter == nullptr)
-    {
-      parameter = ncmLink->getParameter (connParam->getName ());
-    }
-
-  if (parameter == nullptr)
-    {
-      return 0;
-    }
-  else
-    {
-      param = parameter->getValue ();
-      if (param == "")
-        {
-          return 0;
-        }
-      else
-        {
-          return (GingaTime)(xstrtod (param) * GINGA_NSECOND);
-        }
-    }
-}
-
 string
-Converter::getBindKey (Link *ncmLink, Bind *ncmBind)
+Converter::getBindKey (Bind *ncmBind)
 {
   Role *role;
   string keyValue;
-  Parameter *param, *auxParam;
+  Parameter *param;
   string key;
 
   role = ncmBind->getRole ();
@@ -1373,26 +1296,9 @@ Converter::getBindKey (Link *ncmLink, Bind *ncmBind)
       key = "";
     }
   else if (keyValue[0] == '$')
-    { // instanceof Parameter
-      param
-          = new Parameter (keyValue.substr (1, keyValue.length () - 1), "");
-
-      auxParam = ncmBind->getParameter (param->getName ());
-      if (auxParam == nullptr)
-        {
-          auxParam = ncmLink->getParameter (param->getName ());
-        }
-
-      if (auxParam != nullptr)
-        {
-          key = auxParam->getValue ();
-        }
-      else
-        {
-          key = "";
-        }
-
-      delete param;
+    {
+      param = new Parameter (keyValue.substr (1, keyValue.length () - 1), "");
+      key = ncmBind->getParameter (param->getName ());
     }
   else
     {

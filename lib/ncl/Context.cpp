@@ -35,7 +35,6 @@ Context::Context (NclDocument *ncl, const string &id)
  */
 Context::~Context ()
 {
-  _links.clear ();
 }
 
 /**

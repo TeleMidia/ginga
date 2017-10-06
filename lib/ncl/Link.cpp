@@ -40,7 +40,6 @@ Link::Link (NclDocument *ncl, const string &id) : Entity (ncl, id)
  */
 Link::~Link ()
 {
-  _parameters.clear ();
   _binds.clear ();
 }
 
@@ -68,40 +67,6 @@ Link::initConnector (Connector *conn)
 }
 
 /**
- * @brief Adds parameter to link.
- * @param parameter Parameter.
- */
-void
-Link::addParameter (Parameter *parameter)
-{
-  g_assert_nonnull (parameter);
-  _parameters.push_back (parameter);
-}
-
-/**
- * @brief Gets all link parameters.
- */
-const vector<Parameter *> *
-Link::getParameters ()
-{
-  return &_parameters;
-}
-
-/**
- * @brief Gets link parameter.
- * @param name Parameter name.
- * @return Parameter if successful, or null if not found.
- */
-Parameter *
-Link::getParameter (const string &name)
-{
-  for (auto param: _parameters)
-    if (param->getName () == name)
-      return param;
-  return nullptr;
-}
-
-/**
  * @brief Adds bind to link.
  * @param bind Bind.
  */
@@ -114,6 +79,7 @@ Link::addBind (Bind *bind)
 
 /**
  * @brief Gets all link binds.
+ * @return Link binds.
  */
 const vector<Bind *> *
 Link::getBinds ()

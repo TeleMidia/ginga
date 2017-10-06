@@ -33,10 +33,6 @@ public:
   Connector *getConnector ();
   bool initConnector (Connector *);
 
-  void addParameter (Parameter *);
-  const vector<Parameter *> *getParameters ();
-  Parameter *getParameter (const string &);
-
   void addBind (Bind *);
   const vector<Bind *> *getBinds ();
   vector<Bind *> getBinds (Role *);
@@ -45,7 +41,6 @@ public:
 private:
   Connector *_connector;
   vector<Bind *> _binds;
-  vector<Parameter *> _parameters;
 };
 
 GINGA_NCL_END

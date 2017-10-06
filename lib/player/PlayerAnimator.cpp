@@ -333,10 +333,9 @@ AnimInfo::init (double current)
   g_assert (!_init);
   _current = current;
   if (_duration > 0)
-    _speed = fabs (_target - current) / _duration;
+    _speed = fabs (_target - current) / (double) _duration;
   else
     _speed = 0;
-
   _init = true;
   _last_update = ginga_gettime ();
 }
@@ -354,7 +353,7 @@ AnimInfo::update (void)
   g_assert (!_done);
 
   dir = (_current < _target) ? 1 : -1;
-  _current += dir * _speed * (_current_time - _last_update);
+  _current += dir * _speed * (double) (_current_time - _last_update);
   _last_update = _current_time;
 
   if (_duration == 0

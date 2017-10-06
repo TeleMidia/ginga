@@ -20,6 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/Ncl.h"
 using namespace ginga::ncl;
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wunused-macros)
+
 static G_GNUC_UNUSED bool
 check_failure (const string &log, const string &buf)
 {
