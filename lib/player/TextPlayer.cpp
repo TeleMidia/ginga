@@ -224,7 +224,9 @@ TextPlayer::reload ()
                      cairo_image_surface_get_height (_surface),
                      cairo_image_surface_get_data (_surface));
 #endif
-  printf ("%d w=%d, h=%d.\n", _gltexture, cairo_image_surface_get_width (_surface), cairo_image_surface_get_height (_surface));
+  printf ("%u w=%d, h=%d.\n", _gltexture,
+          cairo_image_surface_get_width (_surface),
+          cairo_image_surface_get_height (_surface));
 
   Player::reload ();
 }
