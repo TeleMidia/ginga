@@ -191,11 +191,18 @@ TextPlayer::reload ()
     }
   g_assert_nonnull (contents);
 
+  printf ("%s.\n", contents);
+
   text = string (contents);
   g_free (contents);
 
   if (_surface != nullptr)
-    cairo_surface_destroy (_surface);
+    {
+      cairo_surface_destroy (_surface);
+#if defined WITH_OPENGL && WITH_OPENGL
+      gl_delete_texture (&_gltexture);
+#endif
+    }
 
   _surface = TextPlayer::renderSurface (text,
                                         _prop.fontFamily,
@@ -209,7 +216,16 @@ TextPlayer::reload ()
                                         _prop.vertAlign,
                                         true,
                                         nullptr);
+
   g_assert_nonnull (_surface);
+#if defined WITH_OPENGL && WITH_OPENGL
+  gl_create_texture (&_gltexture,
+                     cairo_image_surface_get_width (_surface),
+                     cairo_image_surface_get_height (_surface),
+                     cairo_image_surface_get_data (_surface));
+#endif
+  printf ("%d w=%d, h=%d.\n", _gltexture, cairo_image_surface_get_width (_surface), cairo_image_surface_get_height (_surface));
+
   Player::reload ();
 }
 
