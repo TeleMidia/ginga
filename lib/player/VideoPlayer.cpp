@@ -343,6 +343,7 @@ VideoPlayer::redrawGL ()
   gl_create_texture (&_gltexture, width, height, pixels);
 
   gst_video_frame_unmap (&v_frame);
+  gst_sample_unref (sample);
 
  done:
   Player::redrawGL ();
