@@ -92,7 +92,7 @@ LuaPlayer::stop (void)
 
 #if defined WITH_OPENGL && WITH_OPENGL
   if (_gltexture)
-    gl_delete_texture (&_gltexture);
+    GL::delete_texture (&_gltexture);
 #endif
 
   Player::stop ();
@@ -157,18 +157,18 @@ LuaPlayer::redrawGL()
 
   if (!_gltexture)
     {
-      gl_create_texture (&_gltexture,
-                         cairo_image_surface_get_width (_surface),
-                         cairo_image_surface_get_height (_surface),
-                         cairo_image_surface_get_data (_surface));
+      GL::create_texture (&_gltexture,
+                          cairo_image_surface_get_width (_surface),
+                          cairo_image_surface_get_height (_surface),
+                          cairo_image_surface_get_data (_surface));
     }
   else
     {
-      gl_update_subtexture (_gltexture,
-                            0, 0,
-                            cairo_image_surface_get_width (_surface),
-                            cairo_image_surface_get_height (_surface),
-                            cairo_image_surface_get_data (_surface));
+      GL::update_subtexture (_gltexture,
+                             0, 0,
+                             cairo_image_surface_get_width (_surface),
+                             cairo_image_surface_get_height (_surface),
+                             cairo_image_surface_get_data (_surface));
     }
 
   _surface = nullptr;

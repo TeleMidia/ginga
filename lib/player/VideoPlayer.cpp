@@ -327,10 +327,10 @@ VideoPlayer::redrawGL ()
   height = GST_VIDEO_FRAME_HEIGHT (&v_frame);
 
   if (_gltexture != (GLuint) -1)
-    gl_delete_texture (&_gltexture);
+    GL::delete_texture (&_gltexture);
 
   // fixme: There is no need for recreating the texture in each frame.
-  gl_create_texture (&_gltexture, width, height, pixels);
+  GL::create_texture (&_gltexture, width, height, pixels);
 
   gst_video_frame_unmap (&v_frame);
   gst_sample_unref (sample);
