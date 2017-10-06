@@ -104,7 +104,7 @@ Player::Player (GingaInternal *ginga, const string &id, const string &uri)
   _dirty = true;
   _animator = new PlayerAnimator (_ginga);
   _surface = nullptr;
-  _gltexture = (guint) -1;
+  _gltexture = 0;
   this->resetProperties ();
 }
 
@@ -474,7 +474,7 @@ Player::redrawGL ()
                     (GLfloat)(_prop.alpha / 255.));
     }
 
-  if (_gltexture != (GLuint) -1)
+  if (_gltexture)
     {
       gl_draw_quad (_prop.rect.x, _prop.rect.y,
                     _prop.rect.width, _prop.rect.height,
