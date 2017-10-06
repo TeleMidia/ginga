@@ -713,8 +713,6 @@ struct GLES2Ctx
   GLint posAttr;
   GLint colorAttr;
   GLint texAttr;
-
-  // Texture
 };
 
 static struct GLES2Ctx gles2ctx;
@@ -737,6 +735,9 @@ static GLuint elements[] = {
 };
 # endif
 
+/**
+ * @brief gl_init Initiliazes the OpenGL context.
+ */
 void
 gl_init ()
 {
