@@ -160,19 +160,13 @@ VideoPlayer::start ()
   GstCaps *caps;
   GstStructure *st;
   GstStateChangeReturn ret;
-  static const char *format;
-#if defined WITH_OPENGL && WITH_OPENGL
-  format = "RGBA";
-#else
-  format = "BGRA";
-#endif
 
   g_assert (_state != OCCURRING);
   TRACE ("starting");
 
   st = gst_structure_new_empty ("video/x-raw");
   gst_structure_set (st,
-                     "format", G_TYPE_STRING, format,
+                     "format", G_TYPE_STRING, "BGRA",
                      nullptr);
 
   caps = gst_caps_new_full (st, nullptr);

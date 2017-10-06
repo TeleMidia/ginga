@@ -474,7 +474,7 @@ Player::redrawGL ()
                     _prop.alpha / 255.);
     }
 
-  if (_gltexture != -1)
+  if (_gltexture != (guint) -1)
     {
       gl_draw_quad (_prop.rect.x, _prop.rect.y,
                     _prop.rect.width, _prop.rect.height,
