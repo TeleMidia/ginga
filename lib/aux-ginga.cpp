@@ -891,7 +891,7 @@ gl_update_subtexture (GLuint gltex,
                    GL_BGRA_EXT,
                    GL_UNSIGNED_BYTE,
                    data);
-
+  glBindTexture(GL_TEXTURE_2D, 0);
   CHECK_GL_ERROR ();
 }
 
