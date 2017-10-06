@@ -49,7 +49,6 @@ private:
   struct {                      // video pipeline
     GstElement *bin;            // video bin
     GstElement *caps;           // caps filter
-    GstElement *scale;          // scale filter
     GstElement *sink;           // app sink
   } _video;
   int _sample_flag;               // true if new sample is available
