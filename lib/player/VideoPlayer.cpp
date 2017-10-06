@@ -123,17 +123,12 @@ VideoPlayer::VideoPlayer (GingaInternal *ginga, const string &id,
   _video.caps = gst_element_factory_make ("capsfilter", "video.filter");
   g_assert_nonnull (_video.caps);
 
-  _video.scale = gst_element_factory_make ("videoscale", "video.scale");
-  g_assert_nonnull (_video.scale);
-
   _video.sink = gst_element_factory_make ("appsink", "video.sink");
   g_assert_nonnull (_video.sink);
 
   g_assert (gst_bin_add (GST_BIN (_video.bin), _video.caps));
-  g_assert (gst_bin_add (GST_BIN (_video.bin), _video.scale));
   g_assert (gst_bin_add (GST_BIN (_video.bin), _video.sink));
-  g_assert (gst_element_link (_video.caps, _video.scale));
-  g_assert (gst_element_link (_video.scale, _video.sink));
+  g_assert (gst_element_link (_video.caps, _video.sink));
 
   pad = gst_element_get_static_pad (_video.caps, "sink");
   g_assert_nonnull (pad);
@@ -178,8 +173,6 @@ VideoPlayer::start ()
   st = gst_structure_new_empty ("video/x-raw");
   gst_structure_set (st,
                      "format", G_TYPE_STRING, format,
-                     "width", G_TYPE_INT, Player::_prop.rect.width,
-                     "height", G_TYPE_INT, Player::_prop.rect.height,
                      nullptr);
 
   caps = gst_caps_new_full (st, nullptr);
