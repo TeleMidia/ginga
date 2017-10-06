@@ -221,6 +221,7 @@ main (int argc, char **argv)
   opts.height = opt_height;
   opts.debug = opt_debug;
   opts.experimental = opt_experimental;
+  opts.opengl = true;
   opts.background = string (opt_background);
   GINGA = Ginga::create (argc, argv, &opts);
   g_assert_nonnull (GINGA);

@@ -81,6 +81,7 @@ class GingaInternal : public Ginga
 
   static void setOptionDebug (GingaInternal *, const string &, bool);
   static void setOptionExperimental (GingaInternal *, const string &, bool);
+  static void setOptionOpenGL (GingaInternal *, const string &, bool);
   static void setOptionSize (GingaInternal *, const string &, int);
   static void setOptionBackground (GingaInternal *, const string &, string);
 

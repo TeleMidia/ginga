@@ -31,6 +31,7 @@ static GingaOptions opts_defaults =
   600,                          // height
   false,                        // debug
   false,                        // experimental
+  false,                        // opengl
   "",                           // background ("" == none)
 };
 
@@ -54,6 +55,7 @@ static map<string, GingaOptionData> opts_table =
  OPTS_ENTRY (debug,        G_TYPE_BOOLEAN, Debug),
  OPTS_ENTRY (experimental, G_TYPE_BOOLEAN, Experimental),
  OPTS_ENTRY (height,       G_TYPE_INT,     Size),
+ OPTS_ENTRY (opengl,       G_TYPE_BOOLEAN, OpenGL),
  OPTS_ENTRY (width,        G_TYPE_INT,     Size),
 };
 
@@ -113,10 +115,6 @@ GingaInternal::getState ()
 bool
 GingaInternal::start (const string &file, string *errmsg)
 {
-#if defined WITH_OPENGL && WITH_OPENGL
-  gl_init ();
-#endif
-
   if (_state != GINGA_STATE_STOPPED)
     return false;               // nothing to do
 
@@ -428,6 +426,7 @@ GingaInternal::GingaInternal (unused (int argc), unused (char **argv),
   setOptionBackground (this, "background", _opts.background);
   setOptionDebug (this, "debug", _opts.debug);
   setOptionExperimental (this, "experimental", _opts.experimental);
+  setOptionOpenGL (this, "opengl", _opts.opengl);
 
 #if defined WITH_CEF && WITH_CEF
   CefMainArgs args (argc, argv);
@@ -577,12 +576,32 @@ GingaInternal::setOptionDebug (GingaInternal *self, const string &name,
 /**
  * @brief Updates experimental option.
  */
-
 void
 GingaInternal::setOptionExperimental (unused (GingaInternal *self),
                                       const string &name, bool value)
 {
   g_assert (name == "experimental");
+  TRACE ("%s:=%s", name.c_str (), strbool (value));
+}
+
+/**
+ * @brief Initializes OpenGL option.
+ */
+void
+GingaInternal::setOptionOpenGL (unused (GingaInternal *self),
+                                const string &name, bool value)
+{
+  static int n = 0;
+  g_assert (name == "opengl");
+  if (unlikely (n++ > 0))
+    ERROR ("Cannot change to 'opengl' on-the-fly");
+#if defined WITH_OPENGL && WITH_OPENGL
+  if (value)
+    gl_init ();
+#else
+  if (unlikely (value))
+    ERROR ("Not compiled with OpenGL support");
+#endif
   TRACE ("%s:=%s", name.c_str (), strbool (value));
 }
 

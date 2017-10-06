@@ -42,6 +42,7 @@ struct GingaOptions
   int height;
   bool debug;
   bool experimental;
+  bool opengl;
   std::string background;
 };
 
