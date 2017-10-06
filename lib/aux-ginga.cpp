@@ -671,28 +671,35 @@ xpathbuildabs (const string &a, const string &b)
 
 #if defined WITH_OPENGLES2 && WITH_OPENGLES2
 auto vertexSource =
-      "in vec2 pos;\n"
-      "in vec3 color;\n"
-      "in vec2 texcoord;\n"
-      "uniform vec2 winSize;\n"
-      "out vec3 f_color;"
-      "out vec2 f_texcoord;\n"
-      "void main() {\n"
-      "   f_color = color;\n"
-      "   pos.x = ((pos.x)/winSize.x) * 2.0f - 1.0;\n"
-      "   pos.y = ((pos.y)/winSize.y) * (-2.0f) + 1.0f;\n"
-      "   gl_Position = vec4 ( pos.x, pos.y, 0.0, 1.0);"
-      "   f_texcoord = texcoord;"
-      "}\n";
+    "uniform vec2 winSize;\n"
+    "\n"
+    "in vec2 pos;\n"
+    "in vec4 color;\n"
+    "in vec2 texcoord;\n"
+    "\n"
+    "out vec4 f_color;\n"
+    "out vec2 f_texcoord;\n"
+    "void main() {\n"
+    "   pos.x = ((pos.x)/winSize.x) * 2.0f - 1.0;\n"
+    "   pos.y = ((pos.y)/winSize.y) * (-2.0f) + 1.0f;\n"
+    "   gl_Position = vec4 ( pos.x, pos.y, 0.0, 1.0);\n"
+    "   f_texcoord = texcoord;\n"
+    "   f_color = color;\n"
+    "}\n";
 
 static auto fragmentSource =
-      "in vec3 f_color;\n"
-      "in vec2 f_texcoord;\n"
-      "out vec4 outColor;\n"
-      "uniform sampler2D tex;\n"
-      "void main() {\n"
-      "   outColor = texture (tex, f_texcoord); //* vec4(f_color, 1);\n"
-      "}\n";
+    "uniform int use_tex;\n"
+    "uniform sampler2D tex;\n"
+    "\n"
+    "in vec4 f_color;\n"
+    "in vec2 f_texcoord;\n"
+    "\n"
+    "out vec4 outColor;\n"
+    "void main() {\n"
+    "   vec4 t0 = texture2D(tex, f_texcoord);\n"
+    "   outColor = use_tex * t0 * f_color + "
+    "              (1.0-use_tex) * f_color;\n"
+    "}\n";
 
 struct GLES2Ctx
 {
@@ -712,15 +719,15 @@ static struct GLES2Ctx gles2ctx;
 
 struct sprite {
   GLfloat pos [2];
-  GLfloat v_color [3];
+  GLfloat v_color [4];
   GLfloat tex_coords [2];
 };
 
 static struct sprite vertices[] = {
-  {{0.0f, 0.0f}, {1.0, 0.0, 0.0}, {1.0f, 1.0f}},
-  {{400.0f, 0.0f}, {0.0, 1.0, 0.0}, {0.0f, 1.0f}},
-  {{400.0f, 400.0f}, {0.0, 0.0, 1.0}, {0.0f, 0.0f}},
-  {{0.0f, 400.0f}, {1.0, 1.0, 0.0}, {1.0f, 0.0f}} };
+  {{0.0f, 0.0f}, {1.0, 1.0, 1.0, 1.0}, {0.0f, 0.0f}},
+  {{400.0f, 0.0f}, {1.0, 1.0, 1.0, 1.0}, {1.0f, 0.0f}},
+  {{400.0f, 400.0f}, {1.0, 1.0, 1.0, 1.0}, {1.0f, 1.0f}},
+  {{0.0f, 400.0f}, {1.0, 1.0, 1.0, 1.0}, {0.0f, 1.0f}} };
 
 static GLuint elements[] = {
   0, 1, 2,
@@ -756,8 +763,17 @@ gl_init ()
   glUseProgram (gles2ctx.shaderProgram);
 
   gles2ctx.posAttr = glGetAttribLocation (gles2ctx.shaderProgram, "pos");
+  if (gles2ctx.posAttr < 0)
+    WARNING ("Shader pos attribute not found.");
+
   gles2ctx.colorAttr = glGetAttribLocation (gles2ctx.shaderProgram, "color");
+  if (gles2ctx.colorAttr < 0)
+    WARNING ("Shader color attribute not found.");
+
   gles2ctx.texAttr = glGetAttribLocation (gles2ctx.shaderProgram, "texcoord");
+  if (gles2ctx.texAttr < 0)
+    WARNING ("Shader texcoord attribute not found.");
+
 #endif
 
   CHECK_GL_ERROR
@@ -775,6 +791,8 @@ gl_clear_scene (int w, int h)
   GLuint loc = glGetUniformLocation (gles2ctx.shaderProgram, "winSize");
   g_assert (loc != -1);
   glUniform2f (loc, w, h);
+  loc = glGetUniformLocation (gles2ctx.shaderProgram, "use_tex");
+  glUniform1i (loc, 0);
 #else
   glMatrixMode (GL_PROJECTION);
   glLoadIdentity ();
@@ -882,35 +900,55 @@ gl_draw_quad (int x, int y, int w, int h, GLuint gltex, GLfloat alpha)
   g_assert (gltex > 0);
   glBindTexture (GL_TEXTURE_2D, gltex);
 #if WITH_OPENGLES2
+  GLuint loc = glGetUniformLocation (gles2ctx.shaderProgram, "use_tex");
+  glUniform1i (loc, 1);
+
   vertices[0].pos[0] = x; vertices[0].pos[1] = y;
-  vertices[0].tex_coords[0] = 0.0; vertices[0].tex_coords[1] = 0.0;
+  vertices[0].v_color[0] = 1.0;
+  vertices[0].v_color[1] = 1.0;
+  vertices[0].v_color[2] = 1.0;
+  vertices[0].v_color[3] = alpha;
 
   vertices[1].pos[0] = x + w; vertices[1].pos[1] = y;
-  vertices[1].tex_coords[0] = 1.0; vertices[1].tex_coords[1] = 0.0;
+  vertices[1].v_color[0] = 1.0;
+  vertices[1].v_color[1] = 1.0;
+  vertices[1].v_color[2] = 1.0;
+  vertices[1].v_color[3] = alpha;
 
   vertices[2].pos[0] = x + w; vertices[2].pos[1] = y + h;
-  vertices[2].tex_coords[0] = 1.0; vertices[2].tex_coords[1] = 1.0;
+  vertices[2].v_color[0] = 1.0;
+  vertices[2].v_color[1] = 1.0;
+  vertices[2].v_color[2] = 1.0;
+  vertices[2].v_color[3] = alpha;
 
   vertices[3].pos[0] = x; vertices[3].pos[1] = y + h;
-  vertices[3].tex_coords[0] = 0.0; vertices[3].tex_coords[1] = 1.0;
+  vertices[3].v_color[0] = 1.0;
+  vertices[3].v_color[1] = 1.0;
+  vertices[3].v_color[2] = 1.0;
+  vertices[3].v_color[3] = alpha;
+
+  glBufferData (GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
   glEnableVertexAttribArray (gles2ctx.posAttr);
   glVertexAttribPointer (gles2ctx.posAttr, 2, GL_FLOAT, GL_FALSE,
                          sizeof (struct sprite),
                          0);
-  glBufferData (GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-//  glEnableVertexAttribArray (colorAttr);
-//  glVertexAttribPointer (colorAttr, 3, GL_FLOAT, GL_FALSE,
-//                         sizeof (struct sprite),
-//                         (GLvoid*) (2 * sizeof (GLfloat)));
+  glEnableVertexAttribArray (gles2ctx.colorAttr);
+  glVertexAttribPointer (gles2ctx.colorAttr, 4, GL_FLOAT, GL_FALSE,
+                         sizeof (struct sprite),
+                         (GLvoid*) (2 * sizeof (GLfloat)));
 
   glEnableVertexAttribArray (gles2ctx.texAttr);
   glVertexAttribPointer (gles2ctx.texAttr, 2, GL_FLOAT, GL_FALSE,
                          sizeof (struct sprite),
-                         (GLvoid*) (5 * sizeof (GLfloat)) );
+                         (GLvoid*) (6 * sizeof (GLfloat)) );
 
-  //      glDrawArrays (GL_TRIANGLES, 0, 3);
+  glEnable (GL_BLEND);
+  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glBlendEquation (GL_FUNC_ADD);
+
+  // glDrawArrays (GL_TRIANGLES, 0, 3);
   glDrawElements (GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 #else
   glColor4f (1.0f, 1.0f, 1.0f, alpha);
@@ -934,7 +972,36 @@ gl_draw_quad (int x, int y, int w, int h,
               GLfloat r, GLfloat g, GLfloat b, GLfloat a)
 {
 #if WITH_OPENGLES2
-  WARNING_NOT_IMPLEMENTED ("not implemented (work in progress).");
+  GLuint loc = glGetUniformLocation (gles2ctx.shaderProgram, "use_tex");
+  glUniform1i (loc, 0);
+
+  vertices[0].pos[0] = x; vertices[0].pos[1] = y;
+  vertices[0].v_color[0] = r;
+  vertices[0].v_color[1] = g;
+  vertices[0].v_color[2] = b;
+  vertices[0].v_color[3] = a;
+
+  vertices[1].pos[0] = x + w; vertices[1].pos[1] = y;
+  vertices[1].v_color[0] = r;
+  vertices[1].v_color[1] = g;
+  vertices[1].v_color[2] = b;
+  vertices[1].v_color[3] = a;
+
+  vertices[2].pos[0] = x + w; vertices[2].pos[1] = y + h;
+  vertices[2].v_color[0] = r;
+  vertices[2].v_color[1] = g;
+  vertices[2].v_color[2] = b;
+  vertices[2].v_color[3] = a;
+
+  vertices[3].pos[0] = x; vertices[3].pos[1] = y + h;
+  vertices[3].v_color[0] = r;
+  vertices[3].v_color[1] = g;
+  vertices[3].v_color[2] = b;
+  vertices[3].v_color[3] = a;
+
+  glBufferData (GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+  glDrawElements (GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 #else
   glColor4f (r, g, b, a);
   glBegin (GL_QUADS);
