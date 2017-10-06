@@ -233,12 +233,17 @@ xvectremove (vector<T> &v1, vector<T> &v2)
 #include <GL/gl.h>
 #endif
 
-#define CHECK_GL_ERROR                          \
-  GLenum glerror;                               \
-  if ((glerror = glGetError ()) != GL_NO_ERROR) \
-    {                                           \
-      ERROR ("OpenGL error (%d) in %s:%d.", glerror, __FILE__, __LINE__); \
-    }
+#define CHECK_GL_ERROR()                                        \
+  G_STMT_START                                                  \
+  {                                                             \
+    GLenum glerror;                                             \
+    if ((glerror = glGetError ()) != GL_NO_ERROR)               \
+      {                                                         \
+        ERROR ("OpenGL error (%d) in %s:%d.", (int) glerror,    \
+               __FILE__, __LINE__);                             \
+      }                                                         \
+  }                                                             \
+  G_STMT_END
 
 void
 gl_init ();

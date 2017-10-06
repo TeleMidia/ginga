@@ -776,7 +776,7 @@ gl_init ()
 
 #endif
 
-  CHECK_GL_ERROR
+  CHECK_GL_ERROR ();
 }
 
 /**
@@ -825,7 +825,7 @@ gl_create_texture (GLuint *gltex)
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-  CHECK_GL_ERROR
+  CHECK_GL_ERROR ();
 }
 
 /**
@@ -839,7 +839,7 @@ gl_create_texture (GLuint *gltex, int tex_w, int tex_h, unsigned char *data)
   glTexImage2D (GL_TEXTURE_2D, 0, 4,
                 tex_w, tex_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
-  CHECK_GL_ERROR
+  CHECK_GL_ERROR ();
 }
 
 /**
@@ -853,7 +853,7 @@ gl_delete_texture (GLuint *gltex)
       glDeleteTextures (1, gltex);
     }
 
-  CHECK_GL_ERROR
+  CHECK_GL_ERROR ();
 }
 
 /**
@@ -866,7 +866,7 @@ gl_update_texture (GLuint gltex, int tex_w, int tex_h, unsigned char *data)
   glTexImage2D (GL_TEXTURE_2D, 0, 4,
                 tex_w, tex_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
-  CHECK_GL_ERROR
+  CHECK_GL_ERROR ();
 }
 
 /**
@@ -888,7 +888,7 @@ gl_update_subtexture (GLuint gltex,
                    GL_UNSIGNED_BYTE,
                    data);
 
-  CHECK_GL_ERROR
+  CHECK_GL_ERROR ();
 }
 
 /**
@@ -961,7 +961,7 @@ gl_draw_quad (int x, int y, int w, int h, GLuint gltex, GLfloat alpha)
 #endif
   glBindTexture (GL_TEXTURE_2D, 0);
 
-  CHECK_GL_ERROR
+  CHECK_GL_ERROR ();
 }
 
 /**
@@ -1011,7 +1011,7 @@ gl_draw_quad (int x, int y, int w, int h,
     glVertex2d (x, y + h);
   glEnd();
 #endif
-  CHECK_GL_ERROR
+  CHECK_GL_ERROR ();
 }
 
 #endif

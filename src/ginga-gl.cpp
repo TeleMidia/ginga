@@ -15,8 +15,6 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#define __GL_SYNC_TO_VBLANK 1
-
 #include <config.h>
 #include <string.h>
 #include <stdio.h>
@@ -28,11 +26,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define GL_GLEXT_PROTOTYPES 1
 #include <SDL2/SDL_opengles2.h>
 
-PRAGMA_DIAG_PUSH ()
+PRAGMA_DIAG_IGNORE (-Wunused-macros)
 PRAGMA_DIAG_IGNORE (-Wvariadic-macros)
+#define __GL_SYNC_TO_VBLANK 1
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
-PRAGMA_DIAG_POP ()
 
 #include "ginga.h"
 #include "aux-ginga.h"
