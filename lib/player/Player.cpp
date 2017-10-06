@@ -465,20 +465,20 @@ Player::redrawGL ()
 
   if (_prop.bgColor.alpha > 0)
     {
-      gl_draw_quad (_prop.rect.x, _prop.rect.y,
-                    _prop.rect.width, _prop.rect.height,
-                    // Color
-                    (GLfloat) _prop.bgColor.red,
-                    (GLfloat) _prop.bgColor.green,
-                    (GLfloat) _prop.bgColor.blue,
-                    (GLfloat)(_prop.alpha / 255.));
+      GL::draw_quad (_prop.rect.x, _prop.rect.y,
+                     _prop.rect.width, _prop.rect.height,
+                     // Color
+                     (GLfloat) _prop.bgColor.red,
+                     (GLfloat) _prop.bgColor.green,
+                     (GLfloat) _prop.bgColor.blue,
+                     (GLfloat)(_prop.alpha / 255.));
     }
 
   if (_gltexture)
     {
-      gl_draw_quad (_prop.rect.x, _prop.rect.y,
-                    _prop.rect.width, _prop.rect.height,
-                    _gltexture, (GLfloat)(_prop.alpha / 255.));
+      GL::draw_quad (_prop.rect.x, _prop.rect.y,
+                     _prop.rect.width, _prop.rect.height,
+                     _gltexture, (GLfloat)(_prop.alpha / 255.));
     }
 
 #endif

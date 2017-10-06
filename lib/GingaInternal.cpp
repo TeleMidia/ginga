@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
+#include "aux-gl.h"
 #include "GingaInternal.h"
 
 #include "formatter/Scheduler.h"
@@ -259,7 +260,7 @@ GingaInternal::redrawGL ()
   WARNING_NOT_IMPLEMENTED ("not compiled with OpenGL support");
 #else
 
-  gl_clear_scene (_opts.width, _opts.height);
+  GL::clear_scene (_opts.width, _opts.height);
 
   GList *l;
 
@@ -597,7 +598,7 @@ GingaInternal::setOptionOpenGL (unused (GingaInternal *self),
     ERROR ("Cannot change to 'opengl' on-the-fly");
 #if defined WITH_OPENGL && WITH_OPENGL
   if (value)
-    gl_init ();
+    GL::init ();
 #else
   if (unlikely (value))
     ERROR ("Not compiled with OpenGL support");

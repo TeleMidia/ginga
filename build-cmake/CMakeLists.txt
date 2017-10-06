@@ -109,6 +109,7 @@ endif()
 set (LIBGINGA_SOURCES
   ../lib/ginga.h
   ../lib/aux-ginga.cpp
+  ../lib/aux-gl.cpp
   ../lib/Ginga.cpp
   ../lib/GingaInternal.cpp
 

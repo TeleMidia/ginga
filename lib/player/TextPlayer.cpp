@@ -198,7 +198,7 @@ TextPlayer::reload ()
     {
       cairo_surface_destroy (_surface);
 #if defined WITH_OPENGL && WITH_OPENGL
-      gl_delete_texture (&_gltexture);
+      GL::delete_texture (&_gltexture);
 #endif
     }
 
@@ -217,10 +217,10 @@ TextPlayer::reload ()
 
   g_assert_nonnull (_surface);
 #if defined WITH_OPENGL && WITH_OPENGL
-  gl_create_texture (&_gltexture,
-                     cairo_image_surface_get_width (_surface),
-                     cairo_image_surface_get_height (_surface),
-                     cairo_image_surface_get_data (_surface));
+  GL::create_texture (&_gltexture,
+                      cairo_image_surface_get_width (_surface),
+                      cairo_image_surface_get_height (_surface),
+                      cairo_image_surface_get_data (_surface));
 #endif
 
   Player::reload ();
