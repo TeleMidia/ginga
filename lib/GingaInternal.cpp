@@ -113,6 +113,10 @@ GingaInternal::getState ()
 bool
 GingaInternal::start (const string &file, string *errmsg)
 {
+#if defined WITH_OPENGL && WITH_OPENGL
+  gl_init ();
+#endif
+
   if (_state != GINGA_STATE_STOPPED)
     return false;               // nothing to do
 

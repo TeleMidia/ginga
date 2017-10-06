@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wimplicit-fallthrough)
 
-
+
 // Logging -----------------------------------------------------------------
 
 /**
@@ -44,7 +44,7 @@ __ginga_strfunc (const string &strfunc)
   return result + "()";
 }
 
-
+
 // Parsing and evaluation --------------------------------------------------
 
 /**
@@ -289,7 +289,7 @@ ginga_eval_comparator (const string &s, const string &a, const string &b)
   return false;
 }
 
-
+
 // Strings -----------------------------------------------------------------
 
 /**
@@ -579,7 +579,7 @@ xstrsplit (const string &s, char sep)
   return result;
 }
 
-
+
 // Paths -------------------------------------------------------------------
 
 /**
@@ -664,7 +664,7 @@ xpathbuildabs (const string &a, const string &b)
   return xpathmakeabs (xpathbuild (a, b));
 }
 
-
+
 // OpenGL ------------------------------------------------------------------
 
 #if defined WITH_OPENGL && WITH_OPENGL
@@ -836,7 +836,7 @@ void
 gl_create_texture (GLuint *gltex, int tex_w, int tex_h, unsigned char *data)
 {
   gl_create_texture (gltex);
-  glTexImage2D (GL_TEXTURE_2D, 0, 4,
+  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA8,
                 tex_w, tex_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
   CHECK_GL_ERROR ();
@@ -863,7 +863,7 @@ void
 gl_update_texture (GLuint gltex, int tex_w, int tex_h, unsigned char *data)
 {
   glActiveTexture (gltex);
-  glTexImage2D (GL_TEXTURE_2D, 0, 4,
+  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA8,
                 tex_w, tex_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
   CHECK_GL_ERROR ();

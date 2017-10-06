@@ -33,7 +33,6 @@ PRAGMA_DIAG_IGNORE (-Wvariadic-macros)
 #include <GLES2/gl2.h>
 
 #include "ginga.h"
-#include "aux-ginga.h"
 
 using namespace ::std;
 
@@ -259,8 +258,6 @@ main (int argc, char **argv)
 
       g_printerr ("%s\n", errmsg.c_str ());
     }
-
-  gl_init ();
 
   SDL_Event event;
   bool quit = false;
