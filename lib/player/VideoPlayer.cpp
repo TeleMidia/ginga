@@ -151,7 +151,7 @@ VideoPlayer::VideoPlayer (GingaState *ginga, const string &id,
                               &_callbacks, this, nullptr);
 
   // Initialize handled properties.
-  static set<string> handled = {"balance", "mute", "volume", "freeze"};
+  static set<string> handled = {"balance", "bass", "freeze", "mute", "volume", "treble"};
   this->resetProperties (&handled);
 }
 
@@ -306,26 +306,26 @@ VideoPlayer::doSetProperty (PlayerProperty code,
         if (_state != SLEEPING)
           g_object_set (_audio.pan, "panorama", _prop.balance, NULL);
         break;
-//      case PROP_BASS:
-//        _prop.bass = xstrtodorpercent (value, nullptr);
+      case PROP_BASS:
+        _prop.bass = xstrtodorpercent (value, nullptr);
 //        if (_state != SLEEPING)
 //          //TODO;
-//        break;
-//      case PROP_FREEZE:
-//        _prop.freeze = ginga_parse_bool (value);
+        break;
+      case PROP_FREEZE:
+        _prop.freeze = ginga_parse_bool (value);
 //        if (_state != SLEEPING)
 //          //TODO;
-//        break;
+        break;
       case PROP_MUTE:
         _prop.mute = ginga_parse_bool (value);
         if (_state != SLEEPING)
           g_object_set (_audio.volume, "mute", _prop.mute, NULL);
         break;
-//      case PROP_TREBLE:
-//        _prop.treble = xstrtodorpercent (value, nullptr);
+      case PROP_TREBLE:
+        _prop.treble = xstrtodorpercent (value, nullptr);
 //        if (_state != SLEEPING)
 //          //TODO;
-//        break;
+        break;
       case PROP_VOLUME:
         _prop.volume = xstrtodorpercent (value, nullptr);
         if (_state != SLEEPING)
