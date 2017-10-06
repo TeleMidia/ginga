@@ -792,7 +792,7 @@ gl_clear_scene (int w, int h)
 
 #if WITH_OPENGLES2
   GLuint loc = glGetUniformLocation (gles2ctx.shaderProgram, "winSize");
-  g_assert (loc != -1);
+  g_assert (loc);
   glUniform2f (loc, w, h);
   loc = glGetUniformLocation (gles2ctx.shaderProgram, "use_tex");
   glUniform1i (loc, 0);
@@ -851,7 +851,7 @@ gl_create_texture (GLuint *gltex, int tex_w, int tex_h, unsigned char *data)
 void
 gl_delete_texture (GLuint *gltex)
 {
-  if (*gltex != (GLuint) -1)
+  if (*gltex)
     {
       glDeleteTextures (1, gltex);
     }
@@ -901,6 +901,7 @@ void
 gl_draw_quad (int x, int y, int w, int h, GLuint gltex, GLfloat alpha)
 {
   g_assert (gltex > 0);
+
   glBindTexture (GL_TEXTURE_2D, gltex);
 #if WITH_OPENGLES2
   GLuint loc = glGetUniformLocation (gles2ctx.shaderProgram, "use_tex");
