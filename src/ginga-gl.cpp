@@ -248,7 +248,7 @@ main (int argc, char **argv)
     }
 
   SDL_GL_CreateContext (window);
-  SDL_GL_SetSwapInterval (1);
+  SDL_GL_SetSwapInterval (0);
 
   string errmsg;
   if (!GINGA->start (string (saved_argv[1]), &errmsg))
@@ -298,7 +298,7 @@ main (int argc, char **argv)
   // Done.
   delete GINGA;
   g_strfreev (saved_argv);
-  SDL_DestroyWindow(window);
+  SDL_DestroyWindow (window);
   SDL_Quit();
 
   exit (0);
