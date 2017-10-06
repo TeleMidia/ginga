@@ -22,18 +22,19 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PLAYER_BEGIN
 
-class LuaPlayer : public Player, public IGingaStateEventListener
+class LuaPlayer : public Player, public IGingaInternalEventListener
 {
 public:
-  LuaPlayer (GingaState *, const string &, const string &);
+  LuaPlayer (GingaInternal *, const string &, const string &);
   virtual ~LuaPlayer (void);
   void start (void) override;
   void stop (void) override;
   void pause (void) override;
   void resume (void) override;
   void redraw (cairo_t *) override;
+  void redrawGL () override;
 
-  // IGingaStateEventListener.
+  // IGingaInternalEventListener.
   void handleTickEvent (GingaTime, GingaTime, int) override {};
   void handleKeyEvent (const string &, bool) override;
 

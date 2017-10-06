@@ -58,9 +58,11 @@ AC_SUBST([XERCESC_REQUIRED_VERSION],     xercesc_required_version)
 m4_define([cef_required_version],        [3.0])
 m4_define([librsvg_required_version],    [2.40.0])
 m4_define([libxml_required_version],     [2.9])
+m4_define([opengl_required_version],     [17.0])
 AC_SUBST([CEF_REQUIRED_VERSION],         cef_required_version)
 AC_SUBST([LIBRSVG_REQUIRED_VERSION],     librsvg_required_version)
 AC_SUBST([LIBXML_REQUIRED_VERSION],      libxml_required_version)
+AC_SUBST([OPENGL_REQUIRED_VERSION],      opengl_required_version)
 
 # Compiler checks.
 AC_PROG_CXX
@@ -212,6 +214,10 @@ AU_CHECK_OPTIONAL_PKG([libxml], [build with LibXML support], [],
  [LIBXML],
  [libxml-2.0 >= libxml_required_version])
 
+AU_CHECK_OPTIONAL_PKG([opengl], [build with OpenGL support], [],
+ [OPENGL],
+ [gl >= opengl_required_version sdl2])
+
 # Aliases for compiler flags.
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $WARN_CFLAGS $WERROR_CFLAGS "])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $CAIRO_CFLAGS"])
@@ -222,6 +228,7 @@ AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $GTK_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $LIBRSVG_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $LIBXML_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $NCLUA_CFLAGS"])
+AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $OPENGL_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $PANGO_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $XERCESC_CFLAGS"])
 AC_SUBST([GINGA_ALL_CXXFLAGS])
@@ -234,6 +241,7 @@ AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $GTK_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $LIBRSVG_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $LIBXML_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $NCLUA_LIBS"])
+AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $OPENGL_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $PANGO_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $XERCESC_LIBS"])
 AC_SUBST([GINGA_ALL_LDFLAGS])
@@ -259,6 +267,7 @@ AC_MSG_NOTICE([summary of main build options:
   warning flags:  ${WERROR_CFLAGS} ${WARN_CFLAGS}
   valgrind:       ${VALGRIND}
 
-  build html player: ${with_cef_result}
-  build svg player:  ${with_librsvg_result}
+  build html player:    ${with_cef_result}
+  build svg player:     ${with_librsvg_result}
+  build opengl support: ${with_opengl_result}
 ])

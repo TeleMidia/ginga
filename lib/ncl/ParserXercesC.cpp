@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "ParserXercesC.h"
 #include "Ncl.h"
 
@@ -267,58 +267,6 @@ __error_elt (const DOMElement *elt)
 
 // Translation tables.
 
-// Reserved conditions.
-static map<string, pair<int,int>> reserved_condition_table =
-  {
-   {"onBegin",
-    {(int) EventType::PRESENTATION,
-     (int) EventStateTransition::STARTS}},
-   {"onEnd",
-    {(int) EventType::PRESENTATION,
-     (int) EventStateTransition::STOPS}},
-   {"onAbort",
-    {(int) EventType::PRESENTATION,
-     (int) EventStateTransition::ABORTS}},
-   {"onPause",
-    {(int) EventType::PRESENTATION,
-     (int) EventStateTransition::PAUSES}},
-   {"onResumes",
-    {(int) EventType::PRESENTATION,
-     (int) EventStateTransition::RESUMES}},
-   {"onBeginAttribution",
-    {(int) EventType::ATTRIBUTION,
-     (int) EventStateTransition::STARTS}},
-   {"onEndAttribution",
-    {(int) EventType::SELECTION,
-     (int) EventStateTransition::STOPS}},
-   {"onSelection",
-    {(int) EventType::SELECTION,
-     (int) EventStateTransition::STARTS}},
-  };
-
-// Reserved actions.
-static map<string, pair<int,int>> reserved_action_table =
-  {
-   {"start",
-    {(int) EventType::PRESENTATION,
-     (int) SimpleAction::START}},
-   {"stop",
-    {(int) EventType::PRESENTATION,
-     (int) SimpleAction::STOP}},
-   {"abort",
-    {(int) EventType::PRESENTATION,
-     (int) SimpleAction::ABORT}},
-   {"pause",
-    {(int) EventType::PRESENTATION,
-     (int) SimpleAction::PAUSE}},
-   {"resume",
-    {(int) EventType::PRESENTATION,
-     (int) SimpleAction::RESUME}},
-   {"set",
-    {(int) EventType::ATTRIBUTION,
-     (int) SimpleAction::START}},
-  };
-
 // Maps event type name to event type code.
 static map<string, EventType> event_type_table =
   {
@@ -330,21 +278,21 @@ static map<string, EventType> event_type_table =
 // Maps condition name to condition code.
 static map<string, EventStateTransition> event_transition_table =
   {
-   {"starts", EventStateTransition::STARTS},
-   {"stops", EventStateTransition::STOPS},
-   {"aborts", EventStateTransition::ABORTS},
-   {"pauses", EventStateTransition::PAUSES},
-   {"resumes", EventStateTransition::RESUMES},
+   {"starts", EventStateTransition::START},
+   {"stops", EventStateTransition::STOP},
+   {"aborts", EventStateTransition::ABORT},
+   {"pauses", EventStateTransition::PAUSE},
+   {"resumes", EventStateTransition::RESUME},
   };
 
 // Maps action name to action code.
-static map<string, SimpleAction::Type> event_action_type_table =
+static map<string, EventStateTransition> event_action_type_table =
   {
-   {"start", SimpleAction::START},
-   {"stop", SimpleAction::STOP},
-   {"abort", SimpleAction::ABORT},
-   {"pause", SimpleAction::PAUSE},
-   {"resume", SimpleAction::RESUME},
+   {"start", EventStateTransition::START},
+   {"stop", EventStateTransition::STOP},
+   {"abort", EventStateTransition::ABORT},
+   {"pause", EventStateTransition::PAUSE},
+   {"resume", EventStateTransition::RESUME},
   };
 
 
@@ -1052,7 +1000,7 @@ ParserXercesC::parseDescriptor (DOMElement *elt)
       Region *region = _doc->getRegion (value);
       if (unlikely (region == nullptr))
         ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "region");
-      desc->setRegion (region);
+      desc->initRegion (region);
     }
 
   for (auto attr: supported)
@@ -1166,24 +1114,23 @@ ParserXercesC::parseCausalConnector (DOMElement *elt)
       string tag = dom_elt_get_tag (child);
       if (tag == "simpleCondition")
         {
-          conn->setCondition
+          conn->initCondition
             (this->parseSimpleCondition (child));
           ncond++;
         }
       else if (tag == "compoundCondition")
         {
-          conn->setCondition
-            (this->parseCompoundCondition (child));
+          conn->initCondition (this->parseCompoundCondition (child));
           ncond++;
         }
       else if (tag == "simpleAction")
         {
-          conn->setAction (this->parseSimpleAction (child));
+          this->parseSimpleAction (conn, child);
           nact++;
         }
       else if (tag == "compoundAction")
         {
-          conn->setAction (this->parseCompoundAction (child));
+          this->parseCompoundAction (conn, child);
           nact++;
         }
       else if (tag == "connectorParam")
@@ -1192,7 +1139,8 @@ ParserXercesC::parseCausalConnector (DOMElement *elt)
           string type;
           CHECK_ELT_ATTRIBUTE (child, "name", &name);
           CHECK_ELT_OPT_ATTRIBUTE (child, "type", &type, "");
-          conn->addParameter (new Parameter (name, type));
+          // This is useless:
+          // conn->addParameter (new Parameter (name, type));
         }
       else
         {
@@ -1217,15 +1165,8 @@ ParserXercesC::parseCompoundCondition (DOMElement *elt)
   CHECK_ELT_ATTRIBUTE (elt, "operator", &op);
 
   cond = new CompoundCondition ();
-  if (op == "and")
-      cond->setOperator (CompoundCondition::OP_AND);
-  else if (op == "or")
-    cond->setOperator (CompoundCondition::OP_OR);
-  else
+  if (op != "and" and op != "or")
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "operator");
-
-  if (dom_elt_try_get_attribute (value, elt, "delay"))
-    cond->setDelay (value);
 
   // Collect children.
   for (DOMElement *child: dom_elt_get_children (elt))
@@ -1265,7 +1206,6 @@ ParserXercesC::parseSimpleCondition (DOMElement *elt)
   string str;
   string role;
   string key;
-  string delay;
   string qualifier;
 
   EventType type;
@@ -1275,18 +1215,12 @@ ParserXercesC::parseSimpleCondition (DOMElement *elt)
   CHECK_ELT_TAG (elt, "simpleCondition", nullptr);
   CHECK_ELT_ATTRIBUTE (elt, "role", &role);
   CHECK_ELT_OPT_ATTRIBUTE (elt, "qualifier", &qualifier, "or");
-  CHECK_ELT_OPT_ATTRIBUTE (elt, "delay", &delay, "0");
   CHECK_ELT_OPT_ATTRIBUTE (elt, "key", &key, "");
 
   type = (EventType) -1;
   trans = (EventStateTransition) -1;
 
-  if ((it = reserved_condition_table.find (role))
-      != reserved_condition_table.end ())
-    {
-      type = (EventType) it->second.first;
-      trans = (EventStateTransition) it->second.second;
-    }
+  SimpleCondition::isReserved (role, &type, &trans);
 
   if (dom_elt_try_get_attribute (str, elt, "eventType"))
     {
@@ -1306,7 +1240,7 @@ ParserXercesC::parseSimpleCondition (DOMElement *elt)
 
   if (dom_elt_try_get_attribute (str, elt, "transition"))
     {
-      if (unlikely (trans != EventStateTransition::UNKNOWN))
+      if (unlikely (trans != (EventStateTransition) -1))
         {
           ERROR_SYNTAX_ELT (elt, "transition of '%s' cannot be overridden",
                             role.c_str ());
@@ -1327,8 +1261,7 @@ ParserXercesC::parseSimpleCondition (DOMElement *elt)
   if (qualifier != "and" && qualifier != "or")
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "qualifier");
 
-  return new SimpleCondition (type, trans, role, qualifier == "and",
-                              delay, key);
+  return new SimpleCondition (type, trans, role, key);
 }
 
 CompoundStatement *
@@ -1438,16 +1371,13 @@ ParserXercesC::parseValueAssessment (DOMElement *elt)
   return new ValueAssessment (value);
 }
 
-CompoundAction *
-ParserXercesC::parseCompoundAction (DOMElement *elt)
+void
+ParserXercesC::parseCompoundAction (Connector *conn, DOMElement *elt)
 {
-  CompoundAction *action;
   string value;
 
   CHECK_ELT_TAG (elt, "compoundAction", nullptr);
   CHECK_ELT_ATTRIBUTE_NOT_SUPPORTED (elt, "delay");
-
-  action = new CompoundAction ();
 
   // Collect children.
   for (DOMElement *child: dom_elt_get_children (elt))
@@ -1455,55 +1385,43 @@ ParserXercesC::parseCompoundAction (DOMElement *elt)
       string tag = dom_elt_get_tag (child);
       if (tag == "simpleAction")
         {
-          action->addAction (this->parseSimpleAction (child));
+          this->parseSimpleAction (conn, child);
         }
       else if (tag == "compoundAction")
         {
-          action->addAction (this->parseCompoundAction (child));
+          this->parseCompoundAction (conn, child);
         }
       else
         {
           ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
         }
     }
-  return action;
 }
 
-SimpleAction *
-ParserXercesC::parseSimpleAction (DOMElement *elt)
+void
+ParserXercesC::parseSimpleAction (Connector *conn, DOMElement *elt)
 {
   string str;
   string tag;
   string role;
   string delay;
-  string repeat;
-  string repeatDelay;
   string value;
   string duration;
-  string by;
 
   EventType type;
-  int acttype;
+  EventStateTransition acttype;
   map<string, pair<int,int>>::iterator it;
 
   CHECK_ELT_TAG (elt, "simpleAction", nullptr);
   CHECK_ELT_ATTRIBUTE (elt, "role", &role);
   CHECK_ELT_OPT_ATTRIBUTE (elt, "delay", &delay, "0s");
-  CHECK_ELT_OPT_ATTRIBUTE (elt, "repeat", &repeat, "0");
-  CHECK_ELT_OPT_ATTRIBUTE (elt, "repeatDelay", &repeatDelay, "0s");
   CHECK_ELT_OPT_ATTRIBUTE (elt, "value", &value, "0s");
   CHECK_ELT_OPT_ATTRIBUTE (elt, "duration", &duration, "0s");
-  CHECK_ELT_OPT_ATTRIBUTE (elt, "by", &by, "0");
 
   type = (EventType) -1;
-  acttype = -1;
+  acttype = (EventStateTransition) -1;
 
-  if ((it = reserved_action_table.find (role))
-      != reserved_action_table.end ())
-    {
-      type = (EventType) it->second.first;
-      acttype = (SimpleAction::Type) it->second.second;
-    }
+  Action::isReserved (role, &type, &acttype);
 
   if (dom_elt_try_get_attribute (str, elt, "eventType"))
     {
@@ -1523,12 +1441,12 @@ ParserXercesC::parseSimpleAction (DOMElement *elt)
 
   if (dom_elt_try_get_attribute (str, elt, "actionType"))
     {
-      if (unlikely (acttype != -1))
+      if (unlikely (acttype != (EventStateTransition) -1))
         {
           ERROR_SYNTAX_ELT (elt, "actionType of '%s' cannot be overridden",
                             role.c_str ());
         }
-      map<string, SimpleAction::Type>::iterator it;
+      map<string, EventStateTransition>::iterator it;
       if ((it = event_action_type_table.find (str))
           == event_action_type_table.end ())
         {
@@ -1538,11 +1456,10 @@ ParserXercesC::parseSimpleAction (DOMElement *elt)
     }
 
   g_assert (type != (EventType) -1);
-  g_assert (acttype != -1);
+  g_assert (acttype != (EventStateTransition) -1);
 
-  return new SimpleAction ((EventType) type, (SimpleAction::Type) acttype,
-                           role, delay, repeat, repeatDelay, value,
-                           duration, by);
+  Action *act = new Action (type, acttype, role, delay, value, duration);
+  g_assert (conn->addAction (act));
 }
 
 
@@ -1710,7 +1627,7 @@ ParserXercesC::solveNodeReferences (Composition *comp)
         refNode = cast (Media *, _doc->getNode (ref->getId ()));
         g_assert_nonnull (refNode);
 
-        ((Refer *) node)->setReferred (refNode);
+        ((Refer *) node)->initReferred (refNode);
       }
     else if (instanceof (Composition *, node))
       {
@@ -1903,7 +1820,7 @@ ParserXercesC::parseSwitch (DOMElement *elt)
 
 Node *
 ParserXercesC::parseBindRule (DOMElement *elt, Composition *parent,
-                       Rule **rule)
+                              Rule **rule)
 {
   Node *node;
   string constituent;
@@ -2019,7 +1936,7 @@ ParserXercesC::parseMedia (DOMElement *elt)
       g_assert_nonnull (refer);
 
       media = new Refer (_doc, id);
-      ((Refer *) media)->setReferred (refer);
+      ((Refer *) media)->initReferred (refer);
     }
   else
     {
@@ -2043,7 +1960,7 @@ ParserXercesC::parseMedia (DOMElement *elt)
           Descriptor *desc = _doc->getDescriptor (value);
           if (unlikely (desc == nullptr))
             ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "descriptor");
-          ((Media *) media)->setDescriptor (desc);
+          ((Media *) media)->initDescriptor (desc);
         }
     }
 
@@ -2140,6 +2057,7 @@ ParserXercesC::parseLink (DOMElement *elt, Context *context)
   string id;
   string xconn;
   Connector *conn;
+  map<string, string> params;
 
   CHECK_ELT_TAG (elt, "link", nullptr);
   CHECK_ELT_OPT_ID_AUTO (elt, &id, link);
@@ -2149,7 +2067,9 @@ ParserXercesC::parseLink (DOMElement *elt, Context *context)
   if (unlikely (conn == nullptr))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "xconnector");
 
-  link = new Link (_doc, id, context, conn);
+  link = new Link (_doc, id);
+  context->addLink (link);
+  g_assert (link->initConnector (conn));
 
   // Collect children.
   for (DOMElement *child: dom_elt_get_children (elt))
@@ -2157,11 +2077,15 @@ ParserXercesC::parseLink (DOMElement *elt, Context *context)
       string tag = dom_elt_get_tag (child);
       if (tag == "linkParam")
         {
-          link->addParameter (this->parseLinkParam (child));
+          string name, value;
+          CHECK_ELT_TAG (elt, "linkParam", nullptr);
+          CHECK_ELT_ATTRIBUTE (elt, "name", &name);
+          CHECK_ELT_ATTRIBUTE (elt, "value", &value);
+          params[name] = value;
         }
       else if (tag == "bind")
         {
-          g_assert_nonnull (this->parseBind (child, link, context));
+          g_assert_nonnull (this->parseBind (child, link, &params, context));
         }
       else
         {
@@ -2171,19 +2095,9 @@ ParserXercesC::parseLink (DOMElement *elt, Context *context)
   return link;
 }
 
-Parameter *
-ParserXercesC::parseLinkParam (DOMElement *elt)
-{
-  string name;
-  string value;
-  CHECK_ELT_TAG (elt, "linkParam", nullptr);
-  CHECK_ELT_ATTRIBUTE (elt, "name", &name);
-  CHECK_ELT_ATTRIBUTE (elt, "value", &value);
-  return new Parameter (name, value);
-}
-
 Bind *
-ParserXercesC::parseBind (DOMElement *elt, Link *link, Context *context)
+ParserXercesC::parseBind (DOMElement *elt, Link *link,
+                          map<string, string> *params, Context *context)
 {
   Bind *bind;
   string label;
@@ -2196,7 +2110,6 @@ ParserXercesC::parseBind (DOMElement *elt, Link *link, Context *context)
   Node *target;
   Node *derefer;
   Anchor *iface;
-  Descriptor *desc;
 
   CHECK_ELT_TAG (elt, "bind", nullptr);
   CHECK_ELT_ATTRIBUTE (elt, "role", &label);
@@ -2221,7 +2134,6 @@ ParserXercesC::parseBind (DOMElement *elt, Link *link, Context *context)
   g_assert_nonnull (derefer);
 
   iface = nullptr;
-  desc = nullptr;
 
   if (dom_elt_try_get_attribute (value, elt, "interface"))
     {
@@ -2257,9 +2169,6 @@ ParserXercesC::parseBind (DOMElement *elt, Link *link, Context *context)
   if (unlikely (iface == nullptr))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "interface");
 
-  if (dom_elt_try_get_attribute (value, elt, "descriptor"))
-    desc = _doc->getDescriptor (value);
-
   conn = cast (Connector *, link->getConnector ());
   g_assert_nonnull (conn);
 
@@ -2282,14 +2191,15 @@ ParserXercesC::parseBind (DOMElement *elt, Link *link, Context *context)
         }
       else
         {
-          conn->setCondition
-            (new CompoundCondition (cond, stmt, CompoundCondition::OP_OR));
+          conn->initCondition (new CompoundCondition (cond, stmt));
         }
       role = (Role *) assess;
     }
   g_assert_nonnull (role);
 
-  bind = new Bind (role, target, iface, desc);
+  bind = new Bind (role, target, iface);
+  for (auto it: *params)
+    bind->setParameter (it.first, it.second);
   link->addBind (bind);
 
   // Collect children.
@@ -2298,7 +2208,8 @@ ParserXercesC::parseBind (DOMElement *elt, Link *link, Context *context)
       string tag = dom_elt_get_tag (child);
       if (tag == "bindParam")
         {
-          bind->addParameter (this->parseBindParam (child));
+          Parameter *par = this->parseBindParam (child);
+          bind->setParameter (par->getName (), par->getValue ());
         }
       else
         {

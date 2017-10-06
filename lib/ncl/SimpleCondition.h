@@ -26,19 +26,17 @@ GINGA_NCL_BEGIN
 class SimpleCondition : public TriggerExpression, public Role
 {
 public:
-
-  SimpleCondition (EventType, EventStateTransition, const string &,
-                   bool , const string &, const string &);
+  SimpleCondition (EventType, EventStateTransition,
+                   const string &, const string &);
   virtual ~SimpleCondition (){}
 
   EventStateTransition getTransition ();
-  bool isConjunction ();
-  string getDelay ();
   string getKey ();
 
+  static bool isReserved (const string &, EventType *,
+                          EventStateTransition *);
 private:
   EventStateTransition _transition;
-  bool _conjunction;
   string _key;
 };
 

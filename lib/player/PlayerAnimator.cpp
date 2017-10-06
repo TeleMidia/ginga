@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "PlayerAnimator.h"
 
 GINGA_PLAYER_BEGIN
@@ -26,7 +26,7 @@ GINGA_PLAYER_BEGIN
 /**
  * @brief Creates a new player animator.
  */
-PlayerAnimator::PlayerAnimator (GingaState *ginga)
+PlayerAnimator::PlayerAnimator (GingaInternal *ginga)
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;
@@ -333,11 +333,11 @@ AnimInfo::init (double current)
   g_assert (!_init);
   _current = current;
   if (_duration > 0)
-    _speed = fabs (_target - current)
-      / (double) GINGA_TIME_AS_SECONDS (_duration);
+    _speed = fabs (_target - current) / (double) _duration;
   else
     _speed = 0;
   _init = true;
+  _last_update = ginga_gettime ();
 }
 
 /**
@@ -346,15 +346,15 @@ AnimInfo::init (double current)
 void
 AnimInfo::update (void)
 {
-  double fps;
+  GingaTime _current_time = ginga_gettime ();
   int dir;
 
   g_assert (_init);
   g_assert (!_done);
 
-  fps = (double) 60.;
   dir = (_current < _target) ? 1 : -1;
-  _current += dir * (_speed / fps);
+  _current += dir * _speed * (double) (_current_time - _last_update);
+  _last_update = _current_time;
 
   if (_duration == 0
       || (dir > 0 && _current >= _target)

@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "Switch.h"
 #include "SwitchPort.h"
 
@@ -52,7 +52,7 @@ Switch::addNode (Node *node, Rule *rule)
   _nodes.push_back (node);
   g_assert_nonnull (rule);
   _rules.push_back (rule);
-  node->setParent (this);
+  node->initParent (this);
 }
 
 /**

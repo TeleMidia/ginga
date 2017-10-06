@@ -15,12 +15,12 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "ExecutionObjectContext.h"
 
 GINGA_FORMATTER_BEGIN
 
-ExecutionObjectContext::ExecutionObjectContext (GingaState *ginga,
+ExecutionObjectContext::ExecutionObjectContext (GingaInternal *ginga,
                                                 const string &id,
                                                 Node *dataObject,
                                                 INclActionListener *seListener)
@@ -134,19 +134,6 @@ ExecutionObjectContext::addExecutionObject (ExecutionObject *obj)
   return true;
 }
 
-bool
-ExecutionObjectContext::containsExecutionObject (const string &execObjId)
-{
-  if (getExecutionObject (execObjId) != NULL)
-    {
-      return true;
-    }
-  else
-    {
-      return false;
-    }
-}
-
 ExecutionObject *
 ExecutionObjectContext::getExecutionObject (const string &id)
 {
@@ -223,19 +210,6 @@ ExecutionObjectContext::setLinkCompiled (NclFormatterLink *link)
 }
 
 void
-ExecutionObjectContext::setParentsAsListeners ()
-{
-  map<Node *, ExecutionObjectContext *>::iterator i;
-
-  i = _parentTable.begin ();
-  while (i != _parentTable.end ())
-    {
-      _wholeContent->addListener (i->second);
-      ++i;
-    }
-}
-
-void
 ExecutionObjectContext::eventStateChanged (
     NclEvent *event,
     EventStateTransition transition,
@@ -248,17 +222,18 @@ ExecutionObjectContext::eventStateChanged (
 
   switch (transition)
     {
-    case EventStateTransition::STARTS:
+    case EventStateTransition::START:
       if (_runningEvents.empty () && _pausedEvents.empty ())
         {
-          setParentsAsListeners ();
+          for (auto it: _parentTable)
+            _wholeContent->addListener (it.second);
           _wholeContent->start ();
         }
 
       _runningEvents.insert (event);
       break;
 
-    case EventStateTransition::ABORTS:
+    case EventStateTransition::ABORT:
       lastTransition = transition;
       if (previousState == EventState::OCCURRING)
         {
@@ -284,7 +259,7 @@ ExecutionObjectContext::eventStateChanged (
         }
       break;
 
-    case EventStateTransition::STOPS:
+    case EventStateTransition::STOP:
       if (((PresentationEvent *)event)->getRepetitions () == 0)
         {
           lastTransition = transition;
@@ -313,7 +288,7 @@ ExecutionObjectContext::eventStateChanged (
         }
       break;
 
-    case EventStateTransition::PAUSES:
+    case EventStateTransition::PAUSE:
       i = _runningEvents.find (event);
       if (i != _runningEvents.end ())
         {
@@ -327,7 +302,7 @@ ExecutionObjectContext::eventStateChanged (
         }
       break;
 
-    case EventStateTransition::RESUMES:
+    case EventStateTransition::RESUME:
       i = _pausedEvents.find (event);
       if (i != _pausedEvents.end ())
         {
@@ -379,7 +354,7 @@ ExecutionObjectContext::linkEvaluationFinished (
           if (_runningEvents.empty () && _pausedEvents.empty ()
               && _pendingLinks.empty ())
             {
-              if (lastTransition == EventStateTransition::STOPS)
+              if (lastTransition == EventStateTransition::STOP)
                 {
                   checkLinkConditions ();
                 }
@@ -406,7 +381,10 @@ ExecutionObjectContext::checkLinkConditions ()
         {
           _wholeContent->stop ();
           if (this->getParentObject () == nullptr)
-            TRACE ("*** ALL DONE ***");
+            {
+              TRACE ("*** ALL DONE ***");
+              _ginga->setEOS (true);
+            }
         }
     }
 }

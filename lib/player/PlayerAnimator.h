@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PLAYER_ANIMATOR_H
 #define PLAYER_ANIMATOR_H
 
-#include "GingaState.h"
+#include "GingaInternal.h"
 
 GINGA_PLAYER_BEGIN
 
@@ -45,6 +45,7 @@ private:
   double _current;               // current value
   double _target;                // target value
   GingaTime _duration;           // animation duration
+  GingaTime _last_update;        // time of the last update
   double _speed;                 // animation speed
   bool _done;                    // true if animation is done
   bool _init;                    // true if animation is initialized
@@ -53,14 +54,14 @@ private:
 class PlayerAnimator
 {
 public:
-  PlayerAnimator(GingaState *);
+  PlayerAnimator(GingaInternal *);
   ~PlayerAnimator();
   void clear ();
   void schedule (const string &, const string &, const string &, GingaTime);
   void update (GingaRect *, GingaColor *, guint8 *);
 
 private:
-  GingaState *_ginga;           // ginga state
+  GingaInternal *_ginga;        // ginga handle
   list <AnimInfo *> _scheduled; // scheduled animations
   void doSchedule (const string &, const string &,
                    const string &, GingaTime);

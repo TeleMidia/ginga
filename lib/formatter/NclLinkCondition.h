@@ -26,20 +26,10 @@ using namespace ::ginga::ncl;
 GINGA_FORMATTER_BEGIN
 
 class NclLinkCondition;
-
-enum class NclLinkConditionStatus
-{
-  CONDITION_SATISFIED,
-  EVALUATION_STARTED,
-  EVALUATION_ENDED
-};
-
 class NclLinkTriggerListener
 {
 public:
-  virtual void conditionSatisfied (NclLinkCondition *condition) = 0;
-  virtual void evaluationStarted () = 0;
-  virtual void evaluationEnded () = 0;
+  virtual void conditionSatisfied (NclLinkCondition *) = 0;
 };
 
 class NclLinkCondition
@@ -47,7 +37,6 @@ class NclLinkCondition
 public:
   NclLinkCondition () {}
   virtual ~NclLinkCondition () {}
-
   virtual vector<NclEvent *> getEvents () = 0;
 };
 
@@ -60,11 +49,7 @@ class NclLinkTriggerCondition : public NclLinkCondition
 public:
   NclLinkTriggerCondition ();
   virtual ~NclLinkTriggerCondition () {}
-
   void conditionSatisfied (NclLinkCondition *condition);
-
-protected:
-  virtual void notifyListeners (NclLinkConditionStatus status);
 };
 
 class NclLinkCompoundTriggerCondition : public NclLinkTriggerCondition,
@@ -78,26 +63,8 @@ public:
   virtual void addCondition (NclLinkCondition *condition);
   virtual vector<NclEvent *> getEvents ();
 
-  void evaluationStarted ();
-  void evaluationEnded ();
-
 protected:
   vector<NclLinkCondition *> _conditions;
-};
-
-class NclLinkAndCompoundTriggerCondition
-    : public NclLinkCompoundTriggerCondition
-{
-public:
-  NclLinkAndCompoundTriggerCondition ();
-  virtual ~NclLinkAndCompoundTriggerCondition ();
-  void addCondition (NclLinkCondition *condition);
-  void conditionSatisfied (NclLinkCondition *condition);
-  vector<NclEvent *> getEvents ();
-
-private:
-  vector<NclLinkCondition *> _unsatisfiedConditions;
-  vector<NclLinkCondition *> _statements;
 };
 
 class NclLinkTransitionTriggerCondition : public NclLinkTriggerCondition,
@@ -105,19 +72,14 @@ class NclLinkTransitionTriggerCondition : public NclLinkTriggerCondition,
 {
 public:
   NclLinkTransitionTriggerCondition (NclEvent *ev,
-                                     EventStateTransition trans,
-                                     Bind *bind);
+                                     EventStateTransition trans);
 
   virtual ~NclLinkTransitionTriggerCondition ();
-
-  Bind *getBind ();
 
   virtual void eventStateChanged (NclEvent *_event,
                                   EventStateTransition _transition,
                                   EventState previousState) override;
 
-  NclEvent *getEvent ();
-  EventStateTransition getTransition ();
   virtual vector<NclEvent *> getEvents () override;
 
 protected:

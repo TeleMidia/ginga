@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "TextPlayer.h"
 
 GINGA_PLAYER_BEGIN
@@ -154,7 +154,7 @@ TextPlayer::renderSurface (const string &text,
 
 // Public.
 
-TextPlayer::TextPlayer (GingaState *ginga,
+TextPlayer::TextPlayer (GingaInternal *ginga,
                         const string &id, const string &uri)
   : Player (ginga, id, uri)
 {
@@ -195,7 +195,12 @@ TextPlayer::reload ()
   g_free (contents);
 
   if (_surface != nullptr)
-    cairo_surface_destroy (_surface);
+    {
+      cairo_surface_destroy (_surface);
+#if defined WITH_OPENGL && WITH_OPENGL
+      gl_delete_texture (&_gltexture);
+#endif
+    }
 
   _surface = TextPlayer::renderSurface (text,
                                         _prop.fontFamily,
@@ -209,7 +214,15 @@ TextPlayer::reload ()
                                         _prop.vertAlign,
                                         true,
                                         nullptr);
+
   g_assert_nonnull (_surface);
+#if defined WITH_OPENGL && WITH_OPENGL
+  gl_create_texture (&_gltexture,
+                     cairo_image_surface_get_width (_surface),
+                     cairo_image_surface_get_height (_surface),
+                     cairo_image_surface_get_data (_surface));
+#endif
+
   Player::reload ();
 }
 

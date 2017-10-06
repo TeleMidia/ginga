@@ -18,15 +18,30 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef ACTION_H
 #define ACTION_H
 
-#include "ginga-internal.h"
+#include "Action.h"
+#include "Role.h"
 
 GINGA_NCL_BEGIN
 
-class Action
+class Action: public Role
 {
 public:
-  Action () {};
-  virtual ~Action () {};
+  Action (EventType, EventStateTransition, const string &,
+          const string &, const string &, const string &);
+  virtual ~Action ();
+
+  EventStateTransition getActionType ();
+  string getDelay ();
+  string getValue ();
+  string getDuration ();
+
+  static bool isReserved (const string &, EventType *,
+                          EventStateTransition *);
+private:
+  EventStateTransition _actionType;
+  string _delay;
+  string _value;
+  string _duration;
 };
 
 GINGA_NCL_END

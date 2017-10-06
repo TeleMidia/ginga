@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef ENTITY_H
 #define ENTITY_H
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 
 GINGA_NCL_BEGIN
 

@@ -46,6 +46,15 @@ struct GingaOptions
 };
 
 /**
+ * @brief Ginga states.
+ */
+typedef enum
+{
+ GINGA_STATE_PLAYING,
+ GINGA_STATE_STOPPED,
+} GingaState;
+
+/**
  * @brief Ginga object.
  */
 class Ginga
@@ -54,13 +63,16 @@ public:
   Ginga (int, char **, GingaOptions *);
   virtual ~Ginga () = 0;
 
-  virtual void resize (int, int) = 0;
+  virtual GingaState getState () = 0;
   virtual bool start (const std::string &, std::string *) = 0;
-  virtual void stop () = 0;
+  virtual bool stop () = 0;
 
+  virtual void resize (int, int) = 0;
   virtual void redraw (cairo_t *) = 0;
-  virtual void sendKeyEvent (const std::string &, bool) = 0;
-  virtual void sendTickEvent (uint64_t, uint64_t, uint64_t) = 0;
+  virtual void redrawGL () = 0;
+
+  virtual bool sendKeyEvent (const std::string &, bool) = 0;
+  virtual bool sendTickEvent (uint64_t, uint64_t, uint64_t) = 0;
 
   virtual const GingaOptions *getOptions () = 0;
   virtual bool getOptionBool (const std::string &) = 0;

@@ -20,35 +20,54 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/Ncl.h"
 using namespace ginga::ncl;
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wunused-macros)
+
 static G_GNUC_UNUSED bool
-check_failure (const string &buf)
+check_failure (const string &log, const string &buf)
 {
+  static int i = 1;
   NclDocument *ncl;
   string msg = "";
 
-  ncl = ParserLibXML::parseBuffer (buf.c_str (), buf.length (), 100, 100, &msg);
+  g_printerr ("xfail #%d: %s\n", i++, log.c_str ());
+  ncl = ParserLibXML::parseBuffer (buf.c_str (), buf.length (),
+                                   100, 100, &msg);
   if (ncl == nullptr && msg != "")
     {
-      g_printerr ("%s\n", msg.c_str ());
+      g_printerr ("%s\n\n", msg.c_str ());
       return true;
     }
   return false;
 }
 
 static G_GNUC_UNUSED NclDocument *
-check_success (const string &buf)
+check_success (const string &log, const string &buf)
 {
+  static int i = 1;
   NclDocument *ncl;
   string msg = "";
 
-  ncl = ParserLibXML::parseBuffer (buf.c_str (), buf.length (), 100, 100, &msg);
+  g_printerr ("pass #%d: %s\n", i++, log.c_str ());
+  ncl = ParserLibXML::parseBuffer (buf.c_str (), buf.length (),
+                                   100, 100, &msg);
   if (msg != "")
     {
-      g_printerr ("Unexpected error: %s", msg.c_str ());
+      g_printerr ("*** Unexpected error: %s", msg.c_str ());
       g_assert_not_reached ();
     }
   return ncl;
 }
+
+#define XFAIL(log, str)\
+  g_assert (check_failure ((log), (str)))
+
+#define PASS(ncl, log, str)                     \
+  G_STMT_START                                  \
+  {                                             \
+    tryset (ncl, check_success ((log), (str))); \
+    g_assert_nonnull (*(ncl));                  \
+  }                                             \
+  G_STMT_END
 
 int
 main (void)
@@ -59,63 +78,47 @@ main (void)
 // General errors.
 // -------------------------------------------------------------------------
 
-  // Error: XML error.
-  g_assert (check_failure ("<a>"));
-
-  // Error: Unknown element.
-  g_assert (check_failure ("<unknown/>"));
-
-  // Error: Bad parent.
-  g_assert (check_failure ("<head/>"));
-
-  // Error: Bad child.
-  g_assert (check_failure ("<ncl><media/></ncl>"));
-
-  // Error: Unknown child.
-  g_assert (check_failure ("<ncl><unknown/></ncl>"));
-
-  // Error: Unknown attribute.
-  g_assert (check_failure ("<ncl unknown='unknown'/>"));
-
-  // Error: ncl: Bad id.
-  g_assert (check_failure ("<ncl id='@'/>"));
+  XFAIL ("XML error", "<a>");
+  XFAIL ("Unknown element", "<unknown/>");
+  XFAIL ("Missing parent", "<head/>");
+  XFAIL ("Unknown child", "<ncl><media/></ncl>");
+  XFAIL ("Unknown child", "<ncl><unknown/></ncl>");
+  XFAIL ("Unknown attribute", "<ncl unknown='unknown'/>");
+  XFAIL ("ncl: Bad id", "<ncl id='@'/>");
 
 
 // -------------------------------------------------------------------------
 // Port.
 // -------------------------------------------------------------------------
 
-  // Error: Port: Missing id.
-  g_assert (check_failure ("\
+  XFAIL ("port: Missing id", "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
   <port/>\n\
  </body>\n\
 </ncl>\n\
-"));
+");
 
-  // Error: Port: Missing component.
-  g_assert (check_failure ("\
+  XFAIL ("port: Missing component", "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
   <port id='p'/>\n\
  </body>\n\
 </ncl>\n\
-"));
+");
 
-  // Error: Port: Bad component.
-  g_assert (check_failure ("\
+  XFAIL ("port: Bad component", "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
   <port id='p' component='p'/>\n\
  </body>\n\
 </ncl>\n\
-"));
+");
 
-  g_assert (check_failure ("\
+  XFAIL ("port: Bad component", "\
 <ncl>\n\
  <head>\n\
   <regionBase id='r'/>\n\
@@ -124,9 +127,9 @@ main (void)
   <port id='p' component='r'/>\n\
  </body>\n\
 </ncl>\n\
-"));
+");
 
-  g_assert (check_failure ("\
+  XFAIL ("port: Bad Component", "\
 <ncl>\n\
  <body>\n\
   <port id='p' component='b'/>\n\
@@ -135,10 +138,9 @@ main (void)
   </context>\n\
  </body>\n\
 </ncl>\n\
-"));
+");
 
-  // Error: Port: Bad interface.
-  g_assert (check_failure ("\
+  XFAIL ("port: Bad interface", "\
 <ncl>\n\
  <head>\n\
   <regionBase id='r'/>\n\
@@ -148,34 +150,32 @@ main (void)
   <media id='m'/>\n\
  </body>\n\
 </ncl>\n\
-"));
+");
 
-  g_assert (check_failure ("\
+  XFAIL ("port: Bad interface", "\
 <ncl>\n\
  <body>\n\
   <port id='p' component='m' interface='nonexistent'/>\n\
   <media id='m'/>\n\
  </body>\n\
 </ncl>\n\
-"));
+");
 
 
 // -------------------------------------------------------------------------
 // Media.
 // -------------------------------------------------------------------------
 
-  // Error: Media: Missing id.
-  g_assert (check_failure ("\
+  XFAIL ("media: Missing id", "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
   <media/>\n\
  </body>\n\
 </ncl>\n\
-"));
+");
 
-  // Error: Media: Duplicated id.
-  g_assert (check_failure ("\
+  XFAIL ("media: Duplicated id", "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -183,19 +183,18 @@ main (void)
   <media id='a'/>\n\
  </body>\n\
 </ncl>\n\
-"));
+");
 
-  // Error: Media: Bad descriptor.
-  g_assert (check_failure ("\
+  XFAIL ("media: Bad descriptor", "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
   <media id='a' descriptor='nonexistent'/>\n\
  </body>\n\
 </ncl>\n\
-"));
+");
 
-  g_assert (check_failure ("\
+  XFAIL ("media: Bad descriptor", "\
 <ncl>\n\
  <head>\n\
   <regionBase>\n\
@@ -206,15 +205,83 @@ main (void)
   <media id='a' descriptor='r'/>\n\
  </body>\n\
 </ncl>\n\
-"));
+");
+
+
+// -------------------------------------------------------------------------
+// Link.
+// -------------------------------------------------------------------------
+
+  XFAIL ("link: Missing xconnector", "\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <link>\n\
+  </link>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("link: No such xconnector", "\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <link xconnector='c'>\n\
+  </link>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("link: Link does not match connector", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+  <link xconnector='c'>\n\
+  </link>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+
+// -------------------------------------------------------------------------
+// Region.
+// -------------------------------------------------------------------------
+
+  XFAIL ("region: Missing id", "\
+<ncl>\n\
+ <head>\n\
+  <regionBase>\n\
+   <region/>\n\
+  </regionBase>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
 
 
 // -------------------------------------------------------------------------
 // Descriptor.
 // -------------------------------------------------------------------------
 
-  // Error: Descriptor: Bad region.
-  g_assert (check_failure ("\
+  XFAIL ("descriptor: Missing id", "\
+<ncl>\n\
+ <head>\n\
+  <descriptorBase>\n\
+   <descriptor/>\n\
+  </descriptorBase>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("descriptor: Bad region", "\
 <ncl>\n\
  <head>\n\
   <descriptorBase>\n\
@@ -223,9 +290,9 @@ main (void)
  </head>\n\
  <body/>\n\
 </ncl>\n\
-"));
+");
 
-  g_assert (check_failure ("\
+  XFAIL ("descriptor: Bad region", "\
 <ncl>\n\
  <head>\n\
   <descriptorBase>\n\
@@ -235,7 +302,303 @@ main (void)
  </head>\n\
  <body/>\n\
 </ncl>\n\
-"));
+");
+
+  XFAIL ("descriptor: Bad descriptorParam", "\
+<ncl>\n\
+ <head>\n\
+  <descriptorBase>\n\
+   <descriptor id='d'>\n\
+    <descriptorParam/>\n\
+   </descriptor>\n\
+  </descriptorBase>\n\
+ </head>\n\
+ <body/>\n\
+</ncl>\n\
+");
+
+  XFAIL ("descriptor: Bad descriptorParam", "\
+<ncl>\n\
+ <head>\n\
+  <descriptorBase>\n\
+   <descriptor id='d'>\n\
+    <descriptorParam name='x'/>\n\
+   </descriptor>\n\
+  </descriptorBase>\n\
+ </head>\n\
+ <body/>\n\
+</ncl>\n\
+");
+
+
+// -------------------------------------------------------------------------
+// causalConnector.
+// -------------------------------------------------------------------------
+
+  XFAIL ("causalConnector: Missing id", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector/>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("causalConnector: Missing child condition", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'/>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("causalConnector: Missing child condition", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleAction role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("causalConnector: Missing child action", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+
+// -------------------------------------------------------------------------
+// simpleCondition.
+// -------------------------------------------------------------------------
+
+  XFAIL ("simpleCondition: Missing role", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleCondition: Reserved role", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin' eventType='presentation'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleCondition: Reserved role", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin' transition='starts'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleCondition: Missing eventType", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='x'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleCondition: Bad eventType", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='x' eventType='unknown'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleCondition: Missing transition", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='x' eventType='presentation'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleCondition: Bad transition", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='x' eventType='presentation' transition='unknown'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+
+// -------------------------------------------------------------------------
+// simpleAction.
+// -------------------------------------------------------------------------
+
+  XFAIL ("simpleAction: Missing role", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Reserved role", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='start' eventType='presentation'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Reserved role", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='start' actionType='starts'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Missing eventType", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='x'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Bad eventType", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='x' eventType='unknown'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Missing actionType", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='x' eventType='presentation'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Bad actionType", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='x' eventType='presentation' actionType='unknown'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
 
 
 // -------------------------------------------------------------------------
@@ -244,7 +607,8 @@ main (void)
 
   // Success: Empty document.
   {
-    NclDocument *ncl = check_success ("\
+    NclDocument *ncl;
+    PASS (&ncl, "Empty document", "\
 <ncl>\n\
  <head/>\n\
  <body/>\n\
@@ -263,7 +627,8 @@ main (void)
 
   // Success: Misc checks.
   {
-    NclDocument *ncl = check_success ("\
+    NclDocument *ncl;
+    PASS (&ncl, "Misc checks", "\
 <ncl>\n\
  <head>\n\
   <regionBase>\n\
@@ -282,6 +647,12 @@ main (void)
    </descriptor>\n\
    <descriptor id='d1'/>\n\
   </descriptorBase>\n\
+  <connectorBase>\n\
+   <causalConnector id='conn1'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
  </head>\n\
  <body>\n\
   <port id='p' component='m'/>\n\
@@ -338,7 +709,6 @@ main (void)
 
     delete ncl;
   }
-
 
   exit (EXIT_SUCCESS);
 }

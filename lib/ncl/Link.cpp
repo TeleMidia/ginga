@@ -15,12 +15,12 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "Link.h"
 
+#include "Action.h"
 #include "AttributeAssessment.h"
 #include "Port.h"
-#include "SimpleAction.h"
 #include "SimpleCondition.h"
 
 GINGA_NCL_BEGIN
@@ -29,16 +29,10 @@ GINGA_NCL_BEGIN
  * @brief Creates a new link.
  * @param ncl Parent document.
  * @param id Link id.
- * @param ctx Parent context.
- * @param conn Associated connector.
  */
-Link::Link (NclDocument *ncl, const string &id, Context *ctx,
-            Connector *conn) : Entity (ncl, id)
+Link::Link (NclDocument *ncl, const string &id) : Entity (ncl, id)
 {
-  g_assert_nonnull (conn);
-  _connector = conn;
-  g_assert_nonnull (ctx);
-  _context = ctx;
+  _connector = nullptr;
 }
 
 /**
@@ -46,12 +40,12 @@ Link::Link (NclDocument *ncl, const string &id, Context *ctx,
  */
 Link::~Link ()
 {
-  _parameters.clear ();
   _binds.clear ();
 }
 
 /**
  * @brief Gets link connector.
+ * @return Link connector.
  */
 Connector *
 Link::getConnector ()
@@ -60,46 +54,16 @@ Link::getConnector ()
 }
 
 /**
- * @brief Gets link context.
+ * @brief Initializes link connector.
+ * @return True if successful, or false otherwise.
  */
-Context *
-Link::getContext ()
+bool
+Link::initConnector (Connector *conn)
 {
-  return _context;
-}
-
-/**
- * @brief Adds parameter to link.
- * @param parameter Parameter.
- */
-void
-Link::addParameter (Parameter *parameter)
-{
-  g_assert_nonnull (parameter);
-  _parameters.push_back (parameter);
-}
-
-/**
- * @brief Gets all link parameters.
- */
-const vector<Parameter *> *
-Link::getParameters ()
-{
-  return &_parameters;
-}
-
-/**
- * @brief Gets link parameter.
- * @param name Parameter name.
- * @return Parameter if successful, or null if not found.
- */
-Parameter *
-Link::getParameter (const string &name)
-{
-  for (auto param: _parameters)
-    if (param->getName () == name)
-      return param;
-  return nullptr;
+  g_assert_nonnull (conn);
+  g_assert_null (_connector);
+  _connector = conn;
+  return true;
 }
 
 /**
@@ -115,6 +79,7 @@ Link::addBind (Bind *bind)
 
 /**
  * @brief Gets all link binds.
+ * @return Link binds.
  */
 const vector<Bind *> *
 Link::getBinds ()
@@ -159,8 +124,7 @@ Link::contains (Node *node, bool condition)
           continue;             // skip
         }
 
-      if (instanceof (SimpleAction *, role)
-          && condition)
+      if (instanceof (Action *, role) && condition)
         {
           continue;             // skip
         }

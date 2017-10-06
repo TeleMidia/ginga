@@ -1,25 +1,47 @@
 cmake_minimum_required(VERSION 3.2)
 project(ginga)
 
+option (WITH_CEF "Build with chromium embedded support." OFF)
+option (WITH_OPENGL "Build Ginga with opengl." ON)
+option (WITH_RUNVIEW "Build nclcomposer's ginga plugin." OFF)
+
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_INCLUDE_CURRENTDIR ON)
+# Defaul C++ params
+set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD_REQUIRED ON)
+set (CMAKE_INCLUDE_CURRENTDIR ON)
+if (UNIX)
+  add_definitions(-Wextra -Wall)
+endif()
 
-find_package(GLIB 2.32 REQUIRED)
+set (GINGA_BINARY_DIR ${CMAKE_BINARY_DIR}/bin)
+set (GINGA_BINARY_TESTS_DIR ${CMAKE_BINARY_DIR}/tests)
 
-find_package(LibXml2 REQUIRED)
-find_package(XercesC 2.7 REQUIRED)
+# Find dependencies
+find_package (GLIB 2.32 REQUIRED)
 
-find_package(GDKPixBuf REQUIRED)
-find_package(GDK3 REQUIRED)
+find_package (LibXml2 REQUIRED)
+find_package (XercesC 2.7 REQUIRED)
 
-find_package(Cairo REQUIRED)
-find_package(Pango REQUIRED)
-find_package(RSVG REQUIRED)
-find_package(GStreamer REQUIRED)
-add_definitions(-DWITH_PANGO=1 -DWITH_GSTREAMER=1)
+find_package (GDKPixBuf REQUIRED)
+find_package (GDK3 REQUIRED)
+
+find_package (Cairo REQUIRED)
+find_package (Pango REQUIRED)
+find_package (RSVG REQUIRED)
+find_package (GStreamer REQUIRED)
+add_definitions (-DWITH_PANGO=1 -DWITH_GSTREAMER=1)
+
+find_package (SDL2)
+find_package (SDL2_image)
+find_package (OpenGL)
+
+if (OPENGL_FOUND)
+  add_definitions (-DWITH_OPENGL=1)
+else ()
+  set (WITH_OPENGL OFF) # OpenGL not found, turn it off
+endif()
 
 find_package(GTK3)
 if (GTK3_FOUND)
@@ -47,8 +69,6 @@ ExternalProject_Get_Property(nclua_build install_dir)
 set(NCLUA_INCLUDE_DIRS "${install_dir}/include")
 link_directories("${install_dir}/lib")
 #end NCLUA
-
-option (WITH_CEF "Build with chromium embedded support" ON)
 
 if (WITH_CEF) # Download, link, build with CEF
   set(CEF_VERSION cef_binary_3.3029.1619.geeeb5d7_linux64_minimal)
@@ -82,14 +102,15 @@ if (WITH_CEF) # Download, link, build with CEF
   SET (CEF_TARGET_OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/bin/")
 
 else()
-  add_definitions(-DWITH_CEF=0)
+  add_definitions (-DWITH_CEF=0)
 
 endif()
 
 set (LIBGINGA_SOURCES
-  ../lib/ginga-internal.cpp
-  ../lib/ginga.cpp
-  ../lib/GingaState.cpp
+  ../lib/ginga.h
+  ../lib/aux-ginga.cpp
+  ../lib/Ginga.cpp
+  ../lib/GingaInternal.cpp
 
   ../lib/formatter/Converter.cpp
   ../lib/formatter/ExecutionObject.cpp
@@ -107,6 +128,7 @@ set (LIBGINGA_SOURCES
   ../lib/formatter/RuleAdapter.cpp
   ../lib/formatter/Scheduler.cpp
 
+  ../lib/ncl/Action.cpp
   ../lib/ncl/Area.cpp
   ../lib/ncl/AreaLabeled.cpp
   ../lib/ncl/AssessmentStatement.cpp
@@ -115,7 +137,6 @@ set (LIBGINGA_SOURCES
   ../lib/ncl/Bind.cpp
   ../lib/ncl/CompositeRule.cpp
   ../lib/ncl/Composition.cpp
-  ../lib/ncl/CompoundAction.cpp
   ../lib/ncl/CompoundCondition.cpp
   ../lib/ncl/CompoundStatement.cpp
   ../lib/ncl/Connector.cpp
@@ -139,7 +160,6 @@ set (LIBGINGA_SOURCES
   ../lib/ncl/RegionBase.cpp
   ../lib/ncl/Role.cpp
   ../lib/ncl/RuleBase.cpp
-  ../lib/ncl/SimpleAction.cpp
   ../lib/ncl/SimpleCondition.cpp
   ../lib/ncl/SimpleRule.cpp
   ../lib/ncl/Switch.cpp
@@ -147,7 +167,6 @@ set (LIBGINGA_SOURCES
   ../lib/ncl/Transition.cpp
   ../lib/ncl/TransitionBase.cpp
   ../lib/ncl/TransitionUtil.cpp
-  ../lib/ncl/TriggerExpression.cpp
   ../lib/ncl/ValueAssessment.cpp
 
   ../lib/player/ImagePlayer.cpp
@@ -203,6 +222,11 @@ set (LIBGINGA_LIBS
   nclua
 )
 
+if (WITH_OPENGL)
+  list (APPEND LIBGINGA_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
+  list (APPEND LIBGINGA_LIBS ${OPENGL_LIBRARIES})
+endif ()
+
 if (WITH_CEF)
   list (APPEND LIBGINGA_SOURCES
     ../lib/player/HTMLPlayer.cpp
@@ -239,6 +263,8 @@ set (GINGAGUI_GTK_INCLUDE_DIRS
   ${GTK3_INCLUDE_DIRS}
 )
 
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${GINGA_BINARY_DIR})
+
 # libginga target
 add_library (libginga STATIC ${LIBGINGA_SOURCES})
 add_dependencies (libginga nclua_build)
@@ -251,12 +277,27 @@ add_executable (ginga ../src/ginga.cpp)
 target_include_directories (ginga PRIVATE ${GTK3_INCLUDE_DIRS})
 target_link_libraries (ginga PRIVATE libginga ${GTK3_LIBRARIES})
 
+# gingagl target
+if (WITH_OPENGL)
+  add_executable (gingagl ../src/ginga-gl.cpp)
+
+  target_include_directories (gingagl PRIVATE
+    ${SDL2_INCLUDE_DIR}
+  )
+
+  target_link_libraries (gingagl PRIVATE
+    libginga
+    ${SDL2_LIBRARY}
+    ${SDL2_IMAGE_LIBRARIES}
+  )
+
+endif ()
+
 # gingagui target
 if (WITH_GINGAGUI_GTK)
   add_executable (gingagui ${GINGAGUI_GTK_SOURCES})
   target_include_directories (gingagui PRIVATE ${GINGAGUI_GTK_INCLUDE_DIRS})
   target_link_libraries (gingagui PRIVATE libginga ${GTK3_LIBRARIES})
-  set_target_properties(gingagui PROPERTIES RUNTIME_OUTPUT_DIRECTORY bin/)
 endif()
 
 # nclcomposer's run-view target
@@ -292,8 +333,6 @@ if (WITH_RUNVIEW)
 
     ${LIBGINGA_INCLUDE_DIRS}
   )
-
-  set_target_properties(runview PROPERTIES RUNTIME_OUTPUT_DIRECTORY bin/)
 endif ()
 
 # Copy datafiles to build dir
@@ -303,9 +342,8 @@ add_custom_target (copy-data-files ALL
 )
 
 # Set rpath so that libraries can be placed next to the executable.
-set_target_properties(ginga PROPERTIES INSTALL_RPATH "$ORIGIN")
-set_target_properties(ginga PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
-set_target_properties(ginga PROPERTIES RUNTIME_OUTPUT_DIRECTORY bin/)
+set_target_properties (ginga PROPERTIES INSTALL_RPATH "$ORIGIN")
+set_target_properties (ginga PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
 
 if (WITH_CEF)
   # Copy binary and resource files to the target output directory.
@@ -332,6 +370,26 @@ if(DOXYGEN_FOUND)
   )
 endif(DOXYGEN_FOUND)
 
+enable_testing ()
+add_custom_target (check COMMAND ${CMAKE_CTEST_COMMAND})
+macro (add_ginga_test target)
+  add_executable (${target} EXCLUDE_FROM_ALL ${ARGN})
+  target_link_libraries (${target} PRIVATE libginga)
+  set_target_properties (${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY
+                         ${GINGA_BINARY_TESTS_DIR})
+  add_test (${target} tests/${target})
+  add_dependencies (check ${target})
+endmacro ()
+
+file(GLOB GINGA_TESTS_SRC
+  "../tests/*.cpp")
+
+add_definitions (-DTOP_SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}/../")
+foreach (SRC ${GINGA_TESTS_SRC})
+  get_filename_component (TEST_NAME ${SRC} NAME_WE)
+  add_ginga_test (${TEST_NAME} ${SRC})
+endforeach ()
+
 message ( "
 ---
 summary of main build options:
@@ -349,12 +407,14 @@ with cef:		${WITH_CEF}
 Optional executables:
 ginga-gui (gtk):	${WITH_GINGAGUI_GTK}
 ginga-runview:          ${WITH_RUNVIEW}
+ginga-gl:               ${WITH_OPENGL}
 ")
  
 set (CPACK_PACKAGE_NAME ginga-idtv)
 set (CPACK_PACKAGE_CONTACT robertogerson@telemidia.puc-rio.br)
 
-install (DIRECTORY Release/ DESTINATION bin)
+install (DIRECTORY ${CMAKE_BINARY_OUTPUT_DIR} DESTINATION bin)
 install (TARGETS ginga DESTINATION bin)
+install (TARGETS gingagui DESTINATION bin)
 include (CPack)
 

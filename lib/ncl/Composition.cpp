@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga-internal.h"
+#include "aux-ginga.h"
 #include "Composition.h"
 
 GINGA_NCL_BEGIN
@@ -51,7 +51,7 @@ Composition::addNode (Node *node)
 {
   g_assert_nonnull (node);
   _nodes.push_back (node);
-  node->setParent (this);
+  node->initParent (this);
 }
 
 /**
@@ -107,7 +107,7 @@ Composition::addPort (Port *port)
 {
   g_assert_nonnull (port);
   _ports.push_back (port);
-  port->setParent (this);
+  port->initParent (this);
 }
 
 /**

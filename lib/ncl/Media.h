@@ -37,7 +37,7 @@ public:
   void setSrc (const string &);
 
   Descriptor *getDescriptor ();
-  void setDescriptor (Descriptor *);
+  void initDescriptor (Descriptor *);
 
   void addSameInstance (Refer *);
   const set<Refer *> *getInstSameInstances ();

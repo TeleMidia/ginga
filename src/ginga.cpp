@@ -16,19 +16,15 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include <config.h>
+#include <stdio.h>
 #include <string.h>
 
+#include "aux-glib.h"
 #include <cairo.h>
-#include <glib.h>
-#include <stdlib.h>
-#include <glib/gstdio.h>
 #include <gtk/gtk.h>
 
 #include "ginga.h"
 using namespace ::std;
-
-#define deconst(t, x) ((t)(ptrdiff_t)(const void *)(x))
-#define gpointerof(p) ((gpointer)((ptrdiff_t)(p)))
 
 
 // Global formatter.
@@ -104,7 +100,7 @@ opt_version_cb (void)
 
 static GOptionEntry options[] = {
   {"background", 'b', 0, G_OPTION_ARG_CALLBACK,
-   gpointerof (opt_background_cb), "Set background color", "COLOR"},
+   pointerof (opt_background_cb), "Set background color", "COLOR"},
   {"debug", 'd', 0, G_OPTION_ARG_NONE,
    &opt_debug, "Enable debugging", NULL},
   {"experimental", 'x', 0, G_OPTION_ARG_NONE,
@@ -112,9 +108,9 @@ static GOptionEntry options[] = {
   {"fullscreen", 'f', 0, G_OPTION_ARG_NONE,
    &opt_fullscreen, "Enable full-screen mode", NULL},
   {"size", 's', 0, G_OPTION_ARG_CALLBACK,
-   gpointerof (opt_size_cb), "Set initial window size", "WIDTHxHEIGHT"},
+   pointerof (opt_size_cb), "Set initial window size", "WIDTHxHEIGHT"},
   {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
-   gpointerof (opt_version_cb), "Print version information and exit", NULL},
+   pointerof (opt_version_cb), "Print version information and exit", NULL},
   {NULL, 0, 0, G_OPTION_ARG_NONE, NULL, NULL, NULL}
 };
 
@@ -166,7 +162,6 @@ resize_callback (GtkWidget *widget, GdkEventConfigure *e, gpointer data)
 
   opt_width = e->width;
   opt_height = e->height;
-
   GINGA->resize (opt_width, opt_height);
 
   // We must return FALSE here, otherwise the new geometry is not propagated
@@ -178,7 +173,7 @@ static gboolean
 keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
 {
   const char *key;
-  gboolean free_key = FALSE;
+  bool free_key = false;
 
   switch (e->keyval)
     {
@@ -243,17 +238,24 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
       if (strlen (key) > 1)
         {
           key = g_utf8_strup (key, -1);
-          free_key = TRUE;
+          free_key = true;
         }
       break;
     }
 
-  GINGA->sendKeyEvent
+  bool status = GINGA->sendKeyEvent
     (string (key), g_str_equal ((const char *) type, "press") == 0);
+
   if (free_key)
     g_free (deconst (char *, key));
 
-  return TRUE;
+  if (!status)
+    {
+      g_assert (GINGA->getState () == GINGA_STATE_STOPPED);
+      gtk_main_quit ();         // all done
+    }
+
+  return status;
 }
 
 #if GTK_CHECK_VERSION(3,8,0)
@@ -283,7 +285,14 @@ tick_callback (GtkWidget *widget)
       first = time;
       last = time;
     }
-  GINGA->sendTickEvent (time - first, time - last, frame);
+
+  if (!GINGA->sendTickEvent (time - first, time - last, frame))
+    {
+      g_assert (GINGA->getState () == GINGA_STATE_STOPPED);
+      gtk_main_quit ();         // all done
+      return G_SOURCE_REMOVE;
+    }
+
   last = time;
   gtk_widget_queue_draw (widget);
   return G_SOURCE_CONTINUE;
@@ -357,7 +366,7 @@ main (int argc, char **argv)
   g_timeout_add (1000 / opt_fps, (GSourceFunc) tick_callback, app);
 #endif
 
-  // Create Ginga state.
+  // Create Ginga handle.
   opts.width = opt_width;
   opts.height = opt_height;
   opts.debug = opt_debug;
@@ -371,7 +380,7 @@ main (int argc, char **argv)
   for (int i = 1; i < saved_argc; i++)
     {
       string errmsg;
-      if (!GINGA->start (string (saved_argv[i]), &errmsg))
+      if (!unlikely (GINGA->start (string (saved_argv[i]), &errmsg)))
         {
           g_printerr ("error: ");
           if (saved_argc > 2)

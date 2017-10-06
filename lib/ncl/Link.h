@@ -27,15 +27,11 @@ class Context;
 class Link : public Entity
 {
 public:
-  Link (NclDocument *, const string &, Context *, Connector *);
+  Link (NclDocument *, const string &);
   virtual ~Link ();
 
   Connector *getConnector ();
-  Context *getContext ();
-
-  void addParameter (Parameter *);
-  const vector<Parameter *> *getParameters ();
-  Parameter *getParameter (const string &);
+  bool initConnector (Connector *);
 
   void addBind (Bind *);
   const vector<Bind *> *getBinds ();
@@ -43,10 +39,8 @@ public:
   bool contains (Node *, bool);
 
 private:
-  Context *_context;
   Connector *_connector;
   vector<Bind *> _binds;
-  vector<Parameter *> _parameters;
 };
 
 GINGA_NCL_END
