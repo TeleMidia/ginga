@@ -160,20 +160,14 @@ VideoPlayer::start ()
   GstCaps *caps;
   GstStructure *st;
   GstStateChangeReturn ret;
-  static const char *format;
-#if defined WITH_OPENGL && WITH_OPENGL
-  format = "RGBA";
-#else
-  format = "BGRA";
-#endif
 
   g_assert (_state != OCCURRING);
   TRACE ("starting");
 
   st = gst_structure_new_empty ("video/x-raw");
-  gst_structure_set (st,
-                     "format", G_TYPE_STRING, format,
-                     nullptr);
+  gst_structure_set
+    (st, "format", G_TYPE_STRING,
+     (_ginga->getOptionBool ("opengl")) ? "RGBA" : "BGRA", nullptr);
 
   caps = gst_caps_new_full (st, nullptr);
   g_assert_nonnull (caps);
@@ -275,9 +269,7 @@ VideoPlayer::redraw (cairo_t *cr)
   stride = (int) GST_VIDEO_FRAME_PLANE_STRIDE (&v_frame, 0);
 
   if (_surface != nullptr)
-    {
-      cairo_surface_destroy (_surface);
-    }
+    cairo_surface_destroy (_surface);
 
   _surface = cairo_image_surface_create_for_data
     (pixels, CAIRO_FORMAT_ARGB32, width, height, stride);
@@ -335,9 +327,7 @@ VideoPlayer::redrawGL ()
   height = GST_VIDEO_FRAME_HEIGHT (&v_frame);
 
   if (_gltexture != (GLuint) -1)
-    {
-      gl_delete_texture (&_gltexture);
-    }
+    gl_delete_texture (&_gltexture);
 
   // fixme: There is no need for recreating the texture to each frame.
   gl_create_texture (&_gltexture, width, height, pixels);
