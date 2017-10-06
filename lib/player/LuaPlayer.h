@@ -32,6 +32,7 @@ public:
   void pause (void) override;
   void resume (void) override;
   void redraw (cairo_t *) override;
+  void redrawGL () override;
 
   // IGingaInternalEventListener.
   void handleTickEvent (GingaTime, GingaTime, int) override {};

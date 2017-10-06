@@ -669,7 +669,7 @@ xpathbuildabs (const string &a, const string &b)
 
 #if defined WITH_OPENGL && WITH_OPENGL
 
-#if defined WITH_OPENGLES2 && WITH_OPENGLES2
+# if defined WITH_OPENGLES2 && WITH_OPENGLES2
 auto vertexSource =
     "uniform vec2 winSize;\n"
     "\n"
@@ -733,12 +733,15 @@ static GLuint elements[] = {
   0, 1, 2,
   2, 3, 0
 };
-#endif
+# endif
 
+/**
+ * @brief gl_init Initiliazes the OpenGL context.
+ */
 void
 gl_init ()
 {
-#if defined WITH_OPENGLES2 && WITH_OPENGLES2
+# if defined WITH_OPENGLES2 && WITH_OPENGLES2
   glGenBuffers (1, &gles2ctx.vbo);
   glBindBuffer (GL_ARRAY_BUFFER, gles2ctx.vbo);
   glBufferData (GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -774,7 +777,7 @@ gl_init ()
   if (gles2ctx.texAttr < 0)
     WARNING ("Shader texcoord attribute not found.");
 
-#endif
+# endif
 
   CHECK_GL_ERROR ();
 }
@@ -789,7 +792,7 @@ gl_clear_scene (int w, int h)
 
 #if WITH_OPENGLES2
   GLuint loc = glGetUniformLocation (gles2ctx.shaderProgram, "winSize");
-  g_assert (loc != -1);
+  g_assert (loc);
   glUniform2f (loc, w, h);
   loc = glGetUniformLocation (gles2ctx.shaderProgram, "use_tex");
   glUniform1i (loc, 0);
@@ -836,8 +839,8 @@ void
 gl_create_texture (GLuint *gltex, int tex_w, int tex_h, unsigned char *data)
 {
   gl_create_texture (gltex);
-  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA8,
-                tex_w, tex_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+  glTexImage2D (GL_TEXTURE_2D, 0, 4,
+                tex_w, tex_h, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, data);
 
   CHECK_GL_ERROR ();
 }
@@ -848,7 +851,7 @@ gl_create_texture (GLuint *gltex, int tex_w, int tex_h, unsigned char *data)
 void
 gl_delete_texture (GLuint *gltex)
 {
-  if (*gltex != (GLuint) -1)
+  if (*gltex)
     {
       glDeleteTextures (1, gltex);
     }
@@ -862,10 +865,11 @@ gl_delete_texture (GLuint *gltex)
 void
 gl_update_texture (GLuint gltex, int tex_w, int tex_h, unsigned char *data)
 {
-  glActiveTexture (gltex);
-  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA8,
-                tex_w, tex_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-
+  g_assert (gltex > 0);
+  glBindTexture (GL_TEXTURE_2D, gltex);
+  glTexImage2D (GL_TEXTURE_2D, 0, 4,
+                tex_w, tex_h, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, data);
+  glBindTexture (GL_TEXTURE_2D, 0);
   CHECK_GL_ERROR ();
 }
 
@@ -884,10 +888,10 @@ gl_update_subtexture (GLuint gltex,
                    yoffset,
                    width,
                    height,
-                   GL_RGBA,
+                   GL_BGRA_EXT,
                    GL_UNSIGNED_BYTE,
                    data);
-
+  glBindTexture(GL_TEXTURE_2D, 0);
   CHECK_GL_ERROR ();
 }
 
@@ -898,6 +902,7 @@ void
 gl_draw_quad (int x, int y, int w, int h, GLuint gltex, GLfloat alpha)
 {
   g_assert (gltex > 0);
+
   glBindTexture (GL_TEXTURE_2D, gltex);
 #if WITH_OPENGLES2
   GLuint loc = glGetUniformLocation (gles2ctx.shaderProgram, "use_tex");

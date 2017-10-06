@@ -165,9 +165,9 @@ VideoPlayer::start ()
   TRACE ("starting");
 
   st = gst_structure_new_empty ("video/x-raw");
-  gst_structure_set
-    (st, "format", G_TYPE_STRING,
-     (_ginga->getOptionBool ("opengl")) ? "RGBA" : "BGRA", nullptr);
+  gst_structure_set (st,
+                     "format", G_TYPE_STRING, "BGRA",
+                     nullptr);
 
   caps = gst_caps_new_full (st, nullptr);
   g_assert_nonnull (caps);
@@ -329,7 +329,7 @@ VideoPlayer::redrawGL ()
   if (_gltexture != (GLuint) -1)
     gl_delete_texture (&_gltexture);
 
-  // fixme: There is no need for recreating the texture to each frame.
+  // fixme: There is no need for recreating the texture in each frame.
   gl_create_texture (&_gltexture, width, height, pixels);
 
   gst_video_frame_unmap (&v_frame);

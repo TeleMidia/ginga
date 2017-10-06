@@ -90,6 +90,11 @@ LuaPlayer::stop (void)
   g_assert (_ginga->unregisterEventListener (this));
   _nw = nullptr;
 
+#if defined WITH_OPENGL && WITH_OPENGL
+  if (_gltexture)
+    gl_delete_texture (&_gltexture);
+#endif
+
   Player::stop ();
 }
 
@@ -127,10 +132,49 @@ LuaPlayer::redraw (cairo_t *cr)
   this->pwdRestore ();
 
   _surface = (cairo_surface_t *) ncluaw_debug_get_surface (_nw);
+
   g_assert_nonnull (_surface);
 
   Player::redraw (cr);
   _surface = nullptr;
+}
+
+void
+LuaPlayer::redrawGL()
+{
+#if !(defined WITH_OPENGL && WITH_OPENGL)
+  WARNING_NOT_IMPLEMENTED ("not compiled with OpenGL support");
+#else
+  g_assert (_state != SLEEPING);
+  g_assert_nonnull (_nw);
+
+  this->pwdSave ();
+  ncluaw_cycle (_nw);
+  this->pwdRestore ();
+
+  _surface = (cairo_surface_t *) ncluaw_debug_get_surface (_nw);
+  g_assert_nonnull (_surface);
+
+  if (!_gltexture)
+    {
+      gl_create_texture (&_gltexture,
+                         cairo_image_surface_get_width (_surface),
+                         cairo_image_surface_get_height (_surface),
+                         cairo_image_surface_get_data (_surface));
+    }
+  else
+    {
+      gl_update_subtexture (_gltexture,
+                            0, 0,
+                            cairo_image_surface_get_width (_surface),
+                            cairo_image_surface_get_height (_surface),
+                            cairo_image_surface_get_data (_surface));
+    }
+
+  _surface = nullptr;
+
+  Player::redrawGL ();
+#endif
 }
 
 
