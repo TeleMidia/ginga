@@ -28,6 +28,7 @@ main (void)
      20,                        // height
      false,                     // debug
      false,                     // experimental
+     false,                     // opengl
      "green",                   // background
     };
   Ginga *ginga = Ginga::create (0, nullptr, &opts);
