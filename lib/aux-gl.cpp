@@ -161,7 +161,7 @@ GL::clear_scene (int w, int h)
 # if WITH_OPENGLES2
   GLuint loc = glGetUniformLocation (gles2ctx.shaderProgram, "winSize");
   g_assert (loc);
-  glUniform2f (loc, w, h);
+  glUniform2f (loc, (GLfloat) w, (GLfloat) h);
   loc = glGetUniformLocation (gles2ctx.shaderProgram, "use_tex");
   glUniform1i (loc, 0);
 # else
@@ -300,25 +300,29 @@ GL::draw_quad (int x, int y, int w, int h, GLuint gltex, GLfloat alpha)
   GLuint loc = glGetUniformLocation (gles2ctx.shaderProgram, "use_tex");
   glUniform1i (loc, 1);
 
-  vertices[0].pos[0] = x; vertices[0].pos[1] = y;
+  vertices[0].pos[0] = (GLfloat) x;
+  vertices[0].pos[1] = (GLfloat) y;
   vertices[0].v_color[0] = 1.0;
   vertices[0].v_color[1] = 1.0;
   vertices[0].v_color[2] = 1.0;
   vertices[0].v_color[3] = alpha;
 
-  vertices[1].pos[0] = x + w; vertices[1].pos[1] = y;
+  vertices[1].pos[0] = (GLfloat)(x + w);
+  vertices[1].pos[1] = (GLfloat) y;
   vertices[1].v_color[0] = 1.0;
   vertices[1].v_color[1] = 1.0;
   vertices[1].v_color[2] = 1.0;
   vertices[1].v_color[3] = alpha;
 
-  vertices[2].pos[0] = x + w; vertices[2].pos[1] = y + h;
+  vertices[2].pos[0] = (GLfloat)(x + w);
+  vertices[2].pos[1] = (GLfloat)(y + h);
   vertices[2].v_color[0] = 1.0;
   vertices[2].v_color[1] = 1.0;
   vertices[2].v_color[2] = 1.0;
   vertices[2].v_color[3] = alpha;
 
-  vertices[3].pos[0] = x; vertices[3].pos[1] = y + h;
+  vertices[3].pos[0] = (GLfloat) x;
+  vertices[3].pos[1] = (GLfloat)(y + h);
   vertices[3].v_color[0] = 1.0;
   vertices[3].v_color[1] = 1.0;
   vertices[3].v_color[2] = 1.0;
@@ -376,25 +380,29 @@ GL::draw_quad (int x, int y, int w, int h,
   GLuint loc = glGetUniformLocation (gles2ctx.shaderProgram, "use_tex");
   glUniform1i (loc, 0);
 
-  vertices[0].pos[0] = x; vertices[0].pos[1] = y;
+  vertices[0].pos[0] = (GLfloat) x;
+  vertices[0].pos[1] = (GLfloat) y;
   vertices[0].v_color[0] = r;
   vertices[0].v_color[1] = g;
   vertices[0].v_color[2] = b;
   vertices[0].v_color[3] = a;
 
-  vertices[1].pos[0] = x + w; vertices[1].pos[1] = y;
+  vertices[1].pos[0] = (GLfloat)(x + w);
+  vertices[1].pos[1] = (GLfloat) y;
   vertices[1].v_color[0] = r;
   vertices[1].v_color[1] = g;
   vertices[1].v_color[2] = b;
   vertices[1].v_color[3] = a;
 
-  vertices[2].pos[0] = x + w; vertices[2].pos[1] = y + h;
+  vertices[2].pos[0] = (GLfloat)(x + w);
+  vertices[2].pos[1] = (GLfloat)(y + h);
   vertices[2].v_color[0] = r;
   vertices[2].v_color[1] = g;
   vertices[2].v_color[2] = b;
   vertices[2].v_color[3] = a;
 
-  vertices[3].pos[0] = x; vertices[3].pos[1] = y + h;
+  vertices[3].pos[0] = (GLfloat) x;
+  vertices[3].pos[1] = (GLfloat)(y + h);
   vertices[3].v_color[0] = r;
   vertices[3].v_color[1] = g;
   vertices[3].v_color[2] = b;
