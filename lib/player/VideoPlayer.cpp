@@ -268,76 +268,36 @@ VideoPlayer::redraw (cairo_t *cr)
   height = GST_VIDEO_FRAME_HEIGHT (&v_frame);
   stride = (int) GST_VIDEO_FRAME_PLANE_STRIDE (&v_frame, 0);
 
-  if (_surface != nullptr)
-    cairo_surface_destroy (_surface);
+  if (_ginga->getOptionBool("opengl"))
+    {
+      if (_gltexture)
+        GL::delete_texture (&_gltexture);
 
-  _surface = cairo_image_surface_create_for_data
-    (pixels, CAIRO_FORMAT_ARGB32, width, height, stride);
-  g_assert_nonnull (_surface);
+      // fixme: There is no need for recreating the texture in each frame.
+      GL::create_texture (&_gltexture, width, height, pixels);
 
-  gst_video_frame_unmap (&v_frame);
+      gst_video_frame_unmap (&v_frame);
+      gst_sample_unref (sample);
+    }
+  else
+    {
+      if (_surface != nullptr)
+        cairo_surface_destroy (_surface);
 
-  status = cairo_surface_set_user_data
-    (_surface, &key, (void *) sample,
-     (cairo_destroy_func_t) gst_sample_unref);
-  g_assert (status == CAIRO_STATUS_SUCCESS);
+      _surface = cairo_image_surface_create_for_data
+          (pixels, CAIRO_FORMAT_ARGB32, width, height, stride);
+      g_assert_nonnull (_surface);
+
+      gst_video_frame_unmap (&v_frame);
+
+      status = cairo_surface_set_user_data
+          (_surface, &key, (void *) sample,
+           (cairo_destroy_func_t) gst_sample_unref);
+      g_assert (status == CAIRO_STATUS_SUCCESS);
+    }
 
  done:
   Player::redraw (cr);
-}
-
-void
-VideoPlayer::redrawGL ()
-{
-#if !(defined WITH_OPENGL && WITH_OPENGL)
-  WARNING_NOT_IMPLEMENTED ("not compiled with OpenGL support");
-#else
-  GstSample *sample;
-  GstVideoFrame v_frame;
-  GstVideoInfo v_info;
-  GstBuffer *buf;
-  GstCaps *caps;
-  guint8 *pixels;
-  int width;
-  int height;
-
-  g_assert (_state != SLEEPING);
-
-  if (Player::getEOS ())
-    goto done;
-
-  if (!g_atomic_int_compare_and_exchange (&_sample_flag, 1, 0))
-    goto done;
-
-  sample = gst_app_sink_pull_sample (GST_APP_SINK (_video.sink));
-  if (sample == nullptr)
-    goto done;
-
-  buf = gst_sample_get_buffer (sample);
-  g_assert_nonnull (buf);
-
-  caps = gst_sample_get_caps (sample);
-  g_assert_nonnull (caps);
-
-  g_assert (gst_video_info_from_caps (&v_info, caps));
-  g_assert (gst_video_frame_map (&v_frame, &v_info, buf, GST_MAP_READ));
-
-  pixels = (guint8 *) GST_VIDEO_FRAME_PLANE_DATA (&v_frame, 0);
-  width = GST_VIDEO_FRAME_WIDTH (&v_frame);
-  height = GST_VIDEO_FRAME_HEIGHT (&v_frame);
-
-  if (_gltexture != (GLuint) -1)
-    GL::delete_texture (&_gltexture);
-
-  // fixme: There is no need for recreating the texture in each frame.
-  GL::create_texture (&_gltexture, width, height, pixels);
-
-  gst_video_frame_unmap (&v_frame);
-  gst_sample_unref (sample);
-
- done:
-  Player::redrawGL ();
-#endif
 }
 
 

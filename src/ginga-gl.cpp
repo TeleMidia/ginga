@@ -286,7 +286,7 @@ main (int argc, char **argv)
         }
 
       sendTickEvent ();
-      GINGA->redrawGL ();
+      GINGA->redraw (nullptr);
 
       SDL_GL_SwapWindow (window);
       SDL_Delay (11);

@@ -50,7 +50,6 @@ class GingaInternal : public Ginga
 
   void resize (int, int);
   void redraw (cairo_t *);
-  void redrawGL ();
 
   bool sendKeyEvent (const string &, bool);
   bool sendTickEvent (uint64_t, uint64_t, uint64_t);

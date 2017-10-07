@@ -77,10 +77,9 @@ ImagePlayer::reload ()
   if (_surface != nullptr)
     {
       cairo_surface_destroy (_surface);
-#if defined WITH_OPENGL && WITH_OPENGL
+
       if (_ginga->getOptionBool("opengl"))
         GL::delete_texture (&_gltexture);
-#endif
     }
 
   status = cairox_surface_create_from_file (_uri.c_str (), &_surface);
@@ -92,12 +91,12 @@ ImagePlayer::reload ()
   g_assert_nonnull (_surface);
 
   if (_ginga->getOptionBool("opengl"))
-#if defined WITH_OPENGL && WITH_OPENGL
-    GL::create_texture (&_gltexture,
-                        cairo_image_surface_get_width (_surface),
-                        cairo_image_surface_get_height (_surface),
-                        cairo_image_surface_get_data (_surface));
-#endif
+    {
+      GL::create_texture (&_gltexture,
+                          cairo_image_surface_get_width (_surface),
+                          cairo_image_surface_get_height (_surface),
+                          cairo_image_surface_get_data (_surface));
+    }
 
   Player::reload ();
 }
