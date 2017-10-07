@@ -23,6 +23,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <cairo.h>
 #include <gtk/gtk.h>
 
+#if defined WITH_OPENGL && WITH_OPENGL
+PRAGMA_DIAG_IGNORE (-Wunused-macros)
+PRAGMA_DIAG_IGNORE (-Wvariadic-macros)
+# define __GL_SYNC_TO_VBLANK 1
+# include <EGL/egl.h>
+# include <GLES2/gl2.h>
+#endif
+
 #include "ginga.h"
 using namespace ::std;
 
@@ -41,34 +49,27 @@ static Ginga *GINGA = nullptr;
 static gboolean opt_debug = FALSE;        // toggle debug
 static gboolean opt_experimental = FALSE; // toggle experimental stuff
 static gboolean opt_fullscreen = FALSE;   // toggle fullscreen-mode
+static gboolean opt_opengl = FALSE;       // toggle OpenGL backend
 static string opt_background = "";        // background color
 static gint opt_width = 800;              // initial window width
 static gint opt_height = 600;             // initial window height
 
 static gboolean
-opt_background_cb (const gchar *opt, const gchar *arg,
-                   gpointer data, GError **err)
+opt_background_cb (unused (const gchar *opt), const gchar *arg,
+                   unused (gpointer data), unused (GError **err))
 {
-  (void) opt;
-  (void) data;
-  (void) err;
-
   g_assert_nonnull (arg);
   opt_background = string (arg);
   return TRUE;
 }
 
 static gboolean
-opt_size_cb (const gchar *opt, const gchar *arg,
-             gpointer data, GError **err)
+opt_size_cb (unused (const gchar *opt), const gchar *arg,
+             unused (gpointer data), GError **err)
 {
   gint64 width;
   gint64 height;
   gchar *end;
-
-  (void) opt;
-  (void) arg;
-  (void) data;
 
   width = g_ascii_strtoll (arg, &end, 10);
   if (width == 0)
@@ -103,12 +104,14 @@ static GOptionEntry options[] = {
    pointerof (opt_background_cb), "Set background color", "COLOR"},
   {"debug", 'd', 0, G_OPTION_ARG_NONE,
    &opt_debug, "Enable debugging", NULL},
-  {"experimental", 'x', 0, G_OPTION_ARG_NONE,
-   &opt_experimental, "Enable experimental stuff", NULL},
   {"fullscreen", 'f', 0, G_OPTION_ARG_NONE,
    &opt_fullscreen, "Enable full-screen mode", NULL},
+  {"opengl", 'g', 0, G_OPTION_ARG_NONE,
+   &opt_opengl, "Use OpenGL backend", NULL},
   {"size", 's', 0, G_OPTION_ARG_CALLBACK,
    pointerof (opt_size_cb), "Set initial window size", "WIDTHxHEIGHT"},
+  {"experimental", 'x', 0, G_OPTION_ARG_NONE,
+   &opt_experimental, "Enable experimental stuff", NULL},
   {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
    pointerof (opt_version_cb), "Print version information and exit", NULL},
   {NULL, 0, 0, G_OPTION_ARG_NONE, NULL, NULL, NULL}
@@ -139,11 +142,18 @@ _error (gboolean try_help, const gchar *format, ...)
 // Callbacks.
 
 static gboolean
-draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
+render_gl_callback (unused (GtkGLArea *area), unused (GdkGLContext *ctx))
 {
-  (void) widget;
-  (void) data;
+  glClearColor (1., 0., 0., 0.);
+  glClear (GL_COLOR_BUFFER_BIT);
+  // GINGA->redraw (nullptr);
+  return TRUE;
+}
 
+static gboolean
+draw_callback (unused (GtkWidget *widget), cairo_t *cr,
+               unused (gpointer data))
+{
   GINGA->redraw (cr);
   return TRUE;
 }
@@ -155,11 +165,9 @@ exit_callback (void)
 }
 
 static gboolean
-resize_callback (GtkWidget *widget, GdkEventConfigure *e, gpointer data)
+resize_callback (unused (GtkWidget *widget), GdkEventConfigure *e,
+                 unused (gpointer data))
 {
-  (void) widget;
-  (void) data;
-
   opt_width = e->width;
   opt_height = e->height;
   GINGA->resize (opt_width, opt_height);
@@ -339,18 +347,36 @@ main (int argc, char **argv)
       exit (EXIT_FAILURE);
     }
 
+#if !(defined WITH_OPENGL && WITH_OPENGL)
+  if (opt_opengl)
+    usage_error ("Option -g requires OpenGL support");
+#endif
+
   // Create application window.
   app = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   g_assert_nonnull (app);
   gtk_window_set_title (GTK_WINDOW (app), PACKAGE_STRING);
   gtk_window_set_default_size (GTK_WINDOW (app), opt_width, opt_height);
-  gtk_widget_set_app_paintable (app, TRUE);
   if (opt_fullscreen)
     gtk_window_fullscreen (GTK_WINDOW (app));
 
+  // Setup draw area.
+  if (opt_opengl)
+    {
+      GtkWidget *area = gtk_gl_area_new ();
+      g_assert_nonnull (area);
+      gtk_container_add (GTK_CONTAINER (app), area);
+      g_signal_connect (area, "render", G_CALLBACK (render_gl_callback),
+                        NULL);
+    }
+  else
+    {
+      gtk_widget_set_app_paintable (app, TRUE);
+      g_signal_connect (app, "draw", G_CALLBACK (draw_callback), NULL);
+    }
+
   // Setup GTK+ callbacks.
   g_signal_connect (app, "destroy", G_CALLBACK (exit_callback), NULL);
-  g_signal_connect (app, "draw", G_CALLBACK (draw_callback), NULL);
   g_signal_connect (app, "configure-event",
                     G_CALLBACK (resize_callback), NULL);
   g_signal_connect (app, "key-press-event",
@@ -371,7 +397,7 @@ main (int argc, char **argv)
   opts.height = opt_height;
   opts.debug = opt_debug;
   opts.experimental = opt_experimental;
-  opts.opengl = false;
+  opts.opengl = opt_opengl;
   opts.background = string (opt_background);
   GINGA = Ginga::create (argc, argv, &opts);
   g_assert_nonnull (GINGA);
