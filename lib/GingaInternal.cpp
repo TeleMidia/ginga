@@ -194,16 +194,22 @@ GingaInternal::redraw (cairo_t *cr)
 
   if (_background.alpha > 0)
     {
-      GingaColor c = _background;
       if (_opts.opengl)
         {
           GL::draw_quad (0, 0, _opts.width, _opts.height,
-                         c.red, c.green, c.blue, c.alpha);
+                         (float) _background.red,
+                         (float) _background.green,
+                         (float) _background.blue,
+                         (float) _background.alpha);
         }
       else
         {
           cairo_save (cr);
-          cairo_set_source_rgba (cr, c.red, c.green, c.blue, c.alpha);
+          cairo_set_source_rgba (cr,
+                                 _background.red,
+                                 _background.green,
+                                 _background.blue,
+                                 _background.alpha);
           cairo_rectangle (cr, 0, 0, _opts.width, _opts.height);
           cairo_fill (cr);
           cairo_restore (cr);
