@@ -116,6 +116,8 @@ Player::~Player ()
   delete _animator;
   if (_surface != nullptr)
     cairo_surface_destroy (_surface);
+  if (_gltexture)
+    GL::delete_texture (&_gltexture);
   _properties.clear ();
 }
 
@@ -400,92 +402,87 @@ Player::redraw (cairo_t *cr)
 
   if (_prop.bgColor.alpha > 0)
     {
-      cairo_save (cr);
-      cairo_set_source_rgba (cr,
-                             _prop.bgColor.red,
-                             _prop.bgColor.green,
-                             _prop.bgColor.blue,
-                             _prop.alpha / 255.);
-      cairo_rectangle (cr,
-                       _prop.rect.x,
-                       _prop.rect.y,
-                       _prop.rect.width,
-                       _prop.rect.height);
-      cairo_fill (cr);
-      cairo_restore (cr);
+      if (_ginga->getOptionBool("opengl"))
+        {
+          GL::draw_quad (_prop.rect.x, _prop.rect.y,
+                         _prop.rect.width, _prop.rect.height,
+                         // Color
+                         (GLfloat) _prop.bgColor.red,
+                         (GLfloat) _prop.bgColor.green,
+                         (GLfloat) _prop.bgColor.blue,
+                         (GLfloat)(_prop.alpha / 255.));
+        }
+      else
+        {
+          cairo_save (cr);
+          cairo_set_source_rgba (cr,
+                                 _prop.bgColor.red,
+                                 _prop.bgColor.green,
+                                 _prop.bgColor.blue,
+                                 _prop.alpha / 255.);
+          cairo_rectangle (cr,
+                           _prop.rect.x,
+                           _prop.rect.y,
+                           _prop.rect.width,
+                           _prop.rect.height);
+          cairo_fill (cr);
+          cairo_restore (cr);
+        }
     }
 
-  if (_surface != nullptr)
+  if (_ginga->getOptionBool("opengl"))
     {
-      double sx, sy;
-      sx = (double) _prop.rect.width
-        / cairo_image_surface_get_width (_surface);
-      sy = (double) _prop.rect.height
-        / cairo_image_surface_get_height (_surface);
-      cairo_save (cr);
-      cairo_translate (cr, _prop.rect.x, _prop.rect.y);
-      cairo_scale (cr, sx, sy);
-      cairo_set_source_surface (cr, _surface, 0., 0.);
-      cairo_paint_with_alpha (cr, _prop.alpha / 255.);
-      cairo_restore (cr);
+      if (_gltexture)
+        {
+          GL::draw_quad (_prop.rect.x, _prop.rect.y,
+                         _prop.rect.width, _prop.rect.height,
+                         _gltexture, (GLfloat)(_prop.alpha / 255.));
+        }
+    }
+  else
+    {
+      if (_surface != nullptr)
+        {
+          double sx, sy;
+          sx = (double) _prop.rect.width
+              / cairo_image_surface_get_width (_surface);
+          sy = (double) _prop.rect.height
+              / cairo_image_surface_get_height (_surface);
+          cairo_save (cr);
+          cairo_translate (cr, _prop.rect.x, _prop.rect.y);
+          cairo_scale (cr, sx, sy);
+          cairo_set_source_surface (cr, _surface, 0., 0.);
+          cairo_paint_with_alpha (cr, _prop.alpha / 255.);
+          cairo_restore (cr);
+        }
     }
 
   if (this->isFocused ())
     {
-      cairo_save (cr);
-      cairo_set_source_rgba (cr, 1., 1., 0., 1.);
-      cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
-      cairo_rectangle (cr,
-                       _prop.rect.x,
-                       _prop.rect.y,
-                       _prop.rect.width,
-                       _prop.rect.height);
-      cairo_stroke (cr);
-      cairo_restore (cr);
+      if (_ginga->getOptionBool("opengl"))
+        {
+          // TODO
+        }
+      else
+        {
+          cairo_save (cr);
+          cairo_set_source_rgba (cr, 1., 1., 0., 1.);
+          cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+          cairo_rectangle (cr,
+                           _prop.rect.x,
+                           _prop.rect.y,
+                           _prop.rect.width,
+                           _prop.rect.height);
+          cairo_stroke (cr);
+          cairo_restore (cr);
+        }
     }
 
   if (_prop.debug || _ginga->getOptionBool ("debug"))
     this->redrawDebuggingInfo (cr);
 }
 
-/**
- * @brief Redraws player using OpenGL.
- */
-void
-Player::redrawGL ()
-{
-#if !(defined WITH_OPENGL && WITH_OPENGL)
-  WARNING_NOT_IMPLEMENTED ("not compiled with OpenGL support");
-#else
-  static int i = 0;
 
-  i += 1;
-  g_assert (_state != SLEEPING);
-  _animator->update (&_prop.rect, &_prop.bgColor, &_prop.alpha);
-
-  if (_prop.bgColor.alpha > 0)
-    {
-      GL::draw_quad (_prop.rect.x, _prop.rect.y,
-                     _prop.rect.width, _prop.rect.height,
-                     // Color
-                     (GLfloat) _prop.bgColor.red,
-                     (GLfloat) _prop.bgColor.green,
-                     (GLfloat) _prop.bgColor.blue,
-                     (GLfloat)(_prop.alpha / 255.));
-    }
-
-  if (_gltexture)
-    {
-      GL::draw_quad (_prop.rect.x, _prop.rect.y,
-                     _prop.rect.width, _prop.rect.height,
-                     _gltexture, (GLfloat)(_prop.alpha / 255.));
-    }
-
-#endif
-}
-
-
-
 // Public: Static.
 
 /**

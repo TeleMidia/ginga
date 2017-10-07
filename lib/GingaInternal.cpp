@@ -187,14 +187,27 @@ GingaInternal::redraw (cairo_t *cr)
 {
   GList *l;
 
+  if (_opts.opengl)
+    {
+      GL::clear_scene (_opts.width, _opts.height);
+    }
+
   if (_background.alpha > 0)
     {
       GingaColor c = _background;
-      cairo_save (cr);
-      cairo_set_source_rgba (cr, c.red, c.green, c.blue, c.alpha);
-      cairo_rectangle (cr, 0, 0, _opts.width, _opts.height);
-      cairo_fill (cr);
-      cairo_restore (cr);
+      if (_opts.opengl)
+        {
+          GL::draw_quad (0, 0, _opts.width, _opts.height,
+                         c.red, c.green, c.blue, c.alpha);
+        }
+      else
+        {
+          cairo_save (cr);
+          cairo_set_source_rgba (cr, c.red, c.green, c.blue, c.alpha);
+          cairo_rectangle (cr, 0, 0, _opts.width, _opts.height);
+          cairo_fill (cr);
+          cairo_restore (cr);
+        }
     }
 
   _players = g_list_sort (_players, (GCompareFunc) win_cmp_z);
@@ -209,9 +222,14 @@ GingaInternal::redraw (cairo_t *cr)
         }
       else
         {
-          cairo_save (cr);
-          pl->redraw (cr);
-          cairo_restore (cr);
+          if (_opts.opengl)
+            pl->redraw (cr);
+          else
+            {
+              cairo_save (cr);
+              pl->redraw (cr);
+              cairo_restore (cr);
+            }
         }
       l = next;
     }
@@ -250,38 +268,6 @@ GingaInternal::redraw (cairo_t *cr)
     }
 }
 
-/**
- * @brief Draws current surface onto current OpenGL context.
- */
-void
-GingaInternal::redrawGL ()
-{
-#if !(defined WITH_OPENGL && WITH_OPENGL)
-  WARNING_NOT_IMPLEMENTED ("not compiled with OpenGL support");
-#else
-
-  GL::clear_scene (_opts.width, _opts.height);
-
-  GList *l;
-
-  _players = g_list_sort (_players, (GCompareFunc) win_cmp_z);
-  l = _players;
-  while (l != NULL)             // can be modified while being traversed
-    {
-      GList *next = l->next;
-      Player *pl = (Player *) l->data;
-      if (pl == NULL)
-        {
-          _players = g_list_remove_link (_players, l);
-        }
-      else
-        {
-          pl->redrawGL ();
-        }
-      l = next;
-    }
-#endif
-}
 
 // Stop formatter if EOS has been seen.
 #define _GINGA_CHECK_EOS(ginga)                                 \

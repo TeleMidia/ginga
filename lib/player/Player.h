@@ -102,7 +102,6 @@ public:
                                   const string &, GingaTime);
   virtual void reload ();
   virtual void redraw (cairo_t *);
-  virtual void redrawGL ();
 
   // Static.
   static string getCurrentFocus ();

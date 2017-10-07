@@ -28,6 +28,7 @@ libginga_la_LDFLAGS= -static $(AM_LDFLAGS)
 libginga_la_SOURCES= $(src)
 src=
 src+= aux-ginga.cpp
+src+= aux-gl.cpp
 src+= Ginga.cpp
 src+= GingaInternal.cpp
 src+= formatter/Converter.cpp
