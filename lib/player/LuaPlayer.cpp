@@ -90,11 +90,8 @@ LuaPlayer::stop (void)
   g_assert (_ginga->unregisterEventListener (this));
   _nw = nullptr;
 
-  if (_ginga->getOptionBool("opengl"))
-    {
-      if (_gltexture)
-        GL::delete_texture (&_gltexture);
-    }
+  if (_opengl && _gltexture != 0)
+    GL::delete_texture (&_gltexture);
 
   Player::stop ();
 }
@@ -125,6 +122,8 @@ LuaPlayer::handleKeyEvent (string const &key, bool press)
 void
 LuaPlayer::redraw (cairo_t *cr)
 {
+  cairo_surface_t *sfc;
+
   g_assert (_state != SLEEPING);
   g_assert_nonnull (_nw);
 
@@ -132,31 +131,30 @@ LuaPlayer::redraw (cairo_t *cr)
   ncluaw_cycle (_nw);
   this->pwdRestore ();
 
-  _surface = (cairo_surface_t *) ncluaw_debug_get_surface (_nw);
+  sfc = (cairo_surface_t *) ncluaw_debug_get_surface (_nw);
+  g_assert_nonnull (sfc);
 
-  g_assert_nonnull (_surface);
-
-  if (_ginga->getOptionBool ("opengl"))
+  if (_opengl)
     {
-      if (!_gltexture)
-        {
-          GL::create_texture (&_gltexture,
-                              cairo_image_surface_get_width (_surface),
-                              cairo_image_surface_get_height (_surface),
-                              cairo_image_surface_get_data (_surface));
-        }
+      if (_gltexture == 0)
+        GL::create_texture (&_gltexture,
+                            cairo_image_surface_get_width (sfc),
+                            cairo_image_surface_get_height (sfc),
+                            cairo_image_surface_get_data (sfc));
       else
-        {
-          GL::update_subtexture (_gltexture,
-                                 0, 0,
-                                 cairo_image_surface_get_width (_surface),
-                                 cairo_image_surface_get_height (_surface),
-                                 cairo_image_surface_get_data (_surface));
-        }
+        GL::update_subtexture (_gltexture, 0, 0,
+                               cairo_image_surface_get_width (sfc),
+                               cairo_image_surface_get_height (sfc),
+                               cairo_image_surface_get_data (sfc));
+    }
+  else
+    {
+      _surface = sfc;
     }
 
-  _surface = nullptr;
   Player::redraw (cr);
+  if (!_opengl)
+    _surface = nullptr;
 }
 
 

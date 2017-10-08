@@ -111,6 +111,7 @@ public:
                                const string &, const string &);
 protected:
   GingaInternal *_ginga;        // ginga handle
+  bool _opengl;                 // true if OpenGL is used
   string _id;                   // associated object id
   string _uri;                  // source uri
   PlayerState _state;           // current state

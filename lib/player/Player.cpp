@@ -96,6 +96,7 @@ Player::Player (GingaInternal *ginga, const string &id, const string &uri)
   // Internal data.
   g_assert_nonnull (ginga);
   _ginga = ginga;
+  _opengl = _ginga->getOptionBool ("opengl");
   _id = id;
   _uri = uri;
   _state = SLEEPING;
@@ -402,7 +403,7 @@ Player::redraw (cairo_t *cr)
 
   if (_prop.bgColor.alpha > 0)
     {
-      if (_ginga->getOptionBool("opengl"))
+      if (_opengl)
         {
           GL::draw_quad (_prop.rect.x, _prop.rect.y,
                          _prop.rect.width, _prop.rect.height,
@@ -430,7 +431,7 @@ Player::redraw (cairo_t *cr)
         }
     }
 
-  if (_ginga->getOptionBool("opengl"))
+  if (_opengl)
     {
       if (_gltexture)
         {
@@ -459,7 +460,7 @@ Player::redraw (cairo_t *cr)
 
   if (this->isFocused ())
     {
-      if (_ginga->getOptionBool("opengl"))
+      if (_opengl)
         {
           // TODO
         }
