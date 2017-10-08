@@ -155,8 +155,8 @@ Scheduler::run (const string &file, string *errmsg)
   // Start entry events.
   for (auto event: *entryevts)
     {
-      NclSimpleAction *fakeAction;
-      fakeAction = new NclSimpleAction (event, EventStateTransition::START, this);
+      NclAction *fakeAction;
+      fakeAction = new NclAction (event, EventStateTransition::START, this);
       runAction (event, fakeAction);
       delete fakeAction;
     }
@@ -202,7 +202,7 @@ SET_ACCESS_DEFN (Object, ExecutionObject, _objects)
 SET_ACCESS_DEFN (Event, NclEvent, _events)
 
 void
-Scheduler::scheduleAction (NclSimpleAction *action)
+Scheduler::scheduleAction (NclAction *action)
 {
   runAction (action->getEvent (), action);
 }
@@ -211,7 +211,7 @@ Scheduler::scheduleAction (NclSimpleAction *action)
 // Private.
 
 void
-Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
+Scheduler::runAction (NclEvent *event, NclAction *action)
 {
   ExecutionObject *obj;
   string name;
@@ -327,7 +327,7 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
 
 void
 Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
-                                     NclSimpleAction *action)
+                                     NclAction *action)
 {
   NclEvent *event;
   EventType type;
@@ -456,7 +456,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
 void
 Scheduler::runActionOverSwitch (ExecutionObjectSwitch *switchObj,
                                 SwitchEvent *event,
-                                NclSimpleAction *action)
+                                NclAction *action)
 {
   ExecutionObject *selectedObject;
   NclEvent *selectedEvent;
@@ -493,7 +493,7 @@ void
 Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObj,
                                     SwitchEvent *switchEvent,
                                     ExecutionObject *selectedObject,
-                                    NclSimpleAction *action)
+                                    NclAction *action)
 {
   NclEvent *selectedEvent;
   SwitchPort *switchPort;

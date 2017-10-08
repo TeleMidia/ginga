@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ExecutionObjectContext.h"
 #include "ExecutionObjectSettings.h"
 #include "ExecutionObjectSwitch.h"
-#include "NclActions.h"
+#include "NclAction.h"
 #include "NclEvents.h"
 #include "NclFormatterLink.h"
 #include "NclFormatterLink.h"
@@ -140,7 +140,7 @@ private:
       AttributeAssessment *attributeAssessment, Bind *bind,
       ExecutionObjectContext *parentObject);
 
-  NclSimpleAction *
+  NclAction *
   createSimpleAction (Action *, Bind *,
                       ExecutionObjectContext *);
 

@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
-#include "NclActions.h"
+#include "NclAction.h"
 
 GINGA_FORMATTER_BEGIN
 
@@ -26,9 +26,9 @@ GINGA_FORMATTER_BEGIN
  * @param transition Action transition.
  * @param listener Action listener.
  */
-NclSimpleAction::NclSimpleAction (NclEvent *event,
-                                  EventStateTransition transition,
-                                  INclActionListener *listener)
+NclAction::NclAction (NclEvent *event,
+                      EventStateTransition transition,
+                      INclActionListener *listener)
 {
   g_assert_nonnull (event);
   g_assert_nonnull (listener);
@@ -43,7 +43,7 @@ NclSimpleAction::NclSimpleAction (NclEvent *event,
 /**
  * @brief Destroys action.
  */
-NclSimpleAction::~NclSimpleAction ()
+NclAction::~NclAction ()
 {
 }
 
@@ -52,7 +52,7 @@ NclSimpleAction::~NclSimpleAction ()
  * @return Target event.
  */
 NclEvent *
-NclSimpleAction::getEvent ()
+NclAction::getEvent ()
 {
   return _event;
 }
@@ -62,7 +62,7 @@ NclSimpleAction::getEvent ()
  * @return Target event type.
  */
 EventType
-NclSimpleAction::getEventType ()
+NclAction::getEventType ()
 {
   return _event->getType ();
 }
@@ -72,7 +72,7 @@ NclSimpleAction::getEventType ()
  * @return Action transition.
  */
 EventStateTransition
-NclSimpleAction::getEventStateTransition ()
+NclAction::getEventStateTransition ()
 {
   return _transition;
 }
@@ -82,7 +82,7 @@ NclSimpleAction::getEventStateTransition ()
  * @return Action duration.
  */
 string
-NclSimpleAction::getDuration ()
+NclAction::getDuration ()
 {
   return _duration;
 }
@@ -92,7 +92,7 @@ NclSimpleAction::getDuration ()
  * @param duration Duration.
  */
 void
-NclSimpleAction::setDuration (const string &duration)
+NclAction::setDuration (const string &duration)
 {
   _duration = duration;
 }
@@ -102,7 +102,7 @@ NclSimpleAction::setDuration (const string &duration)
  * @return Action value.
  */
 string
-NclSimpleAction::getValue (void)
+NclAction::getValue (void)
 {
   return _value;
 }
@@ -112,7 +112,7 @@ NclSimpleAction::getValue (void)
  * @param value Value.
  */
 void
-NclSimpleAction::setValue (const string &value)
+NclAction::setValue (const string &value)
 {
   _value = value;
 }
@@ -121,7 +121,7 @@ NclSimpleAction::setValue (const string &value)
  * @brief Runs action.
  */
 void
-NclSimpleAction::run ()
+NclAction::run ()
 {
   _listener->scheduleAction (this);
 }
