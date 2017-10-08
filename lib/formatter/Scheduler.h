@@ -24,7 +24,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ExecutionObjectContext.h"
 #include "ExecutionObjectSwitch.h"
 #include "Converter.h"
-#include "NclActions.h"
+#include "NclAction.h"
 
 #include "ncl/Ncl.h"
 using namespace ::ginga::ncl;
@@ -51,7 +51,7 @@ public:
   ExecutionObject *getObjectById (const string &);
   void addObject (ExecutionObject *);
 
-  void scheduleAction (NclSimpleAction *) override;
+  void scheduleAction (NclAction *) override;
 
 private:
   GingaInternal *_ginga;        // ginga handle
@@ -62,13 +62,13 @@ private:
   set<NclEvent *> _events;         // document events
   set<ExecutionObject *> _objects; // document objects
 
-  void runAction (NclEvent *, NclSimpleAction *);
+  void runAction (NclEvent *, NclAction *);
   void runActionOverComposition (ExecutionObjectContext *,
-                                 NclSimpleAction *);
+                                 NclAction *);
   void runActionOverSwitch (ExecutionObjectSwitch *, SwitchEvent *,
-                            NclSimpleAction *);
+                            NclAction *);
   void runSwitchEvent (ExecutionObjectSwitch *, SwitchEvent *,
-                       ExecutionObject *, NclSimpleAction *);
+                       ExecutionObject *, NclAction *);
 };
 
 GINGA_FORMATTER_END

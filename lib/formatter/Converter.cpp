@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "Converter.h"
 
-#include "NclActions.h"
+#include "NclAction.h"
 #include "NclLinkAssessment.h"
 #include "NclLinkStatement.h"
 #include "Scheduler.h"
@@ -752,7 +752,7 @@ Converter::createLink (Link *ncmLink, ExecutionObjectContext *parentObj)
     {
       for (auto bind: ncmLink->getBinds (act))
         {
-          NclSimpleAction *simpleAction;
+          NclAction *simpleAction;
           simpleAction = createSimpleAction (act, bind, parentObj);
           g_assert_nonnull (simpleAction);
           formatterLink->addAction (simpleAction);
@@ -969,7 +969,7 @@ Converter::createAttributeAssessment (
     (event, AttributeType::NODE_PROPERTY);
 }
 
-NclSimpleAction *
+NclAction *
 Converter::createSimpleAction (
     Action *sae, Bind *bind,
     ExecutionObjectContext *parentObj)
@@ -977,7 +977,7 @@ Converter::createSimpleAction (
   NclEvent *event;
   EventStateTransition actionType;
   EventType eventType;
-  NclSimpleAction *action;
+  NclAction *action;
   Parameter *connParam;
   string paramValue;
 
@@ -995,7 +995,7 @@ Converter::createSimpleAction (
     case EventStateTransition::START:
       if (eventType == EventType::PRESENTATION)
         {
-          action = new NclSimpleAction (event, actionType, _actionListener);
+          action = new NclAction (event, actionType, _actionListener);
         }
       else if (eventType == EventType::ATTRIBUTION)
         {
@@ -1018,7 +1018,7 @@ Converter::createSimpleAction (
               paramDur = bind->getParameter (connParam->getName ());
             }
 
-          action = new NclSimpleAction (event, actionType, _actionListener);
+          action = new NclAction (event, actionType, _actionListener);
           g_assert (paramDur[0] != '$');
           action->setDuration (paramDur);
           g_assert (paramValue[0] != '$');
@@ -1034,7 +1034,7 @@ Converter::createSimpleAction (
     case EventStateTransition::PAUSE:
     case EventStateTransition::RESUME:
     case EventStateTransition::ABORT:
-      action = new NclSimpleAction (event, actionType, _actionListener);
+      action = new NclAction (event, actionType, _actionListener);
       break;
 
     default:

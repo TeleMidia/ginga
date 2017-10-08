@@ -56,14 +56,14 @@ NclFormatterLink::getNcmLink ()
   return _ncmLink;
 }
 
-const vector <NclSimpleAction *> *
+const vector <NclAction *> *
 NclFormatterLink::getActions ()
 {
   return &_actions;
 }
 
 void
-NclFormatterLink::addAction (NclSimpleAction *action)
+NclFormatterLink::addAction (NclAction *action)
 {
   g_assert_nonnull (action);
   _actions.push_back (action);

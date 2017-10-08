@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FORMATTER_LINK_H
 #define FORMATTER_LINK_H
 
-#include "NclActions.h"
+#include "NclAction.h"
 #include "NclEvents.h"
 #include "NclFormatterLink.h"
 #include "NclLinkCondition.h"
@@ -40,8 +40,8 @@ public:
   void suspendLinkEvaluation (bool suspended);
   Link *getNcmLink ();
 
-  const vector <NclSimpleAction *> *getActions ();
-  void addAction (NclSimpleAction *);
+  const vector <NclAction *> *getActions ();
+  void addAction (NclAction *);
 
   NclLinkTriggerCondition *getTriggerCondition ();
   void conditionSatisfied ();
@@ -56,7 +56,7 @@ protected:
 
 private:
   NclLinkTriggerCondition *_condition;
-  vector <NclSimpleAction *> _actions;
+  vector <NclAction *> _actions;
 };
 
 GINGA_FORMATTER_END
