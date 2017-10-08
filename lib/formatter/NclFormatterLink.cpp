@@ -23,22 +23,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclFormatterLink::NclFormatterLink (
-    NclLinkTriggerCondition *condition, NclAction *act,
-    Link *ncmLink, ExecutionObjectContext *parentObj)
+NclFormatterLink::NclFormatterLink (NclLinkTriggerCondition *condition,
+                                    Link *ncmLink,
+                                    ExecutionObjectContext *parentObj)
 {
-  this->_parentObj = parentObj;
-  this->_ncmLink = ncmLink;
-  this->_suspended = false;
-
-  this->_condition = condition;
-  this->_action = act;
-
-  g_assert_nonnull (this->_condition);
-  g_assert_nonnull (this->_action);
-
-  this->_condition->setTriggerListener (this);
-  //this->_action->addProgressListener (this);
+  _parentObj = parentObj;
+  _ncmLink = ncmLink;
+  _suspended = false;
+  _condition = condition;
+  g_assert_nonnull (_condition);
+  _condition->setTriggerListener (this);
 }
 
 NclFormatterLink::~NclFormatterLink ()
@@ -46,8 +40,8 @@ NclFormatterLink::~NclFormatterLink ()
   if (_condition != nullptr)
     delete _condition;
 
-  if (_action != nullptr)
-    delete _action;
+  for (auto action: _actions)
+    delete action;
 }
 
 void
@@ -62,10 +56,17 @@ NclFormatterLink::getNcmLink ()
   return _ncmLink;
 }
 
-NclAction *
-NclFormatterLink::getAction ()
+const vector <NclSimpleAction *> *
+NclFormatterLink::getActions ()
 {
-  return _action;
+  return &_actions;
+}
+
+void
+NclFormatterLink::addAction (NclSimpleAction *action)
+{
+  g_assert_nonnull (action);
+  _actions.push_back (action);
 }
 
 NclLinkTriggerCondition *
@@ -75,20 +76,20 @@ NclFormatterLink::getTriggerCondition ()
 }
 
 void
-NclFormatterLink::conditionSatisfied (unused (NclLinkCondition *condition))
+NclFormatterLink::conditionSatisfied ()
 {
-  if (!_suspended)
-    _action->run ();
+  if (_suspended)
+    return;                     // nothing to do
+  for (auto action: _actions)
+    action->run ();
 }
 
 vector<NclEvent *>
 NclFormatterLink::getEvents ()
 {
   vector<NclEvent *> events = _condition->getEvents ();
-  vector<NclEvent *> actEvents = _action->getEvents ();
-
-  events.insert(events.end(), actEvents.begin(), actEvents.end());
-
+  for (auto action: _actions)
+    events.push_back (action->getEvent ());
   return events;
 }
 
@@ -103,11 +104,5 @@ NclFormatterLink::evaluationEnded ()
 {
   _parentObj->linkEvaluationFinished (this, false);
 }
-
-// void
-// NclFormatterLink::actionProcessed (bool start)
-// {
-//   _parentObj->linkEvaluationFinished (this, start);
-// }
 
 GINGA_FORMATTER_END

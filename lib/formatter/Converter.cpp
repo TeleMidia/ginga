@@ -406,10 +406,8 @@ Converter::processLink (Link *ncmLink,
 
       if (formatterLink != NULL)
         {
-          setActionListener (
-                             ((NclFormatterLink *)formatterLink)
-                             ->getAction ());
-
+          // for (auto action: *formatterLink->getActions ())
+          //   action->initListener (_actionListener);
           parentObject->setLinkCompiled (formatterLink);
         }
     }
@@ -471,27 +469,6 @@ Converter::compileExecutionObjectLinks (
 
           compileExecutionObjectLinks (object, dataObject, parentObj);
         }
-    }
-}
-
-void
-Converter::setActionListener (NclAction *action)
-{
-  auto simpleAction = cast (NclSimpleAction *, action);
-  auto compoundAction = cast (NclCompoundAction *, action);
-
-  if (simpleAction)
-    {
-      simpleAction->setSimpleActionListener (_actionListener);
-    }
-  else if (compoundAction)
-    {
-      for (auto action: *compoundAction->getSimpleActions ())
-        setActionListener (action);
-    }
-  else
-    {
-      g_assert_not_reached ();
     }
 }
 
@@ -743,11 +720,8 @@ Converter::createLink (Link *ncmLink, ExecutionObjectContext *parentObj)
   Connector *connector;
   Condition *conditionExpression;
   NclLinkCondition *formatterCondition;
-  NclAction *formatterAction;
   NclFormatterLink *formatterLink;
-  NclAssignmentAction *action;
   string value;
-  NclEvent *event;
 
   g_assert_nonnull (ncmLink);
 
@@ -768,8 +742,12 @@ Converter::createLink (Link *ncmLink, ExecutionObjectContext *parentObj)
       return nullptr;
     }
 
-  // compile link action
-  formatterAction = new NclCompoundAction ();
+  // Create formatter link.
+  formatterLink = new NclFormatterLink (
+        (NclLinkTriggerCondition *) formatterCondition,
+        ncmLink, (ExecutionObjectContext *) parentObj);
+
+  // Add actions.
   for (auto act: *connector->getActions ())
     {
       for (auto bind: ncmLink->getBinds (act))
@@ -777,92 +755,11 @@ Converter::createLink (Link *ncmLink, ExecutionObjectContext *parentObj)
           NclSimpleAction *simpleAction;
           simpleAction = createSimpleAction (act, bind, parentObj);
           g_assert_nonnull (simpleAction);
-          cast (NclCompoundAction *, formatterAction)->addAction (simpleAction);
-        }
-    }
-
-  // create formatter causal link
-  formatterLink = new NclFormatterLink (
-        (NclLinkTriggerCondition *)formatterCondition, formatterAction,
-        ncmLink, (ExecutionObjectContext *)parentObj);
-
-  if (instanceof (NclLinkCompoundTriggerCondition *, formatterCondition))
-    {
-      vector<NclAction *> acts
-          = formatterAction->getImplicitRefRoleActions ();
-
-      for (NclAction *linkAction : acts)
-        {
-          action = cast (NclAssignmentAction *, linkAction);
-          g_assert_nonnull (action);
-
-          value = action->getValue ();
-          if (value != "" && value.substr (0, 1) == "$")
-            {
-              event = action->getEvent ();
-              setImplicitRefAssessment (
-                    value.substr (1, value.length ()), ncmLink, event);
-            }
-
-          value = action->getDuration ();
-          if (value != "" && value.substr (0, 1) == "$")
-            {
-              event = action->getEvent ();
-              setImplicitRefAssessment
-                (value.substr (1, value.length ()), ncmLink, event);
-            }
+          formatterLink->addAction (simpleAction);
         }
     }
 
   return formatterLink;
-}
-
-void
-Converter::setImplicitRefAssessment (const string &roleId,
-                                     Link *ncmLink,
-                                     NclEvent *event)
-{
-  NclNodeNesting *refPerspective;
-  ExecutionObject *refObject;
-  string value;
-
-  auto attributionEvt = cast (AttributionEvent *, event);
-  if (attributionEvt)
-    {
-      for (Bind *bind: *(ncmLink->getBinds ()))
-        {
-          value = bind->getRole ()->getLabel ();
-          if (roleId == value)
-            {
-              Anchor *refInterface = bind->getInterface ();
-              auto propAnchor = cast (Property *, refInterface);
-              if (propAnchor)
-                {
-                  vector<Node *> *ncmPerspective
-                      = bind->getNode ()->getPerspective ();
-                  refPerspective = new NclNodeNesting (ncmPerspective);
-
-                  delete ncmPerspective;
-
-                  refObject = this->getExecutionObjectFromPerspective (
-                        refPerspective, nullptr);
-
-                  delete refPerspective;
-
-                  NclEvent *refEvent
-                      = this->getEvent (refObject,
-                                        propAnchor,
-                                        EventType::ATTRIBUTION,
-                                        "");
-
-                  attributionEvt->setImplicitRefAssessmentEvent (roleId,
-                                                                 refEvent);
-
-                  break;
-                }
-            }
-        }
-    }
 }
 
 NclLinkCondition *
@@ -1098,7 +995,7 @@ Converter::createSimpleAction (
     case EventStateTransition::START:
       if (eventType == EventType::PRESENTATION)
         {
-          action = new NclSimpleAction (event, actionType);
+          action = new NclSimpleAction (event, actionType, _actionListener);
         }
       else if (eventType == EventType::ATTRIBUTION)
         {
@@ -1107,7 +1004,6 @@ Converter::createSimpleAction (
             {
               connParam = new Parameter (
                     paramValue.substr (1, paramValue.length () - 1), "");
-
               paramValue = bind->getParameter (connParam->getName ());
             }
 
@@ -1122,8 +1018,11 @@ Converter::createSimpleAction (
               paramDur = bind->getParameter (connParam->getName ());
             }
 
-          action = new NclAssignmentAction (event, actionType,
-                                            paramValue, paramDur);
+          action = new NclSimpleAction (event, actionType, _actionListener);
+          g_assert (paramDur[0] != '$');
+          action->setDuration (paramDur);
+          g_assert (paramValue[0] != '$');
+          action->setValue (paramValue);
         }
       else
         {
@@ -1135,7 +1034,7 @@ Converter::createSimpleAction (
     case EventStateTransition::PAUSE:
     case EventStateTransition::RESUME:
     case EventStateTransition::ABORT:
-      action = new NclSimpleAction (event, actionType);
+      action = new NclSimpleAction (event, actionType, _actionListener);
       break;
 
     default:
