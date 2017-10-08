@@ -27,9 +27,9 @@ NclLinkTriggerCondition::NclLinkTriggerCondition () : NclLinkCondition ()
 }
 
 void
-NclLinkTriggerCondition::conditionSatisfied (unused (NclLinkCondition *condition))
+NclLinkTriggerCondition::conditionSatisfied ()
 {
-  _listener->conditionSatisfied (this);
+  _listener->conditionSatisfied ();
 }
 
 
@@ -62,10 +62,9 @@ NclLinkCompoundTriggerCondition::addCondition (NclLinkCondition *condition)
 }
 
 void
-NclLinkCompoundTriggerCondition::conditionSatisfied (
-    NclLinkCondition *condition)
+NclLinkCompoundTriggerCondition::conditionSatisfied ()
 {
-  NclLinkTriggerCondition::conditionSatisfied (condition);
+  NclLinkTriggerCondition::conditionSatisfied ();
 }
 
 vector<NclEvent *>
@@ -101,8 +100,8 @@ NclLinkTransitionTriggerCondition::eventStateChanged (
     unused (NclEvent *_event), EventStateTransition transition,
     unused (EventState previousState))
 {
-  if (this->_transition == transition)
-    NclLinkTriggerCondition::conditionSatisfied (this);
+  if (_transition == transition)
+    NclLinkTriggerCondition::conditionSatisfied ();
 }
 
 vector<NclEvent *>

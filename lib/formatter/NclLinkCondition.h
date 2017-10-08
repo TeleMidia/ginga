@@ -29,7 +29,7 @@ class NclLinkCondition;
 class NclLinkTriggerListener
 {
 public:
-  virtual void conditionSatisfied (NclLinkCondition *) = 0;
+  virtual void conditionSatisfied () = 0;
 };
 
 class NclLinkCondition
@@ -49,7 +49,7 @@ class NclLinkTriggerCondition : public NclLinkCondition
 public:
   NclLinkTriggerCondition ();
   virtual ~NclLinkTriggerCondition () {}
-  void conditionSatisfied (NclLinkCondition *condition);
+  void conditionSatisfied ();
 };
 
 class NclLinkCompoundTriggerCondition : public NclLinkTriggerCondition,
@@ -59,7 +59,7 @@ public:
   NclLinkCompoundTriggerCondition ();
   virtual ~NclLinkCompoundTriggerCondition ();
 
-  virtual void conditionSatisfied (NclLinkCondition *condition);
+  virtual void conditionSatisfied ();
   virtual void addCondition (NclLinkCondition *condition);
   virtual vector<NclEvent *> getEvents ();
 

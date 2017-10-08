@@ -99,8 +99,6 @@ private:
                     ExecutionObject *exeObj,
                     ExecutionObjectContext *parentObj);
 
-  void setActionListener (NclAction *action);
-
   void resolveSwitchEvents (ExecutionObjectSwitch *switchObject);
 
   NclEvent *insertNode (NclNodeNesting *perspective,
@@ -116,9 +114,6 @@ private:
                           Descriptor *descriptor);
 
   static bool hasDescriptorPropName (const string &name);
-
-  void setImplicitRefAssessment (const string &roleId, Link *ncmLink,
-                                 NclEvent *event);
 
   NclLinkCondition *
   createCondition (Condition *ncmExpression, Link *ncmLink,

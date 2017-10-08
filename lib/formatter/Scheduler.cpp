@@ -156,7 +156,7 @@ Scheduler::run (const string &file, string *errmsg)
   for (auto event: *entryevts)
     {
       NclSimpleAction *fakeAction;
-      fakeAction = new NclSimpleAction (event, EventStateTransition::START);
+      fakeAction = new NclSimpleAction (event, EventStateTransition::START, this);
       runAction (event, fakeAction);
       delete fakeAction;
     }
@@ -219,7 +219,7 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
   obj = event->getExecutionObject ();
   g_assert_nonnull (obj);
 
-  switch (action->getType ())   // fixme
+  switch (action->getEventStateTransition ())   // fixme
     {
     case EventStateTransition::START:
       name = "start";
@@ -268,7 +268,6 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
   if (instanceof (AttributionEvent *, event))
     {
       AttributionEvent *attevt;
-      NclAssignmentAction *attact;
       Property *property;
 
       string name;
@@ -277,12 +276,9 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
 
       GingaTime dur;
 
-      g_assert (instanceof (NclAssignmentAction *, action));
-      g_assert (action->getType () == EventStateTransition::START);
+      g_assert (action->getEventStateTransition () == EventStateTransition::START);
 
       attevt = (AttributionEvent *) event;
-      attact = (NclAssignmentAction *) action;
-
       if (event->getCurrentState () != EventState::SLEEPING)
         return;                 // nothing to do
 
@@ -291,10 +287,10 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
 
       name = property->getName ();
       from = property->getValue ();
-      to = attevt->solveImplicitRefAssessment (attact->getValue ());
+      to = attevt->solveImplicitRefAssessment (action->getValue ());
 
       string s;
-      s = attevt->solveImplicitRefAssessment (attact->getDuration ());
+      s = attevt->solveImplicitRefAssessment (action->getDuration ());
       dur = ginga_parse_time (s);
 
       attevt->start ();
@@ -306,7 +302,7 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
       return;
     }
 
-  switch (action->getType ())
+  switch (action->getEventStateTransition ())
     {
     case EventStateTransition::START:
       obj->prepare (event);
@@ -380,7 +376,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
         = ctxObj->getNodePerspective ();
     }
 
-  acttype = action->getType ();
+  acttype = action->getEventStateTransition ();
   if (acttype == EventStateTransition::START) // start all ports
     {
       ctxObj->suspendLinkEvaluation (false);
@@ -486,8 +482,8 @@ Scheduler::runActionOverSwitch (ExecutionObjectSwitch *switchObj,
       runSwitchEvent (switchObj, event, selectedObject, action);
     }
 
-  if (action->getType () == EventStateTransition::STOP
-      || action->getType () == EventStateTransition::ABORT)
+  if (action->getEventStateTransition () == EventStateTransition::STOP
+      || action->getEventStateTransition () == EventStateTransition::ABORT)
     {
       switchObj->select (nullptr);
     }

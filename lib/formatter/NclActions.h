@@ -20,96 +20,39 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclEvents.h"
 
-#include "ncl/Ncl.h"
-using namespace ::ginga::ncl;
-
 GINGA_FORMATTER_BEGIN
 
-class NclLinkCondition;
 class NclSimpleAction;
-
 class INclActionListener
 {
 public:
   virtual void scheduleAction (NclSimpleAction *) = 0;
 };
 
-class NclAction
+class NclSimpleAction
 {
 public:
-  explicit NclAction ();
-  virtual ~NclAction () {}
-  virtual vector<NclEvent *> getEvents () = 0;
-  virtual vector<NclAction *> getImplicitRefRoleActions () = 0;
-  void run (NclLinkCondition *);
-  virtual void run () = 0;
-
-private:
-  vector<INclActionListener *> _listeners;
-};
-
-class NclSimpleAction : public NclAction
-{
-public:
-  NclSimpleAction (NclEvent *event, EventStateTransition type);
-  virtual ~NclSimpleAction () {}
-
-  virtual void run () override;
+  NclSimpleAction (NclEvent *, EventStateTransition, INclActionListener *);
+  virtual ~NclSimpleAction ();
 
   NclEvent *getEvent ();
-  EventStateTransition getType ();
+  EventType getEventType ();
+  EventStateTransition getEventStateTransition ();
 
-  void setSimpleActionListener (INclActionListener *);
-
-  virtual vector<NclEvent *> getEvents () override;
-  virtual vector<NclAction *> getImplicitRefRoleActions () override;
-
-protected:
-  NclEvent *_event;
-  EventStateTransition _actType;
-
-private:
-  INclActionListener *_listener;
-};
-
-class NclAssignmentAction : public NclSimpleAction
-{
-public:
-  NclAssignmentAction (NclEvent *evt,
-                       EventStateTransition actType,
-                       const string &value,
-                       const string &duration);
-
-  virtual ~NclAssignmentAction () {}
+  string getDuration ();
+  void setDuration (const string &);
 
   string getValue ();
-  string getDuration ();
+  void setValue (const string &);
+
+  void run ();
 
 private:
-  string _value;
-  string _duration;
-};
-
-class NclCompoundAction : public NclAction
-{
-public:
-  NclCompoundAction ();
-  virtual ~NclCompoundAction ();
-
-  virtual void run () override;
-  void addAction (NclSimpleAction *);
-  const vector<NclSimpleAction *> *getSimpleActions ();
-  virtual vector<NclEvent *> getEvents () override;
-  virtual vector<NclAction *> getImplicitRefRoleActions () override;
-
-protected:
-  vector<NclSimpleAction *> _actions;
-
-private:
-  int _pendingActions;
-  bool _hasStart;
-
+  NclEvent *_event;
+  EventStateTransition _transition;
   INclActionListener *_listener;
+  string _duration;
+  string _value;
 };
 
 GINGA_FORMATTER_END

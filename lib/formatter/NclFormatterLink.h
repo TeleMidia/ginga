@@ -30,26 +30,24 @@ GINGA_FORMATTER_BEGIN
 
 class ExecutionObjectContext;
 
-class NclFormatterLink :
-    public NclLinkTriggerListener
+class NclFormatterLink: public NclLinkTriggerListener
 {
 public:
   NclFormatterLink (NclLinkTriggerCondition *,
-                    NclAction *, Link *,
-                    ExecutionObjectContext *);
-
+                    Link *, ExecutionObjectContext *);
   virtual ~NclFormatterLink ();
 
   void suspendLinkEvaluation (bool suspended);
   Link *getNcmLink ();
 
-  NclAction *getAction ();
+  const vector <NclSimpleAction *> *getActions ();
+  void addAction (NclSimpleAction *);
+
   NclLinkTriggerCondition *getTriggerCondition ();
-  void conditionSatisfied (NclLinkCondition *condition);
+  void conditionSatisfied ();
   virtual vector<NclEvent *> getEvents ();
   void evaluationStarted ();
   void evaluationEnded ();
-  // void actionProcessed (bool);
 
 protected:
   Link *_ncmLink;
@@ -58,7 +56,7 @@ protected:
 
 private:
   NclLinkTriggerCondition *_condition;
-  NclAction *_action;
+  vector <NclSimpleAction *> _actions;
 };
 
 GINGA_FORMATTER_END

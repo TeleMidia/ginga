@@ -20,164 +20,110 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclAction::NclAction ()
+/**
+ * @brief Creates a new action.
+ * @param event Target event.
+ * @param transition Action transition.
+ * @param listener Action listener.
+ */
+NclSimpleAction::NclSimpleAction (NclEvent *event,
+                                  EventStateTransition transition,
+                                  INclActionListener *listener)
 {
-}
+  g_assert_nonnull (event);
+  g_assert_nonnull (listener);
 
-
-// NclSimpleAction
-
-NclSimpleAction::NclSimpleAction (NclEvent *event, EventStateTransition type)
-  : NclAction ()
-{
   _event = event;
-  _actType = type;
-  _listener = nullptr;
+  _transition = transition;
+  _listener = listener;
+  _duration = "";
+  _value = "";
 }
 
+/**
+ * @brief Destroys action.
+ */
+NclSimpleAction::~NclSimpleAction ()
+{
+}
+
+/**
+ * @brief Gets target event.
+ * @return Target event.
+ */
 NclEvent *
 NclSimpleAction::getEvent ()
 {
   return _event;
 }
 
+/**
+ * @brief Gets target event type.
+ * @return Target event type.
+ */
+EventType
+NclSimpleAction::getEventType ()
+{
+  return _event->getType ();
+}
+
+/**
+ * @brief Gets action transition.
+ * @return Action transition.
+ */
 EventStateTransition
-NclSimpleAction::getType ()
+NclSimpleAction::getEventStateTransition ()
 {
-  return _actType;
+  return _transition;
 }
 
-void
-NclSimpleAction::setSimpleActionListener (INclActionListener *listener)
-{
-  g_assert_nonnull (listener);
-  this->_listener = listener;
-}
-
-vector<NclEvent *>
-NclSimpleAction::getEvents ()
-{
-  vector<NclEvent *> events;
-  if (_event)
-    events.push_back (_event);
-  return events;
-}
-
-vector<NclAction *>
-NclSimpleAction::getImplicitRefRoleActions ()
-{
-  vector<NclAction *> actions;
-  string attVal = "", durVal = "", byVal = "";
-
-  auto assignmentAct = cast (NclAssignmentAction *, this);
-  if (assignmentAct)
-    {
-      attVal = assignmentAct->getValue ();
-      durVal = assignmentAct->getDuration ();
-
-      if ((durVal != "" && durVal.substr (0, 1) == "$")
-          || (attVal != "" && attVal.substr (0, 1) == "$"))
-        {
-          AttributionEvent *attrEvt = cast (AttributionEvent *, _event);
-          if (attrEvt)
-            {
-              actions.push_back (this);
-            }
-        }
-    }
-
-  return actions;
-}
-
-void
-NclSimpleAction::run ()
-{
-  g_assert_nonnull (_listener);
-  _listener->scheduleAction (this);
-}
-
-
-// NclAssignmentAction
-
-NclAssignmentAction::NclAssignmentAction (NclEvent *evt,
-                                          EventStateTransition actType,
-                                          const string &value,
-                                          const string &duration)
-  : NclSimpleAction (evt, actType)
-{
-  _value = value;
-  _duration = duration;
-}
-
+/**
+ * @brief Gets action duration.
+ * @return Action duration.
+ */
 string
-NclAssignmentAction::getValue ()
-{
-  return _value;
-}
-
-string
-NclAssignmentAction::getDuration ()
+NclSimpleAction::getDuration ()
 {
   return _duration;
 }
 
-
-// NclCompoundAction
-
-NclCompoundAction::NclCompoundAction () : NclAction ()
-{
-  _hasStart = false;
-  _listener = nullptr;
-}
-
-NclCompoundAction::~NclCompoundAction ()
-{
-  for (auto action: _actions)
-    delete action;
-}
-
+/**
+ * @brief Sets action duration.
+ * @param duration Duration.
+ */
 void
-NclCompoundAction::addAction (NclSimpleAction *action)
+NclSimpleAction::setDuration (const string &duration)
 {
-  _actions.push_back (action);
+  _duration = duration;
 }
 
-const vector <NclSimpleAction *> *
-NclCompoundAction::getSimpleActions ()
+/**
+ * @brief Gets action value.
+ * @return Action value.
+ */
+string
+NclSimpleAction::getValue (void)
 {
-  return &_actions;
+  return _value;
 }
 
-vector<NclEvent *>
-NclCompoundAction::getEvents ()
-{
-  vector<NclEvent *> events;
-
-  for (auto action: _actions)
-    for (auto evt: action->getEvents ())
-      events.push_back (evt);
-
-  return events;
-}
-
-vector<NclAction *>
-NclCompoundAction::getImplicitRefRoleActions ()
-{
-  vector<NclAction *> refActs;
-  for (auto act: _actions)
-    {
-      vector<NclAction *> assignmentActs = act->getImplicitRefRoleActions ();
-      for (NclAction *assignmentAct : assignmentActs)
-        refActs.push_back (assignmentAct);
-    }
-  return refActs;
-}
-
+/**
+ * @brief Sets action value.
+ * @param value Value.
+ */
 void
-NclCompoundAction::run ()
+NclSimpleAction::setValue (const string &value)
 {
-  for (auto action: _actions)
-    action->run ();
+  _value = value;
+}
+
+/**
+ * @brief Runs action.
+ */
+void
+NclSimpleAction::run ()
+{
+  _listener->scheduleAction (this);
 }
 
 GINGA_FORMATTER_END
