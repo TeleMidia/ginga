@@ -486,15 +486,8 @@ Converter::setActionListener (NclAction *action)
     }
   else if (compoundAction)
     {
-      vector<NclSimpleAction *> actions;
-
-      compoundAction->setCompoundActionListener (_actionListener);
-      compoundAction->getSimpleActions (actions);
-
-      for (NclSimpleAction *a: actions)
-        {
-          setActionListener (a);
-        }
+      for (auto action: *compoundAction->getSimpleActions ())
+        setActionListener (action);
     }
   else
     {
@@ -745,8 +738,7 @@ Converter::eventStateChanged (NclEvent *event,
 }
 
 NclFormatterLink *
-Converter::createLink (Link *ncmLink,
-                             ExecutionObjectContext *parentObj)
+Converter::createLink (Link *ncmLink, ExecutionObjectContext *parentObj)
 {
   Connector *connector;
   Condition *conditionExpression;
@@ -777,8 +769,17 @@ Converter::createLink (Link *ncmLink,
     }
 
   // compile link action
-  formatterAction = createAction (connector, ncmLink, parentObj);
-  g_assert_nonnull (formatterAction);
+  formatterAction = new NclCompoundAction ();
+  for (auto act: *connector->getActions ())
+    {
+      for (auto bind: ncmLink->getBinds (act))
+        {
+          NclSimpleAction *simpleAction;
+          simpleAction = createSimpleAction (act, bind, parentObj);
+          g_assert_nonnull (simpleAction);
+          cast (NclCompoundAction *, formatterAction)->addAction (simpleAction);
+        }
+    }
 
   // create formatter causal link
   formatterLink = new NclFormatterLink (
@@ -862,31 +863,6 @@ Converter::setImplicitRefAssessment (const string &roleId,
             }
         }
     }
-}
-
-NclAction *
-Converter::createAction (Connector *connector,
-                         Link *link,
-                         ExecutionObjectContext *context)
-{
-  NclCompoundAction *compact;
-
-  g_assert_nonnull (connector);
-  g_assert_nonnull (link);
-  g_assert_nonnull (context);
-
-  compact = new NclCompoundAction ();
-  for (auto act: *connector->getActions ())
-    {
-      for (auto bind: link->getBinds (act))
-        {
-          NclSimpleAction *simpleAction;
-          simpleAction = createSimpleAction (act, bind, context);
-          g_assert_nonnull (simpleAction);
-          compact->addAction (simpleAction);
-        }
-    }
-  return compact;
 }
 
 NclLinkCondition *

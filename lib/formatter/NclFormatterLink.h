@@ -31,8 +31,7 @@ GINGA_FORMATTER_BEGIN
 class ExecutionObjectContext;
 
 class NclFormatterLink :
-    public NclLinkTriggerListener,
-    public INclActionListener
+    public NclLinkTriggerListener
 {
 public:
   NclFormatterLink (NclLinkTriggerCondition *,
@@ -50,7 +49,7 @@ public:
   virtual vector<NclEvent *> getEvents ();
   void evaluationStarted ();
   void evaluationEnded ();
-  void actionProcessed (bool start);
+  // void actionProcessed (bool);
 
 protected:
   Link *_ncmLink;

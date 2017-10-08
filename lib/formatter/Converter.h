@@ -120,8 +120,6 @@ private:
   void setImplicitRefAssessment (const string &roleId, Link *ncmLink,
                                  NclEvent *event);
 
-  NclAction *createAction (Connector *, Link *, ExecutionObjectContext *);
-
   NclLinkCondition *
   createCondition (Condition *ncmExpression, Link *ncmLink,
                    ExecutionObjectContext *parentObject);
