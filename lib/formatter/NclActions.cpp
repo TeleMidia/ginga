@@ -22,41 +22,10 @@ GINGA_FORMATTER_BEGIN
 
 NclAction::NclAction ()
 {
-  _satisfiedCondition = nullptr;
 }
 
-void
-NclAction::run (NclLinkCondition *satisfiedCondition)
-{
-  _satisfiedCondition = satisfiedCondition;
-  run ();
-}
-
-void
-NclAction::addProgressListener (INclActionListener *listener)
-{
-  auto i = find (_listeners.begin(), _listeners.end(),
-                 listener);
-
-  if (i != _listeners.end())
-    {
-      WARNING ("Trying to add the same listener twice.");
-      return;
-    }
-
-  _listeners.push_back (listener);
-}
-
-void
-NclAction::notifyProgressListeners (bool start)
-{
-  vector<INclActionListener *> notifyList (_listeners);
-
-  for (size_t i = 0; i < notifyList.size (); i++)
-    {
-      notifyList[i]->actionProcessed (start);
-    }
-}
+
+// NclSimpleAction
 
 NclSimpleAction::NclSimpleAction (NclEvent *event, EventStateTransition type)
   : NclAction ()
@@ -123,22 +92,11 @@ NclSimpleAction::getImplicitRefRoleActions ()
 void
 NclSimpleAction::run ()
 {
-  if (_listener != nullptr)
-    {
-      g_assert_nonnull (_satisfiedCondition);
-      _listener->scheduleAction (this);
-    }
-
-  if (_actType == EventStateTransition::START)
-    {
-      notifyProgressListeners (true);
-    }
-  else
-    {
-      notifyProgressListeners (false);
-    }
+  g_assert_nonnull (_listener);
+  _listener->scheduleAction (this);
 }
 
+
 // NclAssignmentAction
 
 NclAssignmentAction::NclAssignmentAction (NclEvent *evt,
@@ -163,6 +121,9 @@ NclAssignmentAction::getDuration ()
   return _duration;
 }
 
+
+// NclCompoundAction
+
 NclCompoundAction::NclCompoundAction () : NclAction ()
 {
   _hasStart = false;
@@ -171,69 +132,30 @@ NclCompoundAction::NclCompoundAction () : NclAction ()
 
 NclCompoundAction::~NclCompoundAction ()
 {
-  for (NclAction *action : _actions)
+  for (auto action: _actions)
     delete action;
-  _actions.clear ();
 }
 
 void
-NclCompoundAction::addAction (NclAction *action)
+NclCompoundAction::addAction (NclSimpleAction *action)
 {
-  vector<NclAction *>::iterator i;
-
-  action->addProgressListener (this);
-  i = _actions.begin ();
-  while (i != _actions.end ())
-    {
-      if (*i == action)
-        {
-          WARNING ("Trying to add same action twice.");
-          return;
-        }
-      ++i;
-    }
-
   _actions.push_back (action);
 }
 
-void
-NclCompoundAction::getSimpleActions (vector<NclSimpleAction *> &simpleActions)
+const vector <NclSimpleAction *> *
+NclCompoundAction::getSimpleActions ()
 {
-  for (NclAction *action : _actions)
-    {
-      auto simpleAct = cast (NclSimpleAction *, action);
-      auto compoundAct = cast (NclCompoundAction *, action);
-      if (compoundAct)
-        {
-          compoundAct->getSimpleActions (simpleActions);
-        }
-      else if (simpleAct)
-        {
-          simpleActions.push_back (simpleAct);
-        }
-    }
-}
-
-void
-NclCompoundAction::setCompoundActionListener (
-    INclActionListener *listener)
-{
-  _listener = listener;
+  return &_actions;
 }
 
 vector<NclEvent *>
 NclCompoundAction::getEvents ()
 {
-  vector<NclAction *> acts (_actions);
   vector<NclEvent *> events;
 
-  for (NclAction *action : acts)
-    {
-      for (NclEvent *actEvt : action->getEvents ())
-        {
-          events.push_back (actEvt);
-        }
-    }
+  for (auto action: _actions)
+    for (auto evt: action->getEvents ())
+      events.push_back (evt);
 
   return events;
 }
@@ -242,52 +164,20 @@ vector<NclAction *>
 NclCompoundAction::getImplicitRefRoleActions ()
 {
   vector<NclAction *> refActs;
-  vector<NclAction *> acts (_actions);
-
-  for (NclAction *act: acts)
+  for (auto act: _actions)
     {
       vector<NclAction *> assignmentActs = act->getImplicitRefRoleActions ();
-
       for (NclAction *assignmentAct : assignmentActs)
-        {
-          refActs.push_back (assignmentAct);
-        }
+        refActs.push_back (assignmentAct);
     }
-
   return refActs;
 }
 
 void
 NclCompoundAction::run ()
 {
-  size_t i, size;
-  NclAction *action = nullptr;
-
-  if (_actions.empty ())
-    return;
-
-  size = _actions.size ();
-  _pendingActions = (int) size;
-  _hasStart = false;
-
-  for (i = 0; i < size; i++)
-    {
-      if (_actions.empty ())
-        return;
-      action = _actions.at (i);
-      action->run (_satisfiedCondition);
-    }
-}
-
-void
-NclCompoundAction::actionProcessed (bool start)
-{
-  _pendingActions--;
-  _hasStart = (_hasStart || start);
-  if (_pendingActions == 0)
-    {
-      notifyProgressListeners (_hasStart);
-    }
+  for (auto action: _actions)
+    action->run ();
 }
 
 GINGA_FORMATTER_END

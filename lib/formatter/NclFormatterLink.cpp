@@ -38,7 +38,7 @@ NclFormatterLink::NclFormatterLink (
   g_assert_nonnull (this->_action);
 
   this->_condition->setTriggerListener (this);
-  this->_action->addProgressListener (this);
+  //this->_action->addProgressListener (this);
 }
 
 NclFormatterLink::~NclFormatterLink ()
@@ -75,12 +75,10 @@ NclFormatterLink::getTriggerCondition ()
 }
 
 void
-NclFormatterLink::conditionSatisfied (NclLinkCondition *condition)
+NclFormatterLink::conditionSatisfied (unused (NclLinkCondition *condition))
 {
   if (!_suspended)
-    {
-      _action->run (condition);
-    }
+    _action->run ();
 }
 
 vector<NclEvent *>
@@ -106,10 +104,10 @@ NclFormatterLink::evaluationEnded ()
   _parentObj->linkEvaluationFinished (this, false);
 }
 
-void
-NclFormatterLink::actionProcessed (bool start)
-{
-  _parentObj->linkEvaluationFinished (this, start);
-}
+// void
+// NclFormatterLink::actionProcessed (bool start)
+// {
+//   _parentObj->linkEvaluationFinished (this, start);
+// }
 
 GINGA_FORMATTER_END

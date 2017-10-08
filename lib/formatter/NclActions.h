@@ -31,8 +31,7 @@ class NclSimpleAction;
 class INclActionListener
 {
 public:
-  virtual void scheduleAction (NclSimpleAction *action) {(void) action;}
-  virtual void actionProcessed (bool start) {(void) start;}
+  virtual void scheduleAction (NclSimpleAction *) = 0;
 };
 
 class NclAction
@@ -40,20 +39,10 @@ class NclAction
 public:
   explicit NclAction ();
   virtual ~NclAction () {}
-
-  void addProgressListener (INclActionListener *listener);
-
   virtual vector<NclEvent *> getEvents () = 0;
   virtual vector<NclAction *> getImplicitRefRoleActions () = 0;
-
   void run (NclLinkCondition *);
-
   virtual void run () = 0;
-
-protected:
-  NclLinkCondition *_satisfiedCondition;
-
-  void notifyProgressListeners (bool start);
 
 private:
   vector<INclActionListener *> _listeners;
@@ -70,7 +59,7 @@ public:
   NclEvent *getEvent ();
   EventStateTransition getType ();
 
-  void setSimpleActionListener (INclActionListener *_listener);
+  void setSimpleActionListener (INclActionListener *);
 
   virtual vector<NclEvent *> getEvents () override;
   virtual vector<NclAction *> getImplicitRefRoleActions () override;
@@ -101,25 +90,20 @@ private:
   string _duration;
 };
 
-class NclCompoundAction : public NclAction, public INclActionListener
+class NclCompoundAction : public NclAction
 {
 public:
   NclCompoundAction ();
   virtual ~NclCompoundAction ();
 
   virtual void run () override;
-
-  void addAction (NclAction *);
-
-  void setCompoundActionListener (INclActionListener *listener);
-
-  void getSimpleActions (vector<NclSimpleAction *> &simpleActions);
+  void addAction (NclSimpleAction *);
+  const vector<NclSimpleAction *> *getSimpleActions ();
   virtual vector<NclEvent *> getEvents () override;
-  void actionProcessed (bool start) override;
   virtual vector<NclAction *> getImplicitRefRoleActions () override;
 
 protected:
-  vector<NclAction *> _actions;
+  vector<NclSimpleAction *> _actions;
 
 private:
   int _pendingActions;

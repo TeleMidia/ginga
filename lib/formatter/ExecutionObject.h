@@ -38,8 +38,8 @@ class ExecutionObjectSettings;
 class ExecutionObject : public IGingaInternalEventListener
 {
 public:
-  ExecutionObject (GingaInternal *,
-                   const string &, Node *, INclActionListener *);
+  ExecutionObject (GingaInternal *, const string &, Node *,
+                   INclActionListener *);
   virtual ~ExecutionObject ();
 
   virtual bool isSleeping ();
