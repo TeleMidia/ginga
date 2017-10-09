@@ -115,26 +115,26 @@ private:
 
   static bool hasDescriptorPropName (const string &name);
 
-  NclLinkCondition *
-  createCondition (Condition *ncmExpression, Link *ncmLink,
-                   ExecutionObjectContext *parentObject);
+  // NclLinkCondition *
+  // createCondition (Condition *ncmExpression, Link *ncmLink,
+  //                  ExecutionObjectContext *parentObject);
 
-  NclLinkCompoundTriggerCondition *createCompoundTriggerCondition (
-      GingaTime delay,
-      const vector<Condition *> *ncmChildConditions,
-      Link *ncmLink, ExecutionObjectContext *parentObject);
+  // NclLinkCompoundTriggerCondition *createCompoundTriggerCondition (
+  //     GingaTime delay,
+  //     const vector<Condition *> *ncmChildConditions,
+  //     Link *ncmLink, ExecutionObjectContext *parentObject);
 
   NclLinkCondition *createCondition (
-      TriggerExpression *triggerExpression, Link *ncmLink,
+      SimpleCondition *triggerExpression, Link *ncmLink,
       ExecutionObjectContext *parentObject);
 
-  NclLinkAssessmentStatement *createAssessmentStatement (
-      AssessmentStatement *assessmentStatement, Bind *bind, Link *ncmLink,
-      ExecutionObjectContext *parentObject);
+  // NclLinkAssessmentStatement *createAssessmentStatement (
+  //     AssessmentStatement *assessmentStatement, Bind *bind, Link *ncmLink,
+  //     ExecutionObjectContext *parentObject);
 
-  NclLinkStatement *
-  createStatement (Statement *statementExpression, Link *ncmLink,
-                   ExecutionObjectContext *parentObject);
+  // NclLinkStatement *
+  // createStatement (Statement *statementExpression, Link *ncmLink,
+  //                  ExecutionObjectContext *parentObject);
 
   NclLinkAttributeAssessment *createAttributeAssessment (
       AttributeAssessment *attributeAssessment, Bind *bind,

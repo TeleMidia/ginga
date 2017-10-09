@@ -37,7 +37,7 @@ class NclLinkCondition
 public:
   NclLinkCondition () {}
   virtual ~NclLinkCondition () {}
-  virtual vector<NclEvent *> getEvents () = 0;
+  virtual NclEvent *getEvent () = 0;
 };
 
 class NclLinkTriggerCondition : public NclLinkCondition
@@ -52,20 +52,18 @@ public:
   void conditionSatisfied ();
 };
 
-class NclLinkCompoundTriggerCondition : public NclLinkTriggerCondition,
-                                        public NclLinkTriggerListener
-{
-public:
-  NclLinkCompoundTriggerCondition ();
-  virtual ~NclLinkCompoundTriggerCondition ();
-
-  virtual void conditionSatisfied ();
-  virtual void addCondition (NclLinkCondition *condition);
-  virtual vector<NclEvent *> getEvents ();
-
-protected:
-  vector<NclLinkCondition *> _conditions;
-};
+// class NclLinkCompoundTriggerCondition : public NclLinkTriggerCondition,
+//                                         public NclLinkTriggerListener
+// {
+// public:
+//   NclLinkCompoundTriggerCondition ();
+//   virtual ~NclLinkCompoundTriggerCondition ();
+//   virtual void conditionSatisfied ();
+//   virtual void addCondition (NclLinkCondition *condition);
+//   virtual vector<NclEvent *> getEvents ();
+// protected:
+//   vector<NclLinkCondition *> _conditions;
+// };
 
 class NclLinkTransitionTriggerCondition : public NclLinkTriggerCondition,
                                           public INclEventListener
@@ -73,15 +71,11 @@ class NclLinkTransitionTriggerCondition : public NclLinkTriggerCondition,
 public:
   NclLinkTransitionTriggerCondition (NclEvent *ev,
                                      EventStateTransition trans);
-
   virtual ~NclLinkTransitionTriggerCondition ();
-
   virtual void eventStateChanged (NclEvent *_event,
                                   EventStateTransition _transition,
                                   EventState previousState) override;
-
-  virtual vector<NclEvent *> getEvents () override;
-
+  virtual NclEvent * getEvent () override;
 protected:
   NclEvent *_event;
   EventStateTransition _transition;

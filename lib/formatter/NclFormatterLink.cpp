@@ -23,23 +23,18 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclFormatterLink::NclFormatterLink (NclLinkTriggerCondition *condition,
-                                    Link *ncmLink,
+NclFormatterLink::NclFormatterLink (Link *ncmLink,
                                     ExecutionObjectContext *parentObj)
 {
   _parentObj = parentObj;
   _ncmLink = ncmLink;
   _suspended = false;
-  _condition = condition;
-  g_assert_nonnull (_condition);
-  _condition->setTriggerListener (this);
 }
 
 NclFormatterLink::~NclFormatterLink ()
 {
-  if (_condition != nullptr)
-    delete _condition;
-
+  for (auto condition: _conditions)
+    delete condition;
   for (auto action: _actions)
     delete action;
 }
@@ -69,10 +64,19 @@ NclFormatterLink::addAction (NclAction *action)
   _actions.push_back (action);
 }
 
-NclLinkTriggerCondition *
-NclFormatterLink::getTriggerCondition ()
+const vector <NclLinkTriggerCondition *> *
+NclFormatterLink::getConditions ()
 {
-  return _condition;
+  return &_conditions;
+}
+
+void
+NclFormatterLink::addCondition (NclLinkTriggerCondition *condition)
+{
+  g_assert_nonnull (condition);
+  condition->setTriggerListener (this);
+  _conditions.push_back (condition);
+
 }
 
 void
@@ -87,7 +91,9 @@ NclFormatterLink::conditionSatisfied ()
 vector<NclEvent *>
 NclFormatterLink::getEvents ()
 {
-  vector<NclEvent *> events = _condition->getEvents ();
+  vector<NclEvent *> events;
+  for (auto condition: _conditions)
+    events.push_back (condition->getEvent ());
   for (auto action: _actions)
     events.push_back (action->getEvent ());
   return events;

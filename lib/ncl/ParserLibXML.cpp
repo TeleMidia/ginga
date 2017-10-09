@@ -108,8 +108,10 @@ _st_err (ParserLibXML_State *st, const char *fmt, ...)
 #define ST_ERR_ELT_UNKNOWN_CHILD(st, elt, child)\
   ST_ERR_ELT ((st), (elt), "Unknown child <%s>", (child))
 
+#if 0
 #define ST_ERR_ELT_MISSING_CHILD(st, elt, child)\
   ST_ERR_ELT ((st), (elt), "Missing child <%s>", (child))
+#endif
 
 // Index state cache.
 static bool
@@ -973,7 +975,7 @@ ncl_push_causalConnector (ParserLibXML_State *st,
 }
 
 static bool
-ncl_pop_causalConnector (unused (ParserLibXML_State *st),
+ncl_pop_causalConnector (ParserLibXML_State *st,
                          xmlNode *elt,
                          unused (map<string, string> *attr),
                          unused (vector<xmlNode *> *children),
@@ -984,10 +986,13 @@ ncl_pop_causalConnector (unused (ParserLibXML_State *st),
   conn = cast (Connector *, entity);
   g_assert_nonnull (conn);
 
-  if (unlikely (conn->getCondition () == nullptr))
-    return ST_ERR_ELT_MISSING_CHILD (st, elt, "simpleCondition");
-  if (unlikely ((conn->getActions ())->size ()  == 0))
-    return ST_ERR_ELT_MISSING_CHILD (st, elt, "simpleAction");
+  (void) st;
+  (void) elt;
+
+  // if (unlikely (conn->getCondition () == nullptr))
+  //   return ST_ERR_ELT_MISSING_CHILD (st, elt, "simpleCondition");
+  // if (unlikely ((conn->getActions ())->size ()  == 0))
+  //   return ST_ERR_ELT_MISSING_CHILD (st, elt, "simpleAction");
 
   return true;
 }
@@ -1063,7 +1068,7 @@ ncl_push_simpleConditionOrAction (ParserLibXML_State *st,
       SimpleCondition *cond;
       key = ncl_attrmap_opt_get (attr, "key", "");
       cond = new SimpleCondition (type, trans, role, key);
-      parent->initCondition (cond);
+      parent->addCondition (cond);
     }
   else
     {

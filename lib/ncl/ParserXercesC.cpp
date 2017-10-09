@@ -1114,13 +1114,12 @@ ParserXercesC::parseCausalConnector (DOMElement *elt)
       string tag = dom_elt_get_tag (child);
       if (tag == "simpleCondition")
         {
-          conn->initCondition
-            (this->parseSimpleCondition (child));
+          this->parseSimpleCondition (conn, child);
           ncond++;
         }
       else if (tag == "compoundCondition")
         {
-          conn->initCondition (this->parseCompoundCondition (child));
+          this->parseCompoundCondition (conn, child);
           ncond++;
         }
       else if (tag == "simpleAction")
@@ -1154,17 +1153,15 @@ ParserXercesC::parseCausalConnector (DOMElement *elt)
   return conn;
 }
 
-CompoundCondition *
-ParserXercesC::parseCompoundCondition (DOMElement *elt)
+void
+ParserXercesC::parseCompoundCondition (Connector *conn, DOMElement *elt)
 {
-  CompoundCondition *cond;
   string op;
   string value;
 
   CHECK_ELT_TAG (elt, "compoundCondition", nullptr);
   CHECK_ELT_ATTRIBUTE (elt, "operator", &op);
 
-  cond = new CompoundCondition ();
   if (op != "and" and op != "or")
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "operator");
 
@@ -1174,34 +1171,33 @@ ParserXercesC::parseCompoundCondition (DOMElement *elt)
       string tag = dom_elt_get_tag (child);
       if (tag == "simpleCondition")
         {
-          cond->addCondition
-            (this->parseSimpleCondition (child));
+          this->parseSimpleCondition (conn, child);
         }
       else if (tag == "assessmentStatement")
         {
-          cond->addCondition
-            (this->parseAssessmentStatement (child));
+          continue;
+          // cond->addCondition
+          //   (this->parseAssessmentStatement (child));
         }
       else if (tag == "compoundCondition")
         {
-          cond->addCondition
-            (this->parseCompoundCondition (child));
+          this->parseCompoundCondition (conn, child);
         }
       else if (tag ==  "compoundStatement")
         {
-          cond->addCondition
-            (this->parseCompoundStatement (child));
+          continue;
+          // cond->addCondition
+          //   (this->parseCompoundStatement (child));
         }
       else
         {
           ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
         }
     }
-  return cond;
 }
 
-SimpleCondition *
-ParserXercesC::parseSimpleCondition (DOMElement *elt)
+void
+ParserXercesC::parseSimpleCondition (Connector *conn, DOMElement *elt)
 {
   string str;
   string role;
@@ -1261,115 +1257,107 @@ ParserXercesC::parseSimpleCondition (DOMElement *elt)
   if (qualifier != "and" && qualifier != "or")
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "qualifier");
 
-  return new SimpleCondition (type, trans, role, key);
+  SimpleCondition *cond = new SimpleCondition (type, trans, role, key);
+  g_assert (conn->addCondition (cond));
 }
 
-CompoundStatement *
-ParserXercesC::parseCompoundStatement (DOMElement *elt)
-{
-  CompoundStatement *stmt;
-  string op;
-  string neg;
+// CompoundStatement *
+// ParserXercesC::parseCompoundStatement (DOMElement *elt)
+// {
+//   CompoundStatement *stmt;
+//   string op;
+//   string neg;
+//   CHECK_ELT_TAG (elt, "compoundStatement", nullptr);
+//   CHECK_ELT_ATTRIBUTE (elt, "operator", &op);
+//   CHECK_ELT_OPT_ATTRIBUTE (elt, "isNegated", &neg, "false");
+//   if (unlikely (op != "and" && op != "or"))
+//     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "operator");
+//   if (unlikely (neg != "true" && neg != "false"))
+//     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "isNegated");
+//   stmt = new CompoundStatement (op == "and", neg == "true");
+//   // Collect children.
+//   for (DOMElement *child: dom_elt_get_children (elt))
+//     {
+//       string tag = dom_elt_get_tag (child);
+//       if (tag == "assessmentStatement")
+//         {
+//           stmt->addStatement (this->parseAssessmentStatement (child));
+//         }
+//       else if (tag == "compoundStatement")
+//         {
+//           stmt->addStatement (this->parseCompoundStatement (child));
+//         }
+//       else
+//         {
+//           ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
+//         }
+//     }
+//   return stmt;
+// }
 
-  CHECK_ELT_TAG (elt, "compoundStatement", nullptr);
-  CHECK_ELT_ATTRIBUTE (elt, "operator", &op);
-  CHECK_ELT_OPT_ATTRIBUTE (elt, "isNegated", &neg, "false");
+// AssessmentStatement *
+// ParserXercesC::parseAssessmentStatement (DOMElement *elt)
+// {
+//   AssessmentStatement *stmt;
+//   string comp;
+//   string value;
+//   CHECK_ELT_TAG (elt, "assessmentStatement", nullptr);
+//   CHECK_ELT_ATTRIBUTE (elt, "comparator", &comp);
+//   if (unlikely (!_ginga_parse_comparator (comp, &comp)))
+//     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "comparator");
+//   stmt = new AssessmentStatement (comp);
+//   for (DOMElement *child: dom_elt_get_children (elt))
+//     {
+//       string tag = dom_elt_get_tag (child);
+//       if (tag == "attributeAssessment")
+//         {
+//           AttributeAssessment *assess;
+//           assess = this->parseAttributeAssessment (child);
+//           if (stmt->getMainAssessment () == nullptr)
+//             stmt->setMainAssessment (assess);
+//           else
+//             stmt->setOtherAssessment (assess);
+//         }
+//       else if (tag == "valueAssessment")
+//         {
+//           stmt->setOtherAssessment (this->parseValueAssessment (child));
+//         }
+//       else
+//         {
+//           ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
+//         }
+//     }
+//   return stmt;
+// }
 
-  if (unlikely (op != "and" && op != "or"))
-    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "operator");
+// AttributeAssessment *
+// ParserXercesC::parseAttributeAssessment (DOMElement *elt)
+// {
+//   map<string, EventType>::iterator it;
+//   string role;
+//   string type;
+//   string key;
+//   string offset;
+//   EventType evttype;
+//   CHECK_ELT_TAG (elt, "attributeAssessment", nullptr);
+//   CHECK_ELT_ATTRIBUTE (elt, "role", &role);
+//   CHECK_ELT_OPT_ATTRIBUTE (elt, "type", &type, "attribution");
+//   CHECK_ELT_OPT_ATTRIBUTE (elt, "key", &key, "");
+//   CHECK_ELT_OPT_ATTRIBUTE (elt, "offset", &offset, "");
+//   if ((it = event_type_table.find (type)) == event_type_table.end ())
+//     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "eventType");
+//   evttype = it->second;
+//   return new AttributeAssessment (evttype, role, key, offset);
+// }
 
-  if (unlikely (neg != "true" && neg != "false"))
-    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "isNegated");
-
-  stmt = new CompoundStatement (op == "and", neg == "true");
-
-  // Collect children.
-  for (DOMElement *child: dom_elt_get_children (elt))
-    {
-      string tag = dom_elt_get_tag (child);
-      if (tag == "assessmentStatement")
-        {
-          stmt->addStatement (this->parseAssessmentStatement (child));
-        }
-      else if (tag == "compoundStatement")
-        {
-          stmt->addStatement (this->parseCompoundStatement (child));
-        }
-      else
-        {
-          ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
-        }
-    }
-  return stmt;
-}
-
-AssessmentStatement *
-ParserXercesC::parseAssessmentStatement (DOMElement *elt)
-{
-  AssessmentStatement *stmt;
-  string comp;
-  string value;
-
-  CHECK_ELT_TAG (elt, "assessmentStatement", nullptr);
-  CHECK_ELT_ATTRIBUTE (elt, "comparator", &comp);
-  if (unlikely (!_ginga_parse_comparator (comp, &comp)))
-    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "comparator");
-
-  stmt = new AssessmentStatement (comp);
-  for (DOMElement *child: dom_elt_get_children (elt))
-    {
-      string tag = dom_elt_get_tag (child);
-      if (tag == "attributeAssessment")
-        {
-          AttributeAssessment *assess;
-          assess = this->parseAttributeAssessment (child);
-          if (stmt->getMainAssessment () == nullptr)
-            stmt->setMainAssessment (assess);
-          else
-            stmt->setOtherAssessment (assess);
-        }
-      else if (tag == "valueAssessment")
-        {
-          stmt->setOtherAssessment (this->parseValueAssessment (child));
-        }
-      else
-        {
-          ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
-        }
-    }
-  return stmt;
-}
-
-AttributeAssessment *
-ParserXercesC::parseAttributeAssessment (DOMElement *elt)
-{
-  map<string, EventType>::iterator it;
-  string role;
-  string type;
-  string key;
-  string offset;
-  EventType evttype;
-
-  CHECK_ELT_TAG (elt, "attributeAssessment", nullptr);
-  CHECK_ELT_ATTRIBUTE (elt, "role", &role);
-  CHECK_ELT_OPT_ATTRIBUTE (elt, "type", &type, "attribution");
-  CHECK_ELT_OPT_ATTRIBUTE (elt, "key", &key, "");
-  CHECK_ELT_OPT_ATTRIBUTE (elt, "offset", &offset, "");
-
-  if ((it = event_type_table.find (type)) == event_type_table.end ())
-    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "eventType");
-  evttype = it->second;
-  return new AttributeAssessment (evttype, role, key, offset);
-}
-
-ValueAssessment *
-ParserXercesC::parseValueAssessment (DOMElement *elt)
-{
-  string value;
-  CHECK_ELT_TAG (elt, "valueAssessment", nullptr);
-  CHECK_ELT_ATTRIBUTE (elt, "value", &value);
-  return new ValueAssessment (value);
-}
+// ValueAssessment *
+// ParserXercesC::parseValueAssessment (DOMElement *elt)
+// {
+//   string value;
+//   CHECK_ELT_TAG (elt, "valueAssessment", nullptr);
+//   CHECK_ELT_ATTRIBUTE (elt, "value", &value);
+//   return new ValueAssessment (value);
+// }
 
 void
 ParserXercesC::parseCompoundAction (Connector *conn, DOMElement *elt)
@@ -2085,7 +2073,7 @@ ParserXercesC::parseLink (DOMElement *elt, Context *context)
         }
       else if (tag == "bind")
         {
-          g_assert_nonnull (this->parseBind (child, link, &params, context));
+          this->parseBind (child, link, &params, context);
         }
       else
         {
@@ -2097,7 +2085,8 @@ ParserXercesC::parseLink (DOMElement *elt, Context *context)
 
 Bind *
 ParserXercesC::parseBind (DOMElement *elt, Link *link,
-                          map<string, string> *params, Context *context)
+                          unused (map<string, string> *params),
+                          Context *context)
 {
   Bind *bind;
   string label;
@@ -2172,29 +2161,29 @@ ParserXercesC::parseBind (DOMElement *elt, Link *link,
   conn = cast (Connector *, link->getConnector ());
   g_assert_nonnull (conn);
 
-  role = conn->getRole (label);
-  if (role == nullptr)          // ghost "get"
-    {
-      Condition *cond;
-      AssessmentStatement *stmt;
-      AttributeAssessment *assess;
-
-      assess = new AttributeAssessment (EventType::ATTRIBUTION, label, "", "");
-      stmt = new AssessmentStatement ("ne");
-      stmt->setMainAssessment (assess);
-      stmt->setOtherAssessment (new ValueAssessment (label));
-
-      cond = conn->getCondition ();
-      if (instanceof (CompoundCondition *, cond))
-        {
-          ((CompoundCondition *) cond)->addCondition (stmt);
-        }
-      else
-        {
-          conn->initCondition (new CompoundCondition (cond, stmt));
-        }
-      role = (Role *) assess;
-    }
+  role = conn->getRole (label); // ghost "get"
+  if (role == nullptr)
+    return nullptr;
+  // if (role == nullptr)
+  //   {
+  //     Condition *cond;
+  //     AssessmentStatement *stmt;
+  //     AttributeAssessment *assess;
+  //     assess = new AttributeAssessment (EventType::ATTRIBUTION, label, "", "");
+  //     stmt = new AssessmentStatement ("ne");
+  //     stmt->setMainAssessment (assess);
+  //     stmt->setOtherAssessment (new ValueAssessment (label));
+  //     cond = conn->getCondition ();
+  //     if (instanceof (CompoundCondition *, cond))
+  //       {
+  //         ((CompoundCondition *) cond)->addCondition (stmt);
+  //       }
+  //     else
+  //       {
+  //         conn->initCondition (new CompoundCondition (cond, stmt));
+  //       }
+  //     role = (Role *) assess;
+  //   }
   g_assert_nonnull (role);
 
   bind = new Bind (role, target, iface);

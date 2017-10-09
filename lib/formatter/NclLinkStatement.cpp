@@ -20,171 +20,171 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclLinkCompoundStatement::NclLinkCompoundStatement (bool conj, bool neg)
-    : NclLinkStatement ()
-{
-  _conjunction = conj;
-  _negated = neg;
-}
+// NclLinkCompoundStatement::NclLinkCompoundStatement (bool conj, bool neg)
+//     : NclLinkStatement ()
+// {
+//   _conjunction = conj;
+//   _negated = neg;
+// }
 
-NclLinkCompoundStatement::~NclLinkCompoundStatement ()
-{
-  _statements.clear ();
-}
+// NclLinkCompoundStatement::~NclLinkCompoundStatement ()
+// {
+//   _statements.clear ();
+// }
 
-bool
-NclLinkCompoundStatement::isConjunction ()
-{
-  return _conjunction;
-}
+// bool
+// NclLinkCompoundStatement::isConjunction ()
+// {
+//   return _conjunction;
+// }
 
-bool
-NclLinkCompoundStatement::isNegated ()
-{
-  return _negated;
-}
+// bool
+// NclLinkCompoundStatement::isNegated ()
+// {
+//   return _negated;
+// }
 
-void
-NclLinkCompoundStatement::addStatement (NclLinkStatement *statement)
-{
-  g_assert_nonnull (statement);
-  _statements.push_back (statement);
-}
+// void
+// NclLinkCompoundStatement::addStatement (NclLinkStatement *statement)
+// {
+//   g_assert_nonnull (statement);
+//   _statements.push_back (statement);
+// }
 
-const vector<NclLinkStatement *> *
-NclLinkCompoundStatement::getStatements ()
-{
-  return &_statements;
-}
+// const vector<NclLinkStatement *> *
+// NclLinkCompoundStatement::getStatements ()
+// {
+//   return &_statements;
+// }
 
-bool
-NclLinkCompoundStatement::returnEvaluationResult (bool result)
-{
-  return (_negated ^ result);
-}
+// bool
+// NclLinkCompoundStatement::returnEvaluationResult (bool result)
+// {
+//   return (_negated ^ result);
+// }
 
-vector<NclEvent *>
-NclLinkCompoundStatement::getEvents ()
-{
-  vector<NclEvent *> events;
+// vector<NclEvent *>
+// NclLinkCompoundStatement::getEvents ()
+// {
+//   vector<NclEvent *> events;
 
-  for (NclLinkStatement *statement : _statements)
-    {
-      for (NclEvent *evt : statement->getEvents ())
-        {
-          events.push_back (evt);
-        }
-    }
+//   for (NclLinkStatement *statement : _statements)
+//     {
+//       for (NclEvent *evt : statement->getEvents ())
+//         {
+//           events.push_back (evt);
+//         }
+//     }
 
-  return events;
-}
+//   return events;
+// }
 
-bool
-NclLinkCompoundStatement::evaluate ()
-{
-  size_t i, size;
-  NclLinkStatement *childStatement;
+// bool
+// NclLinkCompoundStatement::evaluate ()
+// {
+//   size_t i, size;
+//   NclLinkStatement *childStatement;
 
-  size = _statements.size ();
-  if (!_conjunction)
-    {
-      for (i = 0; i < size; i++)
-        {
-          childStatement = _statements[i];
-          if (childStatement->evaluate ())
-            return returnEvaluationResult (true);
-        }
+//   size = _statements.size ();
+//   if (!_conjunction)
+//     {
+//       for (i = 0; i < size; i++)
+//         {
+//           childStatement = _statements[i];
+//           if (childStatement->evaluate ())
+//             return returnEvaluationResult (true);
+//         }
 
-      return returnEvaluationResult (false);
-    }
-  else
-    {
-      for (i = 0; i < size; i++)
-        {
-          childStatement = _statements[i];
-          if (!childStatement->evaluate ())
-            return returnEvaluationResult (false);
-        }
+//       return returnEvaluationResult (false);
+//     }
+//   else
+//     {
+//       for (i = 0; i < size; i++)
+//         {
+//           childStatement = _statements[i];
+//           if (!childStatement->evaluate ())
+//             return returnEvaluationResult (false);
+//         }
 
-      return returnEvaluationResult (true);
-    }
-}
+//       return returnEvaluationResult (true);
+//     }
+// }
 
-NclLinkAssessmentStatement::NclLinkAssessmentStatement (
-    const string &comparator, NclLinkAttributeAssessment *mainAssessment,
-    NclLinkAssessment *otherAssessment)
-    : NclLinkStatement ()
-{
-  this->_comparator = comparator;
-  this->_mainAssessment = mainAssessment;
-  this->_otherAssessment = otherAssessment;
-}
+// NclLinkAssessmentStatement::NclLinkAssessmentStatement (
+//     const string &comparator, NclLinkAttributeAssessment *mainAssessment,
+//     NclLinkAssessment *otherAssessment)
+//     : NclLinkStatement ()
+// {
+//   this->_comparator = comparator;
+//   this->_mainAssessment = mainAssessment;
+//   this->_otherAssessment = otherAssessment;
+// }
 
-NclLinkAssessmentStatement::~NclLinkAssessmentStatement ()
-{
-  if (_mainAssessment)
-    delete _mainAssessment;
+// NclLinkAssessmentStatement::~NclLinkAssessmentStatement ()
+// {
+//   if (_mainAssessment)
+//     delete _mainAssessment;
 
-  if (_otherAssessment)
-    delete _otherAssessment;
-}
+//   if (_otherAssessment)
+//     delete _otherAssessment;
+// }
 
-vector<NclEvent *>
-NclLinkAssessmentStatement::getEvents ()
-{
-  vector<NclEvent *> events;
+// vector<NclEvent *>
+// NclLinkAssessmentStatement::getEvents ()
+// {
+//   vector<NclEvent *> events;
 
-  events.push_back (
-      ((NclLinkAttributeAssessment *)_mainAssessment)->getEvent ());
+//   events.push_back (
+//       ((NclLinkAttributeAssessment *)_mainAssessment)->getEvent ());
 
-  auto attrAssessment
-      = cast (NclLinkAttributeAssessment *, _otherAssessment);
-  if (attrAssessment)
-    {
-      events.push_back (attrAssessment->getEvent ());
-    }
-  return events;
-}
+//   auto attrAssessment
+//       = cast (NclLinkAttributeAssessment *, _otherAssessment);
+//   if (attrAssessment)
+//     {
+//       events.push_back (attrAssessment->getEvent ());
+//     }
+//   return events;
+// }
 
-string
-NclLinkAssessmentStatement::getComparator ()
-{
-  return _comparator;
-}
+// string
+// NclLinkAssessmentStatement::getComparator ()
+// {
+//   return _comparator;
+// }
 
-NclLinkAssessment *
-NclLinkAssessmentStatement::getMainAssessment ()
-{
-  return _mainAssessment;
-}
+// NclLinkAssessment *
+// NclLinkAssessmentStatement::getMainAssessment ()
+// {
+//   return _mainAssessment;
+// }
 
-void
-NclLinkAssessmentStatement::setMainAssessment (
-    NclLinkAssessment *assessment)
-{
-  _mainAssessment = assessment;
-}
+// void
+// NclLinkAssessmentStatement::setMainAssessment (
+//     NclLinkAssessment *assessment)
+// {
+//   _mainAssessment = assessment;
+// }
 
-NclLinkAssessment *
-NclLinkAssessmentStatement::getOtherAssessment ()
-{
-  return _otherAssessment;
-}
+// NclLinkAssessment *
+// NclLinkAssessmentStatement::getOtherAssessment ()
+// {
+//   return _otherAssessment;
+// }
 
-void
-NclLinkAssessmentStatement::setOtherAssessment (
-    NclLinkAssessment *assessment)
-{
-  _otherAssessment = assessment;
-}
+// void
+// NclLinkAssessmentStatement::setOtherAssessment (
+//     NclLinkAssessment *assessment)
+// {
+//   _otherAssessment = assessment;
+// }
 
-bool
-NclLinkAssessmentStatement::evaluate ()
-{
-  if (_mainAssessment == NULL || _otherAssessment == NULL)
-    return false;
-  return ginga_eval_comparator (_comparator, _mainAssessment->getValue (),
-                                _otherAssessment->getValue ());
-}
+// bool
+// NclLinkAssessmentStatement::evaluate ()
+// {
+//   if (_mainAssessment == NULL || _otherAssessment == NULL)
+//     return false;
+//   return ginga_eval_comparator (_comparator, _mainAssessment->getValue (),
+//                                 _otherAssessment->getValue ());
+// }
 
 GINGA_FORMATTER_END

@@ -31,7 +31,6 @@ GINGA_PRAGMA_DIAG_POP ()
 #include "Area.h"
 #include "AreaLabeled.h"
 #include "CompositeRule.h"
-#include "CompoundCondition.h"
 #include "Descriptor.h"
 #include "NclDocument.h"
 #include "Property.h"
@@ -87,12 +86,13 @@ private:
 
   ConnectorBase *parseConnectorBase (DOMElement *);
   Connector *parseCausalConnector (DOMElement *);
-  CompoundCondition *parseCompoundCondition (DOMElement *);
-  SimpleCondition *parseSimpleCondition (DOMElement *);
-  CompoundStatement *parseCompoundStatement (DOMElement *);
-  AssessmentStatement *parseAssessmentStatement (DOMElement *);
-  AttributeAssessment *parseAttributeAssessment (DOMElement *);
-  ValueAssessment *parseValueAssessment (DOMElement *);
+
+  void parseCompoundCondition (Connector *, DOMElement *);
+  void parseSimpleCondition (Connector *, DOMElement *);
+  // CompoundStatement *parseCompoundStatement (DOMElement *);
+  // AssessmentStatement *parseAssessmentStatement (DOMElement *);
+  // AttributeAssessment *parseAttributeAssessment (DOMElement *);
+  // ValueAssessment *parseValueAssessment (DOMElement *);
 
   void parseCompoundAction (Connector *, DOMElement *);
   void parseSimpleAction (Connector *, DOMElement *);
