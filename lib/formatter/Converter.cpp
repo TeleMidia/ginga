@@ -19,8 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Converter.h"
 
 #include "NclAction.h"
-#include "NclLinkAssessment.h"
-#include "NclLinkStatement.h"
 #include "Scheduler.h"
 
 GINGA_FORMATTER_BEGIN
