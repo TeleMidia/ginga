@@ -740,7 +740,7 @@ Converter::createLink (Link *ncmLink, ExecutionObjectContext *parentObj)
     {
       for (auto bind: ncmLink->getBinds (cond))
         {
-          NclLinkTriggerCondition *condition;
+          NclCondition *condition;
           condition = createCondition (cond, bind, parentObj);
           g_assert_nonnull (condition);
           formatterLink->addCondition (condition);
@@ -798,7 +798,7 @@ Converter::createLink (Link *ncmLink, ExecutionObjectContext *parentObj)
 //   return condition;
 // }
 
-NclLinkCondition *
+NclCondition *
 Converter::createCondition (
     Condition *condition, Link *ncmLink,
     ExecutionObjectContext *parentObj)
@@ -1023,17 +1023,17 @@ Converter::createSimpleAction (
   return action;
 }
 
-NclLinkTriggerCondition *
+NclCondition *
 Converter::createCondition (
     Condition *simpleCondition, Bind *bind,
     ExecutionObjectContext *parentObj)
 {
   NclEvent *event;
   string delayObject;
-  NclLinkTriggerCondition *condition;
+  NclCondition *condition;
 
   event = createEvent (bind, parentObj);
-  condition = new NclLinkTransitionTriggerCondition (
+  condition = new NclCondition (
         event, simpleCondition->getTransition ());
 
   return condition;

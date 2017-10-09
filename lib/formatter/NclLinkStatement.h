@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef LINK_COMPOUND_STATEMENT_H
 #define LINK_COMPOUND_STATEMENT_H
 
-#include "NclLinkCondition.h"
+#include "NclCondition.h"
 #include "NclLinkAssessment.h"
 #include "NclEvents.h"
 
@@ -27,7 +27,7 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-class NclLinkStatement : public NclLinkCondition
+class NclLinkStatement
 {
 public:
   virtual bool evaluate () = 0;

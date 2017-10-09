@@ -15,52 +15,43 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef FORMATTER_LINK_H
-#define FORMATTER_LINK_H
+#ifndef NCL_CONDITION
+#define NCL_CONDITION
 
-#include "NclAction.h"
-#include "NclCondition.h"
 #include "NclEvents.h"
-#include "NclFormatterLink.h"
 
 #include "ncl/Ncl.h"
 using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-class ExecutionObjectContext;
-
-class NclFormatterLink: public INclConditionListener
+class INclConditionListener
 {
 public:
-  NclFormatterLink (Link *, ExecutionObjectContext *);
-  virtual ~NclFormatterLink ();
+  virtual void conditionSatisfied () = 0;
+};
 
-  void suspendLinkEvaluation (bool suspended);
-  Link *getNcmLink ();
+class NclCondition: INclEventListener
+{
+public:
+  NclCondition (NclEvent *, EventStateTransition);
+  virtual ~NclCondition ();
 
-  const vector <NclAction *> *getActions ();
-  void addAction (NclAction *);
+  NclEvent *getEvent ();
 
-  const vector <NclCondition *> *getConditions ();
-  void addCondition (NclCondition *);
-
+  void setTriggerListener (INclConditionListener *);
   void conditionSatisfied ();
 
-  virtual vector<NclEvent *> getEvents ();
-  void evaluationStarted ();
-  void evaluationEnded ();
-
-protected:
-  Link *_ncmLink;
-  bool _suspended;
-  ExecutionObjectContext *_parentObj;
-
+  // INclEventListener
+  virtual void eventStateChanged (NclEvent *_event,
+                                  EventStateTransition _transition,
+                                  EventState previousState) override;
 private:
-  vector <NclCondition *> _conditions;
-  vector <NclAction *> _actions;
+  NclEvent *_event;
+  EventStateTransition _transition;
+  INclConditionListener *_listener;
 };
 
 GINGA_FORMATTER_END
 
-#endif //_FORMATTERLINK_H_
+#endif // NCL_CONDITION
