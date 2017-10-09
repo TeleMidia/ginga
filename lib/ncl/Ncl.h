@@ -38,7 +38,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Ncl.h"
 #include "NclDocument.h"
 #include "Node.h"
-#include "Parameter.h"
 #include "Port.h"
 #include "Property.h"
 #include "Refer.h"
