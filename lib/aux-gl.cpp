@@ -159,7 +159,7 @@ GL::clear_scene (int w, int h)
   glViewport (0.0, 0.0, w, h);
 
 # if WITH_OPENGLES2
-  GLuint loc = glGetUniformLocation (gles2ctx.shaderProgram, "winSize");
+  GLint loc = glGetUniformLocation (gles2ctx.shaderProgram, "winSize");
   g_assert (loc);
   glUniform2f (loc, (GLfloat) w, (GLfloat) h);
   loc = glGetUniformLocation (gles2ctx.shaderProgram, "use_tex");
@@ -297,7 +297,7 @@ GL::draw_quad (int x, int y, int w, int h, GLuint gltex, GLfloat alpha)
   glBindTexture (GL_TEXTURE_2D, gltex);
 
 # if WITH_OPENGLES2
-  GLuint loc = glGetUniformLocation (gles2ctx.shaderProgram, "use_tex");
+  GLint loc = glGetUniformLocation (gles2ctx.shaderProgram, "use_tex");
   glUniform1i (loc, 1);
 
   vertices[0].pos[0] = (GLfloat) x;
@@ -330,18 +330,18 @@ GL::draw_quad (int x, int y, int w, int h, GLuint gltex, GLfloat alpha)
 
   glBufferData (GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-  glEnableVertexAttribArray (gles2ctx.posAttr);
-  glVertexAttribPointer (gles2ctx.posAttr, 2, GL_FLOAT, GL_FALSE,
+  glEnableVertexAttribArray ((GLuint) gles2ctx.posAttr);
+  glVertexAttribPointer ((GLuint) gles2ctx.posAttr, 2, GL_FLOAT, GL_FALSE,
                          sizeof (struct sprite),
                          0);
 
-  glEnableVertexAttribArray (gles2ctx.colorAttr);
-  glVertexAttribPointer (gles2ctx.colorAttr, 4, GL_FLOAT, GL_FALSE,
+  glEnableVertexAttribArray ((GLuint) gles2ctx.colorAttr);
+  glVertexAttribPointer ((GLuint) gles2ctx.colorAttr, 4, GL_FLOAT, GL_FALSE,
                          sizeof (struct sprite),
                          (GLvoid*) (2 * sizeof (GLfloat)));
 
-  glEnableVertexAttribArray (gles2ctx.texAttr);
-  glVertexAttribPointer (gles2ctx.texAttr, 2, GL_FLOAT, GL_FALSE,
+  glEnableVertexAttribArray ((GLuint) gles2ctx.texAttr);
+  glVertexAttribPointer ((GLuint) gles2ctx.texAttr, 2, GL_FLOAT, GL_FALSE,
                          sizeof (struct sprite),
                          (GLvoid*) (6 * sizeof (GLfloat)) );
 
@@ -377,7 +377,7 @@ GL::draw_quad (int x, int y, int w, int h,
   ERROR_NOT_IMPLEMENTED ("not compiled with OpenGL support");
 #else
 # if WITH_OPENGLES2
-  GLuint loc = glGetUniformLocation (gles2ctx.shaderProgram, "use_tex");
+  GLint loc = glGetUniformLocation (gles2ctx.shaderProgram, "use_tex");
   glUniform1i (loc, 0);
 
   vertices[0].pos[0] = (GLfloat) x;
