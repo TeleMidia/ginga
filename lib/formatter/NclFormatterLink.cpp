@@ -64,14 +64,14 @@ NclFormatterLink::addAction (NclAction *action)
   _actions.push_back (action);
 }
 
-const vector <NclLinkTriggerCondition *> *
+const vector <NclCondition *> *
 NclFormatterLink::getConditions ()
 {
   return &_conditions;
 }
 
 void
-NclFormatterLink::addCondition (NclLinkTriggerCondition *condition)
+NclFormatterLink::addCondition (NclCondition *condition)
 {
   g_assert_nonnull (condition);
   condition->setTriggerListener (this);

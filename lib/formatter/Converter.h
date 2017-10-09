@@ -18,16 +18,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef CONVERTER_H
 #define CONVERTER_H
 
-#include "GingaInternal.h"
 #include "ExecutionObject.h"
 #include "ExecutionObjectContext.h"
 #include "ExecutionObjectSettings.h"
 #include "ExecutionObjectSwitch.h"
+#include "GingaInternal.h"
 #include "NclAction.h"
+#include "NclCondition.h"
 #include "NclEvents.h"
 #include "NclFormatterLink.h"
 #include "NclFormatterLink.h"
-#include "NclLinkCondition.h"
 #include "NclLinkStatement.h"
 #include "RuleAdapter.h"
 
@@ -124,7 +124,7 @@ private:
   //     const vector<Condition *> *ncmChildConditions,
   //     Link *ncmLink, ExecutionObjectContext *parentObject);
 
-  NclLinkCondition *createCondition (
+  NclCondition *createCondition (
       Condition *triggerExpression, Link *ncmLink,
       ExecutionObjectContext *parentObject);
 
@@ -144,7 +144,7 @@ private:
   createSimpleAction (Action *, Bind *,
                       ExecutionObjectContext *);
 
-  NclLinkTriggerCondition *createCondition (
+  NclCondition *createCondition (
       Condition *condition, Bind *bind,
       ExecutionObjectContext *parentObject);
 
