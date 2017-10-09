@@ -50,8 +50,7 @@ Converter::getRuleAdapter ()
 }
 
 ExecutionObject *
-Converter::getExecutionObjectFromPerspective (
-    NclNodeNesting *perspective, Descriptor *descriptor)
+Converter::getExecutionObjectFromPerspective (NclNodeNesting *perspective)
 {
   ExecutionObjectContext *parentObj;
   ExecutionObject *exeObj;
@@ -63,7 +62,7 @@ Converter::getExecutionObjectFromPerspective (
     return exeObj;
 
   parentObj = getParentExecutionObject (perspective);
-  exeObj = createExecutionObject (id, perspective, descriptor);
+  exeObj = createExecutionObject (id, perspective);
   g_assert_nonnull (exeObj);
 
   addExecutionObject (exeObj, parentObj);
@@ -240,7 +239,7 @@ Converter::getParentExecutionObject (NclNodeNesting *perspective)
 
       auto cObj = cast (ExecutionObjectContext *,
             this->getExecutionObjectFromPerspective (
-              parentPerspective, nullptr));
+              parentPerspective));
 
       g_assert_nonnull (cObj);
 
@@ -254,8 +253,7 @@ Converter::getParentExecutionObject (NclNodeNesting *perspective)
 
 ExecutionObject *
 Converter::createExecutionObject (
-    const string &id, NclNodeNesting *perspective,
-    Descriptor *descriptor)
+    const string &id, NclNodeNesting *perspective)
 {
   Node *node;
   NclNodeNesting *nodePerspective;
@@ -282,8 +280,7 @@ Converter::createExecutionObject (
           if (nodePerspective->getHeadNode ()
               == perspective->getHeadNode ())
             {
-              exeObj = getExecutionObjectFromPerspective (nodePerspective,
-                                                          descriptor);
+              exeObj = getExecutionObjectFromPerspective (nodePerspective);
               if (exeObj == nullptr)
                 {
                   g_assert_nonnull (nodeEntity);
@@ -503,7 +500,7 @@ Converter::processExecutionObjectSwitch (
       return obj;
     }
 
-  selectedObject = createExecutionObject (id, selectedPerspective, nullptr);
+  selectedObject = createExecutionObject (id, selectedPerspective);
 
   delete selectedPerspective;
 
@@ -574,7 +571,7 @@ Converter::resolveSwitchEvents (
 
                   endPointObject
                       = getExecutionObjectFromPerspective (
-                        nodePerspective, nullptr);
+                        nodePerspective);
 
                   if (endPointObject != nullptr)
                     {
@@ -601,16 +598,14 @@ Converter::resolveSwitchEvents (
 
 NclEvent *
 Converter::insertNode (NclNodeNesting *perspective,
-                       Anchor *interfacePoint,
-                       Descriptor *descriptor)
+                       Anchor *interfacePoint)
 {
   ExecutionObject *executionObject;
   NclEvent *event;
   EventType eventType;
 
   event = nullptr;
-  executionObject = getExecutionObjectFromPerspective (perspective,
-                                                       descriptor);
+  executionObject = getExecutionObjectFromPerspective (perspective);
 
   if (executionObject != nullptr)
     {
@@ -660,8 +655,7 @@ Converter::insertContext (NclNodeNesting *persp,
   perspective->append (&nestedSeq);
 
   newEvent = insertNode (perspective,
-                         port->getFinalInterface (),
-                         nullptr);
+                         port->getFinalInterface ());
   delete perspective;
 
   return newEvent;
@@ -715,7 +709,7 @@ Converter::eventStateChanged (NclEvent *event,
 }
 
 NclEvent *
-Converter::createEvent (Bind *bind, ExecutionObjectContext *parentObject)
+Converter::createEvent (Bind *bind, ExecutionObjectContext *context)
 {
   NclNodeNesting *endPointNodeSequence;
   NclNodeNesting *endPointPerspective;
@@ -726,7 +720,7 @@ Converter::createEvent (Bind *bind, ExecutionObjectContext *parentObject)
   NclEvent *event = nullptr;
   vector<Node *> seq;
 
-  endPointPerspective = parentObject->getNodePerspective ();
+  endPointPerspective = context->getNodePerspective ();
 
   parentNode = endPointPerspective->getAnchorNode ();
 
@@ -735,7 +729,6 @@ Converter::createEvent (Bind *bind, ExecutionObjectContext *parentObject)
 
   interfacePoint = bind->getInterface ();
 
-  //seq = bind->getNodeNesting ();
   seq.push_back (node);
   if (interfacePoint != nullptr
       && instanceof (Port *, interfacePoint)
@@ -756,7 +749,7 @@ Converter::createEvent (Bind *bind, ExecutionObjectContext *parentObject)
   delete endPointNodeSequence;
 
   executionObject = getExecutionObjectFromPerspective (
-        endPointPerspective, nullptr);
+        endPointPerspective);
 
   if (executionObject == nullptr)
     {
@@ -784,7 +777,8 @@ Converter::createEvent (Bind *bind, ExecutionObjectContext *parentObject)
       interfacePoint = comp->getMapInterface (port);
     }
 
-  key = getBindKey (bind);
+  if (!getBindKey (bind, &key))
+    key = "";
   event = getEvent (executionObject, interfacePoint,
                     bind->getRole ()->getEventType (), key);
 
@@ -792,46 +786,26 @@ Converter::createEvent (Bind *bind, ExecutionObjectContext *parentObject)
   return event;
 }
 
-string
-Converter::getBindKey (Bind *ncmBind)
+bool
+Converter::getBindKey (Bind *bind, string *result)
 {
   Role *role;
-  string keyValue;
+  Condition *docCond;
   string key;
 
-  role = ncmBind->getRole ();
-  if (role == nullptr)
-    {
-      return "";
-    }
+  role = bind->getRole ();
+  g_assert_nonnull (role);
 
-  if (auto sc = cast (Condition *, role))
-    {
-      keyValue = sc->getKey ();
-    }
-  else if (auto attrAssessment = cast (AttributeAssessment *, role))
-    {
-      keyValue = attrAssessment->getKey ();
-    }
-  else
-    {
-      return "";
-    }
+  docCond = cast (Condition *, role);
+  if (docCond == nullptr)
+    return false;
 
-  if (keyValue == "")
-    {
-      key = "";
-    }
-  else if (keyValue[0] == '$')
-    {
-      key = ncmBind->getParameter (keyValue.substr (1, keyValue.length () - 1));
-    }
-  else
-    {
-      key = keyValue;
-    }
+  key = docCond->getKey ();
+  if (key[0] == '$')
+    key = bind->getParameter (key.substr (1, key.length () - 1));
 
-  return key;
+  tryset (result, key);
+  return true;
 }
 
 

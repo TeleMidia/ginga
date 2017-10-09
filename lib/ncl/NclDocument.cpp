@@ -107,7 +107,6 @@ NclDocument::NclDocument (const string &id, const string &uri)
   _root = new Context (this, id);
 
   _connectorBase = nullptr;
-  _descriptorBase = nullptr;
   _parentDocument = nullptr;
   _ruleBase = nullptr;
   _transitionBase = nullptr;
@@ -240,39 +239,6 @@ NclDocument::getTransitionBase ()
   return _transitionBase;
 }
 
-Descriptor *
-NclDocument::getDescriptor (const string &descriptorId)
-{
-  Descriptor *descriptor;
-  vector<NclDocument *>::iterator i;
-
-  if (_descriptorBase != NULL)
-    {
-      descriptor = _descriptorBase->getDescriptor (descriptorId);
-      if (descriptor != NULL)
-        {
-          return descriptor;
-        }
-    }
-
-  for (i = _documentBase.begin (); i != _documentBase.end (); ++i)
-    {
-      descriptor = (*i)->getDescriptor (descriptorId);
-      if (descriptor != NULL)
-        {
-          return descriptor;
-        }
-    }
-
-  return NULL;
-}
-
-DescriptorBase *
-NclDocument::getDescriptorBase ()
-{
-  return _descriptorBase;
-}
-
 NclDocument *
 NclDocument::getDocument (const string &documentId)
 {
@@ -380,91 +346,6 @@ NclDocument::getNode (const string &nodeId)
     }
 
   return NULL;
-}
-
-Region *
-NclDocument::getRegion (const string &regionId)
-{
-  Region *region;
-  map<int, RegionBase *>::iterator i;
-
-  i = _regionBases.begin ();
-  while (i != _regionBases.end ())
-    {
-      region = getRegion (regionId, i->second);
-      if (region != NULL)
-        {
-          return region;
-        }
-      ++i;
-    }
-
-  return NULL;
-}
-
-Region *
-NclDocument::getRegion (const string &regionId, RegionBase *regionBase)
-{
-  Region *region;
-  vector<NclDocument *>::iterator i;
-
-  if (regionBase != NULL)
-    {
-      region = regionBase->getRegion (regionId);
-      if (region != NULL)
-        {
-          return region;
-        }
-    }
-
-  for (i = _documentBase.begin (); i != _documentBase.end (); ++i)
-    {
-      region = (*i)->getRegion (regionId);
-      if (region != NULL)
-        {
-          return region;
-        }
-    }
-
-  return NULL;
-}
-
-RegionBase *
-NclDocument::getRegionBase (int devClass)
-{
-  map<int, RegionBase *>::iterator i;
-
-  i = _regionBases.find (devClass);
-  if (i == _regionBases.end ())
-    {
-      return NULL;
-    }
-
-  return i->second;
-}
-
-RegionBase *
-NclDocument::getRegionBase (const string &regionBaseId)
-{
-  map<int, RegionBase *>::iterator i;
-
-  i = _regionBases.begin ();
-  while (i != _regionBases.end ())
-    {
-      if (i->second->getId () == regionBaseId)
-        {
-          return i->second;
-        }
-      ++i;
-    }
-
-  return NULL;
-}
-
-map<int, RegionBase *> *
-NclDocument::getRegionBases ()
-{
-  return &_regionBases;
 }
 
 Rule *
@@ -583,12 +464,6 @@ NclDocument::setTransitionBase (TransitionBase *transitionBase)
 }
 
 void
-NclDocument::setDescriptorBase (DescriptorBase *descriptorBase)
-{
-  this->_descriptorBase = descriptorBase;
-}
-
-void
 NclDocument::setDocumentAlias (NclDocument *document, const string &alias)
 {
   string oldAlias;
@@ -615,33 +490,9 @@ NclDocument::setId (const string &id)
 }
 
 void
-NclDocument::addRegionBase (RegionBase *regionBase)
-{
-  g_assert (regionBase != NULL);
-  _regionBases[0] = regionBase;
-}
-
-void
 NclDocument::setRuleBase (RuleBase *ruleBase)
 {
   this->_ruleBase = ruleBase;
-}
-
-void
-NclDocument::removeRegionBase (const string &regionBaseId)
-{
-  map<int, RegionBase *>::iterator i;
-
-  i = _regionBases.begin ();
-  while (i != _regionBases.end ())
-    {
-      if (i->second->getId () == regionBaseId)
-        {
-          _regionBases.erase (i);
-          return;
-        }
-      ++i;
-    }
 }
 
 GINGA_NCL_END

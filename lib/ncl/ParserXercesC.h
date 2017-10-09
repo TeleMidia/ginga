@@ -31,8 +31,8 @@ GINGA_PRAGMA_DIAG_POP ()
 #include "Area.h"
 #include "AreaLabeled.h"
 #include "CompositeRule.h"
-#include "Descriptor.h"
 #include "NclDocument.h"
+#include "Parameter.h"
 #include "Property.h"
 #include "Rule.h"
 #include "SimpleRule.h"
@@ -56,6 +56,9 @@ private:
   int _width;                   // screen width (in pixels)
   int _height;                  // screen height (in pixels)
 
+  map<string,map<string,string>> _descriptors; // cached descriptors
+  map<string,map<string,string>> _regions;     // cached regions
+
   ParserXercesC (int, int);
   ~ParserXercesC ();
 
@@ -78,11 +81,11 @@ private:
   TransitionBase *parseTransitionBase (DOMElement *);
   Transition *parseTransition (DOMElement *);
 
-  RegionBase *parseRegionBase (DOMElement *);
-  Region *parseRegion (DOMElement *, RegionBase *, Region *);
+  void parseRegionBase (DOMElement *);
+  void parseRegion (DOMElement *, GingaRect);
 
-  DescriptorBase *parseDescriptorBase (DOMElement *);
-  Descriptor *parseDescriptor (DOMElement *);
+  void parseDescriptorBase (DOMElement *);
+  void parseDescriptor (DOMElement *);
 
   ConnectorBase *parseConnectorBase (DOMElement *);
   Connector *parseCausalConnector (DOMElement *);
