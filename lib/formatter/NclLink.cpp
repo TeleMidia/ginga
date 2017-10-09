@@ -16,18 +16,18 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
-#include "NclFormatterLink.h"
+#include "NclLink.h"
 #include "ExecutionObjectContext.h"
 
 GINGA_FORMATTER_BEGIN
 
-NclFormatterLink::NclFormatterLink (ExecutionObjectContext *context)
+NclLink::NclLink (ExecutionObjectContext *context)
 {
   _context = context;
   _disabled = false;
 }
 
-NclFormatterLink::~NclFormatterLink ()
+NclLink::~NclLink ()
 {
   for (auto condition: _conditions)
     delete condition;
@@ -36,19 +36,19 @@ NclFormatterLink::~NclFormatterLink ()
 }
 
 void
-NclFormatterLink::disable (bool disable)
+NclLink::disable (bool disable)
 {
   _disabled = disable;
 }
 
 const vector <NclCondition *> *
-NclFormatterLink::getConditions ()
+NclLink::getConditions ()
 {
   return &_conditions;
 }
 
 bool
-NclFormatterLink::addCondition (NclCondition *condition)
+NclLink::addCondition (NclCondition *condition)
 {
   g_assert_nonnull (condition);
   for (auto cond: _conditions)
@@ -60,13 +60,13 @@ NclFormatterLink::addCondition (NclCondition *condition)
 }
 
 const vector <NclAction *> *
-NclFormatterLink::getActions ()
+NclLink::getActions ()
 {
   return &_actions;
 }
 
 bool
-NclFormatterLink::addAction (NclAction *action)
+NclLink::addAction (NclAction *action)
 {
   g_assert_nonnull (action);
   for (auto act: _actions)
@@ -77,7 +77,7 @@ NclFormatterLink::addAction (NclAction *action)
 }
 
 void
-NclFormatterLink::conditionSatisfied ()
+NclLink::conditionSatisfied ()
 {
   if (_disabled)
     return;                     // nothing to do
@@ -86,7 +86,7 @@ NclFormatterLink::conditionSatisfied ()
 }
 
 vector<NclEvent *>
-NclFormatterLink::getEvents ()
+NclLink::getEvents ()
 {
   vector<NclEvent *> events;
   for (auto condition: _conditions)
@@ -97,13 +97,13 @@ NclFormatterLink::getEvents ()
 }
 
 void
-NclFormatterLink::evaluationStarted ()
+NclLink::evaluationStarted ()
 {
   _context->linkEvaluationStarted (this);
 }
 
 void
-NclFormatterLink::evaluationEnded ()
+NclLink::evaluationEnded ()
 {
   _context->linkEvaluationFinished (this);
 }

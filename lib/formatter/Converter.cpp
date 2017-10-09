@@ -401,7 +401,7 @@ Converter::processLink (Link *ncmLink,
   if (causalLink->contains (dataObject, true) || contains)
     {
       parentObject->removeLinkUncompiled (ncmLink);
-      NclFormatterLink *formatterLink
+      NclLink *formatterLink
         = createLink (causalLink, parentObject);
 
       if (formatterLink != NULL)
@@ -837,11 +837,11 @@ Converter::getBindKey (Bind *ncmBind)
 
 // INSANITY ABOVE ----------------------------------------------------------
 
-NclFormatterLink *
+NclLink *
 Converter::createLink (Link *docLink, ExecutionObjectContext *context)
 {
   Connector *connector;
-  NclFormatterLink *link;
+  NclLink *link;
 
   g_assert_nonnull (docLink);
   g_assert_nonnull (context);
@@ -849,7 +849,7 @@ Converter::createLink (Link *docLink, ExecutionObjectContext *context)
   connector = cast (Connector *, docLink->getConnector ());
   g_assert_nonnull (connector);
 
-  link = new NclFormatterLink (context);
+  link = new NclLink (context);
 
   // Add conditions.
   for (auto connCond: *connector->getConditions ())
