@@ -1017,7 +1017,7 @@ ncl_push_simpleConditionOrAction (ParserLibXML_State *st,
 
   if (is_cond)
     {
-      reserved = SimpleCondition::isReserved (role, &type, &trans);
+      reserved = Condition::isReserved (role, &type, &trans);
       transname = "transition";
     }
   else
@@ -1065,9 +1065,9 @@ ncl_push_simpleConditionOrAction (ParserLibXML_State *st,
   if (is_cond)
     {
       string key;
-      SimpleCondition *cond;
+      Condition *cond;
       key = ncl_attrmap_opt_get (attr, "key", "");
-      cond = new SimpleCondition (type, trans, role, key);
+      cond = new Condition (type, trans, nullptr, role, key);
       parent->addCondition (cond);
     }
   else

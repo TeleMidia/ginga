@@ -125,7 +125,7 @@ private:
   //     Link *ncmLink, ExecutionObjectContext *parentObject);
 
   NclLinkCondition *createCondition (
-      SimpleCondition *triggerExpression, Link *ncmLink,
+      Condition *triggerExpression, Link *ncmLink,
       ExecutionObjectContext *parentObject);
 
   // NclLinkAssessmentStatement *createAssessmentStatement (
@@ -144,8 +144,8 @@ private:
   createSimpleAction (Action *, Bind *,
                       ExecutionObjectContext *);
 
-  NclLinkTriggerCondition *createSimpleCondition (
-      SimpleCondition *condition, Bind *bind,
+  NclLinkTriggerCondition *createCondition (
+      Condition *condition, Bind *bind,
       ExecutionObjectContext *parentObject);
 
   NclEvent *createEvent (Bind *bind,

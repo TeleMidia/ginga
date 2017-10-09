@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Connector.h"
 
 #include "Action.h"
-#include "SimpleCondition.h"
+#include "Condition.h"
 
 GINGA_NCL_BEGIN
 
@@ -46,7 +46,7 @@ Connector::~Connector ()
  * @brief Gets connector conditions.
  * @return Connector conditions.
  */
-const vector <SimpleCondition *> *
+const vector <Condition *> *
 Connector::getConditions ()
 {
   return &_conditions;
@@ -58,7 +58,7 @@ Connector::getConditions ()
  * @return True if successful, or false otherwise.
  */
 bool
-Connector::addCondition (SimpleCondition *condition)
+Connector::addCondition (Condition *condition)
 {
   g_assert_nonnull (condition);
   for (auto cond: _conditions)

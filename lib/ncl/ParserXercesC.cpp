@@ -1114,7 +1114,7 @@ ParserXercesC::parseCausalConnector (DOMElement *elt)
       string tag = dom_elt_get_tag (child);
       if (tag == "simpleCondition")
         {
-          this->parseSimpleCondition (conn, child);
+          this->parseCondition (conn, child);
           ncond++;
         }
       else if (tag == "compoundCondition")
@@ -1171,7 +1171,7 @@ ParserXercesC::parseCompoundCondition (Connector *conn, DOMElement *elt)
       string tag = dom_elt_get_tag (child);
       if (tag == "simpleCondition")
         {
-          this->parseSimpleCondition (conn, child);
+          this->parseCondition (conn, child);
         }
       else if (tag == "assessmentStatement")
         {
@@ -1197,7 +1197,7 @@ ParserXercesC::parseCompoundCondition (Connector *conn, DOMElement *elt)
 }
 
 void
-ParserXercesC::parseSimpleCondition (Connector *conn, DOMElement *elt)
+ParserXercesC::parseCondition (Connector *conn, DOMElement *elt)
 {
   string str;
   string role;
@@ -1216,7 +1216,7 @@ ParserXercesC::parseSimpleCondition (Connector *conn, DOMElement *elt)
   type = (EventType) -1;
   trans = (EventStateTransition) -1;
 
-  SimpleCondition::isReserved (role, &type, &trans);
+  Condition::isReserved (role, &type, &trans);
 
   if (dom_elt_try_get_attribute (str, elt, "eventType"))
     {
@@ -1257,7 +1257,7 @@ ParserXercesC::parseSimpleCondition (Connector *conn, DOMElement *elt)
   if (qualifier != "and" && qualifier != "or")
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "qualifier");
 
-  SimpleCondition *cond = new SimpleCondition (type, trans, role, key);
+  Condition *cond = new Condition (type, trans, nullptr, role, key);
   g_assert (conn->addCondition (cond));
 }
 

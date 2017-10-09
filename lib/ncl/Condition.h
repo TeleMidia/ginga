@@ -15,26 +15,24 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef SIMPLE_CONDITION_H
-#define SIMPLE_CONDITION_H
+#ifndef CONDITION_H
+#define CONDITION_H
 
 #include "Role.h"
 #include "Predicate.h"
 
 GINGA_NCL_BEGIN
 
-class SimpleCondition: public Role
+class Condition: public Role
 {
 public:
-  SimpleCondition (EventType, EventStateTransition,
-                   const string &, const string &);
-  virtual ~SimpleCondition ();
+  Condition (EventType, EventStateTransition,
+             Predicate *, const string &, const string &);
+  virtual ~Condition ();
 
   EventStateTransition getTransition ();
-  string getKey ();
-
-  void initPredicate (Predicate *);
   Predicate *getPredicate ();
+  string getKey ();
 
   static bool isReserved (const string &, EventType *,
                           EventStateTransition *);
@@ -46,4 +44,4 @@ private:
 
 GINGA_NCL_END
 
-#endif // SIMPLE_CONDITION_H
+#endif // CONDITION_H

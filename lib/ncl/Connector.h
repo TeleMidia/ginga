@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define CONNECTOR_H
 
 #include "Action.h"
-#include "SimpleCondition.h"
+#include "Condition.h"
 #include "Entity.h"
 #include "Role.h"
 
@@ -31,8 +31,8 @@ public:
   Connector (NclDocument *, const string &);
   virtual ~Connector ();
 
-  const vector<SimpleCondition *> *getConditions ();
-  bool addCondition (SimpleCondition *);
+  const vector<Condition *> *getConditions ();
+  bool addCondition (Condition *);
 
   const vector<Action *> *getActions ();
   bool addAction (Action *);
@@ -40,7 +40,7 @@ public:
   Role *getRole (const string &);
 
 private:
-  vector <SimpleCondition *> _conditions;
+  vector <Condition *> _conditions;
   vector<Action *> _actions;
 };
 

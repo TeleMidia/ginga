@@ -88,7 +88,7 @@ private:
   Connector *parseCausalConnector (DOMElement *);
 
   void parseCompoundCondition (Connector *, DOMElement *);
-  void parseSimpleCondition (Connector *, DOMElement *);
+  void parseCondition (Connector *, DOMElement *);
   // CompoundStatement *parseCompoundStatement (DOMElement *);
   // AssessmentStatement *parseAssessmentStatement (DOMElement *);
   // AttributeAssessment *parseAttributeAssessment (DOMElement *);
