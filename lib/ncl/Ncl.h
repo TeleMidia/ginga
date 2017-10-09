@@ -49,7 +49,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Role.h"
 #include "Rule.h"
 #include "RuleBase.h"
-#include "SimpleCondition.h"
+#include "Condition.h"
 #include "SimpleRule.h"
 #include "Statement.h"
 #include "Switch.h"

@@ -741,7 +741,7 @@ Converter::createLink (Link *ncmLink, ExecutionObjectContext *parentObj)
       for (auto bind: ncmLink->getBinds (cond))
         {
           NclLinkTriggerCondition *condition;
-          condition = createSimpleCondition (cond, bind, parentObj);
+          condition = createCondition (cond, bind, parentObj);
           g_assert_nonnull (condition);
           formatterLink->addCondition (condition);
         }
@@ -800,17 +800,17 @@ Converter::createLink (Link *ncmLink, ExecutionObjectContext *parentObj)
 
 NclLinkCondition *
 Converter::createCondition (
-    SimpleCondition *condition, Link *ncmLink,
+    Condition *condition, Link *ncmLink,
     ExecutionObjectContext *parentObj)
 {
-  auto ste = cast (SimpleCondition *, condition);
-  if (ste)                      // SimpleCondition
+  auto ste = cast (Condition *, condition);
+  if (ste)                      // Condition
     {
       vector<Bind *> binds = ncmLink->getBinds (ste);
       size_t size = binds.size ();
       if (size == 1)
         {
-          return createSimpleCondition (ste, binds[0], parentObj);
+          return createCondition (ste, binds[0], parentObj);
         }
       else if (size > 1)
         {
@@ -818,7 +818,7 @@ Converter::createCondition (
           // compoundCondition = new NclLinkCompoundTriggerCondition ();
           // for (size_t i = 0; i < size; i++)
           //   {
-          //     simpleCondition = createSimpleCondition (ste, binds[i], parentObj);
+          //     simpleCondition = createCondition (ste, binds[i], parentObj);
 
           //     compoundCondition->addCondition (simpleCondition);
           //   }
@@ -1024,8 +1024,8 @@ Converter::createSimpleAction (
 }
 
 NclLinkTriggerCondition *
-Converter::createSimpleCondition (
-    SimpleCondition *simpleCondition, Bind *bind,
+Converter::createCondition (
+    Condition *simpleCondition, Bind *bind,
     ExecutionObjectContext *parentObj)
 {
   NclEvent *event;
@@ -1131,7 +1131,7 @@ Converter::getBindKey (Bind *ncmBind)
       return "";
     }
 
-  if (auto sc = cast (SimpleCondition *, role))
+  if (auto sc = cast (Condition *, role))
     {
       keyValue = sc->getKey ();
     }
