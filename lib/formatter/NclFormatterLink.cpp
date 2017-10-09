@@ -17,18 +17,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 #include "NclFormatterLink.h"
-
-#include "ExecutionObject.h"
 #include "ExecutionObjectContext.h"
 
 GINGA_FORMATTER_BEGIN
 
-NclFormatterLink::NclFormatterLink (Link *ncmLink,
-                                    ExecutionObjectContext *parentObj)
+NclFormatterLink::NclFormatterLink (ExecutionObjectContext *context)
 {
-  _parentObj = parentObj;
-  _ncmLink = ncmLink;
-  _suspended = false;
+  _context = context;
+  _disabled = false;
 }
 
 NclFormatterLink::~NclFormatterLink ()
@@ -40,15 +36,9 @@ NclFormatterLink::~NclFormatterLink ()
 }
 
 void
-NclFormatterLink::suspendLinkEvaluation (bool suspend)
+NclFormatterLink::disable (bool disable)
 {
-  this->_suspended = suspend;
-}
-
-Link *
-NclFormatterLink::getNcmLink ()
-{
-  return _ncmLink;
+  _disabled = disable;
 }
 
 const vector <NclCondition *> *
@@ -89,7 +79,7 @@ NclFormatterLink::addAction (NclAction *action)
 void
 NclFormatterLink::conditionSatisfied ()
 {
-  if (_suspended)
+  if (_disabled)
     return;                     // nothing to do
   for (auto action: _actions)
     action->run ();
@@ -109,13 +99,13 @@ NclFormatterLink::getEvents ()
 void
 NclFormatterLink::evaluationStarted ()
 {
-  _parentObj->linkEvaluationStarted (this);
+  _context->linkEvaluationStarted (this);
 }
 
 void
 NclFormatterLink::evaluationEnded ()
 {
-  _parentObj->linkEvaluationFinished (this, false);
+  _context->linkEvaluationFinished (this);
 }
 
 GINGA_FORMATTER_END
