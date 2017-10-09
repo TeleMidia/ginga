@@ -39,11 +39,19 @@ SimpleCondition::SimpleCondition (EventType type,
 {
   _transition = transition;
   _key = key;
+  _predicate = nullptr;
+}
+
+/**
+ * @brief Destroys simple condition.
+ */
+SimpleCondition::~SimpleCondition ()
+{
 }
 
 /**
  * @brief Gets transition.
- * @return Transition value.
+ * @return Transition.
  */
 EventStateTransition
 SimpleCondition::getTransition ()
@@ -53,12 +61,26 @@ SimpleCondition::getTransition ()
 
 /**
  * @brief Gets key.
- * @return Key value.
+ * @return Key.
  */
 string
 SimpleCondition::getKey ()
 {
   return _key;
+}
+
+void
+SimpleCondition::initPredicate (Predicate *predicate)
+{
+  g_assert_nonnull (predicate);
+  g_assert_null (_predicate);
+  _predicate = predicate;
+}
+
+Predicate *
+SimpleCondition::getPredicate ()
+{
+  return _predicate;
 }
 
 

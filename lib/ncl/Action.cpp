@@ -21,16 +21,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NCL_BEGIN
 
 /**
- * @brief Creates a new simple action.
+ * @brief Creates a new action.
  * @param type Event type.
- * @param actType Action type.
+ * @param transition Transition.
  * @param label Role.
  * @param delay Delay.
  * @param value Value.
  * @param duration Duration.
  */
 Action::Action (EventType type,
-                EventStateTransition actType,
+                EventStateTransition transition,
                 const string &label,
                 const string &delay,
                 const string &value,
@@ -38,30 +38,32 @@ Action::Action (EventType type,
 
   : Role (type, label)
 {
-  _actionType = actType;
+  _transition = transition;
   _delay = delay;
   _value = value;
   _duration = duration;
 }
 
 /**
- * @brief Destroys simple action.
+ * @brief Destroys action.
  */
 Action::~Action ()
 {
 }
 
 /**
- * @brief Gets simple action type.
+ * @brief Gets transition.
+ * @return Transition.
  */
 EventStateTransition
-Action::getActionType ()
+Action::getTransition ()
 {
-  return _actionType;
+  return _transition;
 }
 
 /**
- * @brief Gets simple action delay.
+ * @brief Gets delay.
+ * @return Delay.
  */
 string
 Action::getDelay ()
@@ -70,7 +72,8 @@ Action::getDelay ()
 }
 
 /**
- * @brief Gets simple action value.
+ * @brief Gets value.
+ * @return Value.
  */
 string
 Action::getValue ()
@@ -79,7 +82,8 @@ Action::getValue ()
 }
 
 /**
- * @brief Gets simple action duration.
+ * @brief Gets duration.
+ * @return Duration.
  */
 string
 Action::getDuration ()

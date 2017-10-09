@@ -71,6 +71,7 @@ src+= ncl/Node.cpp
 src+= ncl/Parameter.cpp
 src+= ncl/ParserXercesC.cpp
 src+= ncl/Port.cpp
+src+= ncl/Predicate.cpp
 src+= ncl/Property.cpp
 src+= ncl/Refer.cpp
 src+= ncl/Region.cpp

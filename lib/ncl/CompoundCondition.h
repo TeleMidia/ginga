@@ -36,7 +36,6 @@ public:
   virtual ~CompoundCondition ();
   const vector<Condition *> *getConditions ();
   void addCondition (Condition *condition);
-  void removeCondition (Condition *condition);
 
 private:
   vector<Condition *> *_expressions;
