@@ -106,9 +106,7 @@ void
 ExecutionObjectContext::suspendLinkEvaluation (bool suspend)
 {
   for (NclFormatterLink *link : _links)
-    {
-      link->suspendLinkEvaluation (suspend);
-    }
+    link->disable (suspend);
 }
 
 bool
@@ -336,8 +334,7 @@ ExecutionObjectContext::linkEvaluationStarted (NclFormatterLink *link)
 }
 
 void
-ExecutionObjectContext::linkEvaluationFinished (
-    NclFormatterLink *link, bool start)
+ExecutionObjectContext::linkEvaluationFinished (NclFormatterLink *link)
 {
   int linkNumber;
   NclFormatterLink *finishedLink;
@@ -358,7 +355,7 @@ ExecutionObjectContext::linkEvaluationFinished (
                 {
                   checkLinkConditions ();
                 }
-              else if (!start)
+              else
                 {
                   _wholeContent->abort ();
                 }

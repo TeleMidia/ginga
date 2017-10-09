@@ -15,29 +15,21 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef FORMATTER_LINK_H
-#define FORMATTER_LINK_H
+#ifndef NCL_LINK_H
+#define NCL_LINK_H
 
 #include "NclAction.h"
 #include "NclCondition.h"
 #include "NclEvents.h"
-#include "NclFormatterLink.h"
-
-#include "ncl/Ncl.h"
-using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
 class ExecutionObjectContext;
-
 class NclFormatterLink: public INclConditionListener
 {
 public:
-  NclFormatterLink (Link *, ExecutionObjectContext *);
+  NclFormatterLink (ExecutionObjectContext *);
   virtual ~NclFormatterLink ();
-
-  void suspendLinkEvaluation (bool suspended);
-  Link *getNcmLink ();
 
   const vector <NclCondition *> *getConditions ();
   bool addCondition (NclCondition *);
@@ -45,22 +37,22 @@ public:
   const vector <NclAction *> *getActions ();
   bool addAction (NclAction *);
 
-  void conditionSatisfied ();
-
   virtual vector<NclEvent *> getEvents ();
   void evaluationStarted ();
   void evaluationEnded ();
 
-protected:
-  Link *_ncmLink;
-  bool _suspended;
-  ExecutionObjectContext *_parentObj;
+  void disable (bool);
+
+  // INclConditionListener
+  void conditionSatisfied ();
 
 private:
-  vector <NclCondition *> _conditions;
-  vector <NclAction *> _actions;
+  ExecutionObjectContext *_context;    // list of contexts
+  vector <NclCondition *> _conditions; // list of conditions
+  vector <NclAction *> _actions;       // list of actions
+  bool _disabled;                      // whether link is disabled
 };
 
 GINGA_FORMATTER_END
 
-#endif //_FORMATTERLINK_H_
+#endif // NCL_LINK_H

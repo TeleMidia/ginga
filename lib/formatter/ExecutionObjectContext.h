@@ -21,7 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ExecutionObject.h"
 #include "NclEvents.h"
 #include "NclFormatterLink.h"
-#include "NclLinkListener.h"
 #include "NclNodeNesting.h"
 
 #include "ncl/Ncl.h"
@@ -29,9 +28,8 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-class ExecutionObjectContext : public ExecutionObject,
-    public NclLinkListener,
-    public INclEventListener
+class ExecutionObjectContext: public ExecutionObject,
+                              public INclEventListener
 {
 public:
   ExecutionObjectContext (GingaInternal *, const string &,
@@ -54,8 +52,9 @@ public:
                           EventStateTransition transition,
                           EventState previousState) override;
 
-  void linkEvaluationStarted (NclFormatterLink *link) override;
-  void linkEvaluationFinished (NclFormatterLink *, bool) override;
+  // Callbacks
+  void linkEvaluationStarted (NclFormatterLink *);
+  void linkEvaluationFinished (NclFormatterLink *);
 
 private:
   set<NclFormatterLink *> _links;

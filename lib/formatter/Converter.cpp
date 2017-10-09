@@ -797,7 +797,6 @@ Converter::getBindKey (Bind *ncmBind)
 {
   Role *role;
   string keyValue;
-  Parameter *param;
   string key;
 
   role = ncmBind->getRole ();
@@ -825,8 +824,7 @@ Converter::getBindKey (Bind *ncmBind)
     }
   else if (keyValue[0] == '$')
     {
-      param = new Parameter (keyValue.substr (1, keyValue.length () - 1), "");
-      key = ncmBind->getParameter (param->getName ());
+      key = ncmBind->getParameter (keyValue.substr (1, keyValue.length () - 1));
     }
   else
     {
@@ -840,23 +838,23 @@ Converter::getBindKey (Bind *ncmBind)
 // INSANITY ABOVE ----------------------------------------------------------
 
 NclFormatterLink *
-Converter::createLink (Link *domLink, ExecutionObjectContext *context)
+Converter::createLink (Link *docLink, ExecutionObjectContext *context)
 {
   Connector *connector;
   NclFormatterLink *link;
 
-  g_assert_nonnull (domLink);
+  g_assert_nonnull (docLink);
   g_assert_nonnull (context);
 
-  connector = cast (Connector *, domLink->getConnector ());
+  connector = cast (Connector *, docLink->getConnector ());
   g_assert_nonnull (connector);
 
-  link = new NclFormatterLink (domLink, context);
+  link = new NclFormatterLink (context);
 
   // Add conditions.
   for (auto connCond: *connector->getConditions ())
     {
-      for (auto bind: domLink->getBinds (connCond))
+      for (auto bind: docLink->getBinds (connCond))
         {
           NclCondition *cond;
           cond = createCondition (connCond, bind, context);
@@ -868,7 +866,7 @@ Converter::createLink (Link *domLink, ExecutionObjectContext *context)
   // Add actions.
   for (auto connAct: *connector->getActions ())
     {
-      for (auto bind: domLink->getBinds (connAct))
+      for (auto bind: docLink->getBinds (connAct))
         {
           NclAction *action;
           action = createAction (connAct, bind, context);
