@@ -525,8 +525,6 @@ ParserXercesC::parseImportBase (DOMElement *elt, NclDocument **doc,
   tag = dom_elt_get_tag (parent);
   if (tag == "ruleBase")
     return (*doc)->getRuleBase ();
-  else if (tag == "transitionBase")
-    return (*doc)->getTransitionBase ();
   else if (tag == "connectorBase")
     return (*doc)->getConnectorBase ();
   else
@@ -652,98 +650,83 @@ ParserXercesC::parseRule (DOMElement *elt)
 
 // Private: Transition.
 
-TransitionBase *
+void
 ParserXercesC::parseTransitionBase (DOMElement *elt)
 {
-  TransitionBase *base;
   string id;
 
   CHECK_ELT_TAG (elt, "transitionBase", nullptr);
   CHECK_ELT_OPT_ID_AUTO (elt, &id, transitionBase);
 
-  base = new TransitionBase (_doc, id);
   for(DOMElement *child: dom_elt_get_children (elt))
     {
       string tag = dom_elt_get_tag (child);
       if (tag == "importBase")
         {
-          NclDocument *doc;     // FIXME: this is lost (leak?)
-          Base *imported;
-          string alias;
-          string uri;
-          imported = this->parseImportBase (child, &doc, &alias, &uri);
-          g_assert_nonnull (imported);
-          base->addBase (imported, alias, uri);
+          ERROR_NOT_IMPLEMENTED ("%s: element is not supported",
+                                 __error_elt (child).c_str ());
         }
       else if (tag == "transition")
         {
-          Transition *trans = parseTransition (child);
-          g_assert_nonnull (trans);
-          base->addTransition (trans);
+          parseTransition (child);
         }
       else
         {
           ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
         }
     }
-  return base;
 }
 
-Transition *
+void
 ParserXercesC::parseTransition (DOMElement *elt)
 {
-  Transition *trans;
   string id;
   string value;
-  int type;
 
   CHECK_ELT_TAG (elt, "transition", nullptr);
   CHECK_ELT_ID (elt, &id);
 
   CHECK_ELT_ATTRIBUTE (elt, "type", &value);
-  type = TransitionUtil::getTypeCode (value);
-  if (unlikely (type < 0))
-    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "type");
-
-  trans = new Transition (_doc, id, type);
-
   if (dom_elt_try_get_attribute (value, elt, "subtype"))
     {
-      int subtype = TransitionUtil::getSubtypeCode (type, value);
-      trans->setSubtype (CLAMP (subtype, 0, G_MAXINT));
+      // No-op.
     }
-
   if (dom_elt_try_get_attribute (value, elt, "dur"))
-    trans->setDuration (ginga_parse_time (value));
-
+    {
+      // No-op.
+    }
   if (dom_elt_try_get_attribute (value, elt, "startProgress"))
-    trans->setStartProgress (xstrtod (value));
-
+    {
+      // No-op.
+    }
   if (dom_elt_try_get_attribute (value, elt, "endProgress"))
-    trans->setEndProgress (xstrtod (value));
-
+    {
+      // No-op.
+    }
   if (dom_elt_try_get_attribute (value, elt, "direction"))
     {
-      int dir = TransitionUtil::getDirectionCode (value);
-      trans->setDirection ((short) CLAMP (dir, 0, G_MAXINT));
+      // No-op.
     }
-
   if (dom_elt_try_get_attribute (value, elt, "fadeColor"))
-    trans->setFadeColor (ginga_parse_color (value));
-
+    {
+      // No-op.
+    }
   if (dom_elt_try_get_attribute (value, elt, "horzRepeat"))
-    trans->setHorzRepeat (xstrtoint (value, 10));
-
+    {
+      // No-op.
+    }
   if (dom_elt_try_get_attribute (value, elt, "vertRepeat"))
-    trans->setVertRepeat (xstrtoint (value, 10));
-
+    {
+      // No-op.
+    }
   if (dom_elt_try_get_attribute (value, elt, "borderWidth"))
-    trans->setBorderWidth (xstrtoint (value, 10));
-
+    {
+      // No-op.
+    }
   if (dom_elt_try_get_attribute (value, elt, "borderColor"))
-    trans->setBorderColor (ginga_parse_color (value));
-
-  return trans;
+    {
+      // No-op.
+    }
 }
 
 
