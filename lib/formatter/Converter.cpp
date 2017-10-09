@@ -714,331 +714,6 @@ Converter::eventStateChanged (NclEvent *event,
     }
 }
 
-NclFormatterLink *
-Converter::createLink (Link *ncmLink, ExecutionObjectContext *parentObj)
-{
-  Connector *connector;
-  NclFormatterLink *formatterLink;
-  string value;
-
-  g_assert_nonnull (ncmLink);
-
-  // compile link condition and verify if it is a trigger condition
-  connector = cast (Connector *, ncmLink->getConnector ());
-  g_assert_nonnull (connector);
-
-  // conditionExpression = (*connector->getConditions ())[0];
-  // formatterCondition
-  //     = createCondition (conditionExpression, ncmLink,
-  //                        parentObj);
-
-  // Create formatter link.
-  formatterLink = new NclFormatterLink (ncmLink, parentObj);
-
-  // Add conditions.
-  for (auto cond: *connector->getConditions ())
-    {
-      for (auto bind: ncmLink->getBinds (cond))
-        {
-          NclCondition *condition;
-          condition = createCondition (cond, bind, parentObj);
-          g_assert_nonnull (condition);
-          formatterLink->addCondition (condition);
-        }
-    }
-
-  // Add actions.
-  for (auto act: *connector->getActions ())
-    {
-      for (auto bind: ncmLink->getBinds (act))
-        {
-          NclAction *action;
-          action = createSimpleAction (act, bind, parentObj);
-          g_assert_nonnull (action);
-          formatterLink->addAction (action);
-        }
-    }
-
-  return formatterLink;
-}
-
-// NclLinkCondition *
-// Converter::createCondition (
-//     Condition *ncmExp, Link *ncmLink,
-//     ExecutionObjectContext *parentObj)
-// {
-//   auto triggerExp = cast (TriggerExpression *, ncmExp);
-//   auto statment = cast (Statement *, ncmExp);
-//   if (triggerExp)
-//     {
-//       return createCondition (triggerExp, ncmLink, parentObj);
-//     }
-//   else if (statment)
-//     {
-//       return createStatement (statment, ncmLink, parentObj);
-//     }
-//   g_assert_not_reached ();
-// }
-
-// NclLinkCompoundTriggerCondition *
-// Converter::createCompoundTriggerCondition (GingaTime delay,
-//     const vector<Condition *> *ncmChildConditions, Link *ncmLink,
-//     ExecutionObjectContext *parentObj)
-// {
-//   NclLinkCompoundTriggerCondition *condition;
-//   NclLinkCondition *childCondition;
-//   condition = new NclLinkCompoundTriggerCondition ();
-//   if (delay > 0)
-//     condition->setDelay (delay);
-//   for (auto cond: *ncmChildConditions)
-//     {
-//       childCondition = createCondition (cond, ncmLink, parentObj);
-//       condition->addCondition (childCondition);
-//     }
-//   return condition;
-// }
-
-NclCondition *
-Converter::createCondition (
-    Condition *condition, Link *ncmLink,
-    ExecutionObjectContext *parentObj)
-{
-  auto ste = cast (Condition *, condition);
-  if (ste)                      // Condition
-    {
-      vector<Bind *> binds = ncmLink->getBinds (ste);
-      size_t size = binds.size ();
-      if (size == 1)
-        {
-          return createCondition (ste, binds[0], parentObj);
-        }
-      else if (size > 1)
-        {
-          g_assert_not_reached ();
-          // compoundCondition = new NclLinkCompoundTriggerCondition ();
-          // for (size_t i = 0; i < size; i++)
-          //   {
-          //     simpleCondition = createCondition (ste, binds[i], parentObj);
-
-          //     compoundCondition->addCondition (simpleCondition);
-          //   }
-          // return compoundCondition;
-        }
-      else
-        {
-          return nullptr;
-        }
-    }
-  // else if (cte)                 // CompoundCondition
-  //   {
-  //     return createCompoundTriggerCondition (0,
-  //                                            cte->getConditions (), ncmLink,
-  //                                            parentObj);
-  //   }
-  else
-    {
-      g_assert_not_reached ();
-    }
-
-  return nullptr;
-}
-
-// NclLinkAssessmentStatement *
-// Converter::createAssessmentStatement (
-//     AssessmentStatement *assessmentStatement, Bind *bind, Link *ncmLink,
-//     ExecutionObjectContext *parentObj)
-// {
-//   NclLinkAttributeAssessment *mainAssessment;
-//   NclLinkAssessment *otherAssessment;
-//   NclLinkAssessmentStatement *statement;
-//   string paramValue;
-//   Parameter *connParam;
-//   vector<Bind *> otherBinds;
-//   mainAssessment = createAttributeAssessment (
-//         assessmentStatement->getMainAssessment (), bind,
-//         parentObj);
-//   auto valueAssessment = cast (ValueAssessment *,
-//         assessmentStatement->getOtherAssessment ());
-//   auto attrAssessment = cast (AttributeAssessment *,
-//         assessmentStatement->getOtherAssessment ());
-//   if (valueAssessment)
-//     {
-//       paramValue = valueAssessment->getValue ();
-//       if (paramValue[0] == '$')
-//         { // instanceof("Parameter")
-//           connParam = new Parameter (
-//                 paramValue.substr (1, paramValue.length () - 1), "");
-//           paramValue = bind->getParameter (connParam->getName ());
-//         }
-//       otherAssessment = new NclLinkValueAssessment (paramValue);
-//     }
-//   else if (attrAssessment)
-//     {
-//       otherBinds = ncmLink->getBinds (attrAssessment);
-//       if (!otherBinds.empty ())
-//         {
-//           otherAssessment = createAttributeAssessment (
-//                 attrAssessment, otherBinds[0], parentObj);
-//         }
-//       else
-//         {
-//           otherAssessment = createAttributeAssessment (
-//                 attrAssessment, nullptr, parentObj);
-//         }
-//     }
-//   else
-//     {
-//       g_assert_not_reached ();
-//     }
-//   statement = new NclLinkAssessmentStatement (
-//         assessmentStatement->getComparator (), mainAssessment,
-//         otherAssessment);
-//   return statement;
-// }
-
-// NclLinkStatement *
-// Converter::createStatement (
-//     Statement *statementExpression, Link *ncmLink,
-//     ExecutionObjectContext *parentObj)
-// {
-//   int size;
-//   NclLinkStatement *statement;
-//   auto as = cast (AssessmentStatement *, statementExpression);
-//   auto cs = cast (CompoundStatement *, statementExpression);
-//   if (as) // AssessmentStatement
-//     {
-//       vector<Bind *> binds = ncmLink->getBinds (as->getMainAssessment ());
-//       size = (int) binds.size ();
-//       if (size == 1)
-//         {
-//           statement = createAssessmentStatement (as, binds[0], ncmLink, parentObj);
-//         }
-//       else
-//         {
-//           return nullptr;
-//         }
-//     }
-//   else if (cs) // CompoundStatement
-//     {
-//       statement = new NclLinkCompoundStatement (cs->isConjunction (),
-//                                                 cs->isNegated ());
-//       for (auto child: *cs->getStatements ())
-//         {
-//           NclLinkStatement *childStatement
-//               = createStatement (child, ncmLink, parentObj);
-//           ((NclLinkCompoundStatement *)statement)
-//               ->addStatement (childStatement);
-//         }
-//     }
-//   else
-//     {
-//       g_assert_not_reached ();
-//     }
-//   return statement;
-// }
-
-// NclLinkAttributeAssessment *
-// Converter::createAttributeAssessment (
-//     unused (AttributeAssessment *attributeAssessment), Bind *bind,
-//     ExecutionObjectContext *parentObj)
-// {
-//   NclEvent *event = createEvent (bind, parentObj);
-//   return new NclLinkAttributeAssessment
-//     (event, AttributeType::NODE_PROPERTY);
-// }
-
-NclAction *
-Converter::createSimpleAction (
-    Action *sae, Bind *bind,
-    ExecutionObjectContext *parentObj)
-{
-  NclEvent *event;
-  EventStateTransition actionType;
-  EventType eventType;
-  NclAction *action;
-  Parameter *connParam;
-  string paramValue;
-
-  action = nullptr;
-
-  event = createEvent (bind, parentObj);
-  g_assert_nonnull (event);
-
-  actionType = sae->getTransition ();
-
-  eventType = bind->getRole ()->getEventType ();
-  event->setType (eventType);
-  switch (actionType)
-    {
-    case EventStateTransition::START:
-      if (eventType == EventType::PRESENTATION)
-        {
-          action = new NclAction (event, actionType, _actionListener);
-        }
-      else if (eventType == EventType::ATTRIBUTION)
-        {
-          paramValue = sae->getValue ();
-          if (paramValue != "" && paramValue[0] == '$')
-            {
-              connParam = new Parameter (
-                    paramValue.substr (1, paramValue.length () - 1), "");
-              paramValue = bind->getParameter (connParam->getName ());
-            }
-
-          string paramDur;
-
-          paramDur = sae->getDuration ();
-          if (paramDur[0] == '$')
-            {
-              connParam = new Parameter
-                (paramDur.substr (1, paramDur.length () - 1), "");
-
-              paramDur = bind->getParameter (connParam->getName ());
-            }
-
-          action = new NclAction (event, actionType, _actionListener);
-          g_assert (paramDur[0] != '$');
-          action->setDuration (paramDur);
-          g_assert (paramValue[0] != '$');
-          action->setValue (paramValue);
-        }
-      else
-        {
-          g_assert_not_reached ();
-        }
-      break;
-
-    case EventStateTransition::STOP:
-    case EventStateTransition::PAUSE:
-    case EventStateTransition::RESUME:
-    case EventStateTransition::ABORT:
-      action = new NclAction (event, actionType, _actionListener);
-      break;
-
-    default:
-      g_assert_not_reached ();
-    }
-
-  g_assert_nonnull (action);
-  return action;
-}
-
-NclCondition *
-Converter::createCondition (
-    Condition *simpleCondition, Bind *bind,
-    ExecutionObjectContext *parentObj)
-{
-  NclEvent *event;
-  string delayObject;
-  NclCondition *condition;
-
-  event = createEvent (bind, parentObj);
-  condition = new NclCondition (
-        event, simpleCondition->getTransition ());
-
-  return condition;
-}
-
 NclEvent *
 Converter::createEvent (Bind *bind, ExecutionObjectContext *parentObject)
 {
@@ -1160,5 +835,110 @@ Converter::getBindKey (Bind *ncmBind)
 
   return key;
 }
+
+
+// INSANITY ABOVE ----------------------------------------------------------
+
+NclFormatterLink *
+Converter::createLink (Link *domLink, ExecutionObjectContext *context)
+{
+  Connector *connector;
+  NclFormatterLink *link;
+
+  g_assert_nonnull (domLink);
+  g_assert_nonnull (context);
+
+  connector = cast (Connector *, domLink->getConnector ());
+  g_assert_nonnull (connector);
+
+  link = new NclFormatterLink (domLink, context);
+
+  // Add conditions.
+  for (auto connCond: *connector->getConditions ())
+    {
+      for (auto bind: domLink->getBinds (connCond))
+        {
+          NclCondition *cond;
+          cond = createCondition (connCond, bind, context);
+          g_assert_nonnull (cond);
+          g_assert (link->addCondition (cond));
+        }
+    }
+
+  // Add actions.
+  for (auto connAct: *connector->getActions ())
+    {
+      for (auto bind: domLink->getBinds (connAct))
+        {
+          NclAction *action;
+          action = createAction (connAct, bind, context);
+          g_assert_nonnull (action);
+          g_assert (link->addAction (action));
+        }
+    }
+
+  return link;
+}
+
+NclCondition *
+Converter::createCondition (Condition *connCondition, Bind *bind,
+                            ExecutionObjectContext *context)
+{
+  NclEvent *event;
+
+  g_assert_nonnull (connCondition);
+  g_assert_nonnull (bind);
+  g_assert_nonnull (context);
+
+  event = createEvent (bind, context);
+  g_assert_nonnull (event);
+  return new NclCondition (event, connCondition->getTransition ());
+}
+
+NclAction *
+Converter::createAction (Action *connAction, Bind *bind,
+                         ExecutionObjectContext *context)
+{
+  EventType eventType;
+  EventStateTransition transition;
+
+  NclEvent *event;
+  NclAction *action;
+
+  g_assert_nonnull (connAction);
+  g_assert_nonnull (bind);
+  g_assert_nonnull (context);
+
+  eventType = bind->getRole ()->getEventType ();
+  transition = connAction->getTransition ();
+
+  event = createEvent (bind, context);
+  g_assert_nonnull (event);
+  event->setType (eventType);
+
+  action = new NclAction (event, transition, _actionListener);
+  if (eventType == EventType::ATTRIBUTION)
+    {
+      string dur;
+      string value;
+
+      dur = connAction->getDuration ();
+      if (dur[0] == '$')
+          dur = bind->getParameter (dur.substr (1, dur.length () - 1));
+
+      value = connAction->getValue ();
+      if (value[0] == '$')
+        value = bind->getParameter (value.substr (1, value.length () - 1));
+
+      g_assert (dur[0] != '$');
+      g_assert (value[0] != '$');
+
+      action->setDuration (dur);
+      action->setValue (value);
+    }
+
+  return action;
+}
+
 
 GINGA_FORMATTER_END

@@ -51,32 +51,39 @@ NclFormatterLink::getNcmLink ()
   return _ncmLink;
 }
 
-const vector <NclAction *> *
-NclFormatterLink::getActions ()
-{
-  return &_actions;
-}
-
-void
-NclFormatterLink::addAction (NclAction *action)
-{
-  g_assert_nonnull (action);
-  _actions.push_back (action);
-}
-
 const vector <NclCondition *> *
 NclFormatterLink::getConditions ()
 {
   return &_conditions;
 }
 
-void
+bool
 NclFormatterLink::addCondition (NclCondition *condition)
 {
   g_assert_nonnull (condition);
+  for (auto cond: _conditions)
+    if (cond == condition)
+      return false;
   condition->setTriggerListener (this);
   _conditions.push_back (condition);
+  return true;
+}
 
+const vector <NclAction *> *
+NclFormatterLink::getActions ()
+{
+  return &_actions;
+}
+
+bool
+NclFormatterLink::addAction (NclAction *action)
+{
+  g_assert_nonnull (action);
+  for (auto act: _actions)
+    if (act == action)
+      return false;
+  _actions.push_back (action);
+  return true;
 }
 
 void

@@ -39,11 +39,11 @@ public:
   void suspendLinkEvaluation (bool suspended);
   Link *getNcmLink ();
 
-  const vector <NclAction *> *getActions ();
-  void addAction (NclAction *);
-
   const vector <NclCondition *> *getConditions ();
-  void addCondition (NclCondition *);
+  bool addCondition (NclCondition *);
+
+  const vector <NclAction *> *getActions ();
+  bool addAction (NclAction *);
 
   void conditionSatisfied ();
 
