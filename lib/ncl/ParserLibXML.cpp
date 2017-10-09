@@ -910,6 +910,9 @@ ncl_push_region (ParserLibXML_State *st,
         - ginga_parse_percent (value, parent_rect.height, 0, G_MAXINT);
     }
 
+  // FIXME: Handle zIndex.
+  // FIXME: Do we need to export zorder?
+
   st->rect = rect;
   (*attr)["zorder"] = xstrbuild ("%d", last_zorder++);
   (*attr)["left"] = xstrbuild

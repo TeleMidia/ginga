@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef MEDIA_H
 #define MEDIA_H
 
-#include "Descriptor.h"
 #include "Node.h"
 
 GINGA_NCL_BEGIN
@@ -36,9 +35,6 @@ public:
   string getSrc ();
   void setSrc (const string &);
 
-  Descriptor *getDescriptor ();
-  void initDescriptor (Descriptor *);
-
   void addSameInstance (Refer *);
   const set<Refer *> *getInstSameInstances ();
 
@@ -46,7 +42,6 @@ private:
   bool _isSettings;
   string _src;
   string _mimetype;
-  Descriptor *_descriptor;
   set<Refer *> _instances;
 };
 

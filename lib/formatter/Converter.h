@@ -48,7 +48,7 @@ public:
   void setHandlingStatus (bool handling);
 
   ExecutionObject *getExecutionObjectFromPerspective
-  (NclNodeNesting *, Descriptor *);
+  (NclNodeNesting *);
 
   NclEvent *getEvent (ExecutionObject *exeObj,
                       Anchor *interfacePoint,
@@ -73,46 +73,39 @@ private:
   RuleAdapter *_ruleAdapter;
   bool _handling;
 
-  void addExecutionObject (ExecutionObject *exeObj,
-                           ExecutionObjectContext *parentObj);
+  void addExecutionObject (ExecutionObject *,
+                           ExecutionObjectContext *);
 
 
 
   ExecutionObjectContext *
-  addSameInstance (ExecutionObject *exeObj, Refer *referNode);
+  addSameInstance (ExecutionObject *, Refer *);
 
-  ExecutionObjectContext *getParentExecutionObject (
-      NclNodeNesting *perspective);
+  ExecutionObjectContext *getParentExecutionObject (NclNodeNesting *);
 
   ExecutionObject *
-  createExecutionObject (const string &id, NclNodeNesting *perspective,
-                         Descriptor *descriptor);
+  createExecutionObject (const string &, NclNodeNesting *);
 
-  void compileExecutionObjectLinks (ExecutionObject *exeObj, Node *dataObj,
-                                    ExecutionObjectContext *parentObj);
+  void compileExecutionObjectLinks (ExecutionObject *, Node *,
+                                    ExecutionObjectContext *);
 
-  void processLink (Link *ncmLink,
-                    Node *dataObject,
-                    ExecutionObject *exeObj,
-                    ExecutionObjectContext *parentObj);
+  void processLink (Link *,
+                    Node *,
+                    ExecutionObject *,
+                    ExecutionObjectContext *);
 
   void resolveSwitchEvents (ExecutionObjectSwitch *switchObject);
 
   NclEvent *insertNode (NclNodeNesting *perspective,
-                        Anchor *interfacePoint,
-                        Descriptor *descriptor);
+                        Anchor *interfacePoint);
 
   void eventStateChanged (NclEvent *someEvent,
                           EventStateTransition transition,
                           EventState previousState) override;
 
-  static Descriptor *
-  getCascadingDescriptor (NclNodeNesting *nodePerspective,
-                          Descriptor *descriptor);
-
   static bool hasDescriptorPropName (const string &name);
 
-  string getBindKey (Bind *ncmBind);
+  bool getBindKey (Bind *, string *);
 
 
   NclEvent *createEvent (Bind *, ExecutionObjectContext *);
