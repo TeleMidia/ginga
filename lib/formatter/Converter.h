@@ -27,8 +27,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclCondition.h"
 #include "NclEvents.h"
 #include "NclLink.h"
-#include "NclLink.h"
-#include "NclLinkStatement.h"
 #include "RuleAdapter.h"
 
 #include "ncl/Ncl.h"
