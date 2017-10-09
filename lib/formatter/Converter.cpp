@@ -718,8 +718,6 @@ NclFormatterLink *
 Converter::createLink (Link *ncmLink, ExecutionObjectContext *parentObj)
 {
   Connector *connector;
-  Condition *conditionExpression;
-  NclLinkCondition *formatterCondition;
   NclFormatterLink *formatterLink;
   string value;
 
@@ -729,91 +727,83 @@ Converter::createLink (Link *ncmLink, ExecutionObjectContext *parentObj)
   connector = cast (Connector *, ncmLink->getConnector ());
   g_assert_nonnull (connector);
 
-  conditionExpression = connector->getCondition ();
-  formatterCondition
-      = createCondition ((TriggerExpression *)conditionExpression, ncmLink,
-                         parentObj);
-
-  if (formatterCondition == nullptr
-      || !(instanceof (NclLinkTriggerCondition *, formatterCondition)))
-    {
-      if (formatterCondition != nullptr)
-        delete formatterCondition;
-      return nullptr;
-    }
+  // conditionExpression = (*connector->getConditions ())[0];
+  // formatterCondition
+  //     = createCondition (conditionExpression, ncmLink,
+  //                        parentObj);
 
   // Create formatter link.
-  formatterLink = new NclFormatterLink (
-        (NclLinkTriggerCondition *) formatterCondition,
-        ncmLink, (ExecutionObjectContext *) parentObj);
+  formatterLink = new NclFormatterLink (ncmLink, parentObj);
+
+  // Add conditions.
+  for (auto cond: *connector->getConditions ())
+    {
+      for (auto bind: ncmLink->getBinds (cond))
+        {
+          NclLinkTriggerCondition *condition;
+          condition = createSimpleCondition (cond, bind, parentObj);
+          g_assert_nonnull (condition);
+          formatterLink->addCondition (condition);
+        }
+    }
 
   // Add actions.
   for (auto act: *connector->getActions ())
     {
       for (auto bind: ncmLink->getBinds (act))
         {
-          NclAction *simpleAction;
-          simpleAction = createSimpleAction (act, bind, parentObj);
-          g_assert_nonnull (simpleAction);
-          formatterLink->addAction (simpleAction);
+          NclAction *action;
+          action = createSimpleAction (act, bind, parentObj);
+          g_assert_nonnull (action);
+          formatterLink->addAction (action);
         }
     }
 
   return formatterLink;
 }
 
-NclLinkCondition *
-Converter::createCondition (
-    Condition *ncmExp, Link *ncmLink,
-    ExecutionObjectContext *parentObj)
-{
-  auto triggerExp = cast (TriggerExpression *, ncmExp);
-  auto statment = cast (Statement *, ncmExp);
-  if (triggerExp)
-    {
-      return createCondition (triggerExp, ncmLink, parentObj);
-    }
-  else if (statment)
-    {
-      return createStatement (statment, ncmLink, parentObj);
-    }
+// NclLinkCondition *
+// Converter::createCondition (
+//     Condition *ncmExp, Link *ncmLink,
+//     ExecutionObjectContext *parentObj)
+// {
+//   auto triggerExp = cast (TriggerExpression *, ncmExp);
+//   auto statment = cast (Statement *, ncmExp);
+//   if (triggerExp)
+//     {
+//       return createCondition (triggerExp, ncmLink, parentObj);
+//     }
+//   else if (statment)
+//     {
+//       return createStatement (statment, ncmLink, parentObj);
+//     }
+//   g_assert_not_reached ();
+// }
 
-  g_assert_not_reached ();
-}
-
-NclLinkCompoundTriggerCondition *
-Converter::createCompoundTriggerCondition (GingaTime delay,
-    const vector<Condition *> *ncmChildConditions, Link *ncmLink,
-    ExecutionObjectContext *parentObj)
-{
-  NclLinkCompoundTriggerCondition *condition;
-  NclLinkCondition *childCondition;
-
-  condition = new NclLinkCompoundTriggerCondition ();
-
-  if (delay > 0)
-    condition->setDelay (delay);
-
-  for (auto cond: *ncmChildConditions)
-    {
-      childCondition = createCondition (cond, ncmLink, parentObj);
-      condition->addCondition (childCondition);
-    }
-
-  return condition;
-}
+// NclLinkCompoundTriggerCondition *
+// Converter::createCompoundTriggerCondition (GingaTime delay,
+//     const vector<Condition *> *ncmChildConditions, Link *ncmLink,
+//     ExecutionObjectContext *parentObj)
+// {
+//   NclLinkCompoundTriggerCondition *condition;
+//   NclLinkCondition *childCondition;
+//   condition = new NclLinkCompoundTriggerCondition ();
+//   if (delay > 0)
+//     condition->setDelay (delay);
+//   for (auto cond: *ncmChildConditions)
+//     {
+//       childCondition = createCondition (cond, ncmLink, parentObj);
+//       condition->addCondition (childCondition);
+//     }
+//   return condition;
+// }
 
 NclLinkCondition *
 Converter::createCondition (
-    TriggerExpression *condition, Link *ncmLink,
+    SimpleCondition *condition, Link *ncmLink,
     ExecutionObjectContext *parentObj)
 {
-  NclLinkCompoundTriggerCondition *compoundCondition;
-  NclLinkTriggerCondition *simpleCondition;
-
   auto ste = cast (SimpleCondition *, condition);
-  auto cte = cast (CompoundCondition *, condition);
-
   if (ste)                      // SimpleCondition
     {
       vector<Bind *> binds = ncmLink->getBinds (ste);
@@ -824,26 +814,27 @@ Converter::createCondition (
         }
       else if (size > 1)
         {
-          compoundCondition = new NclLinkCompoundTriggerCondition ();
-          for (size_t i = 0; i < size; i++)
-            {
-              simpleCondition = createSimpleCondition (ste, binds[i], parentObj);
+          g_assert_not_reached ();
+          // compoundCondition = new NclLinkCompoundTriggerCondition ();
+          // for (size_t i = 0; i < size; i++)
+          //   {
+          //     simpleCondition = createSimpleCondition (ste, binds[i], parentObj);
 
-              compoundCondition->addCondition (simpleCondition);
-            }
-          return compoundCondition;
+          //     compoundCondition->addCondition (simpleCondition);
+          //   }
+          // return compoundCondition;
         }
       else
         {
           return nullptr;
         }
     }
-  else if (cte)                 // CompoundCondition
-    {
-      return createCompoundTriggerCondition (0,
-                                             cte->getConditions (), ncmLink,
-                                             parentObj);
-    }
+  // else if (cte)                 // CompoundCondition
+  //   {
+  //     return createCompoundTriggerCondition (0,
+  //                                            cte->getConditions (), ncmLink,
+  //                                            parentObj);
+  //   }
   else
     {
       g_assert_not_reached ();
@@ -852,122 +843,109 @@ Converter::createCondition (
   return nullptr;
 }
 
-NclLinkAssessmentStatement *
-Converter::createAssessmentStatement (
-    AssessmentStatement *assessmentStatement, Bind *bind, Link *ncmLink,
-    ExecutionObjectContext *parentObj)
-{
-  NclLinkAttributeAssessment *mainAssessment;
-  NclLinkAssessment *otherAssessment;
-  NclLinkAssessmentStatement *statement;
-  string paramValue;
-  Parameter *connParam;
-  vector<Bind *> otherBinds;
+// NclLinkAssessmentStatement *
+// Converter::createAssessmentStatement (
+//     AssessmentStatement *assessmentStatement, Bind *bind, Link *ncmLink,
+//     ExecutionObjectContext *parentObj)
+// {
+//   NclLinkAttributeAssessment *mainAssessment;
+//   NclLinkAssessment *otherAssessment;
+//   NclLinkAssessmentStatement *statement;
+//   string paramValue;
+//   Parameter *connParam;
+//   vector<Bind *> otherBinds;
+//   mainAssessment = createAttributeAssessment (
+//         assessmentStatement->getMainAssessment (), bind,
+//         parentObj);
+//   auto valueAssessment = cast (ValueAssessment *,
+//         assessmentStatement->getOtherAssessment ());
+//   auto attrAssessment = cast (AttributeAssessment *,
+//         assessmentStatement->getOtherAssessment ());
+//   if (valueAssessment)
+//     {
+//       paramValue = valueAssessment->getValue ();
+//       if (paramValue[0] == '$')
+//         { // instanceof("Parameter")
+//           connParam = new Parameter (
+//                 paramValue.substr (1, paramValue.length () - 1), "");
+//           paramValue = bind->getParameter (connParam->getName ());
+//         }
+//       otherAssessment = new NclLinkValueAssessment (paramValue);
+//     }
+//   else if (attrAssessment)
+//     {
+//       otherBinds = ncmLink->getBinds (attrAssessment);
+//       if (!otherBinds.empty ())
+//         {
+//           otherAssessment = createAttributeAssessment (
+//                 attrAssessment, otherBinds[0], parentObj);
+//         }
+//       else
+//         {
+//           otherAssessment = createAttributeAssessment (
+//                 attrAssessment, nullptr, parentObj);
+//         }
+//     }
+//   else
+//     {
+//       g_assert_not_reached ();
+//     }
+//   statement = new NclLinkAssessmentStatement (
+//         assessmentStatement->getComparator (), mainAssessment,
+//         otherAssessment);
+//   return statement;
+// }
 
-  mainAssessment = createAttributeAssessment (
-        assessmentStatement->getMainAssessment (), bind,
-        parentObj);
+// NclLinkStatement *
+// Converter::createStatement (
+//     Statement *statementExpression, Link *ncmLink,
+//     ExecutionObjectContext *parentObj)
+// {
+//   int size;
+//   NclLinkStatement *statement;
+//   auto as = cast (AssessmentStatement *, statementExpression);
+//   auto cs = cast (CompoundStatement *, statementExpression);
+//   if (as) // AssessmentStatement
+//     {
+//       vector<Bind *> binds = ncmLink->getBinds (as->getMainAssessment ());
+//       size = (int) binds.size ();
+//       if (size == 1)
+//         {
+//           statement = createAssessmentStatement (as, binds[0], ncmLink, parentObj);
+//         }
+//       else
+//         {
+//           return nullptr;
+//         }
+//     }
+//   else if (cs) // CompoundStatement
+//     {
+//       statement = new NclLinkCompoundStatement (cs->isConjunction (),
+//                                                 cs->isNegated ());
+//       for (auto child: *cs->getStatements ())
+//         {
+//           NclLinkStatement *childStatement
+//               = createStatement (child, ncmLink, parentObj);
+//           ((NclLinkCompoundStatement *)statement)
+//               ->addStatement (childStatement);
+//         }
+//     }
+//   else
+//     {
+//       g_assert_not_reached ();
+//     }
+//   return statement;
+// }
 
-  auto valueAssessment = cast (ValueAssessment *,
-        assessmentStatement->getOtherAssessment ());
-
-  auto attrAssessment = cast (AttributeAssessment *,
-        assessmentStatement->getOtherAssessment ());
-
-  if (valueAssessment)
-    {
-      paramValue = valueAssessment->getValue ();
-      if (paramValue[0] == '$')
-        { // instanceof("Parameter")
-          connParam = new Parameter (
-                paramValue.substr (1, paramValue.length () - 1), "");
-
-          paramValue = bind->getParameter (connParam->getName ());
-        }
-
-      otherAssessment = new NclLinkValueAssessment (paramValue);
-    }
-  else if (attrAssessment)
-    {
-      otherBinds = ncmLink->getBinds (attrAssessment);
-      if (!otherBinds.empty ())
-        {
-          otherAssessment = createAttributeAssessment (
-                attrAssessment, otherBinds[0], parentObj);
-        }
-      else
-        {
-          otherAssessment = createAttributeAssessment (
-                attrAssessment, nullptr, parentObj);
-        }
-    }
-  else
-    {
-      g_assert_not_reached ();
-    }
-
-  statement = new NclLinkAssessmentStatement (
-        assessmentStatement->getComparator (), mainAssessment,
-        otherAssessment);
-
-  return statement;
-}
-
-NclLinkStatement *
-Converter::createStatement (
-    Statement *statementExpression, Link *ncmLink,
-    ExecutionObjectContext *parentObj)
-{
-  int size;
-  NclLinkStatement *statement;
-
-  auto as = cast (AssessmentStatement *, statementExpression);
-  auto cs = cast (CompoundStatement *, statementExpression);
-  if (as) // AssessmentStatement
-    {
-      vector<Bind *> binds = ncmLink->getBinds (as->getMainAssessment ());
-      size = (int) binds.size ();
-      if (size == 1)
-        {
-          statement = createAssessmentStatement (as, binds[0], ncmLink, parentObj);
-        }
-      else
-        {
-          return nullptr;
-        }
-    }
-  else if (cs) // CompoundStatement
-    {
-      statement = new NclLinkCompoundStatement (cs->isConjunction (),
-                                                cs->isNegated ());
-
-      for (auto child: *cs->getStatements ())
-        {
-          NclLinkStatement *childStatement
-              = createStatement (child, ncmLink, parentObj);
-
-          ((NclLinkCompoundStatement *)statement)
-              ->addStatement (childStatement);
-        }
-    }
-  else
-    {
-      g_assert_not_reached ();
-    }
-
-  return statement;
-}
-
-NclLinkAttributeAssessment *
-Converter::createAttributeAssessment (
-    unused (AttributeAssessment *attributeAssessment), Bind *bind,
-    ExecutionObjectContext *parentObj)
-{
-  NclEvent *event = createEvent (bind, parentObj);
-
-  return new NclLinkAttributeAssessment
-    (event, AttributeType::NODE_PROPERTY);
-}
+// NclLinkAttributeAssessment *
+// Converter::createAttributeAssessment (
+//     unused (AttributeAssessment *attributeAssessment), Bind *bind,
+//     ExecutionObjectContext *parentObj)
+// {
+//   NclEvent *event = createEvent (bind, parentObj);
+//   return new NclLinkAttributeAssessment
+//     (event, AttributeType::NODE_PROPERTY);
+// }
 
 NclAction *
 Converter::createSimpleAction (

@@ -19,12 +19,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define SIMPLE_CONDITION_H
 
 #include "Role.h"
-#include "TriggerExpression.h"
 #include "Predicate.h"
 
 GINGA_NCL_BEGIN
 
-class SimpleCondition : public TriggerExpression, public Role
+class SimpleCondition: public Role
 {
 public:
   SimpleCondition (EventType, EventStateTransition,

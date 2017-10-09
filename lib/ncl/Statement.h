@@ -18,14 +18,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef STATEMENT_H
 #define STATEMENT_H
 
-#include "Condition.h"
-
 GINGA_NCL_BEGIN
 
-class Statement : public Condition
+class Statement
 {
 public:
-  Statement () : Condition () {};
+  Statement () {};
   virtual ~Statement () {};
 };
 

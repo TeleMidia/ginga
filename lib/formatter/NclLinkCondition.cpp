@@ -33,54 +33,53 @@ NclLinkTriggerCondition::conditionSatisfied ()
 }
 
 
-NclLinkCompoundTriggerCondition::NclLinkCompoundTriggerCondition ()
-    : NclLinkTriggerCondition ()
-{
-}
+// NclLinkCompoundTriggerCondition::NclLinkCompoundTriggerCondition ()
+//     : NclLinkTriggerCondition ()
+// {
+// }
 
-NclLinkCompoundTriggerCondition::~NclLinkCompoundTriggerCondition ()
-{
-  for (NclLinkCondition *condition : _conditions)
-    {
-      g_assert_nonnull (condition);
-      delete condition;
-    }
-}
+// NclLinkCompoundTriggerCondition::~NclLinkCompoundTriggerCondition ()
+// {
+//   for (NclLinkCondition *condition : _conditions)
+//     {
+//       g_assert_nonnull (condition);
+//       delete condition;
+//     }
+// }
 
-void
-NclLinkCompoundTriggerCondition::addCondition (NclLinkCondition *condition)
-{
-  g_assert_nonnull (condition);
+// void
+// NclLinkCompoundTriggerCondition::addCondition (NclLinkCondition *condition)
+// {
+//   g_assert_nonnull (condition);
 
-  _conditions.push_back (condition);
+//   _conditions.push_back (condition);
 
-  auto linkTriggerCondition = cast (NclLinkTriggerCondition *, condition);
-  if (linkTriggerCondition)
-    {
-      linkTriggerCondition->setTriggerListener (this);
-    }
-}
+//   auto linkTriggerCondition = cast (NclLinkTriggerCondition *, condition);
+//   if (linkTriggerCondition)
+//     {
+//       linkTriggerCondition->setTriggerListener (this);
+//     }
+// }
 
-void
-NclLinkCompoundTriggerCondition::conditionSatisfied ()
-{
-  NclLinkTriggerCondition::conditionSatisfied ();
-}
+// void
+// NclLinkCompoundTriggerCondition::conditionSatisfied ()
+// {
+//   NclLinkTriggerCondition::conditionSatisfied ();
+// }
 
-vector<NclEvent *>
-NclLinkCompoundTriggerCondition::getEvents ()
-{
-  vector<NclEvent *> events;
-  for (NclLinkCondition *condition : _conditions)
-    {
-      for (NclEvent *evt : condition->getEvents ())
-        {
-          events.push_back (evt);
-        }
-    }
-
-  return events;
-}
+// vector<NclEvent *>
+// NclLinkCompoundTriggerCondition::getEvents ()
+// {
+//   vector<NclEvent *> events;
+//   for (NclLinkCondition *condition : _conditions)
+//     {
+//       for (NclEvent *evt : condition->getEvents ())
+//         {
+//           events.push_back (evt);
+//         }
+//     }
+//   return events;
+// }
 
 NclLinkTransitionTriggerCondition::NclLinkTransitionTriggerCondition (
     NclEvent *event, EventStateTransition transition)
@@ -104,12 +103,10 @@ NclLinkTransitionTriggerCondition::eventStateChanged (
     NclLinkTriggerCondition::conditionSatisfied ();
 }
 
-vector<NclEvent *>
-NclLinkTransitionTriggerCondition::getEvents ()
+NclEvent *
+NclLinkTransitionTriggerCondition::getEvent ()
 {
-  vector<NclEvent *> events;
-  events.push_back (_event);
-  return events;
+  return _event;
 }
 
 GINGA_FORMATTER_END

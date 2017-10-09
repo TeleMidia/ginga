@@ -35,7 +35,7 @@ SimpleCondition::SimpleCondition (EventType type,
                                   EventStateTransition transition,
                                   const string &label,
                                   const string &key)
-  : TriggerExpression (), Role (type, label)
+  : Role (type, label)
 {
   _transition = transition;
   _key = key;

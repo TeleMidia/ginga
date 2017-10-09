@@ -33,8 +33,7 @@ class ExecutionObjectContext;
 class NclFormatterLink: public NclLinkTriggerListener
 {
 public:
-  NclFormatterLink (NclLinkTriggerCondition *,
-                    Link *, ExecutionObjectContext *);
+  NclFormatterLink (Link *, ExecutionObjectContext *);
   virtual ~NclFormatterLink ();
 
   void suspendLinkEvaluation (bool suspended);
@@ -43,8 +42,11 @@ public:
   const vector <NclAction *> *getActions ();
   void addAction (NclAction *);
 
-  NclLinkTriggerCondition *getTriggerCondition ();
+  const vector <NclLinkTriggerCondition *> *getConditions ();
+  void addCondition (NclLinkTriggerCondition *);
+
   void conditionSatisfied ();
+
   virtual vector<NclEvent *> getEvents ();
   void evaluationStarted ();
   void evaluationEnded ();
@@ -55,7 +57,7 @@ protected:
   ExecutionObjectContext *_parentObj;
 
 private:
-  NclLinkTriggerCondition *_condition;
+  vector <NclLinkTriggerCondition *> _conditions;
   vector <NclAction *> _actions;
 };
 

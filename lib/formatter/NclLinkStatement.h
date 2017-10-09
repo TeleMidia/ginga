@@ -33,53 +33,45 @@ public:
   virtual bool evaluate () = 0;
 };
 
-class NclLinkCompoundStatement : public NclLinkStatement
-{
-public:
-  NclLinkCompoundStatement (bool, bool);
-  virtual ~NclLinkCompoundStatement ();
+// class NclLinkCompoundStatement : public NclLinkStatement
+// {
+// public:
+//   NclLinkCompoundStatement (bool, bool);
+//   virtual ~NclLinkCompoundStatement ();
+//   bool isConjunction ();
+//   bool isNegated ();
+//   void addStatement (NclLinkStatement *statement);
+//   const vector<NclLinkStatement *> *getStatements ();
+//   virtual vector<NclEvent *> getEvents () override;
+//   virtual bool evaluate () override;
+// private:
+//   vector<NclLinkStatement *> _statements;
+//   bool _negated;
+//   bool _conjunction;
+//   bool returnEvaluationResult (bool result);
+// };
 
-  bool isConjunction ();
-  bool isNegated ();
-
-  void addStatement (NclLinkStatement *statement);
-  const vector<NclLinkStatement *> *getStatements ();
-
-  virtual vector<NclEvent *> getEvents () override;
-  virtual bool evaluate () override;
-
-private:
-  vector<NclLinkStatement *> _statements;
-  bool _negated;
-  bool _conjunction;
-
-  bool returnEvaluationResult (bool result);
-};
-
-class NclLinkAssessmentStatement : public NclLinkStatement
-{
-public:
-  NclLinkAssessmentStatement (const string &,
-                              NclLinkAttributeAssessment *mainAssessment,
-                              NclLinkAssessment *otherAssessment);
-
-  virtual ~NclLinkAssessmentStatement ();
-  vector<NclEvent *> getEvents ();
-  string getComparator ();
-  void setComparator (string comp);
-  NclLinkAssessment *getMainAssessment ();
-  void setMainAssessment (NclLinkAssessment *assessment);
-  NclLinkAssessment *getOtherAssessment ();
-  void setOtherAssessment (NclLinkAssessment *assessment);
-  virtual bool evaluate ();
-
-protected:
-  string _comparator;
-  NclLinkAssessment *_otherAssessment;
-
-private:
-  NclLinkAssessment *_mainAssessment;
-};
+// class NclLinkAssessmentStatement : public NclLinkStatement
+// {
+// public:
+//   NclLinkAssessmentStatement (const string &,
+//                               NclLinkAttributeAssessment *mainAssessment,
+//                               NclLinkAssessment *otherAssessment);
+//   virtual ~NclLinkAssessmentStatement ();
+//   vector<NclEvent *> getEvents ();
+//   string getComparator ();
+//   void setComparator (string comp);
+//   NclLinkAssessment *getMainAssessment ();
+//   void setMainAssessment (NclLinkAssessment *assessment);
+//   NclLinkAssessment *getOtherAssessment ();
+//   void setOtherAssessment (NclLinkAssessment *assessment);
+//   virtual bool evaluate ();
+// protected:
+//   string _comparator;
+//   NclLinkAssessment *_otherAssessment;
+// private:
+//   NclLinkAssessment *_mainAssessment;
+// };
 
 GINGA_FORMATTER_END
 

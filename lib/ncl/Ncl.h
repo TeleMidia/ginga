@@ -23,15 +23,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Area.h"
 #include "AreaLabeled.h"
 #include "Assessment.h"
-#include "AssessmentStatement.h"
 #include "AttributeAssessment.h"
 #include "Base.h"
 #include "Bind.h"
 #include "CompositeRule.h"
 #include "Composition.h"
-#include "CompoundCondition.h"
-#include "CompoundStatement.h"
-#include "Condition.h"
 #include "Connector.h"
 #include "ConnectorBase.h"
 #include "Context.h"
@@ -61,7 +57,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Transition.h"
 #include "TransitionBase.h"
 #include "TransitionUtil.h"
-#include "TriggerExpression.h"
 #include "ValueAssessment.h"
 
 #endif // NCL_H
