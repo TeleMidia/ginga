@@ -25,11 +25,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_FORMATTER_BEGIN
 
 class ExecutionObjectContext;
-class NclFormatterLink: public INclConditionListener
+class NclLink: public INclConditionListener
 {
 public:
-  NclFormatterLink (ExecutionObjectContext *);
-  virtual ~NclFormatterLink ();
+  NclLink (ExecutionObjectContext *);
+  virtual ~NclLink ();
 
   const vector <NclCondition *> *getConditions ();
   bool addCondition (NclCondition *);

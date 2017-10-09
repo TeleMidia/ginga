@@ -26,8 +26,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclAction.h"
 #include "NclCondition.h"
 #include "NclEvents.h"
-#include "NclFormatterLink.h"
-#include "NclFormatterLink.h"
+#include "NclLink.h"
+#include "NclLink.h"
 #include "NclLinkStatement.h"
 #include "RuleAdapter.h"
 
@@ -119,7 +119,7 @@ private:
 
   // INSANITY ABOVE --------------------------------------------------------
 
-  NclFormatterLink *createLink (Link *, ExecutionObjectContext *);
+  NclLink *createLink (Link *, ExecutionObjectContext *);
   NclCondition *createCondition (Condition *, Bind *, ExecutionObjectContext *);
   NclAction *createAction (Action *, Bind *, ExecutionObjectContext *);
 };
