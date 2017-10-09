@@ -32,7 +32,6 @@ GINGA_PRAGMA_DIAG_POP ()
 #include "AreaLabeled.h"
 #include "CompositeRule.h"
 #include "NclDocument.h"
-#include "Parameter.h"
 #include "Property.h"
 #include "Rule.h"
 #include "SimpleRule.h"
@@ -42,7 +41,7 @@ GINGA_PRAGMA_DIAG_POP ()
 
 GINGA_NCL_BEGIN
 
-class ParserXercesC : public ErrorHandler
+class ParserXercesC: public ErrorHandler
 {
 public:
   static NclDocument *parse (const string &, int, int, string *);
@@ -119,7 +118,6 @@ private:
 
   Link *parseLink (DOMElement *, Context *);
   Bind *parseBind (DOMElement *, Link *, map<string, string> *, Context *);
-  Parameter *parseBindParam (DOMElement *);
 
   // From ErrorHandler.
   void warning (const SAXParseException &);

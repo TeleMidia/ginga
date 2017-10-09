@@ -2090,8 +2090,12 @@ ParserXercesC::parseBind (DOMElement *elt, Link *link,
       string tag = dom_elt_get_tag (child);
       if (tag == "bindParam")
         {
-          Parameter *par = this->parseBindParam (child);
-          bind->setParameter (par->getName (), par->getValue ());
+          string name;
+          string value;
+          CHECK_ELT_TAG (child, "bindParam", nullptr);
+          CHECK_ELT_ATTRIBUTE (child, "name", &name);
+          CHECK_ELT_ATTRIBUTE (child, "value", &value);
+          bind->setParameter (name, value);
         }
       else
         {
@@ -2099,17 +2103,6 @@ ParserXercesC::parseBind (DOMElement *elt, Link *link,
         }
     }
   return bind;
-}
-
-Parameter *
-ParserXercesC::parseBindParam (DOMElement *elt)
-{
-  string name;
-  string value;
-  CHECK_ELT_TAG (elt, "bindParam", nullptr);
-  CHECK_ELT_ATTRIBUTE (elt, "name", &name);
-  CHECK_ELT_ATTRIBUTE (elt, "value", &value);
-  return new Parameter (name, value);
 }
 
 
