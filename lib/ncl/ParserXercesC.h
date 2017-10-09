@@ -38,7 +38,6 @@ GINGA_PRAGMA_DIAG_POP ()
 #include "SimpleRule.h"
 #include "Switch.h"
 #include "SwitchPort.h"
-#include "TransitionUtil.h"
 #include "ValueAssessment.h"
 
 GINGA_NCL_BEGIN
@@ -78,8 +77,8 @@ private:
   CompositeRule *parseCompositeRule (DOMElement *);
   SimpleRule *parseRule (DOMElement *);
 
-  TransitionBase *parseTransitionBase (DOMElement *);
-  Transition *parseTransition (DOMElement *);
+  void parseTransitionBase (DOMElement *);
+  void parseTransition (DOMElement *);
 
   void parseRegionBase (DOMElement *);
   void parseRegion (DOMElement *, GingaRect);

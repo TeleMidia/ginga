@@ -21,7 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ConnectorBase.h"
 #include "Context.h"
 #include "RuleBase.h"
-#include "TransitionBase.h"
 
 GINGA_NCL_BEGIN
 
@@ -55,8 +54,6 @@ public:
                     const string &location);
   Connector *getConnector (const string &connectorId);
   ConnectorBase *getConnectorBase ();
-  Transition *getTransition (const string &transitionId);
-  TransitionBase *getTransitionBase ();
 
   NclDocument *getDocument (const string &documentId);
   string getDocumentAlias (NclDocument *document);
@@ -71,7 +68,6 @@ public:
   vector<Node *> *getSettingsNodes ();
   bool removeDocument (NclDocument *document);
   void setConnectorBase (ConnectorBase *_connectorBase);
-  void setTransitionBase (TransitionBase *_transitionBase);
   void setDocumentAlias (NclDocument *document, const string &alias);
 
   void setDocumentLocation (NclDocument *document, const string &location);
@@ -85,8 +81,6 @@ private:
   map<string, NclDocument *> _documentLocations;
 
   RuleBase *_ruleBase;
-  TransitionBase *_transitionBase;
-
   NclDocument *_parentDocument;
 
   Node *getNodeLocally (const string &nodeId);

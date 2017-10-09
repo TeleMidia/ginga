@@ -109,7 +109,6 @@ NclDocument::NclDocument (const string &id, const string &uri)
   _connectorBase = nullptr;
   _parentDocument = nullptr;
   _ruleBase = nullptr;
-  _transitionBase = nullptr;
 }
 
 /**
@@ -201,42 +200,6 @@ ConnectorBase *
 NclDocument::getConnectorBase ()
 {
   return _connectorBase;
-}
-
-Transition *
-NclDocument::getTransition (const string &transitionId)
-{
-  Transition *transition;
-  size_t i, size;
-  NclDocument *document;
-
-  if (_transitionBase != NULL)
-    {
-      transition = _transitionBase->getTransition (transitionId);
-      if (transition != NULL)
-        {
-          return transition;
-        }
-    }
-
-  size = _documentBase.size ();
-  for (i = 0; i < size; i++)
-    {
-      document = _documentBase[i];
-      transition = document->getTransition (transitionId);
-      if (transition != NULL)
-        {
-          return transition;
-        }
-    }
-
-  return NULL;
-}
-
-TransitionBase *
-NclDocument::getTransitionBase ()
-{
-  return _transitionBase;
 }
 
 NclDocument *
@@ -455,12 +418,6 @@ void
 NclDocument::setConnectorBase (ConnectorBase *connectorBase)
 {
   this->_connectorBase = connectorBase;
-}
-
-void
-NclDocument::setTransitionBase (TransitionBase *transitionBase)
-{
-  this->_transitionBase = transitionBase;
 }
 
 void
