@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "CompoundCondition.h"
 
-GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
-
 GINGA_NCL_BEGIN
 
 CompoundCondition::CompoundCondition () : TriggerExpression ()
@@ -65,26 +63,6 @@ CompoundCondition::addCondition (Condition *condition)
 {
   g_assert_nonnull (condition);
   _expressions->push_back (condition);
-}
-
-void
-CompoundCondition::removeCondition (
-    Condition *condition)
-{
-  vector<Condition *>::iterator iterator;
-  vector<Condition *>::iterator i;
-
-  iterator = _expressions->begin ();
-  while (iterator != _expressions->end ())
-    {
-      if ((*iterator) == condition)
-        {
-          i = _expressions->erase (iterator);
-          if (i == _expressions->end ())
-            return;
-        }
-      ++iterator;
-    }
 }
 
 GINGA_NCL_END

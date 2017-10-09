@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Statement.h"
 #include "AssessmentStatement.h"
-#include "Role.h"
+
 
 GINGA_NCL_BEGIN
 
@@ -32,6 +32,7 @@ public:
 
   bool isNegated ();
   bool isConjunction ();
+  bool isDisjunction ();
 
   void addStatement (Statement *);
   const vector<Statement *> *getStatements ();

@@ -40,6 +40,15 @@ CompoundStatement::~CompoundStatement ()
 }
 
 /**
+ * @brief Tests whether statement is negated.
+ */
+bool
+CompoundStatement::isNegated ()
+{
+  return _negated;
+}
+
+/**
  * @brief Tests whether statement is a conjunction.
  */
 bool
@@ -49,12 +58,12 @@ CompoundStatement::isConjunction ()
 }
 
 /**
- * @brief Tests whether statement is negated.
+ * @brief Tests whether statement is a disjunction.
  */
 bool
-CompoundStatement::isNegated ()
+CompoundStatement::isDisjunction ()
 {
-  return _negated;
+  return not _conjunction;
 }
 
 /**

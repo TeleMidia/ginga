@@ -986,7 +986,7 @@ Converter::createSimpleAction (
   event = createEvent (bind, parentObj);
   g_assert_nonnull (event);
 
-  actionType = sae->getActionType ();
+  actionType = sae->getTransition ();
 
   eventType = bind->getRole ()->getEventType ();
   event->setType (eventType);

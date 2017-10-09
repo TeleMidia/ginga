@@ -20,6 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Role.h"
 #include "TriggerExpression.h"
+#include "Predicate.h"
 
 GINGA_NCL_BEGIN
 
@@ -28,16 +29,20 @@ class SimpleCondition : public TriggerExpression, public Role
 public:
   SimpleCondition (EventType, EventStateTransition,
                    const string &, const string &);
-  virtual ~SimpleCondition (){}
+  virtual ~SimpleCondition ();
 
   EventStateTransition getTransition ();
   string getKey ();
+
+  void initPredicate (Predicate *);
+  Predicate *getPredicate ();
 
   static bool isReserved (const string &, EventType *,
                           EventStateTransition *);
 private:
   EventStateTransition _transition;
   string _key;
+  Predicate *_predicate;
 };
 
 GINGA_NCL_END
