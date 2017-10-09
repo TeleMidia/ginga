@@ -77,9 +77,6 @@ private:
                            ExecutionObjectContext *parentObj);
 
 
-  NclFormatterLink *
-  createLink (Link *ncmLink,
-                    ExecutionObjectContext *parentObject);
 
   ExecutionObjectContext *
   addSameInstance (ExecutionObject *exeObj, Refer *referNode);
@@ -115,43 +112,16 @@ private:
 
   static bool hasDescriptorPropName (const string &name);
 
-  // NclLinkCondition *
-  // createCondition (Condition *ncmExpression, Link *ncmLink,
-  //                  ExecutionObjectContext *parentObject);
-
-  // NclLinkCompoundTriggerCondition *createCompoundTriggerCondition (
-  //     GingaTime delay,
-  //     const vector<Condition *> *ncmChildConditions,
-  //     Link *ncmLink, ExecutionObjectContext *parentObject);
-
-  NclCondition *createCondition (
-      Condition *triggerExpression, Link *ncmLink,
-      ExecutionObjectContext *parentObject);
-
-  // NclLinkAssessmentStatement *createAssessmentStatement (
-  //     AssessmentStatement *assessmentStatement, Bind *bind, Link *ncmLink,
-  //     ExecutionObjectContext *parentObject);
-
-  // NclLinkStatement *
-  // createStatement (Statement *statementExpression, Link *ncmLink,
-  //                  ExecutionObjectContext *parentObject);
-
-  NclLinkAttributeAssessment *createAttributeAssessment (
-      AttributeAssessment *attributeAssessment, Bind *bind,
-      ExecutionObjectContext *parentObject);
-
-  NclAction *
-  createSimpleAction (Action *, Bind *,
-                      ExecutionObjectContext *);
-
-  NclCondition *createCondition (
-      Condition *condition, Bind *bind,
-      ExecutionObjectContext *parentObject);
-
-  NclEvent *createEvent (Bind *bind,
-                         ExecutionObjectContext *parentObject);
-
   string getBindKey (Bind *ncmBind);
+
+
+  NclEvent *createEvent (Bind *, ExecutionObjectContext *);
+
+  // INSANITY ABOVE --------------------------------------------------------
+
+  NclFormatterLink *createLink (Link *, ExecutionObjectContext *);
+  NclCondition *createCondition (Condition *, Bind *, ExecutionObjectContext *);
+  NclAction *createAction (Action *, Bind *, ExecutionObjectContext *);
 };
 
 GINGA_FORMATTER_END
