@@ -79,9 +79,6 @@ private:
 
   void resolveSwitchEvents (ExecutionObjectSwitch *switchObject);
 
-  NclEvent *insertNode (NclNodeNesting *perspective,
-                        Anchor *interfacePoint);
-
   void eventStateChanged (NclEvent *someEvent,
                           EventStateTransition transition,
                           EventState previousState) override;
@@ -96,7 +93,7 @@ private:
   // INSANITY ABOVE --------------------------------------------------------
 
 public:
-  ExecutionObject *obtainExecutionObject (const string &, Node *);
+  ExecutionObject *obtainExecutionObject (Node *);
 
 private:
   NclLink *createLink (Link *, ExecutionObjectContext *);
@@ -106,4 +103,4 @@ private:
 
 GINGA_FORMATTER_END
 
-#endif /*CONVERTER_H_*/
+#endif // CONVERTER_H

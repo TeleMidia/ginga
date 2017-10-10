@@ -119,7 +119,7 @@ Scheduler::run (const string &file, string *errmsg)
           // persp = new NclNodeNesting (node->getPerspective ());
           // obj = _converter
           //   ->getExecutionObjectFromPerspective (persp);
-          obj = _converter->obtainExecutionObject (node->getId (), node);
+          obj = _converter->obtainExecutionObject (node);
           g_assert_nonnull (obj);
           // delete persp;
 
@@ -408,13 +408,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
           nestedSeq = port->getMapNodeNesting ();
           persp->append (&nestedSeq);
 
-          // Create or get the execution object mapped by port.
-          // child = _converter
-          //   ->getExecutionObjectFromPerspective (persp);
-          // g_assert (child);
-          child = _converter->obtainExecutionObject
-            (port->getFinalNode ()->getId (), port->getFinalNode ());
-
+          child = _converter->obtainExecutionObject (port->getFinalNode ());
           iface = port->getFinalInterface ();
           g_assert_nonnull (iface);
 
@@ -533,8 +527,7 @@ Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObj,
               //   ->getExecutionObjectFromPerspective (nodePerspective);
 
               endPointObject = _converter->obtainExecutionObject
-                (nodePerspective->getAnchorNode ()->getId (),
-                 nodePerspective->getAnchorNode ());
+                (nodePerspective->getAnchorNode ());
 
               if (endPointObject != nullptr)
                 {
