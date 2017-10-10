@@ -401,9 +401,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
       for (auto child: *ctxObj->getChildren ())
         {
           NclEvent *evt;
-          evt = child->getMainEvent ();
-          if (evt == nullptr)
-            evt = child->getLambda ();
+          evt = child->getLambda ();
           if (evt == nullptr)
             continue;
           runAction (evt, action);

@@ -56,13 +56,10 @@ public:
   const set<NclEvent *> *getEvents ();
   NclEvent *getEventById (const string &);
   bool addEvent (NclEvent *);
-  void addPresentationEvent (PresentationEvent *event);
-
   PresentationEvent *getLambda ();
 
   bool isCompiled ();
   void setCompiled (bool status);
-  NclEvent *getMainEvent ();
 
   virtual bool prepare (NclEvent *event);
   virtual bool start ();
