@@ -326,26 +326,6 @@ ExecutionObject::setCompiled (bool status)
   _isCompiled = status;
 }
 
-vector<Node *>
-ExecutionObject::getNodes ()
-{
-  vector<Node *> nodes;
-  if (!_nodeParentTable.empty())
-    {
-      for (auto &i: _nodeParentTable)
-        {
-          nodes.push_back (i.first);
-        }
-
-      if (_nodeParentTable.count (_node) == 0)
-        {
-          nodes.push_back (_node);
-        }
-    }
-
-  return nodes;
-}
-
 Property *
 ExecutionObject::getNCMProperty (const string &name)
 {
@@ -379,15 +359,6 @@ ExecutionObject::prepare (NclEvent *event)
     return false;
 
   _mainEvent = event;
-
-  i = _parentTable.begin ();
-  while (i != _parentTable.end ())
-    {
-      // register parent as a mainEvent listener
-     _mainEvent->addListener (i->second);
-      ++i;
-    }
-
   _transMan.prepare (_mainEvent == _wholeContent, 0);
 
   size = _otherEvents.size ();
