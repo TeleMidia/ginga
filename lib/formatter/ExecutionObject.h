@@ -49,6 +49,13 @@ public:
   Node *getNode ();
   string getId ();
 
+  const vector <string> *getAliases ();
+  bool hasAlias (const string &);
+  bool addAlias (const string &);
+
+  ExecutionObject *getParent ();
+  void initParent (ExecutionObject *);
+
   ExecutionObjectContext *getParentObject ();
   ExecutionObjectContext *getParentObject (Node *node);
   void addParentObject (ExecutionObjectContext *parentObject,
@@ -118,6 +125,8 @@ protected:
   Scheduler *_scheduler;        // scheduler
 
   string _id;                   // object id
+  vector<string> _aliases;      // aliases
+  ExecutionObject *_parent;     // parent object
   Player *_player;              // associated player
   GingaTime _time;              // playback time
   bool _destroying;             // true if object is being destroyed

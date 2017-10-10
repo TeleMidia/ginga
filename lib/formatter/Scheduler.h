@@ -49,6 +49,7 @@ public:
   set<ExecutionObject *> *getObjects ();
   bool hasObject (ExecutionObject *);
   ExecutionObject *getObjectById (const string &);
+  ExecutionObject *getObjectByIdOrAlias (const string &);
   void addObject (ExecutionObject *);
 
   void scheduleAction (NclAction *) override;
