@@ -121,7 +121,7 @@ ExecutionObject::addAlias (const string &alias)
   return true;
 }
 
-ExecutionObject *
+ExecutionObjectContext *
 ExecutionObject::getParent ()
 {
   return _parent;
@@ -136,57 +136,30 @@ ExecutionObject::initParent (ExecutionObjectContext *parent)
   g_assert (parent->addChild (this));
 }
 
-ExecutionObjectContext *
-ExecutionObject::getParentObject ()
-{
-  return getParentObject (_node);
-}
-
-ExecutionObjectContext *
-ExecutionObject::getParentObject (Node *node)
-{
-  ExecutionObjectContext *parentObj = nullptr;
-
-  auto i = _nodeParentTable.find (node);
-  if (i != _nodeParentTable.end ())
-    {
-      Node *parentNode = i->second;
-      auto j = _parentTable.find (parentNode);
-      if (j != _parentTable.end ())
-        {
-          parentObj = j->second;
-        }
-    }
-
-  return parentObj;
-}
-
-void
-ExecutionObject::addParentObject (ExecutionObjectContext *parentObject,
-                                  Node *parentNode)
-{
-  addParentObject (_node, parentObject, parentNode);
-}
-
-void
-ExecutionObject::addParentObject (Node *node,
-                                  ExecutionObjectContext *parentObject,
-                                  Node *parentNode)
-{
-  _nodeParentTable[node] = parentNode;
-  _parentTable[parentNode] = parentObject;
-}
-
-void
-ExecutionObject::removeParentObject (Node *parentNode,
-                                     ExecutionObjectContext *parentObject)
-{
-  map<Node *, ExecutionObjectContext *>::iterator i;
-
-  i = _parentTable.find (parentNode);
-  if (i != _parentTable.end () && i->second == parentObject)
-    _parentTable.erase (i);
-}
+// void
+// ExecutionObject::addParentObject (ExecutionObjectContext *parentObject,
+//                                   Node *parentNode)
+// {
+//   addParentObject (_node, parentObject, parentNode);
+// }
+//
+// void
+// ExecutionObject::addParentObject (Node *node,
+//                                   ExecutionObjectContext *parentObject,
+//                                   Node *parentNode)
+// {
+//   _nodeParentTable[node] = parentNode;
+//   _parentTable[parentNode] = parentObject;
+// }
+// void
+// ExecutionObject::removeParentObject (Node *parentNode,
+//                                      ExecutionObjectContext *parentObject)
+// {
+//   map<Node *, ExecutionObjectContext *>::iterator i;
+//   i = _parentTable.find (parentNode);
+//   if (i != _parentTable.end () && i->second == parentObject)
+//     _parentTable.erase (i);
+// }
 
 bool
 ExecutionObject::addEvent (NclEvent *event)
@@ -381,51 +354,6 @@ ExecutionObject::getNCMProperty (const string &name)
     if (instanceof (Property *, anchor) && anchor->getId () == name)
       return cast (Property *, anchor);
   return nullptr;
-}
-
-NclNodeNesting *
-ExecutionObject::getNodePerspective ()
-{
-  return getNodePerspective (_node);
-}
-
-NclNodeNesting *
-ExecutionObject::getNodePerspective (Node *node)
-{
-  Node *parentNode;
-  NclNodeNesting *perspective;
-  ExecutionObjectContext *parentObject;
-  map<Node *, ExecutionObjectContext *>::iterator i;
-
-  if (_nodeParentTable.count (node) == 0)
-    {
-      if (_node == node)
-        {
-          perspective = new NclNodeNesting ();
-        }
-      else
-        {
-          return nullptr;
-        }
-    }
-  else
-    {
-      parentNode = _nodeParentTable[node];
-
-      i = _parentTable.find (parentNode);
-      if (i != _parentTable.end ())
-        {
-          parentObject = (ExecutionObjectContext *)(i->second);
-
-          perspective = parentObject->getNodePerspective (parentNode);
-        }
-      else
-        {
-          return nullptr;
-        }
-    }
-  perspective->insertAnchorNode (node);
-  return perspective;
 }
 
 NclEvent *

@@ -53,8 +53,7 @@ public:
   ExecutionObject *
   processExecutionObjectSwitch (ExecutionObjectSwitch *switchObject);
 
-  NclEvent *insertContext (NclNodeNesting *contextPerspective,
-                           Port *port);
+  NclEvent *insertContext (Port *port);
 
   RuleAdapter *getRuleAdapter ();
 
@@ -88,7 +87,7 @@ private:
   bool getBindKey (Bind *, string *);
 
 
-  NclEvent *createEvent (Bind *, ExecutionObjectContext *);
+  NclEvent *createEvent (Bind *);
 
   // INSANITY ABOVE --------------------------------------------------------
 
@@ -97,8 +96,8 @@ public:
 
 private:
   NclLink *createLink (Link *, ExecutionObjectContext *);
-  NclCondition *createCondition (Condition *, Bind *, ExecutionObjectContext *);
-  NclAction *createAction (Action *, Bind *, ExecutionObjectContext *);
+  NclCondition *createCondition (Condition *, Bind *);
+  NclAction *createAction (Action *, Bind *);
 };
 
 GINGA_FORMATTER_END

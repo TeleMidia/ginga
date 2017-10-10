@@ -58,7 +58,6 @@ Scheduler::run (const string &file, string *errmsg)
   Context *body;
   const vector<Port *> *ports;
   vector<NclEvent *> *entryevts;
-  NclNodeNesting *persp;
   int w, h;
 
   // Parse document.
@@ -94,16 +93,13 @@ Scheduler::run (const string &file, string *errmsg)
 
   // Create and load converter.
   _converter = new Converter (_ginga, this, new RuleAdapter ());
-  persp = new NclNodeNesting ();
-  persp->insertAnchorNode (body);
   entryevts = new vector<NclEvent *>;
   for (auto port: *ports)
     {
-      NclEvent *evt = _converter->insertContext (persp, port);
+      NclEvent *evt = _converter->insertContext (port);
       g_assert_nonnull (evt);
       entryevts->push_back (evt);
     }
-  delete persp;
   g_assert_false (entryevts->empty ()); // doc has no ports
 
   // Create execution object for settings node and initialize it.
@@ -116,9 +112,6 @@ Scheduler::run (const string &file, string *errmsg)
       if (settings == nullptr)
         {
           ExecutionObject *obj;
-          // persp = new NclNodeNesting (node->getPerspective ());
-          // obj = _converter
-          //   ->getExecutionObjectFromPerspective (persp);
           obj = _converter->obtainExecutionObject (node);
           g_assert_nonnull (obj);
           // delete persp;
@@ -349,7 +342,6 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
   Node *node;
   Entity *entity;
   Composition *compNode;
-  NclNodeNesting *compPerspective;
 
   event = action->getEvent ();
   g_assert_nonnull (event);
@@ -378,36 +370,19 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
   compNode = cast (Composition *, entity);
   g_assert_nonnull (compNode);
 
-  if (compNode->getParent () == nullptr)
-    {
-      compPerspective
-        = new NclNodeNesting (compNode->getPerspective ());
-    }
-  else
-    {
-      compPerspective
-        = ctxObj->getNodePerspective ();
-    }
-
   acttype = action->getEventStateTransition ();
   if (acttype == EventStateTransition::START) // start all ports
     {
       ctxObj->suspendLinkEvaluation (false);
       for (auto port: *compNode->getPorts ())
         {
-          NclNodeNesting *persp;
           vector<Node *> nestedSeq;
           Anchor *iface;
 
           ExecutionObject *child;
           NclEvent *evt;
 
-          persp = compPerspective->copy ();
-          g_assert_nonnull (persp);
-
           nestedSeq = port->getMapNodeNesting ();
-          persp->append (&nestedSeq);
-
           child = _converter->obtainExecutionObject (port->getFinalNode ());
           iface = port->getFinalInterface ();
           g_assert_nonnull (iface);
@@ -422,18 +397,14 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
 
           runAction (evt, action);
 
-          delete persp;
         }
     }
   else if (acttype == EventStateTransition::STOP) // stop all children
     {
       ctxObj->suspendLinkEvaluation (true);
-      for (const auto pair: *ctxObj->getExecutionObjects ())
+      for (auto child: *ctxObj->getChildren ())
         {
-          ExecutionObject *child;
           NclEvent *evt;
-
-          child = pair.second;
           evt = child->getMainEvent ();
           if (evt == nullptr)
             evt = child->getWholeContentPresentationEvent ();
@@ -459,7 +430,6 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
     {
       g_assert_not_reached ();
     }
-  delete compPerspective;
 }
 
 void
@@ -499,15 +469,14 @@ Scheduler::runActionOverSwitch (ExecutionObjectSwitch *switchObj,
 }
 
 void
-Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObj,
-                                    SwitchEvent *switchEvent,
-                                    ExecutionObject *selectedObject,
-                                    NclAction *action)
+Scheduler::runSwitchEvent (unused (ExecutionObjectSwitch *switchObj),
+                           SwitchEvent *switchEvent,
+                           ExecutionObject *selectedObject,
+                           NclAction *action)
 {
   NclEvent *selectedEvent;
   SwitchPort *switchPort;
   vector<Port *>::iterator i;
-  NclNodeNesting *nodePerspective;
   vector<Node *> nestedSeq;
   ExecutionObject *endPointObject;
 
@@ -517,17 +486,11 @@ Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObj,
     {
       if (mapping->getNode () == selectedObject->getNode ())
         {
-          nodePerspective = switchObj->getNodePerspective ();
           nestedSeq = mapping->getMapNodeNesting ();
-          nodePerspective->append (&nestedSeq);
           try
             {
-              // endPointObject
-              //   = _converter
-              //   ->getExecutionObjectFromPerspective (nodePerspective);
-
               endPointObject = _converter->obtainExecutionObject
-                (nodePerspective->getAnchorNode ());
+                (nestedSeq.back ());
 
               if (endPointObject != nullptr)
                 {
