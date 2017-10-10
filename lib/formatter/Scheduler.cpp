@@ -403,7 +403,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
           NclEvent *evt;
           evt = child->getMainEvent ();
           if (evt == nullptr)
-            evt = child->getWholeContentPresentationEvent ();
+            evt = child->getLambda ();
           if (evt == nullptr)
             continue;
           runAction (evt, action);

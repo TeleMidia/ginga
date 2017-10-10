@@ -48,21 +48,4 @@ ExecutionObjectSwitch::select (ExecutionObject *exeObj)
     }
 }
 
-bool
-ExecutionObjectSwitch::addEvent (NclEvent *evt)
-{
- auto presentationEvt = cast (PresentationEvent *, evt);
-
-  if (presentationEvt
-      && instanceof (AreaLambda *, presentationEvt->getAnchor ()))
-    {
-      ExecutionObject::_wholeContent = presentationEvt;
-      return true;
-    }
-  else
-    {
-      return ExecutionObject::addEvent (evt);
-    }
-}
-
 GINGA_FORMATTER_END
