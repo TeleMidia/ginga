@@ -54,17 +54,16 @@ RuleAdapter::setSettings (ExecutionObject *settings)
 void
 RuleAdapter::adapt (ExecutionObjectContext *compositeObject, bool force)
 {
-  for (auto i: *compositeObject->getExecutionObjects ())
+  for (auto child: *compositeObject->getChildren ())
     {
-      ExecutionObject *obj = i.second;
-      if (instanceof (ExecutionObjectSwitch *, obj))
+      if (instanceof (ExecutionObjectSwitch *, child))
         {
-          obj = ((ExecutionObjectSwitch *)obj)->getSelectedObject ();
+          ((ExecutionObjectSwitch *) child)->getSelectedObject ();
         }
 
-      if (instanceof (ExecutionObjectContext *, obj))
+      if (instanceof (ExecutionObjectContext *, child))
         {
-          adapt ((ExecutionObjectContext *)obj, force);
+          adapt ((ExecutionObjectContext *) child, force);
         }
     }
 }

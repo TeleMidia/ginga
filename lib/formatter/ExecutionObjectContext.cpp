@@ -29,7 +29,6 @@ ExecutionObjectContext::ExecutionObjectContext (GingaInternal *ginga,
   Context *context;
   Entity *entity;
 
-  _execObjList.clear ();
   _links.clear ();
   _uncompiledLinks.clear ();
   _runningEvents.clear ();
@@ -74,33 +73,32 @@ ExecutionObjectContext::~ExecutionObjectContext ()
     }
   _links.clear ();
   _uncompiledLinks.clear ();
-  _execObjList.clear ();
 }
 
-ExecutionObjectContext *
-ExecutionObjectContext::getParentFromDataObject (Node *dataObject)
-{
-  ExecutionObject *object;
-  Node *parentDataObject;
-  map<string, ExecutionObject *>::iterator i;
-
-  parentDataObject = (Node *)(dataObject->getParent ());
-
-  if (parentDataObject != NULL)
-    {
-      i = _execObjList.begin ();
-      while (i != _execObjList.end ())
-        {
-          object = i->second;
-          if (object->getNode () == parentDataObject)
-            {
-              return (ExecutionObjectContext *)object;
-            }
-          ++i;
-        }
-    }
-  return NULL;
-}
+// ExecutionObjectContext *
+// ExecutionObjectContext::getParentFromDataObject (Node *dataObject)
+// {
+//   ExecutionObject *object;
+//   Node *parentDataObject;
+//   map<string, ExecutionObject *>::iterator i;
+//
+//   parentDataObject = (Node *)(dataObject->getParent ());
+//
+//   if (parentDataObject != NULL)
+//     {
+//       i = _execObjList.begin ();
+//       while (i != _execObjList.end ())
+//         {
+//           object = i->second;
+//           if (object->getNode () == parentDataObject)
+//             {
+//               return (ExecutionObjectContext *)object;
+//             }
+//           ++i;
+//         }
+//     }
+//   return NULL;
+// }
 
 void
 ExecutionObjectContext::suspendLinkEvaluation (bool suspend)
@@ -109,69 +107,42 @@ ExecutionObjectContext::suspendLinkEvaluation (bool suspend)
     link->disable (suspend);
 }
 
-bool
-ExecutionObjectContext::addExecutionObject (ExecutionObject *obj)
-{
-  string objId;
+// bool
+// ExecutionObjectContext::addExecutionObject (ExecutionObject *obj)
+// {
+//   string objId;
+//   if (obj == NULL)
+//     {
+//       return false;
+//     }
+//   objId = obj->getId ();
+//   if (_execObjList.count (objId) != 0)
+//     {
+//       WARNING ("Trying to add the same obj twice: '%s'.", objId.c_str ());
+//       return false;
+//     }
+//   _execObjList[objId] = obj;
+//   obj->addParentObject (this, getNode ());
+//   return true;
+// }
 
-  if (obj == NULL)
-    {
-      return false;
-    }
-
-  objId = obj->getId ();
-  if (_execObjList.count (objId) != 0)
-    {
-      WARNING ("Trying to add the same obj twice: '%s'.", objId.c_str ());
-      return false;
-    }
-
-  _execObjList[objId] = obj;
-
-  obj->addParentObject (this, getNode ());
-  return true;
-}
-
-ExecutionObject *
-ExecutionObjectContext::getExecutionObject (const string &id)
-{
-  map<string, ExecutionObject *>::iterator i;
-  ExecutionObject *execObj;
-
-  if (_execObjList.empty ())
-    {
-      return NULL;
-    }
-
-  i = _execObjList.find (id);
-  if (i != _execObjList.end ())
-    {
-      execObj = i->second;
-      return execObj;
-    }
-
-  return NULL;
-}
-
-map<string, ExecutionObject *> *
-ExecutionObjectContext::getExecutionObjects ()
-{
-  return &_execObjList;
-}
-
-bool
-ExecutionObjectContext::removeExecutionObject (ExecutionObject *obj)
-{
-  map<string, ExecutionObject *>::iterator i;
-
-  i = _execObjList.find (obj->getId ());
-  if (i != _execObjList.end ())
-    {
-      _execObjList.erase (i);
-      return true;
-    }
-  return false;
-}
+// ExecutionObject *
+// ExecutionObjectContext::getExecutionObject (const string &id)
+// {
+//   map<string, ExecutionObject *>::iterator i;
+//   ExecutionObject *execObj;
+//   if (_execObjList.empty ())
+//     {
+//       return NULL;
+//     }
+//   i = _execObjList.find (id);
+//   if (i != _execObjList.end ())
+//     {
+//       execObj = i->second;
+//       return execObj;
+//     }
+//   return NULL;
+// }
 
 set<Link *> *
 ExecutionObjectContext::getUncompiledLinks ()
@@ -223,8 +194,7 @@ ExecutionObjectContext::eventStateChanged (
     case EventStateTransition::START:
       if (_runningEvents.empty () && _pausedEvents.empty ())
         {
-          for (auto it: _parentTable)
-            _wholeContent->addListener (it.second);
+          _wholeContent->addListener (_parent);
           _wholeContent->start ();
         }
 
@@ -319,6 +289,31 @@ ExecutionObjectContext::eventStateChanged (
     }
 }
 
+const set<ExecutionObject *> *
+ExecutionObjectContext::getChildren ()
+{
+  return &_children;
+}
+
+ExecutionObject *
+ExecutionObjectContext::getChildById (const string &id)
+{
+  for (auto child: _children)
+    if (child->getId () == id)
+      return child;
+  return nullptr;
+}
+
+bool
+ExecutionObjectContext::addChild (ExecutionObject *child)
+{
+  g_assert_nonnull (child);
+  if (_children.find (child) != _children.end ())
+    return false;
+  _children.insert (child);
+  return true;
+}
+
 void
 ExecutionObjectContext::linkEvaluationStarted (NclLink *link)
 {
@@ -377,7 +372,7 @@ ExecutionObjectContext::checkLinkConditions ()
       if (_wholeContent != NULL)
         {
           _wholeContent->stop ();
-          if (this->getParentObject () == nullptr)
+          if (this->getParent () == nullptr)
             {
               TRACE ("*** ALL DONE ***");
               _ginga->setEOS (true);

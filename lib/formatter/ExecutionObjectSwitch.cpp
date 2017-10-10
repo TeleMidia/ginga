@@ -32,9 +32,9 @@ ExecutionObjectSwitch::ExecutionObjectSwitch (GingaInternal *ginga,
 void
 ExecutionObjectSwitch::select (ExecutionObject *exeObj)
 {
-  if (exeObj != nullptr
-      && getExecutionObject (exeObj->getId ()) != nullptr)
+  if (exeObj != nullptr)
     {
+      g_assert_nonnull (this->getChildById (exeObj->getId ()));
       _selectedObj = exeObj;
     }
   else

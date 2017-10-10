@@ -1598,8 +1598,8 @@ ParserXercesC::parsePort (DOMElement *elt, Composition *context)
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "interface");
 
   Port *port = new Port (_doc, id);
-  port->setNode (target);
-  port->setInterface (iface);
+  port->initNode (target);
+  port->initInterface (iface);
   return port;
 }
 
@@ -1729,7 +1729,7 @@ ParserXercesC::parseSwitchPort (DOMElement *elt, Switch *swtch)
   CHECK_ELT_ID (elt, &id);
 
   port = new SwitchPort (_doc, id);
-  port->setNode (swtch);
+  port->initNode (swtch);
   for (DOMElement *child: dom_elt_get_children (elt))
     {
       string tag = dom_elt_get_tag (child);
@@ -1776,8 +1776,8 @@ ParserXercesC::parseMapping (DOMElement *elt, Switch *swtch,
       g_assert_nonnull (iface);
     }
   Port *node = new Port (_doc, port->getId ());
-  node->setNode (mapping);
-  node->setInterface (iface);
+  node->initNode (mapping);
+  node->initInterface (iface);
   return node;
 }
 
