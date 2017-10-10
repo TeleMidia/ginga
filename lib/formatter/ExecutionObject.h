@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "GingaInternal.h"
 #include "NclEvents.h"
-#include "NclEventTransitionManager.h"
 #include "NclAction.h"
 
 #include "ncl/Ncl.h"
@@ -56,11 +55,11 @@ public:
 
   const set<NclEvent *> *getEvents ();
   NclEvent *getEventById (const string &);
-  virtual bool addEvent (NclEvent *);
-
+  bool addEvent (NclEvent *);
   void addPresentationEvent (PresentationEvent *event);
 
-  PresentationEvent *getWholeContentPresentationEvent ();
+  PresentationEvent *getLambda ();
+
   bool isCompiled ();
   void setCompiled (bool status);
   NclEvent *getMainEvent ();
@@ -74,15 +73,8 @@ public:
 
 protected:
   Node *_node;
-  PresentationEvent *_wholeContent;
   set<NclEvent *> _events;
-
-  vector<PresentationEvent *> _presEvents;
-  set<SelectionEvent *> _selectionEvents;
-  vector<NclEvent *> _otherEvents;
-
   NclEvent *_mainEvent;
-  NclEventTransitionManager _transMan;
 
 private:
   bool _isCompiled;

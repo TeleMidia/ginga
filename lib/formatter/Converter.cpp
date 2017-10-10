@@ -376,7 +376,7 @@ Converter::createEvent (Bind *bind)
 
   if (interfacePoint == nullptr)
     {
-      return executionObject->getWholeContentPresentationEvent ();
+      return executionObject->getLambda ();
     }
 
   if (instanceof (Composition *, node)

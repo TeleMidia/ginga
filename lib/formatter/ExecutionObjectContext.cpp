@@ -122,6 +122,7 @@ ExecutionObjectContext::eventStateChanged (
     EventState previousState)
 {
   set<NclEvent *>::iterator i;
+  NclEvent *lambda = this->getLambda ();
 
   if (!instanceof (PresentationEvent *, event))
     return;
@@ -131,8 +132,8 @@ ExecutionObjectContext::eventStateChanged (
     case EventStateTransition::START:
       if (_runningEvents.empty () && _pausedEvents.empty ())
         {
-          _wholeContent->addListener (_parent);
-          _wholeContent->start ();
+          lambda->addListener (_parent);
+          lambda->start ();
         }
 
       _runningEvents.insert (event);
@@ -160,7 +161,7 @@ ExecutionObjectContext::eventStateChanged (
       if (_runningEvents.empty () && _pausedEvents.empty ()
           && _pendingLinks.empty ())
         {
-          _wholeContent->abort ();
+          lambda->abort ();
         }
       break;
 
@@ -203,7 +204,7 @@ ExecutionObjectContext::eventStateChanged (
       _pausedEvents.insert (event);
       if (_runningEvents.empty ())
         {
-          _wholeContent->pause ();
+          lambda->pause ();
         }
       break;
 
@@ -217,7 +218,7 @@ ExecutionObjectContext::eventStateChanged (
       _runningEvents.insert (event);
       if (_runningEvents.size () == 1)
         {
-          _wholeContent->resume ();
+          lambda->resume ();
         }
       break;
 
@@ -257,14 +258,12 @@ ExecutionObjectContext::checkLinkConditions ()
   if ((_runningEvents.empty () && _pausedEvents.empty ()
        && _pendingLinks.empty ()))
     {
-      if (_wholeContent != NULL)
+      NclEvent *lambda = this->getLambda ();
+      lambda->stop ();
+      if (this->getParent () == nullptr)
         {
-          _wholeContent->stop ();
-          if (this->getParent () == nullptr)
-            {
-              TRACE ("*** ALL DONE ***");
-              _ginga->setEOS (true);
-            }
+          TRACE ("*** ALL DONE ***");
+          _ginga->setEOS (true);
         }
     }
 }

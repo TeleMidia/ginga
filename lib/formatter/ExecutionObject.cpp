@@ -40,7 +40,6 @@ ExecutionObject::ExecutionObject (GingaInternal *ginga,
   g_assert_nonnull (_scheduler);
 
   _node = node;
-  _wholeContent = nullptr;
   _isCompiled = false;
   _mainEvent = nullptr;
 
@@ -156,71 +155,14 @@ ExecutionObject::addEvent (NclEvent *event)
   if (_events.find (event) != _events.end ())
     return false;
   _events.insert (event);
-
-  // Clutter:
-  if (instanceof (PresentationEvent *, event))
-    {
-      addPresentationEvent ((PresentationEvent *) event);
-    }
-  else if (instanceof (SelectionEvent *, event))
-    {
-      _selectionEvents.insert (((SelectionEvent *) event));
-    }
-  else
-    {
-      _otherEvents.push_back (event);
-    }
   return true;
 }
 
-
-void
-ExecutionObject::addPresentationEvent (PresentationEvent *event)
-{
-  PresentationEvent *auxEvent;
-  GingaTime begin, auxBegin;
-  int posBeg = -1;
-  int posEnd, posMid;
-
-  if (instanceof (AreaLambda *, event->getAnchor ()))
-    {
-      _presEvents.insert (_presEvents.begin (), event);
-      _wholeContent = (PresentationEvent *)event;
-    }
-  else
-    {
-      begin = event->getBegin ();
-      posBeg = 0;
-      posEnd = (int)(_presEvents.size () - 1);
-      while (posBeg <= posEnd)
-        {
-          posMid = (posBeg + posEnd) / 2;
-          auxEvent = (PresentationEvent *)(_presEvents[(size_t)posMid]);
-          auxBegin = auxEvent->getBegin ();
-          if (begin < auxBegin)
-            {
-              posEnd = posMid - 1;
-            }
-          else if (begin > auxBegin)
-            {
-              posBeg = posMid + 1;
-            }
-          else
-            {
-              posBeg = posMid + 1;
-              break;
-            }
-        }
-
-      _presEvents.insert ((_presEvents.begin () + posBeg), event);
-    }
-  _transMan.addPresentationEvent (event);
-}
-
 PresentationEvent *
-ExecutionObject::getWholeContentPresentationEvent ()
+ExecutionObject::getLambda ()
 {
-  return _wholeContent;
+  return cast (PresentationEvent *,
+               this->getEventById (_id + "@lambda<pres>"));
 }
 
 bool
@@ -244,12 +186,9 @@ ExecutionObject::getMainEvent ()
 bool
 ExecutionObject::prepare (NclEvent *event)
 {
-  size_t size;
   map<Node *, ExecutionObjectContext *>::iterator i;
-  NclEvent *auxEvent;
   AttributionEvent *attributeEvent;
   Property *attributeAnchor;
-  size_t j;
   string value;
 
   g_assert_nonnull (event);
@@ -258,12 +197,11 @@ ExecutionObject::prepare (NclEvent *event)
     return false;
 
   _mainEvent = event;
-  _transMan.prepare (_mainEvent == _wholeContent, 0);
+  //_transMan.prepare (_mainEvent == this->getLambda (), 0);
 
-  size = _otherEvents.size ();
-  for (j = 0; j < size; j++)
+
+  for (auto auxEvent: _events)
     {
-      auxEvent = _otherEvents[j];
       if (instanceof (AttributionEvent *, auxEvent))
         {
           attributeEvent = (AttributionEvent *)auxEvent;
@@ -287,7 +225,6 @@ ExecutionObject::start ()
   string mime;
 
   g_assert_nonnull (_mainEvent);
-  g_assert_nonnull (_wholeContent);
 
   if (this->isOccurring ())
     return true;              // nothing to do
@@ -329,7 +266,7 @@ ExecutionObject::start ()
   // Start main event.
   if (instanceof (PresentationEvent *, _mainEvent))
     _mainEvent->start ();
-  _transMan.start (0);
+  //_transMan.start (0);
   return true;
 }
 
@@ -400,10 +337,10 @@ ExecutionObject::stop ()
   if (event != nullptr)
     {
       _mainEvent->stop ();
-      _transMan.stop (0);
+      //_transMan.stop (0);
     }
 
-  _transMan.resetTimeIndex ();
+  //_transMan.resetTimeIndex ();
 
   return true;
 }
@@ -484,9 +421,6 @@ ExecutionObject::handleTickEvent (unused (GingaTime total),
                                   GingaTime diff,
                                   unused (int frame))
 {
-  EventTransition *next;
-  NclEvent *evt;
-  GingaTime waited;
   GingaTime now;
   GingaTime dur;
 
@@ -515,26 +449,38 @@ ExecutionObject::handleTickEvent (unused (GingaTime total),
   g_assert (this->isOccurring ());
   g_assert (instanceof (PresentationEvent *, _mainEvent));
 
-  next = _transMan.nextTransition (_mainEvent);
-  if (next == nullptr)
-    return;
+  for (auto _evt: _events)
+    {
+      PresentationEvent *evt = cast (PresentationEvent *, _evt);
+      if (evt == nullptr)
+        continue;
 
-  waited = next->getTime ();
-  now = _time;
+      if (this->getLambda () == evt)
+        continue;
 
-  // TRACE ("now=%" GINGA_TIME_FORMAT " waited=%" GINGA_TIME_FORMAT,
-  //        GINGA_TIME_ARGS (now), GINGA_TIME_ARGS (waited));
+      TRACE ("[%s %" GINGA_TIME_FORMAT "]"
+             " %s begin=%" GINGA_TIME_FORMAT " end=%" GINGA_TIME_FORMAT,
+             this->getId ().c_str (),
+             GINGA_TIME_ARGS (_time),
+             evt->getId ().c_str (),
+             GINGA_TIME_ARGS (evt->getBegin ()),
+             GINGA_TIME_ARGS (evt->getEnd ()));
 
-  if (now < waited)
-    return;
-
-  evt = cast (NclEvent *, next->getEvent ());
-  g_assert_nonnull (evt);
-
-  TRACE ("%s.%s timed-out at %" GINGA_TIME_FORMAT,
-         _id.c_str(), evt->getId ().c_str (), GINGA_TIME_ARGS (now));
-
-  _transMan.updateTransitionTable (now, _player, _mainEvent);
+      if (evt->getCurrentState () == EventState::SLEEPING
+          && evt->getBegin () <= _time)
+        {
+          TRACE ("%s.%s timed-out at %" GINGA_TIME_FORMAT,
+                 _id.c_str(), evt->getId ().c_str (), GINGA_TIME_ARGS (now));
+          evt->start ();
+        }
+      else if (evt->getCurrentState () == EventState::OCCURRING
+               && evt->getEnd () <= _time)
+        {
+          TRACE ("%s.%s timed-out at %" GINGA_TIME_FORMAT,
+                 _id.c_str(), evt->getId ().c_str (), GINGA_TIME_ARGS (now));
+          evt->stop ();
+        }
+    }
 }
 
 void
@@ -571,13 +517,15 @@ ExecutionObject::handleKeyEvent (const string &key, bool press)
         }
     }
 
-  if (_selectionEvents.empty ())
-    return;                     // nothing to do
-
-  for (SelectionEvent *evt: _selectionEvents)
+  for (auto _evt: _events)
     {
+      SelectionEvent *evt;
       Area *anchor;
       string expected;
+
+      evt = cast (SelectionEvent *, _evt);
+      if (evt == nullptr)
+        continue;
 
       expected = evt->getSelectionCode ();
 

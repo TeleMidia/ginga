@@ -38,7 +38,6 @@ src+= formatter/ExecutionObjectSettings.cpp
 src+= formatter/ExecutionObjectSwitch.cpp
 src+= formatter/NclAction.cpp
 src+= formatter/NclCondition.cpp
-src+= formatter/NclEventTransitionManager.cpp
 src+= formatter/NclEvents.cpp
 src+= formatter/NclLink.cpp
 src+= formatter/RuleAdapter.cpp
