@@ -136,31 +136,6 @@ ExecutionObject::initParent (ExecutionObjectContext *parent)
   g_assert (parent->addChild (this));
 }
 
-// void
-// ExecutionObject::addParentObject (ExecutionObjectContext *parentObject,
-//                                   Node *parentNode)
-// {
-//   addParentObject (_node, parentObject, parentNode);
-// }
-//
-// void
-// ExecutionObject::addParentObject (Node *node,
-//                                   ExecutionObjectContext *parentObject,
-//                                   Node *parentNode)
-// {
-//   _nodeParentTable[node] = parentNode;
-//   _parentTable[parentNode] = parentObject;
-// }
-// void
-// ExecutionObject::removeParentObject (Node *parentNode,
-//                                      ExecutionObjectContext *parentObject)
-// {
-//   map<Node *, ExecutionObjectContext *>::iterator i;
-//   i = _parentTable.find (parentNode);
-//   if (i != _parentTable.end () && i->second == parentObject)
-//     _parentTable.erase (i);
-// }
-
 bool
 ExecutionObject::addEvent (NclEvent *event)
 {
