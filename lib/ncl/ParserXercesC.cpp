@@ -1411,7 +1411,7 @@ ParserXercesC::posCompileContext (DOMElement *elt, Context *context)
     {
       string tag = dom_elt_get_tag (child);
       if (tag == "link")
-        context->addLink (this->parseLink (child, context));
+        g_assert (context->addLink (this->parseLink (child, context)));
       else if (tag == "port")
         context->addPort (this->parsePort (child, context));
     }
@@ -1949,7 +1949,6 @@ ParserXercesC::parseLink (DOMElement *elt, Context *context)
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "xconnector");
 
   link = new Link (_doc, id);
-  context->addLink (link);
   g_assert (link->initConnector (conn));
 
   // Collect children.

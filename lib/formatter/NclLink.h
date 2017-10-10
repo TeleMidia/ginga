@@ -24,11 +24,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-class ExecutionObjectContext;
 class NclLink: public INclConditionListener
 {
 public:
-  NclLink (ExecutionObjectContext *);
+  NclLink ();
   virtual ~NclLink ();
 
   const vector <NclCondition *> *getConditions ();
@@ -38,16 +37,12 @@ public:
   bool addAction (NclAction *);
 
   virtual vector<NclEvent *> getEvents ();
-  void evaluationStarted ();
-  void evaluationEnded ();
-
   void disable (bool);
 
   // INclConditionListener
   void conditionSatisfied ();
 
 private:
-  ExecutionObjectContext *_context;    // list of contexts
   vector <NclCondition *> _conditions; // list of conditions
   vector <NclAction *> _actions;       // list of actions
   bool _disabled;                      // whether link is disabled

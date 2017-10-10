@@ -75,7 +75,7 @@ private:
   Scheduler *_scheduler;
   RuleAdapter *_ruleAdapter;
 
-  NclLink *createLink (Link *, ExecutionObjectContext *);
+  NclLink *createLink (Link *);
   NclCondition *createCondition (Condition *, Bind *);
   NclAction *createAction (Action *, Bind *);
 };

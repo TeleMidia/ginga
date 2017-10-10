@@ -21,9 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclLink::NclLink (ExecutionObjectContext *context)
+NclLink::NclLink ()
 {
-  _context = context;
   _disabled = false;
 }
 
@@ -94,18 +93,6 @@ NclLink::getEvents ()
   for (auto action: _actions)
     events.push_back (action->getEvent ());
   return events;
-}
-
-void
-NclLink::evaluationStarted ()
-{
-  _context->linkEvaluationStarted (this);
-}
-
-void
-NclLink::evaluationEnded ()
-{
-  _context->linkEvaluationFinished (this);
 }
 
 GINGA_FORMATTER_END

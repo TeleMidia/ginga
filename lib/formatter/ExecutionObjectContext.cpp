@@ -74,74 +74,12 @@ ExecutionObjectContext::~ExecutionObjectContext ()
   _uncompiledLinks.clear ();
 }
 
-// ExecutionObjectContext *
-// ExecutionObjectContext::getParentFromDataObject (Node *dataObject)
-// {
-//   ExecutionObject *object;
-//   Node *parentDataObject;
-//   map<string, ExecutionObject *>::iterator i;
-//
-//   parentDataObject = (Node *)(dataObject->getParent ());
-//
-//   if (parentDataObject != NULL)
-//     {
-//       i = _execObjList.begin ();
-//       while (i != _execObjList.end ())
-//         {
-//           object = i->second;
-//           if (object->getNode () == parentDataObject)
-//             {
-//               return (ExecutionObjectContext *)object;
-//             }
-//           ++i;
-//         }
-//     }
-//   return NULL;
-// }
-
 void
 ExecutionObjectContext::suspendLinkEvaluation (bool suspend)
 {
   for (NclLink *link : _links)
     link->disable (suspend);
 }
-
-// bool
-// ExecutionObjectContext::addExecutionObject (ExecutionObject *obj)
-// {
-//   string objId;
-//   if (obj == NULL)
-//     {
-//       return false;
-//     }
-//   objId = obj->getId ();
-//   if (_execObjList.count (objId) != 0)
-//     {
-//       WARNING ("Trying to add the same obj twice: '%s'.", objId.c_str ());
-//       return false;
-//     }
-//   _execObjList[objId] = obj;
-//   obj->addParentObject (this, getNode ());
-//   return true;
-// }
-
-// ExecutionObject *
-// ExecutionObjectContext::getExecutionObject (const string &id)
-// {
-//   map<string, ExecutionObject *>::iterator i;
-//   ExecutionObject *execObj;
-//   if (_execObjList.empty ())
-//     {
-//       return NULL;
-//     }
-//   i = _execObjList.find (id);
-//   if (i != _execObjList.end ())
-//     {
-//       execObj = i->second;
-//       return execObj;
-//     }
-//   return NULL;
-// }
 
 set<Link *> *
 ExecutionObjectContext::getUncompiledLinks ()
@@ -311,55 +249,6 @@ ExecutionObjectContext::addChild (ExecutionObject *child)
     return false;
   _children.insert (child);
   return true;
-}
-
-void
-ExecutionObjectContext::linkEvaluationStarted (NclLink *link)
-{
-  int linkNumber = 0;
-  NclLink *evalLink;
-
-  evalLink = link;
-  if (_pendingLinks.count (evalLink) != 0)
-    {
-      linkNumber = _pendingLinks[evalLink];
-    }
-  _pendingLinks[evalLink] = linkNumber + 1;
-}
-
-void
-ExecutionObjectContext::linkEvaluationFinished (NclLink *link)
-{
-  int linkNumber;
-  NclLink *finishedLink;
-  map<NclLink *, int>::iterator i;
-
-  finishedLink = link;
-  i = _pendingLinks.find (finishedLink);
-  if (i != _pendingLinks.end ())
-    {
-      linkNumber = i->second;
-      if (linkNumber == 1)
-        {
-          _pendingLinks.erase (i);
-          if (_runningEvents.empty () && _pausedEvents.empty ()
-              && _pendingLinks.empty ())
-            {
-              if (lastTransition == EventStateTransition::STOP)
-                {
-                  checkLinkConditions ();
-                }
-              else
-                {
-                  _wholeContent->abort ();
-                }
-            }
-        }
-      else
-        {
-          _pendingLinks[finishedLink] = linkNumber - 1;
-        }
-    }
 }
 
 void

@@ -28,7 +28,7 @@ class Context : public Composition
 public:
   Context (NclDocument *, const string &);
   virtual ~Context ();
-  void addLink (Link *);
+  bool addLink (Link *);
   const vector<Link *> *getLinks ();
 
 private:
