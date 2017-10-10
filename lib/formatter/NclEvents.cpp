@@ -41,7 +41,6 @@ NclEvent::NclEvent (GingaInternal *ginga, const string &id,
   _exeObj = exeObj;
 
   TRACE ("%s", _id.c_str ());
-  _scheduler->addEvent (this);
 }
 
 NclEvent::~NclEvent ()

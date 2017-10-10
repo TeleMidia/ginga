@@ -43,10 +43,6 @@ Scheduler::~Scheduler ()
     delete obj;
   _objects.clear ();
 
-  for (auto evt: _events)
-    delete evt;
-  _events.clear ();
-
   if (_converter != nullptr)
     delete _converter;
 }
@@ -172,37 +168,20 @@ Scheduler::run (const string &file, string *errmsg)
   return true;
 }
 
-#define SET_ACCESS_DEFN(Name, Type, Var)                \
-  set<Type *> *                                         \
-  Scheduler::get##Name##s ()                            \
-  {                                                     \
-    return &(Var);                                      \
-  }                                                     \
-  bool                                                  \
-  Scheduler::has##Name (Type *elt)                      \
-  {                                                     \
-    set<Type *>::iterator it;                           \
-    if ((it = (Var).find (elt)) == (Var).end ())        \
-      return false;                                     \
-    return true;                                        \
-  }                                                     \
-  Type *                                                \
-  Scheduler::get##Name##ById (const string &id)         \
-  {                                                     \
-    for (auto *elt: (Var))                              \
-      if (elt->getId () == id)                          \
-        return elt;                                     \
-    return nullptr;                                     \
-  }                                                     \
-  void                                                  \
-  Scheduler::add##Name (Type *elt)                      \
-  {                                                     \
-    g_assert_nonnull (elt);                             \
-    (Var).insert (elt);                                 \
-  }
+const set<ExecutionObject *> *
+Scheduler::getObjects ()
+{
+  return &_objects;
+}
 
-SET_ACCESS_DEFN (Object, ExecutionObject, _objects)
-SET_ACCESS_DEFN (Event, NclEvent, _events)
+ExecutionObject *
+Scheduler::getObjectById (const string &id)
+{
+  for (auto *obj: _objects)
+    if (obj->getId () == id)
+      return obj;
+  return nullptr;
+}
 
 ExecutionObject *
 Scheduler::getObjectByIdOrAlias (const string &id)
@@ -214,6 +193,16 @@ Scheduler::getObjectByIdOrAlias (const string &id)
     if (obj->hasAlias (id))
       return obj;
   return nullptr;
+}
+
+bool
+Scheduler::addObject (ExecutionObject *obj)
+{
+  g_assert_nonnull (obj);
+  if (_objects.find (obj) != _objects.end ())
+    return false;
+  _objects.insert (obj);
+  return true;
 }
 
 void
