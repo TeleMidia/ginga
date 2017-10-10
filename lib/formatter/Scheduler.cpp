@@ -96,7 +96,18 @@ Scheduler::run (const string &file, string *errmsg)
   entryevts = new vector<NclEvent *>;
   for (auto port: *ports)
     {
-      NclEvent *evt = _converter->insertContext (port);
+      Node *node;
+      Anchor *iface;
+      ExecutionObject *obj;
+      NclEvent *evt;
+
+      port->getTarget (&node, &iface);
+      obj = _converter->obtainExecutionObject (node);
+      g_assert_nonnull (obj);
+
+      evt = _converter->getEvent
+        (obj, iface, instanceof (Property *, iface)
+         ? EventType::ATTRIBUTION : EventType::PRESENTATION, "");
       g_assert_nonnull (evt);
       entryevts->push_back (evt);
     }
