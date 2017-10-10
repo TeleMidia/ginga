@@ -54,7 +54,7 @@ public:
   bool addAlias (const string &);
 
   ExecutionObject *getParent ();
-  void initParent (ExecutionObject *);
+  void initParent (ExecutionObjectContext *);
 
   ExecutionObjectContext *getParentObject ();
   ExecutionObjectContext *getParentObject (Node *node);

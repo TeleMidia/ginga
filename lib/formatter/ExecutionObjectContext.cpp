@@ -319,6 +319,16 @@ ExecutionObjectContext::eventStateChanged (
     }
 }
 
+bool
+ExecutionObjectContext::addChild (ExecutionObject *child)
+{
+  g_assert_nonnull (child);
+  if (_children.find (child) != _children.end ())
+    return false;
+  _children.insert (child);
+  return true;
+}
+
 void
 ExecutionObjectContext::linkEvaluationStarted (NclLink *link)
 {

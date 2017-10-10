@@ -52,9 +52,15 @@ public:
                           EventStateTransition transition,
                           EventState previousState) override;
 
+  // Sanity.
+  bool addChild (ExecutionObject *);
+
   // Callbacks
   void linkEvaluationStarted (NclLink *);
   void linkEvaluationFinished (NclLink *);
+
+private:
+  void checkLinkConditions ();
 
 private:
   set<NclLink *> _links;
@@ -64,10 +70,9 @@ private:
   EventStateTransition lastTransition;
 
   map<NclLink *, int> _pendingLinks;
-
   map<string, ExecutionObject *> _execObjList;
 
-  void checkLinkConditions ();
+  set<ExecutionObject *> _children;
 };
 
 GINGA_FORMATTER_END
