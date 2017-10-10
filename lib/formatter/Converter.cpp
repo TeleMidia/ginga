@@ -47,29 +47,24 @@ Converter::getRuleAdapter ()
   return _ruleAdapter;
 }
 
-ExecutionObject *
-Converter::getExecutionObjectFromPerspective (NclNodeNesting *perspective)
-{
-  ExecutionObjectContext *parentObj;
-  ExecutionObject *exeObj;
-
-  string id = perspective->getId () + "/";
-
-  exeObj = _scheduler->getObjectById (id);
-  if (exeObj != nullptr)
-    {
-      g_printerr (">>> PERSPECTIVE '%s'\n", id.c_str ());
-      return exeObj;
-    }
-
-  parentObj = getParentExecutionObject (perspective);
-  exeObj = createExecutionObject (id, perspective);
-  g_assert_nonnull (exeObj);
-
-  addExecutionObject (exeObj, parentObj);
-
-  return exeObj;
-}
+// ExecutionObject *
+// Converter::getExecutionObjectFromPerspective (NclNodeNesting *perspective)
+// {
+//   ExecutionObjectContext *parentObj;
+//   ExecutionObject *exeObj;
+//   string id = perspective->getId () + "/";
+//   exeObj = _scheduler->getObjectById (id);
+//   if (exeObj != nullptr)
+//     {
+//       g_printerr (">>> PERSPECTIVE '%s'\n", id.c_str ());
+//       return exeObj;
+//     }
+//   parentObj = getParentExecutionObject (perspective);
+//   exeObj = createExecutionObject (id, perspective);
+//   g_assert_nonnull (exeObj);
+//   addExecutionObject (exeObj, parentObj);
+//   return exeObj;
+// }
 
 NclEvent *
 Converter::getEvent (ExecutionObject *exeObj,
@@ -164,215 +159,183 @@ Converter::getEvent (ExecutionObject *exeObj,
   return event;
 }
 
-ExecutionObjectContext *
-Converter::addSameInstance (ExecutionObject *exeObj,
-                            Refer *referNode)
-{
-  vector<Node *> *ncmPerspective = referNode->getPerspective ();
-  NclNodeNesting *referPerspective = new NclNodeNesting (ncmPerspective);
+// ExecutionObjectContext *
+// Converter::addSameInstance (ExecutionObject *exeObj,
+//                             Refer *referNode)
+// {
+//   vector<Node *> *ncmPerspective = referNode->getPerspective ();
+//   NclNodeNesting *referPerspective = new NclNodeNesting (ncmPerspective);
+//   ExecutionObjectContext *referParentObject
+//       = getParentExecutionObject (referPerspective);
+//   if (referParentObject != nullptr)
+//     {
+//       exeObj->addParentObject (
+//             referNode,
+//             referParentObject,
+//             referPerspective->getNode (referPerspective->getNumNodes () - 2));
+//       referParentObject->addExecutionObject (exeObj);
+//     }
+//   delete ncmPerspective;
+//   delete referPerspective;
+//   return referParentObject;
+// }
 
-  ExecutionObjectContext *referParentObject
-      = getParentExecutionObject (referPerspective);
+// void
+// Converter::addExecutionObject (ExecutionObject *exeObj,
+//                                ExecutionObjectContext *parentObj)
+// {
+//   if (parentObj)
+//     parentObj->addExecutionObject (exeObj);
+//   // Hanlde settings nodes.
+//   Node *dataObject = exeObj->getNode ();
+//   NclNodeNesting *nodePerspective = exeObj->getNodePerspective ();
+//   Node *headNode = nodePerspective->getHeadNode ();
+//   auto nodeEntity = cast (Media *, dataObject);
+//   auto headComposition = cast (Composition *, headNode);
+//   if (headComposition != nullptr && nodeEntity != nullptr)
+//     {
+//       const set<Refer *> *sameInstances
+//         = nodeEntity->getInstSameInstances ();
+//       g_assert_nonnull (sameInstances);
+//       for (Refer *referNode: *(sameInstances))
+//         addSameInstance (exeObj, referNode);
+//     }
+//   delete nodePerspective;
+//   // Compile execution object links
+//   for (Node *node : exeObj->getNodes ())
+//     {
+//       auto parent = cast
+//         (ExecutionObjectContext*, exeObj->getParentObject (node));
+//       g_assert_nonnull (parent);
+//       compileExecutionObjectLinks (exeObj, node, parent);
+//     }
+// }
 
-  if (referParentObject != nullptr)
-    {
-      exeObj->addParentObject (
-            referNode,
-            referParentObject,
-            referPerspective->getNode (referPerspective->getNumNodes () - 2));
+// ExecutionObjectContext *
+// Converter::getParentExecutionObject (NclNodeNesting *perspective)
+// {
+//   NclNodeNesting *parentPerspective;
+//   if (perspective->getNumNodes () > 1)
+//     {
+//       parentPerspective = perspective->copy ();
+//       parentPerspective->removeAnchorNode ();
+//       auto cObj = cast (ExecutionObjectContext *,
+//             this->getExecutionObjectFromPerspective (
+//               parentPerspective));
+//       g_assert_nonnull (cObj);
+//       delete parentPerspective;
+//       return cObj;
+//     }
+//   return nullptr;
+// }
 
-      referParentObject->addExecutionObject (exeObj);
-    }
-
-  delete ncmPerspective;
-  delete referPerspective;
-
-  return referParentObject;
-}
-
-void
-Converter::addExecutionObject (ExecutionObject *exeObj,
-                               ExecutionObjectContext *parentObj)
-{
-  if (parentObj)
-    parentObj->addExecutionObject (exeObj);
-
-  // Hanlde settings nodes.
-  Node *dataObject = exeObj->getNode ();
-  NclNodeNesting *nodePerspective = exeObj->getNodePerspective ();
-  Node *headNode = nodePerspective->getHeadNode ();
-
-  auto nodeEntity = cast (Media *, dataObject);
-  auto headComposition = cast (Composition *, headNode);
-  if (headComposition != nullptr && nodeEntity != nullptr)
-    {
-      const set<Refer *> *sameInstances
-        = nodeEntity->getInstSameInstances ();
-      g_assert_nonnull (sameInstances);
-
-      for (Refer *referNode: *(sameInstances))
-        addSameInstance (exeObj, referNode);
-    }
-
-  delete nodePerspective;
-
-  // Compile execution object links
-  for (Node *node : exeObj->getNodes ())
-    {
-      auto parent = cast
-        (ExecutionObjectContext*, exeObj->getParentObject (node));
-
-      g_assert_nonnull (parent);
-
-      compileExecutionObjectLinks (exeObj, node, parent);
-    }
-}
-
-ExecutionObjectContext *
-Converter::getParentExecutionObject (NclNodeNesting *perspective)
-{
-  NclNodeNesting *parentPerspective;
-
-  if (perspective->getNumNodes () > 1)
-    {
-      parentPerspective = perspective->copy ();
-      parentPerspective->removeAnchorNode ();
-
-      auto cObj = cast (ExecutionObjectContext *,
-            this->getExecutionObjectFromPerspective (
-              parentPerspective));
-
-      g_assert_nonnull (cObj);
-
-      delete parentPerspective;
-
-      return cObj;
-    }
-
-  return nullptr;
-}
-
-ExecutionObject *
-Converter::createExecutionObject (
-    const string &id, NclNodeNesting *perspective)
-{
-  Node *node;
-  NclNodeNesting *nodePerspective;
-  ExecutionObject *exeObj;
-  PresentationEvent *compositeEvt;
-
-  node = perspective->getAnchorNode ();
-
-  Node *nodeEntity = cast (Node *, node->derefer ());
-  g_assert_nonnull (nodeEntity);
-
-  if (instanceof (Media *, nodeEntity))
-    g_printerr ("MEDIA ID: %s (%s)\n", nodeEntity->getId ().c_str (), node->getId ().c_str ());
-  else if (instanceof (Context *, nodeEntity))
-    g_printerr ("CONTEXT ID: %s\n", nodeEntity->getId ().c_str ());
-  else if (instanceof (Switch *, nodeEntity))
-    g_printerr ("SWITCH ID: %s\n", nodeEntity->getId ().c_str ());
-  else
-    g_printerr ("UNKNOWN ID: %s\n", nodeEntity->getId ().c_str ());
-
-  // solve execution object cross reference coming from refer nodes with
-  // new instance = false
-  auto contentNode = cast (Media *, nodeEntity);
-  if (contentNode != nullptr && !contentNode->isSettings ())
-    {
-      auto referNode = cast (Refer *, node);
-      if (referNode)
-        {
-          g_printerr ("AAAAAAAAAA\n");
-          nodePerspective
-            = new NclNodeNesting (nodeEntity->getPerspective ());
-
-          // verify if both nodes are in the same base.
-          g_assert (nodePerspective->getHeadNode ()
-                    == perspective->getHeadNode ());
-
-          exeObj = getExecutionObjectFromPerspective (nodePerspective);
-          g_assert_nonnull (exeObj);
-          // if (exeObj == nullptr)
-          //   {
-          //     TRACE ("BBBBBBBBBB");
-          //     g_assert_nonnull (nodeEntity);
-          //     exeObj  = new ExecutionObject
-          //       (_ginga, id, nodeEntity, _actionListener);
-          //   }
-
-          delete nodePerspective;
-
-          if (exeObj != nullptr)
-            {
-              return exeObj;
-            }
-        }
-    }
-
-  auto switchNode = cast (Switch *, nodeEntity);
-  if (switchNode)
-    {
-      g_printerr ("DDDDDDDDDD\n");
-      g_assert_nonnull (node);
-      exeObj = new ExecutionObjectSwitch (_ginga, id, node, _actionListener);
-      compositeEvt = new PresentationEvent (_ginga,
-            nodeEntity->getLambda ()->getId () + "<pres>",
-            exeObj,
-            (Area *)(nodeEntity->getLambda ()));
-
-      exeObj->addEvent (compositeEvt);
-      // to monitor the switch presentation and clear the selection after
-      // each execution
-      compositeEvt->addListener (this);
-      _listening.insert (compositeEvt);
-    }
-  else if (instanceof (Composition* , nodeEntity))
-    {
-      g_printerr ("EEEEEEEEEE\n");
-      string s;
-      g_assert_nonnull (node);
-      exeObj = new ExecutionObjectContext (_ginga, id, node, _actionListener);
-
-      xstrassign (s, "%d", (int) EventType::PRESENTATION);
-      compositeEvt = new PresentationEvent (_ginga,
-            nodeEntity->getLambda ()->getId () + "<pres>",
-            exeObj,
-            (Area *)(nodeEntity->getLambda ()));
-
-      exeObj->addEvent (compositeEvt);
-
-      // to monitor the presentation and remove object at stops
-      // compositeEvent->addEventListener(this);
-    }
-  else
-    {
-      g_assert_nonnull (node);
-      if (contentNode->isSettings ())
-        {
-          if ((exeObj = _ruleAdapter->getSettings ()) != nullptr)
-            {
-              g_printerr ("FFFFFFFFFF\n");
-              return exeObj;
-            }
-          else
-            {
-              g_printerr ("GGGGGGGGGG\n");
-              exeObj = new ExecutionObjectSettings
-                (_ginga, id, node, _actionListener);
-              _ruleAdapter->setSettings (exeObj);
-              return exeObj;
-            }
-        }
-      else
-        {
-          g_printerr ("HHHHHHHHHH\n");
-          return new ExecutionObject (_ginga, id, node, _actionListener);
-        }
-    }
-
-  return exeObj;
-}
+// ExecutionObject *
+// Converter::createExecutionObject (
+//     const string &id, NclNodeNesting *perspective)
+// {
+//   Node *node;
+//   NclNodeNesting *nodePerspective;
+//   ExecutionObject *exeObj;
+//   PresentationEvent *compositeEvt;
+//   node = perspective->getAnchorNode ();
+//   Node *nodeEntity = cast (Node *, node->derefer ());
+//   g_assert_nonnull (nodeEntity);
+//   if (instanceof (Media *, nodeEntity))
+//     g_printerr ("MEDIA ID: %s (%s)\n", nodeEntity->getId ().c_str (), node->getId ().c_str ());
+//   else if (instanceof (Context *, nodeEntity))
+//     g_printerr ("CONTEXT ID: %s\n", nodeEntity->getId ().c_str ());
+//   else if (instanceof (Switch *, nodeEntity))
+//     g_printerr ("SWITCH ID: %s\n", nodeEntity->getId ().c_str ());
+//   else
+//     g_printerr ("UNKNOWN ID: %s\n", nodeEntity->getId ().c_str ());
+//   // solve execution object cross reference coming from refer nodes with
+//   // new instance = false
+//   auto contentNode = cast (Media *, nodeEntity);
+//   if (contentNode != nullptr && !contentNode->isSettings ())
+//     {
+//       auto referNode = cast (Refer *, node);
+//       if (referNode)
+//         {
+//           g_printerr ("AAAAAAAAAA\n");
+//           nodePerspective
+//             = new NclNodeNesting (nodeEntity->getPerspective ());
+//           // verify if both nodes are in the same base.
+//           g_assert (nodePerspective->getHeadNode ()
+//                     == perspective->getHeadNode ());
+//           exeObj = getExecutionObjectFromPerspective (nodePerspective);
+//           g_assert_nonnull (exeObj);
+//           // if (exeObj == nullptr)
+//           //   {
+//           //     TRACE ("BBBBBBBBBB");
+//           //     g_assert_nonnull (nodeEntity);
+//           //     exeObj  = new ExecutionObject
+//           //       (_ginga, id, nodeEntity, _actionListener);
+//           //   }
+//           delete nodePerspective;
+//           if (exeObj != nullptr)
+//             {
+//               return exeObj;
+//             }
+//         }
+//     }
+//   auto switchNode = cast (Switch *, nodeEntity);
+//   if (switchNode)
+//     {
+//       g_printerr ("DDDDDDDDDD\n");
+//       g_assert_nonnull (node);
+//       exeObj = new ExecutionObjectSwitch (_ginga, id, node, _actionListener);
+//       compositeEvt = new PresentationEvent (_ginga,
+//             nodeEntity->getLambda ()->getId () + "<pres>",
+//             exeObj,
+//             (Area *)(nodeEntity->getLambda ()));
+//       exeObj->addEvent (compositeEvt);
+//       // to monitor the switch presentation and clear the selection after
+//       // each execution
+//       compositeEvt->addListener (this);
+//       _listening.insert (compositeEvt);
+//     }
+//   else if (instanceof (Composition* , nodeEntity))
+//     {
+//       g_printerr ("EEEEEEEEEE\n");
+//       string s;
+//       g_assert_nonnull (node);
+//       exeObj = new ExecutionObjectContext (_ginga, id, node, _actionListener);
+//       xstrassign (s, "%d", (int) EventType::PRESENTATION);
+//       compositeEvt = new PresentationEvent (_ginga,
+//             nodeEntity->getLambda ()->getId () + "<pres>",
+//             exeObj,
+//             (Area *)(nodeEntity->getLambda ()));
+//       exeObj->addEvent (compositeEvt);
+//       // to monitor the presentation and remove object at stops
+//       // compositeEvent->addEventListener(this);
+//     }
+//   else
+//     {
+//       g_assert_nonnull (node);
+//       if (contentNode->isSettings ())
+//         {
+//           if ((exeObj = _ruleAdapter->getSettings ()) != nullptr)
+//             {
+//               g_printerr ("FFFFFFFFFF\n");
+//               return exeObj;
+//             }
+//           else
+//             {
+//               g_printerr ("GGGGGGGGGG\n");
+//               exeObj = new ExecutionObjectSettings
+//                 (_ginga, id, node, _actionListener);
+//               _ruleAdapter->setSettings (exeObj);
+//               return exeObj;
+//             }
+//         }
+//       else
+//         {
+//           g_printerr ("HHHHHHHHHH\n");
+//           return new ExecutionObject (_ginga, id, node, _actionListener);
+//         }
+//     }
+//   return exeObj;
+// }
 
 void
 Converter::processLink (Link *ncmLink,
@@ -486,7 +449,7 @@ Converter::processExecutionObjectSwitch (
 {
 
   Node *selectedNode;
-  NclNodeNesting *selectedPerspective;
+  //NclNodeNesting *selectedPerspective;
   string id;
   map<string, ExecutionObject *>::iterator i;
   ExecutionObject *selectedObject;
@@ -497,23 +460,24 @@ Converter::processExecutionObjectSwitch (
   selectedNode = _ruleAdapter->adaptSwitch (switchNode);
   g_assert_nonnull (selectedNode);
 
-  selectedPerspective = switchObject->getNodePerspective ();
-  selectedPerspective->insertAnchorNode (selectedNode);
+  // selectedPerspective = switchObject->getNodePerspective ();
+  // selectedPerspective->insertAnchorNode (selectedNode);
 
-  id = selectedPerspective->getId () + "/";
+  // id = selectedPerspective->getId () + "/";
 
-  ExecutionObject *obj = _scheduler->getObjectById (id);
+  ExecutionObject *obj = _scheduler->getObjectByIdOrAlias (selectedNode->getId ());
   if (obj != nullptr)
     {
       switchObject->select (obj);
       resolveSwitchEvents (switchObject);
-      delete selectedPerspective;
+      //delete selectedPerspective;
       return obj;
     }
 
-  selectedObject = createExecutionObject (id, selectedPerspective);
+  //selectedObject = createExecutionObject (id, selectedPerspective);
 
-  delete selectedPerspective;
+  selectedObject = obtainExecutionObject (id, selectedNode);
+  //delete selectedPerspective;
 
   if (selectedObject == nullptr)
     {
@@ -522,7 +486,7 @@ Converter::processExecutionObjectSwitch (
       return nullptr;
     }
 
-  addExecutionObject (selectedObject, switchObject);
+  //addExecutionObject (selectedObject, switchObject);
   switchObject->select (selectedObject);
   resolveSwitchEvents (switchObject);
 
@@ -580,9 +544,12 @@ Converter::resolveSwitchEvents (
                   nestedSeq = mapping->getMapNodeNesting ();
                   nodePerspective->append (&nestedSeq);
 
-                  endPointObject
-                      = getExecutionObjectFromPerspective (
-                        nodePerspective);
+                  // endPointObject
+                  //     = getExecutionObjectFromPerspective (
+                  //       nodePerspective);
+
+                  endPointObject = obtainExecutionObject
+                    (selectedNode->getId (), selectedNode);
 
                   if (endPointObject != nullptr)
                     {
@@ -616,8 +583,11 @@ Converter::insertNode (NclNodeNesting *perspective,
   EventType eventType;
 
   event = nullptr;
-  executionObject = getExecutionObjectFromPerspective (perspective);
+  //executionObject = getExecutionObjectFromPerspective (perspective);
 
+  executionObject = obtainExecutionObject
+    (perspective->getAnchorNode ()->getId (),
+     perspective->getAnchorNode ());
   if (executionObject != nullptr)
     {
       if (!(instanceof (Property *, interfacePoint)))
@@ -759,8 +729,12 @@ Converter::createEvent (Bind *bind, ExecutionObjectContext *context)
 
   delete endPointNodeSequence;
 
-  executionObject = getExecutionObjectFromPerspective (
-        endPointPerspective);
+  // executionObject = getExecutionObjectFromPerspective (
+  //       endPointPerspective);
+
+  executionObject = obtainExecutionObject
+    (endPointPerspective->getAnchorNode ()->getId (),
+     endPointPerspective->getAnchorNode ());
 
   if (executionObject == nullptr)
     {
@@ -823,8 +797,8 @@ Converter::getBindKey (Bind *bind, string *result)
 // INSANITY ABOVE ----------------------------------------------------------
 
 ExecutionObject *
-Converter::obtainExecutionObject (unused (const string &id),
-                                  unused (Node *node))
+Converter::obtainExecutionObject (const string &id,
+                                  Node *node)
 {
   Node *parentNode;
   ExecutionObject *parent;
@@ -888,6 +862,8 @@ Converter::obtainExecutionObject (unused (const string &id),
         {
           object = new ExecutionObject
             (_ginga, id, node, _actionListener);
+          compileExecutionObjectLinks
+            (object, node, cast (ExecutionObjectContext *, parent));
         }
     }
   else
@@ -896,7 +872,12 @@ Converter::obtainExecutionObject (unused (const string &id),
     }
 
   g_assert_nonnull (object);
-  object->initParent (parent);
+  if (parent != nullptr)
+    {
+      object->initParent (parent);
+      cast (ExecutionObjectContext *, parent) // fixme
+        ->addExecutionObject (object);
+    }
   _scheduler->addObject (object);
   return object;
 }
