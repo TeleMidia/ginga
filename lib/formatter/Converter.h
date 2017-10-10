@@ -45,8 +45,8 @@ public:
 
   void setHandlingStatus (bool handling);
 
-  ExecutionObject *getExecutionObjectFromPerspective
-  (NclNodeNesting *);
+  // ExecutionObject *getExecutionObjectFromPerspective
+  // (NclNodeNesting *);
 
   NclEvent *getEvent (ExecutionObject *exeObj,
                       Anchor *interfacePoint,
@@ -71,18 +71,13 @@ private:
   RuleAdapter *_ruleAdapter;
   bool _handling;
 
-  void addExecutionObject (ExecutionObject *,
-                           ExecutionObjectContext *);
-
-
-
-  ExecutionObjectContext *
-  addSameInstance (ExecutionObject *, Refer *);
-
-  ExecutionObjectContext *getParentExecutionObject (NclNodeNesting *);
-
-  ExecutionObject *
-  createExecutionObject (const string &, NclNodeNesting *);
+  // void addExecutionObject (ExecutionObject *,
+  //                          ExecutionObjectContext *);
+  // ExecutionObjectContext *
+  // addSameInstance (ExecutionObject *, Refer *);
+  // ExecutionObjectContext *getParentExecutionObject (NclNodeNesting *);
+  // ExecutionObject *
+  // createExecutionObject (const string &, NclNodeNesting *);
 
   void compileExecutionObjectLinks (ExecutionObject *, Node *,
                                     ExecutionObjectContext *);
@@ -110,7 +105,10 @@ private:
 
   // INSANITY ABOVE --------------------------------------------------------
 
+public:
   ExecutionObject *obtainExecutionObject (const string &, Node *);
+
+private:
   NclLink *createLink (Link *, ExecutionObjectContext *);
   NclCondition *createCondition (Condition *, Bind *, ExecutionObjectContext *);
   NclAction *createAction (Action *, Bind *, ExecutionObjectContext *);

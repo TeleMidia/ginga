@@ -116,11 +116,12 @@ Scheduler::run (const string &file, string *errmsg)
       if (settings == nullptr)
         {
           ExecutionObject *obj;
-          persp = new NclNodeNesting (node->getPerspective ());
-          obj = _converter
-            ->getExecutionObjectFromPerspective (persp);
+          // persp = new NclNodeNesting (node->getPerspective ());
+          // obj = _converter
+          //   ->getExecutionObjectFromPerspective (persp);
+          obj = _converter->obtainExecutionObject (node->getId (), node);
           g_assert_nonnull (obj);
-          delete persp;
+          // delete persp;
 
           settings = cast (ExecutionObjectSettings *, obj);
           g_assert_nonnull (settings);
@@ -408,9 +409,11 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
           persp->append (&nestedSeq);
 
           // Create or get the execution object mapped by port.
-          child = _converter
-            ->getExecutionObjectFromPerspective (persp);
-          g_assert (child);
+          // child = _converter
+          //   ->getExecutionObjectFromPerspective (persp);
+          // g_assert (child);
+          child = _converter->obtainExecutionObject
+            (port->getFinalNode ()->getId (), port->getFinalNode ());
 
           iface = port->getFinalInterface ();
           g_assert_nonnull (iface);
@@ -525,9 +528,13 @@ Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObj,
           nodePerspective->append (&nestedSeq);
           try
             {
-              endPointObject
-                = _converter
-                ->getExecutionObjectFromPerspective (nodePerspective);
+              // endPointObject
+              //   = _converter
+              //   ->getExecutionObjectFromPerspective (nodePerspective);
+
+              endPointObject = _converter->obtainExecutionObject
+                (nodePerspective->getAnchorNode ()->getId (),
+                 nodePerspective->getAnchorNode ());
 
               if (endPointObject != nullptr)
                 {
