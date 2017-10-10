@@ -22,9 +22,8 @@ GINGA_FORMATTER_BEGIN
 
 ExecutionObjectContext::ExecutionObjectContext (GingaInternal *ginga,
                                                 const string &id,
-                                                Node *dataObject,
-                                                INclActionListener *seListener)
-  : ExecutionObject (ginga, id, dataObject, seListener)
+                                                Node *dataObject)
+  : ExecutionObject (ginga, id, dataObject)
 {
   Context *context;
   Entity *entity;

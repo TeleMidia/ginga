@@ -31,8 +31,7 @@ GINGA_FORMATTER_BEGIN
 
 ExecutionObject::ExecutionObject (GingaInternal *ginga,
                                   const string &id,
-                                  Node *node,
-                                  INclActionListener *seListener)
+                                  Node *node)
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;
@@ -40,7 +39,6 @@ ExecutionObject::ExecutionObject (GingaInternal *ginga,
   _scheduler = ginga->getScheduler ();
   g_assert_nonnull (_scheduler);
 
-  _seListener = seListener;
   _node = node;
   _wholeContent = nullptr;
   _isCompiled = false;
@@ -674,12 +672,9 @@ ExecutionObject::handleKeyEvent (const string &key, bool press)
 
   for (SelectionEvent *evt: buf)
     {
-      if (_seListener != nullptr)
-        {
-          NclAction *fakeAct =
-            new NclAction (evt, EventStateTransition::START, _seListener);
-          _seListener->scheduleAction (fakeAct);
-        }
+      NclAction *fakeAct =
+        new NclAction (evt, EventStateTransition::START, _scheduler);
+      _scheduler->scheduleAction (fakeAct);
     }
 
   if (buf.size () == 0)

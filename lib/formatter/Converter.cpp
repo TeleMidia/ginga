@@ -463,7 +463,7 @@ Converter::obtainExecutionObject (Node *node)
   else if (instanceof (Context *, node))
     {
       TRACE ("creating switch");
-      object = new ExecutionObjectContext (_ginga, id, node, _scheduler);
+      object = new ExecutionObjectContext (_ginga, id, node);
       event = new PresentationEvent
         (_ginga, node->getLambda ()->getId () + "<pres>", object,
          (Area *)(node->getLambda ()));
@@ -472,7 +472,7 @@ Converter::obtainExecutionObject (Node *node)
   else if (instanceof (Switch *, node))
     {
       TRACE ("creating switch");
-      object = new ExecutionObjectSwitch (_ginga, id, node, _scheduler);
+      object = new ExecutionObjectSwitch (_ginga, id, node);
       event = new PresentationEvent
         (_ginga, node->getLambda ()->getId () + "<pres>", object,
          (Area *)(node->getLambda ()));
@@ -485,12 +485,12 @@ Converter::obtainExecutionObject (Node *node)
       g_assert_nonnull (media);
       if (media->isSettings ())
         {
-          object = new ExecutionObjectSettings (_ginga, id, node, _scheduler);
+          object = new ExecutionObjectSettings (_ginga, id, node);
           _ruleAdapter->setSettings (object);
         }
       else
         {
-          object = new ExecutionObject (_ginga, id, node, _scheduler);
+          object = new ExecutionObject (_ginga, id, node);
           compileExecutionObjectLinks
             (object, node, cast (ExecutionObjectContext *, parent));
         }
