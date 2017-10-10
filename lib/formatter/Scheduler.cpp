@@ -371,7 +371,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
   acttype = action->getEventStateTransition ();
   if (acttype == EventStateTransition::START) // start all ports
     {
-      ctxObj->suspendLinkEvaluation (false);
+      //ctxObj->suspendLinkEvaluation (false);
       for (auto port: *compNode->getPorts ())
         {
           Node *node;
@@ -397,7 +397,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
     }
   else if (acttype == EventStateTransition::STOP) // stop all children
     {
-      ctxObj->suspendLinkEvaluation (true);
+      //ctxObj->suspendLinkEvaluation (true);
       for (auto child: *ctxObj->getChildren ())
         {
           NclEvent *evt;
@@ -406,7 +406,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
             continue;
           runAction (evt, action);
         }
-      ctxObj->suspendLinkEvaluation (false);
+      //ctxObj->suspendLinkEvaluation (false);
     }
   else if (acttype == EventStateTransition::ABORT)
     {

@@ -28,11 +28,9 @@ ExecutionObjectContext::ExecutionObjectContext (GingaInternal *ginga,
   Context *context;
   Entity *entity;
 
-  _links.clear ();
   _uncompiledLinks.clear ();
   _runningEvents.clear ();
   _pausedEvents.clear ();
-  _pendingLinks.clear ();
 
   entity = cast (Entity *, dataObject);
   g_assert_nonnull (entity);
@@ -50,35 +48,6 @@ ExecutionObjectContext::ExecutionObjectContext (GingaInternal *ginga,
 
 ExecutionObjectContext::~ExecutionObjectContext ()
 {
-  // ExecutionObject *object;
-  NclLink *link;
-  set<NclLink *>::iterator i;
-  map<string, ExecutionObject *>::iterator j;
-
-  _runningEvents.clear ();
-  _pausedEvents.clear ();
-  _pendingLinks.clear ();
-
-  i = _links.begin ();
-  while (i != _links.end ())
-    {
-      link = *i;
-      if (link != NULL)
-        {
-          delete link;
-          link = NULL;
-        }
-      ++i;
-    }
-  _links.clear ();
-  _uncompiledLinks.clear ();
-}
-
-void
-ExecutionObjectContext::suspendLinkEvaluation (bool suspend)
-{
-  for (NclLink *link : _links)
-    link->disable (suspend);
 }
 
 set<Link *> *
@@ -106,13 +75,6 @@ ExecutionObjectContext::removeLinkUncompiled (Link *ncmLink)
       _uncompiledLinks.erase (i);
       return;
     }
-}
-
-void
-ExecutionObjectContext::setLinkCompiled (NclLink *link)
-{
-  g_assert_nonnull (link);
-  _links.insert (link);
 }
 
 void
@@ -158,8 +120,7 @@ ExecutionObjectContext::eventStateChanged (
             }
         }
 
-      if (_runningEvents.empty () && _pausedEvents.empty ()
-          && _pendingLinks.empty ())
+      if (_runningEvents.empty () && _pausedEvents.empty ())
         {
           lambda->abort ();
         }
@@ -186,8 +147,7 @@ ExecutionObjectContext::eventStateChanged (
                 }
             }
 
-          if (_runningEvents.empty () && _pausedEvents.empty ()
-              && _pendingLinks.empty ())
+          if (_runningEvents.empty () && _pausedEvents.empty ())
             {
               checkLinkConditions ();
             }
@@ -255,8 +215,7 @@ ExecutionObjectContext::addChild (ExecutionObject *child)
 void
 ExecutionObjectContext::checkLinkConditions ()
 {
-  if ((_runningEvents.empty () && _pausedEvents.empty ()
-       && _pendingLinks.empty ()))
+  if (_runningEvents.empty () && _pausedEvents.empty ())
     {
       NclEvent *lambda = this->getLambda ();
       lambda->stop ();

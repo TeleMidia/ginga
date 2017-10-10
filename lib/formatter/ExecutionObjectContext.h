@@ -34,11 +34,9 @@ public:
   ExecutionObjectContext (GingaInternal *, const string &, Node *);
   virtual ~ExecutionObjectContext ();
 
-  void suspendLinkEvaluation (bool);
   set<Link *> *getUncompiledLinks ();
   bool containsUncompiledLink (Link *);
   void removeLinkUncompiled (Link *);
-  void setLinkCompiled (NclLink *);
   void eventStateChanged (NclEvent *,
                           EventStateTransition,
                           EventState) override;
@@ -54,13 +52,10 @@ private:
 private:
   set<ExecutionObject *> _children;
 
-  set<NclLink *> _links;
   set<Link *> _uncompiledLinks;
   set<NclEvent *> _runningEvents; // child events occurring
   set<NclEvent *> _pausedEvents;  // child events paused
   EventStateTransition lastTransition;
-  map<NclLink *, int> _pendingLinks;
-
 };
 
 GINGA_FORMATTER_END
