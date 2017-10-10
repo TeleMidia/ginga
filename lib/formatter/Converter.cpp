@@ -200,7 +200,7 @@ Converter::compileExecutionObjectLinks (
   execDataObject = exeObj->getNode ();
   if (execDataObject != dataObject)
     {
-      compObj = parentObj->getParentFromDataObject (execDataObject);
+      compObj = parentObj->getParent ();
       if (compObj != nullptr && compObj != parentObj)
         {
           compileExecutionObjectLinks (exeObj, execDataObject,
@@ -222,7 +222,7 @@ Converter::compileExecutionObjectLinks (
 
       compileExecutionObjectLinks (
             exeObj, dataObject,
-            (ExecutionObjectContext *)(parentObj->getParentObject ()));
+            parentObj->getParent ());
     }
   else
     {
@@ -233,10 +233,7 @@ Converter::compileExecutionObjectLinks (
       while (parentObj != nullptr)
         {
           object = parentObj;
-          parentObj
-              = (ExecutionObjectContext *)(parentObj
-                                           ->getParentObject ());
-
+          parentObj = parentObj->getParent ();
           compileExecutionObjectLinks (object, dataObject, parentObj);
         }
     }
@@ -248,7 +245,6 @@ Converter::processExecutionObjectSwitch (
 {
 
   Node *selectedNode;
-  //NclNodeNesting *selectedPerspective;
   string id;
   map<string, ExecutionObject *>::iterator i;
   ExecutionObject *selectedObject;
@@ -288,7 +284,6 @@ Converter::resolveSwitchEvents (
   SwitchEvent *switchEvent;
   Anchor *interfacePoint;
   vector<Node *> nestedSeq;
-  NclNodeNesting *nodePerspective;
   NclEvent *mappedEvent;
 
   selectedObject = switchObject->getSelectedObject ();
@@ -321,16 +316,6 @@ Converter::resolveSwitchEvents (
             {
               if (mapping->getNode () == selectedNode)
                 {
-                  nodePerspective
-                      = switchObject->getNodePerspective ();
-
-                  nestedSeq = mapping->getMapNodeNesting ();
-                  nodePerspective->append (&nestedSeq);
-
-                  // endPointObject
-                  //     = getExecutionObjectFromPerspective (
-                  //       nodePerspective);
-
                   endPointObject = obtainExecutionObject (selectedNode);
 
                   if (endPointObject != nullptr)
@@ -341,9 +326,6 @@ Converter::resolveSwitchEvents (
                             switchEvent->getType (),
                             switchEvent->getKey ());
                     }
-
-                  delete nodePerspective;
-
                   break;
                 }
             }
@@ -357,15 +339,12 @@ Converter::resolveSwitchEvents (
 }
 
 NclEvent *
-Converter::insertContext (NclNodeNesting *persp,
-                          Port *port)
+Converter::insertContext (Port *port)
 {
   Anchor *anchor;
   vector<Node *> nestedSeq;
-  NclNodeNesting *perspective;
   EventType eventType;
 
-  g_assert_nonnull (persp);
   g_assert_nonnull (port);
 
   anchor = port->getFinalInterface ();
@@ -376,11 +355,9 @@ Converter::insertContext (NclNodeNesting *persp,
             || instanceof (SwitchPort *, anchor));
 
   nestedSeq = port->getMapNodeNesting ();
-  perspective = new NclNodeNesting (persp);
-  perspective->append (&nestedSeq);
 
   ExecutionObject *object
-    = obtainExecutionObject (perspective->getAnchorNode ());
+    = obtainExecutionObject (nestedSeq.back ());
   g_assert_nonnull (object);
   if (instanceof (Property *, anchor))
     {
@@ -442,20 +419,13 @@ Converter::eventStateChanged (NclEvent *event,
 }
 
 NclEvent *
-Converter::createEvent (Bind *bind, ExecutionObjectContext *context)
+Converter::createEvent (Bind *bind)
 {
-  NclNodeNesting *endPointNodeSequence;
-  NclNodeNesting *endPointPerspective;
-  Node *parentNode;
   ExecutionObject *executionObject;
   Anchor *interfacePoint;
   string key;
   NclEvent *event = nullptr;
   vector<Node *> seq;
-
-  endPointPerspective = context->getNodePerspective ();
-
-  parentNode = endPointPerspective->getAnchorNode ();
 
   Node *node = bind->getNode ();
   g_assert_nonnull (node);
@@ -471,35 +441,12 @@ Converter::createEvent (Bind *bind, ExecutionObjectContext *context)
         seq.push_back (inner);
     }
 
-  endPointNodeSequence = new NclNodeNesting (&seq);
-  if (endPointNodeSequence->getAnchorNode ()
-      != endPointPerspective->getAnchorNode ()
-      && endPointNodeSequence->getAnchorNode () != parentNode)
-    {
-      endPointPerspective->append (endPointNodeSequence);
-    }
 
-  delete endPointNodeSequence;
-
-  // executionObject = getExecutionObjectFromPerspective (
-  //       endPointPerspective);
-
-  executionObject = obtainExecutionObject (endPointPerspective->getAnchorNode ());
-  if (executionObject == nullptr)
-    {
-      delete endPointPerspective;
-      return nullptr;
-    }
-
+  executionObject = obtainExecutionObject (seq.back());
+  g_assert_nonnull (executionObject);
 
   if (interfacePoint == nullptr)
     {
-      // TODO: This is an error, the formatter then return the main event
-      // WARNING ("Can't find an interface point for '%s' bind '%s'.",
-      //          endPointPerspective->getId ().c_str (),
-      //          bind->getRole ()->getLabel ().c_str ());
-      delete endPointPerspective;
-
       return executionObject->getWholeContentPresentationEvent ();
     }
 
@@ -516,7 +463,6 @@ Converter::createEvent (Bind *bind, ExecutionObjectContext *context)
   event = getEvent (executionObject, interfacePoint,
                     bind->getRole ()->getEventType (), key);
 
-  delete endPointPerspective;
   return event;
 }
 
@@ -631,11 +577,7 @@ Converter::obtainExecutionObject (Node *node)
 
   g_assert_nonnull (object);
   if (parent != nullptr)
-    {
-      object->initParent (parent);
-      cast (ExecutionObjectContext *, parent) // fixme
-        ->addExecutionObject (object);
-    }
+    object->initParent (parent);
   _scheduler->addObject (object);
   return object;
 }
@@ -660,7 +602,7 @@ Converter::createLink (Link *docLink, ExecutionObjectContext *context)
       for (auto bind: docLink->getBinds (connCond))
         {
           NclCondition *cond;
-          cond = this->createCondition (connCond, bind, context);
+          cond = this->createCondition (connCond, bind);
           g_assert_nonnull (cond);
           g_assert (link->addCondition (cond));
         }
@@ -672,7 +614,7 @@ Converter::createLink (Link *docLink, ExecutionObjectContext *context)
       for (auto bind: docLink->getBinds (connAct))
         {
           NclAction *action;
-          action = this->createAction (connAct, bind, context);
+          action = this->createAction (connAct, bind);
           g_assert_nonnull (action);
           g_assert (link->addAction (action));
         }
@@ -682,23 +624,20 @@ Converter::createLink (Link *docLink, ExecutionObjectContext *context)
 }
 
 NclCondition *
-Converter::createCondition (Condition *connCondition, Bind *bind,
-                            ExecutionObjectContext *context)
+Converter::createCondition (Condition *connCondition, Bind *bind)
 {
   NclEvent *event;
 
   g_assert_nonnull (connCondition);
   g_assert_nonnull (bind);
-  g_assert_nonnull (context);
 
-  event = createEvent (bind, context);
+  event = createEvent (bind);
   g_assert_nonnull (event);
   return new NclCondition (event, connCondition->getTransition ());
 }
 
 NclAction *
-Converter::createAction (Action *connAction, Bind *bind,
-                         ExecutionObjectContext *context)
+Converter::createAction (Action *connAction, Bind *bind)
 {
   EventType eventType;
   EventStateTransition transition;
@@ -708,12 +647,11 @@ Converter::createAction (Action *connAction, Bind *bind,
 
   g_assert_nonnull (connAction);
   g_assert_nonnull (bind);
-  g_assert_nonnull (context);
 
   eventType = bind->getRole ()->getEventType ();
   transition = connAction->getTransition ();
 
-  event = createEvent (bind, context);
+  event = createEvent (bind);
   g_assert_nonnull (event);
   event->setType (eventType);
 

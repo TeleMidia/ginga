@@ -41,7 +41,6 @@ src+= formatter/NclCondition.cpp
 src+= formatter/NclEventTransitionManager.cpp
 src+= formatter/NclEvents.cpp
 src+= formatter/NclLink.cpp
-src+= formatter/NclNodeNesting.cpp
 src+= formatter/RuleAdapter.cpp
 src+= formatter/Scheduler.cpp
 src+= ncl/Action.cpp

@@ -22,7 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclEvents.h"
 #include "NclEventTransitionManager.h"
 #include "NclAction.h"
-#include "NclNodeNesting.h"
 
 #include "ncl/Ncl.h"
 using namespace ::ginga::ncl;
@@ -53,18 +52,8 @@ public:
   bool hasAlias (const string &);
   bool addAlias (const string &);
 
-  ExecutionObject *getParent ();
+  ExecutionObjectContext *getParent ();
   void initParent (ExecutionObjectContext *);
-
-  ExecutionObjectContext *getParentObject ();
-  ExecutionObjectContext *getParentObject (Node *node);
-  void addParentObject (ExecutionObjectContext *parentObject,
-                        Node *parentNode);
-  void addParentObject (Node *node,
-                        ExecutionObjectContext *parentObject,
-                        Node *parentNode);
-  virtual void removeParentObject (Node *parentNode,
-                                   ExecutionObjectContext *parentObject);
 
   virtual bool addEvent (NclEvent *event);
   void addPresentationEvent (PresentationEvent *event);
@@ -79,8 +68,6 @@ public:
   void setCompiled (bool status);
   vector<Node *> getNodes ();
   Property *getNCMProperty (const string &propertyName);
-  NclNodeNesting *getNodePerspective ();
-  NclNodeNesting *getNodePerspective (Node *node);
   NclEvent *getMainEvent ();
 
   virtual bool prepare (NclEvent *event);
@@ -124,12 +111,12 @@ protected:
   GingaInternal *_ginga;        // ginga handle
   Scheduler *_scheduler;        // scheduler
 
-  string _id;                   // object id
-  vector<string> _aliases;      // aliases
-  ExecutionObject *_parent;     // parent object
-  Player *_player;              // associated player
-  GingaTime _time;              // playback time
-  bool _destroying;             // true if object is being destroyed
+  string _id;                      // object id
+  vector<string> _aliases;         // aliases
+  ExecutionObjectContext *_parent; // parent object
+  Player *_player;                 // associated player
+  GingaTime _time;                 // playback time
+  bool _destroying;                // true if object is being destroyed
 };
 
 GINGA_FORMATTER_END
