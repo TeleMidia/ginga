@@ -25,56 +25,10 @@ ExecutionObjectContext::ExecutionObjectContext (GingaInternal *ginga,
                                                 Node *dataObject)
   : ExecutionObject (ginga, id, dataObject)
 {
-  Context *context;
-  Entity *entity;
-
-  _uncompiledLinks.clear ();
-  _runningEvents.clear ();
-  _pausedEvents.clear ();
-
-  entity = cast (Entity *, dataObject);
-  g_assert_nonnull (entity);
-
-  if (!instanceof (Context *, entity))
-    return;                     // switch, nothing to do
-
-  context = cast (Context *, entity);
-  g_assert_nonnull (context);
-
-  g_assert_nonnull (context->getLinks ());
-  for (auto link: *context->getLinks ())
-    _uncompiledLinks.insert (link);
 }
 
 ExecutionObjectContext::~ExecutionObjectContext ()
 {
-}
-
-set<Link *> *
-ExecutionObjectContext::getUncompiledLinks ()
-{
-  set<Link *> *uLinks = new set<Link *> (_uncompiledLinks);
-  return uLinks;
-}
-
-bool
-ExecutionObjectContext::containsUncompiledLink (Link *dataLink)
-{
-  if (_uncompiledLinks.count (dataLink) != 0)
-    return true;
-  return false;
-}
-
-void
-ExecutionObjectContext::removeLinkUncompiled (Link *ncmLink)
-{
-  set<Link *>::iterator i;
-  i = _uncompiledLinks.find (ncmLink);
-  if (i != _uncompiledLinks.end ())
-    {
-      _uncompiledLinks.erase (i);
-      return;
-    }
 }
 
 void
