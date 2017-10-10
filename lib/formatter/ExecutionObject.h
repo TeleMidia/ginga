@@ -54,12 +54,11 @@ public:
   ExecutionObjectContext *getParent ();
   void initParent (ExecutionObjectContext *);
 
-  virtual bool addEvent (NclEvent *event);
-  void addPresentationEvent (PresentationEvent *event);
-  bool containsEvent (NclEvent *event);
+  const set<NclEvent *> *getEvents ();
+  NclEvent *getEventById (const string &);
+  virtual bool addEvent (NclEvent *);
 
-  NclEvent *getEvent (const string &id);
-  vector<NclEvent *> getEvents ();
+  void addPresentationEvent (PresentationEvent *event);
 
   PresentationEvent *getWholeContentPresentationEvent ();
   bool isCompiled ();
@@ -76,7 +75,8 @@ public:
 protected:
   Node *_node;
   PresentationEvent *_wholeContent;
-  map<string, NclEvent *> _events;
+  set<NclEvent *> _events;
+
   vector<PresentationEvent *> _presEvents;
   set<SelectionEvent *> _selectionEvents;
   vector<NclEvent *> _otherEvents;

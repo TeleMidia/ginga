@@ -86,16 +86,7 @@ ExecutionObjectSettings::updateCurrentFocus (const string &index)
   string from = this->getProperty (name);
   string to = next;
 
-  NclEvent *evt = nullptr;
-  for (auto pair: _events)
-    {
-      if (xstrhasprefix (pair.first.c_str (), "service.currentFocus"))
-        {
-          evt = pair.second;
-          break;
-        }
-    }
-
+  NclEvent *evt = this->getEventById (name);
   if (evt == nullptr)           // do no trigger links
     {
       cast (ExecutionObject *, this)->setProperty (name, from, to, 0);
