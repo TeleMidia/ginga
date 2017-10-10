@@ -37,8 +37,7 @@ class ExecutionObjectSettings;
 class ExecutionObject : public IGingaInternalEventListener
 {
 public:
-  ExecutionObject (GingaInternal *, const string &, Node *,
-                   INclActionListener *);
+  ExecutionObject (GingaInternal *, const string &, Node *);
   virtual ~ExecutionObject ();
 
   virtual bool isSleeping ();
@@ -78,8 +77,6 @@ public:
 protected:
   Node *_node;
   PresentationEvent *_wholeContent;
-  INclActionListener *_seListener;
-
   map<string, NclEvent *> _events;
   vector<PresentationEvent *> _presEvents;
   set<SelectionEvent *> _selectionEvents;

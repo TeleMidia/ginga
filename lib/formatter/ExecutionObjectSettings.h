@@ -26,8 +26,7 @@ class ExecutionObject;
 class ExecutionObjectSettings : public ExecutionObject
 {
 public:
-  ExecutionObjectSettings (GingaInternal *,
-                           const string &, Node *, INclActionListener *);
+  ExecutionObjectSettings (GingaInternal *, const string &, Node *);
   virtual ~ExecutionObjectSettings () {};
 
   void setProperty (const string &, const string &,
@@ -43,7 +42,6 @@ public:
  private:
   string _nextFocus;            // next focus index
   bool _hasNextFocus;           // true if a focus update is scheduled
-
 };
 
 GINGA_FORMATTER_END

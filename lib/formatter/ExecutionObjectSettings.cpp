@@ -26,9 +26,8 @@ GINGA_FORMATTER_BEGIN
 
 ExecutionObjectSettings::ExecutionObjectSettings (GingaInternal *ginga,
                                                   const string &id,
-                                                  Node *node,
-                                                  INclActionListener *lst)
-  : ExecutionObject (ginga, id, node, lst)
+                                                  Node *node)
+  : ExecutionObject (ginga, id, node)
 {
   Node *nodeEntity = cast (Node *, node->derefer ());
   g_assert_nonnull (nodeEntity);

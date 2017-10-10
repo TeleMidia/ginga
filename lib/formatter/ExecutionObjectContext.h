@@ -31,20 +31,17 @@ class ExecutionObjectContext: public ExecutionObject,
                               public INclEventListener
 {
 public:
-  ExecutionObjectContext (GingaInternal *, const string &,
-                          Node *,
-                          INclActionListener *);
-
+  ExecutionObjectContext (GingaInternal *, const string &, Node *);
   virtual ~ExecutionObjectContext ();
 
-  void suspendLinkEvaluation (bool suspend);
+  void suspendLinkEvaluation (bool);
   set<Link *> *getUncompiledLinks ();
-  bool containsUncompiledLink (Link *dataLink);
-  void removeLinkUncompiled (Link *ncmLink);
-  void setLinkCompiled (NclLink *formatterLink);
-  void eventStateChanged (NclEvent *event,
-                          EventStateTransition transition,
-                          EventState previousState) override;
+  bool containsUncompiledLink (Link *);
+  void removeLinkUncompiled (Link *);
+  void setLinkCompiled (NclLink *);
+  void eventStateChanged (NclEvent *,
+                          EventStateTransition,
+                          EventState) override;
 
   // Sanity.
   const set<ExecutionObject *> *getChildren ();
