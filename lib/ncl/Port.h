@@ -34,20 +34,20 @@ public:
   void initParent (Composition *);
 
   Node *getNode ();
-  void setNode (Node *);
+  void initNode (Node *);
 
   Anchor *getInterface ();
-  void setInterface (Anchor *);
+  void initInterface (Anchor *);
 
-  Node *getFinalNode ();
-  Anchor *getFinalInterface ();
-
-  vector<Node *> getMapNodeNesting ();
+  void getTarget (Node **, Anchor **);
 
 protected:
   Composition *_parent;
   Node *_node;
   Anchor *_interface;
+
+  Node *getFinalNode ();
+  Anchor *getFinalInterface ();
 };
 
 GINGA_NCL_END

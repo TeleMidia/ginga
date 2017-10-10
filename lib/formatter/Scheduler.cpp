@@ -376,16 +376,14 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
       ctxObj->suspendLinkEvaluation (false);
       for (auto port: *compNode->getPorts ())
         {
-          vector<Node *> nestedSeq;
+          Node *node;
           Anchor *iface;
-
           ExecutionObject *child;
           NclEvent *evt;
 
-          nestedSeq = port->getMapNodeNesting ();
-          child = _converter->obtainExecutionObject (port->getFinalNode ());
-          iface = port->getFinalInterface ();
-          g_assert_nonnull (iface);
+          port->getTarget (&node, &iface);
+          child = _converter->obtainExecutionObject (node);
+          g_assert_nonnull (child);
 
           if (!instanceof (Area *, iface))
             continue;           // nothing to do
@@ -477,39 +475,25 @@ Scheduler::runSwitchEvent (unused (ExecutionObjectSwitch *switchObj),
   NclEvent *selectedEvent;
   SwitchPort *switchPort;
   vector<Port *>::iterator i;
-  vector<Node *> nestedSeq;
   ExecutionObject *endPointObject;
 
   selectedEvent = nullptr;
   switchPort = (SwitchPort *)(switchEvent->getInterface ());
   for (auto mapping: *switchPort->getPorts ())
     {
-      if (mapping->getNode () == selectedObject->getNode ())
-        {
-          nestedSeq = mapping->getMapNodeNesting ();
-          try
-            {
-              endPointObject = _converter->obtainExecutionObject
-                (nestedSeq.back ());
+      if (mapping->getNode () != selectedObject->getNode ())
+        continue;
 
-              if (endPointObject != nullptr)
-                {
-                  selectedEvent
-                    = _converter
-                    ->getEvent (
-                                endPointObject,
-                                mapping->getFinalInterface (),
-                                switchEvent->getType (),
-                                switchEvent->getKey ());
-                }
-            }
-          catch (exception *exc)
-            {
-              // continue
-            }
+      Node *node;
+      Anchor *iface;
+      mapping->getTarget (&node, &iface);
 
-          break;
-        }
+      endPointObject = _converter->obtainExecutionObject (node);
+      g_assert_nonnull (endPointObject);
+      selectedEvent = _converter
+        ->getEvent (endPointObject, iface, switchEvent->getType (),
+                    switchEvent->getKey ());
+      break;
     }
 
   if (selectedEvent != nullptr)
