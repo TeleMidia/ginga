@@ -17,7 +17,7 @@
       <area id="a2" begin="2s"/>
     </media>
     <link xconnector="onBeginSet">
-      <bind role="onBegin" component="time"/>
+      <bind role="onBegin" component="time" interface="a1"/>
       <bind role="set" component="time" interface="background">
         <bindParam name="var" value="green"/>
       </bind>

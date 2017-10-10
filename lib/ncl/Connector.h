@@ -21,7 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Action.h"
 #include "Condition.h"
 #include "Entity.h"
-#include "Parameter.h"
 #include "Role.h"
 
 GINGA_NCL_BEGIN
@@ -32,8 +31,8 @@ public:
   Connector (NclDocument *, const string &);
   virtual ~Connector ();
 
-  Condition *getCondition ();
-  void initCondition (Condition *);
+  const vector<Condition *> *getConditions ();
+  bool addCondition (Condition *);
 
   const vector<Action *> *getActions ();
   bool addAction (Action *);
@@ -41,11 +40,8 @@ public:
   Role *getRole (const string &);
 
 private:
-  map<string, string> _param;
-  Condition *_condition;
+  vector <Condition *> _conditions;
   vector<Action *> _actions;
-
-  Role *searchRole (Condition *, const string &);
 };
 
 GINGA_NCL_END

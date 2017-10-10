@@ -15,53 +15,44 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef FORMATTER_LINK_H
-#define FORMATTER_LINK_H
+#ifndef NCL_LINK_H
+#define NCL_LINK_H
 
-#include "NclActions.h"
+#include "NclAction.h"
+#include "NclCondition.h"
 #include "NclEvents.h"
-#include "NclFormatterLink.h"
-#include "NclLinkCondition.h"
-
-#include "ncl/Ncl.h"
-using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
 class ExecutionObjectContext;
-
-class NclFormatterLink :
-    public NclLinkTriggerListener,
-    public INclActionListener
+class NclLink: public INclConditionListener
 {
 public:
-  NclFormatterLink (NclLinkTriggerCondition *,
-                    NclAction *, Link *,
-                    ExecutionObjectContext *);
+  NclLink (ExecutionObjectContext *);
+  virtual ~NclLink ();
 
-  virtual ~NclFormatterLink ();
+  const vector <NclCondition *> *getConditions ();
+  bool addCondition (NclCondition *);
 
-  void suspendLinkEvaluation (bool suspended);
-  Link *getNcmLink ();
+  const vector <NclAction *> *getActions ();
+  bool addAction (NclAction *);
 
-  NclAction *getAction ();
-  NclLinkTriggerCondition *getTriggerCondition ();
-  void conditionSatisfied (NclLinkCondition *condition);
   virtual vector<NclEvent *> getEvents ();
   void evaluationStarted ();
   void evaluationEnded ();
-  void actionProcessed (bool start);
 
-protected:
-  Link *_ncmLink;
-  bool _suspended;
-  ExecutionObjectContext *_parentObj;
+  void disable (bool);
+
+  // INclConditionListener
+  void conditionSatisfied ();
 
 private:
-  NclLinkTriggerCondition *_condition;
-  NclAction *_action;
+  ExecutionObjectContext *_context;    // list of contexts
+  vector <NclCondition *> _conditions; // list of conditions
+  vector <NclAction *> _actions;       // list of actions
+  bool _disabled;                      // whether link is disabled
 };
 
 GINGA_FORMATTER_END
 
-#endif //_FORMATTERLINK_H_
+#endif // NCL_LINK_H

@@ -456,21 +456,15 @@ ParserXercesC::parseHead (DOMElement *elt)
         }
       else if (tag == "transitionBase")
         {
-          TransitionBase *base = this->parseTransitionBase (child);
-          g_assert_nonnull (base);
-          _doc->setTransitionBase (base);
+          WARNING_NOT_IMPLEMENTED ("transitions are not supported");
         }
       else if (tag == "regionBase")
         {
-          RegionBase *base = this->parseRegionBase (child);
-          g_assert_nonnull (base);
-          _doc->addRegionBase (base);
+          this->parseRegionBase (child);
         }
       else if (tag == "descriptorBase")
         {
-          DescriptorBase *base = this->parseDescriptorBase (child);
-          g_assert_nonnull (base);
-          _doc->setDescriptorBase (base);
+          this->parseDescriptorBase (child);
         }
       else if (tag == "connectorBase")
         {
@@ -509,7 +503,7 @@ ParserXercesC::parseImportNCL (DOMElement *elt, string *alias, string *uri)
 
 Base *
 ParserXercesC::parseImportBase (DOMElement *elt, NclDocument **doc,
-                            string *alias, string *uri)
+                                string *alias, string *uri)
 {
   DOMElement *parent;
   string tag;
@@ -531,12 +525,6 @@ ParserXercesC::parseImportBase (DOMElement *elt, NclDocument **doc,
   tag = dom_elt_get_tag (parent);
   if (tag == "ruleBase")
     return (*doc)->getRuleBase ();
-  else if (tag == "transitionBase")
-    return (*doc)->getTransitionBase ();
-  else if (tag == "regionBase")
-    return (*doc)->getRegionBase (0);
-  else if (tag == "descriptorBase")
-    return (*doc)->getDescriptorBase ();
   else if (tag == "connectorBase")
     return (*doc)->getConnectorBase ();
   else
@@ -662,148 +650,122 @@ ParserXercesC::parseRule (DOMElement *elt)
 
 // Private: Transition.
 
-TransitionBase *
+void
 ParserXercesC::parseTransitionBase (DOMElement *elt)
 {
-  TransitionBase *base;
   string id;
 
   CHECK_ELT_TAG (elt, "transitionBase", nullptr);
   CHECK_ELT_OPT_ID_AUTO (elt, &id, transitionBase);
 
-  base = new TransitionBase (_doc, id);
   for(DOMElement *child: dom_elt_get_children (elt))
     {
       string tag = dom_elt_get_tag (child);
       if (tag == "importBase")
         {
-          NclDocument *doc;     // FIXME: this is lost (leak?)
-          Base *imported;
-          string alias;
-          string uri;
-          imported = this->parseImportBase (child, &doc, &alias, &uri);
-          g_assert_nonnull (imported);
-          base->addBase (imported, alias, uri);
+          ERROR_NOT_IMPLEMENTED ("%s: element is not supported",
+                                 __error_elt (child).c_str ());
         }
       else if (tag == "transition")
         {
-          Transition *trans = parseTransition (child);
-          g_assert_nonnull (trans);
-          base->addTransition (trans);
+          parseTransition (child);
         }
       else
         {
           ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
         }
     }
-  return base;
 }
 
-Transition *
+void
 ParserXercesC::parseTransition (DOMElement *elt)
 {
-  Transition *trans;
   string id;
   string value;
-  int type;
 
   CHECK_ELT_TAG (elt, "transition", nullptr);
   CHECK_ELT_ID (elt, &id);
 
   CHECK_ELT_ATTRIBUTE (elt, "type", &value);
-  type = TransitionUtil::getTypeCode (value);
-  if (unlikely (type < 0))
-    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "type");
-
-  trans = new Transition (_doc, id, type);
-
   if (dom_elt_try_get_attribute (value, elt, "subtype"))
     {
-      int subtype = TransitionUtil::getSubtypeCode (type, value);
-      trans->setSubtype (CLAMP (subtype, 0, G_MAXINT));
+      // No-op.
     }
-
   if (dom_elt_try_get_attribute (value, elt, "dur"))
-    trans->setDuration (ginga_parse_time (value));
-
+    {
+      // No-op.
+    }
   if (dom_elt_try_get_attribute (value, elt, "startProgress"))
-    trans->setStartProgress (xstrtod (value));
-
+    {
+      // No-op.
+    }
   if (dom_elt_try_get_attribute (value, elt, "endProgress"))
-    trans->setEndProgress (xstrtod (value));
-
+    {
+      // No-op.
+    }
   if (dom_elt_try_get_attribute (value, elt, "direction"))
     {
-      int dir = TransitionUtil::getDirectionCode (value);
-      trans->setDirection ((short) CLAMP (dir, 0, G_MAXINT));
+      // No-op.
     }
-
   if (dom_elt_try_get_attribute (value, elt, "fadeColor"))
-    trans->setFadeColor (ginga_parse_color (value));
-
+    {
+      // No-op.
+    }
   if (dom_elt_try_get_attribute (value, elt, "horzRepeat"))
-    trans->setHorzRepeat (xstrtoint (value, 10));
-
+    {
+      // No-op.
+    }
   if (dom_elt_try_get_attribute (value, elt, "vertRepeat"))
-    trans->setVertRepeat (xstrtoint (value, 10));
-
+    {
+      // No-op.
+    }
   if (dom_elt_try_get_attribute (value, elt, "borderWidth"))
-    trans->setBorderWidth (xstrtoint (value, 10));
-
+    {
+      // No-op.
+    }
   if (dom_elt_try_get_attribute (value, elt, "borderColor"))
-    trans->setBorderColor (ginga_parse_color (value));
-
-  return trans;
+    {
+      // No-op.
+    }
 }
 
 
 // Private: Region.
 
-RegionBase *
+void
 ParserXercesC::parseRegionBase (DOMElement *elt)
 {
-  RegionBase *base;
   string id;
 
   CHECK_ELT_TAG (elt, "regionBase", nullptr);
   CHECK_ELT_OPT_ID_AUTO (elt, &id, regionBase);
 
-  base = new RegionBase (_doc, id);
   for (DOMElement *child: dom_elt_get_children (elt))
     {
       string tag = dom_elt_get_tag (child);
+
       if (tag == "importBase")
         {
-          NclDocument *doc;     // FIXME: this is lost (leak?)
-          Base *imported;
-          string alias;
-          string uri;
-          imported = this->parseImportBase (child, &doc, &alias, &uri);
-          g_assert_nonnull (imported);
-          base->addBase (imported, alias, uri);
+          ERROR_NOT_IMPLEMENTED ("%s: element is not supported",
+                                 __error_elt (child).c_str ());
         }
       else if (tag == "region")
         {
-          Region *region = this->parseRegion (child, base, nullptr);
-          g_assert_nonnull (region);
-          base->addRegion (region);
+          this->parseRegion (child, {0, 0, _width, _height});
         }
       else
         {
           ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
         }
     }
-  return base;
 }
 
-Region *
-ParserXercesC::parseRegion (DOMElement *elt, RegionBase *base, Region *parent)
+void
+ParserXercesC::parseRegion (DOMElement *elt, GingaRect parent_rect)
 {
-  Region *region;
   string id;
   string value;
 
-  GingaRect parent_rect;
   GingaRect rect;
   int z;
   int zorder;
@@ -812,58 +774,39 @@ ParserXercesC::parseRegion (DOMElement *elt, RegionBase *base, Region *parent)
   CHECK_ELT_TAG (elt, "region", nullptr);
   CHECK_ELT_ID (elt, &id);
 
-  region = new Region (_doc, id);
-  if (parent != NULL)
-    {
-      parent_rect = parent->getRect ();
-    }
-  else
-    {
-      parent_rect.x = 0;
-      parent_rect.y = 0;
-      parent_rect.width = _width;
-      parent_rect.height = _height;
-    }
-
   rect = parent_rect;
   z = zorder = 0;
 
   if (dom_elt_try_get_attribute (value, elt, "left"))
     {
-      region->setLeft (value);
       rect.x += ginga_parse_percent (value, parent_rect.width, 0, G_MAXINT);
     }
 
   if (dom_elt_try_get_attribute (value, elt, "top"))
     {
-      region->setTop (value);
       rect.y += ginga_parse_percent (value, parent_rect.height, 0, G_MAXINT);
     }
 
   if (dom_elt_try_get_attribute (value, elt, "width"))
     {
-      region->setWidth (value);
       rect.width = ginga_parse_percent
         (value, parent_rect.width, 0, G_MAXINT);
     }
 
   if (dom_elt_try_get_attribute (value, elt, "height"))
     {
-      region->setHeight (value);
       rect.height = ginga_parse_percent
         (value, parent_rect.height, 0, G_MAXINT);
     }
 
   if (dom_elt_try_get_attribute (value, elt, "right"))
     {
-      region->setRight (value);
       rect.x += parent_rect.width - rect.width
         - ginga_parse_percent (value, parent_rect.width, 0, G_MAXINT);
     }
 
   if (dom_elt_try_get_attribute (value, elt, "bottom"))
     {
-      region->setBottom (value);
       rect.y += parent_rect.height - rect.height
         - ginga_parse_percent (value, parent_rect.height, 0, G_MAXINT);
     }
@@ -872,97 +815,60 @@ ParserXercesC::parseRegion (DOMElement *elt, RegionBase *base, Region *parent)
     z = xstrtoint (value, 10);
   zorder = last_zorder++;
 
-  string left = xstrbuild ("%.2f%%", ((double) rect.x / _width) * 100.);
-  string top = xstrbuild ("%.2f%%", ((double) rect.y / _height) * 100.);
-  string width = xstrbuild ("%.2f%%", ((double) rect.width / _width) * 100.);
-  string height = xstrbuild ("%.2f%%", ((double) rect.height / _height) * 100.);
-
-  region->setLeft (left);
-  region->setTop (top);
-  region->setWidth (width);
-  region->setHeight (height);
-
-  region->setRect (rect);
-  region->setZ (z, zorder);
+  GingaRect screen = {0, 0, _width, _height};
+  _regions[id]["zIndex"] = xstrbuild ("%d", z);
+  _regions[id]["zorder"] = xstrbuild ("%d", zorder);
+  _regions[id]["left"] = xstrbuild
+    ("%.2f%%", ((double) rect.x / screen.width) * 100.);
+  _regions[id]["top"] = xstrbuild
+    ("%.2f%%", ((double) rect.y / screen.height) * 100.);
+  _regions[id]["width"] = xstrbuild
+    ("%.2f%%", ((double) rect.width / screen.width) * 100.);
+  _regions[id]["height"] = xstrbuild
+    ("%.2f%%", ((double) rect.height / screen.height) * 100.);
 
   // Collect children.
   for (DOMElement *child: dom_elt_get_children (elt))
     {
       string tag = dom_elt_get_tag (child);
       if (tag == "region")
-        base->addRegion (this->parseRegion (child, base, region));
+        this->parseRegion (child, rect);
       else
         ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
     }
-  return region;
 }
 
 
 // Private: Descriptor.
 
-DescriptorBase *
+void
 ParserXercesC::parseDescriptorBase (DOMElement *elt)
 {
-  DescriptorBase *base;
   string id;
 
   CHECK_ELT_TAG (elt, "descriptorBase", nullptr);
   CHECK_ELT_OPT_ID_AUTO (elt, &id, descriptorBase);
 
-  base = new DescriptorBase (_doc, id);
   for (DOMElement *child: dom_elt_get_children (elt))
     {
       string tag = dom_elt_get_tag (child);
-      if (tag == "importBase")
-        {
-          NclDocument *doc;     // FIXME: this is lost (leak?)
-          Base *imported;
-          string alias;
-          string uri;
-
-          imported = this->parseImportBase (child, &doc, &alias, &uri);
-          g_assert_nonnull (imported);
-          base->addBase (imported, alias, uri);
-
-          // Import regions.
-          RegionBase *regionBase = _doc->getRegionBase (0);
-          if (regionBase == nullptr)
-            {
-              regionBase = new RegionBase (_doc, "");
-              _doc->addRegionBase (regionBase);
-            }
-          for (auto item: *doc->getRegionBases ())
-            regionBase->addBase (item.second, alias, uri);
-
-          // Import rules.
-          RuleBase *ruleBase = _doc->getRuleBase ();
-          if (ruleBase == nullptr)
-            {
-              ruleBase = new RuleBase (_doc, "");
-              _doc->setRuleBase (ruleBase);
-            }
-          ruleBase->addBase (doc->getRuleBase (), alias, uri);
-        }
-      else if (tag == "descriptorSwitch")
+      if (tag == "importBase" || tag == "descriptorSwitch")
         {
           ERROR_NOT_IMPLEMENTED ("%s: element is not supported",
                                  __error_elt (child).c_str ());
         }
       else if (tag == "descriptor")
         {
-          Descriptor *desc = parseDescriptor (child);
-          g_assert_nonnull (desc);
-          base->addDescriptor (desc);
+          parseDescriptor (child);
         }
       else
         {
           ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
         }
     }
-  return base;
 }
 
-Descriptor *
+void
 ParserXercesC::parseDescriptor (DOMElement *elt)
 {
   // List of attributes that should be collected as parameters.
@@ -982,57 +888,33 @@ ParserXercesC::parseDescriptor (DOMElement *elt)
      "moveUp",
      "player",
      "selBorderColor",
+     "transIn",
+     "transOut",
     };
 
   // List of transition attributes.
   static vector<string> transattr = {"transIn", "transOut"};
 
-  Descriptor *desc;
   string id;
   string value;
 
   CHECK_ELT_TAG (elt, "descriptor", nullptr);
   CHECK_ELT_ID (elt, &id);
 
-  desc = new Descriptor (_doc, id);
+  _descriptors[id]["_id"] = id;
+
   if (dom_elt_try_get_attribute (value, elt, "region"))
     {
-      Region *region = _doc->getRegion (value);
-      if (unlikely (region == nullptr))
+      if (unlikely (_regions.find (value) == _regions.end ()))
         ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "region");
-      desc->initRegion (region);
+
+      for (auto it: _regions[value])
+        _descriptors[id][it.first] = it.second;
     }
 
   for (auto attr: supported)
-    {
-      if (dom_elt_try_get_attribute (value, elt, attr))
-        desc->addParameter (new Parameter (attr, value));
-    }
-
-  for (auto attr: transattr)
-    {
-      TransitionBase *base;
-
-      if (!dom_elt_try_get_attribute (value, elt, attr))
-        continue;
-
-      base = _doc->getTransitionBase ();
-      if (base == nullptr)
-        continue;
-
-      vector<string> ids = ginga_parse_list (value, ';', 0, G_MAXINT);
-      for (size_t i = 0; i < ids.size (); i++)
-        {
-          Transition *trans = base->getTransition (ids[i]);
-          if (unlikely (trans == nullptr))
-            ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, attr);
-
-          if (attr == "transIn")
-            desc->addInputTransition (trans);
-          else
-            desc->addOutputTransition (trans);
-        }
-    }
+    if (dom_elt_try_get_attribute (value, elt, attr))
+      _descriptors[id][attr] = value;
 
   // Collect children.
   for (DOMElement *child: dom_elt_get_children (elt))
@@ -1044,14 +926,13 @@ ParserXercesC::parseDescriptor (DOMElement *elt)
           string value;
           CHECK_ELT_ATTRIBUTE (child, "name", &name);
           CHECK_ELT_OPT_ATTRIBUTE (child, "value", &value, "");
-          desc->addParameter (new Parameter (name, value));
+          _descriptors[id][name] = value;
         }
       else
         {
           ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
         }
     }
-  return desc;
 }
 
 
@@ -1114,13 +995,12 @@ ParserXercesC::parseCausalConnector (DOMElement *elt)
       string tag = dom_elt_get_tag (child);
       if (tag == "simpleCondition")
         {
-          conn->initCondition
-            (this->parseSimpleCondition (child));
+          this->parseCondition (conn, child);
           ncond++;
         }
       else if (tag == "compoundCondition")
         {
-          conn->initCondition (this->parseCompoundCondition (child));
+          this->parseCompoundCondition (conn, child);
           ncond++;
         }
       else if (tag == "simpleAction")
@@ -1154,17 +1034,15 @@ ParserXercesC::parseCausalConnector (DOMElement *elt)
   return conn;
 }
 
-CompoundCondition *
-ParserXercesC::parseCompoundCondition (DOMElement *elt)
+void
+ParserXercesC::parseCompoundCondition (Connector *conn, DOMElement *elt)
 {
-  CompoundCondition *cond;
   string op;
   string value;
 
   CHECK_ELT_TAG (elt, "compoundCondition", nullptr);
   CHECK_ELT_ATTRIBUTE (elt, "operator", &op);
 
-  cond = new CompoundCondition ();
   if (op != "and" and op != "or")
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "operator");
 
@@ -1174,34 +1052,33 @@ ParserXercesC::parseCompoundCondition (DOMElement *elt)
       string tag = dom_elt_get_tag (child);
       if (tag == "simpleCondition")
         {
-          cond->addCondition
-            (this->parseSimpleCondition (child));
+          this->parseCondition (conn, child);
         }
       else if (tag == "assessmentStatement")
         {
-          cond->addCondition
-            (this->parseAssessmentStatement (child));
+          continue;
+          // cond->addCondition
+          //   (this->parseAssessmentStatement (child));
         }
       else if (tag == "compoundCondition")
         {
-          cond->addCondition
-            (this->parseCompoundCondition (child));
+          this->parseCompoundCondition (conn, child);
         }
       else if (tag ==  "compoundStatement")
         {
-          cond->addCondition
-            (this->parseCompoundStatement (child));
+          continue;
+          // cond->addCondition
+          //   (this->parseCompoundStatement (child));
         }
       else
         {
           ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
         }
     }
-  return cond;
 }
 
-SimpleCondition *
-ParserXercesC::parseSimpleCondition (DOMElement *elt)
+void
+ParserXercesC::parseCondition (Connector *conn, DOMElement *elt)
 {
   string str;
   string role;
@@ -1220,7 +1097,7 @@ ParserXercesC::parseSimpleCondition (DOMElement *elt)
   type = (EventType) -1;
   trans = (EventStateTransition) -1;
 
-  SimpleCondition::isReserved (role, &type, &trans);
+  Condition::isReserved (role, &type, &trans);
 
   if (dom_elt_try_get_attribute (str, elt, "eventType"))
     {
@@ -1261,115 +1138,107 @@ ParserXercesC::parseSimpleCondition (DOMElement *elt)
   if (qualifier != "and" && qualifier != "or")
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "qualifier");
 
-  return new SimpleCondition (type, trans, role, key);
+  Condition *cond = new Condition (type, trans, nullptr, role, key);
+  g_assert (conn->addCondition (cond));
 }
 
-CompoundStatement *
-ParserXercesC::parseCompoundStatement (DOMElement *elt)
-{
-  CompoundStatement *stmt;
-  string op;
-  string neg;
+// CompoundStatement *
+// ParserXercesC::parseCompoundStatement (DOMElement *elt)
+// {
+//   CompoundStatement *stmt;
+//   string op;
+//   string neg;
+//   CHECK_ELT_TAG (elt, "compoundStatement", nullptr);
+//   CHECK_ELT_ATTRIBUTE (elt, "operator", &op);
+//   CHECK_ELT_OPT_ATTRIBUTE (elt, "isNegated", &neg, "false");
+//   if (unlikely (op != "and" && op != "or"))
+//     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "operator");
+//   if (unlikely (neg != "true" && neg != "false"))
+//     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "isNegated");
+//   stmt = new CompoundStatement (op == "and", neg == "true");
+//   // Collect children.
+//   for (DOMElement *child: dom_elt_get_children (elt))
+//     {
+//       string tag = dom_elt_get_tag (child);
+//       if (tag == "assessmentStatement")
+//         {
+//           stmt->addStatement (this->parseAssessmentStatement (child));
+//         }
+//       else if (tag == "compoundStatement")
+//         {
+//           stmt->addStatement (this->parseCompoundStatement (child));
+//         }
+//       else
+//         {
+//           ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
+//         }
+//     }
+//   return stmt;
+// }
 
-  CHECK_ELT_TAG (elt, "compoundStatement", nullptr);
-  CHECK_ELT_ATTRIBUTE (elt, "operator", &op);
-  CHECK_ELT_OPT_ATTRIBUTE (elt, "isNegated", &neg, "false");
+// AssessmentStatement *
+// ParserXercesC::parseAssessmentStatement (DOMElement *elt)
+// {
+//   AssessmentStatement *stmt;
+//   string comp;
+//   string value;
+//   CHECK_ELT_TAG (elt, "assessmentStatement", nullptr);
+//   CHECK_ELT_ATTRIBUTE (elt, "comparator", &comp);
+//   if (unlikely (!_ginga_parse_comparator (comp, &comp)))
+//     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "comparator");
+//   stmt = new AssessmentStatement (comp);
+//   for (DOMElement *child: dom_elt_get_children (elt))
+//     {
+//       string tag = dom_elt_get_tag (child);
+//       if (tag == "attributeAssessment")
+//         {
+//           AttributeAssessment *assess;
+//           assess = this->parseAttributeAssessment (child);
+//           if (stmt->getMainAssessment () == nullptr)
+//             stmt->setMainAssessment (assess);
+//           else
+//             stmt->setOtherAssessment (assess);
+//         }
+//       else if (tag == "valueAssessment")
+//         {
+//           stmt->setOtherAssessment (this->parseValueAssessment (child));
+//         }
+//       else
+//         {
+//           ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
+//         }
+//     }
+//   return stmt;
+// }
 
-  if (unlikely (op != "and" && op != "or"))
-    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "operator");
+// AttributeAssessment *
+// ParserXercesC::parseAttributeAssessment (DOMElement *elt)
+// {
+//   map<string, EventType>::iterator it;
+//   string role;
+//   string type;
+//   string key;
+//   string offset;
+//   EventType evttype;
+//   CHECK_ELT_TAG (elt, "attributeAssessment", nullptr);
+//   CHECK_ELT_ATTRIBUTE (elt, "role", &role);
+//   CHECK_ELT_OPT_ATTRIBUTE (elt, "type", &type, "attribution");
+//   CHECK_ELT_OPT_ATTRIBUTE (elt, "key", &key, "");
+//   CHECK_ELT_OPT_ATTRIBUTE (elt, "offset", &offset, "");
+//   if ((it = event_type_table.find (type)) == event_type_table.end ())
+//     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "eventType");
+//   evttype = it->second;
+//   return new AttributeAssessment (evttype, role, key, offset);
+// }
 
-  if (unlikely (neg != "true" && neg != "false"))
-    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "isNegated");
-
-  stmt = new CompoundStatement (op == "and", neg == "true");
-
-  // Collect children.
-  for (DOMElement *child: dom_elt_get_children (elt))
-    {
-      string tag = dom_elt_get_tag (child);
-      if (tag == "assessmentStatement")
-        {
-          stmt->addStatement (this->parseAssessmentStatement (child));
-        }
-      else if (tag == "compoundStatement")
-        {
-          stmt->addStatement (this->parseCompoundStatement (child));
-        }
-      else
-        {
-          ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
-        }
-    }
-  return stmt;
-}
-
-AssessmentStatement *
-ParserXercesC::parseAssessmentStatement (DOMElement *elt)
-{
-  AssessmentStatement *stmt;
-  string comp;
-  string value;
-
-  CHECK_ELT_TAG (elt, "assessmentStatement", nullptr);
-  CHECK_ELT_ATTRIBUTE (elt, "comparator", &comp);
-  if (unlikely (!_ginga_parse_comparator (comp, &comp)))
-    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "comparator");
-
-  stmt = new AssessmentStatement (comp);
-  for (DOMElement *child: dom_elt_get_children (elt))
-    {
-      string tag = dom_elt_get_tag (child);
-      if (tag == "attributeAssessment")
-        {
-          AttributeAssessment *assess;
-          assess = this->parseAttributeAssessment (child);
-          if (stmt->getMainAssessment () == nullptr)
-            stmt->setMainAssessment (assess);
-          else
-            stmt->setOtherAssessment (assess);
-        }
-      else if (tag == "valueAssessment")
-        {
-          stmt->setOtherAssessment (this->parseValueAssessment (child));
-        }
-      else
-        {
-          ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
-        }
-    }
-  return stmt;
-}
-
-AttributeAssessment *
-ParserXercesC::parseAttributeAssessment (DOMElement *elt)
-{
-  map<string, EventType>::iterator it;
-  string role;
-  string type;
-  string key;
-  string offset;
-  EventType evttype;
-
-  CHECK_ELT_TAG (elt, "attributeAssessment", nullptr);
-  CHECK_ELT_ATTRIBUTE (elt, "role", &role);
-  CHECK_ELT_OPT_ATTRIBUTE (elt, "type", &type, "attribution");
-  CHECK_ELT_OPT_ATTRIBUTE (elt, "key", &key, "");
-  CHECK_ELT_OPT_ATTRIBUTE (elt, "offset", &offset, "");
-
-  if ((it = event_type_table.find (type)) == event_type_table.end ())
-    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "eventType");
-  evttype = it->second;
-  return new AttributeAssessment (evttype, role, key, offset);
-}
-
-ValueAssessment *
-ParserXercesC::parseValueAssessment (DOMElement *elt)
-{
-  string value;
-  CHECK_ELT_TAG (elt, "valueAssessment", nullptr);
-  CHECK_ELT_ATTRIBUTE (elt, "value", &value);
-  return new ValueAssessment (value);
-}
+// ValueAssessment *
+// ParserXercesC::parseValueAssessment (DOMElement *elt)
+// {
+//   string value;
+//   CHECK_ELT_TAG (elt, "valueAssessment", nullptr);
+//   CHECK_ELT_ATTRIBUTE (elt, "value", &value);
+//   return new ValueAssessment (value);
+// }
 
 void
 ParserXercesC::parseCompoundAction (Connector *conn, DOMElement *elt)
@@ -1475,7 +1344,6 @@ ParserXercesC::parseBody (DOMElement *elt)
   CHECK_ELT_OPT_ID (elt, &id, _doc->getId ());
 
   body = _doc->getRoot ();
-
   for (DOMElement *child: dom_elt_get_children (elt))
     {
       Node *node;
@@ -1957,10 +1825,14 @@ ParserXercesC::parseMedia (DOMElement *elt)
 
       if (dom_elt_try_get_attribute (value, elt, "descriptor"))
         {
-          Descriptor *desc = _doc->getDescriptor (value);
-          if (unlikely (desc == nullptr))
+          if (unlikely (_descriptors.find (value) == _descriptors.end ()))
             ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "descriptor");
-          ((Media *) media)->initDescriptor (desc);
+          for (auto it: _descriptors[value])
+            {
+              if (it.first == "_id")
+                continue;       // ignored
+              media->setProperty (it.first, it.second);
+            }
         }
     }
 
@@ -1976,9 +1848,18 @@ ParserXercesC::parseMedia (DOMElement *elt)
         }
       else if (tag == "property")
         {
-          Property *prop = this->parseProperty (child);
-          g_assert_nonnull (prop);
-          media->addAnchor (prop);
+          string name;
+          string value;
+
+          CHECK_ELT_TAG (child, "property", nullptr);
+          CHECK_ELT_ATTRIBUTE (child, "name", &name);
+          CHECK_ELT_OPT_ATTRIBUTE (child, "value", &value, "");
+
+          media->setProperty (name, value);
+
+          // Property *prop = this->parseProperty (child);
+          // g_assert_nonnull (prop);
+          // media->addAnchor (prop);
         }
       else
         {
@@ -2085,7 +1966,7 @@ ParserXercesC::parseLink (DOMElement *elt, Context *context)
         }
       else if (tag == "bind")
         {
-          g_assert_nonnull (this->parseBind (child, link, &params, context));
+          this->parseBind (child, link, &params, context);
         }
       else
         {
@@ -2097,7 +1978,8 @@ ParserXercesC::parseLink (DOMElement *elt, Context *context)
 
 Bind *
 ParserXercesC::parseBind (DOMElement *elt, Link *link,
-                          map<string, string> *params, Context *context)
+                          unused (map<string, string> *params),
+                          Context *context)
 {
   Bind *bind;
   string label;
@@ -2172,29 +2054,29 @@ ParserXercesC::parseBind (DOMElement *elt, Link *link,
   conn = cast (Connector *, link->getConnector ());
   g_assert_nonnull (conn);
 
-  role = conn->getRole (label);
-  if (role == nullptr)          // ghost "get"
-    {
-      Condition *cond;
-      AssessmentStatement *stmt;
-      AttributeAssessment *assess;
-
-      assess = new AttributeAssessment (EventType::ATTRIBUTION, label, "", "");
-      stmt = new AssessmentStatement ("ne");
-      stmt->setMainAssessment (assess);
-      stmt->setOtherAssessment (new ValueAssessment (label));
-
-      cond = conn->getCondition ();
-      if (instanceof (CompoundCondition *, cond))
-        {
-          ((CompoundCondition *) cond)->addCondition (stmt);
-        }
-      else
-        {
-          conn->initCondition (new CompoundCondition (cond, stmt));
-        }
-      role = (Role *) assess;
-    }
+  role = conn->getRole (label); // ghost "get"
+  if (role == nullptr)
+    return nullptr;
+  // if (role == nullptr)
+  //   {
+  //     Condition *cond;
+  //     AssessmentStatement *stmt;
+  //     AttributeAssessment *assess;
+  //     assess = new AttributeAssessment (EventType::ATTRIBUTION, label, "", "");
+  //     stmt = new AssessmentStatement ("ne");
+  //     stmt->setMainAssessment (assess);
+  //     stmt->setOtherAssessment (new ValueAssessment (label));
+  //     cond = conn->getCondition ();
+  //     if (instanceof (CompoundCondition *, cond))
+  //       {
+  //         ((CompoundCondition *) cond)->addCondition (stmt);
+  //       }
+  //     else
+  //       {
+  //         conn->initCondition (new CompoundCondition (cond, stmt));
+  //       }
+  //     role = (Role *) assess;
+  //   }
   g_assert_nonnull (role);
 
   bind = new Bind (role, target, iface);
@@ -2208,8 +2090,12 @@ ParserXercesC::parseBind (DOMElement *elt, Link *link,
       string tag = dom_elt_get_tag (child);
       if (tag == "bindParam")
         {
-          Parameter *par = this->parseBindParam (child);
-          bind->setParameter (par->getName (), par->getValue ());
+          string name;
+          string value;
+          CHECK_ELT_TAG (child, "bindParam", nullptr);
+          CHECK_ELT_ATTRIBUTE (child, "name", &name);
+          CHECK_ELT_ATTRIBUTE (child, "value", &value);
+          bind->setParameter (name, value);
         }
       else
         {
@@ -2217,17 +2103,6 @@ ParserXercesC::parseBind (DOMElement *elt, Link *link,
         }
     }
   return bind;
-}
-
-Parameter *
-ParserXercesC::parseBindParam (DOMElement *elt)
-{
-  string name;
-  string value;
-  CHECK_ELT_TAG (elt, "bindParam", nullptr);
-  CHECK_ELT_ATTRIBUTE (elt, "name", &name);
-  CHECK_ELT_ATTRIBUTE (elt, "value", &value);
-  return new Parameter (name, value);
 }
 
 

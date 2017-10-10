@@ -89,7 +89,6 @@ Media::Media (NclDocument *ncl, const string &id, bool settings)
   _isSettings = settings;
   _src = "";
   _mimetype = (settings) ? "application/x-ginga-settings" : "";
-  _descriptor = nullptr;
 }
 
 /**
@@ -97,8 +96,6 @@ Media::Media (NclDocument *ncl, const string &id, bool settings)
  */
 Media::~Media ()
 {
-  if (_descriptor != nullptr)
-    delete _descriptor;
   _instances.clear ();
 }
 
@@ -158,26 +155,6 @@ Media::setSrc (const string &src)
  done:
   _src = src;
   _mimetype = type;
-}
-
-/**
- * @brief Gets media descriptor.
- */
-Descriptor *
-Media::getDescriptor ()
-{
-  return _descriptor;
-}
-
-/**
- * @brief Initializes media descriptor.
- */
-void
-Media::initDescriptor (Descriptor *descriptor)
-{
-  g_assert_null (_descriptor);
-  g_assert_nonnull (descriptor);
-  _descriptor = descriptor;
 }
 
 /**

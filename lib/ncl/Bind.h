@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef BIND_H
 #define BIND_H
 
-#include "Descriptor.h"
 #include "Node.h"
 #include "Role.h"
 

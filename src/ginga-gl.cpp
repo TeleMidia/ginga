@@ -216,15 +216,6 @@ main (int argc, char **argv)
       exit (EXIT_FAILURE);
     }
 
-  // Create Ginga state.
-  opts.width = opt_width;
-  opts.height = opt_height;
-  opts.debug = opt_debug;
-  opts.experimental = opt_experimental;
-  opts.background = string (opt_background);
-  GINGA = Ginga::create (argc, argv, &opts);
-  g_assert_nonnull (GINGA);
-
   SDL_Init(SDL_INIT_VIDEO);              // Initialize SDL2
 
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -247,7 +238,18 @@ main (int argc, char **argv)
     }
 
   SDL_GL_CreateContext (window);
-  SDL_GL_SetSwapInterval (0);
+  SDL_GL_SetSwapInterval (1);
+
+  // Create Ginga state.
+  opts.width = opt_width;
+  opts.height = opt_height;
+  opts.debug = opt_debug;
+  opts.experimental = opt_experimental;
+  opts.opengl = true;
+  opts.background = string (opt_background);
+  opts.opengl = true;
+  GINGA = Ginga::create (argc, argv, &opts);
+  g_assert_nonnull (GINGA);
 
   string errmsg;
   if (!GINGA->start (string (saved_argv[1]), &errmsg))
@@ -284,7 +286,7 @@ main (int argc, char **argv)
         }
 
       sendTickEvent ();
-      GINGA->redrawGL ();
+      GINGA->redraw (nullptr);
 
       SDL_GL_SwapWindow (window);
       SDL_Delay (11);

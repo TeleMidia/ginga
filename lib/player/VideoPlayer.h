@@ -32,7 +32,6 @@ public:
   void pause () override;
   void resume () override;
   void redraw (cairo_t *) override;
-  void redrawGL () override;
 
 protected:
   bool doSetProperty (PlayerProperty, const string &,

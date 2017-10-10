@@ -444,8 +444,6 @@ bool
 ExecutionObject::start ()
 {
   Media *media;
-  Descriptor *desc;
-
   string src;
   string mime;
 
@@ -469,29 +467,6 @@ ExecutionObject::start ()
   _player = Player::createPlayer (_ginga, _id, src, mime);
 
   // Initialize player properties.
-  desc = media->getDescriptor ();
-  if (desc != nullptr)
-    {
-      Region *region = desc->getRegion ();
-      if (region != nullptr)
-        {
-          string bounds;
-          int z, zorder;
-
-          bounds = xstrbuild ("%s,%s,%s,%s",
-                              region->getLeft ().c_str (),
-                              region->getTop ().c_str (),
-                              region->getWidth ().c_str (),
-                              region->getHeight ().c_str ());
-          _player->setProperty ("bounds", bounds);
-          region->getZ (&z, &zorder);
-          _player->setZ (z, zorder);
-        }
-
-      for (auto param: *desc->getParameters ())
-        _player->setProperty (param->getName (), param->getValue ());
-    }
-
   for (auto anchor: *media->getAnchors ())
     {
       Property *prop = cast (Property *, anchor);
@@ -796,8 +771,8 @@ ExecutionObject::handleKeyEvent (const string &key, bool press)
     {
       if (_seListener != nullptr)
         {
-          NclSimpleAction *fakeAct =
-            new NclSimpleAction (evt, EventStateTransition::START);
+          NclAction *fakeAct =
+            new NclAction (evt, EventStateTransition::START, _seListener);
           _seListener->scheduleAction (fakeAct);
         }
     }
