@@ -53,8 +53,6 @@ public:
   ExecutionObject *
   processExecutionObjectSwitch (ExecutionObjectSwitch *switchObject);
 
-  NclEvent *insertContext (Port *port);
-
   RuleAdapter *getRuleAdapter ();
 
 

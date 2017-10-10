@@ -332,31 +332,6 @@ Converter::resolveSwitchEvents (
     }
 }
 
-NclEvent *
-Converter::insertContext (Port *port)
-{
-  Node *node;
-  Anchor *anchor;
-  EventType eventType;
-
-  g_assert_nonnull (port);
-  port->getTarget (&node, &anchor);
-
-  ExecutionObject *object = obtainExecutionObject (node);
-  g_assert_nonnull (object);
-
-  if (instanceof (Property *, anchor))
-    {
-      eventType = EventType::ATTRIBUTION;
-    }
-  else
-    {
-      eventType = EventType::PRESENTATION;
-    }
-
-  return getEvent (object, anchor, eventType, "");
-}
-
 void
 Converter::eventStateChanged (NclEvent *event,
                               EventStateTransition transition,
