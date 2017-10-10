@@ -18,13 +18,28 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef CONDITION_H
 #define CONDITION_H
 
+#include "Role.h"
+#include "Predicate.h"
+
 GINGA_NCL_BEGIN
 
-class Condition
+class Condition: public Role
 {
 public:
-  Condition () {};
-  virtual ~Condition () {};
+  Condition (EventType, EventStateTransition,
+             Predicate *, const string &, const string &);
+  virtual ~Condition ();
+
+  EventStateTransition getTransition ();
+  Predicate *getPredicate ();
+  string getKey ();
+
+  static bool isReserved (const string &, EventType *,
+                          EventStateTransition *);
+private:
+  EventStateTransition _transition;
+  string _key;
+  Predicate *_predicate;
 };
 
 GINGA_NCL_END

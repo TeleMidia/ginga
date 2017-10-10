@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Action.h"
 #include "AttributeAssessment.h"
 #include "Port.h"
-#include "SimpleCondition.h"
+#include "Condition.h"
 
 GINGA_NCL_BEGIN
 
@@ -118,7 +118,7 @@ Link::contains (Node *node, bool condition)
       Role *role;
 
       role = bind->getRole ();
-      if ((instanceof (SimpleCondition *, role)
+      if ((instanceof (Condition *, role)
            || instanceof (AttributeAssessment *, role)) && !condition)
         {
           continue;             // skip

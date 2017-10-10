@@ -20,6 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "aux-ginga.h"
+#include "aux-gl.h"
 
 GINGA_PLAYER_BEGIN
 class Player;
@@ -49,7 +50,6 @@ class GingaInternal : public Ginga
 
   void resize (int, int);
   void redraw (cairo_t *);
-  void redrawGL ();
 
   bool sendKeyEvent (const string &, bool);
   bool sendTickEvent (uint64_t, uint64_t, uint64_t);
@@ -81,6 +81,7 @@ class GingaInternal : public Ginga
 
   static void setOptionDebug (GingaInternal *, const string &, bool);
   static void setOptionExperimental (GingaInternal *, const string &, bool);
+  static void setOptionOpenGL (GingaInternal *, const string &, bool);
   static void setOptionSize (GingaInternal *, const string &, int);
   static void setOptionBackground (GingaInternal *, const string &, string);
 

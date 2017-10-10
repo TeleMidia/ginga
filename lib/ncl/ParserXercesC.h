@@ -31,20 +31,17 @@ GINGA_PRAGMA_DIAG_POP ()
 #include "Area.h"
 #include "AreaLabeled.h"
 #include "CompositeRule.h"
-#include "CompoundCondition.h"
-#include "Descriptor.h"
 #include "NclDocument.h"
 #include "Property.h"
 #include "Rule.h"
 #include "SimpleRule.h"
 #include "Switch.h"
 #include "SwitchPort.h"
-#include "TransitionUtil.h"
 #include "ValueAssessment.h"
 
 GINGA_NCL_BEGIN
 
-class ParserXercesC : public ErrorHandler
+class ParserXercesC: public ErrorHandler
 {
 public:
   static NclDocument *parse (const string &, int, int, string *);
@@ -56,6 +53,9 @@ private:
   string _errmsg;               // last error
   int _width;                   // screen width (in pixels)
   int _height;                  // screen height (in pixels)
+
+  map<string,map<string,string>> _descriptors; // cached descriptors
+  map<string,map<string,string>> _regions;     // cached regions
 
   ParserXercesC (int, int);
   ~ParserXercesC ();
@@ -76,23 +76,24 @@ private:
   CompositeRule *parseCompositeRule (DOMElement *);
   SimpleRule *parseRule (DOMElement *);
 
-  TransitionBase *parseTransitionBase (DOMElement *);
-  Transition *parseTransition (DOMElement *);
+  void parseTransitionBase (DOMElement *);
+  void parseTransition (DOMElement *);
 
-  RegionBase *parseRegionBase (DOMElement *);
-  Region *parseRegion (DOMElement *, RegionBase *, Region *);
+  void parseRegionBase (DOMElement *);
+  void parseRegion (DOMElement *, GingaRect);
 
-  DescriptorBase *parseDescriptorBase (DOMElement *);
-  Descriptor *parseDescriptor (DOMElement *);
+  void parseDescriptorBase (DOMElement *);
+  void parseDescriptor (DOMElement *);
 
   ConnectorBase *parseConnectorBase (DOMElement *);
   Connector *parseCausalConnector (DOMElement *);
-  CompoundCondition *parseCompoundCondition (DOMElement *);
-  SimpleCondition *parseSimpleCondition (DOMElement *);
-  CompoundStatement *parseCompoundStatement (DOMElement *);
-  AssessmentStatement *parseAssessmentStatement (DOMElement *);
-  AttributeAssessment *parseAttributeAssessment (DOMElement *);
-  ValueAssessment *parseValueAssessment (DOMElement *);
+
+  void parseCompoundCondition (Connector *, DOMElement *);
+  void parseCondition (Connector *, DOMElement *);
+  // CompoundStatement *parseCompoundStatement (DOMElement *);
+  // AssessmentStatement *parseAssessmentStatement (DOMElement *);
+  // AttributeAssessment *parseAttributeAssessment (DOMElement *);
+  // ValueAssessment *parseValueAssessment (DOMElement *);
 
   void parseCompoundAction (Connector *, DOMElement *);
   void parseSimpleAction (Connector *, DOMElement *);
@@ -117,7 +118,6 @@ private:
 
   Link *parseLink (DOMElement *, Context *);
   Bind *parseBind (DOMElement *, Link *, map<string, string> *, Context *);
-  Parameter *parseBindParam (DOMElement *);
 
   // From ErrorHandler.
   void warning (const SAXParseException &);

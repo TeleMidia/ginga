@@ -42,6 +42,7 @@ struct GingaOptions
   int height;
   bool debug;
   bool experimental;
+  bool opengl;
   std::string background;
 };
 
@@ -69,7 +70,6 @@ public:
 
   virtual void resize (int, int) = 0;
   virtual void redraw (cairo_t *) = 0;
-  virtual void redrawGL () = 0;
 
   virtual bool sendKeyEvent (const std::string &, bool) = 0;
   virtual bool sendTickEvent (uint64_t, uint64_t, uint64_t) = 0;

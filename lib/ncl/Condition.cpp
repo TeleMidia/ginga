@@ -16,47 +16,65 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
-#include "SimpleCondition.h"
+#include "Condition.h"
 
 GINGA_NCL_BEGIN
 
-
-// Public.
-
 /**
- * @brief Creates a new simple condition.
+ * @brief Creates a new condition.
  * @param type Event type.
- * @param transition Condition type.
+ * @param transition Transition.
+ * @param predicate Predicate.
  * @param label Role.
  * @param delay Delay.
  * @param key Key.
  */
-SimpleCondition::SimpleCondition (EventType type,
-                                  EventStateTransition transition,
-                                  const string &label,
-                                  const string &key)
-  : TriggerExpression (), Role (type, label)
+Condition::Condition (EventType type,
+                      EventStateTransition transition,
+                      Predicate *predicate,
+                      const string &label,
+                      const string &key) : Role (type, label)
 {
   _transition = transition;
+  _predicate = predicate;
   _key = key;
 }
 
 /**
+ * @brief Destroys condition.
+ */
+Condition::~Condition ()
+{
+  if (_predicate)
+    delete _predicate;
+}
+
+/**
  * @brief Gets transition.
- * @return Transition value.
+ * @return Transition.
  */
 EventStateTransition
-SimpleCondition::getTransition ()
+Condition::getTransition ()
 {
   return _transition;
 }
 
 /**
+ * @brief Gets predicate.
+ * @return Predicate.
+ */
+Predicate *
+Condition::getPredicate ()
+{
+  return _predicate;
+}
+
+/**
  * @brief Gets key.
- * @return Key value.
+ * @return Key.
  */
 string
-SimpleCondition::getKey ()
+Condition::getKey ()
 {
   return _key;
 }
@@ -71,7 +89,7 @@ SimpleCondition::getKey ()
  * @return True if successful, or false otherwise.
  */
 bool
-SimpleCondition::isReserved (const string &role,
+Condition::isReserved (const string &role,
                              EventType *type,
                              EventStateTransition *trans)
 {

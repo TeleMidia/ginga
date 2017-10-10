@@ -20,8 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ExecutionObject.h"
 #include "NclEvents.h"
-#include "NclFormatterLink.h"
-#include "NclLinkListener.h"
+#include "NclLink.h"
 #include "NclNodeNesting.h"
 
 #include "ncl/Ncl.h"
@@ -29,9 +28,8 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-class ExecutionObjectContext : public ExecutionObject,
-    public NclLinkListener,
-    public INclEventListener
+class ExecutionObjectContext: public ExecutionObject,
+                              public INclEventListener
 {
 public:
   ExecutionObjectContext (GingaInternal *, const string &,
@@ -49,22 +47,23 @@ public:
   set<Link *> *getUncompiledLinks ();
   bool containsUncompiledLink (Link *dataLink);
   void removeLinkUncompiled (Link *ncmLink);
-  void setLinkCompiled (NclFormatterLink *formatterLink);
+  void setLinkCompiled (NclLink *formatterLink);
   void eventStateChanged (NclEvent *event,
                           EventStateTransition transition,
                           EventState previousState) override;
 
-  void linkEvaluationStarted (NclFormatterLink *link) override;
-  void linkEvaluationFinished (NclFormatterLink *, bool) override;
+  // Callbacks
+  void linkEvaluationStarted (NclLink *);
+  void linkEvaluationFinished (NclLink *);
 
 private:
-  set<NclFormatterLink *> _links;
+  set<NclLink *> _links;
   set<Link *> _uncompiledLinks;
   set<NclEvent *> _runningEvents; // child events occurring
   set<NclEvent *> _pausedEvents;  // child events paused
   EventStateTransition lastTransition;
 
-  map<NclFormatterLink *, int> _pendingLinks;
+  map<NclLink *, int> _pendingLinks;
 
   map<string, ExecutionObject *> _execObjList;
 

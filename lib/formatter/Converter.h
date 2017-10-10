@@ -18,17 +18,15 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef CONVERTER_H
 #define CONVERTER_H
 
-#include "GingaInternal.h"
 #include "ExecutionObject.h"
 #include "ExecutionObjectContext.h"
 #include "ExecutionObjectSettings.h"
 #include "ExecutionObjectSwitch.h"
-#include "NclActions.h"
+#include "GingaInternal.h"
+#include "NclAction.h"
+#include "NclCondition.h"
 #include "NclEvents.h"
-#include "NclFormatterLink.h"
-#include "NclFormatterLink.h"
-#include "NclLinkCondition.h"
-#include "NclLinkStatement.h"
+#include "NclLink.h"
 #include "RuleAdapter.h"
 
 #include "ncl/Ncl.h"
@@ -48,7 +46,7 @@ public:
   void setHandlingStatus (bool handling);
 
   ExecutionObject *getExecutionObjectFromPerspective
-  (NclNodeNesting *, Descriptor *);
+  (NclNodeNesting *);
 
   NclEvent *getEvent (ExecutionObject *exeObj,
                       Anchor *interfacePoint,
@@ -73,92 +71,48 @@ private:
   RuleAdapter *_ruleAdapter;
   bool _handling;
 
-  void addExecutionObject (ExecutionObject *exeObj,
-                           ExecutionObjectContext *parentObj);
+  void addExecutionObject (ExecutionObject *,
+                           ExecutionObjectContext *);
 
 
-  NclFormatterLink *
-  createLink (Link *ncmLink,
-                    ExecutionObjectContext *parentObject);
 
   ExecutionObjectContext *
-  addSameInstance (ExecutionObject *exeObj, Refer *referNode);
+  addSameInstance (ExecutionObject *, Refer *);
 
-  ExecutionObjectContext *getParentExecutionObject (
-      NclNodeNesting *perspective);
+  ExecutionObjectContext *getParentExecutionObject (NclNodeNesting *);
 
   ExecutionObject *
-  createExecutionObject (const string &id, NclNodeNesting *perspective,
-                         Descriptor *descriptor);
+  createExecutionObject (const string &, NclNodeNesting *);
 
-  void compileExecutionObjectLinks (ExecutionObject *exeObj, Node *dataObj,
-                                    ExecutionObjectContext *parentObj);
+  void compileExecutionObjectLinks (ExecutionObject *, Node *,
+                                    ExecutionObjectContext *);
 
-  void processLink (Link *ncmLink,
-                    Node *dataObject,
-                    ExecutionObject *exeObj,
-                    ExecutionObjectContext *parentObj);
-
-  void setActionListener (NclAction *action);
+  void processLink (Link *,
+                    Node *,
+                    ExecutionObject *,
+                    ExecutionObjectContext *);
 
   void resolveSwitchEvents (ExecutionObjectSwitch *switchObject);
 
   NclEvent *insertNode (NclNodeNesting *perspective,
-                        Anchor *interfacePoint,
-                        Descriptor *descriptor);
+                        Anchor *interfacePoint);
 
   void eventStateChanged (NclEvent *someEvent,
                           EventStateTransition transition,
                           EventState previousState) override;
 
-  static Descriptor *
-  getCascadingDescriptor (NclNodeNesting *nodePerspective,
-                          Descriptor *descriptor);
-
   static bool hasDescriptorPropName (const string &name);
 
-  void setImplicitRefAssessment (const string &roleId, Link *ncmLink,
-                                 NclEvent *event);
+  bool getBindKey (Bind *, string *);
 
-  NclAction *createAction (Connector *, Link *, ExecutionObjectContext *);
 
-  NclLinkCondition *
-  createCondition (Condition *ncmExpression, Link *ncmLink,
-                   ExecutionObjectContext *parentObject);
+  NclEvent *createEvent (Bind *, ExecutionObjectContext *);
 
-  NclLinkCompoundTriggerCondition *createCompoundTriggerCondition (
-      GingaTime delay,
-      const vector<Condition *> *ncmChildConditions,
-      Link *ncmLink, ExecutionObjectContext *parentObject);
+  // INSANITY ABOVE --------------------------------------------------------
 
-  NclLinkCondition *createCondition (
-      TriggerExpression *triggerExpression, Link *ncmLink,
-      ExecutionObjectContext *parentObject);
-
-  NclLinkAssessmentStatement *createAssessmentStatement (
-      AssessmentStatement *assessmentStatement, Bind *bind, Link *ncmLink,
-      ExecutionObjectContext *parentObject);
-
-  NclLinkStatement *
-  createStatement (Statement *statementExpression, Link *ncmLink,
-                   ExecutionObjectContext *parentObject);
-
-  NclLinkAttributeAssessment *createAttributeAssessment (
-      AttributeAssessment *attributeAssessment, Bind *bind,
-      ExecutionObjectContext *parentObject);
-
-  NclSimpleAction *
-  createSimpleAction (Action *, Bind *,
-                      ExecutionObjectContext *);
-
-  NclLinkTriggerCondition *createSimpleCondition (
-      SimpleCondition *condition, Bind *bind,
-      ExecutionObjectContext *parentObject);
-
-  NclEvent *createEvent (Bind *bind,
-                         ExecutionObjectContext *parentObject);
-
-  string getBindKey (Bind *ncmBind);
+  NclLink *createLink (Link *, ExecutionObjectContext *);
+  NclCondition *createCondition (Condition *, Bind *, ExecutionObjectContext *);
+  NclAction *createAction (Action *, Bind *, ExecutionObjectContext *);
 };
 
 GINGA_FORMATTER_END

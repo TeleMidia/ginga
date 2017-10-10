@@ -30,7 +30,7 @@ public:
           const string &, const string &, const string &);
   virtual ~Action ();
 
-  EventStateTransition getActionType ();
+  EventStateTransition getTransition ();
   string getDelay ();
   string getValue ();
   string getDuration ();
@@ -38,7 +38,7 @@ public:
   static bool isReserved (const string &, EventType *,
                           EventStateTransition *);
 private:
-  EventStateTransition _actionType;
+  EventStateTransition _transition;
   string _delay;
   string _value;
   string _duration;

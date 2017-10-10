@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "GingaInternal.h"
 #include "NclEvents.h"
 #include "NclEventTransitionManager.h"
-#include "NclActions.h"
+#include "NclAction.h"
 #include "NclNodeNesting.h"
 
 #include "ncl/Ncl.h"
@@ -38,8 +38,8 @@ class ExecutionObjectSettings;
 class ExecutionObject : public IGingaInternalEventListener
 {
 public:
-  ExecutionObject (GingaInternal *,
-                   const string &, Node *, INclActionListener *);
+  ExecutionObject (GingaInternal *, const string &, Node *,
+                   INclActionListener *);
   virtual ~ExecutionObject ();
 
   virtual bool isSleeping ();

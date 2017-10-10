@@ -53,8 +53,8 @@ ExecutionObjectContext::ExecutionObjectContext (GingaInternal *ginga,
 ExecutionObjectContext::~ExecutionObjectContext ()
 {
   // ExecutionObject *object;
-  NclFormatterLink *link;
-  set<NclFormatterLink *>::iterator i;
+  NclLink *link;
+  set<NclLink *>::iterator i;
   map<string, ExecutionObject *>::iterator j;
 
   _runningEvents.clear ();
@@ -105,10 +105,8 @@ ExecutionObjectContext::getParentFromDataObject (Node *dataObject)
 void
 ExecutionObjectContext::suspendLinkEvaluation (bool suspend)
 {
-  for (NclFormatterLink *link : _links)
-    {
-      link->suspendLinkEvaluation (suspend);
-    }
+  for (NclLink *link : _links)
+    link->disable (suspend);
 }
 
 bool
@@ -203,7 +201,7 @@ ExecutionObjectContext::removeLinkUncompiled (Link *ncmLink)
 }
 
 void
-ExecutionObjectContext::setLinkCompiled (NclFormatterLink *link)
+ExecutionObjectContext::setLinkCompiled (NclLink *link)
 {
   g_assert_nonnull (link);
   _links.insert (link);
@@ -322,10 +320,10 @@ ExecutionObjectContext::eventStateChanged (
 }
 
 void
-ExecutionObjectContext::linkEvaluationStarted (NclFormatterLink *link)
+ExecutionObjectContext::linkEvaluationStarted (NclLink *link)
 {
   int linkNumber = 0;
-  NclFormatterLink *evalLink;
+  NclLink *evalLink;
 
   evalLink = link;
   if (_pendingLinks.count (evalLink) != 0)
@@ -336,12 +334,11 @@ ExecutionObjectContext::linkEvaluationStarted (NclFormatterLink *link)
 }
 
 void
-ExecutionObjectContext::linkEvaluationFinished (
-    NclFormatterLink *link, bool start)
+ExecutionObjectContext::linkEvaluationFinished (NclLink *link)
 {
   int linkNumber;
-  NclFormatterLink *finishedLink;
-  map<NclFormatterLink *, int>::iterator i;
+  NclLink *finishedLink;
+  map<NclLink *, int>::iterator i;
 
   finishedLink = link;
   i = _pendingLinks.find (finishedLink);
@@ -358,7 +355,7 @@ ExecutionObjectContext::linkEvaluationFinished (
                 {
                   checkLinkConditions ();
                 }
-              else if (!start)
+              else
                 {
                   _wholeContent->abort ();
                 }

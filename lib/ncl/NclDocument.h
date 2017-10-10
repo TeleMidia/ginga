@@ -20,10 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ConnectorBase.h"
 #include "Context.h"
-#include "DescriptorBase.h"
-#include "RegionBase.h"
 #include "RuleBase.h"
-#include "TransitionBase.h"
 
 GINGA_NCL_BEGIN
 
@@ -57,10 +54,7 @@ public:
                     const string &location);
   Connector *getConnector (const string &connectorId);
   ConnectorBase *getConnectorBase ();
-  Transition *getTransition (const string &transitionId);
-  TransitionBase *getTransitionBase ();
-  Descriptor *getDescriptor (const string &descriptorId);
-  DescriptorBase *getDescriptorBase ();
+
   NclDocument *getDocument (const string &documentId);
   string getDocumentAlias (NclDocument *document);
   string getDocumentLocation (NclDocument *document);
@@ -68,41 +62,28 @@ public:
 
 
   Node *getNode (const string &nodeId);
-  Region *getRegion (const string &regionId);
 
-  RegionBase *getRegionBase (int devClass);
-  RegionBase *getRegionBase (const string &regionBaseId);
-  map<int, RegionBase *> *getRegionBases ();
   Rule *getRule (const string &ruleId);
   RuleBase *getRuleBase ();
   vector<Node *> *getSettingsNodes ();
   bool removeDocument (NclDocument *document);
   void setConnectorBase (ConnectorBase *_connectorBase);
-  void setTransitionBase (TransitionBase *_transitionBase);
-  void setDescriptorBase (DescriptorBase *_descriptorBase);
   void setDocumentAlias (NclDocument *document, const string &alias);
 
   void setDocumentLocation (NclDocument *document, const string &location);
   void setId (const string &_id);
-  void addRegionBase (RegionBase *regionBase);
   void setRuleBase (RuleBase *_ruleBase);
-  void removeRegionBase (const string &regionBaseId);
 
 private:
   ConnectorBase *_connectorBase;
-  DescriptorBase *_descriptorBase;
   map<string, NclDocument *> _documentAliases;
   vector<NclDocument *> _documentBase;
   map<string, NclDocument *> _documentLocations;
 
-  map<int, RegionBase *> _regionBases;
   RuleBase *_ruleBase;
-  TransitionBase *_transitionBase;
-
   NclDocument *_parentDocument;
 
   Node *getNodeLocally (const string &nodeId);
-  Region *getRegion (const string &regionId, RegionBase *regionBase);
 };
 
 GINGA_NCL_END

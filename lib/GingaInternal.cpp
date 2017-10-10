@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
+#include "aux-gl.h"
 #include "GingaInternal.h"
 
 #include "formatter/Scheduler.h"
@@ -31,6 +32,7 @@ static GingaOptions opts_defaults =
   600,                          // height
   false,                        // debug
   false,                        // experimental
+  false,                        // opengl
   "",                           // background ("" == none)
 };
 
@@ -54,6 +56,7 @@ static map<string, GingaOptionData> opts_table =
  OPTS_ENTRY (debug,        G_TYPE_BOOLEAN, Debug),
  OPTS_ENTRY (experimental, G_TYPE_BOOLEAN, Experimental),
  OPTS_ENTRY (height,       G_TYPE_INT,     Size),
+ OPTS_ENTRY (opengl,       G_TYPE_BOOLEAN, OpenGL),
  OPTS_ENTRY (width,        G_TYPE_INT,     Size),
 };
 
@@ -113,10 +116,6 @@ GingaInternal::getState ()
 bool
 GingaInternal::start (const string &file, string *errmsg)
 {
-#if defined WITH_OPENGL && WITH_OPENGL
-  gl_init ();
-#endif
-
   if (_state != GINGA_STATE_STOPPED)
     return false;               // nothing to do
 
@@ -188,14 +187,33 @@ GingaInternal::redraw (cairo_t *cr)
 {
   GList *l;
 
+  if (_opts.opengl)
+    {
+      GL::clear_scene (_opts.width, _opts.height);
+    }
+
   if (_background.alpha > 0)
     {
-      GingaColor c = _background;
-      cairo_save (cr);
-      cairo_set_source_rgba (cr, c.red, c.green, c.blue, c.alpha);
-      cairo_rectangle (cr, 0, 0, _opts.width, _opts.height);
-      cairo_fill (cr);
-      cairo_restore (cr);
+      if (_opts.opengl)
+        {
+          GL::draw_quad (0, 0, _opts.width, _opts.height,
+                         (float) _background.red,
+                         (float) _background.green,
+                         (float) _background.blue,
+                         (float) _background.alpha);
+        }
+      else
+        {
+          cairo_save (cr);
+          cairo_set_source_rgba (cr,
+                                 _background.red,
+                                 _background.green,
+                                 _background.blue,
+                                 _background.alpha);
+          cairo_rectangle (cr, 0, 0, _opts.width, _opts.height);
+          cairo_fill (cr);
+          cairo_restore (cr);
+        }
     }
 
   _players = g_list_sort (_players, (GCompareFunc) win_cmp_z);
@@ -210,9 +228,14 @@ GingaInternal::redraw (cairo_t *cr)
         }
       else
         {
-          cairo_save (cr);
-          pl->redraw (cr);
-          cairo_restore (cr);
+          if (_opts.opengl)
+            pl->redraw (cr);
+          else
+            {
+              cairo_save (cr);
+              pl->redraw (cr);
+              cairo_restore (cr);
+            }
         }
       l = next;
     }
@@ -251,38 +274,6 @@ GingaInternal::redraw (cairo_t *cr)
     }
 }
 
-/**
- * @brief Draws current surface onto current OpenGL context.
- */
-void
-GingaInternal::redrawGL ()
-{
-#if !(defined WITH_OPENGL && WITH_OPENGL)
-  WARNING_NOT_IMPLEMENTED ("not compiled with OpenGL support");
-#else
-
-  gl_clear_scene (_opts.width, _opts.height);
-
-  GList *l;
-
-  _players = g_list_sort (_players, (GCompareFunc) win_cmp_z);
-  l = _players;
-  while (l != NULL)             // can be modified while being traversed
-    {
-      GList *next = l->next;
-      Player *pl = (Player *) l->data;
-      if (pl == NULL)
-        {
-          _players = g_list_remove_link (_players, l);
-        }
-      else
-        {
-          pl->redrawGL ();
-        }
-      l = next;
-    }
-#endif
-}
 
 // Stop formatter if EOS has been seen.
 #define _GINGA_CHECK_EOS(ginga)                                 \
@@ -428,6 +419,7 @@ GingaInternal::GingaInternal (unused (int argc), unused (char **argv),
   setOptionBackground (this, "background", _opts.background);
   setOptionDebug (this, "debug", _opts.debug);
   setOptionExperimental (this, "experimental", _opts.experimental);
+  setOptionOpenGL (this, "opengl", _opts.opengl);
 
 #if defined WITH_CEF && WITH_CEF
   CefMainArgs args (argc, argv);
@@ -577,12 +569,32 @@ GingaInternal::setOptionDebug (GingaInternal *self, const string &name,
 /**
  * @brief Updates experimental option.
  */
-
 void
 GingaInternal::setOptionExperimental (unused (GingaInternal *self),
                                       const string &name, bool value)
 {
   g_assert (name == "experimental");
+  TRACE ("%s:=%s", name.c_str (), strbool (value));
+}
+
+/**
+ * @brief Initializes OpenGL option.
+ */
+void
+GingaInternal::setOptionOpenGL (unused (GingaInternal *self),
+                                const string &name, bool value)
+{
+  static int n = 0;
+  g_assert (name == "opengl");
+  if (unlikely (n++ > 0))
+    ERROR ("Cannot change to 'opengl' on-the-fly");
+#if defined WITH_OPENGL && WITH_OPENGL
+  if (value)
+    GL::init ();
+#else
+  if (unlikely (value))
+    ERROR ("Not compiled with OpenGL support");
+#endif
   TRACE ("%s:=%s", name.c_str (), strbool (value));
 }
 

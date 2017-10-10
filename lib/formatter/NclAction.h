@@ -15,29 +15,46 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef PARAMETER_H
-#define PARAMETER_H
+#ifndef LINK_ACTION_H
+#define LINK_ACTION_H
 
-#include "aux-ginga.h"
+#include "NclEvents.h"
 
-GINGA_NCL_BEGIN
+GINGA_FORMATTER_BEGIN
 
-class Parameter
+class NclAction;
+class INclActionListener
 {
 public:
-  Parameter (const string &n, const string &v);
-  string getName ();
-  string getValue ();
-  void setName (const string &n);
-  void setValue (const string &v);
+  virtual void scheduleAction (NclAction *) = 0;
+};
 
-protected:
-  string _name;
+class NclAction
+{
+public:
+  NclAction (NclEvent *, EventStateTransition, INclActionListener *);
+  virtual ~NclAction ();
+
+  NclEvent *getEvent ();
+  EventType getEventType ();
+  EventStateTransition getEventStateTransition ();
+
+  string getDuration ();
+  void setDuration (const string &);
+
+  string getValue ();
+  void setValue (const string &);
+
+  void run ();
 
 private:
+  NclEvent *_event;
+  EventStateTransition _transition;
+  INclActionListener *_listener;
+  string _duration;
   string _value;
 };
 
-GINGA_NCL_END
+GINGA_FORMATTER_END
 
-#endif /* PARAMETER_H */
+#endif // LINK_ACTION_H

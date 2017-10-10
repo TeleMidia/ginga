@@ -102,7 +102,6 @@ public:
                                   const string &, GingaTime);
   virtual void reload ();
   virtual void redraw (cairo_t *);
-  virtual void redrawGL ();
 
   // Static.
   static string getCurrentFocus ();
@@ -112,6 +111,7 @@ public:
                                const string &, const string &);
 protected:
   GingaInternal *_ginga;        // ginga handle
+  bool _opengl;                 // true if OpenGL is used
   string _id;                   // associated object id
   string _uri;                  // source uri
   PlayerState _state;           // current state
