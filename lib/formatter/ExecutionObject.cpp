@@ -128,11 +128,12 @@ ExecutionObject::getParent ()
 }
 
 void
-ExecutionObject::initParent (ExecutionObject *parent)
+ExecutionObject::initParent (ExecutionObjectContext *parent)
 {
   g_assert_nonnull (parent);
   g_assert_null (_parent);
   _parent = parent;
+  g_assert (parent->addChild (this));
 }
 
 ExecutionObjectContext *

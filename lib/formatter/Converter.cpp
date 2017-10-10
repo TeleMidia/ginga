@@ -550,7 +550,7 @@ Converter::obtainExecutionObject (Node *node)
 {
   string id;
   Node *parentNode;
-  ExecutionObject *parent;
+  ExecutionObjectContext *parent;
   ExecutionObject *object;
   PresentationEvent *event;
 
@@ -564,9 +564,15 @@ Converter::obtainExecutionObject (Node *node)
   // Get parent.
   parentNode = node->getParent ();
   if (parentNode == nullptr)
-    parent = nullptr;
+    {
+      parent = nullptr;
+    }
   else
-    parent = obtainExecutionObject (parentNode);
+    {
+      parent = cast (ExecutionObjectContext *,
+                     obtainExecutionObject (parentNode));
+      g_assert_nonnull (parent);
+    }
 
   if (instanceof (Refer *, node))
     {
