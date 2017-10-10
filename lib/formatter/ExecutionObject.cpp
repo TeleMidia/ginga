@@ -326,16 +326,6 @@ ExecutionObject::setCompiled (bool status)
   _isCompiled = status;
 }
 
-Property *
-ExecutionObject::getNCMProperty (const string &name)
-{
-  g_assert_nonnull (_node);
-  for (auto anchor: *_node->getAnchors ())
-    if (instanceof (Property *, anchor) && anchor->getId () == name)
-      return cast (Property *, anchor);
-  return nullptr;
-}
-
 NclEvent *
 ExecutionObject::getMainEvent ()
 {
