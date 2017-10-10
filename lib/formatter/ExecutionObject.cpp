@@ -177,12 +177,6 @@ ExecutionObject::setCompiled (bool status)
   _isCompiled = status;
 }
 
-NclEvent *
-ExecutionObject::getMainEvent ()
-{
-  return _mainEvent;
-}
-
 bool
 ExecutionObject::prepare (NclEvent *event)
 {
@@ -197,8 +191,6 @@ ExecutionObject::prepare (NclEvent *event)
     return false;
 
   _mainEvent = event;
-  //_transMan.prepare (_mainEvent == this->getLambda (), 0);
-
 
   for (auto auxEvent: _events)
     {
@@ -266,7 +258,6 @@ ExecutionObject::start ()
   // Start main event.
   if (instanceof (PresentationEvent *, _mainEvent))
     _mainEvent->start ();
-  //_transMan.start (0);
   return true;
 }
 
@@ -335,12 +326,7 @@ ExecutionObject::stop ()
   // Stop main event.
   event = cast (PresentationEvent* , _mainEvent);
   if (event != nullptr)
-    {
-      _mainEvent->stop ();
-      //_transMan.stop (0);
-    }
-
-  //_transMan.resetTimeIndex ();
+    _mainEvent->stop ();
 
   return true;
 }
