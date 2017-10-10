@@ -236,58 +236,6 @@ ExecutionObject::getWholeContentPresentationEvent ()
 }
 
 bool
-ExecutionObject::removeEvent (NclEvent *event)
-{
-  vector<PresentationEvent *>::iterator i;
-  set<SelectionEvent *>::iterator j;
-  vector<NclEvent *>::iterator k;
-  map<string, NclEvent *>::iterator l;
-
-  if (!containsEvent (event))
-    {
-      return false;
-    }
-
-  if (instanceof (PresentationEvent *, event))
-    {
-      for (i = _presEvents.begin (); i != _presEvents.end (); ++i)
-        {
-          if (*i == (PresentationEvent *)event)
-            {
-              _presEvents.erase (i);
-              break;
-            }
-        }
-      _transMan.removeEventTransition ((PresentationEvent *)event);
-    }
-  else if (instanceof (SelectionEvent *, event))
-    {
-      j = _selectionEvents.find (((SelectionEvent *)event));
-      if (j != _selectionEvents.end ())
-        {
-          _selectionEvents.erase (j);
-        }
-    }
-  else
-    {
-      for (k = _otherEvents.begin (); k != _otherEvents.end (); ++k)
-        {
-          if (*k == event)
-            {
-              _otherEvents.erase (k);
-              break;
-            }
-        }
-    }
-
-  l = _events.find (event->getId ());
-  if (l != _events.end ())
-    _events.erase (l);
-
-  return true;
-}
-
-bool
 ExecutionObject::isCompiled ()
 {
   return _isCompiled;
