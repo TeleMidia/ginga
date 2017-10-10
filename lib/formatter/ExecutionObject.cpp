@@ -47,6 +47,7 @@ ExecutionObject::ExecutionObject (GingaInternal *ginga,
   _mainEvent = nullptr;
 
   _id = id;
+  _parent = nullptr;
   _player = nullptr;
   _time = GINGA_TIME_NONE;
   _destroying = false;
@@ -93,6 +94,45 @@ string
 ExecutionObject::getId ()
 {
   return _id;
+}
+
+const vector <string> *
+ExecutionObject::getAliases ()
+{
+  return &_aliases;
+}
+
+bool
+ExecutionObject::hasAlias (const string &alias)
+{
+  for (auto curr: _aliases)
+    if (curr == alias)
+      return true;
+  return false;
+}
+
+bool
+ExecutionObject::addAlias (const string &alias)
+{
+  for (auto old: _aliases)
+    if (old == alias)
+      return false;
+  _aliases.push_back (alias);
+  return true;
+}
+
+ExecutionObject *
+ExecutionObject::getParent ()
+{
+  return _parent;
+}
+
+void
+ExecutionObject::initParent (ExecutionObject *parent)
+{
+  g_assert_nonnull (parent);
+  g_assert_null (_parent);
+  _parent = parent;
 }
 
 ExecutionObjectContext *

@@ -201,6 +201,18 @@ Scheduler::run (const string &file, string *errmsg)
 SET_ACCESS_DEFN (Object, ExecutionObject, _objects)
 SET_ACCESS_DEFN (Event, NclEvent, _events)
 
+ExecutionObject *
+Scheduler::getObjectByIdOrAlias (const string &id)
+{
+  ExecutionObject *obj;
+  if ((obj = this->getObjectById (id)) != nullptr)
+    return obj;
+  for (auto obj: _objects)
+    if (obj->hasAlias (id))
+      return obj;
+  return nullptr;
+}
+
 void
 Scheduler::scheduleAction (NclAction *action)
 {

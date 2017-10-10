@@ -110,6 +110,7 @@ private:
 
   // INSANITY ABOVE --------------------------------------------------------
 
+  ExecutionObject *obtainExecutionObject (const string &, Node *);
   NclLink *createLink (Link *, ExecutionObjectContext *);
   NclCondition *createCondition (Condition *, Bind *, ExecutionObjectContext *);
   NclAction *createAction (Action *, Bind *, ExecutionObjectContext *);
