@@ -48,10 +48,6 @@ public:
   ExecutionObject *getChildById (const string &);
   bool addChild (ExecutionObject *);
 
-  // Callbacks
-  void linkEvaluationStarted (NclLink *);
-  void linkEvaluationFinished (NclLink *);
-
 private:
   void checkLinkConditions ();
 

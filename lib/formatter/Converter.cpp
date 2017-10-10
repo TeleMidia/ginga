@@ -112,23 +112,24 @@ Converter::obtainEvent (ExecutionObject *object,
   return event;
 }
 
+
 void
-Converter::processLink (Link *ncmLink,
-                        Node *dataObject,
-                        ExecutionObject *executionObject,
+Converter::processLink (Link *docLink,
+                        Node *node,
+                        ExecutionObject *object,
                         ExecutionObjectContext *parentObject)
 {
   Node *nodeEntity = nullptr;
   const set<Refer *> *sameInstances;
   bool contains = false;
 
-  if (executionObject->getNode () != nullptr)
-    nodeEntity = cast (Node *, executionObject->getNode ());
+  if (object->getNode () != nullptr)
+    nodeEntity = cast (Node *, object->getNode ());
 
-  if (!parentObject->containsUncompiledLink (ncmLink))
+  if (!parentObject->containsUncompiledLink (docLink))
     return;
 
-  auto causalLink = cast (Link *, ncmLink);
+  auto causalLink = cast (Link *, docLink);
   g_assert_nonnull (causalLink);
 
   if (nodeEntity != nullptr && instanceof (Media *, nodeEntity))
@@ -144,11 +145,10 @@ Converter::processLink (Link *ncmLink,
     }
 
   // Checks if execution object is part of link conditions.
-  if (causalLink->contains (dataObject, true) || contains)
+  if (causalLink->contains (node, true) || contains)
     {
-      parentObject->removeLinkUncompiled (ncmLink);
-      NclLink *formatterLink
-        = createLink (causalLink, parentObject);
+      parentObject->removeLinkUncompiled (docLink);
+      NclLink *formatterLink = createLink (causalLink);
 
       if (formatterLink != NULL)
         parentObject->setLinkCompiled (formatterLink);
@@ -185,9 +185,9 @@ Converter::compileExecutionObjectLinks (
     {
       set<Link *> *dataLinks = uncompiledLinks;
 
-      for ( Link *ncmLink : *dataLinks)
+      for ( Link *docLink : *dataLinks)
         {
-          processLink (ncmLink, dataObject, exeObj, parentObj);
+          processLink (docLink, dataObject, exeObj, parentObj);
         }
 
       delete dataLinks;
@@ -460,16 +460,8 @@ Converter::obtainExecutionObject (Node *node)
       object->addAlias (id);
       return object;
     }
-  else if (instanceof (Context *, node))
-    {
-      TRACE ("creating switch");
-      object = new ExecutionObjectContext (_ginga, id, node);
-      event = new PresentationEvent
-        (_ginga, node->getLambda ()->getId () + "<pres>", object,
-         (Area *)(node->getLambda ()));
-      object->addEvent (event);
-    }
-  else if (instanceof (Switch *, node))
+
+  if (instanceof (Switch *, node))
     {
       TRACE ("creating switch");
       object = new ExecutionObjectSwitch (_ginga, id, node);
@@ -477,8 +469,31 @@ Converter::obtainExecutionObject (Node *node)
         (_ginga, node->getLambda ()->getId () + "<pres>", object,
          (Area *)(node->getLambda ()));
       object->addEvent (event);
+      goto done;
     }
-  else if (instanceof (Media *, node))
+
+  if (instanceof (Context *, node))
+    {
+      TRACE ("creating switch");
+      object = new ExecutionObjectContext (_ginga, id, node);
+      event = new PresentationEvent
+        (_ginga, node->getLambda ()->getId () + "<pres>", object,
+         (Area *)(node->getLambda ()));
+      object->addEvent (event);
+
+      // Context *docCtx= cast (Context *, node);
+      // ExecutionObjectContext *ctx
+      //   = cast (ExecutionObjectContext *, object);
+      // if (parent != nullptr)
+      //   object->initParent (parent);
+      // _scheduler->addObject (object);
+      // for (auto link: *(docCtx->getLinks ()))
+      //   ctx->setLinkCompiled (createLink (link, ctx));
+      goto done;
+      return object;
+    }
+
+  g_assert (instanceof (Media *, node));
     {
       Media *media;
       media = cast (Media *, node);
@@ -495,11 +510,8 @@ Converter::obtainExecutionObject (Node *node)
             (object, node, cast (ExecutionObjectContext *, parent));
         }
     }
-  else
-    {
-      g_assert_not_reached ();
-    }
 
+ done:
   g_assert_nonnull (object);
   if (parent != nullptr)
     object->initParent (parent);
@@ -508,18 +520,16 @@ Converter::obtainExecutionObject (Node *node)
 }
 
 NclLink *
-Converter::createLink (Link *docLink, ExecutionObjectContext *context)
+Converter::createLink (Link *docLink)
 {
   Connector *connector;
   NclLink *link;
 
   g_assert_nonnull (docLink);
-  g_assert_nonnull (context);
-
   connector = cast (Connector *, docLink->getConnector ());
   g_assert_nonnull (connector);
 
-  link = new NclLink (context);
+  link = new NclLink ();
 
   // Add conditions.
   for (auto connCond: *connector->getConditions ())
