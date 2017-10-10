@@ -45,9 +45,6 @@ public:
 
   void setHandlingStatus (bool handling);
 
-  // ExecutionObject *getExecutionObjectFromPerspective
-  // (NclNodeNesting *);
-
   NclEvent *getEvent (ExecutionObject *exeObj,
                       Anchor *interfacePoint,
                       EventType ncmEventType,
@@ -71,14 +68,7 @@ private:
   RuleAdapter *_ruleAdapter;
   bool _handling;
 
-  // void addExecutionObject (ExecutionObject *,
-  //                          ExecutionObjectContext *);
-  // ExecutionObjectContext *
-  // addSameInstance (ExecutionObject *, Refer *);
-  // ExecutionObjectContext *getParentExecutionObject (NclNodeNesting *);
-  // ExecutionObject *
-  // createExecutionObject (const string &, NclNodeNesting *);
-
+private:
   void compileExecutionObjectLinks (ExecutionObject *, Node *,
                                     ExecutionObjectContext *);
 
