@@ -50,13 +50,8 @@ public:
   processExecutionObjectSwitch (ExecutionObjectSwitch *);
 
 private:
-  void compileExecutionObjectLinks (ExecutionObject *, Node *,
-                                    ExecutionObjectContext *);
-
   void resolveSwitchEvents (ExecutionObjectSwitch *);
-
   NclEvent *createEvent (Bind *);
-
   bool getBindKey (Bind *, string *);
 
   // INclEventListener

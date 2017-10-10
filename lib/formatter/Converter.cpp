@@ -98,7 +98,7 @@ Converter::obtainEvent (ExecutionObject *object,
             event = new SelectionEvent (_ginga, id, object, (Area *) iface);
             if (key != "")
               {
-                ((SelectionEvent *)event)->setSelectionCode (key);
+                ((SelectionEvent *) event)->setSelectionCode (key);
               }
             break;
           }
@@ -108,64 +108,8 @@ Converter::obtainEvent (ExecutionObject *object,
     }
 
   g_assert_nonnull (event);
-  object->addEvent (event);
+  g_assert (object->addEvent (event));
   return event;
-}
-
-
-void
-Converter::compileExecutionObjectLinks (
-    ExecutionObject *exeObj, Node *dataObject,
-    ExecutionObjectContext *parentObj)
-{
-  set<Link *> *uncompiledLinks;
-  ExecutionObjectContext *compObj;
-  Node *execDataObject;
-
-  if (parentObj == nullptr)
-    return;
-
-  execDataObject = exeObj->getNode ();
-  if (execDataObject != dataObject)
-    {
-      compObj = parentObj->getParent ();
-      if (compObj != nullptr && compObj != parentObj)
-        {
-          compileExecutionObjectLinks (exeObj, execDataObject,
-                                       compObj);
-        }
-    }
-
-  uncompiledLinks = parentObj->getUncompiledLinks ();
-  if (!uncompiledLinks->empty ())
-    {
-      set<Link *> *dataLinks = uncompiledLinks;
-
-      for ( Link *docLink : *dataLinks)
-        {
-          parentObj->removeLinkUncompiled (docLink);
-          createLink (docLink);
-        }
-
-      delete dataLinks;
-
-      compileExecutionObjectLinks (
-            exeObj, dataObject,
-            parentObj->getParent ());
-    }
-  else
-    {
-      ExecutionObject *object;
-
-      delete uncompiledLinks;
-
-      while (parentObj != nullptr)
-        {
-          object = parentObj;
-          parentObj = parentObj->getParent ();
-          compileExecutionObjectLinks (object, dataObject, parentObj);
-        }
-    }
 }
 
 ExecutionObject *
@@ -397,6 +341,8 @@ Converter::obtainExecutionObject (Node *node)
       parent = cast (ExecutionObjectContext *,
                      obtainExecutionObject (parentNode));
       g_assert_nonnull (parent);
+      if ((object = _scheduler->getObjectByIdOrAlias (id)) != nullptr)
+        return object;
     }
 
   if (instanceof (Refer *, node))
@@ -430,28 +376,12 @@ Converter::obtainExecutionObject (Node *node)
       g_assert_nonnull (object);
       if (parent != nullptr)
         object->initParent (parent);
-      _scheduler->addObject (object);
+      g_assert (_scheduler->addObject (object));
 
       // Process links.
-      // vector <Context *> stack;
-      // stack.push_back (cast (Context *, node));
-      // while (stack.size () > 0)
-      //   {
-      //     Context *ctx = stack.back ();
-      //     stack.pop_back ();
-      //     for (auto link: *(ctx->getLinks ()))
-      //       {
-      //         ExecutionObjectContext *ctxObj
-      //           = cast (ExecutionObjectContext *,
-      //                   obtainExecutionObject (ctx));
-      //         ctxObj->removeLinkUncompiled (link);
-      //         TRACE ("CREATING LINK %s", link->getId ().c_str ());
-      //         g_assert_nonnull (createLink (link));
-      //       }
-      //     for (auto node: *(ctx->getNodes ()))
-      //       if (instanceof (Context *, node))
-      //         stack.push_back (cast (Context *, node));
-      //   }
+      Context *ctx = cast (Context *, node);
+      for (auto link: *(ctx->getLinks ()))
+        g_assert_nonnull (createLink (link));
 
       return object;
     }
@@ -469,15 +399,13 @@ Converter::obtainExecutionObject (Node *node)
   else
     {
       object = new ExecutionObject (_ginga, id, node);
-      compileExecutionObjectLinks
-        (object, node, cast (ExecutionObjectContext *, parent));
     }
 
  done:
   g_assert_nonnull (object);
   if (parent != nullptr)
     object->initParent (parent);
-  _scheduler->addObject (object);
+  g_assert (_scheduler->addObject (object));
   return object;
 }
 

@@ -47,16 +47,12 @@ ExecutionObject::ExecutionObject (GingaInternal *ginga,
   _player = nullptr;
   _time = GINGA_TIME_NONE;
   _destroying = false;
-
-  TRACE ("%s", _id.c_str ());
-  _scheduler->addObject (this);
 }
 
 ExecutionObject::~ExecutionObject ()
 {
   _destroying = true;
   this->stop ();
-  TRACE ("%s", _id.c_str ());
 }
 
 bool
@@ -427,7 +423,6 @@ ExecutionObject::handleTickEvent (unused (GingaTime total),
       PresentationEvent *evt = cast (PresentationEvent *, _evt);
       if (evt == nullptr)
         continue;
-
       if (this->getLambda () == evt)
         continue;
 

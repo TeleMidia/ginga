@@ -177,7 +177,7 @@ Scheduler::getObjects ()
 ExecutionObject *
 Scheduler::getObjectById (const string &id)
 {
-  for (auto *obj: _objects)
+  for (auto obj: _objects)
     if (obj->getId () == id)
       return obj;
   return nullptr;
@@ -199,8 +199,11 @@ bool
 Scheduler::addObject (ExecutionObject *obj)
 {
   g_assert_nonnull (obj);
-  if (_objects.find (obj) != _objects.end ())
-    return false;
+  if (_objects.find (obj) != _objects.end ()
+      || getObjectByIdOrAlias (obj->getId ()) != nullptr)
+    {
+      return false;
+    }
   _objects.insert (obj);
   return true;
 }
@@ -223,26 +226,8 @@ Scheduler::runAction (NclEvent *event, NclAction *action)
   obj = event->getExecutionObject ();
   g_assert_nonnull (obj);
 
-  switch (action->getEventStateTransition ())   // fixme
-    {
-    case EventStateTransition::START:
-      name = "start";
-      break;
-    case EventStateTransition::PAUSE:
-      name = "pause";
-      break;
-    case EventStateTransition::RESUME:
-      name = "resume";
-      break;
-    case EventStateTransition::STOP:
-      name = "stop";
-      break;
-    case EventStateTransition::ABORT:
-      name = "abort";
-      break;
-    default:
-      g_assert_not_reached ();
-    }
+  name = EventUtil::getEventStateTransitionAsString
+    (action->getEventStateTransition ());
 
   TRACE ("running %s over %s",
          name.c_str (), obj->getId ().c_str ());

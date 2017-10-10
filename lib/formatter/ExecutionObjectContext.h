@@ -34,14 +34,10 @@ public:
   ExecutionObjectContext (GingaInternal *, const string &, Node *);
   virtual ~ExecutionObjectContext ();
 
-  set<Link *> *getUncompiledLinks ();
-  bool containsUncompiledLink (Link *);
-  void removeLinkUncompiled (Link *);
   void eventStateChanged (NclEvent *,
                           EventStateTransition,
                           EventState) override;
 
-  // Sanity.
   const set<ExecutionObject *> *getChildren ();
   ExecutionObject *getChildById (const string &);
   bool addChild (ExecutionObject *);
@@ -51,8 +47,6 @@ private:
 
 private:
   set<ExecutionObject *> _children;
-
-  set<Link *> _uncompiledLinks;
   set<NclEvent *> _runningEvents; // child events occurring
   set<NclEvent *> _pausedEvents;  // child events paused
   EventStateTransition lastTransition;
