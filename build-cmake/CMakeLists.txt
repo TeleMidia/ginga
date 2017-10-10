@@ -123,7 +123,6 @@ set (LIBGINGA_SOURCES
   ../lib/formatter/NclEvents.cpp
   ../lib/formatter/NclEventTransitionManager.cpp
   ../lib/formatter/NclLink.cpp
-  ../lib/formatter/NclNodeNesting.cpp
   ../lib/formatter/RuleAdapter.cpp
   ../lib/formatter/Scheduler.cpp
 
