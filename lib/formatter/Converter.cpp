@@ -267,7 +267,7 @@ Converter::processExecutionObjectSwitch (
       return obj;
     }
 
-  selectedObject = obtainExecutionObject (id, selectedNode);
+  selectedObject = obtainExecutionObject (selectedNode);
   g_assert_nonnull (selectedNode);
 
   switchObject->select (selectedObject);
@@ -331,8 +331,7 @@ Converter::resolveSwitchEvents (
                   //     = getExecutionObjectFromPerspective (
                   //       nodePerspective);
 
-                  endPointObject = obtainExecutionObject
-                    (selectedNode->getId (), selectedNode);
+                  endPointObject = obtainExecutionObject (selectedNode);
 
                   if (endPointObject != nullptr)
                     {
@@ -358,71 +357,41 @@ Converter::resolveSwitchEvents (
 }
 
 NclEvent *
-Converter::insertNode (NclNodeNesting *perspective,
-                       Anchor *interfacePoint)
-{
-  ExecutionObject *executionObject;
-  NclEvent *event;
-  EventType eventType;
-
-  event = nullptr;
-  //executionObject = getExecutionObjectFromPerspective (perspective);
-
-  executionObject = obtainExecutionObject
-    (perspective->getAnchorNode ()->getId (),
-     perspective->getAnchorNode ());
-  if (executionObject != nullptr)
-    {
-      if (!(instanceof (Property *, interfacePoint)))
-        {
-          eventType = EventType::PRESENTATION;
-        }
-      else
-        {
-          eventType = EventType::ATTRIBUTION;
-        }
-
-      // get the event corresponding to the node anchor
-      event = getEvent (executionObject, interfacePoint, eventType, "");
-    }
-
-  return event;
-
-}
-
-NclEvent *
 Converter::insertContext (NclNodeNesting *persp,
                           Port *port)
 {
   Anchor *anchor;
   vector<Node *> nestedSeq;
   NclNodeNesting *perspective;
-  NclEvent *newEvent;
+  EventType eventType;
 
   g_assert_nonnull (persp);
   g_assert_nonnull (port);
 
   anchor = port->getFinalInterface ();
 
-  if (!(instanceof (Area *, anchor)
-        || instanceof (AreaLabeled *, anchor)
-        || instanceof (Property *, anchor)
-        || instanceof (SwitchPort *, anchor)
-        || !(instanceof (Context *,
-                         persp->getAnchorNode ()))))
-    {
-      ERROR ("invalid interface point for port");
-    }
+  g_assert (instanceof (Area *, anchor)
+            || instanceof (AreaLabeled *, anchor)
+            || instanceof (Property *, anchor)
+            || instanceof (SwitchPort *, anchor));
 
   nestedSeq = port->getMapNodeNesting ();
   perspective = new NclNodeNesting (persp);
   perspective->append (&nestedSeq);
 
-  newEvent = insertNode (perspective,
-                         port->getFinalInterface ());
-  delete perspective;
+  ExecutionObject *object
+    = obtainExecutionObject (perspective->getAnchorNode ());
+  g_assert_nonnull (object);
+  if (instanceof (Property *, anchor))
+    {
+      eventType = EventType::ATTRIBUTION;
+    }
+  else
+    {
+      eventType = EventType::PRESENTATION;
+    }
 
-  return newEvent;
+  return getEvent (object, anchor, eventType, "");
 }
 
 void
@@ -515,10 +484,7 @@ Converter::createEvent (Bind *bind, ExecutionObjectContext *context)
   // executionObject = getExecutionObjectFromPerspective (
   //       endPointPerspective);
 
-  executionObject = obtainExecutionObject
-    (endPointPerspective->getAnchorNode ()->getId (),
-     endPointPerspective->getAnchorNode ());
-
+  executionObject = obtainExecutionObject (endPointPerspective->getAnchorNode ());
   if (executionObject == nullptr)
     {
       delete endPointPerspective;
@@ -580,13 +546,16 @@ Converter::getBindKey (Bind *bind, string *result)
 // INSANITY ABOVE ----------------------------------------------------------
 
 ExecutionObject *
-Converter::obtainExecutionObject (const string &id,
-                                  Node *node)
+Converter::obtainExecutionObject (Node *node)
 {
+  string id;
   Node *parentNode;
   ExecutionObject *parent;
   ExecutionObject *object;
   PresentationEvent *event;
+
+  id = node->getId ();
+  g_assert (id != "");
 
   // Already created.
   if ((object = _scheduler->getObjectByIdOrAlias (id)) != nullptr)
@@ -597,7 +566,7 @@ Converter::obtainExecutionObject (const string &id,
   if (parentNode == nullptr)
     parent = nullptr;
   else
-    parent = obtainExecutionObject (parentNode->getId (), parentNode);
+    parent = obtainExecutionObject (parentNode);
 
   if (instanceof (Refer *, node))
     {
@@ -606,7 +575,7 @@ Converter::obtainExecutionObject (const string &id,
       TRACE ("solving refer");
       target = node->derefer ();
       g_assert (!instanceof (Refer *, target));
-      object = obtainExecutionObject (id, target->derefer ());
+      object = obtainExecutionObject (target->derefer ());
       object->addAlias (id);
       return object;
     }
