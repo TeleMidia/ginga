@@ -118,13 +118,11 @@ set (LIBGINGA_SOURCES
   ../lib/formatter/ExecutionObjectContext.cpp
   ../lib/formatter/ExecutionObjectSwitch.cpp
   ../lib/formatter/ExecutionObjectSettings.cpp
-  ../lib/formatter/NclActions.cpp
+  ../lib/formatter/NclAction.cpp
+  ../lib/formatter/NclCondition.cpp
   ../lib/formatter/NclEvents.cpp
   ../lib/formatter/NclEventTransitionManager.cpp
-  ../lib/formatter/NclFormatterLink.cpp
-  ../lib/formatter/NclLinkAssessment.cpp
-  ../lib/formatter/NclLinkCondition.cpp
-  ../lib/formatter/NclLinkStatement.cpp
+  ../lib/formatter/NclLink.cpp
   ../lib/formatter/NclNodeNesting.cpp
   ../lib/formatter/RuleAdapter.cpp
   ../lib/formatter/Scheduler.cpp
@@ -132,42 +130,31 @@ set (LIBGINGA_SOURCES
   ../lib/ncl/Action.cpp
   ../lib/ncl/Area.cpp
   ../lib/ncl/AreaLabeled.cpp
-  ../lib/ncl/AssessmentStatement.cpp
   ../lib/ncl/AttributeAssessment.cpp
   ../lib/ncl/Base.cpp
   ../lib/ncl/Bind.cpp
   ../lib/ncl/CompositeRule.cpp
   ../lib/ncl/Composition.cpp
-  ../lib/ncl/CompoundCondition.cpp
-  ../lib/ncl/CompoundStatement.cpp
+  ../lib/ncl/Condition.cpp
   ../lib/ncl/Connector.cpp
   ../lib/ncl/ConnectorBase.cpp
   ../lib/ncl/Context.cpp
-  ../lib/ncl/Descriptor.cpp
-  ../lib/ncl/DescriptorBase.cpp
   ../lib/ncl/Entity.cpp
   ../lib/ncl/EventUtil.cpp
   ../lib/ncl/Link.cpp
   ../lib/ncl/Media.cpp
   ../lib/ncl/NclDocument.cpp
   ../lib/ncl/Node.cpp
-  ../lib/ncl/Parameter.cpp
   ../lib/ncl/ParserXercesC.cpp
   ../lib/ncl/ParserLibXML.cpp
   ../lib/ncl/Port.cpp
   ../lib/ncl/Property.cpp
   ../lib/ncl/Refer.cpp
-  ../lib/ncl/Region.cpp
-  ../lib/ncl/RegionBase.cpp
   ../lib/ncl/Role.cpp
   ../lib/ncl/RuleBase.cpp
-  ../lib/ncl/SimpleCondition.cpp
   ../lib/ncl/SimpleRule.cpp
   ../lib/ncl/Switch.cpp
   ../lib/ncl/SwitchPort.cpp
-  ../lib/ncl/Transition.cpp
-  ../lib/ncl/TransitionBase.cpp
-  ../lib/ncl/TransitionUtil.cpp
   ../lib/ncl/ValueAssessment.cpp
 
   ../lib/player/ImagePlayer.cpp
