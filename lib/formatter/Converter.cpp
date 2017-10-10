@@ -65,7 +65,7 @@ Converter::obtainEvent (ExecutionObject *object,
       g_assert_not_reached ();
     }
 
-  event = object->getEvent (id);
+  event = object->getEventById (id);
   if (event != nullptr)
     return event;
 
@@ -265,7 +265,7 @@ Converter::resolveSwitchEvents (
   selectedNode = cast (Node *, selectedNode);
   g_assert_nonnull (selectedNode);
 
-  for (NclEvent *event: switchObject->getEvents ())
+  for (auto event: *(switchObject->getEvents ()))
     {
       mappedEvent = nullptr;
       switchEvent = cast (SwitchEvent *, event);
@@ -316,7 +316,7 @@ Converter::eventStateChanged (NclEvent *event,
     {
       if (transition == EventStateTransition::START)
         {
-          for (NclEvent *e: exeSwitch->getEvents())
+          for (auto e: *(exeSwitch->getEvents()))
             {
               auto switchEvt = cast (SwitchEvent *, e);
               if (switchEvt)
@@ -453,7 +453,7 @@ Converter::obtainExecutionObject (Node *node)
     {
       Node *target;
 
-      TRACE ("solving refer");
+      TRACE ("solving refer %s", node->getId ().c_str ());
       target = node->derefer ();
       g_assert (!instanceof (Refer *, target));
       object = obtainExecutionObject (target->derefer ());
@@ -463,7 +463,7 @@ Converter::obtainExecutionObject (Node *node)
 
   if (instanceof (Switch *, node))
     {
-      TRACE ("creating switch");
+      TRACE ("creating switch %s", node->getId ().c_str ());
       object = new ExecutionObjectSwitch (_ginga, id, node);
       event = new PresentationEvent
         (_ginga, node->getLambda ()->getId () + "<pres>", object,
@@ -474,7 +474,7 @@ Converter::obtainExecutionObject (Node *node)
 
   if (instanceof (Context *, node))
     {
-      TRACE ("creating switch");
+      TRACE ("creating context %s", node->getId ().c_str ());
       object = new ExecutionObjectContext (_ginga, id, node);
       event = new PresentationEvent
         (_ginga, node->getLambda ()->getId () + "<pres>", object,
@@ -494,21 +494,20 @@ Converter::obtainExecutionObject (Node *node)
     }
 
   g_assert (instanceof (Media *, node));
+  TRACE ("creating media %s", node->getId ().c_str ());
+  Media *media;
+  media = cast (Media *, node);
+  g_assert_nonnull (media);
+  if (media->isSettings ())
     {
-      Media *media;
-      media = cast (Media *, node);
-      g_assert_nonnull (media);
-      if (media->isSettings ())
-        {
-          object = new ExecutionObjectSettings (_ginga, id, node);
-          _ruleAdapter->setSettings (object);
-        }
-      else
-        {
-          object = new ExecutionObject (_ginga, id, node);
-          compileExecutionObjectLinks
-            (object, node, cast (ExecutionObjectContext *, parent));
-        }
+      object = new ExecutionObjectSettings (_ginga, id, node);
+      _ruleAdapter->setSettings (object);
+    }
+  else
+    {
+      object = new ExecutionObject (_ginga, id, node);
+      compileExecutionObjectLinks
+        (object, node, cast (ExecutionObjectContext *, parent));
     }
 
  done:

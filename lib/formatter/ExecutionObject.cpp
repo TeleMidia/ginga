@@ -134,14 +134,30 @@ ExecutionObject::initParent (ExecutionObjectContext *parent)
   g_assert (parent->addChild (this));
 }
 
+const set<NclEvent *> *
+ExecutionObject::getEvents ()
+{
+  return &_events;
+}
+
+NclEvent *
+ExecutionObject::getEventById (const string &id)
+{
+  for (auto event: _events)
+    if (event->getId () == id)
+      return event;
+  return nullptr;
+}
+
+
 bool
 ExecutionObject::addEvent (NclEvent *event)
 {
-  map<string, NclEvent *>::iterator i;
+  if (_events.find (event) != _events.end ())
+    return false;
+  _events.insert (event);
 
-  g_assert (_events.find (event->getId ()) == _events.end ());
-
-  _events[event->getId ()] = event;
+  // Clutter:
   if (instanceof (PresentationEvent *, event))
     {
       addPresentationEvent ((PresentationEvent *) event);
@@ -156,6 +172,7 @@ ExecutionObject::addEvent (NclEvent *event)
     }
   return true;
 }
+
 
 void
 ExecutionObject::addPresentationEvent (PresentationEvent *event)
@@ -200,35 +217,6 @@ ExecutionObject::addPresentationEvent (PresentationEvent *event)
   _transMan.addPresentationEvent (event);
 }
 
-bool
-ExecutionObject::containsEvent (NclEvent *event)
-{
-  return (_events.count (event->getId ()) != 0);
-}
-
-NclEvent *
-ExecutionObject::getEvent (const string &id)
-{
-  NclEvent *ev;
-  if (_events.count (id) != 0)
-    {
-      ev = _events[id];
-      return ev;
-    }
-  return nullptr;
-}
-
-vector<NclEvent *>
-ExecutionObject::getEvents ()
-{
-  vector<NclEvent *> eventsVector;
-  for (const auto &i : _events)
-    {
-      eventsVector.push_back (i.second);
-    }
-  return eventsVector;
-}
-
 PresentationEvent *
 ExecutionObject::getWholeContentPresentationEvent ()
 {
@@ -265,7 +253,7 @@ ExecutionObject::prepare (NclEvent *event)
   string value;
 
   g_assert_nonnull (event);
-  g_assert (this->containsEvent (event));
+  g_assert (this->getEventById (event->getId ()));
   if (event->getCurrentState () != EventState::SLEEPING)
     return false;
 
@@ -326,7 +314,7 @@ ExecutionObject::start ()
     }
 
   // Install attribution events.
-  for (NclEvent *evt: this->getEvents ())
+  for (auto evt: *(this->getEvents ()))
     {
       AttributionEvent *attevt = cast (AttributionEvent *, evt);
       if (attevt)
@@ -351,7 +339,7 @@ ExecutionObject::pause ()
   if (!this->isOccurring ())
     return true;
 
-  for (NclEvent *event: this->getEvents ())
+  for (auto event: *(this->getEvents ()))
     event->pause ();
 
   g_assert_nonnull (_player);
@@ -366,7 +354,7 @@ ExecutionObject::resume ()
   if (!this->isPaused ())
     return true;
 
-  for (NclEvent *event: this->getEvents ())
+  for (auto event: *(this->getEvents ()))
     event->resume ();
 
   g_assert_nonnull (_player);
@@ -397,7 +385,7 @@ ExecutionObject::stop ()
     }
 
   // Uninstall attribution events.
-  for (NclEvent *evt: this->getEvents ())
+  for (auto evt: *(this->getEvents ()))
     {
       AttributionEvent *attevt = cast (AttributionEvent *, evt);
       if (attevt)

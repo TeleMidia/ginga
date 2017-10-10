@@ -39,7 +39,7 @@ ExecutionObjectSwitch::select (ExecutionObject *exeObj)
   else
     {
       _selectedObj = nullptr;
-      for (NclEvent *evt: getEvents())
+      for (auto evt: *(this->getEvents ()))
         {
           auto switchEvent = cast (SwitchEvent *, evt);
           g_assert_nonnull (switchEvent);
