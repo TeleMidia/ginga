@@ -105,7 +105,7 @@ Scheduler::run (const string &file, string *errmsg)
       obj = _converter->obtainExecutionObject (node);
       g_assert_nonnull (obj);
 
-      evt = _converter->getEvent
+      evt = _converter->obtainEvent
         (obj, iface, instanceof (Property *, iface)
          ? EventType::ATTRIBUTION : EventType::PRESENTATION, "");
       g_assert_nonnull (evt);
@@ -125,8 +125,6 @@ Scheduler::run (const string &file, string *errmsg)
           ExecutionObject *obj;
           obj = _converter->obtainExecutionObject (node);
           g_assert_nonnull (obj);
-          // delete persp;
-
           settings = cast (ExecutionObjectSettings *, obj);
           g_assert_nonnull (settings);
         }
@@ -399,8 +397,8 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
           if (!instanceof (Area *, iface))
             continue;           // nothing to do
 
-          evt = _converter->getEvent (child, iface,
-                                      EventType::PRESENTATION, "");
+          evt = _converter->obtainEvent (child, iface,
+                                         EventType::PRESENTATION, "");
           g_assert_nonnull (evt);
           g_assert (instanceof (PresentationEvent *, evt));
 
@@ -502,8 +500,8 @@ Scheduler::runSwitchEvent (unused (ExecutionObjectSwitch *switchObj),
       endPointObject = _converter->obtainExecutionObject (node);
       g_assert_nonnull (endPointObject);
       selectedEvent = _converter
-        ->getEvent (endPointObject, iface, switchEvent->getType (),
-                    switchEvent->getKey ());
+        ->obtainEvent (endPointObject, iface, switchEvent->getType (),
+                       switchEvent->getKey ());
       break;
     }
 

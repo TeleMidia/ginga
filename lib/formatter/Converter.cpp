@@ -37,81 +37,65 @@ Converter::~Converter ()
 }
 
 NclEvent *
-Converter::getEvent (ExecutionObject *exeObj,
-                     Anchor *interfacePoint,
-                     EventType ncmEventType,
-                     const string &key)
+Converter::obtainEvent (ExecutionObject *object,
+                        Anchor *iface,
+                        EventType eventType,
+                        const string &key)
 {
   string id;
-  string suffix;
-
   NclEvent *event;
   string type;
 
-  switch (ncmEventType)
+  id = iface->getId ();
+  switch (eventType)
     {
     case EventType::SELECTION:
-      suffix = "<sel";
+      id += "<sel";
       if (key != "")
-        suffix += "(" + key + ")";
-      suffix += ">";
+        id += "(" + key + ")";
+      id += ">";
       break;
     case EventType::PRESENTATION:
-      suffix = "<pres>";
+      id += "<pres>";
       break;
     case EventType::ATTRIBUTION:
-      suffix = "<attr>";
+      id += "<attr>";
       break;
     default:
       g_assert_not_reached ();
     }
 
-  id = interfacePoint->getId () + suffix;
-
-  event = exeObj->getEvent (id);
+  event = object->getEvent (id);
   if (event != nullptr)
-    {
-      return event;
-    }
+    return event;
 
-  auto switchObj = cast (ExecutionObjectSwitch *, exeObj);
-  auto cObj = cast (ExecutionObjectContext *, exeObj);
-
-  if (switchObj)
+  if (instanceof (ExecutionObjectSwitch *, object))
     {
-      event = new SwitchEvent (_ginga,
-            id, switchObj, interfacePoint, ncmEventType, key);
+      event = new SwitchEvent
+        (_ginga, id, object, iface, eventType, key);
     }
-  else if (ncmEventType == EventType::PRESENTATION)
+  else if (instanceof (ExecutionObjectContext *, object))
     {
-      event = new PresentationEvent (_ginga,
-            id, exeObj, (Area *)interfacePoint);
-    }
-  else if (cObj)
-    {
-      if (ncmEventType == EventType::ATTRIBUTION)
-        {
-          auto propAnchor = cast (Property *, interfacePoint);
-          g_assert_nonnull (propAnchor);
-          event = new AttributionEvent (_ginga, id, exeObj, propAnchor);
-        }
+      g_assert (eventType == EventType::PRESENTATION);
+      event = new PresentationEvent (_ginga, id, object, (Area *) iface);
     }
   else
     {
-      switch (ncmEventType)
+      switch (eventType)
         {
+        case EventType::PRESENTATION:
+          event = new PresentationEvent (_ginga, id, object, (Area *) iface);
+          break;
         case EventType::ATTRIBUTION:
           {
-            auto propAnchor = cast (Property *, interfacePoint);
+            auto propAnchor = cast (Property *, iface);
             g_assert_nonnull (propAnchor);
-            event = new AttributionEvent (_ginga, id, exeObj, propAnchor);
-
+            event = new AttributionEvent (_ginga, id, object, propAnchor);
             break;
           }
         case EventType::SELECTION:
           {
-            event = new SelectionEvent (_ginga,
-                                        id, exeObj, (Area *)interfacePoint);
+            event = new SelectionEvent (_ginga, id, object, (Area *) iface);
             if (key != "")
               {
                 ((SelectionEvent *)event)->setSelectionCode (key);
@@ -124,8 +108,7 @@ Converter::getEvent (ExecutionObject *exeObj,
     }
 
   g_assert_nonnull (event);
-  exeObj->addEvent (event);
-
+  object->addEvent (event);
   return event;
 }
 
@@ -292,7 +275,7 @@ Converter::resolveSwitchEvents (
       auto lambdaAnchor = cast (AreaLambda *, interfacePoint);
       if (lambdaAnchor)
         {
-          mappedEvent = getEvent (
+          mappedEvent = obtainEvent (
                 selectedObject, selectedNode->getLambda (),
                 switchEvent->getType (), switchEvent->getKey ());
         }
@@ -306,7 +289,7 @@ Converter::resolveSwitchEvents (
               mapping->getTarget (&selectedNode, &interfacePoint);
               endPointObject = obtainExecutionObject (selectedNode);
               g_assert_nonnull (endPointObject);
-              mappedEvent = getEvent (endPointObject,
+              mappedEvent = obtainEvent (endPointObject,
                                       interfacePoint,
                                       switchEvent->getType (),
                                       switchEvent->getKey ());
@@ -406,8 +389,8 @@ Converter::createEvent (Bind *bind)
 
   if (!getBindKey (bind, &key))
     key = "";
-  event = getEvent (executionObject, interfacePoint,
-                    bind->getRole ()->getEventType (), key);
+  event = obtainEvent (executionObject, interfacePoint,
+                       bind->getRole ()->getEventType (), key);
 
   return event;
 }
