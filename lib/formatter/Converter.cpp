@@ -325,17 +325,11 @@ Converter::eventStateChanged (NclEvent *event,
 
                   if (ev == nullptr)
                     {
-                      // there is only one way to start a switch with
-                      // NULL mapped event: a instSame refernode inside
-                      // it was started
                       processExecutionObjectSwitch (exeSwitch);
 
                       ev = switchEvt->getMappedEvent ();
                       if (ev != nullptr)
                         {
-                          // now we know the event is mapped, we can start
-                          // the
-                          // switchport
                           e->start ();
                         }
                     }
@@ -427,7 +421,6 @@ Converter::obtainExecutionObject (Node *node)
   Node *parentNode;
   ExecutionObjectContext *parent;
   ExecutionObject *object;
-  PresentationEvent *event;
 
   id = node->getId ();
   g_assert (id != "");
@@ -465,10 +458,8 @@ Converter::obtainExecutionObject (Node *node)
     {
       TRACE ("creating switch %s", node->getId ().c_str ());
       object = new ExecutionObjectSwitch (_ginga, id, node);
-      event = new PresentationEvent
-        (_ginga, node->getLambda ()->getId () + "<pres>", object,
-         (Area *)(node->getLambda ()));
-      object->addEvent (event);
+      g_assert_nonnull
+        (obtainEvent (object, node->getLambda (), EventType::PRESENTATION));
       goto done;
     }
 
@@ -476,10 +467,8 @@ Converter::obtainExecutionObject (Node *node)
     {
       TRACE ("creating context %s", node->getId ().c_str ());
       object = new ExecutionObjectContext (_ginga, id, node);
-      event = new PresentationEvent
-        (_ginga, node->getLambda ()->getId () + "<pres>", object,
-         (Area *)(node->getLambda ()));
-      object->addEvent (event);
+      g_assert_nonnull
+        (obtainEvent (object, node->getLambda (), EventType::PRESENTATION));
 
       // Context *docCtx= cast (Context *, node);
       // ExecutionObjectContext *ctx
@@ -490,7 +479,6 @@ Converter::obtainExecutionObject (Node *node)
       // for (auto link: *(docCtx->getLinks ()))
       //   ctx->setLinkCompiled (createLink (link, ctx));
       goto done;
-      return object;
     }
 
   g_assert (instanceof (Media *, node));
