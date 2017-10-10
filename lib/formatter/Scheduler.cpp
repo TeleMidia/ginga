@@ -92,7 +92,7 @@ Scheduler::run (const string &file, string *errmsg)
   dummy->addAnchor (prop);
 
   // Create and load converter.
-  _converter = new Converter (_ginga, this, new RuleAdapter ());
+  _converter = new Converter (_ginga, new RuleAdapter ());
   entryevts = new vector<NclEvent *>;
   for (auto port: *ports)
     {

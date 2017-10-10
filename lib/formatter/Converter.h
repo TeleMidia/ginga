@@ -37,38 +37,20 @@ class GingaInternal;
 GINGA_FORMATTER_BEGIN
 
 class Scheduler;
-class Converter : public INclEventListener
+class Converter: public INclEventListener
 {
 public:
-  explicit Converter (GingaInternal *, INclActionListener *, RuleAdapter *);
+  explicit Converter (GingaInternal *, RuleAdapter *);
   virtual ~Converter ();
 
-  void setHandlingStatus (bool handling);
-
-  NclEvent *getEvent (ExecutionObject *exeObj,
-                      Anchor *interfacePoint,
-                      EventType ncmEventType,
-                      const string &key);
+  NclEvent *getEvent (ExecutionObject *, Anchor *, EventType , const string &);
 
   ExecutionObject *
-  processExecutionObjectSwitch (ExecutionObjectSwitch *switchObject);
-
-  RuleAdapter *getRuleAdapter ();
-
-
-private:
-  GingaInternal *_ginga;
-  Scheduler *_scheduler;
-
-  set<NclEvent *> _listening;
-  INclActionListener *_actionListener;
-  RuleAdapter *_ruleAdapter;
-  bool _handling;
+  processExecutionObjectSwitch (ExecutionObjectSwitch *);
 
 private:
   void compileExecutionObjectLinks (ExecutionObject *, Node *,
                                     ExecutionObjectContext *);
-
   void processLink (Link *,
                     Node *,
                     ExecutionObject *,
@@ -76,21 +58,22 @@ private:
 
   void resolveSwitchEvents (ExecutionObjectSwitch *switchObject);
 
-  void eventStateChanged (NclEvent *someEvent,
-                          EventStateTransition transition,
-                          EventState previousState) override;
+  NclEvent *createEvent (Bind *);
 
   bool getBindKey (Bind *, string *);
 
-
-  NclEvent *createEvent (Bind *);
+  // INclEventListener
+  void eventStateChanged (NclEvent *, EventStateTransition, EventState) override;
 
   // INSANITY ABOVE --------------------------------------------------------
-
 public:
   ExecutionObject *obtainExecutionObject (Node *);
 
 private:
+  GingaInternal *_ginga;
+  Scheduler *_scheduler;
+  RuleAdapter *_ruleAdapter;
+
   NclLink *createLink (Link *, ExecutionObjectContext *);
   NclCondition *createCondition (Condition *, Bind *);
   NclAction *createAction (Action *, Bind *);

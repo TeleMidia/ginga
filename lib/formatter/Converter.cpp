@@ -23,28 +23,17 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-Converter::Converter (GingaInternal *ginga,
-                      INclActionListener *actlist,
-                      RuleAdapter *ruleAdapter)
+Converter::Converter (GingaInternal *ginga, RuleAdapter *ruleAdapter)
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;
-
   _scheduler = ginga->getScheduler ();
   g_assert_nonnull (_scheduler);
-
-  _actionListener = actlist;
   _ruleAdapter = ruleAdapter;
 }
 
 Converter::~Converter ()
 {
-}
-
-RuleAdapter *
-Converter::getRuleAdapter ()
-{
-  return _ruleAdapter;
 }
 
 NclEvent *
@@ -491,8 +480,7 @@ Converter::obtainExecutionObject (Node *node)
   else if (instanceof (Context *, node))
     {
       TRACE ("creating switch");
-      object = new ExecutionObjectContext
-        (_ginga, id, node, _actionListener);
+      object = new ExecutionObjectContext (_ginga, id, node, _scheduler);
       event = new PresentationEvent
         (_ginga, node->getLambda ()->getId () + "<pres>", object,
          (Area *)(node->getLambda ()));
@@ -501,8 +489,7 @@ Converter::obtainExecutionObject (Node *node)
   else if (instanceof (Switch *, node))
     {
       TRACE ("creating switch");
-      object = new ExecutionObjectSwitch
-        (_ginga, id, node, _actionListener);
+      object = new ExecutionObjectSwitch (_ginga, id, node, _scheduler);
       event = new PresentationEvent
         (_ginga, node->getLambda ()->getId () + "<pres>", object,
          (Area *)(node->getLambda ()));
@@ -515,14 +502,12 @@ Converter::obtainExecutionObject (Node *node)
       g_assert_nonnull (media);
       if (media->isSettings ())
         {
-          object = new ExecutionObjectSettings
-            (_ginga, id, node, _actionListener);
+          object = new ExecutionObjectSettings (_ginga, id, node, _scheduler);
           _ruleAdapter->setSettings (object);
         }
       else
         {
-          object = new ExecutionObject
-            (_ginga, id, node, _actionListener);
+          object = new ExecutionObject (_ginga, id, node, _scheduler);
           compileExecutionObjectLinks
             (object, node, cast (ExecutionObjectContext *, parent));
         }
@@ -612,7 +597,7 @@ Converter::createAction (Action *connAction, Bind *bind)
   g_assert_nonnull (event);
   event->setType (eventType);
 
-  action = new NclAction (event, transition, _actionListener);
+  action = new NclAction (event, transition, _scheduler);
   if (eventType == EventType::ATTRIBUTION)
     {
       string dur;
