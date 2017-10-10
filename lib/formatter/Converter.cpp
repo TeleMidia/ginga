@@ -114,48 +114,6 @@ Converter::obtainEvent (ExecutionObject *object,
 
 
 void
-Converter::processLink (Link *docLink,
-                        Node *node,
-                        ExecutionObject *object,
-                        ExecutionObjectContext *parentObject)
-{
-  Node *nodeEntity = nullptr;
-  const set<Refer *> *sameInstances;
-  bool contains = false;
-
-  if (object->getNode () != nullptr)
-    nodeEntity = cast (Node *, object->getNode ());
-
-  if (!parentObject->containsUncompiledLink (docLink))
-    return;
-
-  auto causalLink = cast (Link *, docLink);
-  g_assert_nonnull (causalLink);
-
-  if (nodeEntity != nullptr && instanceof (Media *, nodeEntity))
-    {
-      sameInstances = cast (Media *, nodeEntity)
-        ->getInstSameInstances ();
-      for (Refer *referNode: *sameInstances)
-        {
-          contains = causalLink->contains (referNode, true);
-          if (contains)
-            break;
-        }
-    }
-
-  // Checks if execution object is part of link conditions.
-  if (causalLink->contains (node, true) || contains)
-    {
-      parentObject->removeLinkUncompiled (docLink);
-      NclLink *formatterLink = createLink (causalLink);
-
-      if (formatterLink != NULL)
-        parentObject->setLinkCompiled (formatterLink);
-    }
-}
-
-void
 Converter::compileExecutionObjectLinks (
     ExecutionObject *exeObj, Node *dataObject,
     ExecutionObjectContext *parentObj)
@@ -163,8 +121,6 @@ Converter::compileExecutionObjectLinks (
   set<Link *> *uncompiledLinks;
   ExecutionObjectContext *compObj;
   Node *execDataObject;
-
-  exeObj->setCompiled (true);
 
   if (parentObj == nullptr)
     return;
@@ -187,7 +143,8 @@ Converter::compileExecutionObjectLinks (
 
       for ( Link *docLink : *dataLinks)
         {
-          processLink (docLink, dataObject, exeObj, parentObj);
+          parentObj->removeLinkUncompiled (docLink);
+          createLink (docLink);
         }
 
       delete dataLinks;
@@ -470,15 +427,33 @@ Converter::obtainExecutionObject (Node *node)
       g_assert_nonnull
         (obtainEvent (object, node->getLambda (), EventType::PRESENTATION));
 
-      // Context *docCtx= cast (Context *, node);
-      // ExecutionObjectContext *ctx
-      //   = cast (ExecutionObjectContext *, object);
-      // if (parent != nullptr)
-      //   object->initParent (parent);
-      // _scheduler->addObject (object);
-      // for (auto link: *(docCtx->getLinks ()))
-      //   ctx->setLinkCompiled (createLink (link, ctx));
-      goto done;
+      g_assert_nonnull (object);
+      if (parent != nullptr)
+        object->initParent (parent);
+      _scheduler->addObject (object);
+
+      // Process links.
+      // vector <Context *> stack;
+      // stack.push_back (cast (Context *, node));
+      // while (stack.size () > 0)
+      //   {
+      //     Context *ctx = stack.back ();
+      //     stack.pop_back ();
+      //     for (auto link: *(ctx->getLinks ()))
+      //       {
+      //         ExecutionObjectContext *ctxObj
+      //           = cast (ExecutionObjectContext *,
+      //                   obtainExecutionObject (ctx));
+      //         ctxObj->removeLinkUncompiled (link);
+      //         TRACE ("CREATING LINK %s", link->getId ().c_str ());
+      //         g_assert_nonnull (createLink (link));
+      //       }
+      //     for (auto node: *(ctx->getNodes ()))
+      //       if (instanceof (Context *, node))
+      //         stack.push_back (cast (Context *, node));
+      //   }
+
+      return object;
     }
 
   g_assert (instanceof (Media *, node));

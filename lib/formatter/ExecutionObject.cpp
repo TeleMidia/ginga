@@ -40,7 +40,6 @@ ExecutionObject::ExecutionObject (GingaInternal *ginga,
   g_assert_nonnull (_scheduler);
 
   _node = node;
-  _isCompiled = false;
   _mainEvent = nullptr;
 
   _id = id;
@@ -163,18 +162,6 @@ ExecutionObject::getLambda ()
 {
   return cast (PresentationEvent *,
                this->getEventById (_id + "@lambda<pres>"));
-}
-
-bool
-ExecutionObject::isCompiled ()
-{
-  return _isCompiled;
-}
-
-void
-ExecutionObject::setCompiled (bool status)
-{
-  _isCompiled = status;
 }
 
 bool
@@ -444,13 +431,13 @@ ExecutionObject::handleTickEvent (unused (GingaTime total),
       if (this->getLambda () == evt)
         continue;
 
-      TRACE ("[%s %" GINGA_TIME_FORMAT "]"
-             " %s begin=%" GINGA_TIME_FORMAT " end=%" GINGA_TIME_FORMAT,
-             this->getId ().c_str (),
-             GINGA_TIME_ARGS (_time),
-             evt->getId ().c_str (),
-             GINGA_TIME_ARGS (evt->getBegin ()),
-             GINGA_TIME_ARGS (evt->getEnd ()));
+      // TRACE ("[%s %" GINGA_TIME_FORMAT "]"
+      //        " %s begin=%" GINGA_TIME_FORMAT " end=%" GINGA_TIME_FORMAT,
+      //        this->getId ().c_str (),
+      //        GINGA_TIME_ARGS (_time),
+      //        evt->getId ().c_str (),
+      //        GINGA_TIME_ARGS (evt->getBegin ()),
+      //        GINGA_TIME_ARGS (evt->getEnd ()));
 
       if (evt->getCurrentState () == EventState::SLEEPING
           && evt->getBegin () <= _time)

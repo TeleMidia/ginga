@@ -52,12 +52,8 @@ public:
 private:
   void compileExecutionObjectLinks (ExecutionObject *, Node *,
                                     ExecutionObjectContext *);
-  void processLink (Link *,
-                    Node *,
-                    ExecutionObject *,
-                    ExecutionObjectContext *);
 
-  void resolveSwitchEvents (ExecutionObjectSwitch *switchObject);
+  void resolveSwitchEvents (ExecutionObjectSwitch *);
 
   NclEvent *createEvent (Bind *);
 

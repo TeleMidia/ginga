@@ -33,7 +33,7 @@ GINGA_FORMATTER_BEGIN
 class ExecutionObjectContext;
 class ExecutionObjectSettings;
 
-class ExecutionObject : public IGingaInternalEventListener
+class ExecutionObject: public IGingaInternalEventListener
 {
 public:
   ExecutionObject (GingaInternal *, const string &, Node *);
@@ -58,9 +58,6 @@ public:
   bool addEvent (NclEvent *);
   PresentationEvent *getLambda ();
 
-  bool isCompiled ();
-  void setCompiled (bool status);
-
   virtual bool prepare (NclEvent *event);
   virtual bool start ();
   virtual bool stop ();
@@ -72,9 +69,6 @@ protected:
   Node *_node;
   set<NclEvent *> _events;
   NclEvent *_mainEvent;
-
-private:
-  bool _isCompiled;
 
   // ------------------------------------------
 
