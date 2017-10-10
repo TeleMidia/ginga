@@ -82,8 +82,6 @@ private:
                           EventStateTransition transition,
                           EventState previousState) override;
 
-  static bool hasDescriptorPropName (const string &name);
-
   bool getBindKey (Bind *, string *);
 
 

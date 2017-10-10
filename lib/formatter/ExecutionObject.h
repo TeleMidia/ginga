@@ -66,7 +66,6 @@ public:
   bool removeEvent (NclEvent *event);
   bool isCompiled ();
   void setCompiled (bool status);
-  Property *getNCMProperty (const string &propertyName);
   NclEvent *getMainEvent ();
 
   virtual bool prepare (NclEvent *event);
