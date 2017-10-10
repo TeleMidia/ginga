@@ -314,20 +314,14 @@ Converter::resolveSwitchEvents (
 
           for (Port *mapping: *(switchPort->getPorts ()))
             {
-              if (mapping->getNode () == selectedNode)
-                {
-                  endPointObject = obtainExecutionObject (selectedNode);
-
-                  if (endPointObject != nullptr)
-                    {
-                      mappedEvent = getEvent (
-                            endPointObject,
-                            mapping->getFinalInterface (),
-                            switchEvent->getType (),
-                            switchEvent->getKey ());
-                    }
-                  break;
-                }
+              mapping->getTarget (&selectedNode, &interfacePoint);
+              endPointObject = obtainExecutionObject (selectedNode);
+              g_assert_nonnull (endPointObject);
+              mappedEvent = getEvent (endPointObject,
+                                      interfacePoint,
+                                      switchEvent->getType (),
+                                      switchEvent->getKey ());
+              break;
             }
         }
 
@@ -341,24 +335,16 @@ Converter::resolveSwitchEvents (
 NclEvent *
 Converter::insertContext (Port *port)
 {
+  Node *node;
   Anchor *anchor;
-  vector<Node *> nestedSeq;
   EventType eventType;
 
   g_assert_nonnull (port);
+  port->getTarget (&node, &anchor);
 
-  anchor = port->getFinalInterface ();
-
-  g_assert (instanceof (Area *, anchor)
-            || instanceof (AreaLabeled *, anchor)
-            || instanceof (Property *, anchor)
-            || instanceof (SwitchPort *, anchor));
-
-  nestedSeq = port->getMapNodeNesting ();
-
-  ExecutionObject *object
-    = obtainExecutionObject (nestedSeq.back ());
+  ExecutionObject *object = obtainExecutionObject (node);
   g_assert_nonnull (object);
+
   if (instanceof (Property *, anchor))
     {
       eventType = EventType::ATTRIBUTION;
@@ -425,24 +411,20 @@ Converter::createEvent (Bind *bind)
   Anchor *interfacePoint;
   string key;
   NclEvent *event = nullptr;
-  vector<Node *> seq;
 
   Node *node = bind->getNode ();
   g_assert_nonnull (node);
 
   interfacePoint = bind->getInterface ();
 
-  seq.push_back (node);
   if (interfacePoint != nullptr
       && instanceof (Port *, interfacePoint)
       && !(instanceof (SwitchPort *, interfacePoint)))
     {
-      for (auto inner: ((Port *) interfacePoint)->getMapNodeNesting ())
-        seq.push_back (inner);
+      cast (Port *, interfacePoint)->getTarget (&node, nullptr);
     }
 
-
-  executionObject = obtainExecutionObject (seq.back());
+  executionObject = obtainExecutionObject (node);
   g_assert_nonnull (executionObject);
 
   if (interfacePoint == nullptr)

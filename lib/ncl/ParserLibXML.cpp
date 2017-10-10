@@ -754,7 +754,7 @@ ncl_pop_context (unused (ParserLibXML_State *st),
             (st, port_elt, "component", comp_id.c_str (),
              "no such component in scope");
         }
-      port->setNode (node);
+      port->initNode (node);
 
       anchor = nullptr;
       if (ncl_attrmap_index (port_attr, "interface", &iface_id))
@@ -771,7 +771,7 @@ ncl_pop_context (unused (ParserLibXML_State *st),
         {
           anchor = node->getLambda ();
         }
-      port->setInterface (anchor);
+      port->initInterface (anchor);
     }
   return true;
 }
