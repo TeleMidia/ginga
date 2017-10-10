@@ -21,7 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ExecutionObject.h"
 #include "NclEvents.h"
 #include "NclLink.h"
-#include "NclNodeNesting.h"
 
 #include "ncl/Ncl.h"
 using namespace ::ginga::ncl;
@@ -38,12 +37,7 @@ public:
 
   virtual ~ExecutionObjectContext ();
 
-  ExecutionObjectContext *getParentFromDataObject (Node *dataObject);
   void suspendLinkEvaluation (bool suspend);
-  bool addExecutionObject (ExecutionObject *execObj);
-  ExecutionObject *getExecutionObject (const string &execObjId);
-  map<string, ExecutionObject *> *getExecutionObjects ();
-  bool removeExecutionObject (ExecutionObject *execObj);
   set<Link *> *getUncompiledLinks ();
   bool containsUncompiledLink (Link *dataLink);
   void removeLinkUncompiled (Link *ncmLink);
@@ -52,22 +46,28 @@ public:
                           EventStateTransition transition,
                           EventState previousState) override;
 
+  // Sanity.
+  const set<ExecutionObject *> *getChildren ();
+  ExecutionObject *getChildById (const string &);
+  bool addChild (ExecutionObject *);
+
   // Callbacks
   void linkEvaluationStarted (NclLink *);
   void linkEvaluationFinished (NclLink *);
 
 private:
+  void checkLinkConditions ();
+
+private:
+  set<ExecutionObject *> _children;
+
   set<NclLink *> _links;
   set<Link *> _uncompiledLinks;
   set<NclEvent *> _runningEvents; // child events occurring
   set<NclEvent *> _pausedEvents;  // child events paused
   EventStateTransition lastTransition;
-
   map<NclLink *, int> _pendingLinks;
 
-  map<string, ExecutionObject *> _execObjList;
-
-  void checkLinkConditions ();
 };
 
 GINGA_FORMATTER_END

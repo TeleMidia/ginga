@@ -37,56 +37,20 @@ class GingaInternal;
 GINGA_FORMATTER_BEGIN
 
 class Scheduler;
-class Converter : public INclEventListener
+class Converter: public INclEventListener
 {
 public:
-  explicit Converter (GingaInternal *, INclActionListener *, RuleAdapter *);
+  explicit Converter (GingaInternal *, RuleAdapter *);
   virtual ~Converter ();
 
-  void setHandlingStatus (bool handling);
-
-  ExecutionObject *getExecutionObjectFromPerspective
-  (NclNodeNesting *);
-
-  NclEvent *getEvent (ExecutionObject *exeObj,
-                      Anchor *interfacePoint,
-                      EventType ncmEventType,
-                      const string &key);
+  NclEvent *getEvent (ExecutionObject *, Anchor *, EventType , const string &);
 
   ExecutionObject *
-  processExecutionObjectSwitch (ExecutionObjectSwitch *switchObject);
-
-  NclEvent *insertContext (NclNodeNesting *contextPerspective,
-                           Port *port);
-
-  RuleAdapter *getRuleAdapter ();
-
+  processExecutionObjectSwitch (ExecutionObjectSwitch *);
 
 private:
-  GingaInternal *_ginga;
-  Scheduler *_scheduler;
-
-  set<NclEvent *> _listening;
-  INclActionListener *_actionListener;
-  RuleAdapter *_ruleAdapter;
-  bool _handling;
-
-  void addExecutionObject (ExecutionObject *,
-                           ExecutionObjectContext *);
-
-
-
-  ExecutionObjectContext *
-  addSameInstance (ExecutionObject *, Refer *);
-
-  ExecutionObjectContext *getParentExecutionObject (NclNodeNesting *);
-
-  ExecutionObject *
-  createExecutionObject (const string &, NclNodeNesting *);
-
   void compileExecutionObjectLinks (ExecutionObject *, Node *,
                                     ExecutionObjectContext *);
-
   void processLink (Link *,
                     Node *,
                     ExecutionObject *,
@@ -94,27 +58,27 @@ private:
 
   void resolveSwitchEvents (ExecutionObjectSwitch *switchObject);
 
-  NclEvent *insertNode (NclNodeNesting *perspective,
-                        Anchor *interfacePoint);
-
-  void eventStateChanged (NclEvent *someEvent,
-                          EventStateTransition transition,
-                          EventState previousState) override;
-
-  static bool hasDescriptorPropName (const string &name);
+  NclEvent *createEvent (Bind *);
 
   bool getBindKey (Bind *, string *);
 
-
-  NclEvent *createEvent (Bind *, ExecutionObjectContext *);
+  // INclEventListener
+  void eventStateChanged (NclEvent *, EventStateTransition, EventState) override;
 
   // INSANITY ABOVE --------------------------------------------------------
+public:
+  ExecutionObject *obtainExecutionObject (Node *);
+
+private:
+  GingaInternal *_ginga;
+  Scheduler *_scheduler;
+  RuleAdapter *_ruleAdapter;
 
   NclLink *createLink (Link *, ExecutionObjectContext *);
-  NclCondition *createCondition (Condition *, Bind *, ExecutionObjectContext *);
-  NclAction *createAction (Action *, Bind *, ExecutionObjectContext *);
+  NclCondition *createCondition (Condition *, Bind *);
+  NclAction *createAction (Action *, Bind *);
 };
 
 GINGA_FORMATTER_END
 
-#endif /*CONVERTER_H_*/
+#endif // CONVERTER_H

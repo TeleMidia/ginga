@@ -22,7 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclEvents.h"
 #include "NclEventTransitionManager.h"
 #include "NclAction.h"
-#include "NclNodeNesting.h"
 
 #include "ncl/Ncl.h"
 using namespace ::ginga::ncl;
@@ -49,15 +48,12 @@ public:
   Node *getNode ();
   string getId ();
 
-  ExecutionObjectContext *getParentObject ();
-  ExecutionObjectContext *getParentObject (Node *node);
-  void addParentObject (ExecutionObjectContext *parentObject,
-                        Node *parentNode);
-  void addParentObject (Node *node,
-                        ExecutionObjectContext *parentObject,
-                        Node *parentNode);
-  virtual void removeParentObject (Node *parentNode,
-                                   ExecutionObjectContext *parentObject);
+  const vector <string> *getAliases ();
+  bool hasAlias (const string &);
+  bool addAlias (const string &);
+
+  ExecutionObjectContext *getParent ();
+  void initParent (ExecutionObjectContext *);
 
   virtual bool addEvent (NclEvent *event);
   void addPresentationEvent (PresentationEvent *event);
@@ -70,10 +66,6 @@ public:
   bool removeEvent (NclEvent *event);
   bool isCompiled ();
   void setCompiled (bool status);
-  vector<Node *> getNodes ();
-  Property *getNCMProperty (const string &propertyName);
-  NclNodeNesting *getNodePerspective ();
-  NclNodeNesting *getNodePerspective (Node *node);
   NclEvent *getMainEvent ();
 
   virtual bool prepare (NclEvent *event);
@@ -88,7 +80,6 @@ protected:
   PresentationEvent *_wholeContent;
   INclActionListener *_seListener;
 
-  map<Node *, ExecutionObjectContext *> _parentTable;
   map<string, NclEvent *> _events;
   vector<PresentationEvent *> _presEvents;
   set<SelectionEvent *> _selectionEvents;
@@ -99,7 +90,6 @@ protected:
 
 private:
   bool _isCompiled;
-  map<Node *, Node *> _nodeParentTable;
 
   // ------------------------------------------
 
@@ -117,10 +107,12 @@ protected:
   GingaInternal *_ginga;        // ginga handle
   Scheduler *_scheduler;        // scheduler
 
-  string _id;                   // object id
-  Player *_player;              // associated player
-  GingaTime _time;              // playback time
-  bool _destroying;             // true if object is being destroyed
+  string _id;                      // object id
+  vector<string> _aliases;         // aliases
+  ExecutionObjectContext *_parent; // parent object
+  Player *_player;                 // associated player
+  GingaTime _time;                 // playback time
+  bool _destroying;                // true if object is being destroyed
 };
 
 GINGA_FORMATTER_END

@@ -63,7 +63,8 @@ Port::initParent (Composition *parent)
 }
 
 /**
- * @brief Gets port component.
+ * @brief Gets target node.
+ * @return Node.
  */
 Node *
 Port::getNode ()
@@ -72,18 +73,20 @@ Port::getNode ()
 }
 
 /**
- * @brief Sets port component.
+ * @brief Initializes target node.
+ * @param node Node.
  */
 void
-Port::setNode (Node *comp)
+Port::initNode (Node *node)
 {
   g_assert_null (_node);
-  g_assert_nonnull (comp);
-  _node = comp;
+  g_assert_nonnull (node);
+  _node = node;
 }
 
 /**
- * @brief Gets port interface.
+ * @brief Gets target interface.
+ * @return Interface.
  */
 Anchor *
 Port::getInterface ()
@@ -92,10 +95,11 @@ Port::getInterface ()
 }
 
 /**
- * @brief Sets port interface.
+ * @brief Initializes target interface.
+ * @param iface Interface.
  */
 void
-Port::setInterface (Anchor *iface)
+Port::initInterface (Anchor *iface)
 {
   g_assert_null (_interface);
   g_assert_nonnull (iface);
@@ -103,8 +107,30 @@ Port::setInterface (Anchor *iface)
 }
 
 /**
- * @brief Gets final component.
+ * @brief Gets final targets.
+ * @param node Address of variable to store target node.
+ * @param iface Address of variable to store target interface.
  */
+void
+Port::getTarget (Node **node, Anchor **iface)
+{
+  if (node != nullptr)
+    {
+      Node *target = this->getFinalNode ();
+      g_assert_nonnull (target);
+      *node = target;
+    }
+  if (iface != nullptr)
+    {
+      Anchor *target = this->getFinalInterface ();
+      g_assert_nonnull (target);
+      *iface = target;
+    }
+}
+
+
+// Private.
+
 Node *
 Port::getFinalNode ()
 {
@@ -114,9 +140,6 @@ Port::getFinalNode ()
     return _node;
 }
 
-/**
- * @brief Gets final interface.
- */
 Anchor *
 Port::getFinalInterface ()
 {
@@ -124,24 +147,6 @@ Port::getFinalInterface ()
     return cast (Port *, _interface)->getFinalInterface ();
   else
     return _interface;
-}
-
-/**
- * @brief Gets list of nodes chained via port.
- */
-vector<Node *>
-Port::getMapNodeNesting ()
-{
-  vector<Node *> result;
-
-  result.push_back (_node);
-  if (!instanceof (Port *, _interface))
-    return result;
-
-  vector<Node *> aux = cast (Port *, _interface)->getMapNodeNesting ();
-  for (auto node: aux)
-    result.push_back (node);
-  return result;
 }
 
 GINGA_NCL_END
