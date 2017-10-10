@@ -62,7 +62,7 @@ public:
   vector<NclEvent *> getEvents ();
 
   PresentationEvent *getWholeContentPresentationEvent ();
-  bool removeEvent (NclEvent *event);
+  // bool removeEvent (NclEvent *event);
   bool isCompiled ();
   void setCompiled (bool status);
   NclEvent *getMainEvent ();
