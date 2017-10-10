@@ -194,8 +194,7 @@ ExecutionObjectContext::eventStateChanged (
     case EventStateTransition::START:
       if (_runningEvents.empty () && _pausedEvents.empty ())
         {
-          for (auto it: _parentTable)
-            _wholeContent->addListener (it.second);
+          _wholeContent->addListener (_parent);
           _wholeContent->start ();
         }
 

@@ -66,7 +66,6 @@ public:
   bool removeEvent (NclEvent *event);
   bool isCompiled ();
   void setCompiled (bool status);
-  vector<Node *> getNodes ();
   Property *getNCMProperty (const string &propertyName);
   NclEvent *getMainEvent ();
 
@@ -82,7 +81,6 @@ protected:
   PresentationEvent *_wholeContent;
   INclActionListener *_seListener;
 
-  map<Node *, ExecutionObjectContext *> _parentTable;
   map<string, NclEvent *> _events;
   vector<PresentationEvent *> _presEvents;
   set<SelectionEvent *> _selectionEvents;
@@ -93,7 +91,6 @@ protected:
 
 private:
   bool _isCompiled;
-  map<Node *, Node *> _nodeParentTable;
 
   // ------------------------------------------
 
