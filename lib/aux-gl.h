@@ -18,8 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef AUX_GL_H
 #define AUX_GL_H
 
-#define WITH_OPENGLES2 1
-
+#define WITH_OPENGLES2 0
 #if WITH_OPENGLES2
 # include <GLES2/gl2.h>
 # include <GLES2/gl2ext.h>
@@ -43,8 +42,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
   G_STMT_END
 
 class GL {
+
 public:
   static void init ();
+  static void beginDraw ();
+
   static void clear_scene (int w, int h);
 
   static void create_texture (GLuint *);
