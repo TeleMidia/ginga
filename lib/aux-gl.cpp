@@ -22,40 +22,36 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wimplicit-fallthrough)
 
 // OpenGL ------------------------------------------------------------------
 #if defined WITH_OPENGL && WITH_OPENGL
-auto vertexSource =
-    "#version 330\n"
-    "uniform vec2 winSize;\n"
-    "\n"
-    "in vec2 pos;\n"
-    "in vec4 color;\n"
-    "in vec2 texcoord;\n"
-    "\n"
-    "out vec4 f_color;\n"
-    "out vec2 f_texcoord;\n"
-    "void main() {\n"
-    "   gl_Position = vec4 ( (pos.x/winSize.x) * 2.0f - 1.0,\n"
-    "                        (pos.y/winSize.y) * -2.0f + 1.0f,\n"
-    "                        0.0,\n"
-    "                        1.0);\n"
-    "   f_texcoord = texcoord;\n"
-    "   f_color = color;\n"
-    "}\n";
+auto vertexSource = R"glsl(
+    uniform vec2 winSize;
+    in vec2 pos;
+    in vec4 color;
+    in vec2 texcoord;
 
-static auto fragmentSource =
-    "#version 330\n"
-    "uniform int use_tex;\n"
-    "uniform sampler2D tex;\n"
-    "\n"
-    "in vec4 f_color;\n"
-    "in vec2 f_texcoord;\n"
-    "\n"
-    "out vec4 outColor;\n"
-    "\n"
-    "void main() {\n"
-    "   vec4 t0 = texture2D(tex, f_texcoord);\n"
-    "   outColor = use_tex * t0 * f_color + "
-    "              (1.0-use_tex) * f_color;\n"
-    "}\n";
+    out vec4 f_color;
+    out vec2 f_texcoord;
+    void main() {
+       gl_Position = vec4 ( (pos.x/winSize.x) * 2.0f - 1.0,
+                            (pos.y/winSize.y) * -2.0f + 1.0f,
+                            0.0,
+                            1.0);
+      f_texcoord = texcoord;
+      f_color = color;
+    })glsl";
+
+static auto fragmentSource = R"glsl(
+    uniform int use_tex;
+    uniform sampler2D tex;
+
+    in vec4 f_color;
+    in vec2 f_texcoord;
+
+    out vec4 outColor;
+
+    void main() {
+       vec4 t0 = texture2D(tex, f_texcoord);
+       outColor = use_tex * t0 * f_color + (1.0-use_tex) * f_color;
+    })glsl";
 
 struct GLES2Ctx
 {
@@ -152,12 +148,12 @@ GL::init ()
   gles2ctx.vertexShader = glCreateShader (GL_VERTEX_SHADER);
   glShaderSource (gles2ctx.vertexShader, 1, &vertexSource, nullptr);
   glCompileShader (gles2ctx.vertexShader);
-  CHECK_SHADER_COMPILE_ERROR(gles2ctx.vertexShader);
+  CHECK_SHADER_COMPILE_ERROR (gles2ctx.vertexShader);
 
   gles2ctx.fragmentShader = glCreateShader (GL_FRAGMENT_SHADER);
   glShaderSource (gles2ctx.fragmentShader, 1, &fragmentSource, nullptr);
   glCompileShader (gles2ctx.fragmentShader);
-  CHECK_SHADER_COMPILE_ERROR(gles2ctx.fragmentShader);
+  CHECK_SHADER_COMPILE_ERROR (gles2ctx.fragmentShader);
 
   gles2ctx.shaderProgram = glCreateProgram ();
   glAttachShader (gles2ctx.shaderProgram, gles2ctx.vertexShader);
@@ -181,7 +177,7 @@ GL::init ()
       glDeleteShader (gles2ctx.vertexShader);
       glDeleteShader (gles2ctx.shaderProgram);
 
-      ERROR ("%s.", (const char *) &infoLog);
+      ERROR ("%s.", &infoLog[0]);
 
       return;
     }
