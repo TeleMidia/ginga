@@ -121,7 +121,6 @@ set (LIBGINGA_SOURCES
   ../lib/formatter/NclAction.cpp
   ../lib/formatter/NclCondition.cpp
   ../lib/formatter/NclEvents.cpp
-  ../lib/formatter/NclEventTransitionManager.cpp
   ../lib/formatter/NclLink.cpp
   ../lib/formatter/RuleAdapter.cpp
   ../lib/formatter/Scheduler.cpp
