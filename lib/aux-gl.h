@@ -19,6 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define AUX_GL_H
 
 #define WITH_OPENGLES2 0
+
+#define GL_GLEXT_PROTOTYPES 1
 #if WITH_OPENGLES2
 # include <GLES2/gl2.h>
 # include <GLES2/gl2ext.h>

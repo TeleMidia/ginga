@@ -21,7 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_PRAGMA_DIAG_IGNORE (-Wimplicit-fallthrough)
 
 // OpenGL ------------------------------------------------------------------
-# if defined WITH_OPENGLES2 && WITH_OPENGLES2
 auto vertexSource =
     "#version 330\n"
     "uniform vec2 winSize;\n"
@@ -94,7 +93,6 @@ static GLuint elements[] = {
   0, 1, 2,
   2, 3, 0
 };
-# endif
 
 /**
  * @brief GL::init Initiliazes the OpenGL context.
@@ -106,15 +104,20 @@ GL::init ()
   ERROR_NOT_IMPLEMENTED ("not compiled with OpenGL support");
 #else
 
-# if defined WITH_OPENGLES2 && WITH_OPENGLES2
   GLint isCompiled = 0;
-
-//  glGenVertexArrays (1, &gles2ctx.vao);
-//  glBindVertexArray (gles2ctx.vao);
 
   glGenBuffers (1, &gles2ctx.vbo);
   glBindBuffer (GL_ARRAY_BUFFER, gles2ctx.vbo);
   glBufferData (GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+#if ! (WITH_OPENGLES2)
+  glGenVertexArrays (1, &gles2ctx.vao);
+  glBindVertexArray (gles2ctx.vao);
+  glEnableVertexAttribArray (0);
+#endif
+
+  glBindBuffer (GL_ARRAY_BUFFER, gles2ctx.vbo);
+  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
   glGenBuffers (1, &gles2ctx.ebo);
   glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, gles2ctx.ebo);
@@ -201,7 +204,7 @@ GL::init ()
   glDetachShader (gles2ctx.shaderProgram, gles2ctx.fragmentShader);
 
   glUseProgram (gles2ctx.shaderProgram);
-# endif
+
   CHECK_GL_ERROR ();
 #endif
 }
@@ -209,7 +212,6 @@ GL::init ()
 void
 GL::beginDraw()
 {
-#if WITH_OPENGLES2
   if (!gles2ctx.shaderProgram)
     GL::init ();
 
@@ -226,7 +228,6 @@ GL::beginDraw()
   gles2ctx.texAttr = glGetAttribLocation (gles2ctx.shaderProgram, "texcoord");
   if (gles2ctx.texAttr < 0)
     WARNING ("Shader texcoord attribute not found.");
-#endif
 }
 
 /**
@@ -243,7 +244,6 @@ GL::clear_scene (int w, int h)
 
   CHECK_GL_ERROR ();
 
-# if WITH_OPENGLES2
   GLint loc = glGetUniformLocation (gles2ctx.shaderProgram, "winSize");
   g_assert (loc);
   glUniform2f (loc, (GLfloat) w, (GLfloat) h);
@@ -251,16 +251,6 @@ GL::clear_scene (int w, int h)
   glUniform1i (loc, 0);
 
   CHECK_GL_ERROR ();
-# else
-  glMatrixMode (GL_PROJECTION);
-  glLoadIdentity ();
-  glOrtho (0.0, w, h, 0.0, 0.0, 1.0);
-
-  glMatrixMode (GL_MODELVIEW);
-  glLoadIdentity();
-
-  CHECK_GL_ERROR ();
-# endif
 
   glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -268,8 +258,6 @@ GL::clear_scene (int w, int h)
   glEnable (GL_BLEND);
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glBlendEquation (GL_FUNC_ADD);
-
-  glEnable (GL_TEXTURE_2D);
 
   CHECK_GL_ERROR ();
 #endif
@@ -308,7 +296,7 @@ GL::create_texture (GLuint *gltex, int tex_w, int tex_h, unsigned char *data)
   ERROR_NOT_IMPLEMENTED ("not compiled with OpenGL support");
 #else
   create_texture (gltex);
-  glTexImage2D (GL_TEXTURE_2D, 0, 4,
+  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA,
                 tex_w, tex_h, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, data);
 
   CHECK_GL_ERROR ();
@@ -392,7 +380,6 @@ GL::draw_quad (int x, int y, int w, int h, GLuint gltex, GLfloat alpha)
 
   CHECK_GL_ERROR ();
 
-# if WITH_OPENGLES2
   GLint loc = glGetUniformLocation (gles2ctx.shaderProgram, "use_tex");
   glUniform1i (loc, 1);
 
@@ -424,7 +411,6 @@ GL::draw_quad (int x, int y, int w, int h, GLuint gltex, GLfloat alpha)
   vertices[3].v_color[2] = 1.0;
   vertices[3].v_color[3] = alpha;
 
-//  glBindVertexArray (gles2ctx.vao);
   glBindBuffer (GL_ARRAY_BUFFER, gles2ctx.vbo);
 //  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, gles2ctx.ebo);
 
@@ -453,15 +439,7 @@ GL::draw_quad (int x, int y, int w, int h, GLuint gltex, GLfloat alpha)
 
   // glDrawArrays (GL_TRIANGLES, 0, 3);
   glDrawElements (GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-# else
-  glColor4f (1.0f, 1.0f, 1.0f, alpha);
-  glBegin( GL_QUADS );
-    glTexCoord2d (0.0,0.0); glVertex2d (x, y);
-    glTexCoord2d (1.0,0.0); glVertex2d (x + w, y);
-    glTexCoord2d (1.0,1.0); glVertex2d (x + w, y + h);
-    glTexCoord2d (0.0,1.0); glVertex2d (x, y + h);
-  glEnd();
-# endif
+
   glBindTexture (GL_TEXTURE_2D, 0);
 
   CHECK_GL_ERROR ();
@@ -478,7 +456,6 @@ GL::draw_quad (int x, int y, int w, int h,
 #if ! (defined WITH_OPENGL && WITH_OPENGL)
   ERROR_NOT_IMPLEMENTED ("not compiled with OpenGL support");
 #else
-# if WITH_OPENGLES2
   GLint loc = glGetUniformLocation (gles2ctx.shaderProgram, "use_tex");
   glUniform1i (loc, 0);
 
@@ -513,15 +490,7 @@ GL::draw_quad (int x, int y, int w, int h,
   glBufferData (GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
   glDrawElements (GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-# else
-  glColor4f (r, g, b, a);
-  glBegin (GL_QUADS);
-    glVertex2d (x, y);
-    glVertex2d (x + w, y);
-    glVertex2d (x + w, y + h);
-    glVertex2d (x, y + h);
-  glEnd();
-# endif
+
   CHECK_GL_ERROR ();
 #endif
 }
