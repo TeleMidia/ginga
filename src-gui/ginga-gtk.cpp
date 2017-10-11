@@ -21,8 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 // Global formatter.
 Ginga *GINGA = nullptr;
 
-gchar* executableFolder;
-
 int
 main (int argc, char **argv)
 {
@@ -34,16 +32,13 @@ main (int argc, char **argv)
   GINGA = Ginga::create (argc, argv, &opts);
   g_assert_nonnull (GINGA);
   
-  executableFolder = g_strconcat (
-      g_get_current_dir (), g_path_get_dirname (argv[0]) + 1, NULL);
-  printf ("PATH: %s \n", executableFolder);
 
   gtk_init (&argc, &argv);
 
   setlocale (LC_ALL, "C");
   
   GError **error;
-  gtk_window_set_default_icon_from_file (g_build_path ( G_DIR_SEPARATOR_S, executableFolder,
+  gtk_window_set_default_icon_from_file (g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR,
                    "icons/common/ginga_icon.png", NULL), error);
   
   load_settings ();

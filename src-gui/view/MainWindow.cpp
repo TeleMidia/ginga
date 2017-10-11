@@ -102,10 +102,10 @@ apply_theme ()
 
   gchar *filename;
   if (presentationAttributes.guiTheme == 0)
-    filename = g_build_path (G_DIR_SEPARATOR_S, executableFolder,
+    filename = g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR,
                              "style/light.css", NULL);
   else
-    filename = g_build_path (G_DIR_SEPARATOR_S, executableFolder,
+    filename = g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR,
                              "style/dark.css", NULL);
 
   GFile *file = g_file_new_for_path (filename);
@@ -122,82 +122,82 @@ apply_theme ()
     }
 
   GtkWidget *img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, executableFolder, "icons",
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
                     get_icon_folder (), "play-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (playButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, executableFolder, "icons",
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
                     get_icon_folder (), "stop-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (stopButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, executableFolder, "icons",
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
                     get_icon_folder (), "fullscreen-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (fullscreenButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, executableFolder, "icons",
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
                     get_icon_folder (), "settings-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (settingsButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, executableFolder, "icons",
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
                     get_icon_folder (), "remote-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (remoteButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, executableFolder, "icons",
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
                     get_icon_folder (), "debug-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (debugButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, executableFolder, "icons",
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
                     get_icon_folder (), "openfile-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (openButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, executableFolder, "icons",
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
                     get_icon_folder (), "history-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (histButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, executableFolder, "icons",
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
                     get_icon_folder (), "tools-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (toolsButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, executableFolder, "icons",
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
                     get_icon_folder (), "info-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (aboutButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, executableFolder, "icons",
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
                     get_icon_folder (), "question-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (helpButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, executableFolder, "icons",
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
                     get_icon_folder (), "question-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (helpButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, executableFolder, "icons",
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
                     get_icon_folder (), "screen-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (bigpictureButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, executableFolder, "icons",
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
                     get_icon_folder (), "bottomhide-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (consoleHideButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, executableFolder, "icons",
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
                     get_icon_folder (), "rightride-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (sidebarHideButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, executableFolder, "icons",
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
                     get_icon_folder (), "window-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (sidebarWinButton), img_icon);
 
@@ -992,7 +992,7 @@ stop_button_callback (void)
 {
   inPlayMode = false;
   GtkWidget *play_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, executableFolder, "icons",
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
                     get_icon_folder (), "play-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (playButton), play_icon);
   gtk_widget_set_sensitive (fileEntry, true);
@@ -1007,7 +1007,7 @@ play_pause_button_callback (void)
 {
   inPlayMode = !inPlayMode;
   GtkWidget *play_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, executableFolder, "icons",
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
                     get_icon_folder (), "play-icon.png", NULL));
   if (inPlayMode)
     {
@@ -1022,7 +1022,7 @@ play_pause_button_callback (void)
         }
 
       play_icon = gtk_image_new_from_file (
-          g_build_path (G_DIR_SEPARATOR_S, executableFolder, "icons",
+          g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
                         get_icon_folder (), "pause-icon.png", NULL));
       gtk_widget_set_sensitive (fileEntry, false);
       gtk_widget_set_sensitive (openButton, false);

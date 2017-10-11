@@ -66,6 +66,8 @@
 /src-gui/Makefile
 /src-gui/Makefile.in
 /src-gui/gingagui
+/src-gui/icons/Makefile
+/src-gui/icons/Makefile.in
 /src/Makefile
 /src/Makefile.in
 /src/ginga
