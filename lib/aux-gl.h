@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #if defined WITH_OPENGL && WITH_OPENGL
 # define GL_GLEXT_PROTOTYPES 1
-# if WITH_OPENGLES2
+# if defined WITH_OPENGLES2 && WITH_OPENGLES2
 #   include <GLES2/gl2.h>
 #   include <GLES2/gl2ext.h>
 # else
@@ -30,7 +30,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 # define WITH_OPENGLES2 0
 #else
 typedef unsigned int    GLuint;
-typedef float		GLfloat;
+typedef float           GLfloat;
 #endif
 
 #include "ginga.h"

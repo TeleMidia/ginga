@@ -109,7 +109,7 @@ static GLuint elements[] = {
       glGetShaderInfoLog (SHADER, maxLength,                    \
                           &maxLength, &errorLog[0]);            \
                                                                 \
-      ERROR ("%s.", maxLength, &errorLog[0]);                   \
+      ERROR ("%d %s.", maxLength, &errorLog[0]);                \
                                                                 \
       glDeleteShader (SHADER);                                  \
       return;                                                   \
@@ -181,7 +181,7 @@ GL::init ()
       glDeleteShader (gles2ctx.vertexShader);
       glDeleteShader (gles2ctx.shaderProgram);
 
-      ERROR ("%s.", &infoLog);
+      ERROR ("%s.", (const char *) &infoLog);
 
       return;
     }
