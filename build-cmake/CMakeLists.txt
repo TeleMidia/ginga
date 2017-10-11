@@ -1,10 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
 project(ginga)
 
-option (WITH_CEF "Build with chromium embedded support." OFF)
-option (WITH_OPENGL "Build Ginga with opengl." ON)
-option (WITH_RUNVIEW "Build nclcomposer's ginga plugin." OFF)
-
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 
 # Defaul C++ params
@@ -40,7 +36,7 @@ find_package (SDL2_image)
 find_package (OpenGL)
 
 if (OPENGL_FOUND)
-  add_definitions (-DWITH_OPENGL=1)
+  set (WITH_OPENGL ON)
 else ()
   set (WITH_OPENGL OFF) # OpenGL not found, turn it off
 endif()
@@ -49,6 +45,14 @@ find_package(GTK3)
 if (GTK3_FOUND)
   set (WITH_GINGAGUI_GTK ON)
 endif()
+
+option (WITH_CEF "Build with chromium embedded support." OFF)
+option (WITH_OPENGL "Build Ginga with opengl." ON)
+option (WITH_RUNVIEW "Build nclcomposer's ginga plugin." OFF)
+
+if (WITH_OPENGL)
+  add_definitions (-DWITH_OPENGL=1)
+endif ()
 
 # NCLUA download/configure/build/install
 include(ExternalProject)
@@ -280,7 +284,6 @@ if (WITH_OPENGL)
     ${SDL2_LIBRARY}
     ${SDL2_IMAGE_LIBRARIES}
   )
-
 endif ()
 
 # gingagui target
