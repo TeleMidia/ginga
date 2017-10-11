@@ -18,15 +18,19 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef AUX_GL_H
 #define AUX_GL_H
 
-#define WITH_OPENGLES2 0
-
-#define GL_GLEXT_PROTOTYPES 1
-#if WITH_OPENGLES2
-# include <GLES2/gl2.h>
-# include <GLES2/gl2ext.h>
+#if defined WITH_OPENGL && WITH_OPENGL
+# define GL_GLEXT_PROTOTYPES 1
+# if WITH_OPENGLES2
+#   include <GLES2/gl2.h>
+#   include <GLES2/gl2ext.h>
+# else
+#   include <GL/gl.h>
+#   include <GL/glext.h>
+# endif
+# define WITH_OPENGLES2 0
 #else
-# include <GL/gl.h>
-# include <GL/glext.h>
+typedef unsigned int    GLuint;
+typedef float		GLfloat;
 #endif
 
 #include "ginga.h"
@@ -59,7 +63,8 @@ public:
   static void update_subtexture (GLuint, int, int, int, int, unsigned char *);
 
   static void draw_quad (int, int, int, int, GLuint, GLfloat a = 1.0f);
-  static void draw_quad (int, int, int, int, GLfloat, GLfloat, GLfloat, GLfloat);
+  static void draw_quad (int, int, int, int,
+                         GLfloat, GLfloat, GLfloat, GLfloat);
 };
 
 #endif // AUX_GINGA_H
