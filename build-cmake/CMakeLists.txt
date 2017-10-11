@@ -33,6 +33,8 @@ find_package (RSVG REQUIRED)
 find_package (GStreamer REQUIRED)
 add_definitions (-DWITH_PANGO=1 -DWITH_GSTREAMER=1)
 
+find_package (Lua REQUIRED)
+
 find_package (SDL2)
 find_package (SDL2_image)
 find_package (OpenGL)
@@ -65,9 +67,10 @@ ExternalProject_Add(nclua_build
   INSTALL_COMMAND make install
 )
 
-ExternalProject_Get_Property(nclua_build install_dir)
-set(NCLUA_INCLUDE_DIRS "${install_dir}/include")
-link_directories("${install_dir}/lib")
+ExternalProject_Get_Property (nclua_build install_dir)
+set (NCLUA_INCLUDE_DIRS "${install_dir}/include")
+set (NCLUA_LIBRARY "${install_dir}/lib/libnclua.a")
+link_directories ("${install_dir}/lib")
 #end NCLUA
 
 if (WITH_CEF) # Download, link, build with CEF
@@ -205,7 +208,8 @@ set (LIBGINGA_LIBS
   ${GSTREAMER_APP_LIBRARIES}
   ${GSTREAMER_VIDEO_LIBRARIES}
 
-  nclua
+  ${NCLUA_LIBRARY}
+  ${LUA_LIBRARIES}
 )
 
 if (WITH_OPENGL)
@@ -263,15 +267,15 @@ add_executable (ginga ../src/ginga.cpp)
 target_include_directories (ginga PRIVATE ${GTK3_INCLUDE_DIRS})
 target_link_libraries (ginga PRIVATE libginga ${GTK3_LIBRARIES})
 
-# gingagl target
+# ginga-gl target
 if (WITH_OPENGL)
-  add_executable (gingagl ../src/ginga-gl.cpp)
+  add_executable (ginga-gl ../src/ginga-gl.cpp)
 
-  target_include_directories (gingagl PRIVATE
+  target_include_directories (ginga-gl PRIVATE
     ${SDL2_INCLUDE_DIR}
   )
 
-  target_link_libraries (gingagl PRIVATE
+  target_link_libraries (ginga-gl PRIVATE
     libginga
     ${SDL2_LIBRARY}
     ${SDL2_IMAGE_LIBRARIES}
