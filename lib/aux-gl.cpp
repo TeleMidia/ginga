@@ -177,7 +177,7 @@ GL::init ()
       glDeleteShader (gles2ctx.vertexShader);
       glDeleteShader (gles2ctx.shaderProgram);
 
-      ERROR ("%s.", (const char *) &infoLog);
+      ERROR ("%s.", &infoLog[0]);
 
       return;
     }
