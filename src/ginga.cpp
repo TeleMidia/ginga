@@ -26,9 +26,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #if defined WITH_OPENGL && WITH_OPENGL
 PRAGMA_DIAG_IGNORE (-Wunused-macros)
 PRAGMA_DIAG_IGNORE (-Wvariadic-macros)
-# define __GL_SYNC_TO_VBLANK 1
-# include <EGL/egl.h>
-# include <GLES2/gl2.h>
 #endif
 
 #include "ginga.h"
@@ -144,9 +141,7 @@ _error (gboolean try_help, const gchar *format, ...)
 static gboolean
 render_gl_callback (unused (GtkGLArea *area), unused (GdkGLContext *ctx))
 {
-  glClearColor (1., 0., 0., 0.);
-  glClear (GL_COLOR_BUFFER_BIT);
-  // GINGA->redraw (nullptr);
+  GINGA->redraw (nullptr);
   return TRUE;
 }
 
