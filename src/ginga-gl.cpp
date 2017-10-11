@@ -22,25 +22,18 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-glib.h"
 #include <cairo.h>
-#include <SDL2/SDL.h>
-#define GL_GLEXT_PROTOTYPES 1
-#include <SDL2/SDL_opengles2.h>
 
 PRAGMA_DIAG_IGNORE (-Wunused-macros)
 PRAGMA_DIAG_IGNORE (-Wvariadic-macros)
-#define __GL_SYNC_TO_VBLANK 1
-#include <EGL/egl.h>
-#include <GLES2/gl2.h>
+
+#define GL_GLEXT_PROTOTYPES 1
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_opengles2.h>
 
 #include "ginga.h"
+#include "aux-gl.h"
 
 using namespace ::std;
-
-Display* getDisplay();
-void createAndShowWindow (int width, int height,
-                          Window* window,
-                          cairo_device_t** cairoDevice,
-                          cairo_surface_t** windowSurface);
 
 // Global formatter.
 static Ginga *GINGA = nullptr;
@@ -216,9 +209,9 @@ main (int argc, char **argv)
       exit (EXIT_FAILURE);
     }
 
-  SDL_Init(SDL_INIT_VIDEO);              // Initialize SDL2
+  SDL_Init (SDL_INIT_VIDEO);              // Initialize SDL2
 
-  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
 
   // Create an application window with the following settings:
   window = SDL_CreateWindow (
