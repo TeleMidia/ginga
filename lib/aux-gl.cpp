@@ -23,6 +23,7 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wimplicit-fallthrough)
 // OpenGL ------------------------------------------------------------------
 #if defined WITH_OPENGL && WITH_OPENGL
 auto vertexSource = R"glsl(
+    #version 330 core
     uniform vec2 winSize;
     in vec2 pos;
     in vec4 color;
@@ -40,6 +41,7 @@ auto vertexSource = R"glsl(
     })glsl";
 
 static auto fragmentSource = R"glsl(
+    #version 330 core
     uniform int use_tex;
     uniform sampler2D tex;
 
