@@ -234,7 +234,7 @@ GL::clear_scene (int w, int h)
   CHECK_GL_ERROR ();
 
   GLint loc = glGetUniformLocation (gles2ctx.shaderProgram, "winSize");
-  g_assert (loc);
+  g_assert (loc != -1);
   glUniform2f (loc, (GLfloat) w, (GLfloat) h);
   loc = glGetUniformLocation (gles2ctx.shaderProgram, "use_tex");
   glUniform1i (loc, 0);
