@@ -94,6 +94,31 @@ static GLuint elements[] = {
   2, 3, 0
 };
 
+#define CHECK_SHADER_COMPILE_ERROR(SHADER)                      \
+  G_STMT_START                                                  \
+  {                                                             \
+    GLint isCompiled = 0;                                       \
+    glGetShaderiv (SHADER, GL_COMPILE_STATUS, &isCompiled);     \
+    if (isCompiled == GL_FALSE)                                 \
+     {                                                          \
+      GLint maxLength = 0;                                      \
+      glGetShaderiv (SHADER, GL_INFO_LOG_LENGTH, &maxLength);   \
+      std::vector<GLchar> errorLog (maxLength);                 \
+      glGetShaderInfoLog (SHADER, maxLength,                    \
+                          &maxLength, &errorLog[0]);            \
+                                                                \
+      ERROR ("%s.", maxLength, &errorLog[0]);                   \
+                                                                \
+      glDeleteShader (SHADER);                                  \
+      return;                                                   \
+    }                                                           \
+  else                                                          \
+    {                                                           \
+      TRACE ("Shader compiled with success.");                  \
+    }                                                           \
+  }                                                             \
+  G_STMT_END
+
 /**
  * @brief GL::init Initiliazes the OpenGL context.
  */
@@ -103,8 +128,6 @@ GL::init ()
 #if ! (defined WITH_OPENGL && WITH_OPENGL)
   ERROR_NOT_IMPLEMENTED ("not compiled with OpenGL support");
 #else
-
-  GLint isCompiled = 0;
 
   glGenBuffers (1, &gles2ctx.vbo);
   glBindBuffer (GL_ARRAY_BUFFER, gles2ctx.vbo);
@@ -127,54 +150,19 @@ GL::init ()
   gles2ctx.vertexShader = glCreateShader (GL_VERTEX_SHADER);
   glShaderSource (gles2ctx.vertexShader, 1, &vertexSource, nullptr);
   glCompileShader (gles2ctx.vertexShader);
-
-  glGetShaderiv (gles2ctx.vertexShader, GL_COMPILE_STATUS, &isCompiled);
-  if (isCompiled == GL_FALSE)
-    {
-      GLint maxLength = 0;
-      glGetShaderiv (gles2ctx.vertexShader, GL_INFO_LOG_LENGTH, &maxLength);
-      std::vector<GLchar> errorLog (maxLength);
-      glGetShaderInfoLog (gles2ctx.vertexShader, maxLength, &maxLength,
-                          &errorLog[0]);
-
-      ERROR ("1. %d %s.", maxLength, &errorLog[0]);
-
-      glDeleteShader (gles2ctx.vertexShader);
-      return;
-    }
-  else
-    {
-      TRACE ("Vertex shader compiled with success.");
-    }
+  CHECK_SHADER_COMPILE_ERROR(gles2ctx.vertexShader);
 
   gles2ctx.fragmentShader = glCreateShader (GL_FRAGMENT_SHADER);
   glShaderSource (gles2ctx.fragmentShader, 1, &fragmentSource, nullptr);
   glCompileShader (gles2ctx.fragmentShader);
-  glGetShaderiv (gles2ctx.fragmentShader, GL_COMPILE_STATUS, &isCompiled);
-  if (isCompiled == GL_FALSE)
-    {
-      GLint maxLength = 0;
-      glGetShaderiv (gles2ctx.fragmentShader, GL_INFO_LOG_LENGTH, &maxLength);
-      std::vector<GLchar> errorLog (maxLength);
-      glGetShaderInfoLog (gles2ctx.fragmentShader, maxLength, &maxLength,
-                          &errorLog[0]);
-
-      ERROR ("2. %s.", &errorLog);
-
-      glDeleteShader(gles2ctx.fragmentShader);
-      return;
-    }
-  else
-    {
-      TRACE ("Fragment shader compiled with success.");
-    }
+  CHECK_SHADER_COMPILE_ERROR(gles2ctx.fragmentShader);
 
   gles2ctx.shaderProgram = glCreateProgram ();
   glAttachShader (gles2ctx.shaderProgram, gles2ctx.vertexShader);
   glAttachShader (gles2ctx.shaderProgram, gles2ctx.fragmentShader);
   glLinkProgram (gles2ctx.shaderProgram);
 
-  //Note the different functions here: glGetProgram* instead of glGetShader*.
+  // Checks if the program is linked correctly.
   GLint isLinked = 0;
   glGetProgramiv (gles2ctx.shaderProgram, GL_LINK_STATUS, (int *)&isLinked);
   if(isLinked == GL_FALSE)
@@ -182,15 +170,12 @@ GL::init ()
       GLint maxLength = 0;
       glGetProgramiv (gles2ctx.shaderProgram, GL_INFO_LOG_LENGTH, &maxLength);
 
-      //The maxLength includes the NULL character
       std::vector<GLchar> infoLog(maxLength);
       glGetProgramInfoLog (gles2ctx.shaderProgram, maxLength, &maxLength,
                            &infoLog[0]);
 
-      //We don't need the program anymore.
       glDeleteProgram (gles2ctx.shaderProgram);
 
-      //Don't leak shaders either.
       glDeleteShader (gles2ctx.vertexShader);
       glDeleteShader (gles2ctx.shaderProgram);
 
@@ -199,11 +184,9 @@ GL::init ()
       return;
     }
 
-  //Always detach shaders after a successful link.
+  // Always detach shaders after a successful link.
   glDetachShader (gles2ctx.shaderProgram, gles2ctx.vertexShader);
   glDetachShader (gles2ctx.shaderProgram, gles2ctx.fragmentShader);
-
-  glUseProgram (gles2ctx.shaderProgram);
 
   CHECK_GL_ERROR ();
 #endif
