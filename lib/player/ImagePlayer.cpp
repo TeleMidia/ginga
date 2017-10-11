@@ -72,12 +72,13 @@ cairox_surface_create_from_file (const char *path, cairo_surface_t **dup)
 void
 ImagePlayer::reload ()
 {
+
   cairo_status_t status;
 
   if (_surface != nullptr)
     {
       cairo_surface_destroy (_surface);
-      if (_opengl)
+      if (_opengl && _gltexture)
         GL::delete_texture (&_gltexture);
     }
 
