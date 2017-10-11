@@ -17,11 +17,13 @@
 # along with Ginga.  If not, see <http://www.gnu.org/licenses/>.
 
 AC_PREREQ([2.62])
+
+AU_GIT_VERSION_GEN([ginga])
 AC_INIT([Ginga],
- [0.13.6],
+  ginga_version_string,
  [bugs@telemidia.puc-rio.br],
  [ginga],
- [http://www.telemidia.puc-rio.br])
+ [http://github.com/TeleMidia/ginga])
 
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([build-aux])
@@ -34,9 +36,20 @@ AM_SILENT_RULES([yes])
 AM_PROG_AR
 LT_PREREQ([2.2])
 LT_INIT([win32-dll])
+AU_LIBTOOL_MODULE_LDFLAGS
 
 # Ginga version.
-AC_DEFINE_UNQUOTED([VERSION], ["$PACKAGE_VERSION"], [Ginga version.])
+AC_SUBST([GINGA_VERSION_MAJOR], ginga_version_major)
+AC_SUBST([GINGA_VERSION_MINOR], ginga_version_minor)
+AC_SUBST([GINGA_VERSION_MICRO], ginga_version_micro)
+AC_SUBST([GINGA_VERSION_STRING], ginga_version_string)
+
+# Libginga version.
+# - library code modified:            REVISION++
+# - interfaces changed/added/removed: REVISION=0, CURRENT++
+# - interfaces added:                 AGE++
+# - interfaces removed:               AGE=0
+AU_LIBTOOL_VERSION([GINGA], [0], [0], [0])
 
 # Required dependencies version.
 m4_define([cairo_required_version],      [1.10.2])
@@ -251,6 +264,7 @@ AC_SUBST([GINGA_ALL_LDFLAGS])
 AC_CONFIG_FILES([
 Makefile
 lib/Makefile
+lib/ginga.pc
 src/Makefile
 src-gui/Makefile
 tests-ncl/Makefile

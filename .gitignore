@@ -60,6 +60,7 @@
 /lib/Makefile.in
 /lib/config.h
 /lib/config.h.in
+/lib/ginga.pc
 /lib/stamp-h1
 /libtool
 /src-gui/Makefile
