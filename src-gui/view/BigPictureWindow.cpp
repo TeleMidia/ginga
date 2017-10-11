@@ -203,7 +203,7 @@ create_bigpicture_window ()
     return;
 
   cairo_surface_t *image_p = cairo_image_surface_create_from_png (
-      g_strconcat (executableFolder, "icons/common/pattern_1.png", NULL));
+      g_strconcat (GINGADATADIR, "icons/common/pattern_1.png", NULL));
   g_assert_nonnull (image_p);
   background_pattern = cairo_pattern_create_for_surface (image_p);
   cairo_pattern_set_extend (background_pattern, CAIRO_EXTEND_REPEAT);
@@ -238,7 +238,7 @@ create_bigpicture_window ()
       bigPictureCard[i].animate = FALSE;
 
       bigPictureCard[i].surface = cairo_image_surface_create_from_png (
-          g_strconcat (executableFolder, "icons/cover.png", NULL));
+          g_strconcat (GINGADATADIR, "icons/cover.png", NULL));
 
       if (i % 5 == 0)
         {

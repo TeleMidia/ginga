@@ -260,6 +260,12 @@ AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $PANGO_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $XERCESC_LIBS"])
 AC_SUBST([GINGA_ALL_LDFLAGS])
 
+# Directories.
+gingadatadir="$datadir/$PACKAGE"
+gingasysconfdir="$sysconfdir/$PACKAGE"
+AC_SUBST([gingadatadir])
+AC_SUBST([gingasysconfdir])
+
 # Epilogue.
 AC_CONFIG_FILES([
 Makefile
@@ -267,6 +273,7 @@ lib/Makefile
 lib/ginga.pc
 src/Makefile
 src-gui/Makefile
+src-gui/icons/Makefile
 tests-ncl/Makefile
 tests/Makefile
 ])
