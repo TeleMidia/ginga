@@ -47,7 +47,7 @@ if (GTK3_FOUND)
 endif()
 
 option (WITH_CEF "Build with chromium embedded support." OFF)
-option (WITH_OPENGL "Build Ginga with opengl." ON)
+option (WITH_OPENGL "Build Ginga with opengl." OFF)
 option (WITH_RUNVIEW "Build nclcomposer's ginga plugin." OFF)
 
 if (WITH_OPENGL)
