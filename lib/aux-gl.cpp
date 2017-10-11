@@ -21,6 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_PRAGMA_DIAG_IGNORE (-Wimplicit-fallthrough)
 
 // OpenGL ------------------------------------------------------------------
+#if defined WITH_OPENGL && WITH_OPENGL
 auto vertexSource =
     "#version 330\n"
     "uniform vec2 winSize;\n"
@@ -93,6 +94,7 @@ static GLuint elements[] = {
   0, 1, 2,
   2, 3, 0
 };
+#endif
 
 #define CHECK_SHADER_COMPILE_ERROR(SHADER)                      \
   G_STMT_START                                                  \
@@ -195,6 +197,9 @@ GL::init ()
 void
 GL::beginDraw()
 {
+#if ! (defined WITH_OPENGL && WITH_OPENGL)
+  ERROR_NOT_IMPLEMENTED ("not compiled with OpenGL support");
+#else
   if (!gles2ctx.shaderProgram)
     GL::init ();
 
@@ -211,6 +216,7 @@ GL::beginDraw()
   gles2ctx.texAttr = glGetAttribLocation (gles2ctx.shaderProgram, "texcoord");
   if (gles2ctx.texAttr < 0)
     WARNING ("Shader texcoord attribute not found.");
+#endif
 }
 
 /**
