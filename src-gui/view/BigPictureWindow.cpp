@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga_gtk.h"
+#include "aux-glib.h"
 #include "BigPictureWindow.h"
 
 GList *cards_list = NULL;
@@ -30,7 +31,7 @@ gdouble mid = 0;
 gdouble speed = 1500.0; /* pixels/s */
 gdouble frameRate = 1.000 / 60.0;
 
-gint numCards = 20;
+guint numCards = 20;
 gdouble cardWidth = 300;
 gdouble cardHeight = 169;
 
@@ -78,7 +79,8 @@ update_bigpicture_callback (GtkWidget *widget)
 }
 
 void
-draw_bigpicture_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
+draw_bigpicture_callback (GtkWidget *widget, cairo_t *cr,
+                          unused (gpointer data))
 {
 
   int w, h;
@@ -167,7 +169,7 @@ carrousel_rotate (gint dir)
   else if (dir > 0)
     currentCard--;
 
-  if (dir < 0 && currentCard == numCards - 1)
+  if (dir < 0 && currentCard == (gint)(numCards) - 1)
     return;
   else if (dir < 0)
     currentCard++;

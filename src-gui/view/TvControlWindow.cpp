@@ -16,12 +16,13 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga_gtk.h"
+#include "aux-glib.h"
 
 GtkWidget *tvcontrolWindow = NULL;
 gboolean tvcontrolAsSidebar = TRUE;
 
 void
-key_tvremote_press_event_callback (GtkWidget *widget, gpointer data)
+key_tvremote_press_event_callback (GtkWidget *widget, unused (gpointer data))
 {
   const gchar *widget_name = gtk_widget_get_name (widget);
   GINGA->sendKeyEvent (std::string (widget_name), true);
@@ -31,7 +32,6 @@ GtkWidget *
 create_tvremote_buttons (guint offSetX, guint offSetY)
 {
   guint16 control_width = (BUTTON_SIZE * 4);
-  guint16 control_height = (BUTTON_SIZE * 11);
   guint16 middle_button_pos = (control_width / 2) - (BUTTON_SIZE / 2);
 
   GtkWidget *fixed_layout = gtk_fixed_new ();
