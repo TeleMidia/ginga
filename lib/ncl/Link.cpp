@@ -132,7 +132,7 @@ Link::contains (Node *node, bool condition)
       if ((iface = bind->getInterface ()) != nullptr
           && instanceof (Port *, iface))
         {
-          cast (Port *, iface)->getTarget (&node, nullptr);
+          cast (Port *, iface)->getTarget (&bound, nullptr);
         }
       else
         {
