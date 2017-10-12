@@ -100,22 +100,22 @@ static GLuint elements[] = {
     GLint isCompiled = 0;                                       \
     glGetShaderiv (SHADER, GL_COMPILE_STATUS, &isCompiled);     \
     if (isCompiled == GL_FALSE)                                 \
-     {                                                          \
-      GLint maxLength = 0;                                      \
-      glGetShaderiv (SHADER, GL_INFO_LOG_LENGTH, &maxLength);   \
-      std::vector<GLchar> errorLog (maxLength);                 \
-      glGetShaderInfoLog (SHADER, maxLength,                    \
-                          &maxLength, &errorLog[0]);            \
+      {                                                         \
+        GLint maxLength = 0;                                    \
+        glGetShaderiv (SHADER, GL_INFO_LOG_LENGTH, &maxLength); \
+        std::vector<GLchar> errorLog ((GLuint) maxLength);      \
+        glGetShaderInfoLog (SHADER, maxLength,                  \
+                            &maxLength, &errorLog[0]);          \
                                                                 \
-      ERROR ("%d %s.", maxLength, &errorLog[0]);                \
+        ERROR ("%d %s.", maxLength, &errorLog[0]);              \
                                                                 \
-      glDeleteShader (SHADER);                                  \
-      return;                                                   \
-    }                                                           \
-  else                                                          \
-    {                                                           \
-      TRACE ("Shader compiled with success.");                  \
-    }                                                           \
+        glDeleteShader (SHADER);                                \
+        return;                                                 \
+      }                                                         \
+    else                                                        \
+      {                                                         \
+        TRACE ("Shader compiled with success.");                \
+      }                                                         \
   }                                                             \
   G_STMT_END
 
@@ -170,7 +170,7 @@ GL::init ()
       GLint maxLength = 0;
       glGetProgramiv (gles2ctx.shaderProgram, GL_INFO_LOG_LENGTH, &maxLength);
 
-      std::vector<GLchar> infoLog(maxLength);
+      std::vector<GLchar> infoLog ((GLuint) maxLength);
       glGetProgramInfoLog (gles2ctx.shaderProgram, maxLength, &maxLength,
                            &infoLog[0]);
 

@@ -390,7 +390,6 @@ ExecutionObject::handleTickEvent (unused (GingaTime total),
                                   GingaTime diff,
                                   unused (int frame))
 {
-  GingaTime now;
   GingaTime dur;
 
   if (_player == nullptr)
@@ -438,14 +437,16 @@ ExecutionObject::handleTickEvent (unused (GingaTime total),
           && evt->getBegin () <= _time)
         {
           TRACE ("%s.%s timed-out at %" GINGA_TIME_FORMAT,
-                 _id.c_str(), evt->getId ().c_str (), GINGA_TIME_ARGS (now));
+                 _id.c_str(), evt->getId ().c_str (),
+                 GINGA_TIME_ARGS (time));
           evt->start ();
         }
       else if (evt->getCurrentState () == EventState::OCCURRING
                && evt->getEnd () <= _time)
         {
           TRACE ("%s.%s timed-out at %" GINGA_TIME_FORMAT,
-                 _id.c_str(), evt->getId ().c_str (), GINGA_TIME_ARGS (now));
+                 _id.c_str(), evt->getId ().c_str (),
+                 GINGA_TIME_ARGS (time));
           evt->stop ();
         }
     }
