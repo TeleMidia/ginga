@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga_gtk.h"
+#include "aux-glib.h"
 
 GtkWidget *mainWindow = NULL;
 GtkWidget *gingaView = NULL;
@@ -209,7 +210,7 @@ apply_theme ()
   update_window ();
 }
 void
-aspect_combobox_changed (GtkComboBox *widget, gpointer user_data)
+aspect_combobox_changed (GtkComboBox *widget, unused (gpointer user_data))
 {
   presentationAttributes.aspectRatio = gtk_combo_box_get_active (widget);
 
@@ -217,7 +218,7 @@ aspect_combobox_changed (GtkComboBox *widget, gpointer user_data)
 }
 
 void
-theme_combobox_changed (GtkComboBox *widget, gpointer user_data)
+theme_combobox_changed (GtkComboBox *widget, unused (gpointer user_data))
 {
   presentationAttributes.guiTheme = gtk_combo_box_get_active (widget);
 
@@ -381,7 +382,7 @@ insert_historicbox (gchar *filename)
 
 void
 select_historic_line (GtkListBox *box, GtkListBoxRow *row,
-                      gpointer user_data)
+                      unused (gpointer user_data) )
 {
   GtkLabel *label = (GtkLabel *)gtk_bin_get_child (GTK_BIN (row));
   gchar *label_text = g_strdup (gtk_label_get_text (label));
@@ -396,9 +397,9 @@ select_historic_line (GtkListBox *box, GtkListBoxRow *row,
 }
 
 void
-keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
+keyboard_callback (unused (GtkWidget *widget), GdkEventKey *e, gpointer type)
 {
-  const char *key;
+  const char *key = "\0";
   gboolean free_key = FALSE;
 
   switch (e->keyval)
@@ -946,7 +947,7 @@ enable_disable_debug (void)
 }
 
 void
-select_ncl_file_callback (GtkWidget *widget, gpointer data)
+select_ncl_file_callback (unused (GtkWidget *widget), unused (gpointer data))
 {
   GtkWidget *dialog = gtk_file_chooser_dialog_new (
       "Open File", GTK_WINDOW (mainWindow), GTK_FILE_CHOOSER_ACTION_OPEN,
