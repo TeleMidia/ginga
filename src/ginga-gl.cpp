@@ -211,6 +211,9 @@ main (int argc, char **argv)
 
   SDL_Init (SDL_INIT_VIDEO);              // Initialize SDL2
 
+  SDL_GL_SetAttribute (SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute (SDL_GL_CONTEXT_MINOR_VERSION, 2);
+
   SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
 
   // Create an application window with the following settings:
