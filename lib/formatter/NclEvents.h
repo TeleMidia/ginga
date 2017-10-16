@@ -169,16 +169,6 @@ public:
       EventState prevState) override;
 };
 
-class EventTransition
-{
-  PROPERTY_READONLY (PresentationEvent *, _evt, getEvent)
-  PROPERTY_READONLY (GingaTime, _time, getTime)
-
-public:
-  EventTransition (GingaTime time, PresentationEvent *evt);
-  virtual ~EventTransition () {}
-};
-
 GINGA_FORMATTER_END
 
 #endif // NCL_EVENTS_H
