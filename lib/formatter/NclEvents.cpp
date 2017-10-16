@@ -156,7 +156,6 @@ PresentationEvent::PresentationEvent (GingaInternal *ginga,
                                       Area *anchor)
   : AnchorEvent (ginga, id, exeObj, anchor)
 {
-  _numPresentations = 1;
   _type = EventType::PRESENTATION;
 
   auto intervalAnchor = cast (Area *, anchor);
@@ -170,17 +169,6 @@ PresentationEvent::PresentationEvent (GingaInternal *ginga,
       _begin = 0;
       _end = GINGA_TIME_NONE;
     }
-}
-
-bool
-PresentationEvent::stop ()
-{
-  if (_state == EventState::OCCURRING && _numPresentations > 1)
-    {
-      _numPresentations--;
-    }
-
-  return NclEvent::stop ();
 }
 
 GingaTime
@@ -197,11 +185,21 @@ PresentationEvent::getDuration ()
 SelectionEvent::SelectionEvent (GingaInternal *ginga,
                                 const string &id,
                                 ExecutionObject *exeObj,
-                                Area *anchor)
+                                Area *anchor, const string &key)
   : AnchorEvent (ginga, id, exeObj, anchor)
 {
   _type = EventType::SELECTION;
-  _selCode.assign ("NO_CODE");
+  _key = key;
+}
+
+SelectionEvent::~SelectionEvent ()
+{
+}
+
+string
+SelectionEvent::getKey ()
+{
+  return _key;
 }
 
 bool

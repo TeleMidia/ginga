@@ -95,11 +95,7 @@ Converter::obtainEvent (ExecutionObject *object,
           }
         case EventType::SELECTION:
           {
-            event = new SelectionEvent (_ginga, id, object, (Area *) iface);
-            if (key != "")
-              {
-                ((SelectionEvent *) event)->setSelectionCode (key);
-              }
+            event = new SelectionEvent (_ginga, id, object, (Area *) iface, key);
             break;
           }
         default:
