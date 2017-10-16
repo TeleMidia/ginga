@@ -144,9 +144,11 @@ _error (gboolean try_help, const gchar *format, ...)
 static gboolean
 render_gl_callback (unused (GtkGLArea *area), unused (GdkGLContext *ctx))
 {
+#if defined WITH_OPENGL && WITH_OPENGL
   glClearColor (1., 0., 0., 0.);
   glClear (GL_COLOR_BUFFER_BIT);
   // GINGA->redraw (nullptr);
+#endif
   return TRUE;
 }
 
