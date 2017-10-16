@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "aux-ginga.h"
-#include "aux-gl.h"
 
 GINGA_PLAYER_BEGIN
 class Player;

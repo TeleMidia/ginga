@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
+#include "aux-gl.h"
 #include "ImagePlayer.h"
 
 GINGA_PLAYER_BEGIN
