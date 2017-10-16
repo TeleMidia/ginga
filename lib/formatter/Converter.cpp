@@ -205,47 +205,6 @@ Converter::resolveSwitchEvents (
     }
 }
 
-void
-Converter::eventStateChanged (NclEvent *event,
-                              EventStateTransition transition,
-                              unused (EventState previousState))
-{
-  ExecutionObject *exeObj = event->getExecutionObject ();
-  auto exeSwitch = cast (ExecutionObjectSwitch *, exeObj);
-
-  if (exeSwitch)
-    {
-      if (transition == EventStateTransition::START)
-        {
-          for (auto e: *(exeSwitch->getEvents()))
-            {
-              auto switchEvt = cast (SwitchEvent *, e);
-              if (switchEvt)
-                {
-                  NclEvent *ev = switchEvt->getMappedEvent ();
-
-                  if (ev == nullptr)
-                    {
-                      processExecutionObjectSwitch (exeSwitch);
-
-                      ev = switchEvt->getMappedEvent ();
-                      if (ev != nullptr)
-                        {
-                          e->start ();
-                        }
-                    }
-                }
-            }
-        }
-
-      if (transition == EventStateTransition::STOP
-          || transition == EventStateTransition::ABORT)
-        {
-          exeSwitch->select (NULL);
-        }
-    }
-}
-
 NclEvent *
 Converter::createEvent (Bind *bind)
 {

@@ -411,14 +411,4 @@ SwitchEvent::eventStateChanged (
   changeState (EventUtil::getNextState (trans), trans);
 }
 
-
-// EventTransition.
-
-EventTransition::EventTransition (GingaTime time,
-                                  PresentationEvent *evt)
-{
-  this->_time = time;
-  this->_evt = evt;
-}
-
 GINGA_FORMATTER_END

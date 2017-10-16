@@ -423,11 +423,7 @@ Scheduler::runActionOverSwitch (ExecutionObjectSwitch *switchObj,
   if (selectedObject == nullptr)
     {
       selectedObject = _converter->processExecutionObjectSwitch (switchObj);
-
-      if (selectedObject == nullptr)
-        {
-          return;
-        }
+      g_assert_nonnull (selectedObject);
     }
 
   selectedEvent = event->getMappedEvent ();
