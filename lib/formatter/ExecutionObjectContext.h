@@ -31,43 +31,25 @@ class ExecutionObjectContext: public ExecutionObject,
                               public INclEventListener
 {
 public:
-  ExecutionObjectContext (GingaInternal *, const string &,
-                          Node *,
-                          INclActionListener *);
-
+  ExecutionObjectContext (GingaInternal *, const string &, Node *);
   virtual ~ExecutionObjectContext ();
 
-  void suspendLinkEvaluation (bool suspend);
-  set<Link *> *getUncompiledLinks ();
-  bool containsUncompiledLink (Link *dataLink);
-  void removeLinkUncompiled (Link *ncmLink);
-  void setLinkCompiled (NclLink *formatterLink);
-  void eventStateChanged (NclEvent *event,
-                          EventStateTransition transition,
-                          EventState previousState) override;
+  void eventStateChanged (NclEvent *,
+                          EventStateTransition,
+                          EventState) override;
 
-  // Sanity.
   const set<ExecutionObject *> *getChildren ();
   ExecutionObject *getChildById (const string &);
   bool addChild (ExecutionObject *);
-
-  // Callbacks
-  void linkEvaluationStarted (NclLink *);
-  void linkEvaluationFinished (NclLink *);
 
 private:
   void checkLinkConditions ();
 
 private:
   set<ExecutionObject *> _children;
-
-  set<NclLink *> _links;
-  set<Link *> _uncompiledLinks;
   set<NclEvent *> _runningEvents; // child events occurring
   set<NclEvent *> _pausedEvents;  // child events paused
   EventStateTransition lastTransition;
-  map<NclLink *, int> _pendingLinks;
-
 };
 
 GINGA_FORMATTER_END

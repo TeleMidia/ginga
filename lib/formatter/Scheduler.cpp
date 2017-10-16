@@ -43,10 +43,6 @@ Scheduler::~Scheduler ()
     delete obj;
   _objects.clear ();
 
-  for (auto evt: _events)
-    delete evt;
-  _events.clear ();
-
   if (_converter != nullptr)
     delete _converter;
 }
@@ -105,7 +101,7 @@ Scheduler::run (const string &file, string *errmsg)
       obj = _converter->obtainExecutionObject (node);
       g_assert_nonnull (obj);
 
-      evt = _converter->getEvent
+      evt = _converter->obtainEvent
         (obj, iface, instanceof (Property *, iface)
          ? EventType::ATTRIBUTION : EventType::PRESENTATION, "");
       g_assert_nonnull (evt);
@@ -125,8 +121,6 @@ Scheduler::run (const string &file, string *errmsg)
           ExecutionObject *obj;
           obj = _converter->obtainExecutionObject (node);
           g_assert_nonnull (obj);
-          // delete persp;
-
           settings = cast (ExecutionObjectSettings *, obj);
           g_assert_nonnull (settings);
         }
@@ -174,37 +168,20 @@ Scheduler::run (const string &file, string *errmsg)
   return true;
 }
 
-#define SET_ACCESS_DEFN(Name, Type, Var)                \
-  set<Type *> *                                         \
-  Scheduler::get##Name##s ()                            \
-  {                                                     \
-    return &(Var);                                      \
-  }                                                     \
-  bool                                                  \
-  Scheduler::has##Name (Type *elt)                      \
-  {                                                     \
-    set<Type *>::iterator it;                           \
-    if ((it = (Var).find (elt)) == (Var).end ())        \
-      return false;                                     \
-    return true;                                        \
-  }                                                     \
-  Type *                                                \
-  Scheduler::get##Name##ById (const string &id)         \
-  {                                                     \
-    for (auto *elt: (Var))                              \
-      if (elt->getId () == id)                          \
-        return elt;                                     \
-    return nullptr;                                     \
-  }                                                     \
-  void                                                  \
-  Scheduler::add##Name (Type *elt)                      \
-  {                                                     \
-    g_assert_nonnull (elt);                             \
-    (Var).insert (elt);                                 \
-  }
+const set<ExecutionObject *> *
+Scheduler::getObjects ()
+{
+  return &_objects;
+}
 
-SET_ACCESS_DEFN (Object, ExecutionObject, _objects)
-SET_ACCESS_DEFN (Event, NclEvent, _events)
+ExecutionObject *
+Scheduler::getObjectById (const string &id)
+{
+  for (auto obj: _objects)
+    if (obj->getId () == id)
+      return obj;
+  return nullptr;
+}
 
 ExecutionObject *
 Scheduler::getObjectByIdOrAlias (const string &id)
@@ -216,6 +193,19 @@ Scheduler::getObjectByIdOrAlias (const string &id)
     if (obj->hasAlias (id))
       return obj;
   return nullptr;
+}
+
+bool
+Scheduler::addObject (ExecutionObject *obj)
+{
+  g_assert_nonnull (obj);
+  if (_objects.find (obj) != _objects.end ()
+      || getObjectByIdOrAlias (obj->getId ()) != nullptr)
+    {
+      return false;
+    }
+  _objects.insert (obj);
+  return true;
 }
 
 void
@@ -236,26 +226,8 @@ Scheduler::runAction (NclEvent *event, NclAction *action)
   obj = event->getExecutionObject ();
   g_assert_nonnull (obj);
 
-  switch (action->getEventStateTransition ())   // fixme
-    {
-    case EventStateTransition::START:
-      name = "start";
-      break;
-    case EventStateTransition::PAUSE:
-      name = "pause";
-      break;
-    case EventStateTransition::RESUME:
-      name = "resume";
-      break;
-    case EventStateTransition::STOP:
-      name = "stop";
-      break;
-    case EventStateTransition::ABORT:
-      name = "abort";
-      break;
-    default:
-      g_assert_not_reached ();
-    }
+  name = EventUtil::getEventStateTransitionAsString
+    (action->getEventStateTransition ());
 
   TRACE ("running %s over %s",
          name.c_str (), obj->getId ().c_str ());
@@ -384,7 +356,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
   acttype = action->getEventStateTransition ();
   if (acttype == EventStateTransition::START) // start all ports
     {
-      ctxObj->suspendLinkEvaluation (false);
+      //ctxObj->suspendLinkEvaluation (false);
       for (auto port: *compNode->getPorts ())
         {
           Node *node;
@@ -399,8 +371,8 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
           if (!instanceof (Area *, iface))
             continue;           // nothing to do
 
-          evt = _converter->getEvent (child, iface,
-                                      EventType::PRESENTATION, "");
+          evt = _converter->obtainEvent (child, iface,
+                                         EventType::PRESENTATION, "");
           g_assert_nonnull (evt);
           g_assert (instanceof (PresentationEvent *, evt));
 
@@ -410,18 +382,16 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
     }
   else if (acttype == EventStateTransition::STOP) // stop all children
     {
-      ctxObj->suspendLinkEvaluation (true);
+      //ctxObj->suspendLinkEvaluation (true);
       for (auto child: *ctxObj->getChildren ())
         {
           NclEvent *evt;
-          evt = child->getMainEvent ();
-          if (evt == nullptr)
-            evt = child->getWholeContentPresentationEvent ();
+          evt = child->getLambda ();
           if (evt == nullptr)
             continue;
           runAction (evt, action);
         }
-      ctxObj->suspendLinkEvaluation (false);
+      //ctxObj->suspendLinkEvaluation (false);
     }
   else if (acttype == EventStateTransition::ABORT)
     {
@@ -502,8 +472,8 @@ Scheduler::runSwitchEvent (unused (ExecutionObjectSwitch *switchObj),
       endPointObject = _converter->obtainExecutionObject (node);
       g_assert_nonnull (endPointObject);
       selectedEvent = _converter
-        ->getEvent (endPointObject, iface, switchEvent->getType (),
-                    switchEvent->getKey ());
+        ->obtainEvent (endPointObject, iface, switchEvent->getType (),
+                       switchEvent->getKey ());
       break;
     }
 

@@ -37,84 +37,68 @@ Converter::~Converter ()
 }
 
 NclEvent *
-Converter::getEvent (ExecutionObject *exeObj,
-                     Anchor *interfacePoint,
-                     EventType ncmEventType,
-                     const string &key)
+Converter::obtainEvent (ExecutionObject *object,
+                        Anchor *iface,
+                        EventType eventType,
+                        const string &key)
 {
   string id;
-  string suffix;
-
   NclEvent *event;
   string type;
 
-  switch (ncmEventType)
+  id = iface->getId ();
+  switch (eventType)
     {
     case EventType::SELECTION:
-      suffix = "<sel";
+      id += "<sel";
       if (key != "")
-        suffix += "(" + key + ")";
-      suffix += ">";
+        id += "(" + key + ")";
+      id += ">";
       break;
     case EventType::PRESENTATION:
-      suffix = "<pres>";
+      id += "<pres>";
       break;
     case EventType::ATTRIBUTION:
-      suffix = "<attr>";
+      id += "<attr>";
       break;
     default:
       g_assert_not_reached ();
     }
 
-  id = interfacePoint->getId () + suffix;
-
-  event = exeObj->getEvent (id);
+  event = object->getEventById (id);
   if (event != nullptr)
-    {
-      return event;
-    }
+    return event;
 
-  auto switchObj = cast (ExecutionObjectSwitch *, exeObj);
-  auto cObj = cast (ExecutionObjectContext *, exeObj);
-
-  if (switchObj)
+  if (instanceof (ExecutionObjectSwitch *, object))
     {
-      event = new SwitchEvent (_ginga,
-            id, switchObj, interfacePoint, ncmEventType, key);
+      event = new SwitchEvent
+        (_ginga, id, object, iface, eventType, key);
     }
-  else if (ncmEventType == EventType::PRESENTATION)
+  else if (instanceof (ExecutionObjectContext *, object))
     {
-      event = new PresentationEvent (_ginga,
-            id, exeObj, (Area *)interfacePoint);
-    }
-  else if (cObj)
-    {
-      if (ncmEventType == EventType::ATTRIBUTION)
-        {
-          auto propAnchor = cast (Property *, interfacePoint);
-          g_assert_nonnull (propAnchor);
-          event = new AttributionEvent (_ginga, id, exeObj, propAnchor);
-        }
+      g_assert (eventType == EventType::PRESENTATION);
+      event = new PresentationEvent (_ginga, id, object, (Area *) iface);
     }
   else
     {
-      switch (ncmEventType)
+      switch (eventType)
         {
+        case EventType::PRESENTATION:
+          event = new PresentationEvent (_ginga, id, object, (Area *) iface);
+          break;
         case EventType::ATTRIBUTION:
           {
-            auto propAnchor = cast (Property *, interfacePoint);
+            auto propAnchor = cast (Property *, iface);
             g_assert_nonnull (propAnchor);
-            event = new AttributionEvent (_ginga, id, exeObj, propAnchor);
-
+            event = new AttributionEvent (_ginga, id, object, propAnchor);
             break;
           }
         case EventType::SELECTION:
           {
-            event = new SelectionEvent (_ginga,
-                                        id, exeObj, (Area *)interfacePoint);
+            event = new SelectionEvent (_ginga, id, object, (Area *) iface);
             if (key != "")
               {
-                ((SelectionEvent *)event)->setSelectionCode (key);
+                ((SelectionEvent *) event)->setSelectionCode (key);
               }
             break;
           }
@@ -124,108 +108,8 @@ Converter::getEvent (ExecutionObject *exeObj,
     }
 
   g_assert_nonnull (event);
-  exeObj->addEvent (event);
-
+  g_assert (object->addEvent (event));
   return event;
-}
-
-void
-Converter::processLink (Link *ncmLink,
-                        Node *dataObject,
-                        ExecutionObject *executionObject,
-                        ExecutionObjectContext *parentObject)
-{
-  Node *nodeEntity = nullptr;
-  const set<Refer *> *sameInstances;
-  bool contains = false;
-
-  if (executionObject->getNode () != nullptr)
-    nodeEntity = cast (Node *, executionObject->getNode ());
-
-  if (!parentObject->containsUncompiledLink (ncmLink))
-    return;
-
-  auto causalLink = cast (Link *, ncmLink);
-  g_assert_nonnull (causalLink);
-
-  if (nodeEntity != nullptr && instanceof (Media *, nodeEntity))
-    {
-      sameInstances = cast (Media *, nodeEntity)
-        ->getInstSameInstances ();
-      for (Refer *referNode: *sameInstances)
-        {
-          contains = causalLink->contains (referNode, true);
-          if (contains)
-            break;
-        }
-    }
-
-  // Checks if execution object is part of link conditions.
-  if (causalLink->contains (dataObject, true) || contains)
-    {
-      parentObject->removeLinkUncompiled (ncmLink);
-      NclLink *formatterLink
-        = createLink (causalLink, parentObject);
-
-      if (formatterLink != NULL)
-        parentObject->setLinkCompiled (formatterLink);
-    }
-}
-
-void
-Converter::compileExecutionObjectLinks (
-    ExecutionObject *exeObj, Node *dataObject,
-    ExecutionObjectContext *parentObj)
-{
-  set<Link *> *uncompiledLinks;
-  ExecutionObjectContext *compObj;
-  Node *execDataObject;
-
-  exeObj->setCompiled (true);
-
-  if (parentObj == nullptr)
-    return;
-
-  execDataObject = exeObj->getNode ();
-  if (execDataObject != dataObject)
-    {
-      compObj = parentObj->getParent ();
-      if (compObj != nullptr && compObj != parentObj)
-        {
-          compileExecutionObjectLinks (exeObj, execDataObject,
-                                       compObj);
-        }
-    }
-
-  uncompiledLinks = parentObj->getUncompiledLinks ();
-  if (!uncompiledLinks->empty ())
-    {
-      set<Link *> *dataLinks = uncompiledLinks;
-
-      for ( Link *ncmLink : *dataLinks)
-        {
-          processLink (ncmLink, dataObject, exeObj, parentObj);
-        }
-
-      delete dataLinks;
-
-      compileExecutionObjectLinks (
-            exeObj, dataObject,
-            parentObj->getParent ());
-    }
-  else
-    {
-      ExecutionObject *object;
-
-      delete uncompiledLinks;
-
-      while (parentObj != nullptr)
-        {
-          object = parentObj;
-          parentObj = parentObj->getParent ();
-          compileExecutionObjectLinks (object, dataObject, parentObj);
-        }
-    }
 }
 
 ExecutionObject *
@@ -282,7 +166,7 @@ Converter::resolveSwitchEvents (
   selectedNode = cast (Node *, selectedNode);
   g_assert_nonnull (selectedNode);
 
-  for (NclEvent *event: switchObject->getEvents ())
+  for (auto event: *(switchObject->getEvents ()))
     {
       mappedEvent = nullptr;
       switchEvent = cast (SwitchEvent *, event);
@@ -292,7 +176,7 @@ Converter::resolveSwitchEvents (
       auto lambdaAnchor = cast (AreaLambda *, interfacePoint);
       if (lambdaAnchor)
         {
-          mappedEvent = getEvent (
+          mappedEvent = obtainEvent (
                 selectedObject, selectedNode->getLambda (),
                 switchEvent->getType (), switchEvent->getKey ());
         }
@@ -306,7 +190,7 @@ Converter::resolveSwitchEvents (
               mapping->getTarget (&selectedNode, &interfacePoint);
               endPointObject = obtainExecutionObject (selectedNode);
               g_assert_nonnull (endPointObject);
-              mappedEvent = getEvent (endPointObject,
+              mappedEvent = obtainEvent (endPointObject,
                                       interfacePoint,
                                       switchEvent->getType (),
                                       switchEvent->getKey ());
@@ -333,7 +217,7 @@ Converter::eventStateChanged (NclEvent *event,
     {
       if (transition == EventStateTransition::START)
         {
-          for (NclEvent *e: exeSwitch->getEvents())
+          for (auto e: *(exeSwitch->getEvents()))
             {
               auto switchEvt = cast (SwitchEvent *, e);
               if (switchEvt)
@@ -342,17 +226,11 @@ Converter::eventStateChanged (NclEvent *event,
 
                   if (ev == nullptr)
                     {
-                      // there is only one way to start a switch with
-                      // NULL mapped event: a instSame refernode inside
-                      // it was started
                       processExecutionObjectSwitch (exeSwitch);
 
                       ev = switchEvt->getMappedEvent ();
                       if (ev != nullptr)
                         {
-                          // now we know the event is mapped, we can start
-                          // the
-                          // switchport
                           e->start ();
                         }
                     }
@@ -393,7 +271,7 @@ Converter::createEvent (Bind *bind)
 
   if (interfacePoint == nullptr)
     {
-      return executionObject->getWholeContentPresentationEvent ();
+      return executionObject->getLambda ();
     }
 
   if (instanceof (Composition *, node)
@@ -406,8 +284,8 @@ Converter::createEvent (Bind *bind)
 
   if (!getBindKey (bind, &key))
     key = "";
-  event = getEvent (executionObject, interfacePoint,
-                    bind->getRole ()->getEventType (), key);
+  event = obtainEvent (executionObject, interfacePoint,
+                       bind->getRole ()->getEventType (), key);
 
   return event;
 }
@@ -444,7 +322,6 @@ Converter::obtainExecutionObject (Node *node)
   Node *parentNode;
   ExecutionObjectContext *parent;
   ExecutionObject *object;
-  PresentationEvent *event;
 
   id = node->getId ();
   g_assert (id != "");
@@ -464,79 +341,85 @@ Converter::obtainExecutionObject (Node *node)
       parent = cast (ExecutionObjectContext *,
                      obtainExecutionObject (parentNode));
       g_assert_nonnull (parent);
+      if ((object = _scheduler->getObjectByIdOrAlias (id)) != nullptr)
+        return object;
     }
 
   if (instanceof (Refer *, node))
     {
       Node *target;
 
-      TRACE ("solving refer");
+      TRACE ("solving refer %s", node->getId ().c_str ());
       target = node->derefer ();
       g_assert (!instanceof (Refer *, target));
       object = obtainExecutionObject (target->derefer ());
       object->addAlias (id);
       return object;
     }
-  else if (instanceof (Context *, node))
+
+  if (instanceof (Switch *, node))
     {
-      TRACE ("creating switch");
-      object = new ExecutionObjectContext (_ginga, id, node, _scheduler);
-      event = new PresentationEvent
-        (_ginga, node->getLambda ()->getId () + "<pres>", object,
-         (Area *)(node->getLambda ()));
-      object->addEvent (event);
+      TRACE ("creating switch %s", node->getId ().c_str ());
+      object = new ExecutionObjectSwitch (_ginga, id, node);
+      g_assert_nonnull
+        (obtainEvent (object, node->getLambda (), EventType::PRESENTATION));
+      goto done;
     }
-  else if (instanceof (Switch *, node))
+
+  if (instanceof (Context *, node))
     {
-      TRACE ("creating switch");
-      object = new ExecutionObjectSwitch (_ginga, id, node, _scheduler);
-      event = new PresentationEvent
-        (_ginga, node->getLambda ()->getId () + "<pres>", object,
-         (Area *)(node->getLambda ()));
-      object->addEvent (event);
+      TRACE ("creating context %s", node->getId ().c_str ());
+      object = new ExecutionObjectContext (_ginga, id, node);
+      g_assert_nonnull
+        (obtainEvent (object, node->getLambda (), EventType::PRESENTATION));
+
+      g_assert_nonnull (object);
+      if (parent != nullptr)
+        object->initParent (parent);
+      g_assert (_scheduler->addObject (object));
+
+      // Process links.
+      Context *ctx = cast (Context *, node);
+      for (auto link: *(ctx->getLinks ()))
+        g_assert_nonnull (createLink (link));
+
+      return object;
     }
-  else if (instanceof (Media *, node))
+
+  g_assert (instanceof (Media *, node));
+  TRACE ("creating media %s", node->getId ().c_str ());
+  Media *media;
+  media = cast (Media *, node);
+  g_assert_nonnull (media);
+  if (media->isSettings ())
     {
-      Media *media;
-      media = cast (Media *, node);
-      g_assert_nonnull (media);
-      if (media->isSettings ())
-        {
-          object = new ExecutionObjectSettings (_ginga, id, node, _scheduler);
-          _ruleAdapter->setSettings (object);
-        }
-      else
-        {
-          object = new ExecutionObject (_ginga, id, node, _scheduler);
-          compileExecutionObjectLinks
-            (object, node, cast (ExecutionObjectContext *, parent));
-        }
+      object = new ExecutionObjectSettings (_ginga, id, node);
+      _ruleAdapter->setSettings (object);
     }
   else
     {
-      g_assert_not_reached ();
+      object = new ExecutionObject (_ginga, id, node);
     }
 
+ done:
   g_assert_nonnull (object);
   if (parent != nullptr)
     object->initParent (parent);
-  _scheduler->addObject (object);
+  g_assert (_scheduler->addObject (object));
   return object;
 }
 
 NclLink *
-Converter::createLink (Link *docLink, ExecutionObjectContext *context)
+Converter::createLink (Link *docLink)
 {
   Connector *connector;
   NclLink *link;
 
   g_assert_nonnull (docLink);
-  g_assert_nonnull (context);
-
   connector = cast (Connector *, docLink->getConnector ());
   g_assert_nonnull (connector);
 
-  link = new NclLink (context);
+  link = new NclLink ();
 
   // Add conditions.
   for (auto connCond: *connector->getConditions ())

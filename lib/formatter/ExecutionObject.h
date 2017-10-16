@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "GingaInternal.h"
 #include "NclEvents.h"
-#include "NclEventTransitionManager.h"
 #include "NclAction.h"
 
 #include "ncl/Ncl.h"
@@ -34,11 +33,10 @@ GINGA_FORMATTER_BEGIN
 class ExecutionObjectContext;
 class ExecutionObjectSettings;
 
-class ExecutionObject : public IGingaInternalEventListener
+class ExecutionObject: public IGingaInternalEventListener
 {
 public:
-  ExecutionObject (GingaInternal *, const string &, Node *,
-                   INclActionListener *);
+  ExecutionObject (GingaInternal *, const string &, Node *);
   virtual ~ExecutionObject ();
 
   virtual bool isSleeping ();
@@ -55,18 +53,10 @@ public:
   ExecutionObjectContext *getParent ();
   void initParent (ExecutionObjectContext *);
 
-  virtual bool addEvent (NclEvent *event);
-  void addPresentationEvent (PresentationEvent *event);
-  bool containsEvent (NclEvent *event);
-
-  NclEvent *getEvent (const string &id);
-  vector<NclEvent *> getEvents ();
-
-  PresentationEvent *getWholeContentPresentationEvent ();
-  bool removeEvent (NclEvent *event);
-  bool isCompiled ();
-  void setCompiled (bool status);
-  NclEvent *getMainEvent ();
+  const set<NclEvent *> *getEvents ();
+  NclEvent *getEventById (const string &);
+  bool addEvent (NclEvent *);
+  PresentationEvent *getLambda ();
 
   virtual bool prepare (NclEvent *event);
   virtual bool start ();
@@ -77,19 +67,8 @@ public:
 
 protected:
   Node *_node;
-  PresentationEvent *_wholeContent;
-  INclActionListener *_seListener;
-
-  map<string, NclEvent *> _events;
-  vector<PresentationEvent *> _presEvents;
-  set<SelectionEvent *> _selectionEvents;
-  vector<NclEvent *> _otherEvents;
-
+  set<NclEvent *> _events;
   NclEvent *_mainEvent;
-  NclEventTransitionManager _transMan;
-
-private:
-  bool _isCompiled;
 
   // ------------------------------------------
 

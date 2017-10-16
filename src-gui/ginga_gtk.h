@@ -47,7 +47,6 @@ extern GtkWidget *sideView;
 extern GtkWidget *infoBar;
 extern GtkWidget *gingaView;
 extern GtkWidget *historicBox;
-extern gchar *executableFolder;
 extern gboolean isFullScreenMode;
 extern gboolean isDebugMode;
 extern gboolean needShowSideBar;

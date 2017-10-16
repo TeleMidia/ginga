@@ -22,9 +22,8 @@ GINGA_FORMATTER_BEGIN
 
 ExecutionObjectSwitch::ExecutionObjectSwitch (GingaInternal *ginga,
                                               const string &id,
-                                              Node *switchNode,
-                                              INclActionListener *seListener)
-  : ExecutionObjectContext (ginga, id, switchNode, seListener)
+                                              Node *switchNode)
+  : ExecutionObjectContext (ginga, id, switchNode)
 {
   _selectedObj = nullptr;
 }
@@ -40,29 +39,12 @@ ExecutionObjectSwitch::select (ExecutionObject *exeObj)
   else
     {
       _selectedObj = nullptr;
-      for (NclEvent *evt: getEvents())
+      for (auto evt: *(this->getEvents ()))
         {
           auto switchEvent = cast (SwitchEvent *, evt);
           g_assert_nonnull (switchEvent);
           switchEvent->setMappedEvent (nullptr);
         }
-    }
-}
-
-bool
-ExecutionObjectSwitch::addEvent (NclEvent *evt)
-{
- auto presentationEvt = cast (PresentationEvent *, evt);
-
-  if (presentationEvt
-      && instanceof (AreaLambda *, presentationEvt->getAnchor ()))
-    {
-      ExecutionObject::_wholeContent = presentationEvt;
-      return true;
-    }
-  else
-    {
-      return ExecutionObject::addEvent (evt);
     }
 }
 

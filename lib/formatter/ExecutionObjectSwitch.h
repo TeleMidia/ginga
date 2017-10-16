@@ -29,9 +29,7 @@ GINGA_FORMATTER_BEGIN
 class ExecutionObjectSwitch : public ExecutionObjectContext
 {
 public:
-  ExecutionObjectSwitch (GingaInternal *, const string &, Node *,
-                         INclActionListener *);
-
+  ExecutionObjectSwitch (GingaInternal *, const string &, Node *);
   virtual ~ExecutionObjectSwitch (){}
   ExecutionObject *getSelectedObject () {return _selectedObj; }
   void select (ExecutionObject *exeObj);

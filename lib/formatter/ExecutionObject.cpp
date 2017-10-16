@@ -31,8 +31,7 @@ GINGA_FORMATTER_BEGIN
 
 ExecutionObject::ExecutionObject (GingaInternal *ginga,
                                   const string &id,
-                                  Node *node,
-                                  INclActionListener *seListener)
+                                  Node *node)
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;
@@ -40,10 +39,7 @@ ExecutionObject::ExecutionObject (GingaInternal *ginga,
   _scheduler = ginga->getScheduler ();
   g_assert_nonnull (_scheduler);
 
-  _seListener = seListener;
   _node = node;
-  _wholeContent = nullptr;
-  _isCompiled = false;
   _mainEvent = nullptr;
 
   _id = id;
@@ -51,16 +47,12 @@ ExecutionObject::ExecutionObject (GingaInternal *ginga,
   _player = nullptr;
   _time = GINGA_TIME_NONE;
   _destroying = false;
-
-  TRACE ("%s", _id.c_str ());
-  _scheduler->addObject (this);
 }
 
 ExecutionObject::~ExecutionObject ()
 {
   _destroying = true;
   this->stop ();
-  TRACE ("%s", _id.c_str ());
 }
 
 bool
@@ -136,225 +128,55 @@ ExecutionObject::initParent (ExecutionObjectContext *parent)
   g_assert (parent->addChild (this));
 }
 
-// void
-// ExecutionObject::addParentObject (ExecutionObjectContext *parentObject,
-//                                   Node *parentNode)
-// {
-//   addParentObject (_node, parentObject, parentNode);
-// }
-//
-// void
-// ExecutionObject::addParentObject (Node *node,
-//                                   ExecutionObjectContext *parentObject,
-//                                   Node *parentNode)
-// {
-//   _nodeParentTable[node] = parentNode;
-//   _parentTable[parentNode] = parentObject;
-// }
-// void
-// ExecutionObject::removeParentObject (Node *parentNode,
-//                                      ExecutionObjectContext *parentObject)
-// {
-//   map<Node *, ExecutionObjectContext *>::iterator i;
-//   i = _parentTable.find (parentNode);
-//   if (i != _parentTable.end () && i->second == parentObject)
-//     _parentTable.erase (i);
-// }
+const set<NclEvent *> *
+ExecutionObject::getEvents ()
+{
+  return &_events;
+}
+
+NclEvent *
+ExecutionObject::getEventById (const string &id)
+{
+  for (auto event: _events)
+    if (event->getId () == id)
+      return event;
+  return nullptr;
+}
+
 
 bool
 ExecutionObject::addEvent (NclEvent *event)
 {
-  map<string, NclEvent *>::iterator i;
-
-  g_assert (_events.find (event->getId ()) == _events.end ());
-
-  _events[event->getId ()] = event;
-  if (instanceof (PresentationEvent *, event))
-    {
-      addPresentationEvent ((PresentationEvent *) event);
-    }
-  else if (instanceof (SelectionEvent *, event))
-    {
-      _selectionEvents.insert (((SelectionEvent *) event));
-    }
-  else
-    {
-      _otherEvents.push_back (event);
-    }
+  if (_events.find (event) != _events.end ())
+    return false;
+  _events.insert (event);
   return true;
-}
-
-void
-ExecutionObject::addPresentationEvent (PresentationEvent *event)
-{
-  PresentationEvent *auxEvent;
-  GingaTime begin, auxBegin;
-  int posBeg = -1;
-  int posEnd, posMid;
-
-  if (instanceof (AreaLambda *, event->getAnchor ()))
-    {
-      _presEvents.insert (_presEvents.begin (), event);
-      _wholeContent = (PresentationEvent *)event;
-    }
-  else
-    {
-      begin = event->getBegin ();
-      posBeg = 0;
-      posEnd = (int)(_presEvents.size () - 1);
-      while (posBeg <= posEnd)
-        {
-          posMid = (posBeg + posEnd) / 2;
-          auxEvent = (PresentationEvent *)(_presEvents[(size_t)posMid]);
-          auxBegin = auxEvent->getBegin ();
-          if (begin < auxBegin)
-            {
-              posEnd = posMid - 1;
-            }
-          else if (begin > auxBegin)
-            {
-              posBeg = posMid + 1;
-            }
-          else
-            {
-              posBeg = posMid + 1;
-              break;
-            }
-        }
-
-      _presEvents.insert ((_presEvents.begin () + posBeg), event);
-    }
-  _transMan.addPresentationEvent (event);
-}
-
-bool
-ExecutionObject::containsEvent (NclEvent *event)
-{
-  return (_events.count (event->getId ()) != 0);
-}
-
-NclEvent *
-ExecutionObject::getEvent (const string &id)
-{
-  NclEvent *ev;
-  if (_events.count (id) != 0)
-    {
-      ev = _events[id];
-      return ev;
-    }
-  return nullptr;
-}
-
-vector<NclEvent *>
-ExecutionObject::getEvents ()
-{
-  vector<NclEvent *> eventsVector;
-  for (const auto &i : _events)
-    {
-      eventsVector.push_back (i.second);
-    }
-  return eventsVector;
 }
 
 PresentationEvent *
-ExecutionObject::getWholeContentPresentationEvent ()
+ExecutionObject::getLambda ()
 {
-  return _wholeContent;
-}
-
-bool
-ExecutionObject::removeEvent (NclEvent *event)
-{
-  vector<PresentationEvent *>::iterator i;
-  set<SelectionEvent *>::iterator j;
-  vector<NclEvent *>::iterator k;
-  map<string, NclEvent *>::iterator l;
-
-  if (!containsEvent (event))
-    {
-      return false;
-    }
-
-  if (instanceof (PresentationEvent *, event))
-    {
-      for (i = _presEvents.begin (); i != _presEvents.end (); ++i)
-        {
-          if (*i == (PresentationEvent *)event)
-            {
-              _presEvents.erase (i);
-              break;
-            }
-        }
-      _transMan.removeEventTransition ((PresentationEvent *)event);
-    }
-  else if (instanceof (SelectionEvent *, event))
-    {
-      j = _selectionEvents.find (((SelectionEvent *)event));
-      if (j != _selectionEvents.end ())
-        {
-          _selectionEvents.erase (j);
-        }
-    }
-  else
-    {
-      for (k = _otherEvents.begin (); k != _otherEvents.end (); ++k)
-        {
-          if (*k == event)
-            {
-              _otherEvents.erase (k);
-              break;
-            }
-        }
-    }
-
-  l = _events.find (event->getId ());
-  if (l != _events.end ())
-    _events.erase (l);
-
-  return true;
-}
-
-bool
-ExecutionObject::isCompiled ()
-{
-  return _isCompiled;
-}
-
-void
-ExecutionObject::setCompiled (bool status)
-{
-  _isCompiled = status;
-}
-
-NclEvent *
-ExecutionObject::getMainEvent ()
-{
-  return _mainEvent;
+  return cast (PresentationEvent *,
+               this->getEventById (_id + "@lambda<pres>"));
 }
 
 bool
 ExecutionObject::prepare (NclEvent *event)
 {
-  size_t size;
   map<Node *, ExecutionObjectContext *>::iterator i;
-  NclEvent *auxEvent;
   AttributionEvent *attributeEvent;
   Property *attributeAnchor;
-  size_t j;
   string value;
 
   g_assert_nonnull (event);
-  g_assert (this->containsEvent (event));
+  g_assert (this->getEventById (event->getId ()));
   if (event->getCurrentState () != EventState::SLEEPING)
     return false;
 
   _mainEvent = event;
-  _transMan.prepare (_mainEvent == _wholeContent, 0);
 
-  size = _otherEvents.size ();
-  for (j = 0; j < size; j++)
+  for (auto auxEvent: _events)
     {
-      auxEvent = _otherEvents[j];
       if (instanceof (AttributionEvent *, auxEvent))
         {
           attributeEvent = (AttributionEvent *)auxEvent;
@@ -378,7 +200,6 @@ ExecutionObject::start ()
   string mime;
 
   g_assert_nonnull (_mainEvent);
-  g_assert_nonnull (_wholeContent);
 
   if (this->isOccurring ())
     return true;              // nothing to do
@@ -405,7 +226,7 @@ ExecutionObject::start ()
     }
 
   // Install attribution events.
-  for (NclEvent *evt: this->getEvents ())
+  for (auto evt: *(this->getEvents ()))
     {
       AttributionEvent *attevt = cast (AttributionEvent *, evt);
       if (attevt)
@@ -420,7 +241,6 @@ ExecutionObject::start ()
   // Start main event.
   if (instanceof (PresentationEvent *, _mainEvent))
     _mainEvent->start ();
-  _transMan.start (0);
   return true;
 }
 
@@ -430,7 +250,7 @@ ExecutionObject::pause ()
   if (!this->isOccurring ())
     return true;
 
-  for (NclEvent *event: this->getEvents ())
+  for (auto event: *(this->getEvents ()))
     event->pause ();
 
   g_assert_nonnull (_player);
@@ -445,7 +265,7 @@ ExecutionObject::resume ()
   if (!this->isPaused ())
     return true;
 
-  for (NclEvent *event: this->getEvents ())
+  for (auto event: *(this->getEvents ()))
     event->resume ();
 
   g_assert_nonnull (_player);
@@ -476,7 +296,7 @@ ExecutionObject::stop ()
     }
 
   // Uninstall attribution events.
-  for (NclEvent *evt: this->getEvents ())
+  for (auto evt: *(this->getEvents ()))
     {
       AttributionEvent *attevt = cast (AttributionEvent *, evt);
       if (attevt)
@@ -489,12 +309,7 @@ ExecutionObject::stop ()
   // Stop main event.
   event = cast (PresentationEvent* , _mainEvent);
   if (event != nullptr)
-    {
-      _mainEvent->stop ();
-      _transMan.stop (0);
-    }
-
-  _transMan.resetTimeIndex ();
+    _mainEvent->stop ();
 
   return true;
 }
@@ -575,10 +390,6 @@ ExecutionObject::handleTickEvent (unused (GingaTime total),
                                   GingaTime diff,
                                   unused (int frame))
 {
-  EventTransition *next;
-  NclEvent *evt;
-  GingaTime waited;
-  GingaTime now;
   GingaTime dur;
 
   if (_player == nullptr)
@@ -606,26 +417,39 @@ ExecutionObject::handleTickEvent (unused (GingaTime total),
   g_assert (this->isOccurring ());
   g_assert (instanceof (PresentationEvent *, _mainEvent));
 
-  next = _transMan.nextTransition (_mainEvent);
-  if (next == nullptr)
-    return;
+  for (auto _evt: _events)
+    {
+      PresentationEvent *evt = cast (PresentationEvent *, _evt);
+      if (evt == nullptr)
+        continue;
+      if (this->getLambda () == evt)
+        continue;
 
-  waited = next->getTime ();
-  now = _time;
+      // TRACE ("[%s %" GINGA_TIME_FORMAT "]"
+      //        " %s begin=%" GINGA_TIME_FORMAT " end=%" GINGA_TIME_FORMAT,
+      //        this->getId ().c_str (),
+      //        GINGA_TIME_ARGS (_time),
+      //        evt->getId ().c_str (),
+      //        GINGA_TIME_ARGS (evt->getBegin ()),
+      //        GINGA_TIME_ARGS (evt->getEnd ()));
 
-  // TRACE ("now=%" GINGA_TIME_FORMAT " waited=%" GINGA_TIME_FORMAT,
-  //        GINGA_TIME_ARGS (now), GINGA_TIME_ARGS (waited));
-
-  if (now < waited)
-    return;
-
-  evt = cast (NclEvent *, next->getEvent ());
-  g_assert_nonnull (evt);
-
-  TRACE ("%s.%s timed-out at %" GINGA_TIME_FORMAT,
-         _id.c_str(), evt->getId ().c_str (), GINGA_TIME_ARGS (now));
-
-  _transMan.updateTransitionTable (now, _player, _mainEvent);
+      if (evt->getCurrentState () == EventState::SLEEPING
+          && evt->getBegin () <= _time)
+        {
+          TRACE ("%s.%s timed-out at %" GINGA_TIME_FORMAT,
+                 _id.c_str(), evt->getId ().c_str (),
+                 GINGA_TIME_ARGS (time));
+          evt->start ();
+        }
+      else if (evt->getCurrentState () == EventState::OCCURRING
+               && evt->getEnd () <= _time)
+        {
+          TRACE ("%s.%s timed-out at %" GINGA_TIME_FORMAT,
+                 _id.c_str(), evt->getId ().c_str (),
+                 GINGA_TIME_ARGS (time));
+          evt->stop ();
+        }
+    }
 }
 
 void
@@ -662,13 +486,15 @@ ExecutionObject::handleKeyEvent (const string &key, bool press)
         }
     }
 
-  if (_selectionEvents.empty ())
-    return;                     // nothing to do
-
-  for (SelectionEvent *evt: _selectionEvents)
+  for (auto _evt: _events)
     {
+      SelectionEvent *evt;
       Area *anchor;
       string expected;
+
+      evt = cast (SelectionEvent *, _evt);
+      if (evt == nullptr)
+        continue;
 
       expected = evt->getSelectionCode ();
 
@@ -699,12 +525,9 @@ ExecutionObject::handleKeyEvent (const string &key, bool press)
 
   for (SelectionEvent *evt: buf)
     {
-      if (_seListener != nullptr)
-        {
-          NclAction *fakeAct =
-            new NclAction (evt, EventStateTransition::START, _seListener);
-          _seListener->scheduleAction (fakeAct);
-        }
+      NclAction *fakeAct =
+        new NclAction (evt, EventStateTransition::START, _scheduler);
+      _scheduler->scheduleAction (fakeAct);
     }
 
   if (buf.size () == 0)

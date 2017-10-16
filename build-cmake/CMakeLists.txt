@@ -1,10 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
 project(ginga)
 
-option (WITH_CEF "Build with chromium embedded support." OFF)
-option (WITH_OPENGL "Build Ginga with opengl." ON)
-option (WITH_RUNVIEW "Build nclcomposer's ginga plugin." OFF)
-
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 
 # Defaul C++ params
@@ -15,8 +11,12 @@ if (UNIX)
   add_definitions(-Wextra -Wall)
 endif()
 
+# Ginga-related cmake's variables
+include (GNUInstallDirs)
+set (PACKAGE "ginga")
 set (GINGA_BINARY_DIR ${CMAKE_BINARY_DIR}/bin)
 set (GINGA_BINARY_TESTS_DIR ${CMAKE_BINARY_DIR}/tests)
+add_definitions (-DGINGADATADIR="${CMAKE_INSTALL_FULL_DATADIR}/${PACKAGE}")
 
 # Find dependencies
 find_package (GLIB 2.32 REQUIRED)
@@ -33,12 +33,14 @@ find_package (RSVG REQUIRED)
 find_package (GStreamer REQUIRED)
 add_definitions (-DWITH_PANGO=1 -DWITH_GSTREAMER=1)
 
+find_package (Lua REQUIRED)
+
 find_package (SDL2)
 find_package (SDL2_image)
 find_package (OpenGL)
 
 if (OPENGL_FOUND)
-  add_definitions (-DWITH_OPENGL=1)
+  set (WITH_OPENGL ON)
 else ()
   set (WITH_OPENGL OFF) # OpenGL not found, turn it off
 endif()
@@ -47,6 +49,14 @@ find_package(GTK3)
 if (GTK3_FOUND)
   set (WITH_GINGAGUI_GTK ON)
 endif()
+
+option (WITH_CEF "Build with chromium embedded support." OFF)
+option (WITH_OPENGL "Build Ginga with opengl." OFF)
+option (WITH_RUNVIEW "Build nclcomposer's ginga plugin." OFF)
+
+if (WITH_OPENGL)
+  add_definitions (-DWITH_OPENGL=1)
+endif ()
 
 # NCLUA download/configure/build/install
 include(ExternalProject)
@@ -65,9 +75,10 @@ ExternalProject_Add(nclua_build
   INSTALL_COMMAND make install
 )
 
-ExternalProject_Get_Property(nclua_build install_dir)
-set(NCLUA_INCLUDE_DIRS "${install_dir}/include")
-link_directories("${install_dir}/lib")
+ExternalProject_Get_Property (nclua_build install_dir)
+set (NCLUA_INCLUDE_DIRS "${install_dir}/include")
+set (NCLUA_LIBRARY "${install_dir}/lib/libnclua.a")
+link_directories ("${install_dir}/lib")
 #end NCLUA
 
 if (WITH_CEF) # Download, link, build with CEF
@@ -103,7 +114,6 @@ if (WITH_CEF) # Download, link, build with CEF
 
 else()
   add_definitions (-DWITH_CEF=0)
-
 endif()
 
 set (LIBGINGA_SOURCES
@@ -121,9 +131,7 @@ set (LIBGINGA_SOURCES
   ../lib/formatter/NclAction.cpp
   ../lib/formatter/NclCondition.cpp
   ../lib/formatter/NclEvents.cpp
-  ../lib/formatter/NclEventTransitionManager.cpp
   ../lib/formatter/NclLink.cpp
-  ../lib/formatter/NclNodeNesting.cpp
   ../lib/formatter/RuleAdapter.cpp
   ../lib/formatter/Scheduler.cpp
 
@@ -207,7 +215,8 @@ set (LIBGINGA_LIBS
   ${GSTREAMER_APP_LIBRARIES}
   ${GSTREAMER_VIDEO_LIBRARIES}
 
-  nclua
+  ${NCLUA_LIBRARY}
+  ${LUA_LIBRARIES}
 )
 
 if (WITH_OPENGL)
@@ -265,20 +274,19 @@ add_executable (ginga ../src/ginga.cpp)
 target_include_directories (ginga PRIVATE ${GTK3_INCLUDE_DIRS})
 target_link_libraries (ginga PRIVATE libginga ${GTK3_LIBRARIES})
 
-# gingagl target
+# ginga-gl target
 if (WITH_OPENGL)
-  add_executable (gingagl ../src/ginga-gl.cpp)
+  add_executable (ginga-gl ../src/ginga-gl.cpp)
 
-  target_include_directories (gingagl PRIVATE
+  target_include_directories (ginga-gl PRIVATE
     ${SDL2_INCLUDE_DIR}
   )
 
-  target_link_libraries (gingagl PRIVATE
+  target_link_libraries (ginga-gl PRIVATE
     libginga
     ${SDL2_LIBRARY}
     ${SDL2_IMAGE_LIBRARIES}
   )
-
 endif ()
 
 # gingagui target
@@ -398,11 +406,10 @@ ginga-runview:          ${WITH_RUNVIEW}
 ginga-gl:               ${WITH_OPENGL}
 ")
  
-set (CPACK_PACKAGE_NAME ginga-idtv)
+set (CPACK_PACKAGE_NAME ${PACKAGE})
 set (CPACK_PACKAGE_CONTACT robertogerson@telemidia.puc-rio.br)
 
 install (DIRECTORY ${CMAKE_BINARY_OUTPUT_DIR} DESTINATION bin)
 install (TARGETS ginga DESTINATION bin)
 install (TARGETS gingagui DESTINATION bin)
 include (CPack)
-

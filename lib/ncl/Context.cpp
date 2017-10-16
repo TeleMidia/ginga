@@ -40,16 +40,22 @@ Context::~Context ()
 /**
  * @brief Adds link to context.
  * @param link Link.
+ * @return True if successful, or false otherwise.
  */
-void
+bool
 Context::addLink (Link *link)
 {
   g_assert_nonnull (link);
+  for (auto old: _links)
+    if (old == link)
+      return false;
   _links.push_back (link);
+  return true;
 }
 
 /**
- * @brief Gets all context links.
+ * @brief Gets context links.
+ * @return Links.
  */
 const vector<Link *> *
 Context::getLinks ()

@@ -16,12 +16,13 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga_gtk.h"
+#include "aux-glib.h"
 #include <cairo.h>
 
 #if GTK_CHECK_VERSION(3, 8, 0)
 gboolean
 update_draw_callback (GtkWidget *widget, GdkFrameClock *frame_clock,
-                      G_GNUC_UNUSED gpointer data)
+                      unused (gpointer data) )
 #else
 gboolean
 update_draw_callback (GtkWidget *widget)
@@ -52,7 +53,7 @@ update_draw_callback (GtkWidget *widget)
 }
 
 void
-draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
+draw_callback (GtkWidget *widget, cairo_t *cr, unused (gpointer data))
 {
 
   int w, h;
