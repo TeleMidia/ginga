@@ -95,22 +95,19 @@ public:
   PresentationEvent (GingaInternal *, const string &,
                      ExecutionObject *, Area *);
   virtual ~PresentationEvent () {}
-  virtual bool stop () override;
   GingaTime getDuration ();
-
-private:
-  int _numPresentations;
 };
 
 class SelectionEvent : public AnchorEvent
 {
-  PROPERTY (string, _selCode, getSelectionCode, setSelectionCode)
-
 public:
-  SelectionEvent (GingaInternal *, const string &, ExecutionObject *, Area *);
-  virtual ~SelectionEvent () {}
-
+  SelectionEvent (GingaInternal *, const string &, ExecutionObject *,
+                  Area *, const string &);
+  virtual ~SelectionEvent ();
+  string getKey ();
   virtual bool start () override;
+private:
+  string _key;
 };
 
 class AttributionEvent : public NclEvent

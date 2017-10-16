@@ -496,11 +496,9 @@ ExecutionObject::handleKeyEvent (const string &key, bool press)
       if (evt == nullptr)
         continue;
 
-      expected = evt->getSelectionCode ();
-
-      if (!((expected == "NO_CODE" && key == "ENTER"
-             && _player->isFocused ())
-            || (expected != "NO_CODE" && key == expected)))
+      expected = evt->getKey ();
+      if (!((expected == "" && key == "ENTER" && _player->isFocused ())
+            || (expected != "" && key == expected)))
         {
           continue;
         }
