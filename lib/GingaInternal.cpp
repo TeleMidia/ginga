@@ -22,6 +22,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "formatter/Scheduler.h"
 using namespace ::ginga::formatter;
 
+#include "ncl/ParserXercesC.h"
+#include "ncl/ParserLibXML.h"
+using namespace ::ginga::ncl;
+
 #include "player/TextPlayer.h"
 using namespace ::ginga::player;
 
@@ -116,9 +120,23 @@ GingaInternal::getState ()
 bool
 GingaInternal::start (const string &file, string *errmsg)
 {
+  NclDocument *doc;
+  int w, h;
+
   if (_state != GINGA_STATE_STOPPED)
     return false;               // nothing to do
 
+  // Parse document.
+  w = _opts.width;
+  h = _opts.height;
+  if (!_opts.experimental)
+    doc = ParserXercesC::parse (file, w, h, errmsg);
+  else
+    doc = ParserLibXML::parseFile (file, w, h, errmsg);
+  if (unlikely (doc == nullptr))
+    return false;
+
+  // Create scheduler.
   _scheduler = new Scheduler (this);
   _ncl_file = file;
   _eos = false;
@@ -126,8 +144,9 @@ GingaInternal::start (const string &file, string *errmsg)
   _last_tick_diff = 0;
   _last_tick_frameno = 0;
 
+  // Run document.
   TRACE ("%s", file.c_str ());
-  if (unlikely (!_scheduler->run (file, errmsg)))
+  if (unlikely (!_scheduler->run (doc)))
     {
       delete _scheduler;
       return false;

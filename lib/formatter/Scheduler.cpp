@@ -19,10 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Scheduler.h"
 #include "Converter.h"
 
-#include "ncl/ParserXercesC.h"
-#include "ncl/ParserLibXML.h"
-using namespace ::ginga::ncl;
-
 GINGA_FORMATTER_BEGIN
 
 
@@ -48,24 +44,15 @@ Scheduler::~Scheduler ()
 }
 
 bool
-Scheduler::run (const string &file, string *errmsg)
+Scheduler::run (NclDocument *doc)
 {
   string id;
   Context *body;
   const vector<Port *> *ports;
   vector<NclEvent *> *entryevts;
-  int w, h;
 
-  // Parse document.
-  w = _ginga->getOptionInt ("width");
-  h = _ginga->getOptionInt ("height");
-
-  if (!_ginga->getOptionBool ("experimental"))
-    _doc = ParserXercesC::parse (file, w, h, errmsg);
-  else
-    _doc = ParserLibXML::parseFile (file, w, h, errmsg);
-  if (unlikely (_doc == nullptr))
-    return false;               // syntax error
+  g_assert_nonnull (doc);
+  _doc = doc;
 
   id = _doc->getId ();
   body = _doc->getRoot ();
@@ -76,7 +63,7 @@ Scheduler::run (const string &file, string *errmsg)
   g_assert_nonnull (ports);
   if (unlikely (ports->size () == 0))
     {
-      *errmsg = "Document has no ports";
+      WARNING ("document has no ports");
       return false;
     }
 
