@@ -22,160 +22,13 @@ GINGA_FORMATTER_BEGIN
 
 ExecutionObjectContext::ExecutionObjectContext (GingaInternal *ginga,
                                                 const string &id,
-                                                Node *dataObject,
-                                                INclActionListener *seListener)
-  : ExecutionObject (ginga, id, dataObject, seListener)
+                                                Node *dataObject)
+  : ExecutionObject (ginga, id, dataObject)
 {
-  Context *context;
-  Entity *entity;
-
-  _links.clear ();
-  _uncompiledLinks.clear ();
-  _runningEvents.clear ();
-  _pausedEvents.clear ();
-  _pendingLinks.clear ();
-
-  entity = cast (Entity *, dataObject);
-  g_assert_nonnull (entity);
-
-  if (!instanceof (Context *, entity))
-    return;                     // switch, nothing to do
-
-  context = cast (Context *, entity);
-  g_assert_nonnull (context);
-
-  g_assert_nonnull (context->getLinks ());
-  for (auto link: *context->getLinks ())
-    _uncompiledLinks.insert (link);
 }
 
 ExecutionObjectContext::~ExecutionObjectContext ()
 {
-  // ExecutionObject *object;
-  NclLink *link;
-  set<NclLink *>::iterator i;
-  map<string, ExecutionObject *>::iterator j;
-
-  _runningEvents.clear ();
-  _pausedEvents.clear ();
-  _pendingLinks.clear ();
-
-  i = _links.begin ();
-  while (i != _links.end ())
-    {
-      link = *i;
-      if (link != NULL)
-        {
-          delete link;
-          link = NULL;
-        }
-      ++i;
-    }
-  _links.clear ();
-  _uncompiledLinks.clear ();
-}
-
-// ExecutionObjectContext *
-// ExecutionObjectContext::getParentFromDataObject (Node *dataObject)
-// {
-//   ExecutionObject *object;
-//   Node *parentDataObject;
-//   map<string, ExecutionObject *>::iterator i;
-//
-//   parentDataObject = (Node *)(dataObject->getParent ());
-//
-//   if (parentDataObject != NULL)
-//     {
-//       i = _execObjList.begin ();
-//       while (i != _execObjList.end ())
-//         {
-//           object = i->second;
-//           if (object->getNode () == parentDataObject)
-//             {
-//               return (ExecutionObjectContext *)object;
-//             }
-//           ++i;
-//         }
-//     }
-//   return NULL;
-// }
-
-void
-ExecutionObjectContext::suspendLinkEvaluation (bool suspend)
-{
-  for (NclLink *link : _links)
-    link->disable (suspend);
-}
-
-// bool
-// ExecutionObjectContext::addExecutionObject (ExecutionObject *obj)
-// {
-//   string objId;
-//   if (obj == NULL)
-//     {
-//       return false;
-//     }
-//   objId = obj->getId ();
-//   if (_execObjList.count (objId) != 0)
-//     {
-//       WARNING ("Trying to add the same obj twice: '%s'.", objId.c_str ());
-//       return false;
-//     }
-//   _execObjList[objId] = obj;
-//   obj->addParentObject (this, getNode ());
-//   return true;
-// }
-
-// ExecutionObject *
-// ExecutionObjectContext::getExecutionObject (const string &id)
-// {
-//   map<string, ExecutionObject *>::iterator i;
-//   ExecutionObject *execObj;
-//   if (_execObjList.empty ())
-//     {
-//       return NULL;
-//     }
-//   i = _execObjList.find (id);
-//   if (i != _execObjList.end ())
-//     {
-//       execObj = i->second;
-//       return execObj;
-//     }
-//   return NULL;
-// }
-
-set<Link *> *
-ExecutionObjectContext::getUncompiledLinks ()
-{
-  set<Link *> *uLinks = new set<Link *> (_uncompiledLinks);
-  return uLinks;
-}
-
-bool
-ExecutionObjectContext::containsUncompiledLink (Link *dataLink)
-{
-  if (_uncompiledLinks.count (dataLink) != 0)
-    return true;
-  return false;
-}
-
-void
-ExecutionObjectContext::removeLinkUncompiled (Link *ncmLink)
-{
-  set<Link *>::iterator i;
-  i = _uncompiledLinks.find (ncmLink);
-  if (i != _uncompiledLinks.end ())
-    {
-      _uncompiledLinks.erase (i);
-      return;
-    }
-}
-
-void
-ExecutionObjectContext::setLinkCompiled (NclLink *link)
-{
-  g_assert_nonnull (link);
-  _links.insert (link);
 }
 
 void
@@ -185,6 +38,7 @@ ExecutionObjectContext::eventStateChanged (
     EventState previousState)
 {
   set<NclEvent *>::iterator i;
+  NclEvent *lambda = this->getLambda ();
 
   if (!instanceof (PresentationEvent *, event))
     return;
@@ -194,8 +48,8 @@ ExecutionObjectContext::eventStateChanged (
     case EventStateTransition::START:
       if (_runningEvents.empty () && _pausedEvents.empty ())
         {
-          _wholeContent->addListener (_parent);
-          _wholeContent->start ();
+          lambda->addListener (_parent);
+          lambda->start ();
         }
 
       _runningEvents.insert (event);
@@ -220,10 +74,9 @@ ExecutionObjectContext::eventStateChanged (
             }
         }
 
-      if (_runningEvents.empty () && _pausedEvents.empty ()
-          && _pendingLinks.empty ())
+      if (_runningEvents.empty () && _pausedEvents.empty ())
         {
-          _wholeContent->abort ();
+          lambda->abort ();
         }
       break;
 
@@ -248,8 +101,7 @@ ExecutionObjectContext::eventStateChanged (
                 }
             }
 
-          if (_runningEvents.empty () && _pausedEvents.empty ()
-              && _pendingLinks.empty ())
+          if (_runningEvents.empty () && _pausedEvents.empty ())
             {
               checkLinkConditions ();
             }
@@ -266,7 +118,7 @@ ExecutionObjectContext::eventStateChanged (
       _pausedEvents.insert (event);
       if (_runningEvents.empty ())
         {
-          _wholeContent->pause ();
+          lambda->pause ();
         }
       break;
 
@@ -280,7 +132,7 @@ ExecutionObjectContext::eventStateChanged (
       _runningEvents.insert (event);
       if (_runningEvents.size () == 1)
         {
-          _wholeContent->resume ();
+          lambda->resume ();
         }
       break;
 
@@ -315,68 +167,16 @@ ExecutionObjectContext::addChild (ExecutionObject *child)
 }
 
 void
-ExecutionObjectContext::linkEvaluationStarted (NclLink *link)
-{
-  int linkNumber = 0;
-  NclLink *evalLink;
-
-  evalLink = link;
-  if (_pendingLinks.count (evalLink) != 0)
-    {
-      linkNumber = _pendingLinks[evalLink];
-    }
-  _pendingLinks[evalLink] = linkNumber + 1;
-}
-
-void
-ExecutionObjectContext::linkEvaluationFinished (NclLink *link)
-{
-  int linkNumber;
-  NclLink *finishedLink;
-  map<NclLink *, int>::iterator i;
-
-  finishedLink = link;
-  i = _pendingLinks.find (finishedLink);
-  if (i != _pendingLinks.end ())
-    {
-      linkNumber = i->second;
-      if (linkNumber == 1)
-        {
-          _pendingLinks.erase (i);
-          if (_runningEvents.empty () && _pausedEvents.empty ()
-              && _pendingLinks.empty ())
-            {
-              if (lastTransition == EventStateTransition::STOP)
-                {
-                  checkLinkConditions ();
-                }
-              else
-                {
-                  _wholeContent->abort ();
-                }
-            }
-        }
-      else
-        {
-          _pendingLinks[finishedLink] = linkNumber - 1;
-        }
-    }
-}
-
-void
 ExecutionObjectContext::checkLinkConditions ()
 {
-  if ((_runningEvents.empty () && _pausedEvents.empty ()
-       && _pendingLinks.empty ()))
+  if (_runningEvents.empty () && _pausedEvents.empty ())
     {
-      if (_wholeContent != NULL)
+      NclEvent *lambda = this->getLambda ();
+      lambda->stop ();
+      if (this->getParent () == nullptr)
         {
-          _wholeContent->stop ();
-          if (this->getParent () == nullptr)
-            {
-              TRACE ("*** ALL DONE ***");
-              _ginga->setEOS (true);
-            }
+          TRACE ("*** ALL DONE ***");
+          _ginga->setEOS (true);
         }
     }
 }

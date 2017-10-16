@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef FORMATTER_SCHEDULER_H
-#define FORMATTER_SCHEDULER_H
+#ifndef SCHEDULER_H
+#define SCHEDULER_H
 
 #include "GingaInternal.h"
 
@@ -34,33 +34,25 @@ class GingaInternal;
 GINGA_FORMATTER_BEGIN
 
 class Converter;
-class Scheduler : public INclActionListener
+class Scheduler: public INclActionListener
 {
 public:
   Scheduler (GingaInternal *);
   virtual ~Scheduler ();
   bool run (const string &, string *);
 
-  set<NclEvent *> *getEvents ();
-  bool hasEvent (NclEvent *);
-  NclEvent *getEventById (const string &);
-  void addEvent (NclEvent *);
-
-  set<ExecutionObject *> *getObjects ();
-  bool hasObject (ExecutionObject *);
+  const set<ExecutionObject *> *getObjects ();
   ExecutionObject *getObjectById (const string &);
   ExecutionObject *getObjectByIdOrAlias (const string &);
-  void addObject (ExecutionObject *);
+  bool addObject (ExecutionObject *);
 
   void scheduleAction (NclAction *) override;
 
 private:
-  GingaInternal *_ginga;        // ginga handle
-  Converter *_converter;        // converter object
-  string _file;                 // path to document file
-  NclDocument *_doc;            // document tree
-
-  set<NclEvent *> _events;         // document events
+  GingaInternal *_ginga;           // ginga handle
+  Converter *_converter;           // converter object
+  string _file;                    // path to document file
+  NclDocument *_doc;               // document tree
   set<ExecutionObject *> _objects; // document objects
 
   void runAction (NclEvent *, NclAction *);
@@ -74,4 +66,4 @@ private:
 
 GINGA_FORMATTER_END
 
-#endif // FORMATTER_SCHEDULER_H
+#endif // SCHEDULER_H

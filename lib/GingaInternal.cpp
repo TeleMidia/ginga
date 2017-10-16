@@ -189,6 +189,7 @@ GingaInternal::redraw (cairo_t *cr)
 
   if (_opts.opengl)
     {
+      GL::beginDraw ();
       GL::clear_scene (_opts.width, _opts.height);
     }
 
@@ -588,10 +589,7 @@ GingaInternal::setOptionOpenGL (unused (GingaInternal *self),
   g_assert (name == "opengl");
   if (unlikely (n++ > 0))
     ERROR ("Cannot change to 'opengl' on-the-fly");
-#if defined WITH_OPENGL && WITH_OPENGL
-  if (value)
-    GL::init ();
-#else
+#if !(defined WITH_OPENGL && WITH_OPENGL)
   if (unlikely (value))
     ERROR ("Not compiled with OpenGL support");
 #endif

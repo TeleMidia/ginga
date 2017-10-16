@@ -21,44 +21,47 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_PRAGMA_DIAG_IGNORE (-Wimplicit-fallthrough)
 
 // OpenGL ------------------------------------------------------------------
-# if defined WITH_OPENGLES2 && WITH_OPENGLES2
-auto vertexSource =
-    "uniform vec2 winSize;\n"
-    "\n"
-    "in vec2 pos;\n"
-    "in vec4 color;\n"
-    "in vec2 texcoord;\n"
-    "\n"
-    "out vec4 f_color;\n"
-    "out vec2 f_texcoord;\n"
-    "void main() {\n"
-    "   pos.x = ((pos.x)/winSize.x) * 2.0f - 1.0;\n"
-    "   pos.y = ((pos.y)/winSize.y) * (-2.0f) + 1.0f;\n"
-    "   gl_Position = vec4 ( pos.x, pos.y, 0.0, 1.0);\n"
-    "   f_texcoord = texcoord;\n"
-    "   f_color = color;\n"
-    "}\n";
+#if defined WITH_OPENGL && WITH_OPENGL
+auto vertexSource = R"glsl(
+    #version 330 core
+    uniform vec2 winSize;
+    in vec2 pos;
+    in vec4 color;
+    in vec2 texcoord;
 
-static auto fragmentSource =
-    "uniform int use_tex;\n"
-    "uniform sampler2D tex;\n"
-    "\n"
-    "in vec4 f_color;\n"
-    "in vec2 f_texcoord;\n"
-    "\n"
-    "out vec4 outColor;\n"
-    "void main() {\n"
-    "   vec4 t0 = texture2D(tex, f_texcoord);\n"
-    "   outColor = use_tex * t0 * f_color + "
-    "              (1.0-use_tex) * f_color;\n"
-    "}\n";
+    out vec4 f_color;
+    out vec2 f_texcoord;
+    void main() {
+       gl_Position = vec4 ( (pos.x/winSize.x) * 2.0f - 1.0,
+                            (pos.y/winSize.y) * -2.0f + 1.0f,
+                            0.0,
+                            1.0);
+      f_texcoord = texcoord;
+      f_color = color;
+    })glsl";
+
+static auto fragmentSource = R"glsl(
+    #version 330 core
+    uniform int use_tex;
+    uniform sampler2D tex;
+
+    in vec4 f_color;
+    in vec2 f_texcoord;
+
+    out vec4 outColor;
+
+    void main() {
+       vec4 t0 = texture2D(tex, f_texcoord);
+       outColor = use_tex * t0 * f_color + (1.0-use_tex) * f_color;
+    })glsl";
 
 struct GLES2Ctx
 {
-  GLuint vertexShader, fragmentShader, shaderProgram;
+  GLuint vertexShader, fragmentShader, shaderProgram = 0;
 
   // Buffers
   GLuint vbo;
+  GLuint vao;
   GLuint ebo;
 
   // Attributes
@@ -89,7 +92,32 @@ static GLuint elements[] = {
   0, 1, 2,
   2, 3, 0
 };
-# endif
+#endif
+
+#define CHECK_SHADER_COMPILE_ERROR(SHADER)                      \
+  G_STMT_START                                                  \
+  {                                                             \
+    GLint isCompiled = 0;                                       \
+    glGetShaderiv (SHADER, GL_COMPILE_STATUS, &isCompiled);     \
+    if (isCompiled == GL_FALSE)                                 \
+      {                                                         \
+        GLint maxLength = 0;                                    \
+        glGetShaderiv (SHADER, GL_INFO_LOG_LENGTH, &maxLength); \
+        std::vector<GLchar> errorLog ((GLuint) maxLength);      \
+        glGetShaderInfoLog (SHADER, maxLength,                  \
+                            &maxLength, &errorLog[0]);          \
+                                                                \
+        ERROR ("%d %s.", maxLength, &errorLog[0]);              \
+                                                                \
+        glDeleteShader (SHADER);                                \
+        return;                                                 \
+      }                                                         \
+    else                                                        \
+      {                                                         \
+        TRACE ("Shader compiled with success.");                \
+      }                                                         \
+  }                                                             \
+  G_STMT_END
 
 /**
  * @brief GL::init Initiliazes the OpenGL context.
@@ -101,10 +129,18 @@ GL::init ()
   ERROR_NOT_IMPLEMENTED ("not compiled with OpenGL support");
 #else
 
-# if defined WITH_OPENGLES2 && WITH_OPENGLES2
   glGenBuffers (1, &gles2ctx.vbo);
   glBindBuffer (GL_ARRAY_BUFFER, gles2ctx.vbo);
   glBufferData (GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+#if ! (WITH_OPENGLES2)
+  glGenVertexArrays (1, &gles2ctx.vao);
+  glBindVertexArray (gles2ctx.vao);
+  glEnableVertexAttribArray (0);
+#endif
+
+  glBindBuffer (GL_ARRAY_BUFFER, gles2ctx.vbo);
+  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
   glGenBuffers (1, &gles2ctx.ebo);
   glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, gles2ctx.ebo);
@@ -114,21 +150,58 @@ GL::init ()
   gles2ctx.vertexShader = glCreateShader (GL_VERTEX_SHADER);
   glShaderSource (gles2ctx.vertexShader, 1, &vertexSource, nullptr);
   glCompileShader (gles2ctx.vertexShader);
+  CHECK_SHADER_COMPILE_ERROR (gles2ctx.vertexShader);
 
   gles2ctx.fragmentShader = glCreateShader (GL_FRAGMENT_SHADER);
   glShaderSource (gles2ctx.fragmentShader, 1, &fragmentSource, nullptr);
   glCompileShader (gles2ctx.fragmentShader);
+  CHECK_SHADER_COMPILE_ERROR (gles2ctx.fragmentShader);
+
   gles2ctx.shaderProgram = glCreateProgram ();
   glAttachShader (gles2ctx.shaderProgram, gles2ctx.vertexShader);
   glAttachShader (gles2ctx.shaderProgram, gles2ctx.fragmentShader);
   glLinkProgram (gles2ctx.shaderProgram);
-  glUseProgram (gles2ctx.shaderProgram);
 
-  glGetShaderInfoLog (gles2ctx.vertexShader, 255, &gles2ctx.log_len, gles2ctx.log);
+  // Checks if the program is linked correctly.
+  GLint isLinked = 0;
+  glGetProgramiv (gles2ctx.shaderProgram, GL_LINK_STATUS, (int *)&isLinked);
+  if(isLinked == GL_FALSE)
+    {
+      GLint maxLength = 0;
+      glGetProgramiv (gles2ctx.shaderProgram, GL_INFO_LOG_LENGTH, &maxLength);
 
-  TRACE ("%s.", gles2ctx.log);
+      std::vector<GLchar> infoLog ((GLuint) maxLength);
+      glGetProgramInfoLog (gles2ctx.shaderProgram, maxLength, &maxLength,
+                           &infoLog[0]);
+
+      glDeleteProgram (gles2ctx.shaderProgram);
+
+      glDeleteShader (gles2ctx.vertexShader);
+      glDeleteShader (gles2ctx.shaderProgram);
+
+      ERROR ("%s.", &infoLog[0]);
+
+      return;
+    }
+
+  // Always detach shaders after a successful link.
+  glDetachShader (gles2ctx.shaderProgram, gles2ctx.vertexShader);
+  glDetachShader (gles2ctx.shaderProgram, gles2ctx.fragmentShader);
 
   CHECK_GL_ERROR ();
+#endif
+}
+
+void
+GL::beginDraw()
+{
+#if ! (defined WITH_OPENGL && WITH_OPENGL)
+  ERROR_NOT_IMPLEMENTED ("not compiled with OpenGL support");
+#else
+  if (!gles2ctx.shaderProgram)
+    GL::init ();
+
+  glUseProgram (gles2ctx.shaderProgram);
 
   gles2ctx.posAttr = glGetAttribLocation (gles2ctx.shaderProgram, "pos");
   if (gles2ctx.posAttr < 0)
@@ -141,9 +214,6 @@ GL::init ()
   gles2ctx.texAttr = glGetAttribLocation (gles2ctx.shaderProgram, "texcoord");
   if (gles2ctx.texAttr < 0)
     WARNING ("Shader texcoord attribute not found.");
-
-# endif
-  CHECK_GL_ERROR ();
 #endif
 }
 
@@ -153,24 +223,21 @@ GL::init ()
 void
 GL::clear_scene (int w, int h)
 {
+
 #if ! (defined WITH_OPENGL && WITH_OPENGL)
   ERROR_NOT_IMPLEMENTED ("not compiled with OpenGL support");
 #else
   glViewport (0.0, 0.0, w, h);
 
-# if WITH_OPENGLES2
+  CHECK_GL_ERROR ();
+
   GLint loc = glGetUniformLocation (gles2ctx.shaderProgram, "winSize");
-  g_assert (loc);
+  g_assert (loc != -1);
   glUniform2f (loc, (GLfloat) w, (GLfloat) h);
   loc = glGetUniformLocation (gles2ctx.shaderProgram, "use_tex");
   glUniform1i (loc, 0);
-# else
-  glMatrixMode (GL_PROJECTION);
-  glLoadIdentity ();
-  glOrtho (0.0, w, h, 0.0, 0.0, 1.0);
-  glMatrixMode (GL_MODELVIEW);
-  glLoadIdentity();
-# endif
+
+  CHECK_GL_ERROR ();
 
   glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -179,7 +246,7 @@ GL::clear_scene (int w, int h)
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glBlendEquation (GL_FUNC_ADD);
 
-  glEnable (GL_TEXTURE_2D);
+  CHECK_GL_ERROR ();
 #endif
 }
 
@@ -192,6 +259,7 @@ GL::create_texture (GLuint *gltex)
 #if ! (defined WITH_OPENGL && WITH_OPENGL)
   ERROR_NOT_IMPLEMENTED ("not compiled with OpenGL support");
 #else
+  glActiveTexture(GL_TEXTURE0);
   glGenTextures (1, gltex);
   glBindTexture (GL_TEXTURE_2D, *gltex);
 
@@ -215,7 +283,7 @@ GL::create_texture (GLuint *gltex, int tex_w, int tex_h, unsigned char *data)
   ERROR_NOT_IMPLEMENTED ("not compiled with OpenGL support");
 #else
   create_texture (gltex);
-  glTexImage2D (GL_TEXTURE_2D, 0, 4,
+  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA,
                 tex_w, tex_h, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, data);
 
   CHECK_GL_ERROR ();
@@ -294,9 +362,11 @@ GL::draw_quad (int x, int y, int w, int h, GLuint gltex, GLfloat alpha)
   ERROR_NOT_IMPLEMENTED ("not compiled with OpenGL support");
 #else
   g_assert (gltex > 0);
+  glActiveTexture (GL_TEXTURE0);
   glBindTexture (GL_TEXTURE_2D, gltex);
 
-# if WITH_OPENGLES2
+  CHECK_GL_ERROR ();
+
   GLint loc = glGetUniformLocation (gles2ctx.shaderProgram, "use_tex");
   glUniform1i (loc, 1);
 
@@ -328,12 +398,17 @@ GL::draw_quad (int x, int y, int w, int h, GLuint gltex, GLfloat alpha)
   vertices[3].v_color[2] = 1.0;
   vertices[3].v_color[3] = alpha;
 
+  glBindBuffer (GL_ARRAY_BUFFER, gles2ctx.vbo);
+//  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, gles2ctx.ebo);
+
   glBufferData (GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
   glEnableVertexAttribArray ((GLuint) gles2ctx.posAttr);
   glVertexAttribPointer ((GLuint) gles2ctx.posAttr, 2, GL_FLOAT, GL_FALSE,
                          sizeof (struct sprite),
-                         0);
+                         NULL);
+
+  CHECK_GL_ERROR ();
 
   glEnableVertexAttribArray ((GLuint) gles2ctx.colorAttr);
   glVertexAttribPointer ((GLuint) gles2ctx.colorAttr, 4, GL_FLOAT, GL_FALSE,
@@ -351,15 +426,7 @@ GL::draw_quad (int x, int y, int w, int h, GLuint gltex, GLfloat alpha)
 
   // glDrawArrays (GL_TRIANGLES, 0, 3);
   glDrawElements (GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-# else
-  glColor4f (1.0f, 1.0f, 1.0f, alpha);
-  glBegin( GL_QUADS );
-    glTexCoord2d (0.0,0.0); glVertex2d (x, y);
-    glTexCoord2d (1.0,0.0); glVertex2d (x + w, y);
-    glTexCoord2d (1.0,1.0); glVertex2d (x + w, y + h);
-    glTexCoord2d (0.0,1.0); glVertex2d (x, y + h);
-  glEnd();
-# endif
+
   glBindTexture (GL_TEXTURE_2D, 0);
 
   CHECK_GL_ERROR ();
@@ -376,7 +443,6 @@ GL::draw_quad (int x, int y, int w, int h,
 #if ! (defined WITH_OPENGL && WITH_OPENGL)
   ERROR_NOT_IMPLEMENTED ("not compiled with OpenGL support");
 #else
-# if WITH_OPENGLES2
   GLint loc = glGetUniformLocation (gles2ctx.shaderProgram, "use_tex");
   glUniform1i (loc, 0);
 
@@ -411,15 +477,7 @@ GL::draw_quad (int x, int y, int w, int h,
   glBufferData (GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
   glDrawElements (GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-# else
-  glColor4f (r, g, b, a);
-  glBegin (GL_QUADS);
-    glVertex2d (x, y);
-    glVertex2d (x + w, y);
-    glVertex2d (x + w, y + h);
-    glVertex2d (x, y + h);
-  glEnd();
-# endif
+
   CHECK_GL_ERROR ();
 #endif
 }

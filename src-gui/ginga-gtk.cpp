@@ -16,12 +16,11 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga_gtk.h"
+#include "aux-glib.h"
 #include <locale.h>
 
 // Global formatter.
 Ginga *GINGA = nullptr;
-
-gchar* executableFolder;
 
 int
 main (int argc, char **argv)
@@ -34,22 +33,25 @@ main (int argc, char **argv)
   GINGA = Ginga::create (argc, argv, &opts);
   g_assert_nonnull (GINGA);
   
-  executableFolder = g_strconcat (
-      g_get_current_dir (), g_path_get_dirname (argv[0]) + 1, NULL);
-  printf ("PATH: %s \n", executableFolder);
 
   gtk_init (&argc, &argv);
 
   setlocale (LC_ALL, "C");
   
-  GError **error;
-  gtk_window_set_default_icon_from_file (g_build_path ( G_DIR_SEPARATOR_S, executableFolder,
-                   "icons/common/ginga_icon.png", NULL), error);
+  GError *err = NULL;
+  gtk_window_set_default_icon_from_file (
+        g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR,
+                      "icons/common/ginga_icon.png", NULL),
+        &err);
+
+  if (err != NULL)
+    {
+      fprintf (stderr, "Error: %s\n", err->message);
+      g_error_free (err);
+    }
   
   load_settings ();
-
   create_main_window ();
-
   gtk_main ();
 
   exit (EXIT_SUCCESS);

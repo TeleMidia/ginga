@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga_gtk.h"
+#include "aux-glib.h"
 #include "BigPictureWindow.h"
 
 GList *cards_list = NULL;
@@ -30,7 +31,7 @@ gdouble mid = 0;
 gdouble speed = 1500.0; /* pixels/s */
 gdouble frameRate = 1.000 / 60.0;
 
-gint numCards = 20;
+guint numCards = 20;
 gdouble cardWidth = 300;
 gdouble cardHeight = 169;
 
@@ -78,7 +79,8 @@ update_bigpicture_callback (GtkWidget *widget)
 }
 
 void
-draw_bigpicture_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
+draw_bigpicture_callback (GtkWidget *widget, cairo_t *cr,
+                          unused (gpointer data))
 {
 
   int w, h;
@@ -167,7 +169,7 @@ carrousel_rotate (gint dir)
   else if (dir > 0)
     currentCard--;
 
-  if (dir < 0 && currentCard == numCards - 1)
+  if (dir < 0 && currentCard == (gint)(numCards) - 1)
     return;
   else if (dir < 0)
     currentCard++;
@@ -203,7 +205,7 @@ create_bigpicture_window ()
     return;
 
   cairo_surface_t *image_p = cairo_image_surface_create_from_png (
-      g_strconcat (executableFolder, "icons/common/pattern_1.png", NULL));
+      g_strconcat (GINGADATADIR, "icons/common/pattern_1.png", NULL));
   g_assert_nonnull (image_p);
   background_pattern = cairo_pattern_create_for_surface (image_p);
   cairo_pattern_set_extend (background_pattern, CAIRO_EXTEND_REPEAT);
@@ -238,7 +240,7 @@ create_bigpicture_window ()
       bigPictureCard[i].animate = FALSE;
 
       bigPictureCard[i].surface = cairo_image_surface_create_from_png (
-          g_strconcat (executableFolder, "icons/cover.png", NULL));
+          g_strconcat (GINGADATADIR, "icons/cover.png", NULL));
 
       if (i % 5 == 0)
         {

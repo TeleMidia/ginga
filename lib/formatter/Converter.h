@@ -43,23 +43,15 @@ public:
   explicit Converter (GingaInternal *, RuleAdapter *);
   virtual ~Converter ();
 
-  NclEvent *getEvent (ExecutionObject *, Anchor *, EventType , const string &);
+  NclEvent *obtainEvent (ExecutionObject *, Anchor *, EventType,
+                         const string &key="");
 
   ExecutionObject *
   processExecutionObjectSwitch (ExecutionObjectSwitch *);
 
 private:
-  void compileExecutionObjectLinks (ExecutionObject *, Node *,
-                                    ExecutionObjectContext *);
-  void processLink (Link *,
-                    Node *,
-                    ExecutionObject *,
-                    ExecutionObjectContext *);
-
-  void resolveSwitchEvents (ExecutionObjectSwitch *switchObject);
-
+  void resolveSwitchEvents (ExecutionObjectSwitch *);
   NclEvent *createEvent (Bind *);
-
   bool getBindKey (Bind *, string *);
 
   // INclEventListener
@@ -74,7 +66,7 @@ private:
   Scheduler *_scheduler;
   RuleAdapter *_ruleAdapter;
 
-  NclLink *createLink (Link *, ExecutionObjectContext *);
+  NclLink *createLink (Link *);
   NclCondition *createCondition (Condition *, Bind *);
   NclAction *createAction (Action *, Bind *);
 };

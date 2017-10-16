@@ -19,12 +19,19 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 MAINTAINERCLEANFILES+= config.h.in config.h.in~
 
+EXTRA_DIST+= nclua.pc.in
+DISTCLEANFILES+= ginga.pc
+
+pkgconfigdir= $(libdir)/pkgconfig
+pkgconfig_DATA= ginga.pc
+
 AM_CXXFLAGS= $(GINGA_ALL_CXXFLAGS)
 AM_LDFLAGS= $(GINGA_ALL_LDFLAGS)
 
-noinst_LTLIBRARIES= libginga.la
+include_HEADERS= ginga.h
+lib_LTLIBRARIES= libginga.la
 libginga_la_CXXFLAGS= $(AM_CXXFLAGS)
-libginga_la_LDFLAGS= -static $(AM_LDFLAGS)
+libginga_la_LDFLAGS= $(AM_LDFLAGS)
 libginga_la_SOURCES= $(src)
 src=
 src+= aux-ginga.cpp
@@ -38,7 +45,6 @@ src+= formatter/ExecutionObjectSettings.cpp
 src+= formatter/ExecutionObjectSwitch.cpp
 src+= formatter/NclAction.cpp
 src+= formatter/NclCondition.cpp
-src+= formatter/NclEventTransitionManager.cpp
 src+= formatter/NclEvents.cpp
 src+= formatter/NclLink.cpp
 src+= formatter/RuleAdapter.cpp

@@ -29,11 +29,11 @@ bin_PROGRAMS+= ginga-gl
 endif
 
 ginga_CXXFLAGS= $(AM_CXXFLAGS)
-ginga_LDFLAGS= -static $(AM_LDFLAGS)
+ginga_LDFLAGS= $(AM_LDFLAGS)
 ginga_SOURCES= ginga.cpp
 ginga_LDADD= $(top_builddir)/lib/libginga.la
 
 ginga_gl_CXXFLAGS= $(AM_CXXFLAGS)
-ginga_gl_LDFLAGS= -static $(AM_LDFLAGS)
+ginga_gl_LDFLAGS= $(AM_LDFLAGS)
 ginga_gl_SOURCES= ginga-gl.cpp
 ginga_gl_LDADD= $(top_builddir)/lib/libginga.la
