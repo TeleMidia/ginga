@@ -48,55 +48,6 @@ NclEvent::~NclEvent ()
   TRACE ("%s", _id.c_str ());
 }
 
-bool
-NclEvent::hasNcmId (NclEvent *evt, const string &anchorId)
-{
-  Anchor *anchor;
-  string anchorName = " ";
-
-  if (auto anchorEvt = cast (AnchorEvent *, evt))
-    {
-      anchor = anchorEvt->getAnchor ();
-      if (anchor != nullptr)
-        {
-          if (instanceof (Area *, anchor))
-            {
-              anchorName = anchor->getId ();
-            }
-          else if (auto labeledAnchor = cast (AreaLabeled *, anchor))
-            {
-              anchorName = labeledAnchor->getLabel ();
-            }
-          else if (instanceof (AreaLambda *, anchor))
-            {
-              anchorName = "";
-            }
-
-          if (anchorName == anchorId
-              && !(instanceof (SelectionEvent *, evt)))
-            {
-              return true;
-            }
-        }
-    }
-  else if (auto attrEvt = cast (AttributionEvent *, evt))
-    {
-      anchor = attrEvt->getAnchor ();
-      if (anchor != nullptr)
-        {
-          auto propAnchor = cast (Property *, anchor);
-          g_assert_nonnull (propAnchor);
-          anchorName = propAnchor->getName ();
-          if (anchorName == anchorId)
-            {
-              return true;
-            }
-        }
-    }
-
-  return false;
-}
-
 void
 NclEvent::addListener (INclEventListener *listener)
 {
@@ -206,7 +157,6 @@ PresentationEvent::PresentationEvent (GingaInternal *ginga,
   : AnchorEvent (ginga, id, exeObj, anchor)
 {
   _numPresentations = 1;
-  _repetitionInterval = 0;
   _type = EventType::PRESENTATION;
 
   auto intervalAnchor = cast (Area *, anchor);
@@ -241,34 +191,6 @@ PresentationEvent::getDuration ()
   return this->_end - this->_begin;
 }
 
-int
-PresentationEvent::getRepetitions ()
-{
-  return (_numPresentations - 1);
-}
-
-void
-PresentationEvent::setRepetitionSettings (int repetitions,
-                                          GingaTime repetitionInterval)
-{
-  if (repetitions >= 0)
-    {
-      this->_numPresentations = repetitions + 1;
-    }
-  else
-    {
-      this->_numPresentations = 1;
-    }
-
-  this->_repetitionInterval = repetitionInterval;
-}
-
-void
-PresentationEvent::incOccurrences ()
-{
-  _occurrences++;
-}
-
 
 // SelectionEvent
 
@@ -279,7 +201,7 @@ SelectionEvent::SelectionEvent (GingaInternal *ginga,
   : AnchorEvent (ginga, id, exeObj, anchor)
 {
   _type = EventType::SELECTION;
-  _selCode.assign("NO_CODE");
+  _selCode.assign ("NO_CODE");
 }
 
 bool
