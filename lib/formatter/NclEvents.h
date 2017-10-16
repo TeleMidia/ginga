@@ -58,7 +58,6 @@ public:
   bool resume ();
   bool abort ();
   void addListener (INclEventListener *listener);
-  static bool hasNcmId (NclEvent *evt, const string &anchorId);
 
 protected:
   GingaInternal *_ginga;        // ginga handle
@@ -91,7 +90,6 @@ class PresentationEvent : public AnchorEvent
 {
   PROPERTY_READONLY (GingaTime, _begin, getBegin)
   PROPERTY (GingaTime, _end, getEnd, setEnd)
-  PROPERTY_READONLY (GingaTime, _repetitionInterval, getRepetitionInterval)
 
 public:
   PresentationEvent (GingaInternal *, const string &,
@@ -99,9 +97,6 @@ public:
   virtual ~PresentationEvent () {}
   virtual bool stop () override;
   GingaTime getDuration ();
-  int getRepetitions ();
-  void setRepetitionSettings (int, GingaTime);
-  void incOccurrences ();
 
 private:
   int _numPresentations;
