@@ -37,14 +37,12 @@ Converter::~Converter ()
 }
 
 NclEvent *
-Converter::obtainEvent (ExecutionObject *object,
-                        Anchor *iface,
-                        EventType eventType,
-                        const string &key)
+Converter::obtainEvent (EventType eventType, ExecutionObject *object,
+                        Anchor *iface, const string &key)
 {
-  string id;
   NclEvent *event;
   string type;
+  string id;
 
   id = iface->getId ();
   switch (eventType)
@@ -172,9 +170,9 @@ Converter::resolveSwitchEvents (
       auto lambdaAnchor = cast (AreaLambda *, interfacePoint);
       if (lambdaAnchor)
         {
-          mappedEvent = obtainEvent (
+          mappedEvent = obtainEvent (switchEvent->getType (),
                 selectedObject, selectedNode->getLambda (),
-                switchEvent->getType (), switchEvent->getKey ());
+                                     switchEvent->getKey ());
         }
       else
         {
@@ -186,10 +184,10 @@ Converter::resolveSwitchEvents (
               mapping->getTarget (&selectedNode, &interfacePoint);
               endPointObject = obtainExecutionObject (selectedNode);
               g_assert_nonnull (endPointObject);
-              mappedEvent = obtainEvent (endPointObject,
-                                      interfacePoint,
-                                      switchEvent->getType (),
-                                      switchEvent->getKey ());
+              mappedEvent = obtainEvent (switchEvent->getType (),
+                                         endPointObject,
+                                         interfacePoint,
+                                         switchEvent->getKey ());
               break;
             }
         }
@@ -239,8 +237,8 @@ Converter::createEvent (Bind *bind)
 
   if (!getBindKey (bind, &key))
     key = "";
-  event = obtainEvent (executionObject, interfacePoint,
-                       bind->getRole ()->getEventType (), key);
+  event = obtainEvent (bind->getRole ()->getEventType (),
+                       executionObject, interfacePoint, key);
 
   return event;
 }
@@ -317,7 +315,7 @@ Converter::obtainExecutionObject (Node *node)
       TRACE ("creating switch %s", node->getId ().c_str ());
       object = new ExecutionObjectSwitch (_ginga, id, node);
       g_assert_nonnull
-        (obtainEvent (object, node->getLambda (), EventType::PRESENTATION));
+        (obtainEvent (EventType::PRESENTATION, object, node->getLambda ()));
       goto done;
     }
 
@@ -326,7 +324,7 @@ Converter::obtainExecutionObject (Node *node)
       TRACE ("creating context %s", node->getId ().c_str ());
       object = new ExecutionObjectContext (_ginga, id, node);
       g_assert_nonnull
-        (obtainEvent (object, node->getLambda (), EventType::PRESENTATION));
+        (obtainEvent (EventType::PRESENTATION, object, node->getLambda ()));
 
       g_assert_nonnull (object);
       if (parent != nullptr)
