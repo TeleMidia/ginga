@@ -49,7 +49,6 @@ public:
   virtual ~NclEvent ();
 
 
-  void setState (EventState);
   virtual bool start ();
   virtual bool stop ();
   bool pause ();
@@ -62,7 +61,6 @@ public:
   Anchor *getAnchor ();
 
   EventState getState ();
-  EventState getPreviousState ();
 
 protected:
   GingaInternal *_ginga;        // ginga handle

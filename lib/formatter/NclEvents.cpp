@@ -77,12 +77,6 @@ NclEvent::getState ()
   return _state;
 }
 
-EventState
-NclEvent::getPreviousState ()
-{
-  return _previousState;
-}
-
 void
 NclEvent::addListener (INclEventListener *listener)
 {
@@ -140,13 +134,6 @@ NclEvent::resume ()
     return changeState (EventState::OCCURRING, EventStateTransition::RESUME);
   else
     return false;
-}
-
-void
-NclEvent::setState (EventState newState)
-{
-  _previousState = _state;
-  _state = newState;
 }
 
 bool
