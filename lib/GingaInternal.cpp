@@ -167,8 +167,6 @@ GingaInternal::stop ()
 
   delete _scheduler;
   _scheduler = nullptr;
-  g_list_free (_listeners);
-  _listeners = nullptr;
   g_list_free (_players);
   _players = nullptr;
   _state = GINGA_STATE_STOPPED;
@@ -294,7 +292,6 @@ GingaInternal::redraw (cairo_t *cr)
     }
 }
 
-
 // Stop formatter if EOS has been seen.
 #define _GINGA_CHECK_EOS(ginga)                                 \
   G_STMT_START                                                  \
@@ -309,26 +306,10 @@ GingaInternal::redraw (cairo_t *cr)
   }                                                             \
   G_STMT_END
 
-// This gymnastics is necessary to ensure that the list can be safely
-// modified while it is being traversed.
-#define _GINGA_NOTIFY_LISTENERS(list, Type, method, ...)        \
-  G_STMT_START                                                  \
-  {                                                             \
-    guint n = g_list_length ((list));                           \
-    for (guint i = 0; i < n; i++)                               \
-      {                                                         \
-        Type *obj = (Type *) g_list_nth_data ((list), i);       \
-        if (obj == NULL)                                        \
-          break;                                                \
-        obj->method (__VA_ARGS__);                              \
-      }                                                         \
-  }                                                             \
-  G_STMT_END
-
 /**
  * @brief Sends key event.
  * @param key Key name.
- * @param press True if press, False if release.
+ * @param press True if press or false if release.
  * @return True if successful, or false otherwise.
  */
 bool
@@ -338,8 +319,7 @@ GingaInternal::sendKeyEvent (const string &key, bool press)
   if (_state != GINGA_STATE_PLAYING)
     return false;               // nothing to do
 
-  _GINGA_NOTIFY_LISTENERS (_listeners, IGingaInternalEventListener,
-                           handleKeyEvent, key, press);
+  _scheduler->sendKeyEvent (key, press);
   return true;
 }
 
@@ -360,8 +340,8 @@ GingaInternal::sendTickEvent (uint64_t total, uint64_t diff, uint64_t frame)
   _last_tick_total = total;
   _last_tick_diff = diff;
   _last_tick_frameno = frame;
-  _GINGA_NOTIFY_LISTENERS (_listeners, IGingaInternalEventListener,
-                           handleTickEvent, total, diff, (int) frame);
+
+  _scheduler->sendTickEvent (total, diff, frame);
   return true;
 }
 
@@ -425,7 +405,6 @@ GingaInternal::GingaInternal (unused (int argc), unused (char **argv),
   _state = GINGA_STATE_STOPPED;
   _opts = (opts) ? *opts : opts_defaults;
   _scheduler = nullptr;
-  _listeners = nullptr;
   _players = nullptr;
 
   _ncl_file = "";
@@ -492,30 +471,6 @@ void
 GingaInternal::setEOS (bool eos)
 {
   _eos = eos;
-}
-
-/**
- * @brief Adds event listener.
- * @param obj Event listener.
- * @return True if successful, or false otherwise.
- */
-bool
-GingaInternal::registerEventListener (IGingaInternalEventListener *obj)
-{
-  g_assert_nonnull (obj);
-  return this->add (&_listeners, obj);
-}
-
-/**
- * @brief Removes event listener.
- * @param obj Event listener.
- * @return True if successful, or false otherwise.
- */
-bool
-GingaInternal::unregisterEventListener (IGingaInternalEventListener *obj)
-{
-  g_assert_nonnull (obj);
-  return this->remove (&_listeners, obj);
 }
 
 /**

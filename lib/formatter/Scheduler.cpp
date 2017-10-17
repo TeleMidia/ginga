@@ -196,6 +196,20 @@ Scheduler::addObject (ExecutionObject *obj)
 }
 
 void
+Scheduler::sendTickEvent (GingaTime total, GingaTime diff, GingaTime frame)
+{
+  for (auto obj: _objects)
+    obj->sendTickEvent (total, diff, frame);
+}
+
+void
+Scheduler::sendKeyEvent (const string &key, bool press)
+{
+  for (auto obj: _objects)
+    obj->sendKeyEvent (key, press);
+}
+
+void
 Scheduler::scheduleAction (NclAction *action)
 {
   runAction (action->getEvent (), action);

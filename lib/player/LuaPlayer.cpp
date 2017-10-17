@@ -69,8 +69,6 @@ LuaPlayer::start (void)
   this->pwdRestore ();
 
   evt_ncl_send_presentation (_nw, "start", "");
-  g_assert (_ginga->registerEventListener (this));
-
   Player::start ();
 }
 
@@ -88,7 +86,6 @@ LuaPlayer::stop (void)
   this->pwdRestore ();
 
   ncluaw_close (_nw);
-  g_assert (_ginga->unregisterEventListener (this));
   _nw = nullptr;
 
   if (_opengl && _gltexture != 0)
@@ -114,7 +111,7 @@ LuaPlayer::resume (void)
 }
 
 void
-LuaPlayer::handleKeyEvent (string const &key, bool press)
+LuaPlayer::sendKeyEvent (string const &key, bool press)
 {
   g_assert_nonnull (_nw);
   evt_key_send (_nw, press ? "press" : "release", key.c_str ());

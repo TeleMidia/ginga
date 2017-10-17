@@ -35,7 +35,6 @@ ExecutionObjectSettings::ExecutionObjectSettings (GingaInternal *ginga,
   g_assert_nonnull (media);
   g_assert (media->isSettings ());
   _player = Player::createPlayer (_ginga, _id, "", media->getMimeType ());
-  g_assert (_ginga->registerEventListener (this));
 }
 
 void
@@ -110,15 +109,9 @@ ExecutionObjectSettings::scheduleFocusUpdate (const string &next)
 }
 
 void
-ExecutionObjectSettings::handleKeyEvent (unused (const string &key),
-                                         unused (bool press))
-{
-}
-
-void
-ExecutionObjectSettings::handleTickEvent (unused (GingaTime total),
-                                          unused (GingaTime diff),
-                                          unused (int frame))
+ExecutionObjectSettings::sendTickEvent (unused (GingaTime total),
+                                        unused (GingaTime diff),
+                                        unused (GingaTime frame))
 {
   if (_hasNextFocus)            // effectuate pending focus index update
     {
