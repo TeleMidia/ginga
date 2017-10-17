@@ -19,10 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Scheduler.h"
 #include "Converter.h"
 
-#include "ncl/ParserXercesC.h"
-#include "ncl/ParserLibXML.h"
-using namespace ::ginga::ncl;
-
 GINGA_FORMATTER_BEGIN
 
 
@@ -32,9 +28,9 @@ Scheduler::Scheduler (GingaInternal *ginga)
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;
-  _ginga->setData ("scheduler", this);
   _converter = nullptr;
   _doc = nullptr;
+  _settings = nullptr;
 }
 
 Scheduler::~Scheduler ()
@@ -48,24 +44,15 @@ Scheduler::~Scheduler ()
 }
 
 bool
-Scheduler::run (const string &file, string *errmsg)
+Scheduler::run (NclDocument *doc)
 {
   string id;
   Context *body;
   const vector<Port *> *ports;
   vector<NclEvent *> *entryevts;
-  int w, h;
 
-  // Parse document.
-  w = _ginga->getOptionInt ("width");
-  h = _ginga->getOptionInt ("height");
-
-  if (!_ginga->getOptionBool ("experimental"))
-    _doc = ParserXercesC::parse (file, w, h, errmsg);
-  else
-    _doc = ParserLibXML::parseFile (file, w, h, errmsg);
-  if (unlikely (_doc == nullptr))
-    return false;               // syntax error
+  g_assert_nonnull (doc);
+  _doc = doc;
 
   id = _doc->getId ();
   body = _doc->getRoot ();
@@ -76,7 +63,7 @@ Scheduler::run (const string &file, string *errmsg)
   g_assert_nonnull (ports);
   if (unlikely (ports->size () == 0))
     {
-      *errmsg = "Document has no ports";
+      WARNING ("document has no ports");
       return false;
     }
 
@@ -149,7 +136,7 @@ Scheduler::run (const string &file, string *errmsg)
 
   // Set global settings object.
   g_assert_nonnull (settings);
-  _ginga->setData ("settings", settings);
+  _settings = settings;
 
   // Start entry events.
   for (auto event: *entryevts)
@@ -166,6 +153,12 @@ Scheduler::run (const string &file, string *errmsg)
 
   // Success.
   return true;
+}
+
+ExecutionObjectSettings *
+Scheduler::getSettings ()
+{
+  return _settings;
 }
 
 const set<ExecutionObject *> *
@@ -206,6 +199,32 @@ Scheduler::addObject (ExecutionObject *obj)
     }
   _objects.insert (obj);
   return true;
+}
+
+void
+Scheduler::sendTickEvent (GingaTime total, GingaTime diff, GingaTime frame)
+{
+  vector<ExecutionObject *> buf;
+  for (auto obj: _objects)
+    if (obj->isOccurring ())
+      buf.push_back (obj);
+  for (auto obj: buf)
+    {
+      g_assert (!instanceof (ExecutionObjectSettings *, obj));
+      obj->sendTickEvent (total, diff, frame);
+    }
+  _settings->sendTickEvent (total, diff, frame);
+}
+
+void
+Scheduler::sendKeyEvent (const string &key, bool press)
+{
+  vector<ExecutionObject *> buf;
+  for (auto obj: _objects)
+    if (instanceof (ExecutionObjectSettings *, obj) || obj->isOccurring ())
+      buf.push_back (obj);
+  for (auto obj: buf)
+    obj->sendKeyEvent (key, press);
 }
 
 void
@@ -271,7 +290,7 @@ Scheduler::runAction (NclEvent *event, NclAction *action)
       if (event->getCurrentState () != EventState::SLEEPING)
         return;                 // nothing to do
 
-      property = attevt->getAnchor ();
+      property = cast (Property *, attevt->getAnchor ());
       g_assert_nonnull (property);
 
       name = property->getName ();
@@ -423,11 +442,7 @@ Scheduler::runActionOverSwitch (ExecutionObjectSwitch *switchObj,
   if (selectedObject == nullptr)
     {
       selectedObject = _converter->processExecutionObjectSwitch (switchObj);
-
-      if (selectedObject == nullptr)
-        {
-          return;
-        }
+      g_assert_nonnull (selectedObject);
     }
 
   selectedEvent = event->getMappedEvent ();
@@ -459,7 +474,7 @@ Scheduler::runSwitchEvent (unused (ExecutionObjectSwitch *switchObj),
   ExecutionObject *endPointObject;
 
   selectedEvent = nullptr;
-  switchPort = (SwitchPort *)(switchEvent->getInterface ());
+  switchPort = (SwitchPort *)(switchEvent->getAnchor ());
   for (auto mapping: *switchPort->getPorts ())
     {
       if (mapping->getNode () != selectedObject->getNode ())

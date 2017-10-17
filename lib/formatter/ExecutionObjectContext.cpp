@@ -81,30 +81,27 @@ ExecutionObjectContext::eventStateChanged (
       break;
 
     case EventStateTransition::STOP:
-      if (((PresentationEvent *)event)->getRepetitions () == 0)
+      lastTransition = transition;
+      if (previousState == EventState::OCCURRING)
         {
-          lastTransition = transition;
-          if (previousState == EventState::OCCURRING)
+          i = _runningEvents.find (event);
+          if (i != _runningEvents.end ())
             {
-              i = _runningEvents.find (event);
-              if (i != _runningEvents.end ())
-                {
-                  _runningEvents.erase (i);
-                }
+              _runningEvents.erase (i);
             }
-          else if (previousState == EventState::PAUSED)
+        }
+      else if (previousState == EventState::PAUSED)
+        {
+          i = _pausedEvents.find (event);
+          if (i != _pausedEvents.end ())
             {
-              i = _pausedEvents.find (event);
-              if (i != _pausedEvents.end ())
-                {
-                  _pausedEvents.erase (i);
-                }
+              _pausedEvents.erase (i);
             }
+        }
 
-          if (_runningEvents.empty () && _pausedEvents.empty ())
-            {
-              checkLinkConditions ();
-            }
+      if (_runningEvents.empty () && _pausedEvents.empty ())
+        {
+          checkLinkConditions ();
         }
       break;
 

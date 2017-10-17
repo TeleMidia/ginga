@@ -22,6 +22,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "formatter/Scheduler.h"
 using namespace ::ginga::formatter;
 
+#include "ncl/ParserXercesC.h"
+#include "ncl/ParserLibXML.h"
+using namespace ::ginga::ncl;
+
 #include "player/TextPlayer.h"
 using namespace ::ginga::player;
 
@@ -116,9 +120,23 @@ GingaInternal::getState ()
 bool
 GingaInternal::start (const string &file, string *errmsg)
 {
+  NclDocument *doc;
+  int w, h;
+
   if (_state != GINGA_STATE_STOPPED)
     return false;               // nothing to do
 
+  // Parse document.
+  w = _opts.width;
+  h = _opts.height;
+  if (!_opts.experimental)
+    doc = ParserXercesC::parse (file, w, h, errmsg);
+  else
+    doc = ParserLibXML::parseFile (file, w, h, errmsg);
+  if (unlikely (doc == nullptr))
+    return false;
+
+  // Create scheduler.
   _scheduler = new Scheduler (this);
   _ncl_file = file;
   _eos = false;
@@ -126,8 +144,9 @@ GingaInternal::start (const string &file, string *errmsg)
   _last_tick_diff = 0;
   _last_tick_frameno = 0;
 
+  // Run document.
   TRACE ("%s", file.c_str ());
-  if (unlikely (!_scheduler->run (file, errmsg)))
+  if (unlikely (!_scheduler->run (doc)))
     {
       delete _scheduler;
       return false;
@@ -148,8 +167,6 @@ GingaInternal::stop ()
 
   delete _scheduler;
   _scheduler = nullptr;
-  g_list_free (_listeners);
-  _listeners = nullptr;
   g_list_free (_players);
   _players = nullptr;
   _state = GINGA_STATE_STOPPED;
@@ -275,7 +292,6 @@ GingaInternal::redraw (cairo_t *cr)
     }
 }
 
-
 // Stop formatter if EOS has been seen.
 #define _GINGA_CHECK_EOS(ginga)                                 \
   G_STMT_START                                                  \
@@ -290,26 +306,10 @@ GingaInternal::redraw (cairo_t *cr)
   }                                                             \
   G_STMT_END
 
-// This gymnastics is necessary to ensure that the list can be safely
-// modified while it is being traversed.
-#define _GINGA_NOTIFY_LISTENERS(list, Type, method, ...)        \
-  G_STMT_START                                                  \
-  {                                                             \
-    guint n = g_list_length ((list));                           \
-    for (guint i = 0; i < n; i++)                               \
-      {                                                         \
-        Type *obj = (Type *) g_list_nth_data ((list), i);       \
-        if (obj == NULL)                                        \
-          break;                                                \
-        obj->method (__VA_ARGS__);                              \
-      }                                                         \
-  }                                                             \
-  G_STMT_END
-
 /**
  * @brief Sends key event.
  * @param key Key name.
- * @param press True if press, False if release.
+ * @param press True if press or false if release.
  * @return True if successful, or false otherwise.
  */
 bool
@@ -319,8 +319,7 @@ GingaInternal::sendKeyEvent (const string &key, bool press)
   if (_state != GINGA_STATE_PLAYING)
     return false;               // nothing to do
 
-  _GINGA_NOTIFY_LISTENERS (_listeners, IGingaInternalEventListener,
-                           handleKeyEvent, key, press);
+  _scheduler->sendKeyEvent (key, press);
   return true;
 }
 
@@ -341,8 +340,8 @@ GingaInternal::sendTickEvent (uint64_t total, uint64_t diff, uint64_t frame)
   _last_tick_total = total;
   _last_tick_diff = diff;
   _last_tick_frameno = frame;
-  _GINGA_NOTIFY_LISTENERS (_listeners, IGingaInternalEventListener,
-                           handleTickEvent, total, diff, (int) frame);
+
+  _scheduler->sendTickEvent (total, diff, frame);
   return true;
 }
 
@@ -406,7 +405,6 @@ GingaInternal::GingaInternal (unused (int argc), unused (char **argv),
   _state = GINGA_STATE_STOPPED;
   _opts = (opts) ? *opts : opts_defaults;
   _scheduler = nullptr;
-  _listeners = nullptr;
   _players = nullptr;
 
   _ncl_file = "";
@@ -452,7 +450,7 @@ GingaInternal::~GingaInternal ()
 Scheduler *
 GingaInternal::getScheduler ()
 {
-  return (Scheduler *) this->getData ("scheduler");
+  return _scheduler;
 }
 
 /**
@@ -476,30 +474,6 @@ GingaInternal::setEOS (bool eos)
 }
 
 /**
- * @brief Adds event listener.
- * @param obj Event listener.
- * @return True if successful, or false otherwise.
- */
-bool
-GingaInternal::registerEventListener (IGingaInternalEventListener *obj)
-{
-  g_assert_nonnull (obj);
-  return this->add (&_listeners, obj);
-}
-
-/**
- * @brief Removes event listener.
- * @param obj Event listener.
- * @return True if successful, or false otherwise.
- */
-bool
-GingaInternal::unregisterEventListener (IGingaInternalEventListener *obj)
-{
-  g_assert_nonnull (obj);
-  return this->remove (&_listeners, obj);
-}
-
-/**
  * @brief Adds handled player.
  * @param player Player.
  */
@@ -518,30 +492,6 @@ GingaInternal::unregisterPlayer (Player *player)
 {
   g_assert_nonnull (player);
   g_assert (this->remove (&_players, player));
-}
-
-/**
- * @brief Gets data previously attached to state.
- * @param key Name of the key.
- * @return Data associated with key.
- */
-void *
-GingaInternal::getData (const string &key)
-{
-  map<string, void *>::iterator it;
-  return ((it = _userdata.find (key)) == _userdata.end ())
-    ? nullptr : it->second;
-}
-
-/**
- * @brief Attaches data to state.
- * @param key Name of the key.
- * @param data Data to associate with key.
- */
-void
-GingaInternal::setData (const string &key, void *data)
-{
-  _userdata[key] = data;
 }
 
 /**

@@ -95,11 +95,7 @@ Converter::obtainEvent (ExecutionObject *object,
           }
         case EventType::SELECTION:
           {
-            event = new SelectionEvent (_ginga, id, object, (Area *) iface);
-            if (key != "")
-              {
-                ((SelectionEvent *) event)->setSelectionCode (key);
-              }
+            event = new SelectionEvent (_ginga, id, object, (Area *) iface, key);
             break;
           }
         default:
@@ -172,7 +168,7 @@ Converter::resolveSwitchEvents (
       switchEvent = cast (SwitchEvent *, event);
       g_assert_nonnull (switchEvent);
 
-      interfacePoint = switchEvent->getInterface ();
+      interfacePoint = switchEvent->getAnchor ();
       auto lambdaAnchor = cast (AreaLambda *, interfacePoint);
       if (lambdaAnchor)
         {
@@ -201,47 +197,6 @@ Converter::resolveSwitchEvents (
       if (mappedEvent != nullptr)
         {
           switchEvent->setMappedEvent (mappedEvent);
-        }
-    }
-}
-
-void
-Converter::eventStateChanged (NclEvent *event,
-                              EventStateTransition transition,
-                              unused (EventState previousState))
-{
-  ExecutionObject *exeObj = event->getExecutionObject ();
-  auto exeSwitch = cast (ExecutionObjectSwitch *, exeObj);
-
-  if (exeSwitch)
-    {
-      if (transition == EventStateTransition::START)
-        {
-          for (auto e: *(exeSwitch->getEvents()))
-            {
-              auto switchEvt = cast (SwitchEvent *, e);
-              if (switchEvt)
-                {
-                  NclEvent *ev = switchEvt->getMappedEvent ();
-
-                  if (ev == nullptr)
-                    {
-                      processExecutionObjectSwitch (exeSwitch);
-
-                      ev = switchEvt->getMappedEvent ();
-                      if (ev != nullptr)
-                        {
-                          e->start ();
-                        }
-                    }
-                }
-            }
-        }
-
-      if (transition == EventStateTransition::STOP
-          || transition == EventStateTransition::ABORT)
-        {
-          exeSwitch->select (NULL);
         }
     }
 }

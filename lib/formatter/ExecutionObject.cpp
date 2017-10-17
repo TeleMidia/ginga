@@ -180,7 +180,8 @@ ExecutionObject::prepare (NclEvent *event)
       if (instanceof (AttributionEvent *, auxEvent))
         {
           attributeEvent = (AttributionEvent *)auxEvent;
-          attributeAnchor = attributeEvent->getAnchor ();
+          attributeAnchor = cast (Property *, attributeEvent->getAnchor ());
+          g_assert_nonnull (attributeAnchor);
           value = attributeAnchor->getValue ();
           if (value != "")
             {
@@ -225,17 +226,8 @@ ExecutionObject::start ()
         _player->setProperty (prop->getName (), prop->getValue ());
     }
 
-  // Install attribution events.
-  for (auto evt: *(this->getEvents ()))
-    {
-      AttributionEvent *attevt = cast (AttributionEvent *, evt);
-      if (attevt)
-        attevt->setPlayer (_player);
-    }
-
   _time = 0;
   _player->start ();
-  g_assert (_ginga->registerEventListener (this));
 
  done:
   // Start main event.
@@ -292,15 +284,6 @@ ExecutionObject::stop ()
       delete _player;
       _player = nullptr;
       _time = GINGA_TIME_NONE;
-      g_assert (_ginga->unregisterEventListener (this));
-    }
-
-  // Uninstall attribution events.
-  for (auto evt: *(this->getEvents ()))
-    {
-      AttributionEvent *attevt = cast (AttributionEvent *, evt);
-      if (attevt)
-        attevt->setPlayer (nullptr);
     }
 
   if (_destroying)
@@ -386,16 +369,102 @@ ExecutionObject::setProperty (const string &name,
 }
 
 void
-ExecutionObject::handleTickEvent (unused (GingaTime total),
-                                  GingaTime diff,
-                                  unused (int frame))
+ExecutionObject::sendKeyEvent (const string &key, bool press)
+{
+
+  list<SelectionEvent *> buf;
+
+  if (!press
+      || instanceof (ExecutionObjectSettings *, this)
+      || _player == nullptr
+      || !this->isOccurring ())
+    {
+      return;                     // nothing to do
+    }
+
+  g_assert (instanceof (PresentationEvent *, _mainEvent));
+  if (xstrhasprefix (key, "CURSOR_") && _player->isFocused ())
+    {
+      string next;
+      if ((key == "CURSOR_UP"
+           && (next = _player->getProperty ("moveUp")) != "")
+          || ((key == "CURSOR_DOWN"
+               && (next = _player->getProperty ("moveDown")) != ""))
+          || ((key == "CURSOR_LEFT"
+               && (next = _player->getProperty ("moveLeft")) != ""))
+          || ((key == "CURSOR_RIGHT"
+               && (next = _player->getProperty ("moveRight")) != "")))
+        {
+          ExecutionObjectSettings *settings;
+          settings = _scheduler->getSettings ();
+          g_assert_nonnull (settings);
+          settings->scheduleFocusUpdate (next);
+        }
+    }
+
+  // Pass key to player.
+  if (_player->isFocused ())
+    _player->sendKeyEvent (key, press);
+
+  // Collect the events to be triggered.
+  for (auto _evt: _events)
+    {
+      SelectionEvent *evt;
+      Area *anchor;
+      string expected;
+
+      evt = cast (SelectionEvent *, _evt);
+      if (evt == nullptr)
+        continue;
+
+      expected = evt->getKey ();
+      if (!((expected == "" && key == "ENTER" && _player->isFocused ())
+            || (expected != "" && key == expected)))
+        {
+          continue;
+        }
+      anchor = cast (Area *, evt->getAnchor ());
+      g_assert_nonnull (anchor);
+
+      if (instanceof (AreaLambda *, anchor))
+        {
+          buf.push_back (evt);
+        }
+      else if (instanceof (Area *, anchor))
+        {
+          ERROR_NOT_IMPLEMENTED
+            ("selection of temporal anchors is no supported");
+        }
+      else
+        {
+          ERROR_NOT_IMPLEMENTED
+            ("selection of property anchors is not supported");
+        }
+    }
+
+  // Run collected events.
+  for (SelectionEvent *evt: buf)
+    {
+      NclAction *fakeAct =
+        new NclAction (evt, EventStateTransition::START, _scheduler);
+      _scheduler->scheduleAction (fakeAct);
+    }
+
+  if (buf.size () == 0)
+    return;
+
+  TRACE ("%s selected via '%s'",
+         _id.c_str (), key.c_str ());
+}
+
+void
+ExecutionObject::sendTickEvent (unused (GingaTime total),
+                                GingaTime diff,
+                                unused (GingaTime frame))
 {
   GingaTime dur;
 
-  if (_player == nullptr)
-    return;                     // nothing to do
-
-  if (this->isPaused ())
+  if (_player == nullptr || !this->isOccurring ())
     return;                     // nothing to do
 
   if (_player->getEOS ())
@@ -450,91 +519,6 @@ ExecutionObject::handleTickEvent (unused (GingaTime total),
           evt->stop ();
         }
     }
-}
-
-void
-ExecutionObject::handleKeyEvent (const string &key, bool press)
-{
-  ExecutionObjectSettings *settings;
-  list<SelectionEvent *> buf;
-
-  if (!press)
-    return;                     // nothing to do
-
-  if (this->isPaused ())
-    return;                     // nothing to do
-
-  g_assert (this->isOccurring ());
-  g_assert (_player);
-  g_assert (instanceof (PresentationEvent *, _mainEvent));
-
-  if (xstrhasprefix (key, "CURSOR_") && _player->isFocused ())
-    {
-      string next;
-      if ((key == "CURSOR_UP"
-           && (next = _player->getProperty ("moveUp")) != "")
-          || ((key == "CURSOR_DOWN"
-               && (next = _player->getProperty ("moveDown")) != ""))
-          || ((key == "CURSOR_LEFT"
-               && (next = _player->getProperty ("moveLeft")) != ""))
-          || ((key == "CURSOR_RIGHT"
-               && (next = _player->getProperty ("moveRight")) != "")))
-        {
-          settings = (ExecutionObjectSettings *) _ginga->getData ("settings");
-          g_assert_nonnull (settings);
-          settings->scheduleFocusUpdate (next);
-        }
-    }
-
-  for (auto _evt: _events)
-    {
-      SelectionEvent *evt;
-      Area *anchor;
-      string expected;
-
-      evt = cast (SelectionEvent *, _evt);
-      if (evt == nullptr)
-        continue;
-
-      expected = evt->getSelectionCode ();
-
-      if (!((expected == "NO_CODE" && key == "ENTER"
-             && _player->isFocused ())
-            || (expected != "NO_CODE" && key == expected)))
-        {
-          continue;
-        }
-      anchor = evt->getAnchor ();
-      g_assert_nonnull (anchor);
-
-      if (instanceof (AreaLambda *, anchor))
-        {
-          buf.push_back (evt);
-        }
-      else if (instanceof (Area *, anchor))
-        {
-          ERROR_NOT_IMPLEMENTED
-            ("selection of temporal anchors is no supported");
-        }
-      else
-        {
-          ERROR_NOT_IMPLEMENTED
-            ("selection of property anchors is not supported");
-        }
-    }
-
-  for (SelectionEvent *evt: buf)
-    {
-      NclAction *fakeAct =
-        new NclAction (evt, EventStateTransition::START, _scheduler);
-      _scheduler->scheduleAction (fakeAct);
-    }
-
-  if (buf.size () == 0)
-    return;
-
-  TRACE ("%s selected via '%s'",
-         _id.c_str (), key.c_str ());
 }
 
 GINGA_FORMATTER_END
