@@ -221,7 +221,26 @@ SwitchEvent::eventStateChanged (unused (NclEvent *evt),
                                 EventStateTransition trans)
 
 {
-  changeState (EventUtil::getNextState (trans), trans);
+  EventState next;
+  switch (trans)
+    {
+    case EventStateTransition::STOP:
+      next = EventState::SLEEPING;
+      break;
+    case EventStateTransition::START: // fall-through
+    case EventStateTransition::RESUME:
+      next = EventState::OCCURRING;
+      break;
+    case EventStateTransition::PAUSE:
+      next = EventState::PAUSED;
+      break;
+    case EventStateTransition::ABORT:
+      next = EventState::SLEEPING;
+      break;
+    default:
+      g_assert_not_reached ();
+    }
+  changeState (next, trans);
 }
 
 GINGA_FORMATTER_END

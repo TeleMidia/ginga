@@ -114,23 +114,4 @@ EventUtil::getTransition (EventState prev, EventState next,
   return true;
 }
 
-EventState
-EventUtil::getNextState (EventStateTransition trans)
-{
-  switch (trans)
-    {
-    case EventStateTransition::STOP:
-      return EventState::SLEEPING;
-    case EventStateTransition::START: // fall-through
-    case EventStateTransition::RESUME:
-      return EventState::OCCURRING;
-    case EventStateTransition::PAUSE:
-      return EventState::PAUSED;
-    case EventStateTransition::ABORT:
-      return EventState::SLEEPING;
-    default:
-      g_assert_not_reached ();
-    }
-}
-
 GINGA_NCL_END

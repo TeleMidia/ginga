@@ -32,10 +32,6 @@ class ExecutionObject;
   protected: type name;\
   public: type getfunc () const { return this->name; }
 
-#define PROPERTY(type,name,getfunc,setfunc) \
-  PROPERTY_READONLY (type,name,getfunc) \
-  public: void setfunc (type value) {this->name = value;}\
-
 class NclEvent;
 class INclEventListener
 {
@@ -79,7 +75,7 @@ protected:
 class PresentationEvent: public NclEvent
 {
   PROPERTY_READONLY (GingaTime, _begin, getBegin)
-  PROPERTY (GingaTime, _end, getEnd, setEnd)
+  PROPERTY_READONLY (GingaTime, _end, getEnd)
 
 public:
   PresentationEvent (GingaInternal *, ExecutionObject *, Area *);
