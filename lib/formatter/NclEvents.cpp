@@ -27,7 +27,7 @@ GINGA_FORMATTER_BEGIN
 // NclEvent.
 
 NclEvent::NclEvent (GingaInternal *ginga, const string &id,
-                    ExecutionObject *exeObj)
+                    ExecutionObject *exeObj, Anchor *anchor)
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;
@@ -37,8 +37,8 @@ NclEvent::NclEvent (GingaInternal *ginga, const string &id,
 
   _id = id;
   _state = EventState::SLEEPING;
-  _occurrences = 0;
   _exeObj = exeObj;
+  _anchor = anchor;
 
   TRACE ("%s", _id.c_str ());
 }
@@ -46,6 +46,12 @@ NclEvent::NclEvent (GingaInternal *ginga, const string &id,
 NclEvent::~NclEvent ()
 {
   TRACE ("%s", _id.c_str ());
+}
+
+Anchor *
+NclEvent::getAnchor ()
+{
+  return _anchor;
 }
 
 void
@@ -118,11 +124,6 @@ bool
 NclEvent::changeState (EventState newState,
                        EventStateTransition transition)
 {
-  if (transition == EventStateTransition::STOP)
-    {
-      _occurrences++;
-    }
-
   _previousState = _state;
   _state = newState;
 
@@ -136,16 +137,6 @@ NclEvent::changeState (EventState newState,
   return true;
 }
 
-
-// AnchorEvent.
-
-AnchorEvent::AnchorEvent (GingaInternal *ginga, const string &id,
-                          ExecutionObject *executionObject,
-                          Area *anchor)
-  : NclEvent (ginga, id, executionObject)
-{
-  this->_anchor = anchor;
-}
 
 
 // PresentationEvent.
@@ -154,7 +145,7 @@ PresentationEvent::PresentationEvent (GingaInternal *ginga,
                                       const string &id,
                                       ExecutionObject *exeObj,
                                       Area *anchor)
-  : AnchorEvent (ginga, id, exeObj, anchor)
+  : NclEvent (ginga, id, exeObj, anchor)
 {
   _type = EventType::PRESENTATION;
 
@@ -186,7 +177,7 @@ SelectionEvent::SelectionEvent (GingaInternal *ginga,
                                 const string &id,
                                 ExecutionObject *exeObj,
                                 Area *anchor, const string &key)
-  : AnchorEvent (ginga, id, exeObj, anchor)
+  : NclEvent (ginga, id, exeObj, anchor)
 {
   _type = EventType::SELECTION;
   _key = key;
@@ -205,8 +196,8 @@ SelectionEvent::getKey ()
 bool
 SelectionEvent::start ()
 {
-  if (AnchorEvent::start ())
-    return AnchorEvent::stop ();
+  if (NclEvent::start ())
+    return NclEvent::stop ();
   else
     return false;
 }
@@ -218,14 +209,9 @@ AttributionEvent::AttributionEvent (GingaInternal *ginga,
                                     const string &id,
                                     ExecutionObject *exeObj,
                                     Property *anchor)
-  : NclEvent (ginga, id, exeObj)
+  : NclEvent (ginga, id, exeObj, anchor)
 {
   _type = EventType::ATTRIBUTION;
-  this->_anchor = anchor;
-  this->_player = nullptr;
-
-  Node *node = exeObj->getNode ();
-  g_assert_nonnull (node);
 }
 
 AttributionEvent::~AttributionEvent ()
@@ -245,14 +231,10 @@ AttributionEvent::getCurrentValue ()
              _id.c_str ());
     }
 
-  if (_player)
-    {
-      value = _player->getProperty (this->getAnchor ()->getName ());
-    }
-
+  value = _exeObj->getProperty (this->getAnchor ()->getId ());
   if (value == "")
     {
-      value = _anchor->getValue ();
+      value = cast (Property *, _anchor)->getValue ();
     }
 
   return value;
@@ -261,9 +243,9 @@ AttributionEvent::getCurrentValue ()
 bool
 AttributionEvent::setValue (const string &newValue)
 {
-  if (_anchor->getValue () != newValue)
+  if (cast (Property *, _anchor)->getValue () != newValue)
     {
-      _anchor->setValue (newValue);
+      cast (Property *, _anchor)->setValue (newValue);
       return true;
     }
   return false;
@@ -303,9 +285,8 @@ SwitchEvent::SwitchEvent (GingaInternal *ginga,
                           ExecutionObject *exeObjSwitch,
                           Anchor *interface,
                           EventType type, const string &key)
-  : NclEvent (ginga, id, exeObjSwitch)
+  : NclEvent (ginga, id, exeObjSwitch, interface)
 {
-  this->_interface = interface;
   this->_type = type;
   this->_key = key;
   _mappedEvent = nullptr;

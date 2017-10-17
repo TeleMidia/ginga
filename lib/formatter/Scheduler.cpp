@@ -290,7 +290,7 @@ Scheduler::runAction (NclEvent *event, NclAction *action)
       if (event->getCurrentState () != EventState::SLEEPING)
         return;                 // nothing to do
 
-      property = attevt->getAnchor ();
+      property = cast (Property *, attevt->getAnchor ());
       g_assert_nonnull (property);
 
       name = property->getName ();
@@ -474,7 +474,7 @@ Scheduler::runSwitchEvent (unused (ExecutionObjectSwitch *switchObj),
   ExecutionObject *endPointObject;
 
   selectedEvent = nullptr;
-  switchPort = (SwitchPort *)(switchEvent->getInterface ());
+  switchPort = (SwitchPort *)(switchEvent->getAnchor ());
   for (auto mapping: *switchPort->getPorts ())
     {
       if (mapping->getNode () != selectedObject->getNode ())

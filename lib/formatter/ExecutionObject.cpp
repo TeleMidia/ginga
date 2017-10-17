@@ -180,7 +180,8 @@ ExecutionObject::prepare (NclEvent *event)
       if (instanceof (AttributionEvent *, auxEvent))
         {
           attributeEvent = (AttributionEvent *)auxEvent;
-          attributeAnchor = attributeEvent->getAnchor ();
+          attributeAnchor = cast (Property *, attributeEvent->getAnchor ());
+          g_assert_nonnull (attributeAnchor);
           value = attributeAnchor->getValue ();
           if (value != "")
             {
@@ -223,14 +224,6 @@ ExecutionObject::start ()
       Property *prop = cast (Property *, anchor);
       if (prop != nullptr)
         _player->setProperty (prop->getName (), prop->getValue ());
-    }
-
-  // Install attribution events.
-  for (auto evt: *(this->getEvents ()))
-    {
-      AttributionEvent *attevt = cast (AttributionEvent *, evt);
-      if (attevt)
-        attevt->setPlayer (_player);
     }
 
   _time = 0;
@@ -291,14 +284,6 @@ ExecutionObject::stop ()
       delete _player;
       _player = nullptr;
       _time = GINGA_TIME_NONE;
-    }
-
-  // Uninstall attribution events.
-  for (auto evt: *(this->getEvents ()))
-    {
-      AttributionEvent *attevt = cast (AttributionEvent *, evt);
-      if (attevt)
-        attevt->setPlayer (nullptr);
     }
 
   if (_destroying)
@@ -438,7 +423,7 @@ ExecutionObject::sendKeyEvent (const string &key, bool press)
         {
           continue;
         }
-      anchor = evt->getAnchor ();
+      anchor = cast (Area *, evt->getAnchor ());
       g_assert_nonnull (anchor);
 
       if (instanceof (AreaLambda *, anchor))
