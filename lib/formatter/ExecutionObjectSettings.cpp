@@ -95,7 +95,6 @@ ExecutionObjectSettings::updateCurrentFocus (const string &index)
       AttributionEvent *attevt = cast (AttributionEvent *, evt);
       g_assert_nonnull (attevt);
       attevt->start ();
-      attevt->setValue (to);
       cast (ExecutionObject *, this)->setProperty (name, from, to, 0);
       attevt->stop ();
     }

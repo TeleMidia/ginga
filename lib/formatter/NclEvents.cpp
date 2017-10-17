@@ -27,19 +27,24 @@ GINGA_FORMATTER_BEGIN
 // NclEvent.
 
 NclEvent::NclEvent (GingaInternal *ginga, const string &id,
-                    ExecutionObject *exeObj, Anchor *anchor)
+                    EventType type,
+                    ExecutionObject *object, Anchor *anchor)
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;
-
   _scheduler = ginga->getScheduler ();
   g_assert_nonnull (_scheduler);
 
-  _id = id;
-  _state = EventState::SLEEPING;
-  _exeObj = exeObj;
+  _type = type;
+  g_assert_nonnull (object);
+  _object = object;
+  g_assert_nonnull (anchor);
   _anchor = anchor;
 
+  _state = EventState::SLEEPING;
+  _previousState = EventState::SLEEPING;
+
+  _id = id;
   TRACE ("%s", _id.c_str ());
 }
 
@@ -48,16 +53,40 @@ NclEvent::~NclEvent ()
   TRACE ("%s", _id.c_str ());
 }
 
+EventType
+NclEvent::getType ()
+{
+  return _type;
+}
+
+ExecutionObject *
+NclEvent::getObject ()
+{
+  return _object;
+}
+
 Anchor *
 NclEvent::getAnchor ()
 {
   return _anchor;
 }
 
+EventState
+NclEvent::getState ()
+{
+  return _state;
+}
+
+EventState
+NclEvent::getPreviousState ()
+{
+  return _previousState;
+}
+
 void
 NclEvent::addListener (INclEventListener *listener)
 {
-  this->_listeners.insert (listener);
+  _listeners.insert (listener);
 }
 
 EventStateTransition
@@ -145,10 +174,8 @@ PresentationEvent::PresentationEvent (GingaInternal *ginga,
                                       const string &id,
                                       ExecutionObject *exeObj,
                                       Area *anchor)
-  : NclEvent (ginga, id, exeObj, anchor)
+  : NclEvent (ginga, id, EventType::PRESENTATION, exeObj, anchor)
 {
-  _type = EventType::PRESENTATION;
-
   auto intervalAnchor = cast (Area *, anchor);
   if (intervalAnchor)
     {
@@ -177,9 +204,8 @@ SelectionEvent::SelectionEvent (GingaInternal *ginga,
                                 const string &id,
                                 ExecutionObject *exeObj,
                                 Area *anchor, const string &key)
-  : NclEvent (ginga, id, exeObj, anchor)
+  : NclEvent (ginga, id, EventType::SELECTION, exeObj, anchor)
 {
-  _type = EventType::SELECTION;
   _key = key;
 }
 
@@ -209,72 +235,12 @@ AttributionEvent::AttributionEvent (GingaInternal *ginga,
                                     const string &id,
                                     ExecutionObject *exeObj,
                                     Property *anchor)
-  : NclEvent (ginga, id, exeObj, anchor)
+  : NclEvent (ginga, id, EventType::ATTRIBUTION, exeObj, anchor)
 {
-  _type = EventType::ATTRIBUTION;
 }
 
 AttributionEvent::~AttributionEvent ()
 {
-  _assessments.clear ();
-}
-
-string
-AttributionEvent::getCurrentValue ()
-{
-  string propName;
-  string value = "";
-
-  if (unlikely (_anchor == nullptr))
-    {
-      ERROR ("Trying to set a null property anchor of object '%s'.",
-             _id.c_str ());
-    }
-
-  value = _exeObj->getProperty (this->getAnchor ()->getId ());
-  if (value == "")
-    {
-      value = cast (Property *, _anchor)->getValue ();
-    }
-
-  return value;
-}
-
-bool
-AttributionEvent::setValue (const string &newValue)
-{
-  if (cast (Property *, _anchor)->getValue () != newValue)
-    {
-      cast (Property *, _anchor)->setValue (newValue);
-      return true;
-    }
-  return false;
-}
-
-void
-AttributionEvent::setImplicitRefAssessmentEvent (
-    const string &roleId, NclEvent *event)
-{
-  _assessments[roleId] = event;
-}
-
-NclEvent *
-AttributionEvent::getImplicitRefAssessmentEvent (const string &id)
-{
-  return (_assessments.count (id) > 0) ? _assessments[id] : nullptr;
-}
-
-string
-AttributionEvent::solveImplicitRefAssessment (const string &val)
-{
-  AttributionEvent *evt;
-
-  if (val.substr (0, 1) != "$")
-    return val;
-
-  evt = cast (AttributionEvent *,
-    this->getImplicitRefAssessmentEvent (val.substr (1, val.length ())));
-  return (evt != nullptr) ? evt->getCurrentValue () : "";
 }
 
 
@@ -285,16 +251,14 @@ SwitchEvent::SwitchEvent (GingaInternal *ginga,
                           ExecutionObject *exeObjSwitch,
                           Anchor *interface,
                           EventType type, const string &key)
-  : NclEvent (ginga, id, exeObjSwitch, interface)
+  : NclEvent (ginga, id, type, exeObjSwitch, interface)
 {
-  this->_type = type;
   this->_key = key;
   _mappedEvent = nullptr;
 }
 
 SwitchEvent::~SwitchEvent ()
 {
-  //_mappedEvent->removeListener (this);
 }
 
 void

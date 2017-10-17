@@ -38,15 +38,17 @@ class ExecutionObject;
 
 class NclEvent
 {
-  PROPERTY (EventType, _type, getType, setType)
   PROPERTY_READONLY (string, _id, getId)
-  PROPERTY (ExecutionObject *, _exeObj, getExecutionObject, setExecutionObject)
-  PROPERTY_READONLY (EventState, _state, getCurrentState)
-  PROPERTY_READONLY (EventState, _previousState, getPreviousState)
+  // PROPERTY_READONLY (EventState, _state, getCurrentState)
+  // PROPERTY_READONLY (EventState, _previousState, getPreviousState)
 
 public:
-  NclEvent (GingaInternal *, const string &, ExecutionObject *, Anchor *);
+  NclEvent (GingaInternal *, const string &, EventType,
+            ExecutionObject *, Anchor *);
+
   virtual ~NclEvent ();
+
+
   void setState (EventState);
   virtual bool start ();
   virtual bool stop ();
@@ -54,13 +56,25 @@ public:
   bool resume ();
   bool abort ();
   void addListener (INclEventListener *listener);
+
+  EventType getType ();
+  ExecutionObject *getObject ();
   Anchor *getAnchor ();
+
+  EventState getState ();
+  EventState getPreviousState ();
 
 protected:
   GingaInternal *_ginga;        // ginga handle
   Scheduler *_scheduler;        // scheduler
 
-  Anchor *_anchor;
+  EventType _type;              // event type
+  ExecutionObject *_object;     // target object
+  Anchor *_anchor;              // target anchor
+
+  EventState _state;            // current state
+  EventState _previousState;    // previous state
+
   set<INclEventListener *> _listeners;
 
   EventStateTransition getTransition (EventState newState);
@@ -108,16 +122,6 @@ public:
                     Property *);
 
   virtual ~AttributionEvent ();
-  string getCurrentValue ();
-  bool setValue (const string &newValue);
-  void setImplicitRefAssessmentEvent (const string &roleId,
-                                      NclEvent *event);
-
-  NclEvent *getImplicitRefAssessmentEvent (const string &roleId);
-  string solveImplicitRefAssessment (const string &val);
-
-protected:
-  map<string, NclEvent *> _assessments;
 };
 
 class SwitchEvent : public NclEvent, public INclEventListener

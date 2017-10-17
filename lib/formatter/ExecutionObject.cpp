@@ -59,21 +59,21 @@ bool
 ExecutionObject::isSleeping ()
 {
   return  _mainEvent
-    && _mainEvent->getCurrentState () == EventState::SLEEPING;
+    && _mainEvent->getState () == EventState::SLEEPING;
 }
 
 bool
 ExecutionObject::isPaused ()
 {
   return _mainEvent
-    && _mainEvent->getCurrentState () == EventState::PAUSED;
+    && _mainEvent->getState () == EventState::PAUSED;
 }
 
 bool
 ExecutionObject::isOccurring ()
 {
   return _mainEvent
-    && _mainEvent->getCurrentState () == EventState::OCCURRING;
+    && _mainEvent->getState () == EventState::OCCURRING;
 }
 
 Node *
@@ -164,31 +164,14 @@ bool
 ExecutionObject::prepare (NclEvent *event)
 {
   map<Node *, ExecutionObjectContext *>::iterator i;
-  AttributionEvent *attributeEvent;
-  Property *attributeAnchor;
   string value;
 
   g_assert_nonnull (event);
   g_assert (this->getEventById (event->getId ()));
-  if (event->getCurrentState () != EventState::SLEEPING)
+  if (event->getState () != EventState::SLEEPING)
     return false;
 
   _mainEvent = event;
-
-  for (auto auxEvent: _events)
-    {
-      if (instanceof (AttributionEvent *, auxEvent))
-        {
-          attributeEvent = (AttributionEvent *)auxEvent;
-          attributeAnchor = cast (Property *, attributeEvent->getAnchor ());
-          g_assert_nonnull (attributeAnchor);
-          value = attributeAnchor->getValue ();
-          if (value != "")
-            {
-              attributeEvent->setValue (value);
-            }
-        }
-    }
 
   return true;
 }
@@ -502,7 +485,7 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
       //        GINGA_TIME_ARGS (evt->getBegin ()),
       //        GINGA_TIME_ARGS (evt->getEnd ()));
 
-      if (evt->getCurrentState () == EventState::SLEEPING
+      if (evt->getState () == EventState::SLEEPING
           && evt->getBegin () <= _time)
         {
           TRACE ("%s.%s timed-out at %" GINGA_TIME_FORMAT,
@@ -510,7 +493,7 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
                  GINGA_TIME_ARGS (time));
           evt->start ();
         }
-      else if (evt->getCurrentState () == EventState::OCCURRING
+      else if (evt->getState () == EventState::OCCURRING
                && evt->getEnd () <= _time)
         {
           TRACE ("%s.%s timed-out at %" GINGA_TIME_FORMAT,
