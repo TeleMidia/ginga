@@ -34,8 +34,7 @@ ExecutionObjectContext::~ExecutionObjectContext ()
 void
 ExecutionObjectContext::eventStateChanged (
     NclEvent *event,
-    EventStateTransition transition,
-    EventState previousState)
+    EventStateTransition transition)
 {
   set<NclEvent *>::iterator i;
   NclEvent *lambda = this->getLambda (EventType::PRESENTATION);
@@ -54,19 +53,6 @@ ExecutionObjectContext::eventStateChanged (
       break;
 
     case EventStateTransition::ABORT:
-      lastTransition = transition;
-      if (previousState == EventState::OCCURRING)
-        {
-          i = _runningEvents.find (event);
-          if (i != _runningEvents.end ())
-            {
-              _runningEvents.erase (i);
-            }
-        }
-      else if (previousState == EventState::PAUSED)
-        {
-        }
-
       if (_runningEvents.empty ())
         {
           lambda->abort ();

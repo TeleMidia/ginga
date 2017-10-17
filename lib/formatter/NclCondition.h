@@ -43,9 +43,7 @@ public:
   void conditionSatisfied ();
 
   // INclEventListener
-  virtual void eventStateChanged (NclEvent *_event,
-                                  EventStateTransition _transition,
-                                  EventState previousState) override;
+  virtual void eventStateChanged (NclEvent *, EventStateTransition) override;
 private:
   NclEvent *_event;
   EventStateTransition _transition;
