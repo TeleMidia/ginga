@@ -26,8 +26,7 @@ GINGA_FORMATTER_BEGIN
 
 // NclEvent.
 
-NclEvent::NclEvent (GingaInternal *ginga, const string &id,
-                    EventType type,
+NclEvent::NclEvent (GingaInternal *ginga, EventType type,
                     ExecutionObject *object, Anchor *anchor)
 {
   g_assert_nonnull (ginga);
@@ -43,14 +42,10 @@ NclEvent::NclEvent (GingaInternal *ginga, const string &id,
 
   _state = EventState::SLEEPING;
   _previousState = EventState::SLEEPING;
-
-  _id = id;
-  TRACE ("%s", _id.c_str ());
 }
 
 NclEvent::~NclEvent ()
 {
-  TRACE ("%s", _id.c_str ());
 }
 
 EventType
@@ -158,10 +153,9 @@ NclEvent::changeState (EventState newState,
 // PresentationEvent.
 
 PresentationEvent::PresentationEvent (GingaInternal *ginga,
-                                      const string &id,
                                       ExecutionObject *exeObj,
                                       Area *anchor)
-  : NclEvent (ginga, id, EventType::PRESENTATION, exeObj, anchor)
+  : NclEvent (ginga, EventType::PRESENTATION, exeObj, anchor)
 {
   auto intervalAnchor = cast (Area *, anchor);
   if (intervalAnchor)
@@ -188,10 +182,9 @@ PresentationEvent::getDuration ()
 // SelectionEvent
 
 SelectionEvent::SelectionEvent (GingaInternal *ginga,
-                                const string &id,
                                 ExecutionObject *exeObj,
                                 Area *anchor, const string &key)
-  : NclEvent (ginga, id, EventType::SELECTION, exeObj, anchor)
+  : NclEvent (ginga, EventType::SELECTION, exeObj, anchor)
 {
   _key = key;
 }
@@ -219,10 +212,9 @@ SelectionEvent::start ()
 // AttributionEvent
 
 AttributionEvent::AttributionEvent (GingaInternal *ginga,
-                                    const string &id,
                                     ExecutionObject *exeObj,
                                     Property *anchor)
-  : NclEvent (ginga, id, EventType::ATTRIBUTION, exeObj, anchor)
+  : NclEvent (ginga, EventType::ATTRIBUTION, exeObj, anchor)
 {
 }
 
@@ -234,11 +226,10 @@ AttributionEvent::~AttributionEvent ()
 // SwitchEvent.
 
 SwitchEvent::SwitchEvent (GingaInternal *ginga,
-                          const string &id,
                           ExecutionObject *exeObjSwitch,
                           Anchor *interface,
                           EventType type, const string &key)
-  : NclEvent (ginga, id, type, exeObjSwitch, interface)
+  : NclEvent (ginga, type, exeObjSwitch, interface)
 {
   this->_key = key;
   _mappedEvent = nullptr;
