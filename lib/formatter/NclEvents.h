@@ -23,9 +23,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/Ncl.h"
 using namespace ::ginga::ncl;
 
-#include "player/Player.h"
-using namespace ::ginga::player;
-
 GINGA_FORMATTER_BEGIN
 
 class INclEventListener;
@@ -43,13 +40,12 @@ class NclEvent
 {
   PROPERTY (EventType, _type, getType, setType)
   PROPERTY_READONLY (string, _id, getId)
-  PROPERTY_READONLY (int, _occurrences, getOccurrences)
   PROPERTY (ExecutionObject *, _exeObj, getExecutionObject, setExecutionObject)
   PROPERTY_READONLY (EventState, _state, getCurrentState)
   PROPERTY_READONLY (EventState, _previousState, getPreviousState)
 
 public:
-  NclEvent (GingaInternal *, const string &, ExecutionObject *);
+  NclEvent (GingaInternal *, const string &, ExecutionObject *, Anchor *);
   virtual ~NclEvent ();
   void setState (EventState);
   virtual bool start ();
@@ -58,11 +54,13 @@ public:
   bool resume ();
   bool abort ();
   void addListener (INclEventListener *listener);
+  Anchor *getAnchor ();
 
 protected:
   GingaInternal *_ginga;        // ginga handle
   Scheduler *_scheduler;        // scheduler
 
+  Anchor *_anchor;
   set<INclEventListener *> _listeners;
 
   EventStateTransition getTransition (EventState newState);
@@ -77,16 +75,7 @@ public:
                                   EventState) = 0;
 };
 
-class AnchorEvent : public NclEvent
-{
-  PROPERTY_READONLY (Area *, _anchor, getAnchor)
-
-public:
-  AnchorEvent (GingaInternal *, const string &, ExecutionObject *, Area *);
-  virtual ~AnchorEvent () {}
-};
-
-class PresentationEvent : public AnchorEvent
+class PresentationEvent : public NclEvent
 {
   PROPERTY_READONLY (GingaTime, _begin, getBegin)
   PROPERTY (GingaTime, _end, getEnd, setEnd)
@@ -98,7 +87,7 @@ public:
   GingaTime getDuration ();
 };
 
-class SelectionEvent : public AnchorEvent
+class SelectionEvent : public NclEvent
 {
 public:
   SelectionEvent (GingaInternal *, const string &, ExecutionObject *,
@@ -112,9 +101,6 @@ private:
 
 class AttributionEvent : public NclEvent
 {
-  PROPERTY (Player *, _player, getPlayer, setPlayer)
-  PROPERTY_READONLY (Property *, _anchor, getAnchor)
-
 public:
   AttributionEvent (GingaInternal *,
                     const string &,
@@ -136,7 +122,6 @@ protected:
 
 class SwitchEvent : public NclEvent, public INclEventListener
 {
-  PROPERTY_READONLY (Anchor*, _interface, getInterface)
   PROPERTY_READONLY (string, _key, getKey)
 
 private:

@@ -168,7 +168,7 @@ Converter::resolveSwitchEvents (
       switchEvent = cast (SwitchEvent *, event);
       g_assert_nonnull (switchEvent);
 
-      interfacePoint = switchEvent->getInterface ();
+      interfacePoint = switchEvent->getAnchor ();
       auto lambdaAnchor = cast (AreaLambda *, interfacePoint);
       if (lambdaAnchor)
         {
