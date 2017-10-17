@@ -43,14 +43,6 @@ enum class EventStateTransition
   ABORT
 };
 
-enum class AttributeType
-{
-  OCCURRENCES = 0,
-  REPETITIONS,
-  STATE,
-  NODE_PROPERTY
-};
-
 class EventUtil
 {
 public:
