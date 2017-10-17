@@ -174,7 +174,8 @@ ExecutionObject::getEvent (EventType type, Anchor *anchor,
 }
 
 NclEvent *
-ExecutionObject::getEventByAnchorId (EventType type, const string &id)
+ExecutionObject::getEventByAnchorId (EventType type, const string &id,
+                                     const string &key)
 {
   for (auto event: _events)
     {
@@ -183,8 +184,24 @@ ExecutionObject::getEventByAnchorId (EventType type, const string &id)
         continue;
       anchor = event->getAnchor ();
       g_assert_nonnull (anchor);
-      if (anchor->getId () == id)
-        return event;
+      if (anchor->getId () != id)
+        continue;
+      switch (type)
+        {
+        case EventType::ATTRIBUTION: // fall-through
+        case EventType::PRESENTATION:
+          return event;
+        case EventType::SELECTION:
+          {
+            SelectionEvent *sel = cast (SelectionEvent *, event);
+            g_assert_nonnull (sel);
+            if (sel->getKey () == key)
+              return event;
+            break;
+          }
+        default:
+          g_assert_not_reached ();
+        }
     }
   return nullptr;
 }
@@ -193,7 +210,7 @@ NclEvent *
 ExecutionObject::getLambda (EventType type)
 {
   g_assert (type != EventType::ATTRIBUTION);
-  return this->getEventByAnchorId (type, "@lambda");
+  return this->getEventByAnchorId (type, "@lambda", "");
 }
 
 NclEvent *
@@ -207,7 +224,7 @@ ExecutionObject::obtainEvent (EventType type, Anchor *anchor,
     return event;
 
   g_assert_nonnull (anchor);
-  g_assert_null (this->getEventByAnchorId (type, anchor->getId ()));
+  g_assert_null (this->getEventByAnchorId (type, anchor->getId (), key));
 
   if (instanceof (ExecutionObjectSwitch *, this))
     {

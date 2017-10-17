@@ -55,7 +55,8 @@ public:
 
   const set<NclEvent *> *getEvents ();
   NclEvent *getEvent (EventType, Anchor *, const string &);
-  NclEvent *getEventByAnchorId (EventType type, const string &);
+  NclEvent *getEventByAnchorId (EventType type, const string &,
+                                const string &);
   NclEvent *getLambda (EventType);
   NclEvent *obtainEvent (EventType, Anchor *, const string &);
   bool addEvent (NclEvent *);
