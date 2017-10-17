@@ -39,15 +39,11 @@ class ExecutionObject;
 class NclEvent
 {
   PROPERTY_READONLY (string, _id, getId)
-  // PROPERTY_READONLY (EventState, _state, getCurrentState)
-  // PROPERTY_READONLY (EventState, _previousState, getPreviousState)
-
 public:
   NclEvent (GingaInternal *, const string &, EventType,
             ExecutionObject *, Anchor *);
 
   virtual ~NclEvent ();
-
 
   virtual bool start ();
   virtual bool stop ();
