@@ -148,13 +148,6 @@ test_aux_xstrassign_SOURCES= test-aux-xstrassign.cpp
 progs+= test-aux-xstrbuild
 test_aux_xstrbuild_SOURCES= test-aux-xstrbuild.cpp
 
-# lib/GingaInternal.h ------------------------------------------------------
-progs+= test-GingaInternal-getData
-test_GingaInternal_getData_SOURCES= test-GingaInternal-getData.cpp
-
-progs+= test-GingaInternal-setData
-test_GingaInternal_setData_SOURCES= test-GingaInternal-setData.cpp
-
 # lib/ncl/ParserLibXML.h ---------------------------------------------------
 progs+= test-ParserLibXML-parseFile
 test_ParserLibXML_parseFile_SOURCES= test-ParserLibXML-parseFile.cpp
