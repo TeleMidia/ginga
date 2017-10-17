@@ -164,8 +164,6 @@ bool
 ExecutionObject::prepare (NclEvent *event)
 {
   map<Node *, ExecutionObjectContext *>::iterator i;
-  AttributionEvent *attributeEvent;
-  Property *attributeAnchor;
   string value;
 
   g_assert_nonnull (event);
@@ -174,21 +172,6 @@ ExecutionObject::prepare (NclEvent *event)
     return false;
 
   _mainEvent = event;
-
-  for (auto auxEvent: _events)
-    {
-      if (instanceof (AttributionEvent *, auxEvent))
-        {
-          attributeEvent = (AttributionEvent *)auxEvent;
-          attributeAnchor = cast (Property *, attributeEvent->getAnchor ());
-          g_assert_nonnull (attributeAnchor);
-          value = attributeAnchor->getValue ();
-          if (value != "")
-            {
-              attributeEvent->setValue (value);
-            }
-        }
-    }
 
   return true;
 }
