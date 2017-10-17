@@ -34,10 +34,7 @@ public:
 
   void updateCurrentFocus (const string &);
   void scheduleFocusUpdate (const string &);
-
-  // From IEventListener.
-  virtual void handleKeyEvent (const string &, bool) override;
-  virtual void handleTickEvent (GingaTime, GingaTime, int) override;
+  void sendTickEvent (GingaTime, GingaTime, GingaTime) override;
 
  private:
   string _nextFocus;            // next focus index

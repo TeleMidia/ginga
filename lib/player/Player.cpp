@@ -484,7 +484,18 @@ Player::redraw (cairo_t *cr)
     this->redrawDebuggingInfo (cr);
 }
 
+/**
+ * @brief Sends key event.
+ * @param key Key name.
+ * @param press True if press or false if release.
+ * @return True if successful, or false otherwise.
+ */
+void
+Player::sendKeyEvent (unused (const string &key), unused (bool press))
+{
+}
 
+
 // Public: Static.
 
 /**

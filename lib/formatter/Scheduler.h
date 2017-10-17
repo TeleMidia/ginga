@@ -46,6 +46,9 @@ public:
   ExecutionObject *getObjectByIdOrAlias (const string &);
   bool addObject (ExecutionObject *);
 
+  void sendKeyEvent (const string &, bool);
+  void sendTickEvent (GingaTime, GingaTime, GingaTime);
+
   void scheduleAction (NclAction *) override;
 
 private:

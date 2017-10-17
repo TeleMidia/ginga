@@ -31,13 +31,6 @@ class Scheduler;
 GINGA_FORMATTER_END
 using namespace ::ginga::formatter;
 
-class IGingaInternalEventListener
-{
-public:
-  virtual void handleTickEvent (GingaTime, GingaTime, int) = 0;
-  virtual void handleKeyEvent (const string &key, bool) = 0;
-};
-
 class GingaInternal : public Ginga
 {
  public:
@@ -69,9 +62,6 @@ class GingaInternal : public Ginga
   bool getEOS ();
   void setEOS (bool);
 
-  bool registerEventListener (IGingaInternalEventListener *);
-  bool unregisterEventListener (IGingaInternalEventListener *);
-
   void registerPlayer (Player *);
   void unregisterPlayer (Player *);
 
@@ -88,7 +78,6 @@ class GingaInternal : public Ginga
   GingaState _state;             // current state
   GingaOptions _opts;            // current options
   Scheduler *_scheduler;         // formatter core
-  GList *_listeners;             // list of listeners to be notified
   GList *_players;               // list of players to be ticked
   map<string, void *> _userdata; // userdata attached to state
 
