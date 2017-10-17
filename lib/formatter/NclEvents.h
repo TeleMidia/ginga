@@ -76,8 +76,6 @@ protected:
   bool changeState (EventState, EventStateTransition);
 };
 
-
-
 class PresentationEvent: public NclEvent
 {
   PROPERTY_READONLY (GingaTime, _begin, getBegin)
@@ -86,7 +84,6 @@ class PresentationEvent: public NclEvent
 public:
   PresentationEvent (GingaInternal *, ExecutionObject *, Area *);
   virtual ~PresentationEvent () {}
-  GingaTime getDuration ();
 };
 
 class SelectionEvent : public NclEvent

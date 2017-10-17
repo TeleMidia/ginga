@@ -145,25 +145,8 @@ PresentationEvent::PresentationEvent (GingaInternal *ginga,
                                       Area *anchor)
   : NclEvent (ginga, EventType::PRESENTATION, exeObj, anchor)
 {
-  auto intervalAnchor = cast (Area *, anchor);
-  if (intervalAnchor)
-    {
-      _begin = intervalAnchor->getBegin ();
-      _end = intervalAnchor->getEnd ();
-    }
-  else
-    {
-      _begin = 0;
-      _end = GINGA_TIME_NONE;
-    }
-}
-
-GingaTime
-PresentationEvent::getDuration ()
-{
-  if (!GINGA_TIME_IS_VALID (this->_end))
-    return GINGA_TIME_NONE;
-  return this->_end - this->_begin;
+  _begin = anchor->getBegin ();
+  _end = anchor->getEnd ();
 }
 
 
