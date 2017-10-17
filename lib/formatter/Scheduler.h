@@ -45,6 +45,7 @@ public:
   const set<ExecutionObject *> *getObjects ();
   ExecutionObject *getObjectById (const string &);
   ExecutionObject *getObjectByIdOrAlias (const string &);
+  bool getObjectPropertyByRef (const string &, string *);
   bool addObject (ExecutionObject *);
 
   void sendKeyEvent (const string &, bool);

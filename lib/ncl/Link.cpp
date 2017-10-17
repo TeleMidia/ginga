@@ -146,4 +146,38 @@ Link::contains (Node *node, bool condition)
   return false;
 }
 
+/**
+ * @brief Gets ghost binds.
+ * @return Ghost binds.
+ */
+const map<string, string> *
+Link::getGhostBinds ()
+{
+  return &_ghost_binds;
+}
+
+/**
+ * @brief Gets ghost bind.
+ * @param name Ghost bind name.
+ * @return Ghost bind value.
+ */
+string
+Link::getGhostBind (const string &name)
+{
+  map<string, string>::iterator it;
+  return ((it = _ghost_binds.find (name)) != _ghost_binds.end ())
+    ? it->second : "";
+}
+
+/**
+ * @brief Sets ghost bind.
+ * @param name Ghost bind name.
+ * @param value Ghost bind value.
+ */
+void
+Link::setGhostBind (const string &name, const string &value)
+{
+  _ghost_binds[name] = value;
+}
+
 GINGA_NCL_END

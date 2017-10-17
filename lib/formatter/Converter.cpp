@@ -433,7 +433,6 @@ Converter::createAction (Action *connAction, Bind *bind)
 
   event = createEvent (bind);
   g_assert_nonnull (event);
-  event->setType (eventType);
 
   action = new NclAction (event, transition, _scheduler);
   if (eventType == EventType::ATTRIBUTION)
@@ -443,14 +442,11 @@ Converter::createAction (Action *connAction, Bind *bind)
 
       dur = connAction->getDuration ();
       if (dur[0] == '$')
-          dur = bind->getParameter (dur.substr (1, dur.length () - 1));
+        dur = bind->getParameter (dur.substr (1, dur.length () - 1));
 
       value = connAction->getValue ();
       if (value[0] == '$')
         value = bind->getParameter (value.substr (1, value.length () - 1));
-
-      g_assert (dur[0] != '$');
-      g_assert (value[0] != '$');
 
       action->setDuration (dur);
       action->setValue (value);

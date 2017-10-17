@@ -189,6 +189,27 @@ Scheduler::getObjectByIdOrAlias (const string &id)
 }
 
 bool
+Scheduler::getObjectPropertyByRef (const string &ref, string *result)
+{
+  size_t i;
+  string id;
+  string name;
+  ExecutionObject *object;
+
+  if (ref[0] != '$' || (i = ref.find ('.')) == string::npos)
+    return false;
+
+  id = ref.substr (1, i - 1);
+  name = ref.substr (i + 1);
+  object = this->getObjectByIdOrAlias (id);
+  if (object == nullptr)
+    return false;
+
+  tryset (result, object->getProperty (name));
+  return true;
+}
+
+bool
 Scheduler::addObject (ExecutionObject *obj)
 {
   g_assert_nonnull (obj);
@@ -242,7 +263,7 @@ Scheduler::runAction (NclEvent *event, NclAction *action)
   ExecutionObject *obj;
   string name;
 
-  obj = event->getExecutionObject ();
+  obj = event->getObject ();
   g_assert_nonnull (obj);
 
   name = EventUtil::getEventStateTransitionAsString
@@ -284,10 +305,11 @@ Scheduler::runAction (NclEvent *event, NclAction *action)
 
       GingaTime dur;
 
-      g_assert (action->getEventStateTransition () == EventStateTransition::START);
+      g_assert (action->getEventStateTransition ()
+                == EventStateTransition::START);
 
       attevt = (AttributionEvent *) event;
-      if (event->getCurrentState () != EventState::SLEEPING)
+      if (event->getState () != EventState::SLEEPING)
         return;                 // nothing to do
 
       property = cast (Property *, attevt->getAnchor ());
@@ -295,14 +317,17 @@ Scheduler::runAction (NclEvent *event, NclAction *action)
 
       name = property->getName ();
       from = property->getValue ();
-      to = attevt->solveImplicitRefAssessment (action->getValue ());
+      to = action->getValue ();
+      if (to[0] == '$')
+        this->getObjectPropertyByRef (to, &to);
 
       string s;
-      s = attevt->solveImplicitRefAssessment (action->getDuration ());
+      s = action->getDuration ();
+      if (s[0] == '$')
+        this->getObjectPropertyByRef (s, &s);
       dur = ginga_parse_time (s);
 
       attevt->start ();
-      attevt->setValue (to);
       obj->setProperty (name, from, to, dur);
 
       // TODO: Wrap this in a closure to be called at the end of animation.
