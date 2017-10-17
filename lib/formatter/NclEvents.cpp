@@ -41,7 +41,6 @@ NclEvent::NclEvent (GingaInternal *ginga, EventType type,
   _anchor = anchor;
 
   _state = EventState::SLEEPING;
-  _previousState = EventState::SLEEPING;
 }
 
 NclEvent::~NclEvent ()
@@ -127,7 +126,6 @@ bool
 NclEvent::changeState (EventState newState,
                        EventStateTransition transition)
 {
-  _previousState = _state;
   _state = newState;
 
   set<INclEventListener *> clone (_listeners);

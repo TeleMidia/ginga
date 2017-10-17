@@ -71,8 +71,6 @@ protected:
   Anchor *_anchor;              // target anchor
 
   EventState _state;            // current state
-  EventState _previousState;    // previous state
-
   set<INclEventListener *> _listeners;
 
   bool changeState (EventState, EventStateTransition);
