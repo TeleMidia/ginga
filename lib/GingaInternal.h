@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "aux-ginga.h"
-#include "aux-gl.h"
 
 GINGA_PLAYER_BEGIN
 class Player;
@@ -32,14 +31,7 @@ class Scheduler;
 GINGA_FORMATTER_END
 using namespace ::ginga::formatter;
 
-class IGingaInternalEventListener
-{
-public:
-  virtual void handleTickEvent (GingaTime, GingaTime, int) = 0;
-  virtual void handleKeyEvent (const string &key, bool) = 0;
-};
-
-class GingaInternal : public Ginga
+class GingaInternal: public Ginga
 {
  public:
   // External API.
@@ -70,14 +62,8 @@ class GingaInternal : public Ginga
   bool getEOS ();
   void setEOS (bool);
 
-  bool registerEventListener (IGingaInternalEventListener *);
-  bool unregisterEventListener (IGingaInternalEventListener *);
-
   void registerPlayer (Player *);
   void unregisterPlayer (Player *);
-
-  void *getData (const string &);
-  void setData (const string &, void *);
 
   static void setOptionDebug (GingaInternal *, const string &, bool);
   static void setOptionExperimental (GingaInternal *, const string &, bool);
@@ -89,9 +75,7 @@ class GingaInternal : public Ginga
   GingaState _state;             // current state
   GingaOptions _opts;            // current options
   Scheduler *_scheduler;         // formatter core
-  GList *_listeners;             // list of listeners to be notified
   GList *_players;               // list of players to be ticked
-  map<string, void *> _userdata; // userdata attached to state
 
   string _ncl_file;               // path to current NCL file
   bool _eos;                      // true if EOS was reached

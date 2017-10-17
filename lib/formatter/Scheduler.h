@@ -39,21 +39,25 @@ class Scheduler: public INclActionListener
 public:
   Scheduler (GingaInternal *);
   virtual ~Scheduler ();
-  bool run (const string &, string *);
+  bool run (NclDocument *);
 
+  ExecutionObjectSettings *getSettings ();
   const set<ExecutionObject *> *getObjects ();
   ExecutionObject *getObjectById (const string &);
   ExecutionObject *getObjectByIdOrAlias (const string &);
   bool addObject (ExecutionObject *);
 
+  void sendKeyEvent (const string &, bool);
+  void sendTickEvent (GingaTime, GingaTime, GingaTime);
+
   void scheduleAction (NclAction *) override;
 
 private:
-  GingaInternal *_ginga;           // ginga handle
-  Converter *_converter;           // converter object
-  string _file;                    // path to document file
-  NclDocument *_doc;               // document tree
-  set<ExecutionObject *> _objects; // document objects
+  GingaInternal *_ginga;              // ginga handle
+  Converter *_converter;              // converter object
+  NclDocument *_doc;                  // document tree
+  ExecutionObjectSettings *_settings; // settings object
+  set<ExecutionObject *> _objects;    // document objects
 
   void runAction (NclEvent *, NclAction *);
   void runActionOverComposition (ExecutionObjectContext *,

@@ -1,4 +1,3 @@
-<?xml version='1.0' encoding='utf-8'?>
 <!-- Copyright (C) 2006-2017 PUC-Rio/Laboratorio TeleMidia
 
 This file is part of Ginga (Ginga-NCL).
@@ -18,9 +17,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <ncl>
   <body>
-    <port id='start' component='lua' />
-    <media id='lua' src='game.lua'>
+    <port id="start" component="lua" />
+    <media id="lua" src="game.lua">
       <property name="size" value="100%,100%"/>
+      <property name="focusIndex" value="0"/>
     </media>
   </body>
 </ncl>

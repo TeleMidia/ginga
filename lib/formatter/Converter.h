@@ -37,7 +37,7 @@ class GingaInternal;
 GINGA_FORMATTER_BEGIN
 
 class Scheduler;
-class Converter: public INclEventListener
+class Converter
 {
 public:
   explicit Converter (GingaInternal *, RuleAdapter *);
@@ -53,9 +53,6 @@ private:
   void resolveSwitchEvents (ExecutionObjectSwitch *);
   NclEvent *createEvent (Bind *);
   bool getBindKey (Bind *, string *);
-
-  // INclEventListener
-  void eventStateChanged (NclEvent *, EventStateTransition, EventState) override;
 
   // INSANITY ABOVE --------------------------------------------------------
 public:
