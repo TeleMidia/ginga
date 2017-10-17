@@ -450,7 +450,7 @@ GingaInternal::~GingaInternal ()
 Scheduler *
 GingaInternal::getScheduler ()
 {
-  return (Scheduler *) this->getData ("scheduler");
+  return _scheduler;
 }
 
 /**
@@ -492,30 +492,6 @@ GingaInternal::unregisterPlayer (Player *player)
 {
   g_assert_nonnull (player);
   g_assert (this->remove (&_players, player));
-}
-
-/**
- * @brief Gets data previously attached to state.
- * @param key Name of the key.
- * @return Data associated with key.
- */
-void *
-GingaInternal::getData (const string &key)
-{
-  map<string, void *>::iterator it;
-  return ((it = _userdata.find (key)) == _userdata.end ())
-    ? nullptr : it->second;
-}
-
-/**
- * @brief Attaches data to state.
- * @param key Name of the key.
- * @param data Data to associate with key.
- */
-void
-GingaInternal::setData (const string &key, void *data)
-{
-  _userdata[key] = data;
 }
 
 /**

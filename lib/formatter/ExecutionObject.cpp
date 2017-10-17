@@ -411,14 +411,17 @@ ExecutionObject::sendKeyEvent (const string &key, bool press)
                && (next = _player->getProperty ("moveRight")) != "")))
         {
           ExecutionObjectSettings *settings;
-          settings = (ExecutionObjectSettings *)
-            _ginga->getData ("settings");
+          settings = _scheduler->getSettings ();
           g_assert_nonnull (settings);
           settings->scheduleFocusUpdate (next);
         }
     }
 
-  // Collect the triggered.
+  // Pass key to player.
+  if (_player->isFocused ())
+    _player->sendKeyEvent (key, press);
+
+  // Collect the events to be triggered.
   for (auto _evt: _events)
     {
       SelectionEvent *evt;
@@ -453,10 +456,6 @@ ExecutionObject::sendKeyEvent (const string &key, bool press)
             ("selection of property anchors is not supported");
         }
     }
-
-  // Pass key to player.
-  if (_player->isFocused ())
-    _player->sendKeyEvent (key, press);
 
   // Run collected events.
   for (SelectionEvent *evt: buf)

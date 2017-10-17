@@ -31,7 +31,7 @@ class Scheduler;
 GINGA_FORMATTER_END
 using namespace ::ginga::formatter;
 
-class GingaInternal : public Ginga
+class GingaInternal: public Ginga
 {
  public:
   // External API.
@@ -65,9 +65,6 @@ class GingaInternal : public Ginga
   void registerPlayer (Player *);
   void unregisterPlayer (Player *);
 
-  void *getData (const string &);
-  void setData (const string &, void *);
-
   static void setOptionDebug (GingaInternal *, const string &, bool);
   static void setOptionExperimental (GingaInternal *, const string &, bool);
   static void setOptionOpenGL (GingaInternal *, const string &, bool);
@@ -79,7 +76,6 @@ class GingaInternal : public Ginga
   GingaOptions _opts;            // current options
   Scheduler *_scheduler;         // formatter core
   GList *_players;               // list of players to be ticked
-  map<string, void *> _userdata; // userdata attached to state
 
   string _ncl_file;               // path to current NCL file
   bool _eos;                      // true if EOS was reached

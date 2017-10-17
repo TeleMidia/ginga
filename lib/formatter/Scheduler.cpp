@@ -28,9 +28,9 @@ Scheduler::Scheduler (GingaInternal *ginga)
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;
-  _ginga->setData ("scheduler", this);
   _converter = nullptr;
   _doc = nullptr;
+  _settings = nullptr;
 }
 
 Scheduler::~Scheduler ()
@@ -136,7 +136,7 @@ Scheduler::run (NclDocument *doc)
 
   // Set global settings object.
   g_assert_nonnull (settings);
-  _ginga->setData ("settings", settings);
+  _settings = settings;
 
   // Start entry events.
   for (auto event: *entryevts)
@@ -153,6 +153,12 @@ Scheduler::run (NclDocument *doc)
 
   // Success.
   return true;
+}
+
+ExecutionObjectSettings *
+Scheduler::getSettings ()
+{
+  return _settings;
 }
 
 const set<ExecutionObject *> *
@@ -198,14 +204,26 @@ Scheduler::addObject (ExecutionObject *obj)
 void
 Scheduler::sendTickEvent (GingaTime total, GingaTime diff, GingaTime frame)
 {
+  vector<ExecutionObject *> buf;
   for (auto obj: _objects)
-    obj->sendTickEvent (total, diff, frame);
+    if (obj->isOccurring ())
+      buf.push_back (obj);
+  for (auto obj: buf)
+    {
+      g_assert (!instanceof (ExecutionObjectSettings *, obj));
+      obj->sendTickEvent (total, diff, frame);
+    }
+  _settings->sendTickEvent (total, diff, frame);
 }
 
 void
 Scheduler::sendKeyEvent (const string &key, bool press)
 {
+  vector<ExecutionObject *> buf;
   for (auto obj: _objects)
+    if (instanceof (ExecutionObjectSettings *, obj) || obj->isOccurring ())
+      buf.push_back (obj);
+  for (auto obj: buf)
     obj->sendKeyEvent (key, press);
 }
 
