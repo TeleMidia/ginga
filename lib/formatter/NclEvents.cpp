@@ -133,9 +133,7 @@ NclEvent::changeState (EventState newState,
   set<INclEventListener *> clone (_listeners);
 
   for (INclEventListener *listener: clone)
-    {
-      listener->eventStateChanged (this, transition, _previousState);
-    }
+    listener->eventStateChanged (this, transition);
 
   return true;
 }
@@ -238,10 +236,9 @@ SwitchEvent::setMappedEvent (NclEvent *evt)
 }
 
 void
-SwitchEvent::eventStateChanged (
-    unused (NclEvent *evt),
-    EventStateTransition trans,
-    unused (EventState prevState))
+SwitchEvent::eventStateChanged (unused (NclEvent *evt),
+                                EventStateTransition trans)
+
 {
   changeState (EventUtil::getNextState (trans), trans);
 }

@@ -36,6 +36,13 @@ class ExecutionObject;
   PROPERTY_READONLY (type,name,getfunc) \
   public: void setfunc (type value) {this->name = value;}\
 
+class NclEvent;
+class INclEventListener
+{
+public:
+  virtual void eventStateChanged (NclEvent *, EventStateTransition) = 0;
+};
+
 class NclEvent
 {
 public:
@@ -71,13 +78,7 @@ protected:
   bool changeState (EventState, EventStateTransition);
 };
 
-class INclEventListener
-{
-public:
-  virtual void eventStateChanged (NclEvent *,
-                                  EventStateTransition,
-                                  EventState) = 0;
-};
+
 
 class PresentationEvent: public NclEvent
 {
@@ -131,10 +132,7 @@ public:
   void setMappedEvent (NclEvent *evt);
   NclEvent *getMappedEvent () { return this->_mappedEvent; }
 
-  virtual void eventStateChanged (
-      NclEvent *evt,
-      EventStateTransition trans,
-      EventState prevState) override;
+  virtual void eventStateChanged (NclEvent *, EventStateTransition) override;
 };
 
 GINGA_FORMATTER_END

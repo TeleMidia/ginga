@@ -34,9 +34,7 @@ public:
   ExecutionObjectContext (GingaInternal *, const string &, Node *);
   virtual ~ExecutionObjectContext ();
 
-  void eventStateChanged (NclEvent *,
-                          EventStateTransition,
-                          EventState) override;
+  void eventStateChanged (NclEvent *, EventStateTransition) override;
 
   const set<ExecutionObject *> *getChildren ();
   ExecutionObject *getChildById (const string &);
