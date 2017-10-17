@@ -72,46 +72,4 @@ EventUtil::getEventStateTransitionAsString (EventStateTransition trans)
     }
 }
 
-bool
-EventUtil::getTransition (EventState prev, EventState next,
-                          EventStateTransition *trans)
-{
-  if (prev == EventState::SLEEPING)
-    {
-      if (next == EventState::OCCURRING)
-        goto trans_start;
-    }
-  if (prev == EventState::OCCURRING)
-    {
-      if (next == EventState::SLEEPING)
-        goto trans_stop;
-      if (next == EventState::PAUSED)
-        goto trans_pause;
-    }
-  if (prev == EventState::PAUSED)
-    {
-      if (next == EventState::OCCURRING)
-        goto trans_resume;
-      if (next == EventState::SLEEPING)
-        goto trans_stop;
-    }
-  return false;
-
- trans_start:
-  tryset (trans, EventStateTransition::START);
-  return true;
-
- trans_pause:
-  tryset (trans, EventStateTransition::PAUSE);
-  return true;
-
- trans_resume:
-  tryset (trans, EventStateTransition::RESUME);
-  return true;
-
- trans_stop:
-  tryset (trans, EventStateTransition::STOP);
-  return true;
-}
-
 GINGA_NCL_END
