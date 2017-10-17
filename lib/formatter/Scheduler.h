@@ -41,6 +41,7 @@ public:
   virtual ~Scheduler ();
   bool run (NclDocument *);
 
+  ExecutionObjectSettings *getSettings ();
   const set<ExecutionObject *> *getObjects ();
   ExecutionObject *getObjectById (const string &);
   ExecutionObject *getObjectByIdOrAlias (const string &);
@@ -52,10 +53,11 @@ public:
   void scheduleAction (NclAction *) override;
 
 private:
-  GingaInternal *_ginga;           // ginga handle
-  Converter *_converter;           // converter object
-  NclDocument *_doc;               // document tree
-  set<ExecutionObject *> _objects; // document objects
+  GingaInternal *_ginga;              // ginga handle
+  Converter *_converter;              // converter object
+  NclDocument *_doc;                  // document tree
+  ExecutionObjectSettings *_settings; // settings object
+  set<ExecutionObject *> _objects;    // document objects
 
   void runAction (NclEvent *, NclAction *);
   void runActionOverComposition (ExecutionObjectContext *,
