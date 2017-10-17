@@ -43,12 +43,8 @@ public:
   bool addChild (ExecutionObject *);
 
 private:
-  void checkLinkConditions ();
-
-private:
   set<ExecutionObject *> _children;
   set<NclEvent *> _runningEvents; // child events occurring
-  set<NclEvent *> _pausedEvents;  // child events paused
   EventStateTransition lastTransition;
 };
 
