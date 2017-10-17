@@ -49,8 +49,6 @@ public:
   static string getEventTypeAsString (EventType);
   static string getEventStateAsString (EventState);
   static string getEventStateTransitionAsString (EventStateTransition);
-
-  static bool getTransition (EventState, EventState, EventStateTransition *);
 };
 
 GINGA_NCL_END
