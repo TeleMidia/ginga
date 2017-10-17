@@ -38,15 +38,18 @@ class ExecutionObject;
 
 class NclEvent
 {
-  PROPERTY (EventType, _type, getType, setType)
   PROPERTY_READONLY (string, _id, getId)
   PROPERTY (ExecutionObject *, _exeObj, getExecutionObject, setExecutionObject)
   PROPERTY_READONLY (EventState, _state, getCurrentState)
   PROPERTY_READONLY (EventState, _previousState, getPreviousState)
 
 public:
-  NclEvent (GingaInternal *, const string &, ExecutionObject *, Anchor *);
+  NclEvent (GingaInternal *, const string &, EventType,
+            ExecutionObject *, Anchor *);
+
   virtual ~NclEvent ();
+
+
   void setState (EventState);
   virtual bool start ();
   virtual bool stop ();
@@ -54,12 +57,15 @@ public:
   bool resume ();
   bool abort ();
   void addListener (INclEventListener *listener);
+
   Anchor *getAnchor ();
+  EventType getType ();
 
 protected:
   GingaInternal *_ginga;        // ginga handle
   Scheduler *_scheduler;        // scheduler
 
+  EventType _type;
   Anchor *_anchor;
   set<INclEventListener *> _listeners;
 
@@ -108,16 +114,6 @@ public:
                     Property *);
 
   virtual ~AttributionEvent ();
-  string getCurrentValue ();
-  bool setValue (const string &newValue);
-  void setImplicitRefAssessmentEvent (const string &roleId,
-                                      NclEvent *event);
-
-  NclEvent *getImplicitRefAssessmentEvent (const string &roleId);
-  string solveImplicitRefAssessment (const string &val);
-
-protected:
-  map<string, NclEvent *> _assessments;
 };
 
 class SwitchEvent : public NclEvent, public INclEventListener

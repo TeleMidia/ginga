@@ -38,9 +38,14 @@ public:
   vector<Bind *> getBinds (Role *);
   bool contains (Node *, bool);
 
+  const map<string, string> *getGhostBinds ();
+  string getGhostBind (const string &);
+  void setGhostBind (const string &, const string &);
+
 private:
   Connector *_connector;
   vector<Bind *> _binds;
+  map<string, string> _ghost_binds;
 };
 
 GINGA_NCL_END
