@@ -78,14 +78,6 @@ NclEvent::addListener (INclEventListener *listener)
   _listeners.insert (listener);
 }
 
-EventStateTransition
-NclEvent::getTransition (EventState newState)
-{
-  EventStateTransition trans;
-  g_assert (EventUtil::getTransition (_state, newState, &trans));
-  return trans;
-}
-
 bool
 NclEvent::abort ()
 {

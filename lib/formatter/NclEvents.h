@@ -42,18 +42,18 @@ public:
   NclEvent (GingaInternal *, EventType, ExecutionObject *, Anchor *);
   virtual ~NclEvent ();
 
-  virtual bool start ();
-  virtual bool stop ();
-  bool pause ();
-  bool resume ();
-  bool abort ();
-  void addListener (INclEventListener *listener);
-
   EventType getType ();
   ExecutionObject *getObject ();
   Anchor *getAnchor ();
-
   EventState getState ();
+  void addListener (INclEventListener *);
+
+  virtual bool start ();
+  virtual bool stop ();
+  virtual bool pause ();
+  virtual bool resume ();
+  virtual bool abort ();
+
 
 protected:
   GingaInternal *_ginga;        // ginga handle
@@ -68,7 +68,6 @@ protected:
 
   set<INclEventListener *> _listeners;
 
-  EventStateTransition getTransition (EventState);
   bool changeState (EventState, EventStateTransition);
 };
 
