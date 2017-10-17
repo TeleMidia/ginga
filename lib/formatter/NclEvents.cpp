@@ -28,23 +28,23 @@ GINGA_FORMATTER_BEGIN
 
 NclEvent::NclEvent (GingaInternal *ginga, const string &id,
                     EventType type,
-                    ExecutionObject *exeObj, Anchor *anchor)
+                    ExecutionObject *object, Anchor *anchor)
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;
-
   _scheduler = ginga->getScheduler ();
   g_assert_nonnull (_scheduler);
 
   _type = type;
-
+  g_assert_nonnull (object);
+  _object = object;
   g_assert_nonnull (anchor);
   _anchor = anchor;
 
-  _id = id;
   _state = EventState::SLEEPING;
-  _exeObj = exeObj;
+  _previousState = EventState::SLEEPING;
 
+  _id = id;
   TRACE ("%s", _id.c_str ());
 }
 
@@ -59,16 +59,34 @@ NclEvent::getType ()
   return _type;
 }
 
+ExecutionObject *
+NclEvent::getObject ()
+{
+  return _object;
+}
+
 Anchor *
 NclEvent::getAnchor ()
 {
   return _anchor;
 }
 
+EventState
+NclEvent::getState ()
+{
+  return _state;
+}
+
+EventState
+NclEvent::getPreviousState ()
+{
+  return _previousState;
+}
+
 void
 NclEvent::addListener (INclEventListener *listener)
 {
-  this->_listeners.insert (listener);
+  _listeners.insert (listener);
 }
 
 EventStateTransition
