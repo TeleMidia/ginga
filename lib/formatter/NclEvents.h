@@ -38,11 +38,8 @@ class ExecutionObject;
 
 class NclEvent
 {
-  PROPERTY_READONLY (string, _id, getId)
 public:
-  NclEvent (GingaInternal *, const string &, EventType,
-            ExecutionObject *, Anchor *);
-
+  NclEvent (GingaInternal *, EventType, ExecutionObject *, Anchor *);
   virtual ~NclEvent ();
 
   virtual bool start ();
@@ -71,8 +68,8 @@ protected:
 
   set<INclEventListener *> _listeners;
 
-  EventStateTransition getTransition (EventState newState);
-  bool changeState (EventState newState, EventStateTransition transition);
+  EventStateTransition getTransition (EventState);
+  bool changeState (EventState, EventStateTransition);
 };
 
 class INclEventListener
@@ -83,14 +80,13 @@ public:
                                   EventState) = 0;
 };
 
-class PresentationEvent : public NclEvent
+class PresentationEvent: public NclEvent
 {
   PROPERTY_READONLY (GingaTime, _begin, getBegin)
   PROPERTY (GingaTime, _end, getEnd, setEnd)
 
 public:
-  PresentationEvent (GingaInternal *, const string &,
-                     ExecutionObject *, Area *);
+  PresentationEvent (GingaInternal *, ExecutionObject *, Area *);
   virtual ~PresentationEvent () {}
   GingaTime getDuration ();
 };
@@ -98,7 +94,7 @@ public:
 class SelectionEvent : public NclEvent
 {
 public:
-  SelectionEvent (GingaInternal *, const string &, ExecutionObject *,
+  SelectionEvent (GingaInternal *, ExecutionObject *,
                   Area *, const string &);
   virtual ~SelectionEvent ();
   string getKey ();
@@ -111,7 +107,6 @@ class AttributionEvent : public NclEvent
 {
 public:
   AttributionEvent (GingaInternal *,
-                    const string &,
                     ExecutionObject *,
                     Property *);
 
@@ -127,7 +122,6 @@ private:
 
 public:
   SwitchEvent (GingaInternal *,
-               const string &,
                ExecutionObject *,
                Anchor *,
                EventType ,

@@ -38,7 +38,7 @@ ExecutionObjectContext::eventStateChanged (
     EventState previousState)
 {
   set<NclEvent *>::iterator i;
-  NclEvent *lambda = this->getLambda ();
+  NclEvent *lambda = this->getLambda (EventType::PRESENTATION);
 
   if (!instanceof (PresentationEvent *, event))
     return;
@@ -168,7 +168,7 @@ ExecutionObjectContext::checkLinkConditions ()
 {
   if (_runningEvents.empty () && _pausedEvents.empty ())
     {
-      NclEvent *lambda = this->getLambda ();
+      NclEvent *lambda = this->getLambda (EventType::PRESENTATION);
       lambda->stop ();
       if (this->getParent () == nullptr)
         {
