@@ -39,9 +39,8 @@ class ExecutionObject;
 class NclEvent
 {
   PROPERTY_READONLY (string, _id, getId)
-  PROPERTY (ExecutionObject *, _exeObj, getExecutionObject, setExecutionObject)
-  PROPERTY_READONLY (EventState, _state, getCurrentState)
-  PROPERTY_READONLY (EventState, _previousState, getPreviousState)
+  // PROPERTY_READONLY (EventState, _state, getCurrentState)
+  // PROPERTY_READONLY (EventState, _previousState, getPreviousState)
 
 public:
   NclEvent (GingaInternal *, const string &, EventType,
@@ -58,15 +57,24 @@ public:
   bool abort ();
   void addListener (INclEventListener *listener);
 
-  Anchor *getAnchor ();
   EventType getType ();
+  ExecutionObject *getObject ();
+  Anchor *getAnchor ();
+
+  EventState getState ();
+  EventState getPreviousState ();
 
 protected:
   GingaInternal *_ginga;        // ginga handle
   Scheduler *_scheduler;        // scheduler
 
-  EventType _type;
-  Anchor *_anchor;
+  EventType _type;              // event type
+  ExecutionObject *_object;     // target object
+  Anchor *_anchor;              // target anchor
+
+  EventState _state;            // current state
+  EventState _previousState;    // previous state
+
   set<INclEventListener *> _listeners;
 
   EventStateTransition getTransition (EventState newState);

@@ -263,7 +263,7 @@ Scheduler::runAction (NclEvent *event, NclAction *action)
   ExecutionObject *obj;
   string name;
 
-  obj = event->getExecutionObject ();
+  obj = event->getObject ();
   g_assert_nonnull (obj);
 
   name = EventUtil::getEventStateTransitionAsString
@@ -309,7 +309,7 @@ Scheduler::runAction (NclEvent *event, NclAction *action)
                 == EventStateTransition::START);
 
       attevt = (AttributionEvent *) event;
-      if (event->getCurrentState () != EventState::SLEEPING)
+      if (event->getState () != EventState::SLEEPING)
         return;                 // nothing to do
 
       property = cast (Property *, attevt->getAnchor ());
