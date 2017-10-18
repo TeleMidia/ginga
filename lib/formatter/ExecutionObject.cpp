@@ -135,14 +135,132 @@ ExecutionObject::getEvents ()
 }
 
 NclEvent *
-ExecutionObject::getEventById (const string &id)
+ExecutionObject::getEvent (EventType type, Anchor *anchor,
+                           const string &key)
 {
+  g_assert_nonnull (anchor);
+
+  // bool fail = true;
+  // for (auto a: *(this->getNode ()->getAnchors ()))
+  //   if (a == anchor)
+  //     {
+  //       fail = false;
+  //       break;
+  //     }
+  // g_assert_false (fail);
+
   for (auto event: _events)
-    if (event->getId () == id)
-      return event;
+    {
+      if (event->getAnchor () != anchor || event->getType () != type)
+        continue;
+      switch (type)
+        {
+        case EventType::ATTRIBUTION: // fall-through
+        case EventType::PRESENTATION:
+          return event;
+        case EventType::SELECTION:
+          {
+            SelectionEvent *sel = cast (SelectionEvent *, event);
+            g_assert_nonnull (sel);
+            if (sel->getKey () == key)
+              return event;
+            break;
+          }
+        default:
+          g_assert_not_reached ();
+        }
+    }
   return nullptr;
 }
 
+NclEvent *
+ExecutionObject::getEventByAnchorId (EventType type, const string &id,
+                                     const string &key)
+{
+  for (auto event: _events)
+    {
+      Anchor *anchor;
+      if (event->getType () != type)
+        continue;
+      anchor = event->getAnchor ();
+      g_assert_nonnull (anchor);
+      if (anchor->getId () != id)
+        continue;
+      switch (type)
+        {
+        case EventType::ATTRIBUTION: // fall-through
+        case EventType::PRESENTATION:
+          return event;
+        case EventType::SELECTION:
+          {
+            SelectionEvent *sel = cast (SelectionEvent *, event);
+            g_assert_nonnull (sel);
+            if (sel->getKey () == key)
+              return event;
+            break;
+          }
+        default:
+          g_assert_not_reached ();
+        }
+    }
+  return nullptr;
+}
+
+NclEvent *
+ExecutionObject::getLambda (EventType type)
+{
+  g_assert (type != EventType::ATTRIBUTION);
+  return this->getEventByAnchorId (type, "@lambda", "");
+}
+
+NclEvent *
+ExecutionObject::obtainEvent (EventType type, Anchor *anchor,
+                              const string &key)
+{
+  NclEvent *event;
+
+  event = this->getEvent (type, anchor, key);
+  if (event != nullptr)
+    return event;
+
+  g_assert_nonnull (anchor);
+  g_assert_null (this->getEventByAnchorId (type, anchor->getId (), key));
+
+  if (instanceof (ExecutionObjectSwitch *, this))
+    {
+      event = new SwitchEvent (_ginga, this, anchor, type, key);
+    }
+  else if (instanceof (ExecutionObjectContext *, this))
+    {
+      g_assert (type == EventType::PRESENTATION);
+      event = new PresentationEvent (_ginga, this, (Area *) anchor);
+    }
+  else
+    {
+      switch (type)
+        {
+        case EventType::PRESENTATION:
+          event = new PresentationEvent (_ginga, this, (Area *) anchor);
+          break;
+        case EventType::ATTRIBUTION:
+          {
+            Property *property = cast (Property *, anchor);
+            g_assert_nonnull (property);
+            event = new AttributionEvent (_ginga, this, property);
+            break;
+          }
+        case EventType::SELECTION:
+          event = new SelectionEvent (_ginga, this, (Area *) anchor, key);
+          break;
+        default:
+          g_assert_not_reached ();
+        }
+    }
+
+  g_assert_nonnull (event);
+  g_assert (this->addEvent (event));
+  return event;
+}
 
 bool
 ExecutionObject::addEvent (NclEvent *event)
@@ -153,23 +271,20 @@ ExecutionObject::addEvent (NclEvent *event)
   return true;
 }
 
-PresentationEvent *
-ExecutionObject::getLambda ()
-{
-  return cast (PresentationEvent *,
-               this->getEventById (_id + "@lambda<pres>"));
-}
-
 bool
 ExecutionObject::prepare (NclEvent *event)
 {
-  map<Node *, ExecutionObjectContext *>::iterator i;
-  string value;
+  // map<Node *, ExecutionObjectContext *>::iterator i;
+  // string value;
 
-  g_assert_nonnull (event);
-  g_assert (this->getEventById (event->getId ()));
-  if (event->getState () != EventState::SLEEPING)
-    return false;
+  // g_assert_nonnull (event);
+  // g_assert (this->obtainEvent
+  //           (event->getType (),
+  //            event->getAnchor (),
+  //            instanceof (SelectionEvent *, event)
+  //            ? cast (SelectionEvent *, event)->getKey () : ""));
+  // if (event->getState () != EventState::SLEEPING)
+  //   return false;
 
   _mainEvent = event;
 
@@ -474,7 +589,7 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
       PresentationEvent *evt = cast (PresentationEvent *, _evt);
       if (evt == nullptr)
         continue;
-      if (this->getLambda () == evt)
+      if (this->getLambda (EventType::PRESENTATION) == evt)
         continue;
 
       // TRACE ("[%s %" GINGA_TIME_FORMAT "]"
@@ -489,7 +604,7 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
           && evt->getBegin () <= _time)
         {
           TRACE ("%s.%s timed-out at %" GINGA_TIME_FORMAT,
-                 _id.c_str(), evt->getId ().c_str (),
+                 _id.c_str(), evt->getAnchor ()->getId ().c_str (),
                  GINGA_TIME_ARGS (time));
           evt->start ();
         }
@@ -497,7 +612,7 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
                && evt->getEnd () <= _time)
         {
           TRACE ("%s.%s timed-out at %" GINGA_TIME_FORMAT,
-                 _id.c_str(), evt->getId ().c_str (),
+                 _id.c_str(), evt->getAnchor ()->getId ().c_str (),
                  GINGA_TIME_ARGS (time));
           evt->stop ();
         }

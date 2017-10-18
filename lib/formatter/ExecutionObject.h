@@ -54,9 +54,12 @@ public:
   void initParent (ExecutionObjectContext *);
 
   const set<NclEvent *> *getEvents ();
-  NclEvent *getEventById (const string &);
+  NclEvent *getEvent (EventType, Anchor *, const string &);
+  NclEvent *getEventByAnchorId (EventType type, const string &,
+                                const string &);
+  NclEvent *getLambda (EventType);
+  NclEvent *obtainEvent (EventType, Anchor *, const string &);
   bool addEvent (NclEvent *);
-  PresentationEvent *getLambda ();
 
   virtual bool prepare (NclEvent *event);
   virtual bool start ();

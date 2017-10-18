@@ -88,9 +88,10 @@ Scheduler::run (NclDocument *doc)
       obj = _converter->obtainExecutionObject (node);
       g_assert_nonnull (obj);
 
-      evt = _converter->obtainEvent
-        (obj, iface, instanceof (Property *, iface)
-         ? EventType::ATTRIBUTION : EventType::PRESENTATION, "");
+      evt = obj->obtainEvent (instanceof (Property *, iface)
+                              ? EventType::ATTRIBUTION
+                              : EventType::PRESENTATION,
+                              iface, "");
       g_assert_nonnull (evt);
       entryevts->push_back (evt);
     }
@@ -415,8 +416,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
           if (!instanceof (Area *, iface))
             continue;           // nothing to do
 
-          evt = _converter->obtainEvent (child, iface,
-                                         EventType::PRESENTATION, "");
+          evt = child->obtainEvent (EventType::PRESENTATION, iface, "");
           g_assert_nonnull (evt);
           g_assert (instanceof (PresentationEvent *, evt));
 
@@ -430,7 +430,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
       for (auto child: *ctxObj->getChildren ())
         {
           NclEvent *evt;
-          evt = child->getLambda ();
+          evt = child->getLambda (EventType::PRESENTATION);
           if (evt == nullptr)
             continue;
           runAction (evt, action);
@@ -511,9 +511,8 @@ Scheduler::runSwitchEvent (unused (ExecutionObjectSwitch *switchObj),
 
       endPointObject = _converter->obtainExecutionObject (node);
       g_assert_nonnull (endPointObject);
-      selectedEvent = _converter
-        ->obtainEvent (endPointObject, iface, switchEvent->getType (),
-                       switchEvent->getKey ());
+      selectedEvent = endPointObject->obtainEvent
+        (switchEvent->getType (), iface, switchEvent->getKey ());
       break;
     }
 
