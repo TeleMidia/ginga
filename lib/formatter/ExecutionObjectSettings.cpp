@@ -85,7 +85,7 @@ ExecutionObjectSettings::updateCurrentFocus (const string &index)
   string from = this->getProperty (name);
   string to = next;
 
-  NclEvent *evt = this->getEventById (name);
+  NclEvent *evt = this->getEventByAnchorId (EventType::ATTRIBUTION, name, "");
   if (evt == nullptr)           // do no trigger links
     {
       cast (ExecutionObject *, this)->setProperty (name, from, to, 0);

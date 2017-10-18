@@ -43,9 +43,6 @@ public:
   explicit Converter (GingaInternal *, RuleAdapter *);
   virtual ~Converter ();
 
-  NclEvent *obtainEvent (ExecutionObject *, Anchor *, EventType,
-                         const string &key="");
-
   ExecutionObject *
   processExecutionObjectSwitch (ExecutionObjectSwitch *);
 

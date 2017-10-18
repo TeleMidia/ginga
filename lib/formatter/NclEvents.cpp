@@ -26,8 +26,7 @@ GINGA_FORMATTER_BEGIN
 
 // NclEvent.
 
-NclEvent::NclEvent (GingaInternal *ginga, const string &id,
-                    EventType type,
+NclEvent::NclEvent (GingaInternal *ginga, EventType type,
                     ExecutionObject *object, Anchor *anchor)
 {
   g_assert_nonnull (ginga);
@@ -42,15 +41,10 @@ NclEvent::NclEvent (GingaInternal *ginga, const string &id,
   _anchor = anchor;
 
   _state = EventState::SLEEPING;
-  _previousState = EventState::SLEEPING;
-
-  _id = id;
-  TRACE ("%s", _id.c_str ());
 }
 
 NclEvent::~NclEvent ()
 {
-  TRACE ("%s", _id.c_str ());
 }
 
 EventType
@@ -77,24 +71,10 @@ NclEvent::getState ()
   return _state;
 }
 
-EventState
-NclEvent::getPreviousState ()
-{
-  return _previousState;
-}
-
 void
 NclEvent::addListener (INclEventListener *listener)
 {
   _listeners.insert (listener);
-}
-
-EventStateTransition
-NclEvent::getTransition (EventState newState)
-{
-  EventStateTransition trans;
-  g_assert (EventUtil::getTransition (_state, newState, &trans));
-  return trans;
 }
 
 bool
@@ -142,26 +122,16 @@ NclEvent::resume ()
     return false;
 }
 
-void
-NclEvent::setState (EventState newState)
-{
-  _previousState = _state;
-  _state = newState;
-}
-
 bool
 NclEvent::changeState (EventState newState,
                        EventStateTransition transition)
 {
-  _previousState = _state;
   _state = newState;
 
   set<INclEventListener *> clone (_listeners);
 
   for (INclEventListener *listener: clone)
-    {
-      listener->eventStateChanged (this, transition, _previousState);
-    }
+    listener->eventStateChanged (this, transition);
 
   return true;
 }
@@ -171,40 +141,21 @@ NclEvent::changeState (EventState newState,
 // PresentationEvent.
 
 PresentationEvent::PresentationEvent (GingaInternal *ginga,
-                                      const string &id,
                                       ExecutionObject *exeObj,
                                       Area *anchor)
-  : NclEvent (ginga, id, EventType::PRESENTATION, exeObj, anchor)
+  : NclEvent (ginga, EventType::PRESENTATION, exeObj, anchor)
 {
-  auto intervalAnchor = cast (Area *, anchor);
-  if (intervalAnchor)
-    {
-      _begin = intervalAnchor->getBegin ();
-      _end = intervalAnchor->getEnd ();
-    }
-  else
-    {
-      _begin = 0;
-      _end = GINGA_TIME_NONE;
-    }
-}
-
-GingaTime
-PresentationEvent::getDuration ()
-{
-  if (!GINGA_TIME_IS_VALID (this->_end))
-    return GINGA_TIME_NONE;
-  return this->_end - this->_begin;
+  _begin = anchor->getBegin ();
+  _end = anchor->getEnd ();
 }
 
 
 // SelectionEvent
 
 SelectionEvent::SelectionEvent (GingaInternal *ginga,
-                                const string &id,
                                 ExecutionObject *exeObj,
                                 Area *anchor, const string &key)
-  : NclEvent (ginga, id, EventType::SELECTION, exeObj, anchor)
+  : NclEvent (ginga, EventType::SELECTION, exeObj, anchor)
 {
   _key = key;
 }
@@ -232,10 +183,9 @@ SelectionEvent::start ()
 // AttributionEvent
 
 AttributionEvent::AttributionEvent (GingaInternal *ginga,
-                                    const string &id,
                                     ExecutionObject *exeObj,
                                     Property *anchor)
-  : NclEvent (ginga, id, EventType::ATTRIBUTION, exeObj, anchor)
+  : NclEvent (ginga, EventType::ATTRIBUTION, exeObj, anchor)
 {
 }
 
@@ -247,11 +197,10 @@ AttributionEvent::~AttributionEvent ()
 // SwitchEvent.
 
 SwitchEvent::SwitchEvent (GingaInternal *ginga,
-                          const string &id,
                           ExecutionObject *exeObjSwitch,
                           Anchor *interface,
                           EventType type, const string &key)
-  : NclEvent (ginga, id, type, exeObjSwitch, interface)
+  : NclEvent (ginga, type, exeObjSwitch, interface)
 {
   this->_key = key;
   _mappedEvent = nullptr;
@@ -268,12 +217,30 @@ SwitchEvent::setMappedEvent (NclEvent *evt)
 }
 
 void
-SwitchEvent::eventStateChanged (
-    unused (NclEvent *evt),
-    EventStateTransition trans,
-    unused (EventState prevState))
+SwitchEvent::eventStateChanged (unused (NclEvent *evt),
+                                EventStateTransition trans)
+
 {
-  changeState (EventUtil::getNextState (trans), trans);
+  EventState next;
+  switch (trans)
+    {
+    case EventStateTransition::STOP:
+      next = EventState::SLEEPING;
+      break;
+    case EventStateTransition::START: // fall-through
+    case EventStateTransition::RESUME:
+      next = EventState::OCCURRING;
+      break;
+    case EventStateTransition::PAUSE:
+      next = EventState::PAUSED;
+      break;
+    case EventStateTransition::ABORT:
+      next = EventState::SLEEPING;
+      break;
+    default:
+      g_assert_not_reached ();
+    }
+  changeState (next, trans);
 }
 
 GINGA_FORMATTER_END

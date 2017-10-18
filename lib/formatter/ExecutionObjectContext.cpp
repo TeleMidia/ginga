@@ -34,19 +34,16 @@ ExecutionObjectContext::~ExecutionObjectContext ()
 void
 ExecutionObjectContext::eventStateChanged (
     NclEvent *event,
-    EventStateTransition transition,
-    EventState previousState)
+    EventStateTransition transition)
 {
   set<NclEvent *>::iterator i;
-  NclEvent *lambda = this->getLambda ();
-
-  if (!instanceof (PresentationEvent *, event))
-    return;
+  NclEvent *lambda = this->getLambda (EventType::PRESENTATION);
+  g_assert_nonnull (lambda);
 
   switch (transition)
     {
     case EventStateTransition::START:
-      if (_runningEvents.empty () && _pausedEvents.empty ())
+      if (_runningEvents.empty ())
         {
           lambda->addListener (_parent);
           lambda->start ();
@@ -56,25 +53,7 @@ ExecutionObjectContext::eventStateChanged (
       break;
 
     case EventStateTransition::ABORT:
-      lastTransition = transition;
-      if (previousState == EventState::OCCURRING)
-        {
-          i = _runningEvents.find (event);
-          if (i != _runningEvents.end ())
-            {
-              _runningEvents.erase (i);
-            }
-        }
-      else if (previousState == EventState::PAUSED)
-        {
-          i = _pausedEvents.find (event);
-          if (i != _pausedEvents.end ())
-            {
-              _pausedEvents.erase (i);
-            }
-        }
-
-      if (_runningEvents.empty () && _pausedEvents.empty ())
+      if (_runningEvents.empty ())
         {
           lambda->abort ();
         }
@@ -82,26 +61,21 @@ ExecutionObjectContext::eventStateChanged (
 
     case EventStateTransition::STOP:
       lastTransition = transition;
-      if (previousState == EventState::OCCURRING)
+      i = _runningEvents.find (event);
+      if (i != _runningEvents.end ())
         {
-          i = _runningEvents.find (event);
-          if (i != _runningEvents.end ())
-            {
-              _runningEvents.erase (i);
-            }
-        }
-      else if (previousState == EventState::PAUSED)
-        {
-          i = _pausedEvents.find (event);
-          if (i != _pausedEvents.end ())
-            {
-              _pausedEvents.erase (i);
-            }
+          _runningEvents.erase (i);
         }
 
-      if (_runningEvents.empty () && _pausedEvents.empty ())
+      if (_runningEvents.empty ())
         {
-          checkLinkConditions ();
+          NclEvent *lambda = this->getLambda (EventType::PRESENTATION);
+          lambda->stop ();
+          if (this->getParent () == nullptr)
+            {
+              TRACE ("*** ALL DONE ***");
+              _ginga->setEOS (true);
+            }
         }
       break;
 
@@ -112,7 +86,6 @@ ExecutionObjectContext::eventStateChanged (
           _runningEvents.erase (i);
         }
 
-      _pausedEvents.insert (event);
       if (_runningEvents.empty ())
         {
           lambda->pause ();
@@ -120,12 +93,6 @@ ExecutionObjectContext::eventStateChanged (
       break;
 
     case EventStateTransition::RESUME:
-      i = _pausedEvents.find (event);
-      if (i != _pausedEvents.end ())
-        {
-          _pausedEvents.erase (i);
-        }
-
       _runningEvents.insert (event);
       if (_runningEvents.size () == 1)
         {
@@ -162,21 +129,5 @@ ExecutionObjectContext::addChild (ExecutionObject *child)
   _children.insert (child);
   return true;
 }
-
-void
-ExecutionObjectContext::checkLinkConditions ()
-{
-  if (_runningEvents.empty () && _pausedEvents.empty ())
-    {
-      NclEvent *lambda = this->getLambda ();
-      lambda->stop ();
-      if (this->getParent () == nullptr)
-        {
-          TRACE ("*** ALL DONE ***");
-          _ginga->setEOS (true);
-        }
-    }
-}
-
 
 GINGA_FORMATTER_END

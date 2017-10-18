@@ -43,23 +43,12 @@ enum class EventStateTransition
   ABORT
 };
 
-enum class AttributeType
-{
-  OCCURRENCES = 0,
-  REPETITIONS,
-  STATE,
-  NODE_PROPERTY
-};
-
 class EventUtil
 {
 public:
   static string getEventTypeAsString (EventType);
   static string getEventStateAsString (EventState);
   static string getEventStateTransitionAsString (EventStateTransition);
-
-  static bool getTransition (EventState, EventState, EventStateTransition *);
-  static EventState getNextState (EventStateTransition);
 };
 
 GINGA_NCL_END

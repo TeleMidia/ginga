@@ -32,37 +32,31 @@ class ExecutionObject;
   protected: type name;\
   public: type getfunc () const { return this->name; }
 
-#define PROPERTY(type,name,getfunc,setfunc) \
-  PROPERTY_READONLY (type,name,getfunc) \
-  public: void setfunc (type value) {this->name = value;}\
+class NclEvent;
+class INclEventListener
+{
+public:
+  virtual void eventStateChanged (NclEvent *, EventStateTransition) = 0;
+};
 
 class NclEvent
 {
-  PROPERTY_READONLY (string, _id, getId)
-  // PROPERTY_READONLY (EventState, _state, getCurrentState)
-  // PROPERTY_READONLY (EventState, _previousState, getPreviousState)
-
 public:
-  NclEvent (GingaInternal *, const string &, EventType,
-            ExecutionObject *, Anchor *);
-
+  NclEvent (GingaInternal *, EventType, ExecutionObject *, Anchor *);
   virtual ~NclEvent ();
-
-
-  void setState (EventState);
-  virtual bool start ();
-  virtual bool stop ();
-  bool pause ();
-  bool resume ();
-  bool abort ();
-  void addListener (INclEventListener *listener);
 
   EventType getType ();
   ExecutionObject *getObject ();
   Anchor *getAnchor ();
-
   EventState getState ();
-  EventState getPreviousState ();
+  void addListener (INclEventListener *);
+
+  virtual bool start ();
+  virtual bool stop ();
+  virtual bool pause ();
+  virtual bool resume ();
+  virtual bool abort ();
+
 
 protected:
   GingaInternal *_ginga;        // ginga handle
@@ -73,38 +67,25 @@ protected:
   Anchor *_anchor;              // target anchor
 
   EventState _state;            // current state
-  EventState _previousState;    // previous state
-
   set<INclEventListener *> _listeners;
 
-  EventStateTransition getTransition (EventState newState);
-  bool changeState (EventState newState, EventStateTransition transition);
+  bool changeState (EventState, EventStateTransition);
 };
 
-class INclEventListener
-{
-public:
-  virtual void eventStateChanged (NclEvent *,
-                                  EventStateTransition,
-                                  EventState) = 0;
-};
-
-class PresentationEvent : public NclEvent
+class PresentationEvent: public NclEvent
 {
   PROPERTY_READONLY (GingaTime, _begin, getBegin)
-  PROPERTY (GingaTime, _end, getEnd, setEnd)
+  PROPERTY_READONLY (GingaTime, _end, getEnd)
 
 public:
-  PresentationEvent (GingaInternal *, const string &,
-                     ExecutionObject *, Area *);
+  PresentationEvent (GingaInternal *, ExecutionObject *, Area *);
   virtual ~PresentationEvent () {}
-  GingaTime getDuration ();
 };
 
 class SelectionEvent : public NclEvent
 {
 public:
-  SelectionEvent (GingaInternal *, const string &, ExecutionObject *,
+  SelectionEvent (GingaInternal *, ExecutionObject *,
                   Area *, const string &);
   virtual ~SelectionEvent ();
   string getKey ();
@@ -117,7 +98,6 @@ class AttributionEvent : public NclEvent
 {
 public:
   AttributionEvent (GingaInternal *,
-                    const string &,
                     ExecutionObject *,
                     Property *);
 
@@ -133,7 +113,6 @@ private:
 
 public:
   SwitchEvent (GingaInternal *,
-               const string &,
                ExecutionObject *,
                Anchor *,
                EventType ,
@@ -144,10 +123,7 @@ public:
   void setMappedEvent (NclEvent *evt);
   NclEvent *getMappedEvent () { return this->_mappedEvent; }
 
-  virtual void eventStateChanged (
-      NclEvent *evt,
-      EventStateTransition trans,
-      EventState prevState) override;
+  virtual void eventStateChanged (NclEvent *, EventStateTransition) override;
 };
 
 GINGA_FORMATTER_END
