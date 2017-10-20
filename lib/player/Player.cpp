@@ -42,7 +42,7 @@ static map<string, PlayerPropertyInfo> player_property_map =
 {
  {"background",   {Player::PROP_BACKGROUND,    true,  ""}},
  {"balance",      {Player::PROP_BALANCE,       true,  "0.0"}},
- {"bass",         {Player::PROP_BASS,          false,  "100%"}},
+ {"bass",         {Player::PROP_BASS,          true,  "0"}},
  {"bottom",       {Player::PROP_BOTTOM,        false, "0%"}},
  {"bounds",       {Player::PROP_BOUNDS,        false, "0%,0%,100%,100%"}},
  {"debug",        {Player::PROP_DEBUG,         true,  "false"}},
@@ -65,7 +65,7 @@ static map<string, PlayerPropertyInfo> player_property_map =
  {"size",         {Player::PROP_SIZE,          false, "100%,100%"}},
  {"top",          {Player::PROP_TOP,           true,  "0"}},
  {"transparency", {Player::PROP_TRANSPARENCY,  true,  "0%"}},
- {"treble",       {Player::PROP_TREBLE,        false,  "100%"}},
+ {"treble",       {Player::PROP_TREBLE,        true,  "0"}},
  {"vertAlign",    {Player::PROP_VERT_ALIGN,    true,  "top"}},
  {"visible",      {Player::PROP_VISIBLE,       true,  "true"}},
  {"volume",       {Player::PROP_VOLUME,        true,  "100%"}},
