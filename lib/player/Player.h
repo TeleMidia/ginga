@@ -103,6 +103,8 @@ public:
   virtual void reload ();
   virtual void redraw (cairo_t *);
 
+  virtual void sendKeyEvent (const string &, bool);
+
   // Static.
   static string getCurrentFocus ();
   static void setCurrentFocus (const string &);

@@ -36,82 +36,6 @@ Converter::~Converter ()
 {
 }
 
-NclEvent *
-Converter::obtainEvent (ExecutionObject *object,
-                        Anchor *iface,
-                        EventType eventType,
-                        const string &key)
-{
-  string id;
-  NclEvent *event;
-  string type;
-
-  id = iface->getId ();
-  switch (eventType)
-    {
-    case EventType::SELECTION:
-      id += "<sel";
-      if (key != "")
-        id += "(" + key + ")";
-      id += ">";
-      break;
-    case EventType::PRESENTATION:
-      id += "<pres>";
-      break;
-    case EventType::ATTRIBUTION:
-      id += "<attr>";
-      break;
-    default:
-      g_assert_not_reached ();
-    }
-
-  event = object->getEventById (id);
-  if (event != nullptr)
-    return event;
-
-  if (instanceof (ExecutionObjectSwitch *, object))
-    {
-      event = new SwitchEvent
-        (_ginga, id, object, iface, eventType, key);
-    }
-  else if (instanceof (ExecutionObjectContext *, object))
-    {
-      g_assert (eventType == EventType::PRESENTATION);
-      event = new PresentationEvent (_ginga, id, object, (Area *) iface);
-    }
-  else
-    {
-      switch (eventType)
-        {
-        case EventType::PRESENTATION:
-          event = new PresentationEvent (_ginga, id, object, (Area *) iface);
-          break;
-        case EventType::ATTRIBUTION:
-          {
-            auto propAnchor = cast (Property *, iface);
-            g_assert_nonnull (propAnchor);
-            event = new AttributionEvent (_ginga, id, object, propAnchor);
-            break;
-          }
-        case EventType::SELECTION:
-          {
-            event = new SelectionEvent (_ginga, id, object, (Area *) iface);
-            if (key != "")
-              {
-                ((SelectionEvent *) event)->setSelectionCode (key);
-              }
-            break;
-          }
-        default:
-          g_assert_not_reached ();
-        }
-    }
-
-  g_assert_nonnull (event);
-  g_assert (object->addEvent (event));
-  return event;
-}
-
 ExecutionObject *
 Converter::processExecutionObjectSwitch (
     ExecutionObjectSwitch *switchObject)
@@ -172,13 +96,13 @@ Converter::resolveSwitchEvents (
       switchEvent = cast (SwitchEvent *, event);
       g_assert_nonnull (switchEvent);
 
-      interfacePoint = switchEvent->getInterface ();
+      interfacePoint = switchEvent->getAnchor ();
       auto lambdaAnchor = cast (AreaLambda *, interfacePoint);
       if (lambdaAnchor)
         {
-          mappedEvent = obtainEvent (
-                selectedObject, selectedNode->getLambda (),
-                switchEvent->getType (), switchEvent->getKey ());
+          mappedEvent = selectedObject->obtainEvent
+            (switchEvent->getType (), selectedNode->getLambda (),
+             switchEvent->getKey ());
         }
       else
         {
@@ -190,10 +114,9 @@ Converter::resolveSwitchEvents (
               mapping->getTarget (&selectedNode, &interfacePoint);
               endPointObject = obtainExecutionObject (selectedNode);
               g_assert_nonnull (endPointObject);
-              mappedEvent = obtainEvent (endPointObject,
-                                      interfacePoint,
-                                      switchEvent->getType (),
-                                      switchEvent->getKey ());
+              mappedEvent = endPointObject->obtainEvent
+                (switchEvent->getType (), interfacePoint,
+                 switchEvent->getKey ());
               break;
             }
         }
@@ -201,47 +124,6 @@ Converter::resolveSwitchEvents (
       if (mappedEvent != nullptr)
         {
           switchEvent->setMappedEvent (mappedEvent);
-        }
-    }
-}
-
-void
-Converter::eventStateChanged (NclEvent *event,
-                              EventStateTransition transition,
-                              unused (EventState previousState))
-{
-  ExecutionObject *exeObj = event->getExecutionObject ();
-  auto exeSwitch = cast (ExecutionObjectSwitch *, exeObj);
-
-  if (exeSwitch)
-    {
-      if (transition == EventStateTransition::START)
-        {
-          for (auto e: *(exeSwitch->getEvents()))
-            {
-              auto switchEvt = cast (SwitchEvent *, e);
-              if (switchEvt)
-                {
-                  NclEvent *ev = switchEvt->getMappedEvent ();
-
-                  if (ev == nullptr)
-                    {
-                      processExecutionObjectSwitch (exeSwitch);
-
-                      ev = switchEvt->getMappedEvent ();
-                      if (ev != nullptr)
-                        {
-                          e->start ();
-                        }
-                    }
-                }
-            }
-        }
-
-      if (transition == EventStateTransition::STOP
-          || transition == EventStateTransition::ABORT)
-        {
-          exeSwitch->select (NULL);
         }
     }
 }
@@ -271,7 +153,7 @@ Converter::createEvent (Bind *bind)
 
   if (interfacePoint == nullptr)
     {
-      return executionObject->getLambda ();
+      return executionObject->getLambda (EventType::PRESENTATION);
     }
 
   if (instanceof (Composition *, node)
@@ -284,8 +166,8 @@ Converter::createEvent (Bind *bind)
 
   if (!getBindKey (bind, &key))
     key = "";
-  event = obtainEvent (executionObject, interfacePoint,
-                       bind->getRole ()->getEventType (), key);
+  event = executionObject->obtainEvent
+    (bind->getRole ()->getEventType (), interfacePoint, key);
 
   return event;
 }
@@ -362,7 +244,8 @@ Converter::obtainExecutionObject (Node *node)
       TRACE ("creating switch %s", node->getId ().c_str ());
       object = new ExecutionObjectSwitch (_ginga, id, node);
       g_assert_nonnull
-        (obtainEvent (object, node->getLambda (), EventType::PRESENTATION));
+        (object->obtainEvent (EventType::PRESENTATION,
+                              node->getLambda (), ""));
       goto done;
     }
 
@@ -371,7 +254,8 @@ Converter::obtainExecutionObject (Node *node)
       TRACE ("creating context %s", node->getId ().c_str ());
       object = new ExecutionObjectContext (_ginga, id, node);
       g_assert_nonnull
-        (obtainEvent (object, node->getLambda (), EventType::PRESENTATION));
+        (object->obtainEvent (EventType::PRESENTATION,
+                              node->getLambda (), ""));
 
       g_assert_nonnull (object);
       if (parent != nullptr)
@@ -478,7 +362,6 @@ Converter::createAction (Action *connAction, Bind *bind)
 
   event = createEvent (bind);
   g_assert_nonnull (event);
-  event->setType (eventType);
 
   action = new NclAction (event, transition, _scheduler);
   if (eventType == EventType::ATTRIBUTION)
@@ -488,14 +371,11 @@ Converter::createAction (Action *connAction, Bind *bind)
 
       dur = connAction->getDuration ();
       if (dur[0] == '$')
-          dur = bind->getParameter (dur.substr (1, dur.length () - 1));
+        dur = bind->getParameter (dur.substr (1, dur.length () - 1));
 
       value = connAction->getValue ();
       if (value[0] == '$')
         value = bind->getParameter (value.substr (1, value.length () - 1));
-
-      g_assert (dur[0] != '$');
-      g_assert (value[0] != '$');
 
       action->setDuration (dur);
       action->setValue (value);

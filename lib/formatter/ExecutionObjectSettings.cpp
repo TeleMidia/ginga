@@ -35,7 +35,6 @@ ExecutionObjectSettings::ExecutionObjectSettings (GingaInternal *ginga,
   g_assert_nonnull (media);
   g_assert (media->isSettings ());
   _player = Player::createPlayer (_ginga, _id, "", media->getMimeType ());
-  g_assert (_ginga->registerEventListener (this));
 }
 
 void
@@ -86,7 +85,7 @@ ExecutionObjectSettings::updateCurrentFocus (const string &index)
   string from = this->getProperty (name);
   string to = next;
 
-  NclEvent *evt = this->getEventById (name);
+  NclEvent *evt = this->getEventByAnchorId (EventType::ATTRIBUTION, name, "");
   if (evt == nullptr)           // do no trigger links
     {
       cast (ExecutionObject *, this)->setProperty (name, from, to, 0);
@@ -96,7 +95,6 @@ ExecutionObjectSettings::updateCurrentFocus (const string &index)
       AttributionEvent *attevt = cast (AttributionEvent *, evt);
       g_assert_nonnull (attevt);
       attevt->start ();
-      attevt->setValue (to);
       cast (ExecutionObject *, this)->setProperty (name, from, to, 0);
       attevt->stop ();
     }
@@ -110,15 +108,9 @@ ExecutionObjectSettings::scheduleFocusUpdate (const string &next)
 }
 
 void
-ExecutionObjectSettings::handleKeyEvent (unused (const string &key),
-                                         unused (bool press))
-{
-}
-
-void
-ExecutionObjectSettings::handleTickEvent (unused (GingaTime total),
-                                          unused (GingaTime diff),
-                                          unused (int frame))
+ExecutionObjectSettings::sendTickEvent (unused (GingaTime total),
+                                        unused (GingaTime diff),
+                                        unused (GingaTime frame))
 {
   if (_hasNextFocus)            // effectuate pending focus index update
     {

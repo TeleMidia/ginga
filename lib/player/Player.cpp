@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
+#include "aux-gl.h"
 #include "Player.h"
 #include "player/ImagePlayer.h"
 #include "player/LuaPlayer.h"
@@ -483,7 +484,18 @@ Player::redraw (cairo_t *cr)
     this->redrawDebuggingInfo (cr);
 }
 
+/**
+ * @brief Sends key event.
+ * @param key Key name.
+ * @param press True if press or false if release.
+ * @return True if successful, or false otherwise.
+ */
+void
+Player::sendKeyEvent (unused (const string &key), unused (bool press))
+{
+}
 
+
 // Public: Static.
 
 /**

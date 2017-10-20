@@ -54,8 +54,7 @@ NclCondition::conditionSatisfied ()
 
 void
 NclCondition::eventStateChanged (unused (NclEvent *event),
-                                 EventStateTransition transition,
-                                 unused (EventState prev))
+                                 EventStateTransition transition)
 {
   if (_transition == transition)
     NclCondition::conditionSatisfied ();

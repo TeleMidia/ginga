@@ -2055,35 +2055,27 @@ ParserXercesC::parseBind (DOMElement *elt, Link *link,
 
   role = conn->getRole (label); // ghost "get"
   if (role == nullptr)
-    return nullptr;
-  // if (role == nullptr)
-  //   {
-  //     Condition *cond;
-  //     AssessmentStatement *stmt;
-  //     AttributeAssessment *assess;
-  //     assess = new AttributeAssessment (EventType::ATTRIBUTION, label, "", "");
-  //     stmt = new AssessmentStatement ("ne");
-  //     stmt->setMainAssessment (assess);
-  //     stmt->setOtherAssessment (new ValueAssessment (label));
-  //     cond = conn->getCondition ();
-  //     if (instanceof (CompoundCondition *, cond))
-  //       {
-  //         ((CompoundCondition *) cond)->addCondition (stmt);
-  //       }
-  //     else
-  //       {
-  //         conn->initCondition (new CompoundCondition (cond, stmt));
-  //       }
-  //     role = (Role *) assess;
-  //   }
+    {
+      link->setGhostBind (label, xstrbuild ("$%s.%s",
+                                            target->getId().c_str (),
+                                            iface->getId ().c_str ()));
+      return nullptr;
+    }
   g_assert_nonnull (role);
 
   bind = new Bind (role, target, iface);
-  for (auto it: *params)
-    bind->setParameter (it.first, it.second);
-  link->addBind (bind);
 
-  // Collect children.
+  // Collect link parameters.
+  for (auto it: *params)
+    {
+      string name;
+      string value;
+      name = it.first;
+      value = it.second;
+      bind->setParameter (name, value);
+    }
+
+  // Collect bind parameters.
   for (DOMElement *child: dom_elt_get_children (elt))
     {
       string tag = dom_elt_get_tag (child);
@@ -2101,6 +2093,20 @@ ParserXercesC::parseBind (DOMElement *elt, Link *link,
           ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
         }
     }
+
+  // Solve ghosts.
+  for (auto it: *bind->getParameters ())
+    {
+      if (it.second[0] == '$')
+        {
+          string value = it.second.substr (1, it.second.length () - 1);
+          string ghost = link->getGhostBind (value);
+          if (ghost != "")
+            bind->setParameter (it.first, ghost);
+        }
+    }
+
+  link->addBind (bind);
   return bind;
 }
 

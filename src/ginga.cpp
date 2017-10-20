@@ -117,10 +117,20 @@ static GOptionEntry options[] = {
 
 // Error handling.
 
-#define usage_error(format, ...) _error (TRUE, format, ## __VA_ARGS__)
+#define usage_error(fmt, ...)\
+  _error (TRUE, 0, fmt, ## __VA_ARGS__)
 
-static G_GNUC_PRINTF (2,3) void
-_error (gboolean try_help, const gchar *format, ...)
+#define usage_die(fmt, ...)\
+  _error (TRUE, EXIT_FAILURE, fmt, ## __VA_ARGS__)
+
+#define error(fmt, ...)\
+  _error (FALSE, 0, fmt, ## __VA_ARGS__)
+
+#define die(fmt, ...)\
+  _error (FALSE, EXIT_FAILURE, fmt, ## __VA_ARGS__)
+
+static G_GNUC_PRINTF (3,4) void
+_error (gboolean try_help, int die, const gchar *format, ...)
 {
   const gchar *me = g_get_application_name ();
   va_list args;
@@ -133,17 +143,21 @@ _error (gboolean try_help, const gchar *format, ...)
 
   if (try_help)
     g_fprintf (stderr, "Try '%s --help' for more information.\n", me);
+  if (die > 0)
+    exit (die);
 }
 
 
 // Callbacks.
 
+#if GTK_CHECK_VERSION(3,16,0)
 static gboolean
 render_gl_callback (unused (GtkGLArea *area), unused (GdkGLContext *ctx))
 {
   GINGA->redraw (nullptr);
   return TRUE;
 }
+#endif
 
 static gboolean
 draw_callback (unused (GtkWidget *widget), cairo_t *cr,
@@ -261,10 +275,10 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
   return status;
 }
 
-#if GTK_CHECK_VERSION(3,8,0)
+#if GTK_CHECK_VERSION (3,8,0)
 static gboolean
 tick_callback (GtkWidget *widget, GdkFrameClock *frame_clock,
-               G_GNUC_UNUSED gpointer data)
+               unused (gpointer data))
 #else
 static gboolean
 tick_callback (GtkWidget *widget)
@@ -275,11 +289,11 @@ tick_callback (GtkWidget *widget)
   static guint64 last;
   static guint64 first;
 
-#if GTK_CHECK_VERSION(3,8,0)
+#if GTK_CHECK_VERSION (3,8,0)
   time = (guint64)(gdk_frame_clock_get_frame_time (frame_clock) * 1000);
   frame = (guint64) gdk_frame_clock_get_frame_counter (frame_clock);
 #else
-  time = ginga_gettime ();
+  time = (guint64) g_get_monotonic_time ();
   frame++;
 #endif
 
@@ -342,10 +356,15 @@ main (int argc, char **argv)
       _exit (0);
     }
 
-#if !(defined WITH_OPENGL && WITH_OPENGL)
   if (opt_opengl)
-    usage_error ("Option -g requires OpenGL support");
+    {
+#if !(defined WITH_OPENGL && WITH_OPENGL)
+      die ("Option -g requires OpenGL support");
 #endif
+#if !(GTK_CHECK_VERSION (3,16,0))
+      die ("Option -g requires gtk+ >= 3.16");
+#endif
+    }
 
   // Create application window.
   app = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -358,11 +377,15 @@ main (int argc, char **argv)
   // Setup draw area.
   if (opt_opengl)
     {
+#if GTK_CHECK_VERSION (3,16,0)
       GtkWidget *area = gtk_gl_area_new ();
       g_assert_nonnull (area);
       gtk_container_add (GTK_CONTAINER (app), area);
       g_signal_connect (area, "render", G_CALLBACK (render_gl_callback),
                         NULL);
+#else
+      g_assert_not_reached ();
+#endif
     }
   else
     {
@@ -380,11 +403,11 @@ main (int argc, char **argv)
   g_signal_connect (app, "key-release-event",
                     G_CALLBACK (keyboard_callback),
                     deconst (void *, "release"));
-#if GTK_CHECK_VERSION(3,8,0)
+#if GTK_CHECK_VERSION (3,8,0)
   gtk_widget_add_tick_callback (app, (GtkTickCallback) tick_callback,
                                 NULL, NULL);
 #else
-  g_timeout_add (1000 / opt_fps, (GSourceFunc) tick_callback, app);
+  g_timeout_add (1000 / 60, (GSourceFunc) tick_callback, app);
 #endif
 
   // Create Ginga handle.
@@ -404,10 +427,10 @@ main (int argc, char **argv)
       string errmsg;
       if (!unlikely (GINGA->start (string (saved_argv[i]), &errmsg)))
         {
-          g_printerr ("error: ");
           if (saved_argc > 2)
-            g_printerr ("%s: ", saved_argv[i]);
-          g_printerr ("%s\n", errmsg.c_str ());
+            error ("%s: %s", saved_argv[i], errmsg.c_str ());
+          else
+            error ("%s", errmsg.c_str ());
           fail_count++;
           continue;
         }
