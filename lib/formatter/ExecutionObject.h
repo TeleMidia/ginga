@@ -33,7 +33,7 @@ GINGA_FORMATTER_BEGIN
 class ExecutionObjectContext;
 class ExecutionObjectSettings;
 
-class ExecutionObject: public IGingaInternalEventListener
+class ExecutionObject
 {
 public:
   ExecutionObject (GingaInternal *, const string &, Node *);
@@ -54,9 +54,12 @@ public:
   void initParent (ExecutionObjectContext *);
 
   const set<NclEvent *> *getEvents ();
-  NclEvent *getEventById (const string &);
+  NclEvent *getEvent (EventType, Anchor *, const string &);
+  NclEvent *getEventByAnchorId (EventType type, const string &,
+                                const string &);
+  NclEvent *getLambda (EventType);
+  NclEvent *obtainEvent (EventType, Anchor *, const string &);
   bool addEvent (NclEvent *);
-  PresentationEvent *getLambda ();
 
   virtual bool prepare (NclEvent *event);
   virtual bool start ();
@@ -78,9 +81,8 @@ public:
   void setProperty (const string &, const string &,
                     const string &, GingaTime);
 
-  // From IGingaInternalEventListener.
-  virtual void handleKeyEvent (const string &, bool) override;
-  virtual void handleTickEvent (GingaTime, GingaTime, int) override;
+  void sendKeyEvent (const string &, bool);
+  virtual void sendTickEvent (GingaTime, GingaTime, GingaTime);
 
 protected:
   GingaInternal *_ginga;        // ginga handle

@@ -19,10 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Scheduler.h"
 #include "Converter.h"
 
-#include "ncl/ParserXercesC.h"
-#include "ncl/ParserLibXML.h"
-using namespace ::ginga::ncl;
-
 GINGA_FORMATTER_BEGIN
 
 
@@ -32,9 +28,9 @@ Scheduler::Scheduler (GingaInternal *ginga)
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;
-  _ginga->setData ("scheduler", this);
   _converter = nullptr;
   _doc = nullptr;
+  _settings = nullptr;
 }
 
 Scheduler::~Scheduler ()
@@ -48,24 +44,15 @@ Scheduler::~Scheduler ()
 }
 
 bool
-Scheduler::run (const string &file, string *errmsg)
+Scheduler::run (NclDocument *doc)
 {
   string id;
   Context *body;
   const vector<Port *> *ports;
   vector<NclEvent *> *entryevts;
-  int w, h;
 
-  // Parse document.
-  w = _ginga->getOptionInt ("width");
-  h = _ginga->getOptionInt ("height");
-
-  if (!_ginga->getOptionBool ("experimental"))
-    _doc = ParserXercesC::parse (file, w, h, errmsg);
-  else
-    _doc = ParserLibXML::parseFile (file, w, h, errmsg);
-  if (unlikely (_doc == nullptr))
-    return false;               // syntax error
+  g_assert_nonnull (doc);
+  _doc = doc;
 
   id = _doc->getId ();
   body = _doc->getRoot ();
@@ -76,7 +63,7 @@ Scheduler::run (const string &file, string *errmsg)
   g_assert_nonnull (ports);
   if (unlikely (ports->size () == 0))
     {
-      *errmsg = "Document has no ports";
+      WARNING ("document has no ports");
       return false;
     }
 
@@ -101,9 +88,10 @@ Scheduler::run (const string &file, string *errmsg)
       obj = _converter->obtainExecutionObject (node);
       g_assert_nonnull (obj);
 
-      evt = _converter->obtainEvent
-        (obj, iface, instanceof (Property *, iface)
-         ? EventType::ATTRIBUTION : EventType::PRESENTATION, "");
+      evt = obj->obtainEvent (instanceof (Property *, iface)
+                              ? EventType::ATTRIBUTION
+                              : EventType::PRESENTATION,
+                              iface, "");
       g_assert_nonnull (evt);
       entryevts->push_back (evt);
     }
@@ -149,7 +137,7 @@ Scheduler::run (const string &file, string *errmsg)
 
   // Set global settings object.
   g_assert_nonnull (settings);
-  _ginga->setData ("settings", settings);
+  _settings = settings;
 
   // Start entry events.
   for (auto event: *entryevts)
@@ -166,6 +154,12 @@ Scheduler::run (const string &file, string *errmsg)
 
   // Success.
   return true;
+}
+
+ExecutionObjectSettings *
+Scheduler::getSettings ()
+{
+  return _settings;
 }
 
 const set<ExecutionObject *> *
@@ -196,6 +190,27 @@ Scheduler::getObjectByIdOrAlias (const string &id)
 }
 
 bool
+Scheduler::getObjectPropertyByRef (const string &ref, string *result)
+{
+  size_t i;
+  string id;
+  string name;
+  ExecutionObject *object;
+
+  if (ref[0] != '$' || (i = ref.find ('.')) == string::npos)
+    return false;
+
+  id = ref.substr (1, i - 1);
+  name = ref.substr (i + 1);
+  object = this->getObjectByIdOrAlias (id);
+  if (object == nullptr)
+    return false;
+
+  tryset (result, object->getProperty (name));
+  return true;
+}
+
+bool
 Scheduler::addObject (ExecutionObject *obj)
 {
   g_assert_nonnull (obj);
@@ -206,6 +221,32 @@ Scheduler::addObject (ExecutionObject *obj)
     }
   _objects.insert (obj);
   return true;
+}
+
+void
+Scheduler::sendTickEvent (GingaTime total, GingaTime diff, GingaTime frame)
+{
+  vector<ExecutionObject *> buf;
+  for (auto obj: _objects)
+    if (obj->isOccurring ())
+      buf.push_back (obj);
+  for (auto obj: buf)
+    {
+      g_assert (!instanceof (ExecutionObjectSettings *, obj));
+      obj->sendTickEvent (total, diff, frame);
+    }
+  _settings->sendTickEvent (total, diff, frame);
+}
+
+void
+Scheduler::sendKeyEvent (const string &key, bool press)
+{
+  vector<ExecutionObject *> buf;
+  for (auto obj: _objects)
+    if (instanceof (ExecutionObjectSettings *, obj) || obj->isOccurring ())
+      buf.push_back (obj);
+  for (auto obj: buf)
+    obj->sendKeyEvent (key, press);
 }
 
 void
@@ -223,7 +264,7 @@ Scheduler::runAction (NclEvent *event, NclAction *action)
   ExecutionObject *obj;
   string name;
 
-  obj = event->getExecutionObject ();
+  obj = event->getObject ();
   g_assert_nonnull (obj);
 
   name = EventUtil::getEventStateTransitionAsString
@@ -265,25 +306,29 @@ Scheduler::runAction (NclEvent *event, NclAction *action)
 
       GingaTime dur;
 
-      g_assert (action->getEventStateTransition () == EventStateTransition::START);
+      g_assert (action->getEventStateTransition ()
+                == EventStateTransition::START);
 
       attevt = (AttributionEvent *) event;
-      if (event->getCurrentState () != EventState::SLEEPING)
+      if (event->getState () != EventState::SLEEPING)
         return;                 // nothing to do
 
-      property = attevt->getAnchor ();
+      property = cast (Property *, attevt->getAnchor ());
       g_assert_nonnull (property);
 
       name = property->getName ();
       from = property->getValue ();
-      to = attevt->solveImplicitRefAssessment (action->getValue ());
+      to = action->getValue ();
+      if (to[0] == '$')
+        this->getObjectPropertyByRef (to, &to);
 
       string s;
-      s = attevt->solveImplicitRefAssessment (action->getDuration ());
+      s = action->getDuration ();
+      if (s[0] == '$')
+        this->getObjectPropertyByRef (s, &s);
       dur = ginga_parse_time (s);
 
       attevt->start ();
-      attevt->setValue (to);
       obj->setProperty (name, from, to, dur);
 
       // TODO: Wrap this in a closure to be called at the end of animation.
@@ -371,8 +416,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
           if (!instanceof (Area *, iface))
             continue;           // nothing to do
 
-          evt = _converter->obtainEvent (child, iface,
-                                         EventType::PRESENTATION, "");
+          evt = child->obtainEvent (EventType::PRESENTATION, iface, "");
           g_assert_nonnull (evt);
           g_assert (instanceof (PresentationEvent *, evt));
 
@@ -386,7 +430,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
       for (auto child: *ctxObj->getChildren ())
         {
           NclEvent *evt;
-          evt = child->getLambda ();
+          evt = child->getLambda (EventType::PRESENTATION);
           if (evt == nullptr)
             continue;
           runAction (evt, action);
@@ -423,11 +467,7 @@ Scheduler::runActionOverSwitch (ExecutionObjectSwitch *switchObj,
   if (selectedObject == nullptr)
     {
       selectedObject = _converter->processExecutionObjectSwitch (switchObj);
-
-      if (selectedObject == nullptr)
-        {
-          return;
-        }
+      g_assert_nonnull (selectedObject);
     }
 
   selectedEvent = event->getMappedEvent ();
@@ -459,7 +499,7 @@ Scheduler::runSwitchEvent (unused (ExecutionObjectSwitch *switchObj),
   ExecutionObject *endPointObject;
 
   selectedEvent = nullptr;
-  switchPort = (SwitchPort *)(switchEvent->getInterface ());
+  switchPort = (SwitchPort *)(switchEvent->getAnchor ());
   for (auto mapping: *switchPort->getPorts ())
     {
       if (mapping->getNode () != selectedObject->getNode ())
@@ -471,9 +511,8 @@ Scheduler::runSwitchEvent (unused (ExecutionObjectSwitch *switchObj),
 
       endPointObject = _converter->obtainExecutionObject (node);
       g_assert_nonnull (endPointObject);
-      selectedEvent = _converter
-        ->obtainEvent (endPointObject, iface, switchEvent->getType (),
-                       switchEvent->getKey ());
+      selectedEvent = endPointObject->obtainEvent
+        (switchEvent->getType (), iface, switchEvent->getKey ());
       break;
     }
 

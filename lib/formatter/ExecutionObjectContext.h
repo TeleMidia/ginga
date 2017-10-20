@@ -34,21 +34,15 @@ public:
   ExecutionObjectContext (GingaInternal *, const string &, Node *);
   virtual ~ExecutionObjectContext ();
 
-  void eventStateChanged (NclEvent *,
-                          EventStateTransition,
-                          EventState) override;
+  void eventStateChanged (NclEvent *, EventStateTransition) override;
 
   const set<ExecutionObject *> *getChildren ();
   ExecutionObject *getChildById (const string &);
   bool addChild (ExecutionObject *);
 
 private:
-  void checkLinkConditions ();
-
-private:
   set<ExecutionObject *> _children;
   set<NclEvent *> _runningEvents; // child events occurring
-  set<NclEvent *> _pausedEvents;  // child events paused
   EventStateTransition lastTransition;
 };
 

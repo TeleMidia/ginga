@@ -11,8 +11,12 @@ if (UNIX)
   add_definitions(-Wextra -Wall)
 endif()
 
+# Ginga-related cmake's variables
+include (GNUInstallDirs)
+set (PACKAGE "ginga")
 set (GINGA_BINARY_DIR ${CMAKE_BINARY_DIR}/bin)
 set (GINGA_BINARY_TESTS_DIR ${CMAKE_BINARY_DIR}/tests)
+add_definitions (-DGINGADATADIR="${CMAKE_INSTALL_FULL_DATADIR}/${PACKAGE}")
 
 # Find dependencies
 find_package (GLIB 2.32 REQUIRED)
@@ -47,7 +51,7 @@ if (GTK3_FOUND)
 endif()
 
 option (WITH_CEF "Build with chromium embedded support." OFF)
-option (WITH_OPENGL "Build Ginga with opengl." ON)
+option (WITH_OPENGL "Build Ginga with opengl." OFF)
 option (WITH_RUNVIEW "Build nclcomposer's ginga plugin." OFF)
 
 if (WITH_OPENGL)
@@ -110,7 +114,6 @@ if (WITH_CEF) # Download, link, build with CEF
 
 else()
   add_definitions (-DWITH_CEF=0)
-
 endif()
 
 set (LIBGINGA_SOURCES
@@ -403,11 +406,10 @@ ginga-runview:          ${WITH_RUNVIEW}
 ginga-gl:               ${WITH_OPENGL}
 ")
  
-set (CPACK_PACKAGE_NAME ginga-idtv)
+set (CPACK_PACKAGE_NAME ${PACKAGE})
 set (CPACK_PACKAGE_CONTACT robertogerson@telemidia.puc-rio.br)
 
 install (DIRECTORY ${CMAKE_BINARY_OUTPUT_DIR} DESTINATION bin)
 install (TARGETS ginga DESTINATION bin)
 install (TARGETS gingagui DESTINATION bin)
 include (CPack)
-
