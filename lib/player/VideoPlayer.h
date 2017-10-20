@@ -43,6 +43,8 @@ private:
     GstElement *bin;            // audio bin
     GstElement *volume;         // volume filter
     GstElement *pan;            // balance filter
+    GstElement *equalizer;      // equalizer filter
+    GstElement *convert;        // convert audio format
     GstElement *sink;           // audio sink
   } _audio;
   struct {                      // video pipeline
@@ -58,8 +60,8 @@ private:
     bool mute;                  // true if mute is on
     double balance;             // balance sound level
     double volume;              // sound level
-    double treble;
-    double bass;
+    double treble;              // treble level
+    double bass;                // bass level
     bool freeze;                // true if freeze is on
   } _prop;
 
