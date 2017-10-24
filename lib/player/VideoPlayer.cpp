@@ -57,6 +57,8 @@ VideoPlayer::VideoPlayer (GingaInternal *ginga, const string &id,
   _audio.bin = nullptr;
   _audio.volume = nullptr;
   _audio.pan = nullptr;
+  _audio.equalizer = nullptr;
+  _audio.convert = nullptr;
   _audio.sink = nullptr;
   _video.bin = nullptr;
   _video.caps = nullptr;
@@ -98,6 +100,15 @@ VideoPlayer::VideoPlayer (GingaInternal *ginga, const string &id,
   _audio.pan = gst_element_factory_make ("audiopanorama", "audio.pan");
   g_assert_nonnull (_audio.pan);
 
+  _audio.equalizer = gst_element_factory_make ("equalizer-3bands", "equalizer");
+  g_assert_nonnull (_audio.equalizer);
+
+  // We are not sure of the capabilities of the audio sink because it is hardware-dependant).
+  _audio.convert = gst_element_factory_make ("audioconvert", "convert");
+  g_assert_nonnull (_audio.convert);
+
+  // Try to create element to render audio samples using ALSA audio API.
+  // ALSA has a better performance than anothers.
   _audio.sink = gst_element_factory_make ("alsasink", "audio.sink");
   if (_audio.sink == nullptr)
     _audio.sink = gst_element_factory_make ("autoaudiosink", "audio.sink");
@@ -105,9 +116,13 @@ VideoPlayer::VideoPlayer (GingaInternal *ginga, const string &id,
 
   g_assert (gst_bin_add (GST_BIN (_audio.bin), _audio.volume));
   g_assert (gst_bin_add (GST_BIN (_audio.bin), _audio.pan));
+  g_assert (gst_bin_add (GST_BIN (_audio.bin), _audio.equalizer));
+  g_assert (gst_bin_add (GST_BIN (_audio.bin), _audio.convert));
   g_assert (gst_bin_add (GST_BIN (_audio.bin), _audio.sink));
   g_assert (gst_element_link (_audio.volume, _audio.pan));
-  g_assert (gst_element_link (_audio.pan, _audio.sink));
+  g_assert (gst_element_link (_audio.pan, _audio.equalizer));
+  g_assert (gst_element_link (_audio.equalizer, _audio.convert));
+  g_assert (gst_element_link (_audio.convert, _audio.sink));
 
   pad = gst_element_get_static_pad (_audio.volume, "sink");
   g_assert_nonnull (pad);
@@ -147,12 +162,13 @@ VideoPlayer::VideoPlayer (GingaInternal *ginga, const string &id,
                               &_callbacks, this, nullptr);
 
   // Initialize handled properties.
-  static set<string> handled = {"balance", "mute", "volume", "freeze"};
+  static set<string> handled = {"balance", "bass", "freeze", "mute", "volume", "treble"};
   this->resetProperties (&handled);
 }
 
 VideoPlayer::~VideoPlayer ()
 {
+
 }
 
 void
@@ -188,6 +204,21 @@ VideoPlayer::start ()
   g_object_set (_audio.pan,
                 "panorama", _prop.balance,
                 NULL);
+  
+  // Equalizer band values:
+  //  - Default: 0; 
+  //  - Range: -24 and +12
+  g_object_set (_audio.equalizer, 
+                "band0", _prop.bass, 
+                NULL);
+
+  g_object_set (_audio.equalizer, 
+                "band1", _prop.treble, 
+                NULL); 
+  
+  g_object_set (_audio.equalizer, 
+                "band2", _prop.treble, 
+                NULL); 
 
   ret = gst_element_set_state (_playbin, GST_STATE_PLAYING);
   if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
@@ -297,7 +328,6 @@ VideoPlayer::redraw (cairo_t *cr)
   Player::redraw (cr);
 }
 
-
 // Protected.
 
 bool
@@ -312,26 +342,33 @@ VideoPlayer::doSetProperty (PlayerProperty code,
         if (_state != SLEEPING)
           g_object_set (_audio.pan, "panorama", _prop.balance, NULL);
         break;
-//      case PROP_BASS:
-//        _prop.bass = xstrtodorpercent (value, nullptr);
+      case PROP_BASS:
+        _prop.bass = xstrtodorpercent (value, nullptr);
+        if (_state != SLEEPING)
+        {
+          // Default: 0; Range: -24 and +12
+          g_object_set (_audio.equalizer, "band0", _prop.bass, NULL); 
+        }
+        break;
+      case PROP_FREEZE:
+        _prop.freeze = ginga_parse_bool (value);
 //        if (_state != SLEEPING)
-//          //TODO;
-//        break;
-//      case PROP_FREEZE:
-//        _prop.freeze = ginga_parse_bool (value);
-//        if (_state != SLEEPING)
-//          //TODO;
-//        break;
+//          TODO;
+        break;
       case PROP_MUTE:
         _prop.mute = ginga_parse_bool (value);
         if (_state != SLEEPING)
           g_object_set (_audio.volume, "mute", _prop.mute, NULL);
         break;
-//      case PROP_TREBLE:
-//        _prop.treble = xstrtodorpercent (value, nullptr);
-//        if (_state != SLEEPING)
-//          //TODO;
-//        break;
+      case PROP_TREBLE:
+        _prop.treble = xstrtodorpercent (value, nullptr);
+        if (_state != SLEEPING)
+        {
+          // Default: 0; Range: -24 and +12
+          g_object_set (_audio.equalizer, "band1", _prop.treble, NULL);
+          g_object_set (_audio.equalizer, "band2", _prop.treble, NULL);
+        }
+        break;
       case PROP_VOLUME:
         _prop.volume = xstrtodorpercent (value, nullptr);
         if (_state != SLEEPING)
