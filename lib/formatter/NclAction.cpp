@@ -24,18 +24,12 @@ GINGA_FORMATTER_BEGIN
  * @brief Creates a new action.
  * @param event Target event.
  * @param transition Action transition.
- * @param listener Action listener.
  */
-NclAction::NclAction (NclEvent *event,
-                      EventStateTransition transition,
-                      INclActionListener *listener)
+NclAction::NclAction (NclEvent *event, EventStateTransition transition)
 {
   g_assert_nonnull (event);
-  g_assert_nonnull (listener);
-
   _event = event;
   _transition = transition;
-  _listener = listener;
   _duration = "";
   _value = "";
 }
@@ -115,15 +109,6 @@ void
 NclAction::setValue (const string &value)
 {
   _value = value;
-}
-
-/**
- * @brief Runs action.
- */
-void
-NclAction::run ()
-{
-  _listener->scheduleAction (this);
 }
 
 GINGA_FORMATTER_END

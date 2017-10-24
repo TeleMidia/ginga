@@ -18,11 +18,18 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "NclLink.h"
 #include "ExecutionObjectContext.h"
+#include "Scheduler.h"
 
 GINGA_FORMATTER_BEGIN
 
-NclLink::NclLink ()
+NclLink::NclLink (GingaInternal *ginga)
 {
+  g_assert_nonnull (ginga);
+  _ginga = ginga;
+
+  _scheduler = ginga->getScheduler ();
+  g_assert_nonnull (_scheduler);
+
   _disabled = false;
 }
 
@@ -81,7 +88,7 @@ NclLink::conditionSatisfied ()
   if (_disabled)
     return;                     // nothing to do
   for (auto action: _actions)
-    action->run ();
+    _scheduler->scheduleAction (action);
 }
 
 vector<NclEvent *>

@@ -27,7 +27,7 @@ GINGA_FORMATTER_BEGIN
 class NclLink: public INclConditionListener
 {
 public:
-  NclLink ();
+  NclLink (GingaInternal *);
   virtual ~NclLink ();
 
   const vector <NclCondition *> *getConditions ();
@@ -43,6 +43,8 @@ public:
   void conditionSatisfied ();
 
 private:
+  GingaInternal *_ginga;               // ginga handle
+  Scheduler *_scheduler;               // scheduler
   vector <NclCondition *> _conditions; // list of conditions
   vector <NclAction *> _actions;       // list of actions
   bool _disabled;                      // whether link is disabled

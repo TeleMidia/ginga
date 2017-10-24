@@ -22,17 +22,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-class NclAction;
-class INclActionListener
-{
-public:
-  virtual void scheduleAction (NclAction *) = 0;
-};
-
 class NclAction
 {
 public:
-  NclAction (NclEvent *, EventStateTransition, INclActionListener *);
+  NclAction (NclEvent *, EventStateTransition);
   virtual ~NclAction ();
 
   NclEvent *getEvent ();
@@ -45,12 +38,9 @@ public:
   string getValue ();
   void setValue (const string &);
 
-  void run ();
-
 private:
   NclEvent *_event;
   EventStateTransition _transition;
-  INclActionListener *_listener;
   string _duration;
   string _value;
 };

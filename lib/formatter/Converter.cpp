@@ -303,7 +303,7 @@ Converter::createLink (Link *docLink)
   connector = cast (Connector *, docLink->getConnector ());
   g_assert_nonnull (connector);
 
-  link = new NclLink ();
+  link = new NclLink (_ginga);
 
   // Add conditions.
   for (auto connCond: *connector->getConditions ())
@@ -363,7 +363,7 @@ Converter::createAction (Action *connAction, Bind *bind)
   event = createEvent (bind);
   g_assert_nonnull (event);
 
-  action = new NclAction (event, transition, _scheduler);
+  action = new NclAction (event, transition);
   if (eventType == EventType::ATTRIBUTION)
     {
       string dur;

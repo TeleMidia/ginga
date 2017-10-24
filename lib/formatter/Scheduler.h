@@ -34,7 +34,7 @@ class GingaInternal;
 GINGA_FORMATTER_BEGIN
 
 class Converter;
-class Scheduler: public INclActionListener
+class Scheduler
 {
 public:
   Scheduler (GingaInternal *);
@@ -51,7 +51,7 @@ public:
   void sendKeyEvent (const string &, bool);
   void sendTickEvent (GingaTime, GingaTime, GingaTime);
 
-  void scheduleAction (NclAction *) override;
+  void scheduleAction (NclAction *);
 
 private:
   GingaInternal *_ginga;              // ginga handle

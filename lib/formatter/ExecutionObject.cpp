@@ -520,8 +520,7 @@ ExecutionObject::sendKeyEvent (const string &key, bool press)
   // Run collected events.
   for (SelectionEvent *evt: buf)
     {
-      NclAction *fakeAct =
-        new NclAction (evt, EventStateTransition::START, _scheduler);
+      NclAction *fakeAct = new NclAction (evt, EventStateTransition::START);
       _scheduler->scheduleAction (fakeAct);
     }
 
