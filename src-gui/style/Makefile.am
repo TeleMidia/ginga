@@ -18,25 +18,8 @@
 
 include $(top_srcdir)/build-aux/Makefile.am.common
 
-SUBDIRS= icons style
-
-AM_CPPFLAGS= -I$(top_srcdir)/lib -I$(top_builddir)/lib\
-  -DGINGADATADIR=\"$(gingadatadir)\"
-AM_CXXFLAGS= $(CAIRO_CFLAGS) $(GLIB_CFLAGS) $(GTK_CFLAGS)
-AM_LDFLAGS= $(CAIRO_LIBS) $(GLIB_LIBS) $(GTK_LIBS)
-
-bin_PROGRAMS= gingagui
-gingagui_CXXFLAGS= $(AM_CXXFLAGS)
-gingagui_LDADD= $(top_builddir)/lib/libginga.la
-gingagui_LDFLAGS= $(AM_LDFLAGS)
-gingagui_SOURCES=\
-  ginga-gtk.cpp\
-  model/SaveLoadSettings.cpp\
-  view/AboutWindow.cpp\
-  view/HelpWindow.cpp\
-  view/Draw.cpp\
-  view/FullscreenWindow.cpp\
-  view/MainWindow.cpp\
-  view/BigPictureWindow.cpp\
-  view/TvControlWindow.cpp\
+cssdir= $(gingadatadir)/style
+css_DATA=\
+  dark.css\
+  light.css\
   $(NULL)

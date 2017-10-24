@@ -93,7 +93,7 @@ static gboolean
 opt_version_cb (void)
 {
   puts (PACKAGE_STRING);
-  exit (EXIT_SUCCESS);
+  _exit (0);
 }
 
 static GOptionEntry options[] = {
@@ -127,7 +127,7 @@ static GOptionEntry options[] = {
   _error (FALSE, 0, fmt, ## __VA_ARGS__)
 
 #define die(fmt, ...)\
-  _error (FALSE, EXIT_FAILURE, fmt, ## __VA_ARGS__)
+  _error (FALSE, 1, fmt, ## __VA_ARGS__)
 
 static G_GNUC_PRINTF (3,4) void
 _error (gboolean try_help, int die, const gchar *format, ...)
@@ -144,7 +144,7 @@ _error (gboolean try_help, int die, const gchar *format, ...)
   if (try_help)
     g_fprintf (stderr, "Try '%s --help' for more information.\n", me);
   if (die > 0)
-    exit (die);
+    _exit (die);
 }
 
 
@@ -170,7 +170,7 @@ draw_callback (unused (GtkWidget *widget), cairo_t *cr,
 static void
 exit_callback (void)
 {
-  exit (0);
+  _exit (0);
 }
 
 static gboolean
@@ -347,11 +347,14 @@ main (int argc, char **argv)
       g_assert_nonnull (error);
       usage_error ("%s", error->message);
       g_error_free (error);
-      exit (EXIT_FAILURE);
+      _exit (0);
     }
 
   if (saved_argc < 2)
-    usage_die ("Missing file operand");
+    {
+      usage_error ("Missing file operand");
+      _exit (0);
+    }
 
   if (opt_opengl)
     {
@@ -440,5 +443,5 @@ main (int argc, char **argv)
   delete GINGA;
   g_strfreev (saved_argv);
 
-  exit (fail_count);
+  _exit (fail_count);
 }
