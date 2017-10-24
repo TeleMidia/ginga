@@ -68,7 +68,7 @@ Scheduler::run (NclDocument *doc)
 
   // Create execution object for settings node and initialize it.
   ExecutionObjectSettings *settings = nullptr;
-  vector <Node *> *nodes = _doc->getSettingsNodes ();
+  vector<Node *> *nodes = _doc->getSettingsNodes ();
   for (auto node: *nodes)
     {
       Media *content;
@@ -111,7 +111,7 @@ Scheduler::run (NclDocument *doc)
   // Start document.
   ExecutionObject *obj = _converter->obtainExecutionObject (body);
   NclEvent *evt = obj->getLambda (EventType::PRESENTATION);
-  NclAction *act = new NclAction (evt, EventStateTransition::START, this);
+  NclAction *act = new NclAction (evt, EventStateTransition::START);
   runAction (evt, act);
   delete act;
 
