@@ -24,16 +24,17 @@ lightdir= $(iconsdir)/light-theme
 darkdir= $(iconsdir)/dark-theme
 
 icons_DATA=\
-  cover.png\
   $(NULL)
 
 common_DATA=\
   common/blue-icon.png\
   common/ginga_icon.png\
   common/green-icon.png\
-  common/pattern_1.png\
   common/red-icon.png\
   common/yellow-icon.png\
+  common/background_pattern.png\
+  common/app_cover.png\
+  common/app_preview.png\
   $(NULL)
 
 light_DATA=\

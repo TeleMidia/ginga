@@ -221,8 +221,8 @@ create_bigpicture_window ()
     return;
 
   cairo_surface_t *image_p = cairo_image_surface_create_from_png (
-      g_build_path (G_DIR_SEPARATOR_S, executableFolder, "icons", "common",
-                    "pattern_1.png", NULL));
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons", "common",
+                    "background_pattern.png", NULL));
 
   g_assert_nonnull (image_p);
   background_pattern = cairo_pattern_create_for_surface (image_p);
@@ -262,12 +262,12 @@ create_bigpicture_window ()
       bigPictureCard[i].animate = FALSE;
 
       bigPictureCard[i].surface = cairo_image_surface_create_from_png (
-          g_build_path (G_DIR_SEPARATOR_S, executableFolder, "icons",
-                        "common", "cover.png", NULL));
+          g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                        "common", "app_cover.png", NULL));
 
       bigPictureCard[i].print_surface = cairo_image_surface_create_from_png (
-          g_build_path (G_DIR_SEPARATOR_S, executableFolder, "icons",
-                        "common", "print.png", NULL));
+          g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                        "common", "app_preview.png", NULL));
 
       if (i % 5 == 0)
         {
@@ -356,6 +356,9 @@ create_bigpicture_window ()
                     G_CALLBACK (destroy_bigpicture_window), NULL);
 
   gtk_widget_show_all (bigPictureWindow);
+
+  carrousel_rotate(-1);
+  carrousel_rotate(1);
 }
 
 void
@@ -365,6 +368,7 @@ destroy_card_list (gpointer data)
   g_free (card->appName);
   g_free (card->appDesc);
   cairo_surface_destroy (card->surface);
+  cairo_surface_destroy (card->print_surface);
 }
 void
 destroy_bigpicture_window ()
@@ -375,4 +379,5 @@ destroy_bigpicture_window ()
   bigPictureWindow = NULL;
   g_list_free_full (cards_list, destroy_card_list);
   cards_list = NULL;
+  currentCard = 0;
 }
