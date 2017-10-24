@@ -19,7 +19,6 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
 cssdir= $(gingadatadir)/style
-
 css_DATA=\
   dark.css\
   light.css\
