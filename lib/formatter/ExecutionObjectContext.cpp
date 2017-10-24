@@ -32,9 +32,8 @@ ExecutionObjectContext::~ExecutionObjectContext ()
 }
 
 void
-ExecutionObjectContext::eventStateChanged (
-    NclEvent *event,
-    EventStateTransition transition)
+ExecutionObjectContext::eventStateChanged (NclEvent *event,
+                                           EventStateTransition transition)
 {
   set<NclEvent *>::iterator i;
   NclEvent *lambda = this->getLambda (EventType::PRESENTATION);

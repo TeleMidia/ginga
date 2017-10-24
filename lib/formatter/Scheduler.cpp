@@ -48,8 +48,6 @@ Scheduler::run (NclDocument *doc)
 {
   string id;
   Context *body;
-  const vector<Port *> *ports;
-  vector<NclEvent *> *entryevts;
 
   g_assert_nonnull (doc);
   _doc = doc;
@@ -58,15 +56,6 @@ Scheduler::run (NclDocument *doc)
   body = _doc->getRoot ();
   g_assert_nonnull (body);
 
-  // Get entry events (i.e., those mapped by ports).
-  ports = body->getPorts ();
-  g_assert_nonnull (ports);
-  if (unlikely (ports->size () == 0))
-    {
-      WARNING ("document has no ports");
-      return false;
-    }
-
   // Insert dummy settings node.
   Media *dummy =  new Media (_doc, "__settings__", true);
   body->addNode (dummy);
@@ -74,28 +63,8 @@ Scheduler::run (NclDocument *doc)
   prop->setValue ("");
   dummy->addAnchor (prop);
 
-  // Create and load converter.
+  // Create converter.
   _converter = new Converter (_ginga, new RuleAdapter ());
-  entryevts = new vector<NclEvent *>;
-  for (auto port: *ports)
-    {
-      Node *node;
-      Anchor *iface;
-      ExecutionObject *obj;
-      NclEvent *evt;
-
-      port->getTarget (&node, &iface);
-      obj = _converter->obtainExecutionObject (node);
-      g_assert_nonnull (obj);
-
-      evt = obj->obtainEvent (instanceof (Property *, iface)
-                              ? EventType::ATTRIBUTION
-                              : EventType::PRESENTATION,
-                              iface, "");
-      g_assert_nonnull (evt);
-      entryevts->push_back (evt);
-    }
-  g_assert_false (entryevts->empty ()); // doc has no ports
 
   // Create execution object for settings node and initialize it.
   ExecutionObjectSettings *settings = nullptr;
@@ -139,15 +108,12 @@ Scheduler::run (NclDocument *doc)
   g_assert_nonnull (settings);
   _settings = settings;
 
-  // Start entry events.
-  for (auto event: *entryevts)
-    {
-      NclAction *fakeAction;
-      fakeAction = new NclAction (event, EventStateTransition::START, this);
-      runAction (event, fakeAction);
-      delete fakeAction;
-    }
-  delete entryevts;
+  // Start document.
+  ExecutionObject *obj = _converter->obtainExecutionObject (body);
+  NclEvent *evt = obj->getLambda (EventType::PRESENTATION);
+  NclAction *act = new NclAction (evt, EventStateTransition::START, this);
+  runAction (evt, act);
+  delete act;
 
   // Refresh current focus.
   settings->updateCurrentFocus ("");
@@ -401,7 +367,6 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
   acttype = action->getEventStateTransition ();
   if (acttype == EventStateTransition::START) // start all ports
     {
-      //ctxObj->suspendLinkEvaluation (false);
       for (auto port: *compNode->getPorts ())
         {
           Node *node;
