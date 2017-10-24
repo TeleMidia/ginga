@@ -139,16 +139,6 @@ ExecutionObject::getEvent (EventType type, Anchor *anchor,
                            const string &key)
 {
   g_assert_nonnull (anchor);
-
-  // bool fail = true;
-  // for (auto a: *(this->getNode ()->getAnchors ()))
-  //   if (a == anchor)
-  //     {
-  //       fail = false;
-  //       break;
-  //     }
-  // g_assert_false (fail);
-
   for (auto event: _events)
     {
       if (event->getAnchor () != anchor || event->getType () != type)
@@ -210,7 +200,7 @@ NclEvent *
 ExecutionObject::getLambda (EventType type)
 {
   g_assert (type != EventType::ATTRIBUTION);
-  return this->getEventByAnchorId (type, "@lambda", "");
+  return this->getEventByAnchorId (type, _id + "@lambda", "");
 }
 
 NclEvent *
@@ -274,20 +264,7 @@ ExecutionObject::addEvent (NclEvent *event)
 bool
 ExecutionObject::prepare (NclEvent *event)
 {
-  // map<Node *, ExecutionObjectContext *>::iterator i;
-  // string value;
-
-  // g_assert_nonnull (event);
-  // g_assert (this->obtainEvent
-  //           (event->getType (),
-  //            event->getAnchor (),
-  //            instanceof (SelectionEvent *, event)
-  //            ? cast (SelectionEvent *, event)->getKey () : ""));
-  // if (event->getState () != EventState::SLEEPING)
-  //   return false;
-
   _mainEvent = event;
-
   return true;
 }
 
