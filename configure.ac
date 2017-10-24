@@ -274,6 +274,7 @@ lib/ginga.pc
 src/Makefile
 src-gui/Makefile
 src-gui/icons/Makefile
+src-gui/style/Makefile
 tests-ncl/Makefile
 tests/Makefile
 ])

@@ -28,8 +28,10 @@ cairo_pattern_t *background_pattern;
 gint currentCard = 0;
 gint carrouselDir = 0;
 gdouble mid = 0;
-gdouble speed = 1500.0; /* pixels/s */
+gdouble screen_width = 0;
+gdouble speed = 3000.0; /* pixels/s */
 gdouble frameRate = 1.000 / 60.0;
+gdouble gradient = 1.0;
 
 guint numCards = 20;
 gdouble cardWidth = 300;
@@ -52,6 +54,12 @@ comp_card_list (gconstpointer a, gconstpointer b)
 gboolean
 update_bigpicture_callback (GtkWidget *widget)
 {
+
+  if(gradient < 1.0)
+    gradient += (4.0 * frameRate);
+    if(gradient > 1.0)
+      gradient = 1.0;
+
   GList *l;
   for (l = cards_list; l != NULL; l = l->next)
     {
@@ -96,63 +104,70 @@ draw_bigpicture_callback (GtkWidget *widget, cairo_t *cr,
     {
       BigPictureCard *card = (BigPictureCard *)l->data;
 
-      gdouble fa = mid - card->position;
-      if (fa < 0)
-        fa *= -1;
-
-      gdouble scale = 1.4 - (fa / mid);
-      // gdouble scale = 1.0;
-
-      // gdouble posX = card->position - ((cardWidth * scale) / 2);
+      
       gdouble posX = card->position - (cardWidth / 2);
-      // gdouble posY = (h - cardHeight - 100) - ((cardHeight * scale) / 2);
       gdouble posY = (h - cardHeight - 100);
 
-      // printf ("x: %f, w: %f, p %f, s: %f \n",  x, 400.0*scale, posX,
-      // scale);
+      if (card->index == 0)
+        {
+          cairo_set_source_rgba (cr, 1.0, 1.0, 1.0, gradient);
+          cairo_rectangle (cr, posX - 10, posY - 10, cardWidth + 20,
+                           cardHeight + 20);
+        }
+      cairo_fill (cr);
 
-      cairo_set_source_rgba (cr, card->r, card->g, card->b, scale - 0.3);
-      // cairo_scale(cr, scale, scale);
       cairo_set_source_surface (cr, card->surface, posX, posY);
 
-      //  cairo_rectangle (cr, posX, posY, cardWidth * scale,  cardHeight *
-      //  scale);
-      cairo_paint (cr);
+      
+      gdouble b = screen_width - card->position;  
+      if(card->index < 0)
+        b = card->position;  
+      cairo_paint_with_alpha (cr, b/ (screen_width - mid) + 0.3);
 
       cairo_text_extents_t extents;
       cairo_select_font_face (cr, "Arial", CAIRO_FONT_SLANT_NORMAL,
                               CAIRO_FONT_WEIGHT_BOLD);
 
-      if (card->index == 0)
+      if (card->index == 0 && !card->animate)
         {
-          gdouble info_height = h / 2;
-          gdouble info_weight = h * 1.2;
+          gdouble info_height = 600;
+          gdouble info_weight = 1200;
 
-          cairo_set_source_rgba (cr, 0.3, 0.3, 0.3, 1.0);
-          cairo_rectangle (cr, mid - (info_weight / 2), 100, info_weight,
-                           info_height);
-          cairo_fill (cr);
-          cairo_set_source_rgba (cr, 1.0, 1.0, 1.0, scale - 0.5);
+          //cairo_set_source_rgba (cr, 0.3, 0.3, 0.3, gradient);
+          //cairo_rectangle (cr, mid - (info_weight / 2), 100, info_weight,
+          //                 info_height);
+          //cairo_fill (cr);
+          cairo_set_source_rgba (cr, 1.0, 1.0, 1.0, gradient);
 
           PangoLayout *layout = pango_cairo_create_layout (cr);
           g_assert_nonnull (layout);
-          cairo_set_font_size (cr, 30);
-          pango_layout_set_text (layout, card->appDesc, -1);
-          pango_layout_set_alignment (layout, PANGO_ALIGN_LEFT);
-          pango_layout_set_width (layout,
-                                  ((info_weight / 2) - 20) * PANGO_SCALE);
-          pango_layout_set_wrap (layout, PANGO_WRAP_WORD);
-          pango_cairo_update_layout (cr, layout);
-          cairo_move_to (cr, mid - (info_weight / 2) + 30,
-                         (h / 2) - (info_height / 2) + 130);
-          pango_cairo_show_layout (cr, layout);
 
           cairo_set_font_size (cr, 50);
           cairo_text_extents (cr, card->appName, &extents);
-          cairo_move_to (cr, mid - (info_weight / 2) + 50, 200);
+          cairo_move_to (cr, mid - (info_weight / 2) + 20, 200);
           cairo_show_text (cr, card->appName);
 
+          cairo_set_font_size (cr, 40);
+          pango_layout_set_text (layout, card->appDesc, -1);
+        
+          PangoFontDescription* desc = pango_font_description_from_string ("Arial 20");
+          g_assert_nonnull(desc);
+          pango_layout_set_font_description (layout, desc);
+          pango_font_description_free (desc);
+
+          pango_layout_set_alignment (layout, PANGO_ALIGN_LEFT);
+          pango_layout_set_width (layout,
+                                  ((info_weight / 2) - 50) * PANGO_SCALE);
+          pango_layout_set_wrap (layout, PANGO_WRAP_WORD);
+          pango_cairo_update_layout (cr, layout);
+          cairo_move_to (cr, mid - (info_weight / 2) + 30,
+                         (h / 2) - (info_height / 2) );
+          pango_cairo_show_layout (cr, layout);
+
           g_object_unref (layout);
+
+          cairo_set_source_surface (cr, card->print_surface, mid, (h / 2) - (info_height / 2));
+          cairo_paint_with_alpha (cr, gradient);
         }
     }
 
@@ -194,6 +209,7 @@ carrousel_rotate (gint dir)
       card->animate = TRUE;
     }
 
+  gradient = 0;
   cards_list = g_list_sort (cards_list, (GCompareFunc)comp_card_list);
 }
 
@@ -205,7 +221,9 @@ create_bigpicture_window ()
     return;
 
   cairo_surface_t *image_p = cairo_image_surface_create_from_png (
-      g_strconcat (GINGADATADIR, "icons/common/pattern_1.png", NULL));
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons", "common",
+                    "background_pattern.png", NULL));
+
   g_assert_nonnull (image_p);
   background_pattern = cairo_pattern_create_for_surface (image_p);
   cairo_pattern_set_extend (background_pattern, CAIRO_EXTEND_REPEAT);
@@ -226,6 +244,10 @@ create_bigpicture_window ()
   gdk_screen_get_monitor_geometry (GDK_SCREEN (screen), 0, &rect);
 #endif
 
+  // prov
+  // rect.width = 1800;
+  
+  screen_width = rect.width;
   mid = (rect.width / 2.0);
 
   BigPictureCard *bigPictureCard
@@ -240,14 +262,16 @@ create_bigpicture_window ()
       bigPictureCard[i].animate = FALSE;
 
       bigPictureCard[i].surface = cairo_image_surface_create_from_png (
-          g_strconcat (GINGADATADIR, "icons/cover.png", NULL));
+          g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                        "common", "app_cover.png", NULL));
+
+      bigPictureCard[i].print_surface = cairo_image_surface_create_from_png (
+          g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                        "common", "app_preview.png", NULL));
 
       if (i % 5 == 0)
         {
-          bigPictureCard[i].r = 1.0;
-          bigPictureCard[i].g = 0.0;
-          bigPictureCard[i].b = 0.0;
-          bigPictureCard[i].appName = g_strdup ("Primeiro Joao");
+          bigPictureCard[i].appName = g_strdup ("Lorem Ipsum Dolor sit Amet");
           bigPictureCard[i].appDesc = g_strdup (
               "Lorem ipsum dolor sit amet, consectetur adipiscing elit, "
               "sed do eiusmod tempor incididunt ut labore et dolore magna "
@@ -258,10 +282,7 @@ create_bigpicture_window ()
         }
       else if (i % 5 == 1)
         {
-          bigPictureCard[i].r = 0.0;
-          bigPictureCard[i].g = 1.0;
-          bigPictureCard[i].b = 0.0;
-          bigPictureCard[i].appName = g_strdup ("Pacman");
+          bigPictureCard[i].appName = g_strdup ("Sed ut Perspiciatis");
           bigPictureCard[i].appDesc = g_strdup (
               "Sed ut perspiciatis unde omnis iste natus error sit "
               "voluptatem accusantium doloremque laudantium, totam rem "
@@ -273,10 +294,7 @@ create_bigpicture_window ()
         }
       else if (i % 5 == 2)
         {
-          bigPictureCard[i].r = 0.0;
-          bigPictureCard[i].g = 0.0;
-          bigPictureCard[i].b = 1.0;
-          bigPictureCard[i].appName = g_strdup ("Ponto Turistico");
+          bigPictureCard[i].appName = g_strdup ("Ut Enim ad Minima Veniam quis Nostrum");
           bigPictureCard[i].appDesc = g_strdup (
               "Ut enim ad minima veniam, quis nostrum exercitationem ullam "
               "corporis suscipit laboriosam, nisi ut aliquid ex ea commodi "
@@ -287,10 +305,7 @@ create_bigpicture_window ()
         }
       else if (i % 5 == 3)
         {
-          bigPictureCard[i].r = 1.0;
-          bigPictureCard[i].g = 0.0;
-          bigPictureCard[i].b = 1.0;
-          bigPictureCard[i].appName = g_strdup ("App 123456");
+          bigPictureCard[i].appName = g_strdup ("At Vero eos Et Accusamus");
           bigPictureCard[i].appDesc = g_strdup (
               "At vero eos et accusamus et iusto odio dignissimos ducimus "
               "qui blanditiis praesentium voluptatum deleniti atque "
@@ -301,10 +316,7 @@ create_bigpicture_window ()
         }
       else if (i % 5 == 4)
         {
-          bigPictureCard[i].r = 0.0;
-          bigPictureCard[i].g = 1.0;
-          bigPictureCard[i].b = 1.0;
-          bigPictureCard[i].appName = g_strdup ("Asteroides");
+          bigPictureCard[i].appName = g_strdup ("Nam Libero Tempore Cum Soluta");
           bigPictureCard[i].appDesc = g_strdup (
               "Nam libero tempore, cum soluta nobis est eligendi optio "
               "cumque nihil impedit quo minus id quod maxime placeat "
@@ -344,6 +356,9 @@ create_bigpicture_window ()
                     G_CALLBACK (destroy_bigpicture_window), NULL);
 
   gtk_widget_show_all (bigPictureWindow);
+
+  carrousel_rotate(-1);
+  carrousel_rotate(1);
 }
 
 void
@@ -353,6 +368,7 @@ destroy_card_list (gpointer data)
   g_free (card->appName);
   g_free (card->appDesc);
   cairo_surface_destroy (card->surface);
+  cairo_surface_destroy (card->print_surface);
 }
 void
 destroy_bigpicture_window ()
@@ -363,4 +379,5 @@ destroy_bigpicture_window ()
   bigPictureWindow = NULL;
   g_list_free_full (cards_list, destroy_card_list);
   cards_list = NULL;
+  currentCard = 0;
 }

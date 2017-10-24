@@ -20,16 +20,14 @@ typedef struct{
    gint index;
    gint drawOrder; 
    cairo_surface_t *surface;
+   cairo_surface_t *print_surface;
    gdouble position;
    gdouble scale; 
    gdouble destPosition;
    gboolean animate;
    gchar *appName;
    gchar *appDesc; 
-   //provisory
-   gdouble r;
-   gdouble g;
-   gdouble b;
+
 }BigPictureCard;
 
 extern BigPictureCard *bigPictureCard;
