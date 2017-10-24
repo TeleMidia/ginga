@@ -127,7 +127,7 @@ static GOptionEntry options[] = {
   _error (FALSE, 0, fmt, ## __VA_ARGS__)
 
 #define die(fmt, ...)\
-  _error (FALSE, EXIT_FAILURE, fmt, ## __VA_ARGS__)
+  _error (FALSE, 1, fmt, ## __VA_ARGS__)
 
 static G_GNUC_PRINTF (3,4) void
 _error (gboolean try_help, int die, const gchar *format, ...)
@@ -144,7 +144,7 @@ _error (gboolean try_help, int die, const gchar *format, ...)
   if (try_help)
     g_fprintf (stderr, "Try '%s --help' for more information.\n", me);
   if (die > 0)
-    exit (die);
+    _exit (die);
 }
 
 
