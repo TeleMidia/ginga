@@ -56,6 +56,14 @@ above configure step to:
 When using cmake, nclua and chromium embedded will be automatically
 downloaded and built.
 
+### MSYS | MinGW --- Windows only build
+Download MSYS and install the dependencies through MinGW ("$ pacman -S base-devel"
+and others).
+
+    $ ./bootstrap
+    $ ./configure
+    $ mingw32-make
+
 ---
 Copyright (C) 2006-2017 PUC-Rio/Laboratorio TeleMidia
 
