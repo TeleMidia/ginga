@@ -32,6 +32,7 @@ public:
   void pause () override;
   void resume () override;
   void redraw (cairo_t *) override;
+  bool isFreezeOn ();
 
 protected:
   bool doSetProperty (PlayerProperty, const string &,

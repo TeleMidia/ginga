@@ -55,7 +55,7 @@ static map<string, PlayerPropertyInfo> player_property_map =
  {"fontStyle",    {Player::PROP_FONT_STYLE,    true,  ""}},
  {"fontVariant",  {Player::PROP_FONT_VARIANT,  true,  ""}},
  {"fontWeight",   {Player::PROP_FONT_WEIGHT,   true,  ""}},
- {"freeze",       {Player::PROP_FREEZE,        false,  "false"}},
+ {"freeze",       {Player::PROP_FREEZE,        true,  "false"}},
  {"height",       {Player::PROP_HEIGHT,        true,  "100%"}},
  {"horzAlign",    {Player::PROP_HORZ_ALIGN,    true,  "left"}},
  {"left",         {Player::PROP_LEFT,          true,  "0"}},

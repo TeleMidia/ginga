@@ -1,4 +1,5 @@
-<ncl>
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ncl id="menuEx" xmlns="http://www.ncl.org.br/NCL3.0/EDTVProfile">
   <head>
     <regionBase>
       <region id='reg' width='640' height='480'/>
