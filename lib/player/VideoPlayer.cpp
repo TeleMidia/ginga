@@ -63,7 +63,7 @@ VideoPlayer::VideoPlayer (GingaInternal *ginga, const string &id,
   _video.bin = nullptr;
   _video.caps = nullptr;
   _video.sink = nullptr;
-
+  
   if (!gst_is_initialized ())
     {
       GError *error = nullptr;
@@ -275,17 +275,17 @@ VideoPlayer::redraw (cairo_t *cr)
   cairo_status_t status;
 
   g_assert (_state != SLEEPING);
-
+  
   if (Player::getEOS ())
     goto done;
-
-  if (!g_atomic_int_compare_and_exchange (&_sample_flag, 1, 0))
+    
+  if (!g_atomic_int_compare_and_exchange (&_sample_flag, 1, 0))  
     goto done;
-
+  
   sample = gst_app_sink_pull_sample (GST_APP_SINK (_video.sink));
   if (sample == nullptr)
-    goto done;
-
+    goto done;      
+  
   buf = gst_sample_get_buffer (sample);
   g_assert_nonnull (buf);
 
@@ -352,8 +352,6 @@ VideoPlayer::doSetProperty (PlayerProperty code,
         break;
       case PROP_FREEZE:
         _prop.freeze = ginga_parse_bool (value);
-//        if (_state != SLEEPING)
-//          TODO;
         break;
       case PROP_MUTE:
         _prop.mute = ginga_parse_bool (value);
@@ -380,6 +378,12 @@ VideoPlayer::doSetProperty (PlayerProperty code,
   return true;
 }
 
+bool 
+VideoPlayer::isFreezeOn ()
+{
+  return _prop.freeze;
+}
+
 // Private: Static (GStreamer callbacks).
 
 gboolean
@@ -393,7 +397,9 @@ VideoPlayer::cb_Bus (GstBus *bus, GstMessage *msg, VideoPlayer *player)
     {
     case GST_MESSAGE_EOS:
       {
-        player->setEOS (true);
+        if(!player->isFreezeOn())
+          player->setEOS (true);    
+
         TRACE ("EOS");
         break;
       }
