@@ -22,8 +22,9 @@
   <body>
     <port id='start' component='video1'/>
     <port id='start2' component='video2'/>
+
     <media id='video1' src='../samples/small.mp4' descriptor='desc' >
-      <property name='freeze' value="true"/>
+      <property name='freeze' value="false"/>
     </media>
     <media id='video2' src='../samples/animGar.mp4' descriptor='desc2'/>
     

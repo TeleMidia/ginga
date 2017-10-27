@@ -32,7 +32,7 @@ public:
   void pause () override;
   void resume () override;
   void redraw (cairo_t *) override;
-  bool isFreezeOn ();
+  bool getFreeze ();            // return if freeze property is on
 
 protected:
   bool doSetProperty (PlayerProperty, const string &,
@@ -61,8 +61,8 @@ private:
     bool mute;                  // true if mute is on
     double balance;             // balance sound level
     double volume;              // sound level
-    double treble;              // treble level
-    double bass;                // bass level
+    double treble;              // treble level (Default: 0; Range: -24 and +12)
+    double bass;                // bass level (Default: 0; Range: -24 and +12)
     bool freeze;                // true if freeze is on
   } _prop;
 
