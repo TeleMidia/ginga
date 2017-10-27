@@ -189,7 +189,10 @@ VideoPlayer::start ()
   caps = gst_caps_new_full (st, nullptr);
   g_assert_nonnull (caps);
 
-  g_object_set (_video.caps, "caps", caps, nullptr);
+  g_object_set (_video.caps, 
+                "caps", caps, 
+                nullptr);
+
   gst_caps_unref (caps);
 
   Player::setEOS (false);
@@ -199,26 +202,17 @@ VideoPlayer::start ()
   g_object_set (_audio.volume,
                 "volume", _prop.volume,
                 "mute", _prop.mute,
-                NULL);
+                nullptr);
 
   g_object_set (_audio.pan,
                 "panorama", _prop.balance,
-                NULL);
-  
-  // Equalizer band values:
-  //  - Default: 0; 
-  //  - Range: -24 and +12
-  g_object_set (_audio.equalizer, 
-                "band0", _prop.bass, 
-                NULL);
-
-  g_object_set (_audio.equalizer, 
-                "band1", _prop.treble, 
-                NULL); 
+                nullptr);
   
   g_object_set (_audio.equalizer, 
-                "band2", _prop.treble, 
-                NULL); 
+                "band0", _prop.bass,
+                "band1", _prop.treble,
+                "band2", _prop.treble,
+                nullptr);
 
   ret = gst_element_set_state (_playbin, GST_STATE_PLAYING);
   if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
@@ -340,15 +334,16 @@ VideoPlayer::doSetProperty (PlayerProperty code,
       case PROP_BALANCE:
         _prop.balance = xstrtodorpercent (value, nullptr);
         if (_state != SLEEPING)
-          g_object_set (_audio.pan, "panorama", _prop.balance, NULL);
+          g_object_set (_audio.pan, 
+                        "panorama", _prop.balance, 
+                        nullptr);
         break;
       case PROP_BASS:
         _prop.bass = xstrtodorpercent (value, nullptr);
-        if (_state != SLEEPING)
-        {
-          // Default: 0; Range: -24 and +12
-          g_object_set (_audio.equalizer, "band0", _prop.bass, NULL); 
-        }
+        if (_state != SLEEPING)        
+          g_object_set (_audio.equalizer, 
+                        "band0", _prop.bass, 
+                        nullptr);         
         break;
       case PROP_FREEZE:
         _prop.freeze = ginga_parse_bool (value);
@@ -356,21 +351,24 @@ VideoPlayer::doSetProperty (PlayerProperty code,
       case PROP_MUTE:
         _prop.mute = ginga_parse_bool (value);
         if (_state != SLEEPING)
-          g_object_set (_audio.volume, "mute", _prop.mute, NULL);
+          g_object_set (_audio.volume, 
+                        "mute", _prop.mute, 
+                        nullptr);
         break;
       case PROP_TREBLE:
         _prop.treble = xstrtodorpercent (value, nullptr);
-        if (_state != SLEEPING)
-        {
-          // Default: 0; Range: -24 and +12
-          g_object_set (_audio.equalizer, "band1", _prop.treble, NULL);
-          g_object_set (_audio.equalizer, "band2", _prop.treble, NULL);
-        }
+        if (_state != SLEEPING)        
+          g_object_set (_audio.equalizer, 
+                        "band1", _prop.treble, 
+                        "band2", _prop.treble,
+                        nullptr);        
         break;
       case PROP_VOLUME:
         _prop.volume = xstrtodorpercent (value, nullptr);
         if (_state != SLEEPING)
-          g_object_set (_audio.volume, "volume", _prop.volume, NULL);
+          g_object_set (_audio.volume, 
+                        "volume", _prop.volume, 
+                        nullptr);
         break;
       default:
         return Player::doSetProperty (code, name, value);
@@ -379,7 +377,7 @@ VideoPlayer::doSetProperty (PlayerProperty code,
 }
 
 bool 
-VideoPlayer::isFreezeOn ()
+VideoPlayer::getFreeze ()
 {
   return _prop.freeze;
 }
@@ -397,7 +395,7 @@ VideoPlayer::cb_Bus (GstBus *bus, GstMessage *msg, VideoPlayer *player)
     {
     case GST_MESSAGE_EOS:
       {
-        if(!player->isFreezeOn())
+        if(!player->getFreeze ())
           player->setEOS (true);    
 
         TRACE ("EOS");
