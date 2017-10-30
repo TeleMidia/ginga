@@ -48,6 +48,7 @@ public:
   bool getObjectPropertyByRef (const string &, string *);
   bool addObject (ExecutionObject *);
 
+  void resize (int, int);
   void sendKeyEvent (const string &, bool);
   void sendTickEvent (GingaTime, GingaTime, GingaTime);
 

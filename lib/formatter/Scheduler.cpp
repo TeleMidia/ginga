@@ -190,6 +190,36 @@ Scheduler::addObject (ExecutionObject *obj)
 }
 
 void
+Scheduler::resize (int width, int height)
+{
+  g_assert (width == _ginga->getOptionInt ("width"));
+  g_assert (height == _ginga->getOptionInt ("height"));
+  for (auto obj: _objects)
+    {
+      obj->setProperty ("top", obj->getProperty ("top"),
+                        obj->getProperty ("top"), 0);
+      obj->setProperty ("left", obj->getProperty ("left"),
+                        obj->getProperty ("left"), 0);
+      obj->setProperty ("width", obj->getProperty ("width"),
+                        obj->getProperty ("width"), 0);
+      obj->setProperty ("height", obj->getProperty ("height"),
+                        obj->getProperty ("height"), 0);
+    }
+
+}
+
+void
+Scheduler::sendKeyEvent (const string &key, bool press)
+{
+  vector<ExecutionObject *> buf;
+  for (auto obj: _objects)
+    if (instanceof (ExecutionObjectSettings *, obj) || obj->isOccurring ())
+      buf.push_back (obj);
+  for (auto obj: buf)
+    obj->sendKeyEvent (key, press);
+}
+
+void
 Scheduler::sendTickEvent (GingaTime total, GingaTime diff, GingaTime frame)
 {
   vector<ExecutionObject *> buf;
@@ -202,17 +232,6 @@ Scheduler::sendTickEvent (GingaTime total, GingaTime diff, GingaTime frame)
       obj->sendTickEvent (total, diff, frame);
     }
   _settings->sendTickEvent (total, diff, frame);
-}
-
-void
-Scheduler::sendKeyEvent (const string &key, bool press)
-{
-  vector<ExecutionObject *> buf;
-  for (auto obj: _objects)
-    if (instanceof (ExecutionObjectSettings *, obj) || obj->isOccurring ())
-      buf.push_back (obj);
-  for (auto obj: buf)
-    obj->sendKeyEvent (key, press);
 }
 
 void
