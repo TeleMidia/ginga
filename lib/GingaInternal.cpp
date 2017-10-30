@@ -184,15 +184,7 @@ GingaInternal::resize (int width, int height)
   g_assert (width > 0 && height > 0);
   _opts.width = width;
   _opts.height = height;
-  for (GList *l = _players; l != nullptr; l = l->next)
-    {
-      Player *pl = (Player *) l->data;
-      g_assert_nonnull (pl);
-      pl->setProperty ("top", pl->getProperty ("top"));
-      pl->setProperty ("left", pl->getProperty ("left"));
-      pl->setProperty ("width", pl->getProperty ("width"));
-      pl->setProperty ("height", pl->getProperty ("height"));
-    }
+  _scheduler->resize (width, height);
 }
 
 /**
