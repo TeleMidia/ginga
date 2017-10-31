@@ -357,9 +357,10 @@ Scheduler::runAction (NclEvent *event, NclAction *action)
   TRACE ("running %s over %s",
          name.c_str (), obj->getId ().c_str ());
 
-  if (instanceof (SelectionEvent *, event))
+  if (event->getType () == EventType::SELECTION)
     {
       event->start ();
+      event->stop ();
       delete action;
       return;
     }
@@ -377,24 +378,20 @@ Scheduler::runAction (NclEvent *event, NclAction *action)
       return;
     }
 
-  if (instanceof (AttributionEvent *, event))
+  if (event->getType () == EventType::ATTRIBUTION)
     {
-      AttributionEvent *attevt;
       Property *property;
-
       string name;
       string value;
-
       GingaTime dur;
 
       g_assert (action->getEventStateTransition ()
                 == EventStateTransition::START);
 
-      attevt = (AttributionEvent *) event;
       if (event->getState () != EventState::SLEEPING)
         return;                 // nothing to do
 
-      property = cast (Property *, attevt->getAnchor ());
+      property = cast (Property *, event->getAnchor ());
       g_assert_nonnull (property);
 
       name = property->getName ();
@@ -408,11 +405,10 @@ Scheduler::runAction (NclEvent *event, NclAction *action)
         this->getObjectPropertyByRef (s, &s);
       dur = ginga_parse_time (s);
 
-      attevt->start ();
+      event->start ();
       obj->setProperty (name, value, dur);
-
       // TODO: Wrap this in a closure to be called at the end of animation.
-      attevt->stop ();
+      event->stop ();
       return;
     }
 
@@ -497,7 +493,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
 
           evt = child->obtainEvent (EventType::PRESENTATION, iface, "");
           g_assert_nonnull (evt);
-          g_assert (instanceof (PresentationEvent *, evt));
+          g_assert (evt->getType () == EventType::PRESENTATION);
 
           runAction (evt, action);
 

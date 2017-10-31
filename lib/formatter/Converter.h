@@ -25,12 +25,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "GingaInternal.h"
 #include "NclAction.h"
 #include "NclCondition.h"
-#include "NclEvents.h"
+#include "NclEvent.h"
 #include "NclLink.h"
 #include "RuleAdapter.h"
-
-#include "ncl/Ncl.h"
-using namespace ::ginga::ncl;
 
 class GingaInternal;
 

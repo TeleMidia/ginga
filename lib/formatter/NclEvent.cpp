@@ -16,18 +16,13 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
-#include "NclEvents.h"
-
-#include "ExecutionObjectContext.h"
-#include "Scheduler.h"
+#include "NclEvent.h"
 
 GINGA_FORMATTER_BEGIN
 
-
-// NclEvent.
-
 NclEvent::NclEvent (GingaInternal *ginga, EventType type,
-                    ExecutionObject *object, Anchor *anchor)
+                    ExecutionObject *object, Anchor *anchor,
+                    const string &key)
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;
@@ -39,7 +34,7 @@ NclEvent::NclEvent (GingaInternal *ginga, EventType type,
   _object = object;
   g_assert_nonnull (anchor);
   _anchor = anchor;
-
+  _key = key;
   _state = EventState::SLEEPING;
 }
 
@@ -71,17 +66,45 @@ NclEvent::getState ()
   return _state;
 }
 
+const vector<INclEventListener *> *
+NclEvent::getListeners ()
+{
+  return &_listeners;
+}
+
 void
 NclEvent::addListener (INclEventListener *listener)
 {
-  _listeners.insert (listener);
+  _listeners.push_back (listener);
+}
+
+bool
+NclEvent::getInterval (GingaTime *begin, GingaTime *end)
+{
+  Area *area;
+  if (_type != EventType::PRESENTATION)
+    return false;
+  area = cast (Area *, _anchor);
+  g_assert_nonnull (area);
+  tryset (begin, area->getBegin ());
+  tryset (end, area->getEnd ());
+  return true;
+}
+
+bool
+NclEvent::getKey (string *key)
+{
+  if (_type != EventType::SELECTION)
+    return false;
+  tryset (key, _key);
+  return true;
 }
 
 bool
 NclEvent::abort ()
 {
   if (_state == EventState::SLEEPING)
-    return false;               // nothing to do
+    return false;
   _state = EventState::SLEEPING;
   this->notifyListeners (EventStateTransition::ABORT);
   return true;
@@ -91,7 +114,7 @@ bool
 NclEvent::start ()
 {
   if (_state == EventState::OCCURRING)
-    return false;               // nothing to do
+    return false;
   _state = EventState::OCCURRING;
   this->notifyListeners (EventStateTransition::START);
   return true;
@@ -101,7 +124,7 @@ bool
 NclEvent::stop ()
 {
   if (_state == EventState::SLEEPING)
-    return false;               // nothing to do
+    return false;
   _state = EventState::SLEEPING;
   this->notifyListeners (EventStateTransition::STOP);
   return true;
@@ -111,7 +134,7 @@ bool
 NclEvent::pause ()
 {
   if (_state != EventState::OCCURRING)
-    return false;               // nothing to do
+    return false;
   _state = EventState::PAUSED;
   this->notifyListeners (EventStateTransition::PAUSE);
   return true;
@@ -121,7 +144,7 @@ bool
 NclEvent::resume ()
 {
   if (_state != EventState::PAUSED)
-    return false;               // nothing to do
+    return false;
   _state = EventState::OCCURRING;
   this->notifyListeners (EventStateTransition::RESUME);
   return true;
@@ -132,69 +155,6 @@ NclEvent:: notifyListeners (EventStateTransition transition)
 {
   for (INclEventListener *listener: _listeners)
     listener->eventStateChanged (this, transition);
-}
-
-
-// PresentationEvent.
-
-PresentationEvent::PresentationEvent (GingaInternal *ginga,
-                                      ExecutionObject *exeObj,
-                                      Area *anchor)
-  : NclEvent (ginga, EventType::PRESENTATION, exeObj, anchor)
-{
-}
-
-void
-PresentationEvent::getInterval (GingaTime *begin, GingaTime *end)
-{
-  Area *area = cast (Area *, _anchor);
-  g_assert_nonnull (area);
-  tryset (begin, area->getBegin ());
-  tryset (end, area->getEnd ());
-}
-
-
-// SelectionEvent
-
-SelectionEvent::SelectionEvent (GingaInternal *ginga,
-                                ExecutionObject *exeObj,
-                                Area *anchor, const string &key)
-  : NclEvent (ginga, EventType::SELECTION, exeObj, anchor)
-{
-  _key = key;
-}
-
-SelectionEvent::~SelectionEvent ()
-{
-}
-
-string
-SelectionEvent::getKey ()
-{
-  return _key;
-}
-
-bool
-SelectionEvent::start ()
-{
-  if (NclEvent::start ())
-    return NclEvent::stop ();
-  else
-    return false;
-}
-
-
-// AttributionEvent
-
-AttributionEvent::AttributionEvent (GingaInternal *ginga,
-                                    ExecutionObject *exeObj,
-                                    Property *anchor)
-  : NclEvent (ginga, EventType::ATTRIBUTION, exeObj, anchor)
-{
-}
-
-AttributionEvent::~AttributionEvent ()
-{
 }
 
 GINGA_FORMATTER_END

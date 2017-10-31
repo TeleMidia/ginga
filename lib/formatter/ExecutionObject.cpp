@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ExecutionObjectContext.h"
 #include "ExecutionObjectSettings.h"
 #include "ExecutionObjectSwitch.h"
-#include "NclEvents.h"
+#include "NclEvent.h"
 #include "Scheduler.h"
 
 #include "player/Player.h"
@@ -150,9 +150,9 @@ ExecutionObject::getEvent (EventType type, Anchor *anchor,
           return event;
         case EventType::SELECTION:
           {
-            SelectionEvent *sel = cast (SelectionEvent *, event);
-            g_assert_nonnull (sel);
-            if (sel->getKey () == key)
+            string evtkey;
+            g_assert (event->getKey (&evtkey));
+            if (evtkey == key)
               return event;
             break;
           }
@@ -183,9 +183,9 @@ ExecutionObject::getEventByAnchorId (EventType type, const string &id,
           return event;
         case EventType::SELECTION:
           {
-            SelectionEvent *sel = cast (SelectionEvent *, event);
-            g_assert_nonnull (sel);
-            if (sel->getKey () == key)
+            string evtkey;
+            g_assert (event->getKey (&evtkey));
+            if (evtkey == key)
               return event;
             break;
           }
@@ -223,24 +223,24 @@ ExecutionObject::obtainEvent (EventType type, Anchor *anchor,
   else if (instanceof (ExecutionObjectContext *, this))
     {
       g_assert (type == EventType::PRESENTATION);
-      event = new PresentationEvent (_ginga, this, (Area *) anchor);
+      event = new NclEvent (_ginga, type, this, (Area *) anchor, "");
     }
   else
     {
       switch (type)
         {
         case EventType::PRESENTATION:
-          event = new PresentationEvent (_ginga, this, (Area *) anchor);
+          event = new NclEvent (_ginga, type, this, (Area *) anchor, "");
           break;
         case EventType::ATTRIBUTION:
           {
             Property *property = cast (Property *, anchor);
             g_assert_nonnull (property);
-            event = new AttributionEvent (_ginga, this, property);
+            event = new NclEvent (_ginga, type, this, property, "");
             break;
           }
         case EventType::SELECTION:
-          event = new SelectionEvent (_ginga, this, (Area *) anchor, key);
+          event = new NclEvent (_ginga, type, this, (Area *) anchor, key);
           break;
         default:
           g_assert_not_reached ();
@@ -306,7 +306,7 @@ ExecutionObject::start ()
 
  done:
   // Start main event.
-  if (instanceof (PresentationEvent *, _mainEvent))
+  if (_mainEvent->getType () == EventType::PRESENTATION)
     _mainEvent->start ();
   return true;
 }
@@ -344,8 +344,6 @@ ExecutionObject::resume ()
 bool
 ExecutionObject::stop ()
 {
-  PresentationEvent *event;
-
   if (this->isSleeping ())
     return false;               // nothing to do
 
@@ -365,8 +363,7 @@ ExecutionObject::stop ()
     return true;                // done
 
   // Stop main event.
-  event = cast (PresentationEvent* , _mainEvent);
-  if (event != nullptr)
+  if (_mainEvent->getType () == EventType::PRESENTATION)
     _mainEvent->stop ();
 
   return true;
@@ -375,16 +372,9 @@ ExecutionObject::stop ()
 bool G_GNUC_NORETURN
 ExecutionObject::abort ()
 {
-  ERROR_NOT_IMPLEMENTED ("action 'abort' is not supported");
+  g_assert_not_reached ();
 }
 
-
-// -----------------------------------
-
-/**
- * @brief Tests whether object is focused.
- * @return True if successful, or false otherwise.
- */
 bool
 ExecutionObject::isFocused ()
 {
@@ -398,23 +388,12 @@ ExecutionObject::isFocused ()
   return _player->isFocused ();
 }
 
-/**
- * @brief Gets property.
- * @param name Property name.
- * @return Property value.
- */
 string
 ExecutionObject::getProperty (const string &name)
 {
   return (_player) ? _player->getProperty (name) : "";
 }
 
-/**
- * @brief Sets property.
- * @param name Property name.
- * @param to Updated value.
- * @param dur Duration of the attribution.
- */
 void
 ExecutionObject::setProperty (const string &name,
                               const string &value,
@@ -467,7 +446,7 @@ ExecutionObject::redraw (cairo_t *cr)
 void
 ExecutionObject::sendKeyEvent (const string &key, bool press)
 {
-  list<SelectionEvent *> buf;
+  list<NclEvent *> buf;
 
   if (!press
       || instanceof (ExecutionObjectSettings *, this)
@@ -477,7 +456,7 @@ ExecutionObject::sendKeyEvent (const string &key, bool press)
       return;                     // nothing to do
     }
 
-  g_assert (instanceof (PresentationEvent *, _mainEvent));
+  g_assert (_mainEvent->getType () == EventType::PRESENTATION);
   if (xstrhasprefix (key, "CURSOR_") && _player->isFocused ())
     {
       string next;
@@ -502,17 +481,15 @@ ExecutionObject::sendKeyEvent (const string &key, bool press)
     _player->sendKeyEvent (key, press);
 
   // Collect the events to be triggered.
-  for (auto _evt: _events)
+  for (auto evt: _events)
     {
-      SelectionEvent *evt;
       Area *anchor;
       string expected;
 
-      evt = cast (SelectionEvent *, _evt);
-      if (evt == nullptr)
+      if (evt->getType () != EventType::SELECTION)
         continue;
 
-      expected = evt->getKey ();
+      g_assert (evt->getKey (&expected));
       if (!((expected == "" && key == "ENTER" && _player->isFocused ())
             || (expected != "" && key == expected)))
         {
@@ -538,7 +515,7 @@ ExecutionObject::sendKeyEvent (const string &key, bool press)
     }
 
   // Run collected events.
-  for (SelectionEvent *evt: buf)
+  for (NclEvent *evt: buf)
     {
       NclAction *fakeAct = new NclAction (evt, EventStateTransition::START);
       _scheduler->scheduleAction (fakeAct);
@@ -578,12 +555,11 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
     }
 
   g_assert (this->isOccurring ());
-  g_assert (instanceof (PresentationEvent *, _mainEvent));
+  g_assert (_mainEvent->getType () == EventType::PRESENTATION);
 
-  for (auto _evt: _events)
+  for (auto evt: _events)
     {
-      PresentationEvent *evt = cast (PresentationEvent *, _evt);
-      if (evt == nullptr)
+      if (evt->getType () != EventType::PRESENTATION)
         continue;
       if (this->getLambda (EventType::PRESENTATION) == evt)
         continue;
