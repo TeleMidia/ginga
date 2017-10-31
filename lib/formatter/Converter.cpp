@@ -78,7 +78,7 @@ Converter::resolveSwitchEvents (
   Node *selectedNode;
   vector<NclEvent *> events;
   vector<NclEvent *>::iterator i;
-  SwitchEvent *switchEvent;
+  ProxyEvent *switchEvent;
   Anchor *interfacePoint;
   vector<Node *> nestedSeq;
   NclEvent *mappedEvent;
@@ -93,7 +93,7 @@ Converter::resolveSwitchEvents (
   for (auto event: *(switchObject->getEvents ()))
     {
       mappedEvent = nullptr;
-      switchEvent = cast (SwitchEvent *, event);
+      switchEvent = cast (ProxyEvent *, event);
       g_assert_nonnull (switchEvent);
 
       interfacePoint = switchEvent->getAnchor ();
@@ -123,7 +123,7 @@ Converter::resolveSwitchEvents (
 
       if (mappedEvent != nullptr)
         {
-          switchEvent->setMappedEvent (mappedEvent);
+          switchEvent->setTarget (mappedEvent);
         }
     }
 }

@@ -365,10 +365,10 @@ Scheduler::runAction (NclEvent *event, NclAction *action)
     }
 
   if (instanceof (ExecutionObjectSwitch *, obj)
-      && instanceof (SwitchEvent *, event))
+      && instanceof (ProxyEvent *, event))
     {
       this->runActionOverSwitch ((ExecutionObjectSwitch *) obj,
-                                 (SwitchEvent *) event, action);
+                                 (ProxyEvent *) event, action);
       return;
     }
 
@@ -538,7 +538,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
 
 void
 Scheduler::runActionOverSwitch (ExecutionObjectSwitch *switchObj,
-                                SwitchEvent *event,
+                                ProxyEvent *event,
                                 NclAction *action)
 {
   ExecutionObject *selectedObject;
@@ -551,7 +551,7 @@ Scheduler::runActionOverSwitch (ExecutionObjectSwitch *switchObj,
       g_assert_nonnull (selectedObject);
     }
 
-  selectedEvent = event->getMappedEvent ();
+  selectedEvent = event->getTarget ();
   if (selectedEvent != nullptr)
     {
       runAction (selectedEvent, action);
@@ -570,7 +570,7 @@ Scheduler::runActionOverSwitch (ExecutionObjectSwitch *switchObj,
 
 void
 Scheduler::runSwitchEvent (unused (ExecutionObjectSwitch *switchObj),
-                           SwitchEvent *switchEvent,
+                           ProxyEvent *switchEvent,
                            ExecutionObject *selectedObject,
                            NclAction *action)
 {
@@ -599,7 +599,7 @@ Scheduler::runSwitchEvent (unused (ExecutionObjectSwitch *switchObj),
 
   if (selectedEvent != nullptr)
     {
-      switchEvent->setMappedEvent (selectedEvent);
+      switchEvent->setTarget (selectedEvent);
       runAction (selectedEvent, action);
     }
 }

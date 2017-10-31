@@ -65,9 +65,9 @@ private:
   void runAction (NclEvent *, NclAction *);
   void runActionOverComposition (ExecutionObjectContext *,
                                  NclAction *);
-  void runActionOverSwitch (ExecutionObjectSwitch *, SwitchEvent *,
+  void runActionOverSwitch (ExecutionObjectSwitch *, ProxyEvent *,
                             NclAction *);
-  void runSwitchEvent (ExecutionObjectSwitch *, SwitchEvent *,
+  void runSwitchEvent (ExecutionObjectSwitch *, ProxyEvent *,
                        ExecutionObject *, NclAction *);
 };
 

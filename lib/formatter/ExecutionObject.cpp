@@ -218,7 +218,7 @@ ExecutionObject::obtainEvent (EventType type, Anchor *anchor,
 
   if (instanceof (ExecutionObjectSwitch *, this))
     {
-      event = new SwitchEvent (_ginga, this, anchor, type, key);
+      event = new ProxyEvent (_ginga, this, anchor, type, key);
     }
   else if (instanceof (ExecutionObjectContext *, this))
     {
@@ -425,7 +425,6 @@ ExecutionObject::setProperty (const string &name,
   if (_player == nullptr)
     return;                     // nothing to do
 
-
   from = this->getProperty (name);
   g_assert (GINGA_TIME_IS_VALID (dur));
   TRACE ("%s.%s:='%s' (previous '%s')",
@@ -597,16 +596,17 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
       //        GINGA_TIME_ARGS (evt->getBegin ()),
       //        GINGA_TIME_ARGS (evt->getEnd ()));
 
-      if (evt->getState () == EventState::SLEEPING
-          && evt->getBegin () <= _time)
+      GingaTime begin, end;
+      evt->getInterval (&begin, &end);
+
+      if (evt->getState () == EventState::SLEEPING && begin <= _time)
         {
           TRACE ("%s.%s timed-out at %" GINGA_TIME_FORMAT,
                  _id.c_str(), evt->getAnchor ()->getId ().c_str (),
                  GINGA_TIME_ARGS (time));
           evt->start ();
         }
-      else if (evt->getState () == EventState::OCCURRING
-               && evt->getEnd () <= _time)
+      else if (evt->getState () == EventState::OCCURRING && end <= _time)
         {
           TRACE ("%s.%s timed-out at %" GINGA_TIME_FORMAT,
                  _id.c_str(), evt->getAnchor ()->getId ().c_str (),

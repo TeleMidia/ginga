@@ -39,12 +39,12 @@ ExecutionObjectSwitch::select (ExecutionObject *exeObj)
   else
     {
       _selectedObj = nullptr;
-      for (auto evt: *(this->getEvents ()))
-        {
-          auto switchEvent = cast (SwitchEvent *, evt);
-          g_assert_nonnull (switchEvent);
-          switchEvent->setMappedEvent (nullptr);
-        }
+      // for (auto evt: *(this->getEvents ()))
+      //   {
+      //     auto switchEvent = cast (SwitchEvent *, evt);
+      //     g_assert_nonnull (switchEvent);
+      //     switchEvent->setMappedEvent (nullptr);
+      //   }
     }
 }
 
