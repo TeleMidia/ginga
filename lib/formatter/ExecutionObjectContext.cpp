@@ -45,7 +45,7 @@ ExecutionObjectContext::eventStateChanged (NclEvent *event,
       if (_runningEvents.empty ())
         {
           lambda->addListener (_parent);
-          lambda->start ();
+          lambda->transition (EventStateTransition::START);
         }
 
       _runningEvents.insert (event);
@@ -53,9 +53,7 @@ ExecutionObjectContext::eventStateChanged (NclEvent *event,
 
     case EventStateTransition::ABORT:
       if (_runningEvents.empty ())
-        {
-          lambda->abort ();
-        }
+        lambda->transition (EventStateTransition::ABORT);
       break;
 
     case EventStateTransition::STOP:
@@ -69,7 +67,7 @@ ExecutionObjectContext::eventStateChanged (NclEvent *event,
       if (_runningEvents.empty ())
         {
           NclEvent *lambda = this->getLambda (EventType::PRESENTATION);
-          lambda->stop ();
+          lambda->transition (EventStateTransition::STOP);
           if (this->getParent () == nullptr)
             {
               TRACE ("*** ALL DONE ***");
@@ -87,7 +85,7 @@ ExecutionObjectContext::eventStateChanged (NclEvent *event,
 
       if (_runningEvents.empty ())
         {
-          lambda->pause ();
+          lambda->transition (EventStateTransition::PAUSE);
         }
       break;
 
@@ -95,7 +93,7 @@ ExecutionObjectContext::eventStateChanged (NclEvent *event,
       _runningEvents.insert (event);
       if (_runningEvents.size () == 1)
         {
-          lambda->resume ();
+          lambda->transition (EventStateTransition::RESUME);
         }
       break;
 

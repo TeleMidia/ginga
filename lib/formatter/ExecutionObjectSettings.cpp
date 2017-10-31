@@ -90,9 +90,9 @@ ExecutionObjectSettings::updateCurrentFocus (const string &index)
     }
   else                          // trigger links
     {
-      evt->start ();
+      evt->transition (EventStateTransition::START);
       cast (ExecutionObject *, this)->setProperty (name, value);
-      evt->stop ();
+      evt->transition (EventStateTransition::STOP);
     }
 }
 
