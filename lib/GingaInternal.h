@@ -21,11 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "aux-ginga.h"
 
-GINGA_PLAYER_BEGIN
-class Player;
-GINGA_PLAYER_END
-using namespace ::ginga::player;
-
 GINGA_FORMATTER_BEGIN
 class Scheduler;
 GINGA_FORMATTER_END
@@ -62,9 +57,6 @@ class GingaInternal: public Ginga
   bool getEOS ();
   void setEOS (bool);
 
-  void registerPlayer (Player *);
-  void unregisterPlayer (Player *);
-
   static void setOptionDebug (GingaInternal *, const string &, bool);
   static void setOptionExperimental (GingaInternal *, const string &, bool);
   static void setOptionOpenGL (GingaInternal *, const string &, bool);
@@ -75,7 +67,6 @@ class GingaInternal: public Ginga
   GingaState _state;             // current state
   GingaOptions _opts;            // current options
   Scheduler *_scheduler;         // formatter core
-  GList *_players;               // list of players to be ticked
 
   string _ncl_file;               // path to current NCL file
   bool _eos;                      // true if EOS was reached

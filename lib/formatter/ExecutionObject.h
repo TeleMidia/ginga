@@ -80,6 +80,8 @@ public:
   string getProperty (const string &);
   void setProperty (const string &, const string &, GingaTime dur=0);
 
+  bool getZ (int *, int *);
+  void redraw (cairo_t *);
   void sendKeyEvent (const string &, bool);
   virtual void sendTickEvent (GingaTime, GingaTime, GingaTime);
 

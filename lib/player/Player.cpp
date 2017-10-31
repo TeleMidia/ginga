@@ -240,7 +240,6 @@ Player::start ()
   _time = 0;
   _eos = false;
   this->reload ();
-  _ginga->registerPlayer (this);
 }
 
 /**
@@ -253,7 +252,6 @@ Player::stop ()
   TRACE ("%s", _id.c_str ());
 
   _state = SLEEPING;
-  _ginga->unregisterPlayer (this);
   this->resetProperties ();
 }
 

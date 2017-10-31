@@ -76,7 +76,7 @@ opts_table_index (const string &key, GingaOptionData **result)
 }
 
 // Compares the z-index and z-order of two players.
-static gint
+static gint G_GNUC_UNUSED
 win_cmp_z (Player *p1, Player *p2)
 {
   int z1, zo1, z2, zo2;
@@ -167,8 +167,6 @@ GingaInternal::stop ()
 
   delete _scheduler;
   _scheduler = nullptr;
-  g_list_free (_players);
-  _players = nullptr;
   _state = GINGA_STATE_STOPPED;
   return true;
 }
@@ -194,94 +192,8 @@ GingaInternal::resize (int width, int height)
 void
 GingaInternal::redraw (cairo_t *cr)
 {
-  GList *l;
-
-  if (_opts.opengl)
-    {
-      GL::beginDraw ();
-      GL::clear_scene (_opts.width, _opts.height);
-    }
-
-  if (_background.alpha > 0)
-    {
-      if (_opts.opengl)
-        {
-          GL::draw_quad (0, 0, _opts.width, _opts.height,
-                         (float) _background.red,
-                         (float) _background.green,
-                         (float) _background.blue,
-                         (float) _background.alpha);
-        }
-      else
-        {
-          cairo_save (cr);
-          cairo_set_source_rgba (cr,
-                                 _background.red,
-                                 _background.green,
-                                 _background.blue,
-                                 _background.alpha);
-          cairo_rectangle (cr, 0, 0, _opts.width, _opts.height);
-          cairo_fill (cr);
-          cairo_restore (cr);
-        }
-    }
-
-  _players = g_list_sort (_players, (GCompareFunc) win_cmp_z);
-  l = _players;
-  while (l != NULL)             // can be modified while being traversed
-    {
-      GList *next = l->next;
-      Player *pl = (Player *) l->data;
-      if (pl == NULL)
-        {
-          _players = g_list_remove_link (_players, l);
-        }
-      else
-        {
-          if (_opts.opengl)
-            pl->redraw (cr);
-          else
-            {
-              cairo_save (cr);
-              pl->redraw (cr);
-              cairo_restore (cr);
-            }
-        }
-      l = next;
-    }
-
-  if (_opts.debug)
-    {
-      static GingaColor fg = {1., 1., 1., 1.};
-      static GingaColor bg = {0, 0, 0, 0};
-      static GingaRect rect = {0, 0, 0, 0};
-
-      string info;
-      cairo_surface_t *debug;
-      GingaRect ink;
-
-      info = xstrbuild ("%s: #%lu %" GINGA_TIME_FORMAT " %.1ffps",
-                        _ncl_file.c_str (),
-                        _last_tick_frameno,
-                        GINGA_TIME_ARGS (_last_tick_total),
-                        1 * GINGA_SECOND / (double) _last_tick_diff);
-
-      rect.width = _opts.width;
-      rect.height = _opts.height;
-      debug = TextPlayer::renderSurface
-        (info, "monospace", "", "bold", "9", fg, bg,
-         rect, "center", "", true, &ink);
-      ink = {0, 0, rect.width, ink.height - ink.y + 4};
-
-      cairo_save (cr);
-      cairo_set_source_rgba (cr, 1., 0., 0., .5);
-      cairo_rectangle (cr, 0, 0, ink.width, ink.height);
-      cairo_fill (cr);
-      cairo_set_source_surface (cr, debug, 0, 0);
-      cairo_paint (cr);
-      cairo_restore (cr);
-      cairo_surface_destroy (debug);
-    }
+  g_assert_nonnull (_scheduler);
+  _scheduler->redraw (cr);
 }
 
 // Stop formatter if EOS has been seen.
@@ -397,7 +309,6 @@ GingaInternal::GingaInternal (unused (int argc), unused (char **argv),
   _state = GINGA_STATE_STOPPED;
   _opts = (opts) ? *opts : opts_defaults;
   _scheduler = nullptr;
-  _players = nullptr;
 
   _ncl_file = "";
   _eos = false;
@@ -463,27 +374,6 @@ void
 GingaInternal::setEOS (bool eos)
 {
   _eos = eos;
-}
-
-/**
- * @brief Adds handled player.
- * @param player Player.
- */
-void
-GingaInternal::registerPlayer (Player *player)
-{
-  g_assert_nonnull (player);
-  g_assert (this->add (&_players, player));
-}
-
-/**
- * @brief Removes handled player.
- */
-void
-GingaInternal::unregisterPlayer (Player *player)
-{
-  g_assert_nonnull (player);
-  g_assert (this->remove (&_players, player));
 }
 
 /**

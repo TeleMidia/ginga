@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
+#include "aux-gl.h"
 #include "Scheduler.h"
 #include "Converter.h"
 
@@ -188,10 +189,108 @@ Scheduler::addObject (ExecutionObject *obj)
   return true;
 }
 
+static bool
+cmpz (ExecutionObject *a, ExecutionObject *b)
+{
+  int z1, zo1, z2, zo2;
+
+  g_assert_nonnull (a);
+  g_assert_nonnull (b);
+
+  z1 = zo1 = z2 = zo2 = 0;      // fixme
+  a->getZ (&z1, &zo1);
+  b->getZ (&z2, &zo2);
+
+  if (z1 < z2)
+    return true;
+  if (z1 > z2)
+    return false;
+  if (zo1 < zo2)
+    return true;
+  if (zo1 > zo2)
+    return false;
+  return true;
+}
+
 void
 Scheduler::redraw (cairo_t *cr)
 {
-  (void) cr;
+  bool opengl;
+  GingaColor background;
+  int width, height;
+  vector<ExecutionObject *> objs;
+
+  opengl = _ginga->getOptionBool ("opengl");
+  background = ginga_parse_color (_ginga->getOptionString ("background"));
+  width = _ginga->getOptionInt ("width");
+  height = _ginga->getOptionInt ("height");
+
+  if (opengl)
+    {
+      GL::beginDraw ();
+      GL::clear_scene (width, height);
+    }
+
+  if (background.alpha > 0)
+    {
+      if (opengl)
+        {
+          GL::draw_quad (0, 0, width, height,
+                         (float) background.red,
+                         (float) background.green,
+                         (float) background.blue,
+                         (float) background.alpha);
+        }
+      else
+        {
+          cairo_save (cr);
+          cairo_set_source_rgba (cr,
+                                 background.red,
+                                 background.green,
+                                 background.blue,
+                                 background.alpha);
+          cairo_rectangle (cr, 0, 0, width, height);
+          cairo_fill (cr);
+          cairo_restore (cr);
+        }
+    }
+
+  for (auto obj: _objects)      // fixme
+    if (!instanceof (ExecutionObjectContext *, obj)
+        && !instanceof (ExecutionObjectSwitch *, obj))
+      objs.push_back (obj);
+  std::sort (objs.begin (), objs.end (), cmpz);
+  for (auto obj: objs)
+    obj->redraw (cr);
+
+  // if (_opts.debug)
+  //   {
+  //     static GingaColor fg = {1., 1., 1., 1.};
+  //     static GingaColor bg = {0, 0, 0, 0};
+  //     static GingaRect rect = {0, 0, 0, 0};
+  //     string info;
+  //     cairo_surface_t *debug;
+  //     GingaRect ink;
+  //     info = xstrbuild ("%s: #%lu %" GINGA_TIME_FORMAT " %.1ffps",
+  //                       _ncl_file.c_str (),
+  //                       _last_tick_frameno,
+  //                       GINGA_TIME_ARGS (_last_tick_total),
+  //                       1 * GINGA_SECOND / (double) _last_tick_diff);
+  //     rect.width = _opts.width;
+  //     rect.height = _opts.height;
+  //     debug = TextPlayer::renderSurface
+  //       (info, "monospace", "", "bold", "9", fg, bg,
+  //        rect, "center", "", true, &ink);
+  //     ink = {0, 0, rect.width, ink.height - ink.y + 4};
+  //     cairo_save (cr);
+  //     cairo_set_source_rgba (cr, 1., 0., 0., .5);
+  //     cairo_rectangle (cr, 0, 0, ink.width, ink.height);
+  //     cairo_fill (cr);
+  //     cairo_set_source_surface (cr, debug, 0, 0);
+  //     cairo_paint (cr);
+  //     cairo_restore (cr);
+  //     cairo_surface_destroy (debug);
+  //   }
 }
 
 void
