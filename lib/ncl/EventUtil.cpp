@@ -31,6 +31,8 @@ EventUtil::getEventTypeAsString (EventType type)
       return "attribution";
     case EventType::SELECTION:
       return "selection";
+    case EventType::PROXY:
+      return "proxy";
     default:
       g_assert_not_reached ();
     }
