@@ -445,10 +445,29 @@ ExecutionObject::setProperty (const string &name,
       ->setProperty (name, value, dur);
 }
 
+bool
+ExecutionObject::getZ (int *z, int *zorder)
+{
+  if (_player == nullptr || _player->getState () == Player::SLEEPING) // fixme
+    return false;
+  g_assert_nonnull (_player);
+  _player->getZ (z, zorder);
+  return true;
+}
+
+void
+ExecutionObject::redraw (cairo_t *cr)
+{
+  if (this->isSleeping ())
+    return;                     // nothing to do
+  if (_player == nullptr || _player->getState () == Player::SLEEPING) // fixme
+    return;                     // nothing to do
+  _player->redraw (cr);
+}
+
 void
 ExecutionObject::sendKeyEvent (const string &key, bool press)
 {
-
   list<SelectionEvent *> buf;
 
   if (!press
