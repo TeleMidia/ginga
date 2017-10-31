@@ -29,8 +29,7 @@ public:
   ExecutionObjectSettings (GingaInternal *, const string &, Node *);
   virtual ~ExecutionObjectSettings () {};
 
-  void setProperty (const string &, const string &,
-                    const string &, GingaTime);
+  void setProperty (const string &, const string &, GingaTime);
 
   void updateCurrentFocus (const string &);
   void scheduleFocusUpdate (const string &);

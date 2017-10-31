@@ -61,7 +61,7 @@ public:
   NclEvent *obtainEvent (EventType, Anchor *, const string &);
   bool addEvent (NclEvent *);
 
-  virtual bool prepare (NclEvent *event);
+  virtual bool prepare (NclEvent *);
   virtual bool start ();
   virtual bool stop ();
   virtual bool abort ();
@@ -78,8 +78,7 @@ protected:
 public:
   bool isFocused ();
   string getProperty (const string &);
-  void setProperty (const string &, const string &,
-                    const string &, GingaTime);
+  void setProperty (const string &, const string &, GingaTime dur=0);
 
   void sendKeyEvent (const string &, bool);
   virtual void sendTickEvent (GingaTime, GingaTime, GingaTime);
