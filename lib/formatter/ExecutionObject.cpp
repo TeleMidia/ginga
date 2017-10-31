@@ -412,35 +412,37 @@ ExecutionObject::getProperty (const string &name)
 /**
  * @brief Sets property.
  * @param name Property name.
- * @param from Current value.
  * @param to Updated value.
  * @param dur Duration of the attribution.
  */
 void
 ExecutionObject::setProperty (const string &name,
-                              const string &from,
-                              const string &to,
+                              const string &value,
                               GingaTime dur)
 {
+  string from;
+
   if (_player == nullptr)
     return;                     // nothing to do
 
+
+  from = this->getProperty (name);
   g_assert (GINGA_TIME_IS_VALID (dur));
   TRACE ("%s.%s:='%s' (previous '%s')",
-         _id.c_str (), name.c_str (), from.c_str (), to.c_str ());
+         _id.c_str (), name.c_str (), value.c_str (), from.c_str ());
 
   if (dur > 0)
     {
-      _player->schedulePropertyAnimation (name, from, to, dur);
+      _player->schedulePropertyAnimation (name, from, value, dur);
     }
   else
     {
-      _player->setProperty (name, to);
+      _player->setProperty (name, value);
     }
 
   if (instanceof (ExecutionObjectSettings *, this))
     cast (ExecutionObjectSettings *, this)
-      ->setProperty (name, from, to, dur);
+      ->setProperty (name, value, dur);
 }
 
 void

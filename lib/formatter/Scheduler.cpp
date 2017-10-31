@@ -98,8 +98,7 @@ Scheduler::run (NclDocument *doc)
           if (value == "")
             continue;           // nothing to do
 
-          cast (ExecutionObject *, settings)
-            ->setProperty (name, "", value, 0);
+          cast (ExecutionObject *, settings)->setProperty (name, value, 0);
         }
     }
   delete nodes;
@@ -190,22 +189,23 @@ Scheduler::addObject (ExecutionObject *obj)
 }
 
 void
+Scheduler::redraw (cairo_t *cr)
+{
+  (void) cr;
+}
+
+void
 Scheduler::resize (int width, int height)
 {
   g_assert (width == _ginga->getOptionInt ("width"));
   g_assert (height == _ginga->getOptionInt ("height"));
   for (auto obj: _objects)
     {
-      obj->setProperty ("top", obj->getProperty ("top"),
-                        obj->getProperty ("top"), 0);
-      obj->setProperty ("left", obj->getProperty ("left"),
-                        obj->getProperty ("left"), 0);
-      obj->setProperty ("width", obj->getProperty ("width"),
-                        obj->getProperty ("width"), 0);
-      obj->setProperty ("height", obj->getProperty ("height"),
-                        obj->getProperty ("height"), 0);
+      obj->setProperty ("top", obj->getProperty ("top"));
+      obj->setProperty ("left", obj->getProperty ("left"));
+      obj->setProperty ("width", obj->getProperty ("width"));
+      obj->setProperty ("height", obj->getProperty ("height"));
     }
-
 }
 
 void
@@ -286,8 +286,7 @@ Scheduler::runAction (NclEvent *event, NclAction *action)
       Property *property;
 
       string name;
-      string from;
-      string to;
+      string value;
 
       GingaTime dur;
 
@@ -302,10 +301,9 @@ Scheduler::runAction (NclEvent *event, NclAction *action)
       g_assert_nonnull (property);
 
       name = property->getName ();
-      from = property->getValue ();
-      to = action->getValue ();
-      if (to[0] == '$')
-        this->getObjectPropertyByRef (to, &to);
+      value = action->getValue ();
+      if (value[0] == '$')
+        this->getObjectPropertyByRef (value, &value);
 
       string s;
       s = action->getDuration ();
@@ -314,7 +312,7 @@ Scheduler::runAction (NclEvent *event, NclAction *action)
       dur = ginga_parse_time (s);
 
       attevt->start ();
-      obj->setProperty (name, from, to, dur);
+      obj->setProperty (name, value, dur);
 
       // TODO: Wrap this in a closure to be called at the end of animation.
       attevt->stop ();

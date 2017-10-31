@@ -39,12 +39,11 @@ ExecutionObjectSettings::ExecutionObjectSettings (GingaInternal *ginga,
 
 void
 ExecutionObjectSettings::setProperty (const string &name,
-                                      unused (const string &from),
-                                      const string &to,
+                                      const string &value,
                                       unused (GingaTime dur))
 {
   if (name == "service.currentFocus")
-    Player::setCurrentFocus (to);
+    Player::setCurrentFocus (value);
 }
 
 void
@@ -82,20 +81,19 @@ ExecutionObjectSettings::updateCurrentFocus (const string &index)
 
   // Do the actual attribution.
   string name = "service.currentFocus";
-  string from = this->getProperty (name);
   string to = next;
 
   NclEvent *evt = this->getEventByAnchorId (EventType::ATTRIBUTION, name, "");
   if (evt == nullptr)           // do no trigger links
     {
-      cast (ExecutionObject *, this)->setProperty (name, from, to, 0);
+      cast (ExecutionObject *, this)->setProperty (name, to);
     }
   else                          // trigger links
     {
       AttributionEvent *attevt = cast (AttributionEvent *, evt);
       g_assert_nonnull (attevt);
       attevt->start ();
-      cast (ExecutionObject *, this)->setProperty (name, from, to, 0);
+      cast (ExecutionObject *, this)->setProperty (name, to);
       attevt->stop ();
     }
 }
