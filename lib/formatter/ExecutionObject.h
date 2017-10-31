@@ -19,11 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define EXECUTION_OBJECT_H
 
 #include "GingaInternal.h"
-#include "NclEvents.h"
-#include "NclAction.h"
-
-#include "ncl/Ncl.h"
-using namespace ::ginga::ncl;
+#include "NclEvent.h"
 
 #include "player/Player.h"
 using namespace ::ginga::player;

@@ -18,10 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NCL_CONDITION
 #define NCL_CONDITION
 
-#include "NclEvents.h"
-
-#include "ncl/Ncl.h"
-using namespace ::ginga::ncl;
+#include "NclEvent.h"
 
 GINGA_FORMATTER_BEGIN
 

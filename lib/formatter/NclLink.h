@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclAction.h"
 #include "NclCondition.h"
-#include "NclEvents.h"
+#include "NclEvent.h"
 
 GINGA_FORMATTER_BEGIN
 

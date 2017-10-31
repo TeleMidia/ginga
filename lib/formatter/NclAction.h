@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef LINK_ACTION_H
 #define LINK_ACTION_H
 
-#include "NclEvents.h"
+#include "NclEvent.h"
 
 GINGA_FORMATTER_BEGIN
 
