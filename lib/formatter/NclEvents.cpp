@@ -203,8 +203,8 @@ AttributionEvent::~AttributionEvent ()
 ProxyEvent::ProxyEvent (GingaInternal *ginga,
                           ExecutionObject *exeObjSwitch,
                           Anchor *interface,
-                          EventType type, const string &key)
-  : NclEvent (ginga, type, exeObjSwitch, interface)
+                        const string &key)
+  : NclEvent (ginga, EventType::PROXY, exeObjSwitch, interface)
 {
   _key = key;
   _target = nullptr;

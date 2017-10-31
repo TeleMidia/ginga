@@ -112,7 +112,6 @@ public:
   ProxyEvent (GingaInternal *,
                ExecutionObject *,
                Anchor *,
-               EventType ,
                const string &);
 
   virtual ~ProxyEvent ();

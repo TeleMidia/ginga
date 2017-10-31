@@ -101,7 +101,7 @@ Converter::resolveSwitchEvents (
       if (lambdaAnchor)
         {
           mappedEvent = selectedObject->obtainEvent
-            (switchEvent->getType (), selectedNode->getLambda (),
+            (EventType::PRESENTATION, selectedNode->getLambda (),
              switchEvent->getKey ());
         }
       else
@@ -115,7 +115,7 @@ Converter::resolveSwitchEvents (
               endPointObject = obtainExecutionObject (selectedNode);
               g_assert_nonnull (endPointObject);
               mappedEvent = endPointObject->obtainEvent
-                (switchEvent->getType (), interfacePoint,
+                (EventType::PRESENTATION, interfacePoint,
                  switchEvent->getKey ());
               break;
             }

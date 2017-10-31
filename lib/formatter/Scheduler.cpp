@@ -593,7 +593,7 @@ Scheduler::runSwitchEvent (unused (ExecutionObjectSwitch *switchObj),
       endPointObject = _converter->obtainExecutionObject (node);
       g_assert_nonnull (endPointObject);
       selectedEvent = endPointObject->obtainEvent
-        (switchEvent->getType (), iface, switchEvent->getKey ());
+        (EventType::PRESENTATION, iface, switchEvent->getKey ());
       break;
     }
 
