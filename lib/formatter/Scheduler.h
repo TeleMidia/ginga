@@ -65,10 +65,6 @@ private:
   void runAction (NclEvent *, NclAction *);
   void runActionOverComposition (ExecutionObjectContext *,
                                  NclAction *);
-  void runActionOverSwitch (ExecutionObjectSwitch *, ProxyEvent *,
-                            NclAction *);
-  void runSwitchEvent (ExecutionObjectSwitch *, ProxyEvent *,
-                       ExecutionObject *, NclAction *);
 };
 
 GINGA_FORMATTER_END

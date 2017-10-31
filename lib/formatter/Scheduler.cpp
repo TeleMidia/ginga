@@ -364,11 +364,9 @@ Scheduler::runAction (NclEvent *event, NclAction *action)
       return;
     }
 
-  if (instanceof (ExecutionObjectSwitch *, obj)
-      && instanceof (ProxyEvent *, event))
+  if (instanceof (ExecutionObjectSwitch *, obj))
     {
-      this->runActionOverSwitch ((ExecutionObjectSwitch *) obj,
-                                 (ProxyEvent *) event, action);
+      g_assert_not_reached ();
       return;
     }
 
@@ -533,74 +531,6 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
   else
     {
       g_assert_not_reached ();
-    }
-}
-
-void
-Scheduler::runActionOverSwitch (ExecutionObjectSwitch *switchObj,
-                                ProxyEvent *event,
-                                NclAction *action)
-{
-  ExecutionObject *selectedObject;
-  NclEvent *selectedEvent;
-
-  selectedObject = switchObj->getSelectedObject ();
-  if (selectedObject == nullptr)
-    {
-      selectedObject = _converter->processExecutionObjectSwitch (switchObj);
-      g_assert_nonnull (selectedObject);
-    }
-
-  selectedEvent = event->getTarget ();
-  if (selectedEvent != nullptr)
-    {
-      runAction (selectedEvent, action);
-    }
-  else
-    {
-      runSwitchEvent (switchObj, event, selectedObject, action);
-    }
-
-  if (action->getEventStateTransition () == EventStateTransition::STOP
-      || action->getEventStateTransition () == EventStateTransition::ABORT)
-    {
-      switchObj->select (nullptr);
-    }
-}
-
-void
-Scheduler::runSwitchEvent (unused (ExecutionObjectSwitch *switchObj),
-                           ProxyEvent *switchEvent,
-                           ExecutionObject *selectedObject,
-                           NclAction *action)
-{
-  NclEvent *selectedEvent;
-  SwitchPort *switchPort;
-  vector<Port *>::iterator i;
-  ExecutionObject *endPointObject;
-
-  selectedEvent = nullptr;
-  switchPort = (SwitchPort *)(switchEvent->getAnchor ());
-  for (auto mapping: *switchPort->getPorts ())
-    {
-      if (mapping->getNode () != selectedObject->getNode ())
-        continue;
-
-      Node *node;
-      Anchor *iface;
-      mapping->getTarget (&node, &iface);
-
-      endPointObject = _converter->obtainExecutionObject (node);
-      g_assert_nonnull (endPointObject);
-      selectedEvent = endPointObject->obtainEvent
-        (EventType::PRESENTATION, iface, switchEvent->getKey ());
-      break;
-    }
-
-  if (selectedEvent != nullptr)
-    {
-      switchEvent->setTarget (selectedEvent);
-      runAction (selectedEvent, action);
     }
 }
 
