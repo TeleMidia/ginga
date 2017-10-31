@@ -51,11 +51,7 @@ public:
   bool getInterval (GingaTime *, GingaTime *); // presentation
   bool getKey (string *);                      // selection
 
-  bool start ();
-  bool stop ();
-  bool pause ();
-  bool resume ();
-  bool abort ();
+  bool transition (EventStateTransition);
 
 private:
   GingaInternal *_ginga;                  // ginga handle
@@ -66,8 +62,6 @@ private:
   EventState _state;                      // event state
   vector<INclEventListener *> _listeners; // event listeners
   string _key;                            // key (selection event only)
-
-  void notifyListeners (EventStateTransition);
 };
 
 GINGA_FORMATTER_END

@@ -101,60 +101,37 @@ NclEvent::getKey (string *key)
 }
 
 bool
-NclEvent::abort ()
+NclEvent::transition (EventStateTransition to)
 {
-  if (_state == EventState::SLEEPING)
-    return false;
-  _state = EventState::SLEEPING;
-  this->notifyListeners (EventStateTransition::ABORT);
+  switch (to)
+    {
+    case EventStateTransition::START:
+      if (_state == EventState::OCCURRING)
+        return false;
+      _state = EventState::OCCURRING;
+      break;
+    case EventStateTransition::PAUSE:
+      if (_state != EventState::OCCURRING)
+        return false;
+      _state = EventState::PAUSED;
+      break;
+    case EventStateTransition::RESUME:
+      if (_state != EventState::PAUSED)
+        return false;
+      _state = EventState::OCCURRING;
+      break;
+    case EventStateTransition::STOP: // fall through
+    case EventStateTransition::ABORT:
+      if (_state == EventState::SLEEPING)
+        return false;
+      _state = EventState::SLEEPING;
+      break;
+    default:
+      g_assert_not_reached ();
+    }
+  for (INclEventListener *lst: _listeners)
+    lst->eventStateChanged (this, to);
   return true;
-}
-
-bool
-NclEvent::start ()
-{
-  if (_state == EventState::OCCURRING)
-    return false;
-  _state = EventState::OCCURRING;
-  this->notifyListeners (EventStateTransition::START);
-  return true;
-}
-
-bool
-NclEvent::stop ()
-{
-  if (_state == EventState::SLEEPING)
-    return false;
-  _state = EventState::SLEEPING;
-  this->notifyListeners (EventStateTransition::STOP);
-  return true;
-}
-
-bool
-NclEvent::pause ()
-{
-  if (_state != EventState::OCCURRING)
-    return false;
-  _state = EventState::PAUSED;
-  this->notifyListeners (EventStateTransition::PAUSE);
-  return true;
-}
-
-bool
-NclEvent::resume ()
-{
-  if (_state != EventState::PAUSED)
-    return false;
-  _state = EventState::OCCURRING;
-  this->notifyListeners (EventStateTransition::RESUME);
-  return true;
-}
-
-void
-NclEvent:: notifyListeners (EventStateTransition transition)
-{
-  for (INclEventListener *listener: _listeners)
-    listener->eventStateChanged (this, transition);
 }
 
 GINGA_FORMATTER_END

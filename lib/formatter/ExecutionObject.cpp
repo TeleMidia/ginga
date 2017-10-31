@@ -307,7 +307,7 @@ ExecutionObject::start ()
  done:
   // Start main event.
   if (_mainEvent->getType () == EventType::PRESENTATION)
-    _mainEvent->start ();
+    _mainEvent->transition (EventStateTransition::START);
   return true;
 }
 
@@ -318,7 +318,7 @@ ExecutionObject::pause ()
     return true;
 
   for (auto event: *(this->getEvents ()))
-    event->pause ();
+    event->transition (EventStateTransition::PAUSE);
 
   g_assert_nonnull (_player);
   _player->pause ();
@@ -333,7 +333,7 @@ ExecutionObject::resume ()
     return true;
 
   for (auto event: *(this->getEvents ()))
-    event->resume ();
+    event->transition (EventStateTransition::RESUME);
 
   g_assert_nonnull (_player);
   _player->resume ();
@@ -364,7 +364,7 @@ ExecutionObject::stop ()
 
   // Stop main event.
   if (_mainEvent->getType () == EventType::PRESENTATION)
-    _mainEvent->stop ();
+    _mainEvent->transition (EventStateTransition::STOP);
 
   return true;
 }
@@ -580,14 +580,14 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
           TRACE ("%s.%s timed-out at %" GINGA_TIME_FORMAT,
                  _id.c_str(), evt->getAnchor ()->getId ().c_str (),
                  GINGA_TIME_ARGS (time));
-          evt->start ();
+          evt->transition (EventStateTransition::START);
         }
       else if (evt->getState () == EventState::OCCURRING && end <= _time)
         {
           TRACE ("%s.%s timed-out at %" GINGA_TIME_FORMAT,
                  _id.c_str(), evt->getAnchor ()->getId ().c_str (),
                  GINGA_TIME_ARGS (time));
-          evt->stop ();
+          evt->transition (EventStateTransition::STOP);
         }
     }
 }

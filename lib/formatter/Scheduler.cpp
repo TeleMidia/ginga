@@ -359,8 +359,8 @@ Scheduler::runAction (NclEvent *event, NclAction *action)
 
   if (event->getType () == EventType::SELECTION)
     {
-      event->start ();
-      event->stop ();
+      event->transition (EventStateTransition::START);
+      event->transition (EventStateTransition::STOP);
       delete action;
       return;
     }
@@ -405,10 +405,13 @@ Scheduler::runAction (NclEvent *event, NclAction *action)
         this->getObjectPropertyByRef (s, &s);
       dur = ginga_parse_time (s);
 
-      event->start ();
-      obj->setProperty (name, value, dur);
-      // TODO: Wrap this in a closure to be called at the end of animation.
-      event->stop ();
+      if (event->transition (EventStateTransition::START))
+        {
+          obj->setProperty (name, value, dur);
+          // TODO: Wrap this in a closure to be called at the end of
+          // animation.
+          event->transition (EventStateTransition::STOP);
+        }
       return;
     }
 
