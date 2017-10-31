@@ -25,13 +25,6 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-class INclEventListener;
-class ExecutionObject;
-
-#define PROPERTY_READONLY(type,name,getfunc)\
-  protected: type name;\
-  public: type getfunc () const { return this->name; }
-
 class NclEvent;
 class INclEventListener
 {
@@ -39,6 +32,7 @@ public:
   virtual void eventStateChanged (NclEvent *, EventStateTransition) = 0;
 };
 
+class ExecutionObject;
 class NclEvent
 {
 public:
@@ -99,25 +93,6 @@ public:
                     Property *);
 
   virtual ~AttributionEvent ();
-};
-
-class ProxyEvent : public NclEvent
-{
-  PROPERTY_READONLY (string, _key, getKey)
-
-private:
-  NclEvent *_target;
-
-public:
-  ProxyEvent (GingaInternal *,
-               ExecutionObject *,
-               Anchor *,
-               const string &);
-
-  virtual ~ProxyEvent ();
-
-  NclEvent *getTarget ();
-  void setTarget (NclEvent *);
 };
 
 GINGA_FORMATTER_END

@@ -218,7 +218,7 @@ ExecutionObject::obtainEvent (EventType type, Anchor *anchor,
 
   if (instanceof (ExecutionObjectSwitch *, this))
     {
-      event = new ProxyEvent (_ginga, this, anchor, key);
+      g_assert_not_reached ();
     }
   else if (instanceof (ExecutionObjectContext *, this))
     {

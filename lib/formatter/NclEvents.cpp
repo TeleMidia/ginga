@@ -197,34 +197,4 @@ AttributionEvent::~AttributionEvent ()
 {
 }
 
-
-// ProxyEvent.
-
-ProxyEvent::ProxyEvent (GingaInternal *ginga,
-                          ExecutionObject *exeObjSwitch,
-                          Anchor *interface,
-                        const string &key)
-  : NclEvent (ginga, EventType::PROXY, exeObjSwitch, interface)
-{
-  _key = key;
-  _target = nullptr;
-}
-
-ProxyEvent::~ProxyEvent ()
-{
-}
-
-NclEvent *
-ProxyEvent::getTarget ()
-{
-  return _target;
-}
-
-void
-ProxyEvent::setTarget (NclEvent *evt)
-{
-  g_assert_nonnull (evt);
-  _target = evt;
-}
-
 GINGA_FORMATTER_END

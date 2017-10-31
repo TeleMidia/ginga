@@ -25,7 +25,6 @@ enum class EventType
   SELECTION = 0,
   PRESENTATION,
   ATTRIBUTION,
-  PROXY,
 };
 
 enum class EventState
