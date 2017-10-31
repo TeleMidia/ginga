@@ -57,7 +57,6 @@ public:
   virtual bool resume ();
   virtual bool abort ();
 
-
 protected:
   GingaInternal *_ginga;        // ginga handle
   Scheduler *_scheduler;        // scheduler
@@ -66,20 +65,18 @@ protected:
   ExecutionObject *_object;     // target object
   Anchor *_anchor;              // target anchor
 
-  EventState _state;            // current state
-  set<INclEventListener *> _listeners;
+  EventState _state;                   // current state
+  set<INclEventListener *> _listeners; // listeners
 
-  bool changeState (EventState, EventStateTransition);
+  void notifyListeners (EventStateTransition);
 };
 
 class PresentationEvent: public NclEvent
 {
-  PROPERTY_READONLY (GingaTime, _begin, getBegin)
-  PROPERTY_READONLY (GingaTime, _end, getEnd)
-
 public:
   PresentationEvent (GingaInternal *, ExecutionObject *, Area *);
   virtual ~PresentationEvent () {}
+  void getInterval (GingaTime *, GingaTime *);
 };
 
 class SelectionEvent : public NclEvent
@@ -104,26 +101,24 @@ public:
   virtual ~AttributionEvent ();
 };
 
-class SwitchEvent : public NclEvent, public INclEventListener
+class ProxyEvent : public NclEvent
 {
   PROPERTY_READONLY (string, _key, getKey)
 
 private:
-  NclEvent *_mappedEvent;
+  NclEvent *_target;
 
 public:
-  SwitchEvent (GingaInternal *,
+  ProxyEvent (GingaInternal *,
                ExecutionObject *,
                Anchor *,
                EventType ,
                const string &);
 
-  virtual ~SwitchEvent ();
+  virtual ~ProxyEvent ();
 
-  void setMappedEvent (NclEvent *evt);
-  NclEvent *getMappedEvent () { return this->_mappedEvent; }
-
-  virtual void eventStateChanged (NclEvent *, EventStateTransition) override;
+  NclEvent *getTarget ();
+  void setTarget (NclEvent *);
 };
 
 GINGA_FORMATTER_END

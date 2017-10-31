@@ -80,62 +80,59 @@ NclEvent::addListener (INclEventListener *listener)
 bool
 NclEvent::abort ()
 {
-  if (_state == EventState::OCCURRING || _state == EventState::PAUSED)
-    return changeState (EventState::SLEEPING, EventStateTransition::ABORT);
-  else
-    return false;
+  if (_state == EventState::SLEEPING)
+    return false;               // nothing to do
+  _state = EventState::SLEEPING;
+  this->notifyListeners (EventStateTransition::ABORT);
+  return true;
 }
 
 bool
 NclEvent::start ()
 {
-  if (_state == EventState::SLEEPING)
-    return changeState (EventState::OCCURRING, EventStateTransition::START);
-  else
-    return false;
+  if (_state == EventState::OCCURRING)
+    return false;               // nothing to do
+  _state = EventState::OCCURRING;
+  this->notifyListeners (EventStateTransition::START);
+  return true;
 }
 
 bool
 NclEvent::stop ()
 {
-  if (_state == EventState::OCCURRING || _state == EventState::PAUSED)
-    return changeState (EventState::SLEEPING, EventStateTransition::STOP);
-  else
-    return false;
+  if (_state == EventState::SLEEPING)
+    return false;               // nothing to do
+  _state = EventState::SLEEPING;
+  this->notifyListeners (EventStateTransition::STOP);
+  return true;
 }
 
 bool
 NclEvent::pause ()
 {
-  if (_state == EventState::OCCURRING)
-    return changeState (EventState::PAUSED, EventStateTransition::PAUSE);
-  else
-    return false;
+  if (_state != EventState::OCCURRING)
+    return false;               // nothing to do
+  _state = EventState::PAUSED;
+  this->notifyListeners (EventStateTransition::PAUSE);
+  return true;
 }
 
 bool
 NclEvent::resume ()
 {
-  if (_state == EventState::PAUSED)
-    return changeState (EventState::OCCURRING, EventStateTransition::RESUME);
-  else
-    return false;
-}
-
-bool
-NclEvent::changeState (EventState newState,
-                       EventStateTransition transition)
-{
-  _state = newState;
-
-  set<INclEventListener *> clone (_listeners);
-
-  for (INclEventListener *listener: clone)
-    listener->eventStateChanged (this, transition);
-
+  if (_state != EventState::PAUSED)
+    return false;               // nothing to do
+  _state = EventState::OCCURRING;
+  this->notifyListeners (EventStateTransition::RESUME);
   return true;
 }
 
+void
+NclEvent:: notifyListeners (EventStateTransition transition)
+{
+  for (INclEventListener *listener: _listeners)
+    listener->eventStateChanged (this, transition);
+}
 
 
 // PresentationEvent.
@@ -145,8 +142,15 @@ PresentationEvent::PresentationEvent (GingaInternal *ginga,
                                       Area *anchor)
   : NclEvent (ginga, EventType::PRESENTATION, exeObj, anchor)
 {
-  _begin = anchor->getBegin ();
-  _end = anchor->getEnd ();
+}
+
+void
+PresentationEvent::getInterval (GingaTime *begin, GingaTime *end)
+{
+  Area *area = cast (Area *, _anchor);
+  g_assert_nonnull (area);
+  tryset (begin, area->getBegin ());
+  tryset (end, area->getEnd ());
 }
 
 
@@ -194,53 +198,33 @@ AttributionEvent::~AttributionEvent ()
 }
 
 
-// SwitchEvent.
+// ProxyEvent.
 
-SwitchEvent::SwitchEvent (GingaInternal *ginga,
+ProxyEvent::ProxyEvent (GingaInternal *ginga,
                           ExecutionObject *exeObjSwitch,
                           Anchor *interface,
                           EventType type, const string &key)
   : NclEvent (ginga, type, exeObjSwitch, interface)
 {
-  this->_key = key;
-  _mappedEvent = nullptr;
+  _key = key;
+  _target = nullptr;
 }
 
-SwitchEvent::~SwitchEvent ()
+ProxyEvent::~ProxyEvent ()
 {
+}
+
+NclEvent *
+ProxyEvent::getTarget ()
+{
+  return _target;
 }
 
 void
-SwitchEvent::setMappedEvent (NclEvent *evt)
+ProxyEvent::setTarget (NclEvent *evt)
 {
-  _mappedEvent = evt;
-}
-
-void
-SwitchEvent::eventStateChanged (unused (NclEvent *evt),
-                                EventStateTransition trans)
-
-{
-  EventState next;
-  switch (trans)
-    {
-    case EventStateTransition::STOP:
-      next = EventState::SLEEPING;
-      break;
-    case EventStateTransition::START: // fall-through
-    case EventStateTransition::RESUME:
-      next = EventState::OCCURRING;
-      break;
-    case EventStateTransition::PAUSE:
-      next = EventState::PAUSED;
-      break;
-    case EventStateTransition::ABORT:
-      next = EventState::SLEEPING;
-      break;
-    default:
-      g_assert_not_reached ();
-    }
-  changeState (next, trans);
+  g_assert_nonnull (evt);
+  _target = evt;
 }
 
 GINGA_FORMATTER_END
