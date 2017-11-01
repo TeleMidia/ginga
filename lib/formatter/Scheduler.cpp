@@ -316,12 +316,22 @@ void
 Scheduler::sendTickEvent (GingaTime total, GingaTime diff, GingaTime frame)
 {
   vector<ExecutionObject *> buf;
+
   for (auto obj: _objects)
     if (obj->getLambdaState () == EventState::OCCURRING)
       buf.push_back (obj);
+
+  if (buf.empty ())
+    {
+      _ginga->setEOS (true);
+      return;
+    }
+
   for (auto obj: buf)
     {
       g_assert (!instanceof (ExecutionObjectSettings *, obj));
+      if (obj->getLambdaState () != EventState::OCCURRING)
+        continue;
       obj->sendTickEvent (total, diff, frame);
     }
   _settings->sendTickEvent (total, diff, frame);
