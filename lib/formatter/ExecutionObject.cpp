@@ -398,23 +398,21 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
   if (_player == nullptr)
     return;
 
-  if (_player->getEOS ())
+  // Update object time.
+  g_assert (GINGA_TIME_IS_VALID (_time));
+  _time += diff;
+  _player->incTime (diff);
+
+  // Check EOS.
+  if (_player->getEOS ()
+      || (GINGA_TIME_IS_VALID (dur = _player->getDuration ())
+          && _time > dur))
     {
       NclEvent *lambda = this->getLambda (EventType::PRESENTATION);
       g_assert_nonnull (lambda);
       TRACE ("eos %s@lambda at %" GINGA_TIME_FORMAT, _id.c_str (),
              GINGA_TIME_ARGS (_time));
       lambda->transition (EventStateTransition::STOP);
-      return;
-    }
-
-  g_assert (GINGA_TIME_IS_VALID (_time));
-  _time += diff;
-  _player->incTime (diff);
-
-  if (GINGA_TIME_IS_VALID (dur = _player->getDuration ()) && _time > dur)
-    {
-      g_assert_not_reached ();
       return;
     }
 
@@ -436,32 +434,6 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
       else
         {
           ++it;
-        }
-    }
-
-  // Evaluate areas.
-  for (auto evt: _events)
-    {
-      if (evt->getType () != EventType::PRESENTATION)
-        continue;
-      if (this->getLambda (EventType::PRESENTATION) == evt)
-        continue;
-
-      GingaTime begin, end;
-      evt->getInterval (&begin, &end);
-      switch (evt->getState ())
-        {
-        case EventState::OCCURRING:
-          if (end <= _time)
-            g_assert (evt->transition (EventStateTransition::STOP));
-          break;
-        case EventState::SLEEPING:
-          if (begin <= _time)
-            g_assert (evt->transition (EventStateTransition::START));
-          break;
-        case EventState::PAUSED: // impossible
-        default:
-          g_assert_not_reached ();
         }
     }
 }
@@ -505,6 +477,7 @@ ExecutionObject::exec (NclEvent *evt,
               _player = Player::createPlayer (_ginga, _id, src, mime);
               g_assert_nonnull (_player);
 
+              // Initialize properties.
               for (auto anchor: *media->getAnchors ())
                 {
                   Property *prop = cast (Property *, anchor);
@@ -512,6 +485,28 @@ ExecutionObject::exec (NclEvent *evt,
                     _player->setProperty (prop->getName (),
                                           prop->getValue ());
                 }
+
+              // Install delayed actions for time anchors.
+              for (auto e: _events)
+                {
+                  GingaTime begin, end;
+                  NclAction *act;
+
+                  if (e->getType () != EventType::PRESENTATION)
+                    continue;
+                  if (e == this->getLambda (EventType::PRESENTATION))
+                    continue;
+
+                  begin = 0;
+                  end = GINGA_TIME_NONE;
+                  g_assert (e->getInterval (&begin, &end));
+                  act = new NclAction (e, EventStateTransition::START);
+                  _delayed.push_back (std::make_pair (act, begin));
+
+                  act = new NclAction (e, EventStateTransition::STOP);
+                  _delayed.push_back (std::make_pair (act, end));
+                }
+
               _time = 0;
               TRACE ("start %s@lambda", _id.c_str ());
               _player->start ();
