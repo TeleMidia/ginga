@@ -17,35 +17,112 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 #include "ExecutionObjectSwitch.h"
+#include "Scheduler.h"
 
 GINGA_FORMATTER_BEGIN
 
 ExecutionObjectSwitch::ExecutionObjectSwitch (GingaInternal *ginga,
                                               const string &id,
-                                              Node *switchNode)
-  : ExecutionObjectContext (ginga, id, switchNode)
+                                              Node *node)
+  : ExecutionObjectContext (ginga, id, node)
 {
-  _selectedObj = nullptr;
+  g_assert_nonnull (node);
+  _switch = cast (Switch *, node);
+  g_assert_nonnull (_switch);
+  _selected = nullptr;
 }
 
-void
-ExecutionObjectSwitch::select (ExecutionObject *exeObj)
+ExecutionObjectSwitch::~ExecutionObjectSwitch ()
 {
-  if (exeObj != nullptr)
+}
+
+bool
+ExecutionObjectSwitch::exec (NclEvent *evt,
+                             unused (EventState from),
+                             unused (EventState to),
+                             EventStateTransition transition)
+{
+  switch (evt->getType ())
     {
-      g_assert_nonnull (this->getChildById (exeObj->getId ()));
-      _selectedObj = exeObj;
+    // ---------------------------------------------------------------------
+    // Presentation event.
+    // ---------------------------------------------------------------------
+    case EventType::PRESENTATION:
+      switch (transition)
+        {
+        case EventStateTransition::START:
+          //
+          // Start lambda.
+          //
+          TRACE ("start %s@lambda", _id.c_str ());
+          g_assert_null (_selected);
+          for (auto item: *_switch->getRules ())
+            {
+              Node *node;
+              Predicate *pred;
+              NclEvent *e;
+
+              node = item.first;
+              g_assert_nonnull (node);
+              pred = item.second;
+              g_assert_nonnull (pred);
+
+              if (_scheduler->eval (pred))
+                {
+                  _selected = _scheduler->obtainExecutionObject (node);
+                  g_assert_nonnull (_selected);
+                  e = _selected->obtainEvent (EventType::PRESENTATION,
+                                              node->getLambda (), "");
+                  g_assert_nonnull (e);
+                  e->transition (transition);
+                  break;
+                }
+            }
+          if (_selected == nullptr) // schedule stop
+            {
+              NclAction *act = new NclAction
+                (evt, EventStateTransition::STOP);
+              _delayed_new.push_back (std::make_pair (act, _time));
+            }
+          break;
+        case EventStateTransition::PAUSE:
+          g_assert_not_reached ();
+          break;
+        case EventStateTransition::RESUME:
+          g_assert_not_reached ();
+          break;
+        case EventStateTransition::STOP:
+          //
+          // Stop lambda.
+          //
+          TRACE ("stop %s@lambda", _id.c_str ());
+          g_assert_not_reached ();
+          break;
+        case EventStateTransition::ABORT:
+          g_assert_not_reached ();
+          break;
+        default:
+          g_assert_not_reached ();
+        }
+      break;
+
+    // ---------------------------------------------------------------------
+    // Attribution event.
+    // ---------------------------------------------------------------------
+    case EventType::ATTRIBUTION:
+      g_assert_not_reached ();
+      break;
+
+    //----------------------------------------------------------------------
+    // Selection event.
+    // ---------------------------------------------------------------------
+    case EventType::SELECTION:
+      g_assert_not_reached ();
+      break;
+    default:
+      g_assert_not_reached ();
     }
-  else
-    {
-      _selectedObj = nullptr;
-      // for (auto evt: *(this->getEvents ()))
-      //   {
-      //     auto switchEvent = cast (SwitchEvent *, evt);
-      //     g_assert_nonnull (switchEvent);
-      //     switchEvent->setMappedEvent (nullptr);
-      //   }
-    }
+  return true;
 }
 
 GINGA_FORMATTER_END

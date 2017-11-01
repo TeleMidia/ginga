@@ -19,29 +19,28 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define SWITCH_H
 
 #include "Composition.h"
-#include "Rule.h"
+#include "Predicate.h"
 
 GINGA_NCL_BEGIN
 
-class Switch : public Composition
+class Switch: public Composition
 {
 public:
   Switch (NclDocument *, const string &);
   virtual ~Switch ();
 
-  void addNode (Node *, Rule *);
-  void addNode (Node *);
+  void addNode (Node *, Predicate *);
   Node *getNode (const string &);
 
-  Node *getDefaultNode ();
-  void setDefaultNode (Node *);
+  Node *getDefault ();
+  void initDefault (Node *);
 
-  const vector <Rule *> *getRules ();
-  Anchor *getMapInterface (Port *port);
+  const vector <pair<Node *, Predicate *>> *getRules ();
+  Anchor *getMapInterface (Port *);
 
 private:
   Node *_default;
-  vector<Rule *> _rules;
+  vector<pair<Node *, Predicate *>> _rules;
 };
 
 GINGA_NCL_END

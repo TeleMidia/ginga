@@ -58,7 +58,7 @@ RuleAdapter::adapt (ExecutionObjectContext *compositeObject, bool force)
     {
       if (instanceof (ExecutionObjectSwitch *, child))
         {
-          ((ExecutionObjectSwitch *) child)->getSelectedObject ();
+          // ((ExecutionObjectSwitch *) child)->getSelectedObject ();
         }
 
       if (instanceof (ExecutionObjectContext *, child))

@@ -108,7 +108,6 @@ NclDocument::NclDocument (const string &id, const string &uri)
 
   _connectorBase = nullptr;
   _parentDocument = nullptr;
-  _ruleBase = nullptr;
 }
 
 /**
@@ -311,42 +310,6 @@ NclDocument::getNode (const string &nodeId)
   return NULL;
 }
 
-Rule *
-NclDocument::getRule (const string &ruleId)
-{
-  Rule *rule;
-  vector<NclDocument *>::iterator i;
-
-  if (_ruleBase != NULL)
-    {
-      rule = _ruleBase->getRule (ruleId);
-      if (rule != NULL)
-        {
-          return rule;
-        }
-    }
-
-  for (i = _documentBase.begin (); i != _documentBase.end (); ++i)
-    {
-      rule = (*i)->getRule (ruleId);
-      if (rule != NULL)
-        {
-          return rule;
-        }
-    }
-
-  return NULL;
-}
-
-RuleBase *
-NclDocument::getRuleBase ()
-{
-  return _ruleBase;
-}
-
-/**
- * @return A vector containing all settings nodes in document.
- */
 vector<Node *> *
 NclDocument::getSettingsNodes ()
 {
@@ -444,12 +407,6 @@ void
 NclDocument::setId (const string &id)
 {
   this->_id = id;
-}
-
-void
-NclDocument::setRuleBase (RuleBase *ruleBase)
-{
-  this->_ruleBase = ruleBase;
 }
 
 GINGA_NCL_END

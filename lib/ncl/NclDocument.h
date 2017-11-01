@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ConnectorBase.h"
 #include "Context.h"
-#include "RuleBase.h"
 
 GINGA_NCL_BEGIN
 
@@ -63,8 +62,6 @@ public:
 
   Node *getNode (const string &nodeId);
 
-  Rule *getRule (const string &ruleId);
-  RuleBase *getRuleBase ();
   vector<Node *> *getSettingsNodes ();
   bool removeDocument (NclDocument *document);
   void setConnectorBase (ConnectorBase *_connectorBase);
@@ -72,7 +69,6 @@ public:
 
   void setDocumentLocation (NclDocument *document, const string &location);
   void setId (const string &_id);
-  void setRuleBase (RuleBase *_ruleBase);
 
 private:
   ConnectorBase *_connectorBase;
@@ -80,7 +76,6 @@ private:
   vector<NclDocument *> _documentBase;
   map<string, NclDocument *> _documentLocations;
 
-  RuleBase *_ruleBase;
   NclDocument *_parentDocument;
 
   Node *getNodeLocally (const string &nodeId);

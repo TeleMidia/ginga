@@ -36,33 +36,22 @@ Switch::Switch (NclDocument *ncl, const string &id) : Composition (ncl, id)
  */
 Switch::~Switch ()
 {
-  _nodes.clear ();
-  _rules.clear ();
+  for (auto item: _rules)
+    delete item.first;
 }
 
 /**
- * @brief Adds child node and associated rule.
+ * @brief Adds child node and associated predicate.
  * @param node Child node.
- * @param rule Associated rule.
+ * @param pred Associated predicate.
  */
 void
-Switch::addNode (Node *node, Rule *rule)
+Switch::addNode (Node *node, Predicate *pred)
 {
   g_assert_nonnull (node);
-  _nodes.push_back (node);
-  g_assert_nonnull (rule);
-  _rules.push_back (rule);
-  node->initParent (this);
-}
-
-/**
- * @brief Updates default node.
- */
-void
-Switch::addNode (Node *node)
-{
-  g_assert_nonnull (node);
-  this->setDefaultNode (node);
+  g_assert_nonnull (pred);
+  Composition::addNode (node);
+  _rules.push_back (std::make_pair (node, pred));
 }
 
 /**
@@ -73,16 +62,18 @@ Switch::addNode (Node *node)
 Node *
 Switch::getNode (const string &id)
 {
-  if (_default != nullptr && _default->getId () == id)
-    return _default;
-  return Composition::getNode (id);
+  for (auto item: _rules)
+    if (item.first->getId () == id)
+      return item.first;
+  return nullptr;
+
 }
 
 /**
  * @brief Gets default node.
  */
 Node *
-Switch::getDefaultNode ()
+Switch::getDefault ()
 {
   return _default;
 }
@@ -91,7 +82,7 @@ Switch::getDefaultNode ()
  * @brief Sets default node.
  */
 void
-Switch::setDefaultNode (Node *node)
+Switch::initDefault (Node *node)
 {
   g_assert_null (_default);
   g_assert_nonnull (node);
@@ -101,7 +92,7 @@ Switch::setDefaultNode (Node *node)
 /**
  * @brief Gets all rules.
  */
-const vector <Rule *> *
+const vector <pair<Node *, Predicate *>> *
 Switch::getRules ()
 {
   return &_rules;

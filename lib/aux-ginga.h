@@ -159,8 +159,6 @@ int ginga_parse_percent (const string &, int, int, int);
 #define ginga_parse_pixel(s) (guint8) ginga_parse_percent ((s), 255, 0, 255)
 bool _ginga_parse_time (const string &, GingaTime *);
 GingaTime ginga_parse_time (const string &);
-bool _ginga_parse_comparator (const string &, string *);
-bool ginga_eval_comparator (const string &, const string &, const string &);
 
 // String functions.
 bool _xstrtod (const string &, double *);

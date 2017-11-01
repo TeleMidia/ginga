@@ -23,17 +23,17 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-class ExecutionObjectSwitch : public ExecutionObjectContext
+class ExecutionObjectSwitch: public ExecutionObjectContext
 {
 public:
   ExecutionObjectSwitch (GingaInternal *, const string &, Node *);
-  virtual ~ExecutionObjectSwitch (){}
-  ExecutionObject *getSelectedObject () {return _selectedObj; }
-  void select (ExecutionObject *exeObj);
-  bool addEvent (NclEvent *evt);
+  virtual ~ExecutionObjectSwitch ();
 
-protected:
-  ExecutionObject *_selectedObj;
+  bool exec (NclEvent *, EventState, EventState,
+             EventStateTransition) override;
+private:
+  Switch *_switch;
+  ExecutionObject *_selected;
 };
 
 GINGA_FORMATTER_END
