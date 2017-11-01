@@ -1,5 +1,17 @@
 <ncl>
   <head>
+    <connectorBase>
+      <causalConnector id="onKeySelSetStopStart">
+        <connectorParam name="key"/>
+        <connectorParam name="var"/>
+        <simpleCondition role="onSelection" key="$key"/>
+        <compoundAction operator="seq">
+          <simpleAction role="set" value="$var"/>
+          <simpleAction role="stop"/>
+          <simpleAction role="start"/>
+        </compoundAction>
+      </causalConnector>
+    </connectorBase>
     <ruleBase>
       <rule id="rColorRed" var="color" value="red" comparator="eq"/>
       <rule id="rColorGreen" var="color" value="green" comparator="eq"/>
@@ -8,7 +20,9 @@
     </ruleBase>
   </head>
   <body>
-    <port id="start" component="switch"/>
+    <port id="pSwitch" component="switch"/>
+    <port id="pTimer" component="time"/>
+    <media id="time"/>
     <media id="settings" type="application/x-ginga-settings">
       <property name="color" value="green"/>
     </media>
@@ -30,5 +44,15 @@
         <property name="background" value="yellow"/>
       </media>
     </switch>
+    <link xconnector="onKeySelSetStopStart">
+      <bind role="onSelection" component="time">
+        <bindParam name="key" value="RED"/>
+      </bind>
+      <bind role="set" component="settings" interface="color">
+        <bindParam name="var" value="red"/>
+      </bind>
+      <bind role="stop" component="switch"/>
+      <bind role="start" component="switch"/>
+    </link>
   </body>
 </ncl>

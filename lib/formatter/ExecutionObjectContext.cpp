@@ -31,6 +31,9 @@ ExecutionObjectContext::ExecutionObjectContext (GingaInternal *ginga,
 {
   g_assert_nonnull (node);
   _context = cast (Context *, node);
+  //
+  // FIXME: Break Context-Switch inheritance.
+  //
   // g_assert_nonnull (_context);
 }
 
@@ -89,12 +92,12 @@ ExecutionObjectContext::sendTickEvent (unused (GingaTime total),
 {
   NclEvent *lambda;
 
-  g_assert (this->getLambdaState () == EventState::OCCURRING);
+  g_assert (this->isOccurring ());
   for (auto child: _children)
-    if (child->getLambdaState () == EventState::OCCURRING)
+    if (child->isOccurring ())
       return;
 
-  lambda = this->getLambda (EventType::PRESENTATION);
+  lambda = this->obtainLambda ();
   g_assert_nonnull (lambda);
   lambda->transition (EventStateTransition::STOP);
 }
@@ -151,7 +154,7 @@ ExecutionObjectContext::exec (NclEvent *evt,
           this->toggleLinks (true);
           for (auto child: _children)
             {
-              NclEvent *e = child->getLambda (EventType::PRESENTATION);
+              NclEvent *e = child->obtainLambda ();
               g_assert_nonnull (e);
               e->transition (EventStateTransition::STOP);
             }

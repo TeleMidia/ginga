@@ -96,7 +96,16 @@ ExecutionObjectSwitch::exec (NclEvent *evt,
           // Stop lambda.
           //
           TRACE ("stop %s@lambda", _id.c_str ());
-          g_assert_not_reached ();
+          g_assert_nonnull (_selected);
+          {
+            NclEvent *e = _selected->obtainLambda ();
+            g_assert_nonnull (e);
+            e->transition (EventStateTransition::STOP);
+            _selected = nullptr;
+            NclAction *act = new NclAction
+              (evt, EventStateTransition::STOP);
+            _delayed_new.push_back (std::make_pair (act, _time));
+          }
           break;
         case EventStateTransition::ABORT:
           g_assert_not_reached ();
