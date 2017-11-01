@@ -21,6 +21,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
+
+// Public.
+
 ExecutionObjectContext::ExecutionObjectContext (GingaInternal *ginga,
                                                 const string &id,
                                                 Node *node)
@@ -77,22 +80,42 @@ ExecutionObjectContext::addLink (NclLink *link)
   return true;
 }
 
+void
+ExecutionObjectContext::sendTickEvent (unused (GingaTime total),
+                                       unused (GingaTime diff),
+                                       unused (GingaTime frame))
+{
+  NclEvent *lambda;
+
+  g_assert (this->getLambdaState () == EventState::OCCURRING);
+  for (auto child: _children)
+    if (child->getLambdaState () == EventState::OCCURRING)
+      return;
+
+  lambda = this->getLambda (EventType::PRESENTATION);
+  g_assert_nonnull (lambda);
+  lambda->transition (EventStateTransition::STOP);
+}
+
 bool
-ExecutionObjectContext::exec (NclEvent *evt, EventState from, EventState to,
+ExecutionObjectContext::exec (NclEvent *evt,
+                              unused (EventState from),
+                              unused (EventState to),
                               EventStateTransition transition)
 {
-  TRACE (">>>>>>>>> CTX evt %s from %s to %s via %s",
-         evt->getAnchor ()->getId ().c_str (),
-         EventUtil::getEventStateAsString (from).c_str (),
-         EventUtil::getEventStateAsString (to).c_str (),
-         EventUtil::getEventStateTransitionAsString (transition).c_str ());
-
   switch (evt->getType ())
     {
+    // ---------------------------------------------------------------------
+    // Presentation event.
+    // ---------------------------------------------------------------------
     case EventType::PRESENTATION:
       switch (transition)
         {
         case EventStateTransition::START:
+          //
+          // Start lambda.
+          //
+          TRACE ("start %s@lambda", _id.c_str ());
           for (auto port: *_context->getPorts ())
             {
               Node *target;
@@ -119,7 +142,18 @@ ExecutionObjectContext::exec (NclEvent *evt, EventState from, EventState to,
           g_assert_not_reached ();
           break;
         case EventStateTransition::STOP:
-          g_assert_not_reached ();
+          //
+          // Stop lambda.
+          //
+          TRACE ("stop %s@lambda", _id.c_str ());
+          this->toggleLinks (true);
+          for (auto child: _children)
+            {
+              NclEvent *e = child->getLambda (EventType::PRESENTATION);
+              g_assert_nonnull (e);
+              e->transition (EventStateTransition::STOP);
+            }
+          this->toggleLinks (false);
           break;
         case EventStateTransition::ABORT:
           g_assert_not_reached ();
@@ -128,9 +162,17 @@ ExecutionObjectContext::exec (NclEvent *evt, EventState from, EventState to,
           g_assert_not_reached ();
         }
       break;
+
+    // ---------------------------------------------------------------------
+    // Attribution event.
+    // ---------------------------------------------------------------------
     case EventType::ATTRIBUTION:
       g_assert_not_reached ();
       break;
+
+    //----------------------------------------------------------------------
+    // Selection event.
+    // ---------------------------------------------------------------------
     case EventType::SELECTION:
       return false;             // fail: contexts cannot be selected
     default:
@@ -139,5 +181,14 @@ ExecutionObjectContext::exec (NclEvent *evt, EventState from, EventState to,
   return true;
 }
 
+
+// Private.
+
+void
+ExecutionObjectContext::toggleLinks (bool status)
+{
+  for (auto link: _links)
+    link->disable (status);
+}
 
 GINGA_FORMATTER_END

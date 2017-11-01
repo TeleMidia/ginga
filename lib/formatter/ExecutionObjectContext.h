@@ -37,12 +37,16 @@ public:
   const vector<NclLink *> *getLinks ();
   bool addLink (NclLink *);
 
-  bool exec (NclEvent *, EventState, EventState, EventStateTransition) override;
+  void sendTickEvent (GingaTime, GingaTime, GingaTime) override;
+  bool exec (NclEvent *, EventState, EventState,
+             EventStateTransition) override;
 
 private:
   Context *_context;
   set<ExecutionObject *> _children;
   vector<NclLink *> _links;
+
+  void toggleLinks (bool);
 };
 
 GINGA_FORMATTER_END

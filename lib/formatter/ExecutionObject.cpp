@@ -395,6 +395,7 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
 {
   GingaTime dur;
 
+  g_assert (this->getLambdaState () == EventState::OCCURRING);
   if (_player == nullptr)
     return;
 
@@ -429,6 +430,8 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
           NclEvent *evt = act->getEvent ();
           g_assert_nonnull (evt);
           evt->transition (act->getEventStateTransition ());
+          if (this->getLambdaState () != EventState::OCCURRING)
+            break;
           it = _delayed.erase (it);
         }
       else
@@ -443,13 +446,6 @@ ExecutionObject::exec (NclEvent *evt,
                        unused (EventState from), unused (EventState to),
                        EventStateTransition transition)
 {
-  // TRACE (">>>>>>>>> evt %s from %s to %s via %s",
-  //        evt->getAnchor ()->getId ().c_str (),
-  //        EventUtil::getEventStateAsString (from).c_str (),
-  //        EventUtil::getEventStateAsString (to).c_str (),
-  //        EventUtil::getEventStateTransitionAsString
-  //        (transition).c_str ());
-
   switch (evt->getType ())
     {
     // ---------------------------------------------------------------------

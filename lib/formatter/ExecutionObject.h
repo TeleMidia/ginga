@@ -64,7 +64,6 @@ public:
   void redraw (cairo_t *);
   void sendKeyEvent (const string &, bool);
   virtual void sendTickEvent (GingaTime, GingaTime, GingaTime);
-
   virtual bool exec (NclEvent *, EventState, EventState,
                      EventStateTransition);
 
