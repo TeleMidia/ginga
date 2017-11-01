@@ -92,13 +92,12 @@ Scheduler::run (NclDocument *doc)
   delete nodes;
 
   // Set global settings object.
-  g_assert_nonnull (_settings->obtainEvent
-                    (EventType::PRESENTATION,
-                     _settings->getNode ()->getLambda (), ""));
+  g_assert_nonnull (_settings->obtainLambda ());
 
   // Start document.
   ExecutionObject *obj = this->obtainExecutionObject (body);
-  NclEvent *evt = obj->getLambda (EventType::PRESENTATION);
+  NclEvent *evt = obj->obtainLambda ();
+  g_assert_nonnull (evt);
   if (!evt->transition (EventStateTransition::START))
     return false;
 
@@ -300,7 +299,7 @@ Scheduler::sendKeyEvent (const string &key, bool press)
   vector<ExecutionObject *> buf;
   for (auto obj: _objects)
     if (instanceof (ExecutionObjectSettings *, obj)
-        || obj->getLambdaState () == EventState::OCCURRING)
+        || obj->isOccurring ())
       buf.push_back (obj);
   for (auto obj: buf)
     obj->sendKeyEvent (key, press);
@@ -312,7 +311,7 @@ Scheduler::sendTickEvent (GingaTime total, GingaTime diff, GingaTime frame)
   vector<ExecutionObject *> buf;
 
   for (auto obj: _objects)
-    if (obj->getLambdaState () == EventState::OCCURRING)
+    if (obj->isOccurring ())
       buf.push_back (obj);
 
   if (buf.empty ())
@@ -324,7 +323,7 @@ Scheduler::sendTickEvent (GingaTime total, GingaTime diff, GingaTime frame)
   for (auto obj: buf)
     {
       g_assert (!instanceof (ExecutionObjectSettings *, obj));
-      if (obj->getLambdaState () != EventState::OCCURRING)
+      if (!obj->isOccurring ())
         continue;
       obj->sendTickEvent (total, diff, frame);
     }
@@ -455,7 +454,7 @@ Scheduler::obtainNclEventFromBind (Bind *bind)
   g_assert_nonnull (obj);
 
   if (iface == nullptr)
-    return obj->getLambda (EventType::PRESENTATION);
+    return obj->obtainLambda ();
 
   if (instanceof (Composition *, node)
       && instanceof (Port *, iface))

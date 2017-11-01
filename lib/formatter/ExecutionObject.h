@@ -53,8 +53,10 @@ public:
   NclEvent *obtainEvent (EventType, Anchor *, const string &);
   bool addEvent (NclEvent *);
 
-  NclEvent *getLambda (EventType);
-  EventState getLambdaState ();
+  NclEvent *obtainLambda ();
+  bool isOccurring ();
+  bool isPaused ();
+  bool isSleeping ();
 
   bool isFocused ();
   string getProperty (const string &);

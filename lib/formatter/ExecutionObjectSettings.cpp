@@ -70,7 +70,7 @@ ExecutionObjectSettings::updateCurrentFocus (const string &index)
           if (!instanceof (ExecutionObjectContext *, obj)
               && !instanceof (ExecutionObjectSettings *, obj)
               && !instanceof (ExecutionObjectSwitch *, obj)
-              && obj->getLambdaState () == EventState::OCCURRING
+              && obj->isOccurring ()
               && (i = obj->getProperty ("focusIndex")) != ""
               && (next == "" || g_strcmp0 (i.c_str (), next.c_str ()) < 0))
             {

@@ -233,18 +233,32 @@ ExecutionObject::addEvent (NclEvent *event)
 }
 
 NclEvent *
-ExecutionObject::getLambda (EventType type)
+ExecutionObject::obtainLambda ()
 {
-  g_assert (type != EventType::ATTRIBUTION);
-  return this->getEventByAnchorId (type, _id + "@lambda", "");
+  NclEvent *lambda;
+  g_assert_nonnull (_node);
+  lambda = this->obtainEvent (EventType::PRESENTATION,
+                              _node->getLambda (), "");
+  g_assert_nonnull (lambda);
+  return lambda;
 }
 
-EventState
-ExecutionObject::getLambdaState ()
+bool
+ExecutionObject::isOccurring ()
 {
-  NclEvent *evt = this->getLambda (EventType::PRESENTATION);
-  g_assert_nonnull (evt);
-  return evt->getState ();
+  return this->obtainLambda ()->getState () == EventState::OCCURRING;
+}
+
+bool
+ExecutionObject::isPaused ()
+{
+  return this->obtainLambda ()->getState () == EventState::PAUSED;
+}
+
+bool
+ExecutionObject::isSleeping ()
+{
+  return this->obtainLambda ()->getState () == EventState::SLEEPING;
 }
 
 bool
@@ -256,7 +270,7 @@ ExecutionObject::isFocused ()
     {
       return false;
     }
-  if (this->getLambdaState () != EventState::OCCURRING)
+  if (!this->isOccurring ())
     return false;
   g_assert_nonnull (_player);
   return _player->isFocused ();
@@ -302,7 +316,7 @@ ExecutionObject::setProperty (const string &name,
 bool
 ExecutionObject::getZ (int *z, int *zorder)
 {
-  if (this->getLambdaState () == EventState::SLEEPING)
+  if (this->isSleeping ())
     return false;               // nothing to do
   if (_player == nullptr)
     return false;               // nothing to do
@@ -314,7 +328,7 @@ ExecutionObject::getZ (int *z, int *zorder)
 void
 ExecutionObject::redraw (cairo_t *cr)
 {
-  if (this->getLambdaState () == EventState::SLEEPING)
+  if (this->isSleeping ())
     return;                     // nothing to do
   if (_player == nullptr)
     return;                     // nothing to do
@@ -397,7 +411,7 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
 {
   GingaTime dur;
 
-  g_assert (this->getLambdaState () == EventState::OCCURRING);
+  g_assert (this->isOccurring ());
   if (_player == nullptr)
     return;
 
@@ -411,7 +425,7 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
       || (GINGA_TIME_IS_VALID (dur = _player->getDuration ())
           && _time > dur))
     {
-      NclEvent *lambda = this->getLambda (EventType::PRESENTATION);
+      NclEvent *lambda = this->obtainLambda ();
       g_assert_nonnull (lambda);
       TRACE ("eos %s@lambda at %" GINGA_TIME_FORMAT, _id.c_str (),
              GINGA_TIME_ARGS (_time));
@@ -432,7 +446,7 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
           NclEvent *evt = act->getEvent ();
           g_assert_nonnull (evt);
           evt->transition (act->getEventStateTransition ());
-          if (this->getLambdaState () != EventState::OCCURRING)
+          if (!this->isOccurring ())
             {
               this->resetDelayed ();
               break;
@@ -501,7 +515,7 @@ ExecutionObject::exec (NclEvent *evt,
 
                   if (e->getType () != EventType::PRESENTATION)
                     continue;
-                  if (e == this->getLambda (EventType::PRESENTATION))
+                  if (e == this->obtainLambda ())
                     continue;
 
                   begin = 0;
@@ -523,7 +537,7 @@ ExecutionObject::exec (NclEvent *evt,
               //
               // Start area (non-lambda).
               //
-              if (this->getLambdaState () == EventState::OCCURRING)
+              if (this->isOccurring ())
                 {
                   //
                   // Implicit.
@@ -567,7 +581,7 @@ ExecutionObject::exec (NclEvent *evt,
               //
               // Stop area (non-lambda).
               //
-              if (this->getLambdaState () == EventState::OCCURRING)
+              if (this->isOccurring ())
                 {
                   //
                   // Implicit.
@@ -602,7 +616,7 @@ ExecutionObject::exec (NclEvent *evt,
     // Attribution event.
     // ---------------------------------------------------------------------
     case EventType::ATTRIBUTION:
-      if (this->getLambdaState () != EventState::OCCURRING)
+      if (!this->isOccurring ())
         return false;           // nothing to do
       switch (transition)
         {
@@ -657,7 +671,7 @@ ExecutionObject::exec (NclEvent *evt,
     // Selection event.
     // ---------------------------------------------------------------------
     case EventType::SELECTION:
-      if (this->getLambdaState () != EventState::OCCURRING)
+      if (!this->isOccurring ())
         return false;           // nothing to do
       switch (transition)
         {
