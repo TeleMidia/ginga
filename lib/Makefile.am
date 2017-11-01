@@ -38,7 +38,6 @@ src+= aux-ginga.cpp
 src+= aux-gl.cpp
 src+= Ginga.cpp
 src+= GingaInternal.cpp
-src+= formatter/Converter.cpp
 src+= formatter/ExecutionObject.cpp
 src+= formatter/ExecutionObjectContext.cpp
 src+= formatter/ExecutionObjectSettings.cpp

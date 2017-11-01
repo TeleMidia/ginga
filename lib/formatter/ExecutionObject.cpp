@@ -29,6 +29,9 @@ using namespace ::ginga::player;
 
 GINGA_FORMATTER_BEGIN
 
+
+// Public.
+
 ExecutionObject::ExecutionObject (GingaInternal *ginga,
                                   const string &id,
                                   Node *node)
@@ -39,41 +42,17 @@ ExecutionObject::ExecutionObject (GingaInternal *ginga,
   _scheduler = ginga->getScheduler ();
   g_assert_nonnull (_scheduler);
 
+  g_assert_nonnull (node);
   _node = node;
-  _mainEvent = nullptr;
 
   _id = id;
   _parent = nullptr;
   _player = nullptr;
   _time = GINGA_TIME_NONE;
-  _destroying = false;
 }
 
 ExecutionObject::~ExecutionObject ()
 {
-  _destroying = true;
-  this->stop ();
-}
-
-bool
-ExecutionObject::isSleeping ()
-{
-  return  _mainEvent
-    && _mainEvent->getState () == EventState::SLEEPING;
-}
-
-bool
-ExecutionObject::isPaused ()
-{
-  return _mainEvent
-    && _mainEvent->getState () == EventState::PAUSED;
-}
-
-bool
-ExecutionObject::isOccurring ()
-{
-  return _mainEvent
-    && _mainEvent->getState () == EventState::OCCURRING;
 }
 
 Node *
@@ -145,14 +124,12 @@ ExecutionObject::getEvent (EventType type, Anchor *anchor,
         continue;
       switch (type)
         {
-        case EventType::ATTRIBUTION: // fall-through
+        case EventType::ATTRIBUTION: // fall through
         case EventType::PRESENTATION:
           return event;
         case EventType::SELECTION:
           {
-            string evtkey;
-            g_assert (event->getKey (&evtkey));
-            if (evtkey == key)
+            if (event->getParameter ("key") == key)
               return event;
             break;
           }
@@ -183,9 +160,7 @@ ExecutionObject::getEventByAnchorId (EventType type, const string &id,
           return event;
         case EventType::SELECTION:
           {
-            string evtkey;
-            g_assert (event->getKey (&evtkey));
-            if (evtkey == key)
+            if (event->getParameter ("key") == key)
               return event;
             break;
           }
@@ -194,13 +169,6 @@ ExecutionObject::getEventByAnchorId (EventType type, const string &id,
         }
     }
   return nullptr;
-}
-
-NclEvent *
-ExecutionObject::getLambda (EventType type)
-{
-  g_assert (type != EventType::ATTRIBUTION);
-  return this->getEventByAnchorId (type, _id + "@lambda", "");
 }
 
 NclEvent *
@@ -223,24 +191,25 @@ ExecutionObject::obtainEvent (EventType type, Anchor *anchor,
   else if (instanceof (ExecutionObjectContext *, this))
     {
       g_assert (type == EventType::PRESENTATION);
-      event = new NclEvent (_ginga, type, this, (Area *) anchor, "");
+      event = new NclEvent (_ginga, type, this, anchor);
     }
   else
     {
       switch (type)
         {
         case EventType::PRESENTATION:
-          event = new NclEvent (_ginga, type, this, (Area *) anchor, "");
+          event = new NclEvent (_ginga, type, this, anchor);
           break;
         case EventType::ATTRIBUTION:
           {
             Property *property = cast (Property *, anchor);
             g_assert_nonnull (property);
-            event = new NclEvent (_ginga, type, this, property, "");
+            event = new NclEvent (_ginga, type, this, property);
             break;
           }
         case EventType::SELECTION:
-          event = new NclEvent (_ginga, type, this, (Area *) anchor, key);
+          event = new NclEvent (_ginga, type, this, anchor);
+          event->setParameter ("key", key);
           break;
         default:
           g_assert_not_reached ();
@@ -261,118 +230,19 @@ ExecutionObject::addEvent (NclEvent *event)
   return true;
 }
 
-bool
-ExecutionObject::prepare (NclEvent *event)
+NclEvent *
+ExecutionObject::getLambda (EventType type)
 {
-  _mainEvent = event;
-  return true;
+  g_assert (type != EventType::ATTRIBUTION);
+  return this->getEventByAnchorId (type, _id + "@lambda", "");
 }
 
-bool
-ExecutionObject::start ()
+EventState
+ExecutionObject::getLambdaState ()
 {
-  Media *media;
-  string src;
-  string mime;
-
-  g_assert_nonnull (_mainEvent);
-
-  if (this->isOccurring ())
-    return true;              // nothing to do
-
-  TRACE ("%s", _id.c_str ());
-
-  if (instanceof (ExecutionObjectContext *, this))
-    goto done;
-
-  media = cast (Media *, _node);
-  g_assert_nonnull (media);
-
-  // Allocate player.
-  src = media->getSrc ();
-  mime = media->getMimeType ();
-  _player = Player::createPlayer (_ginga, _id, src, mime);
-
-  // Initialize player properties.
-  for (auto anchor: *media->getAnchors ())
-    {
-      Property *prop = cast (Property *, anchor);
-      if (prop != nullptr)
-        _player->setProperty (prop->getName (), prop->getValue ());
-    }
-
-  _time = 0;
-  _player->start ();
-
- done:
-  // Start main event.
-  if (_mainEvent->getType () == EventType::PRESENTATION)
-    _mainEvent->transition (EventStateTransition::START);
-  return true;
-}
-
-bool
-ExecutionObject::pause ()
-{
-  if (!this->isOccurring ())
-    return true;
-
-  for (auto event: *(this->getEvents ()))
-    event->transition (EventStateTransition::PAUSE);
-
-  g_assert_nonnull (_player);
-  _player->pause ();
-
-  return true;
-}
-
-bool
-ExecutionObject::resume ()
-{
-  if (!this->isPaused ())
-    return true;
-
-  for (auto event: *(this->getEvents ()))
-    event->transition (EventStateTransition::RESUME);
-
-  g_assert_nonnull (_player);
-  _player->resume ();
-
-  return true;
-}
-
-bool
-ExecutionObject::stop ()
-{
-  if (this->isSleeping ())
-    return false;               // nothing to do
-
-  TRACE ("%s", _id.c_str ());
-
-  // Stop and destroy player.
-  if (_player != nullptr)
-    {
-      if (_player->getState () != Player::SLEEPING)
-        _player->stop ();
-      delete _player;
-      _player = nullptr;
-      _time = GINGA_TIME_NONE;
-    }
-
-  if (_destroying)
-    return true;                // done
-
-  // Stop main event.
-  if (_mainEvent->getType () == EventType::PRESENTATION)
-    _mainEvent->transition (EventStateTransition::STOP);
-
-  return true;
-}
-
-bool G_GNUC_NORETURN
-ExecutionObject::abort ()
-{
-  g_assert_not_reached ();
+  NclEvent *evt = this->getLambda (EventType::PRESENTATION);
+  g_assert_nonnull (evt);
+  return evt->getState ();
 }
 
 bool
@@ -380,11 +250,13 @@ ExecutionObject::isFocused ()
 {
   if (instanceof (ExecutionObjectContext *, this)
       || instanceof (ExecutionObjectSettings *, this)
-      || instanceof (ExecutionObjectSwitch *, this)
-      || _player == nullptr)
+      || instanceof (ExecutionObjectSwitch *, this))
     {
       return false;
     }
+  if (this->getLambdaState () != EventState::OCCURRING)
+    return false;
+  g_assert_nonnull (_player);
   return _player->isFocused ();
 }
 
@@ -406,15 +278,17 @@ ExecutionObject::setProperty (const string &name,
 
   from = this->getProperty (name);
   g_assert (GINGA_TIME_IS_VALID (dur));
-  TRACE ("%s.%s:='%s' (previous '%s')",
-         _id.c_str (), name.c_str (), value.c_str (), from.c_str ());
-
   if (dur > 0)
     {
+      TRACE ("%s.%s:='%s' (previous '%s') over %" GINGA_TIME_FORMAT,
+             _id.c_str (), name.c_str (), value.c_str (),
+             from.c_str (), GINGA_TIME_ARGS (dur));
       _player->schedulePropertyAnimation (name, from, value, dur);
     }
   else
     {
+      TRACE ("%s.%s:='%s' (previous '%s')",
+             _id.c_str (), name.c_str (), value.c_str (), from.c_str ());
       _player->setProperty (name, value);
     }
 
@@ -426,8 +300,10 @@ ExecutionObject::setProperty (const string &name,
 bool
 ExecutionObject::getZ (int *z, int *zorder)
 {
-  if (_player == nullptr || _player->getState () == Player::SLEEPING) // fixme
-    return false;
+  if (this->getLambdaState () == EventState::SLEEPING)
+    return false;               // nothing to do
+  if (_player == nullptr)
+    return false;               // nothing to do
   g_assert_nonnull (_player);
   _player->getZ (z, zorder);
   return true;
@@ -436,9 +312,9 @@ ExecutionObject::getZ (int *z, int *zorder)
 void
 ExecutionObject::redraw (cairo_t *cr)
 {
-  if (this->isSleeping ())
+  if (this->getLambdaState () == EventState::SLEEPING)
     return;                     // nothing to do
-  if (_player == nullptr || _player->getState () == Player::SLEEPING) // fixme
+  if (_player == nullptr)
     return;                     // nothing to do
   _player->redraw (cr);
 }
@@ -448,15 +324,17 @@ ExecutionObject::sendKeyEvent (const string &key, bool press)
 {
   list<NclEvent *> buf;
 
-  if (!press
-      || instanceof (ExecutionObjectSettings *, this)
-      || _player == nullptr
-      || !this->isOccurring ())
-    {
-      return;                     // nothing to do
-    }
+  if (!press)
+    return;                     // nothing to do
 
-  g_assert (_mainEvent->getType () == EventType::PRESENTATION);
+  if (instanceof (ExecutionObjectSettings *, this)
+      || instanceof (ExecutionObjectContext *, this)
+      || instanceof (ExecutionObjectSwitch *, this))
+    return;                     // nothing to do
+
+  if (_player == nullptr)
+    return;                     // nothing to do
+
   if (xstrhasprefix (key, "CURSOR_") && _player->isFocused ())
     {
       string next;
@@ -489,43 +367,25 @@ ExecutionObject::sendKeyEvent (const string &key, bool press)
       if (evt->getType () != EventType::SELECTION)
         continue;
 
-      g_assert (evt->getKey (&expected));
+      expected = evt->getParameter ("key");
       if (!((expected == "" && key == "ENTER" && _player->isFocused ())
             || (expected != "" && key == expected)))
         {
           continue;
         }
+
       anchor = cast (Area *, evt->getAnchor ());
       g_assert_nonnull (anchor);
-
-      if (instanceof (AreaLambda *, anchor))
-        {
-          buf.push_back (evt);
-        }
-      else if (instanceof (Area *, anchor))
-        {
-          ERROR_NOT_IMPLEMENTED
-            ("selection of temporal anchors is no supported");
-        }
-      else
-        {
-          ERROR_NOT_IMPLEMENTED
-            ("selection of property anchors is not supported");
-        }
+      g_assert (instanceof (AreaLambda *, anchor));
+      buf.push_back (evt);
     }
 
   // Run collected events.
   for (NclEvent *evt: buf)
     {
-      NclAction *fakeAct = new NclAction (evt, EventStateTransition::START);
-      _scheduler->scheduleAction (fakeAct);
+      evt->transition (EventStateTransition::START);
+      evt->transition (EventStateTransition::STOP);
     }
-
-  if (buf.size () == 0)
-    return;
-
-  TRACE ("%s selected via '%s'",
-         _id.c_str (), key.c_str ());
 }
 
 void
@@ -535,12 +395,16 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
 {
   GingaTime dur;
 
-  if (_player == nullptr || !this->isOccurring ())
-    return;                     // nothing to do
+  if (_player == nullptr)
+    return;
 
   if (_player->getEOS ())
     {
-      this->stop ();            // done
+      NclEvent *lambda = this->getLambda (EventType::PRESENTATION);
+      g_assert_nonnull (lambda);
+      TRACE ("eos %s@lambda at %" GINGA_TIME_FORMAT, _id.c_str (),
+             GINGA_TIME_ARGS (_time));
+      lambda->transition (EventStateTransition::STOP);
       return;
     }
 
@@ -550,13 +414,32 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
 
   if (GINGA_TIME_IS_VALID (dur = _player->getDuration ()) && _time > dur)
     {
-      this->stop ();            // done
+      g_assert_not_reached ();
       return;
     }
 
-  g_assert (this->isOccurring ());
-  g_assert (_mainEvent->getType () == EventType::PRESENTATION);
+  // Evaluate delayed actions.
+  for (auto it = _delayed.begin (); it != _delayed.end ();)
+    {
+      NclAction *act;
+      GingaTime timeout;
 
+      act = (*it).first;
+      timeout = (*it).second;
+      if (timeout <= _time)
+        {
+          NclEvent *evt = act->getEvent ();
+          g_assert_nonnull (evt);
+          evt->transition (act->getEventStateTransition ());
+          it = _delayed.erase (it);
+        }
+      else
+        {
+          ++it;
+        }
+    }
+
+  // Evaluate areas.
   for (auto evt: _events)
     {
       if (evt->getType () != EventType::PRESENTATION)
@@ -564,32 +447,241 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
       if (this->getLambda (EventType::PRESENTATION) == evt)
         continue;
 
-      // TRACE ("[%s %" GINGA_TIME_FORMAT "]"
-      //        " %s begin=%" GINGA_TIME_FORMAT " end=%" GINGA_TIME_FORMAT,
-      //        this->getId ().c_str (),
-      //        GINGA_TIME_ARGS (_time),
-      //        evt->getId ().c_str (),
-      //        GINGA_TIME_ARGS (evt->getBegin ()),
-      //        GINGA_TIME_ARGS (evt->getEnd ()));
-
       GingaTime begin, end;
       evt->getInterval (&begin, &end);
-
-      if (evt->getState () == EventState::SLEEPING && begin <= _time)
+      switch (evt->getState ())
         {
-          TRACE ("%s.%s timed-out at %" GINGA_TIME_FORMAT,
-                 _id.c_str(), evt->getAnchor ()->getId ().c_str (),
-                 GINGA_TIME_ARGS (time));
-          evt->transition (EventStateTransition::START);
-        }
-      else if (evt->getState () == EventState::OCCURRING && end <= _time)
-        {
-          TRACE ("%s.%s timed-out at %" GINGA_TIME_FORMAT,
-                 _id.c_str(), evt->getAnchor ()->getId ().c_str (),
-                 GINGA_TIME_ARGS (time));
-          evt->transition (EventStateTransition::STOP);
+        case EventState::OCCURRING:
+          if (end <= _time)
+            g_assert (evt->transition (EventStateTransition::STOP));
+          break;
+        case EventState::SLEEPING:
+          if (begin <= _time)
+            g_assert (evt->transition (EventStateTransition::START));
+          break;
+        case EventState::PAUSED: // impossible
+        default:
+          g_assert_not_reached ();
         }
     }
+}
+
+bool
+ExecutionObject::exec (NclEvent *evt,
+                       unused (EventState from), unused (EventState to),
+                       EventStateTransition transition)
+{
+  // TRACE (">>>>>>>>> evt %s from %s to %s via %s",
+  //        evt->getAnchor ()->getId ().c_str (),
+  //        EventUtil::getEventStateAsString (from).c_str (),
+  //        EventUtil::getEventStateAsString (to).c_str (),
+  //        EventUtil::getEventStateTransitionAsString
+  //        (transition).c_str ());
+
+  switch (evt->getType ())
+    {
+    // ---------------------------------------------------------------------
+    // Presentation event.
+    // ---------------------------------------------------------------------
+    case EventType::PRESENTATION:
+      switch (transition)
+        {
+        case EventStateTransition::START:
+          if (instanceof (AreaLambda *, evt->getAnchor ()))
+            {
+              //
+              // Start lambda.
+              //
+              Media *media;
+              string src;
+              string mime;
+
+              g_assert_null (_player);
+              media = cast (Media *, _node);
+              g_assert_nonnull (media);
+
+              src = media->getSrc ();
+              mime = media->getMimeType ();
+              _player = Player::createPlayer (_ginga, _id, src, mime);
+              g_assert_nonnull (_player);
+
+              for (auto anchor: *media->getAnchors ())
+                {
+                  Property *prop = cast (Property *, anchor);
+                  if (prop != nullptr)
+                    _player->setProperty (prop->getName (),
+                                          prop->getValue ());
+                }
+              _time = 0;
+              TRACE ("start %s@lambda", _id.c_str ());
+              _player->start ();
+            }
+          else
+            {
+              //
+              // Start area (non-lambda).
+              //
+              if (this->getLambdaState () == EventState::OCCURRING)
+                {
+                  //
+                  // Implicit.
+                  //
+                  GingaTime begin;
+                  g_assert (evt->getInterval (&begin, nullptr));
+                  TRACE ("start %s@%s (begin=%"
+                         GINGA_TIME_FORMAT ") at %" GINGA_TIME_FORMAT,
+                         _id.c_str (),
+                         evt->getAnchor ()->getId ().c_str (),
+                         GINGA_TIME_ARGS (begin),
+                         GINGA_TIME_ARGS (_time));
+                }
+              else
+                {
+                  //
+                  // Explicit.
+                  //
+                  g_assert_not_reached ();
+                }
+            }
+          break;
+        case EventStateTransition::PAUSE:
+          g_assert_not_reached ();
+          break;
+        case EventStateTransition::RESUME:
+          g_assert_not_reached ();
+          break;
+        case EventStateTransition::STOP:
+          if (instanceof (AreaLambda *, evt->getAnchor ()))
+            {
+              //
+              // Stop lambda.
+              //
+              g_assert_nonnull (_player);
+              TRACE ("stop %s@lambda", _id.c_str ());
+              _player->stop ();
+              delete _player;
+              _player = nullptr;
+              _time = GINGA_TIME_NONE;
+              _delayed.clear ();
+            }
+          else
+            {
+              //
+              // Stop area (non-lambda).
+              //
+              if (this->getLambdaState () == EventState::OCCURRING)
+                {
+                  //
+                  // Implicit.
+                  //
+                  GingaTime end;
+                  g_assert (evt->getInterval (nullptr, &end));
+                  TRACE ("stop %s@%s (end=%"
+                         GINGA_TIME_FORMAT ") at %" GINGA_TIME_FORMAT,
+                         _id.c_str (),
+                         evt->getAnchor ()->getId ().c_str (),
+                         GINGA_TIME_ARGS (end),
+                         GINGA_TIME_ARGS (_time));
+                }
+              else
+                {
+                  //
+                  // Explicit.
+                  //
+                  g_assert_not_reached ();
+                }
+            }
+          break;
+        case EventStateTransition::ABORT:
+          g_assert_not_reached ();
+          break;
+        default:
+          g_assert_not_reached ();
+        }
+      break;
+
+    // ---------------------------------------------------------------------
+    // Attribution event.
+    // ---------------------------------------------------------------------
+    case EventType::ATTRIBUTION:
+      if (this->getLambdaState () != EventState::OCCURRING)
+        return false;           // nothing to do
+      switch (transition)
+        {
+        case EventStateTransition::START:
+          {
+            Property *prop;
+            string name;
+            string value;
+            GingaTime dur;
+
+            prop = cast (Property *, evt->getAnchor ());
+            g_assert_nonnull (prop);
+
+            name = prop->getName ();
+            value = evt->getParameter ("value");
+            if (value[0] == '$')
+              _scheduler->getObjectPropertyByRef (value, &value);
+
+            string s;
+            s = evt->getParameter ("duration");
+            if (s[0] == '$')
+              _scheduler->getObjectPropertyByRef (s, &s);
+            dur = ginga_parse_time (s);
+            this->setProperty (name, value, dur);
+
+            // Schedule stop.
+            NclAction *act = new NclAction
+              (evt, EventStateTransition::STOP);
+            _delayed.push_back (std::make_pair (act, _time + dur));
+
+            TRACE ("start %s.%s:=%s (duration=%s)", _id.c_str (),
+                   name.c_str (), value.c_str (), s.c_str ());
+            break;
+          }
+        case EventStateTransition::STOP:
+          {
+            Property *prop = cast (Property *, evt->getAnchor ());
+            g_assert_nonnull (prop);
+            TRACE ("stop %s.%s:=...", _id.c_str (),
+                   prop->getName ().c_str ());
+            break;
+          }
+        case EventStateTransition::PAUSE: // impossible
+        case EventStateTransition::RESUME:
+        case EventStateTransition::ABORT:
+        default:
+          g_assert_not_reached ();
+        }
+      break;
+
+    //----------------------------------------------------------------------
+    // Selection event.
+    // ---------------------------------------------------------------------
+    case EventType::SELECTION:
+      if (this->getLambdaState () != EventState::OCCURRING)
+        return false;           // nothing to do
+      switch (transition)
+        {
+        case EventStateTransition::START:
+          TRACE ("start %s<%s>", _id.c_str (),
+                 evt->getParameter ("key").c_str ());
+          break;
+        case EventStateTransition::STOP:
+          TRACE ("stop %s<%s>", _id.c_str (),
+                 evt->getParameter ("key").c_str ());
+          break;
+        case EventStateTransition::PAUSE: // impossible
+        case EventStateTransition::RESUME:
+        case EventStateTransition::ABORT:
+        default:
+          g_assert_not_reached ();
+        }
+      break;
+    default:
+      g_assert_not_reached ();
+    }
+  return true;
 }
 
 GINGA_FORMATTER_END

@@ -88,7 +88,17 @@ NclLink::conditionSatisfied ()
   if (_disabled)
     return;                     // nothing to do
   for (auto action: _actions)
-    _scheduler->scheduleAction (action);
+    {
+      NclEvent *evt;
+      evt = action->getEvent ();
+      g_assert_nonnull (evt);
+      if (evt->getType () == EventType::ATTRIBUTION)
+        {
+          evt->setParameter ("duration", action->getDuration ());
+          evt->setParameter ("value", action->getValue ());
+        }
+      evt->transition (action->getEventStateTransition ());
+    }
 }
 
 vector<NclEvent *>
