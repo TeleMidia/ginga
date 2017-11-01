@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-class AttributeAssessment : public Assessment, public Role
+class AttributeAssessment: public Assessment, public Role
 {
 public:
   AttributeAssessment (EventType, const string &,

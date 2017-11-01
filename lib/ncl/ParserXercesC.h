@@ -56,6 +56,7 @@ private:
 
   map<string,map<string,string>> _descriptors; // cached descriptors
   map<string,map<string,string>> _regions;     // cached regions
+  map<string,Predicate *> _rules;              // cached rules
 
   ParserXercesC (int, int);
   ~ParserXercesC ();
@@ -72,9 +73,9 @@ private:
   Base *parseImportBase (DOMElement *, NclDocument **, string *, string *);
   void parseImportedDocumentBase (DOMElement *);
 
-  RuleBase *parseRuleBase (DOMElement *);
-  CompositeRule *parseCompositeRule (DOMElement *);
-  SimpleRule *parseRule (DOMElement *);
+  void parseRuleBase (DOMElement *);
+  // void parseCompositeRule (DOMElement *, Predicate *);
+  void parseRule (DOMElement *, Predicate *);
 
   void parseTransitionBase (DOMElement *);
   void parseTransition (DOMElement *);
@@ -106,9 +107,8 @@ private:
   Node *parseContext (DOMElement *);
   Port *parsePort (DOMElement *, Composition *);
 
-  map<string, map<string, Node *> *> _switchMap; // FIXME
   Node *parseSwitch (DOMElement *);
-  Node *parseBindRule (DOMElement *, Composition *, Rule **);
+  // Node *parseBindRule (DOMElement *, Composition *, Rule **);
   SwitchPort *parseSwitchPort (DOMElement *, Switch *);
   Port *parseMapping (DOMElement *, Switch *, SwitchPort *);
 

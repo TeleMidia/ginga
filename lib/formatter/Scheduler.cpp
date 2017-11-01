@@ -51,30 +51,26 @@ Scheduler::run (NclDocument *doc)
   body = _doc->getRoot ();
   g_assert_nonnull (body);
 
-  // Insert dummy settings node.
-  Media *dummy =  new Media (_doc, "__settings__", true);
-  body->addNode (dummy);
+  // Create dummy settings node.
+  Media *settings_node =  new Media (_doc, "__settings__", true);
+  body->addNode (settings_node);
   Property *prop = new Property (_doc, "service.currentFocus");
   prop->setValue ("");
-  dummy->addAnchor (prop);
+  settings_node->addAnchor (prop);
+  _settings = cast (ExecutionObjectSettings *,
+                    this->obtainExecutionObject (settings_node));
+  g_assert_nonnull (_settings);
 
   // Create execution object for settings node and initialize it.
-  ExecutionObjectSettings *settings = nullptr;
   vector<Node *> *nodes = _doc->getSettingsNodes ();
   for (auto node: *nodes)
     {
       Media *content;
 
-      if (settings == nullptr)
-        {
-          ExecutionObject *obj;
-          obj = this->obtainExecutionObject (node);
-          g_assert_nonnull (obj);
-          settings = cast (ExecutionObjectSettings *, obj);
-          g_assert_nonnull (settings);
-        }
-
       content = (Media *) node;
+      if (content != settings_node)
+        _settings->addAlias (content->getId ());
+
       for (auto anchor: *content->getAnchors ())
         {
           Property *prop;
@@ -90,14 +86,12 @@ Scheduler::run (NclDocument *doc)
           if (value == "")
             continue;           // nothing to do
 
-          cast (ExecutionObject *, settings)->setProperty (name, value, 0);
+          cast (ExecutionObject *, _settings)->setProperty (name, value, 0);
         }
     }
   delete nodes;
 
   // Set global settings object.
-  g_assert_nonnull (settings);
-  _settings = settings;
   g_assert_nonnull (_settings->obtainEvent
                     (EventType::PRESENTATION,
                      _settings->getNode ()->getLambda (), ""));
@@ -109,7 +103,7 @@ Scheduler::run (NclDocument *doc)
     return false;
 
   // Refresh current focus.
-  settings->updateCurrentFocus ("");
+  _settings->updateCurrentFocus ("");
 
   // Success.
   return true;
@@ -551,6 +545,84 @@ Scheduler::obtainNclLink (Link *docLink)
     }
 
   return link;
+}
+
+bool
+Scheduler::eval (Predicate *pred)
+{
+  switch (pred->getType ())
+    {
+    case PredicateType::ATOM:
+      {
+        string left, right;
+        PredicateTestType test;
+        string msg_left, msg_test, msg_right;
+        bool result;
+
+        pred->getTest (&left, &test, &right);
+
+        msg_left = left;
+        if (left[0] == '$')
+          {
+            string saved = left;
+            if (this->getObjectPropertyByRef (left, &left))
+              msg_left = saved + " (" + left + ")";
+          }
+
+        msg_right = right;
+        if (right[0] == '$')
+          {
+            string saved = right;
+            if (this->getObjectPropertyByRef (right, &right))
+              msg_right = saved + " (" + right + ")";
+          }
+
+        switch (test)
+          {
+          case PredicateTestType::EQ:
+            msg_test = "==";
+            result = left == right;
+            break;
+          case PredicateTestType::NE:
+            msg_test = "!=";
+            result = left != right;
+            break;
+          case PredicateTestType::LT:
+            msg_test = "<";
+            result = left < right;
+            break;
+          case PredicateTestType::LE:
+            msg_test = "<=";
+            result = left <= right;
+            break;
+          case PredicateTestType::GT:
+            msg_test = ">";
+            result = left > right;
+            break;
+          case PredicateTestType::GE:
+            msg_test = ">=";
+            result = left >= right;
+            break;
+          default:
+            g_assert_not_reached ();
+          }
+        TRACE ("%s %s %s -> %s", msg_left.c_str (),
+               msg_test.c_str (), msg_right.c_str (), strbool (result));
+        return result;
+      }
+    case PredicateType::NEGATION:
+      g_assert_not_reached ();
+      break;
+    case PredicateType::CONJUNCTION:
+      g_assert_not_reached ();
+      break;
+    case PredicateType::DISJUNCTION:
+      g_assert_not_reached ();
+      break;
+    default:
+      g_assert_not_reached ();
+    }
+  g_assert_not_reached ();
 }
 
 GINGA_FORMATTER_END

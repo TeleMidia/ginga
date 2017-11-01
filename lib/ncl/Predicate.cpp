@@ -18,13 +18,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "Predicate.h"
 
-
-
 GINGA_NCL_BEGIN
 
 Predicate::Predicate (PredicateType type)
 {
   _type = type;
+  _parent = nullptr;
 }
 
 Predicate::~Predicate ()
@@ -37,28 +36,40 @@ Predicate::getType ()
   return _type;
 }
 
-void
-Predicate::initTest (Assessment *op1, PredicateTestType test,
-                     Assessment *op2)
+Predicate *
+Predicate::clone ()
 {
-  g_assert_nonnull (op1);
-  g_assert_nonnull (op2);
-  g_assert (_type == PredicateType::ATOM);
-  g_assert_null (_atom.left);
-  g_assert_null (_atom.right);
-  _atom.test = test;
-  _atom.left = op1;
-  _atom.right = op2;
+  Predicate *clone = new Predicate (_type);
+  if (_type == PredicateType::ATOM)
+    {
+      clone->initTest (_atom.left, _atom.test, _atom.right);
+    }
+  else
+    {
+      for (auto child: _children)
+        clone->addChild (child->clone ());
+    }
+  return clone;
 }
 
 void
-Predicate::getTest (Assessment **op1, PredicateTestType *test,
-                    Assessment **op2)
+Predicate::initTest (const string &left, PredicateTestType test,
+                     const string &right)
 {
   g_assert (_type == PredicateType::ATOM);
-  tryset (op1, _atom.left);
+  _atom.test = test;
+  _atom.left = left;
+  _atom.right = right;
+}
+
+void
+Predicate::getTest (string *left, PredicateTestType *test,
+                    string *right)
+{
+  g_assert (_type == PredicateType::ATOM);
+  tryset (left, _atom.left);
   tryset (test, _atom.test);
-  tryset (op2, _atom.right);
+  tryset (right, _atom.right);
 }
 
 void
@@ -76,6 +87,7 @@ Predicate::addChild (Predicate *child)
     default:
       g_assert_not_reached  ();
     }
+  child->initParent (this);
   _children.push_back (child);
 }
 
@@ -83,6 +95,20 @@ const vector<Predicate *> *
 Predicate::getChildren ()
 {
   return &_children;
+}
+
+void
+Predicate::initParent (Predicate *parent)
+{
+  g_assert_null (_parent);
+  g_assert_nonnull (parent);
+  _parent = parent;
+}
+
+Predicate *
+Predicate::getParent ()
+{
+  return _parent;
 }
 
 GINGA_NCL_END

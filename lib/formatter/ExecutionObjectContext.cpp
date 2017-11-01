@@ -31,11 +31,13 @@ ExecutionObjectContext::ExecutionObjectContext (GingaInternal *ginga,
 {
   g_assert_nonnull (node);
   _context = cast (Context *, node);
-  g_assert_nonnull (_context);
+  // g_assert_nonnull (_context);
 }
 
 ExecutionObjectContext::~ExecutionObjectContext ()
 {
+  for (auto link: _links)
+    delete link;
 }
 
 const set<ExecutionObject *> *
@@ -121,7 +123,7 @@ ExecutionObjectContext::exec (NclEvent *evt,
               Node *target;
               Anchor *iface;
               ExecutionObject *child;
-              NclEvent *evt;
+              NclEvent *e;
 
               port->getTarget (&target, &iface);
               child = _scheduler->obtainExecutionObject (target);
@@ -130,9 +132,9 @@ ExecutionObjectContext::exec (NclEvent *evt,
               if (!instanceof (Area *, iface))
                 continue;       // nothing to do
 
-              evt = child->obtainEvent (EventType::PRESENTATION, iface, "");
-              g_assert_nonnull (evt);
-              evt->transition (transition);
+              e = child->obtainEvent (EventType::PRESENTATION, iface, "");
+              g_assert_nonnull (e);
+              e->transition (transition);
             }
           break;
         case EventStateTransition::PAUSE:

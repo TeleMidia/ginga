@@ -187,7 +187,8 @@ ExecutionObject::obtainEvent (EventType type, Anchor *anchor,
 
   if (instanceof (ExecutionObjectSwitch *, this))
     {
-      g_assert_not_reached ();
+      g_assert (type == EventType::PRESENTATION);
+      event = new NclEvent (_ginga, type, this, anchor);
     }
   else if (instanceof (ExecutionObjectContext *, this))
     {

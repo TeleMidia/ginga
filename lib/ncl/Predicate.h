@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PREDICATE_H
 #define PREDICATE_H
 
-#include "Assessment.h"
-
 GINGA_NCL_BEGIN
 
 enum class PredicateType
@@ -46,24 +44,30 @@ class Predicate
   Predicate (PredicateType);
   virtual ~Predicate ();
   PredicateType getType ();
+  Predicate *clone ();
 
   // Atomic only.
-  void initTest (Assessment *, PredicateTestType, Assessment *);
-  void getTest (Assessment **, PredicateTestType *, Assessment **);
+  void initTest (const string &, PredicateTestType, const string &);
+  void getTest (string *, PredicateTestType *, string *);
 
   // Non-atomic only.
   void addChild (Predicate *);
   const vector <Predicate *> *getChildren ();
+
+  // Both.
+  Predicate *getParent ();
+  void initParent (Predicate *);
 
 private:
   PredicateType _type;
   struct
   {
     PredicateTestType test;
-    Assessment *left;
-    Assessment *right;
+    string left;
+    string right;
   } _atom;
   vector<Predicate *> _children;
+  Predicate *_parent;
 };
 
 GINGA_NCL_END

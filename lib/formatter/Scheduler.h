@@ -54,6 +54,7 @@ public:
   void sendTickEvent (GingaTime, GingaTime, GingaTime);
 
   ExecutionObject *obtainExecutionObject (Node *);
+  bool eval (Predicate *);
 
 private:
   GingaInternal *_ginga;              // ginga handle

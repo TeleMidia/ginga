@@ -344,8 +344,9 @@ ParserXercesC::ParserXercesC (int width, int height)
 
 ParserXercesC::~ParserXercesC ()
 {
-  for (auto i: _switchMap)
-    delete i.second;
+  for (auto item: _rules)
+    if (item.second->getParent () == nullptr)
+      delete item.second;
 }
 
 NclDocument *
@@ -450,9 +451,7 @@ ParserXercesC::parseHead (DOMElement *elt)
         }
       else if (tag == "ruleBase")
         {
-          RuleBase *base = this->parseRuleBase (child);
-          g_assert_nonnull (base);
-          _doc->setRuleBase (base);
+          this->parseRuleBase (child);
         }
       else if (tag == "transitionBase")
         {
@@ -523,9 +522,7 @@ ParserXercesC::parseImportBase (DOMElement *elt, NclDocument **doc,
   g_assert_nonnull (parent);
 
   tag = dom_elt_get_tag (parent);
-  if (tag == "ruleBase")
-    return (*doc)->getRuleBase ();
-  else if (tag == "connectorBase")
+  if (tag == "connectorBase")
     return (*doc)->getConnectorBase ();
   else
     g_assert_not_reached ();
@@ -555,97 +552,114 @@ ParserXercesC::parseImportedDocumentBase (DOMElement *elt)
 
 // Private: Rule.
 
-RuleBase *
+void
 ParserXercesC::parseRuleBase (DOMElement *elt)
 {
-  RuleBase *base;
   string id;
 
   CHECK_ELT_TAG (elt, "ruleBase", nullptr);
   CHECK_ELT_OPT_ID_AUTO (elt, &id, ruleBase);
 
-  base = new RuleBase (_doc, id);
   for (DOMElement *child: dom_elt_get_children (elt))
     {
       string tag = dom_elt_get_tag (child);
       if ( tag == "importBase")
         {
-          NclDocument *doc;     // FIXME: this is lost (leak?)
-          Base *imported;
-          string alias;
-          string uri;
-          imported = this->parseImportBase (child, &doc, &alias, &uri);
-          g_assert_nonnull (imported);
-          base->addBase (imported, alias, uri);
+          ERROR_NOT_IMPLEMENTED ("%s: element is not supported",
+                                 __error_elt (child).c_str ());
         }
       else if (tag == "rule")
         {
-          base->addRule (this->parseRule (child));
+          this->parseRule (child, nullptr);
         }
       else if (tag == "compositeRule")
         {
-          base->addRule (this->parseCompositeRule (child));
+          g_assert_not_reached ();
+          // this->parseCompositeRule (child, nullptr);
         }
       else
         {
           ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
         }
     }
-  return base;
 }
 
-CompositeRule *
-ParserXercesC::parseCompositeRule (DOMElement *elt)
-{
-  CompositeRule *rule;
-  string id;
-  string value;
+// CompositeRule *
+// ParserXercesC::parseCompositeRule (DOMElement *elt, Predicate *parent)
+// {
+//   CompositeRule *rule;
+//   string id;
+//   string value;
+//
+//   CHECK_ELT_TAG (elt, "compositeRule", nullptr);
+//   CHECK_ELT_ID (elt, &id);
+//
+//   CHECK_ELT_ATTRIBUTE (elt, "operator", &value);
+//   if (value == "and")
+//     rule = new CompositeRule (_doc, id, true);
+//   else if (value == "or")
+//     rule = new CompositeRule (_doc, id, false);
+//   else
+//     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "operator");
+//
+//   for (DOMElement *child: dom_elt_get_children (elt))
+//     {
+//       string tag = dom_elt_get_tag (child);
+//       if (tag == "rule")
+//         {
+//           rule->addRule (this->parseRule (child));
+//         }
+//       else if (tag == "compositeRule")
+//         {
+//           rule->addRule (this->parseCompositeRule (child));
+//         }
+//       else
+//         {
+//           ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
+//         }
+//     }
+//   return rule;
+// }
 
-  CHECK_ELT_TAG (elt, "compositeRule", nullptr);
-  CHECK_ELT_ID (elt, &id);
-
-  CHECK_ELT_ATTRIBUTE (elt, "operator", &value);
-  if (value == "and")
-    rule = new CompositeRule (_doc, id, true);
-  else if (value == "or")
-    rule = new CompositeRule (_doc, id, false);
-  else
-    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "operator");
-
-  for (DOMElement *child: dom_elt_get_children (elt))
-    {
-      string tag = dom_elt_get_tag (child);
-      if (tag == "rule")
-        {
-          rule->addRule (this->parseRule (child));
-        }
-      else if (tag == "compositeRule")
-        {
-          rule->addRule (this->parseCompositeRule (child));
-        }
-      else
-        {
-          ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
-        }
-    }
-  return rule;
-}
-
-SimpleRule *
-ParserXercesC::parseRule (DOMElement *elt)
+void
+ParserXercesC::parseRule (DOMElement *elt, Predicate *parent)
 {
   string id;
   string var;
   string comp;
   string value;
+
+  Predicate *pred;
+  PredicateTestType test;
+
   CHECK_ELT_TAG (elt, "rule", nullptr);
   CHECK_ELT_OPT_ID_AUTO (elt, &id, rule);
   CHECK_ELT_ATTRIBUTE (elt, "var", &var);
   CHECK_ELT_ATTRIBUTE (elt, "value", &value);
   CHECK_ELT_ATTRIBUTE (elt, "comparator", &comp);
-  if (unlikely (!_ginga_parse_comparator (comp, &comp)))
+
+  if (xstrcaseeq (comp, "eq"))
+    test = PredicateTestType::EQ;
+  else if (xstrcaseeq (comp, "ne"))
+    test = PredicateTestType::NE;
+  else if (xstrcaseeq (comp, "lt"))
+    test = PredicateTestType::LT;
+  else if (xstrcaseeq (comp, "lte"))
+    test = PredicateTestType::LE;
+  else if (xstrcaseeq (comp, "gt"))
+    test = PredicateTestType::GT;
+  else if (xstrcaseeq (comp, "gte"))
+    test = PredicateTestType::GE;
+  else
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "comparator");
-  return new SimpleRule (_doc, id, var, comp, value);
+
+  pred = new Predicate (PredicateType::ATOM);
+  pred->initTest ("$__settings__." + var, test, value);
+
+  if (parent != nullptr)
+    parent->addChild (pred);
+
+  _rules[id] = pred;
 }
 
 // Private: Transition.
@@ -1461,17 +1475,10 @@ ParserXercesC::solveNodeReferences (Composition *comp)
 
   if (instanceof (Switch *, comp))
     {
-      map<string, map<string, Node *> *>::iterator it;
-      map<string, Node *> *tab;
       vector<Node *> *aux_nodes = new vector<Node *>;
       del = true;
-
-      if ((it = _switchMap.find (comp->getId ())) != _switchMap.end ())
-        {
-          tab = it->second;
-          for (auto k: *tab)
-            aux_nodes->push_back (k.second);
-        }
+      for (auto item: *cast (Switch *, comp)->getRules ())
+        aux_nodes->push_back (item.first);
       nodes = aux_nodes;
     }
   else
@@ -1609,15 +1616,16 @@ ParserXercesC::parsePort (DOMElement *elt, Composition *context)
 Node *
 ParserXercesC::parseSwitch (DOMElement *elt)
 {
-  Node *swtch;
   string id;
+
+  Node *swtch;
+  set<Node *> swtch_children;
 
   CHECK_ELT_TAG (elt, "switch", nullptr);
   CHECK_ELT_ID (elt, &id);
   CHECK_ELT_ATTRIBUTE_NOT_SUPPORTED (elt, "refer");
 
   swtch = new Switch (_doc, id);
-  _switchMap[id] = new map<string, Node *>;
 
   // Collect children.
   for (DOMElement *child: dom_elt_get_children (elt))
@@ -1643,79 +1651,75 @@ ParserXercesC::parseSwitch (DOMElement *elt)
         ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
 
       g_assert_nonnull (node);
-      map<string, Node *> *map = _switchMap[id];
-      if (map->count (node->getId ()) == 0)
-        (*map)[node->getId ()] = node;
+      swtch_children.insert (node);
     }
 
   // Collect skipped.
-  for (DOMElement *child: dom_elt_get_children (elt)) // redo
+  for (DOMElement *child: dom_elt_get_children (elt))
     {
       string tag = dom_elt_get_tag (child);
       if (tag == "bindRule")
         {
           Node *node;
-          Rule *rule;
-          node = this->parseBindRule (child, (Composition *) swtch, &rule);
-          g_assert_nonnull (node);
-          ((Switch *) swtch)->addNode (node, rule);
+          string constituent;
+          string rule;
+
+          CHECK_ELT_TAG (child, "bindRule", nullptr);
+          CHECK_ELT_ATTRIBUTE (child, "constituent", &constituent);
+          CHECK_ELT_ATTRIBUTE (child, "rule", &rule);
+
+          node = nullptr;
+          for (auto swtch_child: swtch_children)
+            if (swtch_child->getId () == constituent)
+              node = swtch_child;
+
+          if (unlikely (node == nullptr))
+            ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (child, "constituent");
+
+          if (unlikely (_rules.find (rule) == _rules.end ()))
+            ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (child, "rule");
+
+          cast (Switch *, swtch)->addNode (node, _rules[rule]->clone ());
         }
       else if (tag == "defaultComponent")
         {
-          Node *node;
-          string comp;
-          map<string, Node *> *nodes;
-
-          CHECK_ELT_TAG (child, "defaultComponent", nullptr);
-          CHECK_ELT_ATTRIBUTE (child, "component", &comp);
-
-          nodes = _switchMap[swtch->getId ()];
-          g_assert_nonnull (nodes);
-
-          if (unlikely (nodes->count (comp) == 0))
-            ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (child, "component");
-
-          node = (*nodes)[comp];
-          if (unlikely (node == nullptr))
-            ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (child, "component");
-
-          ((Switch *) swtch)->setDefaultNode (node);
+          g_assert_not_reached ();
         }
     }
 
   return swtch;
 }
 
-Node *
-ParserXercesC::parseBindRule (DOMElement *elt, Composition *parent,
-                              Rule **rule)
-{
-  Node *node;
-  string constituent;
-  string ruleid;
-
-  map<string, Node *> *nodes;
-
-  CHECK_ELT_TAG (elt, "bindRule", nullptr);
-  CHECK_ELT_ATTRIBUTE (elt, "constituent", &constituent);
-  CHECK_ELT_ATTRIBUTE (elt, "rule", &ruleid);
-
-  nodes = _switchMap[parent->getId ()];
-  g_assert_nonnull (nodes);
-
-  if (unlikely (nodes->count (constituent) == 0))
-    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "constituent");
-
-  node = (Node *)(*nodes)[constituent];
-  if (unlikely (node == nullptr))
-    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "constituent");
-
-  g_assert_nonnull (rule);
-  *rule = _doc->getRule (ruleid);
-  if (unlikely (*rule == nullptr))
-    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "rule");
-  return node;
-}
+// Node *
+// ParserXercesC::parseBindRule (DOMElement *elt, Composition *parent,
+//                               Rule **rule)
+// {
+//   Node *node;
+//   string constituent;
+//   string ruleid;
+//
+//   map<string, Node *> *nodes;
+//
+//   CHECK_ELT_TAG (elt, "bindRule", nullptr);
+//   CHECK_ELT_ATTRIBUTE (elt, "constituent", &constituent);
+//   CHECK_ELT_ATTRIBUTE (elt, "rule", &ruleid);
+//
+//   nodes = _switchMap[parent->getId ()];
+//   g_assert_nonnull (nodes);
+//
+//   if (unlikely (nodes->count (constituent) == 0))
+//     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "constituent");
+//
+//   node = (Node *)(*nodes)[constituent];
+//   if (unlikely (node == nullptr))
+//     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "constituent");
+//
+//   g_assert_nonnull (rule);
+//   *rule = _doc->getRule (ruleid);
+//   if (unlikely (*rule == nullptr))
+//     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "rule");
+//   return node;
+// }
 
 SwitchPort *
 ParserXercesC::parseSwitchPort (DOMElement *elt, Switch *swtch)
