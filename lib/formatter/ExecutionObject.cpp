@@ -417,7 +417,7 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
       return;
     }
 
-  // Evaluate delayed actions.
+  // Evaluate current delayed actions.
   for (auto it = _delayed.begin (); it != _delayed.end ();)
     {
       NclAction *act;
@@ -431,7 +431,11 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
           g_assert_nonnull (evt);
           evt->transition (act->getEventStateTransition ());
           if (this->getLambdaState () != EventState::OCCURRING)
-            break;
+            {
+              _delayed.clear ();
+              _delayed_new.clear ();
+              break;
+            }
           it = _delayed.erase (it);
         }
       else
@@ -439,6 +443,11 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
           ++it;
         }
     }
+
+  // Update current delayed actions.
+  _delayed.insert (_delayed.end (),
+                   _delayed_new.begin (), _delayed_new.end ());
+  _delayed_new.clear ();
 }
 
 bool
@@ -497,10 +506,10 @@ ExecutionObject::exec (NclEvent *evt,
                   end = GINGA_TIME_NONE;
                   g_assert (e->getInterval (&begin, &end));
                   act = new NclAction (e, EventStateTransition::START);
-                  _delayed.push_back (std::make_pair (act, begin));
+                  _delayed_new.push_back (std::make_pair (act, begin));
 
                   act = new NclAction (e, EventStateTransition::STOP);
-                  _delayed.push_back (std::make_pair (act, end));
+                  _delayed_new.push_back (std::make_pair (act, end));
                 }
 
               _time = 0;
@@ -554,6 +563,7 @@ ExecutionObject::exec (NclEvent *evt,
               _player = nullptr;
               _time = GINGA_TIME_NONE;
               _delayed.clear ();
+              _delayed_new.clear ();
             }
           else
             {
@@ -624,7 +634,7 @@ ExecutionObject::exec (NclEvent *evt,
             // Schedule stop.
             NclAction *act = new NclAction
               (evt, EventStateTransition::STOP);
-            _delayed.push_back (std::make_pair (act, _time + dur));
+            _delayed_new.push_back (std::make_pair (act, _time + dur));
 
             TRACE ("start %s.%s:=%s (duration=%s)", _id.c_str (),
                    name.c_str (), value.c_str (), s.c_str ());
