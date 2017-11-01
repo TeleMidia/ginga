@@ -68,16 +68,18 @@ public:
                      EventStateTransition);
 
 protected:
-  GingaInternal *_ginga;                         // ginga handle
-  Scheduler *_scheduler;                         // scheduler
-  Node *_node;                                   // NCL node
-  string _id;                                    // object id
-  vector<string> _aliases;                       // aliases
-  ExecutionObjectContext *_parent;               // parent object
-  Player *_player;                               // associated player
-  GingaTime _time;                               // playback time
-  set<NclEvent *> _events;                       // object events
-  vector<pair<NclAction *, GingaTime>> _delayed; // delayed actions
+  GingaInternal *_ginga;           // ginga handle
+  Scheduler *_scheduler;           // scheduler
+  Node *_node;                     // NCL node
+  string _id;                      // object id
+  vector<string> _aliases;         // aliases
+  ExecutionObjectContext *_parent; // parent object
+  Player *_player;                 // associated player
+  GingaTime _time;                 // playback time
+  set<NclEvent *> _events;         // object events
+
+  vector<pair<NclAction *, GingaTime>> _delayed;     // curr delayed actions
+  vector<pair<NclAction *, GingaTime>> _delayed_new; // new delayed actions
 };
 
 GINGA_FORMATTER_END
