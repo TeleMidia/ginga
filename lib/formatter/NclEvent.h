@@ -37,19 +37,19 @@ class NclEvent
 {
 public:
   NclEvent (GingaInternal *, EventType, ExecutionObject *,
-            Anchor *, const string &);
+            Anchor *);
   virtual ~NclEvent ();
 
   EventType getType ();
   ExecutionObject *getObject ();
   Anchor *getAnchor ();
   EventState getState ();
+  bool getInterval (GingaTime *, GingaTime *); // presentation
 
   const vector<INclEventListener *> *getListeners ();
   void addListener (INclEventListener *);
-
-  bool getInterval (GingaTime *, GingaTime *); // presentation
-  bool getKey (string *);                      // selection
+  string getParameter (const string &);
+  void setParameter (const string &, const string &);
 
   bool transition (EventStateTransition);
 
@@ -61,7 +61,7 @@ private:
   Anchor *_anchor;                        // target anchor
   EventState _state;                      // event state
   vector<INclEventListener *> _listeners; // event listeners
-  string _key;                            // key (selection event only)
+  map<string,string> _params;             // parameters
 };
 
 GINGA_FORMATTER_END

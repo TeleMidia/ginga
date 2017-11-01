@@ -326,9 +326,9 @@ Player::setProperty (const string &name, const string &value)
     _value = "";
 
  done:
-  TRACE ("%s.%s:='%s'%s",
-         _id.c_str (), name.c_str (), _value.c_str (),
-         (use_defval) ? (" (default: '" + defval + "')").c_str () : "");
+  // TRACE ("%s.%s:='%s'%s",
+  //        _id.c_str (), name.c_str (), _value.c_str (),
+  //        (use_defval) ? (" (default: '" + defval + "')").c_str () : "");
   _properties[name] = _value;
   return;
 }
@@ -367,9 +367,9 @@ void
 Player::schedulePropertyAnimation (const string &name, const string &from,
                                    const string &to, GingaTime dur)
 {
-  TRACE ("%s.%s from '%s' to '%s' in %" GINGA_TIME_FORMAT,
-         _id.c_str (), name.c_str (), from.c_str (), to.c_str (),
-         GINGA_TIME_ARGS (dur));
+  // TRACE ("%s.%s from '%s' to '%s' in %" GINGA_TIME_FORMAT,
+  //        _id.c_str (), name.c_str (), from.c_str (), to.c_str (),
+  //        GINGA_TIME_ARGS (dur));
   _animator->schedule (name, from, to, dur);
 }
 

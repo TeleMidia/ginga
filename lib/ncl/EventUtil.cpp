@@ -58,15 +58,15 @@ EventUtil::getEventStateTransitionAsString (EventStateTransition trans)
   switch (trans)
     {
     case EventStateTransition::START:
-      return "starts";
+      return "start";
     case EventStateTransition::PAUSE:
-      return "pauses";
+      return "pause";
     case EventStateTransition::RESUME:
-      return "resumes";
+      return "resume";
     case EventStateTransition::STOP:
-      return "stops";
+      return "stop";
     case EventStateTransition::ABORT:
-      return "aborts";
+      return "abort";
     default:
       g_assert_not_reached ();
     }

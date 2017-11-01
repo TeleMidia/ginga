@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "aux-gl.h"
 #include "Scheduler.h"
-#include "Converter.h"
 
 GINGA_FORMATTER_BEGIN
 
@@ -29,7 +28,6 @@ Scheduler::Scheduler (GingaInternal *ginga)
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;
-  _converter = nullptr;
   _doc = nullptr;
   _settings = nullptr;
 }
@@ -38,10 +36,6 @@ Scheduler::~Scheduler ()
 {
   for (auto obj: _objects)
     delete obj;
-  _objects.clear ();
-
-  if (_converter != nullptr)
-    delete _converter;
 }
 
 bool
@@ -64,9 +58,6 @@ Scheduler::run (NclDocument *doc)
   prop->setValue ("");
   dummy->addAnchor (prop);
 
-  // Create converter.
-  _converter = new Converter (_ginga, new RuleAdapter ());
-
   // Create execution object for settings node and initialize it.
   ExecutionObjectSettings *settings = nullptr;
   vector<Node *> *nodes = _doc->getSettingsNodes ();
@@ -77,7 +68,7 @@ Scheduler::run (NclDocument *doc)
       if (settings == nullptr)
         {
           ExecutionObject *obj;
-          obj = _converter->obtainExecutionObject (node);
+          obj = this->obtainExecutionObject (node);
           g_assert_nonnull (obj);
           settings = cast (ExecutionObjectSettings *, obj);
           g_assert_nonnull (settings);
@@ -107,13 +98,15 @@ Scheduler::run (NclDocument *doc)
   // Set global settings object.
   g_assert_nonnull (settings);
   _settings = settings;
+  g_assert_nonnull (_settings->obtainEvent
+                    (EventType::PRESENTATION,
+                     _settings->getNode ()->getLambda (), ""));
 
   // Start document.
-  ExecutionObject *obj = _converter->obtainExecutionObject (body);
+  ExecutionObject *obj = this->obtainExecutionObject (body);
   NclEvent *evt = obj->getLambda (EventType::PRESENTATION);
-  NclAction *act = new NclAction (evt, EventStateTransition::START);
-  runAction (evt, act);
-  delete act;
+  if (!evt->transition (EventStateTransition::START))
+    return false;
 
   // Refresh current focus.
   settings->updateCurrentFocus ("");
@@ -312,7 +305,8 @@ Scheduler::sendKeyEvent (const string &key, bool press)
 {
   vector<ExecutionObject *> buf;
   for (auto obj: _objects)
-    if (instanceof (ExecutionObjectSettings *, obj) || obj->isOccurring ())
+    if (instanceof (ExecutionObjectSettings *, obj)
+        || obj->getLambdaState () == EventState::OCCURRING)
       buf.push_back (obj);
   for (auto obj: buf)
     obj->sendKeyEvent (key, press);
@@ -323,7 +317,7 @@ Scheduler::sendTickEvent (GingaTime total, GingaTime diff, GingaTime frame)
 {
   vector<ExecutionObject *> buf;
   for (auto obj: _objects)
-    if (obj->isOccurring ())
+    if (obj->getLambdaState () == EventState::OCCURRING)
       buf.push_back (obj);
   for (auto obj: buf)
     {
@@ -333,204 +327,220 @@ Scheduler::sendTickEvent (GingaTime total, GingaTime diff, GingaTime frame)
   _settings->sendTickEvent (total, diff, frame);
 }
 
-void
-Scheduler::scheduleAction (NclAction *action)
+ExecutionObject *
+Scheduler::obtainExecutionObject (Node *node)
 {
-  runAction (action->getEvent (), action);
+  string id;
+  Node *parentNode;
+  ExecutionObjectContext *parent;
+  ExecutionObject *object;
+
+  id = node->getId ();
+  g_assert (id != "");
+
+  // Already created.
+  if ((object = this->getObjectByIdOrAlias (id)) != nullptr)
+    return object;
+
+  // Get parent.
+  parentNode = node->getParent ();
+  if (parentNode == nullptr)
+    {
+      parent = nullptr;
+    }
+  else
+    {
+      parent = cast (ExecutionObjectContext *,
+                     obtainExecutionObject (parentNode));
+      g_assert_nonnull (parent);
+      if ((object = this->getObjectByIdOrAlias (id)) != nullptr)
+        return object;
+    }
+
+  if (instanceof (Refer *, node))
+    {
+      Node *target;
+
+      TRACE ("solving refer %s", node->getId ().c_str ());
+      target = node->derefer ();
+      g_assert (!instanceof (Refer *, target));
+      object = obtainExecutionObject (target->derefer ());
+      object->addAlias (id);
+      return object;
+    }
+
+  if (instanceof (Switch *, node))
+    {
+      TRACE ("creating switch %s", node->getId ().c_str ());
+      object = new ExecutionObjectSwitch (_ginga, id, node);
+      g_assert_nonnull
+        (object->obtainEvent (EventType::PRESENTATION,
+                              node->getLambda (), ""));
+      goto done;
+    }
+
+  if (instanceof (Context *, node))
+    {
+      TRACE ("creating context %s", node->getId ().c_str ());
+      object = new ExecutionObjectContext (_ginga, id, node);
+      g_assert_nonnull
+        (object->obtainEvent (EventType::PRESENTATION,
+                              node->getLambda (), ""));
+
+      g_assert_nonnull (object);
+      if (parent != nullptr)
+        object->initParent (parent);
+      g_assert (this->addObject (object));
+
+      Context *ctx = cast (Context *, node);
+      for (auto link: *(ctx->getLinks ()))
+        g_assert (cast (ExecutionObjectContext *, object)
+                  ->addLink (obtainNclLink (link)));
+
+      return object;
+    }
+
+  g_assert (instanceof (Media *, node));
+  TRACE ("creating media %s", node->getId ().c_str ());
+  Media *media;
+  media = cast (Media *, node);
+  g_assert_nonnull (media);
+  if (media->isSettings ())
+    {
+      object = new ExecutionObjectSettings (_ginga, id, node);
+      //_ruleAdapter->setSettings (object);
+    }
+  else
+    {
+      object = new ExecutionObject (_ginga, id, node);
+    }
+
+ done:
+  g_assert_nonnull (object);
+  if (parent != nullptr)
+    object->initParent (parent);
+  g_assert (this->addObject (object));
+  return object;
 }
 
 
 // Private.
 
-void
-Scheduler::runAction (NclEvent *event, NclAction *action)
+NclEvent *
+Scheduler::obtainNclEventFromBind (Bind *bind)
 {
-  ExecutionObject *obj;
-  string name;
-
-  obj = event->getObject ();
-  g_assert_nonnull (obj);
-
-  name = EventUtil::getEventStateTransitionAsString
-    (action->getEventStateTransition ());
-
-  TRACE ("running %s over %s",
-         name.c_str (), obj->getId ().c_str ());
-
-  if (event->getType () == EventType::SELECTION)
-    {
-      event->transition (EventStateTransition::START);
-      event->transition (EventStateTransition::STOP);
-      delete action;
-      return;
-    }
-
-  if (instanceof (ExecutionObjectSwitch *, obj))
-    {
-      g_assert_not_reached ();
-      return;
-    }
-
-  if (instanceof (ExecutionObjectContext *, obj))
-    {
-      this->runActionOverComposition
-        ((ExecutionObjectContext *) obj, action);
-      return;
-    }
-
-  if (event->getType () == EventType::ATTRIBUTION)
-    {
-      Property *property;
-      string name;
-      string value;
-      GingaTime dur;
-
-      g_assert (action->getEventStateTransition ()
-                == EventStateTransition::START);
-
-      if (event->getState () != EventState::SLEEPING)
-        return;                 // nothing to do
-
-      property = cast (Property *, event->getAnchor ());
-      g_assert_nonnull (property);
-
-      name = property->getName ();
-      value = action->getValue ();
-      if (value[0] == '$')
-        this->getObjectPropertyByRef (value, &value);
-
-      string s;
-      s = action->getDuration ();
-      if (s[0] == '$')
-        this->getObjectPropertyByRef (s, &s);
-      dur = ginga_parse_time (s);
-
-      if (event->transition (EventStateTransition::START))
-        {
-          obj->setProperty (name, value, dur);
-          // TODO: Wrap this in a closure to be called at the end of
-          // animation.
-          event->transition (EventStateTransition::STOP);
-        }
-      return;
-    }
-
-  switch (action->getEventStateTransition ())
-    {
-    case EventStateTransition::START:
-      obj->prepare (event);
-      g_assert (obj->start ());
-      break;
-    case EventStateTransition::STOP:
-      obj->stop ();
-      break;
-    case EventStateTransition::PAUSE:
-      g_assert (obj->pause ());
-      break;
-    case EventStateTransition::RESUME:
-      g_assert (obj->resume ());
-      break;
-    case EventStateTransition::ABORT:
-      g_assert (obj->abort ());
-      break;
-    default:
-      g_assert_not_reached ();
-    }
-}
-
-void
-Scheduler::runActionOverComposition (ExecutionObjectContext *ctxObj,
-                                     NclAction *action)
-{
-  NclEvent *event;
-  EventType type;
-  EventStateTransition acttype;
-
   Node *node;
-  Entity *entity;
-  Composition *compNode;
+  ExecutionObject *obj;
+  Anchor *iface;
+  Role *role;
+  EventType type;
+  string key = "";
 
-  event = action->getEvent ();
-  g_assert_nonnull (event);
-
-  type = event->getType ();
-
-  if (type == EventType::ATTRIBUTION)
-    {
-      ERROR_NOT_IMPLEMENTED
-        ("context property attribution is not supported");
-    }
-
-  if (type == EventType::SELECTION)
-    {
-      WARNING ("trying to select composition '%s'",
-               ctxObj->getId ().c_str ());
-      return;
-    }
-
-  node = ctxObj->getNode ();
+  node = bind->getNode ();
   g_assert_nonnull (node);
 
-  entity = cast (Entity *, node);
-  g_assert_nonnull (entity);
-
-  compNode = cast (Composition *, entity);
-  g_assert_nonnull (compNode);
-
-  acttype = action->getEventStateTransition ();
-  if (acttype == EventStateTransition::START) // start all ports
+  iface = bind->getInterface ();
+  if (iface != nullptr
+      && instanceof (Port *, iface)
+      && !(instanceof (SwitchPort *, iface)))
     {
-      for (auto port: *compNode->getPorts ())
+      cast (Port *, iface)->getTarget (&node, nullptr);
+    }
+
+  obj = obtainExecutionObject (node);
+  g_assert_nonnull (obj);
+
+  if (iface == nullptr)
+    return obj->getLambda (EventType::PRESENTATION);
+
+  if (instanceof (Composition *, node)
+      && instanceof (Port *, iface))
+    {
+      Composition *comp = cast (Composition *, node);
+      Port *port = cast (Port *, iface);
+      iface = comp->getMapInterface (port);
+    }
+
+  role = bind->getRole ();
+  g_assert_nonnull (role);
+
+  type = role->getEventType ();
+  if (type == EventType::SELECTION)
+    {
+      Condition *cond = cast (Condition *, role);
+      if (cond != nullptr)
         {
-          Node *node;
-          Anchor *iface;
-          ExecutionObject *child;
+          key = cond->getKey ();
+          if (key[0] == '$')
+            key = bind->getParameter
+              (key.substr (1, key.length () - 1));
+        }
+    }
+
+  return obj->obtainEvent (type, iface, key);
+}
+
+NclLink *
+Scheduler::obtainNclLink (Link *docLink)
+{
+  Connector *connector;
+  NclLink *link;
+
+  g_assert_nonnull (docLink);
+  connector = cast (Connector *, docLink->getConnector ());
+  g_assert_nonnull (connector);
+
+  link = new NclLink (_ginga);
+
+  for (auto connCond: *connector->getConditions ())
+    {
+      for (auto bind: docLink->getBinds (connCond))
+        {
           NclEvent *evt;
+          NclCondition *cond;
 
-          port->getTarget (&node, &iface);
-          child = _converter->obtainExecutionObject (node);
-          g_assert_nonnull (child);
-
-          if (!instanceof (Area *, iface))
-            continue;           // nothing to do
-
-          evt = child->obtainEvent (EventType::PRESENTATION, iface, "");
+          evt = this->obtainNclEventFromBind (bind);
           g_assert_nonnull (evt);
-          g_assert (evt->getType () == EventType::PRESENTATION);
 
-          runAction (evt, action);
-
+          cond = new NclCondition (evt, connCond ->getTransition ());
+          g_assert (link->addCondition (cond));
         }
     }
-  else if (acttype == EventStateTransition::STOP) // stop all children
+
+  for (auto connAct: *connector->getActions ())
     {
-      //ctxObj->suspendLinkEvaluation (true);
-      for (auto child: *ctxObj->getChildren ())
+      for (auto bind: docLink->getBinds (connAct))
         {
           NclEvent *evt;
-          evt = child->getLambda (EventType::PRESENTATION);
-          if (evt == nullptr)
-            continue;
-          runAction (evt, action);
+          NclAction *act;
+
+          evt = this->obtainNclEventFromBind (bind);
+          g_assert_nonnull (evt);
+
+          act = new NclAction (evt, connAct->getTransition ());
+          if (evt->getType () == EventType::ATTRIBUTION)
+            {
+              string dur;
+              string value;
+
+              dur = connAct->getDuration ();
+              if (dur[0] == '$')
+                dur = bind->getParameter
+                  (dur.substr (1, dur.length () - 1));
+
+              value = connAct->getValue ();
+              if (value[0] == '$')
+                value = bind->getParameter
+                  (value.substr (1, value.length () - 1));
+
+              act->setDuration (dur);
+              act->setValue (value);
+            }
+          g_assert (link->addAction (act));
         }
-      //ctxObj->suspendLinkEvaluation (false);
     }
-  else if (acttype == EventStateTransition::ABORT)
-    {
-      ERROR_NOT_IMPLEMENTED ("action 'abort' is not supported");
-    }
-  else if (acttype == EventStateTransition::PAUSE)
-    {
-      ERROR_NOT_IMPLEMENTED ("action 'pause' is not supported");
-    }
-  else if (acttype == EventStateTransition::RESUME)
-    {
-      ERROR_NOT_IMPLEMENTED ("action 'resume' is not supported");
-    }
-  else
-    {
-      g_assert_not_reached ();
-    }
+
+  return link;
 }
 
 GINGA_FORMATTER_END

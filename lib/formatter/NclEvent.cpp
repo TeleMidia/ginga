@@ -17,24 +17,22 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 #include "NclEvent.h"
+#include "ExecutionObject.h"
 
 GINGA_FORMATTER_BEGIN
 
 NclEvent::NclEvent (GingaInternal *ginga, EventType type,
-                    ExecutionObject *object, Anchor *anchor,
-                    const string &key)
+                    ExecutionObject *object, Anchor *anchor)
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;
   _scheduler = ginga->getScheduler ();
   g_assert_nonnull (_scheduler);
-
   _type = type;
   g_assert_nonnull (object);
   _object = object;
   g_assert_nonnull (anchor);
   _anchor = anchor;
-  _key = key;
   _state = EventState::SLEEPING;
 }
 
@@ -66,18 +64,6 @@ NclEvent::getState ()
   return _state;
 }
 
-const vector<INclEventListener *> *
-NclEvent::getListeners ()
-{
-  return &_listeners;
-}
-
-void
-NclEvent::addListener (INclEventListener *listener)
-{
-  _listeners.push_back (listener);
-}
-
 bool
 NclEvent::getInterval (GingaTime *begin, GingaTime *end)
 {
@@ -91,46 +77,66 @@ NclEvent::getInterval (GingaTime *begin, GingaTime *end)
   return true;
 }
 
-bool
-NclEvent::getKey (string *key)
+const vector<INclEventListener *> *
+NclEvent::getListeners ()
 {
-  if (_type != EventType::SELECTION)
-    return false;
-  tryset (key, _key);
-  return true;
+  return &_listeners;
+}
+
+void
+NclEvent::addListener (INclEventListener *listener)
+{
+  _listeners.push_back (listener);
+}
+
+string
+NclEvent::getParameter (const string &name)
+{
+  return (_params.count (name) != 0) ? _params[name] : "";
+}
+
+void
+NclEvent::setParameter (const string &name, const string &value)
+{
+  _params[name] = value;
 }
 
 bool
-NclEvent::transition (EventStateTransition to)
+NclEvent::transition (EventStateTransition trans)
 {
-  switch (to)
+  EventState curr = _state;
+  EventState next;
+  switch (trans)
     {
     case EventStateTransition::START:
-      if (_state == EventState::OCCURRING)
+      if (curr == EventState::OCCURRING)
         return false;
-      _state = EventState::OCCURRING;
+      next = EventState::OCCURRING;
       break;
     case EventStateTransition::PAUSE:
-      if (_state != EventState::OCCURRING)
+      if (curr != EventState::OCCURRING)
         return false;
-      _state = EventState::PAUSED;
+      next = EventState::PAUSED;
       break;
     case EventStateTransition::RESUME:
-      if (_state != EventState::PAUSED)
+      if (curr != EventState::PAUSED)
         return false;
-      _state = EventState::OCCURRING;
+      next = EventState::OCCURRING;
       break;
     case EventStateTransition::STOP: // fall through
     case EventStateTransition::ABORT:
-      if (_state == EventState::SLEEPING)
+      if (curr == EventState::SLEEPING)
         return false;
-      _state = EventState::SLEEPING;
+      next = EventState::SLEEPING;
       break;
     default:
       g_assert_not_reached ();
     }
+  if (!_object->exec (this, curr, next, trans))
+    return false;
+  _state = next;
   for (INclEventListener *lst: _listeners)
-    lst->eventStateChanged (this, to);
+    lst->eventStateChanged (this, trans);
   return true;
 }
 

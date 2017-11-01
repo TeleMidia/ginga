@@ -18,13 +18,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
-#include "GingaInternal.h"
-
 #include "ExecutionObject.h"
 #include "ExecutionObjectContext.h"
 #include "ExecutionObjectSwitch.h"
-#include "Converter.h"
+#include "ExecutionObjectSettings.h"
 #include "NclAction.h"
+#include "NclCondition.h"
+#include "NclEvent.h"
+#include "NclLink.h"
 
 #include "ncl/Ncl.h"
 using namespace ::ginga::ncl;
@@ -33,7 +34,6 @@ class GingaInternal;
 
 GINGA_FORMATTER_BEGIN
 
-class Converter;
 class Scheduler
 {
 public:
@@ -53,18 +53,16 @@ public:
   void sendKeyEvent (const string &, bool);
   void sendTickEvent (GingaTime, GingaTime, GingaTime);
 
-  void scheduleAction (NclAction *);
+  ExecutionObject *obtainExecutionObject (Node *);
 
 private:
   GingaInternal *_ginga;              // ginga handle
-  Converter *_converter;              // converter object
   NclDocument *_doc;                  // document tree
   ExecutionObjectSettings *_settings; // settings object
   set<ExecutionObject *> _objects;    // document objects
 
-  void runAction (NclEvent *, NclAction *);
-  void runActionOverComposition (ExecutionObjectContext *,
-                                 NclAction *);
+  NclEvent *obtainNclEventFromBind (Bind *);
+  NclLink *obtainNclLink (Link *);
 };
 
 GINGA_FORMATTER_END

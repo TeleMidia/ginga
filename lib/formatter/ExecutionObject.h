@@ -19,6 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define EXECUTION_OBJECT_H
 
 #include "GingaInternal.h"
+#include "NclAction.h"
 #include "NclEvent.h"
 
 #include "player/Player.h"
@@ -35,10 +36,6 @@ public:
   ExecutionObject (GingaInternal *, const string &, Node *);
   virtual ~ExecutionObject ();
 
-  virtual bool isSleeping ();
-  virtual bool isPaused ();
-  virtual bool isOccurring ();
-
   Node *getNode ();
   string getId ();
 
@@ -53,25 +50,12 @@ public:
   NclEvent *getEvent (EventType, Anchor *, const string &);
   NclEvent *getEventByAnchorId (EventType type, const string &,
                                 const string &);
-  NclEvent *getLambda (EventType);
   NclEvent *obtainEvent (EventType, Anchor *, const string &);
   bool addEvent (NclEvent *);
 
-  virtual bool prepare (NclEvent *);
-  virtual bool start ();
-  virtual bool stop ();
-  virtual bool abort ();
-  virtual bool pause ();
-  virtual bool resume ();
+  NclEvent *getLambda (EventType);
+  EventState getLambdaState ();
 
-protected:
-  Node *_node;
-  set<NclEvent *> _events;
-  NclEvent *_mainEvent;
-
-  // ------------------------------------------
-
-public:
   bool isFocused ();
   string getProperty (const string &);
   void setProperty (const string &, const string &, GingaTime dur=0);
@@ -81,16 +65,20 @@ public:
   void sendKeyEvent (const string &, bool);
   virtual void sendTickEvent (GingaTime, GingaTime, GingaTime);
 
-protected:
-  GingaInternal *_ginga;        // ginga handle
-  Scheduler *_scheduler;        // scheduler
+  virtual bool exec (NclEvent *, EventState, EventState,
+                     EventStateTransition);
 
-  string _id;                      // object id
-  vector<string> _aliases;         // aliases
-  ExecutionObjectContext *_parent; // parent object
-  Player *_player;                 // associated player
-  GingaTime _time;                 // playback time
-  bool _destroying;                // true if object is being destroyed
+protected:
+  GingaInternal *_ginga;                         // ginga handle
+  Scheduler *_scheduler;                         // scheduler
+  Node *_node;                                   // NCL node
+  string _id;                                    // object id
+  vector<string> _aliases;                       // aliases
+  ExecutionObjectContext *_parent;               // parent object
+  Player *_player;                               // associated player
+  GingaTime _time;                               // playback time
+  set<NclEvent *> _events;                       // object events
+  vector<pair<NclAction *, GingaTime>> _delayed; // delayed actions
 };
 
 GINGA_FORMATTER_END

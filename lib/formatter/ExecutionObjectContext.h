@@ -24,23 +24,25 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-class ExecutionObjectContext: public ExecutionObject,
-                              public INclEventListener
+class ExecutionObjectContext: public ExecutionObject
 {
 public:
   ExecutionObjectContext (GingaInternal *, const string &, Node *);
   virtual ~ExecutionObjectContext ();
 
-  void eventStateChanged (NclEvent *, EventStateTransition) override;
-
   const set<ExecutionObject *> *getChildren ();
   ExecutionObject *getChildById (const string &);
   bool addChild (ExecutionObject *);
 
+  const vector<NclLink *> *getLinks ();
+  bool addLink (NclLink *);
+
+  bool exec (NclEvent *, EventState, EventState, EventStateTransition) override;
+
 private:
+  Context *_context;
   set<ExecutionObject *> _children;
-  set<NclEvent *> _runningEvents; // child events occurring
-  EventStateTransition lastTransition;
+  vector<NclLink *> _links;
 };
 
 GINGA_FORMATTER_END
