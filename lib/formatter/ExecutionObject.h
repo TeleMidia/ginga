@@ -80,6 +80,9 @@ protected:
 
   vector<pair<NclAction *, GingaTime>> _delayed;     // curr delayed actions
   vector<pair<NclAction *, GingaTime>> _delayed_new; // new delayed actions
+
+  void reset ();
+  void resetDelayed ();
 };
 
 GINGA_FORMATTER_END

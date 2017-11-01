@@ -53,6 +53,7 @@ ExecutionObject::ExecutionObject (GingaInternal *ginga,
 
 ExecutionObject::~ExecutionObject ()
 {
+  this->reset ();
 }
 
 Node *
@@ -155,7 +156,7 @@ ExecutionObject::getEventByAnchorId (EventType type, const string &id,
         continue;
       switch (type)
         {
-        case EventType::ATTRIBUTION: // fall-through
+        case EventType::ATTRIBUTION: // fall through
         case EventType::PRESENTATION:
           return event;
         case EventType::SELECTION:
@@ -432,10 +433,10 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
           evt->transition (act->getEventStateTransition ());
           if (this->getLambdaState () != EventState::OCCURRING)
             {
-              _delayed.clear ();
-              _delayed_new.clear ();
+              this->resetDelayed ();
               break;
             }
+          delete act;
           it = _delayed.erase (it);
         }
       else
@@ -558,12 +559,7 @@ ExecutionObject::exec (NclEvent *evt,
               //
               g_assert_nonnull (_player);
               TRACE ("stop %s@lambda", _id.c_str ());
-              _player->stop ();
-              delete _player;
-              _player = nullptr;
-              _time = GINGA_TIME_NONE;
-              _delayed.clear ();
-              _delayed_new.clear ();
+              this->reset ();
             }
           else
             {
@@ -683,6 +679,35 @@ ExecutionObject::exec (NclEvent *evt,
       g_assert_not_reached ();
     }
   return true;
+}
+
+
+// Private.
+
+void
+ExecutionObject::reset ()
+{
+  if (_player != nullptr)
+    {
+      if (_player->getState () != Player::SLEEPING)
+        _player->stop ();
+      delete _player;
+      _player = nullptr;
+    }
+  this->resetDelayed ();
+  _time = GINGA_TIME_NONE;
+}
+
+void
+ExecutionObject::resetDelayed ()
+{
+  for (auto item: _delayed)
+    delete item.first;
+  _delayed.clear ();
+
+  for (auto item: _delayed_new)
+    delete item.first;
+  _delayed_new.clear ();
 }
 
 GINGA_FORMATTER_END
