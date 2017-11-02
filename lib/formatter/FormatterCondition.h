@@ -15,41 +15,39 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef NCL_LINK_H
-#define NCL_LINK_H
+#ifndef FORMATTER_CONDITION
+#define FORMATTER_CONDITION
 
-#include "NclAction.h"
-#include "NclCondition.h"
-#include "NclEvent.h"
+#include "FormatterEvent.h"
 
 GINGA_FORMATTER_BEGIN
 
-class NclLink: public INclConditionListener
+class IFormatterConditionListener
 {
 public:
-  NclLink (GingaInternal *);
-  virtual ~NclLink ();
+  virtual void conditionSatisfied () = 0;
+};
 
-  const vector <NclCondition *> *getConditions ();
-  bool addCondition (NclCondition *);
+class FormatterCondition: IFormatterEventListener
+{
+public:
+  FormatterCondition (FormatterEvent *, EventStateTransition);
+  virtual ~FormatterCondition ();
 
-  const vector <NclAction *> *getActions ();
-  bool addAction (NclAction *);
+  FormatterEvent *getEvent ();
 
-  virtual vector<NclEvent *> getEvents ();
-  void disable (bool);
-
-  // INclConditionListener
+  void setTriggerListener (IFormatterConditionListener *);
   void conditionSatisfied ();
 
+  // IFormatterEventListener
+  virtual void eventStateChanged (FormatterEvent *,
+                                  EventStateTransition) override;
 private:
-  GingaInternal *_ginga;               // ginga handle
-  Scheduler *_scheduler;               // scheduler
-  vector <NclCondition *> _conditions; // list of conditions
-  vector <NclAction *> _actions;       // list of actions
-  bool _disabled;                      // whether link is disabled
+  FormatterEvent *_event;
+  EventStateTransition _transition;
+  IFormatterConditionListener *_listener;
 };
 
 GINGA_FORMATTER_END
 
-#endif // NCL_LINK_H
+#endif // FORMATTER_CONDITION

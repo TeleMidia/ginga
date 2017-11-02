@@ -96,7 +96,7 @@ Scheduler::run (NclDocument *doc)
 
   // Start document.
   ExecutionObject *obj = this->obtainExecutionObject (body);
-  NclEvent *evt = obj->obtainLambda ();
+  FormatterEvent *evt = obj->obtainLambda ();
   g_assert_nonnull (evt);
   if (!evt->transition (EventStateTransition::START))
     return false;
@@ -398,7 +398,7 @@ Scheduler::obtainExecutionObject (Node *node)
       Context *ctx = cast (Context *, node);
       for (auto link: *(ctx->getLinks ()))
         g_assert (cast (ExecutionObjectContext *, object)
-                  ->addLink (obtainNclLink (link)));
+                  ->addLink (obtainFormatterLink (link)));
 
       return object;
     }
@@ -429,8 +429,8 @@ Scheduler::obtainExecutionObject (Node *node)
 
 // Private.
 
-NclEvent *
-Scheduler::obtainNclEventFromBind (Bind *bind)
+FormatterEvent *
+Scheduler::obtainFormatterEventFromBind (Bind *bind)
 {
   Node *node;
   ExecutionObject *obj;
@@ -483,29 +483,29 @@ Scheduler::obtainNclEventFromBind (Bind *bind)
   return obj->obtainEvent (type, iface, key);
 }
 
-NclLink *
-Scheduler::obtainNclLink (Link *docLink)
+FormatterLink *
+Scheduler::obtainFormatterLink (Link *docLink)
 {
   Connector *connector;
-  NclLink *link;
+  FormatterLink *link;
 
   g_assert_nonnull (docLink);
   connector = cast (Connector *, docLink->getConnector ());
   g_assert_nonnull (connector);
 
-  link = new NclLink (_ginga);
+  link = new FormatterLink (_ginga);
 
   for (auto connCond: *connector->getConditions ())
     {
       for (auto bind: docLink->getBinds (connCond))
         {
-          NclEvent *evt;
-          NclCondition *cond;
+          FormatterEvent *evt;
+          FormatterCondition *cond;
 
-          evt = this->obtainNclEventFromBind (bind);
+          evt = this->obtainFormatterEventFromBind (bind);
           g_assert_nonnull (evt);
 
-          cond = new NclCondition (evt, connCond ->getTransition ());
+          cond = new FormatterCondition (evt, connCond ->getTransition ());
           g_assert (link->addCondition (cond));
         }
     }
@@ -514,13 +514,13 @@ Scheduler::obtainNclLink (Link *docLink)
     {
       for (auto bind: docLink->getBinds (connAct))
         {
-          NclEvent *evt;
-          NclAction *act;
+          FormatterEvent *evt;
+          FormatterAction *act;
 
-          evt = this->obtainNclEventFromBind (bind);
+          evt = this->obtainFormatterEventFromBind (bind);
           g_assert_nonnull (evt);
 
-          act = new NclAction (evt, connAct->getTransition ());
+          act = new FormatterAction (evt, connAct->getTransition ());
           if (evt->getType () == EventType::ATTRIBUTION)
             {
               string dur;

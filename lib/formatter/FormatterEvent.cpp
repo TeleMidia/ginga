@@ -16,13 +16,13 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
-#include "NclEvent.h"
+#include "FormatterEvent.h"
 #include "ExecutionObject.h"
 
 GINGA_FORMATTER_BEGIN
 
-NclEvent::NclEvent (GingaInternal *ginga, EventType type,
-                    ExecutionObject *object, Anchor *anchor)
+FormatterEvent::FormatterEvent (GingaInternal *ginga, EventType type,
+                                ExecutionObject *object, Anchor *anchor)
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;
@@ -36,60 +36,60 @@ NclEvent::NclEvent (GingaInternal *ginga, EventType type,
   _state = EventState::SLEEPING;
 }
 
-NclEvent::~NclEvent ()
+FormatterEvent::~FormatterEvent ()
 {
 }
 
 EventType
-NclEvent::getType ()
+FormatterEvent::getType ()
 {
   return _type;
 }
 
 ExecutionObject *
-NclEvent::getObject ()
+FormatterEvent::getObject ()
 {
   return _object;
 }
 
 Anchor *
-NclEvent::getAnchor ()
+FormatterEvent::getAnchor ()
 {
   return _anchor;
 }
 
 EventState
-NclEvent::getState ()
+FormatterEvent::getState ()
 {
   return _state;
 }
 
-const vector<INclEventListener *> *
-NclEvent::getListeners ()
+const vector<IFormatterEventListener *> *
+FormatterEvent::getListeners ()
 {
   return &_listeners;
 }
 
 void
-NclEvent::addListener (INclEventListener *listener)
+FormatterEvent::addListener (IFormatterEventListener *listener)
 {
   _listeners.push_back (listener);
 }
 
 string
-NclEvent::getParameter (const string &name)
+FormatterEvent::getParameter (const string &name)
 {
   return (_params.count (name) != 0) ? _params[name] : "";
 }
 
 void
-NclEvent::setParameter (const string &name, const string &value)
+FormatterEvent::setParameter (const string &name, const string &value)
 {
   _params[name] = value;
 }
 
 bool
-NclEvent::transition (EventStateTransition trans)
+FormatterEvent::transition (EventStateTransition trans)
 {
   EventState curr = _state;
   EventState next;
@@ -122,7 +122,7 @@ NclEvent::transition (EventStateTransition trans)
   if (!_object->exec (this, curr, next, trans))
     return false;
   _state = next;
-  for (INclEventListener *lst: _listeners)
+  for (IFormatterEventListener *lst: _listeners)
     lst->eventStateChanged (this, trans);
   return true;
 }

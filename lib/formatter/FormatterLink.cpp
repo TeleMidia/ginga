@@ -16,13 +16,13 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
-#include "NclLink.h"
+#include "FormatterLink.h"
 #include "ExecutionObjectContext.h"
 #include "Scheduler.h"
 
 GINGA_FORMATTER_BEGIN
 
-NclLink::NclLink (GingaInternal *ginga)
+FormatterLink::FormatterLink (GingaInternal *ginga)
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;
@@ -33,7 +33,7 @@ NclLink::NclLink (GingaInternal *ginga)
   _disabled = false;
 }
 
-NclLink::~NclLink ()
+FormatterLink::~FormatterLink ()
 {
   for (auto condition: _conditions)
     delete condition;
@@ -42,19 +42,19 @@ NclLink::~NclLink ()
 }
 
 void
-NclLink::disable (bool disable)
+FormatterLink::disable (bool disable)
 {
   _disabled = disable;
 }
 
-const vector <NclCondition *> *
-NclLink::getConditions ()
+const vector <FormatterCondition *> *
+FormatterLink::getConditions ()
 {
   return &_conditions;
 }
 
 bool
-NclLink::addCondition (NclCondition *condition)
+FormatterLink::addCondition (FormatterCondition *condition)
 {
   g_assert_nonnull (condition);
   for (auto cond: _conditions)
@@ -65,14 +65,14 @@ NclLink::addCondition (NclCondition *condition)
   return true;
 }
 
-const vector <NclAction *> *
-NclLink::getActions ()
+const vector <FormatterAction *> *
+FormatterLink::getActions ()
 {
   return &_actions;
 }
 
 bool
-NclLink::addAction (NclAction *action)
+FormatterLink::addAction (FormatterAction *action)
 {
   g_assert_nonnull (action);
   for (auto act: _actions)
@@ -83,13 +83,13 @@ NclLink::addAction (NclAction *action)
 }
 
 void
-NclLink::conditionSatisfied ()
+FormatterLink::conditionSatisfied ()
 {
   if (_disabled)
     return;                     // nothing to do
   for (auto action: _actions)
     {
-      NclEvent *evt;
+      FormatterEvent *evt;
       evt = action->getEvent ();
       g_assert_nonnull (evt);
       if (evt->getType () == EventType::ATTRIBUTION)
@@ -101,10 +101,10 @@ NclLink::conditionSatisfied ()
     }
 }
 
-vector<NclEvent *>
-NclLink::getEvents ()
+vector<FormatterEvent *>
+FormatterLink::getEvents ()
 {
-  vector<NclEvent *> events;
+  vector<FormatterEvent *> events;
   for (auto condition: _conditions)
     events.push_back (condition->getEvent ());
   for (auto action: _actions)

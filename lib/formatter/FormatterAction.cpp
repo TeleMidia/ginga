@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
-#include "NclAction.h"
+#include "FormatterAction.h"
 
 GINGA_FORMATTER_BEGIN
 
@@ -25,7 +25,8 @@ GINGA_FORMATTER_BEGIN
  * @param event Target event.
  * @param transition Action transition.
  */
-NclAction::NclAction (NclEvent *event, EventStateTransition transition)
+FormatterAction::FormatterAction (FormatterEvent *event,
+                                  EventStateTransition transition)
 {
   g_assert_nonnull (event);
   _event = event;
@@ -37,7 +38,7 @@ NclAction::NclAction (NclEvent *event, EventStateTransition transition)
 /**
  * @brief Destroys action.
  */
-NclAction::~NclAction ()
+FormatterAction::~FormatterAction ()
 {
 }
 
@@ -45,8 +46,8 @@ NclAction::~NclAction ()
  * @brief Gets target event.
  * @return Target event.
  */
-NclEvent *
-NclAction::getEvent ()
+FormatterEvent *
+FormatterAction::getEvent ()
 {
   return _event;
 }
@@ -56,7 +57,7 @@ NclAction::getEvent ()
  * @return Target event type.
  */
 EventType
-NclAction::getEventType ()
+FormatterAction::getEventType ()
 {
   return _event->getType ();
 }
@@ -66,7 +67,7 @@ NclAction::getEventType ()
  * @return Action transition.
  */
 EventStateTransition
-NclAction::getEventStateTransition ()
+FormatterAction::getEventStateTransition ()
 {
   return _transition;
 }
@@ -76,7 +77,7 @@ NclAction::getEventStateTransition ()
  * @return Action duration.
  */
 string
-NclAction::getDuration ()
+FormatterAction::getDuration ()
 {
   return _duration;
 }
@@ -86,7 +87,7 @@ NclAction::getDuration ()
  * @param duration Duration.
  */
 void
-NclAction::setDuration (const string &duration)
+FormatterAction::setDuration (const string &duration)
 {
   _duration = duration;
 }
@@ -96,7 +97,7 @@ NclAction::setDuration (const string &duration)
  * @return Action value.
  */
 string
-NclAction::getValue (void)
+FormatterAction::getValue (void)
 {
   return _value;
 }
@@ -106,7 +107,7 @@ NclAction::getValue (void)
  * @param value Value.
  */
 void
-NclAction::setValue (const string &value)
+FormatterAction::setValue (const string &value)
 {
   _value = value;
 }
