@@ -22,7 +22,9 @@ GINGA_NCL_BEGIN
 
 enum class PredicateType
 {
-  ATOM = 0,
+  FALSUM = 0,                   // false
+  VERUM,                        // true
+  ATOM,
   NEGATION,
   CONJUNCTION,
   DISJUNCTION,

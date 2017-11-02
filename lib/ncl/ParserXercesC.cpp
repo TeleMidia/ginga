@@ -1619,6 +1619,7 @@ ParserXercesC::parseSwitch (DOMElement *elt)
   string id;
 
   Node *swtch;
+  Node *defcomp;
   set<Node *> swtch_children;
 
   CHECK_ELT_TAG (elt, "switch", nullptr);
@@ -1626,6 +1627,7 @@ ParserXercesC::parseSwitch (DOMElement *elt)
   CHECK_ELT_ATTRIBUTE_NOT_SUPPORTED (elt, "refer");
 
   swtch = new Switch (_doc, id);
+  defcomp = nullptr;
 
   // Collect children.
   for (DOMElement *child: dom_elt_get_children (elt))
@@ -1683,8 +1685,29 @@ ParserXercesC::parseSwitch (DOMElement *elt)
         }
       else if (tag == "defaultComponent")
         {
-          g_assert_not_reached ();
+          Node *node;
+          string component;
+
+          CHECK_ELT_TAG (child, "defaultComponent", nullptr);
+          CHECK_ELT_ATTRIBUTE (child, "component", &component);
+
+          node = nullptr;
+          for (auto swtch_child: swtch_children)
+            if (swtch_child->getId () == component)
+              node = swtch_child;
+
+          if (unlikely (node == nullptr))
+            ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (child, "component");
+
+          defcomp = node;
         }
+    }
+
+  // Insert default component as the last, tautological rule.
+  if (defcomp != nullptr)
+    {
+      cast (Switch *, swtch)->addNode
+        (defcomp, new Predicate (PredicateType::VERUM));
     }
 
   return swtch;

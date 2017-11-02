@@ -551,6 +551,12 @@ Scheduler::eval (Predicate *pred)
 {
   switch (pred->getType ())
     {
+    case PredicateType::FALSUM:
+      TRACE ("false");
+      break;
+    case PredicateType::VERUM:
+      TRACE ("true");
+      break;
     case PredicateType::ATOM:
       {
         string left, right;
@@ -560,20 +566,26 @@ Scheduler::eval (Predicate *pred)
 
         pred->getTest (&left, &test, &right);
 
-        msg_left = left;
         if (left[0] == '$')
           {
-            string saved = left;
+            msg_left = left;
             if (this->getObjectPropertyByRef (left, &left))
-              msg_left = saved + " (" + left + ")";
+              msg_left += " ('" + left + "')";
+          }
+        else
+          {
+            msg_left = "'" + left + "'";
           }
 
-        msg_right = right;
         if (right[0] == '$')
           {
-            string saved = right;
+            msg_right = right;
             if (this->getObjectPropertyByRef (right, &right))
-              msg_right = saved + " (" + right + ")";
+              msg_right += " ('" + right + "')";
+          }
+        else
+          {
+            msg_right = "'" + right + "'";
           }
 
         switch (test)
