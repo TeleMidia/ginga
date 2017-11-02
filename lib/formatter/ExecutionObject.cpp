@@ -510,6 +510,8 @@ ExecutionObject::exec (NclEvent *evt,
               // Install delayed actions for time anchors.
               for (auto e: _events)
                 {
+                  Anchor *anchor;
+                  Area *area;
                   GingaTime begin, end;
                   NclAction *act;
 
@@ -518,12 +520,17 @@ ExecutionObject::exec (NclEvent *evt,
                   if (e == this->obtainLambda ())
                     continue;
 
-                  begin = 0;
-                  end = GINGA_TIME_NONE;
-                  g_assert (e->getInterval (&begin, &end));
+                  anchor = e->getAnchor ();
+                  g_assert_nonnull (anchor);
+
+                  area = cast (Area *, anchor);
+                  g_assert_nonnull (area);
+
+                  begin = area->getBegin ();
+                  end = area->getEnd ();
+
                   act = new NclAction (e, EventStateTransition::START);
                   _delayed_new.push_back (std::make_pair (act, begin));
-
                   act = new NclAction (e, EventStateTransition::STOP);
                   _delayed_new.push_back (std::make_pair (act, end));
                 }
@@ -542,13 +549,20 @@ ExecutionObject::exec (NclEvent *evt,
                   //
                   // Implicit.
                   //
-                  GingaTime begin;
-                  g_assert (evt->getInterval (&begin, nullptr));
+                  Anchor *anchor;
+                  Area *area;
+
+                  anchor = evt->getAnchor ();
+                  g_assert_nonnull (anchor);
+
+                  area = cast (Area *, anchor);
+                  g_assert_nonnull (area);
+
                   TRACE ("start %s@%s (begin=%"
                          GINGA_TIME_FORMAT ") at %" GINGA_TIME_FORMAT,
                          _id.c_str (),
                          evt->getAnchor ()->getId ().c_str (),
-                         GINGA_TIME_ARGS (begin),
+                         GINGA_TIME_ARGS (area->getBegin ()),
                          GINGA_TIME_ARGS (_time));
                 }
               else
@@ -586,13 +600,20 @@ ExecutionObject::exec (NclEvent *evt,
                   //
                   // Implicit.
                   //
-                  GingaTime end;
-                  g_assert (evt->getInterval (nullptr, &end));
+                  Anchor *anchor;
+                  Area *area;
+
+                  anchor = evt->getAnchor ();
+                  g_assert_nonnull (anchor);
+
+                  area = cast (Area *, anchor);
+                  g_assert_nonnull (area);
+
                   TRACE ("stop %s@%s (end=%"
                          GINGA_TIME_FORMAT ") at %" GINGA_TIME_FORMAT,
                          _id.c_str (),
                          evt->getAnchor ()->getId ().c_str (),
-                         GINGA_TIME_ARGS (end),
+                         GINGA_TIME_ARGS (area->getEnd ()),
                          GINGA_TIME_ARGS (_time));
                 }
               else

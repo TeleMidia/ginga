@@ -64,19 +64,6 @@ NclEvent::getState ()
   return _state;
 }
 
-bool
-NclEvent::getInterval (GingaTime *begin, GingaTime *end)
-{
-  Area *area;
-  if (_type != EventType::PRESENTATION)
-    return false;
-  area = cast (Area *, _anchor);
-  g_assert_nonnull (area);
-  tryset (begin, area->getBegin ());
-  tryset (end, area->getEnd ());
-  return true;
-}
-
 const vector<INclEventListener *> *
 NclEvent::getListeners ()
 {
