@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define EXECUTION_OBJECT_SWITCH_H
 
 #include "ExecutionObjectContext.h"
-#include "NclEvent.h"
+#include "FormatterEvent.h"
 
 GINGA_FORMATTER_BEGIN
 
@@ -29,7 +29,7 @@ public:
   ExecutionObjectSwitch (GingaInternal *, const string &, Node *);
   virtual ~ExecutionObjectSwitch ();
 
-  bool exec (NclEvent *, EventState, EventState,
+  bool exec (FormatterEvent *, EventState, EventState,
              EventStateTransition) override;
 private:
   Switch *_switch;

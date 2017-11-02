@@ -83,7 +83,8 @@ ExecutionObjectSettings::updateCurrentFocus (const string &index)
   string name = "service.currentFocus";
   string value = next;
 
-  NclEvent *evt = this->getEventByAnchorId (EventType::ATTRIBUTION, name, "");
+  FormatterEvent *evt = this->getEventByAnchorId
+    (EventType::ATTRIBUTION, name, "");
   if (evt == nullptr)           // do no trigger links
     {
       cast (ExecutionObject *, this)->setProperty (name, value);

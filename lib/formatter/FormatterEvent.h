@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef NCL_EVENT_H
-#define NCL_EVENT_H
+#ifndef FORMATTER_EVENT_H
+#define FORMATTER_EVENT_H
 
 #include "GingaInternal.h"
 
@@ -25,44 +25,45 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-class NclEvent;
-class INclEventListener
+class FormatterEvent;
+class IFormatterEventListener
 {
 public:
-  virtual void eventStateChanged (NclEvent *, EventStateTransition) = 0;
+  virtual void eventStateChanged (FormatterEvent *,
+                                  EventStateTransition) = 0;
 };
 
 class ExecutionObject;
-class NclEvent
+class FormatterEvent
 {
 public:
-  NclEvent (GingaInternal *, EventType, ExecutionObject *,
-            Anchor *);
-  virtual ~NclEvent ();
+  FormatterEvent (GingaInternal *, EventType, ExecutionObject *,
+                  Anchor *);
+  virtual ~FormatterEvent ();
 
   EventType getType ();
   ExecutionObject *getObject ();
   Anchor *getAnchor ();
   EventState getState ();
 
-  const vector<INclEventListener *> *getListeners ();
-  void addListener (INclEventListener *);
+  const vector<IFormatterEventListener *> *getListeners ();
+  void addListener (IFormatterEventListener *);
   string getParameter (const string &);
   void setParameter (const string &, const string &);
 
   bool transition (EventStateTransition);
 
 private:
-  GingaInternal *_ginga;                  // ginga handle
-  Scheduler *_scheduler;                  // scheduler
-  EventType _type;                        // event type
-  ExecutionObject *_object;               // target object
-  Anchor *_anchor;                        // target anchor
-  EventState _state;                      // event state
-  vector<INclEventListener *> _listeners; // event listeners
-  map<string,string> _params;             // parameters
+  GingaInternal *_ginga;                        // ginga handle
+  Scheduler *_scheduler;                        // scheduler
+  EventType _type;                              // event type
+  ExecutionObject *_object;                     // target object
+  Anchor *_anchor;                              // target anchor
+  EventState _state;                            // event state
+  vector<IFormatterEventListener *> _listeners; // event listeners
+  map<string,string> _params;                   // parameters
 };
 
 GINGA_FORMATTER_END
 
-#endif // NCL_EVENT_H
+#endif // FORMATTER_EVENT_H

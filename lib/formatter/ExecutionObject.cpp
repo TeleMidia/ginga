@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ExecutionObjectContext.h"
 #include "ExecutionObjectSettings.h"
 #include "ExecutionObjectSwitch.h"
-#include "NclEvent.h"
+#include "FormatterEvent.h"
 #include "Scheduler.h"
 
 #include "player/Player.h"
@@ -108,13 +108,13 @@ ExecutionObject::initParent (ExecutionObjectContext *parent)
   g_assert (parent->addChild (this));
 }
 
-const set<NclEvent *> *
+const set<FormatterEvent *> *
 ExecutionObject::getEvents ()
 {
   return &_events;
 }
 
-NclEvent *
+FormatterEvent *
 ExecutionObject::getEvent (EventType type, Anchor *anchor,
                            const string &key)
 {
@@ -141,7 +141,7 @@ ExecutionObject::getEvent (EventType type, Anchor *anchor,
   return nullptr;
 }
 
-NclEvent *
+FormatterEvent *
 ExecutionObject::getEventByAnchorId (EventType type, const string &id,
                                      const string &key)
 {
@@ -172,11 +172,11 @@ ExecutionObject::getEventByAnchorId (EventType type, const string &id,
   return nullptr;
 }
 
-NclEvent *
+FormatterEvent *
 ExecutionObject::obtainEvent (EventType type, Anchor *anchor,
                               const string &key)
 {
-  NclEvent *event;
+  FormatterEvent *event;
 
   event = this->getEvent (type, anchor, key);
   if (event != nullptr)
@@ -188,29 +188,29 @@ ExecutionObject::obtainEvent (EventType type, Anchor *anchor,
   if (instanceof (ExecutionObjectSwitch *, this))
     {
       g_assert (type == EventType::PRESENTATION);
-      event = new NclEvent (_ginga, type, this, anchor);
+      event = new FormatterEvent (_ginga, type, this, anchor);
     }
   else if (instanceof (ExecutionObjectContext *, this))
     {
       g_assert (type == EventType::PRESENTATION);
-      event = new NclEvent (_ginga, type, this, anchor);
+      event = new FormatterEvent (_ginga, type, this, anchor);
     }
   else
     {
       switch (type)
         {
         case EventType::PRESENTATION:
-          event = new NclEvent (_ginga, type, this, anchor);
+          event = new FormatterEvent (_ginga, type, this, anchor);
           break;
         case EventType::ATTRIBUTION:
           {
             Property *property = cast (Property *, anchor);
             g_assert_nonnull (property);
-            event = new NclEvent (_ginga, type, this, property);
+            event = new FormatterEvent (_ginga, type, this, property);
             break;
           }
         case EventType::SELECTION:
-          event = new NclEvent (_ginga, type, this, anchor);
+          event = new FormatterEvent (_ginga, type, this, anchor);
           event->setParameter ("key", key);
           break;
         default:
@@ -224,7 +224,7 @@ ExecutionObject::obtainEvent (EventType type, Anchor *anchor,
 }
 
 bool
-ExecutionObject::addEvent (NclEvent *event)
+ExecutionObject::addEvent (FormatterEvent *event)
 {
   if (_events.find (event) != _events.end ())
     return false;
@@ -232,10 +232,10 @@ ExecutionObject::addEvent (NclEvent *event)
   return true;
 }
 
-NclEvent *
+FormatterEvent *
 ExecutionObject::obtainLambda ()
 {
-  NclEvent *lambda;
+  FormatterEvent *lambda;
   g_assert_nonnull (_node);
   lambda = this->obtainEvent (EventType::PRESENTATION,
                               _node->getLambda (), "");
@@ -338,7 +338,7 @@ ExecutionObject::redraw (cairo_t *cr)
 void
 ExecutionObject::sendKeyEvent (const string &key, bool press)
 {
-  list<NclEvent *> buf;
+  list<FormatterEvent *> buf;
 
   if (!press)
     return;                     // nothing to do
@@ -397,7 +397,7 @@ ExecutionObject::sendKeyEvent (const string &key, bool press)
     }
 
   // Run collected events.
-  for (NclEvent *evt: buf)
+  for (FormatterEvent *evt: buf)
     {
       evt->transition (EventStateTransition::START);
       evt->transition (EventStateTransition::STOP);
@@ -425,7 +425,7 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
       || (GINGA_TIME_IS_VALID (dur = _player->getDuration ())
           && _time > dur))
     {
-      NclEvent *lambda = this->obtainLambda ();
+      FormatterEvent *lambda = this->obtainLambda ();
       g_assert_nonnull (lambda);
       TRACE ("eos %s@lambda at %" GINGA_TIME_FORMAT, _id.c_str (),
              GINGA_TIME_ARGS (_time));
@@ -436,14 +436,14 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
   // Evaluate current delayed actions.
   for (auto it = _delayed.begin (); it != _delayed.end ();)
     {
-      NclAction *act;
+      FormatterAction *act;
       GingaTime timeout;
 
       act = (*it).first;
       timeout = (*it).second;
       if (timeout <= _time)
         {
-          NclEvent *evt = act->getEvent ();
+          FormatterEvent *evt = act->getEvent ();
           g_assert_nonnull (evt);
           evt->transition (act->getEventStateTransition ());
           if (!this->isOccurring ())
@@ -467,7 +467,7 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
 }
 
 bool
-ExecutionObject::exec (NclEvent *evt,
+ExecutionObject::exec (FormatterEvent *evt,
                        unused (EventState from), unused (EventState to),
                        EventStateTransition transition)
 {
@@ -513,7 +513,7 @@ ExecutionObject::exec (NclEvent *evt,
                   Anchor *anchor;
                   Area *area;
                   GingaTime begin, end;
-                  NclAction *act;
+                  FormatterAction *act;
 
                   if (e->getType () != EventType::PRESENTATION)
                     continue;
@@ -529,9 +529,9 @@ ExecutionObject::exec (NclEvent *evt,
                   begin = area->getBegin ();
                   end = area->getEnd ();
 
-                  act = new NclAction (e, EventStateTransition::START);
+                  act = new FormatterAction (e, EventStateTransition::START);
                   _delayed_new.push_back (std::make_pair (act, begin));
-                  act = new NclAction (e, EventStateTransition::STOP);
+                  act = new FormatterAction (e, EventStateTransition::STOP);
                   _delayed_new.push_back (std::make_pair (act, end));
                 }
 
@@ -664,7 +664,7 @@ ExecutionObject::exec (NclEvent *evt,
             this->setProperty (name, value, dur);
 
             // Schedule stop.
-            NclAction *act = new NclAction
+            FormatterAction *act = new FormatterAction
               (evt, EventStateTransition::STOP);
             _delayed_new.push_back (std::make_pair (act, _time + dur));
 

@@ -37,7 +37,7 @@ ExecutionObjectSwitch::~ExecutionObjectSwitch ()
 }
 
 bool
-ExecutionObjectSwitch::exec (NclEvent *evt,
+ExecutionObjectSwitch::exec (FormatterEvent *evt,
                              unused (EventState from),
                              unused (EventState to),
                              EventStateTransition transition)
@@ -60,7 +60,7 @@ ExecutionObjectSwitch::exec (NclEvent *evt,
             {
               Node *node;
               Predicate *pred;
-              NclEvent *e;
+              FormatterEvent *e;
 
               node = item.first;
               g_assert_nonnull (node);
@@ -80,7 +80,7 @@ ExecutionObjectSwitch::exec (NclEvent *evt,
             }
           if (_selected == nullptr) // schedule stop
             {
-              NclAction *act = new NclAction
+              FormatterAction *act = new FormatterAction
                 (evt, EventStateTransition::STOP);
               _delayed_new.push_back (std::make_pair (act, _time));
             }
@@ -98,11 +98,11 @@ ExecutionObjectSwitch::exec (NclEvent *evt,
           TRACE ("stop %s@lambda", _id.c_str ());
           g_assert_nonnull (_selected);
           {
-            NclEvent *e = _selected->obtainLambda ();
+            FormatterEvent *e = _selected->obtainLambda ();
             g_assert_nonnull (e);
             e->transition (EventStateTransition::STOP);
             _selected = nullptr;
-            NclAction *act = new NclAction
+            FormatterAction *act = new FormatterAction
               (evt, EventStateTransition::STOP);
             _delayed_new.push_back (std::make_pair (act, _time));
           }

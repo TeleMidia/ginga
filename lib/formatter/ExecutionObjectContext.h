@@ -19,8 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define EXECUTION_OBJECT_CONTEXT_H
 
 #include "ExecutionObject.h"
-#include "NclEvent.h"
-#include "NclLink.h"
+#include "FormatterEvent.h"
+#include "FormatterLink.h"
 
 GINGA_FORMATTER_BEGIN
 
@@ -34,17 +34,17 @@ public:
   ExecutionObject *getChildById (const string &);
   bool addChild (ExecutionObject *);
 
-  const vector<NclLink *> *getLinks ();
-  bool addLink (NclLink *);
+  const vector<FormatterLink *> *getLinks ();
+  bool addLink (FormatterLink *);
 
   void sendTickEvent (GingaTime, GingaTime, GingaTime) override;
-  bool exec (NclEvent *, EventState, EventState,
+  bool exec (FormatterEvent *, EventState, EventState,
              EventStateTransition) override;
 
 private:
   Context *_context;
   set<ExecutionObject *> _children;
-  vector<NclLink *> _links;
+  vector<FormatterLink *> _links;
 
   void toggleLinks (bool);
 };

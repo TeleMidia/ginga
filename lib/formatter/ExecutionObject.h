@@ -19,8 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define EXECUTION_OBJECT_H
 
 #include "GingaInternal.h"
-#include "NclAction.h"
-#include "NclEvent.h"
+#include "FormatterAction.h"
+#include "FormatterEvent.h"
 
 #include "player/Player.h"
 using namespace ::ginga::player;
@@ -46,14 +46,14 @@ public:
   ExecutionObjectContext *getParent ();
   void initParent (ExecutionObjectContext *);
 
-  const set<NclEvent *> *getEvents ();
-  NclEvent *getEvent (EventType, Anchor *, const string &);
-  NclEvent *getEventByAnchorId (EventType type, const string &,
+  const set<FormatterEvent *> *getEvents ();
+  FormatterEvent *getEvent (EventType, Anchor *, const string &);
+  FormatterEvent *getEventByAnchorId (EventType type, const string &,
                                 const string &);
-  NclEvent *obtainEvent (EventType, Anchor *, const string &);
-  bool addEvent (NclEvent *);
+  FormatterEvent *obtainEvent (EventType, Anchor *, const string &);
+  bool addEvent (FormatterEvent *);
 
-  NclEvent *obtainLambda ();
+  FormatterEvent *obtainLambda ();
   bool isOccurring ();
   bool isPaused ();
   bool isSleeping ();
@@ -66,7 +66,7 @@ public:
   void redraw (cairo_t *);
   void sendKeyEvent (const string &, bool);
   virtual void sendTickEvent (GingaTime, GingaTime, GingaTime);
-  virtual bool exec (NclEvent *, EventState, EventState,
+  virtual bool exec (FormatterEvent *, EventState, EventState,
                      EventStateTransition);
 
 protected:
@@ -78,10 +78,11 @@ protected:
   ExecutionObjectContext *_parent; // parent object
   Player *_player;                 // associated player
   GingaTime _time;                 // playback time
-  set<NclEvent *> _events;         // object events
+  set<FormatterEvent *> _events;   // object events
 
-  vector<pair<NclAction *, GingaTime>> _delayed;     // curr delayed actions
-  vector<pair<NclAction *, GingaTime>> _delayed_new; // new delayed actions
+  // delayed actions
+  vector<pair<FormatterAction *, GingaTime>> _delayed;
+  vector<pair<FormatterAction *, GingaTime>> _delayed_new;
 
   void reset ();
   void resetDelayed ();

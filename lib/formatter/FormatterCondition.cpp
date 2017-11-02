@@ -15,13 +15,13 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "NclCondition.h"
+#include "FormatterCondition.h"
 #include "aux-ginga.h"
 
 GINGA_FORMATTER_BEGIN
 
-NclCondition::NclCondition
-(NclEvent *event, EventStateTransition transition)
+FormatterCondition::FormatterCondition
+(FormatterEvent *event, EventStateTransition transition)
 {
   _transition = transition;
   _event = event;
@@ -29,35 +29,35 @@ NclCondition::NclCondition
   _listener = nullptr;
 }
 
-NclCondition::~NclCondition ()
+FormatterCondition::~FormatterCondition ()
 {
 }
 
-NclEvent *
-NclCondition::getEvent ()
+FormatterEvent *
+FormatterCondition::getEvent ()
 {
   return _event;
 }
 
 void
-NclCondition::setTriggerListener (INclConditionListener *listener)
+FormatterCondition::setTriggerListener (IFormatterConditionListener *lst)
 {
-  g_assert_nonnull (listener);
-  _listener = listener;
+  g_assert_nonnull (lst);
+  _listener = lst;
 }
 
 void
-NclCondition::conditionSatisfied ()
+FormatterCondition::conditionSatisfied ()
 {
   _listener->conditionSatisfied ();
 }
 
 void
-NclCondition::eventStateChanged (unused (NclEvent *event),
+FormatterCondition::eventStateChanged (unused (FormatterEvent *event),
                                  EventStateTransition transition)
 {
   if (_transition == transition)
-    NclCondition::conditionSatisfied ();
+    FormatterCondition::conditionSatisfied ();
 }
 
 GINGA_FORMATTER_END

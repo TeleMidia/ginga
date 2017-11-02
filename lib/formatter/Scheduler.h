@@ -22,10 +22,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ExecutionObjectContext.h"
 #include "ExecutionObjectSwitch.h"
 #include "ExecutionObjectSettings.h"
-#include "NclAction.h"
-#include "NclCondition.h"
-#include "NclEvent.h"
-#include "NclLink.h"
+#include "FormatterAction.h"
+#include "FormatterCondition.h"
+#include "FormatterEvent.h"
+#include "FormatterLink.h"
 
 #include "ncl/Ncl.h"
 using namespace ::ginga::ncl;
@@ -62,8 +62,8 @@ private:
   ExecutionObjectSettings *_settings; // settings object
   set<ExecutionObject *> _objects;    // document objects
 
-  NclEvent *obtainNclEventFromBind (Bind *);
-  NclLink *obtainNclLink (Link *);
+  FormatterEvent *obtainFormatterEventFromBind (Bind *);
+  FormatterLink *obtainFormatterLink (Link *);
 };
 
 GINGA_FORMATTER_END

@@ -68,14 +68,14 @@ ExecutionObjectContext::addChild (ExecutionObject *child)
   return true;
 }
 
-const vector<NclLink *> *
+const vector<FormatterLink *> *
 ExecutionObjectContext::getLinks ()
 {
   return &_links;
 }
 
 bool
-ExecutionObjectContext::addLink (NclLink *link)
+ExecutionObjectContext::addLink (FormatterLink *link)
 {
   g_assert_nonnull (link);
   for (auto other: _links)
@@ -90,7 +90,7 @@ ExecutionObjectContext::sendTickEvent (unused (GingaTime total),
                                        unused (GingaTime diff),
                                        unused (GingaTime frame))
 {
-  NclEvent *lambda;
+  FormatterEvent *lambda;
 
   g_assert (this->isOccurring ());
   for (auto child: _children)
@@ -103,7 +103,7 @@ ExecutionObjectContext::sendTickEvent (unused (GingaTime total),
 }
 
 bool
-ExecutionObjectContext::exec (NclEvent *evt,
+ExecutionObjectContext::exec (FormatterEvent *evt,
                               unused (EventState from),
                               unused (EventState to),
                               EventStateTransition transition)
@@ -126,7 +126,7 @@ ExecutionObjectContext::exec (NclEvent *evt,
               Node *target;
               Anchor *iface;
               ExecutionObject *child;
-              NclEvent *e;
+              FormatterEvent *e;
 
               port->getTarget (&target, &iface);
               child = _scheduler->obtainExecutionObject (target);
@@ -154,7 +154,7 @@ ExecutionObjectContext::exec (NclEvent *evt,
           this->toggleLinks (true);
           for (auto child: _children)
             {
-              NclEvent *e = child->obtainLambda ();
+              FormatterEvent *e = child->obtainLambda ();
               g_assert_nonnull (e);
               e->transition (EventStateTransition::STOP);
             }

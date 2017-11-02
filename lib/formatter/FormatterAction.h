@@ -15,20 +15,20 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef LINK_ACTION_H
-#define LINK_ACTION_H
+#ifndef FORMATTER_ACTION_H
+#define FORMATTER_ACTION_H
 
-#include "NclEvent.h"
+#include "FormatterEvent.h"
 
 GINGA_FORMATTER_BEGIN
 
-class NclAction
+class FormatterAction
 {
 public:
-  NclAction (NclEvent *, EventStateTransition);
-  virtual ~NclAction ();
+  FormatterAction (FormatterEvent *, EventStateTransition);
+  virtual ~FormatterAction ();
 
-  NclEvent *getEvent ();
+  FormatterEvent *getEvent ();
   EventType getEventType ();
   EventStateTransition getEventStateTransition ();
 
@@ -39,7 +39,7 @@ public:
   void setValue (const string &);
 
 private:
-  NclEvent *_event;
+  FormatterEvent *_event;
   EventStateTransition _transition;
   string _duration;
   string _value;
@@ -47,4 +47,4 @@ private:
 
 GINGA_FORMATTER_END
 
-#endif // LINK_ACTION_H
+#endif // FORMATTER_ACTION_H
