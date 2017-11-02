@@ -123,16 +123,14 @@ set (LIBGINGA_SOURCES
   ../lib/Ginga.cpp
   ../lib/GingaInternal.cpp
 
-  ../lib/formatter/Converter.cpp
   ../lib/formatter/ExecutionObject.cpp
   ../lib/formatter/ExecutionObjectContext.cpp
-  ../lib/formatter/ExecutionObjectSwitch.cpp
   ../lib/formatter/ExecutionObjectSettings.cpp
-  ../lib/formatter/NclAction.cpp
-  ../lib/formatter/NclCondition.cpp
-  ../lib/formatter/NclEvents.cpp
-  ../lib/formatter/NclLink.cpp
-  ../lib/formatter/RuleAdapter.cpp
+  ../lib/formatter/ExecutionObjectSwitch.cpp
+  ../lib/formatter/FormatterAction.cpp
+  ../lib/formatter/FormatterCondition.cpp
+  ../lib/formatter/FormatterEvent.cpp
+  ../lib/formatter/FormatterLink.cpp
   ../lib/formatter/Scheduler.cpp
 
   ../lib/ncl/Action.cpp
@@ -141,7 +139,6 @@ set (LIBGINGA_SOURCES
   ../lib/ncl/AttributeAssessment.cpp
   ../lib/ncl/Base.cpp
   ../lib/ncl/Bind.cpp
-  ../lib/ncl/CompositeRule.cpp
   ../lib/ncl/Composition.cpp
   ../lib/ncl/Condition.cpp
   ../lib/ncl/Connector.cpp
@@ -157,10 +154,9 @@ set (LIBGINGA_SOURCES
   ../lib/ncl/ParserLibXML.cpp
   ../lib/ncl/Port.cpp
   ../lib/ncl/Property.cpp
+  ../lib/ncl/Predicate.cpp
   ../lib/ncl/Refer.cpp
   ../lib/ncl/Role.cpp
-  ../lib/ncl/RuleBase.cpp
-  ../lib/ncl/SimpleRule.cpp
   ../lib/ncl/Switch.cpp
   ../lib/ncl/SwitchPort.cpp
   ../lib/ncl/ValueAssessment.cpp
@@ -405,7 +401,7 @@ ginga-gui (gtk):	${WITH_GINGAGUI_GTK}
 ginga-runview:          ${WITH_RUNVIEW}
 ginga-gl:               ${WITH_OPENGL}
 ")
- 
+
 set (CPACK_PACKAGE_NAME ${PACKAGE})
 set (CPACK_PACKAGE_CONTACT robertogerson@telemidia.puc-rio.br)
 
