@@ -74,7 +74,7 @@ private:
   void parseImportedDocumentBase (DOMElement *);
 
   void parseRuleBase (DOMElement *);
-  // void parseCompositeRule (DOMElement *, Predicate *);
+  void parseCompositeRule (DOMElement *, Predicate *);
   void parseRule (DOMElement *, Predicate *);
 
   void parseTransitionBase (DOMElement *);

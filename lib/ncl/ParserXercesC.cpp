@@ -574,8 +574,7 @@ ParserXercesC::parseRuleBase (DOMElement *elt)
         }
       else if (tag == "compositeRule")
         {
-          g_assert_not_reached ();
-          // this->parseCompositeRule (child, nullptr);
+          this->parseCompositeRule (child, nullptr);
         }
       else
         {
@@ -584,42 +583,50 @@ ParserXercesC::parseRuleBase (DOMElement *elt)
     }
 }
 
-// CompositeRule *
-// ParserXercesC::parseCompositeRule (DOMElement *elt, Predicate *parent)
-// {
-//   CompositeRule *rule;
-//   string id;
-//   string value;
-//
-//   CHECK_ELT_TAG (elt, "compositeRule", nullptr);
-//   CHECK_ELT_ID (elt, &id);
-//
-//   CHECK_ELT_ATTRIBUTE (elt, "operator", &value);
-//   if (value == "and")
-//     rule = new CompositeRule (_doc, id, true);
-//   else if (value == "or")
-//     rule = new CompositeRule (_doc, id, false);
-//   else
-//     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "operator");
-//
-//   for (DOMElement *child: dom_elt_get_children (elt))
-//     {
-//       string tag = dom_elt_get_tag (child);
-//       if (tag == "rule")
-//         {
-//           rule->addRule (this->parseRule (child));
-//         }
-//       else if (tag == "compositeRule")
-//         {
-//           rule->addRule (this->parseCompositeRule (child));
-//         }
-//       else
-//         {
-//           ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
-//         }
-//     }
-//   return rule;
-// }
+void
+ParserXercesC::parseCompositeRule (DOMElement *elt, Predicate *parent)
+{
+  string id;
+  string value;
+
+  Predicate *pred;
+  PredicateType type;
+
+  CHECK_ELT_TAG (elt, "compositeRule", nullptr);
+  CHECK_ELT_ID (elt, &id);
+
+  CHECK_ELT_ATTRIBUTE (elt, "operator", &value);
+  if (xstrcaseeq (value, "and"))
+    type = PredicateType::CONJUNCTION;
+  else if (xstrcaseeq (value, "or"))
+    type = PredicateType::DISJUNCTION;
+  else if (xstrcaseeq (value, "not"))
+    type = PredicateType::NEGATION;
+  else
+    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "operator");
+
+  pred = new Predicate (type);
+  if (parent != nullptr)
+    parent->addChild (pred);
+
+  for (DOMElement *child: dom_elt_get_children (elt))
+    {
+      string tag = dom_elt_get_tag (child);
+      if (tag == "rule")
+        {
+          this->parseRule (child, pred);
+        }
+      else if (tag == "compositeRule")
+        {
+          this->parseCompositeRule (child, pred);
+        }
+      else
+        {
+          ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
+        }
+    }
+  _rules[id] = pred;
+}
 
 void
 ParserXercesC::parseRule (DOMElement *elt, Predicate *parent)
