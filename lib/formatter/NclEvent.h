@@ -44,7 +44,6 @@ public:
   ExecutionObject *getObject ();
   Anchor *getAnchor ();
   EventState getState ();
-  bool getInterval (GingaTime *, GingaTime *); // presentation
 
   const vector<INclEventListener *> *getListeners ();
   void addListener (INclEventListener *);
