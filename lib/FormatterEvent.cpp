@@ -76,16 +76,20 @@ FormatterEvent::addListener (IFormatterEventListener *listener)
   _listeners.push_back (listener);
 }
 
-string
-FormatterEvent::getParameter (const string &name)
+bool
+FormatterEvent::getParameter (const string &name, string *value)
 {
-  return (_params.count (name) != 0) ? _params[name] : "";
+  map<string, string>::iterator it;
+  if ((it = _parameters.find (name)) == _parameters.end ())
+    return false;
+  tryset (value, it->second);
+  return true;
 }
 
 void
 FormatterEvent::setParameter (const string &name, const string &value)
 {
-  _params[name] = value;
+  _parameters[name] = value;
 }
 
 bool

@@ -584,8 +584,8 @@ FormatterScheduler::obtainFormatterLink (NclLink *docLink)
                 value = bind->getParameter
                   (value.substr (1, value.length () - 1));
 
-              act->setDuration (dur);
-              act->setValue (value);
+              act->setParameter ("duration", dur);
+              act->setParameter ("value", value);
             }
           g_assert (link->addAction (act));
         }

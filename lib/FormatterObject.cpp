@@ -128,7 +128,9 @@ FormatterObject::getEvent (NclEventType type, NclAnchor *anchor,
           return event;
         case NclEventType::SELECTION:
           {
-            if (event->getParameter ("key") == key)
+            string evtkey = "";
+            event->getParameter ("key", &evtkey);
+            if (evtkey == key)
               return event;
             break;
           }
@@ -159,7 +161,9 @@ FormatterObject::getEventByAnchorId (NclEventType type, const string &id,
           return event;
         case NclEventType::SELECTION:
           {
-            if (event->getParameter ("key") == key)
+            string evtkey = "";
+            event->getParameter ("key", &evtkey);
+            if (evtkey == key)
               return event;
             break;
           }
@@ -381,7 +385,8 @@ FormatterObject::sendKeyEvent (const string &key, bool press)
       if (evt->getType () != NclEventType::SELECTION)
         continue;
 
-      expected = evt->getParameter ("key");
+      expected = "";
+      evt->getParameter ("key", &expected);
       if (!((expected == "" && key == "ENTER" && _player->isFocused ())
             || (expected != "" && key == expected)))
         {
@@ -653,15 +658,22 @@ FormatterObject::exec (FormatterEvent *evt,
             g_assert_nonnull (prop);
 
             name = prop->getName ();
-            value = evt->getParameter ("value");
+            value = "";
+            evt->getParameter ("value", &value);
             if (value[0] == '$')
               _scheduler->getObjectPropertyByRef (value, &value);
 
             string s;
-            s = evt->getParameter ("duration");
-            if (s[0] == '$')
-              _scheduler->getObjectPropertyByRef (s, &s);
-            dur = ginga_parse_time (s);
+            if (evt->getParameter ("duration", &s))
+              {
+                if (s[0] == '$')
+                  _scheduler->getObjectPropertyByRef (s, &s);
+                dur = ginga_parse_time (s);
+              }
+            else
+              {
+                dur = 0;
+              }
             this->setProperty (name, value, dur);
 
             // Schedule stop.
@@ -698,13 +710,19 @@ FormatterObject::exec (FormatterEvent *evt,
       switch (transition)
         {
         case NclEventStateTransition::START:
-          TRACE ("start %s<%s>", _id.c_str (),
-                 evt->getParameter ("key").c_str ());
-          break;
+          {
+            string key = "";
+            evt->getParameter ("key", &key);
+            TRACE ("start %s<%s>", _id.c_str (), key.c_str ());
+            break;
+          }
         case NclEventStateTransition::STOP:
-          TRACE ("stop %s<%s>", _id.c_str (),
-                 evt->getParameter ("key").c_str ());
-          break;
+          {
+            string key = "";
+            evt->getParameter ("key", &key);
+            TRACE ("stop %s<%s>", _id.c_str (), key.c_str ());
+            break;
+          }
         case NclEventStateTransition::PAUSE: // impossible
         case NclEventStateTransition::RESUME:
         case NclEventStateTransition::ABORT:

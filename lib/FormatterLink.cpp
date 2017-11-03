@@ -101,8 +101,14 @@ FormatterLink::conditionSatisfied (FormatterCondition *cond)
       g_assert_nonnull (evt);
       if (evt->getType () == NclEventType::ATTRIBUTION)
         {
-          evt->setParameter ("duration", action->getDuration ());
-          evt->setParameter ("value", action->getValue ());
+          string dur;
+          string value = "";
+
+          if (action->getParameter ("duration", &dur))
+            evt->setParameter ("duration", dur);
+
+          action->getParameter ("value", &value);
+          evt->setParameter ("value", value);
         }
       evt->transition (action->getEventStateTransition ());
     }
