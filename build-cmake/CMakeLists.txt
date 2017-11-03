@@ -127,6 +127,7 @@ set (LIBGINGA_SOURCES
   ../lib/FormatterLink.cpp
   ../lib/FormatterMediaSettings.cpp
   ../lib/FormatterObject.cpp
+  ../lib/FormatterPredicate.cpp
   ../lib/FormatterScheduler.cpp
   ../lib/FormatterSwitch.cpp
   ../lib/Ginga.cpp
@@ -153,17 +154,16 @@ set (LIBGINGA_SOURCES
   ../lib/ncl/NclSwitch.cpp
   ../lib/ncl/ParserLibXML.cpp
   ../lib/ncl/ParserXercesC.cpp
-  ../lib/ncl/Predicate.cpp
 
-  ../lib/player/ImagePlayer.cpp
-  ../lib/player/LuaPlayer.cpp
   ../lib/player/Player.cpp
   ../lib/player/PlayerAnimator.cpp
-  ../lib/player/TextPlayer.cpp
-  ../lib/player/VideoPlayer.cpp
+  ../lib/player/PlayerImage.cpp
+  ../lib/player/PlayerLua.cpp
+  ../lib/player/PlayerText.cpp
+  ../lib/player/PlayerVideo.cpp
 
 #if WITH_LIBRSVG
-  ../lib/player/SvgPlayer.cpp
+  ../lib/player/PlayerSvg.cpp
 #WITH_LIBRSVG
 )
 
