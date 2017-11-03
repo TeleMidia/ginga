@@ -103,12 +103,6 @@ test_aux_xstrhasprefix_SOURCES= test-aux-xstrhasprefix.cpp
 progs+= test-aux-xstrhassuffix
 test_aux_xstrhassuffix_SOURCES= test-aux-xstrhassuffix.cpp
 
-progs+= test-aux-xstrup
-test_aux_xstrup_SOURCES= test-aux-xstrup.cpp
-
-progs+= test-aux-xstrdown
-test_aux_xstrdown_SOURCES= test-aux-xstrdown.cpp
-
 progs+= test-aux-xstrstrip
 test_aux_xstrstrip_SOURCES= test-aux-xstrstrip.cpp
 

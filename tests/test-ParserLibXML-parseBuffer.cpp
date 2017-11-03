@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <string.h>
 #include "ncl/ParserLibXML.h"
 #include "ncl/Ncl.h"
-using namespace ginga::ncl;
+using namespace ::ginga;
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wunused-macros)
 
@@ -616,7 +616,7 @@ main (void)
 ");
     g_assert_nonnull (ncl);
     g_assert (ncl->getId () == "ncl");
-    Context *body = ncl->getRoot ();
+    NclContext *body = ncl->getRoot ();
     g_assert_nonnull (body);
     g_assert (body->getId () == ncl->getId ());
     g_assert (body->getPorts ()->size () == 0);
@@ -673,26 +673,26 @@ main (void)
 ");
     g_assert_nonnull (ncl);
     g_assert (ncl->getId () == "ncl");
-    Context *body = ncl->getRoot ();
+    NclContext *body = ncl->getRoot ();
     g_assert_nonnull (body);
     g_assert (body->getId () == ncl->getId ());
     g_assert (body->getPorts ()->size () == 3);
     g_assert (body->getNodes ()->size () == 2);
     g_assert (body->getLinks ()->size () == 0);
 
-    Entity *port = ncl->getEntityById ("p");
-    g_assert (instanceof (Port *, port));
-    Port *p = cast (Port *, port);
+    NclEntity *port = ncl->getEntityById ("p");
+    g_assert (instanceof (NclPort *, port));
+    NclPort *p = cast (NclPort *, port);
     g_assert (p->getId () == "p");
 
     port = ncl->getEntityById ("q");
-    g_assert (instanceof (Port *, port));
-    Port *q = cast (Port *, port);
+    g_assert (instanceof (NclPort *, port));
+    NclPort *q = cast (NclPort *, port);
     g_assert (q->getId () == "q");
 
-    Entity *media = ncl->getEntityById ("m");
-    g_assert (instanceof (Media *, media));
-    Media *m = cast (Media *, media);
+    NclEntity *media = ncl->getEntityById ("m");
+    g_assert (instanceof (NclMedia *, media));
+    NclMedia *m = cast (NclMedia *, media);
     g_assert (m->getId () == "m");
 
     g_assert (p->getNode () == m);
