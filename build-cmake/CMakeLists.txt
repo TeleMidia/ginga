@@ -36,7 +36,6 @@ add_definitions (-DWITH_PANGO=1 -DWITH_GSTREAMER=1)
 find_package (Lua REQUIRED)
 
 find_package (SDL2)
-find_package (SDL2_image)
 find_package (OpenGL)
 
 if (OPENGL_FOUND)
@@ -133,33 +132,29 @@ set (LIBGINGA_SOURCES
   ../lib/formatter/FormatterLink.cpp
   ../lib/formatter/Scheduler.cpp
 
-  ../lib/ncl/Action.cpp
-  ../lib/ncl/Area.cpp
-  ../lib/ncl/AreaLabeled.cpp
-  ../lib/ncl/AttributeAssessment.cpp
-  ../lib/ncl/Base.cpp
-  ../lib/ncl/Bind.cpp
-  ../lib/ncl/Composition.cpp
-  ../lib/ncl/Condition.cpp
-  ../lib/ncl/Connector.cpp
-  ../lib/ncl/ConnectorBase.cpp
-  ../lib/ncl/Context.cpp
-  ../lib/ncl/Entity.cpp
-  ../lib/ncl/EventUtil.cpp
-  ../lib/ncl/Link.cpp
-  ../lib/ncl/Media.cpp
+  ../lib/ncl/NclAction.cpp
+  ../lib/ncl/NclArea.cpp
+  ../lib/ncl/NclAreaLabeled.cpp
+  ../lib/ncl/NclBind.cpp
+  ../lib/ncl/NclComposition.cpp
+  ../lib/ncl/NclCondition.cpp
+  ../lib/ncl/NclConnector.cpp
+  ../lib/ncl/NclConnectorBase.cpp
+  ../lib/ncl/NclContext.cpp
   ../lib/ncl/NclDocument.cpp
-  ../lib/ncl/Node.cpp
-  ../lib/ncl/ParserXercesC.cpp
+  ../lib/ncl/NclEntity.cpp
+  ../lib/ncl/NclEvent.cpp
+  ../lib/ncl/NclLink.cpp
+  ../lib/ncl/NclMedia.cpp
+  ../lib/ncl/NclMediaRefer.cpp
+  ../lib/ncl/NclNode.cpp
+  ../lib/ncl/NclPort.cpp
+  ../lib/ncl/NclProperty.cpp
+  ../lib/ncl/NclRole.cpp
+  ../lib/ncl/NclSwitch.cpp
   ../lib/ncl/ParserLibXML.cpp
-  ../lib/ncl/Port.cpp
-  ../lib/ncl/Property.cpp
+  ../lib/ncl/ParserXercesC.cpp
   ../lib/ncl/Predicate.cpp
-  ../lib/ncl/Refer.cpp
-  ../lib/ncl/Role.cpp
-  ../lib/ncl/Switch.cpp
-  ../lib/ncl/SwitchPort.cpp
-  ../lib/ncl/ValueAssessment.cpp
 
   ../lib/player/ImagePlayer.cpp
   ../lib/player/LuaPlayer.cpp
