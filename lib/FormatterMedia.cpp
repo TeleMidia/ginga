@@ -36,11 +36,11 @@ FormatterMedia::FormatterMedia (Formatter *ginga,
   :FormatterObject (ginga, id, node)
 {
   _player = nullptr;
-  _time = GINGA_TIME_NONE;
 }
 
 FormatterMedia::~FormatterMedia ()
 {
+  this->doStop ();
 }
 
 string
@@ -141,19 +141,15 @@ FormatterMedia::sendKeyEvent (const string &key, bool press)
 }
 
 void
-FormatterMedia::sendTickEvent (unused (GingaTime total),
+FormatterMedia::sendTickEvent (GingaTime total,
                                GingaTime diff,
-                               unused (GingaTime frame))
+                               GingaTime frame)
 {
   GingaTime dur;
 
-  g_assert (this->isOccurring ());
-  if (_player == nullptr)
-    return;
-
   // Update object time.
-  g_assert (GINGA_TIME_IS_VALID (_time));
-  _time += diff;
+  FormatterObject::sendTickEvent (total, diff, frame);
+  g_assert_nonnull (_player);
   _player->incTime (diff);
 
   // Check EOS.
@@ -168,38 +164,6 @@ FormatterMedia::sendTickEvent (unused (GingaTime total),
       lambda->transition (NclEventStateTransition::STOP);
       return;
     }
-
-  // Evaluate current delayed actions.
-  for (auto it = _delayed.begin (); it != _delayed.end ();)
-    {
-      FormatterAction *act;
-      GingaTime timeout;
-
-      act = (*it).first;
-      timeout = (*it).second;
-      if (timeout <= _time)
-        {
-          FormatterEvent *evt = act->getEvent ();
-          g_assert_nonnull (evt);
-          evt->transition (act->getEventStateTransition ());
-          if (!this->isOccurring ())
-            {
-              this->reset ();
-              break;
-            }
-          delete act;
-          it = _delayed.erase (it);
-        }
-      else
-        {
-          ++it;
-        }
-    }
-
-  // Update current delayed actions.  (Move this up?)
-  _delayed.insert (_delayed.end (),
-                   _delayed_new.begin (), _delayed_new.end ());
-  _delayed_new.clear ();
 }
 
 bool
@@ -268,10 +232,11 @@ FormatterMedia::exec (FormatterEvent *evt,
 
                   act = new FormatterAction
                     (e, NclEventStateTransition::START);
-                  _delayed_new.push_back (std::make_pair (act, begin));
+                  this->scheduleAction (act, begin);
+
                   act = new FormatterAction
                     (e, NclEventStateTransition::STOP);
-                  _delayed_new.push_back (std::make_pair (act, end));
+                  this->scheduleAction (act, end);
                 }
 
               _time = 0;
@@ -327,7 +292,7 @@ FormatterMedia::exec (FormatterEvent *evt,
               //
               g_assert_nonnull (_player);
               TRACE ("stop %s@lambda", _id.c_str ());
-              this->reset ();
+              this->doStop ();
             }
           else
             {
@@ -412,7 +377,7 @@ FormatterMedia::exec (FormatterEvent *evt,
             // Schedule stop.
             FormatterAction *act = new FormatterAction
               (evt, NclEventStateTransition::STOP);
-            _delayed_new.push_back (std::make_pair (act, _time + dur));
+            this->scheduleAction (act, dur);
 
             TRACE ("start %s.%s:=%s (duration=%s)", _id.c_str (),
                    name.c_str (), value.c_str (), s.c_str ());
@@ -504,7 +469,7 @@ FormatterMedia::redraw (cairo_t *cr)
 // Protected.
 
 void
-FormatterMedia::reset ()
+FormatterMedia::doStop ()
 {
   if (_player != nullptr)
     {
@@ -513,8 +478,7 @@ FormatterMedia::reset ()
       delete _player;
       _player = nullptr;
     }
-  _time = GINGA_TIME_NONE;
-  FormatterObject::reset ();
+  FormatterObject::doStop ();
 }
 
 GINGA_NAMESPACE_END

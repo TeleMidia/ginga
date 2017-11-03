@@ -54,5 +54,35 @@
       <bind role="stop" component="switch"/>
       <bind role="start" component="switch"/>
     </link>
+    <link xconnector="onKeySelSetStopStart">
+      <bind role="onSelection" component="time">
+        <bindParam name="key" value="GREEN"/>
+      </bind>
+      <bind role="set" component="settings" interface="color">
+        <bindParam name="var" value="green"/>
+      </bind>
+      <bind role="stop" component="switch"/>
+      <bind role="start" component="switch"/>
+    </link>
+    <link xconnector="onKeySelSetStopStart">
+      <bind role="onSelection" component="time">
+        <bindParam name="key" value="BLUE"/>
+      </bind>
+      <bind role="set" component="settings" interface="color">
+        <bindParam name="var" value="blue"/>
+      </bind>
+      <bind role="stop" component="switch"/>
+      <bind role="start" component="switch"/>
+    </link>
+    <link xconnector="onKeySelSetStopStart">
+      <bind role="onSelection" component="time">
+        <bindParam name="key" value="YELLOW"/>
+      </bind>
+      <bind role="set" component="settings" interface="color">
+        <bindParam name="var" value="yellow"/>
+      </bind>
+      <bind role="stop" component="switch"/>
+      <bind role="start" component="switch"/>
+    </link>
   </body>
 </ncl>
