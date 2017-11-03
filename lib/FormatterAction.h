@@ -32,17 +32,13 @@ public:
   NclEventType getEventType ();
   NclEventStateTransition getEventStateTransition ();
 
-  string getDuration ();
-  void setDuration (const string &);
-
-  string getValue ();
-  void setValue (const string &);
+  bool getParameter (const string &, string *);
+  void setParameter (const string &, const string &);
 
 private:
   FormatterEvent *_event;
   NclEventStateTransition _transition;
-  string _duration;
-  string _value;
+  map<string, string> _parameters;
 };
 
 GINGA_NAMESPACE_END

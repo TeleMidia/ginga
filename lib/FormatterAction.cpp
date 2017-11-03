@@ -26,8 +26,6 @@ FormatterAction::FormatterAction (FormatterEvent *event,
   g_assert_nonnull (event);
   _event = event;
   _transition = transition;
-  _duration = "";
-  _value = "";
 }
 
 FormatterAction::~FormatterAction ()
@@ -52,28 +50,20 @@ FormatterAction::getEventStateTransition ()
   return _transition;
 }
 
-string
-FormatterAction::getDuration ()
+bool
+FormatterAction::getParameter (const string &name, string *value)
 {
-  return _duration;
+  map<string, string>::iterator it;
+  if ((it = _parameters.find (name)) == _parameters.end ())
+    return false;
+  tryset (value, it->second);
+  return true;
 }
 
 void
-FormatterAction::setDuration (const string &duration)
+FormatterAction::setParameter (const string &name, const string &value)
 {
-  _duration = duration;
-}
-
-string
-FormatterAction::getValue ()
-{
-  return _value;
-}
-
-void
-FormatterAction::setValue (const string &value)
-{
-  _value = value;
+  _parameters[name] = value;
 }
 
 GINGA_NAMESPACE_END

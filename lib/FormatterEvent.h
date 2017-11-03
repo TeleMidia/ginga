@@ -46,20 +46,21 @@ public:
 
   const vector<IFormatterEventListener *> *getListeners ();
   void addListener (IFormatterEventListener *);
-  string getParameter (const string &);
+
+  bool getParameter (const string &, string *);
   void setParameter (const string &, const string &);
 
   bool transition (NclEventStateTransition);
 
 private:
-  Formatter *_ginga;                        // ginga handle
-  FormatterScheduler *_scheduler;                        // scheduler
-  NclEventType _type;                              // event type
+  Formatter *_ginga;                            // formatter handle
+  FormatterScheduler *_scheduler;               // scheduler
+  NclEventType _type;                           // event type
   FormatterObject *_object;                     // target object
-  NclAnchor *_anchor;                              // target anchor
-  NclEventState _state;                            // event state
+  NclAnchor *_anchor;                           // target anchor
+  NclEventState _state;                         // event state
   vector<IFormatterEventListener *> _listeners; // event listeners
-  map<string,string> _params;                   // parameters
+  map<string, string> _parameters;              // parameters
 };
 
 GINGA_NAMESPACE_END
