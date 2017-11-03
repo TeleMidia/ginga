@@ -17,9 +17,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 #include "aux-gl.h"
-#include "TextPlayer.h"
+#include "PlayerText.h"
 
-GINGA_PLAYER_BEGIN
+GINGA_BEGIN
 
 
 // Public: Static.
@@ -42,7 +42,7 @@ GINGA_PLAYER_BEGIN
  * @return The resulting surface.
  */
 cairo_surface_t *
-TextPlayer::renderSurface (const string &text,
+PlayerText::renderSurface (const string &text,
                            const string &family, const string &weight,
                            const string &style, const string &size,
                            GingaColor fg, GingaColor bg, GingaRect rect,
@@ -155,7 +155,7 @@ TextPlayer::renderSurface (const string &text,
 
 // Public.
 
-TextPlayer::TextPlayer (Formatter *ginga,
+PlayerText::PlayerText (Formatter *ginga,
                         const string &id, const string &uri)
   : Player (ginga, id, uri)
 {
@@ -176,7 +176,7 @@ TextPlayer::TextPlayer (Formatter *ginga,
 }
 
 void
-TextPlayer::reload ()
+PlayerText::reload ()
 {
   const char *path;
   gchar *contents = NULL;
@@ -202,7 +202,7 @@ TextPlayer::reload ()
         GL::delete_texture (&_gltexture);
     }
 
-  _surface = TextPlayer::renderSurface (text,
+  _surface = PlayerText::renderSurface (text,
                                         _prop.fontFamily,
                                         _prop.fontWeight,
                                         _prop.fontStyle,
@@ -230,7 +230,7 @@ TextPlayer::reload ()
 // Protected.
 
 bool
-TextPlayer::doSetProperty (PlayerProperty code, unused (const string &name),
+PlayerText::doSetProperty (PlayerProperty code, unused (const string &name),
                            const string &value)
 {
   switch (code)
@@ -295,4 +295,4 @@ TextPlayer::doSetProperty (PlayerProperty code, unused (const string &name),
   return true;
 }
 
-GINGA_PLAYER_END
+GINGA_END

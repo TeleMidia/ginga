@@ -20,9 +20,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Player.h"
 
-GINGA_PLAYER_BEGIN
+GINGA_BEGIN
 
-class TextPlayer : public Player
+class PlayerText : public Player
 {
 public:
   static cairo_surface_t *renderSurface (const string &,
@@ -32,8 +32,8 @@ public:
                                          const string &, const string &,
                                          bool, GingaRect *);
 
-  TextPlayer (Formatter *, const string &, const string &);
-  virtual ~TextPlayer (void) {}
+  PlayerText (Formatter *, const string &, const string &);
+  virtual ~PlayerText (void) {}
   void reload () override;
 
 protected:
@@ -54,6 +54,6 @@ private:
   } _prop;
 };
 
-GINGA_PLAYER_END
+GINGA_END
 
 #endif

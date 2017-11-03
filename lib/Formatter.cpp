@@ -22,9 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterScheduler.h"
 #include "ncl/ParserLibXML.h"
 #include "ncl/ParserXercesC.h"
-
-#include "player/TextPlayer.h"
-using namespace ::ginga::player;
+#include "player/PlayerText.h"
 
 GINGA_BEGIN
 

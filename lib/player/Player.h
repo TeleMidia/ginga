@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 class Formatter;
 
-GINGA_PLAYER_BEGIN
+GINGA_BEGIN
 class Player
 {
 public:
@@ -148,6 +148,6 @@ private:
   static string _currentFocus;  // current (global) focus index
 };
 
-GINGA_PLAYER_END
+GINGA_END
 
 #endif // PLAYER_H

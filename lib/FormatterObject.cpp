@@ -23,9 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterSwitch.h"
 #include "FormatterEvent.h"
 #include "FormatterScheduler.h"
-
 #include "player/Player.h"
-using namespace ::ginga::player;
 
 GINGA_BEGIN
 

@@ -17,11 +17,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 #include "aux-gl.h"
-#include "LuaPlayer.h"
+#include "PlayerLua.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wunused-macros)
 
-GINGA_PLAYER_BEGIN
+GINGA_BEGIN
 
 // Event handling.
 #define evt_ncl_send_attribution(nw, action, name, value)\
@@ -39,7 +39,7 @@ GINGA_PLAYER_BEGIN
 
 // Public.
 
-LuaPlayer::LuaPlayer (Formatter *ginga, const string &id,
+PlayerLua::PlayerLua (Formatter *ginga, const string &id,
                       const string &uri)
   : Player (ginga, id, uri)
 {
@@ -47,12 +47,12 @@ LuaPlayer::LuaPlayer (Formatter *ginga, const string &id,
   _init_rect = {0, 0, 0, 0};
 }
 
-LuaPlayer::~LuaPlayer (void)
+PlayerLua::~PlayerLua (void)
 {
 }
 
 void
-LuaPlayer::start (void)
+PlayerLua::start (void)
 {
   char *errmsg;
 
@@ -73,7 +73,7 @@ LuaPlayer::start (void)
 }
 
 void
-LuaPlayer::stop (void)
+PlayerLua::stop (void)
 {
   g_assert (_state != SLEEPING);
   g_assert_nonnull (_nw);
@@ -95,7 +95,7 @@ LuaPlayer::stop (void)
 }
 
 void G_GNUC_NORETURN
-LuaPlayer::pause (void)
+PlayerLua::pause (void)
 {
   g_assert (_state != PAUSED && _state != SLEEPING);
   TRACE ("pausing");
@@ -103,7 +103,7 @@ LuaPlayer::pause (void)
 }
 
 void G_GNUC_NORETURN
-LuaPlayer::resume (void)
+PlayerLua::resume (void)
 {
   g_assert (_state != PAUSED && _state != SLEEPING);
   TRACE ("resuming");
@@ -111,14 +111,14 @@ LuaPlayer::resume (void)
 }
 
 void
-LuaPlayer::sendKeyEvent (string const &key, bool press)
+PlayerLua::sendKeyEvent (string const &key, bool press)
 {
   g_assert_nonnull (_nw);
   evt_key_send (_nw, press ? "press" : "release", key.c_str ());
 }
 
 void
-LuaPlayer::redraw (cairo_t *cr)
+PlayerLua::redraw (cairo_t *cr)
 {
   cairo_surface_t *sfc;
 
@@ -159,7 +159,7 @@ LuaPlayer::redraw (cairo_t *cr)
 // Protected.
 
 bool
-LuaPlayer::doSetProperty (PlayerProperty code, const string &name,
+PlayerLua::doSetProperty (PlayerProperty code, const string &name,
                           const string &value)
 {
   if (_nw != nullptr && _state == OCCURRING)
@@ -183,7 +183,7 @@ do_chdir (string dir)
 }
 
 void
-LuaPlayer::pwdSave (const string &path)
+PlayerLua::pwdSave (const string &path)
 {
   gchar *cwd;
   gchar *dir;
@@ -203,15 +203,15 @@ LuaPlayer::pwdSave (const string &path)
 }
 
 void
-LuaPlayer::pwdSave ()
+PlayerLua::pwdSave ()
 {
   do_chdir (_pwd);
 }
 
 void
-LuaPlayer::pwdRestore ()
+PlayerLua::pwdRestore ()
 {
   do_chdir (_saved_pwd);
 }
 
-GINGA_PLAYER_END
+GINGA_END

@@ -17,9 +17,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 #include "aux-gl.h"
-#include "ImagePlayer.h"
+#include "PlayerImage.h"
 
-GINGA_PLAYER_BEGIN
+GINGA_BEGIN
 
 // Creates a new surface by loading the image file at path PATH.  Stores the
 // resulting surface into *DUP and return CAIRO_STATUS_SUCCESS if
@@ -71,7 +71,7 @@ cairox_surface_create_from_file (const char *path, cairo_surface_t **dup)
 // Public.
 
 void
-ImagePlayer::reload ()
+PlayerImage::reload ()
 {
 
   cairo_status_t status;
@@ -100,4 +100,4 @@ ImagePlayer::reload ()
   Player::reload ();
 }
 
-GINGA_PLAYER_END
+GINGA_END

@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 #include "aux-gl.h"
-#include "VideoPlayer.h"
+#include "PlayerVideo.h"
 
 #define gstx_element_get_state(elt, st, pend, tout)             \
   g_assert (gst_element_get_state ((elt), (st), (pend), (tout)) \
@@ -38,11 +38,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
   }                                                             \
   G_STMT_END
 
-GINGA_PLAYER_BEGIN
+GINGA_BEGIN
 
 // Public.
 
-VideoPlayer::VideoPlayer (Formatter *ginga, const string &id,
+PlayerVideo::PlayerVideo (Formatter *ginga, const string &id,
                           const string &uri)
   : Player (ginga, id, uri)
 {
@@ -166,13 +166,13 @@ VideoPlayer::VideoPlayer (Formatter *ginga, const string &id,
   this->resetProperties (&handled);
 }
 
-VideoPlayer::~VideoPlayer ()
+PlayerVideo::~PlayerVideo ()
 {
 
 }
 
 void
-VideoPlayer::start ()
+PlayerVideo::start ()
 {
   GstCaps *caps;
   GstStructure *st;
@@ -222,7 +222,7 @@ VideoPlayer::start ()
 }
 
 void
-VideoPlayer::stop ()
+PlayerVideo::stop ()
 {
   g_assert (_state != SLEEPING);
   TRACE ("stopping");
@@ -233,7 +233,7 @@ VideoPlayer::stop ()
 }
 
 void
-VideoPlayer::pause ()
+PlayerVideo::pause ()
 {
   g_assert (_state != PAUSED && _state != SLEEPING);
   TRACE ("pausing");
@@ -243,7 +243,7 @@ VideoPlayer::pause ()
 }
 
 void
-VideoPlayer::resume ()
+PlayerVideo::resume ()
 {
   g_assert (_state == PAUSED);
   TRACE ("resuming");
@@ -253,7 +253,7 @@ VideoPlayer::resume ()
 }
 
 void
-VideoPlayer::redraw (cairo_t *cr)
+PlayerVideo::redraw (cairo_t *cr)
 {
   GstSample *sample;
   GstVideoFrame v_frame;
@@ -325,7 +325,7 @@ VideoPlayer::redraw (cairo_t *cr)
 // Protected.
 
 bool
-VideoPlayer::doSetProperty (PlayerProperty code,
+PlayerVideo::doSetProperty (PlayerProperty code,
                             unused (const string &name),
                             const string &value)
 {
@@ -377,7 +377,7 @@ VideoPlayer::doSetProperty (PlayerProperty code,
 }
 
 bool 
-VideoPlayer::getFreeze ()
+PlayerVideo::getFreeze ()
 {
   return _prop.freeze;
 }
@@ -385,7 +385,7 @@ VideoPlayer::getFreeze ()
 // Private: Static (GStreamer callbacks).
 
 gboolean
-VideoPlayer::cb_Bus (GstBus *bus, GstMessage *msg, VideoPlayer *player)
+PlayerVideo::cb_Bus (GstBus *bus, GstMessage *msg, PlayerVideo *player)
 {
   g_assert_nonnull (bus);
   g_assert_nonnull (msg);
@@ -432,12 +432,12 @@ VideoPlayer::cb_Bus (GstBus *bus, GstMessage *msg, VideoPlayer *player)
 }
 
 GstFlowReturn
-VideoPlayer::cb_NewSample (unused (GstAppSink *appsink), gpointer data)
+PlayerVideo::cb_NewSample (unused (GstAppSink *appsink), gpointer data)
 {
-  VideoPlayer *player = (VideoPlayer *) data;
+  PlayerVideo *player = (PlayerVideo *) data;
   g_assert_nonnull (player);
   g_atomic_int_compare_and_exchange (&player->_sample_flag, 0, 1);
   return GST_FLOW_OK;
 }
 
-GINGA_PLAYER_END
+GINGA_END

@@ -20,13 +20,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Player.h"
 
-GINGA_PLAYER_BEGIN
+GINGA_BEGIN
 
-class VideoPlayer : public Player
+class PlayerVideo : public Player
 {
 public:
-  VideoPlayer (Formatter *, const string &, const string &);
-  virtual ~VideoPlayer ();
+  PlayerVideo (Formatter *, const string &, const string &);
+  virtual ~PlayerVideo ();
   void start () override;
   void stop () override;
   void pause () override;
@@ -67,10 +67,10 @@ private:
   } _prop;
 
   // GStreamer callbacks.
-  static gboolean cb_Bus (GstBus *, GstMessage *, VideoPlayer *);
+  static gboolean cb_Bus (GstBus *, GstMessage *, PlayerVideo *);
   static GstFlowReturn cb_NewSample (GstAppSink *, gpointer);
 };
 
-GINGA_PLAYER_END
+GINGA_END
 
 #endif // VIDEO_PLAYER_H
