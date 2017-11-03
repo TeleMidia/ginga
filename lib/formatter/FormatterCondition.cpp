@@ -20,9 +20,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-FormatterCondition::FormatterCondition
-(FormatterEvent *event, EventStateTransition transition)
+FormatterCondition::FormatterCondition (Predicate *predicate,
+                                        FormatterEvent *event,
+                                        NclEventStateTransition transition)
 {
+  _predicate = predicate;
   _transition = transition;
   _event = event;
   _event->addListener (this);
@@ -31,6 +33,14 @@ FormatterCondition::FormatterCondition
 
 FormatterCondition::~FormatterCondition ()
 {
+  if (_predicate != nullptr)
+    delete _predicate;
+}
+
+Predicate *
+FormatterCondition::getPredicate ()
+{
+  return _predicate;
 }
 
 FormatterEvent *
@@ -49,12 +59,12 @@ FormatterCondition::setTriggerListener (IFormatterConditionListener *lst)
 void
 FormatterCondition::conditionSatisfied ()
 {
-  _listener->conditionSatisfied ();
+  _listener->conditionSatisfied (this);
 }
 
 void
 FormatterCondition::eventStateChanged (unused (FormatterEvent *event),
-                                 EventStateTransition transition)
+                                       NclEventStateTransition transition)
 {
   if (_transition == transition)
     FormatterCondition::conditionSatisfied ();

@@ -49,8 +49,8 @@ class Predicate
   Predicate *clone ();
 
   // Atomic only.
-  void initTest (const string &, PredicateTestType, const string &);
   void getTest (string *, PredicateTestType *, string *);
+  void setTest (const string &, PredicateTestType, const string &);
 
   // Non-atomic only.
   void addChild (Predicate *);

@@ -28,6 +28,8 @@ Predicate::Predicate (PredicateType type)
 
 Predicate::~Predicate ()
 {
+  for (auto child: _children)
+    delete child;
 }
 
 PredicateType
@@ -42,7 +44,7 @@ Predicate::clone ()
   Predicate *clone = new Predicate (_type);
   if (_type == PredicateType::ATOM)
     {
-      clone->initTest (_atom.left, _atom.test, _atom.right);
+      clone->setTest (_atom.left, _atom.test, _atom.right);
     }
   else
     {
@@ -53,8 +55,8 @@ Predicate::clone ()
 }
 
 void
-Predicate::initTest (const string &left, PredicateTestType test,
-                     const string &right)
+Predicate::setTest (const string &left, PredicateTestType test,
+                    const string &right)
 {
   g_assert (_type == PredicateType::ATOM);
   _atom.test = test;
@@ -83,6 +85,8 @@ Predicate::addChild (Predicate *child)
     case PredicateType::CONJUNCTION:
     case PredicateType::DISJUNCTION:
       break;
+    case PredicateType::FALSUM:
+    case PredicateType::VERUM:
     case PredicateType::ATOM:
     default:
       g_assert_not_reached  ();

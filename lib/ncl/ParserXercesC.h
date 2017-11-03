@@ -27,14 +27,12 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wundef)
 XERCES_CPP_NAMESPACE_USE
 GINGA_PRAGMA_DIAG_POP ()
 
-#include "Action.h"
-#include "Area.h"
-#include "AreaLabeled.h"
+#include "NclAction.h"
+#include "NclArea.h"
+#include "NclAreaLabeled.h"
 #include "NclDocument.h"
-#include "Property.h"
-#include "Switch.h"
-#include "SwitchPort.h"
-#include "ValueAssessment.h"
+#include "NclProperty.h"
+#include "NclSwitch.h"
 
 GINGA_NCL_BEGIN
 
@@ -67,7 +65,7 @@ private:
 
   NclDocument *parse1 (const string &);
   NclDocument *parseImportNCL (DOMElement *, string *, string *);
-  Base *parseImportBase (DOMElement *, NclDocument **, string *, string *);
+  NclConnectorBase *parseImportBase (DOMElement *, NclDocument **, string *, string *);
   void parseImportedDocumentBase (DOMElement *);
 
   void parseRuleBase (DOMElement *);
@@ -83,38 +81,33 @@ private:
   void parseDescriptorBase (DOMElement *);
   void parseDescriptor (DOMElement *);
 
-  ConnectorBase *parseConnectorBase (DOMElement *);
-  Connector *parseCausalConnector (DOMElement *);
+  NclConnectorBase *parseConnectorBase (DOMElement *);
+  NclConnector *parseCausalConnector (DOMElement *);
 
-  void parseCompoundCondition (Connector *, DOMElement *);
-  void parseCondition (Connector *, DOMElement *);
-  // CompoundStatement *parseCompoundStatement (DOMElement *);
-  // AssessmentStatement *parseAssessmentStatement (DOMElement *);
-  // AttributeAssessment *parseAttributeAssessment (DOMElement *);
-  // ValueAssessment *parseValueAssessment (DOMElement *);
+  Predicate *parseAssessmentStatement (DOMElement *);
+  Predicate *parseCompoundStatement (DOMElement *);
 
-  void parseCompoundAction (Connector *, DOMElement *);
-  void parseSimpleAction (Connector *, DOMElement *);
+  void parseCompoundCondition (DOMElement *, NclConnector *, Predicate *);
+  void parseCondition (DOMElement *, NclConnector *, Predicate *);
 
-  Context *parseBody (DOMElement *);
-  void solveNodeReferences (Composition *);
-  void posCompileContext (DOMElement *, Context *);
-  void posCompileSwitch (DOMElement *, Switch *);
+  void parseCompoundAction (DOMElement *, NclConnector *);
+  void parseSimpleAction (DOMElement *, NclConnector *);
 
-  Node *parseContext (DOMElement *);
-  Port *parsePort (DOMElement *, Composition *);
+  NclContext *parseBody (DOMElement *);
+  void solveNodeReferences (NclComposition *);
+  void posCompileContext (DOMElement *, NclContext *);
+  void posCompileSwitch (DOMElement *, NclSwitch *);
 
-  Node *parseSwitch (DOMElement *);
-  // Node *parseBindRule (DOMElement *, Composition *, Rule **);
-  SwitchPort *parseSwitchPort (DOMElement *, Switch *);
-  Port *parseMapping (DOMElement *, Switch *, SwitchPort *);
+  NclNode *parseContext (DOMElement *);
+  NclPort *parsePort (DOMElement *, NclComposition *);
 
-  Node *parseMedia (DOMElement *);
-  Property *parseProperty (DOMElement *);
-  Anchor *parseArea (DOMElement *);
+  NclNode *parseSwitch (DOMElement *);
+  NclNode *parseMedia (DOMElement *);
+  NclProperty *parseProperty (DOMElement *);
+  NclAnchor *parseArea (DOMElement *);
 
-  Link *parseLink (DOMElement *, Context *);
-  Bind *parseBind (DOMElement *, Link *, map<string, string> *, Context *);
+  NclLink *parseLink (DOMElement *, NclContext *);
+  NclBind *parseBind (DOMElement *, NclLink *, map<string, string> *, NclContext *);
 
   // From ErrorHandler.
   void warning (const SAXParseException &);

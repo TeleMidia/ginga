@@ -83,16 +83,23 @@ FormatterLink::addAction (FormatterAction *action)
 }
 
 void
-FormatterLink::conditionSatisfied ()
+FormatterLink::conditionSatisfied (FormatterCondition *cond)
 {
+  Predicate *pred;
+
   if (_disabled)
     return;                     // nothing to do
+
+  pred = cond->getPredicate ();
+  if (pred != nullptr && !_scheduler->eval (pred))
+    return;                     // nothing to do
+
   for (auto action: _actions)
     {
       FormatterEvent *evt;
       evt = action->getEvent ();
       g_assert_nonnull (evt);
-      if (evt->getType () == EventType::ATTRIBUTION)
+      if (evt->getType () == NclEventType::ATTRIBUTION)
         {
           evt->setParameter ("duration", action->getDuration ());
           evt->setParameter ("value", action->getValue ());

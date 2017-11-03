@@ -25,12 +25,12 @@ GINGA_FORMATTER_BEGIN
 class FormatterAction
 {
 public:
-  FormatterAction (FormatterEvent *, EventStateTransition);
+  FormatterAction (FormatterEvent *, NclEventStateTransition);
   virtual ~FormatterAction ();
 
   FormatterEvent *getEvent ();
-  EventType getEventType ();
-  EventStateTransition getEventStateTransition ();
+  NclEventType getEventType ();
+  NclEventStateTransition getEventStateTransition ();
 
   string getDuration ();
   void setDuration (const string &);
@@ -40,7 +40,7 @@ public:
 
 private:
   FormatterEvent *_event;
-  EventStateTransition _transition;
+  NclEventStateTransition _transition;
   string _duration;
   string _value;
 };

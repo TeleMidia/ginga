@@ -23,10 +23,10 @@ GINGA_FORMATTER_BEGIN
 /**
  * @brief Creates a new action.
  * @param event Target event.
- * @param transition Action transition.
+ * @param transition NclAction transition.
  */
 FormatterAction::FormatterAction (FormatterEvent *event,
-                                  EventStateTransition transition)
+                                  NclEventStateTransition transition)
 {
   g_assert_nonnull (event);
   _event = event;
@@ -56,7 +56,7 @@ FormatterAction::getEvent ()
  * @brief Gets target event type.
  * @return Target event type.
  */
-EventType
+NclEventType
 FormatterAction::getEventType ()
 {
   return _event->getType ();
@@ -64,9 +64,9 @@ FormatterAction::getEventType ()
 
 /**
  * @brief Gets action transition.
- * @return Action transition.
+ * @return NclAction transition.
  */
-EventStateTransition
+NclEventStateTransition
 FormatterAction::getEventStateTransition ()
 {
   return _transition;
@@ -74,7 +74,7 @@ FormatterAction::getEventStateTransition ()
 
 /**
  * @brief Gets action duration.
- * @return Action duration.
+ * @return NclAction duration.
  */
 string
 FormatterAction::getDuration ()
@@ -94,7 +94,7 @@ FormatterAction::setDuration (const string &duration)
 
 /**
  * @brief Gets action value.
- * @return Action value.
+ * @return NclAction value.
  */
 string
 FormatterAction::getValue (void)

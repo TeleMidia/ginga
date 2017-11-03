@@ -23,11 +23,11 @@ GINGA_FORMATTER_BEGIN
 
 ExecutionObjectSwitch::ExecutionObjectSwitch (GingaInternal *ginga,
                                               const string &id,
-                                              Node *node)
+                                              NclNode *node)
   : ExecutionObjectContext (ginga, id, node)
 {
   g_assert_nonnull (node);
-  _switch = cast (Switch *, node);
+  _switch = cast (NclSwitch *, node);
   g_assert_nonnull (_switch);
   _selected = nullptr;
 }
@@ -38,19 +38,19 @@ ExecutionObjectSwitch::~ExecutionObjectSwitch ()
 
 bool
 ExecutionObjectSwitch::exec (FormatterEvent *evt,
-                             unused (EventState from),
-                             unused (EventState to),
-                             EventStateTransition transition)
+                             unused (NclEventState from),
+                             unused (NclEventState to),
+                             NclEventStateTransition transition)
 {
   switch (evt->getType ())
     {
     // ---------------------------------------------------------------------
     // Presentation event.
     // ---------------------------------------------------------------------
-    case EventType::PRESENTATION:
+    case NclEventType::PRESENTATION:
       switch (transition)
         {
-        case EventStateTransition::START:
+        case NclEventStateTransition::START:
           //
           // Start lambda.
           //
@@ -58,7 +58,7 @@ ExecutionObjectSwitch::exec (FormatterEvent *evt,
           g_assert_null (_selected);
           for (auto item: *_switch->getRules ())
             {
-              Node *node;
+              NclNode *node;
               Predicate *pred;
               FormatterEvent *e;
 
@@ -71,7 +71,7 @@ ExecutionObjectSwitch::exec (FormatterEvent *evt,
                 {
                   _selected = _scheduler->obtainExecutionObject (node);
                   g_assert_nonnull (_selected);
-                  e = _selected->obtainEvent (EventType::PRESENTATION,
+                  e = _selected->obtainEvent (NclEventType::PRESENTATION,
                                               node->getLambda (), "");
                   g_assert_nonnull (e);
                   e->transition (transition);
@@ -81,17 +81,17 @@ ExecutionObjectSwitch::exec (FormatterEvent *evt,
           if (_selected == nullptr) // schedule stop
             {
               FormatterAction *act = new FormatterAction
-                (evt, EventStateTransition::STOP);
+                (evt, NclEventStateTransition::STOP);
               _delayed_new.push_back (std::make_pair (act, _time));
             }
           break;
-        case EventStateTransition::PAUSE:
+        case NclEventStateTransition::PAUSE:
           g_assert_not_reached ();
           break;
-        case EventStateTransition::RESUME:
+        case NclEventStateTransition::RESUME:
           g_assert_not_reached ();
           break;
-        case EventStateTransition::STOP:
+        case NclEventStateTransition::STOP:
           //
           // Stop lambda.
           //
@@ -100,14 +100,14 @@ ExecutionObjectSwitch::exec (FormatterEvent *evt,
           {
             FormatterEvent *e = _selected->obtainLambda ();
             g_assert_nonnull (e);
-            e->transition (EventStateTransition::STOP);
+            e->transition (NclEventStateTransition::STOP);
             _selected = nullptr;
             FormatterAction *act = new FormatterAction
-              (evt, EventStateTransition::STOP);
+              (evt, NclEventStateTransition::STOP);
             _delayed_new.push_back (std::make_pair (act, _time));
           }
           break;
-        case EventStateTransition::ABORT:
+        case NclEventStateTransition::ABORT:
           g_assert_not_reached ();
           break;
         default:
@@ -118,14 +118,14 @@ ExecutionObjectSwitch::exec (FormatterEvent *evt,
     // ---------------------------------------------------------------------
     // Attribution event.
     // ---------------------------------------------------------------------
-    case EventType::ATTRIBUTION:
+    case NclEventType::ATTRIBUTION:
       g_assert_not_reached ();
       break;
 
     //----------------------------------------------------------------------
     // Selection event.
     // ---------------------------------------------------------------------
-    case EventType::SELECTION:
+    case NclEventType::SELECTION:
       g_assert_not_reached ();
       break;
     default:

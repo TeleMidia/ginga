@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "NclDocument.h"
 
-#include "Media.h"
+#include "NclMedia.h"
 
 GINGA_NCL_BEGIN
 
@@ -43,7 +43,7 @@ NclDocument::getURI ()
 /**
  * @brief Gets document body.
  */
-Context *
+NclContext *
 NclDocument::getRoot ()
 {
   return _root;
@@ -51,24 +51,24 @@ NclDocument::getRoot ()
 
 /**
  * @brief Gets entity.
- * @param id Entity id.
- * @return Entity.
+ * @param id NclEntity id.
+ * @return NclEntity.
  */
-Entity *
+NclEntity *
 NclDocument::getEntityById (const string &id)
 {
-  map<string, Entity *>::iterator it;
+  map<string, NclEntity *>::iterator it;
   return ((it = _entities.find (id)) == _entities.end ())
     ? nullptr : it->second;
 }
 
 /**
  * @brief Registers entity.
- * @param entity Entity.
+ * @param entity NclEntity.
  * @return True if successful, or false otherwise.
  */
 bool
-NclDocument::registerEntity (Entity *entity)
+NclDocument::registerEntity (NclEntity *entity)
 {
   string id = entity->getId ();
   if (this->getEntityById (id))
@@ -79,11 +79,11 @@ NclDocument::registerEntity (Entity *entity)
 
 /**
  * @brief Unregisters entity.
- * @param entity Entity.
+ * @param entity NclEntity.
  * @return True if successful, or false otherwise.
  */
 bool
-NclDocument::unregisterEntity (Entity *entity)
+NclDocument::unregisterEntity (NclEntity *entity)
 {
   string id = entity->getId ();
   if (!this->getEntityById (id))
@@ -104,7 +104,7 @@ NclDocument::NclDocument (const string &id, const string &uri)
 {
   _id = id;
   _uri = uri;
-  _root = new Context (this, id);
+  _root = new NclContext (this, id);
 
   _connectorBase = nullptr;
   _parentDocument = nullptr;
@@ -168,10 +168,10 @@ NclDocument::addDocument (NclDocument *document, const string &alias,
   return true;
 }
 
-Connector *
+NclConnector *
 NclDocument::getConnector (const string &connectorId)
 {
-  Connector *connector;
+  NclConnector *connector;
   vector<NclDocument *>::iterator i;
 
   if (_connectorBase != NULL)
@@ -195,7 +195,7 @@ NclDocument::getConnector (const string &connectorId)
   return NULL;
 }
 
-ConnectorBase *
+NclConnectorBase *
 NclDocument::getConnectorBase ()
 {
   return _connectorBase;
@@ -256,7 +256,7 @@ NclDocument::getDocuments ()
 }
 
 
-Node *
+NclNode *
 NclDocument::getNodeLocally (const string &nodeId)
 {
   if (_root != NULL)
@@ -276,7 +276,7 @@ NclDocument::getNodeLocally (const string &nodeId)
     }
 }
 
-Node *
+NclNode *
 NclDocument::getNode (const string &nodeId)
 {
   string::size_type index;
@@ -310,42 +310,42 @@ NclDocument::getNode (const string &nodeId)
   return NULL;
 }
 
-vector<Node *> *
+vector<NclNode *> *
 NclDocument::getSettingsNodes ()
 {
-  Context *body;
-  list<Node *> compositions;
+  NclContext *body;
+  list<NclNode *> compositions;
 
-  const vector<Node *> *nodes;
-  vector<Node *> *settings;
+  const vector<NclNode *> *nodes;
+  vector<NclNode *> *settings;
 
   body = this->getRoot ();
   g_assert_nonnull (body);
 
-  settings = new vector<Node *>;
+  settings = new vector<NclNode *>;
   compositions.push_back (body);
 
  next:
   g_assert (compositions.size () > 0);
-  nodes = ((Composition *)(compositions.front ()))->getNodes ();
+  nodes = ((NclComposition *)(compositions.front ()))->getNodes ();
   g_assert_nonnull (nodes);
   compositions.pop_front ();
 
   for (guint i = 0; i < nodes->size (); i++)
     {
-      Node *node = cast (Node *, nodes->at (i)->derefer ());
+      NclNode *node = cast (NclNode *, nodes->at (i)->derefer ());
       g_assert_nonnull (node);
 
-      if (instanceof (Media *, node)
-          && ((Media *) node)->isSettings ())
+      if (instanceof (NclMedia *, node)
+          && ((NclMedia *) node)->isSettings ())
         {
           //
-          // WARNING: For some obscure reason, we have to store the Node,
+          // WARNING: For some obscure reason, we have to store the NclNode,
           // not the EntityNode.
           //
           settings->push_back (nodes->at (i)); // found
         }
-      else if (instanceof (Composition *, node))
+      else if (instanceof (NclComposition *, node))
         {
           compositions.push_back (node);
         }
@@ -378,7 +378,7 @@ NclDocument::removeDocument (NclDocument *document)
 }
 
 void
-NclDocument::setConnectorBase (ConnectorBase *connectorBase)
+NclDocument::setConnectorBase (NclConnectorBase *connectorBase)
 {
   this->_connectorBase = connectorBase;
 }

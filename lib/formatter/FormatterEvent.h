@@ -30,36 +30,36 @@ class IFormatterEventListener
 {
 public:
   virtual void eventStateChanged (FormatterEvent *,
-                                  EventStateTransition) = 0;
+                                  NclEventStateTransition) = 0;
 };
 
 class ExecutionObject;
 class FormatterEvent
 {
 public:
-  FormatterEvent (GingaInternal *, EventType, ExecutionObject *,
-                  Anchor *);
+  FormatterEvent (GingaInternal *, NclEventType, ExecutionObject *,
+                  NclAnchor *);
   virtual ~FormatterEvent ();
 
-  EventType getType ();
+  NclEventType getType ();
   ExecutionObject *getObject ();
-  Anchor *getAnchor ();
-  EventState getState ();
+  NclAnchor *getAnchor ();
+  NclEventState getState ();
 
   const vector<IFormatterEventListener *> *getListeners ();
   void addListener (IFormatterEventListener *);
   string getParameter (const string &);
   void setParameter (const string &, const string &);
 
-  bool transition (EventStateTransition);
+  bool transition (NclEventStateTransition);
 
 private:
   GingaInternal *_ginga;                        // ginga handle
   Scheduler *_scheduler;                        // scheduler
-  EventType _type;                              // event type
+  NclEventType _type;                              // event type
   ExecutionObject *_object;                     // target object
-  Anchor *_anchor;                              // target anchor
-  EventState _state;                            // event state
+  NclAnchor *_anchor;                              // target anchor
+  NclEventState _state;                            // event state
   vector<IFormatterEventListener *> _listeners; // event listeners
   map<string,string> _params;                   // parameters
 };

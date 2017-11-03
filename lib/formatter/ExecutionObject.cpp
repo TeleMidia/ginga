@@ -34,7 +34,7 @@ GINGA_FORMATTER_BEGIN
 
 ExecutionObject::ExecutionObject (GingaInternal *ginga,
                                   const string &id,
-                                  Node *node)
+                                  NclNode *node)
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;
@@ -56,7 +56,7 @@ ExecutionObject::~ExecutionObject ()
   this->reset ();
 }
 
-Node *
+NclNode *
 ExecutionObject::getNode ()
 {
   return _node;
@@ -115,7 +115,7 @@ ExecutionObject::getEvents ()
 }
 
 FormatterEvent *
-ExecutionObject::getEvent (EventType type, Anchor *anchor,
+ExecutionObject::getEvent (NclEventType type, NclAnchor *anchor,
                            const string &key)
 {
   g_assert_nonnull (anchor);
@@ -125,10 +125,10 @@ ExecutionObject::getEvent (EventType type, Anchor *anchor,
         continue;
       switch (type)
         {
-        case EventType::ATTRIBUTION: // fall through
-        case EventType::PRESENTATION:
+        case NclEventType::ATTRIBUTION: // fall through
+        case NclEventType::PRESENTATION:
           return event;
-        case EventType::SELECTION:
+        case NclEventType::SELECTION:
           {
             if (event->getParameter ("key") == key)
               return event;
@@ -142,12 +142,12 @@ ExecutionObject::getEvent (EventType type, Anchor *anchor,
 }
 
 FormatterEvent *
-ExecutionObject::getEventByAnchorId (EventType type, const string &id,
+ExecutionObject::getEventByAnchorId (NclEventType type, const string &id,
                                      const string &key)
 {
   for (auto event: _events)
     {
-      Anchor *anchor;
+      NclAnchor *anchor;
       if (event->getType () != type)
         continue;
       anchor = event->getAnchor ();
@@ -156,10 +156,10 @@ ExecutionObject::getEventByAnchorId (EventType type, const string &id,
         continue;
       switch (type)
         {
-        case EventType::ATTRIBUTION: // fall through
-        case EventType::PRESENTATION:
+        case NclEventType::ATTRIBUTION: // fall through
+        case NclEventType::PRESENTATION:
           return event;
-        case EventType::SELECTION:
+        case NclEventType::SELECTION:
           {
             if (event->getParameter ("key") == key)
               return event;
@@ -173,7 +173,7 @@ ExecutionObject::getEventByAnchorId (EventType type, const string &id,
 }
 
 FormatterEvent *
-ExecutionObject::obtainEvent (EventType type, Anchor *anchor,
+ExecutionObject::obtainEvent (NclEventType type, NclAnchor *anchor,
                               const string &key)
 {
   FormatterEvent *event;
@@ -187,29 +187,29 @@ ExecutionObject::obtainEvent (EventType type, Anchor *anchor,
 
   if (instanceof (ExecutionObjectSwitch *, this))
     {
-      g_assert (type == EventType::PRESENTATION);
+      g_assert (type == NclEventType::PRESENTATION);
       event = new FormatterEvent (_ginga, type, this, anchor);
     }
   else if (instanceof (ExecutionObjectContext *, this))
     {
-      g_assert (type == EventType::PRESENTATION);
+      g_assert (type == NclEventType::PRESENTATION);
       event = new FormatterEvent (_ginga, type, this, anchor);
     }
   else
     {
       switch (type)
         {
-        case EventType::PRESENTATION:
+        case NclEventType::PRESENTATION:
           event = new FormatterEvent (_ginga, type, this, anchor);
           break;
-        case EventType::ATTRIBUTION:
+        case NclEventType::ATTRIBUTION:
           {
-            Property *property = cast (Property *, anchor);
+            NclProperty *property = cast (NclProperty *, anchor);
             g_assert_nonnull (property);
             event = new FormatterEvent (_ginga, type, this, property);
             break;
           }
-        case EventType::SELECTION:
+        case NclEventType::SELECTION:
           event = new FormatterEvent (_ginga, type, this, anchor);
           event->setParameter ("key", key);
           break;
@@ -237,7 +237,7 @@ ExecutionObject::obtainLambda ()
 {
   FormatterEvent *lambda;
   g_assert_nonnull (_node);
-  lambda = this->obtainEvent (EventType::PRESENTATION,
+  lambda = this->obtainEvent (NclEventType::PRESENTATION,
                               _node->getLambda (), "");
   g_assert_nonnull (lambda);
   return lambda;
@@ -246,19 +246,19 @@ ExecutionObject::obtainLambda ()
 bool
 ExecutionObject::isOccurring ()
 {
-  return this->obtainLambda ()->getState () == EventState::OCCURRING;
+  return this->obtainLambda ()->getState () == NclEventState::OCCURRING;
 }
 
 bool
 ExecutionObject::isPaused ()
 {
-  return this->obtainLambda ()->getState () == EventState::PAUSED;
+  return this->obtainLambda ()->getState () == NclEventState::PAUSED;
 }
 
 bool
 ExecutionObject::isSleeping ()
 {
-  return this->obtainLambda ()->getState () == EventState::SLEEPING;
+  return this->obtainLambda ()->getState () == NclEventState::SLEEPING;
 }
 
 bool
@@ -377,10 +377,10 @@ ExecutionObject::sendKeyEvent (const string &key, bool press)
   // Collect the events to be triggered.
   for (auto evt: _events)
     {
-      Area *anchor;
+      NclArea *anchor;
       string expected;
 
-      if (evt->getType () != EventType::SELECTION)
+      if (evt->getType () != NclEventType::SELECTION)
         continue;
 
       expected = evt->getParameter ("key");
@@ -390,17 +390,17 @@ ExecutionObject::sendKeyEvent (const string &key, bool press)
           continue;
         }
 
-      anchor = cast (Area *, evt->getAnchor ());
+      anchor = cast (NclArea *, evt->getAnchor ());
       g_assert_nonnull (anchor);
-      g_assert (instanceof (AreaLambda *, anchor));
+      g_assert (instanceof (NclAreaLambda *, anchor));
       buf.push_back (evt);
     }
 
   // Run collected events.
   for (FormatterEvent *evt: buf)
     {
-      evt->transition (EventStateTransition::START);
-      evt->transition (EventStateTransition::STOP);
+      evt->transition (NclEventStateTransition::START);
+      evt->transition (NclEventStateTransition::STOP);
     }
 }
 
@@ -429,7 +429,7 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
       g_assert_nonnull (lambda);
       TRACE ("eos %s@lambda at %" GINGA_TIME_FORMAT, _id.c_str (),
              GINGA_TIME_ARGS (_time));
-      lambda->transition (EventStateTransition::STOP);
+      lambda->transition (NclEventStateTransition::STOP);
       return;
     }
 
@@ -468,29 +468,29 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
 
 bool
 ExecutionObject::exec (FormatterEvent *evt,
-                       unused (EventState from), unused (EventState to),
-                       EventStateTransition transition)
+                       unused (NclEventState from), unused (NclEventState to),
+                       NclEventStateTransition transition)
 {
   switch (evt->getType ())
     {
     // ---------------------------------------------------------------------
     // Presentation event.
     // ---------------------------------------------------------------------
-    case EventType::PRESENTATION:
+    case NclEventType::PRESENTATION:
       switch (transition)
         {
-        case EventStateTransition::START:
-          if (instanceof (AreaLambda *, evt->getAnchor ()))
+        case NclEventStateTransition::START:
+          if (instanceof (NclAreaLambda *, evt->getAnchor ()))
             {
               //
               // Start lambda.
               //
-              Media *media;
+              NclMedia *media;
               string src;
               string mime;
 
               g_assert_null (_player);
-              media = cast (Media *, _node);
+              media = cast (NclMedia *, _node);
               g_assert_nonnull (media);
 
               src = media->getSrc ();
@@ -501,7 +501,7 @@ ExecutionObject::exec (FormatterEvent *evt,
               // Initialize properties.
               for (auto anchor: *media->getAnchors ())
                 {
-                  Property *prop = cast (Property *, anchor);
+                  NclProperty *prop = cast (NclProperty *, anchor);
                   if (prop != nullptr)
                     _player->setProperty (prop->getName (),
                                           prop->getValue ());
@@ -510,12 +510,12 @@ ExecutionObject::exec (FormatterEvent *evt,
               // Install delayed actions for time anchors.
               for (auto e: _events)
                 {
-                  Anchor *anchor;
-                  Area *area;
+                  NclAnchor *anchor;
+                  NclArea *area;
                   GingaTime begin, end;
                   FormatterAction *act;
 
-                  if (e->getType () != EventType::PRESENTATION)
+                  if (e->getType () != NclEventType::PRESENTATION)
                     continue;
                   if (e == this->obtainLambda ())
                     continue;
@@ -523,15 +523,15 @@ ExecutionObject::exec (FormatterEvent *evt,
                   anchor = e->getAnchor ();
                   g_assert_nonnull (anchor);
 
-                  area = cast (Area *, anchor);
+                  area = cast (NclArea *, anchor);
                   g_assert_nonnull (area);
 
                   begin = area->getBegin ();
                   end = area->getEnd ();
 
-                  act = new FormatterAction (e, EventStateTransition::START);
+                  act = new FormatterAction (e, NclEventStateTransition::START);
                   _delayed_new.push_back (std::make_pair (act, begin));
-                  act = new FormatterAction (e, EventStateTransition::STOP);
+                  act = new FormatterAction (e, NclEventStateTransition::STOP);
                   _delayed_new.push_back (std::make_pair (act, end));
                 }
 
@@ -549,13 +549,13 @@ ExecutionObject::exec (FormatterEvent *evt,
                   //
                   // Implicit.
                   //
-                  Anchor *anchor;
-                  Area *area;
+                  NclAnchor *anchor;
+                  NclArea *area;
 
                   anchor = evt->getAnchor ();
                   g_assert_nonnull (anchor);
 
-                  area = cast (Area *, anchor);
+                  area = cast (NclArea *, anchor);
                   g_assert_nonnull (area);
 
                   TRACE ("start %s@%s (begin=%"
@@ -574,14 +574,14 @@ ExecutionObject::exec (FormatterEvent *evt,
                 }
             }
           break;
-        case EventStateTransition::PAUSE:
+        case NclEventStateTransition::PAUSE:
           g_assert_not_reached ();
           break;
-        case EventStateTransition::RESUME:
+        case NclEventStateTransition::RESUME:
           g_assert_not_reached ();
           break;
-        case EventStateTransition::STOP:
-          if (instanceof (AreaLambda *, evt->getAnchor ()))
+        case NclEventStateTransition::STOP:
+          if (instanceof (NclAreaLambda *, evt->getAnchor ()))
             {
               //
               // Stop lambda.
@@ -600,13 +600,13 @@ ExecutionObject::exec (FormatterEvent *evt,
                   //
                   // Implicit.
                   //
-                  Anchor *anchor;
-                  Area *area;
+                  NclAnchor *anchor;
+                  NclArea *area;
 
                   anchor = evt->getAnchor ();
                   g_assert_nonnull (anchor);
 
-                  area = cast (Area *, anchor);
+                  area = cast (NclArea *, anchor);
                   g_assert_nonnull (area);
 
                   TRACE ("stop %s@%s (end=%"
@@ -625,7 +625,7 @@ ExecutionObject::exec (FormatterEvent *evt,
                 }
             }
           break;
-        case EventStateTransition::ABORT:
+        case NclEventStateTransition::ABORT:
           g_assert_not_reached ();
           break;
         default:
@@ -636,19 +636,19 @@ ExecutionObject::exec (FormatterEvent *evt,
     // ---------------------------------------------------------------------
     // Attribution event.
     // ---------------------------------------------------------------------
-    case EventType::ATTRIBUTION:
+    case NclEventType::ATTRIBUTION:
       if (!this->isOccurring ())
         return false;           // nothing to do
       switch (transition)
         {
-        case EventStateTransition::START:
+        case NclEventStateTransition::START:
           {
-            Property *prop;
+            NclProperty *prop;
             string name;
             string value;
             GingaTime dur;
 
-            prop = cast (Property *, evt->getAnchor ());
+            prop = cast (NclProperty *, evt->getAnchor ());
             g_assert_nonnull (prop);
 
             name = prop->getName ();
@@ -665,24 +665,24 @@ ExecutionObject::exec (FormatterEvent *evt,
 
             // Schedule stop.
             FormatterAction *act = new FormatterAction
-              (evt, EventStateTransition::STOP);
+              (evt, NclEventStateTransition::STOP);
             _delayed_new.push_back (std::make_pair (act, _time + dur));
 
             TRACE ("start %s.%s:=%s (duration=%s)", _id.c_str (),
                    name.c_str (), value.c_str (), s.c_str ());
             break;
           }
-        case EventStateTransition::STOP:
+        case NclEventStateTransition::STOP:
           {
-            Property *prop = cast (Property *, evt->getAnchor ());
+            NclProperty *prop = cast (NclProperty *, evt->getAnchor ());
             g_assert_nonnull (prop);
             TRACE ("stop %s.%s:=...", _id.c_str (),
                    prop->getName ().c_str ());
             break;
           }
-        case EventStateTransition::PAUSE: // impossible
-        case EventStateTransition::RESUME:
-        case EventStateTransition::ABORT:
+        case NclEventStateTransition::PAUSE: // impossible
+        case NclEventStateTransition::RESUME:
+        case NclEventStateTransition::ABORT:
         default:
           g_assert_not_reached ();
         }
@@ -691,22 +691,22 @@ ExecutionObject::exec (FormatterEvent *evt,
     //----------------------------------------------------------------------
     // Selection event.
     // ---------------------------------------------------------------------
-    case EventType::SELECTION:
+    case NclEventType::SELECTION:
       if (!this->isOccurring ())
         return false;           // nothing to do
       switch (transition)
         {
-        case EventStateTransition::START:
+        case NclEventStateTransition::START:
           TRACE ("start %s<%s>", _id.c_str (),
                  evt->getParameter ("key").c_str ());
           break;
-        case EventStateTransition::STOP:
+        case NclEventStateTransition::STOP:
           TRACE ("stop %s<%s>", _id.c_str (),
                  evt->getParameter ("key").c_str ());
           break;
-        case EventStateTransition::PAUSE: // impossible
-        case EventStateTransition::RESUME:
-        case EventStateTransition::ABORT:
+        case NclEventStateTransition::PAUSE: // impossible
+        case NclEventStateTransition::RESUME:
+        case NclEventStateTransition::ABORT:
         default:
           g_assert_not_reached ();
         }

@@ -27,7 +27,7 @@ GINGA_FORMATTER_BEGIN
 class ExecutionObjectContext: public ExecutionObject
 {
 public:
-  ExecutionObjectContext (GingaInternal *, const string &, Node *);
+  ExecutionObjectContext (GingaInternal *, const string &, NclNode *);
   virtual ~ExecutionObjectContext ();
 
   const set<ExecutionObject *> *getChildren ();
@@ -38,11 +38,11 @@ public:
   bool addLink (FormatterLink *);
 
   void sendTickEvent (GingaTime, GingaTime, GingaTime) override;
-  bool exec (FormatterEvent *, EventState, EventState,
-             EventStateTransition) override;
+  bool exec (FormatterEvent *, NclEventState, NclEventState,
+             NclEventStateTransition) override;
 
 private:
-  Context *_context;
+  NclContext *_context;
   set<ExecutionObject *> _children;
   vector<FormatterLink *> _links;
 
