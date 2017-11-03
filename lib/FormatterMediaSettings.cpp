@@ -27,14 +27,13 @@ GINGA_NAMESPACE_BEGIN
 FormatterMediaSettings::FormatterMediaSettings (Formatter *ginga,
                                                 const string &id,
                                                 NclNode *node)
-  :FormatterObject (ginga, id, node)
+  :FormatterMedia (ginga, id, node)
 {
   NclNode *nodeEntity = cast (NclNode *, node->derefer ());
   g_assert_nonnull (nodeEntity);
   auto media = cast (NclMedia *, nodeEntity);
   g_assert_nonnull (media);
   g_assert (media->isSettings ());
-  _player = Player::createPlayer (_ginga, _id, "", media->getMimeType ());
 }
 
 FormatterMediaSettings::~FormatterMediaSettings ()
@@ -44,10 +43,41 @@ FormatterMediaSettings::~FormatterMediaSettings ()
 void
 FormatterMediaSettings::setProperty (const string &name,
                                      const string &value,
-                                     unused (GingaTime dur))
+                                     GingaTime dur)
 {
   if (name == "service.currentFocus")
     Player::setCurrentFocus (value);
+  FormatterMedia::setProperty (name, value, dur);
+}
+
+void
+FormatterMediaSettings::sendTickEvent (unused (GingaTime total),
+                                       unused (GingaTime diff),
+                                       unused (GingaTime frame))
+{
+  if (_hasNextFocus)            // effectuate pending focus index update
+    {
+      this->updateCurrentFocus (_nextFocus);
+      _hasNextFocus = false;
+    }
+  FormatterMedia::sendTickEvent (total, diff, frame);
+}
+
+bool
+FormatterMediaSettings::isFocused ()
+{
+  return false;
+}
+
+bool
+FormatterMediaSettings::getZ (unused (int *z), unused (int *zorder))
+{
+  return false;
+}
+
+void
+FormatterMediaSettings::redraw (unused (cairo_t *cr))
+{
 }
 
 void
@@ -66,14 +96,16 @@ FormatterMediaSettings::updateCurrentFocus (const string &index)
       g_assert_nonnull (sched);
 
       for (auto obj: *sched->getObjects ())
-        if (obj->isFocused ())
-          return;                   // nothing to do
+        {
+          FormatterMedia *media = cast (FormatterMedia *, obj);
+          if (media != nullptr && media->isFocused ())
+            return;                   // nothing to do
+        }
 
       for (auto obj: *sched->getObjects ())
         {
-          if (!instanceof (FormatterContext *, obj)
+          if (instanceof (FormatterMedia *, obj)
               && !instanceof (FormatterMediaSettings *, obj)
-              && !instanceof (FormatterSwitch *, obj)
               && obj->isOccurring ()
               && (i = obj->getProperty ("focusIndex")) != ""
               && (next == "" || g_strcmp0 (i.c_str (), next.c_str ()) < 0))
@@ -106,18 +138,6 @@ FormatterMediaSettings::scheduleFocusUpdate (const string &next)
 {
   _hasNextFocus = true;
   _nextFocus = next;
-}
-
-void
-FormatterMediaSettings::sendTickEvent (unused (GingaTime total),
-                                       unused (GingaTime diff),
-                                       unused (GingaTime frame))
-{
-  if (_hasNextFocus)            // effectuate pending focus index update
-    {
-      this->updateCurrentFocus (_nextFocus);
-      _hasNextFocus = false;
-    }
 }
 
 GINGA_NAMESPACE_END

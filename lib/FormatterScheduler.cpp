@@ -51,15 +51,18 @@ FormatterScheduler::run (NclDocument *doc)
   body = _doc->getRoot ();
   g_assert_nonnull (body);
 
-  // Create dummy settings node.
+  // Create settings node.
   NclMedia *settings_node =  new NclMedia (_doc, "__settings__", true);
-  body->addNode (settings_node);
+  // body->addNode (settings_node);
   NclProperty *prop = new NclProperty (_doc, "service.currentFocus");
   prop->setValue ("");
   settings_node->addAnchor (prop);
-  _settings = cast (FormatterMediaSettings *,
-                    this->obtainExecutionObject (settings_node));
+  g_assert_nonnull (this->obtainExecutionObject (settings_node));
   g_assert_nonnull (_settings);
+  FormatterEvent *evt = cast (FormatterObject *, _settings)
+    ->obtainLambda ();
+  g_assert_nonnull (evt);
+  g_assert (evt->transition (NclEventStateTransition::START));
 
   // Create execution object for settings node and initialize it.
   vector<NclNode *> *nodes = _doc->getSettingsNodes ();
@@ -86,17 +89,14 @@ FormatterScheduler::run (NclDocument *doc)
           if (value == "")
             continue;           // nothing to do
 
-          cast (FormatterObject *, _settings)->setProperty (name, value, 0);
+          _settings->setProperty (name, value, 0);
         }
     }
   delete nodes;
 
-  // Set global settings object.
-  g_assert_nonnull (_settings->obtainLambda ());
-
   // Start document.
   FormatterObject *obj = this->obtainExecutionObject (body);
-  FormatterEvent *evt = obj->obtainLambda ();
+  evt = obj->obtainLambda ();
   g_assert_nonnull (evt);
   if (!evt->transition (NclEventStateTransition::START))
     return false;
@@ -108,16 +108,22 @@ FormatterScheduler::run (NclDocument *doc)
   return true;
 }
 
-FormatterMediaSettings *
-FormatterScheduler::getSettings ()
-{
-  return _settings;
-}
-
 const set<FormatterObject *> *
 FormatterScheduler::getObjects ()
 {
   return &_objects;
+}
+
+const set<FormatterMedia *> *
+FormatterScheduler::getMediaObjects ()
+{
+  return &_mediaObjects;
+}
+
+FormatterMediaSettings *
+FormatterScheduler::getSettings ()
+{
+  return _settings;
 }
 
 FormatterObject *
@@ -142,7 +148,8 @@ FormatterScheduler::getObjectByIdOrAlias (const string &id)
 }
 
 bool
-FormatterScheduler::getObjectPropertyByRef (const string &ref, string *result)
+FormatterScheduler::getObjectPropertyByRef (const string &ref,
+                                            string *result)
 {
   size_t i;
   string id;
@@ -171,12 +178,27 @@ FormatterScheduler::addObject (FormatterObject *obj)
     {
       return false;
     }
+
   _objects.insert (obj);
+
+  if (instanceof (FormatterMediaSettings *, obj))
+    {
+      g_assert_null (_settings);
+      _settings = cast (FormatterMediaSettings *, obj);
+      g_assert_nonnull (_settings);
+    }
+  else if (instanceof (FormatterMedia *, obj))
+    {
+      FormatterMedia *media = cast (FormatterMedia *, obj);
+      g_assert_nonnull (media);
+      _mediaObjects.insert (media);
+    }
+
   return true;
 }
 
 static bool
-cmpz (FormatterObject *a, FormatterObject *b)
+cmpz (FormatterMedia *a, FormatterMedia *b)
 {
   int z1, zo1, z2, zo2;
 
@@ -204,7 +226,7 @@ FormatterScheduler::redraw (cairo_t *cr)
   bool opengl;
   GingaColor background;
   int width, height;
-  vector<FormatterObject *> objs;
+  vector<FormatterMedia *> mediaobjs;
 
   opengl = _ginga->getOptionBool ("opengl");
   background = ginga_parse_color (_ginga->getOptionString ("background"));
@@ -241,13 +263,11 @@ FormatterScheduler::redraw (cairo_t *cr)
         }
     }
 
-  for (auto obj: _objects)      // fixme
-    if (!instanceof (FormatterContext *, obj)
-        && !instanceof (FormatterSwitch *, obj))
-      objs.push_back (obj);
-  std::sort (objs.begin (), objs.end (), cmpz);
-  for (auto obj: objs)
-    obj->redraw (cr);
+  for (auto obj: _mediaObjects)      // fixme
+    mediaobjs.push_back (cast (FormatterMedia *, obj));
+  std::sort (mediaobjs.begin (), mediaobjs.end (), cmpz);
+  for (auto media: mediaobjs)
+    media->redraw (cr);
 
   // if (_opts.debug)
   //   {
@@ -286,6 +306,8 @@ FormatterScheduler::resize (int width, int height)
   g_assert (height == _ginga->getOptionInt ("height"));
   for (auto obj: _objects)
     {
+      if (!instanceof (FormatterMedia *, obj))
+        continue;
       obj->setProperty ("top", obj->getProperty ("top"));
       obj->setProperty ("left", obj->getProperty ("left"));
       obj->setProperty ("width", obj->getProperty ("width"));
@@ -322,7 +344,6 @@ FormatterScheduler::sendTickEvent (GingaTime total, GingaTime diff, GingaTime fr
 
   for (auto obj: buf)
     {
-      g_assert (!instanceof (FormatterMediaSettings *, obj));
       if (!obj->isOccurring ())
         continue;
       obj->sendTickEvent (total, diff, frame);
@@ -409,14 +430,9 @@ FormatterScheduler::obtainExecutionObject (NclNode *node)
   media = cast (NclMedia *, node);
   g_assert_nonnull (media);
   if (media->isSettings ())
-    {
-      object = new FormatterMediaSettings (_ginga, id, node);
-      //_ruleAdapter->setSettings (object);
-    }
+    object = new FormatterMediaSettings (_ginga, id, node);
   else
-    {
-      object = new FormatterObject (_ginga, id, node);
-    }
+    object = new FormatterMedia (_ginga, id, node);
 
  done:
   g_assert_nonnull (object);

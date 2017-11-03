@@ -30,9 +30,6 @@ FormatterContext::FormatterContext (Formatter *ginga, const string &id,
 {
   g_assert_nonnull (node);
   _context = cast (NclContext *, node);
-  //
-  // FIXME: Break NclContext-NclSwitch inheritance.
-  //
   // g_assert_nonnull (_context);
 }
 
@@ -42,46 +39,24 @@ FormatterContext::~FormatterContext ()
     delete link;
 }
 
-const set<FormatterObject *> *
-FormatterContext::getChildren ()
+string G_GNUC_NORETURN
+FormatterContext::getProperty (unused (const string &name))
 {
-  return &_children;
+  g_assert_not_reached ();
 }
 
-FormatterObject *
-FormatterContext::getChildById (const string &id)
+void G_GNUC_NORETURN
+FormatterContext::setProperty (unused (const string &name),
+                               unused (const string &value),
+                               unused (GingaTime dur))
 {
-  for (auto child: _children)
-    if (child->getId () == id)
-      return child;
-  return nullptr;
+  g_assert_not_reached ();
 }
 
-bool
-FormatterContext::addChild (FormatterObject *child)
+void
+FormatterContext::sendKeyEvent (unused (const string &key),
+                                unused (bool press))
 {
-  g_assert_nonnull (child);
-  if (_children.find (child) != _children.end ())
-    return false;
-  _children.insert (child);
-  return true;
-}
-
-const vector<FormatterLink *> *
-FormatterContext::getLinks ()
-{
-  return &_links;
-}
-
-bool
-FormatterContext::addLink (FormatterLink *link)
-{
-  g_assert_nonnull (link);
-  for (auto other: _links)
-    if (other == link)
-      return false;
-  _links.push_back (link);
-  return true;
 }
 
 void
@@ -183,6 +158,48 @@ FormatterContext::exec (FormatterEvent *evt,
     default:
       g_assert_not_reached ();
     }
+  return true;
+}
+
+const set<FormatterObject *> *
+FormatterContext::getChildren ()
+{
+  return &_children;
+}
+
+FormatterObject *
+FormatterContext::getChildById (const string &id)
+{
+  for (auto child: _children)
+    if (child->getId () == id)
+      return child;
+  return nullptr;
+}
+
+bool
+FormatterContext::addChild (FormatterObject *child)
+{
+  g_assert_nonnull (child);
+  if (_children.find (child) != _children.end ())
+    return false;
+  _children.insert (child);
+  return true;
+}
+
+const vector<FormatterLink *> *
+FormatterContext::getLinks ()
+{
+  return &_links;
+}
+
+bool
+FormatterContext::addLink (FormatterLink *link)
+{
+  g_assert_nonnull (link);
+  for (auto other: _links)
+    if (other == link)
+      return false;
+  _links.push_back (link);
   return true;
 }
 

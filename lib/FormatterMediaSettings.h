@@ -18,22 +18,25 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FORMATTER_MEDIA_SETTINGS_H
 #define FORMATTER_MEDIA_SETTINGS_H
 
-#include "FormatterObject.h"
+#include "FormatterMedia.h"
 
 GINGA_NAMESPACE_BEGIN
 
-class FormatterObject;
-class FormatterMediaSettings : public FormatterObject
+class FormatterMediaSettings: public FormatterMedia
 {
 public:
   FormatterMediaSettings (Formatter *, const string &, NclNode *);
   ~FormatterMediaSettings ();
 
-  void setProperty (const string &, const string &, GingaTime);
+  void setProperty (const string &, const string &, GingaTime) override;
+  void sendTickEvent (GingaTime, GingaTime, GingaTime) override;
+
+  bool isFocused () override;
+  bool getZ (int *, int *) override;
+  void redraw (cairo_t *) override;
 
   void updateCurrentFocus (const string &);
   void scheduleFocusUpdate (const string &);
-  void sendTickEvent (GingaTime, GingaTime, GingaTime) override;
 
  private:
   string _nextFocus;            // next focus index

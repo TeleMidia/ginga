@@ -81,7 +81,7 @@ FormatterSwitch::exec (FormatterEvent *evt,
             {
               FormatterAction *act = new FormatterAction
                 (evt, NclEventStateTransition::STOP);
-              _delayed_new.push_back (std::make_pair (act, _time));
+              _delayed_new.push_back (std::make_pair (act, 0));
             }
           break;
         case NclEventStateTransition::PAUSE:
@@ -103,7 +103,7 @@ FormatterSwitch::exec (FormatterEvent *evt,
             _selected = nullptr;
             FormatterAction *act = new FormatterAction
               (evt, NclEventStateTransition::STOP);
-            _delayed_new.push_back (std::make_pair (act, _time));
+            _delayed_new.push_back (std::make_pair (act, 0));
           }
           break;
         case NclEventStateTransition::ABORT:
