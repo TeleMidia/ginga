@@ -119,18 +119,17 @@ set (LIBGINGA_SOURCES
   ../lib/ginga.h
   ../lib/aux-ginga.cpp
   ../lib/aux-gl.cpp
+  ../lib/Formatter.cpp
+  ../lib/FormatterAction.cpp
+  ../lib/FormatterCondition.cpp
+  ../lib/FormatterContext.cpp
+  ../lib/FormatterEvent.cpp
+  ../lib/FormatterLink.cpp
+  ../lib/FormatterMediaSettings.cpp
+  ../lib/FormatterObject.cpp
+  ../lib/FormatterScheduler.cpp
+  ../lib/FormatterSwitch.cpp
   ../lib/Ginga.cpp
-  ../lib/GingaInternal.cpp
-
-  ../lib/formatter/ExecutionObject.cpp
-  ../lib/formatter/ExecutionObjectContext.cpp
-  ../lib/formatter/ExecutionObjectSettings.cpp
-  ../lib/formatter/ExecutionObjectSwitch.cpp
-  ../lib/formatter/FormatterAction.cpp
-  ../lib/formatter/FormatterCondition.cpp
-  ../lib/formatter/FormatterEvent.cpp
-  ../lib/formatter/FormatterLink.cpp
-  ../lib/formatter/Scheduler.cpp
 
   ../lib/ncl/NclAction.cpp
   ../lib/ncl/NclArea.cpp

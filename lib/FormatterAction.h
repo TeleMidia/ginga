@@ -15,31 +15,36 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef EXECUTION_OBJECT_SETTINGS_H
-#define EXECUTION_OBJECT_SETTINGS_H
+#ifndef FORMATTER_ACTION_H
+#define FORMATTER_ACTION_H
 
-#include "ExecutionObject.h"
+#include "FormatterEvent.h"
 
-GINGA_FORMATTER_BEGIN
+GINGA_BEGIN
 
-class ExecutionObject;
-class ExecutionObjectSettings : public ExecutionObject
+class FormatterAction
 {
 public:
-  ExecutionObjectSettings (GingaInternal *, const string &, NclNode *);
-  virtual ~ExecutionObjectSettings () {};
+  FormatterAction (FormatterEvent *, NclEventStateTransition);
+  virtual ~FormatterAction ();
 
-  void setProperty (const string &, const string &, GingaTime);
+  FormatterEvent *getEvent ();
+  NclEventType getEventType ();
+  NclEventStateTransition getEventStateTransition ();
 
-  void updateCurrentFocus (const string &);
-  void scheduleFocusUpdate (const string &);
-  void sendTickEvent (GingaTime, GingaTime, GingaTime) override;
+  string getDuration ();
+  void setDuration (const string &);
 
- private:
-  string _nextFocus;            // next focus index
-  bool _hasNextFocus;           // true if a focus update is scheduled
+  string getValue ();
+  void setValue (const string &);
+
+private:
+  FormatterEvent *_event;
+  NclEventStateTransition _transition;
+  string _duration;
+  string _value;
 };
 
-GINGA_FORMATTER_END
+GINGA_END
 
-#endif
+#endif // FORMATTER_ACTION_H

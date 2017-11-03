@@ -15,55 +15,54 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef SCHEDULER_H
-#define SCHEDULER_H
+#ifndef FORMATTER_SCHEDULER_H
+#define FORMATTER_SCHEDULER_H
 
-#include "ExecutionObject.h"
-#include "ExecutionObjectContext.h"
-#include "ExecutionObjectSwitch.h"
-#include "ExecutionObjectSettings.h"
+#include "FormatterObject.h"
+#include "FormatterContext.h"
+#include "FormatterSwitch.h"
+#include "FormatterMediaSettings.h"
 #include "FormatterAction.h"
 #include "FormatterCondition.h"
 #include "FormatterEvent.h"
 #include "FormatterLink.h"
 #include "ncl/Ncl.h"
 
-class GingaInternal;
+GINGA_BEGIN
 
-GINGA_FORMATTER_BEGIN
-
-class Scheduler
+class Formatter;
+class FormatterScheduler
 {
 public:
-  Scheduler (GingaInternal *);
-  virtual ~Scheduler ();
+  FormatterScheduler (Formatter *);
+  virtual ~FormatterScheduler ();
   bool run (NclDocument *);
 
-  ExecutionObjectSettings *getSettings ();
-  const set<ExecutionObject *> *getObjects ();
-  ExecutionObject *getObjectById (const string &);
-  ExecutionObject *getObjectByIdOrAlias (const string &);
+  FormatterMediaSettings *getSettings ();
+  const set<FormatterObject *> *getObjects ();
+  FormatterObject *getObjectById (const string &);
+  FormatterObject *getObjectByIdOrAlias (const string &);
   bool getObjectPropertyByRef (const string &, string *);
-  bool addObject (ExecutionObject *);
+  bool addObject (FormatterObject *);
 
   void redraw (cairo_t *);
   void resize (int, int);
   void sendKeyEvent (const string &, bool);
   void sendTickEvent (GingaTime, GingaTime, GingaTime);
 
-  ExecutionObject *obtainExecutionObject (NclNode *);
+  FormatterObject *obtainExecutionObject (NclNode *);
   bool eval (Predicate *);
 
 private:
-  GingaInternal *_ginga;              // ginga handle
-  NclDocument *_doc;                  // document tree
-  ExecutionObjectSettings *_settings; // settings object
-  set<ExecutionObject *> _objects;    // document objects
+  Formatter *_ginga;                 // formatter handle
+  NclDocument *_doc;                 // the document tree
+  FormatterMediaSettings *_settings; // formatter settings object
+  set<FormatterObject *> _objects;   // formatter objects
 
   FormatterEvent *obtainFormatterEventFromBind (NclBind *);
   FormatterLink *obtainFormatterLink (NclLink *);
 };
 
-GINGA_FORMATTER_END
+GINGA_END
 
-#endif // SCHEDULER_H
+#endif // FORMATTER_SCHEDULER_H

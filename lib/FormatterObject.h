@@ -15,26 +15,26 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef EXECUTION_OBJECT_H
-#define EXECUTION_OBJECT_H
+#ifndef FORMATTER_OBJECT_H
+#define FORMATTER_OBJECT_H
 
-#include "GingaInternal.h"
+#include "Formatter.h"
 #include "FormatterAction.h"
 #include "FormatterEvent.h"
 
 #include "player/Player.h"
 using namespace ::ginga::player;
 
-GINGA_FORMATTER_BEGIN
+GINGA_BEGIN
 
-class ExecutionObjectContext;
-class ExecutionObjectSettings;
+class FormatterContext;
+class FormatterMediaSettings;
 
-class ExecutionObject
+class FormatterObject
 {
 public:
-  ExecutionObject (GingaInternal *, const string &, NclNode *);
-  virtual ~ExecutionObject ();
+  FormatterObject (Formatter *, const string &, NclNode *);
+  virtual ~FormatterObject ();
 
   NclNode *getNode ();
   string getId ();
@@ -43,13 +43,13 @@ public:
   bool hasAlias (const string &);
   bool addAlias (const string &);
 
-  ExecutionObjectContext *getParent ();
-  void initParent (ExecutionObjectContext *);
+  FormatterContext *getParent ();
+  void initParent (FormatterContext *);
 
   const set<FormatterEvent *> *getEvents ();
   FormatterEvent *getEvent (NclEventType, NclAnchor *, const string &);
   FormatterEvent *getEventByAnchorId (NclEventType type, const string &,
-                                const string &);
+                                      const string &);
   FormatterEvent *obtainEvent (NclEventType, NclAnchor *, const string &);
   bool addEvent (FormatterEvent *);
 
@@ -70,15 +70,15 @@ public:
                      NclEventStateTransition);
 
 protected:
-  GingaInternal *_ginga;           // ginga handle
-  Scheduler *_scheduler;           // scheduler
-  NclNode *_node;                     // NCL node
-  string _id;                      // object id
-  vector<string> _aliases;         // aliases
-  ExecutionObjectContext *_parent; // parent object
-  Player *_player;                 // associated player
-  GingaTime _time;                 // playback time
-  set<FormatterEvent *> _events;   // object events
+  Formatter *_ginga;              // formatter handle
+  FormatterScheduler *_scheduler; // formatter scheduler
+  NclNode *_node;                 // NCL node
+  string _id;                     // object id
+  vector<string> _aliases;        // aliases
+  FormatterContext *_parent;      // parent object
+  Player *_player;                // associated player
+  GingaTime _time;                // playback time
+  set<FormatterEvent *> _events;  // object events
 
   // delayed actions
   vector<pair<FormatterAction *, GingaTime>> _delayed;
@@ -88,6 +88,6 @@ protected:
   void resetDelayed ();
 };
 
-GINGA_FORMATTER_END
+GINGA_END
 
-#endif // EXECUTION_OBJECT_H
+#endif // FORMATTER_OBJECT_H

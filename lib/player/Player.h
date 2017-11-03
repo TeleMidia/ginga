@@ -18,10 +18,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "GingaInternal.h"
+#include "Formatter.h"
 #include "PlayerAnimator.h"
 
-class GingaInternal;
+class Formatter;
 
 GINGA_PLAYER_BEGIN
 class Player
@@ -71,7 +71,7 @@ public:
      PROP_Z_INDEX,
     };
 
-  Player (GingaInternal *, const string &, const string &);
+  Player (Formatter *, const string &, const string &);
   virtual ~Player ();
 
   PlayerState getState ();
@@ -109,10 +109,10 @@ public:
   static string getCurrentFocus ();
   static void setCurrentFocus (const string &);
   static PlayerProperty getPlayerProperty (const string &, string *);
-  static Player *createPlayer (GingaInternal *, const string &,
+  static Player *createPlayer (Formatter *, const string &,
                                const string &, const string &);
 protected:
-  GingaInternal *_ginga;        // ginga handle
+  Formatter *_ginga;        // ginga handle
   bool _opengl;                 // true if OpenGL is used
   string _id;                   // associated object id
   string _uri;                  // source uri

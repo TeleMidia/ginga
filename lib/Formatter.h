@@ -15,18 +15,16 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef GINGA_INTERNAL_H
-#define GINGA_INTERNAL_H
+#ifndef FORMATTER_H
+#define FORMATTER_H
 
 #include "ginga.h"
 #include "aux-ginga.h"
 
-GINGA_FORMATTER_BEGIN
-class Scheduler;
-GINGA_FORMATTER_END
-using namespace ::ginga::formatter;
+GINGA_BEGIN
 
-class GingaInternal: public Ginga
+class FormatterScheduler;
+class Formatter: public Ginga
 {
  public:
   // External API.
@@ -50,23 +48,23 @@ class GingaInternal: public Ginga
   void setOptionString (const string &, string);
 
   // Internal API.
-  GingaInternal (int, char **, GingaOptions *);
-  virtual ~GingaInternal ();
-  Scheduler *getScheduler ();
+  Formatter (int, char **, GingaOptions *);
+  virtual ~Formatter ();
+  FormatterScheduler *getScheduler ();
 
   bool getEOS ();
   void setEOS (bool);
 
-  static void setOptionDebug (GingaInternal *, const string &, bool);
-  static void setOptionExperimental (GingaInternal *, const string &, bool);
-  static void setOptionOpenGL (GingaInternal *, const string &, bool);
-  static void setOptionSize (GingaInternal *, const string &, int);
-  static void setOptionBackground (GingaInternal *, const string &, string);
+  static void setOptionDebug (Formatter *, const string &, bool);
+  static void setOptionExperimental (Formatter *, const string &, bool);
+  static void setOptionOpenGL (Formatter *, const string &, bool);
+  static void setOptionSize (Formatter *, const string &, int);
+  static void setOptionBackground (Formatter *, const string &, string);
 
  private:
-  GingaState _state;             // current state
-  GingaOptions _opts;            // current options
-  Scheduler *_scheduler;         // formatter core
+  GingaState _state;              // current state
+  GingaOptions _opts;             // current options
+  FormatterScheduler *_scheduler; // formatter core
 
   string _ncl_file;               // path to current NCL file
   bool _eos;                      // true if EOS was reached
@@ -75,9 +73,8 @@ class GingaInternal: public Ginga
   uint64_t _last_tick_diff;       // last diff informed via sendTickEvent
   uint64_t _last_tick_frameno;    // last frameno informed via sendTickEvent
   string _saved_G_MESSAGES_DEBUG; // saved G_MESSAGES_DEBUG value
-
-  bool add (GList **, gpointer);
-  bool remove (GList **, gpointer);
 };
 
-#endif // GINGA_PRIVATE_H
+GINGA_END
+
+#endif // FORMATTER_H

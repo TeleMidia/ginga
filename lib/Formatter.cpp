@@ -17,17 +17,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 #include "aux-gl.h"
-#include "GingaInternal.h"
+#include "Formatter.h"
 
-#include "formatter/Scheduler.h"
-using namespace ::ginga::formatter;
-
-#include "ncl/ParserXercesC.h"
+#include "FormatterScheduler.h"
 #include "ncl/ParserLibXML.h"
-using namespace ::ginga;
+#include "ncl/ParserXercesC.h"
 
 #include "player/TextPlayer.h"
 using namespace ::ginga::player;
+
+GINGA_BEGIN
 
 // Option defaults.
 static GingaOptions opts_defaults =
@@ -51,17 +50,17 @@ typedef struct GingaOptionData
 #define OPTS_ENTRY(name,type,func)                              \
   {G_STRINGIFY (name),                                          \
       {(type), offsetof (GingaOptions, name),                   \
-         pointerof (G_PASTE (GingaInternal::setOption, func))}}
+         pointerof (G_PASTE (Formatter::setOption, func))}}
 
 // Option table.
 static map<string, GingaOptionData> opts_table =
 {
- OPTS_ENTRY (background,   G_TYPE_STRING,  Background),
- OPTS_ENTRY (debug,        G_TYPE_BOOLEAN, Debug),
- OPTS_ENTRY (experimental, G_TYPE_BOOLEAN, Experimental),
- OPTS_ENTRY (height,       G_TYPE_INT,     Size),
- OPTS_ENTRY (opengl,       G_TYPE_BOOLEAN, OpenGL),
- OPTS_ENTRY (width,        G_TYPE_INT,     Size),
+  OPTS_ENTRY (background,   G_TYPE_STRING,  Background),
+  OPTS_ENTRY (debug,        G_TYPE_BOOLEAN, Debug),
+  OPTS_ENTRY (experimental, G_TYPE_BOOLEAN, Experimental),
+  OPTS_ENTRY (height,       G_TYPE_INT,     Size),
+  OPTS_ENTRY (opengl,       G_TYPE_BOOLEAN, OpenGL),
+  OPTS_ENTRY (width,        G_TYPE_INT,     Size),
 };
 
 // Indexes option table.
@@ -101,24 +100,14 @@ win_cmp_z (Player *p1, Player *p2)
 
 // External API.
 
-/**
- * @brief Get current state.
- * @return Current state.
- */
 GingaState
-GingaInternal::getState ()
+Formatter::getState ()
 {
   return _state;
 }
 
-/**
- * @brief Starts NCL from file.
- * @param file Path to NCL file.
- * @param errmsg Address of a variable to store an error message.
- * @return True if successfully, or false otherwise.
- */
 bool
-GingaInternal::start (const string &file, string *errmsg)
+Formatter::start (const string &file, string *errmsg)
 {
   NclDocument *doc;
   int w, h;
@@ -137,7 +126,7 @@ GingaInternal::start (const string &file, string *errmsg)
     return false;
 
   // Create scheduler.
-  _scheduler = new Scheduler (this);
+  _scheduler = new FormatterScheduler (this);
   _ncl_file = file;
   _eos = false;
   _last_tick_total = 0;
@@ -156,11 +145,8 @@ GingaInternal::start (const string &file, string *errmsg)
   return true;
 }
 
-/**
- * @brief Stops NCL.
- */
 bool
-GingaInternal::stop ()
+Formatter::stop ()
 {
   if (_state == GINGA_STATE_STOPPED)
     return false;               // nothing to do
@@ -171,13 +157,8 @@ GingaInternal::stop ()
   return true;
 }
 
-/**
- * @brief Resize current surface.
- * @param width New width (in pixels).
- * @param height New height (in pixels).
- */
 void
-GingaInternal::resize (int width, int height)
+Formatter::resize (int width, int height)
 {
   g_assert (width > 0 && height > 0);
   _opts.width = width;
@@ -186,18 +167,14 @@ GingaInternal::resize (int width, int height)
     _scheduler->resize (width, height);
 }
 
-/**
- * @brief Draw current surface onto cairo context.
- * @param cr Target cairo context.
- */
 void
-GingaInternal::redraw (cairo_t *cr)
+Formatter::redraw (cairo_t *cr)
 {
-  g_assert_nonnull (_scheduler);
-  _scheduler->redraw (cr);
+  if (_scheduler != nullptr)
+    _scheduler->redraw (cr);
 }
 
-// Stop formatter if EOS has been seen.
+// Stops formatter if EOS has been seen.
 #define _GINGA_CHECK_EOS(ginga)                                 \
   G_STMT_START                                                  \
   {                                                             \
@@ -211,14 +188,8 @@ GingaInternal::redraw (cairo_t *cr)
   }                                                             \
   G_STMT_END
 
-/**
- * @brief Sends key event.
- * @param key Key name.
- * @param press True if press or false if release.
- * @return True if successful, or false otherwise.
- */
 bool
-GingaInternal::sendKeyEvent (const string &key, bool press)
+Formatter::sendKeyEvent (const string &key, bool press)
 {
   _GINGA_CHECK_EOS (this);
   if (_state != GINGA_STATE_PLAYING)
@@ -228,15 +199,8 @@ GingaInternal::sendKeyEvent (const string &key, bool press)
   return true;
 }
 
-/**
- * @brief Sends tick event.
- * @param total Time passed since start (in microseconds).
- * @param diff Time passed since last tick (in microseconds).
- * @param frame Current frame number.
- * @return True if successful, or false otherwise.
- */
 bool
-GingaInternal::sendTickEvent (uint64_t total, uint64_t diff, uint64_t frame)
+Formatter::sendTickEvent (uint64_t total, uint64_t diff, uint64_t frame)
 {
   _GINGA_CHECK_EOS (this);
   if (_state != GINGA_STATE_PLAYING)
@@ -250,12 +214,8 @@ GingaInternal::sendTickEvent (uint64_t total, uint64_t diff, uint64_t frame)
   return true;
 }
 
-/**
- * @brief Gets current options.
- * @return The current options.
- */
 const GingaOptions *
-GingaInternal::getOptions ()
+Formatter::getOptions ()
 {
   return &_opts;
 }
@@ -267,7 +227,7 @@ GingaInternal::getOptions ()
 
 #define OPT_GETSET_DEFN(Name, Type, GType)                              \
   Type                                                                  \
-  GingaInternal::getOption##Name (const string &name)                   \
+  Formatter::getOption##Name (const string &name)                       \
   {                                                                     \
     GingaOptionData *opt;                                               \
     if (unlikely (!opts_table_index (name, &opt)))                      \
@@ -277,7 +237,7 @@ GingaInternal::getOptions ()
     return *((Type *)(((ptrdiff_t) &_opts) + opt->offset));             \
   }                                                                     \
   void                                                                  \
-  GingaInternal::setOption##Name (const string &name, Type value)       \
+    Formatter::setOption##Name (const string &name, Type value)         \
   {                                                                     \
     GingaOptionData *opt;                                               \
     if (unlikely (!opts_table_index (name, &opt)))                      \
@@ -287,7 +247,7 @@ GingaInternal::getOptions ()
     *((Type *)(((ptrdiff_t) &_opts) + opt->offset)) = value;            \
     if (opt->func)                                                      \
       {                                                                 \
-        ((void (*) (GingaInternal *, const string &, Type)) opt->func)  \
+        ((void (*) (Formatter *, const string &, Type)) opt->func)      \
           (this, name, value);                                          \
       }                                                                 \
   }
@@ -299,11 +259,8 @@ OPT_GETSET_DEFN (String, string, G_TYPE_STRING)
 
 // Internal API.
 
-/**
- * @brief Creates a new instance.
- */
-GingaInternal::GingaInternal (unused (int argc), unused (char **argv),
-                              GingaOptions *opts) : Ginga (argc, argv, opts)
+Formatter::Formatter (unused (int argc), unused (char **argv),
+                      GingaOptions *opts) : Ginga (argc, argv, opts)
 {
   const char *s;
 
@@ -323,66 +280,35 @@ GingaInternal::GingaInternal (unused (int argc), unused (char **argv),
   setOptionDebug (this, "debug", _opts.debug);
   setOptionExperimental (this, "experimental", _opts.experimental);
   setOptionOpenGL (this, "opengl", _opts.opengl);
-
-#if defined WITH_CEF && WITH_CEF
-  CefMainArgs args (argc, argv);
-  CefSettings settings;
-  int pstatus = CefExecuteProcess (args, nullptr, nullptr);
-  if (pstatus >= 0)
-    return pstatus;
-  if (unlikely (!CefInitialize (args, settings, nullptr, nullptr)))
-    exit (EXIT_FAILURE);
-#endif
 }
 
-/**
- * @brief Destroys instance.
- */
-GingaInternal::~GingaInternal ()
+Formatter::~Formatter ()
 {
   if (_state != GINGA_STATE_STOPPED)
     this->stop ();
-#if defined WITH_CEF && WITH_CEF
-  CefShutdown ();
-#endif
 }
 
-/**
- * @brief Gets associated scheduler.
- * @return The associated scheduler.
- */
-Scheduler *
-GingaInternal::getScheduler ()
+FormatterScheduler *
+Formatter::getScheduler ()
 {
   return _scheduler;
 }
 
-/**
- * @brief Gets EOS flag value.
- * @return EOS flag value.
- */
 bool
-GingaInternal::getEOS ()
+Formatter::getEOS ()
 {
   return _eos;
 }
 
-/**
- * @brief Sets EOS flag.
- * @param eos Flag value.
- */
 void
-GingaInternal::setEOS (bool eos)
+Formatter::setEOS (bool eos)
 {
   _eos = eos;
 }
 
-/**
- * @brief Updates debug option.
- */
 void
-GingaInternal::setOptionDebug (GingaInternal *self, const string &name,
-                               bool value)
+Formatter::setOptionDebug (Formatter *self, const string &name,
+                           bool value)
 {
   g_assert (name == "debug");
   if (value)
@@ -400,23 +326,17 @@ GingaInternal::setOptionDebug (GingaInternal *self, const string &name,
   TRACE ("%s:=%s", name.c_str (), strbool (value));
 }
 
-/**
- * @brief Updates experimental option.
- */
 void
-GingaInternal::setOptionExperimental (unused (GingaInternal *self),
-                                      const string &name, bool value)
+Formatter::setOptionExperimental (unused (Formatter *self),
+                                  const string &name, bool value)
 {
   g_assert (name == "experimental");
   TRACE ("%s:=%s", name.c_str (), strbool (value));
 }
 
-/**
- * @brief Initializes OpenGL option.
- */
 void
-GingaInternal::setOptionOpenGL (unused (GingaInternal *self),
-                                const string &name, bool value)
+Formatter::setOptionOpenGL (unused (Formatter *self),
+                            const string &name, bool value)
 {
   static int n = 0;
   g_assert (name == "opengl");
@@ -429,11 +349,8 @@ GingaInternal::setOptionOpenGL (unused (GingaInternal *self),
   TRACE ("%s:=%s", name.c_str (), strbool (value));
 }
 
-/**
- * @brief Updates size option.
- */
 void
-GingaInternal::setOptionSize (GingaInternal *self, const string &name,
+Formatter::setOptionSize (Formatter *self, const string &name,
                               int value)
 {
   const GingaOptions *opts;
@@ -443,12 +360,9 @@ GingaInternal::setOptionSize (GingaInternal *self, const string &name,
   TRACE ("%s:=%d", name.c_str (), value);
 }
 
-/**
- * @brief Updates background option.
- */
 void
-GingaInternal::setOptionBackground (GingaInternal *self, const string &name,
-                                    string value)
+Formatter::setOptionBackground (Formatter *self, const string &name,
+                                string value)
 {
   g_assert (name == "background");
   if (value == "")
@@ -458,42 +372,4 @@ GingaInternal::setOptionBackground (GingaInternal *self, const string &name,
   TRACE ("%s:='%s'", name.c_str (), value.c_str ());
 }
 
-
-// Private methods.
-
-bool
-GingaInternal::add (GList **list, gpointer data)
-{
-  bool found;
-
-  g_assert_nonnull (list);
-  if (unlikely (found = g_list_find (*list, data)))
-    {
-      WARNING ("object %p already in list %p", data, *list);
-      goto done;
-    }
-  *list = g_list_append (*list, data);
-done:
-  return !found;
-}
-
-bool
-GingaInternal::remove (GList **list, gpointer data)
-{
-  GList *l;
-
-  g_assert_nonnull (list);
-  l = *list;
-  while (l != NULL)
-    {
-      GList *next = l->next;
-      if (l->data == data)
-        {
-          *list = g_list_delete_link (*list, l);
-          return true;
-        }
-      l = next;
-    }
-  WARNING ("object %p not in list %p", data, *list);
-  return false;
-}
+GINGA_END

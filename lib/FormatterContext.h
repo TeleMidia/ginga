@@ -15,24 +15,24 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef EXECUTION_OBJECT_CONTEXT_H
-#define EXECUTION_OBJECT_CONTEXT_H
+#ifndef FORMATTER_CONTEXT_H
+#define FORMATTER_CONTEXT_H
 
-#include "ExecutionObject.h"
+#include "FormatterObject.h"
 #include "FormatterEvent.h"
 #include "FormatterLink.h"
 
-GINGA_FORMATTER_BEGIN
+GINGA_BEGIN
 
-class ExecutionObjectContext: public ExecutionObject
+class FormatterContext: public FormatterObject
 {
 public:
-  ExecutionObjectContext (GingaInternal *, const string &, NclNode *);
-  virtual ~ExecutionObjectContext ();
+  FormatterContext (Formatter *, const string &, NclNode *);
+  virtual ~FormatterContext ();
 
-  const set<ExecutionObject *> *getChildren ();
-  ExecutionObject *getChildById (const string &);
-  bool addChild (ExecutionObject *);
+  const set<FormatterObject *> *getChildren ();
+  FormatterObject *getChildById (const string &);
+  bool addChild (FormatterObject *);
 
   const vector<FormatterLink *> *getLinks ();
   bool addLink (FormatterLink *);
@@ -43,12 +43,12 @@ public:
 
 private:
   NclContext *_context;
-  set<ExecutionObject *> _children;
+  set<FormatterObject *> _children;
   vector<FormatterLink *> _links;
 
   void toggleLinks (bool);
 };
 
-GINGA_FORMATTER_END
+GINGA_END
 
-#endif // EXECUTION_OBJECT_CONTEXT_H
+#endif // FORMATTER_CONTEXT_H

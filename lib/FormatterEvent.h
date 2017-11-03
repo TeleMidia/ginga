@@ -18,10 +18,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FORMATTER_EVENT_H
 #define FORMATTER_EVENT_H
 
-#include "GingaInternal.h"
+#include "Formatter.h"
 #include "ncl/Ncl.h"
 
-GINGA_FORMATTER_BEGIN
+GINGA_BEGIN
 
 class FormatterEvent;
 class IFormatterEventListener
@@ -31,16 +31,16 @@ public:
                                   NclEventStateTransition) = 0;
 };
 
-class ExecutionObject;
+class FormatterObject;
 class FormatterEvent
 {
 public:
-  FormatterEvent (GingaInternal *, NclEventType, ExecutionObject *,
+  FormatterEvent (Formatter *, NclEventType, FormatterObject *,
                   NclAnchor *);
   virtual ~FormatterEvent ();
 
   NclEventType getType ();
-  ExecutionObject *getObject ();
+  FormatterObject *getObject ();
   NclAnchor *getAnchor ();
   NclEventState getState ();
 
@@ -52,16 +52,16 @@ public:
   bool transition (NclEventStateTransition);
 
 private:
-  GingaInternal *_ginga;                        // ginga handle
-  Scheduler *_scheduler;                        // scheduler
+  Formatter *_ginga;                        // ginga handle
+  FormatterScheduler *_scheduler;                        // scheduler
   NclEventType _type;                              // event type
-  ExecutionObject *_object;                     // target object
+  FormatterObject *_object;                     // target object
   NclAnchor *_anchor;                              // target anchor
   NclEventState _state;                            // event state
   vector<IFormatterEventListener *> _listeners; // event listeners
   map<string,string> _params;                   // parameters
 };
 
-GINGA_FORMATTER_END
+GINGA_END
 
 #endif // FORMATTER_EVENT_H

@@ -155,7 +155,7 @@ TextPlayer::renderSurface (const string &text,
 
 // Public.
 
-TextPlayer::TextPlayer (GingaInternal *ginga,
+TextPlayer::TextPlayer (Formatter *ginga,
                         const string &id, const string &uri)
   : Player (ginga, id, uri)
 {

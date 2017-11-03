@@ -15,27 +15,27 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef EXECUTION_OBJECT_SWITCH_H
-#define EXECUTION_OBJECT_SWITCH_H
+#ifndef FORMATTER_SWITCH_H
+#define FORMATTER_SWITCH_H
 
-#include "ExecutionObjectContext.h"
+#include "FormatterContext.h"
 #include "FormatterEvent.h"
 
-GINGA_FORMATTER_BEGIN
+GINGA_BEGIN
 
-class ExecutionObjectSwitch: public ExecutionObjectContext
+class FormatterSwitch: public FormatterContext
 {
 public:
-  ExecutionObjectSwitch (GingaInternal *, const string &, NclNode *);
-  virtual ~ExecutionObjectSwitch ();
+  FormatterSwitch (Formatter *, const string &, NclNode *);
+  virtual ~FormatterSwitch ();
 
   bool exec (FormatterEvent *, NclEventState, NclEventState,
              NclEventStateTransition) override;
 private:
   NclSwitch *_switch;
-  ExecutionObject *_selected;
+  FormatterObject *_selected;
 };
 
-GINGA_FORMATTER_END
+GINGA_END
 
-#endif // EXECUTION_OBJECT_SWITCH_H
+#endif // FORMATTER_SWITCH_H

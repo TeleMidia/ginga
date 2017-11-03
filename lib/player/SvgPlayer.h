@@ -25,7 +25,7 @@ GINGA_PLAYER_BEGIN
 class SvgPlayer : public Player
 {
 public:
-  SvgPlayer (GingaInternal *ginga, const string &id, const string &uri)
+  SvgPlayer (Formatter *ginga, const string &id, const string &uri)
     : Player (ginga, id, uri) {}
   ~SvgPlayer () {}
   void reload () override;
