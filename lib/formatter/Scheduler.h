@@ -26,9 +26,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterCondition.h"
 #include "FormatterEvent.h"
 #include "FormatterLink.h"
-
 #include "ncl/Ncl.h"
-using namespace ::ginga::ncl;
 
 class GingaInternal;
 

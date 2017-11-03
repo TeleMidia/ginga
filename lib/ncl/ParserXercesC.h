@@ -34,7 +34,7 @@ GINGA_PRAGMA_DIAG_POP ()
 #include "NclProperty.h"
 #include "NclSwitch.h"
 
-GINGA_NCL_BEGIN
+GINGA_BEGIN
 
 class ParserXercesC: public ErrorHandler
 {
@@ -116,6 +116,6 @@ private:
   void resetErrors () {};
 };
 
-GINGA_NCL_END
+GINGA_END
 
 #endif // PARSER_XERCESC_H

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "NclMediaRefer.h"
 
-GINGA_NCL_BEGIN
+GINGA_BEGIN
 
 NclMediaRefer::NclMediaRefer (NclDocument *ncl, const string &id)
   : NclNode (ncl, id)
@@ -41,4 +41,4 @@ NclMediaRefer::initReferred (NclMedia *media)
   media->addSameInstance (this);
 }
 
-GINGA_NCL_END
+GINGA_END

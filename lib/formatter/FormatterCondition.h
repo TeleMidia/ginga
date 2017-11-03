@@ -19,9 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define FORMATTER_CONDITION
 
 #include "FormatterEvent.h"
-
 #include "ncl/Predicate.h"
-using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 

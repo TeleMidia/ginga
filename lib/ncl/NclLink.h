@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclConnector.h"
 #include "NclBind.h"
 
-GINGA_NCL_BEGIN
+GINGA_BEGIN
 
 class NclContext;
 class NclLink: public NclEntity
@@ -48,6 +48,6 @@ private:
   map<string, string> _ghost_binds;
 };
 
-GINGA_NCL_END
+GINGA_END
 
 #endif // NCL_LINK_H

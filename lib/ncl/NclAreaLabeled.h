@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclAnchor.h"
 
-GINGA_NCL_BEGIN
+GINGA_BEGIN
 
 class NclAreaLabeled: public NclAnchor
 {
@@ -32,6 +32,6 @@ private:
   string _label;
 };
 
-GINGA_NCL_END
+GINGA_END
 
 #endif // NCL_AREA_LABELED_H

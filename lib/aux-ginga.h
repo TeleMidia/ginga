@@ -77,23 +77,16 @@ using namespace std;
 #define _GINGA_NS_END                    /*{*/}
 #define _GINGA_BEGIN(t)       _GINGA_NS_BEGIN (ginga) _GINGA_NS_BEGIN (t)
 #define _GINGA_END            _GINGA_NS_END _GINGA_NS_END
+#define GINGA_BEGIN           _GINGA_NS_BEGIN (ginga)
+#define GINGA_END             _GINGA_NS_END
 #define GINGA_FORMATTER_BEGIN _GINGA_BEGIN (formatter)
 #define GINGA_FORMATTER_END   _GINGA_END
-#define GINGA_NCL_BEGIN       _GINGA_BEGIN (ncl)
-#define GINGA_NCL_END         _GINGA_END
 #define GINGA_PLAYER_BEGIN    _GINGA_BEGIN (player)
 #define GINGA_PLAYER_END      _GINGA_END
 
 // Utility macros.
-#define GINGA_ASSERT_GLOBAL_NONNULL(G, Type)                    \
-  ((G != NULL) ? (G)                                            \
-   : (g_log (G_LOG_DOMAIN, G_LOG_LEVEL_CRITICAL,                \
-             "global variable %s is null", G_STRINGIFY (G)),    \
-      ((Type) NULL)))
-
 #undef unused
 #define unused(...) G_GNUC_UNUSED __VA_ARGS__
-
 #undef cast
 #define cast(a, b)       (dynamic_cast<a>((b)))
 #define instanceof(a, b) (cast (a,(b)) != nullptr)

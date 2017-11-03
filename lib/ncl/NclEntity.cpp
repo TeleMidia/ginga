@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclDocument.h"
 #include "NclProperty.h"
 
-GINGA_NCL_BEGIN
+GINGA_BEGIN
 
 NclEntity::NclEntity (NclDocument *ncl, const string &id)
 {
@@ -61,4 +61,4 @@ NclEntity::getDocument ()
 //   _userdata[key] = data;
 // }
 
-GINGA_NCL_END
+GINGA_END

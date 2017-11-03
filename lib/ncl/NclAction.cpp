@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "NclAction.h"
 
-GINGA_NCL_BEGIN
+GINGA_BEGIN
 
 NclAction::NclAction (NclEventType type,
                       NclEventStateTransition transition,
@@ -100,4 +100,4 @@ NclAction::isReserved (const string &role,
   return true;
 }
 
-GINGA_NCL_END
+GINGA_END

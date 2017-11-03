@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclAction.h"
 #include "NclRole.h"
 
-GINGA_NCL_BEGIN
+GINGA_BEGIN
 
 class NclAction: public NclRole
 {
@@ -44,6 +44,6 @@ private:
   string _duration;
 };
 
-GINGA_NCL_END
+GINGA_END
 
 #endif // NCL_ACTION_H

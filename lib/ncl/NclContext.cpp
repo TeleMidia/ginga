@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "NclContext.h"
 
-GINGA_NCL_BEGIN
+GINGA_BEGIN
 
 NclContext::NclContext (NclDocument *ncl, const string &id)
   :NclComposition (ncl, id)
@@ -46,4 +46,4 @@ NclContext::getLinks ()
   return &_links;
 }
 
-GINGA_NCL_END
+GINGA_END

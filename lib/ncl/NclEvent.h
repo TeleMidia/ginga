@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NCL_EVENT_H
 #define NCL_EVENT_H
 
-GINGA_NCL_BEGIN
+GINGA_BEGIN
 
 enum class NclEventType
 {
@@ -51,6 +51,6 @@ public:
   static string getEventStateTransitionAsString (NclEventStateTransition);
 };
 
-GINGA_NCL_END
+GINGA_END
 
 #endif // NCL_EVENT_H

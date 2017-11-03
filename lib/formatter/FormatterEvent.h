@@ -19,9 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define FORMATTER_EVENT_H
 
 #include "GingaInternal.h"
-
 #include "ncl/Ncl.h"
-using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
