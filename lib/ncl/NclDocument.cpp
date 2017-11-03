@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclMedia.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 /**
  * @brief Gets document id.
@@ -409,4 +409,4 @@ NclDocument::setId (const string &id)
   this->_id = id;
 }
 
-GINGA_END
+GINGA_NAMESPACE_END

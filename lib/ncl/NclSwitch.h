@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclComposition.h"
 #include "Predicate.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 class NclSwitch: public NclComposition
 {
@@ -38,6 +38,6 @@ private:
   vector<pair<NclNode *, Predicate *>> _rules;
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // NCL_SWITCH_H

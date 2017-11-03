@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclComposition.h"
 #include "NclLink.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 class NclContext: public NclComposition
 {
@@ -35,6 +35,6 @@ private:
   vector<NclLink *> _links;
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // NCL_CONTEXT_H

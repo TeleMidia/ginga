@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclEvent.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 class NclRole
 {
@@ -35,6 +35,6 @@ protected:
   string _label;
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // NCL_ROLE_H

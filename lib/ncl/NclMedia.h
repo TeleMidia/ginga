@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclNode.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 class NclMediaRefer;
 class NclMedia: public NclNode
@@ -45,6 +45,6 @@ private:
   set<NclMediaRefer *> _instances;
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // NCL_MEDIA_H

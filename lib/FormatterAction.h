@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "FormatterEvent.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 class FormatterAction
 {
@@ -45,6 +45,6 @@ private:
   string _value;
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // FORMATTER_ACTION_H

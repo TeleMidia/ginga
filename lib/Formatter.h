@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "aux-ginga.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 class FormatterScheduler;
 class Formatter: public Ginga
@@ -75,6 +75,6 @@ class Formatter: public Ginga
   string _saved_G_MESSAGES_DEBUG; // saved G_MESSAGES_DEBUG value
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // FORMATTER_H

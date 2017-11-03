@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Player.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 class PlayerLua : public Player
 {
@@ -48,6 +48,6 @@ private:
   void pwdRestore ();
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // LUAPLAYER_H

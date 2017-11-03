@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclNode.h"
 #include "NclRole.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 class NclBind
 {
@@ -44,6 +44,6 @@ private:
   map<string, string> _params;
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // NCL_BIND_H

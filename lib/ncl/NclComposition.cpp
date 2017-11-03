@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "NclComposition.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 NclComposition::NclComposition (NclDocument *ncl, const string &id)
   :NclNode (ncl, id)
@@ -118,4 +118,4 @@ NclComposition::getMapInterface (NclPort *port)
     }
 }
 
-GINGA_END
+GINGA_NAMESPACE_END

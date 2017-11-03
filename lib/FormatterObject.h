@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterEvent.h"
 #include "player/Player.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 class FormatterContext;
 class FormatterMediaSettings;
@@ -86,6 +86,6 @@ protected:
   void resetDelayed ();
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // FORMATTER_OBJECT_H

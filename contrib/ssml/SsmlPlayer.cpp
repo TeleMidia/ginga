@@ -40,7 +40,7 @@ SynthCallback (unused (short *wav), unused (int numsamples), unused (espeak_EVEN
   return 0;
 }
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 SsmlPlayer::SsmlPlayer (const string &mrl)
     : Thread (), Player (mrl)
@@ -165,4 +165,4 @@ SsmlPlayer::run ()
   loadSsml ();
 }
 
-GINGA_END
+GINGA_NAMESPACE_END

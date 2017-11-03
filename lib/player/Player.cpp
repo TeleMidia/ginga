@@ -29,7 +29,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 # include "player/PlayerHTML.h"
 #endif
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 typedef struct PlayerPropertyInfo
 {
@@ -773,4 +773,4 @@ Player::redrawDebuggingInfo (cairo_t *cr)
   cairo_surface_destroy (debug);
 }
 
-GINGA_END
+GINGA_NAMESPACE_END

@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 enum class NclEventType
 {
@@ -53,6 +53,6 @@ public:
   static string getEventStateTransitionAsString (NclEventStateTransition);
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // NCL_EVENT_H

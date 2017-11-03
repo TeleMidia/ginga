@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclDocument.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 class ParserLibXML
 {
@@ -30,6 +30,6 @@ public:
   static NclDocument *parseFile (const string &, int, int, string *);
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PREDICATE_H
 #define PREDICATE_H
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 enum class PredicateType
 {
@@ -72,6 +72,6 @@ private:
   Predicate *_parent;
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // PREDICATE_H

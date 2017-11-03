@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 class NclDocument;
 class NclEntity
@@ -36,6 +36,6 @@ private:
   NclDocument *_ncl;
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // NCL_ENTITY_H

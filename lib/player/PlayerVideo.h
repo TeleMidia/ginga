@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Player.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 class PlayerVideo : public Player
 {
@@ -71,6 +71,6 @@ private:
   static GstFlowReturn cb_NewSample (GstAppSink *, gpointer);
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // VIDEO_PLAYER_H

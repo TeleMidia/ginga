@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Formatter.h"
 #include "ncl/Ncl.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 class FormatterEvent;
 class IFormatterEventListener
@@ -62,6 +62,6 @@ private:
   map<string,string> _params;                   // parameters
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // FORMATTER_EVENT_H

@@ -28,7 +28,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterLink.h"
 #include "ncl/Ncl.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 class Formatter;
 class FormatterScheduler
@@ -63,6 +63,6 @@ private:
   FormatterLink *obtainFormatterLink (NclLink *);
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // FORMATTER_SCHEDULER_H

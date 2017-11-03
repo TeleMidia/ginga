@@ -33,10 +33,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Player.h"
 
-#include "mb/IEventListener.h"
-#include "mb/Display.h"
-using namespace ginga::mb;
-
 GINGA_PRAGMA_DIAG_PUSH ()
 GINGA_PRAGMA_DIAG_IGNORE (-Wunused-parameter)
 // GINGA_PRAGMA_DIAG_IGNORE (-Wunused-const-variable)
@@ -48,7 +44,7 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wunused-parameter)
 #include <wrapper/cef_helpers.h>
 GINGA_PRAGMA_DIAG_POP ()
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 /**
  * @brief A render handler class of CEF for Ginga.
@@ -401,6 +397,6 @@ private:
   bool _isPlaying;
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif /* HTML_PLAYER_H */

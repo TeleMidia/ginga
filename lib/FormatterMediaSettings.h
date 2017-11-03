@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "FormatterObject.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 class FormatterObject;
 class FormatterMediaSettings : public FormatterObject
@@ -40,6 +40,6 @@ public:
   bool _hasNextFocus;           // true if a focus update is scheduled
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif

@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclNode.h"
 #include "NclPort.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 class NclComposition: public NclNode
 {
@@ -45,6 +45,6 @@ protected:
   vector<NclPort *> _ports;
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // NCL_COMPOSITION_H

@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wunused-macros)
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 // Event handling.
 #define evt_ncl_send_attribution(nw, action, name, value)\
@@ -214,4 +214,4 @@ PlayerLua::pwdRestore ()
   do_chdir (_saved_pwd);
 }
 
-GINGA_END
+GINGA_NAMESPACE_END

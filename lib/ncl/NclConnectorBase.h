@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclConnectorBase.h"
 #include "NclConnector.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 class NclConnectorBase: NclEntity
 {
@@ -45,6 +45,6 @@ private:
   NclConnectorBase *getHashBase (const string &, string *, string *);
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // NCL_CONNECTOR_BASE_H

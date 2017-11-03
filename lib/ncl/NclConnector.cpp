@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclAction.h"
 #include "NclCondition.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 
 // Public.
@@ -99,4 +99,4 @@ NclConnector::getRole (const string &label)
   return nullptr;
 }
 
-GINGA_END
+GINGA_NAMESPACE_END

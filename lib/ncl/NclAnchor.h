@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclEntity.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 class NclAnchor: public NclEntity
 {
@@ -28,6 +28,6 @@ public:
   NclAnchor (NclDocument *doc, const string &id) : NclEntity (doc, id) {};
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // NCL_ANCHOR_H

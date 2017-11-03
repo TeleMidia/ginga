@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "NclAreaLabeled.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 NclAreaLabeled::NclAreaLabeled (NclDocument *ncl, const string &id,
                                 const string &label)
@@ -34,4 +34,4 @@ NclAreaLabeled::getLabel ()
   return _label;
 }
 
-GINGA_END
+GINGA_NAMESPACE_END

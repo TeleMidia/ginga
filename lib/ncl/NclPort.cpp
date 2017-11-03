@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "NclPort.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 
 // Public.
@@ -114,4 +114,4 @@ NclPort::getFinalInterface ()
     return _interface;
 }
 
-GINGA_END
+GINGA_NAMESPACE_END

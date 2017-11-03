@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclArea.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 NclArea::NclArea (NclDocument *ncl, const string &id,
                   GingaTime begin, GingaTime end): NclAnchor (ncl, id)
@@ -38,4 +38,4 @@ NclArea::getEnd ()
   return _end;
 }
 
-GINGA_END
+GINGA_NAMESPACE_END
