@@ -25,7 +25,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterScheduler.h"
 #include "player/Player.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 
 // Public.
@@ -747,4 +747,4 @@ FormatterObject::resetDelayed ()
   _delayed_new.clear ();
 }
 
-GINGA_END
+GINGA_NAMESPACE_END

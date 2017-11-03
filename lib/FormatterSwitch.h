@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterContext.h"
 #include "FormatterEvent.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 class FormatterSwitch: public FormatterContext
 {
@@ -36,6 +36,6 @@ private:
   FormatterObject *_selected;
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // FORMATTER_SWITCH_H

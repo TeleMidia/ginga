@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterSwitch.h"
 #include "FormatterScheduler.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 FormatterMediaSettings::FormatterMediaSettings (Formatter *ginga,
                                                 const string &id,
@@ -116,4 +116,4 @@ FormatterMediaSettings::sendTickEvent (unused (GingaTime total),
     }
 }
 
-GINGA_END
+GINGA_NAMESPACE_END

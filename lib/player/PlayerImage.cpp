@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-gl.h"
 #include "PlayerImage.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 // Creates a new surface by loading the image file at path PATH.  Stores the
 // resulting surface into *DUP and return CAIRO_STATUS_SUCCESS if
@@ -100,4 +100,4 @@ PlayerImage::reload ()
   Player::reload ();
 }
 
-GINGA_END
+GINGA_NAMESPACE_END

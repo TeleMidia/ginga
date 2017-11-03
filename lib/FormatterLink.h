@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterCondition.h"
 #include "FormatterEvent.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 class FormatterLink: public IFormatterConditionListener
 {
@@ -50,6 +50,6 @@ private:
   bool _disabled;                      // whether link is disabled
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // FORMATTER_LINK_H

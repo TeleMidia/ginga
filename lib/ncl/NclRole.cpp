@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "NclRole.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 NclRole::NclRole (NclEventType type, const string &label)
 {
@@ -42,4 +42,4 @@ NclRole::getLabel ()
   return _label;
 }
 
-GINGA_END
+GINGA_NAMESPACE_END

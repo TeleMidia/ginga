@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "NclCondition.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 NclCondition::NclCondition (NclEventType type,
                             NclEventStateTransition transition,
@@ -98,4 +98,4 @@ NclCondition::isReserved (const string &role,
   return true;
 }
 
-GINGA_END
+GINGA_NAMESPACE_END

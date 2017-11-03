@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <libxml/tree.h>
 #include <libxml/parser.h>
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 // Helper macros and functions.
 #define toCString(s) deconst (char *, (s))
@@ -1340,4 +1340,4 @@ ParserLibXML::parseFile (const string &path, int width, int height,
   return ncl;
 }
 
-GINGA_END
+GINGA_NAMESPACE_END

@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterContext.h"
 #include "FormatterScheduler.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 FormatterLink::FormatterLink (Formatter *ginga)
 {
@@ -119,4 +119,4 @@ FormatterLink::getEvents ()
   return events;
 }
 
-GINGA_END
+GINGA_NAMESPACE_END

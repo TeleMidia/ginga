@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 class Formatter;
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 class Player
 {
 public:
@@ -148,6 +148,6 @@ private:
   static string _currentFocus;  // current (global) focus index
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // PLAYER_H

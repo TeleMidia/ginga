@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Player.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 class PlayerText : public Player
 {
@@ -54,6 +54,6 @@ private:
   } _prop;
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif

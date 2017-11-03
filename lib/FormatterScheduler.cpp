@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-gl.h"
 #include "FormatterScheduler.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 
 // Public.
@@ -695,4 +695,4 @@ FormatterScheduler::eval (Predicate *pred)
   g_assert_not_reached ();
 }
 
-GINGA_END
+GINGA_NAMESPACE_END

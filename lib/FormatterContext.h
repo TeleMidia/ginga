@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterEvent.h"
 #include "FormatterLink.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 class FormatterContext: public FormatterObject
 {
@@ -49,6 +49,6 @@ private:
   void toggleLinks (bool);
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // FORMATTER_CONTEXT_H

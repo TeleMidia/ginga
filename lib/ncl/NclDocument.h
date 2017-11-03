@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclConnectorBase.h"
 #include "NclContext.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 class NclDocument
 {
@@ -81,6 +81,6 @@ private:
   NclNode *getNodeLocally (const string &nodeId);
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // NCL_DOCUMENT_H

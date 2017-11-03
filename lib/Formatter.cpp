@@ -24,7 +24,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/ParserXercesC.h"
 #include "player/PlayerText.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 // Option defaults.
 static GingaOptions opts_defaults =
@@ -370,4 +370,4 @@ Formatter::setOptionBackground (Formatter *self, const string &name,
   TRACE ("%s:='%s'", name.c_str (), value.c_str ());
 }
 
-GINGA_END
+GINGA_NAMESPACE_END

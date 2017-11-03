@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Formatter.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 // Entry in scheduled animations list.
 class AnimInfo
@@ -67,6 +67,6 @@ private:
                    const string &, GingaTime);
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // PLAYER_ANIMATOR_H

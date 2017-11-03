@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "aux-ginga.h"
 #include "Formatter.h"
-using namespace ::ginga;
+using namespace ginga;
 
 Ginga::Ginga (int, char **, GingaOptions *)
 {

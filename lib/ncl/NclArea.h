@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclAnchor.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 class NclArea: public NclAnchor
 {
@@ -41,6 +41,6 @@ public:
     :NclArea (doc, id, 0, GINGA_TIME_NONE) {};
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // NCL_AREA_H

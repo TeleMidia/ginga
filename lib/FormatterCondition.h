@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterEvent.h"
 #include "ncl/Predicate.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 class FormatterCondition;
 class IFormatterConditionListener
@@ -53,6 +53,6 @@ private:
   IFormatterConditionListener *_listener;
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // FORMATTER_CONDITION

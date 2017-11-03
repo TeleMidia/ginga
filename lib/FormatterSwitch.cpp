@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterSwitch.h"
 #include "FormatterScheduler.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 FormatterSwitch::FormatterSwitch (Formatter *ginga, const string &id,
                                   NclNode *node)
@@ -133,4 +133,4 @@ FormatterSwitch::exec (FormatterEvent *evt,
   return true;
 }
 
-GINGA_END
+GINGA_NAMESPACE_END

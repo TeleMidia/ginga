@@ -38,7 +38,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
   }                                                             \
   G_STMT_END
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 // Public.
 
@@ -440,4 +440,4 @@ PlayerVideo::cb_NewSample (unused (GstAppSink *appsink), gpointer data)
   return GST_FLOW_OK;
 }
 
-GINGA_END
+GINGA_NAMESPACE_END

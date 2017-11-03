@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclAnchor.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 class NclProperty: public NclAnchor
 {
@@ -35,6 +35,6 @@ private:
   string _value;
 };
 
-GINGA_END
+GINGA_NAMESPACE_END
 
 #endif // NCL_PROPERTY_H

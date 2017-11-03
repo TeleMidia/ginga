@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterCondition.h"
 #include "aux-ginga.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 FormatterCondition::FormatterCondition (Predicate *predicate,
                                         FormatterEvent *event,
@@ -70,4 +70,4 @@ FormatterCondition::eventStateChanged (unused (FormatterEvent *event),
     FormatterCondition::conditionSatisfied ();
 }
 
-GINGA_END
+GINGA_NAMESPACE_END

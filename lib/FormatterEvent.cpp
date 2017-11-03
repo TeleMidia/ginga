@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterEvent.h"
 #include "FormatterObject.h"
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 FormatterEvent::FormatterEvent (Formatter *ginga, NclEventType type,
                                 FormatterObject *object, NclAnchor *anchor)
@@ -127,4 +127,4 @@ FormatterEvent::transition (NclEventStateTransition trans)
   return true;
 }
 
-GINGA_END
+GINGA_NAMESPACE_END

@@ -73,8 +73,8 @@ GINGA_END_DECLS
 using namespace std;
 
 // Namespaces.
-#define GINGA_BEGIN namespace ginga {/*}*/
-#define GINGA_END   /*{*/}
+#define GINGA_NAMESPACE_BEGIN namespace ginga {/*}*/
+#define GINGA_NAMESPACE_END   /*{*/}
 
 // Utility macros.
 #undef unused

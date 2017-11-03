@@ -27,7 +27,7 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wundef)
 XERCES_CPP_NAMESPACE_USE
 GINGA_PRAGMA_DIAG_POP ()
 
-GINGA_BEGIN
+GINGA_NAMESPACE_BEGIN
 
 
 // Xerces wrappers.
@@ -2204,4 +2204,4 @@ ParserXercesC::fatalError (const SAXParseException &e)
   this->error (e);
 }
 
-GINGA_END
+GINGA_NAMESPACE_END
