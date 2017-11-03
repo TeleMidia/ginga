@@ -26,13 +26,13 @@ GINGA_FORMATTER_BEGIN
 class ExecutionObjectSwitch: public ExecutionObjectContext
 {
 public:
-  ExecutionObjectSwitch (GingaInternal *, const string &, Node *);
+  ExecutionObjectSwitch (GingaInternal *, const string &, NclNode *);
   virtual ~ExecutionObjectSwitch ();
 
-  bool exec (FormatterEvent *, EventState, EventState,
-             EventStateTransition) override;
+  bool exec (FormatterEvent *, NclEventState, NclEventState,
+             NclEventStateTransition) override;
 private:
-  Switch *_switch;
+  NclSwitch *_switch;
   ExecutionObject *_selected;
 };
 

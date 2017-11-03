@@ -268,31 +268,31 @@ __error_elt (const DOMElement *elt)
 // Translation tables.
 
 // Maps event type name to event type code.
-static map<string, EventType> event_type_table =
+static map<string, NclEventType> event_type_table =
   {
-   {"presentation", EventType::PRESENTATION},
-   {"attribution", EventType::ATTRIBUTION},
-   {"selection", EventType::SELECTION},
+   {"presentation", NclEventType::PRESENTATION},
+   {"attribution", NclEventType::ATTRIBUTION},
+   {"selection", NclEventType::SELECTION},
   };
 
 // Maps condition name to condition code.
-static map<string, EventStateTransition> event_transition_table =
+static map<string, NclEventStateTransition> event_transition_table =
   {
-   {"starts", EventStateTransition::START},
-   {"stops", EventStateTransition::STOP},
-   {"aborts", EventStateTransition::ABORT},
-   {"pauses", EventStateTransition::PAUSE},
-   {"resumes", EventStateTransition::RESUME},
+   {"starts", NclEventStateTransition::START},
+   {"stops", NclEventStateTransition::STOP},
+   {"aborts", NclEventStateTransition::ABORT},
+   {"pauses", NclEventStateTransition::PAUSE},
+   {"resumes", NclEventStateTransition::RESUME},
   };
 
 // Maps action name to action code.
-static map<string, EventStateTransition> event_action_type_table =
+static map<string, NclEventStateTransition> event_action_type_table =
   {
-   {"start", EventStateTransition::START},
-   {"stop", EventStateTransition::STOP},
-   {"abort", EventStateTransition::ABORT},
-   {"pause", EventStateTransition::PAUSE},
-   {"resume", EventStateTransition::RESUME},
+   {"start", NclEventStateTransition::START},
+   {"stop", NclEventStateTransition::STOP},
+   {"abort", NclEventStateTransition::ABORT},
+   {"pause", NclEventStateTransition::PAUSE},
+   {"resume", NclEventStateTransition::RESUME},
   };
 
 
@@ -421,7 +421,7 @@ ParserXercesC::parseNcl (DOMElement *elt)
         }
       else if (tag == "body")
         {
-          Context *body = this->parseBody (child);
+          NclContext *body = this->parseBody (child);
           g_assert_nonnull (body);
           this->solveNodeReferences (body);
           this->posCompileContext (child, body);
@@ -467,7 +467,7 @@ ParserXercesC::parseHead (DOMElement *elt)
         }
       else if (tag == "connectorBase")
         {
-          ConnectorBase *base = this->parseConnectorBase (child);
+          NclConnectorBase *base = this->parseConnectorBase (child);
           g_assert_nonnull (base);
           _doc->setConnectorBase (base);
         }
@@ -500,7 +500,7 @@ ParserXercesC::parseImportNCL (DOMElement *elt, string *alias, string *uri)
   return this->parse1 (*uri);
 }
 
-Base *
+NclConnectorBase *
 ParserXercesC::parseImportBase (DOMElement *elt, NclDocument **doc,
                                 string *alias, string *uri)
 {
@@ -661,7 +661,7 @@ ParserXercesC::parseRule (DOMElement *elt, Predicate *parent)
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "comparator");
 
   pred = new Predicate (PredicateType::ATOM);
-  pred->initTest ("$__settings__." + var, test, value);
+  pred->setTest ("$__settings__." + var, test, value);
 
   if (parent != nullptr)
     parent->addChild (pred);
@@ -957,25 +957,25 @@ ParserXercesC::parseDescriptor (DOMElement *elt)
 }
 
 
-// Private: Connector.
+// Private: NclConnector.
 
-ConnectorBase *
+NclConnectorBase *
 ParserXercesC::parseConnectorBase (DOMElement *elt)
 {
-  ConnectorBase *base;
+  NclConnectorBase *base;
   string id;
 
   CHECK_ELT_TAG (elt, "connectorBase", nullptr);
   CHECK_ELT_OPT_ID_AUTO (elt, &id, connectorBase);
 
-  base = new ConnectorBase (_doc, id);
+  base = new NclConnectorBase (_doc, id);
   for (DOMElement *child: dom_elt_get_children (elt))
     {
       string tag = dom_elt_get_tag (child);
       if (tag == "importBase")
         {
           NclDocument *doc;     // FIXME: this is lost (leak?)
-          Base *imported;
+          NclConnectorBase *imported;
           string alias;
           string uri;
           imported = this->parseImportBase (child, &doc, &alias, &uri);
@@ -984,7 +984,7 @@ ParserXercesC::parseConnectorBase (DOMElement *elt)
         }
       else if (tag ==  "causalConnector")
         {
-          Connector *conn = parseCausalConnector (child);
+          NclConnector *conn = parseCausalConnector (child);
           g_assert_nonnull (conn);
           base->addConnector (conn);
         }
@@ -996,10 +996,10 @@ ParserXercesC::parseConnectorBase (DOMElement *elt)
   return base;
 }
 
-Connector *
+NclConnector *
 ParserXercesC::parseCausalConnector (DOMElement *elt)
 {
-  Connector *conn;
+  NclConnector *conn;
   string id;
   int ncond;
   int nact;
@@ -1010,28 +1010,28 @@ ParserXercesC::parseCausalConnector (DOMElement *elt)
   ncond = 0;
   nact = 0;
 
-  conn = new Connector (_doc, id);
+  conn = new NclConnector (_doc, id);
   for (DOMElement *child: dom_elt_get_children (elt))
     {
       string tag = dom_elt_get_tag (child);
       if (tag == "simpleCondition")
         {
-          this->parseCondition (conn, child);
+          this->parseCondition (child, conn, nullptr);
           ncond++;
         }
       else if (tag == "compoundCondition")
         {
-          this->parseCompoundCondition (conn, child);
+          this->parseCompoundCondition (child, conn, nullptr);
           ncond++;
         }
       else if (tag == "simpleAction")
         {
-          this->parseSimpleAction (conn, child);
+          this->parseSimpleAction (child, conn);
           nact++;
         }
       else if (tag == "compoundAction")
         {
-          this->parseCompoundAction (conn, child);
+          this->parseCompoundAction (child, conn);
           nact++;
         }
       else if (tag == "connectorParam")
@@ -1040,8 +1040,6 @@ ParserXercesC::parseCausalConnector (DOMElement *elt)
           string type;
           CHECK_ELT_ATTRIBUTE (child, "name", &name);
           CHECK_ELT_OPT_ATTRIBUTE (child, "type", &type, "");
-          // This is useless:
-          // conn->addParameter (new Parameter (name, type));
         }
       else
         {
@@ -1055,11 +1053,92 @@ ParserXercesC::parseCausalConnector (DOMElement *elt)
   return conn;
 }
 
+Predicate *
+ParserXercesC::parseAssessmentStatement (DOMElement *elt)
+{
+  string comp;
+
+  PredicateTestType test;
+  string role_left = "";
+  string role_right = "";
+  string left;
+  string right;
+
+  CHECK_ELT_TAG (elt, "assessmentStatement", nullptr);
+  CHECK_ELT_ATTRIBUTE (elt, "comparator", &comp);
+
+  if (comp == "eq")
+    test = PredicateTestType::EQ;
+  else if (comp == "ne")
+    test = PredicateTestType::NE;
+  else if (comp == "lt")
+    test = PredicateTestType::LT;
+  else if (comp == "lte")
+    test = PredicateTestType::LE;
+  else if (comp == "gt")
+    test = PredicateTestType::GT;
+  else if (comp == "gte")
+    test = PredicateTestType::GE;
+  else
+    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "comparator");
+
+  DOMElement *left_elt = elt->getFirstElementChild ();
+  g_assert_nonnull (left_elt);
+
+  string tag = dom_elt_get_tag (left_elt);
+  if (tag == "attributeAssessment")
+    {
+      CHECK_ELT_ATTRIBUTE (left_elt, "role", &role_left);
+      left = "$" + role_left;
+    }
+  else if (tag == "valueAssessment")
+    {
+      CHECK_ELT_ATTRIBUTE (left_elt, "value", &left);
+    }
+  else
+    {
+      ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, left_elt);
+    }
+
+  DOMElement *right_elt = left_elt->getNextElementSibling ();
+  g_assert_nonnull (right_elt);
+
+  tag = dom_elt_get_tag (right_elt);
+  if (tag == "attributeAssessment")
+    {
+      CHECK_ELT_ATTRIBUTE (right_elt, "role", &role_right);
+      right = "$" + role_right;
+    }
+  else if (tag == "valueAssessment")
+    {
+      CHECK_ELT_ATTRIBUTE (right_elt, "value", &right);
+    }
+  else
+    {
+      ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, right_elt);
+    }
+
+  Predicate *pred = new Predicate (PredicateType::ATOM);
+  pred->setTest (left, test, right);
+
+  // if (role_left != "")
+  //   conn->addPredicateRole (role_left, pred);
+  // if (role_right != "")
+  //   conn->addPredicateRole (role_right, pred);
+
+  return pred;
+}
+
 void
-ParserXercesC::parseCompoundCondition (Connector *conn, DOMElement *elt)
+ParserXercesC::parseCompoundCondition (DOMElement *elt,
+                                       NclConnector *conn,
+                                       Predicate *parent_pred)
 {
   string op;
   string value;
+
+  Predicate *pred;
+  vector <Predicate *> preds;
 
   CHECK_ELT_TAG (elt, "compoundCondition", nullptr);
   CHECK_ELT_ATTRIBUTE (elt, "operator", &op);
@@ -1067,29 +1146,58 @@ ParserXercesC::parseCompoundCondition (Connector *conn, DOMElement *elt)
   if (op != "and" and op != "or")
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "operator");
 
+  // Collect statements.
+  for (DOMElement *child: dom_elt_get_children (elt))
+    {
+      string tag;
+      tag  = dom_elt_get_tag (child);
+      if (tag == "assessmentStatement")
+        {
+          pred = this->parseAssessmentStatement (child);
+          g_assert_nonnull (pred);
+          preds.push_back (pred);
+        }
+      else if (tag == "compoundStatement")
+        {
+          g_assert_not_reached ();
+        }
+      else
+        {
+          continue;
+        }
+    }
+
+  // Collapse collected predicates.
+  if (preds.size () == 0)
+    {
+      pred = parent_pred;
+    }
+  else
+    {
+      pred = new Predicate (PredicateType::CONJUNCTION);
+      for (auto p: preds)
+        pred->addChild (p);
+      if (parent_pred != nullptr)
+        {
+          parent_pred->addChild (pred);
+          pred = parent_pred;
+        }
+    }
+
   // Collect children.
   for (DOMElement *child: dom_elt_get_children (elt))
     {
       string tag = dom_elt_get_tag (child);
+      if (tag == "assessmentStatement" || tag == "compoundStatement")
+        continue;
+
       if (tag == "simpleCondition")
         {
-          this->parseCondition (conn, child);
-        }
-      else if (tag == "assessmentStatement")
-        {
-          continue;
-          // cond->addCondition
-          //   (this->parseAssessmentStatement (child));
+          this->parseCondition (child, conn, pred);
         }
       else if (tag == "compoundCondition")
         {
-          this->parseCompoundCondition (conn, child);
-        }
-      else if (tag ==  "compoundStatement")
-        {
-          continue;
-          // cond->addCondition
-          //   (this->parseCompoundStatement (child));
+          this->parseCompoundCondition (child, conn, pred);
         }
       else
         {
@@ -1099,15 +1207,16 @@ ParserXercesC::parseCompoundCondition (Connector *conn, DOMElement *elt)
 }
 
 void
-ParserXercesC::parseCondition (Connector *conn, DOMElement *elt)
+ParserXercesC::parseCondition (DOMElement *elt, NclConnector *conn,
+                               Predicate *pred)
 {
   string str;
   string role;
   string key;
   string qualifier;
 
-  EventType type;
-  EventStateTransition trans;
+  NclEventType type;
+  NclEventStateTransition trans;
   map<string, pair<int,int>>::iterator it;
 
   CHECK_ELT_TAG (elt, "simpleCondition", nullptr);
@@ -1115,19 +1224,19 @@ ParserXercesC::parseCondition (Connector *conn, DOMElement *elt)
   CHECK_ELT_OPT_ATTRIBUTE (elt, "qualifier", &qualifier, "or");
   CHECK_ELT_OPT_ATTRIBUTE (elt, "key", &key, "");
 
-  type = (EventType) -1;
-  trans = (EventStateTransition) -1;
+  type = (NclEventType) -1;
+  trans = (NclEventStateTransition) -1;
 
-  Condition::isReserved (role, &type, &trans);
+  NclCondition::isReserved (role, &type, &trans);
 
   if (dom_elt_try_get_attribute (str, elt, "eventType"))
     {
-      if (unlikely (type != (EventType) -1))
+      if (unlikely (type != (NclEventType) -1))
         {
           ERROR_SYNTAX_ELT (elt, "eventType of '%s' cannot be overridden",
                             role.c_str ());
         }
-      map<string, EventType>::iterator it;
+      map<string, NclEventType>::iterator it;
       if ((it = event_type_table.find (str)) == event_type_table.end ())
         {
           ERROR_SYNTAX_ELT (elt, "bad eventType '%s' for role '%s'",
@@ -1138,12 +1247,12 @@ ParserXercesC::parseCondition (Connector *conn, DOMElement *elt)
 
   if (dom_elt_try_get_attribute (str, elt, "transition"))
     {
-      if (unlikely (trans != (EventStateTransition) -1))
+      if (unlikely (trans != (NclEventStateTransition) -1))
         {
           ERROR_SYNTAX_ELT (elt, "transition of '%s' cannot be overridden",
                             role.c_str ());
         }
-      map<string, EventStateTransition>::iterator it;
+      map<string, NclEventStateTransition>::iterator it;
       if ((it = event_transition_table.find (str))
           == event_transition_table.end ())
         {
@@ -1153,13 +1262,13 @@ ParserXercesC::parseCondition (Connector *conn, DOMElement *elt)
       trans = it->second;
     }
 
-  g_assert (type != (EventType) -1);
-  g_assert (trans != (EventStateTransition) -1);
+  g_assert (type != (NclEventType) -1);
+  g_assert (trans != (NclEventStateTransition) -1);
 
   if (qualifier != "and" && qualifier != "or")
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "qualifier");
 
-  Condition *cond = new Condition (type, trans, nullptr, role, key);
+  NclCondition *cond = new NclCondition (type, trans, pred, role, key);
   g_assert (conn->addCondition (cond));
 }
 
@@ -1235,12 +1344,12 @@ ParserXercesC::parseCondition (Connector *conn, DOMElement *elt)
 // AttributeAssessment *
 // ParserXercesC::parseAttributeAssessment (DOMElement *elt)
 // {
-//   map<string, EventType>::iterator it;
+//   map<string, NclEventType>::iterator it;
 //   string role;
 //   string type;
 //   string key;
 //   string offset;
-//   EventType evttype;
+//   NclEventType evttype;
 //   CHECK_ELT_TAG (elt, "attributeAssessment", nullptr);
 //   CHECK_ELT_ATTRIBUTE (elt, "role", &role);
 //   CHECK_ELT_OPT_ATTRIBUTE (elt, "type", &type, "attribution");
@@ -1262,7 +1371,7 @@ ParserXercesC::parseCondition (Connector *conn, DOMElement *elt)
 // }
 
 void
-ParserXercesC::parseCompoundAction (Connector *conn, DOMElement *elt)
+ParserXercesC::parseCompoundAction (DOMElement *elt, NclConnector *conn)
 {
   string value;
 
@@ -1275,11 +1384,11 @@ ParserXercesC::parseCompoundAction (Connector *conn, DOMElement *elt)
       string tag = dom_elt_get_tag (child);
       if (tag == "simpleAction")
         {
-          this->parseSimpleAction (conn, child);
+          this->parseSimpleAction (child, conn);
         }
       else if (tag == "compoundAction")
         {
-          this->parseCompoundAction (conn, child);
+          this->parseCompoundAction (child, conn);
         }
       else
         {
@@ -1289,7 +1398,7 @@ ParserXercesC::parseCompoundAction (Connector *conn, DOMElement *elt)
 }
 
 void
-ParserXercesC::parseSimpleAction (Connector *conn, DOMElement *elt)
+ParserXercesC::parseSimpleAction (DOMElement *elt, NclConnector *conn)
 {
   string str;
   string tag;
@@ -1298,8 +1407,8 @@ ParserXercesC::parseSimpleAction (Connector *conn, DOMElement *elt)
   string value;
   string duration;
 
-  EventType type;
-  EventStateTransition acttype;
+  NclEventType type;
+  NclEventStateTransition acttype;
   map<string, pair<int,int>>::iterator it;
 
   CHECK_ELT_TAG (elt, "simpleAction", nullptr);
@@ -1308,19 +1417,19 @@ ParserXercesC::parseSimpleAction (Connector *conn, DOMElement *elt)
   CHECK_ELT_OPT_ATTRIBUTE (elt, "value", &value, "0s");
   CHECK_ELT_OPT_ATTRIBUTE (elt, "duration", &duration, "0s");
 
-  type = (EventType) -1;
-  acttype = (EventStateTransition) -1;
+  type = (NclEventType) -1;
+  acttype = (NclEventStateTransition) -1;
 
-  Action::isReserved (role, &type, &acttype);
+  NclAction::isReserved (role, &type, &acttype);
 
   if (dom_elt_try_get_attribute (str, elt, "eventType"))
     {
-      if (unlikely (type != (EventType) -1))
+      if (unlikely (type != (NclEventType) -1))
         {
           ERROR_SYNTAX_ELT (elt, "eventType '%s' cannot be overridden",
                             role.c_str ());
         }
-      map<string, EventType>::iterator it;
+      map<string, NclEventType>::iterator it;
       if ((it = event_type_table.find (str)) == event_type_table.end ())
         {
           ERROR_SYNTAX_ELT (elt, "bad eventType '%s' for role '%s'",
@@ -1331,12 +1440,12 @@ ParserXercesC::parseSimpleAction (Connector *conn, DOMElement *elt)
 
   if (dom_elt_try_get_attribute (str, elt, "actionType"))
     {
-      if (unlikely (acttype != (EventStateTransition) -1))
+      if (unlikely (acttype != (NclEventStateTransition) -1))
         {
           ERROR_SYNTAX_ELT (elt, "actionType of '%s' cannot be overridden",
                             role.c_str ());
         }
-      map<string, EventStateTransition>::iterator it;
+      map<string, NclEventStateTransition>::iterator it;
       if ((it = event_action_type_table.find (str))
           == event_action_type_table.end ())
         {
@@ -1345,20 +1454,20 @@ ParserXercesC::parseSimpleAction (Connector *conn, DOMElement *elt)
       acttype = it->second;
     }
 
-  g_assert (type != (EventType) -1);
-  g_assert (acttype != (EventStateTransition) -1);
+  g_assert (type != (NclEventType) -1);
+  g_assert (acttype != (NclEventStateTransition) -1);
 
-  Action *act = new Action (type, acttype, role, delay, value, duration);
+  NclAction *act = new NclAction (type, acttype, role, delay, value, duration);
   g_assert (conn->addAction (act));
 }
 
 
 // Private: Body.
 
-Context *
+NclContext *
 ParserXercesC::parseBody (DOMElement *elt)
 {
-  Context *body;
+  NclContext *body;
   string id;
 
   CHECK_ELT_TAG (elt, "body", nullptr);
@@ -1367,7 +1476,7 @@ ParserXercesC::parseBody (DOMElement *elt)
   body = _doc->getRoot ();
   for (DOMElement *child: dom_elt_get_children (elt))
     {
-      Node *node;
+      NclNode *node;
       string tag;
 
       tag = dom_elt_get_tag (child);
@@ -1378,7 +1487,7 @@ ParserXercesC::parseBody (DOMElement *elt)
 
       if (tag == "property")
         {
-          Property *prop = this->parseProperty (child);
+          NclProperty *prop = this->parseProperty (child);
           g_assert_nonnull (prop);
           body->addAnchor (prop);
           continue;
@@ -1401,9 +1510,9 @@ ParserXercesC::parseBody (DOMElement *elt)
 }
 
 void
-ParserXercesC::posCompileContext (DOMElement *elt, Context *context)
+ParserXercesC::posCompileContext (DOMElement *elt, NclContext *context)
 {
-  Node *node;
+  NclNode *node;
   string id;
 
   g_assert_nonnull (context);
@@ -1415,16 +1524,16 @@ ParserXercesC::posCompileContext (DOMElement *elt, Context *context)
           g_assert (dom_elt_try_get_attribute (id, child, "id"));
           node = context->getNode (id);
           g_assert_nonnull (node);
-          if (instanceof (Context *, node))
-            this->posCompileContext (child, (Context*) node);
+          if (instanceof (NclContext *, node))
+            this->posCompileContext (child, (NclContext*) node);
         }
       else if (tag == "switch")
         {
           g_assert (dom_elt_try_get_attribute (id, child, "id"));
           node = context->getNode (id);
           g_assert_nonnull (node);
-          if (instanceof (Switch *, node))
-            this->posCompileSwitch (child, (Switch*) node);
+          if (instanceof (NclSwitch *, node))
+            this->posCompileSwitch (child, (NclSwitch*) node);
         }
     }
 
@@ -1439,9 +1548,9 @@ ParserXercesC::posCompileContext (DOMElement *elt, Context *context)
 }
 
 void
-ParserXercesC::posCompileSwitch (DOMElement *elt, Switch *swtch)
+ParserXercesC::posCompileSwitch (DOMElement *elt, NclSwitch *swtch)
 {
-  Node *node;
+  NclNode *node;
   string id;
 
   g_assert_nonnull (swtch);
@@ -1453,38 +1562,31 @@ ParserXercesC::posCompileSwitch (DOMElement *elt, Switch *swtch)
           g_assert (dom_elt_try_get_attribute (id, child, "id"));
           node = swtch->getNode (id);
           g_assert_nonnull (node);
-          if (instanceof (Context *, node))
-            this->posCompileContext (child, (Context*) node);
+          if (instanceof (NclContext *, node))
+            this->posCompileContext (child, (NclContext*) node);
         }
       else if (tag ==  "switch")
         {
           g_assert (dom_elt_try_get_attribute (id, child, "id"));
           node = swtch->getNode (id);
           g_assert_nonnull (node);
-          if (instanceof (Switch *, node))
-            this->posCompileSwitch (child, (Switch*) node);
+          if (instanceof (NclSwitch *, node))
+            this->posCompileSwitch (child, (NclSwitch*) node);
         }
-    }
-
-  for (DOMElement *child: dom_elt_get_children (elt))
-    {
-      string tag = dom_elt_get_tag (child);
-      if (tag == "switchPort")
-        swtch->addPort (this->parseSwitchPort (child, swtch));
     }
 }
 
 void
-ParserXercesC::solveNodeReferences (Composition *comp)
+ParserXercesC::solveNodeReferences (NclComposition *comp)
 {
-  const vector<Node *> *nodes;
+  const vector<NclNode *> *nodes;
   bool del = false;
 
-  if (instanceof (Switch *, comp))
+  if (instanceof (NclSwitch *, comp))
     {
-      vector<Node *> *aux_nodes = new vector<Node *>;
+      vector<NclNode *> *aux_nodes = new vector<NclNode *>;
       del = true;
-      for (auto item: *cast (Switch *, comp)->getRules ())
+      for (auto item: *cast (NclSwitch *, comp)->getRules ())
         aux_nodes->push_back (item.first);
       nodes = aux_nodes;
     }
@@ -1495,25 +1597,25 @@ ParserXercesC::solveNodeReferences (Composition *comp)
 
   g_assert_nonnull (nodes);
 
-  for (Node *node : *nodes)
+  for (NclNode *node : *nodes)
   {
     g_assert_nonnull (node);
-    if (instanceof (Refer *, node))
+    if (instanceof (NclMediaRefer *, node))
       {
-        Entity *ref;
-        Media *refNode;
+        NclEntity *ref;
+        NclMedia *refNode;
 
-        ref = ((Refer *) node)->getReferred ();
+        ref = ((NclMediaRefer *) node)->getReferred ();
         g_assert_nonnull (ref);
 
-        refNode = cast (Media *, _doc->getNode (ref->getId ()));
+        refNode = cast (NclMedia *, _doc->getNode (ref->getId ()));
         g_assert_nonnull (refNode);
 
-        ((Refer *) node)->initReferred (refNode);
+        ((NclMediaRefer *) node)->initReferred (refNode);
       }
-    else if (instanceof (Composition *, node))
+    else if (instanceof (NclComposition *, node))
       {
-        this->solveNodeReferences ((Composition *) node);
+        this->solveNodeReferences ((NclComposition *) node);
       }
   }
 
@@ -1522,22 +1624,22 @@ ParserXercesC::solveNodeReferences (Composition *comp)
 }
 
 
-// Private: Context.
+// Private: NclContext.
 
-Node *
+NclNode *
 ParserXercesC::parseContext (DOMElement *elt)
 {
-  Context *context;
+  NclContext *context;
   string id;
 
   CHECK_ELT_TAG (elt, "context", nullptr);
   CHECK_ELT_ID (elt, &id);
   CHECK_ELT_ATTRIBUTE_NOT_SUPPORTED (elt, "refer");
 
-  context = new Context (_doc, id);
+  context = new NclContext (_doc, id);
   for (DOMElement *child: dom_elt_get_children (elt))
     {
-      Node *node;
+      NclNode *node;
       string tag;
 
       tag = dom_elt_get_tag (child);
@@ -1548,7 +1650,7 @@ ParserXercesC::parseContext (DOMElement *elt)
 
       if (tag == "property")
         {
-          Property *prop = this->parseProperty (child);
+          NclProperty *prop = this->parseProperty (child);
           g_assert_nonnull (prop);
           context->addAnchor (prop);
           continue;
@@ -1570,15 +1672,15 @@ ParserXercesC::parseContext (DOMElement *elt)
   return context;
 }
 
-Port *
-ParserXercesC::parsePort (DOMElement *elt, Composition *context)
+NclPort *
+ParserXercesC::parsePort (DOMElement *elt, NclComposition *context)
 {
   string id;
   string comp;
   string value;
 
-  Node *target;
-  Anchor *iface;
+  NclNode *target;
+  NclAnchor *iface;
 
   CHECK_ELT_TAG (elt, "port", nullptr);
   CHECK_ELT_ID (elt, &id);
@@ -1593,9 +1695,9 @@ ParserXercesC::parsePort (DOMElement *elt, Composition *context)
       iface = target->getAnchor (value);
       if (iface == nullptr)
         {
-          if (instanceof (Composition *, target))
+          if (instanceof (NclComposition *, target))
             {
-              iface = ((Composition *) target)->getPort (value);
+              iface = ((NclComposition *) target)->getPort (value);
             }
           else
             {
@@ -1611,43 +1713,47 @@ ParserXercesC::parsePort (DOMElement *elt, Composition *context)
   if (unlikely (iface == nullptr))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "interface");
 
-  Port *port = new Port (_doc, id);
+  NclPort *port = new NclPort (_doc, id);
   port->initNode (target);
   port->initInterface (iface);
   return port;
 }
 
 
-// Private: Switch.
+// Private: NclSwitch.
 
-Node *
+NclNode *
 ParserXercesC::parseSwitch (DOMElement *elt)
 {
   string id;
 
-  Node *swtch;
-  Node *defcomp;
-  set<Node *> swtch_children;
+  NclNode *swtch;
+  NclNode *defcomp;
+  set<NclNode *> swtch_children;
 
   CHECK_ELT_TAG (elt, "switch", nullptr);
   CHECK_ELT_ID (elt, &id);
   CHECK_ELT_ATTRIBUTE_NOT_SUPPORTED (elt, "refer");
 
-  swtch = new Switch (_doc, id);
+  swtch = new NclSwitch (_doc, id);
   defcomp = nullptr;
 
   // Collect children.
   for (DOMElement *child: dom_elt_get_children (elt))
     {
-      Node *node;
+      NclNode *node;
       string tag;
 
       tag = dom_elt_get_tag (child);
-      if (tag == "switchPort"
-          || tag == "bindRule"
-          || tag == "defaultComponent")
+      if (tag == "defaultComponent" || tag == "bindRule")
         {
-          continue;             // skip
+          continue;               // skip
+        }
+
+      if (tag == "switchPort")
+        {
+          WARNING_NOT_IMPLEMENTED ("switchPort is supported");
+          continue;
         }
 
       if (tag == "media")
@@ -1669,7 +1775,7 @@ ParserXercesC::parseSwitch (DOMElement *elt)
       string tag = dom_elt_get_tag (child);
       if (tag == "bindRule")
         {
-          Node *node;
+          NclNode *node;
           string constituent;
           string rule;
 
@@ -1688,11 +1794,11 @@ ParserXercesC::parseSwitch (DOMElement *elt)
           if (unlikely (_rules.find (rule) == _rules.end ()))
             ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (child, "rule");
 
-          cast (Switch *, swtch)->addNode (node, _rules[rule]->clone ());
+          cast (NclSwitch *, swtch)->addNode (node, _rules[rule]->clone ());
         }
       else if (tag == "defaultComponent")
         {
-          Node *node;
+          NclNode *node;
           string component;
 
           CHECK_ELT_TAG (child, "defaultComponent", nullptr);
@@ -1713,115 +1819,20 @@ ParserXercesC::parseSwitch (DOMElement *elt)
   // Insert default component as the last, tautological rule.
   if (defcomp != nullptr)
     {
-      cast (Switch *, swtch)->addNode
+      cast (NclSwitch *, swtch)->addNode
         (defcomp, new Predicate (PredicateType::VERUM));
     }
 
   return swtch;
 }
 
-// Node *
-// ParserXercesC::parseBindRule (DOMElement *elt, Composition *parent,
-//                               Rule **rule)
-// {
-//   Node *node;
-//   string constituent;
-//   string ruleid;
-//
-//   map<string, Node *> *nodes;
-//
-//   CHECK_ELT_TAG (elt, "bindRule", nullptr);
-//   CHECK_ELT_ATTRIBUTE (elt, "constituent", &constituent);
-//   CHECK_ELT_ATTRIBUTE (elt, "rule", &ruleid);
-//
-//   nodes = _switchMap[parent->getId ()];
-//   g_assert_nonnull (nodes);
-//
-//   if (unlikely (nodes->count (constituent) == 0))
-//     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "constituent");
-//
-//   node = (Node *)(*nodes)[constituent];
-//   if (unlikely (node == nullptr))
-//     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "constituent");
-//
-//   g_assert_nonnull (rule);
-//   *rule = _doc->getRule (ruleid);
-//   if (unlikely (*rule == nullptr))
-//     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "rule");
-//   return node;
-// }
-
-SwitchPort *
-ParserXercesC::parseSwitchPort (DOMElement *elt, Switch *swtch)
-{
-  SwitchPort *port;
-  string id;
-
-  g_assert_nonnull (swtch);
-
-  CHECK_ELT_TAG (elt, "switchPort", nullptr);
-  CHECK_ELT_ID (elt, &id);
-
-  port = new SwitchPort (_doc, id);
-  port->initNode (swtch);
-  for (DOMElement *child: dom_elt_get_children (elt))
-    {
-      string tag = dom_elt_get_tag (child);
-      if (tag == "mapping")
-        {
-          swtch->addPort (this->parseMapping (child, swtch, port));
-        }
-      else
-        {
-          ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
-        }
-    }
-  return port;
-}
-
-Port *
-ParserXercesC::parseMapping (DOMElement *elt, Switch *swtch,
-                      SwitchPort *port)
-{
-  Node *mapping;
-  string id;
-  string comp;
-  string value;
-  Anchor *iface;
-
-  CHECK_ELT_TAG (elt, "mapping", nullptr);
-  CHECK_ELT_ATTRIBUTE (elt, "component", &comp);
-
-  mapping = swtch->getNode (comp);
-  if (unlikely (mapping == nullptr))
-    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "component");
-
-  if (dom_elt_try_get_attribute (value, elt, "interface"))
-    {
-      iface = mapping->getAnchor (value);
-      if (iface == nullptr && instanceof (Composition *, mapping))
-        iface = ((Composition *) mapping)->getPort (value);
-      if (unlikely (iface == nullptr))
-        ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "interface");
-    }
-  else
-    {
-      iface = mapping->getLambda ();
-      g_assert_nonnull (iface);
-    }
-  Port *node = new Port (_doc, port->getId ());
-  node->initNode (mapping);
-  node->initInterface (iface);
-  return node;
-}
-
 
-// Private: Media.
+// Private: NclMedia.
 
-Node *
+NclNode *
 ParserXercesC::parseMedia (DOMElement *elt)
 {
-  Node *media;
+  NclNode *media;
   string id;
   string src;
   string value;
@@ -1829,33 +1840,33 @@ ParserXercesC::parseMedia (DOMElement *elt)
   CHECK_ELT_TAG (elt, "media", nullptr);
   CHECK_ELT_ID (elt, &id);
 
-  // Refer?
+  // NclMediaRefer?
   if (dom_elt_try_get_attribute (value, elt, "refer"))
     {
-      Media *refer;
+      NclMedia *refer;
 
-      refer = cast (Media *, _doc->getNode (value));
+      refer = cast (NclMedia *, _doc->getNode (value));
       g_assert_nonnull (refer);
 
-      media = new Refer (_doc, id);
-      ((Refer *) media)->initReferred (refer);
+      media = new NclMediaRefer (_doc, id);
+      ((NclMediaRefer *) media)->initReferred (refer);
     }
   else
     {
       if (dom_elt_try_get_attribute (value, elt, "type")
           && value == "application/x-ginga-settings") // settings?
         {
-          media = new Media (_doc, id, true);
+          media = new NclMedia (_doc, id, true);
         }
       else
         {
-          media = new Media (_doc, id, false);
+          media = new NclMedia (_doc, id, false);
         }
 
       CHECK_ELT_OPT_ATTRIBUTE (elt, "src", &src, "");
       if (!xpathisuri (src) && !xpathisabs (src))
         src = xpathbuildabs (_dirname, src);
-      cast (Media *, media)->setSrc (src);
+      cast (NclMedia *, media)->setSrc (src);
 
       if (dom_elt_try_get_attribute (value, elt, "descriptor"))
         {
@@ -1876,7 +1887,7 @@ ParserXercesC::parseMedia (DOMElement *elt)
       string tag = dom_elt_get_tag (child);
       if (tag == "area")
         {
-          Anchor *area = this->parseArea (child);
+          NclAnchor *area = this->parseArea (child);
           g_assert_nonnull (area);
           media->addAnchor (area);
         }
@@ -1891,7 +1902,7 @@ ParserXercesC::parseMedia (DOMElement *elt)
 
           media->setProperty (name, value);
 
-          // Property *prop = this->parseProperty (child);
+          // NclProperty *prop = this->parseProperty (child);
           // g_assert_nonnull (prop);
           // media->addAnchor (prop);
         }
@@ -1903,10 +1914,10 @@ ParserXercesC::parseMedia (DOMElement *elt)
   return media;
 }
 
-Property *
+NclProperty *
 ParserXercesC::parseProperty (DOMElement *elt)
 {
-  Property *prop;
+  NclProperty *prop;
   string name;
   string value;
 
@@ -1914,12 +1925,12 @@ ParserXercesC::parseProperty (DOMElement *elt)
   CHECK_ELT_ATTRIBUTE (elt, "name", &name);
   CHECK_ELT_OPT_ATTRIBUTE (elt, "value", &value, "");
 
-  prop = new Property (_doc, name);
+  prop = new NclProperty (_doc, name);
   prop->setValue (value);
   return prop;
 }
 
-Anchor *
+NclAnchor *
 ParserXercesC::parseArea (DOMElement *elt)
 {
   string id;
@@ -1948,13 +1959,13 @@ ParserXercesC::parseArea (DOMElement *elt)
       else
         end = GINGA_TIME_NONE;
 
-      return new Area (_doc, id, begin, end);
+      return new NclArea (_doc, id, begin, end);
     }
   else if (dom_elt_has_attribute (elt, "label"))
     {
       string label;
       CHECK_ELT_ATTRIBUTE (elt, "label", &label);
-      return new AreaLabeled (_doc, id, label);
+      return new NclAreaLabeled (_doc, id, label);
     }
   else
     {
@@ -1963,15 +1974,15 @@ ParserXercesC::parseArea (DOMElement *elt)
 }
 
 
-// Private: Link.
+// Private: NclLink.
 
-Link *
-ParserXercesC::parseLink (DOMElement *elt, Context *context)
+NclLink *
+ParserXercesC::parseLink (DOMElement *elt, NclContext *context)
 {
-  Link *link;
+  NclLink *link;
   string id;
   string xconn;
-  Connector *conn;
+  NclConnector *conn;
   map<string, string> params;
 
   CHECK_ELT_TAG (elt, "link", nullptr);
@@ -1982,7 +1993,7 @@ ParserXercesC::parseLink (DOMElement *elt, Context *context)
   if (unlikely (conn == nullptr))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "xconnector");
 
-  link = new Link (_doc, id);
+  link = new NclLink (_doc, id);
   g_assert (link->initConnector (conn));
 
   // Collect children.
@@ -2009,22 +2020,22 @@ ParserXercesC::parseLink (DOMElement *elt, Context *context)
   return link;
 }
 
-Bind *
-ParserXercesC::parseBind (DOMElement *elt, Link *link,
+NclBind *
+ParserXercesC::parseBind (DOMElement *elt, NclLink *link,
                           unused (map<string, string> *params),
-                          Context *context)
+                          NclContext *context)
 {
-  Bind *bind;
+  NclBind *bind;
   string label;
   string comp;
   string value;
 
-  Role *role;
-  Connector *conn;
+  NclRole *role;
+  NclConnector *conn;
 
-  Node *target;
-  Node *derefer;
-  Anchor *iface;
+  NclNode *target;
+  NclNode *derefer;
+  NclAnchor *iface;
 
   CHECK_ELT_TAG (elt, "bind", nullptr);
   CHECK_ELT_ATTRIBUTE (elt, "role", &label);
@@ -2045,16 +2056,16 @@ ParserXercesC::parseBind (DOMElement *elt, Link *link,
     }
   g_assert_nonnull (target);
 
-  derefer = cast (Node *, target->derefer ());
+  derefer = cast (NclNode *, target->derefer ());
   g_assert_nonnull (derefer);
 
   iface = nullptr;
 
   if (dom_elt_try_get_attribute (value, elt, "interface"))
     {
-      if (instanceof (Composition *, derefer))
+      if (instanceof (NclComposition *, derefer))
         {
-          iface = ((Composition *) derefer)->getPort (value);
+          iface = ((NclComposition *) derefer)->getPort (value);
         }
       else
         {
@@ -2064,8 +2075,8 @@ ParserXercesC::parseBind (DOMElement *elt, Link *link,
               iface = target->getAnchor (value);
               if (iface == nullptr) // retry
                 {
-                  for (Refer *refer:
-                         *cast (Media *, derefer)
+                  for (NclMediaRefer *refer:
+                         *cast (NclMedia *, derefer)
                          ->getInstSameInstances ())
                     {
                       iface = refer->getAnchor (value);
@@ -2084,7 +2095,7 @@ ParserXercesC::parseBind (DOMElement *elt, Link *link,
   if (unlikely (iface == nullptr))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "interface");
 
-  conn = cast (Connector *, link->getConnector ());
+  conn = cast (NclConnector *, link->getConnector ());
   g_assert_nonnull (conn);
 
   role = conn->getRole (label); // ghost "get"
@@ -2097,7 +2108,7 @@ ParserXercesC::parseBind (DOMElement *elt, Link *link,
     }
   g_assert_nonnull (role);
 
-  bind = new Bind (role, target, iface);
+  bind = new NclBind (role, target, iface);
 
   // Collect link parameters.
   for (auto it: *params)

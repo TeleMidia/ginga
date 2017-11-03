@@ -33,10 +33,10 @@ class ExecutionObjectSettings;
 class ExecutionObject
 {
 public:
-  ExecutionObject (GingaInternal *, const string &, Node *);
+  ExecutionObject (GingaInternal *, const string &, NclNode *);
   virtual ~ExecutionObject ();
 
-  Node *getNode ();
+  NclNode *getNode ();
   string getId ();
 
   const vector <string> *getAliases ();
@@ -47,10 +47,10 @@ public:
   void initParent (ExecutionObjectContext *);
 
   const set<FormatterEvent *> *getEvents ();
-  FormatterEvent *getEvent (EventType, Anchor *, const string &);
-  FormatterEvent *getEventByAnchorId (EventType type, const string &,
+  FormatterEvent *getEvent (NclEventType, NclAnchor *, const string &);
+  FormatterEvent *getEventByAnchorId (NclEventType type, const string &,
                                 const string &);
-  FormatterEvent *obtainEvent (EventType, Anchor *, const string &);
+  FormatterEvent *obtainEvent (NclEventType, NclAnchor *, const string &);
   bool addEvent (FormatterEvent *);
 
   FormatterEvent *obtainLambda ();
@@ -66,13 +66,13 @@ public:
   void redraw (cairo_t *);
   void sendKeyEvent (const string &, bool);
   virtual void sendTickEvent (GingaTime, GingaTime, GingaTime);
-  virtual bool exec (FormatterEvent *, EventState, EventState,
-                     EventStateTransition);
+  virtual bool exec (FormatterEvent *, NclEventState, NclEventState,
+                     NclEventStateTransition);
 
 protected:
   GingaInternal *_ginga;           // ginga handle
   Scheduler *_scheduler;           // scheduler
-  Node *_node;                     // NCL node
+  NclNode *_node;                     // NCL node
   string _id;                      // object id
   vector<string> _aliases;         // aliases
   ExecutionObjectContext *_parent; // parent object

@@ -40,7 +40,7 @@ public:
   void disable (bool);
 
   // IFormatterConditionListener
-  void conditionSatisfied ();
+  void conditionSatisfied (FormatterCondition *);
 
 private:
   GingaInternal *_ginga;               // ginga handle

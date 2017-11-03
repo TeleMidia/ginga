@@ -18,8 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NCL_DOCUMENT_H
 #define NCL_DOCUMENT_H
 
-#include "ConnectorBase.h"
-#include "Context.h"
+#include "NclConnectorBase.h"
+#include "NclContext.h"
 
 GINGA_NCL_BEGIN
 
@@ -31,17 +31,17 @@ public:
 
   string getId ();
   string getURI ();
-  Context *getRoot ();
+  NclContext *getRoot ();
 
-  Entity *getEntityById (const string &);
-  bool registerEntity (Entity *);
-  bool unregisterEntity (Entity *);
+  NclEntity *getEntityById (const string &);
+  bool registerEntity (NclEntity *);
+  bool unregisterEntity (NclEntity *);
 
 private:
   string _id;                       // document id
   string _uri;                      // document uri
-  Context *_root;                   // document root
-  map<string, Entity *> _entities;  // entity map
+  NclContext *_root;                   // document root
+  map<string, NclEntity *> _entities;  // entity map
 
   // -----------------------------------------------------------------------
 public:
@@ -51,8 +51,8 @@ public:
 
   bool addDocument (NclDocument *document, const string &alias,
                     const string &location);
-  Connector *getConnector (const string &connectorId);
-  ConnectorBase *getConnectorBase ();
+  NclConnector *getConnector (const string &connectorId);
+  NclConnectorBase *getConnectorBase ();
 
   NclDocument *getDocument (const string &documentId);
   string getDocumentAlias (NclDocument *document);
@@ -60,25 +60,25 @@ public:
   vector<NclDocument *> *getDocuments ();
 
 
-  Node *getNode (const string &nodeId);
+  NclNode *getNode (const string &nodeId);
 
-  vector<Node *> *getSettingsNodes ();
+  vector<NclNode *> *getSettingsNodes ();
   bool removeDocument (NclDocument *document);
-  void setConnectorBase (ConnectorBase *_connectorBase);
+  void setConnectorBase (NclConnectorBase *_connectorBase);
   void setDocumentAlias (NclDocument *document, const string &alias);
 
   void setDocumentLocation (NclDocument *document, const string &location);
   void setId (const string &_id);
 
 private:
-  ConnectorBase *_connectorBase;
+  NclConnectorBase *_connectorBase;
   map<string, NclDocument *> _documentAliases;
   vector<NclDocument *> _documentBase;
   map<string, NclDocument *> _documentLocations;
 
   NclDocument *_parentDocument;
 
-  Node *getNodeLocally (const string &nodeId);
+  NclNode *getNodeLocally (const string &nodeId);
 };
 
 GINGA_NCL_END

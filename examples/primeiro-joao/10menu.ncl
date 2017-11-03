@@ -106,10 +106,6 @@
       <media id="icon" src="media/icon.png" descriptor="iconDesc"/>
       <media id="shoes" src="media/shoes.mp4" descriptor="shoesDesc"/>
       <switch id="form">
-        <switchPort id="spForm">
-          <mapping component="enForm"/>
-          <mapping component="ptForm"/>
-        </switchPort>
         <bindRule constituent="enForm" rule="en"/>
         <defaultComponent component="ptForm"/>
         <media id="ptForm" src="media/ptForm.htm" type="text/html" descriptor="formDesc"/>
@@ -125,7 +121,7 @@
           <bindParam name="keyCode" value="RED"/>
         </bind>
         <bind role="start" component="shoes"/>
-        <bind role="start" component="form" interface="spForm"/>
+        <bind role="start" component="form"/>
         <bind role="set" component="reusedAnimation" interface="bounds">
           <bindParam name="var" value="5%,6.67%,45%,45%"/>
         </bind>
@@ -138,7 +134,7 @@
         </bind>
       </link>
       <link id="lEndForm" xconnector="conEx#onEndSet_var">
-        <bind role="onEnd" component="form" interface="spForm"/>
+        <bind role="onEnd" component="form"/>
         <bind role="set" component="reusedAnimation" interface="bounds">
           <bindParam name="var" value="0,0,100%,100%"/>
         </bind>

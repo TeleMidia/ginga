@@ -20,20 +20,26 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "FormatterEvent.h"
 
+#include "ncl/Predicate.h"
+using namespace ::ginga::ncl;
+
 GINGA_FORMATTER_BEGIN
 
+class FormatterCondition;
 class IFormatterConditionListener
 {
 public:
-  virtual void conditionSatisfied () = 0;
+  virtual void conditionSatisfied (FormatterCondition *) = 0;
 };
 
 class FormatterCondition: IFormatterEventListener
 {
 public:
-  FormatterCondition (FormatterEvent *, EventStateTransition);
+  FormatterCondition (Predicate *, FormatterEvent *,
+                      NclEventStateTransition);
   virtual ~FormatterCondition ();
 
+  Predicate *getPredicate ();
   FormatterEvent *getEvent ();
 
   void setTriggerListener (IFormatterConditionListener *);
@@ -41,10 +47,11 @@ public:
 
   // IFormatterEventListener
   virtual void eventStateChanged (FormatterEvent *,
-                                  EventStateTransition) override;
+                                  NclEventStateTransition) override;
 private:
+  Predicate *_predicate;
   FormatterEvent *_event;
-  EventStateTransition _transition;
+  NclEventStateTransition _transition;
   IFormatterConditionListener *_listener;
 };
 

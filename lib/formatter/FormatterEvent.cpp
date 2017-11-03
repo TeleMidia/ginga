@@ -21,8 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-FormatterEvent::FormatterEvent (GingaInternal *ginga, EventType type,
-                                ExecutionObject *object, Anchor *anchor)
+FormatterEvent::FormatterEvent (GingaInternal *ginga, NclEventType type,
+                                ExecutionObject *object, NclAnchor *anchor)
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;
@@ -33,14 +33,14 @@ FormatterEvent::FormatterEvent (GingaInternal *ginga, EventType type,
   _object = object;
   g_assert_nonnull (anchor);
   _anchor = anchor;
-  _state = EventState::SLEEPING;
+  _state = NclEventState::SLEEPING;
 }
 
 FormatterEvent::~FormatterEvent ()
 {
 }
 
-EventType
+NclEventType
 FormatterEvent::getType ()
 {
   return _type;
@@ -52,13 +52,13 @@ FormatterEvent::getObject ()
   return _object;
 }
 
-Anchor *
+NclAnchor *
 FormatterEvent::getAnchor ()
 {
   return _anchor;
 }
 
-EventState
+NclEventState
 FormatterEvent::getState ()
 {
   return _state;
@@ -89,32 +89,32 @@ FormatterEvent::setParameter (const string &name, const string &value)
 }
 
 bool
-FormatterEvent::transition (EventStateTransition trans)
+FormatterEvent::transition (NclEventStateTransition trans)
 {
-  EventState curr = _state;
-  EventState next;
+  NclEventState curr = _state;
+  NclEventState next;
   switch (trans)
     {
-    case EventStateTransition::START:
-      if (curr == EventState::OCCURRING)
+    case NclEventStateTransition::START:
+      if (curr == NclEventState::OCCURRING)
         return false;
-      next = EventState::OCCURRING;
+      next = NclEventState::OCCURRING;
       break;
-    case EventStateTransition::PAUSE:
-      if (curr != EventState::OCCURRING)
+    case NclEventStateTransition::PAUSE:
+      if (curr != NclEventState::OCCURRING)
         return false;
-      next = EventState::PAUSED;
+      next = NclEventState::PAUSED;
       break;
-    case EventStateTransition::RESUME:
-      if (curr != EventState::PAUSED)
+    case NclEventStateTransition::RESUME:
+      if (curr != NclEventState::PAUSED)
         return false;
-      next = EventState::OCCURRING;
+      next = NclEventState::OCCURRING;
       break;
-    case EventStateTransition::STOP: // fall through
-    case EventStateTransition::ABORT:
-      if (curr == EventState::SLEEPING)
+    case NclEventStateTransition::STOP: // fall through
+    case NclEventStateTransition::ABORT:
+      if (curr == NclEventState::SLEEPING)
         return false;
-      next = EventState::SLEEPING;
+      next = NclEventState::SLEEPING;
       break;
     default:
       g_assert_not_reached ();

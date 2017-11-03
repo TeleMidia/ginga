@@ -26,12 +26,12 @@ GINGA_FORMATTER_BEGIN
 
 ExecutionObjectSettings::ExecutionObjectSettings (GingaInternal *ginga,
                                                   const string &id,
-                                                  Node *node)
+                                                  NclNode *node)
   : ExecutionObject (ginga, id, node)
 {
-  Node *nodeEntity = cast (Node *, node->derefer ());
+  NclNode *nodeEntity = cast (NclNode *, node->derefer ());
   g_assert_nonnull (nodeEntity);
-  auto media = cast (Media *, nodeEntity);
+  auto media = cast (NclMedia *, nodeEntity);
   g_assert_nonnull (media);
   g_assert (media->isSettings ());
   _player = Player::createPlayer (_ginga, _id, "", media->getMimeType ());
@@ -84,16 +84,16 @@ ExecutionObjectSettings::updateCurrentFocus (const string &index)
   string value = next;
 
   FormatterEvent *evt = this->getEventByAnchorId
-    (EventType::ATTRIBUTION, name, "");
+    (NclEventType::ATTRIBUTION, name, "");
   if (evt == nullptr)           // do no trigger links
     {
       cast (ExecutionObject *, this)->setProperty (name, value);
     }
   else                          // trigger links
     {
-      evt->transition (EventStateTransition::START);
+      evt->transition (NclEventStateTransition::START);
       cast (ExecutionObject *, this)->setProperty (name, value);
-      evt->transition (EventStateTransition::STOP);
+      evt->transition (NclEventStateTransition::STOP);
     }
 }
 

@@ -53,7 +53,7 @@ public:
   void sendKeyEvent (const string &, bool);
   void sendTickEvent (GingaTime, GingaTime, GingaTime);
 
-  ExecutionObject *obtainExecutionObject (Node *);
+  ExecutionObject *obtainExecutionObject (NclNode *);
   bool eval (Predicate *);
 
 private:
@@ -62,8 +62,8 @@ private:
   ExecutionObjectSettings *_settings; // settings object
   set<ExecutionObject *> _objects;    // document objects
 
-  FormatterEvent *obtainFormatterEventFromBind (Bind *);
-  FormatterLink *obtainFormatterLink (Link *);
+  FormatterEvent *obtainFormatterEventFromBind (NclBind *);
+  FormatterLink *obtainFormatterLink (NclLink *);
 };
 
 GINGA_FORMATTER_END

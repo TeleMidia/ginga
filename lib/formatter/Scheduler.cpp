@@ -42,7 +42,7 @@ bool
 Scheduler::run (NclDocument *doc)
 {
   string id;
-  Context *body;
+  NclContext *body;
 
   g_assert_nonnull (doc);
   _doc = doc;
@@ -52,9 +52,9 @@ Scheduler::run (NclDocument *doc)
   g_assert_nonnull (body);
 
   // Create dummy settings node.
-  Media *settings_node =  new Media (_doc, "__settings__", true);
+  NclMedia *settings_node =  new NclMedia (_doc, "__settings__", true);
   body->addNode (settings_node);
-  Property *prop = new Property (_doc, "service.currentFocus");
+  NclProperty *prop = new NclProperty (_doc, "service.currentFocus");
   prop->setValue ("");
   settings_node->addAnchor (prop);
   _settings = cast (ExecutionObjectSettings *,
@@ -62,25 +62,25 @@ Scheduler::run (NclDocument *doc)
   g_assert_nonnull (_settings);
 
   // Create execution object for settings node and initialize it.
-  vector<Node *> *nodes = _doc->getSettingsNodes ();
+  vector<NclNode *> *nodes = _doc->getSettingsNodes ();
   for (auto node: *nodes)
     {
-      Media *content;
+      NclMedia *content;
 
-      content = (Media *) node;
+      content = (NclMedia *) node;
       if (content != settings_node)
         _settings->addAlias (content->getId ());
 
       for (auto anchor: *content->getAnchors ())
         {
-          Property *prop;
+          NclProperty *prop;
           string name;
           string value;
 
-          if (!instanceof (Property *, anchor))
+          if (!instanceof (NclProperty *, anchor))
             continue;           // nothing to do
 
-          prop = cast (Property *, anchor);
+          prop = cast (NclProperty *, anchor);
           name = prop->getName ();
           value = prop->getValue ();
           if (value == "")
@@ -98,7 +98,7 @@ Scheduler::run (NclDocument *doc)
   ExecutionObject *obj = this->obtainExecutionObject (body);
   FormatterEvent *evt = obj->obtainLambda ();
   g_assert_nonnull (evt);
-  if (!evt->transition (EventStateTransition::START))
+  if (!evt->transition (NclEventStateTransition::START))
     return false;
 
   // Refresh current focus.
@@ -331,10 +331,10 @@ Scheduler::sendTickEvent (GingaTime total, GingaTime diff, GingaTime frame)
 }
 
 ExecutionObject *
-Scheduler::obtainExecutionObject (Node *node)
+Scheduler::obtainExecutionObject (NclNode *node)
 {
   string id;
-  Node *parentNode;
+  NclNode *parentNode;
   ExecutionObjectContext *parent;
   ExecutionObject *object;
 
@@ -360,34 +360,34 @@ Scheduler::obtainExecutionObject (Node *node)
         return object;
     }
 
-  if (instanceof (Refer *, node))
+  if (instanceof (NclMediaRefer *, node))
     {
-      Node *target;
+      NclNode *target;
 
       TRACE ("solving refer %s", node->getId ().c_str ());
       target = node->derefer ();
-      g_assert (!instanceof (Refer *, target));
+      g_assert (!instanceof (NclMediaRefer *, target));
       object = obtainExecutionObject (target->derefer ());
       object->addAlias (id);
       return object;
     }
 
-  if (instanceof (Switch *, node))
+  if (instanceof (NclSwitch *, node))
     {
       TRACE ("creating switch %s", node->getId ().c_str ());
       object = new ExecutionObjectSwitch (_ginga, id, node);
       g_assert_nonnull
-        (object->obtainEvent (EventType::PRESENTATION,
+        (object->obtainEvent (NclEventType::PRESENTATION,
                               node->getLambda (), ""));
       goto done;
     }
 
-  if (instanceof (Context *, node))
+  if (instanceof (NclContext *, node))
     {
       TRACE ("creating context %s", node->getId ().c_str ());
       object = new ExecutionObjectContext (_ginga, id, node);
       g_assert_nonnull
-        (object->obtainEvent (EventType::PRESENTATION,
+        (object->obtainEvent (NclEventType::PRESENTATION,
                               node->getLambda (), ""));
 
       g_assert_nonnull (object);
@@ -395,7 +395,7 @@ Scheduler::obtainExecutionObject (Node *node)
         object->initParent (parent);
       g_assert (this->addObject (object));
 
-      Context *ctx = cast (Context *, node);
+      NclContext *ctx = cast (NclContext *, node);
       for (auto link: *(ctx->getLinks ()))
         g_assert (cast (ExecutionObjectContext *, object)
                   ->addLink (obtainFormatterLink (link)));
@@ -403,10 +403,10 @@ Scheduler::obtainExecutionObject (Node *node)
       return object;
     }
 
-  g_assert (instanceof (Media *, node));
+  g_assert (instanceof (NclMedia *, node));
   TRACE ("creating media %s", node->getId ().c_str ());
-  Media *media;
-  media = cast (Media *, node);
+  NclMedia *media;
+  media = cast (NclMedia *, node);
   g_assert_nonnull (media);
   if (media->isSettings ())
     {
@@ -430,25 +430,21 @@ Scheduler::obtainExecutionObject (Node *node)
 // Private.
 
 FormatterEvent *
-Scheduler::obtainFormatterEventFromBind (Bind *bind)
+Scheduler::obtainFormatterEventFromBind (NclBind *bind)
 {
-  Node *node;
+  NclNode *node;
   ExecutionObject *obj;
-  Anchor *iface;
-  Role *role;
-  EventType type;
+  NclAnchor *iface;
+  NclRole *role;
+  NclEventType type;
   string key = "";
 
   node = bind->getNode ();
   g_assert_nonnull (node);
 
   iface = bind->getInterface ();
-  if (iface != nullptr
-      && instanceof (Port *, iface)
-      && !(instanceof (SwitchPort *, iface)))
-    {
-      cast (Port *, iface)->getTarget (&node, nullptr);
-    }
+  if (iface != nullptr && instanceof (NclPort *, iface))
+    cast (NclPort *, iface)->getTarget (&node, nullptr);
 
   obj = obtainExecutionObject (node);
   g_assert_nonnull (obj);
@@ -456,11 +452,11 @@ Scheduler::obtainFormatterEventFromBind (Bind *bind)
   if (iface == nullptr)
     return obj->obtainLambda ();
 
-  if (instanceof (Composition *, node)
-      && instanceof (Port *, iface))
+  if (instanceof (NclComposition *, node)
+      && instanceof (NclPort *, iface))
     {
-      Composition *comp = cast (Composition *, node);
-      Port *port = cast (Port *, iface);
+      NclComposition *comp = cast (NclComposition *, node);
+      NclPort *port = cast (NclPort *, iface);
       iface = comp->getMapInterface (port);
     }
 
@@ -468,9 +464,9 @@ Scheduler::obtainFormatterEventFromBind (Bind *bind)
   g_assert_nonnull (role);
 
   type = role->getEventType ();
-  if (type == EventType::SELECTION)
+  if (type == NclEventType::SELECTION)
     {
-      Condition *cond = cast (Condition *, role);
+      NclCondition *cond = cast (NclCondition *, role);
       if (cond != nullptr)
         {
           key = cond->getKey ();
@@ -484,19 +480,70 @@ Scheduler::obtainFormatterEventFromBind (Bind *bind)
 }
 
 FormatterLink *
-Scheduler::obtainFormatterLink (Link *docLink)
+Scheduler::obtainFormatterLink (NclLink *docLink)
 {
-  Connector *connector;
+  NclConnector *connector;
   FormatterLink *link;
 
   g_assert_nonnull (docLink);
-  connector = cast (Connector *, docLink->getConnector ());
+  connector = cast (NclConnector *, docLink->getConnector ());
   g_assert_nonnull (connector);
 
   link = new FormatterLink (_ginga);
 
   for (auto connCond: *connector->getConditions ())
     {
+      Predicate *pred = connCond->getPredicate ();
+      if (pred != nullptr)      // solve ghost binds in predicate
+        {
+          vector <Predicate *> buf;
+
+          pred = pred->clone ();
+          g_assert_nonnull (pred);
+
+          buf.push_back (pred);
+          while (!buf.empty ())
+            {
+              Predicate *p = buf.back ();
+              buf.pop_back ();
+              switch (p->getType ())
+                {
+                case PredicateType::FALSUM:
+                case PredicateType::VERUM:
+                  break;        // nothing to do
+                case PredicateType::ATOM:
+                  {
+                    PredicateTestType test;
+                    string left, right, ghost;
+                    p->getTest (&left, &test, &right);
+                    if (left[0] == '$')
+                      {
+                        ghost = docLink->getGhostBind
+                          (left.substr (1, left.length () - 1));
+                        if (ghost != "")
+                          left = ghost;
+                      }
+                    if (right[0] == '$')
+                      {
+                        ghost = docLink->getGhostBind
+                          (right.substr (1, right.length () - 1));
+                        if (ghost != "")
+                          right = ghost;
+                      }
+                    p->setTest (left, test, right);
+                    break;
+                  }
+                case PredicateType::NEGATION:
+                case PredicateType::CONJUNCTION:
+                case PredicateType::DISJUNCTION:
+                  for (auto child: *p->getChildren ())
+                    buf.push_back (child);
+                  break;
+                default:
+                  g_assert_not_reached ();
+                }
+            }
+        }
       for (auto bind: docLink->getBinds (connCond))
         {
           FormatterEvent *evt;
@@ -505,7 +552,8 @@ Scheduler::obtainFormatterLink (Link *docLink)
           evt = this->obtainFormatterEventFromBind (bind);
           g_assert_nonnull (evt);
 
-          cond = new FormatterCondition (evt, connCond ->getTransition ());
+          cond = new FormatterCondition (pred, evt,
+                                         connCond->getTransition ());
           g_assert (link->addCondition (cond));
         }
     }
@@ -521,7 +569,7 @@ Scheduler::obtainFormatterLink (Link *docLink)
           g_assert_nonnull (evt);
 
           act = new FormatterAction (evt, connAct->getTransition ());
-          if (evt->getType () == EventType::ATTRIBUTION)
+          if (evt->getType () == NclEventType::ATTRIBUTION)
             {
               string dur;
               string value;
@@ -625,7 +673,18 @@ Scheduler::eval (Predicate *pred)
       g_assert_not_reached ();
       break;
     case PredicateType::CONJUNCTION:
-      g_assert_not_reached ();
+      {
+        for (auto child: *pred->getChildren ())
+          {
+            if (!this->eval (child))
+              {
+                TRACE ("and -> false");
+                return false;
+              }
+          }
+        TRACE ("and -> true");
+        return true;
+      }
       break;
     case PredicateType::DISJUNCTION:
       g_assert_not_reached ();

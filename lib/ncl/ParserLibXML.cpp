@@ -49,7 +49,7 @@ typedef struct ParserLibXML_State
   GingaRect rect;                    // screen dimensions
   xmlDoc *doc;                       // DOM tree
   NclDocument *ncl;                  // NCL tree
-  vector<Entity *> stack;            // NCL entity stack
+  vector<NclEntity *> stack;            // NCL entity stack
   string errmsg;                     // last error message
   int genid;                         // last generated id
   ParserLibXML_Cache cache;          // attrmap indexed by id
@@ -177,13 +177,13 @@ st_resolve_idref (ParserLibXML_State *st, const string &id,
 typedef bool (NclEltPushFunc) (ParserLibXML_State *,
                                xmlNode *,
                                map<string, string> *,
-                               Entity **);
+                               NclEntity **);
 // Element pop function.
 typedef bool (NclEltPopFunc) (ParserLibXML_State *,
                               xmlNode *,
                               map<string, string> *,
                               vector<xmlNode *> *,
-                              Entity *);
+                              NclEntity *);
 // Attribute info.
 typedef struct NclAttrInfo
 {
@@ -212,12 +212,12 @@ typedef enum
 #define NCL_ELT_PUSH_DECL(elt)                  \
   static bool G_PASTE (ncl_push_, elt)          \
     (ParserLibXML_State *, xmlNode *,           \
-     map<string, string> *, Entity **);
+     map<string, string> *, NclEntity **);
 
 #define NCL_ELT_POP_DECL(elt)                                   \
   static bool G_PASTE (ncl_pop_, elt)                           \
     (ParserLibXML_State *, xmlNode *,                           \
-     map<string, string> *, vector<xmlNode *> *, Entity *);
+     map<string, string> *, vector<xmlNode *> *, NclEntity *);
 
 NCL_ELT_PUSH_DECL (ncl)
 NCL_ELT_POP_DECL  (ncl)
@@ -249,19 +249,19 @@ static map<string, NclEltInfo> ncl_eltmap =
  //
  // Body.
  //
- {"body",                       // -> Context
+ {"body",                       // -> NclContext
   {ncl_push_context, ncl_pop_context,
    0,
    {"ncl"},
    {{"id", false}}},
  },
- {"context",                    // -> Context
+ {"context",                    // -> NclContext
   {ncl_push_context, ncl_pop_context,
    NCL_ELT_FLAG_CACHE,
    {"body", "context"},
    {{"id", true}}},
  },
- {"port",                       // -> Port
+ {"port",                       // -> NclPort
   {ncl_push_port, nullptr,
    NCL_ELT_FLAG_CACHE,
    {"body", "context"},
@@ -269,7 +269,7 @@ static map<string, NclEltInfo> ncl_eltmap =
     {"component", true},
     {"interface", false}}},
  },
- {"media",                      // -> Media
+ {"media",                      // -> NclMedia
   {ncl_push_media, nullptr,
    NCL_ELT_FLAG_CACHE,
    {"body", "context"},
@@ -286,14 +286,14 @@ static map<string, NclEltInfo> ncl_eltmap =
     {"begin", false},
     {"end", false}}},
  },
- {"property",                   // -> Property
+ {"property",                   // -> NclProperty
   {ncl_push_property, nullptr,
    0,
    {"body", "context", "media"},
   {{"name", true},
    {"value", false}}},
  },
- {"link",                       // -> Link
+ {"link",                       // -> NclLink
   {ncl_push_link, nullptr,
    NCL_ELT_FLAG_CACHE | NCL_ELT_FLAG_GEN_ID,
    {"body", "context"},
@@ -475,43 +475,43 @@ ncl_eltmap_get_possible_children (const string &tag)
   G_STMT_END
 
 static bool
-ncl_attr_parse_eventType (string str, EventType *result)
+ncl_attr_parse_eventType (string str, NclEventType *result)
 {
-  static map<string, EventType> tab =
+  static map<string, NclEventType> tab =
     {
-     {"presentation", EventType::PRESENTATION},
-     {"attribution", EventType::ATTRIBUTION},
-     {"selection", EventType::SELECTION},
+     {"presentation", NclEventType::PRESENTATION},
+     {"attribution", NclEventType::ATTRIBUTION},
+     {"selection", NclEventType::SELECTION},
     };
-  _NCL_ATTR_PARSE (EventType, tab, str, result);
+  _NCL_ATTR_PARSE (NclEventType, tab, str, result);
 }
 
 static bool
-ncl_attr_parse_transition (string str, EventStateTransition *result)
+ncl_attr_parse_transition (string str, NclEventStateTransition *result)
 {
-  static map<string, EventStateTransition> tab =
+  static map<string, NclEventStateTransition> tab =
     {
-     {"starts", EventStateTransition::START},
-     {"stops", EventStateTransition::STOP},
-     {"aborts", EventStateTransition::ABORT},
-     {"pauses", EventStateTransition::PAUSE},
-     {"resumes", EventStateTransition::RESUME},
+     {"starts", NclEventStateTransition::START},
+     {"stops", NclEventStateTransition::STOP},
+     {"aborts", NclEventStateTransition::ABORT},
+     {"pauses", NclEventStateTransition::PAUSE},
+     {"resumes", NclEventStateTransition::RESUME},
     };
-  _NCL_ATTR_PARSE (EventStateTransition, tab, str, result);
+  _NCL_ATTR_PARSE (NclEventStateTransition, tab, str, result);
 }
 
 static bool
-ncl_attr_parse_actionType (string str, EventStateTransition *result)
+ncl_attr_parse_actionType (string str, NclEventStateTransition *result)
 {
-  static map<string, EventStateTransition> tab =
+  static map<string, NclEventStateTransition> tab =
     {
-     {"start", EventStateTransition::START},
-     {"stop", EventStateTransition::STOP},
-     {"abort", EventStateTransition::ABORT},
-     {"pause", EventStateTransition::PAUSE},
-     {"resume", EventStateTransition::RESUME},
+     {"start", NclEventStateTransition::START},
+     {"stop", NclEventStateTransition::STOP},
+     {"abort", NclEventStateTransition::ABORT},
+     {"pause", NclEventStateTransition::PAUSE},
+     {"resume", NclEventStateTransition::RESUME},
     };
-  _NCL_ATTR_PARSE (EventStateTransition, tab, str, result);
+  _NCL_ATTR_PARSE (NclEventStateTransition, tab, str, result);
 }
 
 
@@ -551,7 +551,7 @@ static bool
 ncl_push_ncl (ParserLibXML_State *st,
               unused (xmlNode *elt),
               map<string, string> *attr,
-              unused (Entity **entity))
+              unused (NclEntity **entity))
 {
   string id = ncl_attrmap_opt_get (attr, "id", "ncl");
   string  url = (st->doc->URL) ? toString (st->doc->URL) : "";
@@ -564,7 +564,7 @@ ncl_pop_ncl (unused (ParserLibXML_State *st),
              unused (xmlNode *elt),
              unused (map<string, string> *attr),
              unused (vector<xmlNode *> *children),
-             unused (Entity *entity))
+             unused (NclEntity *entity))
 {
   bool status = true;
 
@@ -607,15 +607,15 @@ ncl_pop_ncl (unused (ParserLibXML_State *st),
     {
       map<string, string> *link_attr;
       xmlNode *link_elt;
-      Link *link;
+      NclLink *link;
 
       string conn_id;
-      Connector *conn;
+      NclConnector *conn;
 
       g_assert (st_cache_index (st, link_id, &link_attr));
       link_elt = st->cacheelt[link_id];
       g_assert_nonnull (link_elt);
-      link = cast (Link *, st->ncl->getEntityById (link_id));
+      link = cast (NclLink *, st->ncl->getEntityById (link_id));
       g_assert_nonnull (link);
 
       conn_id = ncl_attrmap_get (link_attr, "xconnector");
@@ -628,7 +628,7 @@ ncl_pop_ncl (unused (ParserLibXML_State *st),
           goto done;
         }
 
-      conn = cast (Connector *, st->ncl->getEntityById (conn_id));
+      conn = cast (NclConnector *, st->ncl->getEntityById (conn_id));
       g_assert_nonnull (conn);
       if (unlikely (!link->initConnector (conn)))
         {
@@ -643,7 +643,7 @@ ncl_pop_ncl (unused (ParserLibXML_State *st),
   for (auto media_id: st->cacheset["media"])
     {
       map<string, string> *media_attr;
-      Media *media;
+      NclMedia *media;
       xmlNode *media_elt;
       map<string, string> *desc_attr;
       string desc_id;
@@ -652,7 +652,7 @@ ncl_pop_ncl (unused (ParserLibXML_State *st),
       if (!ncl_attrmap_index (media_attr, "descriptor", &desc_id))
         continue;               // nothing to do
 
-      media = cast (Media *, st->ncl->getEntityById (media_id));
+      media = cast (NclMedia *, st->ncl->getEntityById (media_id));
       g_assert_nonnull (media);
 
       media_elt = st->cacheelt[media_id];
@@ -685,9 +685,9 @@ static bool
 ncl_push_context (ParserLibXML_State *st,
                   xmlNode *elt,
                   map<string, string> *attr,
-                  Entity **entity)
+                  NclEntity **entity)
 {
-  Context *context;
+  NclContext *context;
   string id;
 
   id = ncl_attrmap_opt_get (attr, "id", st->ncl->getId ());
@@ -697,9 +697,9 @@ ncl_push_context (ParserLibXML_State *st,
     }
   else
     {
-      Composition *parent = cast (Composition *, st->stack.back ());
+      NclComposition *parent = cast (NclComposition *, st->stack.back ());
       g_assert_nonnull (parent);
-      context = new Context (st->ncl, id);
+      context = new NclContext (st->ncl, id);
       parent->addNode (context);
     }
   g_assert_nonnull (context);
@@ -712,11 +712,11 @@ ncl_pop_context (unused (ParserLibXML_State *st),
                  unused (xmlNode *elt),
                  unused (map<string, string> *attr),
                  unused (vector<xmlNode *> *children),
-                 unused (Entity *entity))
+                 unused (NclEntity *entity))
 {
-  Context *context;
+  NclContext *context;
 
-  context = cast (Context *, entity);
+  context = cast (NclContext *, entity);
   g_assert_nonnull (context);
 
   // Resolve port's references.
@@ -728,8 +728,8 @@ ncl_pop_context (unused (ParserLibXML_State *st),
       string comp_id;
       string iface_id;
 
-      Node *node;
-      Anchor *anchor;
+      NclNode *node;
+      NclAnchor *anchor;
 
       port_id = port->getId ();
       g_assert (st_cache_index (st, port_id, &port_attr));
@@ -746,7 +746,7 @@ ncl_pop_context (unused (ParserLibXML_State *st),
              "no such component");
         }
 
-      node = cast (Node *, st->ncl->getEntityById (comp_id));
+      node = cast (NclNode *, st->ncl->getEntityById (comp_id));
       g_assert_nonnull (node);
       if (unlikely (node->getParent () != port->getParent ()))
         {
@@ -780,13 +780,13 @@ static bool
 ncl_push_port (ParserLibXML_State *st,
                unused (xmlNode *elt),
                map<string, string> *attr,
-               unused (Entity **entity))
+               unused (NclEntity **entity))
 {
-  Port *port;
-  Context *context;
+  NclPort *port;
+  NclContext *context;
 
-  port = new Port (st->ncl, ncl_attrmap_get (attr, "id"));
-  context = cast (Context *, st->stack.back ());
+  port = new NclPort (st->ncl, ncl_attrmap_get (attr, "id"));
+  context = cast (NclContext *, st->stack.back ());
   g_assert_nonnull (context);
   context->addPort (port);
   return true;
@@ -796,12 +796,12 @@ static bool
 ncl_push_media (ParserLibXML_State *st,
                 unused (xmlNode *elt),
                 map<string, string> *attr,
-                unused (Entity **entity))
+                unused (NclEntity **entity))
 {
-  Media *media;
-  Composition *comp;
+  NclMedia *media;
+  NclComposition *comp;
 
-  media = new Media (st->ncl, ncl_attrmap_get (attr, "id"), false);
+  media = new NclMedia (st->ncl, ncl_attrmap_get (attr, "id"), false);
   if (ncl_attrmap_index (attr, "src", nullptr))
     {
       string src = ncl_attrmap_get (attr, "src");
@@ -817,7 +817,7 @@ ncl_push_media (ParserLibXML_State *st,
       media->setSrc (src);
     }
 
-  comp = cast (Composition *, st->stack.back ());
+  comp = cast (NclComposition *, st->stack.back ());
   g_assert_nonnull (comp);
   comp->addNode (media);
   *entity = media;              // push onto stack
@@ -828,9 +828,9 @@ static bool
 ncl_push_property (ParserLibXML_State *st,
                    unused (xmlNode *elt),
                    map<string, string> *attr,
-                   unused (Entity **entity))
+                   unused (NclEntity **entity))
 {
-  Node *parent = cast (Node *, st->stack.back ());
+  NclNode *parent = cast (NclNode *, st->stack.back ());
   g_assert_nonnull (parent);
   parent->setProperty (ncl_attrmap_get (attr, "name"),
                        ncl_attrmap_opt_get (attr, "value", ""));
@@ -841,13 +841,13 @@ static bool
 ncl_push_link (ParserLibXML_State *st,
                unused (xmlNode *elt),
                map<string, string> *attr,
-               Entity **entity)
+               NclEntity **entity)
 {
-  Link *link;
-  Context *ctx;
+  NclLink *link;
+  NclContext *ctx;
 
-  link = new Link (st->ncl, ncl_attrmap_get (attr, "id"));
-  ctx = cast (Context *, st->stack.back ());
+  link = new NclLink (st->ncl, ncl_attrmap_get (attr, "id"));
+  ctx = cast (NclContext *, st->stack.back ());
   g_assert_nonnull (ctx);
   ctx->addLink (link);
   *entity = link;               // push onto stack
@@ -858,7 +858,7 @@ static bool
 ncl_push_region (ParserLibXML_State *st,
                  unused (xmlNode *elt),
                  map<string, string> *attr,
-                 unused (Entity **entity))
+                 unused (NclEntity **entity))
 {
   static int last_zorder = 0;
   GingaRect screen_rect;
@@ -932,7 +932,7 @@ ncl_pop_region (ParserLibXML_State *st,
                 unused (xmlNode *elt),
                 unused (map<string, string> *attr),
                 unused (vector<xmlNode *> *children),
-                unused (Entity *entity))
+                unused (NclEntity *entity))
 {
   g_assert_nonnull (elt->parent);
   if (toString (elt->parent->name) != "region") // root region
@@ -950,7 +950,7 @@ static bool
 ncl_push_descriptorParam (ParserLibXML_State *st,
                           xmlNode *elt,
                           map<string, string> *attr,
-                          unused (Entity **entity))
+                          unused (NclEntity **entity))
 {
   string desc_id;
   map<string, string> *desc;
@@ -969,10 +969,10 @@ static bool
 ncl_push_causalConnector (ParserLibXML_State *st,
                           unused (xmlNode *elt),
                           map<string, string> *attr,
-                          Entity **entity)
+                          NclEntity **entity)
 {
-  Connector *conn;
-  conn = new Connector (st->ncl, ncl_attrmap_get (attr, "id"));
+  NclConnector *conn;
+  conn = new NclConnector (st->ncl, ncl_attrmap_get (attr, "id"));
   *entity = conn;               // push onto stack
   return true;
 }
@@ -982,11 +982,11 @@ ncl_pop_causalConnector (ParserLibXML_State *st,
                          xmlNode *elt,
                          unused (map<string, string> *attr),
                          unused (vector<xmlNode *> *children),
-                         Entity *entity)
+                         NclEntity *entity)
 {
-  Connector *conn;
+  NclConnector *conn;
 
-  conn = cast (Connector *, entity);
+  conn = cast (NclConnector *, entity);
   g_assert_nonnull (conn);
 
   (void) st;
@@ -1004,12 +1004,12 @@ static bool
 ncl_push_simpleConditionOrAction (ParserLibXML_State *st,
                                   xmlNode *elt,
                                   map<string, string> *attr,
-                                  unused (Entity **entity))
+                                  unused (NclEntity **entity))
 {
   string role;
-  EventType type;
-  EventStateTransition trans;
-  Connector *parent;
+  NclEventType type;
+  NclEventStateTransition trans;
+  NclConnector *parent;
 
   bool is_cond;
   bool reserved;
@@ -1020,12 +1020,12 @@ ncl_push_simpleConditionOrAction (ParserLibXML_State *st,
 
   if (is_cond)
     {
-      reserved = Condition::isReserved (role, &type, &trans);
+      reserved = NclCondition::isReserved (role, &type, &trans);
       transname = "transition";
     }
   else
     {
-      reserved = Action::isReserved (role, &type, &trans);
+      reserved = NclAction::isReserved (role, &type, &trans);
       transname = "actionType";
     }
 
@@ -1063,14 +1063,14 @@ ncl_push_simpleConditionOrAction (ParserLibXML_State *st,
         }
     }
 
-  parent = cast (Connector *, st->stack.back ());
+  parent = cast (NclConnector *, st->stack.back ());
   g_assert_nonnull (parent);
   if (is_cond)
     {
       string key;
-      Condition *cond;
+      NclCondition *cond;
       key = ncl_attrmap_opt_get (attr, "key", "");
-      cond = new Condition (type, trans, nullptr, role, key);
+      cond = new NclCondition (type, trans, nullptr, role, key);
       parent->addCondition (cond);
     }
   else
@@ -1078,11 +1078,11 @@ ncl_push_simpleConditionOrAction (ParserLibXML_State *st,
       string delay;
       string value;
       string duration;
-      Action *act;
+      NclAction *act;
       delay = ncl_attrmap_opt_get (attr, "delay", "");
       value = ncl_attrmap_opt_get (attr, "key", "");
       duration = ncl_attrmap_opt_get (attr, "duration", "");
-      act = new Action (type, trans, role, delay, value, duration);
+      act = new NclAction (type, trans, role, delay, value, duration);
       parent->addAction (act);
     }
   return true;
@@ -1100,7 +1100,7 @@ processElt (ParserLibXML_State *st, xmlNode *elt)
 
   map<string, string> _attr;
   map<string, string> *attr = &_attr;
-  Entity *entity;
+  NclEntity *entity;
   map<string, bool> possible;
   vector<xmlNode *> children;
 

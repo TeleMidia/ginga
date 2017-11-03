@@ -26,13 +26,13 @@ GINGA_FORMATTER_BEGIN
 
 ExecutionObjectContext::ExecutionObjectContext (GingaInternal *ginga,
                                                 const string &id,
-                                                Node *node)
+                                                NclNode *node)
   : ExecutionObject (ginga, id, node)
 {
   g_assert_nonnull (node);
-  _context = cast (Context *, node);
+  _context = cast (NclContext *, node);
   //
-  // FIXME: Break Context-Switch inheritance.
+  // FIXME: Break NclContext-NclSwitch inheritance.
   //
   // g_assert_nonnull (_context);
 }
@@ -99,32 +99,32 @@ ExecutionObjectContext::sendTickEvent (unused (GingaTime total),
 
   lambda = this->obtainLambda ();
   g_assert_nonnull (lambda);
-  lambda->transition (EventStateTransition::STOP);
+  lambda->transition (NclEventStateTransition::STOP);
 }
 
 bool
 ExecutionObjectContext::exec (FormatterEvent *evt,
-                              unused (EventState from),
-                              unused (EventState to),
-                              EventStateTransition transition)
+                              unused (NclEventState from),
+                              unused (NclEventState to),
+                              NclEventStateTransition transition)
 {
   switch (evt->getType ())
     {
     // ---------------------------------------------------------------------
     // Presentation event.
     // ---------------------------------------------------------------------
-    case EventType::PRESENTATION:
+    case NclEventType::PRESENTATION:
       switch (transition)
         {
-        case EventStateTransition::START:
+        case NclEventStateTransition::START:
           //
           // Start lambda.
           //
           TRACE ("start %s@lambda", _id.c_str ());
           for (auto port: *_context->getPorts ())
             {
-              Node *target;
-              Anchor *iface;
+              NclNode *target;
+              NclAnchor *iface;
               ExecutionObject *child;
               FormatterEvent *e;
 
@@ -132,21 +132,21 @@ ExecutionObjectContext::exec (FormatterEvent *evt,
               child = _scheduler->obtainExecutionObject (target);
               g_assert_nonnull (child);
 
-              if (!instanceof (Area *, iface))
+              if (!instanceof (NclArea *, iface))
                 continue;       // nothing to do
 
-              e = child->obtainEvent (EventType::PRESENTATION, iface, "");
+              e = child->obtainEvent (NclEventType::PRESENTATION, iface, "");
               g_assert_nonnull (e);
               e->transition (transition);
             }
           break;
-        case EventStateTransition::PAUSE:
+        case NclEventStateTransition::PAUSE:
           g_assert_not_reached ();
           break;
-        case EventStateTransition::RESUME:
+        case NclEventStateTransition::RESUME:
           g_assert_not_reached ();
           break;
-        case EventStateTransition::STOP:
+        case NclEventStateTransition::STOP:
           //
           // Stop lambda.
           //
@@ -156,11 +156,11 @@ ExecutionObjectContext::exec (FormatterEvent *evt,
             {
               FormatterEvent *e = child->obtainLambda ();
               g_assert_nonnull (e);
-              e->transition (EventStateTransition::STOP);
+              e->transition (NclEventStateTransition::STOP);
             }
           this->toggleLinks (false);
           break;
-        case EventStateTransition::ABORT:
+        case NclEventStateTransition::ABORT:
           g_assert_not_reached ();
           break;
         default:
@@ -171,14 +171,14 @@ ExecutionObjectContext::exec (FormatterEvent *evt,
     // ---------------------------------------------------------------------
     // Attribution event.
     // ---------------------------------------------------------------------
-    case EventType::ATTRIBUTION:
+    case NclEventType::ATTRIBUTION:
       g_assert_not_reached ();
       break;
 
     //----------------------------------------------------------------------
     // Selection event.
     // ---------------------------------------------------------------------
-    case EventType::SELECTION:
+    case NclEventType::SELECTION:
       return false;             // fail: contexts cannot be selected
     default:
       g_assert_not_reached ();
