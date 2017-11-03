@@ -20,11 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-/**
- * @brief Creates a new action.
- * @param event Target event.
- * @param transition NclAction transition.
- */
 FormatterAction::FormatterAction (FormatterEvent *event,
                                   NclEventStateTransition transition)
 {
@@ -35,77 +30,46 @@ FormatterAction::FormatterAction (FormatterEvent *event,
   _value = "";
 }
 
-/**
- * @brief Destroys action.
- */
 FormatterAction::~FormatterAction ()
 {
 }
 
-/**
- * @brief Gets target event.
- * @return Target event.
- */
 FormatterEvent *
 FormatterAction::getEvent ()
 {
   return _event;
 }
 
-/**
- * @brief Gets target event type.
- * @return Target event type.
- */
 NclEventType
 FormatterAction::getEventType ()
 {
   return _event->getType ();
 }
 
-/**
- * @brief Gets action transition.
- * @return NclAction transition.
- */
 NclEventStateTransition
 FormatterAction::getEventStateTransition ()
 {
   return _transition;
 }
 
-/**
- * @brief Gets action duration.
- * @return NclAction duration.
- */
 string
 FormatterAction::getDuration ()
 {
   return _duration;
 }
 
-/**
- * @brief Sets action duration.
- * @param duration Duration.
- */
 void
 FormatterAction::setDuration (const string &duration)
 {
   _duration = duration;
 }
 
-/**
- * @brief Gets action value.
- * @return NclAction value.
- */
 string
-FormatterAction::getValue (void)
+FormatterAction::getValue ()
 {
   return _value;
 }
 
-/**
- * @brief Sets action value.
- * @param value Value.
- */
 void
 FormatterAction::setValue (const string &value)
 {

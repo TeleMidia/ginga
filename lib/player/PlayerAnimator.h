@@ -38,7 +38,7 @@ public:
   bool isInit ();
 
   void init (double current);
-  void update (void);
+  void update ();
 
 private:
   string _name;                  // property name

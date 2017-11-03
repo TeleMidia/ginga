@@ -288,7 +288,7 @@ AnimInfo::init (double current)
 }
 
 void
-AnimInfo::update (void)
+AnimInfo::update ()
 {
   GingaTime _current_time = ginga_gettime ();
   int dir;

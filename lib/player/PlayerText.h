@@ -33,7 +33,7 @@ public:
                                          bool, GingaRect *);
 
   PlayerText (Formatter *, const string &, const string &);
-  ~PlayerText (void);
+  ~PlayerText ();
   void reload () override;
 
 protected:
