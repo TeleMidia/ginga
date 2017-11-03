@@ -16,18 +16,17 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
-#include "ExecutionObjectContext.h"
-#include "Scheduler.h"
+#include "FormatterContext.h"
+#include "FormatterScheduler.h"
 
-GINGA_FORMATTER_BEGIN
+GINGA_BEGIN
 
 
 // Public.
 
-ExecutionObjectContext::ExecutionObjectContext (GingaInternal *ginga,
-                                                const string &id,
-                                                NclNode *node)
-  : ExecutionObject (ginga, id, node)
+FormatterContext::FormatterContext (Formatter *ginga, const string &id,
+                                    NclNode *node)
+  :FormatterObject (ginga, id, node)
 {
   g_assert_nonnull (node);
   _context = cast (NclContext *, node);
@@ -37,20 +36,20 @@ ExecutionObjectContext::ExecutionObjectContext (GingaInternal *ginga,
   // g_assert_nonnull (_context);
 }
 
-ExecutionObjectContext::~ExecutionObjectContext ()
+FormatterContext::~FormatterContext ()
 {
   for (auto link: _links)
     delete link;
 }
 
-const set<ExecutionObject *> *
-ExecutionObjectContext::getChildren ()
+const set<FormatterObject *> *
+FormatterContext::getChildren ()
 {
   return &_children;
 }
 
-ExecutionObject *
-ExecutionObjectContext::getChildById (const string &id)
+FormatterObject *
+FormatterContext::getChildById (const string &id)
 {
   for (auto child: _children)
     if (child->getId () == id)
@@ -59,7 +58,7 @@ ExecutionObjectContext::getChildById (const string &id)
 }
 
 bool
-ExecutionObjectContext::addChild (ExecutionObject *child)
+FormatterContext::addChild (FormatterObject *child)
 {
   g_assert_nonnull (child);
   if (_children.find (child) != _children.end ())
@@ -69,13 +68,13 @@ ExecutionObjectContext::addChild (ExecutionObject *child)
 }
 
 const vector<FormatterLink *> *
-ExecutionObjectContext::getLinks ()
+FormatterContext::getLinks ()
 {
   return &_links;
 }
 
 bool
-ExecutionObjectContext::addLink (FormatterLink *link)
+FormatterContext::addLink (FormatterLink *link)
 {
   g_assert_nonnull (link);
   for (auto other: _links)
@@ -86,9 +85,9 @@ ExecutionObjectContext::addLink (FormatterLink *link)
 }
 
 void
-ExecutionObjectContext::sendTickEvent (unused (GingaTime total),
-                                       unused (GingaTime diff),
-                                       unused (GingaTime frame))
+FormatterContext::sendTickEvent (unused (GingaTime total),
+                                 unused (GingaTime diff),
+                                 unused (GingaTime frame))
 {
   FormatterEvent *lambda;
 
@@ -103,10 +102,10 @@ ExecutionObjectContext::sendTickEvent (unused (GingaTime total),
 }
 
 bool
-ExecutionObjectContext::exec (FormatterEvent *evt,
-                              unused (NclEventState from),
-                              unused (NclEventState to),
-                              NclEventStateTransition transition)
+FormatterContext::exec (FormatterEvent *evt,
+                        unused (NclEventState from),
+                        unused (NclEventState to),
+                        NclEventStateTransition transition)
 {
   switch (evt->getType ())
     {
@@ -125,7 +124,7 @@ ExecutionObjectContext::exec (FormatterEvent *evt,
             {
               NclNode *target;
               NclAnchor *iface;
-              ExecutionObject *child;
+              FormatterObject *child;
               FormatterEvent *e;
 
               port->getTarget (&target, &iface);
@@ -135,7 +134,8 @@ ExecutionObjectContext::exec (FormatterEvent *evt,
               if (!instanceof (NclArea *, iface))
                 continue;       // nothing to do
 
-              e = child->obtainEvent (NclEventType::PRESENTATION, iface, "");
+              e = child->obtainEvent
+                (NclEventType::PRESENTATION, iface, "");
               g_assert_nonnull (e);
               e->transition (transition);
             }
@@ -190,10 +190,10 @@ ExecutionObjectContext::exec (FormatterEvent *evt,
 // Private.
 
 void
-ExecutionObjectContext::toggleLinks (bool status)
+FormatterContext::toggleLinks (bool status)
 {
   for (auto link: _links)
     link->disable (status);
 }
 
-GINGA_FORMATTER_END
+GINGA_END

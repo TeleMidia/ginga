@@ -17,7 +17,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "aux-ginga.h"
-#include "GingaInternal.h"
+#include "Formatter.h"
+using namespace ::ginga;
 
 Ginga::Ginga (int, char **, GingaOptions *)
 {
@@ -41,7 +42,7 @@ Ginga *
 Ginga::create (int argc, char **argv, GingaOptions *opts)
 {
   setlocale (LC_ALL, "C");
-  return new GingaInternal (argc, argv, opts);
+  return new Formatter (argc, argv, opts);
 }
 
 /**

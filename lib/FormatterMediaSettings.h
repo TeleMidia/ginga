@@ -15,36 +15,31 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef FORMATTER_ACTION_H
-#define FORMATTER_ACTION_H
+#ifndef FORMATTER_MEDIA_SETTINGS_H
+#define FORMATTER_MEDIA_SETTINGS_H
 
-#include "FormatterEvent.h"
+#include "FormatterObject.h"
 
-GINGA_FORMATTER_BEGIN
+GINGA_BEGIN
 
-class FormatterAction
+class FormatterObject;
+class FormatterMediaSettings : public FormatterObject
 {
 public:
-  FormatterAction (FormatterEvent *, NclEventStateTransition);
-  virtual ~FormatterAction ();
+  FormatterMediaSettings (Formatter *, const string &, NclNode *);
+  virtual ~FormatterMediaSettings () {};
 
-  FormatterEvent *getEvent ();
-  NclEventType getEventType ();
-  NclEventStateTransition getEventStateTransition ();
+  void setProperty (const string &, const string &, GingaTime);
 
-  string getDuration ();
-  void setDuration (const string &);
+  void updateCurrentFocus (const string &);
+  void scheduleFocusUpdate (const string &);
+  void sendTickEvent (GingaTime, GingaTime, GingaTime) override;
 
-  string getValue ();
-  void setValue (const string &);
-
-private:
-  FormatterEvent *_event;
-  NclEventStateTransition _transition;
-  string _duration;
-  string _value;
+ private:
+  string _nextFocus;            // next focus index
+  bool _hasNextFocus;           // true if a focus update is scheduled
 };
 
-GINGA_FORMATTER_END
+GINGA_END
 
-#endif // FORMATTER_ACTION_H
+#endif

@@ -17,12 +17,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 #include "FormatterLink.h"
-#include "ExecutionObjectContext.h"
-#include "Scheduler.h"
+#include "FormatterContext.h"
+#include "FormatterScheduler.h"
 
-GINGA_FORMATTER_BEGIN
+GINGA_BEGIN
 
-FormatterLink::FormatterLink (GingaInternal *ginga)
+FormatterLink::FormatterLink (Formatter *ginga)
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;
@@ -119,4 +119,4 @@ FormatterLink::getEvents ()
   return events;
 }
 
-GINGA_FORMATTER_END
+GINGA_END

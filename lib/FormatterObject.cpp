@@ -16,23 +16,23 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
-#include "ExecutionObject.h"
+#include "FormatterObject.h"
 
-#include "ExecutionObjectContext.h"
-#include "ExecutionObjectSettings.h"
-#include "ExecutionObjectSwitch.h"
+#include "FormatterContext.h"
+#include "FormatterMediaSettings.h"
+#include "FormatterSwitch.h"
 #include "FormatterEvent.h"
-#include "Scheduler.h"
+#include "FormatterScheduler.h"
 
 #include "player/Player.h"
 using namespace ::ginga::player;
 
-GINGA_FORMATTER_BEGIN
+GINGA_BEGIN
 
 
 // Public.
 
-ExecutionObject::ExecutionObject (GingaInternal *ginga,
+FormatterObject::FormatterObject (Formatter *ginga,
                                   const string &id,
                                   NclNode *node)
 {
@@ -51,31 +51,31 @@ ExecutionObject::ExecutionObject (GingaInternal *ginga,
   _time = GINGA_TIME_NONE;
 }
 
-ExecutionObject::~ExecutionObject ()
+FormatterObject::~FormatterObject ()
 {
   this->reset ();
 }
 
 NclNode *
-ExecutionObject::getNode ()
+FormatterObject::getNode ()
 {
   return _node;
 }
 
 string
-ExecutionObject::getId ()
+FormatterObject::getId ()
 {
   return _id;
 }
 
 const vector <string> *
-ExecutionObject::getAliases ()
+FormatterObject::getAliases ()
 {
   return &_aliases;
 }
 
 bool
-ExecutionObject::hasAlias (const string &alias)
+FormatterObject::hasAlias (const string &alias)
 {
   for (auto curr: _aliases)
     if (curr == alias)
@@ -84,7 +84,7 @@ ExecutionObject::hasAlias (const string &alias)
 }
 
 bool
-ExecutionObject::addAlias (const string &alias)
+FormatterObject::addAlias (const string &alias)
 {
   for (auto old: _aliases)
     if (old == alias)
@@ -93,14 +93,14 @@ ExecutionObject::addAlias (const string &alias)
   return true;
 }
 
-ExecutionObjectContext *
-ExecutionObject::getParent ()
+FormatterContext *
+FormatterObject::getParent ()
 {
   return _parent;
 }
 
 void
-ExecutionObject::initParent (ExecutionObjectContext *parent)
+FormatterObject::initParent (FormatterContext *parent)
 {
   g_assert_nonnull (parent);
   g_assert_null (_parent);
@@ -109,13 +109,13 @@ ExecutionObject::initParent (ExecutionObjectContext *parent)
 }
 
 const set<FormatterEvent *> *
-ExecutionObject::getEvents ()
+FormatterObject::getEvents ()
 {
   return &_events;
 }
 
 FormatterEvent *
-ExecutionObject::getEvent (NclEventType type, NclAnchor *anchor,
+FormatterObject::getEvent (NclEventType type, NclAnchor *anchor,
                            const string &key)
 {
   g_assert_nonnull (anchor);
@@ -142,7 +142,7 @@ ExecutionObject::getEvent (NclEventType type, NclAnchor *anchor,
 }
 
 FormatterEvent *
-ExecutionObject::getEventByAnchorId (NclEventType type, const string &id,
+FormatterObject::getEventByAnchorId (NclEventType type, const string &id,
                                      const string &key)
 {
   for (auto event: _events)
@@ -173,7 +173,7 @@ ExecutionObject::getEventByAnchorId (NclEventType type, const string &id,
 }
 
 FormatterEvent *
-ExecutionObject::obtainEvent (NclEventType type, NclAnchor *anchor,
+FormatterObject::obtainEvent (NclEventType type, NclAnchor *anchor,
                               const string &key)
 {
   FormatterEvent *event;
@@ -185,12 +185,12 @@ ExecutionObject::obtainEvent (NclEventType type, NclAnchor *anchor,
   g_assert_nonnull (anchor);
   g_assert_null (this->getEventByAnchorId (type, anchor->getId (), key));
 
-  if (instanceof (ExecutionObjectSwitch *, this))
+  if (instanceof (FormatterSwitch *, this))
     {
       g_assert (type == NclEventType::PRESENTATION);
       event = new FormatterEvent (_ginga, type, this, anchor);
     }
-  else if (instanceof (ExecutionObjectContext *, this))
+  else if (instanceof (FormatterContext *, this))
     {
       g_assert (type == NclEventType::PRESENTATION);
       event = new FormatterEvent (_ginga, type, this, anchor);
@@ -224,7 +224,7 @@ ExecutionObject::obtainEvent (NclEventType type, NclAnchor *anchor,
 }
 
 bool
-ExecutionObject::addEvent (FormatterEvent *event)
+FormatterObject::addEvent (FormatterEvent *event)
 {
   if (_events.find (event) != _events.end ())
     return false;
@@ -233,7 +233,7 @@ ExecutionObject::addEvent (FormatterEvent *event)
 }
 
 FormatterEvent *
-ExecutionObject::obtainLambda ()
+FormatterObject::obtainLambda ()
 {
   FormatterEvent *lambda;
   g_assert_nonnull (_node);
@@ -244,29 +244,29 @@ ExecutionObject::obtainLambda ()
 }
 
 bool
-ExecutionObject::isOccurring ()
+FormatterObject::isOccurring ()
 {
   return this->obtainLambda ()->getState () == NclEventState::OCCURRING;
 }
 
 bool
-ExecutionObject::isPaused ()
+FormatterObject::isPaused ()
 {
   return this->obtainLambda ()->getState () == NclEventState::PAUSED;
 }
 
 bool
-ExecutionObject::isSleeping ()
+FormatterObject::isSleeping ()
 {
   return this->obtainLambda ()->getState () == NclEventState::SLEEPING;
 }
 
 bool
-ExecutionObject::isFocused ()
+FormatterObject::isFocused ()
 {
-  if (instanceof (ExecutionObjectContext *, this)
-      || instanceof (ExecutionObjectSettings *, this)
-      || instanceof (ExecutionObjectSwitch *, this))
+  if (instanceof (FormatterContext *, this)
+      || instanceof (FormatterMediaSettings *, this)
+      || instanceof (FormatterSwitch *, this))
     {
       return false;
     }
@@ -277,13 +277,13 @@ ExecutionObject::isFocused ()
 }
 
 string
-ExecutionObject::getProperty (const string &name)
+FormatterObject::getProperty (const string &name)
 {
   return (_player) ? _player->getProperty (name) : "";
 }
 
 void
-ExecutionObject::setProperty (const string &name,
+FormatterObject::setProperty (const string &name,
                               const string &value,
                               GingaTime dur)
 {
@@ -308,13 +308,13 @@ ExecutionObject::setProperty (const string &name,
       _player->setProperty (name, value);
     }
 
-  if (instanceof (ExecutionObjectSettings *, this))
-    cast (ExecutionObjectSettings *, this)
+  if (instanceof (FormatterMediaSettings *, this))
+    cast (FormatterMediaSettings *, this)
       ->setProperty (name, value, dur);
 }
 
 bool
-ExecutionObject::getZ (int *z, int *zorder)
+FormatterObject::getZ (int *z, int *zorder)
 {
   if (this->isSleeping ())
     return false;               // nothing to do
@@ -326,7 +326,7 @@ ExecutionObject::getZ (int *z, int *zorder)
 }
 
 void
-ExecutionObject::redraw (cairo_t *cr)
+FormatterObject::redraw (cairo_t *cr)
 {
   if (this->isSleeping ())
     return;                     // nothing to do
@@ -336,16 +336,16 @@ ExecutionObject::redraw (cairo_t *cr)
 }
 
 void
-ExecutionObject::sendKeyEvent (const string &key, bool press)
+FormatterObject::sendKeyEvent (const string &key, bool press)
 {
   list<FormatterEvent *> buf;
 
   if (!press)
     return;                     // nothing to do
 
-  if (instanceof (ExecutionObjectSettings *, this)
-      || instanceof (ExecutionObjectContext *, this)
-      || instanceof (ExecutionObjectSwitch *, this))
+  if (instanceof (FormatterMediaSettings *, this)
+      || instanceof (FormatterContext *, this)
+      || instanceof (FormatterSwitch *, this))
     return;                     // nothing to do
 
   if (_player == nullptr)
@@ -363,7 +363,7 @@ ExecutionObject::sendKeyEvent (const string &key, bool press)
           || ((key == "CURSOR_RIGHT"
                && (next = _player->getProperty ("moveRight")) != "")))
         {
-          ExecutionObjectSettings *settings;
+          FormatterMediaSettings *settings;
           settings = _scheduler->getSettings ();
           g_assert_nonnull (settings);
           settings->scheduleFocusUpdate (next);
@@ -405,7 +405,7 @@ ExecutionObject::sendKeyEvent (const string &key, bool press)
 }
 
 void
-ExecutionObject::sendTickEvent (unused (GingaTime total),
+FormatterObject::sendTickEvent (unused (GingaTime total),
                                 GingaTime diff,
                                 unused (GingaTime frame))
 {
@@ -467,8 +467,9 @@ ExecutionObject::sendTickEvent (unused (GingaTime total),
 }
 
 bool
-ExecutionObject::exec (FormatterEvent *evt,
-                       unused (NclEventState from), unused (NclEventState to),
+FormatterObject::exec (FormatterEvent *evt,
+                       unused (NclEventState from),
+                       unused (NclEventState to),
                        NclEventStateTransition transition)
 {
   switch (evt->getType ())
@@ -529,9 +530,11 @@ ExecutionObject::exec (FormatterEvent *evt,
                   begin = area->getBegin ();
                   end = area->getEnd ();
 
-                  act = new FormatterAction (e, NclEventStateTransition::START);
+                  act = new FormatterAction
+                    (e, NclEventStateTransition::START);
                   _delayed_new.push_back (std::make_pair (act, begin));
-                  act = new FormatterAction (e, NclEventStateTransition::STOP);
+                  act = new FormatterAction
+                    (e, NclEventStateTransition::STOP);
                   _delayed_new.push_back (std::make_pair (act, end));
                 }
 
@@ -721,7 +724,7 @@ ExecutionObject::exec (FormatterEvent *evt,
 // Private.
 
 void
-ExecutionObject::reset ()
+FormatterObject::reset ()
 {
   if (_player != nullptr)
     {
@@ -735,7 +738,7 @@ ExecutionObject::reset ()
 }
 
 void
-ExecutionObject::resetDelayed ()
+FormatterObject::resetDelayed ()
 {
   for (auto item: _delayed)
     delete item.first;
@@ -746,4 +749,4 @@ ExecutionObject::resetDelayed ()
   _delayed_new.clear ();
 }
 
-GINGA_FORMATTER_END
+GINGA_END

@@ -92,7 +92,7 @@ static map<string, string> player_property_aliases =
  * @param id Media object id.
  * @param uri Content URI.
  */
-Player::Player (GingaInternal *ginga, const string &id, const string &uri)
+Player::Player (Formatter *ginga, const string &id, const string &uri)
 {
   // Internal data.
   g_assert_nonnull (ginga);
@@ -562,7 +562,7 @@ Player::getPlayerProperty (const string &name, string *defval)
  * @return New player.
  */
 Player *
-Player::createPlayer (GingaInternal *ginga, const string &id,
+Player::createPlayer (Formatter *ginga, const string &id,
                       const string &uri, const string &mime)
 {
   Player *player = nullptr;

@@ -39,7 +39,7 @@ GINGA_PLAYER_BEGIN
 
 // Public.
 
-LuaPlayer::LuaPlayer (GingaInternal *ginga, const string &id,
+LuaPlayer::LuaPlayer (Formatter *ginga, const string &id,
                       const string &uri)
   : Player (ginga, id, uri)
 {

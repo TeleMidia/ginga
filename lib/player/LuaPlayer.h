@@ -25,7 +25,7 @@ GINGA_PLAYER_BEGIN
 class LuaPlayer : public Player
 {
 public:
-  LuaPlayer (GingaInternal *, const string &, const string &);
+  LuaPlayer (Formatter *, const string &, const string &);
   virtual ~LuaPlayer (void);
   void start (void) override;
   void stop (void) override;

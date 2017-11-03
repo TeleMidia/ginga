@@ -42,7 +42,7 @@ GINGA_PLAYER_BEGIN
 
 // Public.
 
-VideoPlayer::VideoPlayer (GingaInternal *ginga, const string &id,
+VideoPlayer::VideoPlayer (Formatter *ginga, const string &id,
                           const string &uri)
   : Player (ginga, id, uri)
 {

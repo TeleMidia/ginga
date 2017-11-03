@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "FormatterAction.h"
 
-GINGA_FORMATTER_BEGIN
+GINGA_BEGIN
 
 /**
  * @brief Creates a new action.
@@ -112,4 +112,4 @@ FormatterAction::setValue (const string &value)
   _value = value;
 }
 
-GINGA_FORMATTER_END
+GINGA_END

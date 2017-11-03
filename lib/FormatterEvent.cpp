@@ -17,12 +17,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 #include "FormatterEvent.h"
-#include "ExecutionObject.h"
+#include "FormatterObject.h"
 
-GINGA_FORMATTER_BEGIN
+GINGA_BEGIN
 
-FormatterEvent::FormatterEvent (GingaInternal *ginga, NclEventType type,
-                                ExecutionObject *object, NclAnchor *anchor)
+FormatterEvent::FormatterEvent (Formatter *ginga, NclEventType type,
+                                FormatterObject *object, NclAnchor *anchor)
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;
@@ -46,7 +46,7 @@ FormatterEvent::getType ()
   return _type;
 }
 
-ExecutionObject *
+FormatterObject *
 FormatterEvent::getObject ()
 {
   return _object;
@@ -127,4 +127,4 @@ FormatterEvent::transition (NclEventStateTransition trans)
   return true;
 }
 
-GINGA_FORMATTER_END
+GINGA_END

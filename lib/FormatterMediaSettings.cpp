@@ -16,18 +16,18 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
-#include "ExecutionObjectSettings.h"
+#include "FormatterMediaSettings.h"
 
-#include "ExecutionObjectContext.h"
-#include "ExecutionObjectSwitch.h"
-#include "Scheduler.h"
+#include "FormatterContext.h"
+#include "FormatterSwitch.h"
+#include "FormatterScheduler.h"
 
-GINGA_FORMATTER_BEGIN
+GINGA_BEGIN
 
-ExecutionObjectSettings::ExecutionObjectSettings (GingaInternal *ginga,
-                                                  const string &id,
-                                                  NclNode *node)
-  : ExecutionObject (ginga, id, node)
+FormatterMediaSettings::FormatterMediaSettings (Formatter *ginga,
+                                                const string &id,
+                                                NclNode *node)
+  :FormatterObject (ginga, id, node)
 {
   NclNode *nodeEntity = cast (NclNode *, node->derefer ());
   g_assert_nonnull (nodeEntity);
@@ -38,16 +38,16 @@ ExecutionObjectSettings::ExecutionObjectSettings (GingaInternal *ginga,
 }
 
 void
-ExecutionObjectSettings::setProperty (const string &name,
-                                      const string &value,
-                                      unused (GingaTime dur))
+FormatterMediaSettings::setProperty (const string &name,
+                                     const string &value,
+                                     unused (GingaTime dur))
 {
   if (name == "service.currentFocus")
     Player::setCurrentFocus (value);
 }
 
 void
-ExecutionObjectSettings::updateCurrentFocus (const string &index)
+FormatterMediaSettings::updateCurrentFocus (const string &index)
 {
   string next;
   string i;
@@ -58,7 +58,7 @@ ExecutionObjectSettings::updateCurrentFocus (const string &index)
     }
   else
     {
-      Scheduler *sched = _ginga->getScheduler ();
+      FormatterScheduler *sched = _ginga->getScheduler ();
       g_assert_nonnull (sched);
 
       for (auto obj: *sched->getObjects ())
@@ -67,9 +67,9 @@ ExecutionObjectSettings::updateCurrentFocus (const string &index)
 
       for (auto obj: *sched->getObjects ())
         {
-          if (!instanceof (ExecutionObjectContext *, obj)
-              && !instanceof (ExecutionObjectSettings *, obj)
-              && !instanceof (ExecutionObjectSwitch *, obj)
+          if (!instanceof (FormatterContext *, obj)
+              && !instanceof (FormatterMediaSettings *, obj)
+              && !instanceof (FormatterSwitch *, obj)
               && obj->isOccurring ()
               && (i = obj->getProperty ("focusIndex")) != ""
               && (next == "" || g_strcmp0 (i.c_str (), next.c_str ()) < 0))
@@ -87,27 +87,27 @@ ExecutionObjectSettings::updateCurrentFocus (const string &index)
     (NclEventType::ATTRIBUTION, name, "");
   if (evt == nullptr)           // do no trigger links
     {
-      cast (ExecutionObject *, this)->setProperty (name, value);
+      cast (FormatterObject *, this)->setProperty (name, value);
     }
   else                          // trigger links
     {
       evt->transition (NclEventStateTransition::START);
-      cast (ExecutionObject *, this)->setProperty (name, value);
+      cast (FormatterObject *, this)->setProperty (name, value);
       evt->transition (NclEventStateTransition::STOP);
     }
 }
 
 void
-ExecutionObjectSettings::scheduleFocusUpdate (const string &next)
+FormatterMediaSettings::scheduleFocusUpdate (const string &next)
 {
   _hasNextFocus = true;
   _nextFocus = next;
 }
 
 void
-ExecutionObjectSettings::sendTickEvent (unused (GingaTime total),
-                                        unused (GingaTime diff),
-                                        unused (GingaTime frame))
+FormatterMediaSettings::sendTickEvent (unused (GingaTime total),
+                                       unused (GingaTime diff),
+                                       unused (GingaTime frame))
 {
   if (_hasNextFocus)            // effectuate pending focus index update
     {
@@ -116,4 +116,4 @@ ExecutionObjectSettings::sendTickEvent (unused (GingaTime total),
     }
 }
 
-GINGA_FORMATTER_END
+GINGA_END

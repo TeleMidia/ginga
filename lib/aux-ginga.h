@@ -79,8 +79,6 @@ using namespace std;
 #define _GINGA_END            _GINGA_NS_END _GINGA_NS_END
 #define GINGA_BEGIN           _GINGA_NS_BEGIN (ginga)
 #define GINGA_END             _GINGA_NS_END
-#define GINGA_FORMATTER_BEGIN _GINGA_BEGIN (formatter)
-#define GINGA_FORMATTER_END   _GINGA_END
 #define GINGA_PLAYER_BEGIN    _GINGA_BEGIN (player)
 #define GINGA_PLAYER_END      _GINGA_END
 

@@ -16,15 +16,14 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
-#include "ExecutionObjectSwitch.h"
-#include "Scheduler.h"
+#include "FormatterSwitch.h"
+#include "FormatterScheduler.h"
 
-GINGA_FORMATTER_BEGIN
+GINGA_BEGIN
 
-ExecutionObjectSwitch::ExecutionObjectSwitch (GingaInternal *ginga,
-                                              const string &id,
-                                              NclNode *node)
-  : ExecutionObjectContext (ginga, id, node)
+FormatterSwitch::FormatterSwitch (Formatter *ginga, const string &id,
+                                  NclNode *node)
+  :FormatterContext (ginga, id, node)
 {
   g_assert_nonnull (node);
   _switch = cast (NclSwitch *, node);
@@ -32,15 +31,15 @@ ExecutionObjectSwitch::ExecutionObjectSwitch (GingaInternal *ginga,
   _selected = nullptr;
 }
 
-ExecutionObjectSwitch::~ExecutionObjectSwitch ()
+FormatterSwitch::~FormatterSwitch ()
 {
 }
 
 bool
-ExecutionObjectSwitch::exec (FormatterEvent *evt,
-                             unused (NclEventState from),
-                             unused (NclEventState to),
-                             NclEventStateTransition transition)
+FormatterSwitch::exec (FormatterEvent *evt,
+                       unused (NclEventState from),
+                       unused (NclEventState to),
+                       NclEventStateTransition transition)
 {
   switch (evt->getType ())
     {
@@ -134,4 +133,4 @@ ExecutionObjectSwitch::exec (FormatterEvent *evt,
   return true;
 }
 
-GINGA_FORMATTER_END
+GINGA_END

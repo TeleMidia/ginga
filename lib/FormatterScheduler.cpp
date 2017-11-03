@@ -17,14 +17,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 #include "aux-gl.h"
-#include "Scheduler.h"
+#include "FormatterScheduler.h"
 
-GINGA_FORMATTER_BEGIN
+GINGA_BEGIN
 
 
 // Public.
 
-Scheduler::Scheduler (GingaInternal *ginga)
+FormatterScheduler::FormatterScheduler (Formatter *ginga)
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;
@@ -32,14 +32,14 @@ Scheduler::Scheduler (GingaInternal *ginga)
   _settings = nullptr;
 }
 
-Scheduler::~Scheduler ()
+FormatterScheduler::~FormatterScheduler ()
 {
   for (auto obj: _objects)
     delete obj;
 }
 
 bool
-Scheduler::run (NclDocument *doc)
+FormatterScheduler::run (NclDocument *doc)
 {
   string id;
   NclContext *body;
@@ -57,7 +57,7 @@ Scheduler::run (NclDocument *doc)
   NclProperty *prop = new NclProperty (_doc, "service.currentFocus");
   prop->setValue ("");
   settings_node->addAnchor (prop);
-  _settings = cast (ExecutionObjectSettings *,
+  _settings = cast (FormatterMediaSettings *,
                     this->obtainExecutionObject (settings_node));
   g_assert_nonnull (_settings);
 
@@ -86,7 +86,7 @@ Scheduler::run (NclDocument *doc)
           if (value == "")
             continue;           // nothing to do
 
-          cast (ExecutionObject *, _settings)->setProperty (name, value, 0);
+          cast (FormatterObject *, _settings)->setProperty (name, value, 0);
         }
     }
   delete nodes;
@@ -95,7 +95,7 @@ Scheduler::run (NclDocument *doc)
   g_assert_nonnull (_settings->obtainLambda ());
 
   // Start document.
-  ExecutionObject *obj = this->obtainExecutionObject (body);
+  FormatterObject *obj = this->obtainExecutionObject (body);
   FormatterEvent *evt = obj->obtainLambda ();
   g_assert_nonnull (evt);
   if (!evt->transition (NclEventStateTransition::START))
@@ -108,20 +108,20 @@ Scheduler::run (NclDocument *doc)
   return true;
 }
 
-ExecutionObjectSettings *
-Scheduler::getSettings ()
+FormatterMediaSettings *
+FormatterScheduler::getSettings ()
 {
   return _settings;
 }
 
-const set<ExecutionObject *> *
-Scheduler::getObjects ()
+const set<FormatterObject *> *
+FormatterScheduler::getObjects ()
 {
   return &_objects;
 }
 
-ExecutionObject *
-Scheduler::getObjectById (const string &id)
+FormatterObject *
+FormatterScheduler::getObjectById (const string &id)
 {
   for (auto obj: _objects)
     if (obj->getId () == id)
@@ -129,10 +129,10 @@ Scheduler::getObjectById (const string &id)
   return nullptr;
 }
 
-ExecutionObject *
-Scheduler::getObjectByIdOrAlias (const string &id)
+FormatterObject *
+FormatterScheduler::getObjectByIdOrAlias (const string &id)
 {
-  ExecutionObject *obj;
+  FormatterObject *obj;
   if ((obj = this->getObjectById (id)) != nullptr)
     return obj;
   for (auto obj: _objects)
@@ -142,12 +142,12 @@ Scheduler::getObjectByIdOrAlias (const string &id)
 }
 
 bool
-Scheduler::getObjectPropertyByRef (const string &ref, string *result)
+FormatterScheduler::getObjectPropertyByRef (const string &ref, string *result)
 {
   size_t i;
   string id;
   string name;
-  ExecutionObject *object;
+  FormatterObject *object;
 
   if (ref[0] != '$' || (i = ref.find ('.')) == string::npos)
     return false;
@@ -163,7 +163,7 @@ Scheduler::getObjectPropertyByRef (const string &ref, string *result)
 }
 
 bool
-Scheduler::addObject (ExecutionObject *obj)
+FormatterScheduler::addObject (FormatterObject *obj)
 {
   g_assert_nonnull (obj);
   if (_objects.find (obj) != _objects.end ()
@@ -176,7 +176,7 @@ Scheduler::addObject (ExecutionObject *obj)
 }
 
 static bool
-cmpz (ExecutionObject *a, ExecutionObject *b)
+cmpz (FormatterObject *a, FormatterObject *b)
 {
   int z1, zo1, z2, zo2;
 
@@ -199,12 +199,12 @@ cmpz (ExecutionObject *a, ExecutionObject *b)
 }
 
 void
-Scheduler::redraw (cairo_t *cr)
+FormatterScheduler::redraw (cairo_t *cr)
 {
   bool opengl;
   GingaColor background;
   int width, height;
-  vector<ExecutionObject *> objs;
+  vector<FormatterObject *> objs;
 
   opengl = _ginga->getOptionBool ("opengl");
   background = ginga_parse_color (_ginga->getOptionString ("background"));
@@ -242,8 +242,8 @@ Scheduler::redraw (cairo_t *cr)
     }
 
   for (auto obj: _objects)      // fixme
-    if (!instanceof (ExecutionObjectContext *, obj)
-        && !instanceof (ExecutionObjectSwitch *, obj))
+    if (!instanceof (FormatterContext *, obj)
+        && !instanceof (FormatterSwitch *, obj))
       objs.push_back (obj);
   std::sort (objs.begin (), objs.end (), cmpz);
   for (auto obj: objs)
@@ -280,7 +280,7 @@ Scheduler::redraw (cairo_t *cr)
 }
 
 void
-Scheduler::resize (int width, int height)
+FormatterScheduler::resize (int width, int height)
 {
   g_assert (width == _ginga->getOptionInt ("width"));
   g_assert (height == _ginga->getOptionInt ("height"));
@@ -294,11 +294,11 @@ Scheduler::resize (int width, int height)
 }
 
 void
-Scheduler::sendKeyEvent (const string &key, bool press)
+FormatterScheduler::sendKeyEvent (const string &key, bool press)
 {
-  vector<ExecutionObject *> buf;
+  vector<FormatterObject *> buf;
   for (auto obj: _objects)
-    if (instanceof (ExecutionObjectSettings *, obj)
+    if (instanceof (FormatterMediaSettings *, obj)
         || obj->isOccurring ())
       buf.push_back (obj);
   for (auto obj: buf)
@@ -306,9 +306,9 @@ Scheduler::sendKeyEvent (const string &key, bool press)
 }
 
 void
-Scheduler::sendTickEvent (GingaTime total, GingaTime diff, GingaTime frame)
+FormatterScheduler::sendTickEvent (GingaTime total, GingaTime diff, GingaTime frame)
 {
-  vector<ExecutionObject *> buf;
+  vector<FormatterObject *> buf;
 
   for (auto obj: _objects)
     if (obj->isOccurring ())
@@ -322,7 +322,7 @@ Scheduler::sendTickEvent (GingaTime total, GingaTime diff, GingaTime frame)
 
   for (auto obj: buf)
     {
-      g_assert (!instanceof (ExecutionObjectSettings *, obj));
+      g_assert (!instanceof (FormatterMediaSettings *, obj));
       if (!obj->isOccurring ())
         continue;
       obj->sendTickEvent (total, diff, frame);
@@ -330,13 +330,13 @@ Scheduler::sendTickEvent (GingaTime total, GingaTime diff, GingaTime frame)
   _settings->sendTickEvent (total, diff, frame);
 }
 
-ExecutionObject *
-Scheduler::obtainExecutionObject (NclNode *node)
+FormatterObject *
+FormatterScheduler::obtainExecutionObject (NclNode *node)
 {
   string id;
   NclNode *parentNode;
-  ExecutionObjectContext *parent;
-  ExecutionObject *object;
+  FormatterContext *parent;
+  FormatterObject *object;
 
   id = node->getId ();
   g_assert (id != "");
@@ -353,7 +353,7 @@ Scheduler::obtainExecutionObject (NclNode *node)
     }
   else
     {
-      parent = cast (ExecutionObjectContext *,
+      parent = cast (FormatterContext *,
                      obtainExecutionObject (parentNode));
       g_assert_nonnull (parent);
       if ((object = this->getObjectByIdOrAlias (id)) != nullptr)
@@ -375,7 +375,7 @@ Scheduler::obtainExecutionObject (NclNode *node)
   if (instanceof (NclSwitch *, node))
     {
       TRACE ("creating switch %s", node->getId ().c_str ());
-      object = new ExecutionObjectSwitch (_ginga, id, node);
+      object = new FormatterSwitch (_ginga, id, node);
       g_assert_nonnull
         (object->obtainEvent (NclEventType::PRESENTATION,
                               node->getLambda (), ""));
@@ -385,7 +385,7 @@ Scheduler::obtainExecutionObject (NclNode *node)
   if (instanceof (NclContext *, node))
     {
       TRACE ("creating context %s", node->getId ().c_str ());
-      object = new ExecutionObjectContext (_ginga, id, node);
+      object = new FormatterContext (_ginga, id, node);
       g_assert_nonnull
         (object->obtainEvent (NclEventType::PRESENTATION,
                               node->getLambda (), ""));
@@ -397,7 +397,7 @@ Scheduler::obtainExecutionObject (NclNode *node)
 
       NclContext *ctx = cast (NclContext *, node);
       for (auto link: *(ctx->getLinks ()))
-        g_assert (cast (ExecutionObjectContext *, object)
+        g_assert (cast (FormatterContext *, object)
                   ->addLink (obtainFormatterLink (link)));
 
       return object;
@@ -410,12 +410,12 @@ Scheduler::obtainExecutionObject (NclNode *node)
   g_assert_nonnull (media);
   if (media->isSettings ())
     {
-      object = new ExecutionObjectSettings (_ginga, id, node);
+      object = new FormatterMediaSettings (_ginga, id, node);
       //_ruleAdapter->setSettings (object);
     }
   else
     {
-      object = new ExecutionObject (_ginga, id, node);
+      object = new FormatterObject (_ginga, id, node);
     }
 
  done:
@@ -430,10 +430,10 @@ Scheduler::obtainExecutionObject (NclNode *node)
 // Private.
 
 FormatterEvent *
-Scheduler::obtainFormatterEventFromBind (NclBind *bind)
+FormatterScheduler::obtainFormatterEventFromBind (NclBind *bind)
 {
   NclNode *node;
-  ExecutionObject *obj;
+  FormatterObject *obj;
   NclAnchor *iface;
   NclRole *role;
   NclEventType type;
@@ -480,7 +480,7 @@ Scheduler::obtainFormatterEventFromBind (NclBind *bind)
 }
 
 FormatterLink *
-Scheduler::obtainFormatterLink (NclLink *docLink)
+FormatterScheduler::obtainFormatterLink (NclLink *docLink)
 {
   NclConnector *connector;
   FormatterLink *link;
@@ -595,7 +595,7 @@ Scheduler::obtainFormatterLink (NclLink *docLink)
 }
 
 bool
-Scheduler::eval (Predicate *pred)
+FormatterScheduler::eval (Predicate *pred)
 {
   switch (pred->getType ())
     {
@@ -695,4 +695,4 @@ Scheduler::eval (Predicate *pred)
   g_assert_not_reached ();
 }
 
-GINGA_FORMATTER_END
+GINGA_END

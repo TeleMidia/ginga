@@ -32,7 +32,7 @@ public:
                                          const string &, const string &,
                                          bool, GingaRect *);
 
-  TextPlayer (GingaInternal *, const string &, const string &);
+  TextPlayer (Formatter *, const string &, const string &);
   virtual ~TextPlayer (void) {}
   void reload () override;
 

@@ -22,12 +22,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterCondition.h"
 #include "FormatterEvent.h"
 
-GINGA_FORMATTER_BEGIN
+GINGA_BEGIN
 
 class FormatterLink: public IFormatterConditionListener
 {
 public:
-  FormatterLink (GingaInternal *);
+  FormatterLink (Formatter *);
   virtual ~FormatterLink ();
 
   const vector <FormatterCondition *> *getConditions ();
@@ -43,13 +43,13 @@ public:
   void conditionSatisfied (FormatterCondition *);
 
 private:
-  GingaInternal *_ginga;               // ginga handle
-  Scheduler *_scheduler;               // scheduler
+  Formatter *_ginga;               // ginga handle
+  FormatterScheduler *_scheduler;               // scheduler
   vector <FormatterCondition *> _conditions; // list of conditions
   vector <FormatterAction *> _actions;       // list of actions
   bool _disabled;                      // whether link is disabled
 };
 
-GINGA_FORMATTER_END
+GINGA_END
 
 #endif // FORMATTER_LINK_H
