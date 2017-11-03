@@ -450,30 +450,6 @@ xstrbuild (const char *format, ...)
 }
 
 /**
- * @brief Converts string to uppercase.
- */
-string
-xstrup (string s)
-{
-  gchar *dup = g_ascii_strup (s.c_str (), (gssize) s.size ());
-  s.assign (dup);
-  free (dup);
-  return s;
-}
-
-/**
- * @brief Converts string to lowercase.
- */
-string
-xstrdown (string s)
-{
-  gchar *dup = g_ascii_strdown (s.c_str (), (gssize) s.size ());
-  s.assign (dup);
-  free (dup);
-  return s;
-}
-
-/**
  * @brief Removes leading and trailing whitespace from string.
  */
 string

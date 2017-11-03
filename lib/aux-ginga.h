@@ -172,8 +172,6 @@ bool xstrhasprefix (const string &, const string &);
 bool xstrhassuffix (const string &, const string &);
 int G_GNUC_PRINTF (2,3) xstrassign (string &, const char *, ...);
 string G_GNUC_PRINTF (1,2) xstrbuild (const char *, ...);
-string xstrup (string);
-string xstrdown (string);
 string xstrstrip (string);
 vector<string> xstrsplit (const string &, char);
 
@@ -185,32 +183,5 @@ bool xpathisuri (const string &);
 string xpathmakeabs (string);
 string xpathbuild (const string &, const string &);
 string xpathbuildabs (const string &, const string &);
-
-// Vector functions.
-
-/**
- * @brief Removes element from vector.
- * @param v Vector.
- * @param x Element to be removed.
- */
-template <typename T> void
-xvectremove (vector <T> &v, T &x)
-{
-  v.erase (remove (v.begin (), v.end (), x), v.end ());
-}
-
-/**
- * @brief Removes from vector all elements that appear in another vector.
- * @param v1 Vector.
- * @param v2 Vector containing the elements that should be removed.
- */
-template <typename T> void
-xvectremove (vector<T> &v1, vector<T> &v2)
-{
-  auto fn
-    = [&](T t) {return (find (v2.begin (), v2.end (), t) != v2.end ());};
-  auto begin = remove_if (v1.begin(), v1.end(), fn);
-  v1.erase (begin, v1.end());
-}
 
 #endif // AUX_GINGA_H

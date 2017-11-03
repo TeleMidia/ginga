@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NCL_EVENT_H
 #define NCL_EVENT_H
 
+#include "aux-ginga.h"
+
 GINGA_BEGIN
 
 enum class NclEventType

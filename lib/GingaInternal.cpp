@@ -182,7 +182,8 @@ GingaInternal::resize (int width, int height)
   g_assert (width > 0 && height > 0);
   _opts.width = width;
   _opts.height = height;
-  _scheduler->resize (width, height);
+  if (_scheduler != nullptr)
+    _scheduler->resize (width, height);
 }
 
 /**
