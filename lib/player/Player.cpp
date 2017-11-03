@@ -287,7 +287,7 @@ Player::schedulePropertyAnimation (const string &name, const string &from,
 }
 
 void
-Player::reload (void)
+Player::reload ()
 {
   TRACE ("%s", _id.c_str ());
   _dirty = false;
