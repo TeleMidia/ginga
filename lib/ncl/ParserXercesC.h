@@ -51,7 +51,7 @@ private:
 
   map<string,map<string,string>> _descriptors; // cached descriptors
   map<string,map<string,string>> _regions;     // cached regions
-  map<string,Predicate *> _rules;              // cached rules
+  map<string,FormatterPredicate *> _rules;     // cached rules
 
   ParserXercesC (int, int);
   ~ParserXercesC ();
@@ -69,8 +69,8 @@ private:
   void parseImportedDocumentBase (DOMElement *);
 
   void parseRuleBase (DOMElement *);
-  void parseCompositeRule (DOMElement *, Predicate *);
-  void parseRule (DOMElement *, Predicate *);
+  void parseCompositeRule (DOMElement *, FormatterPredicate *);
+  void parseRule (DOMElement *, FormatterPredicate *);
 
   void parseTransitionBase (DOMElement *);
   void parseTransition (DOMElement *);
@@ -84,11 +84,11 @@ private:
   NclConnectorBase *parseConnectorBase (DOMElement *);
   NclConnector *parseCausalConnector (DOMElement *);
 
-  Predicate *parseAssessmentStatement (DOMElement *);
-  Predicate *parseCompoundStatement (DOMElement *);
+  FormatterPredicate *parseAssessmentStatement (DOMElement *);
+  FormatterPredicate *parseCompoundStatement (DOMElement *);
 
-  void parseCompoundCondition (DOMElement *, NclConnector *, Predicate *);
-  void parseCondition (DOMElement *, NclConnector *, Predicate *);
+  void parseCompoundCondition (DOMElement *, NclConnector *, FormatterPredicate *);
+  void parseCondition (DOMElement *, NclConnector *, FormatterPredicate *);
 
   void parseCompoundAction (DOMElement *, NclConnector *);
   void parseSimpleAction (DOMElement *, NclConnector *);

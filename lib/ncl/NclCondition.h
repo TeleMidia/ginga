@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define NCL_CONDITION_H
 
 #include "NclRole.h"
-#include "Predicate.h"
+#include "FormatterPredicate.h"
 
 GINGA_NAMESPACE_BEGIN
 
@@ -27,11 +27,11 @@ class NclCondition: public NclRole
 {
 public:
   NclCondition (NclEventType, NclEventStateTransition,
-                Predicate *, const string &, const string &);
+                FormatterPredicate *, const string &, const string &);
   virtual ~NclCondition ();
 
   NclEventStateTransition getTransition ();
-  Predicate *getPredicate ();
+  FormatterPredicate *getPredicate ();
   string getKey ();
 
   static bool isReserved (const string &, NclEventType *,
@@ -39,7 +39,7 @@ public:
 private:
   NclEventStateTransition _transition;
   string _key;
-  Predicate *_predicate;
+  FormatterPredicate *_predicate;
 };
 
 GINGA_NAMESPACE_END

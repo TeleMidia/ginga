@@ -85,7 +85,7 @@ FormatterLink::addAction (FormatterAction *action)
 void
 FormatterLink::conditionSatisfied (FormatterCondition *cond)
 {
-  Predicate *pred;
+  FormatterPredicate *pred;
 
   if (_disabled)
     return;                     // nothing to do

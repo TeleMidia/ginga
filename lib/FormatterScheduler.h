@@ -51,7 +51,7 @@ public:
   void sendTickEvent (GingaTime, GingaTime, GingaTime);
 
   FormatterObject *obtainExecutionObject (NclNode *);
-  bool eval (Predicate *);
+  bool eval (FormatterPredicate *);
 
 private:
   Formatter *_ginga;                 // formatter handle

@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef PREDICATE_H
-#define PREDICATE_H
+#ifndef FORMATTER_PREDICATE_H
+#define FORMATTER_PREDICATE_H
 
 GINGA_NAMESPACE_BEGIN
 
@@ -40,25 +40,25 @@ enum class PredicateTestType
   GE                            // >=
 };
 
-class Predicate
+class FormatterPredicate
 {
  public:
-  Predicate (PredicateType);
-  virtual ~Predicate ();
+  FormatterPredicate (PredicateType);
+  virtual ~FormatterPredicate ();
   PredicateType getType ();
-  Predicate *clone ();
+  FormatterPredicate *clone ();
 
   // Atomic only.
   void getTest (string *, PredicateTestType *, string *);
   void setTest (const string &, PredicateTestType, const string &);
 
   // Non-atomic only.
-  void addChild (Predicate *);
-  const vector <Predicate *> *getChildren ();
+  void addChild (FormatterPredicate *);
+  const vector <FormatterPredicate *> *getChildren ();
 
   // Both.
-  Predicate *getParent ();
-  void initParent (Predicate *);
+  FormatterPredicate *getParent ();
+  void initParent (FormatterPredicate *);
 
 private:
   PredicateType _type;
@@ -68,10 +68,10 @@ private:
     string left;
     string right;
   } _atom;
-  vector<Predicate *> _children;
-  Predicate *_parent;
+  vector<FormatterPredicate *> _children;
+  FormatterPredicate *_parent;
 };
 
 GINGA_NAMESPACE_END
 
-#endif // PREDICATE_H
+#endif // FORMATTER_PREDICATE_H

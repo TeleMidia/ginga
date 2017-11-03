@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define FORMATTER_CONDITION
 
 #include "FormatterEvent.h"
-#include "ncl/Predicate.h"
+#include "FormatterPredicate.h"
 
 GINGA_NAMESPACE_BEGIN
 
@@ -33,11 +33,11 @@ public:
 class FormatterCondition: IFormatterEventListener
 {
 public:
-  FormatterCondition (Predicate *, FormatterEvent *,
+  FormatterCondition (FormatterPredicate *, FormatterEvent *,
                       NclEventStateTransition);
   virtual ~FormatterCondition ();
 
-  Predicate *getPredicate ();
+  FormatterPredicate *getPredicate ();
   FormatterEvent *getEvent ();
 
   void setTriggerListener (IFormatterConditionListener *);
@@ -47,7 +47,7 @@ public:
   virtual void eventStateChanged (FormatterEvent *,
                                   NclEventStateTransition) override;
 private:
-  Predicate *_predicate;
+  FormatterPredicate *_predicate;
   FormatterEvent *_event;
   NclEventStateTransition _transition;
   IFormatterConditionListener *_listener;

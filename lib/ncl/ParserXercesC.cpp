@@ -584,12 +584,13 @@ ParserXercesC::parseRuleBase (DOMElement *elt)
 }
 
 void
-ParserXercesC::parseCompositeRule (DOMElement *elt, Predicate *parent)
+ParserXercesC::parseCompositeRule (DOMElement *elt,
+                                   FormatterPredicate *parent)
 {
   string id;
   string value;
 
-  Predicate *pred;
+  FormatterPredicate *pred;
   PredicateType type;
 
   CHECK_ELT_TAG (elt, "compositeRule", nullptr);
@@ -605,7 +606,7 @@ ParserXercesC::parseCompositeRule (DOMElement *elt, Predicate *parent)
   else
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "operator");
 
-  pred = new Predicate (type);
+  pred = new FormatterPredicate (type);
   if (parent != nullptr)
     parent->addChild (pred);
 
@@ -629,14 +630,14 @@ ParserXercesC::parseCompositeRule (DOMElement *elt, Predicate *parent)
 }
 
 void
-ParserXercesC::parseRule (DOMElement *elt, Predicate *parent)
+ParserXercesC::parseRule (DOMElement *elt, FormatterPredicate *parent)
 {
   string id;
   string var;
   string comp;
   string value;
 
-  Predicate *pred;
+  FormatterPredicate *pred;
   PredicateTestType test;
 
   CHECK_ELT_TAG (elt, "rule", nullptr);
@@ -660,7 +661,7 @@ ParserXercesC::parseRule (DOMElement *elt, Predicate *parent)
   else
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "comparator");
 
-  pred = new Predicate (PredicateType::ATOM);
+  pred = new FormatterPredicate (PredicateType::ATOM);
   pred->setTest ("$__settings__." + var, test, value);
 
   if (parent != nullptr)
@@ -1053,7 +1054,7 @@ ParserXercesC::parseCausalConnector (DOMElement *elt)
   return conn;
 }
 
-Predicate *
+FormatterPredicate *
 ParserXercesC::parseAssessmentStatement (DOMElement *elt)
 {
   string comp;
@@ -1118,7 +1119,7 @@ ParserXercesC::parseAssessmentStatement (DOMElement *elt)
       ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, right_elt);
     }
 
-  Predicate *pred = new Predicate (PredicateType::ATOM);
+  FormatterPredicate *pred = new FormatterPredicate (PredicateType::ATOM);
   pred->setTest (left, test, right);
 
   // if (role_left != "")
@@ -1132,13 +1133,13 @@ ParserXercesC::parseAssessmentStatement (DOMElement *elt)
 void
 ParserXercesC::parseCompoundCondition (DOMElement *elt,
                                        NclConnector *conn,
-                                       Predicate *parent_pred)
+                                       FormatterPredicate *parent_pred)
 {
   string op;
   string value;
 
-  Predicate *pred;
-  vector <Predicate *> preds;
+  FormatterPredicate *pred;
+  vector <FormatterPredicate *> preds;
 
   CHECK_ELT_TAG (elt, "compoundCondition", nullptr);
   CHECK_ELT_ATTRIBUTE (elt, "operator", &op);
@@ -1174,7 +1175,7 @@ ParserXercesC::parseCompoundCondition (DOMElement *elt,
     }
   else
     {
-      pred = new Predicate (PredicateType::CONJUNCTION);
+      pred = new FormatterPredicate (PredicateType::CONJUNCTION);
       for (auto p: preds)
         pred->addChild (p);
       if (parent_pred != nullptr)
@@ -1208,7 +1209,7 @@ ParserXercesC::parseCompoundCondition (DOMElement *elt,
 
 void
 ParserXercesC::parseCondition (DOMElement *elt, NclConnector *conn,
-                               Predicate *pred)
+                               FormatterPredicate *pred)
 {
   string str;
   string role;
@@ -1820,7 +1821,7 @@ ParserXercesC::parseSwitch (DOMElement *elt)
   if (defcomp != nullptr)
     {
       cast (NclSwitch *, swtch)->addNode
-        (defcomp, new Predicate (PredicateType::VERUM));
+        (defcomp, new FormatterPredicate (PredicateType::VERUM));
     }
 
   return swtch;
