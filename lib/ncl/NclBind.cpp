@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclComposition.h"
 
-GINGA_NCL_BEGIN
+GINGA_BEGIN
 
 NclBind::NclBind (NclRole *role, NclNode *comp, NclAnchor *iface)
 {
@@ -71,4 +71,4 @@ NclBind::setParameter (const string &name, const string &value)
   _params[name] = value;
 }
 
-GINGA_NCL_END
+GINGA_END

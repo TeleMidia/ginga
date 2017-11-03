@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "NclConnectorBase.h"
 
-GINGA_NCL_BEGIN
+GINGA_BEGIN
 
 NclConnectorBase::NclConnectorBase (NclDocument *ncl, const string &id)
   :NclEntity (ncl, id)
@@ -108,4 +108,4 @@ NclConnectorBase::getHashBase (const string &id, string *prefixp,
   return base;
 }
 
-GINGA_NCL_END
+GINGA_END

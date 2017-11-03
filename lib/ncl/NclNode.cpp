@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclProperty.h"
 #include "NclMediaRefer.h"
 
-GINGA_NCL_BEGIN
+GINGA_BEGIN
 
 NclNode::NclNode (NclDocument *ncl, const string &id): NclEntity (ncl, id)
 {
@@ -142,4 +142,4 @@ NclNode::derefer ()
   return this;
 }
 
-GINGA_NCL_END
+GINGA_END

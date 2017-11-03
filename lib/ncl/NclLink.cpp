@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclPort.h"
 #include "NclCondition.h"
 
-GINGA_NCL_BEGIN
+GINGA_BEGIN
 
 NclLink::NclLink (NclDocument *ncl, const string &id): NclEntity (ncl, id)
 {
@@ -125,4 +125,4 @@ NclLink::setGhostBind (const string &name, const string &value)
   _ghost_binds[name] = value;
 }
 
-GINGA_NCL_END
+GINGA_END

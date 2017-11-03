@@ -24,7 +24,7 @@ using namespace ::ginga::formatter;
 
 #include "ncl/ParserXercesC.h"
 #include "ncl/ParserLibXML.h"
-using namespace ::ginga::ncl;
+using namespace ::ginga;
 
 #include "player/TextPlayer.h"
 using namespace ::ginga::player;

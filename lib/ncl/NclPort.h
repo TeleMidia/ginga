@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclAnchor.h"
 
-GINGA_NCL_BEGIN
+GINGA_BEGIN
 
 class NclComposition;
 class NclNode;
@@ -50,6 +50,6 @@ protected:
   NclAnchor *getFinalInterface ();
 };
 
-GINGA_NCL_END
+GINGA_END
 
 #endif // NCL_PORT_H

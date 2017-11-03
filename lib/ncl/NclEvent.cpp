@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "NclEvent.h"
 
-GINGA_NCL_BEGIN
+GINGA_BEGIN
 
 string
 NclEvent::getEventTypeAsString (NclEventType type)
@@ -72,4 +72,4 @@ NclEvent::getEventStateTransitionAsString (NclEventStateTransition trans)
     }
 }
 
-GINGA_NCL_END
+GINGA_END

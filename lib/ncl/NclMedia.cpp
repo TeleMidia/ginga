@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "NclMedia.h"
 
-GINGA_NCL_BEGIN
+GINGA_BEGIN
 
 static map<string, string> mimetab =
 {
@@ -149,4 +149,4 @@ NclMedia::getInstSameInstances ()
   return &_instances;
 }
 
-GINGA_NCL_END
+GINGA_END

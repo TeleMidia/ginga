@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "NclProperty.h"
 
-GINGA_NCL_BEGIN
+GINGA_BEGIN
 
 NclProperty::NclProperty (NclDocument *ncl, const string &name)
   :NclAnchor (ncl, name)
@@ -48,4 +48,4 @@ NclProperty::setValue (const string &value)
   _value = value;
 }
 
-GINGA_NCL_END
+GINGA_END

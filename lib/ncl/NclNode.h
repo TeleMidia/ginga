@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclAnchor.h"
 
-GINGA_NCL_BEGIN
+GINGA_BEGIN
 
 class NclComposition;
 class NclNode: public NclEntity
@@ -49,6 +49,6 @@ private:
   NclAnchor *_lambda;
 };
 
-GINGA_NCL_END
+GINGA_END
 
 #endif // NCL_NODE_H

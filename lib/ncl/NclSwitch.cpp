@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "NclSwitch.h"
 
-GINGA_NCL_BEGIN
+GINGA_BEGIN
 
 NclSwitch::NclSwitch (NclDocument *ncl, const string &id)
   :NclComposition (ncl, id)
@@ -56,4 +56,4 @@ NclSwitch::getRules ()
   return &_rules;
 }
 
-GINGA_NCL_END
+GINGA_END

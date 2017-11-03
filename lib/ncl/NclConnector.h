@@ -24,7 +24,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclRole.h"
 #include "Predicate.h"
 
-GINGA_NCL_BEGIN
+GINGA_BEGIN
 
 class NclConnector: public NclEntity
 {
@@ -49,6 +49,6 @@ private:
   // map<string, Predicate *> _predicates;
 };
 
-GINGA_NCL_END
+GINGA_END
 
 #endif // NCL_CONNECTOR_H

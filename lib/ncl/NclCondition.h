@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclRole.h"
 #include "Predicate.h"
 
-GINGA_NCL_BEGIN
+GINGA_BEGIN
 
 class NclCondition: public NclRole
 {
@@ -42,6 +42,6 @@ private:
   Predicate *_predicate;
 };
 
-GINGA_NCL_END
+GINGA_END
 
 #endif // NCL_CONDITION_H
