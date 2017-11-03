@@ -35,7 +35,7 @@ class FormatterScheduler
 {
 public:
   FormatterScheduler (Formatter *);
-  virtual ~FormatterScheduler ();
+  ~FormatterScheduler ();
   bool run (NclDocument *);
 
   FormatterMediaSettings *getSettings ();

@@ -23,39 +23,23 @@ GINGA_NAMESPACE_BEGIN
 
 // PlayerAnimator: Public.
 
-/**
- * @brief Creates a new player animator.
- */
 PlayerAnimator::PlayerAnimator (Formatter *ginga)
 {
   g_assert_nonnull (ginga);
   _ginga = ginga;
 }
 
-/**
- * @brief Destroys player animator.
- */
 PlayerAnimator::~PlayerAnimator ()
 {
   this->clear ();
 }
 
-/**
- * @brief Removes all scheduled animations.
- */
 void
 PlayerAnimator::clear ()
 {
   _scheduled.clear ();
 }
 
-/**
- * @brief Schedules property animation.
- * @param name Property name.
- * @param from Current value.
- * @param to Target value.
- * @param dur Duration of the animation.
- */
 void
 PlayerAnimator::schedule (const string &name, const string &from,
                           const string &to, GingaTime dur)
@@ -119,12 +103,6 @@ isDone (AnimInfo *info)
   return info->isDone ();
 }
 
-/**
- * @brief Updates scheduled animations.
- * @param rect Variable to store the resulting bounds.
- * @param bgColor Variable to store the resulting background color.
- * @param alpha Variable to store the resulting duration.
- */
 void
 PlayerAnimator::update (GingaRect *rect, GingaColor *bgColor, guint8 *alpha)
 {
@@ -245,13 +223,6 @@ PlayerAnimator::doSchedule (const string &name, const string &from,
 
 // AnimInfo.
 
-/**
- * @brief Creates animation info.
- * @param name Property name.
- * @param from Current value.
- * @param to Target value.
- * @param dur Duration of the animation.
- */
 AnimInfo::AnimInfo (const string &name, double from,
                     double to, GingaTime dur)
 {
@@ -263,70 +234,46 @@ AnimInfo::AnimInfo (const string &name, double from,
   _init = false;
 }
 
-/**
- * @brief Destroys animation info.
- */
 AnimInfo::~AnimInfo ()
 {
 }
 
-/**
- * @brief Gets animation name.
- */
 string
 AnimInfo::getName ()
 {
   return _name;
 }
 
-/**
- * @brief Gets animation current value.
- */
 double
 AnimInfo::getCurrent ()
 {
   return _current;
 }
 
-/**
- * @brief Gets animation target value.
- */
 double
 AnimInfo::getTarget ()
 {
   return _target;
 }
 
-/**
- * @brief Gets animation  duration.
- */
 GingaTime
 AnimInfo::getDuration ()
 {
   return _duration;
 }
 
-/**
- * @brief Tests if animation is done.
- */
 bool
 AnimInfo::isDone ()
 {
   return _done;
 }
 
-/**
- * @brief Tests if animation is initialized.
- */
 bool
 AnimInfo::isInit ()
 {
   return _init;
 }
 
-/**
- * @brief Initializes animation.
- */
 void
 AnimInfo::init (double current)
 {
@@ -340,9 +287,6 @@ AnimInfo::init (double current)
   _last_update = ginga_gettime ();
 }
 
-/**
- * @brief Updates animation.
- */
 void
 AnimInfo::update (void)
 {

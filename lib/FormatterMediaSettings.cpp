@@ -37,6 +37,10 @@ FormatterMediaSettings::FormatterMediaSettings (Formatter *ginga,
   _player = Player::createPlayer (_ginga, _id, "", media->getMimeType ());
 }
 
+FormatterMediaSettings::~FormatterMediaSettings ()
+{
+}
+
 void
 FormatterMediaSettings::setProperty (const string &name,
                                      const string &value,

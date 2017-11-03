@@ -30,7 +30,7 @@ class NclConnector: public NclEntity
 {
 public:
   NclConnector (NclDocument *, const string &);
-  virtual ~NclConnector ();
+  ~NclConnector ();
 
   const vector<NclCondition *> *getConditions ();
   bool addCondition (NclCondition *);

@@ -19,6 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-gl.h"
 #include "PlayerVideo.h"
 
+GINGA_NAMESPACE_BEGIN
+
 #define gstx_element_get_state(elt, st, pend, tout)             \
   g_assert (gst_element_get_state ((elt), (st), (pend), (tout)) \
             != GST_STATE_CHANGE_FAILURE)
@@ -38,13 +40,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
   }                                                             \
   G_STMT_END
 
-GINGA_NAMESPACE_BEGIN
-
+
 // Public.
 
 PlayerVideo::PlayerVideo (Formatter *ginga, const string &id,
                           const string &uri)
-  : Player (ginga, id, uri)
+  :Player (ginga, id, uri)
 {
   GstBus *bus;
   gulong ret;
@@ -63,7 +64,7 @@ PlayerVideo::PlayerVideo (Formatter *ginga, const string &id,
   _video.bin = nullptr;
   _video.caps = nullptr;
   _video.sink = nullptr;
-  
+
   if (!gst_is_initialized ())
     {
       GError *error = nullptr;
@@ -100,15 +101,14 @@ PlayerVideo::PlayerVideo (Formatter *ginga, const string &id,
   _audio.pan = gst_element_factory_make ("audiopanorama", "audio.pan");
   g_assert_nonnull (_audio.pan);
 
-  _audio.equalizer = gst_element_factory_make ("equalizer-3bands", "equalizer");
+  _audio.equalizer = gst_element_factory_make
+    ("equalizer-3bands", "equalizer");
   g_assert_nonnull (_audio.equalizer);
 
-  // We are not sure of the capabilities of the audio sink because it is hardware-dependant).
   _audio.convert = gst_element_factory_make ("audioconvert", "convert");
   g_assert_nonnull (_audio.convert);
 
-  // Try to create element to render audio samples using ALSA audio API.
-  // ALSA has a better performance than anothers.
+  // Try to use ALSA if available.
   _audio.sink = gst_element_factory_make ("alsasink", "audio.sink");
   if (_audio.sink == nullptr)
     _audio.sink = gst_element_factory_make ("autoaudiosink", "audio.sink");
@@ -162,13 +162,20 @@ PlayerVideo::PlayerVideo (Formatter *ginga, const string &id,
                               &_callbacks, this, nullptr);
 
   // Initialize handled properties.
-  static set<string> handled = {"balance", "bass", "freeze", "mute", "volume", "treble"};
+  static set<string> handled =
+    {
+     "balance",
+     "bass",
+     "freeze",
+     "mute",
+     "treble",
+     "volume",
+    };
   this->resetProperties (&handled);
 }
 
 PlayerVideo::~PlayerVideo ()
 {
-
 }
 
 void
@@ -182,16 +189,12 @@ PlayerVideo::start ()
   TRACE ("starting");
 
   st = gst_structure_new_empty ("video/x-raw");
-  gst_structure_set (st,
-                     "format", G_TYPE_STRING, "BGRA",
-                     nullptr);
+  gst_structure_set (st, "format", G_TYPE_STRING, "BGRA", nullptr);
 
   caps = gst_caps_new_full (st, nullptr);
   g_assert_nonnull (caps);
 
-  g_object_set (_video.caps, 
-                "caps", caps, 
-                nullptr);
+  g_object_set (_video.caps, "caps", caps, nullptr);
 
   gst_caps_unref (caps);
 
@@ -207,8 +210,8 @@ PlayerVideo::start ()
   g_object_set (_audio.pan,
                 "panorama", _prop.balance,
                 nullptr);
-  
-  g_object_set (_audio.equalizer, 
+
+  g_object_set (_audio.equalizer,
                 "band0", _prop.bass,
                 "band1", _prop.treble,
                 "band2", _prop.treble,
@@ -269,17 +272,17 @@ PlayerVideo::redraw (cairo_t *cr)
   cairo_status_t status;
 
   g_assert (_state != SLEEPING);
-  
+
   if (Player::getEOS ())
     goto done;
-    
-  if (!g_atomic_int_compare_and_exchange (&_sample_flag, 1, 0))  
+
+  if (!g_atomic_int_compare_and_exchange (&_sample_flag, 1, 0))
     goto done;
-  
+
   sample = gst_app_sink_pull_sample (GST_APP_SINK (_video.sink));
   if (sample == nullptr)
-    goto done;      
-  
+    goto done;
+
   buf = gst_sample_get_buffer (sample);
   g_assert_nonnull (buf);
 
@@ -298,7 +301,7 @@ PlayerVideo::redraw (cairo_t *cr)
     {
       if (_gltexture)
         GL::delete_texture (&_gltexture);
-      // fixme: There is no need for recreating the texture in each frame.
+      // FIXME: Do not create a new texture for each frame.
       GL::create_texture (&_gltexture, width, height, pixels);
       gst_video_frame_unmap (&v_frame);
       gst_sample_unref (sample);
@@ -322,6 +325,7 @@ PlayerVideo::redraw (cairo_t *cr)
   Player::redraw (cr);
 }
 
+
 // Protected.
 
 bool
@@ -334,16 +338,16 @@ PlayerVideo::doSetProperty (PlayerProperty code,
       case PROP_BALANCE:
         _prop.balance = xstrtodorpercent (value, nullptr);
         if (_state != SLEEPING)
-          g_object_set (_audio.pan, 
-                        "panorama", _prop.balance, 
+          g_object_set (_audio.pan,
+                        "panorama", _prop.balance,
                         nullptr);
         break;
       case PROP_BASS:
         _prop.bass = xstrtodorpercent (value, nullptr);
-        if (_state != SLEEPING)        
-          g_object_set (_audio.equalizer, 
-                        "band0", _prop.bass, 
-                        nullptr);         
+        if (_state != SLEEPING)
+          g_object_set (_audio.equalizer,
+                        "band0", _prop.bass,
+                        nullptr);
         break;
       case PROP_FREEZE:
         _prop.freeze = ginga_parse_bool (value);
@@ -351,23 +355,23 @@ PlayerVideo::doSetProperty (PlayerProperty code,
       case PROP_MUTE:
         _prop.mute = ginga_parse_bool (value);
         if (_state != SLEEPING)
-          g_object_set (_audio.volume, 
-                        "mute", _prop.mute, 
+          g_object_set (_audio.volume,
+                        "mute", _prop.mute,
                         nullptr);
         break;
       case PROP_TREBLE:
         _prop.treble = xstrtodorpercent (value, nullptr);
-        if (_state != SLEEPING)        
-          g_object_set (_audio.equalizer, 
-                        "band1", _prop.treble, 
+        if (_state != SLEEPING)
+          g_object_set (_audio.equalizer,
+                        "band1", _prop.treble,
                         "band2", _prop.treble,
-                        nullptr);        
+                        nullptr);
         break;
       case PROP_VOLUME:
         _prop.volume = xstrtodorpercent (value, nullptr);
         if (_state != SLEEPING)
-          g_object_set (_audio.volume, 
-                        "volume", _prop.volume, 
+          g_object_set (_audio.volume,
+                        "volume", _prop.volume,
                         nullptr);
         break;
       default:
@@ -376,12 +380,16 @@ PlayerVideo::doSetProperty (PlayerProperty code,
   return true;
 }
 
-bool 
+
+// Private.
+
+bool
 PlayerVideo::getFreeze ()
 {
   return _prop.freeze;
 }
 
+
 // Private: Static (GStreamer callbacks).
 
 gboolean
@@ -396,8 +404,7 @@ PlayerVideo::cb_Bus (GstBus *bus, GstMessage *msg, PlayerVideo *player)
     case GST_MESSAGE_EOS:
       {
         if(!player->getFreeze ())
-          player->setEOS (true);    
-
+          player->setEOS (true);
         TRACE ("EOS");
         break;
       }

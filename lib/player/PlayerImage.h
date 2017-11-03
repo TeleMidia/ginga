@@ -15,22 +15,21 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef IMAGE_PLAYER_H
-#define IMAGE_PLAYER_H
+#ifndef PLAYER_IMAGE_H
+#define PLAYER_IMAGE_H
 
 #include "Player.h"
 
 GINGA_NAMESPACE_BEGIN
 
-class PlayerImage : public Player
+class PlayerImage: public Player
 {
 public:
-  PlayerImage (Formatter *ginga, const string &id, const string &uri)
-    : Player (ginga, id, uri) {}
-  ~PlayerImage (void) {}
+  PlayerImage (Formatter *, const string &, const string &);
+  ~PlayerImage ();
   void reload () override;
 };
 
 GINGA_NAMESPACE_END
 
-#endif // IMAGE_PLAYER_H
+#endif // PLAYER_IMAGE_H

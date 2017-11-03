@@ -67,8 +67,14 @@ cairox_surface_create_from_file (const char *path, cairo_surface_t **dup)
   return CAIRO_STATUS_SUCCESS;
 }
 
-
-// Public.
+PlayerImage::PlayerImage (Formatter *ginga, const string &id,
+                          const string &uri): Player (ginga, id, uri)
+{
+}
+
+PlayerImage::~PlayerImage ()
+{
+}
 
 void
 PlayerImage::reload ()

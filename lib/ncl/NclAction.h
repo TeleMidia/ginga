@@ -28,7 +28,7 @@ class NclAction: public NclRole
 public:
   NclAction (NclEventType, NclEventStateTransition, const string &,
              const string &, const string &, const string &);
-  virtual ~NclAction ();
+  ~NclAction ();
 
   NclEventStateTransition getTransition ();
   string getDelay ();

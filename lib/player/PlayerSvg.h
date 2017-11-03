@@ -15,22 +15,21 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef SVG_PLAYER_H
-#define SVG_PLAYER_H
+#ifndef PLAYER_SVG_H
+#define PLAYER_SVG_H
 
 #include "Player.h"
 
 GINGA_NAMESPACE_BEGIN
 
-class PlayerSvg : public Player
+class PlayerSvg: public Player
 {
 public:
-  PlayerSvg (Formatter *ginga, const string &id, const string &uri)
-    : Player (ginga, id, uri) {}
-  ~PlayerSvg () {}
+  PlayerSvg (Formatter *, const string &, const string &);
+  ~PlayerSvg ();
   void reload () override;
 };
 
 GINGA_NAMESPACE_END
 
-#endif // SVG_PLAYER_H
+#endif // PLAYER_SVG_H

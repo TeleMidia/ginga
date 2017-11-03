@@ -37,7 +37,7 @@ class FormatterEvent
 public:
   FormatterEvent (Formatter *, NclEventType, FormatterObject *,
                   NclAnchor *);
-  virtual ~FormatterEvent ();
+  ~FormatterEvent ();
 
   NclEventType getType ();
   FormatterObject *getObject ();

@@ -49,7 +49,7 @@ class Formatter: public Ginga
 
   // Internal API.
   Formatter (int, char **, GingaOptions *);
-  virtual ~Formatter ();
+  ~Formatter ();
   FormatterScheduler *getScheduler ();
 
   bool getEOS ();

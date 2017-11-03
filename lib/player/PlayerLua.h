@@ -15,22 +15,22 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef LUAPLAYER_H
-#define LUAPLAYER_H
+#ifndef PLAYER_LUA_H
+#define PLAYER_LUA_H
 
 #include "Player.h"
 
 GINGA_NAMESPACE_BEGIN
 
-class PlayerLua : public Player
+class PlayerLua: public Player
 {
 public:
   PlayerLua (Formatter *, const string &, const string &);
-  virtual ~PlayerLua (void);
-  void start (void) override;
-  void stop (void) override;
-  void pause (void) override;
-  void resume (void) override;
+  ~PlayerLua ();
+  void start () override;
+  void stop () override;
+  void pause () override;
+  void resume () override;
   void redraw (cairo_t *) override;
   void sendKeyEvent (const string &, bool) override;
 
@@ -50,4 +50,4 @@ private:
 
 GINGA_NAMESPACE_END
 
-#endif // LUAPLAYER_H
+#endif // PLAYER_LUA_H

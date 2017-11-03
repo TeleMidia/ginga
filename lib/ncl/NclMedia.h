@@ -27,7 +27,7 @@ class NclMedia: public NclNode
 {
 public:
   NclMedia (NclDocument *, const string &, bool);
-  virtual ~NclMedia ();
+  ~NclMedia ();
 
   bool isSettings ();
 
