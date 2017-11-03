@@ -27,7 +27,7 @@ class NclConnectorBase: NclEntity
 {
 public:
   NclConnectorBase (NclDocument *, const string &);
-  virtual ~NclConnectorBase ();
+  ~NclConnectorBase ();
 
   void addBase (NclConnectorBase *, const string &, const string &);
 

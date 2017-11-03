@@ -27,7 +27,7 @@ class FormatterMediaSettings : public FormatterObject
 {
 public:
   FormatterMediaSettings (Formatter *, const string &, NclNode *);
-  virtual ~FormatterMediaSettings () {};
+  ~FormatterMediaSettings ();
 
   void setProperty (const string &, const string &, GingaTime);
 

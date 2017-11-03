@@ -28,7 +28,7 @@ class NclCondition: public NclRole
 public:
   NclCondition (NclEventType, NclEventStateTransition,
                 FormatterPredicate *, const string &, const string &);
-  virtual ~NclCondition ();
+  ~NclCondition ();
 
   NclEventStateTransition getTransition ();
   FormatterPredicate *getPredicate ();

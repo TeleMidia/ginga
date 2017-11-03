@@ -39,20 +39,19 @@ GINGA_NAMESPACE_BEGIN
 
 // Public.
 
-PlayerLua::PlayerLua (Formatter *ginga, const string &id,
-                      const string &uri)
-  : Player (ginga, id, uri)
+PlayerLua::PlayerLua (Formatter *ginga, const string &id, const string &uri)
+  :Player (ginga, id, uri)
 {
   _nw = NULL;
   _init_rect = {0, 0, 0, 0};
 }
 
-PlayerLua::~PlayerLua (void)
+PlayerLua::~PlayerLua ()
 {
 }
 
 void
-PlayerLua::start (void)
+PlayerLua::start ()
 {
   char *errmsg;
 
@@ -73,7 +72,7 @@ PlayerLua::start (void)
 }
 
 void
-PlayerLua::stop (void)
+PlayerLua::stop ()
 {
   g_assert (_state != SLEEPING);
   g_assert_nonnull (_nw);
@@ -95,7 +94,7 @@ PlayerLua::stop (void)
 }
 
 void G_GNUC_NORETURN
-PlayerLua::pause (void)
+PlayerLua::pause ()
 {
   g_assert (_state != PAUSED && _state != SLEEPING);
   TRACE ("pausing");
@@ -103,7 +102,7 @@ PlayerLua::pause (void)
 }
 
 void G_GNUC_NORETURN
-PlayerLua::resume (void)
+PlayerLua::resume ()
 {
   g_assert (_state != PAUSED && _state != SLEEPING);
   TRACE ("resuming");

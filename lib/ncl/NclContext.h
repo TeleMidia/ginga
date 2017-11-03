@@ -27,7 +27,7 @@ class NclContext: public NclComposition
 {
 public:
   NclContext (NclDocument *, const string &);
-  virtual ~NclContext ();
+  ~NclContext ();
   bool addLink (NclLink *);
   const vector<NclLink *> *getLinks ();
 

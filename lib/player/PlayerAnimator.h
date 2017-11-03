@@ -54,15 +54,16 @@ private:
 class PlayerAnimator
 {
 public:
-  PlayerAnimator(Formatter *);
-  ~PlayerAnimator();
+  PlayerAnimator (Formatter *);
+  ~PlayerAnimator ();
   void clear ();
   void schedule (const string &, const string &, const string &, GingaTime);
   void update (GingaRect *, GingaColor *, guint8 *);
 
 private:
-  Formatter *_ginga;        // ginga handle
+  Formatter *_ginga;            // formatter handle
   list <AnimInfo *> _scheduled; // scheduled animations
+
   void doSchedule (const string &, const string &,
                    const string &, GingaTime);
 };

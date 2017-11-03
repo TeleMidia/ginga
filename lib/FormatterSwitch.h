@@ -27,7 +27,7 @@ class FormatterSwitch: public FormatterContext
 {
 public:
   FormatterSwitch (Formatter *, const string &, NclNode *);
-  virtual ~FormatterSwitch ();
+  ~FormatterSwitch ();
 
   bool exec (FormatterEvent *, NclEventState, NclEventState,
              NclEventStateTransition) override;

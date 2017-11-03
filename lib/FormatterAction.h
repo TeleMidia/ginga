@@ -26,7 +26,7 @@ class FormatterAction
 {
 public:
   FormatterAction (FormatterEvent *, NclEventStateTransition);
-  virtual ~FormatterAction ();
+  ~FormatterAction ();
 
   FormatterEvent *getEvent ();
   NclEventType getEventType ();

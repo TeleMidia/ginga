@@ -28,7 +28,7 @@ class NclLink: public NclEntity
 {
 public:
   NclLink (NclDocument *, const string &);
-  virtual ~NclLink ();
+  ~NclLink ();
 
   NclConnector *getConnector ();
   bool initConnector (NclConnector *);

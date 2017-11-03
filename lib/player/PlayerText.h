@@ -15,14 +15,14 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef TEXT_PLAYER_H
-#define TEXT_PLAYER_H
+#ifndef PLAYER_TEXT_H
+#define PLAYER_TEXT_H
 
 #include "Player.h"
 
 GINGA_NAMESPACE_BEGIN
 
-class PlayerText : public Player
+class PlayerText: public Player
 {
 public:
   static cairo_surface_t *renderSurface (const string &,
@@ -33,7 +33,7 @@ public:
                                          bool, GingaRect *);
 
   PlayerText (Formatter *, const string &, const string &);
-  virtual ~PlayerText (void) {}
+  ~PlayerText (void);
   void reload () override;
 
 protected:
@@ -56,4 +56,4 @@ private:
 
 GINGA_NAMESPACE_END
 
-#endif
+#endif // PLAYER_TEXT

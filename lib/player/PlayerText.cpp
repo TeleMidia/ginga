@@ -155,9 +155,8 @@ PlayerText::renderSurface (const string &text,
 
 // Public.
 
-PlayerText::PlayerText (Formatter *ginga,
-                        const string &id, const string &uri)
-  : Player (ginga, id, uri)
+PlayerText::PlayerText (Formatter *ginga, const string &id,
+                        const string &uri): Player (ginga, id, uri)
 {
   // Initialize handled properties.
   static set<string> handled =
@@ -173,6 +172,10 @@ PlayerText::PlayerText (Formatter *ginga,
      "vertAlign",
     };
   this->resetProperties (&handled);
+}
+
+PlayerText::~PlayerText ()
+{
 }
 
 void

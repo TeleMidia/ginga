@@ -44,7 +44,7 @@ class FormatterPredicate
 {
  public:
   FormatterPredicate (PredicateType);
-  virtual ~FormatterPredicate ();
+  ~FormatterPredicate ();
   PredicateType getType ();
   FormatterPredicate *clone ();
 

@@ -15,24 +15,23 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef VIDEO_PLAYER_H
-#define VIDEO_PLAYER_H
+#ifndef PLAYER_VIDEO_H
+#define PLAYER_VIDEO_H
 
 #include "Player.h"
 
 GINGA_NAMESPACE_BEGIN
 
-class PlayerVideo : public Player
+class PlayerVideo: public Player
 {
 public:
   PlayerVideo (Formatter *, const string &, const string &);
-  virtual ~PlayerVideo ();
+  ~PlayerVideo ();
   void start () override;
   void stop () override;
   void pause () override;
   void resume () override;
   void redraw (cairo_t *) override;
-  bool getFreeze ();            // return if freeze property is on
 
 protected:
   bool doSetProperty (PlayerProperty, const string &,
@@ -58,13 +57,15 @@ private:
 
   struct
   {
-    bool mute;                  // true if mute is on
-    double balance;             // balance sound level
-    double volume;              // sound level
-    double treble;              // treble level (Default: 0; Range: -24 and +12)
-    double bass;                // bass level (Default: 0; Range: -24 and +12)
-    bool freeze;                // true if freeze is on
+    bool mute;              // true if mute is on
+    double balance;         // balance sound level
+    double volume;          // sound level
+    double treble;          // treble level (Default: 0; Range: -24 and +12)
+    double bass;            // bass level (Default: 0; Range: -24 and +12)
+    bool freeze;            // true if player should freeze
   } _prop;
+
+  bool getFreeze ();
 
   // GStreamer callbacks.
   static gboolean cb_Bus (GstBus *, GstMessage *, PlayerVideo *);
@@ -73,4 +74,4 @@ private:
 
 GINGA_NAMESPACE_END
 
-#endif // VIDEO_PLAYER_H
+#endif // PLAYER_VIDEO_H

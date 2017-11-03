@@ -86,12 +86,6 @@ static map<string, string> player_property_aliases =
 
 // Public.
 
-/**
- * @brief Creates player for the given URI.
- * @param ginga Ginga handle.
- * @param id Media object id.
- * @param uri Content URI.
- */
 Player::Player (Formatter *ginga, const string &id, const string &uri)
 {
   // Internal data.
@@ -110,9 +104,6 @@ Player::Player (Formatter *ginga, const string &id, const string &uri)
   this->resetProperties ();
 }
 
-/**
- * Destroys player.
- */
 Player::~Player ()
 {
   delete _animator;
@@ -123,91 +114,54 @@ Player::~Player ()
   _properties.clear ();
 }
 
-/**
- * @brief Gets player state.
- * @return Player state.
- */
 Player::PlayerState
 Player::getState ()
 {
    return _state;
 }
 
-/**
- * @brief Tests whether player is focused.
- * @return True if successful, or false otherwise.
- */
 bool
 Player::isFocused ()
 {
   return _prop.focusIndex != "" && _prop.focusIndex == _currentFocus;
 }
 
-/**
- * @brief Gets player playback time.
- * @return Playback time.
- */
 GingaTime
 Player::getTime ()
 {
   return _time;
 }
 
-/**
- * @brief Increments player playback time.
- * @param inc Time increment.
- */
 void
 Player::incTime (GingaTime inc)
 {
   _time += inc;
 }
 
-/**
- * @brief Gets player explicit duration.
- * @return Playback duration.
- */
 GingaTime
 Player::getDuration ()
 {
   return _prop.duration;
 }
 
-/**
- * @brief Sets player explicit duration.
- * @param duration Playback duration.
- */
 void
 Player::setDuration (GingaTime duration)
 {
   _prop.duration = duration;
 }
 
-/**
- * @brief Gets player EOS flag.
- * @return EOS flag value.
- */
 bool
 Player::getEOS ()
 {
   return _eos;
 }
 
-/**
- * @brief Sets player EOS flag.
- * @param eos EOS flag value.
- */
 void
 Player::setEOS (bool eos)
 {
   _eos = eos;
 }
 
-/**
- * @brief Gets player z-index and z-order.
- * @param z Address of variable to store player's z-index.
- * @param zorder Address of variable to store player's z-order.
- */
 void
 Player::getZ (int *z, int *zorder)
 {
@@ -215,11 +169,6 @@ Player::getZ (int *z, int *zorder)
   tryset (zorder , _prop.zorder);
 }
 
-/**
- * @brief Sets player z-index and z-order.
- * @param z Z-index value.
- * @param zorder Z-order value.
- */
 void
 Player::setZ (int z, int zorder)
 {
@@ -227,9 +176,6 @@ Player::setZ (int z, int zorder)
   _prop.zorder = zorder;
 }
 
-/**
- * @brief Starts player.
- */
 void
 Player::start ()
 {
@@ -242,9 +188,6 @@ Player::start ()
   this->reload ();
 }
 
-/**
- * @brief Stops player.
- */
 void
 Player::stop ()
 {
@@ -255,9 +198,6 @@ Player::stop ()
   this->resetProperties ();
 }
 
-/**
- * @brief Pauses player.
- */
 void
 Player::pause ()
 {
@@ -267,9 +207,6 @@ Player::pause ()
   _state = PAUSED;
 }
 
-/**
- * @brief Resumes player.
- */
 void
 Player::resume ()
 {
@@ -279,22 +216,12 @@ Player::resume ()
   _state = OCCURRING;
 }
 
-/**
- * @brief Gets player property.
- * @param name Property name.
- * @return Property value.
- */
 string
 Player::getProperty (string const &name)
 {
   return (_properties.count (name) != 0) ? _properties[name] : "";
 }
 
-/**
- * @brief Sets player property.
- * @param name Property name.
- * @param value Property value.
- */
 void
 Player::setProperty (const string &name, const string &value)
 {
@@ -333,9 +260,6 @@ Player::setProperty (const string &name, const string &value)
   return;
 }
 
-/**
- * @brief Reset all player properties to their default values.
- */
 void
 Player::resetProperties ()
 {
@@ -345,10 +269,6 @@ Player::resetProperties ()
   _properties.clear ();
 }
 
-/**
- * @brief Reset the given player properties.
- * @param props Properties to reset.
- */
 void
 Player::resetProperties (set<string> *props)
 {
@@ -356,13 +276,6 @@ Player::resetProperties (set<string> *props)
     this->setProperty (name, "");
 }
 
-/**
- * @brief Schedules linear animation of property value.
- * @param name Property name.
- * @param from Current value.
- * @param to Target value.
- * @param dur Duration of the animation.
- */
 void
 Player::schedulePropertyAnimation (const string &name, const string &from,
                                    const string &to, GingaTime dur)
@@ -373,9 +286,6 @@ Player::schedulePropertyAnimation (const string &name, const string &from,
   _animator->schedule (name, from, to, dur);
 }
 
-/**
- * @brief Reloads player texture.
- */
 void
 Player::reload (void)
 {
@@ -383,9 +293,6 @@ Player::reload (void)
   _dirty = false;
 }
 
-/**
- * @brief Redraws player.
- */
 void
 Player::redraw (cairo_t *cr)
 {
@@ -482,12 +389,6 @@ Player::redraw (cairo_t *cr)
     this->redrawDebuggingInfo (cr);
 }
 
-/**
- * @brief Sends key event.
- * @param key Key name.
- * @param press True if press or false if release.
- * @return True if successful, or false otherwise.
- */
 void
 Player::sendKeyEvent (unused (const string &key), unused (bool press))
 {
@@ -496,25 +397,15 @@ Player::sendKeyEvent (unused (const string &key), unused (bool press))
 
 // Public: Static.
 
-/**
- * @brief Current focus index value.
- */
+// Current focus index value.
 string Player::_currentFocus = "";
 
-/**
- * @brief Gets current focus index.
- * @return Current focus index.
- */
 string
 Player::getCurrentFocus ()
 {
   return _currentFocus;
 }
 
-/**
- * @brief Sets current focus index.
- * @param index Focus index.
- */
 void
 Player::setCurrentFocus (const string &index)
 {
@@ -522,12 +413,6 @@ Player::setCurrentFocus (const string &index)
   _currentFocus = index;
 }
 
-/**
- * @brief Gets the property code of property.
- * @param name Property name.
- * @param defval Address of variable to store property default value.
- * @return Property code.
- */
 Player::PlayerProperty
 Player::getPlayerProperty (const string &name, string *defval)
 {
@@ -553,14 +438,6 @@ Player::getPlayerProperty (const string &name, string *defval)
   return info->code;
 }
 
-/**
- * @brief Creates a player from a mime-type.
- * @param ginga Ginga handle.
- * @param id Object id.
- * @param uri Source URI.
- * @param mime Mime-type of content.
- * @return New player.
- */
 Player *
 Player::createPlayer (Formatter *ginga, const string &id,
                       const string &uri, const string &mime)

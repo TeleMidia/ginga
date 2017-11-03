@@ -21,9 +21,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Formatter.h"
 #include "PlayerAnimator.h"
 
-class Formatter;
-
 GINGA_NAMESPACE_BEGIN
+
+class Formatter;
 class Player
 {
 public:
@@ -112,7 +112,7 @@ public:
   static Player *createPlayer (Formatter *, const string &,
                                const string &, const string &);
 protected:
-  Formatter *_ginga;        // ginga handle
+  Formatter *_ginga;            // formatter handle
   bool _opengl;                 // true if OpenGL is used
   string _id;                   // associated object id
   string _uri;                  // source uri

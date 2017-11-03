@@ -27,7 +27,7 @@ class NclSwitch: public NclComposition
 {
 public:
   NclSwitch (NclDocument *, const string &);
-  virtual ~NclSwitch ();
+  ~NclSwitch ();
 
   void addNode (NclNode *, FormatterPredicate *);
   NclNode *getNode (const string &);

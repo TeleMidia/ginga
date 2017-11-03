@@ -27,7 +27,7 @@ class NclBind
 {
 public:
   NclBind (NclRole *, NclNode *, NclAnchor *);
-  virtual ~NclBind ();
+  ~NclBind ();
 
   NclRole *getRole ();
   NclNode *getNode ();
