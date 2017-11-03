@@ -15,20 +15,19 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef FORMATTER_CONTEXT_H
-#define FORMATTER_CONTEXT_H
+#ifndef FORMATTER_MEDIA_H
+#define FORMATTER_MEDIA_H
 
 #include "FormatterObject.h"
-#include "FormatterEvent.h"
-#include "FormatterLink.h"
+#include "player/Player.h"
 
 GINGA_NAMESPACE_BEGIN
 
-class FormatterContext: public FormatterObject
+class FormatterMedia: public FormatterObject
 {
 public:
-  FormatterContext (Formatter *, const string &, NclNode *);
-  virtual ~FormatterContext ();
+  FormatterMedia (Formatter *, const string &, NclNode *);
+  virtual ~FormatterMedia ();
 
   string getProperty (const string &) override;
   void setProperty (const string &, const string &,
@@ -39,21 +38,17 @@ public:
   bool exec (FormatterEvent *, NclEventState, NclEventState,
              NclEventStateTransition) override;
 
-  const set<FormatterObject *> *getChildren ();
-  FormatterObject *getChildById (const string &);
-  bool addChild (FormatterObject *);
+  virtual bool isFocused ();
+  virtual bool getZ (int *, int *);
+  virtual void redraw (cairo_t *);
 
-  const vector<FormatterLink *> *getLinks ();
-  bool addLink (FormatterLink *);
+protected:
+  Player *_player;
+  GingaTime _time;                // playback time
 
-private:
-  NclContext *_context;
-  set<FormatterObject *> _children;
-  vector<FormatterLink *> _links;
-
-  void toggleLinks (bool);
+  void reset () override;
 };
 
 GINGA_NAMESPACE_END
 
-#endif // FORMATTER_CONTEXT_H
+#endif // FORMATTER_MEDIA_H

@@ -40,6 +40,7 @@ src+= FormatterCondition.cpp
 src+= FormatterContext.cpp
 src+= FormatterEvent.cpp
 src+= FormatterLink.cpp
+src+= FormatterMedia.cpp
 src+= FormatterMediaSettings.cpp
 src+= FormatterObject.cpp
 src+= FormatterPredicate.cpp

@@ -21,7 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Formatter.h"
 #include "FormatterAction.h"
 #include "FormatterEvent.h"
-#include "player/Player.h"
 
 GINGA_NAMESPACE_BEGIN
 
@@ -56,16 +55,14 @@ public:
   bool isPaused ();
   bool isSleeping ();
 
-  bool isFocused ();
-  string getProperty (const string &);
-  void setProperty (const string &, const string &, GingaTime dur=0);
+  virtual string getProperty (const string &) = 0;
+  virtual void setProperty (const string &, const string &,
+                            GingaTime dur=0) = 0;
 
-  bool getZ (int *, int *);
-  void redraw (cairo_t *);
-  void sendKeyEvent (const string &, bool);
-  virtual void sendTickEvent (GingaTime, GingaTime, GingaTime);
+  virtual void sendKeyEvent (const string &, bool) = 0;
+  virtual void sendTickEvent (GingaTime, GingaTime, GingaTime) = 0;
   virtual bool exec (FormatterEvent *, NclEventState, NclEventState,
-                     NclEventStateTransition);
+                     NclEventStateTransition) = 0;
 
 protected:
   Formatter *_ginga;              // formatter handle
@@ -74,16 +71,13 @@ protected:
   string _id;                     // object id
   vector<string> _aliases;        // aliases
   FormatterContext *_parent;      // parent object
-  Player *_player;                // associated player
-  GingaTime _time;                // playback time
   set<FormatterEvent *> _events;  // object events
 
   // delayed actions
   vector<pair<FormatterAction *, GingaTime>> _delayed;
   vector<pair<FormatterAction *, GingaTime>> _delayed_new;
 
-  void reset ();
-  void resetDelayed ();
+  virtual void reset ();
 };
 
 GINGA_NAMESPACE_END

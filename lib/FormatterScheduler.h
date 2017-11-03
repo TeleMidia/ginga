@@ -21,6 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterObject.h"
 #include "FormatterContext.h"
 #include "FormatterSwitch.h"
+#include "FormatterMedia.h"
 #include "FormatterMediaSettings.h"
 #include "FormatterAction.h"
 #include "FormatterCondition.h"
@@ -38,8 +39,10 @@ public:
   ~FormatterScheduler ();
   bool run (NclDocument *);
 
-  FormatterMediaSettings *getSettings ();
   const set<FormatterObject *> *getObjects ();
+  const set<FormatterMedia *> *getMediaObjects ();
+  FormatterMediaSettings *getSettings ();
+
   FormatterObject *getObjectById (const string &);
   FormatterObject *getObjectByIdOrAlias (const string &);
   bool getObjectPropertyByRef (const string &, string *);
@@ -54,10 +57,11 @@ public:
   bool eval (FormatterPredicate *);
 
 private:
-  Formatter *_ginga;                 // formatter handle
-  NclDocument *_doc;                 // the document tree
-  FormatterMediaSettings *_settings; // formatter settings object
-  set<FormatterObject *> _objects;   // formatter objects
+  Formatter *_ginga;                   // formatter handle
+  NclDocument *_doc;                   // the document tree
+  set<FormatterObject *> _objects;     // all objects
+  set<FormatterMedia *> _mediaObjects; // media objects
+  FormatterMediaSettings *_settings;   // settings object
 
   FormatterEvent *obtainFormatterEventFromBind (NclBind *);
   FormatterLink *obtainFormatterLink (NclLink *);
