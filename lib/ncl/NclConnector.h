@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclCondition.h"
 #include "NclEntity.h"
 #include "NclRole.h"
-#include "Predicate.h"
+#include "FormatterPredicate.h"
 
 GINGA_NAMESPACE_BEGIN
 
@@ -38,15 +38,11 @@ public:
   const vector<NclAction *> *getActions ();
   bool addAction (NclAction *);
 
-  // void addPredicateRole (const string &, Predicate *);
-  // Predicate *getPredicateRole (const string &);
-
   NclRole *getRole (const string &);
 
 private:
   vector<NclCondition *> _conditions;
   vector<NclAction *> _actions;
-  // map<string, Predicate *> _predicates;
 };
 
 GINGA_NAMESPACE_END

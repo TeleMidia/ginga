@@ -493,10 +493,10 @@ FormatterScheduler::obtainFormatterLink (NclLink *docLink)
 
   for (auto connCond: *connector->getConditions ())
     {
-      Predicate *pred = connCond->getPredicate ();
+      FormatterPredicate *pred = connCond->getPredicate ();
       if (pred != nullptr)      // solve ghost binds in predicate
         {
-          vector <Predicate *> buf;
+          vector <FormatterPredicate *> buf;
 
           pred = pred->clone ();
           g_assert_nonnull (pred);
@@ -504,7 +504,7 @@ FormatterScheduler::obtainFormatterLink (NclLink *docLink)
           buf.push_back (pred);
           while (!buf.empty ())
             {
-              Predicate *p = buf.back ();
+              FormatterPredicate *p = buf.back ();
               buf.pop_back ();
               switch (p->getType ())
                 {
@@ -595,7 +595,7 @@ FormatterScheduler::obtainFormatterLink (NclLink *docLink)
 }
 
 bool
-FormatterScheduler::eval (Predicate *pred)
+FormatterScheduler::eval (FormatterPredicate *pred)
 {
   switch (pred->getType ())
     {

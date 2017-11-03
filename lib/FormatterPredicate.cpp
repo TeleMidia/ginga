@@ -16,32 +16,32 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
-#include "Predicate.h"
+#include "FormatterPredicate.h"
 
 GINGA_NAMESPACE_BEGIN
 
-Predicate::Predicate (PredicateType type)
+FormatterPredicate::FormatterPredicate (PredicateType type)
 {
   _type = type;
   _parent = nullptr;
 }
 
-Predicate::~Predicate ()
+FormatterPredicate::~FormatterPredicate ()
 {
   for (auto child: _children)
     delete child;
 }
 
 PredicateType
-Predicate::getType ()
+FormatterPredicate::getType ()
 {
   return _type;
 }
 
-Predicate *
-Predicate::clone ()
+FormatterPredicate *
+FormatterPredicate::clone ()
 {
-  Predicate *clone = new Predicate (_type);
+  FormatterPredicate *clone = new FormatterPredicate (_type);
   if (_type == PredicateType::ATOM)
     {
       clone->setTest (_atom.left, _atom.test, _atom.right);
@@ -55,8 +55,8 @@ Predicate::clone ()
 }
 
 void
-Predicate::setTest (const string &left, PredicateTestType test,
-                    const string &right)
+FormatterPredicate::setTest (const string &left, PredicateTestType test,
+                             const string &right)
 {
   g_assert (_type == PredicateType::ATOM);
   _atom.test = test;
@@ -65,8 +65,8 @@ Predicate::setTest (const string &left, PredicateTestType test,
 }
 
 void
-Predicate::getTest (string *left, PredicateTestType *test,
-                    string *right)
+FormatterPredicate::getTest (string *left, PredicateTestType *test,
+                             string *right)
 {
   g_assert (_type == PredicateType::ATOM);
   tryset (left, _atom.left);
@@ -75,7 +75,7 @@ Predicate::getTest (string *left, PredicateTestType *test,
 }
 
 void
-Predicate::addChild (Predicate *child)
+FormatterPredicate::addChild (FormatterPredicate *child)
 {
   g_assert_nonnull (child);
   switch (_type)
@@ -95,22 +95,22 @@ Predicate::addChild (Predicate *child)
   _children.push_back (child);
 }
 
-const vector<Predicate *> *
-Predicate::getChildren ()
+const vector<FormatterPredicate *> *
+FormatterPredicate::getChildren ()
 {
   return &_children;
 }
 
 void
-Predicate::initParent (Predicate *parent)
+FormatterPredicate::initParent (FormatterPredicate *parent)
 {
   g_assert_null (_parent);
   g_assert_nonnull (parent);
   _parent = parent;
 }
 
-Predicate *
-Predicate::getParent ()
+FormatterPredicate *
+FormatterPredicate::getParent ()
 {
   return _parent;
 }

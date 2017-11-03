@@ -58,7 +58,7 @@ FormatterSwitch::exec (FormatterEvent *evt,
           for (auto item: *_switch->getRules ())
             {
               NclNode *node;
-              Predicate *pred;
+              FormatterPredicate *pred;
               FormatterEvent *e;
 
               node = item.first;

@@ -22,7 +22,7 @@ GINGA_NAMESPACE_BEGIN
 
 NclCondition::NclCondition (NclEventType type,
                             NclEventStateTransition transition,
-                            Predicate *predicate,
+                            FormatterPredicate *predicate,
                             const string &label,
                             const string &key) : NclRole (type, label)
 {
@@ -43,7 +43,7 @@ NclCondition::getTransition ()
   return _transition;
 }
 
-Predicate *
+FormatterPredicate *
 NclCondition::getPredicate ()
 {
   return _predicate;

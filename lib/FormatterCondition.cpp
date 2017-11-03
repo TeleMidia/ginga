@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-FormatterCondition::FormatterCondition (Predicate *predicate,
+FormatterCondition::FormatterCondition (FormatterPredicate *predicate,
                                         FormatterEvent *event,
                                         NclEventStateTransition transition)
 {
@@ -37,7 +37,7 @@ FormatterCondition::~FormatterCondition ()
     delete _predicate;
 }
 
-Predicate *
+FormatterPredicate *
 FormatterCondition::getPredicate ()
 {
   return _predicate;

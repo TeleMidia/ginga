@@ -71,22 +71,6 @@ NclConnector::addAction (NclAction *action)
   return true;
 }
 
-// void
-// NclConnector::addPredicateRole (const string &role, Predicate *pred)
-// {
-//   g_assert_nonnull (pred);
-//   g_assert_null (this->getRole (role));
-//   _predicates[role] = pred;
-// }
-
-// Predicate *
-// NclConnector::getPredicateRole (const string &role)
-// {
-//   if (_predicates.find (role) == _predicates.end ())
-//     return nullptr;
-//   return _predicates[role];
-// }
-
 NclRole *
 NclConnector::getRole (const string &label)
 {
