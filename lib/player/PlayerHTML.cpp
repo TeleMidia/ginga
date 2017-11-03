@@ -16,21 +16,21 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /**
- * @file   HTMLPlayer.cpp
+ * @file   PlayerHTML.cpp
  * @author Eduardo Cruz Araújo (edcaraujo@gmail.com)
  * @date   April, 2017
  *
  * @brief  Source file of HTML player.
  *
- * This is the header file for the HTMLPlayer and others
+ * This is the header file for the PlayerHTML and others
  * related classes.
  */
 
-#include "HTMLPlayer.h"
+#include "PlayerHTML.h"
 
-GINGA_PLAYER_BEGIN
+GINGA_BEGIN
 
-HTMLPlayer::HTMLPlayer (const string &location)
+PlayerHTML::PlayerHTML (const string &location)
   : Player (location)
 {
   _handler = nullptr;
@@ -42,13 +42,13 @@ HTMLPlayer::HTMLPlayer (const string &location)
   g_assert (Ginga_Display->registerEventListener (this));
 }
 
-HTMLPlayer::~HTMLPlayer ()
+PlayerHTML::~PlayerHTML ()
 {
   // TODO
 }
 
 bool
-HTMLPlayer::play ()
+PlayerHTML::play ()
 {
   _isPlaying = true;
 
@@ -58,7 +58,7 @@ HTMLPlayer::play ()
 }
 
 void
-HTMLPlayer::stop ()
+PlayerHTML::stop ()
 {
   _isPlaying = false;
 
@@ -72,14 +72,14 @@ HTMLPlayer::stop ()
 }
 
 bool
-HTMLPlayer::displayJobCallbackWrapper(DisplayJob* job, SDL_Renderer* renderer,
+PlayerHTML::displayJobCallbackWrapper(DisplayJob* job, SDL_Renderer* renderer,
                                                        void* self)
 {
-  return ((HTMLPlayer*) self)->displayJobCallback(job, renderer);
+  return ((PlayerHTML*) self)->displayJobCallback(job, renderer);
 }
 
 bool
-HTMLPlayer::displayJobCallback (unused (DisplayJob *job),
+PlayerHTML::displayJobCallback (unused (DisplayJob *job),
                                 SDL_Renderer *renderer)
 {
   if (!_isPlaying)
@@ -108,7 +108,7 @@ HTMLPlayer::displayJobCallback (unused (DisplayJob *job),
 }
 
 void
-HTMLPlayer::handleKeyEvent (SDL_EventType evtType, SDL_Keycode key)
+PlayerHTML::handleKeyEvent (SDL_EventType evtType, SDL_Keycode key)
 {
   CefKeyEvent event;
 
@@ -136,7 +136,7 @@ HTMLPlayer::handleKeyEvent (SDL_EventType evtType, SDL_Keycode key)
 }
 
 void
-HTMLPlayer::mouseInputCallback (SDL_EventType evtType, int x, int y)
+PlayerHTML::mouseInputCallback (SDL_EventType evtType, int x, int y)
 {
   CefMouseEvent event;
 
@@ -153,7 +153,7 @@ HTMLPlayer::mouseInputCallback (SDL_EventType evtType, int x, int y)
 }
 
 int
-HTMLPlayer::getPlayerKey(SDL_Keycode key)
+PlayerHTML::getPlayerKey(SDL_Keycode key)
 {
   int result = 0;
 
@@ -424,4 +424,4 @@ GingaCefClient::GetRenderHandler()
   return _handler;
 }
 
-GINGA_PLAYER_END
+GINGA_END

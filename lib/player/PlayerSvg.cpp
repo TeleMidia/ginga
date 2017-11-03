@@ -16,15 +16,15 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
-#include "SvgPlayer.h"
+#include "PlayerSvg.h"
 
-GINGA_PLAYER_BEGIN
+GINGA_BEGIN
 
 
 // Public.
 
 void
-SvgPlayer::reload ()
+PlayerSvg::reload ()
 {
   RsvgHandle* svg;
   RsvgDimensionData dim;
@@ -71,4 +71,4 @@ SvgPlayer::reload ()
   Player::reload ();
 }
 
-GINGA_PLAYER_END
+GINGA_END

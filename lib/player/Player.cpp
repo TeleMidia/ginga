@@ -18,18 +18,18 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "aux-gl.h"
 #include "Player.h"
-#include "player/ImagePlayer.h"
-#include "player/LuaPlayer.h"
-#include "player/TextPlayer.h"
-#include "player/VideoPlayer.h"
+#include "player/PlayerImage.h"
+#include "player/PlayerLua.h"
+#include "player/PlayerText.h"
+#include "player/PlayerVideo.h"
 #if defined WITH_LIBRSVG && WITH_LIBRSVG
-# include "player/SvgPlayer.h"
+# include "player/PlayerSvg.h"
 #endif
 #if defined WITH_CEF && WITH_CEF
-# include "player/HTMLPlayer.h"
+# include "player/PlayerHTML.h"
 #endif
 
-GINGA_PLAYER_BEGIN
+GINGA_BEGIN
 
 typedef struct PlayerPropertyInfo
 {
@@ -570,31 +570,31 @@ Player::createPlayer (Formatter *ginga, const string &id,
 
   if (xstrhasprefix (mime, "audio") || xstrhasprefix (mime, "video"))
     {
-      player = new VideoPlayer (ginga, id, uri);
+      player = new PlayerVideo (ginga, id, uri);
     }
 #if WITH_LIBRSVG && WITH_LIBRSVG
   else if (xstrhasprefix (mime, "image/svg"))
     {
-      player = new SvgPlayer (ginga, id, uri);
+      player = new PlayerSvg (ginga, id, uri);
     }
 #endif
   else if (xstrhasprefix (mime, "image"))
     {
-      player = new ImagePlayer (ginga, id, uri);
+      player = new PlayerImage (ginga, id, uri);
     }
 #if defined WITH_CEF && WITH_CEF
   else if (xstrhasprefix (mime, "text/html"))
     {
-      player = new HTMLPlayer (ginga, id, uri);
+      player = new PlayerHTML (ginga, id, uri);
     }
 #endif
   else if (mime == "text/plain")
     {
-      player = new TextPlayer (ginga, id, uri);
+      player = new PlayerText (ginga, id, uri);
     }
   else if (mime == "application/x-ginga-NCLua")
     {
-      player = new LuaPlayer (ginga, id, uri);
+      player = new PlayerLua (ginga, id, uri);
     }
   else
     {
@@ -755,7 +755,7 @@ Player::redrawDebuggingInfo (cairo_t *cr)
                    _prop.rect.width, _prop.rect.height,
                    _prop.rect.x, _prop.rect.y, _prop.z);
 
-  debug = TextPlayer::renderSurface
+  debug = PlayerText::renderSurface
     (str, "monospace", "", "", "7", {1.,0,0,1.}, {0,0,0,.75},
      _prop.rect, "center", "middle", true, nullptr);
   g_assert_nonnull (debug);
@@ -773,4 +773,4 @@ Player::redrawDebuggingInfo (cairo_t *cr)
   cairo_surface_destroy (debug);
 }
 
-GINGA_PLAYER_END
+GINGA_END

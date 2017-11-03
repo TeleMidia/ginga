@@ -20,13 +20,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Player.h"
 
-GINGA_PLAYER_BEGIN
+GINGA_BEGIN
 
-class LuaPlayer : public Player
+class PlayerLua : public Player
 {
 public:
-  LuaPlayer (Formatter *, const string &, const string &);
-  virtual ~LuaPlayer (void);
+  PlayerLua (Formatter *, const string &, const string &);
+  virtual ~PlayerLua (void);
   void start (void) override;
   void stop (void) override;
   void pause (void) override;
@@ -48,6 +48,6 @@ private:
   void pwdRestore ();
 };
 
-GINGA_PLAYER_END
+GINGA_END
 
 #endif // LUAPLAYER_H

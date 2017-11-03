@@ -73,14 +73,8 @@ GINGA_END_DECLS
 using namespace std;
 
 // Namespaces.
-#define _GINGA_NS_BEGIN(t)     namespace t {/*}*/
-#define _GINGA_NS_END                    /*{*/}
-#define _GINGA_BEGIN(t)       _GINGA_NS_BEGIN (ginga) _GINGA_NS_BEGIN (t)
-#define _GINGA_END            _GINGA_NS_END _GINGA_NS_END
-#define GINGA_BEGIN           _GINGA_NS_BEGIN (ginga)
-#define GINGA_END             _GINGA_NS_END
-#define GINGA_PLAYER_BEGIN    _GINGA_BEGIN (player)
-#define GINGA_PLAYER_END      _GINGA_END
+#define GINGA_BEGIN namespace ginga {/*}*/
+#define GINGA_END   /*{*/}
 
 // Utility macros.
 #undef unused

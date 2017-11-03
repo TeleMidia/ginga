@@ -69,15 +69,15 @@ src+= ncl/NclRole.cpp
 src+= ncl/NclSwitch.cpp
 src+= ncl/ParserXercesC.cpp
 src+= ncl/Predicate.cpp
-src+= player/ImagePlayer.cpp
-src+= player/LuaPlayer.cpp
 src+= player/Player.cpp
 src+= player/PlayerAnimator.cpp
-src+= player/TextPlayer.cpp
-src+= player/VideoPlayer.cpp
+src+= player/PlayerImage.cpp
+src+= player/PlayerLua.cpp
+src+= player/PlayerText.cpp
+src+= player/PlayerVideo.cpp
 
 if WITH_LIBRSVG
-src+= player/SvgPlayer.cpp
+src+= player/PlayerSvg.cpp
 endif # WITH_LIBRSVG
 
 if WITH_LIBXML
@@ -85,7 +85,7 @@ src+= ncl/ParserLibXML.cpp
 endif # WITH_LIBXML
 
 if WITH_CEF
-src+= player/HTMLPlayer.cpp
+src+= player/PlayerHTML.cpp
 cef_filesdir= $(bindir)
 cef_files_DATA=\
   $(cef_dir)/Release/chrome-sandbox\

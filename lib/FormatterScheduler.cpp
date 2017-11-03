@@ -264,7 +264,7 @@ FormatterScheduler::redraw (cairo_t *cr)
   //                       1 * GINGA_SECOND / (double) _last_tick_diff);
   //     rect.width = _opts.width;
   //     rect.height = _opts.height;
-  //     debug = TextPlayer::renderSurface
+  //     debug = PlayerText::renderSurface
   //       (info, "monospace", "", "bold", "9", fg, bg,
   //        rect, "center", "", true, &ink);
   //     ink = {0, 0, rect.width, ink.height - ink.y + 4};

@@ -16,13 +16,13 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /**
- * @file   HTMLPlayer.h
+ * @file   PlayerHTML.h
  * @author Eduardo Cruz Araújo (edcaraujo@gmail.com)
  * @date   April, 2017
  *
  * @brief  Header file of HTML player.
  *
- * This is the header file for the HTMLPlayer and others
+ * This is the header file for the PlayerHTML and others
  * related classes.
  */
 
@@ -48,7 +48,7 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wunused-parameter)
 #include <wrapper/cef_helpers.h>
 GINGA_PRAGMA_DIAG_POP ()
 
-GINGA_PLAYER_BEGIN
+GINGA_BEGIN
 
 /**
  * @brief A render handler class of CEF for Ginga.
@@ -265,24 +265,24 @@ private:
  * Chromium Embedded Framework (CEF) together with SDL to render
  * the result in the screen.
  */
-class HTMLPlayer :
+class PlayerHTML :
     public Player, public IEventListener
 {
 public:
   /**
-   * @brief Default constructor for HTMLPlayer.
+   * @brief Default constructor for PlayerHTML.
    *
    * @param location An URI for the HTML file.
    * @return Nothing.
    */
-  explicit HTMLPlayer (const string &location);
+  explicit PlayerHTML (const string &location);
 
   /**
-   * @brief Default destructor for HTMLPlayer.
+   * @brief Default destructor for PlayerHTML.
    *
    * @return Nothing.
    */
-  virtual ~HTMLPlayer ();
+  virtual ~PlayerHTML ();
 
   /**
    * @brief Start the presentation.
@@ -401,6 +401,6 @@ private:
   bool _isPlaying;
 };
 
-GINGA_PLAYER_END
+GINGA_END
 
 #endif /* HTML_PLAYER_H */

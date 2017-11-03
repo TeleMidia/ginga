@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "PlayerAnimator.h"
 
-GINGA_PLAYER_BEGIN
+GINGA_BEGIN
 
 
 // PlayerAnimator: Public.
@@ -364,4 +364,4 @@ AnimInfo::update (void)
     }
 }
 
-GINGA_PLAYER_END
+GINGA_END

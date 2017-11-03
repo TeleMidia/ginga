@@ -25,7 +25,7 @@ using namespace ::ginga::mb;
 
 #include "Player.h"
 
-GINGA_PLAYER_BEGIN
+GINGA_BEGIN
 
 class SsmlPlayer : public Thread, public Player
 {
@@ -50,6 +50,6 @@ public:
   virtual void setPropertyValue (const string &name, const string &value);
 };
 
-GINGA_PLAYER_END
+GINGA_END
 
 #endif /*SSMLPLAYER_H_*/
