@@ -44,9 +44,8 @@ public:
 
 protected:
   Player *_player;
-  GingaTime _time;                // playback time
 
-  void reset () override;
+  void doStop () override;
 };
 
 GINGA_NAMESPACE_END

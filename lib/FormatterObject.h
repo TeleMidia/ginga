@@ -55,12 +55,14 @@ public:
   bool isPaused ();
   bool isSleeping ();
 
+  void scheduleAction (FormatterAction *, GingaTime);
+
+  virtual void sendKeyEvent (const string &, bool);
+  virtual void sendTickEvent (GingaTime, GingaTime, GingaTime);
+
   virtual string getProperty (const string &) = 0;
   virtual void setProperty (const string &, const string &,
                             GingaTime dur=0) = 0;
-
-  virtual void sendKeyEvent (const string &, bool) = 0;
-  virtual void sendTickEvent (GingaTime, GingaTime, GingaTime) = 0;
   virtual bool exec (FormatterEvent *, NclEventState, NclEventState,
                      NclEventStateTransition) = 0;
 
@@ -68,16 +70,18 @@ protected:
   Formatter *_ginga;              // formatter handle
   FormatterScheduler *_scheduler; // formatter scheduler
   NclNode *_node;                 // NCL node
-  string _id;                     // object id
+  string _id;                     // id
   vector<string> _aliases;        // aliases
   FormatterContext *_parent;      // parent object
   set<FormatterEvent *> _events;  // object events
+  GingaTime _time;                // playback time
 
   // delayed actions
   vector<pair<FormatterAction *, GingaTime>> _delayed;
   vector<pair<FormatterAction *, GingaTime>> _delayed_new;
 
-  virtual void reset ();
+  virtual void doStart ();
+  virtual void doStop ();
 };
 
 GINGA_NAMESPACE_END

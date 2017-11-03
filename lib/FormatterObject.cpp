@@ -45,11 +45,12 @@ FormatterObject::FormatterObject (Formatter *ginga,
 
   _id = id;
   _parent = nullptr;
+  _time = GINGA_TIME_NONE;
 }
 
 FormatterObject::~FormatterObject ()
 {
-  this->reset ();
+  this->doStop ();
 }
 
 NclNode *
@@ -261,12 +262,73 @@ FormatterObject::isSleeping ()
   return this->obtainLambda ()->getState () == NclEventState::SLEEPING;
 }
 
+void
+FormatterObject::scheduleAction (FormatterAction *action, GingaTime delay)
+{
+  g_assert_nonnull (action);
+  _delayed_new.push_back (std::make_pair (action, _time + delay));
+}
+
+void
+FormatterObject::sendKeyEvent (unused (const string &key),
+                               unused (bool press))
+{
+}
+
+void
+FormatterObject::sendTickEvent (unused (GingaTime total),
+                                GingaTime diff,
+                                unused (GingaTime frame))
+{
+  g_assert (this->isOccurring ());
+
+  // Update time.
+  g_assert (GINGA_TIME_IS_VALID (_time));
+  _time += diff;
+
+  // Evaluate delayed actions.
+  for (auto it = _delayed.begin (); it != _delayed.end ();)
+    {
+      FormatterAction *act;
+      GingaTime timeout;
+
+      act = (*it).first;
+      timeout = (*it).second;
+      if (timeout <= _time)
+        {
+          FormatterEvent *evt = act->getEvent ();
+          g_assert_nonnull (evt);
+          evt->transition (act->getEventStateTransition ());
+          if (!this->isOccurring ())
+            return;
+          delete act;
+          it = _delayed.erase (it);
+        }
+      else
+        {
+          ++it;
+        }
+    }
+
+  // Update current delayed actions.  (Move this up?)
+  _delayed.insert
+    (_delayed.end (), _delayed_new.begin (), _delayed_new.end ());
+  _delayed_new.clear ();
+}
+
 
 // Private.
 
 void
-FormatterObject::reset ()
+FormatterObject::doStart ()
 {
+  _time = 0;
+}
+
+void
+FormatterObject::doStop ()
+{
+  _time = GINGA_TIME_NONE;
   for (auto item: _delayed)
     delete item.first;
   _delayed.clear ();
