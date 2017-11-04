@@ -39,8 +39,9 @@ GINGA_NAMESPACE_BEGIN
 
 // Public.
 
-PlayerLua::PlayerLua (Formatter *ginga, const string &id, const string &uri)
-  :Player (ginga, id, uri)
+PlayerLua::PlayerLua (Formatter *formatter, const string &id,
+                      const string &uri)
+  :Player (formatter, id, uri)
 {
   _nw = NULL;
   _init_rect = {0, 0, 0, 0};

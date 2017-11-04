@@ -17,16 +17,15 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 #include "FormatterContext.h"
-#include "FormatterScheduler.h"
 
 GINGA_NAMESPACE_BEGIN
 
 
 // Public.
 
-FormatterContext::FormatterContext (Formatter *ginga, const string &id,
+FormatterContext::FormatterContext (Formatter *formatter, const string &id,
                                     NclNode *node)
-  :FormatterObject (ginga, id, node)
+  :FormatterObject (formatter, id, node)
 {
   g_assert_nonnull (node);
   _context = cast (NclContext *, node);
@@ -103,7 +102,7 @@ FormatterContext::exec (FormatterEvent *evt,
               FormatterEvent *e;
 
               port->getTarget (&target, &iface);
-              child = _scheduler->obtainExecutionObject (target);
+              child = _formatter->obtainExecutionObject (target);
               g_assert_nonnull (child);
 
               if (!instanceof (NclArea *, iface))

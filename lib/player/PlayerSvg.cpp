@@ -20,8 +20,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-PlayerSvg::PlayerSvg (Formatter *ginga, const string &id, const string &uri)
-  :Player (ginga, id, uri)
+PlayerSvg::PlayerSvg (Formatter *formatter, const string &id,
+                      const string &uri)
+  :Player (formatter, id, uri)
 {
 }
 

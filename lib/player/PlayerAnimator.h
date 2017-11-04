@@ -61,7 +61,7 @@ public:
   void update (GingaRect *, GingaColor *, guint8 *);
 
 private:
-  Formatter *_ginga;            // formatter handle
+  Formatter *_formatter;        // formatter handle
   list <AnimInfo *> _scheduled; // scheduled animations
 
   void doSchedule (const string &, const string &,

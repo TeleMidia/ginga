@@ -22,7 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterEvent.h"
 #include "FormatterMedia.h"
 #include "FormatterMediaSettings.h"
-#include "FormatterScheduler.h"
 #include "FormatterSwitch.h"
 
 GINGA_NAMESPACE_BEGIN
@@ -30,15 +29,12 @@ GINGA_NAMESPACE_BEGIN
 
 // Public.
 
-FormatterObject::FormatterObject (Formatter *ginga,
+FormatterObject::FormatterObject (Formatter *formatter,
                                   const string &id,
                                   NclNode *node)
 {
-  g_assert_nonnull (ginga);
-  _ginga = ginga;
-
-  _scheduler = ginga->getScheduler ();
-  g_assert_nonnull (_scheduler);
+  g_assert_nonnull (formatter);
+  _formatter = formatter;
 
   g_assert_nonnull (node);
   _node = node;
@@ -189,29 +185,29 @@ FormatterObject::obtainEvent (NclEventType type, NclAnchor *anchor,
   if (instanceof (FormatterSwitch *, this))
     {
       g_assert (type == NclEventType::PRESENTATION);
-      event = new FormatterEvent (_ginga, type, this, anchor);
+      event = new FormatterEvent (_formatter, type, this, anchor);
     }
   else if (instanceof (FormatterContext *, this))
     {
       g_assert (type == NclEventType::PRESENTATION);
-      event = new FormatterEvent (_ginga, type, this, anchor);
+      event = new FormatterEvent (_formatter, type, this, anchor);
     }
   else
     {
       switch (type)
         {
         case NclEventType::PRESENTATION:
-          event = new FormatterEvent (_ginga, type, this, anchor);
+          event = new FormatterEvent (_formatter, type, this, anchor);
           break;
         case NclEventType::ATTRIBUTION:
           {
             NclProperty *property = cast (NclProperty *, anchor);
             g_assert_nonnull (property);
-            event = new FormatterEvent (_ginga, type, this, property);
+            event = new FormatterEvent (_formatter, type, this, property);
             break;
           }
         case NclEventType::SELECTION:
-          event = new FormatterEvent (_ginga, type, this, anchor);
+          event = new FormatterEvent (_formatter, type, this, anchor);
           event->setParameter ("key", key);
           break;
         default:

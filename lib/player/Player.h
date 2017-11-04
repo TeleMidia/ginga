@@ -112,7 +112,7 @@ public:
   static Player *createPlayer (Formatter *, const string &,
                                const string &, const string &);
 protected:
-  Formatter *_ginga;            // formatter handle
+  Formatter *_formatter;        // formatter handle
   bool _opengl;                 // true if OpenGL is used
   string _id;                   // associated object id
   string _uri;                  // source uri
