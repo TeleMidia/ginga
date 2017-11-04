@@ -42,6 +42,10 @@ FormatterObject::FormatterObject (Formatter *formatter,
   _id = id;
   _parent = nullptr;
   _time = GINGA_TIME_NONE;
+
+  _lambda = new FormatterEvent
+    (NclEventType::PRESENTATION, this, "@lambda");
+  _events.insert (_lambda);
 }
 
 FormatterObject::~FormatterObject ()
@@ -236,32 +240,31 @@ FormatterObject::addEvent (FormatterEvent *event)
 }
 
 FormatterEvent *
-FormatterObject::obtainLambda ()
+FormatterObject::getLambda ()
 {
-  FormatterEvent *lambda;
-  g_assert_nonnull (_node);
-  lambda = this->obtainEvent (NclEventType::PRESENTATION,
-                              _node->getLambda (), "");
-  g_assert_nonnull (lambda);
-  return lambda;
+  g_assert_nonnull (_lambda);
+  return _lambda;
 }
 
 bool
 FormatterObject::isOccurring ()
 {
-  return this->obtainLambda ()->getState () == NclEventState::OCCURRING;
+  g_assert_nonnull (_lambda);
+  return _lambda->getState () == NclEventState::OCCURRING;
 }
 
 bool
 FormatterObject::isPaused ()
 {
-  return this->obtainLambda ()->getState () == NclEventState::PAUSED;
+  g_assert_nonnull (_lambda);
+  return _lambda->getState () == NclEventState::PAUSED;
 }
 
 bool
 FormatterObject::isSleeping ()
 {
-  return this->obtainLambda ()->getState () == NclEventState::SLEEPING;
+  g_assert_nonnull (_lambda);
+  return _lambda->getState () == NclEventState::SLEEPING;
 }
 
 void

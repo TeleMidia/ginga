@@ -70,7 +70,7 @@ FormatterContext::sendTickEvent (unused (GingaTime total),
     if (child->isOccurring ())
       return;
 
-  lambda = this->obtainLambda ();
+  lambda = this->getLambda ();
   g_assert_nonnull (lambda);
   lambda->transition (NclEventStateTransition::STOP);
 }
@@ -128,7 +128,7 @@ FormatterContext::exec (FormatterEvent *evt,
           this->toggleLinks (true);
           for (auto child: _children)
             {
-              FormatterEvent *e = child->obtainLambda ();
+              FormatterEvent *e = child->getLambda ();
               g_assert_nonnull (e);
               e->transition (NclEventStateTransition::STOP);
             }

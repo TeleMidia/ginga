@@ -153,8 +153,7 @@ Formatter::start (const string &file, string *errmsg)
   g_assert_null (_settings);
   g_assert_nonnull (this->obtainExecutionObject (settingsNode));
   g_assert_nonnull (_settings);
-  FormatterEvent *evt = cast (FormatterObject *, _settings)
-    ->obtainLambda ();
+  FormatterEvent *evt = cast (FormatterObject *, _settings)->getLambda ();
   g_assert_nonnull (evt);
   g_assert (evt->transition (NclEventStateTransition::START));
 
@@ -190,7 +189,7 @@ Formatter::start (const string &file, string *errmsg)
 
   // Start document.
   FormatterObject *obj = this->obtainExecutionObject (body);
-  evt = obj->obtainLambda ();
+  evt = obj->getLambda ();
   g_assert_nonnull (evt);
   if (!evt->transition (NclEventStateTransition::START))
     return false;
@@ -209,7 +208,10 @@ Formatter::stop ()
     return false;               // nothing to do
 
   for (auto obj: _objects)
-    delete obj;
+    if (obj != _settings)
+      delete obj;
+  delete _settings;
+
   _objects.clear ();
   _mediaObjects.clear ();
   _settings = nullptr;
@@ -360,8 +362,6 @@ Formatter::sendTickEvent (uint64_t total, uint64_t diff, uint64_t frame)
       this->setEOS (true);
       return true;
     }
-
-  _settings->sendTickEvent (total, diff, frame);
 
   for (auto obj: buf)
     if (obj->isOccurring ())
@@ -850,7 +850,7 @@ Formatter::obtainFormatterEventFromBind (NclBind *bind)
   g_assert_nonnull (obj);
 
   if (iface == nullptr)
-    return obj->obtainLambda ();
+    return obj->getLambda ();
 
   if (instanceof (NclComposition *, node)
       && instanceof (NclPort *, iface))
