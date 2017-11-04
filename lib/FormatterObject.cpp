@@ -114,7 +114,9 @@ FormatterObject::getEvent (NclEventType type, NclAnchor *anchor,
   g_assert_nonnull (anchor);
   for (auto event: _events)
     {
-      if (event->getAnchor () != anchor || event->getType () != type)
+      if (event->getType () != type)
+        continue;
+      if (event->getId () != anchor->getId ())
         continue;
       switch (type)
         {
@@ -142,12 +144,9 @@ FormatterObject::getEventByAnchorId (NclEventType type, const string &id,
 {
   for (auto event: _events)
     {
-      NclAnchor *anchor;
       if (event->getType () != type)
         continue;
-      anchor = event->getAnchor ();
-      g_assert_nonnull (anchor);
-      if (anchor->getId () != id)
+      if (event->getId () != id)
         continue;
       switch (type)
         {
@@ -185,29 +184,36 @@ FormatterObject::obtainEvent (NclEventType type, NclAnchor *anchor,
   if (instanceof (FormatterSwitch *, this))
     {
       g_assert (type == NclEventType::PRESENTATION);
-      event = new FormatterEvent (type, this, anchor);
+      event = new FormatterEvent (type, this, anchor->getId ());
     }
   else if (instanceof (FormatterContext *, this))
     {
       g_assert (type == NclEventType::PRESENTATION);
-      event = new FormatterEvent (type, this, anchor);
+      event = new FormatterEvent (type, this, anchor->getId ());
     }
   else
     {
       switch (type)
         {
         case NclEventType::PRESENTATION:
-          event = new FormatterEvent (type, this, anchor);
+          event = new FormatterEvent (type, this, anchor->getId ());
+          if (!event->isLambda ())
+            {
+              NclArea *area = cast (NclArea *, anchor);
+              g_assert_nonnull (area);
+              event->setInterval (area->getBegin (), area->getEnd ());
+            }
           break;
         case NclEventType::ATTRIBUTION:
           {
             NclProperty *property = cast (NclProperty *, anchor);
             g_assert_nonnull (property);
-            event = new FormatterEvent (type, this, property);
+            event = new FormatterEvent (type, this, property->getId ());
+            event->setParameter ("value", property->getValue ());
             break;
           }
         case NclEventType::SELECTION:
-          event = new FormatterEvent (type, this, anchor);
+          event = new FormatterEvent (type, this, anchor->getId ());
           event->setParameter ("key", key);
           break;
         default:

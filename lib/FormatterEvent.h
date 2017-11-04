@@ -35,13 +35,17 @@ class FormatterObject;
 class FormatterEvent
 {
 public:
-  FormatterEvent (NclEventType, FormatterObject *, NclAnchor *);
+  FormatterEvent (NclEventType, FormatterObject *, const string &id);
   ~FormatterEvent ();
 
   NclEventType getType ();
   FormatterObject *getObject ();
-  NclAnchor *getAnchor ();
+  string getId ();
   NclEventState getState ();
+
+  bool isLambda ();
+  void getInterval (GingaTime *, GingaTime *);
+  void setInterval (GingaTime, GingaTime);
 
   const vector<IFormatterEventListener *> *getListeners ();
   void addListener (IFormatterEventListener *);
@@ -51,11 +55,14 @@ public:
 
   bool transition (NclEventStateTransition);
 
+
 private:
   NclEventType _type;                           // event type
   FormatterObject *_object;                     // target object
-  NclAnchor *_anchor;                           // target anchor
+  string _id;                                   // event id
   NclEventState _state;                         // event state
+  GingaTime _begin;                             // begin-time
+  GingaTime _end;                               // end-time
   vector<IFormatterEventListener *> _listeners; // event listeners
   map<string, string> _parameters;              // parameters
 };
