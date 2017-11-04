@@ -475,7 +475,7 @@ Player::createPlayer (Formatter *formatter, const string &id,
   else
     {
       player = new Player (formatter, id, uri);
-      if (uri != "")
+      if (mime != "application/x-ginga-timer" && uri != "")
         {
           WARNING ("unknown mime '%s': creating an empty player",
                    mime.c_str ());

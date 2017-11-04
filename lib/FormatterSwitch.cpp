@@ -22,7 +22,7 @@ GINGA_NAMESPACE_BEGIN
 
 FormatterSwitch::FormatterSwitch (Formatter *formatter, const string &id,
                                   NclSwitch *swtch)
-  :FormatterContext (formatter, id, nullptr)
+  :FormatterComposition (formatter, id)
 {
   g_assert_nonnull (swtch);
   _switch = swtch;
@@ -51,7 +51,6 @@ FormatterSwitch::exec (FormatterEvent *evt,
           //
           // Start lambda.
           //
-          TRACE ("start %s@lambda", _id.c_str ());
           g_assert_null (_selected);
           for (auto item: *_switch->getRules ())
             {
@@ -81,6 +80,8 @@ FormatterSwitch::exec (FormatterEvent *evt,
                 (evt, NclEventStateTransition::STOP);
               this->scheduleAction (act, 0);
             }
+          TRACE ("start %s@lambda", _id.c_str ());
+          FormatterObject::doStart ();
           break;
         case NclEventStateTransition::PAUSE:
           g_assert_not_reached ();
@@ -92,7 +93,6 @@ FormatterSwitch::exec (FormatterEvent *evt,
           //
           // Stop lambda.
           //
-          TRACE ("stop %s@lambda", _id.c_str ());
           g_assert_nonnull (_selected);
           {
             FormatterEvent *e = _selected->getLambda ();
@@ -103,6 +103,8 @@ FormatterSwitch::exec (FormatterEvent *evt,
               (evt, NclEventStateTransition::STOP);
             this->scheduleAction (act, 0);
           }
+          TRACE ("stop %s@lambda", _id.c_str ());
+          FormatterObject::doStop ();
           break;
         case NclEventStateTransition::ABORT:
           g_assert_not_reached ();

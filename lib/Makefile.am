@@ -36,6 +36,7 @@ libginga_la_SOURCES= $(src)
 src=
 src+= Formatter.cpp
 src+= FormatterAction.cpp
+src+= FormatterComposition.cpp
 src+= FormatterCondition.cpp
 src+= FormatterContext.cpp
 src+= FormatterEvent.cpp

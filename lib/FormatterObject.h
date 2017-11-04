@@ -24,7 +24,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-class FormatterContext;
+class FormatterComposition;
 class FormatterMediaSettings;
 
 class FormatterObject
@@ -38,8 +38,8 @@ public:
   bool hasAlias (const string &);
   bool addAlias (const string &);
 
-  FormatterContext *getParent ();
-  void initParent (FormatterContext *);
+  FormatterComposition *getParent ();
+  void initParent (FormatterComposition *);
 
   FormatterEvent *obtainEvent (NclEventType, NclAnchor *, const string &);
 
@@ -71,7 +71,7 @@ protected:
   Formatter *_formatter;         // formatter handle
   string _id;                    // id
   vector<string> _aliases;       // aliases
-  FormatterContext *_parent;     // parent object
+  FormatterComposition *_parent; // parent object
   GingaTime _time;               // playback time
   map<string, string> _property; // property map
 
