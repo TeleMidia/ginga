@@ -21,11 +21,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-FormatterEvent::FormatterEvent (Formatter *formatter, NclEventType type,
-                                FormatterObject *object, NclAnchor *anchor)
+FormatterEvent::FormatterEvent (NclEventType type, FormatterObject *object,
+                                NclAnchor *anchor)
 {
-  g_assert_nonnull (formatter);
-  _formatter = formatter;
   _type = type;
   g_assert_nonnull (object);
   _object = object;

@@ -35,8 +35,7 @@ class FormatterObject;
 class FormatterEvent
 {
 public:
-  FormatterEvent (Formatter *, NclEventType, FormatterObject *,
-                  NclAnchor *);
+  FormatterEvent (NclEventType, FormatterObject *, NclAnchor *);
   ~FormatterEvent ();
 
   NclEventType getType ();
@@ -53,7 +52,6 @@ public:
   bool transition (NclEventStateTransition);
 
 private:
-  Formatter *_formatter;                        // formatter handle
   NclEventType _type;                           // event type
   FormatterObject *_object;                     // target object
   NclAnchor *_anchor;                           // target anchor
