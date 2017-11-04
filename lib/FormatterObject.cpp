@@ -185,29 +185,29 @@ FormatterObject::obtainEvent (NclEventType type, NclAnchor *anchor,
   if (instanceof (FormatterSwitch *, this))
     {
       g_assert (type == NclEventType::PRESENTATION);
-      event = new FormatterEvent (_formatter, type, this, anchor);
+      event = new FormatterEvent (type, this, anchor);
     }
   else if (instanceof (FormatterContext *, this))
     {
       g_assert (type == NclEventType::PRESENTATION);
-      event = new FormatterEvent (_formatter, type, this, anchor);
+      event = new FormatterEvent (type, this, anchor);
     }
   else
     {
       switch (type)
         {
         case NclEventType::PRESENTATION:
-          event = new FormatterEvent (_formatter, type, this, anchor);
+          event = new FormatterEvent (type, this, anchor);
           break;
         case NclEventType::ATTRIBUTION:
           {
             NclProperty *property = cast (NclProperty *, anchor);
             g_assert_nonnull (property);
-            event = new FormatterEvent (_formatter, type, this, property);
+            event = new FormatterEvent (type, this, property);
             break;
           }
         case NclEventType::SELECTION:
-          event = new FormatterEvent (_formatter, type, this, anchor);
+          event = new FormatterEvent (type, this, anchor);
           event->setParameter ("key", key);
           break;
         default:

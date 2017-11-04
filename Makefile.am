@@ -44,6 +44,7 @@ MAINTAINERCLEANFILES+=\
   build-aux/ltversion.m4\
   build-aux/lt~obsolete.m4\
   build-aux/missing\
+  build-aux/test-driver\
   configure\
   $(NULL)
 
