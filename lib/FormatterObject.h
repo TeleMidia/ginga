@@ -43,12 +43,17 @@ public:
   FormatterContext *getParent ();
   void initParent (FormatterContext *);
 
-  const set<FormatterEvent *> *getEvents ();
-  FormatterEvent *getEvent (NclEventType, NclAnchor *, const string &);
-  FormatterEvent *getEventByAnchorId (NclEventType type, const string &,
-                                      const string &);
   FormatterEvent *obtainEvent (NclEventType, NclAnchor *, const string &);
-  bool addEvent (FormatterEvent *);
+  FormatterEvent *getEvent (NclEventType, const string &);
+
+  FormatterEvent *getAttributionEvent (const string &);
+  bool addAttributionEvent (const string &);
+
+  FormatterEvent *getPresentationEvent (const string &);
+  bool addPresentationEvent (const string &, GingaTime, GingaTime);
+
+  FormatterEvent *getSelectionEvent (const string &);
+  bool addSelectionEvent (const string &);
 
   FormatterEvent *getLambda ();
   bool isOccurring ();

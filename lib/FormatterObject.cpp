@@ -43,9 +43,9 @@ FormatterObject::FormatterObject (Formatter *formatter,
   _parent = nullptr;
   _time = GINGA_TIME_NONE;
 
-  _lambda = new FormatterEvent
-    (NclEventType::PRESENTATION, this, "@lambda");
-  _events.insert (_lambda);
+  g_assert (this->addPresentationEvent ("@lambda", 0, GINGA_TIME_NONE));
+  _lambda = this->getPresentationEvent ("@lambda");
+  g_assert_nonnull (_lambda);
 }
 
 FormatterObject::~FormatterObject ()
@@ -105,137 +105,125 @@ FormatterObject::initParent (FormatterContext *parent)
   g_assert (parent->addChild (this));
 }
 
-const set<FormatterEvent *> *
-FormatterObject::getEvents ()
-{
-  return &_events;
-}
-
-FormatterEvent *
-FormatterObject::getEvent (NclEventType type, NclAnchor *anchor,
-                           const string &key)
-{
-  g_assert_nonnull (anchor);
-  for (auto event: _events)
-    {
-      if (event->getType () != type)
-        continue;
-      if (event->getId () != anchor->getId ())
-        continue;
-      switch (type)
-        {
-        case NclEventType::ATTRIBUTION: // fall through
-        case NclEventType::PRESENTATION:
-          return event;
-        case NclEventType::SELECTION:
-          {
-            string evtkey = "";
-            event->getParameter ("key", &evtkey);
-            if (evtkey == key)
-              return event;
-            break;
-          }
-        default:
-          g_assert_not_reached ();
-        }
-    }
-  return nullptr;
-}
-
-FormatterEvent *
-FormatterObject::getEventByAnchorId (NclEventType type, const string &id,
-                                     const string &key)
-{
-  for (auto event: _events)
-    {
-      if (event->getType () != type)
-        continue;
-      if (event->getId () != id)
-        continue;
-      switch (type)
-        {
-        case NclEventType::ATTRIBUTION: // fall through
-        case NclEventType::PRESENTATION:
-          return event;
-        case NclEventType::SELECTION:
-          {
-            string evtkey = "";
-            event->getParameter ("key", &evtkey);
-            if (evtkey == key)
-              return event;
-            break;
-          }
-        default:
-          g_assert_not_reached ();
-        }
-    }
-  return nullptr;
-}
-
 FormatterEvent *
 FormatterObject::obtainEvent (NclEventType type, NclAnchor *anchor,
                               const string &key)
 {
   FormatterEvent *event;
 
-  event = this->getEvent (type, anchor, key);
+  if (type == NclEventType::SELECTION)
+    event = this->getEvent (type, key);
+  else
+    event = this->getEvent (type, anchor->getId ());
+
   if (event != nullptr)
     return event;
 
-  g_assert_nonnull (anchor);
-  g_assert_null (this->getEventByAnchorId (type, anchor->getId (), key));
+  g_assert (instanceof (FormatterMedia *, this));
 
-  if (instanceof (FormatterSwitch *, this))
+  switch (type)
     {
-      g_assert (type == NclEventType::PRESENTATION);
-      event = new FormatterEvent (type, this, anchor->getId ());
-    }
-  else if (instanceof (FormatterContext *, this))
-    {
-      g_assert (type == NclEventType::PRESENTATION);
-      event = new FormatterEvent (type, this, anchor->getId ());
-    }
-  else
-    {
-      switch (type)
-        {
-        case NclEventType::PRESENTATION:
-          event = new FormatterEvent (type, this, anchor->getId ());
-          if (!event->isLambda ())
-            {
-              NclArea *area = cast (NclArea *, anchor);
-              g_assert_nonnull (area);
-              event->setInterval (area->getBegin (), area->getEnd ());
-            }
-          break;
-        case NclEventType::ATTRIBUTION:
-          {
-            NclProperty *property = cast (NclProperty *, anchor);
-            g_assert_nonnull (property);
-            event = new FormatterEvent (type, this, property->getId ());
-            event->setParameter ("value", property->getValue ());
-            break;
-          }
-        case NclEventType::SELECTION:
-          event = new FormatterEvent (type, this, anchor->getId ());
-          event->setParameter ("key", key);
-          break;
-        default:
-          g_assert_not_reached ();
-        }
+    case NclEventType::PRESENTATION:
+      {
+        NclArea *area = cast (NclArea *, anchor);
+        g_assert_nonnull (area);
+        g_assert (this->addPresentationEvent
+                  (anchor->getId (), area->getBegin (), area->getEnd ()));
+        event = this->getPresentationEvent (anchor->getId ());
+        g_assert_nonnull (event);
+        break;
+      }
+    case NclEventType::ATTRIBUTION:
+      {
+        NclProperty *property = cast (NclProperty *, anchor);
+        g_assert_nonnull (property);
+        g_assert (this->addAttributionEvent (property->getId ()));
+        event = this->getAttributionEvent (property->getId ());
+        g_assert_nonnull (event);
+        event->setParameter ("value", property->getValue ());
+        break;
+      }
+    case NclEventType::SELECTION:
+      {
+        g_assert (this->addSelectionEvent (key));
+        event = this->getSelectionEvent (key);
+        g_assert_nonnull (event);
+        event->setParameter ("key", key);
+        break;
+      }
+    default:
+      g_assert_not_reached ();
     }
 
   g_assert_nonnull (event);
-  g_assert (this->addEvent (event));
   return event;
 }
 
-bool
-FormatterObject::addEvent (FormatterEvent *event)
+FormatterEvent *
+FormatterObject::getEvent (NclEventType type, const string &id)
 {
-  if (_events.find (event) != _events.end ())
+  for (auto evt: _events)
+    if (evt->getType () == type && evt->getId () == id)
+      return evt;
+  return nullptr;
+}
+
+FormatterEvent *
+FormatterObject::getAttributionEvent (const string &propName)
+{
+  return this->getEvent (NclEventType::ATTRIBUTION, propName);
+}
+
+bool
+FormatterObject::addAttributionEvent (const string &propName)
+{
+  FormatterEvent *evt;
+
+  if (this->getAttributionEvent (propName))
     return false;
-  _events.insert (event);
+
+  evt = new FormatterEvent (NclEventType::ATTRIBUTION, this, propName);
+  _events.insert (evt);
+  return true;
+}
+
+FormatterEvent *
+FormatterObject::getPresentationEvent (const string &id)
+{
+  return this->getEvent (NclEventType::PRESENTATION, id);
+}
+
+bool
+FormatterObject::addPresentationEvent (const string &id, GingaTime begin,
+                                       GingaTime end)
+{
+  FormatterEvent *evt;
+
+  if (this->getPresentationEvent (id))
+    return false;
+
+  evt = new FormatterEvent (NclEventType::PRESENTATION, this, id);
+  evt->setInterval (begin, end);
+  _events.insert (evt);
+  return true;
+}
+
+FormatterEvent *
+FormatterObject::getSelectionEvent (const string &key)
+{
+  return this->getEvent (NclEventType::SELECTION, key);
+}
+
+bool
+FormatterObject::addSelectionEvent (const string &key)
+{
+  FormatterEvent *evt;
+
+  if (this->getSelectionEvent (key))
+    return false;
+
+  evt = new FormatterEvent (NclEventType::SELECTION, this, key);
+  _events.insert (evt);
   return true;
 }
 
