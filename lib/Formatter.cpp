@@ -596,9 +596,6 @@ Formatter::obtainExecutionObject (NclNode *node)
     {
       TRACE ("creating switch %s", node->getId ().c_str ());
       object = new FormatterSwitch (this, id, node);
-      g_assert_nonnull
-        (object->obtainEvent (NclEventType::PRESENTATION,
-                              node->getLambda (), ""));
       goto done;
     }
 
@@ -607,9 +604,6 @@ Formatter::obtainExecutionObject (NclNode *node)
     {
       TRACE ("creating context %s", node->getId ().c_str ());
       object = new FormatterContext (this, id, node);
-      g_assert_nonnull
-        (object->obtainEvent (NclEventType::PRESENTATION,
-                              node->getLambda (), ""));
       g_assert_nonnull (object);
       if (parent != nullptr)
         object->initParent (parent);
