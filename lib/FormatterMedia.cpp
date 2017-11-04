@@ -110,7 +110,6 @@ FormatterMedia::sendKeyEvent (const string &key, bool press)
   // Collect the events to be triggered.
   for (auto evt: _events)
     {
-      NclArea *anchor;
       string expected;
 
       if (evt->getType () != NclEventType::SELECTION)
@@ -124,9 +123,9 @@ FormatterMedia::sendKeyEvent (const string &key, bool press)
           continue;
         }
 
-      anchor = cast (NclArea *, evt->getAnchor ());
-      g_assert_nonnull (anchor);
-      g_assert (instanceof (NclAreaLambda *, anchor));
+      // anchor = cast (NclArea *, evt->getAnchor ());
+      // g_assert_nonnull (anchor);
+      // g_assert (instanceof (NclAreaLambda *, anchor));
       buf.push_back (evt);
     }
 
@@ -184,7 +183,7 @@ FormatterMedia::exec (FormatterEvent *evt,
       switch (transition)
         {
         case NclEventStateTransition::START:
-          if (instanceof (NclAreaLambda *, evt->getAnchor ()))
+          if (evt->isLambda ())
             {
               //
               // Start lambda.
@@ -214,24 +213,15 @@ FormatterMedia::exec (FormatterEvent *evt,
               // Install delayed actions for time anchors.
               for (auto e: _events)
                 {
-                  NclAnchor *anchor;
-                  NclArea *area;
                   GingaTime begin, end;
                   FormatterAction *act;
 
                   if (e->getType () != NclEventType::PRESENTATION)
                     continue;
-                  if (e == this->obtainLambda ())
+                  if (e->isLambda ())
                     continue;
 
-                  anchor = e->getAnchor ();
-                  g_assert_nonnull (anchor);
-
-                  area = cast (NclArea *, anchor);
-                  g_assert_nonnull (area);
-
-                  begin = area->getBegin ();
-                  end = area->getEnd ();
+                  e->getInterval (&begin, &end);
 
                   act = new FormatterAction
                     (e, NclEventStateTransition::START);
@@ -256,20 +246,13 @@ FormatterMedia::exec (FormatterEvent *evt,
                   //
                   // Implicit.
                   //
-                  NclAnchor *anchor;
-                  NclArea *area;
-
-                  anchor = evt->getAnchor ();
-                  g_assert_nonnull (anchor);
-
-                  area = cast (NclArea *, anchor);
-                  g_assert_nonnull (area);
-
-                  TRACE ("start %s@%s (begin=%"
-                         GINGA_TIME_FORMAT ") at %" GINGA_TIME_FORMAT,
+                  GingaTime begin;
+                  evt->getInterval (&begin, nullptr);
+                  TRACE ("start %s@%s (begin=%" GINGA_TIME_FORMAT
+                         ") at %" GINGA_TIME_FORMAT,
                          _id.c_str (),
-                         evt->getAnchor ()->getId ().c_str (),
-                         GINGA_TIME_ARGS (area->getBegin ()),
+                         evt->getId ().c_str (),
+                         GINGA_TIME_ARGS (begin),
                          GINGA_TIME_ARGS (_time));
                 }
               else
@@ -288,7 +271,7 @@ FormatterMedia::exec (FormatterEvent *evt,
           g_assert_not_reached ();
           break;
         case NclEventStateTransition::STOP:
-          if (instanceof (NclAreaLambda *, evt->getAnchor ()))
+          if (evt->isLambda ())
             {
               //
               // Stop lambda.
@@ -307,20 +290,13 @@ FormatterMedia::exec (FormatterEvent *evt,
                   //
                   // Implicit.
                   //
-                  NclAnchor *anchor;
-                  NclArea *area;
-
-                  anchor = evt->getAnchor ();
-                  g_assert_nonnull (anchor);
-
-                  area = cast (NclArea *, anchor);
-                  g_assert_nonnull (area);
-
-                  TRACE ("stop %s@%s (end=%"
-                         GINGA_TIME_FORMAT ") at %" GINGA_TIME_FORMAT,
+                  GingaTime end;
+                  evt->getInterval (nullptr, &end);
+                  TRACE ("stop %s@%s (end=%" GINGA_TIME_FORMAT
+                         ") at %" GINGA_TIME_FORMAT,
                          _id.c_str (),
-                         evt->getAnchor ()->getId ().c_str (),
-                         GINGA_TIME_ARGS (area->getEnd ()),
+                         evt->getId ().c_str (),
+                         GINGA_TIME_ARGS (end),
                          GINGA_TIME_ARGS (_time));
                 }
               else
@@ -350,16 +326,11 @@ FormatterMedia::exec (FormatterEvent *evt,
         {
         case NclEventStateTransition::START:
           {
-            NclProperty *prop;
             string name;
             string value;
             GingaTime dur;
 
-            prop = cast (NclProperty *, evt->getAnchor ());
-            g_assert_nonnull (prop);
-
-            name = prop->getName ();
-            value = "";
+            name = evt->getId ();
             evt->getParameter ("value", &value);
             if (value[0] == '$')
               _formatter->getObjectPropertyByRef (value, &value);
@@ -388,10 +359,8 @@ FormatterMedia::exec (FormatterEvent *evt,
           }
         case NclEventStateTransition::STOP:
           {
-            NclProperty *prop = cast (NclProperty *, evt->getAnchor ());
-            g_assert_nonnull (prop);
             TRACE ("stop %s.%s:=...", _id.c_str (),
-                   prop->getName ().c_str ());
+                   evt->getId ().c_str ());
             break;
           }
         case NclEventStateTransition::PAUSE: // impossible

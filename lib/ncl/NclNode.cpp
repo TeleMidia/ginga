@@ -28,7 +28,7 @@ GINGA_NAMESPACE_BEGIN
 NclNode::NclNode (NclDocument *ncl, const string &id): NclEntity (ncl, id)
 {
   _parent = nullptr;
-  _lambda = new NclAreaLambda (ncl, id + "@lambda");
+  _lambda = new NclAreaLambda (ncl, "@lambda");
   this->addAnchor (_lambda);
 }
 

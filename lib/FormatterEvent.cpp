@@ -22,14 +22,15 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NAMESPACE_BEGIN
 
 FormatterEvent::FormatterEvent (NclEventType type, FormatterObject *object,
-                                NclAnchor *anchor)
+                                const string &id)
 {
   _type = type;
   g_assert_nonnull (object);
   _object = object;
-  g_assert_nonnull (anchor);
-  _anchor = anchor;
+  _id = id;
   _state = NclEventState::SLEEPING;
+  _begin = 0;
+  _end = GINGA_TIME_NONE;
 }
 
 FormatterEvent::~FormatterEvent ()
@@ -48,16 +49,36 @@ FormatterEvent::getObject ()
   return _object;
 }
 
-NclAnchor *
-FormatterEvent::getAnchor ()
+string
+FormatterEvent::getId ()
 {
-  return _anchor;
+  return _id;
 }
 
 NclEventState
 FormatterEvent::getState ()
 {
   return _state;
+}
+
+bool
+FormatterEvent::isLambda ()
+{
+  return _type == NclEventType::PRESENTATION && _id == "@lambda";
+}
+
+void
+FormatterEvent::getInterval (GingaTime *begin, GingaTime *end)
+{
+  tryset (begin, _begin);
+  tryset (end, _end);
+}
+
+void
+FormatterEvent::setInterval (GingaTime begin, GingaTime end)
+{
+  _begin = begin;
+  _end = end;
 }
 
 const vector<IFormatterEventListener *> *
