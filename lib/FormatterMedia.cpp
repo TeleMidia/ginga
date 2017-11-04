@@ -159,7 +159,7 @@ FormatterMedia::sendTickEvent (GingaTime total,
       || (GINGA_TIME_IS_VALID (dur = _player->getDuration ())
           && _time > dur))
     {
-      FormatterEvent *lambda = this->obtainLambda ();
+      FormatterEvent *lambda = this->getLambda ();
       g_assert_nonnull (lambda);
       TRACE ("eos %s@lambda at %" GINGA_TIME_FORMAT, _id.c_str (),
              GINGA_TIME_ARGS (_time));

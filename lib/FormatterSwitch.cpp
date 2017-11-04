@@ -96,7 +96,7 @@ FormatterSwitch::exec (FormatterEvent *evt,
           TRACE ("stop %s@lambda", _id.c_str ());
           g_assert_nonnull (_selected);
           {
-            FormatterEvent *e = _selected->obtainLambda ();
+            FormatterEvent *e = _selected->getLambda ();
             g_assert_nonnull (e);
             e->transition (NclEventStateTransition::STOP);
             _selected = nullptr;

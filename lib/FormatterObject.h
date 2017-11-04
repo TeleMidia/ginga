@@ -50,7 +50,7 @@ public:
   FormatterEvent *obtainEvent (NclEventType, NclAnchor *, const string &);
   bool addEvent (FormatterEvent *);
 
-  FormatterEvent *obtainLambda ();
+  FormatterEvent *getLambda ();
   bool isOccurring ();
   bool isPaused ();
   bool isSleeping ();
@@ -68,12 +68,14 @@ public:
 
 protected:
   Formatter *_formatter;         // formatter handle
-  NclNode *_node;                 // NCL node
-  string _id;                     // id
-  vector<string> _aliases;        // aliases
-  FormatterContext *_parent;      // parent object
-  set<FormatterEvent *> _events;  // object events
-  GingaTime _time;                // playback time
+  NclNode *_node;                // NCL node
+  string _id;                    // id
+  vector<string> _aliases;       // aliases
+  FormatterContext *_parent;     // parent object
+  GingaTime _time;               // playback time
+
+  set<FormatterEvent *> _events; // all events
+  FormatterEvent *_lambda;       // lambda event
 
   // delayed actions
   vector<pair<FormatterAction *, GingaTime>> _delayed;
