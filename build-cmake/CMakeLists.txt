@@ -119,16 +119,17 @@ set (LIBGINGA_SOURCES
   ../lib/ginga.h
   ../lib/aux-ginga.cpp
   ../lib/aux-gl.cpp
+
   ../lib/Formatter.cpp
   ../lib/FormatterAction.cpp
   ../lib/FormatterCondition.cpp
   ../lib/FormatterContext.cpp
   ../lib/FormatterEvent.cpp
   ../lib/FormatterLink.cpp
+  ../lib/FormatterMedia.cpp
   ../lib/FormatterMediaSettings.cpp
   ../lib/FormatterObject.cpp
   ../lib/FormatterPredicate.cpp
-  ../lib/FormatterScheduler.cpp
   ../lib/FormatterSwitch.cpp
   ../lib/Ginga.cpp
 
