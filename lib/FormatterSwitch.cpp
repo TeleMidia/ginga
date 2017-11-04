@@ -21,12 +21,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NAMESPACE_BEGIN
 
 FormatterSwitch::FormatterSwitch (Formatter *formatter, const string &id,
-                                  NclNode *node)
-  :FormatterContext (formatter, id, node)
+                                  NclSwitch *swtch)
+  :FormatterContext (formatter, id, nullptr)
 {
-  g_assert_nonnull (node);
-  _switch = cast (NclSwitch *, node);
-  g_assert_nonnull (_switch);
+  g_assert_nonnull (swtch);
+  _switch = swtch;
   _selected = nullptr;
 }
 

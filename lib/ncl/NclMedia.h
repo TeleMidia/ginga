@@ -31,7 +31,9 @@ public:
 
   bool isSettings ();
 
+  void setMimeType (const string &);
   string getMimeType ();
+
   string getSrc ();
   void setSrc (const string &);
 

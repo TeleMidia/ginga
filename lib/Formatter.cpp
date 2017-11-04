@@ -595,7 +595,7 @@ Formatter::obtainExecutionObject (NclNode *node)
   if (instanceof (NclSwitch *, node))
     {
       TRACE ("creating switch %s", node->getId ().c_str ());
-      object = new FormatterSwitch (this, id, node);
+      object = new FormatterSwitch (this, id, cast (NclSwitch *, node));
       goto done;
     }
 
@@ -603,7 +603,7 @@ Formatter::obtainExecutionObject (NclNode *node)
   if (instanceof (NclContext *, node))
     {
       TRACE ("creating context %s", node->getId ().c_str ());
-      object = new FormatterContext (this, id, node);
+      object = new FormatterContext (this, id, cast (NclContext *, node));
       g_assert_nonnull (object);
       if (parent != nullptr)
         object->initParent (parent);
@@ -626,11 +626,21 @@ Formatter::obtainExecutionObject (NclNode *node)
   if (media->isSettings ())
     {
       g_assert_null (_settings);
-      object = new FormatterMediaSettings (this, id, node);
+      object = new FormatterMediaSettings (this, id);
     }
   else
     {
-      object = new FormatterMedia (this, id, node);
+      object = new FormatterMedia
+        (this, id, media->getMimeType (), media->getSrc ());
+    }
+
+  // Initialize properties.
+  for (auto anchor: *media->getAnchors ())
+    {
+      NclProperty *prop = cast (NclProperty *, anchor);
+      if (prop != nullptr)
+        object->setProperty (prop->getName (),
+                             prop->getValue ());
     }
 
  done:

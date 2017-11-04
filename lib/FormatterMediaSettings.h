@@ -25,7 +25,7 @@ GINGA_NAMESPACE_BEGIN
 class FormatterMediaSettings: public FormatterMedia
 {
 public:
-  FormatterMediaSettings (Formatter *, const string &, NclNode *);
+  FormatterMediaSettings (Formatter *, const string &);
   ~FormatterMediaSettings ();
 
   void setProperty (const string &, const string &, GingaTime) override;

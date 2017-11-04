@@ -22,17 +22,95 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterMediaSettings.h"
 #include "FormatterSwitch.h"
 #include "FormatterEvent.h"
+#include "ncl/Ncl.h"
 #include "player/Player.h"
 
 GINGA_NAMESPACE_BEGIN
+
+static map<string, string> mime_table =
+{
+  {"ac3", "audio/ac3"},
+  {"avi", "video/x-msvideo"},
+  {"bmp", "image/bmp"},
+  {"bpg", "image/x-bpg"},
+  {"class", "application/x-ginga-NCLet"},
+  {"css", "text/css"},
+  {"gif", "image/gif"},
+  {"htm", "text/html"},
+  {"html", "text/html"},
+  {"jpeg", "image/jpeg"},
+  {"jpg", "image/jpeg"},
+  {"lua", "application/x-ginga-NCLua"},
+  {"mov", "video/quicktime"},
+  {"mp2", "audio/mp2"},
+  {"mp3", "audio/mp3"},
+  {"mp4", "video/mp4"},
+  {"mpa", "audio/mpa"},
+  {"mpeg", "video/mpeg"},
+  {"mpg", "video/mpeg"},
+  {"mpv", "video/mpv"},
+  {"ncl", "application/x-ginga-ncl"},
+  {"oga", "audio/ogg"},
+  {"ogg", "audio/ogg"},
+  {"ogv", "video/ogg"},
+  {"opus", "audio/ogg"},
+  {"png", "image/png"},
+  {"smil", "application/smil"},
+  {"spx", "audio/ogg"},
+  {"srt", "text/srt"},
+  {"ssml", "application/ssml+xml"},
+  {"svg", "image/svg+xml"},
+  {"svgz", "image/svg+xml"},
+  {"ts", "video/mpeg"},
+  {"txt", "text/plain"},
+  {"wav", "audio/basic"},
+  {"webp", "image/x-webp"},
+  {"wmv", "video/x-ms-wmv"},
+  {"xlet", "application/x-ginga-NCLet"},
+  {"xlt", "application/x-ginga-NCLet"},
+  {"xml", "text/xml"},
+};
+
+static bool
+mime_table_index (const string &key, string *result)
+{
+  map<string, string>::iterator it;
+  if ((it = mime_table.find (key)) == mime_table.end ())
+    return false;
+  tryset (result, it->second);
+  return true;
+}
 
 
 // Public.
 
 FormatterMedia::FormatterMedia (Formatter *formatter, const string &id,
-                                NclNode *node)
-  :FormatterObject (formatter, id, node)
+                                const string &mimetype, const string &uri)
+  :FormatterObject (formatter, id)
 {
+  _mimetype = mimetype;
+  _uri = uri;
+
+  if (_mimetype == "" && _uri != "")
+    {
+      string::size_type index, len;
+      index = _uri.find_last_of (".");
+      if (index != std::string::npos)
+        {
+          index++;
+          len = _uri.length ();
+          if (index < len)
+            {
+              string extension = _uri.substr (index, (len - index));
+              if (extension != "")
+                mime_table_index (extension, &_mimetype);
+            }
+        }
+    }
+
+  if (_mimetype == "")
+    _mimetype = "application/x-ginga-timer";
+
   _player = nullptr;
 }
 
@@ -44,7 +122,7 @@ FormatterMedia::~FormatterMedia ()
 string
 FormatterMedia::getProperty (const string &name)
 {
-  return (_player) ? _player->getProperty (name) : "";
+  return FormatterObject::getProperty (name);
 }
 
 void
@@ -52,26 +130,16 @@ FormatterMedia::setProperty (const string &name,
                              const string &value,
                              GingaTime dur)
 {
-  string from;
-
+  string from = this->getProperty (name);
+  FormatterObject::setProperty (name, value, dur);
   if (_player == nullptr)
-    return;                     // nothing to do
+    return;
 
-  from = this->getProperty (name);
   g_assert (GINGA_TIME_IS_VALID (dur));
   if (dur > 0)
-    {
-      TRACE ("%s.%s:='%s' (previous '%s') over %" GINGA_TIME_FORMAT,
-             _id.c_str (), name.c_str (), value.c_str (),
-             from.c_str (), GINGA_TIME_ARGS (dur));
-      _player->schedulePropertyAnimation (name, from, value, dur);
-    }
+    _player->schedulePropertyAnimation (name, from, value, dur);
   else
-    {
-      TRACE ("%s.%s:='%s' (previous '%s')",
-             _id.c_str (), name.c_str (), value.c_str (), from.c_str ());
-      _player->setProperty (name, value);
-    }
+    _player->setProperty (name, value);
 }
 
 void
@@ -188,27 +256,14 @@ FormatterMedia::exec (FormatterEvent *evt,
               //
               // Start lambda.
               //
-              NclMedia *media;
-              string src;
-              string mime;
-
               g_assert_null (_player);
-              media = cast (NclMedia *, _node);
-              g_assert_nonnull (media);
-
-              src = media->getSrc ();
-              mime = media->getMimeType ();
-              _player = Player::createPlayer (_formatter, _id, src, mime);
+              _player = Player::createPlayer
+                (_formatter, _id, _uri, _mimetype);
               g_assert_nonnull (_player);
 
-              // Initialize properties.
-              for (auto anchor: *media->getAnchors ())
-                {
-                  NclProperty *prop = cast (NclProperty *, anchor);
-                  if (prop != nullptr)
-                    _player->setProperty (prop->getName (),
-                                          prop->getValue ());
-                }
+              // Initialize player properties.
+              for (auto it: _property)
+                _player->setProperty (it.first, it.second);
 
               // Install delayed actions for time anchors.
               for (auto e: _events)

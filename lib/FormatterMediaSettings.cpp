@@ -24,15 +24,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NAMESPACE_BEGIN
 
 FormatterMediaSettings::FormatterMediaSettings (Formatter *formatter,
-                                                const string &id,
-                                                NclNode *node)
-  :FormatterMedia (formatter, id, node)
+                                                const string &id)
+  :FormatterMedia (formatter, id, "application/x-ginga-settings", "")
 {
-  NclNode *nodeEntity = cast (NclNode *, node->derefer ());
-  g_assert_nonnull (nodeEntity);
-  auto media = cast (NclMedia *, nodeEntity);
-  g_assert_nonnull (media);
-  g_assert (media->isSettings ());
 }
 
 FormatterMediaSettings::~FormatterMediaSettings ()

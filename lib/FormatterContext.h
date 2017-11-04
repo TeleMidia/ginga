@@ -27,7 +27,7 @@ GINGA_NAMESPACE_BEGIN
 class FormatterContext: public FormatterObject
 {
 public:
-  FormatterContext (Formatter *, const string &, NclNode *);
+  FormatterContext (Formatter *, const string &, NclContext *);
   virtual ~FormatterContext ();
 
   string getProperty (const string &) override;

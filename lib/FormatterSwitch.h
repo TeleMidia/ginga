@@ -26,7 +26,7 @@ GINGA_NAMESPACE_BEGIN
 class FormatterSwitch: public FormatterContext
 {
 public:
-  FormatterSwitch (Formatter *, const string &, NclNode *);
+  FormatterSwitch (Formatter *, const string &, NclSwitch *);
   ~FormatterSwitch ();
 
   bool exec (FormatterEvent *, NclEventState, NclEventState,
