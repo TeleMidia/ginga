@@ -44,7 +44,6 @@ src+= FormatterMedia.cpp
 src+= FormatterMediaSettings.cpp
 src+= FormatterObject.cpp
 src+= FormatterPredicate.cpp
-src+= FormatterScheduler.cpp
 src+= FormatterSwitch.cpp
 src+= Ginga.cpp
 src+= aux-ginga.cpp

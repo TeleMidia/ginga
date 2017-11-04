@@ -20,14 +20,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "FormatterContext.h"
 #include "FormatterSwitch.h"
-#include "FormatterScheduler.h"
 
 GINGA_NAMESPACE_BEGIN
 
-FormatterMediaSettings::FormatterMediaSettings (Formatter *ginga,
+FormatterMediaSettings::FormatterMediaSettings (Formatter *formatter,
                                                 const string &id,
                                                 NclNode *node)
-  :FormatterMedia (ginga, id, node)
+  :FormatterMedia (formatter, id, node)
 {
   NclNode *nodeEntity = cast (NclNode *, node->derefer ());
   g_assert_nonnull (nodeEntity);
@@ -92,23 +91,17 @@ FormatterMediaSettings::updateCurrentFocus (const string &index)
     }
   else
     {
-      FormatterScheduler *sched = _ginga->getScheduler ();
-      g_assert_nonnull (sched);
-
-      for (auto obj: *sched->getObjects ())
+      for (auto media: *_formatter->getMediaObjects ())
         {
-          FormatterMedia *media = cast (FormatterMedia *, obj);
-          if (media != nullptr && media->isFocused ())
-            return;                   // nothing to do
+          if (media->isFocused ())
+            return;             // nothing to do
         }
 
-      for (auto obj: *sched->getObjects ())
+      for (auto media: *_formatter->getMediaObjects ())
         {
-          if (instanceof (FormatterMedia *, obj)
-              && !instanceof (FormatterMediaSettings *, obj)
-              && obj->isOccurring ()
-              && (i = obj->getProperty ("focusIndex")) != ""
-              && (next == "" || g_strcmp0 (i.c_str (), next.c_str ()) < 0))
+          if (media->isOccurring ()
+              && (i = media->getProperty ("focusIndex")) != ""
+              && (next == "" || i < next))
             {
               next = i;
             }

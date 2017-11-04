@@ -53,8 +53,7 @@ public:
   bool transition (NclEventStateTransition);
 
 private:
-  Formatter *_ginga;                            // formatter handle
-  FormatterScheduler *_scheduler;               // scheduler
+  Formatter *_formatter;                        // formatter handle
   NclEventType _type;                           // event type
   FormatterObject *_object;                     // target object
   NclAnchor *_anchor;                           // target anchor

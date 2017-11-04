@@ -22,7 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterMediaSettings.h"
 #include "FormatterSwitch.h"
 #include "FormatterEvent.h"
-#include "FormatterScheduler.h"
 #include "player/Player.h"
 
 GINGA_NAMESPACE_BEGIN
@@ -30,10 +29,9 @@ GINGA_NAMESPACE_BEGIN
 
 // Public.
 
-FormatterMedia::FormatterMedia (Formatter *ginga,
-                                const string &id,
+FormatterMedia::FormatterMedia (Formatter *formatter, const string &id,
                                 NclNode *node)
-  :FormatterObject (ginga, id, node)
+  :FormatterObject (formatter, id, node)
 {
   _player = nullptr;
 }
@@ -99,7 +97,7 @@ FormatterMedia::sendKeyEvent (const string &key, bool press)
                && (next = _player->getProperty ("moveRight")) != "")))
         {
           FormatterMediaSettings *settings;
-          settings = _scheduler->getSettings ();
+          settings = _formatter->getSettings ();
           g_assert_nonnull (settings);
           settings->scheduleFocusUpdate (next);
         }
@@ -149,6 +147,11 @@ FormatterMedia::sendTickEvent (GingaTime total,
 
   // Update object time.
   FormatterObject::sendTickEvent (total, diff, frame);
+
+  if (_player == nullptr)
+    return;                     // nothing to do.
+
+  // Update player time.
   g_assert_nonnull (_player);
   _player->incTime (diff);
 
@@ -196,7 +199,7 @@ FormatterMedia::exec (FormatterEvent *evt,
 
               src = media->getSrc ();
               mime = media->getMimeType ();
-              _player = Player::createPlayer (_ginga, _id, src, mime);
+              _player = Player::createPlayer (_formatter, _id, src, mime);
               g_assert_nonnull (_player);
 
               // Initialize properties.
@@ -359,13 +362,13 @@ FormatterMedia::exec (FormatterEvent *evt,
             value = "";
             evt->getParameter ("value", &value);
             if (value[0] == '$')
-              _scheduler->getObjectPropertyByRef (value, &value);
+              _formatter->getObjectPropertyByRef (value, &value);
 
             string s;
             if (evt->getParameter ("duration", &s))
               {
                 if (s[0] == '$')
-                  _scheduler->getObjectPropertyByRef (s, &s);
+                  _formatter->getObjectPropertyByRef (s, &s);
                 dur = ginga_parse_time (s);
               }
             else

@@ -43,11 +43,10 @@ public:
   void conditionSatisfied (FormatterCondition *);
 
 private:
-  Formatter *_ginga;               // ginga handle
-  FormatterScheduler *_scheduler;               // scheduler
+  Formatter *_formatter;                     // formatter handle
   vector <FormatterCondition *> _conditions; // list of conditions
   vector <FormatterAction *> _actions;       // list of actions
-  bool _disabled;                      // whether link is disabled
+  bool _disabled;                            // whether link is disabled
 };
 
 GINGA_NAMESPACE_END

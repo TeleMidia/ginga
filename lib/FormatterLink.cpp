@@ -18,18 +18,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "FormatterLink.h"
 #include "FormatterContext.h"
-#include "FormatterScheduler.h"
 
 GINGA_NAMESPACE_BEGIN
 
-FormatterLink::FormatterLink (Formatter *ginga)
+FormatterLink::FormatterLink (Formatter *formatter)
 {
-  g_assert_nonnull (ginga);
-  _ginga = ginga;
-
-  _scheduler = ginga->getScheduler ();
-  g_assert_nonnull (_scheduler);
-
+  g_assert_nonnull (formatter);
+  _formatter = formatter;
   _disabled = false;
 }
 
@@ -88,11 +83,11 @@ FormatterLink::conditionSatisfied (FormatterCondition *cond)
   FormatterPredicate *pred;
 
   if (_disabled)
-    return;                     // nothing to do
+    return;                     // fail
 
   pred = cond->getPredicate ();
-  if (pred != nullptr && !_scheduler->eval (pred))
-    return;                     // nothing to do
+  if (pred != nullptr && !_formatter->evalPredicate (pred))
+    return;                     // fail
 
   for (auto action: _actions)
     {

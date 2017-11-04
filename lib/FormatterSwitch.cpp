@@ -17,13 +17,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 #include "FormatterSwitch.h"
-#include "FormatterScheduler.h"
 
 GINGA_NAMESPACE_BEGIN
 
-FormatterSwitch::FormatterSwitch (Formatter *ginga, const string &id,
+FormatterSwitch::FormatterSwitch (Formatter *formatter, const string &id,
                                   NclNode *node)
-  :FormatterContext (ginga, id, node)
+  :FormatterContext (formatter, id, node)
 {
   g_assert_nonnull (node);
   _switch = cast (NclSwitch *, node);
@@ -66,9 +65,9 @@ FormatterSwitch::exec (FormatterEvent *evt,
               pred = item.second;
               g_assert_nonnull (pred);
 
-              if (_scheduler->eval (pred))
+              if (_formatter->evalPredicate (pred))
                 {
-                  _selected = _scheduler->obtainExecutionObject (node);
+                  _selected = _formatter->obtainExecutionObject (node);
                   g_assert_nonnull (_selected);
                   e = _selected->obtainEvent (NclEventType::PRESENTATION,
                                               node->getLambda (), "");

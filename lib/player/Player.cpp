@@ -86,19 +86,18 @@ static map<string, string> player_property_aliases =
 
 // Public.
 
-Player::Player (Formatter *ginga, const string &id, const string &uri)
+Player::Player (Formatter *formatter, const string &id, const string &uri)
 {
-  // Internal data.
-  g_assert_nonnull (ginga);
-  _ginga = ginga;
-  _opengl = _ginga->getOptionBool ("opengl");
+  g_assert_nonnull (formatter);
+  _formatter = formatter;
+  _opengl = _formatter->getOptionBool ("opengl");
   _id = id;
   _uri = uri;
   _state = SLEEPING;
   _time = 0;
   _eos = false;
   _dirty = true;
-  _animator = new PlayerAnimator (_ginga);
+  _animator = new PlayerAnimator (_formatter);
   _surface = nullptr;
   _gltexture = 0;
   this->resetProperties ();
@@ -385,7 +384,7 @@ Player::redraw (cairo_t *cr)
         }
     }
 
-  if (_prop.debug || _ginga->getOptionBool ("debug"))
+  if (_prop.debug || _formatter->getOptionBool ("debug"))
     this->redrawDebuggingInfo (cr);
 }
 
@@ -439,43 +438,43 @@ Player::getPlayerProperty (const string &name, string *defval)
 }
 
 Player *
-Player::createPlayer (Formatter *ginga, const string &id,
+Player::createPlayer (Formatter *formatter, const string &id,
                       const string &uri, const string &mime)
 {
   Player *player = nullptr;
-  g_assert_nonnull (ginga);
+  g_assert_nonnull (formatter);
 
   if (xstrhasprefix (mime, "audio") || xstrhasprefix (mime, "video"))
     {
-      player = new PlayerVideo (ginga, id, uri);
+      player = new PlayerVideo (formatter, id, uri);
     }
 #if WITH_LIBRSVG && WITH_LIBRSVG
   else if (xstrhasprefix (mime, "image/svg"))
     {
-      player = new PlayerSvg (ginga, id, uri);
+      player = new PlayerSvg (formatter, id, uri);
     }
 #endif
   else if (xstrhasprefix (mime, "image"))
     {
-      player = new PlayerImage (ginga, id, uri);
+      player = new PlayerImage (formatter, id, uri);
     }
 #if defined WITH_CEF && WITH_CEF
   else if (xstrhasprefix (mime, "text/html"))
     {
-      player = new PlayerHTML (ginga, id, uri);
+      player = new PlayerHTML (formatter, id, uri);
     }
 #endif
   else if (mime == "text/plain")
     {
-      player = new PlayerText (ginga, id, uri);
+      player = new PlayerText (formatter, id, uri);
     }
   else if (mime == "application/x-ginga-NCLua")
     {
-      player = new PlayerLua (ginga, id, uri);
+      player = new PlayerLua (formatter, id, uri);
     }
   else
     {
-      player = new Player (ginga, id, uri);
+      player = new Player (formatter, id, uri);
       if (uri != "")
         {
           WARNING ("unknown mime '%s': creating an empty player",
@@ -533,14 +532,14 @@ Player::doSetProperty (PlayerProperty code, unused (const string &name),
       }
     case PROP_LEFT:
       {
-        int width = _ginga->getOptionInt ("width");
+        int width = _formatter->getOptionInt ("width");
         _prop.rect.x = ginga_parse_percent (value, width, 0, G_MAXINT);
         _dirty = true;
         break;
       }
     case PROP_RIGHT:
       {
-        int width = _ginga->getOptionInt ("width");
+        int width = _formatter->getOptionInt ("width");
         _prop.rect.x = width - _prop.rect.width
           - ginga_parse_percent (value, _prop.rect.width, 0, G_MAXINT);
         _dirty = true;
@@ -548,14 +547,14 @@ Player::doSetProperty (PlayerProperty code, unused (const string &name),
       }
     case PROP_TOP:
       {
-        int height = _ginga->getOptionInt ("height");
+        int height = _formatter->getOptionInt ("height");
         _prop.rect.y = ginga_parse_percent (value, height, 0, G_MAXINT);
         _dirty = true;
         break;
       }
     case PROP_BOTTOM:
       {
-        int height = _ginga->getOptionInt ("height");
+        int height = _formatter->getOptionInt ("height");
         _prop.rect.y = height - _prop.rect.height
           - ginga_parse_percent (value, _prop.rect.height, 0, G_MAXINT);
         _dirty = true;
@@ -563,14 +562,14 @@ Player::doSetProperty (PlayerProperty code, unused (const string &name),
       }
     case PROP_WIDTH:
       {
-        int width = _ginga->getOptionInt ("width");
+        int width = _formatter->getOptionInt ("width");
         _prop.rect.width = ginga_parse_percent (value, width, 0, G_MAXINT);
         _dirty = true;
         break;
       }
     case PROP_HEIGHT:
       {
-        int height = _ginga->getOptionInt ("height");
+        int height = _formatter->getOptionInt ("height");
         _prop.rect.height = ginga_parse_percent
           (value, height, 0, G_MAXINT);
         _dirty = true;

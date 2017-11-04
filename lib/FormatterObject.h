@@ -67,8 +67,7 @@ public:
                      NclEventStateTransition) = 0;
 
 protected:
-  Formatter *_ginga;              // formatter handle
-  FormatterScheduler *_scheduler; // formatter scheduler
+  Formatter *_formatter;         // formatter handle
   NclNode *_node;                 // NCL node
   string _id;                     // id
   vector<string> _aliases;        // aliases

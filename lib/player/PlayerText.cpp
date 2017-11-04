@@ -155,8 +155,8 @@ PlayerText::renderSurface (const string &text,
 
 // Public.
 
-PlayerText::PlayerText (Formatter *ginga, const string &id,
-                        const string &uri): Player (ginga, id, uri)
+PlayerText::PlayerText (Formatter *formatter, const string &id,
+                        const string &uri): Player (formatter, id, uri)
 {
   // Initialize handled properties.
   static set<string> handled =

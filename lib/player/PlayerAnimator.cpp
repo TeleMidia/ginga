@@ -23,10 +23,10 @@ GINGA_NAMESPACE_BEGIN
 
 // PlayerAnimator: Public.
 
-PlayerAnimator::PlayerAnimator (Formatter *ginga)
+PlayerAnimator::PlayerAnimator (Formatter *formatter)
 {
-  g_assert_nonnull (ginga);
-  _ginga = ginga;
+  g_assert_nonnull (formatter);
+  _formatter = formatter;
 }
 
 PlayerAnimator::~PlayerAnimator ()
@@ -185,8 +185,8 @@ PlayerAnimator::doSchedule (const string &name, const string &from,
   int height;
 
   current = 0;
-  width = _ginga->getOptionInt ("width");
-  height = _ginga->getOptionInt ("height");
+  width = _formatter->getOptionInt ("width");
+  height = _formatter->getOptionInt ("height");
 
   if (name == "top" || name == "height")
     {
