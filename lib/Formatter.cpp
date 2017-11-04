@@ -554,7 +554,7 @@ Formatter::obtainExecutionObject (NclNode *node)
 {
   string id;
   NclNode *parentNode;
-  FormatterContext *parent;
+  FormatterComposition *parent;
   FormatterObject *object;
 
   id = node->getId ();
@@ -571,7 +571,7 @@ Formatter::obtainExecutionObject (NclNode *node)
     }
   else
     {
-      parent = cast (FormatterContext *,
+      parent = cast (FormatterComposition *,
                      obtainExecutionObject (parentNode));
       g_assert_nonnull (parent);
       if ((object = this->getObjectByIdOrAlias (id)) != nullptr)
@@ -606,7 +606,7 @@ Formatter::obtainExecutionObject (NclNode *node)
       object = new FormatterContext (this, id, cast (NclContext *, node));
       g_assert_nonnull (object);
       if (parent != nullptr)
-        object->initParent (parent);
+        g_assert (parent->addChild (object));
       g_assert (this->addObject (object));
 
       NclContext *ctx = cast (NclContext *, node);
@@ -646,7 +646,7 @@ Formatter::obtainExecutionObject (NclNode *node)
  done:
   g_assert_nonnull (object);
   if (parent != nullptr)
-    object->initParent (parent);
+    g_assert (parent->addChild (object));
   g_assert (this->addObject (object));
   return object;
 }

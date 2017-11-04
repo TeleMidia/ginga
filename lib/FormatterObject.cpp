@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "FormatterObject.h"
 
-#include "FormatterContext.h"
+#include "FormatterComposition.h"
 #include "FormatterEvent.h"
 #include "FormatterMedia.h"
 #include "FormatterMediaSettings.h"
@@ -30,7 +30,6 @@ GINGA_NAMESPACE_BEGIN
 // Public.
 
 FormatterObject::FormatterObject (Formatter *formatter, const string &id)
-
 {
   g_assert_nonnull (formatter);
   _formatter = formatter;
@@ -79,19 +78,18 @@ FormatterObject::addAlias (const string &alias)
   return true;
 }
 
-FormatterContext *
+FormatterComposition *
 FormatterObject::getParent ()
 {
   return _parent;
 }
 
 void
-FormatterObject::initParent (FormatterContext *parent)
+FormatterObject::initParent (FormatterComposition *parent)
 {
   g_assert_nonnull (parent);
   g_assert_null (_parent);
   _parent = parent;
-  g_assert (parent->addChild (this));
 }
 
 FormatterEvent *

@@ -18,13 +18,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FORMATTER_CONTEXT_H
 #define FORMATTER_CONTEXT_H
 
-#include "FormatterObject.h"
+#include "FormatterComposition.h"
 #include "FormatterEvent.h"
 #include "FormatterLink.h"
 
 GINGA_NAMESPACE_BEGIN
 
-class FormatterContext: public FormatterObject
+class FormatterContext: public FormatterComposition
 {
 public:
   FormatterContext (Formatter *, const string &, NclContext *);
@@ -39,16 +39,11 @@ public:
   bool exec (FormatterEvent *, NclEventState, NclEventState,
              NclEventStateTransition) override;
 
-  const set<FormatterObject *> *getChildren ();
-  FormatterObject *getChildById (const string &);
-  bool addChild (FormatterObject *);
-
   const vector<FormatterLink *> *getLinks ();
   bool addLink (FormatterLink *);
 
 private:
   NclContext *_context;
-  set<FormatterObject *> _children;
   vector<FormatterLink *> _links;
 
   void toggleLinks (bool);

@@ -15,27 +15,27 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef FORMATTER_SWITCH_H
-#define FORMATTER_SWITCH_H
+#ifndef FORMATTER_COMPOSITION_H
+#define FORMATTER_COMPOSITION_H
 
-#include "FormatterContext.h"
-#include "FormatterEvent.h"
+#include "FormatterObject.h"
 
 GINGA_NAMESPACE_BEGIN
 
-class FormatterSwitch: public FormatterComposition
+class FormatterComposition: public FormatterObject
 {
-public:
-  FormatterSwitch (Formatter *, const string &, NclSwitch *);
-  ~FormatterSwitch ();
+ public:
+  FormatterComposition (Formatter *, const string &);
+  virtual ~FormatterComposition ();
 
-  bool exec (FormatterEvent *, NclEventState, NclEventState,
-             NclEventStateTransition) override;
-private:
-  NclSwitch *_switch;
-  FormatterObject *_selected;
+  const set<FormatterObject *> *getChildren ();
+  FormatterObject *getChildById (const string &);
+  bool addChild (FormatterObject *);
+
+ protected:
+  set<FormatterObject *> _children;
 };
 
 GINGA_NAMESPACE_END
 
-#endif // FORMATTER_SWITCH_H
+#endif // FORMATTER_COMPOSITION_H

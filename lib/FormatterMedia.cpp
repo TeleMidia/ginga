@@ -287,8 +287,8 @@ FormatterMedia::exec (FormatterEvent *evt,
                   this->scheduleAction (act, end);
                 }
 
-              _time = 0;
               TRACE ("start %s@lambda", _id.c_str ());
+              FormatterObject::doStart ();
               _player->start ();
             }
           else

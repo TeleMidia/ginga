@@ -25,7 +25,7 @@ GINGA_NAMESPACE_BEGIN
 
 FormatterContext::FormatterContext (Formatter *formatter, const string &id,
                                     NclContext *context)
-  :FormatterObject (formatter, id)
+  :FormatterComposition (formatter, id)
 {
   _context = context;
 }
@@ -91,7 +91,6 @@ FormatterContext::exec (FormatterEvent *evt,
           //
           // Start lambda.
           //
-          TRACE ("start %s@lambda", _id.c_str ());
           for (auto port: *_context->getPorts ())
             {
               NclNode *target;
@@ -111,6 +110,8 @@ FormatterContext::exec (FormatterEvent *evt,
               g_assert_nonnull (e);
               e->transition (transition);
             }
+          TRACE ("start %s@lambda", _id.c_str ());
+          FormatterObject::doStart ();
           break;
         case NclEventStateTransition::PAUSE:
           g_assert_not_reached ();
@@ -122,7 +123,6 @@ FormatterContext::exec (FormatterEvent *evt,
           //
           // Stop lambda.
           //
-          TRACE ("stop %s@lambda", _id.c_str ());
           this->toggleLinks (true);
           for (auto child: _children)
             {
@@ -131,6 +131,8 @@ FormatterContext::exec (FormatterEvent *evt,
               e->transition (NclEventStateTransition::STOP);
             }
           this->toggleLinks (false);
+          TRACE ("stop %s@lambda", _id.c_str ());
+          FormatterObject::doStop ();
           break;
         case NclEventStateTransition::ABORT:
           g_assert_not_reached ();
@@ -155,31 +157,6 @@ FormatterContext::exec (FormatterEvent *evt,
     default:
       g_assert_not_reached ();
     }
-  return true;
-}
-
-const set<FormatterObject *> *
-FormatterContext::getChildren ()
-{
-  return &_children;
-}
-
-FormatterObject *
-FormatterContext::getChildById (const string &id)
-{
-  for (auto child: _children)
-    if (child->getId () == id)
-      return child;
-  return nullptr;
-}
-
-bool
-FormatterContext::addChild (FormatterObject *child)
-{
-  g_assert_nonnull (child);
-  if (_children.find (child) != _children.end ())
-    return false;
-  _children.insert (child);
   return true;
 }
 
