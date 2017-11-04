@@ -24,12 +24,10 @@ GINGA_NAMESPACE_BEGIN
 // Public.
 
 FormatterContext::FormatterContext (Formatter *formatter, const string &id,
-                                    NclNode *node)
-  :FormatterObject (formatter, id, node)
+                                    NclContext *context)
+  :FormatterObject (formatter, id)
 {
-  g_assert_nonnull (node);
-  _context = cast (NclContext *, node);
-  // g_assert_nonnull (_context);
+  _context = context;
 }
 
 FormatterContext::~FormatterContext ()

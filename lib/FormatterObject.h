@@ -30,12 +30,10 @@ class FormatterMediaSettings;
 class FormatterObject
 {
 public:
-  FormatterObject (Formatter *, const string &, NclNode *);
+  FormatterObject (Formatter *, const string &);
   virtual ~FormatterObject ();
 
-  NclNode *getNode ();
   string getId ();
-
   const vector <string> *getAliases ();
   bool hasAlias (const string &);
   bool addAlias (const string &);
@@ -44,14 +42,12 @@ public:
   void initParent (FormatterContext *);
 
   FormatterEvent *obtainEvent (NclEventType, NclAnchor *, const string &);
-  FormatterEvent *getEvent (NclEventType, const string &);
 
+  FormatterEvent *getEvent (NclEventType, const string &);
   FormatterEvent *getAttributionEvent (const string &);
   bool addAttributionEvent (const string &);
-
   FormatterEvent *getPresentationEvent (const string &);
   bool addPresentationEvent (const string &, GingaTime, GingaTime);
-
   FormatterEvent *getSelectionEvent (const string &);
   bool addSelectionEvent (const string &);
 
@@ -60,24 +56,24 @@ public:
   bool isPaused ();
   bool isSleeping ();
 
-  void scheduleAction (FormatterAction *, GingaTime);
+  virtual string getProperty (const string &);
+  virtual void setProperty (const string &, const string &,
+                            GingaTime dur=0);
 
+  void scheduleAction (FormatterAction *, GingaTime);
   virtual void sendKeyEvent (const string &, bool);
   virtual void sendTickEvent (GingaTime, GingaTime, GingaTime);
 
-  virtual string getProperty (const string &) = 0;
-  virtual void setProperty (const string &, const string &,
-                            GingaTime dur=0) = 0;
   virtual bool exec (FormatterEvent *, NclEventState, NclEventState,
                      NclEventStateTransition) = 0;
 
 protected:
   Formatter *_formatter;         // formatter handle
-  NclNode *_node;                // NCL node
   string _id;                    // id
   vector<string> _aliases;       // aliases
   FormatterContext *_parent;     // parent object
   GingaTime _time;               // playback time
+  map<string, string> _property; // property map
 
   set<FormatterEvent *> _events; // all events
   FormatterEvent *_lambda;       // lambda event

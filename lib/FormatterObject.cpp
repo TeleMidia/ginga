@@ -29,16 +29,11 @@ GINGA_NAMESPACE_BEGIN
 
 // Public.
 
-FormatterObject::FormatterObject (Formatter *formatter,
-                                  const string &id,
-                                  NclNode *node)
+FormatterObject::FormatterObject (Formatter *formatter, const string &id)
+
 {
   g_assert_nonnull (formatter);
   _formatter = formatter;
-
-  g_assert_nonnull (node);
-  _node = node;
-
   _id = id;
   _parent = nullptr;
   _time = GINGA_TIME_NONE;
@@ -51,12 +46,6 @@ FormatterObject::FormatterObject (Formatter *formatter,
 FormatterObject::~FormatterObject ()
 {
   this->doStop ();
-}
-
-NclNode *
-FormatterObject::getNode ()
-{
-  return _node;
 }
 
 string
@@ -253,6 +242,38 @@ FormatterObject::isSleeping ()
 {
   g_assert_nonnull (_lambda);
   return _lambda->getState () == NclEventState::SLEEPING;
+}
+
+string
+FormatterObject::getProperty (const string &name)
+{
+  map<string, string>::iterator it;
+  if ((it = _property.find (name)) == _property.end ())
+    return "";
+  return it->second;
+}
+
+void
+FormatterObject::setProperty (const string &name, const string &value,
+                              GingaTime dur)
+{
+  string from;
+
+  g_assert (GINGA_TIME_IS_VALID (dur));
+  from = getProperty (name);
+  _property[name] = value;
+
+  if (dur > 0)
+    {
+      TRACE ("%s.%s:='%s' (previous '%s') over %" GINGA_TIME_FORMAT,
+             _id.c_str (), name.c_str (), value.c_str (),
+             from.c_str (), GINGA_TIME_ARGS (dur));
+    }
+  else
+    {
+      TRACE ("%s.%s:='%s' (previous '%s')",
+             _id.c_str (), name.c_str (), value.c_str (), from.c_str ());
+    }
 }
 
 void
