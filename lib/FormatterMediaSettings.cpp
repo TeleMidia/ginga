@@ -112,8 +112,7 @@ FormatterMediaSettings::updateCurrentFocus (const string &index)
   string name = "service.currentFocus";
   string value = next;
 
-  FormatterEvent *evt = this->getEventByAnchorId
-    (NclEventType::ATTRIBUTION, name, "");
+  FormatterEvent *evt = this->getEvent (NclEventType::ATTRIBUTION, name);
   if (evt == nullptr)           // do no trigger links
     {
       cast (FormatterObject *, this)->setProperty (name, value);
