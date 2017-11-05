@@ -589,16 +589,29 @@ Formatter::obtainExecutionObject (NclNode *node)
       return object;
     }
 
-  // Create switch.
-  if (instanceof (NclSwitch *, node))
+  if (instanceof (NclSwitch *, node)) // switch
     {
       TRACE ("creating switch %s", node->getId ().c_str ());
-      object = new FormatterSwitch (this, id, cast (NclSwitch *, node));
-      goto done;
-    }
+      object = new FormatterSwitch (this, id);
+      g_assert_nonnull (object);
+      if (parent != nullptr)
+        parent->addChild (object);
+      this->addObject (object);
 
-  // Create context.
-  if (instanceof (NclContext *, node))
+      for (auto item: *cast (NclSwitch *, node)->getRules ())
+        {
+          FormatterObject *obj;
+
+          g_assert_nonnull (item.first);
+          g_assert_nonnull (item.second);
+
+          obj = this->obtainExecutionObject (item.first);
+          g_assert_nonnull (obj);
+          cast (FormatterSwitch *, object)->addRule (obj, item.second);
+        }
+      return object;
+    }
+  else if (instanceof (NclContext *, node)) // context
     {
       TRACE ("creating context %s", node->getId ().c_str ());
       object = new FormatterContext (this, id);
@@ -633,39 +646,42 @@ Formatter::obtainExecutionObject (NclNode *node)
 
       return object;
     }
-
-  // Create media.
-  g_assert (instanceof (NclMedia *, node));
-  TRACE ("creating media %s", node->getId ().c_str ());
-  NclMedia *media;
-  media = cast (NclMedia *, node);
-  g_assert_nonnull (media);
-  if (media->isSettings ())
+  else if (instanceof (NclMedia *, node)) // media
     {
-      g_assert_null (_settings);
-      object = new FormatterMediaSettings (this, id);
+      TRACE ("creating media %s", node->getId ().c_str ());
+      NclMedia *media;
+      media = cast (NclMedia *, node);
+      g_assert_nonnull (media);
+      if (media->isSettings ())
+        {
+          g_assert_null (_settings);
+          object = new FormatterMediaSettings (this, id);
+        }
+      else
+        {
+          object = new FormatterMedia
+            (this, id, media->getMimeType (), media->getSrc ());
+        }
+
+      // Initialize properties.
+      for (auto anchor: *media->getAnchors ())
+        {
+          NclProperty *prop = cast (NclProperty *, anchor);
+          if (prop != nullptr)
+            object->setProperty (prop->getName (),
+                                 prop->getValue ());
+        }
+
+      g_assert_nonnull (object);
+      if (parent != nullptr)
+        parent->addChild (object);
+      this->addObject (object);
+      return object;
     }
   else
     {
-      object = new FormatterMedia
-        (this, id, media->getMimeType (), media->getSrc ());
+      g_assert_not_reached ();
     }
-
-  // Initialize properties.
-  for (auto anchor: *media->getAnchors ())
-    {
-      NclProperty *prop = cast (NclProperty *, anchor);
-      if (prop != nullptr)
-        object->setProperty (prop->getName (),
-                             prop->getValue ());
-    }
-
- done:
-  g_assert_nonnull (object);
-  if (parent != nullptr)
-    parent->addChild (object);
-  this->addObject (object);
-  return object;
 }
 
 bool
