@@ -89,7 +89,7 @@ opt_size_cb (unused (const gchar *opt), const gchar *arg,
   return FALSE;
 }
 
-static gboolean
+static void
 opt_version_cb (void)
 {
   puts (PACKAGE_STRING);
