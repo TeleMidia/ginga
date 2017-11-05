@@ -27,7 +27,7 @@ GINGA_NAMESPACE_BEGIN
 class FormatterContext: public FormatterComposition
 {
 public:
-  FormatterContext (Formatter *, const string &, NclContext *);
+  FormatterContext (Formatter *, const string &);
   virtual ~FormatterContext ();
 
   string getProperty (const string &) override;
@@ -46,7 +46,6 @@ public:
   void addLink (FormatterLink *);
 
 private:
-  NclContext *_context;
   list<FormatterEvent *> _ports;
   list<FormatterLink *> _links;
 
