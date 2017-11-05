@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #ifndef NCL_MEDIA_REFER_H
-#define NCL_MEIDA_REFER_H
+#define NCL_MEDIA_REFER_H
 
 #include "NclNode.h"
 #include "NclMedia.h"
