@@ -83,6 +83,30 @@ using namespace std;
 #define cast(a, b)       (dynamic_cast<a>((b)))
 #define instanceof(a, b) (cast (a,(b)) != nullptr)
 
+#define tryinsert(a, b, fn)                             \
+  (std::count ((b).begin (), (b).end (), (a)) == 0)     \
+  ? ((b).fn (a), true) : false
+
+#define MAP_GET_IMPL(m, a, b)                   \
+  G_STMT_START                                  \
+  {                                             \
+    auto it = (m).find ((a));                   \
+    if (it == (m).end ())                       \
+      return false;                             \
+    tryset ((b), it->second);                   \
+    return true;                                \
+  }                                             \
+  G_STMT_END                                    \
+
+#define MAP_SET_IMPL(m, a, b)                           \
+  G_STMT_START                                          \
+  {                                                     \
+    auto it = (m).find ((a));                           \
+    (m)[(a)] = (b);                                     \
+    return it == (m).end ();                            \
+  }                                                     \
+  G_STMT_END
+
 // Message logging.
 #define GINGA_STRLOC  __FILE__ ":" G_STRINGIFY (__LINE__) ":" GINGA_STRFUNC
 #define GINGA_STRFUNC (__ginga_strfunc (G_STRFUNC)).c_str ()

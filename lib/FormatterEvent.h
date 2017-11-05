@@ -47,14 +47,13 @@ public:
   void getInterval (GingaTime *, GingaTime *);
   void setInterval (GingaTime, GingaTime);
 
-  const vector<IFormatterEventListener *> *getListeners ();
+  const list<IFormatterEventListener *> *getListeners ();
   void addListener (IFormatterEventListener *);
 
   bool getParameter (const string &, string *);
-  void setParameter (const string &, const string &);
+  bool setParameter (const string &, const string &);
 
   bool transition (NclEventStateTransition);
-
 
 private:
   NclEventType _type;                           // event type
@@ -63,7 +62,7 @@ private:
   NclEventState _state;                         // event state
   GingaTime _begin;                             // begin-time
   GingaTime _end;                               // end-time
-  vector<IFormatterEventListener *> _listeners; // event listeners
+  list<IFormatterEventListener *> _listeners;   // event listeners
   map<string, string> _parameters;              // parameters
 };
 

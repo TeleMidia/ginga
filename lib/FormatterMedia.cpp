@@ -262,7 +262,7 @@ FormatterMedia::exec (FormatterEvent *evt,
               g_assert_nonnull (_player);
 
               // Initialize player properties.
-              for (auto it: _property)
+              for (auto it: _properties)
                 _player->setProperty (it.first, it.second);
 
               // Install delayed actions for time anchors.

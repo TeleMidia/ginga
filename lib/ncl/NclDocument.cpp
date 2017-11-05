@@ -149,23 +149,20 @@ NclDocument::setParentDocument (NclDocument *parentDocument)
 }
 
 
-bool
+void
 NclDocument::addDocument (NclDocument *document, const string &alias,
                           const string &location)
 {
-  g_assert (document != NULL);
-
+  g_assert_nonnull (document);
   if (_documentAliases.find (alias) != _documentAliases.end ()
       || _documentLocations.find (location) != _documentLocations.end ())
     {
-      return false;
+      return;
     }
 
   _documentBase.push_back (document);
   _documentAliases[alias] = document;
   _documentLocations[location] = document;
-
-  return true;
 }
 
 NclConnector *

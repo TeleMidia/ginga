@@ -160,21 +160,30 @@ FormatterContext::exec (FormatterEvent *evt,
   return true;
 }
 
-const vector<FormatterLink *> *
+const list<FormatterEvent *> *
+FormatterContext::getPorts ()
+{
+  return &_ports;
+}
+
+void
+FormatterContext::addPort (FormatterEvent *evt)
+{
+  g_assert_nonnull (evt);
+  tryinsert (evt, _ports, push_back);
+}
+
+const list<FormatterLink *> *
 FormatterContext::getLinks ()
 {
   return &_links;
 }
 
-bool
+void
 FormatterContext::addLink (FormatterLink *link)
 {
   g_assert_nonnull (link);
-  for (auto other: _links)
-    if (other == link)
-      return false;
-  _links.push_back (link);
-  return true;
+  tryinsert (link, _links, push_back);
 }
 
 

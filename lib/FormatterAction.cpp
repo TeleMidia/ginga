@@ -53,17 +53,13 @@ FormatterAction::getEventStateTransition ()
 bool
 FormatterAction::getParameter (const string &name, string *value)
 {
-  map<string, string>::iterator it;
-  if ((it = _parameters.find (name)) == _parameters.end ())
-    return false;
-  tryset (value, it->second);
-  return true;
+  MAP_GET_IMPL (_parameters, name, value);
 }
 
-void
+bool
 FormatterAction::setParameter (const string &name, const string &value)
 {
-  _parameters[name] = value;
+  MAP_SET_IMPL (_parameters, name, value);
 }
 
 GINGA_NAMESPACE_END

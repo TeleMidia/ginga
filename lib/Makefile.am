@@ -19,7 +19,7 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 MAINTAINERCLEANFILES+= config.h.in config.h.in~
 
-EXTRA_DIST+= nclua.pc.in
+EXTRA_DIST+= ginga.pc.in
 DISTCLEANFILES+= ginga.pc
 
 pkgconfigdir= $(libdir)/pkgconfig

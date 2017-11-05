@@ -521,14 +521,14 @@ Formatter::getObjectPropertyByRef (const string &ref,
   return true;
 }
 
-bool
+void
 Formatter::addObject (FormatterObject *obj)
 {
   g_assert_nonnull (obj);
   if (_objects.find (obj) != _objects.end ()
       || getObjectByIdOrAlias (obj->getId ()) != nullptr)
     {
-      return false;
+      return;
     }
 
   _objects.insert (obj);
@@ -545,8 +545,6 @@ Formatter::addObject (FormatterObject *obj)
       g_assert_nonnull (media);
       _mediaObjects.insert (media);
     }
-
-  return true;
 }
 
 FormatterObject *
@@ -606,13 +604,13 @@ Formatter::obtainExecutionObject (NclNode *node)
       object = new FormatterContext (this, id, cast (NclContext *, node));
       g_assert_nonnull (object);
       if (parent != nullptr)
-        g_assert (parent->addChild (object));
-      g_assert (this->addObject (object));
+        parent->addChild (object);
+      this->addObject (object);
 
       NclContext *ctx = cast (NclContext *, node);
       for (auto link: *(ctx->getLinks ()))
-        g_assert (cast (FormatterContext *, object)
-                  ->addLink (obtainFormatterLink (link)));
+        cast (FormatterContext *, object)
+          ->addLink (obtainFormatterLink (link));
 
       return object;
     }
@@ -646,8 +644,8 @@ Formatter::obtainExecutionObject (NclNode *node)
  done:
   g_assert_nonnull (object);
   if (parent != nullptr)
-    g_assert (parent->addChild (object));
-  g_assert (this->addObject (object));
+    parent->addChild (object);
+  this->addObject (object);
   return object;
 }
 
@@ -955,9 +953,9 @@ Formatter::obtainFormatterLink (NclLink *docLink)
           evt = this->obtainFormatterEventFromBind (bind);
           g_assert_nonnull (evt);
 
-          cond = new FormatterCondition (pred, evt,
-                                         connCond->getTransition ());
-          g_assert (link->addCondition (cond));
+          cond = new FormatterCondition
+            (pred, evt, connCond->getTransition ());
+          link->addCondition (cond);
         }
     }
 
@@ -990,7 +988,7 @@ Formatter::obtainFormatterLink (NclLink *docLink)
               act->setParameter ("duration", dur);
               act->setParameter ("value", value);
             }
-          g_assert (link->addAction (act));
+          link->addAction (act);
         }
     }
 

@@ -45,15 +45,12 @@ FormatterComposition::getChildById (const string &id)
   return nullptr;
 }
 
-bool
+void
 FormatterComposition::addChild (FormatterObject *child)
 {
   g_assert_nonnull (child);
-  if (_children.find (child) != _children.end ())
-    return false;
-  child->initParent (this);
-  _children.insert (child);
-  return true;
+  if (tryinsert (child, _children, insert))
+    child->initParent (this);
 }
 
 GINGA_NAMESPACE_END

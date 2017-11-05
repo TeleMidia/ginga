@@ -32,17 +32,17 @@ public:
   NclConnector (NclDocument *, const string &);
   ~NclConnector ();
 
-  const vector<NclCondition *> *getConditions ();
-  bool addCondition (NclCondition *);
+  const list<NclCondition *> *getConditions ();
+  void addCondition (NclCondition *);
 
-  const vector<NclAction *> *getActions ();
-  bool addAction (NclAction *);
+  const list<NclAction *> *getActions ();
+  void addAction (NclAction *);
 
   NclRole *getRole (const string &);
 
 private:
-  vector<NclCondition *> _conditions;
-  vector<NclAction *> _actions;
+  list<NclCondition *> _conditions;
+  list<NclAction *> _actions;
 };
 
 GINGA_NAMESPACE_END

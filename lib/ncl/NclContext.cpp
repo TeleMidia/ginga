@@ -29,18 +29,14 @@ NclContext::~NclContext ()
 {
 }
 
-bool
+void
 NclContext::addLink (NclLink *link)
 {
   g_assert_nonnull (link);
-  for (auto old: _links)
-    if (old == link)
-      return false;
-  _links.push_back (link);
-  return true;
+  tryinsert (link, _links, push_back);
 }
 
-const vector<NclLink *> *
+const list<NclLink *> *
 NclContext::getLinks ()
 {
   return &_links;

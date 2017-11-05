@@ -36,7 +36,7 @@ public:
   string getId ();
   const vector <string> *getAliases ();
   bool hasAlias (const string &);
-  bool addAlias (const string &);
+  void addAlias (const string &);
 
   FormatterComposition *getParent ();
   void initParent (FormatterComposition *);
@@ -45,11 +45,11 @@ public:
 
   FormatterEvent *getEvent (NclEventType, const string &);
   FormatterEvent *getAttributionEvent (const string &);
-  bool addAttributionEvent (const string &);
+  void addAttributionEvent (const string &);
   FormatterEvent *getPresentationEvent (const string &);
-  bool addPresentationEvent (const string &, GingaTime, GingaTime);
+  void addPresentationEvent (const string &, GingaTime, GingaTime);
   FormatterEvent *getSelectionEvent (const string &);
-  bool addSelectionEvent (const string &);
+  void addSelectionEvent (const string &);
 
   FormatterEvent *getLambda ();
   bool isOccurring ();
@@ -68,12 +68,12 @@ public:
                      NclEventStateTransition) = 0;
 
 protected:
-  Formatter *_formatter;         // formatter handle
-  string _id;                    // id
-  vector<string> _aliases;       // aliases
-  FormatterComposition *_parent; // parent object
-  GingaTime _time;               // playback time
-  map<string, string> _property; // property map
+  Formatter *_formatter;           // formatter handle
+  string _id;                      // id
+  vector<string> _aliases;         // aliases
+  FormatterComposition *_parent;   // parent object
+  GingaTime _time;                 // playback time
+  map<string, string> _properties; // property map
 
   set<FormatterEvent *> _events; // all events
   FormatterEvent *_lambda;       // lambda event

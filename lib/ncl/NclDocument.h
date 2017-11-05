@@ -49,25 +49,23 @@ public:
   void setParentDocument (NclDocument *);
   string getDocumentPerspective ();
 
-  bool addDocument (NclDocument *document, const string &alias,
-                    const string &location);
-  NclConnector *getConnector (const string &connectorId);
+  void addDocument (NclDocument *, const string &, const string &);
+  NclConnector *getConnector (const string &);
   NclConnectorBase *getConnectorBase ();
 
-  NclDocument *getDocument (const string &documentId);
-  string getDocumentAlias (NclDocument *document);
-  string getDocumentLocation (NclDocument *document);
+  NclDocument *getDocument (const string &);
+  string getDocumentAlias (NclDocument *);
+  string getDocumentLocation (NclDocument *);
   vector<NclDocument *> *getDocuments ();
 
-
-  NclNode *getNode (const string &nodeId);
+  NclNode *getNode (const string &);
 
   vector<NclNode *> *getSettingsNodes ();
-  bool removeDocument (NclDocument *document);
-  void setConnectorBase (NclConnectorBase *_connectorBase);
-  void setDocumentAlias (NclDocument *document, const string &alias);
+  bool removeDocument (NclDocument *);
+  void setConnectorBase (NclConnectorBase *);
+  void setDocumentAlias (NclDocument *, const string &);
 
-  void setDocumentLocation (NclDocument *document, const string &location);
+  void setDocumentLocation (NclDocument *, const string &);
   void setId (const string &_id);
 
 private:
