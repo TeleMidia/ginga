@@ -26,13 +26,17 @@ GINGA_NAMESPACE_BEGIN
 class FormatterSwitch: public FormatterComposition
 {
 public:
-  FormatterSwitch (Formatter *, const string &, NclSwitch *);
+  FormatterSwitch (Formatter *, const string &);
   ~FormatterSwitch ();
 
   bool exec (FormatterEvent *, NclEventState, NclEventState,
              NclEventStateTransition) override;
+
+  const list<pair<FormatterObject *, FormatterPredicate *>> *getRules ();
+  void addRule (FormatterObject *, FormatterPredicate *);
+
 private:
-  NclSwitch *_switch;
+  list<pair<FormatterObject *, FormatterPredicate *>> _rules;
   FormatterObject *_selected;
 };
 

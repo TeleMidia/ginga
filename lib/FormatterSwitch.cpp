@@ -20,17 +20,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-FormatterSwitch::FormatterSwitch (Formatter *formatter, const string &id,
-                                  NclSwitch *swtch)
+FormatterSwitch::FormatterSwitch (Formatter *formatter, const string &id)
   :FormatterComposition (formatter, id)
 {
-  g_assert_nonnull (swtch);
-  _switch = swtch;
   _selected = nullptr;
 }
 
 FormatterSwitch::~FormatterSwitch ()
 {
+  for (auto item: _rules)
+    delete item.second;
 }
 
 bool
@@ -52,23 +51,21 @@ FormatterSwitch::exec (FormatterEvent *evt,
           // Start lambda.
           //
           g_assert_null (_selected);
-          for (auto item: *_switch->getRules ())
+          for (auto item: _rules)
             {
-              NclNode *node;
+              FormatterObject *obj;
               FormatterPredicate *pred;
               FormatterEvent *e;
 
-              node = item.first;
-              g_assert_nonnull (node);
+              obj = item.first;
+              g_assert_nonnull (obj);
               pred = item.second;
               g_assert_nonnull (pred);
 
               if (_formatter->evalPredicate (pred))
                 {
-                  _selected = _formatter->obtainExecutionObject (node);
-                  g_assert_nonnull (_selected);
-                  e = _selected->obtainEvent (NclEventType::PRESENTATION,
-                                              node->getLambda (), "");
+                  _selected = obj;
+                  e = _selected->getLambda ();
                   g_assert_nonnull (e);
                   e->transition (transition);
                   break;
@@ -131,6 +128,20 @@ FormatterSwitch::exec (FormatterEvent *evt,
       g_assert_not_reached ();
     }
   return true;
+}
+
+const list<pair<FormatterObject *, FormatterPredicate *>> *
+FormatterSwitch::getRules ()
+{
+  return &_rules;
+}
+
+void
+FormatterSwitch::addRule (FormatterObject *obj, FormatterPredicate *pred)
+{
+  g_assert_nonnull (obj);
+  g_assert_nonnull (pred);
+  _rules.push_back (std::make_pair (obj, pred));
 }
 
 GINGA_NAMESPACE_END
