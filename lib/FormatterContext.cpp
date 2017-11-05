@@ -23,11 +23,9 @@ GINGA_NAMESPACE_BEGIN
 
 // Public.
 
-FormatterContext::FormatterContext (Formatter *formatter, const string &id,
-                                    NclContext *context)
+FormatterContext::FormatterContext (Formatter *formatter, const string &id)
   :FormatterComposition (formatter, id)
 {
-  _context = context;
 }
 
 FormatterContext::~FormatterContext ()
@@ -91,25 +89,8 @@ FormatterContext::exec (FormatterEvent *evt,
           //
           // Start lambda.
           //
-          for (auto port: *_context->getPorts ())
-            {
-              NclNode *target;
-              NclAnchor *iface;
-              FormatterObject *child;
-              FormatterEvent *e;
-
-              port->getTarget (&target, &iface);
-              child = _formatter->obtainExecutionObject (target);
-              g_assert_nonnull (child);
-
-              if (!instanceof (NclArea *, iface))
-                continue;       // nothing to do
-
-              e = child->obtainEvent
-                (NclEventType::PRESENTATION, iface, "");
-              g_assert_nonnull (e);
-              e->transition (transition);
-            }
+          for (auto port: _ports)
+            port->transition (transition);
           TRACE ("start %s@lambda", _id.c_str ());
           FormatterObject::doStart ();
           break;

@@ -601,13 +601,32 @@ Formatter::obtainExecutionObject (NclNode *node)
   if (instanceof (NclContext *, node))
     {
       TRACE ("creating context %s", node->getId ().c_str ());
-      object = new FormatterContext (this, id, cast (NclContext *, node));
+      object = new FormatterContext (this, id);
       g_assert_nonnull (object);
       if (parent != nullptr)
         parent->addChild (object);
       this->addObject (object);
 
       NclContext *ctx = cast (NclContext *, node);
+      for (auto port: *ctx->getPorts ())
+        {
+          NclNode *target;
+          NclAnchor *iface;
+          FormatterObject *child;
+          FormatterEvent *e;
+
+          port->getTarget (&target, &iface);
+          child = this->obtainExecutionObject (target);
+          g_assert_nonnull (child);
+
+          if (!instanceof (NclArea *, iface))
+            continue;       // nothing to do
+
+          e = child->obtainEvent
+            (NclEventType::PRESENTATION, iface, "");
+          g_assert_nonnull (e);
+          cast (FormatterContext *, object)->addPort (e);
+        }
       for (auto link: *(ctx->getLinks ()))
         cast (FormatterContext *, object)
           ->addLink (obtainFormatterLink (link));
