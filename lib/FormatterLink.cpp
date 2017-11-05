@@ -42,39 +42,31 @@ FormatterLink::disable (bool disable)
   _disabled = disable;
 }
 
-const vector <FormatterCondition *> *
+const list<FormatterCondition *> *
 FormatterLink::getConditions ()
 {
   return &_conditions;
 }
 
-bool
+void
 FormatterLink::addCondition (FormatterCondition *condition)
 {
   g_assert_nonnull (condition);
-  for (auto cond: _conditions)
-    if (cond == condition)
-      return false;
-  condition->setTriggerListener (this);
-  _conditions.push_back (condition);
-  return true;
+  if (tryinsert (condition, _conditions, push_back))
+    condition->setTriggerListener (this);
 }
 
-const vector <FormatterAction *> *
+const list<FormatterAction *> *
 FormatterLink::getActions ()
 {
   return &_actions;
 }
 
-bool
+void
 FormatterLink::addAction (FormatterAction *action)
 {
   g_assert_nonnull (action);
-  for (auto act: _actions)
-    if (act == action)
-      return false;
-  _actions.push_back (action);
-  return true;
+  tryinsert (action, _actions, push_back);
 }
 
 void
@@ -107,17 +99,6 @@ FormatterLink::conditionSatisfied (FormatterCondition *cond)
         }
       evt->transition (action->getEventStateTransition ());
     }
-}
-
-vector<FormatterEvent *>
-FormatterLink::getEvents ()
-{
-  vector<FormatterEvent *> events;
-  for (auto condition: _conditions)
-    events.push_back (condition->getEvent ());
-  for (auto action: _actions)
-    events.push_back (action->getEvent ());
-  return events;
 }
 
 GINGA_NAMESPACE_END

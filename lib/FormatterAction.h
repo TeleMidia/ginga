@@ -33,7 +33,7 @@ public:
   NclEventStateTransition getEventStateTransition ();
 
   bool getParameter (const string &, string *);
-  void setParameter (const string &, const string &);
+  bool setParameter (const string &, const string &);
 
 private:
   FormatterEvent *_event;

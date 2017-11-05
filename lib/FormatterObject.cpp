@@ -37,7 +37,7 @@ FormatterObject::FormatterObject (Formatter *formatter, const string &id)
   _parent = nullptr;
   _time = GINGA_TIME_NONE;
 
-  g_assert (this->addPresentationEvent ("@lambda", 0, GINGA_TIME_NONE));
+  this->addPresentationEvent ("@lambda", 0, GINGA_TIME_NONE);
   _lambda = this->getPresentationEvent ("@lambda");
   g_assert_nonnull (_lambda);
 }
@@ -68,14 +68,10 @@ FormatterObject::hasAlias (const string &alias)
   return false;
 }
 
-bool
+void
 FormatterObject::addAlias (const string &alias)
 {
-  for (auto old: _aliases)
-    if (old == alias)
-      return false;
-  _aliases.push_back (alias);
-  return true;
+  tryinsert (alias, _aliases, push_back);
 }
 
 FormatterComposition *
@@ -114,8 +110,9 @@ FormatterObject::obtainEvent (NclEventType type, NclAnchor *anchor,
       {
         NclArea *area = cast (NclArea *, anchor);
         g_assert_nonnull (area);
-        g_assert (this->addPresentationEvent
-                  (anchor->getId (), area->getBegin (), area->getEnd ()));
+        this->addPresentationEvent (anchor->getId (),
+                                    area->getBegin (),
+                                    area->getEnd ());
         event = this->getPresentationEvent (anchor->getId ());
         g_assert_nonnull (event);
         break;
@@ -124,7 +121,7 @@ FormatterObject::obtainEvent (NclEventType type, NclAnchor *anchor,
       {
         NclProperty *property = cast (NclProperty *, anchor);
         g_assert_nonnull (property);
-        g_assert (this->addAttributionEvent (property->getId ()));
+        this->addAttributionEvent (property->getId ());
         event = this->getAttributionEvent (property->getId ());
         g_assert_nonnull (event);
         event->setParameter ("value", property->getValue ());
@@ -132,7 +129,7 @@ FormatterObject::obtainEvent (NclEventType type, NclAnchor *anchor,
       }
     case NclEventType::SELECTION:
       {
-        g_assert (this->addSelectionEvent (key));
+        this->addSelectionEvent (key);
         event = this->getSelectionEvent (key);
         g_assert_nonnull (event);
         event->setParameter ("key", key);
@@ -161,17 +158,16 @@ FormatterObject::getAttributionEvent (const string &propName)
   return this->getEvent (NclEventType::ATTRIBUTION, propName);
 }
 
-bool
+void
 FormatterObject::addAttributionEvent (const string &propName)
 {
   FormatterEvent *evt;
 
   if (this->getAttributionEvent (propName))
-    return false;
+    return;
 
   evt = new FormatterEvent (NclEventType::ATTRIBUTION, this, propName);
   _events.insert (evt);
-  return true;
 }
 
 FormatterEvent *
@@ -180,19 +176,18 @@ FormatterObject::getPresentationEvent (const string &id)
   return this->getEvent (NclEventType::PRESENTATION, id);
 }
 
-bool
+void
 FormatterObject::addPresentationEvent (const string &id, GingaTime begin,
                                        GingaTime end)
 {
   FormatterEvent *evt;
 
   if (this->getPresentationEvent (id))
-    return false;
+    return;
 
   evt = new FormatterEvent (NclEventType::PRESENTATION, this, id);
   evt->setInterval (begin, end);
   _events.insert (evt);
-  return true;
 }
 
 FormatterEvent *
@@ -201,17 +196,16 @@ FormatterObject::getSelectionEvent (const string &key)
   return this->getEvent (NclEventType::SELECTION, key);
 }
 
-bool
+void
 FormatterObject::addSelectionEvent (const string &key)
 {
   FormatterEvent *evt;
 
   if (this->getSelectionEvent (key))
-    return false;
+    return;
 
   evt = new FormatterEvent (NclEventType::SELECTION, this, key);
   _events.insert (evt);
-  return true;
 }
 
 FormatterEvent *
@@ -245,8 +239,8 @@ FormatterObject::isSleeping ()
 string
 FormatterObject::getProperty (const string &name)
 {
-  map<string, string>::iterator it;
-  if ((it = _property.find (name)) == _property.end ())
+  auto it = _properties.find (name);
+  if (it == _properties.end ())
     return "";
   return it->second;
 }
@@ -259,7 +253,7 @@ FormatterObject::setProperty (const string &name, const string &value,
 
   g_assert (GINGA_TIME_IS_VALID (dur));
   from = getProperty (name);
-  _property[name] = value;
+  _properties[name] = value;
 
   if (dur > 0)
     {

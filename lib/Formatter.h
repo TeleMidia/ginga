@@ -67,7 +67,7 @@ class Formatter: public Ginga
   FormatterObject *getObjectById (const string &);
   FormatterObject *getObjectByIdOrAlias (const string &);
   bool getObjectPropertyByRef (const string &, string *);
-  bool addObject (FormatterObject *);
+  void addObject (FormatterObject *);
 
   FormatterObject *obtainExecutionObject (NclNode *);
   bool evalPredicate (FormatterPredicate *);

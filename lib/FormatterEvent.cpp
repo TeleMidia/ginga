@@ -81,7 +81,7 @@ FormatterEvent::setInterval (GingaTime begin, GingaTime end)
   _end = end;
 }
 
-const vector<IFormatterEventListener *> *
+const list<IFormatterEventListener *> *
 FormatterEvent::getListeners ()
 {
   return &_listeners;
@@ -90,23 +90,20 @@ FormatterEvent::getListeners ()
 void
 FormatterEvent::addListener (IFormatterEventListener *listener)
 {
-  _listeners.push_back (listener);
+  g_assert_nonnull (listener);
+  tryinsert (listener, _listeners, push_back);
 }
 
 bool
 FormatterEvent::getParameter (const string &name, string *value)
 {
-  map<string, string>::iterator it;
-  if ((it = _parameters.find (name)) == _parameters.end ())
-    return false;
-  tryset (value, it->second);
-  return true;
+  MAP_GET_IMPL (_parameters, name, value);
 }
 
-void
+bool
 FormatterEvent::setParameter (const string &name, const string &value)
 {
-  _parameters[name] = value;
+  MAP_SET_IMPL (_parameters, name, value);
 }
 
 bool

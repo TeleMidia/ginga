@@ -30,7 +30,7 @@ class FormatterComposition: public FormatterObject
 
   const set<FormatterObject *> *getChildren ();
   FormatterObject *getChildById (const string &);
-  bool addChild (FormatterObject *);
+  void addChild (FormatterObject *);
 
  protected:
   set<FormatterObject *> _children;

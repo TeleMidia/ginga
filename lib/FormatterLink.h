@@ -30,13 +30,12 @@ public:
   FormatterLink (Formatter *);
   virtual ~FormatterLink ();
 
-  const vector <FormatterCondition *> *getConditions ();
-  bool addCondition (FormatterCondition *);
+  const list<FormatterCondition *> *getConditions ();
+  void addCondition (FormatterCondition *);
 
-  const vector <FormatterAction *> *getActions ();
-  bool addAction (FormatterAction *);
+  const list<FormatterAction *> *getActions ();
+  void addAction (FormatterAction *);
 
-  virtual vector<FormatterEvent *> getEvents ();
   void disable (bool);
 
   // IFormatterConditionListener
@@ -44,8 +43,8 @@ public:
 
 private:
   Formatter *_formatter;                     // formatter handle
-  vector <FormatterCondition *> _conditions; // list of conditions
-  vector <FormatterAction *> _actions;       // list of actions
+  list<FormatterCondition *> _conditions;    // list of conditions
+  list<FormatterAction *> _actions;          // list of actions
   bool _disabled;                            // whether link is disabled
 };
 

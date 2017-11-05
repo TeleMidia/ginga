@@ -1270,7 +1270,7 @@ ParserXercesC::parseCondition (DOMElement *elt, NclConnector *conn,
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "qualifier");
 
   NclCondition *cond = new NclCondition (type, trans, pred, role, key);
-  g_assert (conn->addCondition (cond));
+  conn->addCondition (cond);
 }
 
 // CompoundStatement *
@@ -1406,7 +1406,7 @@ ParserXercesC::parseSimpleAction (DOMElement *elt, NclConnector *conn)
   string role;
   string delay;
   string value;
-  string duration;
+  string dur;
 
   NclEventType type;
   NclEventStateTransition acttype;
@@ -1416,7 +1416,7 @@ ParserXercesC::parseSimpleAction (DOMElement *elt, NclConnector *conn)
   CHECK_ELT_ATTRIBUTE (elt, "role", &role);
   CHECK_ELT_OPT_ATTRIBUTE (elt, "delay", &delay, "0s");
   CHECK_ELT_OPT_ATTRIBUTE (elt, "value", &value, "0s");
-  CHECK_ELT_OPT_ATTRIBUTE (elt, "duration", &duration, "0s");
+  CHECK_ELT_OPT_ATTRIBUTE (elt, "dur", &dur, "0s");
 
   type = (NclEventType) -1;
   acttype = (NclEventStateTransition) -1;
@@ -1458,8 +1458,8 @@ ParserXercesC::parseSimpleAction (DOMElement *elt, NclConnector *conn)
   g_assert (type != (NclEventType) -1);
   g_assert (acttype != (NclEventStateTransition) -1);
 
-  NclAction *act = new NclAction (type, acttype, role, delay, value, duration);
-  g_assert (conn->addAction (act));
+  NclAction *act = new NclAction (type, acttype, role, delay, value, dur);
+  conn->addAction (act);
 }
 
 
@@ -1542,7 +1542,7 @@ ParserXercesC::posCompileContext (DOMElement *elt, NclContext *context)
     {
       string tag = dom_elt_get_tag (child);
       if (tag == "link")
-        g_assert (context->addLink (this->parseLink (child, context)));
+        context->addLink (this->parseLink (child, context));
       else if (tag == "port")
         context->addPort (this->parsePort (child, context));
     }

@@ -28,11 +28,12 @@ class NclContext: public NclComposition
 public:
   NclContext (NclDocument *, const string &);
   ~NclContext ();
-  bool addLink (NclLink *);
-  const vector<NclLink *> *getLinks ();
+
+  const list<NclLink *> *getLinks ();
+  void addLink (NclLink *);
 
 private:
-  vector<NclLink *> _links;
+  list<NclLink *> _links;
 };
 
 GINGA_NAMESPACE_END

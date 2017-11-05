@@ -39,12 +39,16 @@ public:
   bool exec (FormatterEvent *, NclEventState, NclEventState,
              NclEventStateTransition) override;
 
-  const vector<FormatterLink *> *getLinks ();
-  bool addLink (FormatterLink *);
+  const list<FormatterEvent *> *getPorts ();
+  void addPort (FormatterEvent *);
+
+  const list<FormatterLink *> *getLinks ();
+  void addLink (FormatterLink *);
 
 private:
   NclContext *_context;
-  vector<FormatterLink *> _links;
+  list<FormatterEvent *> _ports;
+  list<FormatterLink *> _links;
 
   void toggleLinks (bool);
 };

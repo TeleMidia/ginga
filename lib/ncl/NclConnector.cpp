@@ -33,42 +33,32 @@ NclConnector::NclConnector (NclDocument *ncl, const string &id)
 
 NclConnector::~NclConnector ()
 {
-  // for (auto item: _predicates)
-  //   delete item.second;
 }
 
-const vector <NclCondition *> *
+const list<NclCondition *> *
 NclConnector::getConditions ()
 {
   return &_conditions;
 }
 
-bool
+void
 NclConnector::addCondition (NclCondition *condition)
 {
   g_assert_nonnull (condition);
-  for (auto cond: _conditions)
-    if (cond == condition)
-      return false;
-  _conditions.push_back (condition);
-  return true;
+  tryinsert (condition, _conditions, push_back);
 }
 
-const vector<NclAction *> *
+const list<NclAction *> *
 NclConnector::getActions ()
 {
   return &_actions;
 }
 
-bool
+void
 NclConnector::addAction (NclAction *action)
 {
   g_assert_nonnull (action);
-  for (auto act: _actions)
-    if (act == action)
-      return false;
-  _actions.push_back (action);
-  return true;
+  tryinsert (action, _actions, push_back);
 }
 
 NclRole *
