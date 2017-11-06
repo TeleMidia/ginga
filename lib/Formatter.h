@@ -25,6 +25,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
+class FormatterAction;
+class FormatterContext;
 class FormatterEvent;
 class FormatterLink;
 class FormatterMedia;
@@ -69,8 +71,10 @@ class Formatter: public Ginga
   bool getObjectPropertyByRef (const string &, string *);
   void addObject (FormatterObject *);
 
-  FormatterObject *obtainExecutionObject (NclNode *);
+  int evalAction (FormatterEvent *, NclEventStateTransition, const string &value="");
+  int evalAction (FormatterAction *);
   bool evalPredicate (FormatterPredicate *);
+  FormatterObject *obtainExecutionObject (NclNode *);
 
   static void setOptionBackground (Formatter *, const string &, string);
   static void setOptionDebug (Formatter *, const string &, bool);

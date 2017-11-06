@@ -23,12 +23,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-class FormatterCondition;
-class IFormatterConditionListener
-{
-public:
-  virtual void conditionSatisfied (FormatterCondition *) = 0;
-};
+// class FormatterCondition;
+// class IFormatterConditionListener
+// {
+// public:
+//   virtual void conditionSatisfied (FormatterCondition *) = 0;
+// };
 
 class FormatterCondition: IFormatterEventListener
 {
@@ -39,9 +39,13 @@ public:
 
   FormatterPredicate *getPredicate ();
   FormatterEvent *getEvent ();
+  NclEventStateTransition getTransition ();
 
-  void setTriggerListener (IFormatterConditionListener *);
-  void conditionSatisfied ();
+  bool getSatisfied ();
+  void setSatisfied (bool);
+
+  // void setTriggerListener (IFormatterConditionListener *);
+  // void conditionSatisfied ();
 
   // IFormatterEventListener
   virtual void eventStateChanged (FormatterEvent *,
@@ -50,7 +54,7 @@ private:
   FormatterPredicate *_predicate;
   FormatterEvent *_event;
   NclEventStateTransition _transition;
-  IFormatterConditionListener *_listener;
+  bool _satisfied;              // whether event has been triggered
 };
 
 GINGA_NAMESPACE_END

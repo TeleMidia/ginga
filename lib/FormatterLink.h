@@ -24,10 +24,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-class FormatterLink: public IFormatterConditionListener
+class FormatterLink
 {
 public:
-  FormatterLink (Formatter *);
+  FormatterLink ();
   virtual ~FormatterLink ();
 
   const list<FormatterCondition *> *getConditions ();
@@ -36,13 +36,10 @@ public:
   const list<FormatterAction *> *getActions ();
   void addAction (FormatterAction *);
 
-  void disable (bool);
-
-  // IFormatterConditionListener
-  void conditionSatisfied (FormatterCondition *);
+  bool getDisabled ();
+  void setDisabled (bool);
 
 private:
-  Formatter *_formatter;                     // formatter handle
   list<FormatterCondition *> _conditions;    // list of conditions
   list<FormatterAction *> _actions;          // list of actions
   bool _disabled;                            // whether link is disabled

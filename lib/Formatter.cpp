@@ -191,7 +191,7 @@ Formatter::start (const string &file, string *errmsg)
   FormatterObject *obj = this->obtainExecutionObject (body);
   evt = obj->getLambda ();
   g_assert_nonnull (evt);
-  if (!evt->transition (NclEventStateTransition::START))
+  if (this->evalAction (evt, NclEventStateTransition::START) == 0)
     return false;
 
   // Refresh current focus.
@@ -364,8 +364,46 @@ Formatter::sendTickEvent (uint64_t total, uint64_t diff, uint64_t frame)
     }
 
   for (auto obj: buf)
-    if (obj->isOccurring ())
+    {
+      list<FormatterAction *> trigger;
+
+      if (!obj->isOccurring ())
+        continue;
+
       obj->sendTickEvent (total, diff, frame);
+      auto delayed = obj->getDelayedActions ();
+      for (auto it: *delayed)
+        {
+          if (obj->getTime () >= it.second)
+            {
+              it.second = GINGA_TIME_NONE;
+              trigger.push_back (it.first);
+            }
+        }
+
+      for (auto action: trigger)
+        {
+          this->evalAction (action);
+          if (!obj->isOccurring ())
+            break;
+        }
+
+      if (!obj->isOccurring ())
+        continue;
+
+      for (auto it = delayed->begin (); it != delayed->end ();)
+        {
+          if (it->second == GINGA_TIME_NONE)
+            {
+              delete it->first;
+              it = delayed->erase (it);
+            }
+          else
+            {
+              ++it;
+            }
+        }
+    }
 
   return true;
 }
@@ -547,6 +585,215 @@ Formatter::addObject (FormatterObject *obj)
     }
 }
 
+bool
+Formatter::evalPredicate (FormatterPredicate *pred)
+{
+  switch (pred->getType ())
+    {
+    case PredicateType::FALSUM:
+      TRACE ("false");
+      break;
+    case PredicateType::VERUM:
+      TRACE ("true");
+      break;
+    case PredicateType::ATOM:
+      {
+        string left, right;
+        PredicateTestType test;
+        string msg_left, msg_test, msg_right;
+        bool result;
+
+        pred->getTest (&left, &test, &right);
+
+        if (left[0] == '$')
+          {
+            msg_left = left;
+            if (this->getObjectPropertyByRef (left, &left))
+              msg_left += " ('" + left + "')";
+          }
+        else
+          {
+            msg_left = "'" + left + "'";
+          }
+
+        if (right[0] == '$')
+          {
+            msg_right = right;
+            if (this->getObjectPropertyByRef (right, &right))
+              msg_right += " ('" + right + "')";
+          }
+        else
+          {
+            msg_right = "'" + right + "'";
+          }
+
+        switch (test)
+          {
+          case PredicateTestType::EQ:
+            msg_test = "==";
+            result = left == right;
+            break;
+          case PredicateTestType::NE:
+            msg_test = "!=";
+            result = left != right;
+            break;
+          case PredicateTestType::LT:
+            msg_test = "<";
+            result = left < right;
+            break;
+          case PredicateTestType::LE:
+            msg_test = "<=";
+            result = left <= right;
+            break;
+          case PredicateTestType::GT:
+            msg_test = ">";
+            result = left > right;
+            break;
+          case PredicateTestType::GE:
+            msg_test = ">=";
+            result = left >= right;
+            break;
+          default:
+            g_assert_not_reached ();
+          }
+        TRACE ("%s %s %s -> %s", msg_left.c_str (),
+               msg_test.c_str (), msg_right.c_str (), strbool (result));
+        return result;
+      }
+    case PredicateType::NEGATION:
+      g_assert_not_reached ();
+      break;
+    case PredicateType::CONJUNCTION:
+      {
+        for (auto child: *pred->getChildren ())
+          {
+            if (!this->evalPredicate (child))
+              {
+                TRACE ("and -> false");
+                return false;
+              }
+          }
+        TRACE ("and -> true");
+        return true;
+      }
+      break;
+    case PredicateType::DISJUNCTION:
+      g_assert_not_reached ();
+      break;
+    default:
+      g_assert_not_reached ();
+    }
+  g_assert_not_reached ();
+}
+
+int
+Formatter::evalAction (FormatterEvent *event,
+                       NclEventStateTransition transition,
+                       const string &value)
+{
+  FormatterAction *act;
+  int result;
+
+  act = new FormatterAction (event, transition);
+  if (event->getType () == NclEventType::ATTRIBUTION)
+    act->setParameter ("value", value);
+
+  result = this->evalAction (act);
+  delete act;
+
+  return result;
+}
+
+int
+Formatter::evalAction (FormatterAction *action)
+{
+  list<FormatterAction *> stack;
+  int n;
+
+  stack.push_back (action);
+  n = 0;
+
+  while (!stack.empty ())
+    {
+      FormatterAction *act;
+      FormatterEvent *evt;
+      FormatterObject *obj;
+      FormatterComposition *comp;
+      FormatterContext *ctx;
+      bool done;
+
+      act = stack.back ();
+      stack.pop_back ();
+      g_assert_nonnull (act);
+
+      evt = act->getEvent ();
+      g_assert_nonnull (evt);
+      if (evt->getType () == NclEventType::ATTRIBUTION)
+        {
+          string dur;
+          string value;
+          if (act->getParameter ("duration", &dur))
+            evt->setParameter ("duration", dur);
+          if (act->getParameter ("value", &value))
+            evt->setParameter ("value", value);
+        }
+
+      if (!evt->transition (action->getTransition ()))
+        continue;
+
+      n++;
+      done = false;
+      obj = evt->getObject ();
+      g_assert_nonnull (obj);
+
+      // Trigger links in parent context.
+      comp = obj->getParent ();
+      if (comp != nullptr
+          && instanceof (FormatterContext *, comp)
+          && comp->isOccurring ())
+        {
+          ctx = cast (FormatterContext *, comp);
+          g_assert_nonnull (ctx);
+
+        trigger:
+          for (auto link: *ctx->getLinks ())
+            {
+              if (link->getDisabled ())
+                continue;
+
+              for (auto cond: *link->getConditions ())
+                {
+                  FormatterPredicate *pred;
+
+                  if (cond->getEvent () != evt)
+                    continue;
+
+                  if (cond->getTransition () != act->getTransition ())
+                    continue;
+
+                  pred = cond->getPredicate ();
+                  if (pred != nullptr && !this->evalPredicate (pred))
+                    continue;
+
+                  // Success.
+                  for (auto a: *link->getActions ())
+                    stack.push_back (a);
+                }
+            }
+        }
+
+      // Trigger links in context itself.
+      if (!done && instanceof (FormatterContext *, obj))
+        {
+          ctx = cast (FormatterContext *, obj);
+          g_assert_nonnull (ctx);
+          done = true;
+          goto trigger;
+        }
+    }
+  return n;
+}
+
 FormatterObject *
 Formatter::obtainExecutionObject (NclNode *node)
 {
@@ -682,107 +929,6 @@ Formatter::obtainExecutionObject (NclNode *node)
     {
       g_assert_not_reached ();
     }
-}
-
-bool
-Formatter::evalPredicate (FormatterPredicate *pred)
-{
-  switch (pred->getType ())
-    {
-    case PredicateType::FALSUM:
-      TRACE ("false");
-      break;
-    case PredicateType::VERUM:
-      TRACE ("true");
-      break;
-    case PredicateType::ATOM:
-      {
-        string left, right;
-        PredicateTestType test;
-        string msg_left, msg_test, msg_right;
-        bool result;
-
-        pred->getTest (&left, &test, &right);
-
-        if (left[0] == '$')
-          {
-            msg_left = left;
-            if (this->getObjectPropertyByRef (left, &left))
-              msg_left += " ('" + left + "')";
-          }
-        else
-          {
-            msg_left = "'" + left + "'";
-          }
-
-        if (right[0] == '$')
-          {
-            msg_right = right;
-            if (this->getObjectPropertyByRef (right, &right))
-              msg_right += " ('" + right + "')";
-          }
-        else
-          {
-            msg_right = "'" + right + "'";
-          }
-
-        switch (test)
-          {
-          case PredicateTestType::EQ:
-            msg_test = "==";
-            result = left == right;
-            break;
-          case PredicateTestType::NE:
-            msg_test = "!=";
-            result = left != right;
-            break;
-          case PredicateTestType::LT:
-            msg_test = "<";
-            result = left < right;
-            break;
-          case PredicateTestType::LE:
-            msg_test = "<=";
-            result = left <= right;
-            break;
-          case PredicateTestType::GT:
-            msg_test = ">";
-            result = left > right;
-            break;
-          case PredicateTestType::GE:
-            msg_test = ">=";
-            result = left >= right;
-            break;
-          default:
-            g_assert_not_reached ();
-          }
-        TRACE ("%s %s %s -> %s", msg_left.c_str (),
-               msg_test.c_str (), msg_right.c_str (), strbool (result));
-        return result;
-      }
-    case PredicateType::NEGATION:
-      g_assert_not_reached ();
-      break;
-    case PredicateType::CONJUNCTION:
-      {
-        for (auto child: *pred->getChildren ())
-          {
-            if (!this->evalPredicate (child))
-              {
-                TRACE ("and -> false");
-                return false;
-              }
-          }
-        TRACE ("and -> true");
-        return true;
-      }
-      break;
-    case PredicateType::DISJUNCTION:
-      g_assert_not_reached ();
-      break;
-    default:
-      g_assert_not_reached ();
-    }
-  g_assert_not_reached ();
 }
 
 
@@ -926,7 +1072,7 @@ Formatter::obtainFormatterLink (NclLink *docLink)
   connector = cast (NclConnector *, docLink->getConnector ());
   g_assert_nonnull (connector);
 
-  link = new FormatterLink (this);
+  link = new FormatterLink ();
   for (auto connCond: *connector->getConditions ())
     {
       FormatterPredicate *pred = connCond->getPredicate ();

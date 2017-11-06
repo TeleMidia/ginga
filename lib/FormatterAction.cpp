@@ -45,7 +45,7 @@ FormatterAction::getEventType ()
 }
 
 NclEventStateTransition
-FormatterAction::getEventStateTransition ()
+FormatterAction::getTransition ()
 {
   return _transition;
 }

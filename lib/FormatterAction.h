@@ -30,7 +30,7 @@ public:
 
   FormatterEvent *getEvent ();
   NclEventType getEventType ();
-  NclEventStateTransition getEventStateTransition ();
+  NclEventStateTransition getTransition ();
 
   bool getParameter (const string &, string *);
   bool setParameter (const string &, const string &);
