@@ -41,6 +41,8 @@ public:
   FormatterComposition *getParent ();
   void initParent (FormatterComposition *);
 
+  GingaTime getTime ();
+
   FormatterEvent *obtainEvent (NclEventType, NclAnchor *, const string &);
 
   FormatterEvent *getEvent (NclEventType, const string &);
@@ -60,27 +62,30 @@ public:
   virtual void setProperty (const string &, const string &,
                             GingaTime dur=0);
 
-  void scheduleAction (FormatterAction *, GingaTime);
+
+  list<pair<FormatterAction *, GingaTime>> *getDelayedActions ();
+  void addDelayedAction (FormatterEvent *, NclEventStateTransition,
+                         const string &value="", GingaTime delay=0);
+  void clearDelayedActions ();
+
   virtual void sendKeyEvent (const string &, bool);
   virtual void sendTickEvent (GingaTime, GingaTime, GingaTime);
 
-  virtual bool exec (FormatterEvent *, NclEventState, NclEventState,
-                     NclEventStateTransition) = 0;
+  virtual bool exec (FormatterEvent *, NclEventStateTransition) = 0;
 
 protected:
   Formatter *_formatter;           // formatter handle
   string _id;                      // id
   vector<string> _aliases;         // aliases
   FormatterComposition *_parent;   // parent object
+
   GingaTime _time;                 // playback time
   map<string, string> _properties; // property map
 
-  set<FormatterEvent *> _events; // all events
   FormatterEvent *_lambda;       // lambda event
+  set<FormatterEvent *> _events; // all events
 
-  // delayed actions
-  vector<pair<FormatterAction *, GingaTime>> _delayed;
-  vector<pair<FormatterAction *, GingaTime>> _delayed_new;
+  list<pair<FormatterAction *, GingaTime>> _delayed; // delayed actions
 
   virtual void doStart ();
   virtual void doStop ();

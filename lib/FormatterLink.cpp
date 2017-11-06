@@ -21,10 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-FormatterLink::FormatterLink (Formatter *formatter)
+FormatterLink::FormatterLink ()
 {
-  g_assert_nonnull (formatter);
-  _formatter = formatter;
   _disabled = false;
 }
 
@@ -34,12 +32,6 @@ FormatterLink::~FormatterLink ()
     delete condition;
   for (auto action: _actions)
     delete action;
-}
-
-void
-FormatterLink::disable (bool disable)
-{
-  _disabled = disable;
 }
 
 const list<FormatterCondition *> *
@@ -52,8 +44,7 @@ void
 FormatterLink::addCondition (FormatterCondition *condition)
 {
   g_assert_nonnull (condition);
-  if (tryinsert (condition, _conditions, push_back))
-    condition->setTriggerListener (this);
+  tryinsert (condition, _conditions, push_back);
 }
 
 const list<FormatterAction *> *
@@ -69,36 +60,48 @@ FormatterLink::addAction (FormatterAction *action)
   tryinsert (action, _actions, push_back);
 }
 
-void
-FormatterLink::conditionSatisfied (FormatterCondition *cond)
+bool
+FormatterLink::getDisabled ()
 {
-  FormatterPredicate *pred;
-
-  if (_disabled)
-    return;                     // fail
-
-  pred = cond->getPredicate ();
-  if (pred != nullptr && !_formatter->evalPredicate (pred))
-    return;                     // fail
-
-  for (auto action: _actions)
-    {
-      FormatterEvent *evt;
-      evt = action->getEvent ();
-      g_assert_nonnull (evt);
-      if (evt->getType () == NclEventType::ATTRIBUTION)
-        {
-          string dur;
-          string value = "";
-
-          if (action->getParameter ("duration", &dur))
-            evt->setParameter ("duration", dur);
-
-          action->getParameter ("value", &value);
-          evt->setParameter ("value", value);
-        }
-      evt->transition (action->getEventStateTransition ());
-    }
+  return _disabled;
 }
+
+void
+FormatterLink::setDisabled (bool disabled)
+{
+  _disabled = disabled;
+}
+
+// void
+// FormatterLink::conditionSatisfied (FormatterCondition *cond)
+// {
+//   FormatterPredicate *pred;
+//
+//   if (_disabled)
+//     return;                     // fail
+//
+//   pred = cond->getPredicate ();
+//   if (pred != nullptr && !_formatter->evalPredicate (pred))
+//     return;                     // fail
+//
+//   for (auto action: _actions)
+//     {
+//       FormatterEvent *evt;
+//       evt = action->getEvent ();
+//       g_assert_nonnull (evt);
+//       if (evt->getType () == NclEventType::ATTRIBUTION)
+//         {
+//           string dur;
+//           string value = "";
+//
+//           if (action->getParameter ("duration", &dur))
+//             evt->setParameter ("duration", dur);
+//
+//           action->getParameter ("value", &value);
+//           evt->setParameter ("value", value);
+//         }
+//       evt->transition (action->getEventStateTransition ());
+//     }
+// }
 
 GINGA_NAMESPACE_END

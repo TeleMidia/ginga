@@ -27,6 +27,7 @@ FormatterMediaSettings::FormatterMediaSettings (Formatter *formatter,
                                                 const string &id)
   :FormatterMedia (formatter, id, "application/x-ginga-settings", "")
 {
+  this->addAttributionEvent ("service.currentFocus");
 }
 
 FormatterMediaSettings::~FormatterMediaSettings ()
@@ -87,12 +88,6 @@ FormatterMediaSettings::updateCurrentFocus (const string &index)
     {
       for (auto media: *_formatter->getMediaObjects ())
         {
-          if (media->isFocused ())
-            return;             // nothing to do
-        }
-
-      for (auto media: *_formatter->getMediaObjects ())
-        {
           if (media->isOccurring ()
               && (i = media->getProperty ("focusIndex")) != ""
               && (next == "" || i < next))
@@ -106,17 +101,10 @@ FormatterMediaSettings::updateCurrentFocus (const string &index)
   string name = "service.currentFocus";
   string value = next;
 
-  FormatterEvent *evt = this->getEvent (NclEventType::ATTRIBUTION, name);
-  if (evt == nullptr)           // do no trigger links
-    {
-      cast (FormatterObject *, this)->setProperty (name, value);
-    }
-  else                          // trigger links
-    {
-      evt->transition (NclEventStateTransition::START);
-      cast (FormatterObject *, this)->setProperty (name, value);
-      evt->transition (NclEventStateTransition::STOP);
-    }
+  FormatterEvent *evt = this->getAttributionEvent (name);
+  g_assert_nonnull (evt);
+  this->addDelayedAction (evt, NclEventStateTransition::START, value);
+  this->addDelayedAction (evt, NclEventStateTransition::STOP, value);
 }
 
 void

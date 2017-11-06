@@ -200,8 +200,8 @@ FormatterMedia::sendKeyEvent (const string &key, bool press)
   // Run collected events.
   for (FormatterEvent *evt: buf)
     {
-      evt->transition (NclEventStateTransition::START);
-      evt->transition (NclEventStateTransition::STOP);
+      this->addDelayedAction (evt, NclEventStateTransition::START);
+      this->addDelayedAction (evt, NclEventStateTransition::STOP);
     }
 }
 
@@ -231,15 +231,13 @@ FormatterMedia::sendTickEvent (GingaTime total,
       g_assert_nonnull (lambda);
       TRACE ("eos %s@lambda at %" GINGA_TIME_FORMAT, _id.c_str (),
              GINGA_TIME_ARGS (_time));
-      lambda->transition (NclEventStateTransition::STOP);
+      this->addDelayedAction (lambda, NclEventStateTransition::STOP);
       return;
     }
 }
 
 bool
 FormatterMedia::exec (FormatterEvent *evt,
-                      unused (NclEventState from),
-                      unused (NclEventState to),
                       NclEventStateTransition transition)
 {
   switch (evt->getType ())
@@ -269,7 +267,6 @@ FormatterMedia::exec (FormatterEvent *evt,
               for (auto e: _events)
                 {
                   GingaTime begin, end;
-                  FormatterAction *act;
 
                   if (e->getType () != NclEventType::PRESENTATION)
                     continue;
@@ -277,14 +274,10 @@ FormatterMedia::exec (FormatterEvent *evt,
                     continue;
 
                   e->getInterval (&begin, &end);
-
-                  act = new FormatterAction
-                    (e, NclEventStateTransition::START);
-                  this->scheduleAction (act, begin);
-
-                  act = new FormatterAction
-                    (e, NclEventStateTransition::STOP);
-                  this->scheduleAction (act, end);
+                  this->addDelayedAction (e, NclEventStateTransition::START,
+                                        "", begin);
+                  this->addDelayedAction (e, NclEventStateTransition::STOP,
+                                        "", end);
                 }
 
               TRACE ("start %s@lambda", _id.c_str ());
@@ -402,12 +395,7 @@ FormatterMedia::exec (FormatterEvent *evt,
                 dur = 0;
               }
             this->setProperty (name, value, dur);
-
-            // Schedule stop.
-            FormatterAction *act = new FormatterAction
-              (evt, NclEventStateTransition::STOP);
-            this->scheduleAction (act, dur);
-
+            this->addDelayedAction (evt, NclEventStateTransition::STOP);
             TRACE ("start %s.%s:=%s (duration=%s)", _id.c_str (),
                    name.c_str (), value.c_str (), s.c_str ());
             break;

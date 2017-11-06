@@ -36,8 +36,7 @@ public:
 
   void sendKeyEvent (const string &, bool) override;
   void sendTickEvent (GingaTime, GingaTime, GingaTime) override;
-  bool exec (FormatterEvent *, NclEventState, NclEventState,
-             NclEventStateTransition) override;
+  bool exec (FormatterEvent *, NclEventStateTransition) override;
 
   virtual bool isFocused ();
   virtual bool getZ (int *, int *);

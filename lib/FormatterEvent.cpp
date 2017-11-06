@@ -137,7 +137,7 @@ FormatterEvent::transition (NclEventStateTransition trans)
     default:
       g_assert_not_reached ();
     }
-  if (!_object->exec (this, curr, next, trans))
+  if (!_object->exec (this, trans))
     return false;
   _state = next;
   for (IFormatterEventListener *lst: _listeners)

@@ -59,22 +59,23 @@ FormatterContext::sendTickEvent (unused (GingaTime total),
                                  unused (GingaTime diff),
                                  unused (GingaTime frame))
 {
-  FormatterEvent *lambda;
+  // FormatterEvent *lambda;
 
-  g_assert (this->isOccurring ());
-  for (auto child: _children)
-    if (child->isOccurring ())
-      return;
+  // Update object time.
+  FormatterObject::sendTickEvent (total, diff, frame);
 
-  lambda = this->getLambda ();
-  g_assert_nonnull (lambda);
-  lambda->transition (NclEventStateTransition::STOP);
+  // g_assert (this->isOccurring ());
+  // for (auto child: _children)
+  //   if (child->isOccurring ())
+  //     return;
+
+  // lambda = this->getLambda ();
+  // g_assert_nonnull (lambda);
+  // this->scheduleAction (lambda, NclEventStateTransition::STOP);
 }
 
 bool
 FormatterContext::exec (FormatterEvent *evt,
-                        unused (NclEventState from),
-                        unused (NclEventState to),
                         NclEventStateTransition transition)
 {
   switch (evt->getType ())
@@ -89,10 +90,10 @@ FormatterContext::exec (FormatterEvent *evt,
           //
           // Start lambda.
           //
-          for (auto port: _ports)
-            port->transition (transition);
           TRACE ("start %s@lambda", _id.c_str ());
           FormatterObject::doStart ();
+          for (auto port: _ports)
+            this->addDelayedAction (port, transition);
           break;
         case NclEventStateTransition::PAUSE:
           g_assert_not_reached ();
@@ -104,15 +105,14 @@ FormatterContext::exec (FormatterEvent *evt,
           //
           // Stop lambda.
           //
-          this->toggleLinks (true);
+          TRACE ("stop %s@lambda", _id.c_str ());
           for (auto child: _children)
             {
               FormatterEvent *e = child->getLambda ();
               g_assert_nonnull (e);
               e->transition (NclEventStateTransition::STOP);
             }
-          this->toggleLinks (false);
-          TRACE ("stop %s@lambda", _id.c_str ());
+          this->clearDelayedActions ();
           FormatterObject::doStop ();
           break;
         case NclEventStateTransition::ABORT:
@@ -174,7 +174,7 @@ void
 FormatterContext::toggleLinks (bool status)
 {
   for (auto link: _links)
-    link->disable (status);
+    link->setDisabled (status);
 }
 
 GINGA_NAMESPACE_END

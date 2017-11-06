@@ -34,8 +34,6 @@ FormatterSwitch::~FormatterSwitch ()
 
 bool
 FormatterSwitch::exec (FormatterEvent *evt,
-                       unused (NclEventState from),
-                       unused (NclEventState to),
                        NclEventStateTransition transition)
 {
   switch (evt->getType ())
@@ -67,16 +65,14 @@ FormatterSwitch::exec (FormatterEvent *evt,
                   _selected = obj;
                   e = _selected->getLambda ();
                   g_assert_nonnull (e);
-                  e->transition (transition);
+                  this->addDelayedAction (e, transition);
                   break;
                 }
             }
+
           if (_selected == nullptr) // schedule stop
-            {
-              FormatterAction *act = new FormatterAction
-                (evt, NclEventStateTransition::STOP);
-              this->scheduleAction (act, 0);
-            }
+            this->addDelayedAction (evt, NclEventStateTransition::STOP);
+
           TRACE ("start %s@lambda", _id.c_str ());
           FormatterObject::doStart ();
           break;
@@ -94,11 +90,9 @@ FormatterSwitch::exec (FormatterEvent *evt,
           {
             FormatterEvent *e = _selected->getLambda ();
             g_assert_nonnull (e);
-            e->transition (NclEventStateTransition::STOP);
             _selected = nullptr;
-            FormatterAction *act = new FormatterAction
-              (evt, NclEventStateTransition::STOP);
-            this->scheduleAction (act, 0);
+            this->addDelayedAction (e, NclEventStateTransition::STOP);
+            this->addDelayedAction (evt, NclEventStateTransition::STOP);
           }
           TRACE ("stop %s@lambda", _id.c_str ());
           FormatterObject::doStop ();

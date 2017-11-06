@@ -25,10 +25,10 @@ FormatterCondition::FormatterCondition (FormatterPredicate *predicate,
                                         NclEventStateTransition transition)
 {
   _predicate = predicate;
-  _transition = transition;
   _event = event;
   _event->addListener (this);
-  _listener = nullptr;
+  _transition = transition;
+  _satisfied = false;
 }
 
 FormatterCondition::~FormatterCondition ()
@@ -49,25 +49,43 @@ FormatterCondition::getEvent ()
   return _event;
 }
 
-void
-FormatterCondition::setTriggerListener (IFormatterConditionListener *lst)
+NclEventStateTransition
+FormatterCondition::getTransition ()
 {
-  g_assert_nonnull (lst);
-  _listener = lst;
+  return _transition;
+}
+
+bool
+FormatterCondition::getSatisfied ()
+{
+  return _satisfied;
 }
 
 void
-FormatterCondition::conditionSatisfied ()
+FormatterCondition::setSatisfied (bool satisfied)
 {
-  _listener->conditionSatisfied (this);
+  _satisfied = satisfied;
 }
+
+// void
+// FormatterCondition::setTriggerListener (IFormatterConditionListener *lst)
+// {
+//   g_assert_nonnull (lst);
+//   _listener = lst;
+// }
+
+// void
+// FormatterCondition::conditionSatisfied ()
+// {
+//   _listener->conditionSatisfied (this);
+// }
 
 void
 FormatterCondition::eventStateChanged (unused (FormatterEvent *event),
                                        NclEventStateTransition transition)
 {
-  if (_transition == transition)
-    FormatterCondition::conditionSatisfied ();
+  if (!_satisfied && _transition == transition)
+    _satisfied = true;
 }
 
 GINGA_NAMESPACE_END

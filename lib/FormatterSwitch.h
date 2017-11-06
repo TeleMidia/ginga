@@ -29,8 +29,7 @@ public:
   FormatterSwitch (Formatter *, const string &);
   ~FormatterSwitch ();
 
-  bool exec (FormatterEvent *, NclEventState, NclEventState,
-             NclEventStateTransition) override;
+  bool exec (FormatterEvent *, NclEventStateTransition) override;
 
   const list<pair<FormatterObject *, FormatterPredicate *>> *getRules ();
   void addRule (FormatterObject *, FormatterPredicate *);

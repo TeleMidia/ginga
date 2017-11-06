@@ -88,6 +88,12 @@ FormatterObject::initParent (FormatterComposition *parent)
   _parent = parent;
 }
 
+GingaTime
+FormatterObject::getTime ()
+{
+  return _time;
+}
+
 FormatterEvent *
 FormatterObject::obtainEvent (NclEventType type, NclAnchor *anchor,
                               const string &key)
@@ -249,30 +255,33 @@ void
 FormatterObject::setProperty (const string &name, const string &value,
                               GingaTime dur)
 {
-  string from;
-
   g_assert (GINGA_TIME_IS_VALID (dur));
-  from = getProperty (name);
   _properties[name] = value;
+}
 
-  if (dur > 0)
-    {
-      TRACE ("%s.%s:='%s' (previous '%s') over %" GINGA_TIME_FORMAT,
-             _id.c_str (), name.c_str (), value.c_str (),
-             from.c_str (), GINGA_TIME_ARGS (dur));
-    }
-  else
-    {
-      TRACE ("%s.%s:='%s' (previous '%s')",
-             _id.c_str (), name.c_str (), value.c_str (), from.c_str ());
-    }
+list<pair<FormatterAction *, GingaTime>> *
+FormatterObject::getDelayedActions ()
+{
+  return &_delayed;
 }
 
 void
-FormatterObject::scheduleAction (FormatterAction *action, GingaTime delay)
+FormatterObject::addDelayedAction (FormatterEvent *event,
+                                   NclEventStateTransition transition,
+                                   const string &value,
+                                   GingaTime delay)
 {
-  g_assert_nonnull (action);
-  _delayed_new.push_back (std::make_pair (action, _time + delay));
+  FormatterAction *action = new FormatterAction (event, transition);
+  action->setParameter ("value", value);
+  _delayed.push_back (std::make_pair (action, _time + delay));
+}
+
+void
+FormatterObject::clearDelayedActions ()
+{
+  for (auto item: _delayed)
+    delete item.first;
+  _delayed.clear ();
 }
 
 void
@@ -287,39 +296,8 @@ FormatterObject::sendTickEvent (unused (GingaTime total),
                                 unused (GingaTime frame))
 {
   g_assert (this->isOccurring ());
-
-  // Update time.
   g_assert (GINGA_TIME_IS_VALID (_time));
   _time += diff;
-
-  // Evaluate delayed actions.
-  for (auto it = _delayed.begin (); it != _delayed.end ();)
-    {
-      FormatterAction *act;
-      GingaTime timeout;
-
-      act = (*it).first;
-      timeout = (*it).second;
-      if (timeout <= _time)
-        {
-          FormatterEvent *evt = act->getEvent ();
-          g_assert_nonnull (evt);
-          evt->transition (act->getEventStateTransition ());
-          if (!this->isOccurring ())
-            return;
-          delete act;
-          it = _delayed.erase (it);
-        }
-      else
-        {
-          ++it;
-        }
-    }
-
-  // Update current delayed actions.  (Move this up?)
-  _delayed.insert
-    (_delayed.end (), _delayed_new.begin (), _delayed_new.end ());
-  _delayed_new.clear ();
 }
 
 
@@ -335,13 +313,6 @@ void
 FormatterObject::doStop ()
 {
   _time = GINGA_TIME_NONE;
-  for (auto item: _delayed)
-    delete item.first;
-  _delayed.clear ();
-
-  for (auto item: _delayed_new)
-    delete item.first;
-  _delayed_new.clear ();
 }
 
 GINGA_NAMESPACE_END
