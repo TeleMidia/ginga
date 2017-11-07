@@ -20,6 +20,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
+
+// Public.
+
 FormatterSwitch::FormatterSwitch (Formatter *formatter, const string &id)
   :FormatterComposition (formatter, id)
 {
@@ -32,28 +35,26 @@ FormatterSwitch::~FormatterSwitch ()
     delete item.second;
 }
 
+
+// Public: FormatterObject.
+
 bool
-FormatterSwitch::exec (FormatterEvent *evt,
-                       NclEventStateTransition transition)
+FormatterSwitch::startTransition (FormatterEvent *evt,
+                                  NclEventStateTransition transition)
 {
   switch (evt->getType ())
     {
-    // ---------------------------------------------------------------------
-    // Presentation event.
-    // ---------------------------------------------------------------------
     case NclEventType::PRESENTATION:
+      g_assert (evt->isLambda ());
       switch (transition)
         {
         case NclEventStateTransition::START:
-          //
-          // Start lambda.
-          //
           g_assert_null (_selected);
           for (auto item: _rules)
             {
               FormatterObject *obj;
               FormatterPredicate *pred;
-              FormatterEvent *e;
+              FormatterEvent *lambda;
 
               obj = item.first;
               g_assert_nonnull (obj);
@@ -62,67 +63,74 @@ FormatterSwitch::exec (FormatterEvent *evt,
 
               if (_formatter->evalPredicate (pred))
                 {
-                  _selected = obj;
-                  e = _selected->getLambda ();
-                  g_assert_nonnull (e);
-                  this->addDelayedAction (e, transition);
+                  lambda = obj->getLambda ();
+                  g_assert_nonnull (lambda);
+                  if (lambda->transition (transition))
+                    _selected = obj;
                   break;
                 }
             }
+          break;
 
-          if (_selected == nullptr) // schedule stop
-            this->addDelayedAction (evt, NclEventStateTransition::STOP);
-
-          TRACE ("start %s@lambda", _id.c_str ());
-          FormatterObject::doStart ();
-          break;
-        case NclEventStateTransition::PAUSE:
-          g_assert_not_reached ();
-          break;
-        case NclEventStateTransition::RESUME:
-          g_assert_not_reached ();
-          break;
         case NclEventStateTransition::STOP:
-          //
-          // Stop lambda.
-          //
-          g_assert_nonnull (_selected);
-          {
-            FormatterEvent *e = _selected->getLambda ();
-            g_assert_nonnull (e);
-            _selected = nullptr;
-            this->addDelayedAction (e, NclEventStateTransition::STOP);
-            this->addDelayedAction (evt, NclEventStateTransition::STOP);
-          }
-          TRACE ("stop %s@lambda", _id.c_str ());
-          FormatterObject::doStop ();
+          if (_selected != nullptr)
+            {
+              FormatterEvent *lambda = _selected->getLambda ();
+              g_assert_nonnull (lambda);
+              lambda->transition (transition);
+              _selected = nullptr;
+            }
           break;
-        case NclEventStateTransition::ABORT:
-          g_assert_not_reached ();
-          break;
+
         default:
           g_assert_not_reached ();
         }
       break;
 
-    // ---------------------------------------------------------------------
-    // Attribution event.
-    // ---------------------------------------------------------------------
     case NclEventType::ATTRIBUTION:
-      g_assert_not_reached ();
-      break;
-
-    //----------------------------------------------------------------------
-    // Selection event.
-    // ---------------------------------------------------------------------
     case NclEventType::SELECTION:
-      g_assert_not_reached ();
-      break;
     default:
       g_assert_not_reached ();
     }
   return true;
 }
+
+void
+FormatterSwitch::endTransition (FormatterEvent *evt,
+                                NclEventStateTransition transition)
+{
+  switch (evt->getType ())
+    {
+    case NclEventType::PRESENTATION:
+      g_assert (evt->isLambda ());
+     switch (transition)
+        {
+        case NclEventStateTransition::START:
+          FormatterObject::doStart ();
+          TRACE ("start %s@lambda", _id.c_str ());
+          if (_selected == nullptr)
+            _formatter->evalAction (evt, NclEventStateTransition::STOP);
+          break;
+
+        case NclEventStateTransition::STOP:
+          FormatterObject::doStop ();
+          TRACE ("stop %s@lambda", _id.c_str ());
+          break;
+
+        default:
+          g_assert_not_reached ();
+        }
+     break;
+
+    case NclEventType::ATTRIBUTION:
+    case NclEventType::SELECTION:
+    default:
+      g_assert_not_reached ();
+    }
+}
+
+
+// Public.
 
 const list<pair<FormatterObject *, FormatterPredicate *>> *
 FormatterSwitch::getRules ()

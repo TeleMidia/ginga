@@ -23,6 +23,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
+
+// Public.
+
 FormatterMediaSettings::FormatterMediaSettings (Formatter *formatter,
                                                 const string &id)
   :FormatterMedia (formatter, id, "application/x-ginga-settings", "")
@@ -33,6 +36,9 @@ FormatterMediaSettings::FormatterMediaSettings (Formatter *formatter,
 FormatterMediaSettings::~FormatterMediaSettings ()
 {
 }
+
+
+// Public: FormatterObject.
 
 void
 FormatterMediaSettings::setProperty (const string &name,
@@ -57,6 +63,9 @@ FormatterMediaSettings::sendTickEvent (unused (GingaTime total),
   FormatterMedia::sendTickEvent (total, diff, frame);
 }
 
+
+// Public: FormatterMedia.
+
 bool
 FormatterMediaSettings::isFocused ()
 {
@@ -73,6 +82,9 @@ void
 FormatterMediaSettings::redraw (unused (cairo_t *cr))
 {
 }
+
+
+// Public.
 
 void
 FormatterMediaSettings::updateCurrentFocus (const string &index)
@@ -98,13 +110,11 @@ FormatterMediaSettings::updateCurrentFocus (const string &index)
     }
 
   // Do the actual attribution.
-  string name = "service.currentFocus";
   string value = next;
-
-  FormatterEvent *evt = this->getAttributionEvent (name);
+  FormatterEvent *evt = this->getAttributionEvent ("service.currentFocus");
   g_assert_nonnull (evt);
-  this->addDelayedAction (evt, NclEventStateTransition::START, value);
-  this->addDelayedAction (evt, NclEventStateTransition::STOP, value);
+  _formatter->evalAction (evt, NclEventStateTransition::START, value);
+  _formatter->evalAction (evt, NclEventStateTransition::STOP, value);
 }
 
 void

@@ -34,6 +34,9 @@ FormatterContext::~FormatterContext ()
     delete link;
 }
 
+
+// Public: FormatterObject.
+
 string G_GNUC_NORETURN
 FormatterContext::getProperty (unused (const string &name))
 {
@@ -75,71 +78,78 @@ FormatterContext::sendTickEvent (unused (GingaTime total),
 }
 
 bool
-FormatterContext::exec (FormatterEvent *evt,
-                        NclEventStateTransition transition)
+FormatterContext::startTransition (FormatterEvent *evt,
+                                   NclEventStateTransition transition)
 {
   switch (evt->getType ())
     {
-    // ---------------------------------------------------------------------
-    // Presentation event.
-    // ---------------------------------------------------------------------
     case NclEventType::PRESENTATION:
+      g_assert (evt->isLambda ());
       switch (transition)
         {
         case NclEventStateTransition::START:
-          //
-          // Start lambda.
-          //
-          TRACE ("start %s@lambda", _id.c_str ());
-          FormatterObject::doStart ();
-          for (auto port: _ports)
-            this->addDelayedAction (port, transition);
           break;
-        case NclEventStateTransition::PAUSE:
-          g_assert_not_reached ();
-          break;
-        case NclEventStateTransition::RESUME:
-          g_assert_not_reached ();
-          break;
+
         case NclEventStateTransition::STOP:
-          //
-          // Stop lambda.
-          //
-          TRACE ("stop %s@lambda", _id.c_str ());
           for (auto child: _children)
             {
-              FormatterEvent *e = child->getLambda ();
-              g_assert_nonnull (e);
-              e->transition (NclEventStateTransition::STOP);
+              FormatterEvent *lambda = child->getLambda ();
+              g_assert_nonnull (lambda);
+              lambda->transition (NclEventStateTransition::STOP);
             }
-          this->clearDelayedActions ();
-          FormatterObject::doStop ();
           break;
-        case NclEventStateTransition::ABORT:
-          g_assert_not_reached ();
-          break;
+
         default:
           g_assert_not_reached ();
         }
       break;
 
-    // ---------------------------------------------------------------------
-    // Attribution event.
-    // ---------------------------------------------------------------------
     case NclEventType::ATTRIBUTION:
       g_assert_not_reached ();
       break;
 
-    //----------------------------------------------------------------------
-    // Selection event.
-    // ---------------------------------------------------------------------
     case NclEventType::SELECTION:
-      return false;             // fail: contexts cannot be selected
+      return false;             // fail
+
     default:
       g_assert_not_reached ();
     }
   return true;
 }
+
+void
+FormatterContext::endTransition (FormatterEvent *evt,
+                                 NclEventStateTransition transition)
+{
+  switch (evt->getType ())
+    {
+    case NclEventType::PRESENTATION:
+      switch (transition)
+        {
+        case NclEventStateTransition::START:
+          FormatterObject::doStart ();
+          for (auto port: _ports)
+            _formatter->evalAction (port, transition);
+          TRACE ("start %s@lambda", _id.c_str ());
+          break;
+        case NclEventStateTransition::STOP:
+          FormatterObject::doStop ();
+          TRACE ("stop %s@lambda", _id.c_str ());
+          break;
+        default:
+            g_assert_not_reached ();
+        }
+      break;
+
+    case NclEventType::ATTRIBUTION:
+    case NclEventType::SELECTION:
+    default:
+      g_assert_not_reached ();
+    }
+}
+
+
+// Public.
 
 const list<FormatterEvent *> *
 FormatterContext::getPorts ()

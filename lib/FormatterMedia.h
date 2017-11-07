@@ -30,14 +30,15 @@ public:
                   const string &);
   virtual ~FormatterMedia ();
 
-  string getProperty (const string &) override;
+  // FormatterObject:
   void setProperty (const string &, const string &,
                     GingaTime dur=0) override;
-
   void sendKeyEvent (const string &, bool) override;
   void sendTickEvent (GingaTime, GingaTime, GingaTime) override;
-  bool exec (FormatterEvent *, NclEventStateTransition) override;
+  bool startTransition (FormatterEvent *, NclEventStateTransition) override;
+  void endTransition (FormatterEvent *, NclEventStateTransition) override;
 
+  // FormatterMedia:
   virtual bool isFocused ();
   virtual bool getZ (int *, int *);
   virtual void redraw (cairo_t *);

@@ -119,11 +119,8 @@ FormatterMedia::~FormatterMedia ()
   this->doStop ();
 }
 
-string
-FormatterMedia::getProperty (const string &name)
-{
-  return FormatterObject::getProperty (name);
-}
+
+// Public: FormatterObject.
 
 void
 FormatterMedia::setProperty (const string &name,
@@ -190,24 +187,19 @@ FormatterMedia::sendKeyEvent (const string &key, bool press)
         {
           continue;
         }
-
-      // anchor = cast (NclArea *, evt->getAnchor ());
-      // g_assert_nonnull (anchor);
-      // g_assert (instanceof (NclAreaLambda *, anchor));
       buf.push_back (evt);
     }
 
   // Run collected events.
   for (FormatterEvent *evt: buf)
     {
-      this->addDelayedAction (evt, NclEventStateTransition::START);
-      this->addDelayedAction (evt, NclEventStateTransition::STOP);
+      _formatter->evalAction (evt, NclEventStateTransition::START);
+      _formatter->evalAction (evt, NclEventStateTransition::STOP);
     }
 }
 
 void
-FormatterMedia::sendTickEvent (GingaTime total,
-                               GingaTime diff,
+FormatterMedia::sendTickEvent (GingaTime total, GingaTime diff,
                                GingaTime frame)
 {
   GingaTime dur;
@@ -231,151 +223,128 @@ FormatterMedia::sendTickEvent (GingaTime total,
       g_assert_nonnull (lambda);
       TRACE ("eos %s@lambda at %" GINGA_TIME_FORMAT, _id.c_str (),
              GINGA_TIME_ARGS (_time));
-      this->addDelayedAction (lambda, NclEventStateTransition::STOP);
+      _formatter->evalAction (lambda, NclEventStateTransition::STOP);
       return;
     }
 }
 
 bool
-FormatterMedia::exec (FormatterEvent *evt,
-                      NclEventStateTransition transition)
+FormatterMedia::startTransition (FormatterEvent *evt,
+                                 NclEventStateTransition transition)
 {
   switch (evt->getType ())
     {
-    // ---------------------------------------------------------------------
-    // Presentation event.
-    // ---------------------------------------------------------------------
     case NclEventType::PRESENTATION:
       switch (transition)
         {
         case NclEventStateTransition::START:
           if (evt->isLambda ())
             {
-              //
-              // Start lambda.
-              //
               g_assert_null (_player);
               _player = Player::createPlayer
                 (_formatter, _id, _uri, _mimetype);
-              g_assert_nonnull (_player);
+              if (unlikely (_player == nullptr))
+                return false;       // fail
 
-              // Initialize player properties.
               for (auto it: _properties)
                 _player->setProperty (it.first, it.second);
 
-              // Install delayed actions for time anchors.
-              for (auto e: _events)
-                {
-                  GingaTime begin, end;
-
-                  if (e->getType () != NclEventType::PRESENTATION)
-                    continue;
-                  if (e->isLambda ())
-                    continue;
-
-                  e->getInterval (&begin, &end);
-                  this->addDelayedAction (e, NclEventStateTransition::START,
-                                        "", begin);
-                  this->addDelayedAction (e, NclEventStateTransition::STOP,
-                                        "", end);
-                }
-
-              TRACE ("start %s@lambda", _id.c_str ());
-              FormatterObject::doStart ();
-              _player->start ();
-            }
-          else
-            {
-              //
-              // Start area (non-lambda).
-              //
-              if (this->isOccurring ())
-                {
-                  //
-                  // Implicit.
-                  //
-                  GingaTime begin;
-                  evt->getInterval (&begin, nullptr);
-                  TRACE ("start %s@%s (begin=%" GINGA_TIME_FORMAT
-                         ") at %" GINGA_TIME_FORMAT,
-                         _id.c_str (),
-                         evt->getId ().c_str (),
-                         GINGA_TIME_ARGS (begin),
-                         GINGA_TIME_ARGS (_time));
-                }
-              else
-                {
-                  //
-                  // Explicit.
-                  //
-                  g_assert_not_reached ();
-                }
+              _player->start ();    // TODO: check failure
             }
           break;
-        case NclEventStateTransition::PAUSE:
-          g_assert_not_reached ();
-          break;
-        case NclEventStateTransition::RESUME:
-          g_assert_not_reached ();
-          break;
+
         case NclEventStateTransition::STOP:
-          if (evt->isLambda ())
-            {
-              //
-              // Stop lambda.
-              //
-              g_assert_nonnull (_player);
-              TRACE ("stop %s@lambda", _id.c_str ());
-              this->doStop ();
-            }
-          else
-            {
-              //
-              // Stop area (non-lambda).
-              //
-              if (this->isOccurring ())
-                {
-                  //
-                  // Implicit.
-                  //
-                  GingaTime end;
-                  evt->getInterval (nullptr, &end);
-                  TRACE ("stop %s@%s (end=%" GINGA_TIME_FORMAT
-                         ") at %" GINGA_TIME_FORMAT,
-                         _id.c_str (),
-                         evt->getId ().c_str (),
-                         GINGA_TIME_ARGS (end),
-                         GINGA_TIME_ARGS (_time));
-                }
-              else
-                {
-                  //
-                  // Explicit.
-                  //
-                  g_assert_not_reached ();
-                }
-            }
-          break;
-        case NclEventStateTransition::ABORT:
-          g_assert_not_reached ();
           break;
         default:
           g_assert_not_reached ();
         }
       break;
 
-    // ---------------------------------------------------------------------
-    // Attribution event.
-    // ---------------------------------------------------------------------
     case NclEventType::ATTRIBUTION:
+    case NclEventType::SELECTION:
       if (!this->isOccurring ())
-        return false;           // nothing to do
+        return false;           // fail
+      break;
+
+    default:
+      g_assert_not_reached ();
+    }
+  return true;
+}
+
+void
+FormatterMedia::endTransition (FormatterEvent *evt,
+                               NclEventStateTransition transition)
+{
+  switch (evt->getType ())
+    {
+    case NclEventType::PRESENTATION:
+      switch (transition)
+        {
+        case NclEventStateTransition::START:
+          if (evt->isLambda ())
+            {
+              g_assert_nonnull (_player);
+              FormatterObject::doStart ();
+              for (auto e: _events) // schedule time anchors
+                {
+                  if (!e->isLambda ()
+                      && e->getType () == NclEventType::PRESENTATION)
+                    {
+                      GingaTime begin, end;
+                      e->getInterval (&begin, &end);
+                      this->addDelayedAction
+                        (e, NclEventStateTransition::START, "", begin);
+                      this->addDelayedAction
+                        (e, NclEventStateTransition::STOP, "", end);
+                    }
+                }
+              TRACE ("start %s@lambda", _id.c_str ());
+            }
+          else                  // non-lambda area
+            {
+              GingaTime begin;
+              g_assert (this->isOccurring ());
+              evt->getInterval (&begin, nullptr);
+              TRACE ("start %s@%s (begin=%" GINGA_TIME_FORMAT
+                     ") at %" GINGA_TIME_FORMAT,
+                     _id.c_str (), evt->getId ().c_str (),
+                     GINGA_TIME_ARGS (begin), GINGA_TIME_ARGS (_time));
+            }
+          break;
+
+        case NclEventStateTransition::STOP:
+          if (evt->isLambda ())
+            {
+              g_assert_nonnull (_player);
+              this->doStop ();
+              TRACE ("stop %s@lambda", _id.c_str ());
+            }
+          else                  // non-lambda area
+            {
+              GingaTime end;
+              g_assert (this->isOccurring ());
+              evt->getInterval (nullptr, &end);
+              TRACE ("stop %s@%s (end=%" GINGA_TIME_FORMAT
+                     ") at %" GINGA_TIME_FORMAT,
+                     _id.c_str (), evt->getId ().c_str (),
+                     GINGA_TIME_ARGS (end), GINGA_TIME_ARGS (_time));
+            }
+          break;
+
+        default:
+          g_assert_not_reached ();
+        }
+      break;
+
+    case NclEventType::ATTRIBUTION:
       switch (transition)
         {
         case NclEventStateTransition::START:
           {
             string name;
             string value;
+            string s;
             GingaTime dur;
 
             name = evt->getId ();
@@ -383,7 +352,6 @@ FormatterMedia::exec (FormatterEvent *evt,
             if (value[0] == '$')
               _formatter->getObjectPropertyByRef (value, &value);
 
-            string s;
             if (evt->getParameter ("duration", &s))
               {
                 if (s[0] == '$')
@@ -395,59 +363,48 @@ FormatterMedia::exec (FormatterEvent *evt,
                 dur = 0;
               }
             this->setProperty (name, value, dur);
-            this->addDelayedAction (evt, NclEventStateTransition::STOP);
+            this->addDelayedAction
+              (evt, NclEventStateTransition::STOP, s);
+
             TRACE ("start %s.%s:=%s (duration=%s)", _id.c_str (),
                    name.c_str (), value.c_str (), s.c_str ());
             break;
           }
         case NclEventStateTransition::STOP:
-          {
-            TRACE ("stop %s.%s:=...", _id.c_str (),
-                   evt->getId ().c_str ());
-            break;
-          }
-        case NclEventStateTransition::PAUSE: // impossible
-        case NclEventStateTransition::RESUME:
-        case NclEventStateTransition::ABORT:
+          TRACE ("stop %s.%s:=...", _id.c_str (), evt->getId ().c_str ());
+          break;
         default:
           g_assert_not_reached ();
         }
       break;
 
-    //----------------------------------------------------------------------
-    // Selection event.
-    // ---------------------------------------------------------------------
     case NclEventType::SELECTION:
-      if (!this->isOccurring ())
-        return false;           // nothing to do
-      switch (transition)
-        {
-        case NclEventStateTransition::START:
+      {
+        string key;
+
+        g_assert (this->isOccurring ());
+        evt->getParameter ("key", &key);
+
+        switch (transition)
           {
-            string key = "";
-            evt->getParameter ("key", &key);
+          case NclEventStateTransition::START:
             TRACE ("start %s<%s>", _id.c_str (), key.c_str ());
             break;
-          }
-        case NclEventStateTransition::STOP:
-          {
-            string key = "";
-            evt->getParameter ("key", &key);
+          case NclEventStateTransition::STOP:
             TRACE ("stop %s<%s>", _id.c_str (), key.c_str ());
             break;
+          default:
+            g_assert_not_reached ();
           }
-        case NclEventStateTransition::PAUSE: // impossible
-        case NclEventStateTransition::RESUME:
-        case NclEventStateTransition::ABORT:
-        default:
-          g_assert_not_reached ();
-        }
-      break;
+        break;
+      }
     default:
       g_assert_not_reached ();
     }
-  return true;
 }
+
+
+// Public.
 
 bool
 FormatterMedia::isFocused ()
