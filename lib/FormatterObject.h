@@ -41,8 +41,6 @@ public:
   FormatterComposition *getParent ();
   void initParent (FormatterComposition *);
 
-  GingaTime getTime ();
-
   FormatterEvent *obtainEvent (NclEventType, NclAnchor *, const string &);
 
   FormatterEvent *getEvent (NclEventType, const string &);
@@ -62,16 +60,15 @@ public:
   virtual void setProperty (const string &, const string &,
                             GingaTime dur=0);
 
-
   list<pair<FormatterAction *, GingaTime>> *getDelayedActions ();
   void addDelayedAction (FormatterEvent *, NclEventStateTransition,
                          const string &value="", GingaTime delay=0);
-  void clearDelayedActions ();
 
   virtual void sendKeyEvent (const string &, bool);
   virtual void sendTickEvent (GingaTime, GingaTime, GingaTime);
 
-  virtual bool exec (FormatterEvent *, NclEventStateTransition) = 0;
+  virtual bool startTransition (FormatterEvent *, NclEventStateTransition) = 0;
+  virtual void endTransition (FormatterEvent *, NclEventStateTransition) = 0;
 
 protected:
   Formatter *_formatter;           // formatter handle

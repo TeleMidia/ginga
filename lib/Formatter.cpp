@@ -365,44 +365,10 @@ Formatter::sendTickEvent (uint64_t total, uint64_t diff, uint64_t frame)
 
   for (auto obj: buf)
     {
-      list<FormatterAction *> trigger;
-
       if (!obj->isOccurring ())
         continue;
 
       obj->sendTickEvent (total, diff, frame);
-      auto delayed = obj->getDelayedActions ();
-      for (auto it: *delayed)
-        {
-          if (obj->getTime () >= it.second)
-            {
-              it.second = GINGA_TIME_NONE;
-              trigger.push_back (it.first);
-            }
-        }
-
-      for (auto action: trigger)
-        {
-          this->evalAction (action);
-          if (!obj->isOccurring ())
-            break;
-        }
-
-      if (!obj->isOccurring ())
-        continue;
-
-      for (auto it = delayed->begin (); it != delayed->end ();)
-        {
-          if (it->second == GINGA_TIME_NONE)
-            {
-              delete it->first;
-              it = delayed->erase (it);
-            }
-          else
-            {
-              ++it;
-            }
-        }
     }
 
   return true;
@@ -705,12 +671,12 @@ Formatter::evalAction (FormatterEvent *event,
 }
 
 int
-Formatter::evalAction (FormatterAction *action)
+Formatter::evalAction (FormatterAction *init)
 {
   list<FormatterAction *> stack;
   int n;
 
-  stack.push_back (action);
+  stack.push_back (init);
   n = 0;
 
   while (!stack.empty ())
@@ -738,7 +704,7 @@ Formatter::evalAction (FormatterAction *action)
             evt->setParameter ("value", value);
         }
 
-      if (!evt->transition (action->getTransition ()))
+      if (!evt->transition (act->getTransition ()))
         continue;
 
       n++;
@@ -776,8 +742,11 @@ Formatter::evalAction (FormatterAction *action)
                     continue;
 
                   // Success.
-                  for (auto a: *link->getActions ())
-                    stack.push_back (a);
+                  auto acts = *link->getActions ();
+                  std::list<FormatterAction *>::reverse_iterator rit
+                    = acts.rbegin ();
+                  for (; rit != acts.rend (); ++rit)
+                    stack.push_back (*rit);
                 }
             }
         }

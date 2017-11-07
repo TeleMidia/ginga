@@ -88,12 +88,6 @@ FormatterObject::initParent (FormatterComposition *parent)
   _parent = parent;
 }
 
-GingaTime
-FormatterObject::getTime ()
-{
-  return _time;
-}
-
 FormatterEvent *
 FormatterObject::obtainEvent (NclEventType type, NclAnchor *anchor,
                               const string &key)
@@ -277,14 +271,6 @@ FormatterObject::addDelayedAction (FormatterEvent *event,
 }
 
 void
-FormatterObject::clearDelayedActions ()
-{
-  for (auto item: _delayed)
-    delete item.first;
-  _delayed.clear ();
-}
-
-void
 FormatterObject::sendKeyEvent (unused (const string &key),
                                unused (bool press))
 {
@@ -298,6 +284,36 @@ FormatterObject::sendTickEvent (unused (GingaTime total),
   g_assert (this->isOccurring ());
   g_assert (GINGA_TIME_IS_VALID (_time));
   _time += diff;
+
+  list<FormatterAction *> trigger;
+  for (auto it: _delayed)
+    {
+      if (_time >= it.second)
+        {
+          it.second = GINGA_TIME_NONE;
+          trigger.push_back (it.first);
+        }
+    }
+
+  for (auto action: trigger)
+    {
+      _formatter->evalAction (action);
+      if (!this->isOccurring ())
+        return;
+    }
+
+  for (auto it = _delayed.begin (); it != _delayed.end ();)
+    {
+      if (it->second == GINGA_TIME_NONE)
+        {
+          delete it->first;
+          it = _delayed.erase (it);
+        }
+      else
+        {
+          ++it;
+        }
+    }
 }
 
 
@@ -313,6 +329,9 @@ void
 FormatterObject::doStop ()
 {
   _time = GINGA_TIME_NONE;
+  for (auto item: _delayed)
+    delete item.first;
+  _delayed.clear ();
 }
 
 GINGA_NAMESPACE_END

@@ -28,13 +28,16 @@ public:
   FormatterMediaSettings (Formatter *, const string &);
   ~FormatterMediaSettings ();
 
+  // FormatterObject:
   void setProperty (const string &, const string &, GingaTime) override;
   void sendTickEvent (GingaTime, GingaTime, GingaTime) override;
 
+  // FormatterMedia;
   bool isFocused () override;
   bool getZ (int *, int *) override;
   void redraw (cairo_t *) override;
 
+  // FormatterSettings:
   void updateCurrentFocus (const string &);
   void scheduleFocusUpdate (const string &);
 

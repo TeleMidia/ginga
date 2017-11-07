@@ -30,14 +30,16 @@ public:
   FormatterContext (Formatter *, const string &);
   virtual ~FormatterContext ();
 
+  // FormatterObject:
   string getProperty (const string &) override;
   void setProperty (const string &, const string &,
                     GingaTime dur=0) override;
-
   void sendKeyEvent (const string &, bool) override;
   void sendTickEvent (GingaTime, GingaTime, GingaTime) override;
-  bool exec (FormatterEvent *, NclEventStateTransition) override;
+  bool startTransition (FormatterEvent *, NclEventStateTransition) override;
+  void endTransition (FormatterEvent *, NclEventStateTransition) override;
 
+  // FormatterContext:
   const list<FormatterEvent *> *getPorts ();
   void addPort (FormatterEvent *);
 
