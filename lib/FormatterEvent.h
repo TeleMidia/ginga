@@ -23,14 +23,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-class FormatterEvent;
-class IFormatterEventListener
-{
-public:
-  virtual void eventStateChanged (FormatterEvent *,
-                                  NclEventStateTransition) = 0;
-};
-
 class FormatterObject;
 class FormatterEvent
 {
@@ -47,13 +39,11 @@ public:
   void getInterval (GingaTime *, GingaTime *);
   void setInterval (GingaTime, GingaTime);
 
-  const list<IFormatterEventListener *> *getListeners ();
-  void addListener (IFormatterEventListener *);
-
   bool getParameter (const string &, string *);
   bool setParameter (const string &, const string &);
 
   bool transition (NclEventStateTransition);
+  void reset ();
 
 private:
   NclEventType _type;                           // event type
@@ -62,7 +52,6 @@ private:
   NclEventState _state;                         // event state
   GingaTime _begin;                             // begin-time
   GingaTime _end;                               // end-time
-  list<IFormatterEventListener *> _listeners;   // event listeners
   map<string, string> _parameters;              // parameters
 };
 

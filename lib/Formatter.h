@@ -99,7 +99,7 @@ class Formatter: public Ginga
   set<FormatterMedia *> _mediaObjects; // media objects
   FormatterMediaSettings *_settings;   // settings object
 
-  vector<FormatterObject *> getObjectsVector ();
+  list<FormatterObject *> getObjectList (NclEventState);
   FormatterEvent *obtainFormatterEventFromBind (NclBind *);
   FormatterLink *obtainFormatterLink (NclLink *);
 };

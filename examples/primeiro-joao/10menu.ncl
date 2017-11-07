@@ -4,7 +4,7 @@
   <head>
     <ruleBase>
       <rule id="en" var="system.language" value="en" comparator="eq"/>
-      <!--                         <rule id="int" var="service.interactivity" value="true" comparator="eq"/> -->
+      <!-- <rule id="int" var="service.interactivity" value="true" comparator="eq"/> -->
       <rule id="rRock" var="service.currentFocus" value="3" comparator="eq"/>
       <rule id="rTechno" var="service.currentFocus" value="4" comparator="eq"/>
       <rule id="rCartoon" var="service.currentFocus" value="5" comparator="eq"/>
@@ -51,6 +51,7 @@
 
   <body>
     <port id="entry" component="animation"/>
+    <port id="entry2" component="interactivity"/>
     <media id="background" src="media/background.png" descriptor="backgroundDesc"/>
     <media id="animation" src="media/animGar.mp4" descriptor="screenDesc">
       <area id="segDrible" begin="12s"/>
@@ -67,22 +68,18 @@
         <property name="service.interactivity" value="true"/>
         <property name="service.currentFocus"/>
       </media>
-      <media id="anotherAnimation" refer="animation" instance="instSame"/>
       <media id="intOn" src="media/intOn.png" descriptor="intDesc"/>
       <media id="intOff" src="media/intOff.png" descriptor="intDesc"/>
-      <link id="lInt" xconnector="conEx#onBeginSet_varStart">
-        <bind role="onBegin" component="anotherAnimation"/>
+      <link id="lInt" xconnector="conEx#onBeginStart">
+        <bind role="onBegin" component="interactivity"/>
         <bind role="start" component="intOn"/>
-        <bind role="set" component="globalVar" interface="service.interactivity">
-          <bindParam name="var" value="true"/>
-        </bind>
       </link>
       <link id="lOn" xconnector="conEx#onKeySelectionStopSet_varStart">
         <bind role="onSelection" component="intOn">
           <bindParam name="keyCode" value="INFO"/>
         </bind>
-        <bind role="start" component="intOff"/>
         <bind role="stop" component="intOn"/>
+        <bind role="start" component="intOff"/>
         <bind role="set" component="globalVar" interface="service.interactivity">
           <bindParam name="var" value="false"/>
         </bind>
@@ -91,8 +88,8 @@
         <bind role="onSelection" component="intOff">
           <bindParam name="keyCode" value="INFO"/>
         </bind>
-        <bind role="start" component="intOn"/>
         <bind role="stop" component="intOff"/>
+        <bind role="start" component="intOn"/>
         <bind role="set" component="globalVar" interface="service.interactivity">
           <bindParam name="var" value="true"/>
         </bind>

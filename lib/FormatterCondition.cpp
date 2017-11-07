@@ -26,9 +26,7 @@ FormatterCondition::FormatterCondition (FormatterPredicate *predicate,
 {
   _predicate = predicate;
   _event = event;
-  _event->addListener (this);
   _transition = transition;
-  _satisfied = false;
 }
 
 FormatterCondition::~FormatterCondition ()
@@ -53,39 +51,6 @@ NclEventStateTransition
 FormatterCondition::getTransition ()
 {
   return _transition;
-}
-
-bool
-FormatterCondition::getSatisfied ()
-{
-  return _satisfied;
-}
-
-void
-FormatterCondition::setSatisfied (bool satisfied)
-{
-  _satisfied = satisfied;
-}
-
-// void
-// FormatterCondition::setTriggerListener (IFormatterConditionListener *lst)
-// {
-//   g_assert_nonnull (lst);
-//   _listener = lst;
-// }
-
-// void
-// FormatterCondition::conditionSatisfied ()
-// {
-//   _listener->conditionSatisfied (this);
-// }
-
-void
-FormatterCondition::eventStateChanged (unused (FormatterEvent *event),
-                                       NclEventStateTransition transition)
-{
-  if (!_satisfied && _transition == transition)
-    _satisfied = true;
 }
 
 GINGA_NAMESPACE_END
