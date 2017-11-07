@@ -193,6 +193,7 @@ FormatterMedia::sendKeyEvent (const string &key, bool press)
   // Run collected events.
   for (FormatterEvent *evt: buf)
     {
+      TRACE ("%s<%s>", _id.c_str (), evt->getId ().c_str ());
       _formatter->evalAction (evt, NclEventStateTransition::START);
       _formatter->evalAction (evt, NclEventStateTransition::STOP);
     }
@@ -363,8 +364,7 @@ FormatterMedia::endTransition (FormatterEvent *evt,
                 dur = 0;
               }
             this->setProperty (name, value, dur);
-            this->addDelayedAction
-              (evt, NclEventStateTransition::STOP, s);
+            _formatter->evalAction (evt, NclEventStateTransition::STOP);
 
             TRACE ("start %s.%s:=%s (duration=%s)", _id.c_str (),
                    name.c_str (), value.c_str (), s.c_str ());

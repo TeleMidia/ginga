@@ -81,19 +81,6 @@ FormatterEvent::setInterval (GingaTime begin, GingaTime end)
   _end = end;
 }
 
-const list<IFormatterEventListener *> *
-FormatterEvent::getListeners ()
-{
-  return &_listeners;
-}
-
-void
-FormatterEvent::addListener (IFormatterEventListener *listener)
-{
-  g_assert_nonnull (listener);
-  tryinsert (listener, _listeners, push_back);
-}
-
 bool
 FormatterEvent::getParameter (const string &name, string *value)
 {
@@ -142,6 +129,12 @@ FormatterEvent::transition (NclEventStateTransition trans)
   _state = next;
   _object->endTransition (this, trans);
   return true;
+}
+
+void
+FormatterEvent::reset ()
+{
+  _state = NclEventState::SLEEPING;
 }
 
 GINGA_NAMESPACE_END

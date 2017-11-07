@@ -329,6 +329,8 @@ void
 FormatterObject::doStop ()
 {
   _time = GINGA_TIME_NONE;
+  for (auto evt: _events)
+    evt->reset ();
   for (auto item: _delayed)
     delete item.first;
   _delayed.clear ();

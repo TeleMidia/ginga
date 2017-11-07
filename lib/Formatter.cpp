@@ -336,9 +336,8 @@ Formatter::sendKeyEvent (const string &key, bool press)
   if (_state != GINGA_STATE_PLAYING)
     return false;               // nothing to do
 
-  for (auto obj: this->getObjectsVector ())
-    if (obj->isOccurring ())
-      obj->sendKeyEvent (key, press);
+  for (auto obj: this->getObjectList (NclEventState::OCCURRING))
+    obj->sendKeyEvent (key, press);
 
   return true;
 }
@@ -346,7 +345,7 @@ Formatter::sendKeyEvent (const string &key, bool press)
 bool
 Formatter::sendTickEvent (uint64_t total, uint64_t diff, uint64_t frame)
 {
-  vector<FormatterObject *> buf;
+  list<FormatterObject *> buf;
 
   _GINGA_CHECK_EOS (this);
   if (_state != GINGA_STATE_PLAYING)
@@ -356,7 +355,7 @@ Formatter::sendTickEvent (uint64_t total, uint64_t diff, uint64_t frame)
   _last_tick_diff = diff;
   _last_tick_frameno = frame;
 
-  buf = this->getObjectsVector ();
+  buf = this->getObjectList (NclEventState::OCCURRING);
   if (buf.empty ())
     {
       this->setEOS (true);
@@ -364,12 +363,7 @@ Formatter::sendTickEvent (uint64_t total, uint64_t diff, uint64_t frame)
     }
 
   for (auto obj: buf)
-    {
-      if (!obj->isOccurring ())
-        continue;
-
-      obj->sendTickEvent (total, diff, frame);
-    }
+    obj->sendTickEvent (total, diff, frame);
 
   return true;
 }
@@ -972,12 +966,16 @@ Formatter::setOptionSize (Formatter *self, const string &name,
 
 // Private.
 
-vector<FormatterObject *>
-Formatter::getObjectsVector ()
+list<FormatterObject *>
+Formatter::getObjectList (NclEventState state)
 {
-  vector<FormatterObject *> buf;
+  list<FormatterObject *> buf;
   for (auto obj: _objects)
-    buf.push_back (obj);
+    {
+      FormatterEvent *lambda = obj->getLambda ();
+      if (lambda->getState () == state)
+        buf.push_back (obj);
+    }
   return buf;
 }
 
