@@ -121,6 +121,9 @@ string __ginga_strfunc (const string &);
 #define ERROR(fmt, ...)    __ginga_log (g_error, fmt, ## __VA_ARGS__)
 #define CRITICAL(fmt, ...) __ginga_log (g_critical, fmt, ## __VA_ARGS__)
 
+#define ERROR_NOT_IMPLEMENTED(fmt, ...)\
+  ERROR ("not implemented: " fmt, ## __VA_ARGS__)
+
 // Internal types.
 typedef GdkRGBA Color;
 typedef GdkRectangle Rect;
