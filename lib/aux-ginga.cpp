@@ -17,9 +17,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 
-GINGA_PRAGMA_DIAG_IGNORE (-Wimplicit-fallthrough)
+GINGA_NAMESPACE_BEGIN
 
-
+
 // Logging -----------------------------------------------------------------
 
 /**
@@ -44,7 +44,7 @@ __ginga_strfunc (const string &strfunc)
   return result + "()";
 }
 
-
+
 // Parsing and evaluation --------------------------------------------------
 
 /**
@@ -54,7 +54,7 @@ __ginga_strfunc (const string &strfunc)
  * @return True if successful, or false otherwise.
  */
 bool
-_ginga_parse_bool (const string &s, bool *result)
+try_parse_bool (const string &s, bool *result)
 {
   if (xstrcaseeq (s, "true"))
     {
@@ -79,11 +79,11 @@ _ginga_parse_bool (const string &s, bool *result)
  * @return True if successful, or false otherwise.
  */
 bool
-_ginga_parse_color (const string &s, GingaColor *result)
+try_parse_color (const string &s, Color *result)
 {
   if (s == "")
     {
-      GingaColor none = {0,0,0,0};
+      Color none = {0,0,0,0};
       tryset (result, none);
       return true;
     }
@@ -103,8 +103,8 @@ _ginga_parse_color (const string &s, GingaColor *result)
  * @return True if successful, or false otherwise.
  */
 bool
-_ginga_parse_list (const string &s, char sep, size_t min, size_t max,
-                   vector<string> *result)
+try_parse_list (const string &s, char sep, size_t min, size_t max,
+                vector<string> *result)
 {
   vector<string> items;
   size_t n;
@@ -122,40 +122,13 @@ _ginga_parse_list (const string &s, char sep, size_t min, size_t max,
 }
 
 /**
- * @brief Parses number or percent string to an integer.
- * @param s Number or percent string.
- * @param base Base value used to convert percent to integer.
- * @param min Minimum resulting integer.
- * @param max Maximum resulting integer.
- * @return The resulting integer.
- */
-int
-ginga_parse_percent (const string &s, int base, int min, int max)
-{
-  bool percent;
-  double d;
-  int result;
-
-  d = xstrtodorpercent (s, &percent);
-  if (percent)
-    {
-      result = (int) lround (d * base);
-    }
-  else
-    {
-      result = (int) lround (d);
-    }
-  return (int) CLAMP (result, min, max);
-}
-
-/**
  * Parses time string ("Ns" or "NN:NN:NN").
  * @param s Time string.
  * @param result Variable to store the resulting time.
  * @return True if successful, or false otherwise.
  */
 bool
-_ginga_parse_time (const string &s, GingaTime *result)
+try_parse_time (const string &s, Time *result)
 {
   gchar *dup;
   gchar *end;
@@ -183,7 +156,7 @@ _ginga_parse_time (const string &s, GingaTime *result)
 
  success:
   g_free (dup);
-  tryset (result, (GingaTime)(secs * GINGA_SECOND));
+  tryset (result, (Time)(secs * GINGA_SECOND));
   return true;
 
  failure:
@@ -191,28 +164,66 @@ _ginga_parse_time (const string &s, GingaTime *result)
   return false;
 }
 
-// Asserted wrappers for _ginga_parse_*.
+// Asserted wrappers for parse_*.
 #define _GINGA_PARSE_DEFN(Type, Name, Str)                      \
   Type                                                          \
-  ginga_parse_##Name (const string &s)                          \
+  parse_##Name (const string &s)                                \
   {                                                             \
     Type result;                                                \
-    if (unlikely (!_ginga_parse_##Name (s, &result)))           \
-      ERROR_SYNTAX ("invalid %s string '%s'", Str, s.c_str ()); \
+    if (unlikely (!ginga::try_parse_##Name (s, &result)))       \
+      ERROR ("invalid %s string '%s'", Str, s.c_str ());        \
     return result;                                              \
   }
 
 _GINGA_PARSE_DEFN (bool, bool, "boolean")
-_GINGA_PARSE_DEFN (GingaColor, color, "color")
-_GINGA_PARSE_DEFN (GingaTime, time, "time")
+_GINGA_PARSE_DEFN (Color, color, "color")
+_GINGA_PARSE_DEFN (Time, time, "time")
 
 vector<string>
-ginga_parse_list (const string &s, char sep, size_t min, size_t max)
+parse_list (const string &s, char sep, size_t min, size_t max)
 {
   vector<string> result;
-  if (unlikely (!_ginga_parse_list (s, sep, min, max, &result)))
-    ERROR_SYNTAX ("invalid list string '%s'", s.c_str ());
+  if (unlikely (!ginga::try_parse_list (s, sep, min, max, &result)))
+    ERROR ("invalid list string '%s'", s.c_str ());
   return result;
+}
+
+/**
+ * @brief Parses number or percent string to an integer.
+ * @param s Number or percent string.
+ * @param base Base value used to convert percent to integer.
+ * @param min Minimum resulting integer.
+ * @param max Maximum resulting integer.
+ * @return The resulting integer.
+ */
+int
+parse_percent (const string &s, int base, int min, int max)
+{
+  bool percent;
+  double d;
+  int result;
+
+  d = xstrtodorpercent (s, &percent);
+  if (percent)
+    {
+      result = (int) lround (d * base);
+    }
+  else
+    {
+      result = (int) lround (d);
+    }
+  return (int) CLAMP (result, min, max);
+}
+
+/**
+ * @brief Parses pixel string to an integer.
+ * @param s Pixel string.
+ * @return The resulting integer.
+ */
+guint8
+parse_pixel (const string &s)
+{
+  return (guint8) parse_percent (s, 255, 0, 255);
 }
 
 // Strings -----------------------------------------------------------------
@@ -564,3 +575,5 @@ xpathbuildabs (const string &a, const string &b)
 {
   return xpathmakeabs (xpathbuild (a, b));
 }
+
+GINGA_NAMESPACE_END

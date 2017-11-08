@@ -46,7 +46,7 @@ xmlGetPropAsString (xmlNode *node, const string &name, string *result)
 typedef map<string, map<string, string>> ParserLibXML_Cache;
 typedef struct ParserLibXML_State
 {
-  GingaRect rect;                    // screen dimensions
+  Rect rect;                    // screen dimensions
   xmlDoc *doc;                       // DOM tree
   NclDocument *ncl;                  // NCL tree
   vector<NclEntity *> stack;            // NCL entity stack
@@ -861,21 +861,21 @@ ncl_push_region (ParserLibXML_State *st,
                  unused (NclEntity **entity))
 {
   static int last_zorder = 0;
-  GingaRect screen_rect;
-  GingaRect parent_rect;
-  GingaRect rect;
+  Rect screen_rect;
+  Rect parent_rect;
+  Rect rect;
   string value;
 
   g_assert_nonnull (elt->parent);
   if (toString (elt->parent->name) != "region") // root region
     {
-      GingaRect *saved_rect = new GingaRect;
+      Rect *saved_rect = new Rect;
       *saved_rect = screen_rect = st->rect;
       st_set_data (st, "saved_rect", saved_rect);
     }
   else
     {
-      GingaRect *saved_rect = (GingaRect *) st_get_data (st, "saved_rect");
+      Rect *saved_rect = (Rect *) st_get_data (st, "saved_rect");
       screen_rect = *saved_rect;
     }
 
@@ -937,8 +937,8 @@ ncl_pop_region (ParserLibXML_State *st,
   g_assert_nonnull (elt->parent);
   if (toString (elt->parent->name) != "region") // root region
     {
-      GingaRect *saved_rect;
-      saved_rect = (GingaRect *) st_get_data (st, "saved_rect");
+      Rect *saved_rect;
+      saved_rect = (Rect *) st_get_data (st, "saved_rect");
       g_assert_nonnull (saved_rect);
       st->rect = *saved_rect;
       delete saved_rect;

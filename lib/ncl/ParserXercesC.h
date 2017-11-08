@@ -87,7 +87,7 @@ private:
   void parseTransition (DOMElement *);
 
   void parseRegionBase (DOMElement *);
-  void parseRegion (DOMElement *, GingaRect);
+  void parseRegion (DOMElement *, Rect);
 
   void parseDescriptorBase (DOMElement *);
   void parseDescriptor (DOMElement *);

@@ -20,19 +20,19 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NAMESPACE_BEGIN
 
 NclArea::NclArea (NclDocument *ncl, const string &id,
-                  GingaTime begin, GingaTime end): NclAnchor (ncl, id)
+                  Time begin, Time end): NclAnchor (ncl, id)
 {
   _begin = begin;
   _end = end;
 }
 
-GingaTime
+Time
 NclArea::getBegin ()
 {
   return _begin;
 }
 
-GingaTime
+Time
 NclArea::getEnd ()
 {
   return _end;

@@ -191,8 +191,7 @@ Object::getPresentationEvent (const string &id)
 }
 
 void
-Object::addPresentationEvent (const string &id, GingaTime begin,
-                              GingaTime end)
+Object::addPresentationEvent (const string &id, Time begin, Time end)
 {
   Event *evt;
 
@@ -260,14 +259,13 @@ Object::getProperty (const string &name)
 }
 
 void
-Object::setProperty (const string &name, const string &value,
-                     GingaTime dur)
+Object::setProperty (const string &name, const string &value, Time dur)
 {
   g_assert (GINGA_TIME_IS_VALID (dur));
   _properties[name] = value;
 }
 
-list<pair<Action *, GingaTime>> *
+list<pair<Action *, Time>> *
 Object::getDelayedActions ()
 {
   return &_delayed;
@@ -275,7 +273,7 @@ Object::getDelayedActions ()
 
 void
 Object::addDelayedAction (Event *event, Event::Transition transition,
-                          const string &value, GingaTime delay)
+                          const string &value, Time delay)
 {
   Action *action = new Action (event, transition);
   action->setParameter ("value", value);
@@ -288,8 +286,7 @@ Object::sendKeyEvent (unused (const string &key), unused (bool press))
 }
 
 void
-Object::sendTickEvent (unused (GingaTime total), GingaTime diff,
-                       unused (GingaTime frame))
+Object::sendTickEvent (unused (Time total), Time diff, unused (Time frame))
 {
   g_assert (this->isOccurring ());
   g_assert (GINGA_TIME_IS_VALID (_time));

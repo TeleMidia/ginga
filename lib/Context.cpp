@@ -45,7 +45,7 @@ Context::getProperty (unused (const string &name))
 void G_GNUC_NORETURN
 Context::setProperty (unused (const string &name),
                       unused (const string &value),
-                      unused (GingaTime dur))
+                      unused (Time dur))
 {
   g_assert_not_reached ();
 }
@@ -57,7 +57,7 @@ Context::sendKeyEvent (unused (const string &key),
 }
 
 void
-Context::sendTickEvent (GingaTime total, GingaTime diff, GingaTime frame)
+Context::sendTickEvent (Time total, Time diff, Time frame)
 {
   Object::sendTickEvent (total, diff, frame);
 

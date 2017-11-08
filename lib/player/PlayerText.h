@@ -28,9 +28,9 @@ public:
   static cairo_surface_t *renderSurface (const string &,
                                          const string &, const string &,
                                          const string &, const string &,
-                                         GingaColor, GingaColor, GingaRect,
+                                         Color, Color, Rect,
                                          const string &, const string &,
-                                         bool, GingaRect *);
+                                         bool, Rect *);
 
   PlayerText (Formatter *, const string &, const string &);
   ~PlayerText ();
@@ -42,8 +42,8 @@ protected:
 private:
   struct
   {
-    GingaColor fontColor;
-    GingaColor fontBgColor;
+    Color fontColor;
+    Color fontBgColor;
     string fontFamily;
     string fontSize;
     string fontStyle;

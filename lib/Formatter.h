@@ -85,7 +85,7 @@ class Formatter: public Ginga
  private:
   GingaState _state;            // current state
   GingaOptions _opts;           // current options
-  GingaColor _background;       // current background color
+  Color _background;            // current background color
 
   uint64_t _last_tick_total;      // last total informed via sendTickEvent
   uint64_t _last_tick_diff;       // last diff informed via sendTickEvent

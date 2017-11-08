@@ -25,13 +25,13 @@ GINGA_NAMESPACE_BEGIN
 class NclArea: public NclAnchor
 {
 public:
-  NclArea (NclDocument *, const string &, GingaTime, GingaTime);
-  GingaTime getBegin ();
-  GingaTime getEnd ();
+  NclArea (NclDocument *, const string &, Time, Time);
+  Time getBegin ();
+  Time getEnd ();
 
 protected:
-  GingaTime _begin;
-  GingaTime _end;
+  Time _begin;
+  Time _end;
 };
 
 class NclAreaLambda: public NclArea

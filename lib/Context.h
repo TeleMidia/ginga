@@ -33,9 +33,9 @@ public:
   // Object:
   string getProperty (const string &) override;
   void setProperty (const string &, const string &,
-                    GingaTime dur=0) override;
+                    Time dur=0) override;
   void sendKeyEvent (const string &, bool) override;
-  void sendTickEvent (GingaTime, GingaTime, GingaTime) override;
+  void sendTickEvent (Time, Time, Time) override;
   bool startTransition (Event *, Event::Transition) override;
   void endTransition (Event *, Event::Transition) override;
 

@@ -20,12 +20,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  g_assert (!_ginga_parse_bool ("*** invalid ***", nullptr));
-  g_assert (ginga_parse_bool ("true") == true);
-  g_assert (ginga_parse_bool ("false") == false);
-  g_assert (ginga_parse_bool ("True") == true);
-  g_assert (ginga_parse_bool ("False") == false);
-  g_assert (ginga_parse_bool ("TRUE") == true);
-  g_assert (ginga_parse_bool ("FALSE") == false);
+  g_assert (!ginga::try_parse_bool ("*** invalid ***", nullptr));
+  g_assert (ginga::parse_bool ("true") == true);
+  g_assert (ginga::parse_bool ("false") == false);
+  g_assert (ginga::parse_bool ("True") == true);
+  g_assert (ginga::parse_bool ("False") == false);
+  g_assert (ginga::parse_bool ("TRUE") == true);
+  g_assert (ginga::parse_bool ("FALSE") == false);
   exit (EXIT_SUCCESS);
 }

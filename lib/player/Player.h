@@ -77,11 +77,11 @@ public:
   PlayerState getState ();
   bool isFocused ();
 
-  GingaTime getTime ();
-  void incTime (GingaTime);
+  Time getTime ();
+  void incTime (Time);
 
-  GingaTime getDuration ();
-  void setDuration (GingaTime);
+  Time getDuration ();
+  void setDuration (Time);
 
   bool getEOS ();
   void setEOS (bool);
@@ -99,7 +99,7 @@ public:
   void resetProperties ();
   void resetProperties (set<string> *);
   void schedulePropertyAnimation (const string &, const string &,
-                                  const string &, GingaTime);
+                                  const string &, Time);
   virtual void reload ();
   virtual void redraw (cairo_t *);
 
@@ -117,7 +117,7 @@ protected:
   string _id;                   // associated object id
   string _uri;                  // source uri
   PlayerState _state;           // current state
-  GingaTime _time;              // playback time
+  Time _time;              // playback time
   bool _eos;                    // true if content was exhausted
   cairo_surface_t *_surface;    // player surface
   guint _gltexture;             // OpenGL texture (if OpenGL is used)
@@ -129,13 +129,13 @@ protected:
   {
     bool debug;                 // true if debugging mode is on
     string focusIndex;          // focus index
-    GingaRect rect;             // x, y, w, h in pixels
+    Rect rect;                  // x, y, w, h in pixels
     int z;                      // z-index
     int zorder;                 // z-order
     guint8 alpha;               // alpha
-    GingaColor bgColor;         // background color
+    Color bgColor;              // background color
     bool visible;               // true if visible
-    GingaTime duration;         // explicit duration
+    Time duration;         // explicit duration
   } _prop;
 
 protected:

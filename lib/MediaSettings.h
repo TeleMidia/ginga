@@ -29,8 +29,8 @@ public:
   ~MediaSettings ();
 
   // Object:
-  void setProperty (const string &, const string &, GingaTime) override;
-  void sendTickEvent (GingaTime, GingaTime, GingaTime) override;
+  void setProperty (const string &, const string &, Time) override;
+  void sendTickEvent (Time, Time, Time) override;
 
   // Media;
   bool isFocused () override;

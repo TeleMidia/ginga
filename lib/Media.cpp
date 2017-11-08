@@ -122,8 +122,7 @@ Media::~Media ()
 // Public: Object.
 
 void
-Media::setProperty (const string &name, const string &value,
-                    GingaTime dur)
+Media::setProperty (const string &name, const string &value, Time dur)
 {
   string from = this->getProperty (name);
   Object::setProperty (name, value, dur);
@@ -198,10 +197,9 @@ Media::sendKeyEvent (const string &key, bool press)
 }
 
 void
-Media::sendTickEvent (GingaTime total, GingaTime diff,
-                      GingaTime frame)
+Media::sendTickEvent (Time total, Time diff, Time frame)
 {
-  GingaTime dur;
+  Time dur;
 
   // Update object time.
   Object::sendTickEvent (total, diff, frame);
@@ -287,7 +285,7 @@ Media::endTransition (Event *evt, Event::Transition transition)
                   if (!e->isLambda ()
                       && e->getType () == Event::PRESENTATION)
                     {
-                      GingaTime begin, end;
+                      Time begin, end;
                       e->getInterval (&begin, &end);
                       this->addDelayedAction
                         (e, Event::START, "", begin);
@@ -299,7 +297,7 @@ Media::endTransition (Event *evt, Event::Transition transition)
             }
           else                  // non-lambda area
             {
-              GingaTime begin;
+              Time begin;
               g_assert (this->isOccurring ());
               evt->getInterval (&begin, nullptr);
               TRACE ("start %s@%s (begin=%" GINGA_TIME_FORMAT
@@ -318,7 +316,7 @@ Media::endTransition (Event *evt, Event::Transition transition)
             }
           else                  // non-lambda area
             {
-              GingaTime end;
+              Time end;
               g_assert (this->isOccurring ());
               evt->getInterval (nullptr, &end);
               TRACE ("stop %s@%s (end=%" GINGA_TIME_FORMAT
@@ -341,7 +339,7 @@ Media::endTransition (Event *evt, Event::Transition transition)
             string name;
             string value;
             string s;
-            GingaTime dur;
+            Time dur;
 
             name = evt->getId ();
             evt->getParameter ("value", &value);
@@ -352,7 +350,7 @@ Media::endTransition (Event *evt, Event::Transition transition)
               {
                 if (s[0] == '$')
                   _formatter->getObjectPropertyByRef (s, &s);
-                dur = ginga_parse_time (s);
+                dur = ginga::parse_time (s);
               }
             else
               {

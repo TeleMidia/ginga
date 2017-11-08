@@ -39,7 +39,7 @@ protected:
                               const string &) override;
 private:
   ncluaw_t *_nw;                // the NCLua state
-  GingaRect _init_rect;         // initial output rectangle
+  Rect _init_rect;              // initial output rectangle
   string _pwd;                  // script's working dir
   string _saved_pwd;            // saved working dir
 

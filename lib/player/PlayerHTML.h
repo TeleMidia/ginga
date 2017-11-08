@@ -314,7 +314,7 @@ public:
    */
   virtual void handleKeyEvent (SDL_EventType type, SDL_Keycode key) override;
 
-  virtual void handleTickEvent (GingaTime, GingaTime, int) override { };
+  virtual void handleTickEvent (Time, Time, int) override { };
 
 private:
   /**

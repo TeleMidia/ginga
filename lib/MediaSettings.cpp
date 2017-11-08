@@ -41,7 +41,7 @@ MediaSettings::~MediaSettings ()
 
 void
 MediaSettings::setProperty (const string &name, const string &value,
-                            GingaTime dur)
+                            Time dur)
 {
   if (name == "service.currentFocus")
     Player::setCurrentFocus (value);
@@ -49,9 +49,7 @@ MediaSettings::setProperty (const string &name, const string &value,
 }
 
 void
-MediaSettings::sendTickEvent (GingaTime total,
-                              GingaTime diff,
-                              GingaTime frame)
+MediaSettings::sendTickEvent (Time total, Time diff, Time frame)
 {
   if (_hasNextFocus)            // effectuate pending focus index update
     {

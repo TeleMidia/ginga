@@ -350,10 +350,10 @@ PlayerVideo::doSetProperty (PlayerProperty code,
                         nullptr);
         break;
       case PROP_FREEZE:
-        _prop.freeze = ginga_parse_bool (value);
+        _prop.freeze = ginga::parse_bool (value);
         break;
       case PROP_MUTE:
-        _prop.mute = ginga_parse_bool (value);
+        _prop.mute = ginga::parse_bool (value);
         if (_state != SLEEPING)
           g_object_set (_audio.volume,
                         "mute", _prop.mute,

@@ -76,9 +76,12 @@ using namespace std;
 #define GINGA_NAMESPACE_BEGIN namespace ginga {/*}*/
 #define GINGA_NAMESPACE_END   /*{*/}
 
+GINGA_NAMESPACE_BEGIN
+
 // Utility macros.
 #undef unused
 #define unused(...) G_GNUC_UNUSED __VA_ARGS__
+
 #undef cast
 #define cast(a, b)       (dynamic_cast<a>((b)))
 #define instanceof(a, b) (cast (a,(b)) != nullptr)
@@ -107,11 +110,9 @@ using namespace std;
   }                                                     \
   G_STMT_END
 
-// Message logging.
-#define GINGA_STRLOC  __FILE__ ":" G_STRINGIFY (__LINE__) ":" GINGA_STRFUNC
+// Logging, warnings and errors.
 #define GINGA_STRFUNC (__ginga_strfunc (G_STRFUNC)).c_str ()
 string __ginga_strfunc (const string &);
-
 #define __ginga_log(fn, fmt, ...)\
   fn ("%s: " fmt, GINGA_STRFUNC, ## __VA_ARGS__)
 
@@ -120,25 +121,13 @@ string __ginga_strfunc (const string &);
 #define ERROR(fmt, ...)    __ginga_log (g_error, fmt, ## __VA_ARGS__)
 #define CRITICAL(fmt, ...) __ginga_log (g_critical, fmt, ## __VA_ARGS__)
 
-#define WARNING_SYNTAX(fmt, ...)\
-  WARNING ("bad syntax: " fmt, ## __VA_ARGS__)
-
-#define ERROR_SYNTAX(fmt, ...)\
-  ERROR ("bad syntax: " fmt, ## __VA_ARGS__)
-
-#define WARNING_NOT_IMPLEMENTED(fmt, ...)\
-  WARNING ("not implemented: " fmt, ## __VA_ARGS__)
-
-#define ERROR_NOT_IMPLEMENTED(fmt, ...)\
-  ERROR ("not implemented: " fmt, ## __VA_ARGS__)
-
-// Aliases.
-typedef GdkRGBA GingaColor;
-typedef GdkRectangle GingaRect;
-typedef GstClockTime GingaTime;
+// Internal types.
+typedef GdkRGBA Color;
+typedef GdkRectangle Rect;
+typedef GstClockTime Time;
 
 // Time macros and functions.
-#define ginga_gettime() ((GingaTime)(g_get_monotonic_time () * 1000))
+#define ginga_gettime() ((Time)(g_get_monotonic_time () * 1000))
 #define GINGA_TIME_NONE            GST_CLOCK_TIME_NONE
 #define GINGA_TIME_IS_VALID(t)     GST_CLOCK_TIME_IS_VALID ((t))
 #define GINGA_STIME_NONE           GST_CLOCK_STIME_NONE
@@ -158,16 +147,20 @@ typedef GstClockTime GingaTime;
 #define GINGA_STIME_ARGS(t)        GST_STIME_ARGS ((t))
 
 // Parsing and evaluation functions.
-bool _ginga_parse_bool (const string &, bool *);
-bool ginga_parse_bool (const string &);
-bool _ginga_parse_color (const string &, GingaColor *);
-GingaColor ginga_parse_color (const string &);
-bool _ginga_parse_list (const string &, char, size_t, size_t, vector<string> *);
-vector<string> ginga_parse_list (const string &, char, size_t, size_t);
-int ginga_parse_percent (const string &, int, int, int);
-#define ginga_parse_pixel(s) (guint8) ginga_parse_percent ((s), 255, 0, 255)
-bool _ginga_parse_time (const string &, GingaTime *);
-GingaTime ginga_parse_time (const string &);
+bool try_parse_bool (const string &, bool *);
+bool parse_bool (const string &);
+
+bool try_parse_color (const string &, Color *);
+Color parse_color (const string &);
+
+bool try_parse_list (const string &, char, size_t, size_t, vector<string> *);
+vector<string> parse_list (const string &, char, size_t, size_t);
+
+bool try_parse_time (const string &, Time *);
+Time parse_time (const string &);
+
+int parse_percent (const string &, int, int, int);
+guint8 parse_pixel (const string &);
 
 // String functions.
 bool _xstrtod (const string &, double *);
@@ -199,5 +192,8 @@ bool xpathisuri (const string &);
 string xpathmakeabs (string);
 string xpathbuild (const string &, const string &);
 string xpathbuildabs (const string &, const string &);
+
+GINGA_NAMESPACE_END
+using namespace ginga;
 
 #endif // AUX_GINGA_H
