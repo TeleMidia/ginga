@@ -18,6 +18,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "aux-gl.h"
 
+#if ! (defined WITH_OPENGL && WITH_OPENGL)
+GINGA_PRAGMA_DIAG_IGNORE (-Wunused-parameter)
+#endif
 GINGA_PRAGMA_DIAG_IGNORE (-Wimplicit-fallthrough)
 
 // OpenGL ------------------------------------------------------------------

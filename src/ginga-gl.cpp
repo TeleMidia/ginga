@@ -23,9 +23,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-glib.h"
 #include <cairo.h>
 
-PRAGMA_DIAG_IGNORE (-Wunused-macros)
-PRAGMA_DIAG_IGNORE (-Wvariadic-macros)
-
 #define GL_GLEXT_PROTOTYPES 1
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengles2.h>
