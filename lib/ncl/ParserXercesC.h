@@ -41,6 +41,7 @@ public:
   static NclDocument *parse (const string &, int, int, string *);
 
 private:
+  string _prefix;               // current prefix
   NclDocument *_doc;            // NCL document
   string _path;                 // document's absolute path
   string _dirname;              // directory part of document's path
@@ -75,8 +76,8 @@ private:
   void parseHead (DOMElement *);
 
   NclDocument *parse1 (const string &);
-  NclDocument *parseImportNCL (DOMElement *, string *, string *);
-  void parseImportBase (DOMElement *, NclDocument **, string *, string *);
+  void parseImportNCL (DOMElement *);
+  void parseImportBase (DOMElement *);
   void parseImportedDocumentBase (DOMElement *);
 
   void parseRuleBase (DOMElement *);
