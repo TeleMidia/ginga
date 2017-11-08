@@ -127,7 +127,6 @@ typedef GdkRectangle Rect;
 typedef GstClockTime Time;
 
 // Time macros and functions.
-#define ginga_gettime() ((Time)(g_get_monotonic_time () * 1000))
 #define GINGA_TIME_NONE            GST_CLOCK_TIME_NONE
 #define GINGA_TIME_IS_VALID(t)     GST_CLOCK_TIME_IS_VALID ((t))
 #define GINGA_STIME_NONE           GST_CLOCK_STIME_NONE

@@ -284,13 +284,13 @@ AnimInfo::init (double current)
   else
     _speed = 0;
   _init = true;
-  _last_update = ginga_gettime ();
+  _last_update = g_get_monotonic_time (); // fixme
 }
 
 void
 AnimInfo::update ()
 {
-  Time _current_time = ginga_gettime ();
+  Time _current_time = g_get_monotonic_time (); // fixme
   int dir;
 
   g_assert (_init);
