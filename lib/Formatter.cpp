@@ -1032,59 +1032,6 @@ Formatter::obtainFormatterLink (NclLink *docLink)
   g_assert_nonnull (docLink);
 
   link = new FormatterLink ();
-
-  // FormatterPredicate *pred = connCond->getPredicate ();
-  // if (pred != nullptr)      // solve ghost binds in predicate
-  //   {
-  //     vector <FormatterPredicate *> buf;
-  //
-  //     pred = pred->clone ();
-  //     g_assert_nonnull (pred);
-  //
-  //     buf.push_back (pred);
-  //     while (!buf.empty ())
-  //       {
-  //         FormatterPredicate *p = buf.back ();
-  //         buf.pop_back ();
-  //         switch (p->getType ())
-  //           {
-  //           case PredicateType::FALSUM:
-  //           case PredicateType::VERUM:
-  //             break;        // nothing to do
-  //           case PredicateType::ATOM:
-  //             {
-  //               PredicateTestType test;
-  //               string left, right, ghost;
-  //               p->getTest (&left, &test, &right);
-  //               if (left[0] == '$')
-  //                 {
-  //                   ghost = docLink->getGhostBind
-  //                     (left.substr (1, left.length () - 1));
-  //                   if (ghost != "")
-  //                     left = ghost;
-  //                 }
-  //               if (right[0] == '$')
-  //                 {
-  //                   ghost = docLink->getGhostBind
-  //                     (right.substr (1, right.length () - 1));
-  //                   if (ghost != "")
-  //                     right = ghost;
-  //                 }
-  //               p->setTest (left, test, right);
-  //               break;
-  //             }
-  //           case PredicateType::NEGATION:
-  //           case PredicateType::CONJUNCTION:
-  //           case PredicateType::DISJUNCTION:
-  //             for (auto child: *p->getChildren ())
-  //               buf.push_back (child);
-  //             break;
-  //           default:
-  //             g_assert_not_reached ();
-  //           }
-  //       }
-  //   }
-
   for (auto bind: *docLink->getBinds ())
     {
       switch (bind->getRoleType ())
