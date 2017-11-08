@@ -28,22 +28,22 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-equal)
 int
 main (void)
 {
-  GingaColor c;
+  Color c;
 
   // unknown color
-  g_assert (!_ginga_parse_color ("*** unknown ***", &c));
+  g_assert (!ginga::try_parse_color ("*** unknown ***", &c));
 
   // black
-  c = ginga_parse_color ("black");
+  c = ginga::parse_color ("black");
   CHECK_COLOR (c, 0, 0, 0, 255);
 
-  c = ginga_parse_color ("#000000");
+  c = ginga::parse_color ("#000000");
   CHECK_COLOR (c, 0, 0, 0, 255);
 
-  c = ginga_parse_color ("rgb(0,0,0)");
+  c = ginga::parse_color ("rgb(0,0,0)");
   CHECK_COLOR (c, 0, 0, 0, 255);
 
-  c = ginga_parse_color ("rgb(0%,0%,0%)");
+  c = ginga::parse_color ("rgb(0%,0%,0%)");
   CHECK_COLOR (c, 0, 0, 0, 255);
 
   // c = ginga_parse_color ("rgba(0,0,0,.5)");
@@ -53,17 +53,17 @@ main (void)
   // CHECK_COLOR (c, 0, 0, 0, 128);
 
   // white
-  c = ginga_parse_color ("white");
+  c = ginga::parse_color ("white");
   CHECK_COLOR (c, 255, 255, 255, 255);
 
-  c = ginga_parse_color ("#ffffff");
+  c = ginga::parse_color ("#ffffff");
   CHECK_COLOR (c, 255, 255, 255, 255);
 
   // red
-  c = ginga_parse_color ("red");
+  c = ginga::parse_color ("red");
   CHECK_COLOR (c, 255, 0, 0, 255);
 
-  c = ginga_parse_color ("#ff0000");
+  c = ginga::parse_color ("#ff0000");
   CHECK_COLOR (c, 255, 0, 0, 255);
 
   exit (EXIT_SUCCESS);

@@ -159,6 +159,18 @@ __error_elt (const DOMElement *elt)
   return "<" + dom_elt_get_tag (elt) + id + ">";
 }
 
+#define WARN_SYNTAX(fmt, ...)\
+  WARNING ("bad syntax: " fmt, ## __VA_ARGS__)
+
+#define WARN_SYNTAX_ELT(elt, fmt, ...)\
+  WARN_SYNTAX ("%s: " fmt, __error_elt ((elt)).c_str (), ## __VA_ARGS__)
+
+#define WARN_SYNTAX_ELT_NOT_SUPPORTED(elt)\
+  WARN_SYNTAX_ELT ((elt), "element is not supported")
+
+#define ERROR_SYNTAX(fmt, ...)\
+  ERROR ("bad syntax: " fmt, ## __VA_ARGS__)
+
 #define ERROR_SYNTAX_ELT(elt, fmt, ...)\
   ERROR_SYNTAX ("%s: " fmt, __error_elt ((elt)).c_str (), ## __VA_ARGS__)
 
@@ -208,9 +220,9 @@ __error_elt (const DOMElement *elt)
   G_STMT_START                                                          \
   {                                                                     \
     if (unlikely (dom_elt_has_attribute ((elt), (name))))               \
-      ERROR_NOT_IMPLEMENTED ("%s: attribute '%s' is not supported",     \
-                             __error_elt ((elt)).c_str (),              \
-                             string ((name)).c_str ());                 \
+      ERROR ("%s: attribute '%s' is not supported",                     \
+             __error_elt ((elt)).c_str (),                              \
+             string ((name)).c_str ());                                 \
   }                                                                     \
   G_STMT_END
 
@@ -458,7 +470,7 @@ ParserXercesC::parseHead (DOMElement *elt)
         }
       else if (tag == "transitionBase")
         {
-          WARNING_NOT_IMPLEMENTED ("transitions are not supported");
+          WARN_SYNTAX_ELT_NOT_SUPPORTED (child);
         }
       else if (tag == "regionBase")
         {
@@ -564,8 +576,7 @@ ParserXercesC::parseRuleBase (DOMElement *elt)
       string tag = dom_elt_get_tag (child);
       if ( tag == "importBase")
         {
-          ERROR_NOT_IMPLEMENTED ("%s: element is not supported",
-                                 __error_elt (child).c_str ());
+          WARN_SYNTAX_ELT_NOT_SUPPORTED (child);
         }
       else if (tag == "rule")
         {
@@ -684,8 +695,7 @@ ParserXercesC::parseTransitionBase (DOMElement *elt)
       string tag = dom_elt_get_tag (child);
       if (tag == "importBase")
         {
-          ERROR_NOT_IMPLEMENTED ("%s: element is not supported",
-                                 __error_elt (child).c_str ());
+          WARN_SYNTAX_ELT_NOT_SUPPORTED (child);
         }
       else if (tag == "transition")
         {
@@ -767,8 +777,7 @@ ParserXercesC::parseRegionBase (DOMElement *elt)
 
       if (tag == "importBase")
         {
-          ERROR_NOT_IMPLEMENTED ("%s: element is not supported",
-                                 __error_elt (child).c_str ());
+          WARN_SYNTAX_ELT_NOT_SUPPORTED (child);
         }
       else if (tag == "region")
         {
@@ -782,12 +791,12 @@ ParserXercesC::parseRegionBase (DOMElement *elt)
 }
 
 void
-ParserXercesC::parseRegion (DOMElement *elt, GingaRect parent_rect)
+ParserXercesC::parseRegion (DOMElement *elt, Rect parent_rect)
 {
   string id;
   string value;
 
-  GingaRect rect;
+  Rect rect;
   int z;
   int zorder;
   static int last_zorder = 0;
@@ -800,43 +809,44 @@ ParserXercesC::parseRegion (DOMElement *elt, GingaRect parent_rect)
 
   if (dom_elt_try_get_attribute (value, elt, "left"))
     {
-      rect.x += ginga_parse_percent (value, parent_rect.width, 0, G_MAXINT);
+      rect.x += ginga::parse_percent (value, parent_rect.width, 0, G_MAXINT);
     }
 
   if (dom_elt_try_get_attribute (value, elt, "top"))
     {
-      rect.y += ginga_parse_percent (value, parent_rect.height, 0, G_MAXINT);
+      rect.y += ginga::parse_percent
+        (value, parent_rect.height, 0, G_MAXINT);
     }
 
   if (dom_elt_try_get_attribute (value, elt, "width"))
     {
-      rect.width = ginga_parse_percent
+      rect.width = ginga::parse_percent
         (value, parent_rect.width, 0, G_MAXINT);
     }
 
   if (dom_elt_try_get_attribute (value, elt, "height"))
     {
-      rect.height = ginga_parse_percent
+      rect.height = ginga::parse_percent
         (value, parent_rect.height, 0, G_MAXINT);
     }
 
   if (dom_elt_try_get_attribute (value, elt, "right"))
     {
       rect.x += parent_rect.width - rect.width
-        - ginga_parse_percent (value, parent_rect.width, 0, G_MAXINT);
+        - ginga::parse_percent (value, parent_rect.width, 0, G_MAXINT);
     }
 
   if (dom_elt_try_get_attribute (value, elt, "bottom"))
     {
       rect.y += parent_rect.height - rect.height
-        - ginga_parse_percent (value, parent_rect.height, 0, G_MAXINT);
+        - ginga::parse_percent (value, parent_rect.height, 0, G_MAXINT);
     }
 
   if (dom_elt_try_get_attribute (value, elt, "zIndex"))
     z = xstrtoint (value, 10);
   zorder = last_zorder++;
 
-  GingaRect screen = {0, 0, _width, _height};
+  Rect screen = {0, 0, _width, _height};
   _regions[id]["zIndex"] = xstrbuild ("%d", z);
   _regions[id]["zorder"] = xstrbuild ("%d", zorder);
   _regions[id]["left"] = xstrbuild
@@ -875,8 +885,7 @@ ParserXercesC::parseDescriptorBase (DOMElement *elt)
       string tag = dom_elt_get_tag (child);
       if (tag == "importBase" || tag == "descriptorSwitch")
         {
-          ERROR_NOT_IMPLEMENTED ("%s: element is not supported",
-                                 __error_elt (child).c_str ());
+          WARN_SYNTAX_ELT_NOT_SUPPORTED (child);
         }
       else if (tag == "descriptor")
         {
@@ -1705,7 +1714,7 @@ ParserXercesC::parseSwitch (DOMElement *elt)
 
       if (tag == "switchPort")
         {
-          WARNING_NOT_IMPLEMENTED ("switchPort is supported");
+          WARN_SYNTAX_ELT_NOT_SUPPORTED (child);
           continue;
         }
 
@@ -1900,16 +1909,16 @@ ParserXercesC::parseArea (DOMElement *elt)
   if (dom_elt_has_attribute (elt, "begin")
       || dom_elt_has_attribute (elt, "end"))
     {
-      GingaTime begin;
-      GingaTime end;
+      Time begin;
+      Time end;
 
       if (dom_elt_try_get_attribute (value, elt ,"begin"))
-        begin = ginga_parse_time (value);
+        begin = ginga::parse_time (value);
       else
         begin = 0;
 
       if (dom_elt_try_get_attribute (value, elt, "end"))
-        end = ginga_parse_time (value);
+        end = ginga::parse_time (value);
       else
         end = GINGA_TIME_NONE;
 

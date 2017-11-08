@@ -98,16 +98,14 @@ void G_GNUC_NORETURN
 PlayerLua::pause ()
 {
   g_assert (_state != PAUSED && _state != SLEEPING);
-  TRACE ("pausing");
-  ERROR_NOT_IMPLEMENTED ("pause action is not supported");
+  g_assert_not_reached ();
 }
 
 void G_GNUC_NORETURN
 PlayerLua::resume ()
 {
   g_assert (_state != PAUSED && _state != SLEEPING);
-  TRACE ("resuming");
-  ERROR_NOT_IMPLEMENTED ("resume action is not supported");
+  g_assert_not_reached ();
 }
 
 void

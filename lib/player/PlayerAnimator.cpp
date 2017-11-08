@@ -42,7 +42,7 @@ PlayerAnimator::clear ()
 
 void
 PlayerAnimator::schedule (const string &name, const string &from,
-                          const string &to, GingaTime dur)
+                          const string &to, Time dur)
 {
   vector<string> pre = {"", "", "", ""};
   vector<string> pos;
@@ -50,8 +50,8 @@ PlayerAnimator::schedule (const string &name, const string &from,
   if (name == "bounds")
     {
       if (from != "")
-        pre = ginga_parse_list (from, ',', 4, 4);
-      pos = ginga_parse_list (to, ',', 4, 4);
+        pre = ginga::parse_list (from, ',', 4, 4);
+      pos = ginga::parse_list (to, ',', 4, 4);
       this->doSchedule ("left", pre[0], pos[0], dur);
       this->doSchedule ("top", pre[1], pos[1], dur);
       this->doSchedule ("width", pre[2], pos[2], dur);
@@ -60,30 +60,30 @@ PlayerAnimator::schedule (const string &name, const string &from,
   else if (name == "location")
     {
       if (from != "")
-        pre = ginga_parse_list (from, ',', 2, 2);
-      pos = ginga_parse_list (to, ',', 2, 2);
+        pre = ginga::parse_list (from, ',', 2, 2);
+      pos = ginga::parse_list (to, ',', 2, 2);
       this->doSchedule ("left", pre[0], pos[0], dur);
       this->doSchedule ("top", pre[1], pos[1], dur);
     }
   else if (name == "size")
     {
       if (from != "")
-        pre = ginga_parse_list (from, ',', 2, 2);
-      pos = ginga_parse_list (to, ',', 2, 2);
+        pre = ginga::parse_list (from, ',', 2, 2);
+      pos = ginga::parse_list (to, ',', 2, 2);
       this->doSchedule ("width", pre[0], pos[0], dur);
       this->doSchedule ("height", pre[1], pos[1], dur);
     }
   else if (name == "background")
     {
-      GingaColor _pos;
+      Color _pos;
       if (from != "")
         {
-          GingaColor _pre = ginga_parse_color (from);
+          Color _pre = ginga::parse_color (from);
           pre = {xstrbuild ("%d", (int) CLAMP (_pre.red * 255, 0, 255)),
                  xstrbuild ("%d", (int) CLAMP (_pre.green * 255, 0, 255)),
                  xstrbuild ("%d", (int) CLAMP (_pre.blue * 255, 0, 255))};
         }
-      _pos = ginga_parse_color (to);
+      _pos = ginga::parse_color (to);
       pos = {xstrbuild ("%d", (int) CLAMP (_pos.red * 255, 0, 255)),
              xstrbuild ("%d", (int) CLAMP (_pos.green * 255, 0, 255)),
              xstrbuild ("%d", (int) CLAMP (_pos.blue * 255, 0, 255))};
@@ -104,7 +104,7 @@ isDone (AnimInfo *info)
 }
 
 void
-PlayerAnimator::update (GingaRect *rect, GingaColor *bgColor, guint8 *alpha)
+PlayerAnimator::update (Rect *rect, Color *bgColor, guint8 *alpha)
 {
 
 #define UPDATE(info, Type, var, rnd, min, max)                          \
@@ -176,7 +176,7 @@ PlayerAnimator::update (GingaRect *rect, GingaColor *bgColor, guint8 *alpha)
 
 void
 PlayerAnimator::doSchedule (const string &name, const string &from,
-                            const string &to, GingaTime dur)
+                            const string &to, Time dur)
 {
   AnimInfo *info;
   double current;
@@ -191,26 +191,26 @@ PlayerAnimator::doSchedule (const string &name, const string &from,
   if (name == "top" || name == "height")
     {
       if (from != "")
-        current = ginga_parse_percent (from, height, 0, G_MAXINT);
-      target = ginga_parse_percent (to, height, 0, G_MAXINT);
+        current = ginga::parse_percent (from, height, 0, G_MAXINT);
+      target = ginga::parse_percent (to, height, 0, G_MAXINT);
     }
   else if (name == "left" || name == "width")
     {
       if (from != "")
-        current = ginga_parse_percent (from, width, 0, G_MAXINT);
-      target = ginga_parse_percent (to, width, 0, G_MAXINT);
+        current = ginga::parse_percent (from, width, 0, G_MAXINT);
+      target = ginga::parse_percent (to, width, 0, G_MAXINT);
     }
   else if (name == "transparency" || name == "background")
     {
       if (from != "")
-        current = ginga_parse_percent (from, 255, 0, 255);
-      target = ginga_parse_percent (to, 255, 0, 255);
+        current = ginga::parse_percent (from, 255, 0, 255);
+      target = ginga::parse_percent (to, 255, 0, 255);
     }
   else
     {
       if (from != "")
-        current = ginga_parse_percent (from, 100, 0, G_MAXINT);
-      target = ginga_parse_percent (to, 100, 0, G_MAXINT);
+        current = ginga::parse_percent (from, 100, 0, G_MAXINT);
+      target = ginga::parse_percent (to, 100, 0, G_MAXINT);
     }
 
   info = new AnimInfo (name, current, target, dur);
@@ -224,7 +224,7 @@ PlayerAnimator::doSchedule (const string &name, const string &from,
 // AnimInfo.
 
 AnimInfo::AnimInfo (const string &name, double from,
-                    double to, GingaTime dur)
+                    double to, Time dur)
 {
   _name = name;
   _current = from;
@@ -256,7 +256,7 @@ AnimInfo::getTarget ()
   return _target;
 }
 
-GingaTime
+Time
 AnimInfo::getDuration ()
 {
   return _duration;
@@ -290,7 +290,7 @@ AnimInfo::init (double current)
 void
 AnimInfo::update ()
 {
-  GingaTime _current_time = ginga_gettime ();
+  Time _current_time = ginga_gettime ();
   int dir;
 
   g_assert (_init);

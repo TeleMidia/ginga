@@ -125,26 +125,26 @@ Player::isFocused ()
   return _prop.focusIndex != "" && _prop.focusIndex == _currentFocus;
 }
 
-GingaTime
+Time
 Player::getTime ()
 {
   return _time;
 }
 
 void
-Player::incTime (GingaTime inc)
+Player::incTime (Time inc)
 {
   _time += inc;
 }
 
-GingaTime
+Time
 Player::getDuration ()
 {
   return _prop.duration;
 }
 
 void
-Player::setDuration (GingaTime duration)
+Player::setDuration (Time duration)
 {
   _prop.duration = duration;
 }
@@ -244,17 +244,14 @@ Player::setProperty (const string &name, const string &value)
 
   if (unlikely (!this->doSetProperty (code, name, _value)))
     {
-      ERROR_SYNTAX ("property '%s': bad value '%s'",
-                    name.c_str (), _value.c_str ());
+      ERROR ("property '%s': bad value '%s'", name.c_str (),
+             _value.c_str ());
     }
 
   if (use_defval)               // restore value
     _value = "";
 
  done:
-  // TRACE ("%s.%s:='%s'%s",
-  //        _id.c_str (), name.c_str (), _value.c_str (),
-  //        (use_defval) ? (" (default: '" + defval + "')").c_str () : "");
   _properties[name] = _value;
   return;
 }
@@ -277,7 +274,7 @@ Player::resetProperties (set<string> *props)
 
 void
 Player::schedulePropertyAnimation (const string &name, const string &from,
-                                   const string &to, GingaTime dur)
+                                   const string &to, Time dur)
 {
   // TRACE ("%s.%s from '%s' to '%s' in %" GINGA_TIME_FORMAT,
   //        _id.c_str (), name.c_str (), from.c_str (), to.c_str (),
@@ -496,7 +493,7 @@ Player::doSetProperty (PlayerProperty code, unused (const string &name),
   switch (code)
     {
     case PROP_DEBUG:
-      _prop.debug = ginga_parse_bool (value);
+      _prop.debug = ginga::parse_bool (value);
       break;
     case PROP_FOCUS_INDEX:
       _prop.focusIndex = value;
@@ -504,7 +501,7 @@ Player::doSetProperty (PlayerProperty code, unused (const string &name),
     case PROP_BOUNDS:
       {
         vector<string> v;
-        if (unlikely (!_ginga_parse_list (value, ',', 4, 4, &v)))
+        if (unlikely (!ginga::try_parse_list (value, ',', 4, 4, &v)))
           return false;
         this->setProperty ("left", v[0]);
         this->setProperty ("top", v[1]);
@@ -515,7 +512,7 @@ Player::doSetProperty (PlayerProperty code, unused (const string &name),
     case PROP_LOCATION:
       {
         vector<string> v;
-        if (unlikely (!_ginga_parse_list (value, ',', 2, 2, &v)))
+        if (unlikely (!ginga::try_parse_list (value, ',', 2, 2, &v)))
           return false;
         this->setProperty ("left", v[0]);
         this->setProperty ("top", v[1]);
@@ -524,7 +521,7 @@ Player::doSetProperty (PlayerProperty code, unused (const string &name),
     case PROP_SIZE:
       {
         vector<string> v;
-        if (unlikely (!_ginga_parse_list (value, ',', 2, 2, &v)))
+        if (unlikely (!ginga::try_parse_list (value, ',', 2, 2, &v)))
           return false;
         this->setProperty ("width", v[0]);
         this->setProperty ("height", v[1]);
@@ -533,7 +530,7 @@ Player::doSetProperty (PlayerProperty code, unused (const string &name),
     case PROP_LEFT:
       {
         int width = _formatter->getOptionInt ("width");
-        _prop.rect.x = ginga_parse_percent (value, width, 0, G_MAXINT);
+        _prop.rect.x = ginga::parse_percent (value, width, 0, G_MAXINT);
         _dirty = true;
         break;
       }
@@ -541,14 +538,14 @@ Player::doSetProperty (PlayerProperty code, unused (const string &name),
       {
         int width = _formatter->getOptionInt ("width");
         _prop.rect.x = width - _prop.rect.width
-          - ginga_parse_percent (value, _prop.rect.width, 0, G_MAXINT);
+          - ginga::parse_percent (value, _prop.rect.width, 0, G_MAXINT);
         _dirty = true;
         break;
       }
     case PROP_TOP:
       {
         int height = _formatter->getOptionInt ("height");
-        _prop.rect.y = ginga_parse_percent (value, height, 0, G_MAXINT);
+        _prop.rect.y = ginga::parse_percent (value, height, 0, G_MAXINT);
         _dirty = true;
         break;
       }
@@ -556,21 +553,21 @@ Player::doSetProperty (PlayerProperty code, unused (const string &name),
       {
         int height = _formatter->getOptionInt ("height");
         _prop.rect.y = height - _prop.rect.height
-          - ginga_parse_percent (value, _prop.rect.height, 0, G_MAXINT);
+          - ginga::parse_percent (value, _prop.rect.height, 0, G_MAXINT);
         _dirty = true;
         break;
       }
     case PROP_WIDTH:
       {
         int width = _formatter->getOptionInt ("width");
-        _prop.rect.width = ginga_parse_percent (value, width, 0, G_MAXINT);
+        _prop.rect.width = ginga::parse_percent (value, width, 0, G_MAXINT);
         _dirty = true;
         break;
       }
     case PROP_HEIGHT:
       {
         int height = _formatter->getOptionInt ("height");
-        _prop.rect.height = ginga_parse_percent
+        _prop.rect.height = ginga::parse_percent
           (value, height, 0, G_MAXINT);
         _dirty = true;
         break;
@@ -580,23 +577,23 @@ Player::doSetProperty (PlayerProperty code, unused (const string &name),
       break;
     case PROP_TRANSPARENCY:
       _prop.alpha = (guint8) CLAMP
-        (255 - ginga_parse_pixel (value), 0, 255);
+        (255 - ginga::parse_pixel (value), 0, 255);
       break;
     case PROP_BACKGROUND:
       if (value == "")
         _prop.bgColor = {0, 0, 0, 0};
       else
-        _prop.bgColor = ginga_parse_color (value);
+        _prop.bgColor = ginga::parse_color (value);
       break;
     case PROP_VISIBLE:
-      _prop.visible = ginga_parse_bool (value);
+      _prop.visible = ginga::parse_bool (value);
       break;
     case PROP_DURATION:
       {
         if (value == "indefinite")
           _prop.duration = GINGA_TIME_NONE;
         else
-          _prop.duration = ginga_parse_time (value);
+          _prop.duration = ginga::parse_time (value);
         break;
       }
     default:

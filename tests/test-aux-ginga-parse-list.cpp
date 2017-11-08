@@ -22,30 +22,30 @@ main (void)
 {
   vector<string> v;
 
-  g_assert (_ginga_parse_list ("a,b,c", ',', 0, G_MAXSIZE, NULL));
-  g_assert (!_ginga_parse_list ("a,b,c", ',', 2, 2, NULL));
-  g_assert (!_ginga_parse_list ("a,b,c,d", ',', 1, 2, NULL));
+  g_assert (ginga::try_parse_list ("a,b,c", ',', 0, G_MAXSIZE, NULL));
+  g_assert (!ginga::try_parse_list ("a,b,c", ',', 2, 2, NULL));
+  g_assert (!ginga::try_parse_list ("a,b,c,d", ',', 1, 2, NULL));
 
-  v = ginga_parse_list ("a,b,c", ',', 0, 3);
+  v = ginga::parse_list ("a,b,c", ',', 0, 3);
   g_assert (v.size () == 3);
   g_assert (v[0] == "a");
   g_assert (v[1] == "b");
   g_assert (v[2] == "c");
 
-  v = ginga_parse_list ("", ';', 0, 3);
+  v = ginga::parse_list ("", ';', 0, 3);
   g_assert (v.size () == 0);
 
-  v = ginga_parse_list ("x", ';', 0, 3);
+  v = ginga::parse_list ("x", ';', 0, 3);
   g_assert (v.size () == 1);
   g_assert (v[0] == "x");
 
-  v = ginga_parse_list ("x;y;z", ';', 2, 5);
+  v = ginga::parse_list ("x;y;z", ';', 2, 5);
   g_assert (v.size () == 3);
   g_assert (v[0] == "x");
   g_assert (v[1] == "y");
   g_assert (v[2] == "z");
 
-  v = ginga_parse_list (" aa , bb , cc , dd", ',', 0, 10);
+  v = ginga::parse_list (" aa , bb , cc , dd", ',', 0, 10);
   g_assert (v.size () == 4);
   g_assert (v[0] == "aa");
   g_assert (v[1] == "bb");

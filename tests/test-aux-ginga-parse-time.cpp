@@ -20,11 +20,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  g_assert (!_ginga_parse_time ("*** invalid ***", NULL));
-  g_assert (ginga_parse_time ("0") == 0 * GINGA_SECOND);
-  g_assert (ginga_parse_time ("1s") == 1 * GINGA_SECOND);
-  g_assert (ginga_parse_time ("00:00:50") == 50 * GINGA_SECOND);
-  g_assert (ginga_parse_time ("00:01:00") == 60 * GINGA_SECOND);
-  g_assert (ginga_parse_time ("01:00:00") == 3600 * GINGA_SECOND);
+  g_assert (!ginga::try_parse_time ("*** invalid ***", NULL));
+  g_assert (ginga::parse_time ("0") == 0 * GINGA_SECOND);
+  g_assert (ginga::parse_time ("1s") == 1 * GINGA_SECOND);
+  g_assert (ginga::parse_time ("00:00:50") == 50 * GINGA_SECOND);
+  g_assert (ginga::parse_time ("00:01:00") == 60 * GINGA_SECOND);
+  g_assert (ginga::parse_time ("01:00:00") == 3600 * GINGA_SECOND);
   exit (EXIT_SUCCESS);
 }

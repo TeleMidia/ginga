@@ -70,14 +70,14 @@ Event::isLambda ()
 }
 
 void
-Event::getInterval (GingaTime *begin, GingaTime *end)
+Event::getInterval (Time *begin, Time *end)
 {
   tryset (begin, _begin);
   tryset (end, _end);
 }
 
 void
-Event::setInterval (GingaTime begin, GingaTime end)
+Event::setInterval (Time begin, Time end)
 {
   _begin = begin;
   _end = end;

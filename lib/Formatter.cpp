@@ -286,12 +286,12 @@ Formatter::redraw (cairo_t *cr)
 
   if (_opts.debug)
     {
-      static GingaColor fg = {1., 1., 1., 1.};
-      static GingaColor bg = {0, 0, 0, 0};
-      static GingaRect rect = {0, 0, 0, 0};
+      static Color fg = {1., 1., 1., 1.};
+      static Color bg = {0, 0, 0, 0};
+      static Rect rect = {0, 0, 0, 0};
       string info;
       cairo_surface_t *debug;
-      GingaRect ink;
+      Rect ink;
       info = xstrbuild ("%s: #%lu %" GINGA_TIME_FORMAT " %.1ffps",
                         _docPath.c_str (),
                         _last_tick_frameno,
@@ -904,7 +904,7 @@ Formatter::setOptionBackground (Formatter *self, const string &name,
   if (value == "")
     self->_background = {0.,0.,0.,0.};
   else
-    self->_background = ginga_parse_color (value);
+    self->_background = ginga::parse_color (value);
   TRACE ("%s:='%s'", name.c_str (), value.c_str ());
 }
 

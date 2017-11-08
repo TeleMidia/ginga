@@ -45,9 +45,9 @@ cairo_surface_t *
 PlayerText::renderSurface (const string &text,
                            const string &family, const string &weight,
                            const string &style, const string &size,
-                           GingaColor fg, GingaColor bg, GingaRect rect,
+                           Color fg, Color bg, Rect rect,
                            const string &halign, const string &valign,
-                           bool antialias, GingaRect *ink)
+                           bool antialias, Rect *ink)
 {
   cairo_t *cr;
   cairo_surface_t *sfc;         // result
@@ -239,12 +239,12 @@ PlayerText::doSetProperty (PlayerProperty code, unused (const string &name),
   switch (code)
     {
     case PROP_FONT_COLOR:
-      if (unlikely (!_ginga_parse_color (value, &_prop.fontColor)))
+      if (unlikely (!ginga::try_parse_color (value, &_prop.fontColor)))
         return false;
       _dirty = true;
       break;
     case PROP_FONT_BG_COLOR:
-      if (unlikely (!_ginga_parse_color (value, &_prop.fontBgColor)))
+      if (unlikely (!ginga::try_parse_color (value, &_prop.fontBgColor)))
         return false;
       _dirty = true;
       break;

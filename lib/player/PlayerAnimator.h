@@ -26,13 +26,13 @@ GINGA_NAMESPACE_BEGIN
 class AnimInfo
 {
 public:
-  AnimInfo (const string &, double, double, GingaTime);
+  AnimInfo (const string &, double, double, Time);
   ~AnimInfo ();
 
   string getName ();
   double getCurrent ();
   double getTarget ();
-  GingaTime getDuration ();
+  Time getDuration ();
   double getSpeed ();
   bool isDone ();
   bool isInit ();
@@ -44,8 +44,8 @@ private:
   string _name;                  // property name
   double _current;               // current value
   double _target;                // target value
-  GingaTime _duration;           // animation duration
-  GingaTime _last_update;        // time of the last update
+  Time _duration;           // animation duration
+  Time _last_update;        // time of the last update
   double _speed;                 // animation speed
   bool _done;                    // true if animation is done
   bool _init;                    // true if animation is initialized
@@ -57,15 +57,15 @@ public:
   PlayerAnimator (Formatter *);
   ~PlayerAnimator ();
   void clear ();
-  void schedule (const string &, const string &, const string &, GingaTime);
-  void update (GingaRect *, GingaColor *, guint8 *);
+  void schedule (const string &, const string &, const string &, Time);
+  void update (Rect *, Color *, guint8 *);
 
 private:
   Formatter *_formatter;        // formatter handle
   list <AnimInfo *> _scheduled; // scheduled animations
 
   void doSchedule (const string &, const string &,
-                   const string &, GingaTime);
+                   const string &, Time);
 };
 
 GINGA_NAMESPACE_END

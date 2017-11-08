@@ -58,8 +58,8 @@ public:
   Event::State getState ();
 
   bool isLambda ();
-  void getInterval (GingaTime *, GingaTime *);
-  void setInterval (GingaTime, GingaTime);
+  void getInterval (Time *, Time *);
+  void setInterval (Time, Time);
 
   bool getParameter (const string &, string *);
   bool setParameter (const string &, const string &);
@@ -77,8 +77,8 @@ private:
   Object *_object;                 // target object
   string _id;                      // event id
   Event::State _state;             // event state
-  GingaTime _begin;                // begin-time
-  GingaTime _end;                  // end-time
+  Time _begin;                     // begin-time
+  Time _end;                       // end-time
   map<string, string> _parameters; // parameters
 };
 

@@ -51,7 +51,7 @@ public:
   Event *getAttributionEvent (const string &);
   void addAttributionEvent (const string &);
   Event *getPresentationEvent (const string &);
-  void addPresentationEvent (const string &, GingaTime, GingaTime);
+  void addPresentationEvent (const string &, Time, Time);
   Event *getSelectionEvent (const string &);
   void addSelectionEvent (const string &);
 
@@ -61,15 +61,14 @@ public:
   bool isSleeping ();
 
   virtual string getProperty (const string &);
-  virtual void setProperty (const string &, const string &,
-                            GingaTime dur=0);
+  virtual void setProperty (const string &, const string &, Time dur=0);
 
-  list<pair<Action *, GingaTime>> *getDelayedActions ();
+  list<pair<Action *, Time>> *getDelayedActions ();
   void addDelayedAction (Event *, Event::Transition,
-                         const string &value="", GingaTime delay=0);
+                         const string &value="", Time delay=0);
 
   virtual void sendKeyEvent (const string &, bool);
-  virtual void sendTickEvent (GingaTime, GingaTime, GingaTime);
+  virtual void sendTickEvent (Time, Time, Time);
 
   virtual bool startTransition (Event *, Event::Transition) = 0;
   virtual void endTransition (Event *, Event::Transition) = 0;
@@ -80,13 +79,13 @@ protected:
   Composition *_parent;            // parent object
   vector<string> _aliases;         // aliases
 
-  GingaTime _time;                 // playback time
+  Time _time;                      // playback time
   map<string, string> _properties; // property map
 
   Event *_lambda;               // lambda event
   set<Event *> _events;         // all events
 
-  list<pair<Action *, GingaTime>> _delayed; // delayed actions
+  list<pair<Action *, Time>> _delayed; // delayed actions
 
   virtual void doStart ();
   virtual void doStop ();
