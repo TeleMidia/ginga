@@ -120,40 +120,34 @@ set (LIBGINGA_SOURCES
   ../lib/aux-ginga.cpp
   ../lib/aux-gl.cpp
 
+  ../lib/Action.cpp
+  ../lib/Composition.cpp
+  ../lib/Condition.cpp
+  ../lib/Context.cpp
+  ../lib/Event.cpp
   ../lib/Formatter.cpp
-  ../lib/FormatterAction.cpp
-  ../lib/FormatterCondition.cpp
-  ../lib/FormatterContext.cpp
-  ../lib/FormatterEvent.cpp
-  ../lib/FormatterLink.cpp
-  ../lib/FormatterMedia.cpp
-  ../lib/FormatterMediaSettings.cpp
-  ../lib/FormatterObject.cpp
-  ../lib/FormatterPredicate.cpp
-  ../lib/FormatterSwitch.cpp
   ../lib/Ginga.cpp
+  ../lib/Link.cpp
+  ../lib/Media.cpp
+  ../lib/MediaSettings.cpp
+  ../lib/Object.cpp
+  ../lib/Predicate.cpp
+  ../lib/Switch.cpp
 
-  ../lib/ncl/NclAction.cpp
   ../lib/ncl/NclArea.cpp
-  ../lib/ncl/NclAreaLabeled.cpp
   ../lib/ncl/NclBind.cpp
   ../lib/ncl/NclComposition.cpp
-  ../lib/ncl/NclCondition.cpp
-  ../lib/ncl/NclConnector.cpp
-  ../lib/ncl/NclConnectorBase.cpp
   ../lib/ncl/NclContext.cpp
   ../lib/ncl/NclDocument.cpp
   ../lib/ncl/NclEntity.cpp
-  ../lib/ncl/NclEvent.cpp
   ../lib/ncl/NclLink.cpp
   ../lib/ncl/NclMedia.cpp
   ../lib/ncl/NclMediaRefer.cpp
   ../lib/ncl/NclNode.cpp
   ../lib/ncl/NclPort.cpp
   ../lib/ncl/NclProperty.cpp
-  ../lib/ncl/NclRole.cpp
   ../lib/ncl/NclSwitch.cpp
-  ../lib/ncl/ParserLibXML.cpp
+  #  ../lib/ncl/ParserLibXML.cpp
   ../lib/ncl/ParserXercesC.cpp
 
   ../lib/player/Player.cpp
