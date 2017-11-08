@@ -490,7 +490,7 @@ ParserXercesC::parse1 (const string &path)
                         ? xpathbuildabs (_dirname, path) : path);
 }
 
-void
+void G_GNUC_NORETURN
 ParserXercesC::parseImportNCL (DOMElement *elt)
 {
   string alias;
@@ -1211,48 +1211,30 @@ ParserXercesC::parseCondition (DOMElement *elt, list<ConnRole> *conn,
 
   role.role = label;
   role.roleType = NclBind::CONDITION;
-  role.eventType = (FormatterEvent::Type) -1;
-  role.transition = (FormatterEvent::Transition) -1;
   role.predicate = pred;
   role.key = key;
 
-  NclBind::isReserved (role.role, &role.eventType, &role.transition);
-
-  if (dom_elt_try_get_attribute (str, elt, "eventType"))
+  if (!NclBind::isReserved (role.role, &role.eventType, &role.transition))
     {
-      if (unlikely ((int) role.eventType != -1))
-        {
-          ERROR_SYNTAX_ELT (elt, "eventType of '%s' cannot be overridden",
-                            role.role.c_str ());
-        }
-      map<string, FormatterEvent::Type>::iterator it;
-      if ((it = event_type_table.find (str)) == event_type_table.end ())
+      CHECK_ELT_ATTRIBUTE (elt, "eventType", &str);
+      map<string, FormatterEvent::Type>::iterator it_type;
+      if ((it_type = event_type_table.find (str)) == event_type_table.end ())
         {
           ERROR_SYNTAX_ELT (elt, "bad eventType '%s' for role '%s'",
                             str.c_str (), role.role.c_str ());
         }
-      role.eventType = it->second;
-    }
+      role.eventType = it_type->second;
 
-  if (dom_elt_try_get_attribute (str, elt, "transition"))
-    {
-      if (unlikely ((int) role.transition != -1))
-        {
-          ERROR_SYNTAX_ELT (elt, "transition of '%s' cannot be overridden",
-                            role.role.c_str ());
-        }
-      map<string, FormatterEvent::Transition>::iterator it;
-      if ((it = event_transition_table.find (str))
+      CHECK_ELT_ATTRIBUTE (elt, "transition", &str);
+      map<string, FormatterEvent::Transition>::iterator it_trans;
+      if ((it_trans = event_transition_table.find (str))
           == event_transition_table.end ())
         {
           ERROR_SYNTAX_ELT (elt, "bad transition '%s' for role '%s'",
                             str.c_str (), role.role.c_str ());
         }
-      role.transition = it->second;
+      role.transition = it_trans->second;
     }
-
-  g_assert ((int) role.eventType != -1);
-  g_assert ((int) role.transition != -1);
 
   if (qualifier != "and" && qualifier != "or")
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "qualifier");
@@ -1405,46 +1387,29 @@ ParserXercesC::parseSimpleAction (DOMElement *elt, list<ConnRole> *conn)
 
   role.role = label;
   role.roleType = NclBind::ACTION;
-  role.eventType = (FormatterEvent::Type) -1;
-  role.transition = (FormatterEvent::Transition) -1;
   role.value = value;
 
-  NclBind::isReserved (role.role, &role.eventType, &role.transition);
-
-  if (dom_elt_try_get_attribute (str, elt, "eventType"))
+  if (!NclBind::isReserved (role.role, &role.eventType, &role.transition))
     {
-      if (unlikely ((int) role.eventType != -1))
-        {
-          ERROR_SYNTAX_ELT (elt, "eventType '%s' cannot be overridden",
-                            role.role.c_str ());
-        }
-      map<string, FormatterEvent::Type>::iterator it;
-      if ((it = event_type_table.find (str)) == event_type_table.end ())
+      CHECK_ELT_ATTRIBUTE (elt, "eventType", &str);
+      map<string, FormatterEvent::Type>::iterator it_type;
+      if ((it_type = event_type_table.find (str))
+          == event_type_table.end ())
         {
           ERROR_SYNTAX_ELT (elt, "bad eventType '%s' for role '%s'",
                             str.c_str (), role.role.c_str ());
         }
-      role.eventType = it->second;
-    }
+      role.eventType = it_type->second;
 
-  if (dom_elt_try_get_attribute (str, elt, "actionType"))
-    {
-      if (unlikely ((int) role.transition != -1))
-        {
-          ERROR_SYNTAX_ELT (elt, "actionType of '%s' cannot be overridden",
-                            role.role.c_str ());
-        }
-      map<string, FormatterEvent::Transition>::iterator it;
-      if ((it = event_action_type_table.find (str))
+      CHECK_ELT_ATTRIBUTE (elt, "actionType", &str);
+      map<string, FormatterEvent::Transition>::iterator it_act;
+      if ((it_act = event_action_type_table.find (str))
           == event_action_type_table.end ())
         {
           ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "actionType");
         }
-      role.transition = it->second;
+      role.transition = it_act->second;
     }
-
-  g_assert ((int) role.eventType != -1);
-  g_assert ((int) role.transition != -1);
 
   conn->push_back (role);
 }
