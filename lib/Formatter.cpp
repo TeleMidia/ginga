@@ -714,31 +714,31 @@ Formatter::evalAction (Action *init)
           g_assert_nonnull (ctx);
 
         trigger:
-          for (auto link: *ctx->getLinks ())
+          if (ctx->getLinksStatus ())
             {
-              if (link->getDisabled ())
-                continue;
-
-              for (auto cond: *link->getConditions ())
+              for (auto link: *ctx->getLinks ())
                 {
-                  Predicate *pred;
+                  for (auto cond: *link->getConditions ())
+                    {
+                      Predicate *pred;
 
-                  if (cond->getEvent () != evt)
-                    continue;
+                      if (cond->getEvent () != evt)
+                        continue;
 
-                  if (cond->getTransition () != act->getTransition ())
-                    continue;
+                      if (cond->getTransition () != act->getTransition ())
+                        continue;
 
-                  pred = cond->getPredicate ();
-                  if (pred != nullptr && !this->evalPredicate (pred))
-                    continue;
+                      pred = cond->getPredicate ();
+                      if (pred != nullptr && !this->evalPredicate (pred))
+                        continue;
 
-                  // Success.
-                  auto acts = *link->getActions ();
-                  std::list<Action *>::reverse_iterator rit
-                    = acts.rbegin ();
-                  for (; rit != acts.rend (); ++rit)
-                    stack.push_back (*rit);
+                      // Success.
+                      auto acts = *link->getActions ();
+                      std::list<Action *>::reverse_iterator rit
+                        = acts.rbegin ();
+                      for (; rit != acts.rend (); ++rit)
+                        stack.push_back (*rit);
+                    }
                 }
             }
         }

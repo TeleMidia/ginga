@@ -22,7 +22,6 @@ GINGA_NAMESPACE_BEGIN
 
 Link::Link ()
 {
-  _disabled = false;
 }
 
 Link::~Link ()
@@ -57,18 +56,6 @@ Link::addAction (Action *action)
 {
   g_assert_nonnull (action);
   tryinsert (action, _actions, push_back);
-}
-
-bool
-Link::getDisabled ()
-{
-  return _disabled;
-}
-
-void
-Link::setDisabled (bool disabled)
-{
-  _disabled = disabled;
 }
 
 GINGA_NAMESPACE_END

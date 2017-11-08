@@ -36,13 +36,9 @@ public:
   const list<Action *> *getActions ();
   void addAction (Action *);
 
-  bool getDisabled ();
-  void setDisabled (bool);
-
 private:
   list<Condition *> _conditions; // list of conditions
   list<Action *> _actions;       // list of actions
-  bool _disabled;                // whether link is disabled
 };
 
 GINGA_NAMESPACE_END

@@ -25,6 +25,7 @@ GINGA_NAMESPACE_BEGIN
 
 Context::Context (const string &id): Composition (id)
 {
+  _status = true;
 }
 
 Context::~Context ()
@@ -168,14 +169,16 @@ Context::addLink (Link *link)
   tryinsert (link, _links, push_back);
 }
 
-
-// Private.
+bool
+Context::getLinksStatus ()
+{
+  return _status;
+}
 
 void
-Context::toggleLinks (bool status)
+Context::setLinksStatus (bool status)
 {
-  for (auto link: _links)
-    link->setDisabled (status);
+  _status = status;
 }
 
 GINGA_NAMESPACE_END

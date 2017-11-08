@@ -46,11 +46,13 @@ public:
   const list<Link *> *getLinks ();
   void addLink (Link *);
 
+  bool getLinksStatus ();
+  void setLinksStatus (bool);
+
 private:
   list<Event *> _ports;
   list<Link *> _links;
-
-  void toggleLinks (bool);
+  bool _status;                 // whether links are active
 };
 
 GINGA_NAMESPACE_END
