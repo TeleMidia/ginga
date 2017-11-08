@@ -15,32 +15,36 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef FORMATTER_ACTION_H
-#define FORMATTER_ACTION_H
+#ifndef LINK_H
+#define LINK_H
 
-#include "FormatterEvent.h"
+#include "Action.h"
+#include "Condition.h"
+#include "Event.h"
 
 GINGA_NAMESPACE_BEGIN
 
-class FormatterAction
+class Link
 {
 public:
-  FormatterAction (FormatterEvent *, FormatterEvent::Transition);
-  ~FormatterAction ();
+  Link ();
+  virtual ~Link ();
 
-  FormatterEvent *getEvent ();
-  FormatterEvent::Type getEventType ();
-  FormatterEvent::Transition getTransition ();
+  const list<Condition *> *getConditions ();
+  void addCondition (Condition *);
 
-  bool getParameter (const string &, string *);
-  bool setParameter (const string &, const string &);
+  const list<Action *> *getActions ();
+  void addAction (Action *);
+
+  bool getDisabled ();
+  void setDisabled (bool);
 
 private:
-  FormatterEvent *_event;
-  FormatterEvent::Transition _transition;
-  map<string, string> _parameters;
+  list<Condition *> _conditions; // list of conditions
+  list<Action *> _actions;       // list of actions
+  bool _disabled;                // whether link is disabled
 };
 
 GINGA_NAMESPACE_END
 
-#endif // FORMATTER_ACTION_H
+#endif // LINK_H

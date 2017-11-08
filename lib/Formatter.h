@@ -25,13 +25,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-class FormatterAction;
-class FormatterContext;
-class FormatterEvent;
-class FormatterLink;
-class FormatterMedia;
-class FormatterMediaSettings;
-class FormatterObject;
+class Action;
+class Context;
+class Event;
+class Link;
+class Media;
+class MediaSettings;
+class Object;
 
 class Formatter: public Ginga
 {
@@ -63,18 +63,18 @@ class Formatter: public Ginga
   bool getEOS ();
   void setEOS (bool);
 
-  const set<FormatterObject *> *getObjects ();
-  const set<FormatterMedia *> *getMediaObjects ();
-  FormatterMediaSettings *getSettings ();
-  FormatterObject *getObjectById (const string &);
-  FormatterObject *getObjectByIdOrAlias (const string &);
+  const set<Object *> *getObjects ();
+  const set<Media *> *getMediaObjects ();
+  MediaSettings *getSettings ();
+  Object *getObjectById (const string &);
+  Object *getObjectByIdOrAlias (const string &);
   bool getObjectPropertyByRef (const string &, string *);
-  void addObject (FormatterObject *);
+  void addObject (Object *);
 
-  int evalAction (FormatterEvent *, FormatterEvent::Transition, const string &value="");
-  int evalAction (FormatterAction *);
-  bool evalPredicate (FormatterPredicate *);
-  FormatterObject *obtainExecutionObject (NclNode *);
+  int evalAction (Event *, Event::Transition, const string &value="");
+  int evalAction (Action *);
+  bool evalPredicate (Predicate *);
+  Object *obtainExecutionObject (NclNode *);
 
   static void setOptionBackground (Formatter *, const string &, string);
   static void setOptionDebug (Formatter *, const string &, bool);
@@ -92,16 +92,16 @@ class Formatter: public Ginga
   uint64_t _last_tick_frameno;    // last frameno informed via sendTickEvent
   string _saved_G_MESSAGES_DEBUG; // saved G_MESSAGES_DEBUG value
 
-  NclDocument *_doc;                   // current document
-  string _docPath;                     // path to current document
-  bool _eos;                           // true if EOS was reached
-  set<FormatterObject *> _objects;     // all objects
-  set<FormatterMedia *> _mediaObjects; // media objects
-  FormatterMediaSettings *_settings;   // settings object
+  NclDocument *_doc;            // current document
+  string _docPath;              // path to current document
+  bool _eos;                    // true if EOS was reached
+  set<Object *> _objects;       // all objects
+  set<Media *> _mediaObjects;   // media objects
+  MediaSettings *_settings;     // settings object
 
-  list<FormatterObject *> getObjectList (FormatterEvent::State);
-  FormatterEvent *obtainFormatterEventFromBind (NclBind *);
-  FormatterLink *obtainFormatterLink (NclLink *);
+  list<Object *> getObjectList (Event::State);
+  Event *obtainFormatterEventFromBind (NclBind *);
+  Link *obtainFormatterLink (NclLink *);
 };
 
 GINGA_NAMESPACE_END

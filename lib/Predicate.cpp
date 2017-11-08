@@ -16,33 +16,33 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
-#include "FormatterPredicate.h"
+#include "Predicate.h"
 
 GINGA_NAMESPACE_BEGIN
 
-FormatterPredicate::FormatterPredicate (PredicateType type)
+Predicate::Predicate (Predicate::Type type)
 {
   _type = type;
   _parent = nullptr;
 }
 
-FormatterPredicate::~FormatterPredicate ()
+Predicate::~Predicate ()
 {
   for (auto child: _children)
     delete child;
 }
 
-PredicateType
-FormatterPredicate::getType ()
+Predicate::Type
+Predicate::getType ()
 {
   return _type;
 }
 
-FormatterPredicate *
-FormatterPredicate::clone ()
+Predicate *
+Predicate::clone ()
 {
-  FormatterPredicate *clone = new FormatterPredicate (_type);
-  if (_type == PredicateType::ATOM)
+  Predicate *clone = new Predicate (_type);
+  if (_type == Predicate::ATOM)
     {
       clone->setTest (_atom.left, _atom.test, _atom.right);
     }
@@ -55,39 +55,39 @@ FormatterPredicate::clone ()
 }
 
 void
-FormatterPredicate::setTest (const string &left, PredicateTestType test,
+Predicate::setTest (const string &left, Predicate::Test test,
                              const string &right)
 {
-  g_assert (_type == PredicateType::ATOM);
+  g_assert (_type == Predicate::ATOM);
   _atom.test = test;
   _atom.left = left;
   _atom.right = right;
 }
 
 void
-FormatterPredicate::getTest (string *left, PredicateTestType *test,
+Predicate::getTest (string *left, Predicate::Test *test,
                              string *right)
 {
-  g_assert (_type == PredicateType::ATOM);
+  g_assert (_type == Predicate::ATOM);
   tryset (left, _atom.left);
   tryset (test, _atom.test);
   tryset (right, _atom.right);
 }
 
 void
-FormatterPredicate::addChild (FormatterPredicate *child)
+Predicate::addChild (Predicate *child)
 {
   g_assert_nonnull (child);
   switch (_type)
     {
-    case PredicateType::NEGATION:
+    case Predicate::NEGATION:
       g_assert (_children.size () == 0);
-    case PredicateType::CONJUNCTION:
-    case PredicateType::DISJUNCTION:
+    case Predicate::CONJUNCTION:
+    case Predicate::DISJUNCTION:
       break;
-    case PredicateType::FALSUM:
-    case PredicateType::VERUM:
-    case PredicateType::ATOM:
+    case Predicate::FALSUM:
+    case Predicate::VERUM:
+    case Predicate::ATOM:
     default:
       g_assert_not_reached  ();
     }
@@ -95,22 +95,22 @@ FormatterPredicate::addChild (FormatterPredicate *child)
   _children.push_back (child);
 }
 
-const vector<FormatterPredicate *> *
-FormatterPredicate::getChildren ()
+const vector<Predicate *> *
+Predicate::getChildren ()
 {
   return &_children;
 }
 
 void
-FormatterPredicate::initParent (FormatterPredicate *parent)
+Predicate::initParent (Predicate *parent)
 {
   g_assert_null (_parent);
   g_assert_nonnull (parent);
   _parent = parent;
 }
 
-FormatterPredicate *
-FormatterPredicate::getParent ()
+Predicate *
+Predicate::getParent ()
 {
   return _parent;
 }

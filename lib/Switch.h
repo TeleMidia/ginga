@@ -15,23 +15,33 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "aux-ginga.h"
-#include "NclAreaLabeled.h"
+#ifndef SWITCH_H
+#define SWITCH_H
+
+#include "Composition.h"
+#include "Event.h"
 
 GINGA_NAMESPACE_BEGIN
 
-NclAreaLabeled::NclAreaLabeled (NclDocument *ncl, const string &id,
-                                const string &label)
-  :NclAnchor (ncl, id)
+class Switch: public Composition
 {
-  g_assert (label != "");
-  _label = label;
-}
+public:
+  Switch (const string &);
+  ~Switch ();
 
-string
-NclAreaLabeled::getLabel ()
-{
-  return _label;
-}
+  // Object:
+  bool startTransition (Event *, Event::Transition) override;
+  void endTransition (Event *, Event::Transition) override;
+
+  // Switch:
+  const list<pair<Object *, Predicate *>> *getRules ();
+  void addRule (Object *, Predicate *);
+
+private:
+  list<pair<Object *, Predicate *>> _rules;
+  Object *_selected;
+};
 
 GINGA_NAMESPACE_END
+
+#endif // SWITCH_H

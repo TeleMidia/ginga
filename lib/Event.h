@@ -15,15 +15,15 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef FORMATTER_EVENT_H
-#define FORMATTER_EVENT_H
+#ifndef EVENT_H
+#define EVENT_H
 
 #include "aux-ginga.h"
 
 GINGA_NAMESPACE_BEGIN
 
-class FormatterObject;
-class FormatterEvent
+class Object;
+class Event
 {
 public:
   enum Type
@@ -49,13 +49,13 @@ public:
      ABORT
     };
 
-  FormatterEvent (FormatterEvent::Type, FormatterObject *, const string &id);
-  ~FormatterEvent ();
+  Event (Event::Type, Object *, const string &id);
+  ~Event ();
 
-  FormatterEvent::Type getType ();
-  FormatterObject *getObject ();
+  Event::Type getType ();
+  Object *getObject ();
   string getId ();
-  FormatterEvent::State getState ();
+  Event::State getState ();
 
   bool isLambda ();
   void getInterval (GingaTime *, GingaTime *);
@@ -64,19 +64,19 @@ public:
   bool getParameter (const string &, string *);
   bool setParameter (const string &, const string &);
 
-  bool transition (FormatterEvent::Transition);
+  bool transition (Event::Transition);
   void reset ();
 
 public:
-  static string getEventTypeAsString (FormatterEvent::Type);
-  static string getEventStateAsString (FormatterEvent::State);
-  static string getEventTransitionAsString (FormatterEvent::Transition);
+  static string getEventTypeAsString (Event::Type);
+  static string getEventStateAsString (Event::State);
+  static string getEventTransitionAsString (Event::Transition);
 
 private:
-  FormatterEvent::Type _type;      // event type
-  FormatterObject *_object;        // target object
+  Event::Type _type;               // event type
+  Object *_object;                 // target object
   string _id;                      // event id
-  FormatterEvent::State _state;    // event state
+  Event::State _state;             // event state
   GingaTime _begin;                // begin-time
   GingaTime _end;                  // end-time
   map<string, string> _parameters; // parameters
@@ -84,4 +84,4 @@ private:
 
 GINGA_NAMESPACE_END
 
-#endif // FORMATTER_EVENT_H
+#endif // EVENT_H

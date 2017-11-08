@@ -15,47 +15,47 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef FORMATTER_OBJECT_H
-#define FORMATTER_OBJECT_H
+#ifndef OBJECT_H
+#define OBJECT_H
 
 #include "Formatter.h"
-#include "FormatterAction.h"
-#include "FormatterEvent.h"
+#include "Action.h"
+#include "Event.h"
 
 GINGA_NAMESPACE_BEGIN
 
-class FormatterComposition;
-class FormatterMediaSettings;
+class Composition;
+class MediaSettings;
 
-class FormatterObject
+class Object
 {
 public:
-  FormatterObject (const string &);
-  virtual ~FormatterObject ();
+  Object (const string &);
+  virtual ~Object ();
 
   string getId ();
 
   Formatter *getFormatter ();
   void initFormatter (Formatter *);
 
-  FormatterComposition *getParent ();
-  void initParent (FormatterComposition *);
+  Composition *getParent ();
+  void initParent (Composition *);
 
   const vector <string> *getAliases ();
   bool hasAlias (const string &);
   void addAlias (const string &);
 
-  FormatterEvent *obtainEvent (FormatterEvent::Type, NclAnchor *, const string &);
+  Event *obtainEvent (Event::Type, NclAnchor *, const string &);
 
-  FormatterEvent *getEvent (FormatterEvent::Type, const string &);
-  FormatterEvent *getAttributionEvent (const string &);
+  Event *getEvent (Event::Type, const string &);
+  Event *getAttributionEvent (const string &);
   void addAttributionEvent (const string &);
-  FormatterEvent *getPresentationEvent (const string &);
+  Event *getPresentationEvent (const string &);
   void addPresentationEvent (const string &, GingaTime, GingaTime);
-  FormatterEvent *getSelectionEvent (const string &);
+  Event *getSelectionEvent (const string &);
   void addSelectionEvent (const string &);
 
-  FormatterEvent *getLambda ();
+  Event *getLambda ();
   bool isOccurring ();
   bool isPaused ();
   bool isSleeping ();
@@ -64,29 +64,29 @@ public:
   virtual void setProperty (const string &, const string &,
                             GingaTime dur=0);
 
-  list<pair<FormatterAction *, GingaTime>> *getDelayedActions ();
-  void addDelayedAction (FormatterEvent *, FormatterEvent::Transition,
+  list<pair<Action *, GingaTime>> *getDelayedActions ();
+  void addDelayedAction (Event *, Event::Transition,
                          const string &value="", GingaTime delay=0);
 
   virtual void sendKeyEvent (const string &, bool);
   virtual void sendTickEvent (GingaTime, GingaTime, GingaTime);
 
-  virtual bool startTransition (FormatterEvent *, FormatterEvent::Transition) = 0;
-  virtual void endTransition (FormatterEvent *, FormatterEvent::Transition) = 0;
+  virtual bool startTransition (Event *, Event::Transition) = 0;
+  virtual void endTransition (Event *, Event::Transition) = 0;
 
 protected:
   string _id;                      // id
   Formatter *_formatter;           // formatter handle
-  FormatterComposition *_parent;   // parent object
+  Composition *_parent;            // parent object
   vector<string> _aliases;         // aliases
 
   GingaTime _time;                 // playback time
   map<string, string> _properties; // property map
 
-  FormatterEvent *_lambda;       // lambda event
-  set<FormatterEvent *> _events; // all events
+  Event *_lambda;               // lambda event
+  set<Event *> _events;         // all events
 
-  list<pair<FormatterAction *, GingaTime>> _delayed; // delayed actions
+  list<pair<Action *, GingaTime>> _delayed; // delayed actions
 
   virtual void doStart ();
   virtual void doStop ();
@@ -94,4 +94,4 @@ protected:
 
 GINGA_NAMESPACE_END
 
-#endif // FORMATTER_OBJECT_H
+#endif // OBJECT_H

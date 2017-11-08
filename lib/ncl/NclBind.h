@@ -19,8 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define NCL_BIND_H
 
 #include "NclNode.h"
-#include "FormatterEvent.h"
-#include "FormatterPredicate.h"
+#include "Event.h"
+#include "Predicate.h"
 
 GINGA_NAMESPACE_BEGIN
 
@@ -33,16 +33,16 @@ public:
      ACTION
     };
 
-  NclBind (const string &, NclBind::RoleType, FormatterEvent::Type,
-           FormatterEvent::Transition, FormatterPredicate *,
+  NclBind (const string &, NclBind::RoleType, Event::Type,
+           Event::Transition, Predicate *,
            NclNode *, NclAnchor *);
   ~NclBind ();
 
   string getRole ();
   NclBind::RoleType getRoleType ();
-  FormatterEvent::Type getEventType ();
-  FormatterEvent::Transition getTransition ();
-  FormatterPredicate *getPredicate ();
+  Event::Type getEventType ();
+  Event::Transition getTransition ();
+  Predicate *getPredicate ();
 
   NclNode *getNode ();
   NclAnchor *getInterface ();
@@ -52,14 +52,14 @@ public:
   bool setParameter (const string &, const string &);
 
   static bool isReserved (const string &,
-                          FormatterEvent::Type *,
-                          FormatterEvent::Transition *);
+                          Event::Type *,
+                          Event::Transition *);
 private:
   string _role;
   NclBind::RoleType _roleType;
-  FormatterEvent::Type _eventType;
-  FormatterEvent::Transition _transition;
-  FormatterPredicate *_predicate;
+  Event::Type _eventType;
+  Event::Transition _transition;
+  Predicate *_predicate;
   NclNode *_node;
   NclAnchor *_interface;
   map<string, string> _parameters;

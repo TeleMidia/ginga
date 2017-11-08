@@ -15,37 +15,41 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef FORMATTER_MEDIA_SETTINGS_H
-#define FORMATTER_MEDIA_SETTINGS_H
+#ifndef MEDIA_H
+#define MEDIA_H
 
-#include "FormatterMedia.h"
+#include "Object.h"
+#include "player/Player.h"
 
 GINGA_NAMESPACE_BEGIN
 
-class FormatterMediaSettings: public FormatterMedia
+class Media: public Object
 {
 public:
-  FormatterMediaSettings (const string &);
-  ~FormatterMediaSettings ();
+  Media (const string &, const string &, const string &);
+  virtual ~Media ();
 
-  // FormatterObject:
-  void setProperty (const string &, const string &, GingaTime) override;
+  // Object:
+  void setProperty (const string &, const string &,
+                    GingaTime dur=0) override;
+  void sendKeyEvent (const string &, bool) override;
   void sendTickEvent (GingaTime, GingaTime, GingaTime) override;
+  bool startTransition (Event *, Event::Transition) override;
+  void endTransition (Event *, Event::Transition) override;
 
-  // FormatterMedia;
-  bool isFocused () override;
-  bool getZ (int *, int *) override;
-  void redraw (cairo_t *) override;
+  // Media:
+  virtual bool isFocused ();
+  virtual bool getZ (int *, int *);
+  virtual void redraw (cairo_t *);
 
-  // FormatterSettings:
-  void updateCurrentFocus (const string &);
-  void scheduleFocusUpdate (const string &);
+protected:
+  string _mime;                 // mime-type
+  string _uri;                  // content URI
+  Player *_player;              // underlying player
 
- private:
-  string _nextFocus;            // next focus index
-  bool _hasNextFocus;           // true if a focus update is scheduled
+  void doStop () override;
 };
 
 GINGA_NAMESPACE_END
 
-#endif
+#endif // MEDIA_H

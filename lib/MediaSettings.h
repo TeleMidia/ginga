@@ -15,41 +15,37 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "aux-ginga.h"
-#include "FormatterComposition.h"
+#ifndef MEDIA_SETTINGS_H
+#define MEDIA_SETTINGS_H
+
+#include "Media.h"
 
 GINGA_NAMESPACE_BEGIN
 
-FormatterComposition::FormatterComposition (const string &id)
-  :FormatterObject (id)
+class MediaSettings: public Media
 {
-}
+public:
+  MediaSettings (const string &);
+  ~MediaSettings ();
 
-FormatterComposition::~FormatterComposition ()
-{
-}
+  // Object:
+  void setProperty (const string &, const string &, GingaTime) override;
+  void sendTickEvent (GingaTime, GingaTime, GingaTime) override;
 
-const set<FormatterObject *> *
-FormatterComposition::getChildren ()
-{
-  return &_children;
-}
+  // Media;
+  bool isFocused () override;
+  bool getZ (int *, int *) override;
+  void redraw (cairo_t *) override;
 
-FormatterObject *
-FormatterComposition::getChildById (const string &id)
-{
-  for (auto child: _children)
-    if (child->getId () == id)
-      return child;
-  return nullptr;
-}
+  // FormatterSettings:
+  void updateCurrentFocus (const string &);
+  void scheduleFocusUpdate (const string &);
 
-void
-FormatterComposition::addChild (FormatterObject *child)
-{
-  g_assert_nonnull (child);
-  if (tryinsert (child, _children, insert))
-    child->initParent (this);
-}
+ private:
+  string _nextFocus;            // next focus index
+  bool _hasNextFocus;           // true if a focus update is scheduled
+};
 
 GINGA_NAMESPACE_END
+
+#endif // MEDIA_SETTINGS_H

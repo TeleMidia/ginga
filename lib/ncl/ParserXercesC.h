@@ -28,7 +28,6 @@ XERCES_CPP_NAMESPACE_USE
 GINGA_PRAGMA_DIAG_POP ()
 
 #include "NclArea.h"
-#include "NclAreaLabeled.h"
 #include "NclDocument.h"
 #include "NclProperty.h"
 #include "NclSwitch.h"
@@ -51,15 +50,15 @@ private:
 
   map<string,map<string,string>> _descriptors; // cached descriptors
   map<string,map<string,string>> _regions;     // cached regions
-  map<string,FormatterPredicate *> _rules;     // cached rules
+  map<string,Predicate *> _rules;     // cached rules
 
   struct ConnRole
   {
     string role;
     NclBind::RoleType roleType;
-    FormatterEvent::Type eventType;
-    FormatterEvent::Transition transition;
-    FormatterPredicate *predicate;
+    Event::Type eventType;
+    Event::Transition transition;
+    Predicate *predicate;
     string value;
     string key;
   };
@@ -81,8 +80,8 @@ private:
   void parseImportedDocumentBase (DOMElement *);
 
   void parseRuleBase (DOMElement *);
-  void parseCompositeRule (DOMElement *, FormatterPredicate *);
-  void parseRule (DOMElement *, FormatterPredicate *);
+  void parseCompositeRule (DOMElement *, Predicate *);
+  void parseRule (DOMElement *, Predicate *);
 
   void parseTransitionBase (DOMElement *);
   void parseTransition (DOMElement *);
@@ -96,11 +95,11 @@ private:
   void parseConnectorBase (DOMElement *);
   void parseCausalConnector (DOMElement *);
 
-  FormatterPredicate *parseAssessmentStatement (DOMElement *);
-  FormatterPredicate *parseCompoundStatement (DOMElement *);
+  Predicate *parseAssessmentStatement (DOMElement *);
+  Predicate *parseCompoundStatement (DOMElement *);
 
-  void parseCompoundCondition (DOMElement *, list<ConnRole> *, FormatterPredicate *);
-  void parseCondition (DOMElement *, list<ConnRole> *, FormatterPredicate *);
+  void parseCompoundCondition (DOMElement *, list<ConnRole> *, Predicate *);
+  void parseCondition (DOMElement *, list<ConnRole> *, Predicate *);
 
   void parseCompoundAction (DOMElement *, list<ConnRole> *);
   void parseSimpleAction (DOMElement *, list<ConnRole> *);

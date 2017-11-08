@@ -16,12 +16,12 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
-#include "FormatterObject.h"
+#include "Object.h"
 
-#include "FormatterContext.h"
-#include "FormatterMediaSettings.h"
-#include "FormatterSwitch.h"
-#include "FormatterEvent.h"
+#include "Context.h"
+#include "MediaSettings.h"
+#include "Switch.h"
+#include "Event.h"
 #include "ncl/Ncl.h"
 #include "player/Player.h"
 
@@ -84,9 +84,8 @@ mime_table_index (const string &key, string *result)
 
 // Public.
 
-FormatterMedia::FormatterMedia (const string &id, const string &mime,
-                                const string &uri)
-  :FormatterObject (id)
+Media::Media (const string &id, const string &mime, const string &uri)
+  :Object (id)
 {
   _mime = mime;
   _uri = uri;
@@ -114,21 +113,20 @@ FormatterMedia::FormatterMedia (const string &id, const string &mime,
   _player = nullptr;
 }
 
-FormatterMedia::~FormatterMedia ()
+Media::~Media ()
 {
   this->doStop ();
 }
 
 
-// Public: FormatterObject.
+// Public: Object.
 
 void
-FormatterMedia::setProperty (const string &name,
-                             const string &value,
-                             GingaTime dur)
+Media::setProperty (const string &name, const string &value,
+                    GingaTime dur)
 {
   string from = this->getProperty (name);
-  FormatterObject::setProperty (name, value, dur);
+  Object::setProperty (name, value, dur);
   if (_player == nullptr)
     return;
 
@@ -140,9 +138,9 @@ FormatterMedia::setProperty (const string &name,
 }
 
 void
-FormatterMedia::sendKeyEvent (const string &key, bool press)
+Media::sendKeyEvent (const string &key, bool press)
 {
-  list<FormatterEvent *> buf;
+  list<Event *> buf;
 
   if (!press)
     return;                     // nothing to do
@@ -161,7 +159,7 @@ FormatterMedia::sendKeyEvent (const string &key, bool press)
           || ((key == "CURSOR_RIGHT"
                && (next = _player->getProperty ("moveRight")) != "")))
         {
-          FormatterMediaSettings *settings;
+          MediaSettings *settings;
           settings = _formatter->getSettings ();
           g_assert_nonnull (settings);
           settings->scheduleFocusUpdate (next);
@@ -177,7 +175,7 @@ FormatterMedia::sendKeyEvent (const string &key, bool press)
     {
       string expected;
 
-      if (evt->getType () != FormatterEvent::SELECTION)
+      if (evt->getType () != Event::SELECTION)
         continue;
 
       expected = "";
@@ -191,22 +189,22 @@ FormatterMedia::sendKeyEvent (const string &key, bool press)
     }
 
   // Run collected events.
-  for (FormatterEvent *evt: buf)
+  for (Event *evt: buf)
     {
       TRACE ("%s<%s>", _id.c_str (), evt->getId ().c_str ());
-      _formatter->evalAction (evt, FormatterEvent::START);
-      _formatter->evalAction (evt, FormatterEvent::STOP);
+      _formatter->evalAction (evt, Event::START);
+      _formatter->evalAction (evt, Event::STOP);
     }
 }
 
 void
-FormatterMedia::sendTickEvent (GingaTime total, GingaTime diff,
-                               GingaTime frame)
+Media::sendTickEvent (GingaTime total, GingaTime diff,
+                      GingaTime frame)
 {
   GingaTime dur;
 
   // Update object time.
-  FormatterObject::sendTickEvent (total, diff, frame);
+  Object::sendTickEvent (total, diff, frame);
 
   if (_player == nullptr)
     return;                     // nothing to do.
@@ -220,25 +218,24 @@ FormatterMedia::sendTickEvent (GingaTime total, GingaTime diff,
       || (GINGA_TIME_IS_VALID (dur = _player->getDuration ())
           && _time > dur))
     {
-      FormatterEvent *lambda = this->getLambda ();
+      Event *lambda = this->getLambda ();
       g_assert_nonnull (lambda);
       TRACE ("eos %s@lambda at %" GINGA_TIME_FORMAT, _id.c_str (),
              GINGA_TIME_ARGS (_time));
-      _formatter->evalAction (lambda, FormatterEvent::STOP);
+      _formatter->evalAction (lambda, Event::STOP);
       return;
     }
 }
 
 bool
-FormatterMedia::startTransition (FormatterEvent *evt,
-                                 FormatterEvent::Transition transition)
+Media::startTransition (Event *evt, Event::Transition transition)
 {
   switch (evt->getType ())
     {
-    case FormatterEvent::PRESENTATION:
+    case Event::PRESENTATION:
       switch (transition)
         {
-        case FormatterEvent::START:
+        case Event::START:
           if (evt->isLambda ())
             {
               g_assert_null (_player);
@@ -253,15 +250,15 @@ FormatterMedia::startTransition (FormatterEvent *evt,
             }
           break;
 
-        case FormatterEvent::STOP:
+        case Event::STOP:
           break;
         default:
           g_assert_not_reached ();
         }
       break;
 
-    case FormatterEvent::ATTRIBUTION:
-    case FormatterEvent::SELECTION:
+    case Event::ATTRIBUTION:
+    case Event::SELECTION:
       if (!this->isOccurring ())
         return false;           // fail
       break;
@@ -273,30 +270,29 @@ FormatterMedia::startTransition (FormatterEvent *evt,
 }
 
 void
-FormatterMedia::endTransition (FormatterEvent *evt,
-                               FormatterEvent::Transition transition)
+Media::endTransition (Event *evt, Event::Transition transition)
 {
   switch (evt->getType ())
     {
-    case FormatterEvent::PRESENTATION:
+    case Event::PRESENTATION:
       switch (transition)
         {
-        case FormatterEvent::START:
+        case Event::START:
           if (evt->isLambda ())
             {
               g_assert_nonnull (_player);
-              FormatterObject::doStart ();
+              Object::doStart ();
               for (auto e: _events) // schedule time anchors
                 {
                   if (!e->isLambda ()
-                      && e->getType () == FormatterEvent::PRESENTATION)
+                      && e->getType () == Event::PRESENTATION)
                     {
                       GingaTime begin, end;
                       e->getInterval (&begin, &end);
                       this->addDelayedAction
-                        (e, FormatterEvent::START, "", begin);
+                        (e, Event::START, "", begin);
                       this->addDelayedAction
-                        (e, FormatterEvent::STOP, "", end);
+                        (e, Event::STOP, "", end);
                     }
                 }
               TRACE ("start %s@lambda", _id.c_str ());
@@ -313,7 +309,7 @@ FormatterMedia::endTransition (FormatterEvent *evt,
             }
           break;
 
-        case FormatterEvent::STOP:
+        case Event::STOP:
           if (evt->isLambda ())
             {
               g_assert_nonnull (_player);
@@ -337,10 +333,10 @@ FormatterMedia::endTransition (FormatterEvent *evt,
         }
       break;
 
-    case FormatterEvent::ATTRIBUTION:
+    case Event::ATTRIBUTION:
       switch (transition)
         {
-        case FormatterEvent::START:
+        case Event::START:
           {
             string name;
             string value;
@@ -363,13 +359,13 @@ FormatterMedia::endTransition (FormatterEvent *evt,
                 dur = 0;
               }
             this->setProperty (name, value, dur);
-            _formatter->evalAction (evt, FormatterEvent::STOP);
+            _formatter->evalAction (evt, Event::STOP);
 
             TRACE ("start %s.%s:=%s (duration=%s)", _id.c_str (),
                    name.c_str (), value.c_str (), s.c_str ());
             break;
           }
-        case FormatterEvent::STOP:
+        case Event::STOP:
           TRACE ("stop %s.%s:=...", _id.c_str (), evt->getId ().c_str ());
           break;
         default:
@@ -377,7 +373,7 @@ FormatterMedia::endTransition (FormatterEvent *evt,
         }
       break;
 
-    case FormatterEvent::SELECTION:
+    case Event::SELECTION:
       {
         string key;
 
@@ -386,10 +382,10 @@ FormatterMedia::endTransition (FormatterEvent *evt,
 
         switch (transition)
           {
-          case FormatterEvent::START:
+          case Event::START:
             TRACE ("start %s<%s>", _id.c_str (), key.c_str ());
             break;
-          case FormatterEvent::STOP:
+          case Event::STOP:
             TRACE ("stop %s<%s>", _id.c_str (), key.c_str ());
             break;
           default:
@@ -406,7 +402,7 @@ FormatterMedia::endTransition (FormatterEvent *evt,
 // Public.
 
 bool
-FormatterMedia::isFocused ()
+Media::isFocused ()
 {
   if (!this->isOccurring ())
     return false;
@@ -415,11 +411,9 @@ FormatterMedia::isFocused ()
 }
 
 bool
-FormatterMedia::getZ (int *z, int *zorder)
+Media::getZ (int *z, int *zorder)
 {
-  if (this->isSleeping ())
-    return false;               // nothing to do
-  if (_player == nullptr)
+  if (this->isSleeping () || _player == nullptr)
     return false;               // nothing to do
   g_assert_nonnull (_player);
   _player->getZ (z, zorder);
@@ -427,11 +421,9 @@ FormatterMedia::getZ (int *z, int *zorder)
 }
 
 void
-FormatterMedia::redraw (cairo_t *cr)
+Media::redraw (cairo_t *cr)
 {
-  if (this->isSleeping ())
-    return;                     // nothing to do
-  if (_player == nullptr)
+  if (this->isSleeping () || _player == nullptr)
     return;                     // nothing to do
   _player->redraw (cr);
 }
@@ -440,7 +432,7 @@ FormatterMedia::redraw (cairo_t *cr)
 // Protected.
 
 void
-FormatterMedia::doStop ()
+Media::doStop ()
 {
   if (_player != nullptr)
     {
@@ -449,7 +441,7 @@ FormatterMedia::doStop ()
       delete _player;
       _player = nullptr;
     }
-  FormatterObject::doStop ();
+  Object::doStop ();
 }
 
 GINGA_NAMESPACE_END

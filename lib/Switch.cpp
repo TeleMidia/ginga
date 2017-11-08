@@ -16,45 +16,44 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
-#include "FormatterSwitch.h"
+#include "Switch.h"
 
 GINGA_NAMESPACE_BEGIN
 
 
 // Public.
 
-FormatterSwitch::FormatterSwitch (const string &id)
-  :FormatterComposition (id)
+Switch::Switch (const string &id)
+  :Composition (id)
 {
   _selected = nullptr;
 }
 
-FormatterSwitch::~FormatterSwitch ()
+Switch::~Switch ()
 {
   for (auto item: _rules)
     delete item.second;
 }
 
 
-// Public: FormatterObject.
+// Public: Object.
 
 bool
-FormatterSwitch::startTransition (FormatterEvent *evt,
-                                  FormatterEvent::Transition transition)
+Switch::startTransition (Event *event, Event::Transition transition)
 {
-  switch (evt->getType ())
+  switch (event->getType ())
     {
-    case FormatterEvent::PRESENTATION:
-      g_assert (evt->isLambda ());
+    case Event::PRESENTATION:
+      g_assert (event->isLambda ());
       switch (transition)
         {
-        case FormatterEvent::START:
+        case Event::START:
           g_assert_null (_selected);
           for (auto item: _rules)
             {
-              FormatterObject *obj;
-              FormatterPredicate *pred;
-              FormatterEvent *lambda;
+              Object *obj;
+              Predicate *pred;
+              Event *lambda;
 
               obj = item.first;
               g_assert_nonnull (obj);
@@ -72,10 +71,10 @@ FormatterSwitch::startTransition (FormatterEvent *evt,
             }
           break;
 
-        case FormatterEvent::STOP:
+        case Event::STOP:
           if (_selected != nullptr)
             {
-              FormatterEvent *lambda = _selected->getLambda ();
+              Event *lambda = _selected->getLambda ();
               g_assert_nonnull (lambda);
               lambda->transition (transition);
               _selected = nullptr;
@@ -87,8 +86,8 @@ FormatterSwitch::startTransition (FormatterEvent *evt,
         }
       break;
 
-    case FormatterEvent::ATTRIBUTION:
-    case FormatterEvent::SELECTION:
+    case Event::ATTRIBUTION:
+    case Event::SELECTION:
     default:
       g_assert_not_reached ();
     }
@@ -96,24 +95,23 @@ FormatterSwitch::startTransition (FormatterEvent *evt,
 }
 
 void
-FormatterSwitch::endTransition (FormatterEvent *evt,
-                                FormatterEvent::Transition transition)
+Switch::endTransition (Event *event, Event::Transition transition)
 {
-  switch (evt->getType ())
+  switch (event->getType ())
     {
-    case FormatterEvent::PRESENTATION:
-      g_assert (evt->isLambda ());
+    case Event::PRESENTATION:
+      g_assert (event->isLambda ());
      switch (transition)
         {
-        case FormatterEvent::START:
-          FormatterObject::doStart ();
+        case Event::START:
+          Object::doStart ();
           TRACE ("start %s@lambda", _id.c_str ());
           if (_selected == nullptr)
-            _formatter->evalAction (evt, FormatterEvent::STOP);
+            _formatter->evalAction (event, Event::STOP);
           break;
 
-        case FormatterEvent::STOP:
-          FormatterObject::doStop ();
+        case Event::STOP:
+          Object::doStop ();
           TRACE ("stop %s@lambda", _id.c_str ());
           break;
 
@@ -122,8 +120,8 @@ FormatterSwitch::endTransition (FormatterEvent *evt,
         }
      break;
 
-    case FormatterEvent::ATTRIBUTION:
-    case FormatterEvent::SELECTION:
+    case Event::ATTRIBUTION:
+    case Event::SELECTION:
     default:
       g_assert_not_reached ();
     }
@@ -132,14 +130,14 @@ FormatterSwitch::endTransition (FormatterEvent *evt,
 
 // Public.
 
-const list<pair<FormatterObject *, FormatterPredicate *>> *
-FormatterSwitch::getRules ()
+const list<pair<Object *, Predicate *>> *
+Switch::getRules ()
 {
   return &_rules;
 }
 
 void
-FormatterSwitch::addRule (FormatterObject *obj, FormatterPredicate *pred)
+Switch::addRule (Object *obj, Predicate *pred)
 {
   g_assert_nonnull (obj);
   g_assert_nonnull (pred);

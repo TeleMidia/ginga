@@ -16,20 +16,20 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
-#include "FormatterObject.h"
+#include "Object.h"
 
-#include "FormatterComposition.h"
-#include "FormatterEvent.h"
-#include "FormatterMedia.h"
-#include "FormatterMediaSettings.h"
-#include "FormatterSwitch.h"
+#include "Composition.h"
+#include "Event.h"
+#include "Media.h"
+#include "MediaSettings.h"
+#include "Switch.h"
 
 GINGA_NAMESPACE_BEGIN
 
 
 // Public.
 
-FormatterObject::FormatterObject (const string &id)
+Object::Object (const string &id)
 {
   _id = id;
   _formatter = nullptr;
@@ -41,39 +41,39 @@ FormatterObject::FormatterObject (const string &id)
   g_assert_nonnull (_lambda);
 }
 
-FormatterObject::~FormatterObject ()
+Object::~Object ()
 {
   this->doStop ();
 }
 
 string
-FormatterObject::getId ()
+Object::getId ()
 {
   return _id;
 }
 
 Formatter *
-FormatterObject::getFormatter ()
+Object::getFormatter ()
 {
   return _formatter;
 }
 
 void
-FormatterObject::initFormatter (Formatter *formatter)
+Object::initFormatter (Formatter *formatter)
 {
   g_assert_nonnull (formatter);
   g_assert_null (_formatter);
   _formatter = formatter;
 }
 
-FormatterComposition *
-FormatterObject::getParent ()
+Composition *
+Object::getParent ()
 {
   return _parent;
 }
 
 void
-FormatterObject::initParent (FormatterComposition *parent)
+Object::initParent (Composition *parent)
 {
   g_assert_nonnull (parent);
   g_assert_null (_parent);
@@ -81,13 +81,13 @@ FormatterObject::initParent (FormatterComposition *parent)
 }
 
 const vector <string> *
-FormatterObject::getAliases ()
+Object::getAliases ()
 {
   return &_aliases;
 }
 
 bool
-FormatterObject::hasAlias (const string &alias)
+Object::hasAlias (const string &alias)
 {
   for (auto curr: _aliases)
     if (curr == alias)
@@ -96,19 +96,19 @@ FormatterObject::hasAlias (const string &alias)
 }
 
 void
-FormatterObject::addAlias (const string &alias)
+Object::addAlias (const string &alias)
 {
   tryinsert (alias, _aliases, push_back);
 }
 
 
-FormatterEvent *
-FormatterObject::obtainEvent (FormatterEvent::Type type, NclAnchor *anchor,
-                              const string &key)
+Event *
+Object::obtainEvent (Event::Type type, NclAnchor *anchor,
+                     const string &key)
 {
-  FormatterEvent *event;
+  Event *event;
 
-  if (type == FormatterEvent::SELECTION)
+  if (type == Event::SELECTION)
     event = this->getEvent (type, key);
   else
     event = this->getEvent (type, anchor->getId ());
@@ -116,11 +116,11 @@ FormatterObject::obtainEvent (FormatterEvent::Type type, NclAnchor *anchor,
   if (event != nullptr)
     return event;
 
-  g_assert (instanceof (FormatterMedia *, this));
+  g_assert (instanceof (Media *, this));
 
   switch (type)
     {
-    case FormatterEvent::PRESENTATION:
+    case Event::PRESENTATION:
       {
         NclArea *area = cast (NclArea *, anchor);
         g_assert_nonnull (area);
@@ -131,7 +131,7 @@ FormatterObject::obtainEvent (FormatterEvent::Type type, NclAnchor *anchor,
         g_assert_nonnull (event);
         break;
       }
-    case FormatterEvent::ATTRIBUTION:
+    case Event::ATTRIBUTION:
       {
         NclProperty *property = cast (NclProperty *, anchor);
         g_assert_nonnull (property);
@@ -141,7 +141,7 @@ FormatterObject::obtainEvent (FormatterEvent::Type type, NclAnchor *anchor,
         event->setParameter ("value", property->getValue ());
         break;
       }
-    case FormatterEvent::SELECTION:
+    case Event::SELECTION:
       {
         this->addSelectionEvent (key);
         event = this->getSelectionEvent (key);
@@ -157,8 +157,8 @@ FormatterObject::obtainEvent (FormatterEvent::Type type, NclAnchor *anchor,
   return event;
 }
 
-FormatterEvent *
-FormatterObject::getEvent (FormatterEvent::Type type, const string &id)
+Event *
+Object::getEvent (Event::Type type, const string &id)
 {
   for (auto evt: _events)
     if (evt->getType () == type && evt->getId () == id)
@@ -166,92 +166,92 @@ FormatterObject::getEvent (FormatterEvent::Type type, const string &id)
   return nullptr;
 }
 
-FormatterEvent *
-FormatterObject::getAttributionEvent (const string &propName)
+Event *
+Object::getAttributionEvent (const string &propName)
 {
-  return this->getEvent (FormatterEvent::ATTRIBUTION, propName);
+  return this->getEvent (Event::ATTRIBUTION, propName);
 }
 
 void
-FormatterObject::addAttributionEvent (const string &propName)
+Object::addAttributionEvent (const string &propName)
 {
-  FormatterEvent *evt;
+  Event *evt;
 
   if (this->getAttributionEvent (propName))
     return;
 
-  evt = new FormatterEvent (FormatterEvent::ATTRIBUTION, this, propName);
+  evt = new Event (Event::ATTRIBUTION, this, propName);
   _events.insert (evt);
 }
 
-FormatterEvent *
-FormatterObject::getPresentationEvent (const string &id)
+Event *
+Object::getPresentationEvent (const string &id)
 {
-  return this->getEvent (FormatterEvent::PRESENTATION, id);
+  return this->getEvent (Event::PRESENTATION, id);
 }
 
 void
-FormatterObject::addPresentationEvent (const string &id, GingaTime begin,
-                                       GingaTime end)
+Object::addPresentationEvent (const string &id, GingaTime begin,
+                              GingaTime end)
 {
-  FormatterEvent *evt;
+  Event *evt;
 
   if (this->getPresentationEvent (id))
     return;
 
-  evt = new FormatterEvent (FormatterEvent::PRESENTATION, this, id);
+  evt = new Event (Event::PRESENTATION, this, id);
   evt->setInterval (begin, end);
   _events.insert (evt);
 }
 
-FormatterEvent *
-FormatterObject::getSelectionEvent (const string &key)
+Event *
+Object::getSelectionEvent (const string &key)
 {
-  return this->getEvent (FormatterEvent::SELECTION, key);
+  return this->getEvent (Event::SELECTION, key);
 }
 
 void
-FormatterObject::addSelectionEvent (const string &key)
+Object::addSelectionEvent (const string &key)
 {
-  FormatterEvent *evt;
+  Event *evt;
 
   if (this->getSelectionEvent (key))
     return;
 
-  evt = new FormatterEvent (FormatterEvent::SELECTION, this, key);
+  evt = new Event (Event::SELECTION, this, key);
   _events.insert (evt);
 }
 
-FormatterEvent *
-FormatterObject::getLambda ()
+Event *
+Object::getLambda ()
 {
   g_assert_nonnull (_lambda);
   return _lambda;
 }
 
 bool
-FormatterObject::isOccurring ()
+Object::isOccurring ()
 {
   g_assert_nonnull (_lambda);
-  return _lambda->getState () == FormatterEvent::OCCURRING;
+  return _lambda->getState () == Event::OCCURRING;
 }
 
 bool
-FormatterObject::isPaused ()
+Object::isPaused ()
 {
   g_assert_nonnull (_lambda);
-  return _lambda->getState () == FormatterEvent::PAUSED;
+  return _lambda->getState () == Event::PAUSED;
 }
 
 bool
-FormatterObject::isSleeping ()
+Object::isSleeping ()
 {
   g_assert_nonnull (_lambda);
-  return _lambda->getState () == FormatterEvent::SLEEPING;
+  return _lambda->getState () == Event::SLEEPING;
 }
 
 string
-FormatterObject::getProperty (const string &name)
+Object::getProperty (const string &name)
 {
   auto it = _properties.find (name);
   if (it == _properties.end ())
@@ -260,46 +260,42 @@ FormatterObject::getProperty (const string &name)
 }
 
 void
-FormatterObject::setProperty (const string &name, const string &value,
-                              GingaTime dur)
+Object::setProperty (const string &name, const string &value,
+                     GingaTime dur)
 {
   g_assert (GINGA_TIME_IS_VALID (dur));
   _properties[name] = value;
 }
 
-list<pair<FormatterAction *, GingaTime>> *
-FormatterObject::getDelayedActions ()
+list<pair<Action *, GingaTime>> *
+Object::getDelayedActions ()
 {
   return &_delayed;
 }
 
 void
-FormatterObject::addDelayedAction (FormatterEvent *event,
-                                   FormatterEvent::Transition transition,
-                                   const string &value,
-                                   GingaTime delay)
+Object::addDelayedAction (Event *event, Event::Transition transition,
+                          const string &value, GingaTime delay)
 {
-  FormatterAction *action = new FormatterAction (event, transition);
+  Action *action = new Action (event, transition);
   action->setParameter ("value", value);
   _delayed.push_back (std::make_pair (action, _time + delay));
 }
 
 void
-FormatterObject::sendKeyEvent (unused (const string &key),
-                               unused (bool press))
+Object::sendKeyEvent (unused (const string &key), unused (bool press))
 {
 }
 
 void
-FormatterObject::sendTickEvent (unused (GingaTime total),
-                                GingaTime diff,
-                                unused (GingaTime frame))
+Object::sendTickEvent (unused (GingaTime total), GingaTime diff,
+                       unused (GingaTime frame))
 {
   g_assert (this->isOccurring ());
   g_assert (GINGA_TIME_IS_VALID (_time));
   _time += diff;
 
-  list<FormatterAction *> trigger;
+  list<Action *> trigger;
   for (auto it: _delayed)
     {
       if (_time >= it.second)
@@ -334,13 +330,13 @@ FormatterObject::sendTickEvent (unused (GingaTime total),
 // Private.
 
 void
-FormatterObject::doStart ()
+Object::doStart ()
 {
   _time = 0;
 }
 
 void
-FormatterObject::doStop ()
+Object::doStop ()
 {
   _time = GINGA_TIME_NONE;
   for (auto evt: _events)

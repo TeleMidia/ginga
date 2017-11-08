@@ -23,9 +23,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NAMESPACE_BEGIN
 
 NclBind::NclBind (const string &role, NclBind::RoleType roleType,
-                  FormatterEvent::Type eventType,
-                  FormatterEvent::Transition transition,
-                  FormatterPredicate *predicate,
+                  Event::Type eventType,
+                  Event::Transition transition,
+                  Predicate *predicate,
                   NclNode *node, NclAnchor *iface)
 {
   _role = role;
@@ -53,19 +53,19 @@ NclBind::getRoleType ()
   return _roleType;
 }
 
-FormatterEvent::Type
+Event::Type
 NclBind::getEventType ()
 {
   return _eventType;
 }
 
-FormatterEvent::Transition
+Event::Transition
 NclBind::getTransition ()
 {
   return _transition;
 }
 
-FormatterPredicate *
+Predicate *
 NclBind::getPredicate ()
 {
   return _predicate;
@@ -103,59 +103,59 @@ NclBind::setParameter (const string &name, const string &value)
 
 bool
 NclBind::isReserved (const string &role,
-                     FormatterEvent::Type *type,
-                     FormatterEvent::Transition *trans)
+                     Event::Type *type,
+                     Event::Transition *trans)
 {
   static map<string, pair<int,int>> reserved =
     {
      {"onBegin",
-      {(int) FormatterEvent::PRESENTATION,
-       (int) FormatterEvent::START}},
+      {(int) Event::PRESENTATION,
+       (int) Event::START}},
      {"onEnd",
-      {(int) FormatterEvent::PRESENTATION,
-       (int) FormatterEvent::STOP}},
+      {(int) Event::PRESENTATION,
+       (int) Event::STOP}},
      {"onAbort",
-      {(int) FormatterEvent::PRESENTATION,
-       (int) FormatterEvent::ABORT}},
+      {(int) Event::PRESENTATION,
+       (int) Event::ABORT}},
      {"onPause",
-      {(int) FormatterEvent::PRESENTATION,
-       (int) FormatterEvent::PAUSE}},
+      {(int) Event::PRESENTATION,
+       (int) Event::PAUSE}},
      {"onResumes",
-      {(int) FormatterEvent::PRESENTATION,
-       (int) FormatterEvent::RESUME}},
+      {(int) Event::PRESENTATION,
+       (int) Event::RESUME}},
      {"onBeginAttribution",
-      {(int) FormatterEvent::ATTRIBUTION,
-       (int) FormatterEvent::START}},
+      {(int) Event::ATTRIBUTION,
+       (int) Event::START}},
      {"onEndAttribution",
-      {(int) FormatterEvent::SELECTION,
-       (int) FormatterEvent::STOP}},
+      {(int) Event::SELECTION,
+       (int) Event::STOP}},
      {"onSelection",
-      {(int) FormatterEvent::SELECTION,
-       (int) FormatterEvent::START}},
+      {(int) Event::SELECTION,
+       (int) Event::START}},
      {"start",
-      {(int) FormatterEvent::Type::PRESENTATION,
-       (int) FormatterEvent::Transition::START}},
+      {(int) Event::Type::PRESENTATION,
+       (int) Event::Transition::START}},
      {"stop",
-      {(int) FormatterEvent::Type::PRESENTATION,
-       (int) FormatterEvent::Transition::STOP}},
+      {(int) Event::Type::PRESENTATION,
+       (int) Event::Transition::STOP}},
      {"abort",
-      {(int) FormatterEvent::Type::PRESENTATION,
-       (int) FormatterEvent::Transition::ABORT}},
+      {(int) Event::Type::PRESENTATION,
+       (int) Event::Transition::ABORT}},
      {"pause",
-      {(int) FormatterEvent::Type::PRESENTATION,
-       (int) FormatterEvent::Transition::PAUSE}},
+      {(int) Event::Type::PRESENTATION,
+       (int) Event::Transition::PAUSE}},
      {"resume",
-      {(int) FormatterEvent::Type::PRESENTATION,
-       (int) FormatterEvent::Transition::RESUME}},
+      {(int) Event::Type::PRESENTATION,
+       (int) Event::Transition::RESUME}},
      {"set",
-      {(int) FormatterEvent::Type::ATTRIBUTION,
-       (int) FormatterEvent::Transition::START}},
+      {(int) Event::Type::ATTRIBUTION,
+       (int) Event::Transition::START}},
     };
   map<string, pair<int,int>>::iterator it;
   if ((it = reserved.find (role)) == reserved.end ())
     return false;
-  tryset (type, (FormatterEvent::Type) it->second.first);
-  tryset (trans, (FormatterEvent::Transition) it->second.second);
+  tryset (type, (Event::Type) it->second.first);
+  tryset (trans, (Event::Transition) it->second.second);
   return true;
 }
 

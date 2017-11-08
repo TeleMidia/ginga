@@ -16,17 +16,16 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
-#include "FormatterLink.h"
-#include "FormatterContext.h"
+#include "Link.h"
 
 GINGA_NAMESPACE_BEGIN
 
-FormatterLink::FormatterLink ()
+Link::Link ()
 {
   _disabled = false;
 }
 
-FormatterLink::~FormatterLink ()
+Link::~Link ()
 {
   for (auto condition: _conditions)
     delete condition;
@@ -34,40 +33,40 @@ FormatterLink::~FormatterLink ()
     delete action;
 }
 
-const list<FormatterCondition *> *
-FormatterLink::getConditions ()
+const list<Condition *> *
+Link::getConditions ()
 {
   return &_conditions;
 }
 
 void
-FormatterLink::addCondition (FormatterCondition *condition)
+Link::addCondition (Condition *condition)
 {
   g_assert_nonnull (condition);
   tryinsert (condition, _conditions, push_back);
 }
 
-const list<FormatterAction *> *
-FormatterLink::getActions ()
+const list<Action *> *
+Link::getActions ()
 {
   return &_actions;
 }
 
 void
-FormatterLink::addAction (FormatterAction *action)
+Link::addAction (Action *action)
 {
   g_assert_nonnull (action);
   tryinsert (action, _actions, push_back);
 }
 
 bool
-FormatterLink::getDisabled ()
+Link::getDisabled ()
 {
   return _disabled;
 }
 
 void
-FormatterLink::setDisabled (bool disabled)
+Link::setDisabled (bool disabled)
 {
   _disabled = disabled;
 }

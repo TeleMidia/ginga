@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define NCL_SWITCH_H
 
 #include "NclComposition.h"
-#include "FormatterPredicate.h"
+#include "Predicate.h"
 
 GINGA_NAMESPACE_BEGIN
 
@@ -29,13 +29,13 @@ public:
   NclSwitch (NclDocument *, const string &);
   ~NclSwitch ();
 
-  void addNode (NclNode *, FormatterPredicate *);
+  void addNode (NclNode *, Predicate *);
   NclNode *getNode (const string &);
 
-  const vector <pair<NclNode *, FormatterPredicate *>> *getRules ();
+  const vector <pair<NclNode *, Predicate *>> *getRules ();
 
 private:
-  vector<pair<NclNode *, FormatterPredicate *>> _rules;
+  vector<pair<NclNode *, Predicate *>> _rules;
 };
 
 GINGA_NAMESPACE_END

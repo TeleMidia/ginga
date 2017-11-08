@@ -16,69 +16,68 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
-#include "FormatterMediaSettings.h"
+#include "MediaSettings.h"
 
-#include "FormatterContext.h"
-#include "FormatterSwitch.h"
+#include "Context.h"
+#include "Switch.h"
 
 GINGA_NAMESPACE_BEGIN
 
 
 // Public.
 
-FormatterMediaSettings::FormatterMediaSettings (const string &id)
-  :FormatterMedia (id, "application/x-ginga-settings", "")
+MediaSettings::MediaSettings (const string &id)
+  :Media (id, "application/x-ginga-settings", "")
 {
   this->addAttributionEvent ("service.currentFocus");
 }
 
-FormatterMediaSettings::~FormatterMediaSettings ()
+MediaSettings::~MediaSettings ()
 {
 }
 
 
-// Public: FormatterObject.
+// Public: Object.
 
 void
-FormatterMediaSettings::setProperty (const string &name,
-                                     const string &value,
-                                     GingaTime dur)
+MediaSettings::setProperty (const string &name, const string &value,
+                            GingaTime dur)
 {
   if (name == "service.currentFocus")
     Player::setCurrentFocus (value);
-  FormatterMedia::setProperty (name, value, dur);
+  Media::setProperty (name, value, dur);
 }
 
 void
-FormatterMediaSettings::sendTickEvent (unused (GingaTime total),
-                                       unused (GingaTime diff),
-                                       unused (GingaTime frame))
+MediaSettings::sendTickEvent (GingaTime total,
+                              GingaTime diff,
+                              GingaTime frame)
 {
   if (_hasNextFocus)            // effectuate pending focus index update
     {
       this->updateCurrentFocus (_nextFocus);
       _hasNextFocus = false;
     }
-  FormatterMedia::sendTickEvent (total, diff, frame);
+  Media::sendTickEvent (total, diff, frame);
 }
 
 
-// Public: FormatterMedia.
+// Public: Media.
 
 bool
-FormatterMediaSettings::isFocused ()
+MediaSettings::isFocused ()
 {
   return false;
 }
 
 bool
-FormatterMediaSettings::getZ (unused (int *z), unused (int *zorder))
+MediaSettings::getZ (unused (int *z), unused (int *zorder))
 {
   return false;
 }
 
 void
-FormatterMediaSettings::redraw (unused (cairo_t *cr))
+MediaSettings::redraw (unused (cairo_t *cr))
 {
 }
 
@@ -86,7 +85,7 @@ FormatterMediaSettings::redraw (unused (cairo_t *cr))
 // Public.
 
 void
-FormatterMediaSettings::updateCurrentFocus (const string &index)
+MediaSettings::updateCurrentFocus (const string &index)
 {
   string next;
   string i;
@@ -110,14 +109,14 @@ FormatterMediaSettings::updateCurrentFocus (const string &index)
 
   // Do the actual attribution.
   string value = next;
-  FormatterEvent *evt = this->getAttributionEvent ("service.currentFocus");
+  Event *evt = this->getAttributionEvent ("service.currentFocus");
   g_assert_nonnull (evt);
-  _formatter->evalAction (evt, FormatterEvent::START, value);
-  _formatter->evalAction (evt, FormatterEvent::STOP, value);
+  _formatter->evalAction (evt, Event::START, value);
+  _formatter->evalAction (evt, Event::STOP, value);
 }
 
 void
-FormatterMediaSettings::scheduleFocusUpdate (const string &next)
+MediaSettings::scheduleFocusUpdate (const string &next)
 {
   _hasNextFocus = true;
   _nextFocus = next;
