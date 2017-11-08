@@ -230,7 +230,8 @@ __error_elt (const DOMElement *elt)
     string result;                                                      \
     if (unlikely (!dom_elt_try_get_attribute (result, (elt), "id")))    \
       ERROR_SYNTAX_ELT_MISSING_ID ((elt));                              \
-    if (unlikely (_doc->getNode (result) != nullptr))                   \
+    result = _prefix + result;                                          \
+    if (unlikely (_doc->getEntityById (result) != nullptr))             \
       ERROR_SYNTAX_ELT_DUPLICATED_ID ((elt), result);                   \
     tryset ((pvalue), result);                                          \
   }                                                                     \
@@ -242,12 +243,13 @@ __error_elt (const DOMElement *elt)
     string result;                                              \
     if (dom_elt_try_get_attribute (result, (elt), "id"))        \
       {                                                         \
-        if (unlikely (_doc->getNode (result) != nullptr))       \
+        result = _prefix + result;                              \
+        if (unlikely (_doc->getEntityById (result) != nullptr)) \
           ERROR_SYNTAX_ELT_DUPLICATED_ID ((elt), result);       \
       }                                                         \
     else                                                        \
       {                                                         \
-        result = (default);                                     \
+        result = _prefix + (default);                           \
       }                                                         \
     tryset ((pvalue), result);                                  \
   }                                                             \
@@ -335,6 +337,7 @@ ParserXercesC::setErrMsg (const string &msg)
 
 ParserXercesC::ParserXercesC (int width, int height)
 {
+  _prefix = "";
   _doc = nullptr;
   g_assert_cmpint (width, >, 0);
   _width = width;
@@ -487,41 +490,44 @@ ParserXercesC::parse1 (const string &path)
                         ? xpathbuildabs (_dirname, path) : path);
 }
 
-NclDocument *
-ParserXercesC::parseImportNCL (DOMElement *elt, string *alias, string *uri)
+void
+ParserXercesC::parseImportNCL (DOMElement *elt)
 {
-  g_assert_nonnull (alias);
-  g_assert_nonnull (uri);
+  string alias;
+  string uri;
   CHECK_ELT_TAG (elt, "importNCL", nullptr);
-  CHECK_ELT_ATTRIBUTE (elt, "alias", alias);
-  CHECK_ELT_ATTRIBUTE (elt, "documentURI", uri);
-  return this->parse1 (*uri);
+  CHECK_ELT_ATTRIBUTE (elt, "alias", &alias);
+  CHECK_ELT_ATTRIBUTE (elt, "documentURI", &uri);
+  g_assert_not_reached ();
 }
 
 void
-ParserXercesC::parseImportBase (DOMElement *elt, NclDocument **doc,
-                                string *alias, string *uri)
+ParserXercesC::parseImportBase (DOMElement *elt)
 {
+  string alias;
+  string uri;
+
   DOMElement *parent;
   string tag;
 
-  g_assert_nonnull (doc);
-  g_assert_nonnull (alias);
-  g_assert_nonnull (uri);
-
   CHECK_ELT_TAG (elt, "importBase", nullptr);
-  CHECK_ELT_ATTRIBUTE (elt, "alias", alias);
-  CHECK_ELT_ATTRIBUTE (elt, "documentURI", uri);
+  CHECK_ELT_ATTRIBUTE (elt, "alias", &alias);
+  CHECK_ELT_ATTRIBUTE (elt, "documentURI", &uri);
 
-  *doc = this->parse1 (*uri);
-  g_assert_nonnull (*doc);
-
+  uri = xpathbuildabs (xpathdirname (_doc->getURI ()), uri);
   parent = (DOMElement*) elt->getParentNode ();
   g_assert_nonnull (parent);
 
   tag = dom_elt_get_tag (parent);
   if (tag == "connectorBase")
-    g_assert_not_reached ();
+    {
+      NclDocument *saved_doc = _doc;
+      _doc = nullptr;
+      _prefix = alias + "#";
+      delete this->parse0 (uri);
+      _doc = saved_doc;
+      _prefix = "";
+    }
   else
     g_assert_not_reached ();
 }
@@ -534,12 +540,7 @@ ParserXercesC::parseImportedDocumentBase (DOMElement *elt)
       string tag = dom_elt_get_tag (child);
       if (tag == "importNCL")
         {
-          NclDocument *imported;
-          string alias;
-          string uri;
-          imported = this->parseImportNCL (child, &alias, &uri);
-          g_assert_nonnull (imported);
-          _doc->addDocument (imported, alias, uri);
+          g_assert_not_reached ();
         }
       else
         {
@@ -971,14 +972,7 @@ ParserXercesC::parseConnectorBase (DOMElement *elt)
       string tag = dom_elt_get_tag (child);
       if (tag == "importBase")
         {
-          // NclDocument *doc;     // FIXME: this is lost (leak?)
-          // NclConnectorBase *imported;
-          // string alias;
-          // string uri;
-          // imported = this->parseImportBase (child, &doc, &alias, &uri);
-          // g_assert_nonnull (base);
-          // base->addBase (imported, alias, uri);
-          g_assert_not_reached ();
+          this->parseImportBase (child);
         }
       else if (tag ==  "causalConnector")
         {
@@ -1117,11 +1111,6 @@ ParserXercesC::parseAssessmentStatement (DOMElement *elt)
 
   FormatterPredicate *pred = new FormatterPredicate (PredicateType::ATOM);
   pred->setTest (left, test, right);
-
-  // if (role_left != "")
-  //   conn->addPredicateRole (role_left, pred);
-  // if (role_right != "")
-  //   conn->addPredicateRole (role_right, pred);
 
   return pred;
 }
@@ -1607,7 +1596,7 @@ ParserXercesC::solveNodeReferences (NclComposition *comp)
         ref = ((NclMediaRefer *) node)->getReferred ();
         g_assert_nonnull (ref);
 
-        refNode = cast (NclMedia *, _doc->getNode (ref->getId ()));
+        refNode = cast (NclMedia *, _doc->getEntityById (ref->getId ()));
         g_assert_nonnull (refNode);
 
         ((NclMediaRefer *) node)->initReferred (refNode);
@@ -1844,7 +1833,7 @@ ParserXercesC::parseMedia (DOMElement *elt)
     {
       NclMedia *refer;
 
-      refer = cast (NclMedia *, _doc->getNode (value));
+      refer = cast (NclMedia *, _doc->getEntityById (value));
       g_assert_nonnull (refer);
 
       media = new NclMediaRefer (_doc, id);

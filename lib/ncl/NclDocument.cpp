@@ -22,38 +22,36 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-/**
- * @brief Gets document id.
- */
+NclDocument::NclDocument (const string &id, const string &uri)
+{
+  _id = id;
+  _uri = uri;
+  _root = new NclContext (this, id);
+}
+
+NclDocument::~NclDocument ()
+{
+  delete _root;
+}
+
 string
 NclDocument::getId ()
 {
   return _id;
 }
 
-/**
- * @brief Gets document location.
- */
 string
 NclDocument::getURI ()
 {
   return _uri;
 }
 
-/**
- * @brief Gets document body.
- */
 NclContext *
 NclDocument::getRoot ()
 {
   return _root;
 }
 
-/**
- * @brief Gets entity.
- * @param id NclEntity id.
- * @return NclEntity.
- */
 NclEntity *
 NclDocument::getEntityById (const string &id)
 {
@@ -62,11 +60,6 @@ NclDocument::getEntityById (const string &id)
     ? nullptr : it->second;
 }
 
-/**
- * @brief Registers entity.
- * @param entity NclEntity.
- * @return True if successful, or false otherwise.
- */
 bool
 NclDocument::registerEntity (NclEntity *entity)
 {
@@ -77,11 +70,6 @@ NclDocument::registerEntity (NclEntity *entity)
   return true;
 }
 
-/**
- * @brief Unregisters entity.
- * @param entity NclEntity.
- * @return True if successful, or false otherwise.
- */
 bool
 NclDocument::unregisterEntity (NclEntity *entity)
 {
@@ -90,188 +78,6 @@ NclDocument::unregisterEntity (NclEntity *entity)
     return false;
   _entities[id] = nullptr;
   return true;
-}
-
-
-// INSANITY BEGINS HERE ----------------------------------------------------
-
-/**
- * @brief Creates a new document.
- * @param id Document id.
- * @param uri Document URI.
- */
-NclDocument::NclDocument (const string &id, const string &uri)
-{
-  _id = id;
-  _uri = uri;
-  _root = new NclContext (this, id);
-
-  _parentDocument = nullptr;
-}
-
-/**
- * @brief Destroys document.
- */
-NclDocument::~NclDocument ()
-{
-  delete _root;
-}
-
-NclDocument *
-NclDocument::getParentDocument ()
-{
-  return _parentDocument;
-}
-
-string
-NclDocument::getDocumentPerspective ()
-{
-  string docPerspective;
-  NclDocument *parent;
-
-  docPerspective = getId ();
-
-  parent = _parentDocument;
-  while (parent != NULL)
-    {
-      docPerspective = parent->getId () + "/" + docPerspective;
-      parent = parent->getParentDocument ();
-    }
-
-  return docPerspective;
-}
-
-void
-NclDocument::setParentDocument (NclDocument *parentDocument)
-{
-  this->_parentDocument = parentDocument;
-}
-
-
-void
-NclDocument::addDocument (NclDocument *document, const string &alias,
-                          const string &location)
-{
-  g_assert_nonnull (document);
-  if (_documentAliases.find (alias) != _documentAliases.end ()
-      || _documentLocations.find (location) != _documentLocations.end ())
-    {
-      return;
-    }
-
-  _documentBase.push_back (document);
-  _documentAliases[alias] = document;
-  _documentLocations[location] = document;
-}
-
-
-NclDocument *
-NclDocument::getDocument (const string &documentId)
-{
-  vector<NclDocument *>::iterator i;
-
-  for (i = _documentBase.begin (); i != _documentBase.end (); ++i)
-    {
-      if ((*i)->getId () != "" && (*i)->getId () == documentId)
-        {
-          return (*i);
-        }
-    }
-
-  return NULL;
-}
-
-string
-NclDocument::getDocumentAlias (NclDocument *document)
-{
-  map<string, NclDocument *>::iterator i;
-
-  for (i = _documentAliases.begin (); i != _documentAliases.end (); ++i)
-    {
-      if (i->second == document)
-        {
-          return i->first;
-        }
-    }
-
-  return "";
-}
-
-string
-NclDocument::getDocumentLocation (NclDocument *document)
-{
-  map<string, NclDocument *>::iterator i;
-
-  for (i = _documentLocations.begin (); i != _documentLocations.end (); ++i)
-    {
-      if (i->second == document)
-        {
-          return i->first;
-        }
-    }
-
-  return "";
-}
-
-vector<NclDocument *> *
-NclDocument::getDocuments ()
-{
-  return &_documentBase;
-}
-
-
-NclNode *
-NclDocument::getNodeLocally (const string &nodeId)
-{
-  if (_root != NULL)
-    {
-      if (_root->getId () == nodeId)
-        {
-          return _root;
-        }
-      else
-        {
-          return _root->getNestedNode (nodeId);
-        }
-    }
-  else
-    {
-      return NULL;
-    }
-}
-
-NclNode *
-NclDocument::getNode (const string &nodeId)
-{
-  string::size_type index;
-  string prefix, suffix;
-  NclDocument *document;
-
-  index = nodeId.find_first_of ("#");
-  if (index == string::npos)
-    {
-      return getNodeLocally (nodeId);
-    }
-  else if (index == 0)
-    {
-      return getNodeLocally (nodeId.substr (1, nodeId.length () - 1));
-    }
-
-  prefix = nodeId.substr (0, index);
-  index++;
-  suffix = nodeId.substr (index, nodeId.length () - index);
-  if (_documentAliases.find (prefix) != _documentAliases.end ())
-    {
-      document = _documentAliases[prefix];
-      return document->getNode (suffix);
-
-    }
-  else
-    {
-      return NULL;
-    }
-
-  return NULL;
 }
 
 vector<NclNode *> *
@@ -303,10 +109,6 @@ NclDocument::getSettingsNodes ()
       if (instanceof (NclMedia *, node)
           && ((NclMedia *) node)->isSettings ())
         {
-          //
-          // WARNING: For some obscure reason, we have to store the NclNode,
-          // not the EntityNode.
-          //
           settings->push_back (nodes->at (i)); // found
         }
       else if (instanceof (NclComposition *, node))
@@ -320,51 +122,5 @@ NclDocument::getSettingsNodes ()
   return settings;
 }
 
-bool
-NclDocument::removeDocument (NclDocument *document)
-{
-  string alias, location;
-  vector<NclDocument *>::iterator i;
-
-  alias = getDocumentAlias (document);
-  location = getDocumentLocation (document);
-  for (i = _documentBase.begin (); i != _documentBase.end (); ++i)
-    {
-      if (*i == document)
-        {
-          _documentBase.erase (i);
-          _documentAliases.erase (alias);
-          _documentLocations.erase (location);
-          return true;
-        }
-    }
-  return false;
-}
-
-void
-NclDocument::setDocumentAlias (NclDocument *document, const string &alias)
-{
-  string oldAlias;
-
-  oldAlias = getDocumentAlias (document);
-  _documentAliases.erase (oldAlias);
-  _documentAliases[alias] = document;
-}
-
-void
-NclDocument::setDocumentLocation (NclDocument *document, const string &location)
-{
-  string oldLocation;
-
-  oldLocation = getDocumentLocation (document);
-  _documentLocations.erase (oldLocation);
-  _documentLocations[location] = document;
-}
-
-void
-NclDocument::setId (const string &id)
-{
-  this->_id = id;
-}
 
 GINGA_NAMESPACE_END

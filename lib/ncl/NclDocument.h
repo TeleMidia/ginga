@@ -36,42 +36,13 @@ public:
   bool registerEntity (NclEntity *);
   bool unregisterEntity (NclEntity *);
 
-private:
-  string _id;                       // document id
-  string _uri;                      // document uri
-  NclContext *_root;                   // document root
-  map<string, NclEntity *> _entities;  // entity map
-
-  // -----------------------------------------------------------------------
-public:
-  NclDocument *getParentDocument ();
-  void setParentDocument (NclDocument *);
-  string getDocumentPerspective ();
-
-  void addDocument (NclDocument *, const string &, const string &);
-
-  NclDocument *getDocument (const string &);
-  string getDocumentAlias (NclDocument *);
-  string getDocumentLocation (NclDocument *);
-  vector<NclDocument *> *getDocuments ();
-
-  NclNode *getNode (const string &);
-
   vector<NclNode *> *getSettingsNodes ();
-  bool removeDocument (NclDocument *);
-  void setDocumentAlias (NclDocument *, const string &);
-
-  void setDocumentLocation (NclDocument *, const string &);
-  void setId (const string &_id);
 
 private:
-  map<string, NclDocument *> _documentAliases;
-  vector<NclDocument *> _documentBase;
-  map<string, NclDocument *> _documentLocations;
-
-  NclDocument *_parentDocument;
-
-  NclNode *getNodeLocally (const string &nodeId);
+  string _id;
+  string _uri;
+  NclContext *_root;
+  map<string, NclEntity *> _entities;
 };
 
 GINGA_NAMESPACE_END
