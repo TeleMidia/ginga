@@ -16,86 +16,78 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
-#include "FormatterContext.h"
+#include "Context.h"
 
 GINGA_NAMESPACE_BEGIN
 
 
 // Public.
 
-FormatterContext::FormatterContext (const string &id)
-  :FormatterComposition (id)
+Context::Context (const string &id): Composition (id)
 {
 }
 
-FormatterContext::~FormatterContext ()
+Context::~Context ()
 {
   for (auto link: _links)
     delete link;
 }
 
 
-// Public: FormatterObject.
+// Public: Object.
 
 string G_GNUC_NORETURN
-FormatterContext::getProperty (unused (const string &name))
+Context::getProperty (unused (const string &name))
 {
   g_assert_not_reached ();
 }
 
 void G_GNUC_NORETURN
-FormatterContext::setProperty (unused (const string &name),
-                               unused (const string &value),
-                               unused (GingaTime dur))
+Context::setProperty (unused (const string &name),
+                      unused (const string &value),
+                      unused (GingaTime dur))
 {
   g_assert_not_reached ();
 }
 
 void
-FormatterContext::sendKeyEvent (unused (const string &key),
-                                unused (bool press))
+Context::sendKeyEvent (unused (const string &key),
+                       unused (bool press))
 {
 }
 
 void
-FormatterContext::sendTickEvent (unused (GingaTime total),
-                                 unused (GingaTime diff),
-                                 unused (GingaTime frame))
+Context::sendTickEvent (GingaTime total, GingaTime diff, GingaTime frame)
 {
-  // FormatterEvent *lambda;
-
-  // Update object time.
-  FormatterObject::sendTickEvent (total, diff, frame);
+  Object::sendTickEvent (total, diff, frame);
 
   // g_assert (this->isOccurring ());
   // for (auto child: _children)
   //   if (child->isOccurring ())
   //     return;
-
-  // lambda = this->getLambda ();
+  // Event *lambda = this->getLambda ();
   // g_assert_nonnull (lambda);
-  // this->scheduleAction (lambda, FormatterEvent::STOP);
+  // _formatter->evalAction (lambda, Event::STOP);
 }
 
 bool
-FormatterContext::startTransition (FormatterEvent *evt,
-                                   FormatterEvent::Transition transition)
+Context::startTransition (Event *event, Event::Transition transition)
 {
-  switch (evt->getType ())
+  switch (event->getType ())
     {
-    case FormatterEvent::PRESENTATION:
-      g_assert (evt->isLambda ());
+    case Event::PRESENTATION:
+      g_assert (event->isLambda ());
       switch (transition)
         {
-        case FormatterEvent::START:
+        case Event::START:
           break;
 
-        case FormatterEvent::STOP:
+        case Event::STOP:
           for (auto child: _children)
             {
-              FormatterEvent *lambda = child->getLambda ();
+              Event *lambda = child->getLambda ();
               g_assert_nonnull (lambda);
-              lambda->transition (FormatterEvent::STOP);
+              lambda->transition (Event::STOP);
             }
           break;
 
@@ -104,11 +96,11 @@ FormatterContext::startTransition (FormatterEvent *evt,
         }
       break;
 
-    case FormatterEvent::ATTRIBUTION:
+    case Event::ATTRIBUTION:
       g_assert_not_reached ();
       break;
 
-    case FormatterEvent::SELECTION:
+    case Event::SELECTION:
       return false;             // fail
 
     default:
@@ -118,22 +110,21 @@ FormatterContext::startTransition (FormatterEvent *evt,
 }
 
 void
-FormatterContext::endTransition (FormatterEvent *evt,
-                                 FormatterEvent::Transition transition)
+Context::endTransition (Event *event, Event::Transition transition)
 {
-  switch (evt->getType ())
+  switch (event->getType ())
     {
-    case FormatterEvent::PRESENTATION:
+    case Event::PRESENTATION:
       switch (transition)
         {
-        case FormatterEvent::START:
-          FormatterObject::doStart ();
+        case Event::START:
+          Object::doStart ();
           for (auto port: _ports)
             _formatter->evalAction (port, transition);
           TRACE ("start %s@lambda", _id.c_str ());
           break;
-        case FormatterEvent::STOP:
-          FormatterObject::doStop ();
+        case Event::STOP:
+          Object::doStop ();
           TRACE ("stop %s@lambda", _id.c_str ());
           break;
         default:
@@ -141,8 +132,8 @@ FormatterContext::endTransition (FormatterEvent *evt,
         }
       break;
 
-    case FormatterEvent::ATTRIBUTION:
-    case FormatterEvent::SELECTION:
+    case Event::ATTRIBUTION:
+    case Event::SELECTION:
     default:
       g_assert_not_reached ();
     }
@@ -151,27 +142,27 @@ FormatterContext::endTransition (FormatterEvent *evt,
 
 // Public.
 
-const list<FormatterEvent *> *
-FormatterContext::getPorts ()
+const list<Event *> *
+Context::getPorts ()
 {
   return &_ports;
 }
 
 void
-FormatterContext::addPort (FormatterEvent *evt)
+Context::addPort (Event *event)
 {
-  g_assert_nonnull (evt);
-  tryinsert (evt, _ports, push_back);
+  g_assert_nonnull (event);
+  tryinsert (event, _ports, push_back);
 }
 
-const list<FormatterLink *> *
-FormatterContext::getLinks ()
+const list<Link *> *
+Context::getLinks ()
 {
   return &_links;
 }
 
 void
-FormatterContext::addLink (FormatterLink *link)
+Context::addLink (Link *link)
 {
   g_assert_nonnull (link);
   tryinsert (link, _links, push_back);
@@ -181,7 +172,7 @@ FormatterContext::addLink (FormatterLink *link)
 // Private.
 
 void
-FormatterContext::toggleLinks (bool status)
+Context::toggleLinks (bool status)
 {
   for (auto link: _links)
     link->setDisabled (status);

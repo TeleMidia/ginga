@@ -475,43 +475,43 @@ ncl_eltmap_get_possible_children (const string &tag)
   G_STMT_END
 
 static bool
-ncl_attr_parse_eventType (string str, FormatterEvent::Type *result)
+ncl_attr_parse_eventType (string str, Event::Type *result)
 {
-  static map<string, FormatterEvent::Type> tab =
+  static map<string, Event::Type> tab =
     {
-     {"presentation", FormatterEvent::PRESENTATION},
-     {"attribution", FormatterEvent::ATTRIBUTION},
-     {"selection", FormatterEvent::SELECTION},
+     {"presentation", Event::PRESENTATION},
+     {"attribution", Event::ATTRIBUTION},
+     {"selection", Event::SELECTION},
     };
-  _NCL_ATTR_PARSE (FormatterEvent::Type, tab, str, result);
+  _NCL_ATTR_PARSE (Event::Type, tab, str, result);
 }
 
 static bool
-ncl_attr_parse_transition (string str, FormatterEvent::Transition *result)
+ncl_attr_parse_transition (string str, Event::Transition *result)
 {
-  static map<string, FormatterEvent::Transition> tab =
+  static map<string, Event::Transition> tab =
     {
-     {"starts", FormatterEvent::START},
-     {"stops", FormatterEvent::STOP},
-     {"aborts", FormatterEvent::ABORT},
-     {"pauses", FormatterEvent::PAUSE},
-     {"resumes", FormatterEvent::RESUME},
+     {"starts", Event::START},
+     {"stops", Event::STOP},
+     {"aborts", Event::ABORT},
+     {"pauses", Event::PAUSE},
+     {"resumes", Event::RESUME},
     };
-  _NCL_ATTR_PARSE (FormatterEvent::Transition, tab, str, result);
+  _NCL_ATTR_PARSE (Event::Transition, tab, str, result);
 }
 
 static bool
-ncl_attr_parse_actionType (string str, FormatterEvent::Transition *result)
+ncl_attr_parse_actionType (string str, Event::Transition *result)
 {
-  static map<string, FormatterEvent::Transition> tab =
+  static map<string, Event::Transition> tab =
     {
-     {"start", FormatterEvent::START},
-     {"stop", FormatterEvent::STOP},
-     {"abort", FormatterEvent::ABORT},
-     {"pause", FormatterEvent::PAUSE},
-     {"resume", FormatterEvent::RESUME},
+     {"start", Event::START},
+     {"stop", Event::STOP},
+     {"abort", Event::ABORT},
+     {"pause", Event::PAUSE},
+     {"resume", Event::RESUME},
     };
-  _NCL_ATTR_PARSE (FormatterEvent::Transition, tab, str, result);
+  _NCL_ATTR_PARSE (Event::Transition, tab, str, result);
 }
 
 
@@ -1007,8 +1007,8 @@ ncl_push_simpleConditionOrAction (ParserLibXML_State *st,
                                   unused (NclEntity **entity))
 {
   string role;
-  FormatterEvent::Type type;
-  FormatterEvent::Transition trans;
+  Event::Type type;
+  Event::Transition trans;
   NclConnector *parent;
 
   bool is_cond;

@@ -15,30 +15,27 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef FORMATTER_CONDITION
-#define FORMATTER_CONDITION
+#ifndef COMPOSITION_H
+#define COMPOSITION_H
 
-#include "FormatterEvent.h"
-#include "FormatterPredicate.h"
+#include "Object.h"
 
 GINGA_NAMESPACE_BEGIN
 
-class FormatterCondition
+class Composition: public Object
 {
-public:
-  FormatterCondition (FormatterPredicate *, FormatterEvent *,
-                      FormatterEvent::Transition);
-  virtual ~FormatterCondition ();
-  FormatterPredicate *getPredicate ();
-  FormatterEvent *getEvent ();
-  FormatterEvent::Transition getTransition ();
+ public:
+  Composition (const string &);
+  virtual ~Composition () = 0;
 
-private:
-  FormatterPredicate *_predicate;
-  FormatterEvent *_event;
-  FormatterEvent::Transition _transition;
+  const set<Object *> *getChildren ();
+  Object *getChildById (const string &);
+  void addChild (Object *);
+
+ protected:
+  set<Object *> _children;
 };
 
 GINGA_NAMESPACE_END
 
-#endif // FORMATTER_CONDITION
+#endif // COMPOSITION_H

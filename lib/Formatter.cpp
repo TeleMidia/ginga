@@ -19,13 +19,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-gl.h"
 #include "Formatter.h"
 
-#include "FormatterContext.h"
-#include "FormatterMedia.h"
-#include "FormatterMediaSettings.h"
-#include "FormatterObject.h"
-#include "FormatterSwitch.h"
+#include "Context.h"
+#include "Media.h"
+#include "MediaSettings.h"
+#include "Object.h"
+#include "Switch.h"
 
-#include "ncl/ParserLibXML.h"
 #include "ncl/ParserXercesC.h"
 #include "player/PlayerText.h"
 
@@ -79,7 +78,7 @@ opts_table_index (const string &key, GingaOptionData **result)
 
 // Compares the z-index and z-order of two media objects.
 static bool
-cmpz (FormatterMedia *a, FormatterMedia *b)
+cmpz (Media *a, Media *b)
 {
   int z1, zo1, z2, zo2;
 
@@ -153,9 +152,9 @@ Formatter::start (const string &file, string *errmsg)
   g_assert_null (_settings);
   g_assert_nonnull (this->obtainExecutionObject (settingsNode));
   g_assert_nonnull (_settings);
-  FormatterEvent *evt = cast (FormatterObject *, _settings)->getLambda ();
+  Event *evt = cast (Object *, _settings)->getLambda ();
   g_assert_nonnull (evt);
-  g_assert (evt->transition (FormatterEvent::START));
+  g_assert (evt->transition (Event::START));
 
   // Initialize settings object.
   vector<NclNode *> *nodes = _doc->getSettingsNodes ();
@@ -188,10 +187,10 @@ Formatter::start (const string &file, string *errmsg)
   delete nodes;
 
   // Start document.
-  FormatterObject *obj = this->obtainExecutionObject (body);
+  Object *obj = this->obtainExecutionObject (body);
   evt = obj->getLambda ();
   g_assert_nonnull (evt);
-  if (this->evalAction (evt, FormatterEvent::START) == 0)
+  if (this->evalAction (evt, Event::START) == 0)
     return false;
 
   // Refresh current focus.
@@ -232,7 +231,7 @@ Formatter::resize (int width, int height)
 
   for (auto obj: _objects)
     {
-      if (!instanceof (FormatterMedia *, obj))
+      if (!instanceof (Media *, obj))
         continue;
       obj->setProperty ("top", obj->getProperty ("top"));
       obj->setProperty ("left", obj->getProperty ("left"));
@@ -244,7 +243,7 @@ Formatter::resize (int width, int height)
 void
 Formatter::redraw (cairo_t *cr)
 {
-  vector<FormatterMedia *> medias;
+  vector<Media *> medias;
 
   if (_state != GINGA_STATE_PLAYING)
     return;                     // nothing to do
@@ -280,7 +279,7 @@ Formatter::redraw (cairo_t *cr)
     }
 
   for (auto media: _mediaObjects)
-    medias.push_back (cast (FormatterMedia *, media));
+    medias.push_back (cast (Media *, media));
   std::sort (medias.begin (), medias.end (), cmpz);
   for (auto media: medias)
     media->redraw (cr);
@@ -336,7 +335,7 @@ Formatter::sendKeyEvent (const string &key, bool press)
   if (_state != GINGA_STATE_PLAYING)
     return false;               // nothing to do
 
-  for (auto obj: this->getObjectList (FormatterEvent::OCCURRING))
+  for (auto obj: this->getObjectList (Event::OCCURRING))
     obj->sendKeyEvent (key, press);
 
   return true;
@@ -345,7 +344,7 @@ Formatter::sendKeyEvent (const string &key, bool press)
 bool
 Formatter::sendTickEvent (uint64_t total, uint64_t diff, uint64_t frame)
 {
-  list<FormatterObject *> buf;
+  list<Object *> buf;
 
   _GINGA_CHECK_EOS (this);
   if (_state != GINGA_STATE_PLAYING)
@@ -355,7 +354,7 @@ Formatter::sendTickEvent (uint64_t total, uint64_t diff, uint64_t frame)
   _last_tick_diff = diff;
   _last_tick_frameno = frame;
 
-  buf = this->getObjectList (FormatterEvent::OCCURRING);
+  buf = this->getObjectList (Event::OCCURRING);
   if (buf.empty ())
     {
       this->setEOS (true);
@@ -445,7 +444,6 @@ Formatter::~Formatter ()
   this->stop ();
 }
 
-
 bool
 Formatter::getEOS ()
 {
@@ -458,25 +456,25 @@ Formatter::setEOS (bool eos)
   _eos = eos;
 }
 
-const set<FormatterObject *> *
+const set<Object *> *
 Formatter::getObjects ()
 {
   return &_objects;
 }
 
-const set<FormatterMedia *> *
+const set<Media *> *
 Formatter::getMediaObjects ()
 {
   return &_mediaObjects;
 }
 
-FormatterMediaSettings *
+MediaSettings *
 Formatter::getSettings ()
 {
   return _settings;
 }
 
-FormatterObject *
+Object *
 Formatter::getObjectById (const string &id)
 {
   for (auto obj: _objects)
@@ -485,10 +483,10 @@ Formatter::getObjectById (const string &id)
   return nullptr;
 }
 
-FormatterObject *
+Object *
 Formatter::getObjectByIdOrAlias (const string &id)
 {
-  FormatterObject *obj;
+  Object *obj;
   if ((obj = this->getObjectById (id)) != nullptr)
     return obj;
   for (auto obj: _objects)
@@ -504,7 +502,7 @@ Formatter::getObjectPropertyByRef (const string &ref,
   size_t i;
   string id;
   string name;
-  FormatterObject *object;
+  Object *object;
 
   if (ref[0] != '$' || (i = ref.find ('.')) == string::npos)
     return false;
@@ -520,7 +518,7 @@ Formatter::getObjectPropertyByRef (const string &ref,
 }
 
 void
-Formatter::addObject (FormatterObject *obj)
+Formatter::addObject (Object *obj)
 {
   g_assert_nonnull (obj);
   if (_objects.find (obj) != _objects.end ()
@@ -531,35 +529,35 @@ Formatter::addObject (FormatterObject *obj)
 
   _objects.insert (obj);
 
-  if (instanceof (FormatterMediaSettings *, obj))
+  if (instanceof (MediaSettings *, obj))
     {
       g_assert_null (_settings);
-      _settings = cast (FormatterMediaSettings *, obj);
+      _settings = cast (MediaSettings *, obj);
       g_assert_nonnull (_settings);
     }
-  else if (instanceof (FormatterMedia *, obj))
+  else if (instanceof (Media *, obj))
     {
-      FormatterMedia *media = cast (FormatterMedia *, obj);
+      Media *media = cast (Media *, obj);
       g_assert_nonnull (media);
       _mediaObjects.insert (media);
     }
 }
 
 bool
-Formatter::evalPredicate (FormatterPredicate *pred)
+Formatter::evalPredicate (Predicate *pred)
 {
   switch (pred->getType ())
     {
-    case PredicateType::FALSUM:
+    case Predicate::FALSUM:
       TRACE ("false");
       break;
-    case PredicateType::VERUM:
+    case Predicate::VERUM:
       TRACE ("true");
       break;
-    case PredicateType::ATOM:
+    case Predicate::ATOM:
       {
         string left, right;
-        PredicateTestType test;
+        Predicate::Test test;
         string msg_left, msg_test, msg_right;
         bool result;
 
@@ -589,27 +587,27 @@ Formatter::evalPredicate (FormatterPredicate *pred)
 
         switch (test)
           {
-          case PredicateTestType::EQ:
+          case Predicate::EQ:
             msg_test = "==";
             result = left == right;
             break;
-          case PredicateTestType::NE:
+          case Predicate::NE:
             msg_test = "!=";
             result = left != right;
             break;
-          case PredicateTestType::LT:
+          case Predicate::LT:
             msg_test = "<";
             result = left < right;
             break;
-          case PredicateTestType::LE:
+          case Predicate::LE:
             msg_test = "<=";
             result = left <= right;
             break;
-          case PredicateTestType::GT:
+          case Predicate::GT:
             msg_test = ">";
             result = left > right;
             break;
-          case PredicateTestType::GE:
+          case Predicate::GE:
             msg_test = ">=";
             result = left >= right;
             break;
@@ -620,10 +618,10 @@ Formatter::evalPredicate (FormatterPredicate *pred)
                msg_test.c_str (), msg_right.c_str (), strbool (result));
         return result;
       }
-    case PredicateType::NEGATION:
+    case Predicate::NEGATION:
       g_assert_not_reached ();
       break;
-    case PredicateType::CONJUNCTION:
+    case Predicate::CONJUNCTION:
       {
         for (auto child: *pred->getChildren ())
           {
@@ -637,7 +635,7 @@ Formatter::evalPredicate (FormatterPredicate *pred)
         return true;
       }
       break;
-    case PredicateType::DISJUNCTION:
+    case Predicate::DISJUNCTION:
       g_assert_not_reached ();
       break;
     default:
@@ -647,15 +645,15 @@ Formatter::evalPredicate (FormatterPredicate *pred)
 }
 
 int
-Formatter::evalAction (FormatterEvent *event,
-                       FormatterEvent::Transition transition,
+Formatter::evalAction (Event *event,
+                       Event::Transition transition,
                        const string &value)
 {
-  FormatterAction *act;
+  Action *act;
   int result;
 
-  act = new FormatterAction (event, transition);
-  if (event->getType () == FormatterEvent::ATTRIBUTION)
+  act = new Action (event, transition);
+  if (event->getType () == Event::ATTRIBUTION)
     act->setParameter ("value", value);
 
   result = this->evalAction (act);
@@ -665,9 +663,9 @@ Formatter::evalAction (FormatterEvent *event,
 }
 
 int
-Formatter::evalAction (FormatterAction *init)
+Formatter::evalAction (Action *init)
 {
-  list<FormatterAction *> stack;
+  list<Action *> stack;
   int n;
 
   stack.push_back (init);
@@ -675,11 +673,11 @@ Formatter::evalAction (FormatterAction *init)
 
   while (!stack.empty ())
     {
-      FormatterAction *act;
-      FormatterEvent *evt;
-      FormatterObject *obj;
-      FormatterComposition *comp;
-      FormatterContext *ctx;
+      Action *act;
+      Event *evt;
+      Object *obj;
+      Composition *comp;
+      Context *ctx;
       bool done;
 
       act = stack.back ();
@@ -688,7 +686,7 @@ Formatter::evalAction (FormatterAction *init)
 
       evt = act->getEvent ();
       g_assert_nonnull (evt);
-      if (evt->getType () == FormatterEvent::ATTRIBUTION)
+      if (evt->getType () == Event::ATTRIBUTION)
         {
           string dur;
           string value;
@@ -709,10 +707,10 @@ Formatter::evalAction (FormatterAction *init)
       // Trigger links in parent context.
       comp = obj->getParent ();
       if (comp != nullptr
-          && instanceof (FormatterContext *, comp)
+          && instanceof (Context *, comp)
           && comp->isOccurring ())
         {
-          ctx = cast (FormatterContext *, comp);
+          ctx = cast (Context *, comp);
           g_assert_nonnull (ctx);
 
         trigger:
@@ -723,7 +721,7 @@ Formatter::evalAction (FormatterAction *init)
 
               for (auto cond: *link->getConditions ())
                 {
-                  FormatterPredicate *pred;
+                  Predicate *pred;
 
                   if (cond->getEvent () != evt)
                     continue;
@@ -737,7 +735,7 @@ Formatter::evalAction (FormatterAction *init)
 
                   // Success.
                   auto acts = *link->getActions ();
-                  std::list<FormatterAction *>::reverse_iterator rit
+                  std::list<Action *>::reverse_iterator rit
                     = acts.rbegin ();
                   for (; rit != acts.rend (); ++rit)
                     stack.push_back (*rit);
@@ -746,9 +744,9 @@ Formatter::evalAction (FormatterAction *init)
         }
 
       // Trigger links in context itself.
-      if (!done && instanceof (FormatterContext *, obj))
+      if (!done && instanceof (Context *, obj))
         {
-          ctx = cast (FormatterContext *, obj);
+          ctx = cast (Context *, obj);
           g_assert_nonnull (ctx);
           done = true;
           goto trigger;
@@ -757,13 +755,13 @@ Formatter::evalAction (FormatterAction *init)
   return n;
 }
 
-FormatterObject *
+Object *
 Formatter::obtainExecutionObject (NclNode *node)
 {
   string id;
   NclNode *parentNode;
-  FormatterComposition *parent;
-  FormatterObject *object;
+  Composition *parent;
+  Object *object;
 
   id = node->getId ();
   g_assert (id != "");
@@ -779,8 +777,7 @@ Formatter::obtainExecutionObject (NclNode *node)
     }
   else
     {
-      parent = cast (FormatterComposition *,
-                     obtainExecutionObject (parentNode));
+      parent = cast (Composition *, obtainExecutionObject (parentNode));
       g_assert_nonnull (parent);
       if ((object = this->getObjectByIdOrAlias (id)) != nullptr)
         return object;
@@ -802,7 +799,7 @@ Formatter::obtainExecutionObject (NclNode *node)
   if (instanceof (NclSwitch *, node)) // switch
     {
       TRACE ("creating switch %s", node->getId ().c_str ());
-      object = new FormatterSwitch (id);
+      object = new Switch (id);
       object->initFormatter (this);
       if (parent != nullptr)
         parent->addChild (object);
@@ -810,21 +807,21 @@ Formatter::obtainExecutionObject (NclNode *node)
 
       for (auto item: *cast (NclSwitch *, node)->getRules ())
         {
-          FormatterObject *obj;
+          Object *obj;
 
           g_assert_nonnull (item.first);
           g_assert_nonnull (item.second);
 
           obj = this->obtainExecutionObject (item.first);
           g_assert_nonnull (obj);
-          cast (FormatterSwitch *, object)->addRule (obj, item.second);
+          cast (Switch *, object)->addRule (obj, item.second);
         }
       return object;
     }
   else if (instanceof (NclContext *, node)) // context
     {
       TRACE ("creating context %s", node->getId ().c_str ());
-      object = new FormatterContext (id);
+      object = new Context (id);
       object->initFormatter (this);
       if (parent != nullptr)
         parent->addChild (object);
@@ -835,8 +832,8 @@ Formatter::obtainExecutionObject (NclNode *node)
         {
           NclNode *target;
           NclAnchor *iface;
-          FormatterObject *child;
-          FormatterEvent *e;
+          Object *child;
+          Event *e;
 
           port->getTarget (&target, &iface);
           child = this->obtainExecutionObject (target);
@@ -846,12 +843,12 @@ Formatter::obtainExecutionObject (NclNode *node)
             continue;       // nothing to do
 
           e = child->obtainEvent
-            (FormatterEvent::PRESENTATION, iface, "");
+            (Event::PRESENTATION, iface, "");
           g_assert_nonnull (e);
-          cast (FormatterContext *, object)->addPort (e);
+          cast (Context *, object)->addPort (e);
         }
       for (auto link: *(ctx->getLinks ()))
-        cast (FormatterContext *, object)
+        cast (Context *, object)
           ->addLink (obtainFormatterLink (link));
 
       return object;
@@ -865,12 +862,12 @@ Formatter::obtainExecutionObject (NclNode *node)
       if (media->isSettings ())
         {
           g_assert_null (_settings);
-          object = new FormatterMediaSettings (id);
+          object = new MediaSettings (id);
           object->initFormatter (this);
         }
       else
         {
-          object = new FormatterMedia (id, media->getMimeType (),
+          object = new Media (id, media->getMimeType (),
                                        media->getSrc ());
           object->initFormatter (this);
         }
@@ -968,26 +965,26 @@ Formatter::setOptionSize (Formatter *self, const string &name,
 
 // Private.
 
-list<FormatterObject *>
-Formatter::getObjectList (FormatterEvent::State state)
+list<Object *>
+Formatter::getObjectList (Event::State state)
 {
-  list<FormatterObject *> buf;
+  list<Object *> buf;
   for (auto obj: _objects)
     {
-      FormatterEvent *lambda = obj->getLambda ();
+      Event *lambda = obj->getLambda ();
       if (lambda->getState () == state)
         buf.push_back (obj);
     }
   return buf;
 }
 
-FormatterEvent *
+Event *
 Formatter::obtainFormatterEventFromBind (NclBind *bind)
 {
   NclNode *node;
-  FormatterObject *obj;
+  Object *obj;
   NclAnchor *iface;
-  FormatterEvent::Type eventType;
+  Event::Type eventType;
   NclBind::RoleType roleType;
   string key = "";
 
@@ -1015,7 +1012,7 @@ Formatter::obtainFormatterEventFromBind (NclBind *bind)
   roleType = bind->getRoleType ();
   eventType = bind->getEventType ();
 
-  if (eventType == FormatterEvent::SELECTION
+  if (eventType == Event::SELECTION
       && roleType == NclBind::CONDITION)
     {
       bind->getParameter ("key", &key);
@@ -1024,40 +1021,40 @@ Formatter::obtainFormatterEventFromBind (NclBind *bind)
   return obj->obtainEvent (eventType, iface, key);
 }
 
-FormatterLink *
+Link *
 Formatter::obtainFormatterLink (NclLink *docLink)
 {
-  FormatterLink *link;
+  Link *link;
 
   g_assert_nonnull (docLink);
 
-  link = new FormatterLink ();
+  link = new Link ();
   for (auto bind: *docLink->getBinds ())
     {
       switch (bind->getRoleType ())
         {
         case NclBind::CONDITION:
           {
-            FormatterPredicate *pred = bind->getPredicate ();
+            Predicate *pred = bind->getPredicate ();
             if (pred != nullptr) // solve ghost binds in predicate
               {
-                vector <FormatterPredicate *> buf;
+                vector <Predicate *> buf;
 
                 pred = pred->clone ();
                 g_assert_nonnull (pred);
                 buf.push_back (pred);
                 while (!buf.empty ())
                   {
-                    FormatterPredicate *p = buf.back ();
+                    Predicate *p = buf.back ();
                     buf.pop_back ();
                     switch (p->getType ())
                       {
-                      case PredicateType::FALSUM:
-                      case PredicateType::VERUM:
+                      case Predicate::FALSUM:
+                      case Predicate::VERUM:
                         break;        // nothing to do
-                      case PredicateType::ATOM:
+                      case Predicate::ATOM:
                         {
-                          PredicateTestType test;
+                          Predicate::Test test;
                           string left, right, ghost;
                           p->getTest (&left, &test, &right);
                           if (left[0] == '$')
@@ -1077,9 +1074,9 @@ Formatter::obtainFormatterLink (NclLink *docLink)
                           p->setTest (left, test, right);
                           break;
                         }
-                      case PredicateType::NEGATION:
-                      case PredicateType::CONJUNCTION:
-                      case PredicateType::DISJUNCTION:
+                      case Predicate::NEGATION:
+                      case Predicate::CONJUNCTION:
+                      case Predicate::DISJUNCTION:
                         for (auto child: *p->getChildren ())
                           buf.push_back (child);
                         break;
@@ -1089,13 +1086,13 @@ Formatter::obtainFormatterLink (NclLink *docLink)
                   }
               }
 
-            FormatterEvent *evt;
-            FormatterCondition *cond;
+            Event *evt;
+            Condition *cond;
 
             evt = this->obtainFormatterEventFromBind (bind);
             g_assert_nonnull (evt);
 
-            cond = new FormatterCondition
+            cond = new Condition
               (pred, evt, bind->getTransition ());
             link->addCondition (cond);
             break;
@@ -1103,14 +1100,14 @@ Formatter::obtainFormatterLink (NclLink *docLink)
 
         case NclBind::ACTION:
           {
-            FormatterEvent *evt;
-            FormatterAction *act;
+            Event *evt;
+            Action *act;
 
             evt = this->obtainFormatterEventFromBind (bind);
             g_assert_nonnull (evt);
 
-            act = new FormatterAction (evt, bind->getTransition ());
-            if (evt->getType () == FormatterEvent::ATTRIBUTION)
+            act = new Action (evt, bind->getTransition ());
+            if (evt->getType () == Event::ATTRIBUTION)
               {
                 string dur, value;
                 if (bind->getParameter ("duration", &dur))

@@ -270,31 +270,31 @@ __error_elt (const DOMElement *elt)
 // Translation tables.
 
 // Maps event type name to event type code.
-static map<string, FormatterEvent::Type> event_type_table =
+static map<string, Event::Type> event_type_table =
   {
-   {"presentation", FormatterEvent::PRESENTATION},
-   {"attribution", FormatterEvent::ATTRIBUTION},
-   {"selection", FormatterEvent::SELECTION},
+   {"presentation", Event::PRESENTATION},
+   {"attribution", Event::ATTRIBUTION},
+   {"selection", Event::SELECTION},
   };
 
 // Maps condition name to condition code.
-static map<string, FormatterEvent::Transition> event_transition_table =
+static map<string, Event::Transition> event_transition_table =
   {
-   {"starts", FormatterEvent::START},
-   {"stops", FormatterEvent::STOP},
-   {"aborts", FormatterEvent::ABORT},
-   {"pauses", FormatterEvent::PAUSE},
-   {"resumes", FormatterEvent::RESUME},
+   {"starts", Event::START},
+   {"stops", Event::STOP},
+   {"aborts", Event::ABORT},
+   {"pauses", Event::PAUSE},
+   {"resumes", Event::RESUME},
   };
 
 // Maps action name to action code.
-static map<string, FormatterEvent::Transition> event_action_type_table =
+static map<string, Event::Transition> event_action_type_table =
   {
-   {"start", FormatterEvent::START},
-   {"stop", FormatterEvent::STOP},
-   {"abort", FormatterEvent::ABORT},
-   {"pause", FormatterEvent::PAUSE},
-   {"resume", FormatterEvent::RESUME},
+   {"start", Event::START},
+   {"stop", Event::STOP},
+   {"abort", Event::ABORT},
+   {"pause", Event::PAUSE},
+   {"resume", Event::RESUME},
   };
 
 
@@ -584,28 +584,28 @@ ParserXercesC::parseRuleBase (DOMElement *elt)
 
 void
 ParserXercesC::parseCompositeRule (DOMElement *elt,
-                                   FormatterPredicate *parent)
+                                   Predicate *parent)
 {
   string id;
   string value;
 
-  FormatterPredicate *pred;
-  PredicateType type;
+  Predicate *pred;
+  Predicate::Type type;
 
   CHECK_ELT_TAG (elt, "compositeRule", nullptr);
   CHECK_ELT_ID (elt, &id);
 
   CHECK_ELT_ATTRIBUTE (elt, "operator", &value);
   if (xstrcaseeq (value, "and"))
-    type = PredicateType::CONJUNCTION;
+    type = Predicate::CONJUNCTION;
   else if (xstrcaseeq (value, "or"))
-    type = PredicateType::DISJUNCTION;
+    type = Predicate::DISJUNCTION;
   else if (xstrcaseeq (value, "not"))
-    type = PredicateType::NEGATION;
+    type = Predicate::NEGATION;
   else
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "operator");
 
-  pred = new FormatterPredicate (type);
+  pred = new Predicate (type);
   if (parent != nullptr)
     parent->addChild (pred);
 
@@ -629,15 +629,15 @@ ParserXercesC::parseCompositeRule (DOMElement *elt,
 }
 
 void
-ParserXercesC::parseRule (DOMElement *elt, FormatterPredicate *parent)
+ParserXercesC::parseRule (DOMElement *elt, Predicate *parent)
 {
   string id;
   string var;
   string comp;
   string value;
 
-  FormatterPredicate *pred;
-  PredicateTestType test;
+  Predicate *pred;
+  Predicate::Test test;
 
   CHECK_ELT_TAG (elt, "rule", nullptr);
   CHECK_ELT_OPT_ID_AUTO (elt, &id, rule);
@@ -646,21 +646,21 @@ ParserXercesC::parseRule (DOMElement *elt, FormatterPredicate *parent)
   CHECK_ELT_ATTRIBUTE (elt, "comparator", &comp);
 
   if (xstrcaseeq (comp, "eq"))
-    test = PredicateTestType::EQ;
+    test = Predicate::EQ;
   else if (xstrcaseeq (comp, "ne"))
-    test = PredicateTestType::NE;
+    test = Predicate::NE;
   else if (xstrcaseeq (comp, "lt"))
-    test = PredicateTestType::LT;
+    test = Predicate::LT;
   else if (xstrcaseeq (comp, "lte"))
-    test = PredicateTestType::LE;
+    test = Predicate::LE;
   else if (xstrcaseeq (comp, "gt"))
-    test = PredicateTestType::GT;
+    test = Predicate::GT;
   else if (xstrcaseeq (comp, "gte"))
-    test = PredicateTestType::GE;
+    test = Predicate::GE;
   else
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "comparator");
 
-  pred = new FormatterPredicate (PredicateType::ATOM);
+  pred = new Predicate (Predicate::ATOM);
   pred->setTest ("$__settings__." + var, test, value);
 
   if (parent != nullptr)
@@ -1044,12 +1044,12 @@ ParserXercesC::parseCausalConnector (DOMElement *elt)
     }
 }
 
-FormatterPredicate *
+Predicate *
 ParserXercesC::parseAssessmentStatement (DOMElement *elt)
 {
   string comp;
 
-  PredicateTestType test;
+  Predicate::Test test;
   string role_left = "";
   string role_right = "";
   string left;
@@ -1059,17 +1059,17 @@ ParserXercesC::parseAssessmentStatement (DOMElement *elt)
   CHECK_ELT_ATTRIBUTE (elt, "comparator", &comp);
 
   if (comp == "eq")
-    test = PredicateTestType::EQ;
+    test = Predicate::EQ;
   else if (comp == "ne")
-    test = PredicateTestType::NE;
+    test = Predicate::NE;
   else if (comp == "lt")
-    test = PredicateTestType::LT;
+    test = Predicate::LT;
   else if (comp == "lte")
-    test = PredicateTestType::LE;
+    test = Predicate::LE;
   else if (comp == "gt")
-    test = PredicateTestType::GT;
+    test = Predicate::GT;
   else if (comp == "gte")
-    test = PredicateTestType::GE;
+    test = Predicate::GE;
   else
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "comparator");
 
@@ -1109,7 +1109,7 @@ ParserXercesC::parseAssessmentStatement (DOMElement *elt)
       ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, right_elt);
     }
 
-  FormatterPredicate *pred = new FormatterPredicate (PredicateType::ATOM);
+  Predicate *pred = new Predicate (Predicate::ATOM);
   pred->setTest (left, test, right);
 
   return pred;
@@ -1118,13 +1118,13 @@ ParserXercesC::parseAssessmentStatement (DOMElement *elt)
 void
 ParserXercesC::parseCompoundCondition (DOMElement *elt,
                                        list<ConnRole> *conn,
-                                       FormatterPredicate *parent_pred)
+                                       Predicate *parent_pred)
 {
   string op;
   string value;
 
-  FormatterPredicate *pred;
-  vector <FormatterPredicate *> preds;
+  Predicate *pred;
+  vector <Predicate *> preds;
 
   CHECK_ELT_TAG (elt, "compoundCondition", nullptr);
   CHECK_ELT_ATTRIBUTE (elt, "operator", &op);
@@ -1160,7 +1160,7 @@ ParserXercesC::parseCompoundCondition (DOMElement *elt,
     }
   else
     {
-      pred = new FormatterPredicate (PredicateType::CONJUNCTION);
+      pred = new Predicate (Predicate::CONJUNCTION);
       for (auto p: preds)
         pred->addChild (p);
       if (parent_pred != nullptr)
@@ -1194,7 +1194,7 @@ ParserXercesC::parseCompoundCondition (DOMElement *elt,
 
 void
 ParserXercesC::parseCondition (DOMElement *elt, list<ConnRole> *conn,
-                               FormatterPredicate *pred)
+                               Predicate *pred)
 {
 
   string str;
@@ -1217,7 +1217,7 @@ ParserXercesC::parseCondition (DOMElement *elt, list<ConnRole> *conn,
   if (!NclBind::isReserved (role.role, &role.eventType, &role.transition))
     {
       CHECK_ELT_ATTRIBUTE (elt, "eventType", &str);
-      map<string, FormatterEvent::Type>::iterator it_type;
+      map<string, Event::Type>::iterator it_type;
       if ((it_type = event_type_table.find (str)) == event_type_table.end ())
         {
           ERROR_SYNTAX_ELT (elt, "bad eventType '%s' for role '%s'",
@@ -1226,7 +1226,7 @@ ParserXercesC::parseCondition (DOMElement *elt, list<ConnRole> *conn,
       role.eventType = it_type->second;
 
       CHECK_ELT_ATTRIBUTE (elt, "transition", &str);
-      map<string, FormatterEvent::Transition>::iterator it_trans;
+      map<string, Event::Transition>::iterator it_trans;
       if ((it_trans = event_transition_table.find (str))
           == event_transition_table.end ())
         {
@@ -1314,12 +1314,12 @@ ParserXercesC::parseCondition (DOMElement *elt, list<ConnRole> *conn,
 // AttributeAssessment *
 // ParserXercesC::parseAttributeAssessment (DOMElement *elt)
 // {
-//   map<string, FormatterEvent::Type>::iterator it;
+//   map<string, Event::Type>::iterator it;
 //   string role;
 //   string type;
 //   string key;
 //   string offset;
-//   FormatterEvent::Type evttype;
+//   Event::Type evttype;
 //   CHECK_ELT_TAG (elt, "attributeAssessment", nullptr);
 //   CHECK_ELT_ATTRIBUTE (elt, "role", &role);
 //   CHECK_ELT_OPT_ATTRIBUTE (elt, "type", &type, "attribution");
@@ -1392,7 +1392,7 @@ ParserXercesC::parseSimpleAction (DOMElement *elt, list<ConnRole> *conn)
   if (!NclBind::isReserved (role.role, &role.eventType, &role.transition))
     {
       CHECK_ELT_ATTRIBUTE (elt, "eventType", &str);
-      map<string, FormatterEvent::Type>::iterator it_type;
+      map<string, Event::Type>::iterator it_type;
       if ((it_type = event_type_table.find (str))
           == event_type_table.end ())
         {
@@ -1402,7 +1402,7 @@ ParserXercesC::parseSimpleAction (DOMElement *elt, list<ConnRole> *conn)
       role.eventType = it_type->second;
 
       CHECK_ELT_ATTRIBUTE (elt, "actionType", &str);
-      map<string, FormatterEvent::Transition>::iterator it_act;
+      map<string, Event::Transition>::iterator it_act;
       if ((it_act = event_action_type_table.find (str))
           == event_action_type_table.end ())
         {
@@ -1773,7 +1773,7 @@ ParserXercesC::parseSwitch (DOMElement *elt)
   if (defcomp != nullptr)
     {
       cast (NclSwitch *, swtch)->addNode
-        (defcomp, new FormatterPredicate (PredicateType::VERUM));
+        (defcomp, new Predicate (Predicate::VERUM));
     }
 
   return swtch;
@@ -1895,6 +1895,7 @@ ParserXercesC::parseArea (DOMElement *elt)
   CHECK_ELT_ATTRIBUTE_NOT_SUPPORTED (elt, "first");
   CHECK_ELT_ATTRIBUTE_NOT_SUPPORTED (elt, "last");
   CHECK_ELT_ATTRIBUTE_NOT_SUPPORTED (elt, "text");
+  CHECK_ELT_ATTRIBUTE_NOT_SUPPORTED (elt, "label");
 
   if (dom_elt_has_attribute (elt, "begin")
       || dom_elt_has_attribute (elt, "end"))
@@ -1913,12 +1914,6 @@ ParserXercesC::parseArea (DOMElement *elt)
         end = GINGA_TIME_NONE;
 
       return new NclArea (_doc, id, begin, end);
-    }
-  else if (dom_elt_has_attribute (elt, "label"))
-    {
-      string label;
-      CHECK_ELT_ATTRIBUTE (elt, "label", &label);
-      return new NclAreaLabeled (_doc, id, label);
     }
   else
     {
@@ -2099,7 +2094,7 @@ ParserXercesC::parseBind (DOMElement *elt, NclLink *link,
 
   // Solve bind parameters.
   if (role->roleType == NclBind::CONDITION
-      && role->eventType == FormatterEvent::SELECTION)
+      && role->eventType == Event::SELECTION)
     {
       string key = role->key;
       if (key[0] == '$')

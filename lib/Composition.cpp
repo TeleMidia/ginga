@@ -15,23 +15,40 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef NCL_AREA_LABELED_H
-#define NCL_AREA_LABELED_H
-
-#include "NclAnchor.h"
+#include "aux-ginga.h"
+#include "Composition.h"
 
 GINGA_NAMESPACE_BEGIN
 
-class NclAreaLabeled: public NclAnchor
+Composition::Composition (const string &id): Object (id)
 {
-public:
-  NclAreaLabeled (NclDocument *, const string &, const string &);
-  string getLabel ();
+}
 
-private:
-  string _label;
-};
+Composition::~Composition ()
+{
+}
+
+const set<Object *> *
+Composition::getChildren ()
+{
+  return &_children;
+}
+
+Object *
+Composition::getChildById (const string &id)
+{
+  for (auto child: _children)
+    if (child->getId () == id)
+      return child;
+  return nullptr;
+}
+
+void
+Composition::addChild (Object *child)
+{
+  g_assert_nonnull (child);
+  if (tryinsert (child, _children, insert))
+    child->initParent (this);
+}
 
 GINGA_NAMESPACE_END
-
-#endif // NCL_AREA_LABELED_H

@@ -32,7 +32,7 @@ NclSwitch::~NclSwitch ()
 }
 
 void
-NclSwitch::addNode (NclNode *node, FormatterPredicate *pred)
+NclSwitch::addNode (NclNode *node, Predicate *pred)
 {
   g_assert_nonnull (node);
   g_assert_nonnull (pred);
@@ -50,7 +50,7 @@ NclSwitch::getNode (const string &id)
 
 }
 
-const vector <pair<NclNode *, FormatterPredicate *>> *
+const vector <pair<NclNode *, Predicate *>> *
 NclSwitch::getRules ()
 {
   return &_rules;

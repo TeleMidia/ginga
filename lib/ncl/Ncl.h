@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclAnchor.h"
 #include "NclArea.h"
-#include "NclAreaLabeled.h"
 #include "NclBind.h"
 #include "NclComposition.h"
 #include "NclContext.h"

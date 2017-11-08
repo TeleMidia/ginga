@@ -15,44 +15,44 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef FORMATTER_CONTEXT_H
-#define FORMATTER_CONTEXT_H
+#ifndef CONTEXT_H
+#define CONTEXT_H
 
-#include "FormatterComposition.h"
-#include "FormatterEvent.h"
-#include "FormatterLink.h"
+#include "Composition.h"
+#include "Event.h"
+#include "Link.h"
 
 GINGA_NAMESPACE_BEGIN
 
-class FormatterContext: public FormatterComposition
+class Context: public Composition
 {
 public:
-  FormatterContext (const string &);
-  virtual ~FormatterContext ();
+  Context (const string &);
+  virtual ~Context ();
 
-  // FormatterObject:
+  // Object:
   string getProperty (const string &) override;
   void setProperty (const string &, const string &,
                     GingaTime dur=0) override;
   void sendKeyEvent (const string &, bool) override;
   void sendTickEvent (GingaTime, GingaTime, GingaTime) override;
-  bool startTransition (FormatterEvent *, FormatterEvent::Transition) override;
-  void endTransition (FormatterEvent *, FormatterEvent::Transition) override;
+  bool startTransition (Event *, Event::Transition) override;
+  void endTransition (Event *, Event::Transition) override;
 
-  // FormatterContext:
-  const list<FormatterEvent *> *getPorts ();
-  void addPort (FormatterEvent *);
+  // Context:
+  const list<Event *> *getPorts ();
+  void addPort (Event *);
 
-  const list<FormatterLink *> *getLinks ();
-  void addLink (FormatterLink *);
+  const list<Link *> *getLinks ();
+  void addLink (Link *);
 
 private:
-  list<FormatterEvent *> _ports;
-  list<FormatterLink *> _links;
+  list<Event *> _ports;
+  list<Link *> _links;
 
   void toggleLinks (bool);
 };
 
 GINGA_NAMESPACE_END
 
-#endif // FORMATTER_CONTEXT_H
+#endif // CONTEXT_H

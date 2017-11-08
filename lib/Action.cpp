@@ -15,33 +15,50 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef FORMATTER_SWITCH_H
-#define FORMATTER_SWITCH_H
-
-#include "FormatterContext.h"
-#include "FormatterEvent.h"
+#include "aux-ginga.h"
+#include "Action.h"
 
 GINGA_NAMESPACE_BEGIN
 
-class FormatterSwitch: public FormatterComposition
+Action::Action (Event *event, Event::Transition transition)
 {
-public:
-  FormatterSwitch (const string &);
-  ~FormatterSwitch ();
+  g_assert_nonnull (event);
+  _event = event;
+  _transition = transition;
+}
 
-  // FormatterObject:
-  bool startTransition (FormatterEvent *, FormatterEvent::Transition) override;
-  void endTransition (FormatterEvent *, FormatterEvent::Transition) override;
+Action::~Action ()
+{
+}
 
-  // FormatterSwitch:
-  const list<pair<FormatterObject *, FormatterPredicate *>> *getRules ();
-  void addRule (FormatterObject *, FormatterPredicate *);
+Event *
+Action::getEvent ()
+{
+  return _event;
+}
 
-private:
-  list<pair<FormatterObject *, FormatterPredicate *>> _rules;
-  FormatterObject *_selected;
-};
+Event::Type
+Action::getEventType ()
+{
+  return _event->getType ();
+}
+
+Event::Transition
+Action::getTransition ()
+{
+  return _transition;
+}
+
+bool
+Action::getParameter (const string &name, string *value)
+{
+  MAP_GET_IMPL (_parameters, name, value);
+}
+
+bool
+Action::setParameter (const string &name, const string &value)
+{
+  MAP_SET_IMPL (_parameters, name, value);
+}
 
 GINGA_NAMESPACE_END
-
-#endif // FORMATTER_SWITCH_H

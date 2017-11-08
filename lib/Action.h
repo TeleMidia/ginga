@@ -15,42 +15,32 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "FormatterCondition.h"
-#include "aux-ginga.h"
+#ifndef ACTION_H
+#define ACTION_H
+
+#include "Event.h"
 
 GINGA_NAMESPACE_BEGIN
 
-FormatterCondition::FormatterCondition (FormatterPredicate *predicate,
-                                        FormatterEvent *event,
-                                        FormatterEvent::Transition transition)
+class Action
 {
-  _predicate = predicate;
-  _event = event;
-  _transition = transition;
-}
+public:
+  Action (Event *, Event::Transition);
+  ~Action ();
 
-FormatterCondition::~FormatterCondition ()
-{
-  if (_predicate != nullptr)
-    delete _predicate;
-}
+  Event *getEvent ();
+  Event::Type getEventType ();
+  Event::Transition getTransition ();
 
-FormatterPredicate *
-FormatterCondition::getPredicate ()
-{
-  return _predicate;
-}
+  bool getParameter (const string &, string *);
+  bool setParameter (const string &, const string &);
 
-FormatterEvent *
-FormatterCondition::getEvent ()
-{
-  return _event;
-}
-
-FormatterEvent::Transition
-FormatterCondition::getTransition ()
-{
-  return _transition;
-}
+private:
+  Event *_event;
+  Event::Transition _transition;
+  map<string, string> _parameters;
+};
 
 GINGA_NAMESPACE_END
+
+#endif // ACTION_H
