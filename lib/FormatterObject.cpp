@@ -103,12 +103,12 @@ FormatterObject::addAlias (const string &alias)
 
 
 FormatterEvent *
-FormatterObject::obtainEvent (NclEventType type, NclAnchor *anchor,
+FormatterObject::obtainEvent (FormatterEvent::Type type, NclAnchor *anchor,
                               const string &key)
 {
   FormatterEvent *event;
 
-  if (type == NclEventType::SELECTION)
+  if (type == FormatterEvent::Type::SELECTION)
     event = this->getEvent (type, key);
   else
     event = this->getEvent (type, anchor->getId ());
@@ -120,7 +120,7 @@ FormatterObject::obtainEvent (NclEventType type, NclAnchor *anchor,
 
   switch (type)
     {
-    case NclEventType::PRESENTATION:
+    case FormatterEvent::Type::PRESENTATION:
       {
         NclArea *area = cast (NclArea *, anchor);
         g_assert_nonnull (area);
@@ -131,7 +131,7 @@ FormatterObject::obtainEvent (NclEventType type, NclAnchor *anchor,
         g_assert_nonnull (event);
         break;
       }
-    case NclEventType::ATTRIBUTION:
+    case FormatterEvent::Type::ATTRIBUTION:
       {
         NclProperty *property = cast (NclProperty *, anchor);
         g_assert_nonnull (property);
@@ -141,7 +141,7 @@ FormatterObject::obtainEvent (NclEventType type, NclAnchor *anchor,
         event->setParameter ("value", property->getValue ());
         break;
       }
-    case NclEventType::SELECTION:
+    case FormatterEvent::Type::SELECTION:
       {
         this->addSelectionEvent (key);
         event = this->getSelectionEvent (key);
@@ -158,7 +158,7 @@ FormatterObject::obtainEvent (NclEventType type, NclAnchor *anchor,
 }
 
 FormatterEvent *
-FormatterObject::getEvent (NclEventType type, const string &id)
+FormatterObject::getEvent (FormatterEvent::Type type, const string &id)
 {
   for (auto evt: _events)
     if (evt->getType () == type && evt->getId () == id)
@@ -169,7 +169,7 @@ FormatterObject::getEvent (NclEventType type, const string &id)
 FormatterEvent *
 FormatterObject::getAttributionEvent (const string &propName)
 {
-  return this->getEvent (NclEventType::ATTRIBUTION, propName);
+  return this->getEvent (FormatterEvent::Type::ATTRIBUTION, propName);
 }
 
 void
@@ -180,14 +180,14 @@ FormatterObject::addAttributionEvent (const string &propName)
   if (this->getAttributionEvent (propName))
     return;
 
-  evt = new FormatterEvent (NclEventType::ATTRIBUTION, this, propName);
+  evt = new FormatterEvent (FormatterEvent::Type::ATTRIBUTION, this, propName);
   _events.insert (evt);
 }
 
 FormatterEvent *
 FormatterObject::getPresentationEvent (const string &id)
 {
-  return this->getEvent (NclEventType::PRESENTATION, id);
+  return this->getEvent (FormatterEvent::Type::PRESENTATION, id);
 }
 
 void
@@ -199,7 +199,7 @@ FormatterObject::addPresentationEvent (const string &id, GingaTime begin,
   if (this->getPresentationEvent (id))
     return;
 
-  evt = new FormatterEvent (NclEventType::PRESENTATION, this, id);
+  evt = new FormatterEvent (FormatterEvent::Type::PRESENTATION, this, id);
   evt->setInterval (begin, end);
   _events.insert (evt);
 }
@@ -207,7 +207,7 @@ FormatterObject::addPresentationEvent (const string &id, GingaTime begin,
 FormatterEvent *
 FormatterObject::getSelectionEvent (const string &key)
 {
-  return this->getEvent (NclEventType::SELECTION, key);
+  return this->getEvent (FormatterEvent::Type::SELECTION, key);
 }
 
 void
@@ -218,7 +218,7 @@ FormatterObject::addSelectionEvent (const string &key)
   if (this->getSelectionEvent (key))
     return;
 
-  evt = new FormatterEvent (NclEventType::SELECTION, this, key);
+  evt = new FormatterEvent (FormatterEvent::Type::SELECTION, this, key);
   _events.insert (evt);
 }
 
@@ -233,21 +233,21 @@ bool
 FormatterObject::isOccurring ()
 {
   g_assert_nonnull (_lambda);
-  return _lambda->getState () == NclEventState::OCCURRING;
+  return _lambda->getState () == FormatterEvent::State::OCCURRING;
 }
 
 bool
 FormatterObject::isPaused ()
 {
   g_assert_nonnull (_lambda);
-  return _lambda->getState () == NclEventState::PAUSED;
+  return _lambda->getState () == FormatterEvent::State::PAUSED;
 }
 
 bool
 FormatterObject::isSleeping ()
 {
   g_assert_nonnull (_lambda);
-  return _lambda->getState () == NclEventState::SLEEPING;
+  return _lambda->getState () == FormatterEvent::State::SLEEPING;
 }
 
 string
@@ -275,7 +275,7 @@ FormatterObject::getDelayedActions ()
 
 void
 FormatterObject::addDelayedAction (FormatterEvent *event,
-                                   NclEventStateTransition transition,
+                                   FormatterEvent::Transition transition,
                                    const string &value,
                                    GingaTime delay)
 {

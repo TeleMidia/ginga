@@ -60,7 +60,6 @@ src+= ncl/NclConnectorBase.cpp
 src+= ncl/NclContext.cpp
 src+= ncl/NclDocument.cpp
 src+= ncl/NclEntity.cpp
-src+= ncl/NclEvent.cpp
 src+= ncl/NclLink.cpp
 src+= ncl/NclMedia.cpp
 src+= ncl/NclMediaRefer.cpp

@@ -20,8 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-NclAction::NclAction (NclEventType type,
-                      NclEventStateTransition transition,
+NclAction::NclAction (FormatterEvent::Type type,
+                      FormatterEvent::Transition transition,
                       const string &label,
                       const string &delay,
                       const string &value,
@@ -39,7 +39,7 @@ NclAction::~NclAction ()
 {
 }
 
-NclEventStateTransition
+FormatterEvent::Transition
 NclAction::getTransition ()
 {
   return _transition;
@@ -68,35 +68,35 @@ NclAction::getDuration ()
 
 bool
 NclAction::isReserved (const string &role,
-                    NclEventType *type,
-                    NclEventStateTransition *trans)
+                    FormatterEvent::Type *type,
+                    FormatterEvent::Transition *trans)
 {
   static map<string, pair<int,int>> reserved =
     {
      {"start",
-      {(int) NclEventType::PRESENTATION,
-       (int) NclEventStateTransition::START}},
+      {(int) FormatterEvent::Type::PRESENTATION,
+       (int) FormatterEvent::Transition::START}},
      {"stop",
-      {(int) NclEventType::PRESENTATION,
-       (int) NclEventStateTransition::STOP}},
+      {(int) FormatterEvent::Type::PRESENTATION,
+       (int) FormatterEvent::Transition::STOP}},
      {"abort",
-      {(int) NclEventType::PRESENTATION,
-       (int) NclEventStateTransition::ABORT}},
+      {(int) FormatterEvent::Type::PRESENTATION,
+       (int) FormatterEvent::Transition::ABORT}},
      {"pause",
-      {(int) NclEventType::PRESENTATION,
-       (int) NclEventStateTransition::PAUSE}},
+      {(int) FormatterEvent::Type::PRESENTATION,
+       (int) FormatterEvent::Transition::PAUSE}},
      {"resume",
-      {(int) NclEventType::PRESENTATION,
-       (int) NclEventStateTransition::RESUME}},
+      {(int) FormatterEvent::Type::PRESENTATION,
+       (int) FormatterEvent::Transition::RESUME}},
      {"set",
-      {(int) NclEventType::ATTRIBUTION,
-       (int) NclEventStateTransition::START}},
+      {(int) FormatterEvent::Type::ATTRIBUTION,
+       (int) FormatterEvent::Transition::START}},
     };
   map<string, pair<int,int>>::iterator it;
   if ((it = reserved.find (role)) == reserved.end ())
     return false;
-  tryset (type, (NclEventType) it->second.first);
-  tryset (trans, (NclEventStateTransition) it->second.second);
+  tryset (type, (FormatterEvent::Type) it->second.first);
+  tryset (trans, (FormatterEvent::Transition) it->second.second);
   return true;
 }
 

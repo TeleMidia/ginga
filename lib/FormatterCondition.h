@@ -27,16 +27,16 @@ class FormatterCondition
 {
 public:
   FormatterCondition (FormatterPredicate *, FormatterEvent *,
-                      NclEventStateTransition);
+                      FormatterEvent::Transition);
   virtual ~FormatterCondition ();
   FormatterPredicate *getPredicate ();
   FormatterEvent *getEvent ();
-  NclEventStateTransition getTransition ();
+  FormatterEvent::Transition getTransition ();
 
 private:
   FormatterPredicate *_predicate;
   FormatterEvent *_event;
-  NclEventStateTransition _transition;
+  FormatterEvent::Transition _transition;
 };
 
 GINGA_NAMESPACE_END

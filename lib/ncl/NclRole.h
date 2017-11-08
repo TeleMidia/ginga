@@ -18,20 +18,20 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NCL_ROLE_H
 #define NCL_ROLE_H
 
-#include "NclEvent.h"
+#include "FormatterEvent.h"
 
 GINGA_NAMESPACE_BEGIN
 
 class NclRole
 {
 public:
-  NclRole (NclEventType, const string &);
+  NclRole (FormatterEvent::Type, const string &);
   virtual ~NclRole ();
-  virtual NclEventType getEventType ();
+  virtual FormatterEvent::Type getEventType ();
   virtual string getLabel ();
 
 protected:
-  NclEventType _eventType;
+  FormatterEvent::Type _eventType;
   string _label;
 };
 

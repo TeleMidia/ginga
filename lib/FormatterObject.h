@@ -45,9 +45,9 @@ public:
   bool hasAlias (const string &);
   void addAlias (const string &);
 
-  FormatterEvent *obtainEvent (NclEventType, NclAnchor *, const string &);
+  FormatterEvent *obtainEvent (FormatterEvent::Type, NclAnchor *, const string &);
 
-  FormatterEvent *getEvent (NclEventType, const string &);
+  FormatterEvent *getEvent (FormatterEvent::Type, const string &);
   FormatterEvent *getAttributionEvent (const string &);
   void addAttributionEvent (const string &);
   FormatterEvent *getPresentationEvent (const string &);
@@ -65,14 +65,14 @@ public:
                             GingaTime dur=0);
 
   list<pair<FormatterAction *, GingaTime>> *getDelayedActions ();
-  void addDelayedAction (FormatterEvent *, NclEventStateTransition,
+  void addDelayedAction (FormatterEvent *, FormatterEvent::Transition,
                          const string &value="", GingaTime delay=0);
 
   virtual void sendKeyEvent (const string &, bool);
   virtual void sendTickEvent (GingaTime, GingaTime, GingaTime);
 
-  virtual bool startTransition (FormatterEvent *, NclEventStateTransition) = 0;
-  virtual void endTransition (FormatterEvent *, NclEventStateTransition) = 0;
+  virtual bool startTransition (FormatterEvent *, FormatterEvent::Transition) = 0;
+  virtual void endTransition (FormatterEvent *, FormatterEvent::Transition) = 0;
 
 protected:
   string _id;                      // id

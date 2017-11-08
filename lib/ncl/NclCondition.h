@@ -26,18 +26,18 @@ GINGA_NAMESPACE_BEGIN
 class NclCondition: public NclRole
 {
 public:
-  NclCondition (NclEventType, NclEventStateTransition,
+  NclCondition (FormatterEvent::Type, FormatterEvent::Transition,
                 FormatterPredicate *, const string &, const string &);
   ~NclCondition ();
 
-  NclEventStateTransition getTransition ();
+  FormatterEvent::Transition getTransition ();
   FormatterPredicate *getPredicate ();
   string getKey ();
 
-  static bool isReserved (const string &, NclEventType *,
-                          NclEventStateTransition *);
+  static bool isReserved (const string &, FormatterEvent::Type *,
+                          FormatterEvent::Transition *);
 private:
-  NclEventStateTransition _transition;
+  FormatterEvent::Transition _transition;
   string _key;
   FormatterPredicate *_predicate;
 };

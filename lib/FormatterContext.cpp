@@ -74,28 +74,28 @@ FormatterContext::sendTickEvent (unused (GingaTime total),
 
   // lambda = this->getLambda ();
   // g_assert_nonnull (lambda);
-  // this->scheduleAction (lambda, NclEventStateTransition::STOP);
+  // this->scheduleAction (lambda, FormatterEvent::Transition::STOP);
 }
 
 bool
 FormatterContext::startTransition (FormatterEvent *evt,
-                                   NclEventStateTransition transition)
+                                   FormatterEvent::Transition transition)
 {
   switch (evt->getType ())
     {
-    case NclEventType::PRESENTATION:
+    case FormatterEvent::Type::PRESENTATION:
       g_assert (evt->isLambda ());
       switch (transition)
         {
-        case NclEventStateTransition::START:
+        case FormatterEvent::Transition::START:
           break;
 
-        case NclEventStateTransition::STOP:
+        case FormatterEvent::Transition::STOP:
           for (auto child: _children)
             {
               FormatterEvent *lambda = child->getLambda ();
               g_assert_nonnull (lambda);
-              lambda->transition (NclEventStateTransition::STOP);
+              lambda->transition (FormatterEvent::Transition::STOP);
             }
           break;
 
@@ -104,11 +104,11 @@ FormatterContext::startTransition (FormatterEvent *evt,
         }
       break;
 
-    case NclEventType::ATTRIBUTION:
+    case FormatterEvent::Type::ATTRIBUTION:
       g_assert_not_reached ();
       break;
 
-    case NclEventType::SELECTION:
+    case FormatterEvent::Type::SELECTION:
       return false;             // fail
 
     default:
@@ -119,20 +119,20 @@ FormatterContext::startTransition (FormatterEvent *evt,
 
 void
 FormatterContext::endTransition (FormatterEvent *evt,
-                                 NclEventStateTransition transition)
+                                 FormatterEvent::Transition transition)
 {
   switch (evt->getType ())
     {
-    case NclEventType::PRESENTATION:
+    case FormatterEvent::Type::PRESENTATION:
       switch (transition)
         {
-        case NclEventStateTransition::START:
+        case FormatterEvent::Transition::START:
           FormatterObject::doStart ();
           for (auto port: _ports)
             _formatter->evalAction (port, transition);
           TRACE ("start %s@lambda", _id.c_str ());
           break;
-        case NclEventStateTransition::STOP:
+        case FormatterEvent::Transition::STOP:
           FormatterObject::doStop ();
           TRACE ("stop %s@lambda", _id.c_str ());
           break;
@@ -141,8 +141,8 @@ FormatterContext::endTransition (FormatterEvent *evt,
         }
       break;
 
-    case NclEventType::ATTRIBUTION:
-    case NclEventType::SELECTION:
+    case FormatterEvent::Type::ATTRIBUTION:
+    case FormatterEvent::Type::SELECTION:
     default:
       g_assert_not_reached ();
     }

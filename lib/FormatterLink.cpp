@@ -89,7 +89,7 @@ FormatterLink::setDisabled (bool disabled)
 //       FormatterEvent *evt;
 //       evt = action->getEvent ();
 //       g_assert_nonnull (evt);
-//       if (evt->getType () == NclEventType::ATTRIBUTION)
+//       if (evt->getType () == FormatterEvent::Type::ATTRIBUTION)
 //         {
 //           string dur;
 //           string value = "";

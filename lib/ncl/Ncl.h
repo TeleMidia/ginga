@@ -28,7 +28,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclConnectorBase.h"
 #include "NclContext.h"
 #include "NclEntity.h"
-#include "NclEvent.h"
 #include "NclLink.h"
 #include "NclMedia.h"
 #include "Ncl.h"

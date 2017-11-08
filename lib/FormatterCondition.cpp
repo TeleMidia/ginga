@@ -22,7 +22,7 @@ GINGA_NAMESPACE_BEGIN
 
 FormatterCondition::FormatterCondition (FormatterPredicate *predicate,
                                         FormatterEvent *event,
-                                        NclEventStateTransition transition)
+                                        FormatterEvent::Transition transition)
 {
   _predicate = predicate;
   _event = event;
@@ -47,7 +47,7 @@ FormatterCondition::getEvent ()
   return _event;
 }
 
-NclEventStateTransition
+FormatterEvent::Transition
 FormatterCondition::getTransition ()
 {
   return _transition;
