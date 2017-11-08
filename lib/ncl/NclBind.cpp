@@ -22,10 +22,18 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-NclBind::NclBind (NclRole *role, NclNode *comp, NclAnchor *iface)
+NclBind::NclBind (const string &role, NclBind::RoleType roleType,
+                  FormatterEvent::Type eventType,
+                  FormatterEvent::Transition transition,
+                  FormatterPredicate *predicate,
+                  NclNode *node, NclAnchor *iface)
 {
   _role = role;
-  _node = comp;
+  _roleType = roleType;
+  _eventType = eventType;
+  _transition = transition;
+  _predicate = predicate;
+  _node = node;
   _interface = iface;
 }
 
@@ -33,10 +41,34 @@ NclBind::~NclBind ()
 {
 }
 
-NclRole *
+string
 NclBind::getRole ()
 {
   return _role;
+}
+
+NclBind::RoleType
+NclBind::getRoleType ()
+{
+  return _roleType;
+}
+
+FormatterEvent::Type
+NclBind::getEventType ()
+{
+  return _eventType;
+}
+
+FormatterEvent::Transition
+NclBind::getTransition ()
+{
+  return _transition;
+}
+
+FormatterPredicate *
+NclBind::getPredicate ()
+{
+  return _predicate;
 }
 
 NclNode *
@@ -54,21 +86,19 @@ NclBind::getInterface ()
 const map<string, string> *
 NclBind::getParameters ()
 {
-  return &_params;
+  return &_parameters;
 }
 
-string
-NclBind::getParameter (const string &name)
+bool
+NclBind::getParameter (const string &name, string *value)
 {
-  map<string, string>::iterator it;
-  return ((it = _params.find (name)) != _params.end ())
-    ? it->second : "";
+  MAP_GET_IMPL (_parameters, name, value);
 }
 
-void
+bool
 NclBind::setParameter (const string &name, const string &value)
 {
-  _params[name] = value;
+  MAP_SET_IMPL (_parameters, name, value);
 }
 
 GINGA_NAMESPACE_END

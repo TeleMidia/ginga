@@ -107,7 +107,8 @@ private:
   NclAnchor *parseArea (DOMElement *);
 
   NclLink *parseLink (DOMElement *, NclContext *);
-  NclBind *parseBind (DOMElement *, NclLink *, map<string, string> *, NclContext *);
+  NclBind *parseBind (DOMElement *, NclLink *, NclConnector *,
+                      map<string, string> *, NclContext *);
 
   // From ErrorHandler.
   void warning (const SAXParseException &);

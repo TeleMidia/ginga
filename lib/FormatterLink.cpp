@@ -72,36 +72,4 @@ FormatterLink::setDisabled (bool disabled)
   _disabled = disabled;
 }
 
-// void
-// FormatterLink::conditionSatisfied (FormatterCondition *cond)
-// {
-//   FormatterPredicate *pred;
-//
-//   if (_disabled)
-//     return;                     // fail
-//
-//   pred = cond->getPredicate ();
-//   if (pred != nullptr && !_formatter->evalPredicate (pred))
-//     return;                     // fail
-//
-//   for (auto action: _actions)
-//     {
-//       FormatterEvent *evt;
-//       evt = action->getEvent ();
-//       g_assert_nonnull (evt);
-//       if (evt->getType () == FormatterEvent::Type::ATTRIBUTION)
-//         {
-//           string dur;
-//           string value = "";
-//
-//           if (action->getParameter ("duration", &dur))
-//             evt->setParameter ("duration", dur);
-//
-//           action->getParameter ("value", &value);
-//           evt->setParameter ("value", value);
-//         }
-//       evt->transition (action->getEventStateTransition ());
-//     }
-// }
-
 GINGA_NAMESPACE_END

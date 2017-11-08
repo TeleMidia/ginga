@@ -177,7 +177,7 @@ FormatterMedia::sendKeyEvent (const string &key, bool press)
     {
       string expected;
 
-      if (evt->getType () != FormatterEvent::Type::SELECTION)
+      if (evt->getType () != FormatterEvent::SELECTION)
         continue;
 
       expected = "";
@@ -194,8 +194,8 @@ FormatterMedia::sendKeyEvent (const string &key, bool press)
   for (FormatterEvent *evt: buf)
     {
       TRACE ("%s<%s>", _id.c_str (), evt->getId ().c_str ());
-      _formatter->evalAction (evt, FormatterEvent::Transition::START);
-      _formatter->evalAction (evt, FormatterEvent::Transition::STOP);
+      _formatter->evalAction (evt, FormatterEvent::START);
+      _formatter->evalAction (evt, FormatterEvent::STOP);
     }
 }
 
@@ -224,7 +224,7 @@ FormatterMedia::sendTickEvent (GingaTime total, GingaTime diff,
       g_assert_nonnull (lambda);
       TRACE ("eos %s@lambda at %" GINGA_TIME_FORMAT, _id.c_str (),
              GINGA_TIME_ARGS (_time));
-      _formatter->evalAction (lambda, FormatterEvent::Transition::STOP);
+      _formatter->evalAction (lambda, FormatterEvent::STOP);
       return;
     }
 }
@@ -235,10 +235,10 @@ FormatterMedia::startTransition (FormatterEvent *evt,
 {
   switch (evt->getType ())
     {
-    case FormatterEvent::Type::PRESENTATION:
+    case FormatterEvent::PRESENTATION:
       switch (transition)
         {
-        case FormatterEvent::Transition::START:
+        case FormatterEvent::START:
           if (evt->isLambda ())
             {
               g_assert_null (_player);
@@ -253,15 +253,15 @@ FormatterMedia::startTransition (FormatterEvent *evt,
             }
           break;
 
-        case FormatterEvent::Transition::STOP:
+        case FormatterEvent::STOP:
           break;
         default:
           g_assert_not_reached ();
         }
       break;
 
-    case FormatterEvent::Type::ATTRIBUTION:
-    case FormatterEvent::Type::SELECTION:
+    case FormatterEvent::ATTRIBUTION:
+    case FormatterEvent::SELECTION:
       if (!this->isOccurring ())
         return false;           // fail
       break;
@@ -278,10 +278,10 @@ FormatterMedia::endTransition (FormatterEvent *evt,
 {
   switch (evt->getType ())
     {
-    case FormatterEvent::Type::PRESENTATION:
+    case FormatterEvent::PRESENTATION:
       switch (transition)
         {
-        case FormatterEvent::Transition::START:
+        case FormatterEvent::START:
           if (evt->isLambda ())
             {
               g_assert_nonnull (_player);
@@ -289,14 +289,14 @@ FormatterMedia::endTransition (FormatterEvent *evt,
               for (auto e: _events) // schedule time anchors
                 {
                   if (!e->isLambda ()
-                      && e->getType () == FormatterEvent::Type::PRESENTATION)
+                      && e->getType () == FormatterEvent::PRESENTATION)
                     {
                       GingaTime begin, end;
                       e->getInterval (&begin, &end);
                       this->addDelayedAction
-                        (e, FormatterEvent::Transition::START, "", begin);
+                        (e, FormatterEvent::START, "", begin);
                       this->addDelayedAction
-                        (e, FormatterEvent::Transition::STOP, "", end);
+                        (e, FormatterEvent::STOP, "", end);
                     }
                 }
               TRACE ("start %s@lambda", _id.c_str ());
@@ -313,7 +313,7 @@ FormatterMedia::endTransition (FormatterEvent *evt,
             }
           break;
 
-        case FormatterEvent::Transition::STOP:
+        case FormatterEvent::STOP:
           if (evt->isLambda ())
             {
               g_assert_nonnull (_player);
@@ -337,10 +337,10 @@ FormatterMedia::endTransition (FormatterEvent *evt,
         }
       break;
 
-    case FormatterEvent::Type::ATTRIBUTION:
+    case FormatterEvent::ATTRIBUTION:
       switch (transition)
         {
-        case FormatterEvent::Transition::START:
+        case FormatterEvent::START:
           {
             string name;
             string value;
@@ -363,13 +363,13 @@ FormatterMedia::endTransition (FormatterEvent *evt,
                 dur = 0;
               }
             this->setProperty (name, value, dur);
-            _formatter->evalAction (evt, FormatterEvent::Transition::STOP);
+            _formatter->evalAction (evt, FormatterEvent::STOP);
 
             TRACE ("start %s.%s:=%s (duration=%s)", _id.c_str (),
                    name.c_str (), value.c_str (), s.c_str ());
             break;
           }
-        case FormatterEvent::Transition::STOP:
+        case FormatterEvent::STOP:
           TRACE ("stop %s.%s:=...", _id.c_str (), evt->getId ().c_str ());
           break;
         default:
@@ -377,7 +377,7 @@ FormatterMedia::endTransition (FormatterEvent *evt,
         }
       break;
 
-    case FormatterEvent::Type::SELECTION:
+    case FormatterEvent::SELECTION:
       {
         string key;
 
@@ -386,10 +386,10 @@ FormatterMedia::endTransition (FormatterEvent *evt,
 
         switch (transition)
           {
-          case FormatterEvent::Transition::START:
+          case FormatterEvent::START:
             TRACE ("start %s<%s>", _id.c_str (), key.c_str ());
             break;
-          case FormatterEvent::Transition::STOP:
+          case FormatterEvent::STOP:
             TRACE ("stop %s<%s>", _id.c_str (), key.c_str ());
             break;
           default:

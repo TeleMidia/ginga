@@ -479,9 +479,9 @@ ncl_attr_parse_eventType (string str, FormatterEvent::Type *result)
 {
   static map<string, FormatterEvent::Type> tab =
     {
-     {"presentation", FormatterEvent::Type::PRESENTATION},
-     {"attribution", FormatterEvent::Type::ATTRIBUTION},
-     {"selection", FormatterEvent::Type::SELECTION},
+     {"presentation", FormatterEvent::PRESENTATION},
+     {"attribution", FormatterEvent::ATTRIBUTION},
+     {"selection", FormatterEvent::SELECTION},
     };
   _NCL_ATTR_PARSE (FormatterEvent::Type, tab, str, result);
 }
@@ -491,11 +491,11 @@ ncl_attr_parse_transition (string str, FormatterEvent::Transition *result)
 {
   static map<string, FormatterEvent::Transition> tab =
     {
-     {"starts", FormatterEvent::Transition::START},
-     {"stops", FormatterEvent::Transition::STOP},
-     {"aborts", FormatterEvent::Transition::ABORT},
-     {"pauses", FormatterEvent::Transition::PAUSE},
-     {"resumes", FormatterEvent::Transition::RESUME},
+     {"starts", FormatterEvent::START},
+     {"stops", FormatterEvent::STOP},
+     {"aborts", FormatterEvent::ABORT},
+     {"pauses", FormatterEvent::PAUSE},
+     {"resumes", FormatterEvent::RESUME},
     };
   _NCL_ATTR_PARSE (FormatterEvent::Transition, tab, str, result);
 }
@@ -505,11 +505,11 @@ ncl_attr_parse_actionType (string str, FormatterEvent::Transition *result)
 {
   static map<string, FormatterEvent::Transition> tab =
     {
-     {"start", FormatterEvent::Transition::START},
-     {"stop", FormatterEvent::Transition::STOP},
-     {"abort", FormatterEvent::Transition::ABORT},
-     {"pause", FormatterEvent::Transition::PAUSE},
-     {"resume", FormatterEvent::Transition::RESUME},
+     {"start", FormatterEvent::START},
+     {"stop", FormatterEvent::STOP},
+     {"abort", FormatterEvent::ABORT},
+     {"pause", FormatterEvent::PAUSE},
+     {"resume", FormatterEvent::RESUME},
     };
   _NCL_ATTR_PARSE (FormatterEvent::Transition, tab, str, result);
 }

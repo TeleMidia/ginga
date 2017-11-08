@@ -123,10 +123,10 @@ Formatter::start (const string &file, string *errmsg)
   // Parse document.
   w = _opts.width;
   h = _opts.height;
-  if (!_opts.experimental)
-    _doc = ParserXercesC::parse (file, w, h, errmsg);
-  else
-    _doc = ParserLibXML::parseFile (file, w, h, errmsg);
+  // if (!_opts.experimental)
+  _doc = ParserXercesC::parse (file, w, h, errmsg);
+  // else
+  //   _doc = ParserLibXML::parseFile (file, w, h, errmsg);
   if (unlikely (_doc == nullptr))
     return false;
 
@@ -155,7 +155,7 @@ Formatter::start (const string &file, string *errmsg)
   g_assert_nonnull (_settings);
   FormatterEvent *evt = cast (FormatterObject *, _settings)->getLambda ();
   g_assert_nonnull (evt);
-  g_assert (evt->transition (FormatterEvent::Transition::START));
+  g_assert (evt->transition (FormatterEvent::START));
 
   // Initialize settings object.
   vector<NclNode *> *nodes = _doc->getSettingsNodes ();
@@ -191,7 +191,7 @@ Formatter::start (const string &file, string *errmsg)
   FormatterObject *obj = this->obtainExecutionObject (body);
   evt = obj->getLambda ();
   g_assert_nonnull (evt);
-  if (this->evalAction (evt, FormatterEvent::Transition::START) == 0)
+  if (this->evalAction (evt, FormatterEvent::START) == 0)
     return false;
 
   // Refresh current focus.
@@ -336,7 +336,7 @@ Formatter::sendKeyEvent (const string &key, bool press)
   if (_state != GINGA_STATE_PLAYING)
     return false;               // nothing to do
 
-  for (auto obj: this->getObjectList (FormatterEvent::State::OCCURRING))
+  for (auto obj: this->getObjectList (FormatterEvent::OCCURRING))
     obj->sendKeyEvent (key, press);
 
   return true;
@@ -355,7 +355,7 @@ Formatter::sendTickEvent (uint64_t total, uint64_t diff, uint64_t frame)
   _last_tick_diff = diff;
   _last_tick_frameno = frame;
 
-  buf = this->getObjectList (FormatterEvent::State::OCCURRING);
+  buf = this->getObjectList (FormatterEvent::OCCURRING);
   if (buf.empty ())
     {
       this->setEOS (true);
@@ -655,7 +655,7 @@ Formatter::evalAction (FormatterEvent *event,
   int result;
 
   act = new FormatterAction (event, transition);
-  if (event->getType () == FormatterEvent::Type::ATTRIBUTION)
+  if (event->getType () == FormatterEvent::ATTRIBUTION)
     act->setParameter ("value", value);
 
   result = this->evalAction (act);
@@ -688,7 +688,7 @@ Formatter::evalAction (FormatterAction *init)
 
       evt = act->getEvent ();
       g_assert_nonnull (evt);
-      if (evt->getType () == FormatterEvent::Type::ATTRIBUTION)
+      if (evt->getType () == FormatterEvent::ATTRIBUTION)
         {
           string dur;
           string value;
@@ -846,7 +846,7 @@ Formatter::obtainExecutionObject (NclNode *node)
             continue;       // nothing to do
 
           e = child->obtainEvent
-            (FormatterEvent::Type::PRESENTATION, iface, "");
+            (FormatterEvent::PRESENTATION, iface, "");
           g_assert_nonnull (e);
           cast (FormatterContext *, object)->addPort (e);
         }
@@ -987,8 +987,8 @@ Formatter::obtainFormatterEventFromBind (NclBind *bind)
   NclNode *node;
   FormatterObject *obj;
   NclAnchor *iface;
-  NclRole *role;
-  FormatterEvent::Type type;
+  FormatterEvent::Type eventType;
+  NclBind::RoleType roleType;
   string key = "";
 
   node = bind->getNode ();
@@ -1012,133 +1012,171 @@ Formatter::obtainFormatterEventFromBind (NclBind *bind)
       iface = comp->getMapInterface (port);
     }
 
-  role = bind->getRole ();
-  g_assert_nonnull (role);
+  roleType = bind->getRoleType ();
+  eventType = bind->getEventType ();
 
-  type = role->getEventType ();
-  if (type == FormatterEvent::Type::SELECTION)
+  if (eventType == FormatterEvent::SELECTION
+      && roleType == NclBind::CONDITION)
     {
-      NclCondition *cond = cast (NclCondition *, role);
-      if (cond != nullptr)
-        {
-          key = cond->getKey ();
-          if (key[0] == '$')
-            key = bind->getParameter
-              (key.substr (1, key.length () - 1));
-        }
+      bind->getParameter ("key", &key);
     }
 
-  return obj->obtainEvent (type, iface, key);
+  return obj->obtainEvent (eventType, iface, key);
 }
 
 FormatterLink *
 Formatter::obtainFormatterLink (NclLink *docLink)
 {
-  NclConnector *connector;
   FormatterLink *link;
 
   g_assert_nonnull (docLink);
-  connector = cast (NclConnector *, docLink->getConnector ());
-  g_assert_nonnull (connector);
 
   link = new FormatterLink ();
-  for (auto connCond: *connector->getConditions ())
+
+  // FormatterPredicate *pred = connCond->getPredicate ();
+  // if (pred != nullptr)      // solve ghost binds in predicate
+  //   {
+  //     vector <FormatterPredicate *> buf;
+  //
+  //     pred = pred->clone ();
+  //     g_assert_nonnull (pred);
+  //
+  //     buf.push_back (pred);
+  //     while (!buf.empty ())
+  //       {
+  //         FormatterPredicate *p = buf.back ();
+  //         buf.pop_back ();
+  //         switch (p->getType ())
+  //           {
+  //           case PredicateType::FALSUM:
+  //           case PredicateType::VERUM:
+  //             break;        // nothing to do
+  //           case PredicateType::ATOM:
+  //             {
+  //               PredicateTestType test;
+  //               string left, right, ghost;
+  //               p->getTest (&left, &test, &right);
+  //               if (left[0] == '$')
+  //                 {
+  //                   ghost = docLink->getGhostBind
+  //                     (left.substr (1, left.length () - 1));
+  //                   if (ghost != "")
+  //                     left = ghost;
+  //                 }
+  //               if (right[0] == '$')
+  //                 {
+  //                   ghost = docLink->getGhostBind
+  //                     (right.substr (1, right.length () - 1));
+  //                   if (ghost != "")
+  //                     right = ghost;
+  //                 }
+  //               p->setTest (left, test, right);
+  //               break;
+  //             }
+  //           case PredicateType::NEGATION:
+  //           case PredicateType::CONJUNCTION:
+  //           case PredicateType::DISJUNCTION:
+  //             for (auto child: *p->getChildren ())
+  //               buf.push_back (child);
+  //             break;
+  //           default:
+  //             g_assert_not_reached ();
+  //           }
+  //       }
+  //   }
+
+  for (auto bind: *docLink->getBinds ())
     {
-      FormatterPredicate *pred = connCond->getPredicate ();
-      if (pred != nullptr)      // solve ghost binds in predicate
+      switch (bind->getRoleType ())
         {
-          vector <FormatterPredicate *> buf;
+        case NclBind::CONDITION:
+          {
+            FormatterPredicate *pred = bind->getPredicate ();
+            if (pred != nullptr) // solve ghost binds in predicate
+              {
+                vector <FormatterPredicate *> buf;
 
-          pred = pred->clone ();
-          g_assert_nonnull (pred);
-
-          buf.push_back (pred);
-          while (!buf.empty ())
-            {
-              FormatterPredicate *p = buf.back ();
-              buf.pop_back ();
-              switch (p->getType ())
-                {
-                case PredicateType::FALSUM:
-                case PredicateType::VERUM:
-                  break;        // nothing to do
-                case PredicateType::ATOM:
+                pred = pred->clone ();
+                g_assert_nonnull (pred);
+                buf.push_back (pred);
+                while (!buf.empty ())
                   {
-                    PredicateTestType test;
-                    string left, right, ghost;
-                    p->getTest (&left, &test, &right);
-                    if (left[0] == '$')
+                    FormatterPredicate *p = buf.back ();
+                    buf.pop_back ();
+                    switch (p->getType ())
                       {
-                        ghost = docLink->getGhostBind
-                          (left.substr (1, left.length () - 1));
-                        if (ghost != "")
-                          left = ghost;
+                      case PredicateType::FALSUM:
+                      case PredicateType::VERUM:
+                        break;        // nothing to do
+                      case PredicateType::ATOM:
+                        {
+                          PredicateTestType test;
+                          string left, right, ghost;
+                          p->getTest (&left, &test, &right);
+                          if (left[0] == '$')
+                            {
+                              ghost = docLink->getGhostBind
+                                (left.substr (1, left.length () - 1));
+                              if (ghost != "")
+                                left = ghost;
+                            }
+                          if (right[0] == '$')
+                            {
+                              ghost = docLink->getGhostBind
+                                (right.substr (1, right.length () - 1));
+                              if (ghost != "")
+                                right = ghost;
+                            }
+                          p->setTest (left, test, right);
+                          break;
+                        }
+                      case PredicateType::NEGATION:
+                      case PredicateType::CONJUNCTION:
+                      case PredicateType::DISJUNCTION:
+                        for (auto child: *p->getChildren ())
+                          buf.push_back (child);
+                        break;
+                      default:
+                        g_assert_not_reached ();
                       }
-                    if (right[0] == '$')
-                      {
-                        ghost = docLink->getGhostBind
-                          (right.substr (1, right.length () - 1));
-                        if (ghost != "")
-                          right = ghost;
-                      }
-                    p->setTest (left, test, right);
-                    break;
                   }
-                case PredicateType::NEGATION:
-                case PredicateType::CONJUNCTION:
-                case PredicateType::DISJUNCTION:
-                  for (auto child: *p->getChildren ())
-                    buf.push_back (child);
-                  break;
-                default:
-                  g_assert_not_reached ();
-                }
-            }
-        }
-      for (auto bind: docLink->getBinds (connCond))
-        {
-          FormatterEvent *evt;
-          FormatterCondition *cond;
+              }
 
-          evt = this->obtainFormatterEventFromBind (bind);
-          g_assert_nonnull (evt);
+            FormatterEvent *evt;
+            FormatterCondition *cond;
 
-          cond = new FormatterCondition
-            (pred, evt, connCond->getTransition ());
-          link->addCondition (cond);
-        }
-    }
+            evt = this->obtainFormatterEventFromBind (bind);
+            g_assert_nonnull (evt);
 
-  for (auto connAct: *connector->getActions ())
-    {
-      for (auto bind: docLink->getBinds (connAct))
-        {
-          FormatterEvent *evt;
-          FormatterAction *act;
+            cond = new FormatterCondition
+              (pred, evt, bind->getTransition ());
+            link->addCondition (cond);
+            break;
+          }
 
-          evt = this->obtainFormatterEventFromBind (bind);
-          g_assert_nonnull (evt);
+        case NclBind::ACTION:
+          {
+            FormatterEvent *evt;
+            FormatterAction *act;
 
-          act = new FormatterAction (evt, connAct->getTransition ());
-          if (evt->getType () == FormatterEvent::Type::ATTRIBUTION)
-            {
-              string dur;
-              string value;
+            evt = this->obtainFormatterEventFromBind (bind);
+            g_assert_nonnull (evt);
 
-              dur = connAct->getDuration ();
-              if (dur[0] == '$')
-                dur = bind->getParameter
-                  (dur.substr (1, dur.length () - 1));
+            act = new FormatterAction (evt, bind->getTransition ());
+            if (evt->getType () == FormatterEvent::ATTRIBUTION)
+              {
+                string dur, value;
+                if (bind->getParameter ("duration", &dur))
+                  act->setParameter ("duration", dur);
+                if (bind->getParameter ("value", &value))
+                  act->setParameter ("value", value);
+              }
+            link->addAction (act);
+            break;
+          }
 
-              value = connAct->getValue ();
-              if (value[0] == '$')
-                value = bind->getParameter
-                  (value.substr (1, value.length () - 1));
-
-              act->setParameter ("duration", dur);
-              act->setParameter ("value", value);
-            }
-          link->addAction (act);
+          default:
+            g_assert_not_reached ();
         }
     }
 

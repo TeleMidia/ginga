@@ -44,11 +44,11 @@ FormatterSwitch::startTransition (FormatterEvent *evt,
 {
   switch (evt->getType ())
     {
-    case FormatterEvent::Type::PRESENTATION:
+    case FormatterEvent::PRESENTATION:
       g_assert (evt->isLambda ());
       switch (transition)
         {
-        case FormatterEvent::Transition::START:
+        case FormatterEvent::START:
           g_assert_null (_selected);
           for (auto item: _rules)
             {
@@ -72,7 +72,7 @@ FormatterSwitch::startTransition (FormatterEvent *evt,
             }
           break;
 
-        case FormatterEvent::Transition::STOP:
+        case FormatterEvent::STOP:
           if (_selected != nullptr)
             {
               FormatterEvent *lambda = _selected->getLambda ();
@@ -87,8 +87,8 @@ FormatterSwitch::startTransition (FormatterEvent *evt,
         }
       break;
 
-    case FormatterEvent::Type::ATTRIBUTION:
-    case FormatterEvent::Type::SELECTION:
+    case FormatterEvent::ATTRIBUTION:
+    case FormatterEvent::SELECTION:
     default:
       g_assert_not_reached ();
     }
@@ -101,18 +101,18 @@ FormatterSwitch::endTransition (FormatterEvent *evt,
 {
   switch (evt->getType ())
     {
-    case FormatterEvent::Type::PRESENTATION:
+    case FormatterEvent::PRESENTATION:
       g_assert (evt->isLambda ());
      switch (transition)
         {
-        case FormatterEvent::Transition::START:
+        case FormatterEvent::START:
           FormatterObject::doStart ();
           TRACE ("start %s@lambda", _id.c_str ());
           if (_selected == nullptr)
-            _formatter->evalAction (evt, FormatterEvent::Transition::STOP);
+            _formatter->evalAction (evt, FormatterEvent::STOP);
           break;
 
-        case FormatterEvent::Transition::STOP:
+        case FormatterEvent::STOP:
           FormatterObject::doStop ();
           TRACE ("stop %s@lambda", _id.c_str ());
           break;
@@ -122,8 +122,8 @@ FormatterSwitch::endTransition (FormatterEvent *evt,
         }
      break;
 
-    case FormatterEvent::Type::ATTRIBUTION:
-    case FormatterEvent::Type::SELECTION:
+    case FormatterEvent::ATTRIBUTION:
+    case FormatterEvent::SELECTION:
     default:
       g_assert_not_reached ();
     }

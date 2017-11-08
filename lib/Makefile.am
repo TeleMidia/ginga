@@ -81,7 +81,7 @@ src+= player/PlayerSvg.cpp
 endif # WITH_LIBRSVG
 
 if WITH_LIBXML
-src+= ncl/ParserLibXML.cpp
+# src+= ncl/ParserLibXML.cpp
 endif # WITH_LIBXML
 
 if WITH_CEF
