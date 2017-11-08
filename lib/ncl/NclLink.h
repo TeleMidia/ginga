@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NCL_LINK_H
 #define NCL_LINK_H
 
-#include "NclConnector.h"
 #include "NclBind.h"
 
 GINGA_NAMESPACE_BEGIN
@@ -30,12 +29,8 @@ public:
   NclLink (NclDocument *, const string &);
   ~NclLink ();
 
-  NclConnector *getConnector ();
-  bool initConnector (NclConnector *);
-
+  const list<NclBind *> *getBinds ();
   void addBind (NclBind *);
-  const vector<NclBind *> *getBinds ();
-  vector<NclBind *> getBinds (NclRole *);
   bool contains (NclNode *, bool);
 
   const map<string, string> *getGhostBinds ();
@@ -43,8 +38,7 @@ public:
   void setGhostBind (const string &, const string &);
 
 private:
-  NclConnector *_connector;
-  vector<NclBind *> _binds;
+  list<NclBind *> _binds;
   map<string, string> _ghost_binds;
 };
 

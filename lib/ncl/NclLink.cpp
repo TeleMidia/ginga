@@ -26,27 +26,11 @@ GINGA_NAMESPACE_BEGIN
 
 NclLink::NclLink (NclDocument *ncl, const string &id): NclEntity (ncl, id)
 {
-  _connector = nullptr;
 }
 
 NclLink::~NclLink ()
 {
   _binds.clear ();
-}
-
-NclConnector *
-NclLink::getConnector ()
-{
-  return _connector;
-}
-
-bool
-NclLink::initConnector (NclConnector *conn)
-{
-  g_assert_nonnull (conn);
-  g_assert_null (_connector);
-  _connector = conn;
-  return true;
 }
 
 void
@@ -56,20 +40,10 @@ NclLink::addBind (NclBind *bind)
   _binds.push_back (bind);
 }
 
-const vector<NclBind *> *
+const list<NclBind *> *
 NclLink::getBinds ()
 {
   return &_binds;
-}
-
-vector<NclBind *>
-NclLink::getBinds (NclRole *role)
-{
-  vector<NclBind *> result;
-  for (auto bind: _binds)
-    if (bind->getRole ()->getLabel () == role->getLabel ())
-      result.push_back (bind);
-  return result;
 }
 
 bool
@@ -79,13 +53,13 @@ NclLink::contains (NclNode *node, bool condition)
     {
       NclAnchor *iface;
       NclNode *bound;
-      NclRole *role;
+      NclBind::RoleType roleType;
 
-      role = bind->getRole ();
-      if (instanceof (NclCondition *, role))
+      roleType = bind->getRoleType ();
+      if (roleType == NclBind::CONDITION)
         continue;             // skip
 
-      if (instanceof (NclAction *, role) && condition)
+      if (roleType == NclBind::ACTION && condition)
         continue;             // skip
 
       if ((iface = bind->getInterface ()) != nullptr

@@ -74,7 +74,7 @@ FormatterContext::sendTickEvent (unused (GingaTime total),
 
   // lambda = this->getLambda ();
   // g_assert_nonnull (lambda);
-  // this->scheduleAction (lambda, FormatterEvent::Transition::STOP);
+  // this->scheduleAction (lambda, FormatterEvent::STOP);
 }
 
 bool
@@ -83,19 +83,19 @@ FormatterContext::startTransition (FormatterEvent *evt,
 {
   switch (evt->getType ())
     {
-    case FormatterEvent::Type::PRESENTATION:
+    case FormatterEvent::PRESENTATION:
       g_assert (evt->isLambda ());
       switch (transition)
         {
-        case FormatterEvent::Transition::START:
+        case FormatterEvent::START:
           break;
 
-        case FormatterEvent::Transition::STOP:
+        case FormatterEvent::STOP:
           for (auto child: _children)
             {
               FormatterEvent *lambda = child->getLambda ();
               g_assert_nonnull (lambda);
-              lambda->transition (FormatterEvent::Transition::STOP);
+              lambda->transition (FormatterEvent::STOP);
             }
           break;
 
@@ -104,11 +104,11 @@ FormatterContext::startTransition (FormatterEvent *evt,
         }
       break;
 
-    case FormatterEvent::Type::ATTRIBUTION:
+    case FormatterEvent::ATTRIBUTION:
       g_assert_not_reached ();
       break;
 
-    case FormatterEvent::Type::SELECTION:
+    case FormatterEvent::SELECTION:
       return false;             // fail
 
     default:
@@ -123,16 +123,16 @@ FormatterContext::endTransition (FormatterEvent *evt,
 {
   switch (evt->getType ())
     {
-    case FormatterEvent::Type::PRESENTATION:
+    case FormatterEvent::PRESENTATION:
       switch (transition)
         {
-        case FormatterEvent::Transition::START:
+        case FormatterEvent::START:
           FormatterObject::doStart ();
           for (auto port: _ports)
             _formatter->evalAction (port, transition);
           TRACE ("start %s@lambda", _id.c_str ());
           break;
-        case FormatterEvent::Transition::STOP:
+        case FormatterEvent::STOP:
           FormatterObject::doStop ();
           TRACE ("stop %s@lambda", _id.c_str ());
           break;
@@ -141,8 +141,8 @@ FormatterContext::endTransition (FormatterEvent *evt,
         }
       break;
 
-    case FormatterEvent::Type::ATTRIBUTION:
-    case FormatterEvent::Type::SELECTION:
+    case FormatterEvent::ATTRIBUTION:
+    case FormatterEvent::SELECTION:
     default:
       g_assert_not_reached ();
     }

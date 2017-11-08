@@ -19,29 +19,47 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define NCL_BIND_H
 
 #include "NclNode.h"
-#include "NclRole.h"
+#include "FormatterEvent.h"
+#include "FormatterPredicate.h"
 
 GINGA_NAMESPACE_BEGIN
 
 class NclBind
 {
 public:
-  NclBind (NclRole *, NclNode *, NclAnchor *);
+  enum RoleType
+    {
+     CONDITION = 0,
+     ACTION
+    };
+
+  NclBind (const string &, NclBind::RoleType, FormatterEvent::Type,
+           FormatterEvent::Transition, FormatterPredicate *,
+           NclNode *, NclAnchor *);
   ~NclBind ();
 
-  NclRole *getRole ();
+  string getRole ();
+  NclBind::RoleType getRoleType ();
+  FormatterEvent::Type getEventType ();
+  FormatterEvent::Transition getTransition ();
+  FormatterPredicate *getPredicate ();
+
   NclNode *getNode ();
   NclAnchor *getInterface ();
 
   const map<string, string> *getParameters ();
-  string getParameter (const string &);
-  void setParameter (const string &, const string &);
+  bool getParameter (const string &, string *);
+  bool setParameter (const string &, const string &);
 
 private:
-  NclRole *_role;
+  string _role;
+  NclBind::RoleType _roleType;
+  FormatterEvent::Type _eventType;
+  FormatterEvent::Transition _transition;
+  FormatterPredicate *_predicate;
   NclNode *_node;
   NclAnchor *_interface;
-  map<string, string> _params;
+  map<string, string> _parameters;
 };
 
 GINGA_NAMESPACE_END

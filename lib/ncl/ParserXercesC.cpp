@@ -270,29 +270,29 @@ __error_elt (const DOMElement *elt)
 // Maps event type name to event type code.
 static map<string, FormatterEvent::Type> event_type_table =
   {
-   {"presentation", FormatterEvent::Type::PRESENTATION},
-   {"attribution", FormatterEvent::Type::ATTRIBUTION},
-   {"selection", FormatterEvent::Type::SELECTION},
+   {"presentation", FormatterEvent::PRESENTATION},
+   {"attribution", FormatterEvent::ATTRIBUTION},
+   {"selection", FormatterEvent::SELECTION},
   };
 
 // Maps condition name to condition code.
 static map<string, FormatterEvent::Transition> event_transition_table =
   {
-   {"starts", FormatterEvent::Transition::START},
-   {"stops", FormatterEvent::Transition::STOP},
-   {"aborts", FormatterEvent::Transition::ABORT},
-   {"pauses", FormatterEvent::Transition::PAUSE},
-   {"resumes", FormatterEvent::Transition::RESUME},
+   {"starts", FormatterEvent::START},
+   {"stops", FormatterEvent::STOP},
+   {"aborts", FormatterEvent::ABORT},
+   {"pauses", FormatterEvent::PAUSE},
+   {"resumes", FormatterEvent::RESUME},
   };
 
 // Maps action name to action code.
 static map<string, FormatterEvent::Transition> event_action_type_table =
   {
-   {"start", FormatterEvent::Transition::START},
-   {"stop", FormatterEvent::Transition::STOP},
-   {"abort", FormatterEvent::Transition::ABORT},
-   {"pause", FormatterEvent::Transition::PAUSE},
-   {"resume", FormatterEvent::Transition::RESUME},
+   {"start", FormatterEvent::START},
+   {"stop", FormatterEvent::STOP},
+   {"abort", FormatterEvent::ABORT},
+   {"pause", FormatterEvent::PAUSE},
+   {"resume", FormatterEvent::RESUME},
   };
 
 
@@ -1995,7 +1995,6 @@ ParserXercesC::parseLink (DOMElement *elt, NclContext *context)
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "xconnector");
 
   link = new NclLink (_doc, id);
-  g_assert (link->initConnector (conn));
 
   // Collect children.
   for (DOMElement *child: dom_elt_get_children (elt))
@@ -2011,7 +2010,7 @@ ParserXercesC::parseLink (DOMElement *elt, NclContext *context)
         }
       else if (tag == "bind")
         {
-          this->parseBind (child, link, &params, context);
+          this->parseBind (child, link, conn, &params, context);
         }
       else
         {
@@ -2023,7 +2022,8 @@ ParserXercesC::parseLink (DOMElement *elt, NclContext *context)
 
 NclBind *
 ParserXercesC::parseBind (DOMElement *elt, NclLink *link,
-                          unused (map<string, string> *params),
+                          NclConnector *conn,
+                          map<string, string> *params,
                           NclContext *context)
 {
   NclBind *bind;
@@ -2032,8 +2032,6 @@ ParserXercesC::parseBind (DOMElement *elt, NclLink *link,
   string value;
 
   NclRole *role;
-  NclConnector *conn;
-
   NclNode *target;
   NclNode *derefer;
   NclAnchor *iface;
@@ -2096,9 +2094,6 @@ ParserXercesC::parseBind (DOMElement *elt, NclLink *link,
   if (unlikely (iface == nullptr))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "interface");
 
-  conn = cast (NclConnector *, link->getConnector ());
-  g_assert_nonnull (conn);
-
   role = conn->getRole (label); // ghost "get"
   if (role == nullptr)
     {
@@ -2109,7 +2104,25 @@ ParserXercesC::parseBind (DOMElement *elt, NclLink *link,
     }
   g_assert_nonnull (role);
 
-  bind = new NclBind (role, target, iface);
+
+  NclBind::RoleType roleType;
+  FormatterEvent::Type eventType;
+  FormatterEvent::Transition transition;
+  FormatterPredicate *pred;
+
+  roleType = (instanceof (NclCondition *, role))
+    ? NclBind::CONDITION : NclBind::ACTION;
+  eventType = role->getEventType ();
+  transition = (roleType == NclBind::CONDITION)
+    ? cast (NclCondition *, role)->getTransition ()
+    : cast (NclAction *, role)->getTransition ();
+
+  pred = (roleType == NclBind::CONDITION)
+    ? cast (NclCondition *, role)->getPredicate ()
+    : nullptr;
+
+  bind = new NclBind (label, roleType, eventType, transition, pred,
+                      target, iface);
 
   // Collect link parameters.
   for (auto it: *params)
@@ -2138,6 +2151,34 @@ ParserXercesC::parseBind (DOMElement *elt, NclLink *link,
         {
           ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
         }
+    }
+
+  // Solve bind parameters.
+  if (roleType == NclBind::CONDITION
+      && eventType == FormatterEvent::SELECTION)
+    {
+      NclCondition *cond = cast (NclCondition *, role);
+      g_assert_nonnull (cond);
+
+      string key = cond->getKey ();
+      if (key[0] == '$')
+        bind->getParameter (key.substr (1, key.length () - 1), &key);
+      bind->setParameter ("key", key);
+    }
+  else if (roleType == NclBind::ACTION)
+    {
+      NclAction *act = cast (NclAction *, role);
+      g_assert_nonnull (act);
+
+      string dur = act->getDuration ();
+      if (dur[0] == '$')
+        bind->getParameter (dur.substr (1, dur.length () - 1), &dur);
+      bind->setParameter ("duration", dur);
+
+      string value = act->getValue ();
+      if (value[0] == '$')
+        bind->getParameter (value.substr (1, value.length () - 1), &value);
+      bind->setParameter ("value", value);
     }
 
   // Solve ghosts.
