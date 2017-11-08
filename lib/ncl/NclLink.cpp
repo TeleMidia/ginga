@@ -18,9 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "NclLink.h"
 
-#include "NclAction.h"
 #include "NclPort.h"
-#include "NclCondition.h"
 
 GINGA_NAMESPACE_BEGIN
 

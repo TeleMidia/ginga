@@ -101,4 +101,62 @@ NclBind::setParameter (const string &name, const string &value)
   MAP_SET_IMPL (_parameters, name, value);
 }
 
+bool
+NclBind::isReserved (const string &role,
+                     FormatterEvent::Type *type,
+                     FormatterEvent::Transition *trans)
+{
+  static map<string, pair<int,int>> reserved =
+    {
+     {"onBegin",
+      {(int) FormatterEvent::PRESENTATION,
+       (int) FormatterEvent::START}},
+     {"onEnd",
+      {(int) FormatterEvent::PRESENTATION,
+       (int) FormatterEvent::STOP}},
+     {"onAbort",
+      {(int) FormatterEvent::PRESENTATION,
+       (int) FormatterEvent::ABORT}},
+     {"onPause",
+      {(int) FormatterEvent::PRESENTATION,
+       (int) FormatterEvent::PAUSE}},
+     {"onResumes",
+      {(int) FormatterEvent::PRESENTATION,
+       (int) FormatterEvent::RESUME}},
+     {"onBeginAttribution",
+      {(int) FormatterEvent::ATTRIBUTION,
+       (int) FormatterEvent::START}},
+     {"onEndAttribution",
+      {(int) FormatterEvent::SELECTION,
+       (int) FormatterEvent::STOP}},
+     {"onSelection",
+      {(int) FormatterEvent::SELECTION,
+       (int) FormatterEvent::START}},
+     {"start",
+      {(int) FormatterEvent::Type::PRESENTATION,
+       (int) FormatterEvent::Transition::START}},
+     {"stop",
+      {(int) FormatterEvent::Type::PRESENTATION,
+       (int) FormatterEvent::Transition::STOP}},
+     {"abort",
+      {(int) FormatterEvent::Type::PRESENTATION,
+       (int) FormatterEvent::Transition::ABORT}},
+     {"pause",
+      {(int) FormatterEvent::Type::PRESENTATION,
+       (int) FormatterEvent::Transition::PAUSE}},
+     {"resume",
+      {(int) FormatterEvent::Type::PRESENTATION,
+       (int) FormatterEvent::Transition::RESUME}},
+     {"set",
+      {(int) FormatterEvent::Type::ATTRIBUTION,
+       (int) FormatterEvent::Transition::START}},
+    };
+  map<string, pair<int,int>>::iterator it;
+  if ((it = reserved.find (role)) == reserved.end ())
+    return false;
+  tryset (type, (FormatterEvent::Type) it->second.first);
+  tryset (trans, (FormatterEvent::Transition) it->second.second);
+  return true;
+}
+
 GINGA_NAMESPACE_END

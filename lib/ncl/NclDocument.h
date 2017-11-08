@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NCL_DOCUMENT_H
 #define NCL_DOCUMENT_H
 
-#include "NclConnectorBase.h"
 #include "NclContext.h"
 
 GINGA_NAMESPACE_BEGIN
@@ -50,8 +49,6 @@ public:
   string getDocumentPerspective ();
 
   void addDocument (NclDocument *, const string &, const string &);
-  NclConnector *getConnector (const string &);
-  NclConnectorBase *getConnectorBase ();
 
   NclDocument *getDocument (const string &);
   string getDocumentAlias (NclDocument *);
@@ -62,14 +59,12 @@ public:
 
   vector<NclNode *> *getSettingsNodes ();
   bool removeDocument (NclDocument *);
-  void setConnectorBase (NclConnectorBase *);
   void setDocumentAlias (NclDocument *, const string &);
 
   void setDocumentLocation (NclDocument *, const string &);
   void setId (const string &_id);
 
 private:
-  NclConnectorBase *_connectorBase;
   map<string, NclDocument *> _documentAliases;
   vector<NclDocument *> _documentBase;
   map<string, NclDocument *> _documentLocations;

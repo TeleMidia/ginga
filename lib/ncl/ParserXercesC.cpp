@@ -467,9 +467,7 @@ ParserXercesC::parseHead (DOMElement *elt)
         }
       else if (tag == "connectorBase")
         {
-          NclConnectorBase *base = this->parseConnectorBase (child);
-          g_assert_nonnull (base);
-          _doc->setConnectorBase (base);
+          this->parseConnectorBase (child);
         }
       else
         {
@@ -500,7 +498,7 @@ ParserXercesC::parseImportNCL (DOMElement *elt, string *alias, string *uri)
   return this->parse1 (*uri);
 }
 
-NclConnectorBase *
+void
 ParserXercesC::parseImportBase (DOMElement *elt, NclDocument **doc,
                                 string *alias, string *uri)
 {
@@ -523,7 +521,7 @@ ParserXercesC::parseImportBase (DOMElement *elt, NclDocument **doc,
 
   tag = dom_elt_get_tag (parent);
   if (tag == "connectorBase")
-    return (*doc)->getConnectorBase ();
+    g_assert_not_reached ();
   else
     g_assert_not_reached ();
 }
@@ -960,47 +958,44 @@ ParserXercesC::parseDescriptor (DOMElement *elt)
 
 // Private: NclConnector.
 
-NclConnectorBase *
+void
 ParserXercesC::parseConnectorBase (DOMElement *elt)
 {
-  NclConnectorBase *base;
   string id;
 
   CHECK_ELT_TAG (elt, "connectorBase", nullptr);
   CHECK_ELT_OPT_ID_AUTO (elt, &id, connectorBase);
 
-  base = new NclConnectorBase (_doc, id);
   for (DOMElement *child: dom_elt_get_children (elt))
     {
       string tag = dom_elt_get_tag (child);
       if (tag == "importBase")
         {
-          NclDocument *doc;     // FIXME: this is lost (leak?)
-          NclConnectorBase *imported;
-          string alias;
-          string uri;
-          imported = this->parseImportBase (child, &doc, &alias, &uri);
-          g_assert_nonnull (base);
-          base->addBase (imported, alias, uri);
+          // NclDocument *doc;     // FIXME: this is lost (leak?)
+          // NclConnectorBase *imported;
+          // string alias;
+          // string uri;
+          // imported = this->parseImportBase (child, &doc, &alias, &uri);
+          // g_assert_nonnull (base);
+          // base->addBase (imported, alias, uri);
+          g_assert_not_reached ();
         }
       else if (tag ==  "causalConnector")
         {
-          NclConnector *conn = parseCausalConnector (child);
-          g_assert_nonnull (conn);
-          base->addConnector (conn);
+          parseCausalConnector (child);
         }
       else
         {
           ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
         }
     }
-  return base;
 }
 
-NclConnector *
+void
 ParserXercesC::parseCausalConnector (DOMElement *elt)
 {
-  NclConnector *conn;
+  list<ConnRole> _conn;
+  list<ConnRole> *conn;
   string id;
   int ncond;
   int nact;
@@ -1011,7 +1006,9 @@ ParserXercesC::parseCausalConnector (DOMElement *elt)
   ncond = 0;
   nact = 0;
 
-  conn = new NclConnector (_doc, id);
+  _connectors[id] = _conn;
+  conn = &_connectors[id];
+
   for (DOMElement *child: dom_elt_get_children (elt))
     {
       string tag = dom_elt_get_tag (child);
@@ -1051,7 +1048,6 @@ ParserXercesC::parseCausalConnector (DOMElement *elt)
       if (unlikely (nact > 1))
         ERROR_SYNTAX_ELT (elt, "too many actions");
     }
-  return conn;
 }
 
 FormatterPredicate *
@@ -1132,7 +1128,7 @@ ParserXercesC::parseAssessmentStatement (DOMElement *elt)
 
 void
 ParserXercesC::parseCompoundCondition (DOMElement *elt,
-                                       NclConnector *conn,
+                                       list<ConnRole> *conn,
                                        FormatterPredicate *parent_pred)
 {
   string op;
@@ -1208,69 +1204,71 @@ ParserXercesC::parseCompoundCondition (DOMElement *elt,
 }
 
 void
-ParserXercesC::parseCondition (DOMElement *elt, NclConnector *conn,
+ParserXercesC::parseCondition (DOMElement *elt, list<ConnRole> *conn,
                                FormatterPredicate *pred)
 {
+
   string str;
-  string role;
+  string label;
   string key;
   string qualifier;
 
-  FormatterEvent::Type type;
-  FormatterEvent::Transition trans;
-  map<string, pair<int,int>>::iterator it;
+  ConnRole role;
 
   CHECK_ELT_TAG (elt, "simpleCondition", nullptr);
-  CHECK_ELT_ATTRIBUTE (elt, "role", &role);
+  CHECK_ELT_ATTRIBUTE (elt, "role", &label);
   CHECK_ELT_OPT_ATTRIBUTE (elt, "qualifier", &qualifier, "or");
   CHECK_ELT_OPT_ATTRIBUTE (elt, "key", &key, "");
 
-  type = (FormatterEvent::Type) -1;
-  trans = (FormatterEvent::Transition) -1;
+  role.role = label;
+  role.roleType = NclBind::CONDITION;
+  role.eventType = (FormatterEvent::Type) -1;
+  role.transition = (FormatterEvent::Transition) -1;
+  role.predicate = pred;
+  role.key = key;
 
-  NclCondition::isReserved (role, &type, &trans);
+  NclBind::isReserved (role.role, &role.eventType, &role.transition);
 
   if (dom_elt_try_get_attribute (str, elt, "eventType"))
     {
-      if (unlikely ((int) type != -1))
+      if (unlikely ((int) role.eventType != -1))
         {
           ERROR_SYNTAX_ELT (elt, "eventType of '%s' cannot be overridden",
-                            role.c_str ());
+                            role.role.c_str ());
         }
       map<string, FormatterEvent::Type>::iterator it;
       if ((it = event_type_table.find (str)) == event_type_table.end ())
         {
           ERROR_SYNTAX_ELT (elt, "bad eventType '%s' for role '%s'",
-                            str.c_str (), role.c_str ());
+                            str.c_str (), role.role.c_str ());
         }
-      type = it->second;
+      role.eventType = it->second;
     }
 
   if (dom_elt_try_get_attribute (str, elt, "transition"))
     {
-      if (unlikely ((int) trans != -1))
+      if (unlikely ((int) role.transition != -1))
         {
           ERROR_SYNTAX_ELT (elt, "transition of '%s' cannot be overridden",
-                            role.c_str ());
+                            role.role.c_str ());
         }
       map<string, FormatterEvent::Transition>::iterator it;
       if ((it = event_transition_table.find (str))
           == event_transition_table.end ())
         {
           ERROR_SYNTAX_ELT (elt, "bad transition '%s' for role '%s'",
-                            str.c_str (), role.c_str ());
+                            str.c_str (), role.role.c_str ());
         }
-      trans = it->second;
+      role.transition = it->second;
     }
 
-  g_assert ((int) type != -1);
-  g_assert ((int) trans != -1);
+  g_assert ((int) role.eventType != -1);
+  g_assert ((int) role.transition != -1);
 
   if (qualifier != "and" && qualifier != "or")
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "qualifier");
 
-  NclCondition *cond = new NclCondition (type, trans, pred, role, key);
-  conn->addCondition (cond);
+  conn->push_back (role);
 }
 
 // CompoundStatement *
@@ -1372,7 +1370,7 @@ ParserXercesC::parseCondition (DOMElement *elt, NclConnector *conn,
 // }
 
 void
-ParserXercesC::parseCompoundAction (DOMElement *elt, NclConnector *conn)
+ParserXercesC::parseCompoundAction (DOMElement *elt, list<ConnRole> *conn)
 {
   string value;
 
@@ -1399,52 +1397,53 @@ ParserXercesC::parseCompoundAction (DOMElement *elt, NclConnector *conn)
 }
 
 void
-ParserXercesC::parseSimpleAction (DOMElement *elt, NclConnector *conn)
+ParserXercesC::parseSimpleAction (DOMElement *elt, list<ConnRole> *conn)
 {
   string str;
   string tag;
-  string role;
+  string label;
   string delay;
   string value;
   string dur;
 
-  FormatterEvent::Type type;
-  FormatterEvent::Transition acttype;
-  map<string, pair<int,int>>::iterator it;
+  ConnRole role;
 
   CHECK_ELT_TAG (elt, "simpleAction", nullptr);
-  CHECK_ELT_ATTRIBUTE (elt, "role", &role);
+  CHECK_ELT_ATTRIBUTE (elt, "role", &label);
   CHECK_ELT_OPT_ATTRIBUTE (elt, "delay", &delay, "0s");
-  CHECK_ELT_OPT_ATTRIBUTE (elt, "value", &value, "0s");
-  CHECK_ELT_OPT_ATTRIBUTE (elt, "dur", &dur, "0s");
+  CHECK_ELT_OPT_ATTRIBUTE (elt, "value", &value, "");
+  CHECK_ELT_OPT_ATTRIBUTE (elt, "duration", &dur, "0s");
 
-  type = (FormatterEvent::Type) -1;
-  acttype = (FormatterEvent::Transition) -1;
+  role.role = label;
+  role.roleType = NclBind::ACTION;
+  role.eventType = (FormatterEvent::Type) -1;
+  role.transition = (FormatterEvent::Transition) -1;
+  role.value = value;
 
-  NclAction::isReserved (role, &type, &acttype);
+  NclBind::isReserved (role.role, &role.eventType, &role.transition);
 
   if (dom_elt_try_get_attribute (str, elt, "eventType"))
     {
-      if (unlikely ((int) type != -1))
+      if (unlikely ((int) role.eventType != -1))
         {
           ERROR_SYNTAX_ELT (elt, "eventType '%s' cannot be overridden",
-                            role.c_str ());
+                            role.role.c_str ());
         }
       map<string, FormatterEvent::Type>::iterator it;
       if ((it = event_type_table.find (str)) == event_type_table.end ())
         {
           ERROR_SYNTAX_ELT (elt, "bad eventType '%s' for role '%s'",
-                            str.c_str (), role.c_str ());
+                            str.c_str (), role.role.c_str ());
         }
-      type = it->second;
+      role.eventType = it->second;
     }
 
   if (dom_elt_try_get_attribute (str, elt, "actionType"))
     {
-      if (unlikely ((int) acttype != -1))
+      if (unlikely ((int) role.transition != -1))
         {
           ERROR_SYNTAX_ELT (elt, "actionType of '%s' cannot be overridden",
-                            role.c_str ());
+                            role.role.c_str ());
         }
       map<string, FormatterEvent::Transition>::iterator it;
       if ((it = event_action_type_table.find (str))
@@ -1452,14 +1451,13 @@ ParserXercesC::parseSimpleAction (DOMElement *elt, NclConnector *conn)
         {
           ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "actionType");
         }
-      acttype = it->second;
+      role.transition = it->second;
     }
 
-  g_assert ((int) type != -1);
-  g_assert ((int) acttype != -1);
+  g_assert ((int) role.eventType != -1);
+  g_assert ((int) role.transition != -1);
 
-  NclAction *act = new NclAction (type, acttype, role, delay, value, dur);
-  conn->addAction (act);
+  conn->push_back (role);
 }
 
 
@@ -1983,17 +1981,18 @@ ParserXercesC::parseLink (DOMElement *elt, NclContext *context)
   NclLink *link;
   string id;
   string xconn;
-  NclConnector *conn;
+  list<ConnRole> *conn;
   map<string, string> params;
 
   CHECK_ELT_TAG (elt, "link", nullptr);
   CHECK_ELT_OPT_ID_AUTO (elt, &id, link);
   CHECK_ELT_ATTRIBUTE (elt, "xconnector", &xconn);
 
-  conn = _doc->getConnector (xconn);
-  if (unlikely (conn == nullptr))
+  auto it = _connectors.find (xconn);
+  if (unlikely (it == _connectors.end ()))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "xconnector");
 
+  conn = &it->second;
   link = new NclLink (_doc, id);
 
   // Collect children.
@@ -2022,7 +2021,7 @@ ParserXercesC::parseLink (DOMElement *elt, NclContext *context)
 
 NclBind *
 ParserXercesC::parseBind (DOMElement *elt, NclLink *link,
-                          NclConnector *conn,
+                          list<ConnRole> *conn,
                           map<string, string> *params,
                           NclContext *context)
 {
@@ -2031,7 +2030,6 @@ ParserXercesC::parseBind (DOMElement *elt, NclLink *link,
   string comp;
   string value;
 
-  NclRole *role;
   NclNode *target;
   NclNode *derefer;
   NclAnchor *iface;
@@ -2094,7 +2092,16 @@ ParserXercesC::parseBind (DOMElement *elt, NclLink *link,
   if (unlikely (iface == nullptr))
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "interface");
 
-  role = conn->getRole (label); // ghost "get"
+  ConnRole *role = nullptr;
+  for (auto entry: *conn)
+    {
+      if (entry.role == label)
+        {
+          role = &entry;
+          break;
+        }
+    }
+
   if (role == nullptr)
     {
       link->setGhostBind (label, xstrbuild ("$%s.%s",
@@ -2102,27 +2109,10 @@ ParserXercesC::parseBind (DOMElement *elt, NclLink *link,
                                             iface->getId ().c_str ()));
       return nullptr;
     }
+
   g_assert_nonnull (role);
-
-
-  NclBind::RoleType roleType;
-  FormatterEvent::Type eventType;
-  FormatterEvent::Transition transition;
-  FormatterPredicate *pred;
-
-  roleType = (instanceof (NclCondition *, role))
-    ? NclBind::CONDITION : NclBind::ACTION;
-  eventType = role->getEventType ();
-  transition = (roleType == NclBind::CONDITION)
-    ? cast (NclCondition *, role)->getTransition ()
-    : cast (NclAction *, role)->getTransition ();
-
-  pred = (roleType == NclBind::CONDITION)
-    ? cast (NclCondition *, role)->getPredicate ()
-    : nullptr;
-
-  bind = new NclBind (label, roleType, eventType, transition, pred,
-                      target, iface);
+  bind = new NclBind (label, role->roleType, role->eventType,
+                      role->transition, role->predicate, target, iface);
 
   // Collect link parameters.
   for (auto it: *params)
@@ -2154,28 +2144,17 @@ ParserXercesC::parseBind (DOMElement *elt, NclLink *link,
     }
 
   // Solve bind parameters.
-  if (roleType == NclBind::CONDITION
-      && eventType == FormatterEvent::SELECTION)
+  if (role->roleType == NclBind::CONDITION
+      && role->eventType == FormatterEvent::SELECTION)
     {
-      NclCondition *cond = cast (NclCondition *, role);
-      g_assert_nonnull (cond);
-
-      string key = cond->getKey ();
+      string key = role->key;
       if (key[0] == '$')
         bind->getParameter (key.substr (1, key.length () - 1), &key);
       bind->setParameter ("key", key);
     }
-  else if (roleType == NclBind::ACTION)
+  else if (role->roleType == NclBind::ACTION)
     {
-      NclAction *act = cast (NclAction *, role);
-      g_assert_nonnull (act);
-
-      string dur = act->getDuration ();
-      if (dur[0] == '$')
-        bind->getParameter (dur.substr (1, dur.length () - 1), &dur);
-      bind->setParameter ("duration", dur);
-
-      string value = act->getValue ();
+      string value = role->value;
       if (value[0] == '$')
         bind->getParameter (value.substr (1, value.length () - 1), &value);
       bind->setParameter ("value", value);
