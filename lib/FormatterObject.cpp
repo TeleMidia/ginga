@@ -29,11 +29,10 @@ GINGA_NAMESPACE_BEGIN
 
 // Public.
 
-FormatterObject::FormatterObject (Formatter *formatter, const string &id)
+FormatterObject::FormatterObject (const string &id)
 {
-  g_assert_nonnull (formatter);
-  _formatter = formatter;
   _id = id;
+  _formatter = nullptr;
   _parent = nullptr;
   _time = GINGA_TIME_NONE;
 
@@ -51,6 +50,34 @@ string
 FormatterObject::getId ()
 {
   return _id;
+}
+
+Formatter *
+FormatterObject::getFormatter ()
+{
+  return _formatter;
+}
+
+void
+FormatterObject::initFormatter (Formatter *formatter)
+{
+  g_assert_nonnull (formatter);
+  g_assert_null (_formatter);
+  _formatter = formatter;
+}
+
+FormatterComposition *
+FormatterObject::getParent ()
+{
+  return _parent;
+}
+
+void
+FormatterObject::initParent (FormatterComposition *parent)
+{
+  g_assert_nonnull (parent);
+  g_assert_null (_parent);
+  _parent = parent;
 }
 
 const vector <string> *
@@ -74,19 +101,6 @@ FormatterObject::addAlias (const string &alias)
   tryinsert (alias, _aliases, push_back);
 }
 
-FormatterComposition *
-FormatterObject::getParent ()
-{
-  return _parent;
-}
-
-void
-FormatterObject::initParent (FormatterComposition *parent)
-{
-  g_assert_nonnull (parent);
-  g_assert_null (_parent);
-  _parent = parent;
-}
 
 FormatterEvent *
 FormatterObject::obtainEvent (NclEventType type, NclAnchor *anchor,

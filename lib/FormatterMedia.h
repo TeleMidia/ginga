@@ -26,8 +26,7 @@ GINGA_NAMESPACE_BEGIN
 class FormatterMedia: public FormatterObject
 {
 public:
-  FormatterMedia (Formatter *, const string &, const string &,
-                  const string &);
+  FormatterMedia (const string &, const string &, const string &);
   virtual ~FormatterMedia ();
 
   // FormatterObject:
@@ -44,9 +43,9 @@ public:
   virtual void redraw (cairo_t *);
 
 protected:
-  string _mimetype;              // mime-type
-  string _uri;                   // content URI
-  Player *_player;               // underlying player
+  string _mime;                 // mime-type
+  string _uri;                  // content URI
+  Player *_player;              // underlying player
 
   void doStop () override;
 };

@@ -25,7 +25,7 @@ GINGA_NAMESPACE_BEGIN
 class FormatterComposition: public FormatterObject
 {
  public:
-  FormatterComposition (Formatter *, const string &);
+  FormatterComposition (const string &);
   virtual ~FormatterComposition ();
 
   const set<FormatterObject *> *getChildren ();

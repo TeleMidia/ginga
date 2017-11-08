@@ -26,9 +26,8 @@ GINGA_NAMESPACE_BEGIN
 
 // Public.
 
-FormatterMediaSettings::FormatterMediaSettings (Formatter *formatter,
-                                                const string &id)
-  :FormatterMedia (formatter, id, "application/x-ginga-settings", "")
+FormatterMediaSettings::FormatterMediaSettings (const string &id)
+  :FormatterMedia (id, "application/x-ginga-settings", "")
 {
   this->addAttributionEvent ("service.currentFocus");
 }

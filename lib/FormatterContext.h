@@ -27,7 +27,7 @@ GINGA_NAMESPACE_BEGIN
 class FormatterContext: public FormatterComposition
 {
 public:
-  FormatterContext (Formatter *, const string &);
+  FormatterContext (const string &);
   virtual ~FormatterContext ();
 
   // FormatterObject:

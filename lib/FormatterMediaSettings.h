@@ -25,7 +25,7 @@ GINGA_NAMESPACE_BEGIN
 class FormatterMediaSettings: public FormatterMedia
 {
 public:
-  FormatterMediaSettings (Formatter *, const string &);
+  FormatterMediaSettings (const string &);
   ~FormatterMediaSettings ();
 
   // FormatterObject:
