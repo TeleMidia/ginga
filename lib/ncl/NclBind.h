@@ -51,6 +51,9 @@ public:
   bool getParameter (const string &, string *);
   bool setParameter (const string &, const string &);
 
+  static bool isReserved (const string &,
+                          FormatterEvent::Type *,
+                          FormatterEvent::Transition *);
 private:
   string _role;
   NclBind::RoleType _roleType;

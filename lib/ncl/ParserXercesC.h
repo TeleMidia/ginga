@@ -27,7 +27,6 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wundef)
 XERCES_CPP_NAMESPACE_USE
 GINGA_PRAGMA_DIAG_POP ()
 
-#include "NclAction.h"
 #include "NclArea.h"
 #include "NclAreaLabeled.h"
 #include "NclDocument.h"
@@ -53,6 +52,18 @@ private:
   map<string,map<string,string>> _regions;     // cached regions
   map<string,FormatterPredicate *> _rules;     // cached rules
 
+  struct ConnRole
+  {
+    string role;
+    NclBind::RoleType roleType;
+    FormatterEvent::Type eventType;
+    FormatterEvent::Transition transition;
+    FormatterPredicate *predicate;
+    string value;
+    string key;
+  };
+  map<string,list<ConnRole>> _connectors;
+
   ParserXercesC (int, int);
   ~ParserXercesC ();
 
@@ -65,7 +76,7 @@ private:
 
   NclDocument *parse1 (const string &);
   NclDocument *parseImportNCL (DOMElement *, string *, string *);
-  NclConnectorBase *parseImportBase (DOMElement *, NclDocument **, string *, string *);
+  void parseImportBase (DOMElement *, NclDocument **, string *, string *);
   void parseImportedDocumentBase (DOMElement *);
 
   void parseRuleBase (DOMElement *);
@@ -81,17 +92,17 @@ private:
   void parseDescriptorBase (DOMElement *);
   void parseDescriptor (DOMElement *);
 
-  NclConnectorBase *parseConnectorBase (DOMElement *);
-  NclConnector *parseCausalConnector (DOMElement *);
+  void parseConnectorBase (DOMElement *);
+  void parseCausalConnector (DOMElement *);
 
   FormatterPredicate *parseAssessmentStatement (DOMElement *);
   FormatterPredicate *parseCompoundStatement (DOMElement *);
 
-  void parseCompoundCondition (DOMElement *, NclConnector *, FormatterPredicate *);
-  void parseCondition (DOMElement *, NclConnector *, FormatterPredicate *);
+  void parseCompoundCondition (DOMElement *, list<ConnRole> *, FormatterPredicate *);
+  void parseCondition (DOMElement *, list<ConnRole> *, FormatterPredicate *);
 
-  void parseCompoundAction (DOMElement *, NclConnector *);
-  void parseSimpleAction (DOMElement *, NclConnector *);
+  void parseCompoundAction (DOMElement *, list<ConnRole> *);
+  void parseSimpleAction (DOMElement *, list<ConnRole> *);
 
   NclContext *parseBody (DOMElement *);
   void solveNodeReferences (NclComposition *);
@@ -107,7 +118,7 @@ private:
   NclAnchor *parseArea (DOMElement *);
 
   NclLink *parseLink (DOMElement *, NclContext *);
-  NclBind *parseBind (DOMElement *, NclLink *, NclConnector *,
+  NclBind *parseBind (DOMElement *, NclLink *, list<ConnRole> *,
                       map<string, string> *, NclContext *);
 
   // From ErrorHandler.

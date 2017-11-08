@@ -18,14 +18,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NCL_H
 #define NCL_H
 
-#include "NclAction.h"
 #include "NclAnchor.h"
 #include "NclArea.h"
 #include "NclAreaLabeled.h"
 #include "NclBind.h"
 #include "NclComposition.h"
-#include "NclConnector.h"
-#include "NclConnectorBase.h"
 #include "NclContext.h"
 #include "NclEntity.h"
 #include "NclLink.h"
@@ -36,8 +33,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclPort.h"
 #include "NclProperty.h"
 #include "NclMediaRefer.h"
-#include "NclRole.h"
-#include "NclCondition.h"
 #include "NclSwitch.h"
 
 #endif // NCL_H

@@ -106,7 +106,6 @@ NclDocument::NclDocument (const string &id, const string &uri)
   _uri = uri;
   _root = new NclContext (this, id);
 
-  _connectorBase = nullptr;
   _parentDocument = nullptr;
 }
 
@@ -165,38 +164,6 @@ NclDocument::addDocument (NclDocument *document, const string &alias,
   _documentLocations[location] = document;
 }
 
-NclConnector *
-NclDocument::getConnector (const string &connectorId)
-{
-  NclConnector *connector;
-  vector<NclDocument *>::iterator i;
-
-  if (_connectorBase != NULL)
-    {
-      connector = _connectorBase->getConnector (connectorId);
-      if (connector != NULL)
-        {
-          return connector;
-        }
-    }
-
-  for (i = _documentBase.begin (); i != _documentBase.end (); ++i)
-    {
-      connector = (*i)->getConnector (connectorId);
-      if (connector != NULL)
-        {
-          return connector;
-        }
-    }
-
-  return NULL;
-}
-
-NclConnectorBase *
-NclDocument::getConnectorBase ()
-{
-  return _connectorBase;
-}
 
 NclDocument *
 NclDocument::getDocument (const string &documentId)
@@ -372,12 +339,6 @@ NclDocument::removeDocument (NclDocument *document)
         }
     }
   return false;
-}
-
-void
-NclDocument::setConnectorBase (NclConnectorBase *connectorBase)
-{
-  this->_connectorBase = connectorBase;
 }
 
 void
