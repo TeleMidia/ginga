@@ -26,19 +26,19 @@ GINGA_NAMESPACE_BEGIN
 class NclAction: public NclRole
 {
 public:
-  NclAction (NclEventType, NclEventStateTransition, const string &,
+  NclAction (FormatterEvent::Type, FormatterEvent::Transition, const string &,
              const string &, const string &, const string &);
   ~NclAction ();
 
-  NclEventStateTransition getTransition ();
+  FormatterEvent::Transition getTransition ();
   string getDelay ();
   string getValue ();
   string getDuration ();
 
-  static bool isReserved (const string &, NclEventType *,
-                          NclEventStateTransition *);
+  static bool isReserved (const string &, FormatterEvent::Type *,
+                          FormatterEvent::Transition *);
 private:
-  NclEventStateTransition _transition;
+  FormatterEvent::Transition _transition;
   string _delay;
   string _value;
   string _duration;

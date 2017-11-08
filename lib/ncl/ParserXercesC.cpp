@@ -268,31 +268,31 @@ __error_elt (const DOMElement *elt)
 // Translation tables.
 
 // Maps event type name to event type code.
-static map<string, NclEventType> event_type_table =
+static map<string, FormatterEvent::Type> event_type_table =
   {
-   {"presentation", NclEventType::PRESENTATION},
-   {"attribution", NclEventType::ATTRIBUTION},
-   {"selection", NclEventType::SELECTION},
+   {"presentation", FormatterEvent::Type::PRESENTATION},
+   {"attribution", FormatterEvent::Type::ATTRIBUTION},
+   {"selection", FormatterEvent::Type::SELECTION},
   };
 
 // Maps condition name to condition code.
-static map<string, NclEventStateTransition> event_transition_table =
+static map<string, FormatterEvent::Transition> event_transition_table =
   {
-   {"starts", NclEventStateTransition::START},
-   {"stops", NclEventStateTransition::STOP},
-   {"aborts", NclEventStateTransition::ABORT},
-   {"pauses", NclEventStateTransition::PAUSE},
-   {"resumes", NclEventStateTransition::RESUME},
+   {"starts", FormatterEvent::Transition::START},
+   {"stops", FormatterEvent::Transition::STOP},
+   {"aborts", FormatterEvent::Transition::ABORT},
+   {"pauses", FormatterEvent::Transition::PAUSE},
+   {"resumes", FormatterEvent::Transition::RESUME},
   };
 
 // Maps action name to action code.
-static map<string, NclEventStateTransition> event_action_type_table =
+static map<string, FormatterEvent::Transition> event_action_type_table =
   {
-   {"start", NclEventStateTransition::START},
-   {"stop", NclEventStateTransition::STOP},
-   {"abort", NclEventStateTransition::ABORT},
-   {"pause", NclEventStateTransition::PAUSE},
-   {"resume", NclEventStateTransition::RESUME},
+   {"start", FormatterEvent::Transition::START},
+   {"stop", FormatterEvent::Transition::STOP},
+   {"abort", FormatterEvent::Transition::ABORT},
+   {"pause", FormatterEvent::Transition::PAUSE},
+   {"resume", FormatterEvent::Transition::RESUME},
   };
 
 
@@ -1216,8 +1216,8 @@ ParserXercesC::parseCondition (DOMElement *elt, NclConnector *conn,
   string key;
   string qualifier;
 
-  NclEventType type;
-  NclEventStateTransition trans;
+  FormatterEvent::Type type;
+  FormatterEvent::Transition trans;
   map<string, pair<int,int>>::iterator it;
 
   CHECK_ELT_TAG (elt, "simpleCondition", nullptr);
@@ -1225,19 +1225,19 @@ ParserXercesC::parseCondition (DOMElement *elt, NclConnector *conn,
   CHECK_ELT_OPT_ATTRIBUTE (elt, "qualifier", &qualifier, "or");
   CHECK_ELT_OPT_ATTRIBUTE (elt, "key", &key, "");
 
-  type = (NclEventType) -1;
-  trans = (NclEventStateTransition) -1;
+  type = (FormatterEvent::Type) -1;
+  trans = (FormatterEvent::Transition) -1;
 
   NclCondition::isReserved (role, &type, &trans);
 
   if (dom_elt_try_get_attribute (str, elt, "eventType"))
     {
-      if (unlikely (type != (NclEventType) -1))
+      if (unlikely ((int) type != -1))
         {
           ERROR_SYNTAX_ELT (elt, "eventType of '%s' cannot be overridden",
                             role.c_str ());
         }
-      map<string, NclEventType>::iterator it;
+      map<string, FormatterEvent::Type>::iterator it;
       if ((it = event_type_table.find (str)) == event_type_table.end ())
         {
           ERROR_SYNTAX_ELT (elt, "bad eventType '%s' for role '%s'",
@@ -1248,12 +1248,12 @@ ParserXercesC::parseCondition (DOMElement *elt, NclConnector *conn,
 
   if (dom_elt_try_get_attribute (str, elt, "transition"))
     {
-      if (unlikely (trans != (NclEventStateTransition) -1))
+      if (unlikely ((int) trans != -1))
         {
           ERROR_SYNTAX_ELT (elt, "transition of '%s' cannot be overridden",
                             role.c_str ());
         }
-      map<string, NclEventStateTransition>::iterator it;
+      map<string, FormatterEvent::Transition>::iterator it;
       if ((it = event_transition_table.find (str))
           == event_transition_table.end ())
         {
@@ -1263,8 +1263,8 @@ ParserXercesC::parseCondition (DOMElement *elt, NclConnector *conn,
       trans = it->second;
     }
 
-  g_assert (type != (NclEventType) -1);
-  g_assert (trans != (NclEventStateTransition) -1);
+  g_assert ((int) type != -1);
+  g_assert ((int) trans != -1);
 
   if (qualifier != "and" && qualifier != "or")
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "qualifier");
@@ -1345,12 +1345,12 @@ ParserXercesC::parseCondition (DOMElement *elt, NclConnector *conn,
 // AttributeAssessment *
 // ParserXercesC::parseAttributeAssessment (DOMElement *elt)
 // {
-//   map<string, NclEventType>::iterator it;
+//   map<string, FormatterEvent::Type>::iterator it;
 //   string role;
 //   string type;
 //   string key;
 //   string offset;
-//   NclEventType evttype;
+//   FormatterEvent::Type evttype;
 //   CHECK_ELT_TAG (elt, "attributeAssessment", nullptr);
 //   CHECK_ELT_ATTRIBUTE (elt, "role", &role);
 //   CHECK_ELT_OPT_ATTRIBUTE (elt, "type", &type, "attribution");
@@ -1408,8 +1408,8 @@ ParserXercesC::parseSimpleAction (DOMElement *elt, NclConnector *conn)
   string value;
   string dur;
 
-  NclEventType type;
-  NclEventStateTransition acttype;
+  FormatterEvent::Type type;
+  FormatterEvent::Transition acttype;
   map<string, pair<int,int>>::iterator it;
 
   CHECK_ELT_TAG (elt, "simpleAction", nullptr);
@@ -1418,19 +1418,19 @@ ParserXercesC::parseSimpleAction (DOMElement *elt, NclConnector *conn)
   CHECK_ELT_OPT_ATTRIBUTE (elt, "value", &value, "0s");
   CHECK_ELT_OPT_ATTRIBUTE (elt, "dur", &dur, "0s");
 
-  type = (NclEventType) -1;
-  acttype = (NclEventStateTransition) -1;
+  type = (FormatterEvent::Type) -1;
+  acttype = (FormatterEvent::Transition) -1;
 
   NclAction::isReserved (role, &type, &acttype);
 
   if (dom_elt_try_get_attribute (str, elt, "eventType"))
     {
-      if (unlikely (type != (NclEventType) -1))
+      if (unlikely ((int) type != -1))
         {
           ERROR_SYNTAX_ELT (elt, "eventType '%s' cannot be overridden",
                             role.c_str ());
         }
-      map<string, NclEventType>::iterator it;
+      map<string, FormatterEvent::Type>::iterator it;
       if ((it = event_type_table.find (str)) == event_type_table.end ())
         {
           ERROR_SYNTAX_ELT (elt, "bad eventType '%s' for role '%s'",
@@ -1441,12 +1441,12 @@ ParserXercesC::parseSimpleAction (DOMElement *elt, NclConnector *conn)
 
   if (dom_elt_try_get_attribute (str, elt, "actionType"))
     {
-      if (unlikely (acttype != (NclEventStateTransition) -1))
+      if (unlikely ((int) acttype != -1))
         {
           ERROR_SYNTAX_ELT (elt, "actionType of '%s' cannot be overridden",
                             role.c_str ());
         }
-      map<string, NclEventStateTransition>::iterator it;
+      map<string, FormatterEvent::Transition>::iterator it;
       if ((it = event_action_type_table.find (str))
           == event_action_type_table.end ())
         {
@@ -1455,8 +1455,8 @@ ParserXercesC::parseSimpleAction (DOMElement *elt, NclConnector *conn)
       acttype = it->second;
     }
 
-  g_assert (type != (NclEventType) -1);
-  g_assert (acttype != (NclEventStateTransition) -1);
+  g_assert ((int) type != -1);
+  g_assert ((int) acttype != -1);
 
   NclAction *act = new NclAction (type, acttype, role, delay, value, dur);
   conn->addAction (act);

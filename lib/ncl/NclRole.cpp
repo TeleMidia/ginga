@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-NclRole::NclRole (NclEventType type, const string &label)
+NclRole::NclRole (FormatterEvent::Type type, const string &label)
 {
   _eventType = type;
   _label = label;
@@ -30,7 +30,7 @@ NclRole::~NclRole ()
 {
 }
 
-NclEventType
+FormatterEvent::Type
 NclRole::getEventType ()
 {
   return _eventType;

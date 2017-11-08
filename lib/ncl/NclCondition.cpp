@@ -20,8 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-NclCondition::NclCondition (NclEventType type,
-                            NclEventStateTransition transition,
+NclCondition::NclCondition (FormatterEvent::Type type,
+                            FormatterEvent::Transition transition,
                             FormatterPredicate *predicate,
                             const string &label,
                             const string &key) : NclRole (type, label)
@@ -37,7 +37,7 @@ NclCondition::~NclCondition ()
     delete _predicate;
 }
 
-NclEventStateTransition
+FormatterEvent::Transition
 NclCondition::getTransition ()
 {
   return _transition;
@@ -60,41 +60,41 @@ NclCondition::getKey ()
 
 bool
 NclCondition::isReserved (const string &role,
-                          NclEventType *type,
-                          NclEventStateTransition *trans)
+                          FormatterEvent::Type *type,
+                          FormatterEvent::Transition *trans)
 {
   static map<string, pair<int,int>> reserved =
     {
      {"onBegin",
-      {(int) NclEventType::PRESENTATION,
-       (int) NclEventStateTransition::START}},
+      {(int) FormatterEvent::Type::PRESENTATION,
+       (int) FormatterEvent::Transition::START}},
      {"onEnd",
-      {(int) NclEventType::PRESENTATION,
-       (int) NclEventStateTransition::STOP}},
+      {(int) FormatterEvent::Type::PRESENTATION,
+       (int) FormatterEvent::Transition::STOP}},
      {"onAbort",
-      {(int) NclEventType::PRESENTATION,
-       (int) NclEventStateTransition::ABORT}},
+      {(int) FormatterEvent::Type::PRESENTATION,
+       (int) FormatterEvent::Transition::ABORT}},
      {"onPause",
-      {(int) NclEventType::PRESENTATION,
-       (int) NclEventStateTransition::PAUSE}},
+      {(int) FormatterEvent::Type::PRESENTATION,
+       (int) FormatterEvent::Transition::PAUSE}},
      {"onResumes",
-      {(int) NclEventType::PRESENTATION,
-       (int) NclEventStateTransition::RESUME}},
+      {(int) FormatterEvent::Type::PRESENTATION,
+       (int) FormatterEvent::Transition::RESUME}},
      {"onBeginAttribution",
-      {(int) NclEventType::ATTRIBUTION,
-       (int) NclEventStateTransition::START}},
+      {(int) FormatterEvent::Type::ATTRIBUTION,
+       (int) FormatterEvent::Transition::START}},
      {"onEndAttribution",
-      {(int) NclEventType::SELECTION,
-       (int) NclEventStateTransition::STOP}},
+      {(int) FormatterEvent::Type::SELECTION,
+       (int) FormatterEvent::Transition::STOP}},
      {"onSelection",
-      {(int) NclEventType::SELECTION,
-       (int) NclEventStateTransition::START}},
+      {(int) FormatterEvent::Type::SELECTION,
+       (int) FormatterEvent::Transition::START}},
     };
   map<string, pair<int,int>>::iterator it;
   if ((it = reserved.find (role)) == reserved.end ())
     return false;
-  tryset (type, (NclEventType) it->second.first);
-  tryset (trans, (NclEventStateTransition) it->second.second);
+  tryset (type, (FormatterEvent::Type) it->second.first);
+  tryset (trans, (FormatterEvent::Transition) it->second.second);
   return true;
 }
 

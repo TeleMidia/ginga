@@ -71,7 +71,7 @@ class Formatter: public Ginga
   bool getObjectPropertyByRef (const string &, string *);
   void addObject (FormatterObject *);
 
-  int evalAction (FormatterEvent *, NclEventStateTransition, const string &value="");
+  int evalAction (FormatterEvent *, FormatterEvent::Transition, const string &value="");
   int evalAction (FormatterAction *);
   bool evalPredicate (FormatterPredicate *);
   FormatterObject *obtainExecutionObject (NclNode *);
@@ -99,7 +99,7 @@ class Formatter: public Ginga
   set<FormatterMedia *> _mediaObjects; // media objects
   FormatterMediaSettings *_settings;   // settings object
 
-  list<FormatterObject *> getObjectList (NclEventState);
+  list<FormatterObject *> getObjectList (FormatterEvent::State);
   FormatterEvent *obtainFormatterEventFromBind (NclBind *);
   FormatterLink *obtainFormatterLink (NclLink *);
 };

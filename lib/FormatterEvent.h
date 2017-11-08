@@ -18,8 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FORMATTER_EVENT_H
 #define FORMATTER_EVENT_H
 
-#include "Formatter.h"
-#include "ncl/Ncl.h"
+#include "aux-ginga.h"
 
 GINGA_NAMESPACE_BEGIN
 
@@ -27,13 +26,36 @@ class FormatterObject;
 class FormatterEvent
 {
 public:
-  FormatterEvent (NclEventType, FormatterObject *, const string &id);
+  enum Type
+    {
+     SELECTION = 0,
+     PRESENTATION,
+     ATTRIBUTION,
+    };
+
+  enum State
+    {
+     SLEEPING = 0,
+     OCCURRING,
+     PAUSED
+    };
+
+  enum Transition
+    {
+     START = 0,
+     PAUSE,
+     RESUME,
+     STOP,
+     ABORT
+    };
+
+  FormatterEvent (FormatterEvent::Type, FormatterObject *, const string &id);
   ~FormatterEvent ();
 
-  NclEventType getType ();
+  FormatterEvent::Type getType ();
   FormatterObject *getObject ();
   string getId ();
-  NclEventState getState ();
+  FormatterEvent::State getState ();
 
   bool isLambda ();
   void getInterval (GingaTime *, GingaTime *);
@@ -42,17 +64,22 @@ public:
   bool getParameter (const string &, string *);
   bool setParameter (const string &, const string &);
 
-  bool transition (NclEventStateTransition);
+  bool transition (FormatterEvent::Transition);
   void reset ();
 
+public:
+  static string getEventTypeAsString (FormatterEvent::Type);
+  static string getEventStateAsString (FormatterEvent::State);
+  static string getEventTransitionAsString (FormatterEvent::Transition);
+
 private:
-  NclEventType _type;                           // event type
-  FormatterObject *_object;                     // target object
-  string _id;                                   // event id
-  NclEventState _state;                         // event state
-  GingaTime _begin;                             // begin-time
-  GingaTime _end;                               // end-time
-  map<string, string> _parameters;              // parameters
+  FormatterEvent::Type _type;      // event type
+  FormatterObject *_object;        // target object
+  string _id;                      // event id
+  FormatterEvent::State _state;    // event state
+  GingaTime _begin;                // begin-time
+  GingaTime _end;                  // end-time
+  map<string, string> _parameters; // parameters
 };
 
 GINGA_NAMESPACE_END

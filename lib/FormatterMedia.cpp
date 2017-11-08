@@ -177,7 +177,7 @@ FormatterMedia::sendKeyEvent (const string &key, bool press)
     {
       string expected;
 
-      if (evt->getType () != NclEventType::SELECTION)
+      if (evt->getType () != FormatterEvent::Type::SELECTION)
         continue;
 
       expected = "";
@@ -194,8 +194,8 @@ FormatterMedia::sendKeyEvent (const string &key, bool press)
   for (FormatterEvent *evt: buf)
     {
       TRACE ("%s<%s>", _id.c_str (), evt->getId ().c_str ());
-      _formatter->evalAction (evt, NclEventStateTransition::START);
-      _formatter->evalAction (evt, NclEventStateTransition::STOP);
+      _formatter->evalAction (evt, FormatterEvent::Transition::START);
+      _formatter->evalAction (evt, FormatterEvent::Transition::STOP);
     }
 }
 
@@ -224,21 +224,21 @@ FormatterMedia::sendTickEvent (GingaTime total, GingaTime diff,
       g_assert_nonnull (lambda);
       TRACE ("eos %s@lambda at %" GINGA_TIME_FORMAT, _id.c_str (),
              GINGA_TIME_ARGS (_time));
-      _formatter->evalAction (lambda, NclEventStateTransition::STOP);
+      _formatter->evalAction (lambda, FormatterEvent::Transition::STOP);
       return;
     }
 }
 
 bool
 FormatterMedia::startTransition (FormatterEvent *evt,
-                                 NclEventStateTransition transition)
+                                 FormatterEvent::Transition transition)
 {
   switch (evt->getType ())
     {
-    case NclEventType::PRESENTATION:
+    case FormatterEvent::Type::PRESENTATION:
       switch (transition)
         {
-        case NclEventStateTransition::START:
+        case FormatterEvent::Transition::START:
           if (evt->isLambda ())
             {
               g_assert_null (_player);
@@ -253,15 +253,15 @@ FormatterMedia::startTransition (FormatterEvent *evt,
             }
           break;
 
-        case NclEventStateTransition::STOP:
+        case FormatterEvent::Transition::STOP:
           break;
         default:
           g_assert_not_reached ();
         }
       break;
 
-    case NclEventType::ATTRIBUTION:
-    case NclEventType::SELECTION:
+    case FormatterEvent::Type::ATTRIBUTION:
+    case FormatterEvent::Type::SELECTION:
       if (!this->isOccurring ())
         return false;           // fail
       break;
@@ -274,14 +274,14 @@ FormatterMedia::startTransition (FormatterEvent *evt,
 
 void
 FormatterMedia::endTransition (FormatterEvent *evt,
-                               NclEventStateTransition transition)
+                               FormatterEvent::Transition transition)
 {
   switch (evt->getType ())
     {
-    case NclEventType::PRESENTATION:
+    case FormatterEvent::Type::PRESENTATION:
       switch (transition)
         {
-        case NclEventStateTransition::START:
+        case FormatterEvent::Transition::START:
           if (evt->isLambda ())
             {
               g_assert_nonnull (_player);
@@ -289,14 +289,14 @@ FormatterMedia::endTransition (FormatterEvent *evt,
               for (auto e: _events) // schedule time anchors
                 {
                   if (!e->isLambda ()
-                      && e->getType () == NclEventType::PRESENTATION)
+                      && e->getType () == FormatterEvent::Type::PRESENTATION)
                     {
                       GingaTime begin, end;
                       e->getInterval (&begin, &end);
                       this->addDelayedAction
-                        (e, NclEventStateTransition::START, "", begin);
+                        (e, FormatterEvent::Transition::START, "", begin);
                       this->addDelayedAction
-                        (e, NclEventStateTransition::STOP, "", end);
+                        (e, FormatterEvent::Transition::STOP, "", end);
                     }
                 }
               TRACE ("start %s@lambda", _id.c_str ());
@@ -313,7 +313,7 @@ FormatterMedia::endTransition (FormatterEvent *evt,
             }
           break;
 
-        case NclEventStateTransition::STOP:
+        case FormatterEvent::Transition::STOP:
           if (evt->isLambda ())
             {
               g_assert_nonnull (_player);
@@ -337,10 +337,10 @@ FormatterMedia::endTransition (FormatterEvent *evt,
         }
       break;
 
-    case NclEventType::ATTRIBUTION:
+    case FormatterEvent::Type::ATTRIBUTION:
       switch (transition)
         {
-        case NclEventStateTransition::START:
+        case FormatterEvent::Transition::START:
           {
             string name;
             string value;
@@ -363,13 +363,13 @@ FormatterMedia::endTransition (FormatterEvent *evt,
                 dur = 0;
               }
             this->setProperty (name, value, dur);
-            _formatter->evalAction (evt, NclEventStateTransition::STOP);
+            _formatter->evalAction (evt, FormatterEvent::Transition::STOP);
 
             TRACE ("start %s.%s:=%s (duration=%s)", _id.c_str (),
                    name.c_str (), value.c_str (), s.c_str ());
             break;
           }
-        case NclEventStateTransition::STOP:
+        case FormatterEvent::Transition::STOP:
           TRACE ("stop %s.%s:=...", _id.c_str (), evt->getId ().c_str ());
           break;
         default:
@@ -377,7 +377,7 @@ FormatterMedia::endTransition (FormatterEvent *evt,
         }
       break;
 
-    case NclEventType::SELECTION:
+    case FormatterEvent::Type::SELECTION:
       {
         string key;
 
@@ -386,10 +386,10 @@ FormatterMedia::endTransition (FormatterEvent *evt,
 
         switch (transition)
           {
-          case NclEventStateTransition::START:
+          case FormatterEvent::Transition::START:
             TRACE ("start %s<%s>", _id.c_str (), key.c_str ());
             break;
-          case NclEventStateTransition::STOP:
+          case FormatterEvent::Transition::STOP:
             TRACE ("stop %s<%s>", _id.c_str (), key.c_str ());
             break;
           default:

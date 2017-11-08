@@ -34,8 +34,8 @@ public:
                     GingaTime dur=0) override;
   void sendKeyEvent (const string &, bool) override;
   void sendTickEvent (GingaTime, GingaTime, GingaTime) override;
-  bool startTransition (FormatterEvent *, NclEventStateTransition) override;
-  void endTransition (FormatterEvent *, NclEventStateTransition) override;
+  bool startTransition (FormatterEvent *, FormatterEvent::Transition) override;
+  void endTransition (FormatterEvent *, FormatterEvent::Transition) override;
 
   // FormatterMedia:
   virtual bool isFocused ();

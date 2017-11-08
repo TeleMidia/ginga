@@ -25,19 +25,19 @@ GINGA_NAMESPACE_BEGIN
 class FormatterAction
 {
 public:
-  FormatterAction (FormatterEvent *, NclEventStateTransition);
+  FormatterAction (FormatterEvent *, FormatterEvent::Transition);
   ~FormatterAction ();
 
   FormatterEvent *getEvent ();
-  NclEventType getEventType ();
-  NclEventStateTransition getTransition ();
+  FormatterEvent::Type getEventType ();
+  FormatterEvent::Transition getTransition ();
 
   bool getParameter (const string &, string *);
   bool setParameter (const string &, const string &);
 
 private:
   FormatterEvent *_event;
-  NclEventStateTransition _transition;
+  FormatterEvent::Transition _transition;
   map<string, string> _parameters;
 };
 

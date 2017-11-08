@@ -112,8 +112,8 @@ FormatterMediaSettings::updateCurrentFocus (const string &index)
   string value = next;
   FormatterEvent *evt = this->getAttributionEvent ("service.currentFocus");
   g_assert_nonnull (evt);
-  _formatter->evalAction (evt, NclEventStateTransition::START, value);
-  _formatter->evalAction (evt, NclEventStateTransition::STOP, value);
+  _formatter->evalAction (evt, FormatterEvent::Transition::START, value);
+  _formatter->evalAction (evt, FormatterEvent::Transition::STOP, value);
 }
 
 void

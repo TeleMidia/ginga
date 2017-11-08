@@ -155,7 +155,7 @@ Formatter::start (const string &file, string *errmsg)
   g_assert_nonnull (_settings);
   FormatterEvent *evt = cast (FormatterObject *, _settings)->getLambda ();
   g_assert_nonnull (evt);
-  g_assert (evt->transition (NclEventStateTransition::START));
+  g_assert (evt->transition (FormatterEvent::Transition::START));
 
   // Initialize settings object.
   vector<NclNode *> *nodes = _doc->getSettingsNodes ();
@@ -191,7 +191,7 @@ Formatter::start (const string &file, string *errmsg)
   FormatterObject *obj = this->obtainExecutionObject (body);
   evt = obj->getLambda ();
   g_assert_nonnull (evt);
-  if (this->evalAction (evt, NclEventStateTransition::START) == 0)
+  if (this->evalAction (evt, FormatterEvent::Transition::START) == 0)
     return false;
 
   // Refresh current focus.
@@ -336,7 +336,7 @@ Formatter::sendKeyEvent (const string &key, bool press)
   if (_state != GINGA_STATE_PLAYING)
     return false;               // nothing to do
 
-  for (auto obj: this->getObjectList (NclEventState::OCCURRING))
+  for (auto obj: this->getObjectList (FormatterEvent::State::OCCURRING))
     obj->sendKeyEvent (key, press);
 
   return true;
@@ -355,7 +355,7 @@ Formatter::sendTickEvent (uint64_t total, uint64_t diff, uint64_t frame)
   _last_tick_diff = diff;
   _last_tick_frameno = frame;
 
-  buf = this->getObjectList (NclEventState::OCCURRING);
+  buf = this->getObjectList (FormatterEvent::State::OCCURRING);
   if (buf.empty ())
     {
       this->setEOS (true);
@@ -648,14 +648,14 @@ Formatter::evalPredicate (FormatterPredicate *pred)
 
 int
 Formatter::evalAction (FormatterEvent *event,
-                       NclEventStateTransition transition,
+                       FormatterEvent::Transition transition,
                        const string &value)
 {
   FormatterAction *act;
   int result;
 
   act = new FormatterAction (event, transition);
-  if (event->getType () == NclEventType::ATTRIBUTION)
+  if (event->getType () == FormatterEvent::Type::ATTRIBUTION)
     act->setParameter ("value", value);
 
   result = this->evalAction (act);
@@ -688,7 +688,7 @@ Formatter::evalAction (FormatterAction *init)
 
       evt = act->getEvent ();
       g_assert_nonnull (evt);
-      if (evt->getType () == NclEventType::ATTRIBUTION)
+      if (evt->getType () == FormatterEvent::Type::ATTRIBUTION)
         {
           string dur;
           string value;
@@ -846,7 +846,7 @@ Formatter::obtainExecutionObject (NclNode *node)
             continue;       // nothing to do
 
           e = child->obtainEvent
-            (NclEventType::PRESENTATION, iface, "");
+            (FormatterEvent::Type::PRESENTATION, iface, "");
           g_assert_nonnull (e);
           cast (FormatterContext *, object)->addPort (e);
         }
@@ -969,7 +969,7 @@ Formatter::setOptionSize (Formatter *self, const string &name,
 // Private.
 
 list<FormatterObject *>
-Formatter::getObjectList (NclEventState state)
+Formatter::getObjectList (FormatterEvent::State state)
 {
   list<FormatterObject *> buf;
   for (auto obj: _objects)
@@ -988,7 +988,7 @@ Formatter::obtainFormatterEventFromBind (NclBind *bind)
   FormatterObject *obj;
   NclAnchor *iface;
   NclRole *role;
-  NclEventType type;
+  FormatterEvent::Type type;
   string key = "";
 
   node = bind->getNode ();
@@ -1016,7 +1016,7 @@ Formatter::obtainFormatterEventFromBind (NclBind *bind)
   g_assert_nonnull (role);
 
   type = role->getEventType ();
-  if (type == NclEventType::SELECTION)
+  if (type == FormatterEvent::Type::SELECTION)
     {
       NclCondition *cond = cast (NclCondition *, role);
       if (cond != nullptr)
@@ -1120,7 +1120,7 @@ Formatter::obtainFormatterLink (NclLink *docLink)
           g_assert_nonnull (evt);
 
           act = new FormatterAction (evt, connAct->getTransition ());
-          if (evt->getType () == NclEventType::ATTRIBUTION)
+          if (evt->getType () == FormatterEvent::Type::ATTRIBUTION)
             {
               string dur;
               string value;

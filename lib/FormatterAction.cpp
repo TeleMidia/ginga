@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NAMESPACE_BEGIN
 
 FormatterAction::FormatterAction (FormatterEvent *event,
-                                  NclEventStateTransition transition)
+                                  FormatterEvent::Transition transition)
 {
   g_assert_nonnull (event);
   _event = event;
@@ -38,13 +38,13 @@ FormatterAction::getEvent ()
   return _event;
 }
 
-NclEventType
+FormatterEvent::Type
 FormatterAction::getEventType ()
 {
   return _event->getType ();
 }
 
-NclEventStateTransition
+FormatterEvent::Transition
 FormatterAction::getTransition ()
 {
   return _transition;

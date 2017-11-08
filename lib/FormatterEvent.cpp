@@ -21,14 +21,18 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-FormatterEvent::FormatterEvent (NclEventType type, FormatterObject *object,
+
+// Public.
+
+FormatterEvent::FormatterEvent (FormatterEvent::Type type,
+                                FormatterObject *object,
                                 const string &id)
 {
   _type = type;
   g_assert_nonnull (object);
   _object = object;
   _id = id;
-  _state = NclEventState::SLEEPING;
+  _state = FormatterEvent::SLEEPING;
   _begin = 0;
   _end = GINGA_TIME_NONE;
 }
@@ -37,7 +41,7 @@ FormatterEvent::~FormatterEvent ()
 {
 }
 
-NclEventType
+FormatterEvent::Type
 FormatterEvent::getType ()
 {
   return _type;
@@ -55,7 +59,7 @@ FormatterEvent::getId ()
   return _id;
 }
 
-NclEventState
+FormatterEvent::State
 FormatterEvent::getState ()
 {
   return _state;
@@ -64,7 +68,7 @@ FormatterEvent::getState ()
 bool
 FormatterEvent::isLambda ()
 {
-  return _type == NclEventType::PRESENTATION && _id == "@lambda";
+  return _type == FormatterEvent::PRESENTATION && _id == "@lambda";
 }
 
 void
@@ -94,32 +98,32 @@ FormatterEvent::setParameter (const string &name, const string &value)
 }
 
 bool
-FormatterEvent::transition (NclEventStateTransition trans)
+FormatterEvent::transition (FormatterEvent::Transition trans)
 {
-  NclEventState curr = _state;
-  NclEventState next;
+  FormatterEvent::State curr = _state;
+  FormatterEvent::State next;
   switch (trans)
     {
-    case NclEventStateTransition::START:
-      if (curr == NclEventState::OCCURRING)
+    case FormatterEvent::START:
+      if (curr == FormatterEvent::OCCURRING)
         return false;
-      next = NclEventState::OCCURRING;
+      next = FormatterEvent::OCCURRING;
       break;
-    case NclEventStateTransition::PAUSE:
-      if (curr != NclEventState::OCCURRING)
+    case FormatterEvent::PAUSE:
+      if (curr != FormatterEvent::OCCURRING)
         return false;
-      next = NclEventState::PAUSED;
+      next = FormatterEvent::PAUSED;
       break;
-    case NclEventStateTransition::RESUME:
-      if (curr != NclEventState::PAUSED)
+    case FormatterEvent::RESUME:
+      if (curr != FormatterEvent::PAUSED)
         return false;
-      next = NclEventState::OCCURRING;
+      next = FormatterEvent::OCCURRING;
       break;
-    case NclEventStateTransition::STOP: // fall through
-    case NclEventStateTransition::ABORT:
-      if (curr == NclEventState::SLEEPING)
+    case FormatterEvent::STOP: // fall through
+    case FormatterEvent::ABORT:
+      if (curr == FormatterEvent::SLEEPING)
         return false;
-      next = NclEventState::SLEEPING;
+      next = FormatterEvent::SLEEPING;
       break;
     default:
       g_assert_not_reached ();
@@ -134,7 +138,62 @@ FormatterEvent::transition (NclEventStateTransition trans)
 void
 FormatterEvent::reset ()
 {
-  _state = NclEventState::SLEEPING;
+  _state = FormatterEvent::SLEEPING;
+}
+
+
+// Public: Static.
+
+string
+FormatterEvent::getEventTypeAsString (FormatterEvent::Type type)
+{
+  switch (type)
+    {
+    case FormatterEvent::PRESENTATION:
+      return "presentation";
+    case FormatterEvent::ATTRIBUTION:
+      return "attribution";
+    case FormatterEvent::SELECTION:
+      return "selection";
+    default:
+      g_assert_not_reached ();
+    }
+}
+
+string
+FormatterEvent::getEventStateAsString (FormatterEvent::State state)
+{
+  switch (state)
+    {
+    case FormatterEvent::SLEEPING:
+      return "sleeping";
+    case FormatterEvent::OCCURRING:
+      return "occurring";
+    case FormatterEvent::PAUSED:
+      return "paused";
+    default:
+      g_assert_not_reached ();
+    }
+}
+
+string
+FormatterEvent::getEventTransitionAsString (FormatterEvent::Transition tr)
+{
+  switch (tr)
+    {
+    case FormatterEvent::START:
+      return "start";
+    case FormatterEvent::PAUSE:
+      return "pause";
+    case FormatterEvent::RESUME:
+      return "resume";
+    case FormatterEvent::STOP:
+      return "stop";
+    case FormatterEvent::ABORT:
+      return "abort";
+    default:
+      g_assert_not_reached ();
+    }
 }
 
 GINGA_NAMESPACE_END
