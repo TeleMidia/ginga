@@ -20,9 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-FormatterComposition::FormatterComposition (Formatter *formatter,
-                                            const string &id)
-  :FormatterObject (formatter, id)
+FormatterComposition::FormatterComposition (const string &id)
+  :FormatterObject (id)
 {
 }
 

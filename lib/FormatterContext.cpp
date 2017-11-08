@@ -23,8 +23,8 @@ GINGA_NAMESPACE_BEGIN
 
 // Public.
 
-FormatterContext::FormatterContext (Formatter *formatter, const string &id)
-  :FormatterComposition (formatter, id)
+FormatterContext::FormatterContext (const string &id)
+  :FormatterComposition (id)
 {
 }
 

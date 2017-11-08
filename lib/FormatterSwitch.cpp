@@ -23,8 +23,8 @@ GINGA_NAMESPACE_BEGIN
 
 // Public.
 
-FormatterSwitch::FormatterSwitch (Formatter *formatter, const string &id)
-  :FormatterComposition (formatter, id)
+FormatterSwitch::FormatterSwitch (const string &id)
+  :FormatterComposition (id)
 {
   _selected = nullptr;
 }

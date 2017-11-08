@@ -84,14 +84,14 @@ mime_table_index (const string &key, string *result)
 
 // Public.
 
-FormatterMedia::FormatterMedia (Formatter *formatter, const string &id,
-                                const string &mimetype, const string &uri)
-  :FormatterObject (formatter, id)
+FormatterMedia::FormatterMedia (const string &id, const string &mime,
+                                const string &uri)
+  :FormatterObject (id)
 {
-  _mimetype = mimetype;
+  _mime = mime;
   _uri = uri;
 
-  if (_mimetype == "" && _uri != "")
+  if (_mime == "" && _uri != "")
     {
       string::size_type index, len;
       index = _uri.find_last_of (".");
@@ -103,13 +103,13 @@ FormatterMedia::FormatterMedia (Formatter *formatter, const string &id,
             {
               string extension = _uri.substr (index, (len - index));
               if (extension != "")
-                mime_table_index (extension, &_mimetype);
+                mime_table_index (extension, &_mime);
             }
         }
     }
 
-  if (_mimetype == "")
-    _mimetype = "application/x-ginga-timer";
+  if (_mime == "")
+    _mime = "application/x-ginga-timer";
 
   _player = nullptr;
 }
@@ -242,8 +242,7 @@ FormatterMedia::startTransition (FormatterEvent *evt,
           if (evt->isLambda ())
             {
               g_assert_null (_player);
-              _player = Player::createPlayer
-                (_formatter, _id, _uri, _mimetype);
+              _player = Player::createPlayer (_formatter, _id, _uri, _mime);
               if (unlikely (_player == nullptr))
                 return false;       // fail
 

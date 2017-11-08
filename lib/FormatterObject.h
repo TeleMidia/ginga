@@ -30,16 +30,20 @@ class FormatterMediaSettings;
 class FormatterObject
 {
 public:
-  FormatterObject (Formatter *, const string &);
+  FormatterObject (const string &);
   virtual ~FormatterObject ();
 
   string getId ();
-  const vector <string> *getAliases ();
-  bool hasAlias (const string &);
-  void addAlias (const string &);
+
+  Formatter *getFormatter ();
+  void initFormatter (Formatter *);
 
   FormatterComposition *getParent ();
   void initParent (FormatterComposition *);
+
+  const vector <string> *getAliases ();
+  bool hasAlias (const string &);
+  void addAlias (const string &);
 
   FormatterEvent *obtainEvent (NclEventType, NclAnchor *, const string &);
 
@@ -71,10 +75,10 @@ public:
   virtual void endTransition (FormatterEvent *, NclEventStateTransition) = 0;
 
 protected:
-  Formatter *_formatter;           // formatter handle
   string _id;                      // id
-  vector<string> _aliases;         // aliases
+  Formatter *_formatter;           // formatter handle
   FormatterComposition *_parent;   // parent object
+  vector<string> _aliases;         // aliases
 
   GingaTime _time;                 // playback time
   map<string, string> _properties; // property map

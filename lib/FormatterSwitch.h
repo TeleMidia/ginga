@@ -26,7 +26,7 @@ GINGA_NAMESPACE_BEGIN
 class FormatterSwitch: public FormatterComposition
 {
 public:
-  FormatterSwitch (Formatter *, const string &);
+  FormatterSwitch (const string &);
   ~FormatterSwitch ();
 
   // FormatterObject:
