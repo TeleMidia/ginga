@@ -178,9 +178,6 @@ gst_video_info_from_caps (0, 0);
 AU_CHECK_PKG([GTK],
  [gtk+-3.0 >= gtk_required_version])
 
-AU_CHECK_PKG([NCLUA],
- [nclua >= nclua_required_version])
-
 AU_CHECK_PKG([PANGO],
  [pango >= pango_required_version
   pangocairo >= pango_required_version])
@@ -218,6 +215,10 @@ AS_IF([test -n "$with_cef"],
   AC_DEFINE([WITH_CEF], [0], [Define to 1 if you have libcef.])])
 AC_SUBST([cef_dir])
 AM_CONDITIONAL([WITH_CEF], [test "$with_cef" = yes])
+
+AU_CHECK_OPTIONAL_PKG([nclua], [build with NCLua support], [],
+ [NCLUA],
+ [nclua >= nclua_required_version])
 
 AU_CHECK_OPTIONAL_PKG([librsvg], [build with LibRsvg support], [],
  [LIBRSVG],
@@ -291,6 +292,8 @@ AC_MSG_NOTICE([summary of main build options:
   valgrind:       ${VALGRIND}
 
   build html player:    ${with_cef_result}
+  build lua player:     ${with_nclua_result}
   build svg player:     ${with_librsvg_result}
+
   build opengl support: ${with_opengl_result}
 ])

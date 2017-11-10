@@ -19,12 +19,17 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-gl.h"
 #include "Player.h"
 #include "player/PlayerImage.h"
-#include "player/PlayerLua.h"
 #include "player/PlayerText.h"
 #include "player/PlayerVideo.h"
+
+#if defined WITH_NCLUA && WITH_NCLUA
+# include "player/PlayerLua.h"
+#endif
+
 #if defined WITH_LIBRSVG && WITH_LIBRSVG
 # include "player/PlayerSvg.h"
 #endif
+
 #if defined WITH_CEF && WITH_CEF
 # include "player/PlayerHTML.h"
 #endif
@@ -445,34 +450,36 @@ Player::createPlayer (Formatter *formatter, const string &id,
     {
       player = new PlayerVideo (formatter, id, uri);
     }
-#if WITH_LIBRSVG && WITH_LIBRSVG
-  else if (xstrhasprefix (mime, "image/svg"))
-    {
-      player = new PlayerSvg (formatter, id, uri);
-    }
-#endif
   else if (xstrhasprefix (mime, "image"))
     {
       player = new PlayerImage (formatter, id, uri);
+    }
+  else if (mime == "text/plain")
+    {
+      player = new PlayerText (formatter, id, uri);
     }
 #if defined WITH_CEF && WITH_CEF
   else if (xstrhasprefix (mime, "text/html"))
     {
       player = new PlayerHTML (formatter, id, uri);
     }
-#endif
-  else if (mime == "text/plain")
-    {
-      player = new PlayerText (formatter, id, uri);
-    }
+#endif // WITH_CEF
+#if defined WITH_NCLUA && WITH_NCLUA
   else if (mime == "application/x-ginga-NCLua")
     {
       player = new PlayerLua (formatter, id, uri);
     }
+#endif // WITH_NCLUA
+#if WITH_LIBRSVG && WITH_LIBRSVG
+  else if (xstrhasprefix (mime, "image/svg"))
+    {
+      player = new PlayerSvg (formatter, id, uri);
+    }
+#endif // WITH_LIBRSVG
   else
     {
       player = new Player (formatter, id, uri);
-      if (mime != "application/x-ginga-timer" && uri != "")
+      if (unlikely (mime != "application/x-ginga-timer" && uri != ""))
         {
           WARNING ("unknown mime '%s': creating an empty player",
                    mime.c_str ());
