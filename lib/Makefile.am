@@ -42,6 +42,7 @@ src+= Ginga.cpp
 src+= Media.cpp
 src+= MediaSettings.cpp
 src+= Object.cpp
+src+= Parser.cpp
 src+= Predicate.cpp
 src+= Switch.cpp
 src+= aux-ginga.cpp
@@ -73,10 +74,6 @@ endif # WITH_NCLUA
 if WITH_LIBRSVG
 src+= player/PlayerSvg.cpp
 endif # WITH_LIBRSVG
-
-if WITH_LIBXML
-# src+= ncl/ParserLibXML.cpp
-endif # WITH_LIBXML
 
 if WITH_CEF
 src+= player/PlayerHTML.cpp

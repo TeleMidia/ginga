@@ -182,6 +182,9 @@ AU_CHECK_PKG([PANGO],
  [pango >= pango_required_version
   pangocairo >= pango_required_version])
 
+AU_CHECK_PKG([LIBXML],
+ [libxml-2.0 >= libxml_required_version])
+
 AU_CHECK_PKG([XERCESC],
  [xerces-c >= xercesc_required_version])
 
@@ -223,10 +226,6 @@ AU_CHECK_OPTIONAL_PKG([nclua], [build with NCLua support], [],
 AU_CHECK_OPTIONAL_PKG([librsvg], [build with LibRsvg support], [],
  [LIBRSVG],
  [librsvg-2.0 >= librsvg_required_version])
-
-AU_CHECK_OPTIONAL_PKG([libxml], [build with LibXML support], [],
- [LIBXML],
- [libxml-2.0 >= libxml_required_version])
 
 AU_CHECK_OPTIONAL_PKG([opengl], [build with OpenGL support], [],
  [OPENGL],
