@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define OBJECT_H
 
 #include "Formatter.h"
-#include "Action.h"
 #include "Event.h"
 
 GINGA_NAMESPACE_BEGIN
@@ -63,7 +62,7 @@ public:
   virtual string getProperty (const string &);
   virtual void setProperty (const string &, const string &, Time dur=0);
 
-  list<pair<Action *, Time>> *getDelayedActions ();
+  list<pair<Action, Time>> *getDelayedActions ();
   void addDelayedAction (Event *, Event::Transition,
                          const string &value="", Time delay=0);
 
@@ -85,7 +84,7 @@ protected:
   Event *_lambda;               // lambda event
   set<Event *> _events;         // all events
 
-  list<pair<Action *, Time>> _delayed; // delayed actions
+  list<pair<Action, Time>> _delayed; // delayed actions
 
   virtual void doStart ();
   virtual void doStop ();

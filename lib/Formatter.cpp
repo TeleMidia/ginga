@@ -649,23 +649,19 @@ Formatter::evalAction (Event *event,
                        Event::Transition transition,
                        const string &value)
 {
-  Action *act;
-  int result;
-
-  act = new Action (event, transition);
-  if (event->getType () == Event::ATTRIBUTION)
-    act->setParameter ("value", value);
-
-  result = this->evalAction (act);
-  delete act;
-
-  return result;
+  Action act;
+  act.event = event;
+  g_assert_nonnull (event);
+  act.transition = transition;
+  act.predicate = nullptr;
+  act.value = value;
+  return this->evalAction (act);
 }
 
 int
-Formatter::evalAction (Action *init)
+Formatter::evalAction (Action init)
 {
-  list<Action *> stack;
+  list<Action> stack;
   int n;
 
   stack.push_back (init);
@@ -673,7 +669,7 @@ Formatter::evalAction (Action *init)
 
   while (!stack.empty ())
     {
-      Action *act;
+      Action act;
       Event *evt;
       Object *obj;
       Composition *comp;
@@ -682,21 +678,13 @@ Formatter::evalAction (Action *init)
 
       act = stack.back ();
       stack.pop_back ();
-      g_assert_nonnull (act);
 
-      evt = act->getEvent ();
+      evt = act.event;
       g_assert_nonnull (evt);
       if (evt->getType () == Event::ATTRIBUTION)
-        {
-          string dur;
-          string value;
-          if (act->getParameter ("duration", &dur))
-            evt->setParameter ("duration", dur);
-          if (act->getParameter ("value", &value))
-            evt->setParameter ("value", value);
-        }
+        evt->setParameter ("value", act.value);
 
-      if (!evt->transition (act->getTransition ()))
+      if (!evt->transition (act.transition))
         continue;
 
       n++;
@@ -718,23 +706,23 @@ Formatter::evalAction (Action *init)
             {
               for (auto link: *ctx->getLinks ())
                 {
-                  for (auto cond: *link->getConditions ())
+                  for (auto cond: link.first)
                     {
                       Predicate *pred;
 
-                      if (cond->getEvent () != evt)
+                      if (cond.event != evt)
                         continue;
 
-                      if (cond->getTransition () != act->getTransition ())
+                      if (cond.transition != act.transition)
                         continue;
 
-                      pred = cond->getPredicate ();
+                      pred = cond.predicate;
                       if (pred != nullptr && !this->evalPredicate (pred))
                         continue;
 
                       // Success.
-                      auto acts = *link->getActions ();
-                      std::list<Action *>::reverse_iterator rit
+                      auto acts = link.second;
+                      std::list<Action>::reverse_iterator rit
                         = acts.rbegin ();
                       for (; rit != acts.rend (); ++rit)
                         stack.push_back (*rit);
@@ -848,8 +836,10 @@ Formatter::obtainExecutionObject (NclNode *node)
           cast (Context *, object)->addPort (e);
         }
       for (auto link: *(ctx->getLinks ()))
-        cast (Context *, object)
-          ->addLink (obtainFormatterLink (link));
+        {
+          auto ell = obtainFormatterLink (link);
+          cast (Context *, object)->addLink (ell.first, ell.second);
+        }
 
       return object;
     }
@@ -1021,14 +1011,12 @@ Formatter::obtainFormatterEventFromBind (NclBind *bind)
   return obj->obtainEvent (eventType, iface, key);
 }
 
-Link *
+pair<list<Action>,list<Action>>
 Formatter::obtainFormatterLink (NclLink *docLink)
 {
-  Link *link;
+  pair<list<Action>,list<Action>> link;
 
   g_assert_nonnull (docLink);
-
-  link = new Link ();
   for (auto bind: *docLink->getBinds ())
     {
       switch (bind->getRoleType ())
@@ -1086,36 +1074,27 @@ Formatter::obtainFormatterLink (NclLink *docLink)
                   }
               }
 
-            Event *evt;
-            Condition *cond;
+            Action cond;
 
-            evt = this->obtainFormatterEventFromBind (bind);
-            g_assert_nonnull (evt);
-
-            cond = new Condition
-              (pred, evt, bind->getTransition ());
-            link->addCondition (cond);
+            cond.event = this->obtainFormatterEventFromBind (bind);
+            g_assert_nonnull (cond.event);
+            cond.transition = bind->getTransition ();
+            cond.predicate = pred;
+            link.first.push_back (cond);
             break;
           }
 
         case NclBind::ACTION:
           {
-            Event *evt;
-            Action *act;
+            Action act;
+            string value;
 
-            evt = this->obtainFormatterEventFromBind (bind);
-            g_assert_nonnull (evt);
-
-            act = new Action (evt, bind->getTransition ());
-            if (evt->getType () == Event::ATTRIBUTION)
-              {
-                string dur, value;
-                if (bind->getParameter ("duration", &dur))
-                  act->setParameter ("duration", dur);
-                if (bind->getParameter ("value", &value))
-                  act->setParameter ("value", value);
-              }
-            link->addAction (act);
+            act.event = this->obtainFormatterEventFromBind (bind);
+            g_assert_nonnull (act.event);
+            act.transition = bind->getTransition ();
+            act.predicate = nullptr;
+            bind->getParameter ("value", &act.value);
+            link.second.push_back (act);
             break;
           }
 
