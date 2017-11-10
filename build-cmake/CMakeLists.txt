@@ -8,7 +8,7 @@ set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 set (CMAKE_INCLUDE_CURRENTDIR ON)
 if (UNIX)
-  add_definitions(-Wextra -Wall)
+  add_definitions (-Wextra -Wall)
 endif()
 
 # Ginga-related cmake's variables
@@ -78,6 +78,7 @@ ExternalProject_Get_Property (nclua_build install_dir)
 set (NCLUA_INCLUDE_DIRS "${install_dir}/include")
 set (NCLUA_LIBRARY "${install_dir}/lib/libnclua.a")
 link_directories ("${install_dir}/lib")
+add_definitions (-DWITH_NCLUA=1)
 #end NCLUA
 
 if (WITH_CEF) # Download, link, build with CEF
@@ -120,17 +121,15 @@ set (LIBGINGA_SOURCES
   ../lib/aux-ginga.cpp
   ../lib/aux-gl.cpp
 
-  ../lib/Action.cpp
   ../lib/Composition.cpp
-  ../lib/Condition.cpp
   ../lib/Context.cpp
   ../lib/Event.cpp
   ../lib/Formatter.cpp
   ../lib/Ginga.cpp
-  ../lib/Link.cpp
   ../lib/Media.cpp
   ../lib/MediaSettings.cpp
   ../lib/Object.cpp
+  ../lib/Parser.cpp
   ../lib/Predicate.cpp
   ../lib/Switch.cpp
 
