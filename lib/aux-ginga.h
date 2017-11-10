@@ -54,14 +54,9 @@ GINGA_END_DECLS
 
 // C++ library.
 #include <algorithm>
-#include <exception>
-#include <fstream>
-#include <iostream>
-#include <limits>
 #include <list>
 #include <map>
 #include <set>
-#include <sstream>
 #include <string>
 #include <vector>
 using namespace std;
