@@ -265,7 +265,7 @@ Object::setProperty (const string &name, const string &value, Time dur)
   _properties[name] = value;
 }
 
-list<pair<Action *, Time>> *
+list<pair<Action, Time>> *
 Object::getDelayedActions ()
 {
   return &_delayed;
@@ -275,9 +275,12 @@ void
 Object::addDelayedAction (Event *event, Event::Transition transition,
                           const string &value, Time delay)
 {
-  Action *action = new Action (event, transition);
-  action->setParameter ("value", value);
-  _delayed.push_back (std::make_pair (action, _time + delay));
+  Action act;
+
+  act.event = event;
+  act.transition = transition;
+  act.value = value;
+  _delayed.push_back (std::make_pair (act, _time + delay));
 }
 
 void
@@ -292,7 +295,7 @@ Object::sendTickEvent (unused (Time total), Time diff, unused (Time frame))
   g_assert (GINGA_TIME_IS_VALID (_time));
   _time += diff;
 
-  list<Action *> trigger;
+  list<Action> trigger;
   for (auto it: _delayed)
     {
       if (_time >= it.second)
@@ -312,14 +315,9 @@ Object::sendTickEvent (unused (Time total), Time diff, unused (Time frame))
   for (auto it = _delayed.begin (); it != _delayed.end ();)
     {
       if (it->second == GINGA_TIME_NONE)
-        {
-          delete it->first;
-          it = _delayed.erase (it);
-        }
+        it = _delayed.erase (it);
       else
-        {
-          ++it;
-        }
+        ++it;
     }
 }
 
@@ -338,8 +336,6 @@ Object::doStop ()
   _time = GINGA_TIME_NONE;
   for (auto evt: _events)
     evt->reset ();
-  for (auto item: _delayed)
-    delete item.first;
   _delayed.clear ();
 }
 

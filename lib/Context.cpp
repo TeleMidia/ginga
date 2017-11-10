@@ -30,8 +30,6 @@ Context::Context (const string &id): Composition (id)
 
 Context::~Context ()
 {
-  for (auto link: _links)
-    delete link;
 }
 
 
@@ -156,17 +154,18 @@ Context::addPort (Event *event)
   tryinsert (event, _ports, push_back);
 }
 
-const list<Link *> *
+const list<pair<list<Action>,list<Action>>> *
 Context::getLinks ()
 {
   return &_links;
 }
 
 void
-Context::addLink (Link *link)
+Context::addLink (list<Action> conds, list<Action> acts)
 {
-  g_assert_nonnull (link);
-  tryinsert (link, _links, push_back);
+  g_assert (conds.size () > 0);
+  g_assert (acts.size () > 0);
+  _links.push_back (std::make_pair (conds, acts));
 }
 
 bool

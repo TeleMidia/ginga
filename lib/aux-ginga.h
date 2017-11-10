@@ -32,11 +32,7 @@ GINGA_BEGIN_DECLS
 #define GINGA_PRAGMA_DIAG_WARNING PRAGMA_DIAG_WARNING
 
 // C library.
-#include <assert.h>
-#include <errno.h>
 #include <math.h>
-#include <setjmp.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 // External C libraries.
@@ -45,8 +41,8 @@ GINGA_BEGIN_DECLS
 GINGA_PRAGMA_DIAG_PUSH ()
 GINGA_PRAGMA_DIAG_IGNORE (-Wcast-qual)
 GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
-#include <gst/gst.h>
 #include <gst/app/gstappsink.h>
+#include <gst/gst.h>
 #include <gst/video/video.h>
 GINGA_PRAGMA_DIAG_POP ()
 

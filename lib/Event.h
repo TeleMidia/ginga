@@ -19,6 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define EVENT_H
 
 #include "aux-ginga.h"
+#include "Predicate.h"
 
 GINGA_NAMESPACE_BEGIN
 
@@ -81,6 +82,14 @@ private:
   Time _end;                       // end-time
   map<string, string> _parameters; // parameters
 };
+
+typedef struct
+{
+  Event *event;                 // Target event
+  Event::Transition transition; // Target transition
+  Predicate *predicate;         // if appears in condition
+  string value;                 // if attribution event
+} Action;
 
 GINGA_NAMESPACE_END
 

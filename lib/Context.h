@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Composition.h"
 #include "Event.h"
-#include "Link.h"
 
 GINGA_NAMESPACE_BEGIN
 
@@ -43,15 +42,15 @@ public:
   const list<Event *> *getPorts ();
   void addPort (Event *);
 
-  const list<Link *> *getLinks ();
-  void addLink (Link *);
+  const list<pair<list<Action>,list<Action>>> *getLinks ();
+  void addLink (list<Action>, list<Action>);
 
   bool getLinksStatus ();
   void setLinksStatus (bool);
 
 private:
   list<Event *> _ports;
-  list<Link *> _links;
+  list<pair<list<Action>,list<Action>>> _links;
   bool _status;                 // whether links are active
 };
 
