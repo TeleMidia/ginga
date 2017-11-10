@@ -26,6 +26,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Switch.h"
 
 #include "ncl/ParserXercesC.h"
+#include "Parser.h"
 #include "player/PlayerText.h"
 
 GINGA_NAMESPACE_BEGIN
@@ -122,10 +123,22 @@ Formatter::start (const string &file, string *errmsg)
   // Parse document.
   w = _opts.width;
   h = _opts.height;
-  // if (!_opts.experimental)
-  _doc = ParserXercesC::parse (file, w, h, errmsg);
-  // else
-  //   _doc = ParserLibXML::parseFile (file, w, h, errmsg);
+  if (!_opts.experimental)
+    {
+      _doc = ParserXercesC::parse (file, w, h, errmsg);
+    }
+  else
+    {
+      set<Object *> *objs;
+      objs = Parser::parseFile (file, w, h, errmsg);
+      if (unlikely (objs == nullptr))
+        return false;
+      for (auto obj: *objs)
+        TRACE ("obj %s", obj->getId ().c_str ());
+      delete objs;
+      exit (0);
+      return true;
+    }
   if (unlikely (_doc == nullptr))
     return false;
 
