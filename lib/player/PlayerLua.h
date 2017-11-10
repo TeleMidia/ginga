@@ -20,6 +20,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Player.h"
 
+#if defined WITH_NCLUA && WITH_NCLUA
+# include <ncluaw.h>
+#endif
+
 GINGA_NAMESPACE_BEGIN
 
 class PlayerLua: public Player

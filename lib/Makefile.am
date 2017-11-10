@@ -66,9 +66,12 @@ src+= ncl/ParserXercesC.cpp
 src+= player/Player.cpp
 src+= player/PlayerAnimator.cpp
 src+= player/PlayerImage.cpp
-src+= player/PlayerLua.cpp
 src+= player/PlayerText.cpp
 src+= player/PlayerVideo.cpp
+
+if WITH_NCLUA
+src+= player/PlayerLua.cpp
+endif # WITH_NCLUA
 
 if WITH_LIBRSVG
 src+= player/PlayerSvg.cpp

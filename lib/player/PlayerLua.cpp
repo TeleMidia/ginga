@@ -19,8 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-gl.h"
 #include "PlayerLua.h"
 
-GINGA_PRAGMA_DIAG_IGNORE (-Wunused-macros)
-
 GINGA_NAMESPACE_BEGIN
 
 // Event handling.
@@ -30,11 +28,12 @@ GINGA_NAMESPACE_BEGIN
 #define evt_ncl_send_presentation(nw, action, name)\
   ncluaw_send_ncl_event (nw, "presentation", action, name, NULL)
 
-#define evt_ncl_send_selection(nw, action, name)\
+#if 0
+# define evt_ncl_send_selection(nw, action, name)\
   ncluaw_send_ncl_event (nw, "selection", action, name, NULL)
+#endif
 
 #define evt_key_send ncluaw_send_key_event
-#define evt_pointer_send ncluaw_send_pointer_event
 
 
 // Public.

@@ -41,8 +41,6 @@ GINGA_BEGIN_DECLS
 
 // External C libraries.
 #include <gdk/gdk.h>
-#include <ncluaw.h>
-#include <pango/pangocairo.h>
 
 GINGA_PRAGMA_DIAG_PUSH ()
 GINGA_PRAGMA_DIAG_IGNORE (-Wcast-qual)
@@ -51,10 +49,6 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
 #include <gst/app/gstappsink.h>
 #include <gst/video/video.h>
 GINGA_PRAGMA_DIAG_POP ()
-
-#if defined WITH_LIBRSVG && WITH_LIBRSVG
-# include <librsvg/rsvg.h>
-#endif
 
 GINGA_END_DECLS
 
