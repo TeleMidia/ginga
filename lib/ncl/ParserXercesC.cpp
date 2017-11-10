@@ -1124,6 +1124,60 @@ ParserXercesC::parseAssessmentStatement (DOMElement *elt)
   return pred;
 }
 
+Predicate *
+ParserXercesC::parseCompoundStatement (DOMElement *elt)
+{
+  string op;
+  string neg;
+
+  Predicate *parent;
+  Predicate *pred;
+
+  CHECK_ELT_TAG (elt, "compoundStatement", nullptr);
+  CHECK_ELT_ATTRIBUTE (elt, "operator", &op);
+  CHECK_ELT_OPT_ATTRIBUTE (elt, "isNegated", &neg, "false");
+
+  if (unlikely (op != "and" && op != "or"))
+    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "operator");
+
+  if (unlikely (neg != "true" && neg != "false"))
+    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "isNegated");
+
+  pred = (op == "and")
+    ? new Predicate (Predicate::CONJUNCTION)
+    : new Predicate (Predicate::DISJUNCTION);
+
+  if (neg == "true")
+    {
+      parent = new Predicate (Predicate::NEGATION);
+      parent->addChild (pred);
+    }
+  parent = pred;
+
+  for (DOMElement *child: dom_elt_get_children (elt))
+    {
+      string tag = dom_elt_get_tag (child);
+      if (tag == "assessmentStatement")
+        {
+          pred = this->parseAssessmentStatement (child);
+          g_assert_nonnull (pred);
+          parent->addChild (pred);
+        }
+      else if (tag == "compoundStatement")
+        {
+          pred = this->parseCompoundStatement (child);
+          g_assert_nonnull (pred);
+          parent->addChild (pred);
+        }
+      else
+        {
+          ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
+        }
+    }
+
+  return parent;
+}
+
 void
 ParserXercesC::parseCompoundCondition (DOMElement *elt,
                                        list<ConnRole> *conn,
@@ -1154,7 +1208,9 @@ ParserXercesC::parseCompoundCondition (DOMElement *elt,
         }
       else if (tag == "compoundStatement")
         {
-          g_assert_not_reached ();
+          pred = this->parseCompoundStatement (child);
+          g_assert_nonnull (pred);
+          preds.push_back (pred);
         }
       else
         {
@@ -1250,104 +1306,6 @@ ParserXercesC::parseCondition (DOMElement *elt, list<ConnRole> *conn,
 
   conn->push_back (role);
 }
-
-// CompoundStatement *
-// ParserXercesC::parseCompoundStatement (DOMElement *elt)
-// {
-//   CompoundStatement *stmt;
-//   string op;
-//   string neg;
-//   CHECK_ELT_TAG (elt, "compoundStatement", nullptr);
-//   CHECK_ELT_ATTRIBUTE (elt, "operator", &op);
-//   CHECK_ELT_OPT_ATTRIBUTE (elt, "isNegated", &neg, "false");
-//   if (unlikely (op != "and" && op != "or"))
-//     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "operator");
-//   if (unlikely (neg != "true" && neg != "false"))
-//     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "isNegated");
-//   stmt = new CompoundStatement (op == "and", neg == "true");
-//   // Collect children.
-//   for (DOMElement *child: dom_elt_get_children (elt))
-//     {
-//       string tag = dom_elt_get_tag (child);
-//       if (tag == "assessmentStatement")
-//         {
-//           stmt->addStatement (this->parseAssessmentStatement (child));
-//         }
-//       else if (tag == "compoundStatement")
-//         {
-//           stmt->addStatement (this->parseCompoundStatement (child));
-//         }
-//       else
-//         {
-//           ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
-//         }
-//     }
-//   return stmt;
-// }
-
-// AssessmentStatement *
-// ParserXercesC::parseAssessmentStatement (DOMElement *elt)
-// {
-//   AssessmentStatement *stmt;
-//   string comp;
-//   string value;
-//   CHECK_ELT_TAG (elt, "assessmentStatement", nullptr);
-//   CHECK_ELT_ATTRIBUTE (elt, "comparator", &comp);
-//   if (unlikely (!_ginga_parse_comparator (comp, &comp)))
-//     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "comparator");
-//   stmt = new AssessmentStatement (comp);
-//   for (DOMElement *child: dom_elt_get_children (elt))
-//     {
-//       string tag = dom_elt_get_tag (child);
-//       if (tag == "attributeAssessment")
-//         {
-//           AttributeAssessment *assess;
-//           assess = this->parseAttributeAssessment (child);
-//           if (stmt->getMainAssessment () == nullptr)
-//             stmt->setMainAssessment (assess);
-//           else
-//             stmt->setOtherAssessment (assess);
-//         }
-//       else if (tag == "valueAssessment")
-//         {
-//           stmt->setOtherAssessment (this->parseValueAssessment (child));
-//         }
-//       else
-//         {
-//           ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
-//         }
-//     }
-//   return stmt;
-// }
-
-// AttributeAssessment *
-// ParserXercesC::parseAttributeAssessment (DOMElement *elt)
-// {
-//   map<string, Event::Type>::iterator it;
-//   string role;
-//   string type;
-//   string key;
-//   string offset;
-//   Event::Type evttype;
-//   CHECK_ELT_TAG (elt, "attributeAssessment", nullptr);
-//   CHECK_ELT_ATTRIBUTE (elt, "role", &role);
-//   CHECK_ELT_OPT_ATTRIBUTE (elt, "type", &type, "attribution");
-//   CHECK_ELT_OPT_ATTRIBUTE (elt, "key", &key, "");
-//   CHECK_ELT_OPT_ATTRIBUTE (elt, "offset", &offset, "");
-//   if ((it = event_type_table.find (type)) == event_type_table.end ())
-//     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "eventType");
-//   evttype = it->second;
-//   return new AttributeAssessment (evttype, role, key, offset);
-// }
-
-// ValueAssessment *
-// ParserXercesC::parseValueAssessment (DOMElement *elt)
-// {
-//   string value;
-//   CHECK_ELT_TAG (elt, "valueAssessment", nullptr);
-//   CHECK_ELT_ATTRIBUTE (elt, "value", &value);
-//   return new ValueAssessment (value);
-// }
 
 void
 ParserXercesC::parseCompoundAction (DOMElement *elt, list<ConnRole> *conn)
