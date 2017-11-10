@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #if ! (defined WITH_OPENGL && WITH_OPENGL)
 GINGA_PRAGMA_DIAG_IGNORE (-Wunused-parameter)
 GINGA_PRAGMA_DIAG_IGNORE (-Wsuggest-attribute=noreturn)
-GINGA_PRAGMA_DIAG_IGNORE (-Wunused-macros) 
+GINGA_PRAGMA_DIAG_IGNORE (-Wunused-macros)
 #endif
 GINGA_PRAGMA_DIAG_IGNORE (-Wimplicit-fallthrough)
 
