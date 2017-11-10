@@ -142,12 +142,12 @@ test_aux_xstrassign_SOURCES= test-aux-xstrassign.cpp
 progs+= test-aux-xstrbuild
 test_aux_xstrbuild_SOURCES= test-aux-xstrbuild.cpp
 
-# lib/ncl/ParserLibXML.h ---------------------------------------------------
-# progs+= test-ParserLibXML-parseFile
-# test_ParserLibXML_parseFile_SOURCES= test-ParserLibXML-parseFile.cpp
+# lib/Parser.h -------------------------------------------------------------
+progs+= test-Parser-parseFile
+test_Parser_parseFile_SOURCES= test-Parser-parseFile.cpp
 
-# progs+= test-ParserLibXML-parseBuffer
-# test_ParserLibXML_parseBuffer_SOURCES= test-ParserLibXML-parseBuffer.cpp
+progs+= test-Parser-parseBuffer
+test_Parser_parseBuffer_SOURCES= test-Parser-parseBuffer.cpp
 
 # lib/ginga.h (Ginga Library API) ------------------------------------------
 progs+= test-Ginga-version
