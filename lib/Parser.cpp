@@ -20,6 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Context.h"
 #include "Media.h"
+#include "MediaSettings.h"
 
 #include <libxml/tree.h>
 #include <libxml/parser.h>
@@ -58,8 +59,8 @@ typedef struct ParserState
   string errmsg;                // last error message
 
   list<Object *> objStack;      // object stack
-  ParserAttrCache cacheAttr;    // attrmap indexed by id
-  ParserEltCache cacheElt;      // xmlNode indexed by id
+  ParserAttrCache cachedAttrs;  // attrmap indexed by id
+  ParserEltCache cachedElts;    // xmlNode indexed by id
 
   set<Object *> *objects;       // all objects
   map<string, Object *> objMap; // all objects
@@ -179,6 +180,8 @@ PARSER_ELT_PUSH_DECL (ncl)
 PARSER_ELT_POP_DECL  (ncl)
 PARSER_ELT_PUSH_DECL (context)
 PARSER_ELT_POP_DECL  (context)
+PARSER_ELT_PUSH_DECL (media)
+PARSER_ELT_POP_DECL  (media)
 
 
 static map<string, ParserEltData> parser_eltmap =
@@ -193,6 +196,14 @@ static map<string, ParserEltData> parser_eltmap =
     {"xmlns", false}}},
  },
  //
+ // Head.
+ //
+ {"head",
+  {nullptr, nullptr,
+   0,
+   {"ncl"}, {}},
+ },
+ //
  // Body.
  //
  {"body",                       // -> Context
@@ -201,6 +212,16 @@ static map<string, ParserEltData> parser_eltmap =
    0,
    {"ncl"},
    {{"id", false}}},
+ },
+ {"media",                      // -> Media
+  {parser_push_media,
+   nullptr,
+   0,
+   {"body", "context", "switch"},
+   {{"id", true},
+    {"src", false},
+    {"type", false},
+    {"descriptor", false}}},
  },
 };
 
@@ -287,21 +308,32 @@ parser_push_context (ParserState *st,
 {
   Object *ctx;
   string id;
+  list<string> *ports;
 
   id = parser_attrmap_opt_get (attr, "id", st->root->getId ());
   if (toString (elt->name) == "body")
     {
-      ctx = st->root;
+      g_assert (st->objStack.size () == 1);
+      ctx = cast (Context *, st->objStack.back ());
+      g_assert_nonnull (ctx);
     }
   else
     {
-      Composition *parent = cast (Composition *, st->objStack.back ());
+      Composition *parent;
+
+      parent = cast (Composition *, st->objStack.back ());
       g_assert_nonnull (parent);
+
       ctx = new Context (id);
       parent->addChild (ctx);
     }
-  g_assert_nonnull (ctx);
-  *result = ctx;                // push onto stack
+
+  // Create port list.
+  ports = new list<string> ();
+  g_assert (ctx->setData ("ports", ports));
+
+  // Push context onto stack.
+  *result = ctx;
 
   return true;
 }
@@ -313,12 +345,65 @@ parser_pop_context (unused (ParserState *st), unused (xmlNode *elt),
                     Object *object)
 {
   Context *ctx;
+  list<string> *ports;
 
   ctx = cast (Context *, object);
   g_assert_nonnull (ctx);
 
   // TODO: Resolve port's references.
 
+  // Destroy port list.
+  g_assert (ctx->getData ("ports", (void **) &ports));
+  delete ports;
+
+  return true;
+}
+
+
+// Parse <media>.
+
+static bool
+parser_push_media (ParserState *st,
+                   unused (xmlNode *elt),
+                   map<string, string> *attr,
+                   Object **result)
+{
+  Composition *parent;
+  Media *media;
+  string id;
+  string type;
+
+  id = parser_attrmap_get (attr, "id");
+
+  if (parser_attrmap_index (attr, "refer", nullptr))
+    g_assert_not_reached ();    // TODO
+
+  if (parser_attrmap_index (attr, "type", &type)
+      && type == "application/x-ginga-settings")
+    {
+      media = new MediaSettings (id);
+    }
+  else
+    {
+      string src = "";
+      if (parser_attrmap_index (attr, "src", &src)
+          && !xpathisuri (src) && !xpathisabs (src))
+        {
+          string dir;
+          if (st->doc->URL == nullptr)
+            dir = "";
+          else
+            dir = xpathdirname (toString (st->doc->URL));
+          src = xpathbuildabs (dir, src);
+        }
+      media = new Media (id, type, src);
+    }
+
+  parent = cast (Composition *, st->objStack.back ());
+  g_assert_nonnull (parent);
+  parent->addChild (media);
+
+  *result = media;              // push onto stack
   return true;
 }
 
@@ -443,9 +528,9 @@ processElt (ParserState *st, xmlNode *elt)
       // Insert attr-map and element's node into cache.
       if (edata->flags & PARSER_ELT_FLAG_CACHE)
         {
-          st->cacheAttr[id] = map<string, string> (_attr);
-          st->cacheElt[id] = elt;
-          attr = &st->cacheAttr[id];
+          st->cachedAttrs[id] = map<string, string> (_attr);
+          st->cachedElts[id] = elt;
+          attr = &st->cachedAttrs[id];
         }
     }
   else
