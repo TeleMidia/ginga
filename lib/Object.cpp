@@ -265,6 +265,18 @@ Object::setProperty (const string &name, const string &value, Time dur)
   _properties[name] = value;
 }
 
+bool
+Object::getData (const string &key, void **value)
+{
+  MAP_GET_IMPL (_userdata, key, value);
+}
+
+bool
+Object::setData (const string &key, void *value)
+{
+  MAP_SET_IMPL (_userdata, key, value);
+}
+
 list<pair<Action, Time>> *
 Object::getDelayedActions ()
 {

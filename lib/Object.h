@@ -33,7 +33,6 @@ public:
   virtual ~Object ();
 
   string getId ();
-
   Formatter *getFormatter ();
   void initFormatter (Formatter *);
 
@@ -44,6 +43,7 @@ public:
   bool hasAlias (const string &);
   void addAlias (const string &);
 
+  // fixme
   Event *obtainEvent (Event::Type, NclAnchor *, const string &);
 
   Event *getEvent (Event::Type, const string &);
@@ -61,6 +61,9 @@ public:
 
   virtual string getProperty (const string &);
   virtual void setProperty (const string &, const string &, Time dur=0);
+
+  bool getData (const string &, void **);
+  bool setData (const string &, void *);
 
   list<pair<Action, Time>> *getDelayedActions ();
   void addDelayedAction (Event *, Event::Transition,
@@ -80,6 +83,7 @@ protected:
 
   Time _time;                      // playback time
   map<string, string> _properties; // property map
+  map<string, void *> _userdata;   // userdata map
 
   Event *_lambda;               // lambda event
   set<Event *> _events;         // all events
