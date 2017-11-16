@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "Composition.h"
 
+#include "Document.h"
+
 GINGA_NAMESPACE_BEGIN
 
 Composition::Composition (const string &id): Object (id)
@@ -48,7 +50,10 @@ Composition::addChild (Object *child)
 {
   g_assert_nonnull (child);
   if (tryinsert (child, _children, insert))
-    child->initParent (this);
+    {
+      child->initParent (this);
+      _doc->addObject (child);
+    }
 }
 
 GINGA_NAMESPACE_END

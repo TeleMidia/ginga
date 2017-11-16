@@ -18,11 +18,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include "Formatter.h"
 #include "Event.h"
 
 GINGA_NAMESPACE_BEGIN
 
+class Document;
 class Composition;
 class MediaSettings;
 
@@ -33,8 +33,9 @@ public:
   virtual ~Object ();
 
   string getId ();
-  Formatter *getFormatter ();
-  void initFormatter (Formatter *);
+
+  Document *getDocument ();
+  void initDocument (Document *);
 
   Composition *getParent ();
   void initParent (Composition *);
@@ -42,9 +43,6 @@ public:
   const vector <string> *getAliases ();
   bool hasAlias (const string &);
   void addAlias (const string &);
-
-  // fixme
-  Event *obtainEvent (Event::Type, NclAnchor *, const string &);
 
   Event *getEvent (Event::Type, const string &);
   Event *getAttributionEvent (const string &);
@@ -77,7 +75,7 @@ public:
 
 protected:
   string _id;                      // id
-  Formatter *_formatter;           // formatter handle
+  Document *_doc;                  // parent document
   Composition *_parent;            // parent object
   vector<string> _aliases;         // aliases
 
@@ -85,9 +83,8 @@ protected:
   map<string, string> _properties; // property map
   map<string, void *> _userdata;   // userdata map
 
-  Event *_lambda;               // lambda event
-  set<Event *> _events;         // all events
-
+  Event *_lambda;                    // lambda event
+  set<Event *> _events;              // all events
   list<pair<Action, Time>> _delayed; // delayed actions
 
   virtual void doStart ();

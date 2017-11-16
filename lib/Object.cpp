@@ -19,6 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Object.h"
 
 #include "Composition.h"
+#include "Document.h"
 #include "Event.h"
 #include "Media.h"
 #include "MediaSettings.h"
@@ -32,7 +33,7 @@ GINGA_NAMESPACE_BEGIN
 Object::Object (const string &id)
 {
   _id = id;
-  _formatter = nullptr;
+  _doc = nullptr;
   _parent = nullptr;
   _time = GINGA_TIME_NONE;
 
@@ -52,18 +53,18 @@ Object::getId ()
   return _id;
 }
 
-Formatter *
-Object::getFormatter ()
+Document *
+Object::getDocument ()
 {
-  return _formatter;
+  return _doc;
 }
 
 void
-Object::initFormatter (Formatter *formatter)
+Object::initDocument (Document *doc)
 {
-  g_assert_nonnull (formatter);
-  g_assert_null (_formatter);
-  _formatter = formatter;
+  g_assert_nonnull (doc);
+  g_assert_null (_doc);
+  _doc = doc;
 }
 
 Composition *
@@ -99,62 +100,6 @@ void
 Object::addAlias (const string &alias)
 {
   tryinsert (alias, _aliases, push_back);
-}
-
-
-Event *
-Object::obtainEvent (Event::Type type, NclAnchor *anchor,
-                     const string &key)
-{
-  Event *event;
-
-  if (type == Event::SELECTION)
-    event = this->getEvent (type, key);
-  else
-    event = this->getEvent (type, anchor->getId ());
-
-  if (event != nullptr)
-    return event;
-
-  g_assert (instanceof (Media *, this));
-
-  switch (type)
-    {
-    case Event::PRESENTATION:
-      {
-        NclArea *area = cast (NclArea *, anchor);
-        g_assert_nonnull (area);
-        this->addPresentationEvent (anchor->getId (),
-                                    area->getBegin (),
-                                    area->getEnd ());
-        event = this->getPresentationEvent (anchor->getId ());
-        g_assert_nonnull (event);
-        break;
-      }
-    case Event::ATTRIBUTION:
-      {
-        NclProperty *property = cast (NclProperty *, anchor);
-        g_assert_nonnull (property);
-        this->addAttributionEvent (property->getId ());
-        event = this->getAttributionEvent (property->getId ());
-        g_assert_nonnull (event);
-        event->setParameter ("value", property->getValue ());
-        break;
-      }
-    case Event::SELECTION:
-      {
-        this->addSelectionEvent (key);
-        event = this->getSelectionEvent (key);
-        g_assert_nonnull (event);
-        event->setParameter ("key", key);
-        break;
-      }
-    default:
-      g_assert_not_reached ();
-    }
-
-  g_assert_nonnull (event);
-  return event;
 }
 
 Event *
@@ -319,7 +264,7 @@ Object::sendTickEvent (unused (Time total), Time diff, unused (Time frame))
 
   for (auto action: trigger)
     {
-      _formatter->evalAction (action);
+      _doc->evalAction (action);
       if (!this->isOccurring ())
         return;
     }

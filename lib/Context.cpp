@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "Context.h"
 
+#include "Document.h"
+
 GINGA_NAMESPACE_BEGIN
 
 
@@ -119,7 +121,7 @@ Context::endTransition (Event *event, Event::Transition transition)
         case Event::START:
           Object::doStart ();
           for (auto port: _ports)
-            _formatter->evalAction (port, transition);
+            _doc->evalAction (port, transition);
           TRACE ("start %s@lambda", _id.c_str ());
           break;
         case Event::STOP:

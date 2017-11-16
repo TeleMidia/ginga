@@ -125,7 +125,7 @@ Formatter::start (const string &file, string *errmsg)
   h = _opts.height;
   if (!_opts.experimental)
     {
-      _doc = ParserXercesC::parse (file, w, h, errmsg);
+      _docLegacy = ParserXercesC::parse (file, w, h, errmsg);
     }
   else
     {
@@ -139,8 +139,16 @@ Formatter::start (const string &file, string *errmsg)
       exit (0);
       return true;
     }
-  if (unlikely (_doc == nullptr))
+  if (unlikely (_docLegacy == nullptr))
     return false;
+
+  _doc = new Document ();
+  _doc->setData ("formatter", (void *) this);
+
+  Context *root = _doc->getRoot ();
+  g_assert_nonnull (root);
+  MediaSettings *settings = _doc->getSettings ();
+  g_assert_nonnull (settings);
 
   // Initialize formatter variables.
   _docPath = file;
@@ -148,36 +156,37 @@ Formatter::start (const string &file, string *errmsg)
   _last_tick_total = 0;
   _last_tick_diff = 0;
   _last_tick_frameno = 0;
-  g_assert_null (_settings);
 
   // Run document.
   TRACE ("%s", file.c_str ());
 
-  id = _doc->getId ();
-  body = _doc->getRoot ();
+  id = _docLegacy->getId ();
+  body = _docLegacy->getRoot ();
   g_assert_nonnull (body);
 
+  root->addAlias (id);
+
   // Create settings node.
-  NclMedia *settingsNode =  new NclMedia (_doc, "__settings__", true);
-  NclProperty *prop = new NclProperty (_doc, "service.currentFocus");
+  NclMedia *settingsNode =  new NclMedia (_docLegacy,
+                                          "__settings__", true);
+  NclProperty *prop = new NclProperty (_docLegacy,
+                                       "service.currentFocus");
   prop->setValue ("");
   settingsNode->addAnchor (prop);
-  g_assert_null (_settings);
   g_assert_nonnull (this->obtainExecutionObject (settingsNode));
-  g_assert_nonnull (_settings);
-  Event *evt = cast (Object *, _settings)->getLambda ();
+  Event *evt = cast (Object *, settings)->getLambda ();
   g_assert_nonnull (evt);
   g_assert (evt->transition (Event::START));
 
   // Initialize settings object.
-  vector<NclNode *> *nodes = _doc->getSettingsNodes ();
+  vector<NclNode *> *nodes = _docLegacy->getSettingsNodes ();
   for (auto node: *nodes)
     {
       NclMedia *content;
 
       content = (NclMedia *) node;
       if (content != settingsNode)
-        _settings->addAlias (content->getId ());
+        settings->addAlias (content->getId ());
 
       for (auto anchor: *content->getAnchors ())
         {
@@ -194,20 +203,43 @@ Formatter::start (const string &file, string *errmsg)
           if (value == "")
             continue;           // nothing to do
 
-          _settings->setProperty (name, value, 0);
+          settings->setProperty (name, value, 0);
         }
     }
   delete nodes;
 
   // Start document.
   Object *obj = this->obtainExecutionObject (body);
+  for (auto port: *body->getPorts ())
+    {
+      NclNode *target;
+      NclAnchor *iface;
+      Object *child;
+      Event *e;
+
+      port->getTarget (&target, &iface);
+      child = this->obtainExecutionObject (target);
+      g_assert_nonnull (child);
+
+      if (!instanceof (NclArea *, iface))
+        continue;       // nothing to do
+
+      e = this->obtainEvent (child, Event::PRESENTATION, iface, "");
+      g_assert_nonnull (e);
+      cast (Context *, obj)->addPort (e);
+    }
+  for (auto link: *(body->getLinks ()))
+    {
+      auto ell = obtainFormatterLink (link);
+      cast (Context *, obj)->addLink (ell.first, ell.second);
+    }
   evt = obj->getLambda ();
   g_assert_nonnull (evt);
-  if (this->evalAction (evt, Event::START) == 0)
+  if (_doc->evalAction (evt, Event::START) == 0)
     return false;
 
   // Refresh current focus.
-  _settings->updateCurrentFocus ("");
+  settings->updateCurrentFocus ("");
 
   _state = GINGA_STATE_PLAYING;
   return true;
@@ -219,16 +251,8 @@ Formatter::stop ()
   if (_state == GINGA_STATE_STOPPED)
     return false;               // nothing to do
 
-  for (auto obj: _objects)
-    if (obj != _settings)
-      delete obj;
-  delete _settings;
-
-  _objects.clear ();
-  _mediaObjects.clear ();
-  _settings = nullptr;
+  delete _doc;
   _state = GINGA_STATE_STOPPED;
-
   return true;
 }
 
@@ -242,7 +266,7 @@ Formatter::resize (int width, int height)
   if (_state != GINGA_STATE_PLAYING)
     return;                     // nothing to do
 
-  for (auto obj: _objects)
+  for (auto obj: *_doc->getObjects ())
     {
       if (!instanceof (Media *, obj))
         continue;
@@ -291,7 +315,7 @@ Formatter::redraw (cairo_t *cr)
         }
     }
 
-  for (auto media: _mediaObjects)
+  for (auto media: *_doc->getMedias ())
     medias.push_back (cast (Media *, media));
   std::sort (medias.begin (), medias.end (), cmpz);
   for (auto media: medias)
@@ -403,7 +427,7 @@ Formatter::getOptions ()
     return *((Type *)(((ptrdiff_t) &_opts) + opt->offset));             \
   }                                                                     \
   void                                                                  \
-    Formatter::setOption##Name (const string &name, Type value)         \
+  Formatter::setOption##Name (const string &name, Type value)           \
   {                                                                     \
     GingaOptionData *opt;                                               \
     if (unlikely (!opts_table_index (name, &opt)))                      \
@@ -441,9 +465,9 @@ Formatter::Formatter (unused (int argc), unused (char **argv),
     ? string (s) : "";
 
   _doc = nullptr;
+  _docLegacy = nullptr;
   _docPath = "";
   _eos = false;
-  _settings = nullptr;
 
   // Initialize options.
   setOptionBackground (this, "background", _opts.background);
@@ -467,433 +491,6 @@ void
 Formatter::setEOS (bool eos)
 {
   _eos = eos;
-}
-
-const set<Object *> *
-Formatter::getObjects ()
-{
-  return &_objects;
-}
-
-const set<Media *> *
-Formatter::getMediaObjects ()
-{
-  return &_mediaObjects;
-}
-
-MediaSettings *
-Formatter::getSettings ()
-{
-  return _settings;
-}
-
-Object *
-Formatter::getObjectById (const string &id)
-{
-  for (auto obj: _objects)
-    if (obj->getId () == id)
-      return obj;
-  return nullptr;
-}
-
-Object *
-Formatter::getObjectByIdOrAlias (const string &id)
-{
-  Object *obj;
-  if ((obj = this->getObjectById (id)) != nullptr)
-    return obj;
-  for (auto obj: _objects)
-    if (obj->hasAlias (id))
-      return obj;
-  return nullptr;
-}
-
-bool
-Formatter::getObjectPropertyByRef (const string &ref,
-                                   string *result)
-{
-  size_t i;
-  string id;
-  string name;
-  Object *object;
-
-  if (ref[0] != '$' || (i = ref.find ('.')) == string::npos)
-    return false;
-
-  id = ref.substr (1, i - 1);
-  name = ref.substr (i + 1);
-  object = this->getObjectByIdOrAlias (id);
-  if (object == nullptr)
-    return false;
-
-  tryset (result, object->getProperty (name));
-  return true;
-}
-
-void
-Formatter::addObject (Object *obj)
-{
-  g_assert_nonnull (obj);
-  if (_objects.find (obj) != _objects.end ()
-      || getObjectByIdOrAlias (obj->getId ()) != nullptr)
-    {
-      return;
-    }
-
-  _objects.insert (obj);
-
-  if (instanceof (MediaSettings *, obj))
-    {
-      g_assert_null (_settings);
-      _settings = cast (MediaSettings *, obj);
-      g_assert_nonnull (_settings);
-    }
-  else if (instanceof (Media *, obj))
-    {
-      Media *media = cast (Media *, obj);
-      g_assert_nonnull (media);
-      _mediaObjects.insert (media);
-    }
-}
-
-bool
-Formatter::evalPredicate (Predicate *pred)
-{
-  switch (pred->getType ())
-    {
-    case Predicate::FALSUM:
-      TRACE ("false");
-      break;
-    case Predicate::VERUM:
-      TRACE ("true");
-      break;
-    case Predicate::ATOM:
-      {
-        string left, right;
-        Predicate::Test test;
-        string msg_left, msg_test, msg_right;
-        bool result;
-
-        pred->getTest (&left, &test, &right);
-
-        if (left[0] == '$')
-          {
-            msg_left = left;
-            if (this->getObjectPropertyByRef (left, &left))
-              msg_left += " ('" + left + "')";
-          }
-        else
-          {
-            msg_left = "'" + left + "'";
-          }
-
-        if (right[0] == '$')
-          {
-            msg_right = right;
-            if (this->getObjectPropertyByRef (right, &right))
-              msg_right += " ('" + right + "')";
-          }
-        else
-          {
-            msg_right = "'" + right + "'";
-          }
-
-        switch (test)
-          {
-          case Predicate::EQ:
-            msg_test = "==";
-            result = left == right;
-            break;
-          case Predicate::NE:
-            msg_test = "!=";
-            result = left != right;
-            break;
-          case Predicate::LT:
-            msg_test = "<";
-            result = left < right;
-            break;
-          case Predicate::LE:
-            msg_test = "<=";
-            result = left <= right;
-            break;
-          case Predicate::GT:
-            msg_test = ">";
-            result = left > right;
-            break;
-          case Predicate::GE:
-            msg_test = ">=";
-            result = left >= right;
-            break;
-          default:
-            g_assert_not_reached ();
-          }
-        TRACE ("%s %s %s -> %s", msg_left.c_str (),
-               msg_test.c_str (), msg_right.c_str (), strbool (result));
-        return result;
-      }
-    case Predicate::NEGATION:
-      g_assert_not_reached ();
-      break;
-    case Predicate::CONJUNCTION:
-      {
-        for (auto child: *pred->getChildren ())
-          {
-            if (!this->evalPredicate (child))
-              {
-                TRACE ("and -> false");
-                return false;
-              }
-          }
-        TRACE ("and -> true");
-        return true;
-      }
-      break;
-    case Predicate::DISJUNCTION:
-      g_assert_not_reached ();
-      break;
-    default:
-      g_assert_not_reached ();
-    }
-  g_assert_not_reached ();
-}
-
-int
-Formatter::evalAction (Event *event,
-                       Event::Transition transition,
-                       const string &value)
-{
-  Action act;
-  act.event = event;
-  g_assert_nonnull (event);
-  act.transition = transition;
-  act.predicate = nullptr;
-  act.value = value;
-  return this->evalAction (act);
-}
-
-int
-Formatter::evalAction (Action init)
-{
-  list<Action> stack;
-  int n;
-
-  stack.push_back (init);
-  n = 0;
-
-  while (!stack.empty ())
-    {
-      Action act;
-      Event *evt;
-      Object *obj;
-      Composition *comp;
-      Context *ctx;
-      bool done;
-
-      act = stack.back ();
-      stack.pop_back ();
-
-      evt = act.event;
-      g_assert_nonnull (evt);
-      if (evt->getType () == Event::ATTRIBUTION)
-        evt->setParameter ("value", act.value);
-
-      if (!evt->transition (act.transition))
-        continue;
-
-      n++;
-      done = false;
-      obj = evt->getObject ();
-      g_assert_nonnull (obj);
-
-      // Trigger links in parent context.
-      comp = obj->getParent ();
-      if (comp != nullptr
-          && instanceof (Context *, comp)
-          && comp->isOccurring ())
-        {
-          ctx = cast (Context *, comp);
-          g_assert_nonnull (ctx);
-
-        trigger:
-          if (ctx->getLinksStatus ())
-            {
-              for (auto link: *ctx->getLinks ())
-                {
-                  for (auto cond: link.first)
-                    {
-                      Predicate *pred;
-
-                      if (cond.event != evt)
-                        continue;
-
-                      if (cond.transition != act.transition)
-                        continue;
-
-                      pred = cond.predicate;
-                      if (pred != nullptr && !this->evalPredicate (pred))
-                        continue;
-
-                      // Success.
-                      auto acts = link.second;
-                      std::list<Action>::reverse_iterator rit
-                        = acts.rbegin ();
-                      for (; rit != acts.rend (); ++rit)
-                        stack.push_back (*rit);
-                    }
-                }
-            }
-        }
-
-      // Trigger links in context itself.
-      if (!done && instanceof (Context *, obj))
-        {
-          ctx = cast (Context *, obj);
-          g_assert_nonnull (ctx);
-          done = true;
-          goto trigger;
-        }
-    }
-  return n;
-}
-
-Object *
-Formatter::obtainExecutionObject (NclNode *node)
-{
-  string id;
-  NclNode *parentNode;
-  Composition *parent;
-  Object *object;
-
-  id = node->getId ();
-  g_assert (id != "");
-
-  if ((object = this->getObjectByIdOrAlias (id)) != nullptr)
-    return object;              // already created
-
-  // Get parent.
-  parentNode = node->getParent ();
-  if (parentNode == nullptr)
-    {
-      parent = nullptr;
-    }
-  else
-    {
-      parent = cast (Composition *, obtainExecutionObject (parentNode));
-      g_assert_nonnull (parent);
-      if ((object = this->getObjectByIdOrAlias (id)) != nullptr)
-        return object;
-    }
-
-  // Solve refer, if needed.
-  if (instanceof (NclMediaRefer *, node))
-    {
-      NclNode *target;
-
-      TRACE ("solving refer %s", node->getId ().c_str ());
-      target = node->derefer ();
-      g_assert (!instanceof (NclMediaRefer *, target));
-      object = obtainExecutionObject (target->derefer ());
-      object->addAlias (id);
-      return object;
-    }
-
-  if (instanceof (NclSwitch *, node)) // switch
-    {
-      TRACE ("creating switch %s", node->getId ().c_str ());
-      object = new Switch (id);
-      object->initFormatter (this);
-      if (parent != nullptr)
-        parent->addChild (object);
-      this->addObject (object);
-
-      for (auto item: *cast (NclSwitch *, node)->getRules ())
-        {
-          Object *obj;
-
-          g_assert_nonnull (item.first);
-          g_assert_nonnull (item.second);
-
-          obj = this->obtainExecutionObject (item.first);
-          g_assert_nonnull (obj);
-          cast (Switch *, object)->addRule (obj, item.second);
-        }
-      return object;
-    }
-  else if (instanceof (NclContext *, node)) // context
-    {
-      TRACE ("creating context %s", node->getId ().c_str ());
-      object = new Context (id);
-      object->initFormatter (this);
-      if (parent != nullptr)
-        parent->addChild (object);
-      this->addObject (object);
-
-      NclContext *ctx = cast (NclContext *, node);
-      for (auto port: *ctx->getPorts ())
-        {
-          NclNode *target;
-          NclAnchor *iface;
-          Object *child;
-          Event *e;
-
-          port->getTarget (&target, &iface);
-          child = this->obtainExecutionObject (target);
-          g_assert_nonnull (child);
-
-          if (!instanceof (NclArea *, iface))
-            continue;       // nothing to do
-
-          e = child->obtainEvent
-            (Event::PRESENTATION, iface, "");
-          g_assert_nonnull (e);
-          cast (Context *, object)->addPort (e);
-        }
-      for (auto link: *(ctx->getLinks ()))
-        {
-          auto ell = obtainFormatterLink (link);
-          cast (Context *, object)->addLink (ell.first, ell.second);
-        }
-
-      return object;
-    }
-  else if (instanceof (NclMedia *, node)) // media
-    {
-      TRACE ("creating media %s", node->getId ().c_str ());
-      NclMedia *media;
-      media = cast (NclMedia *, node);
-      g_assert_nonnull (media);
-      if (media->isSettings ())
-        {
-          g_assert_null (_settings);
-          object = new MediaSettings (id);
-          object->initFormatter (this);
-        }
-      else
-        {
-          object = new Media (id, media->getMimeType (),
-                                       media->getSrc ());
-          object->initFormatter (this);
-        }
-
-      // Initialize properties.
-      for (auto anchor: *media->getAnchors ())
-        {
-          NclProperty *prop = cast (NclProperty *, anchor);
-          if (prop != nullptr)
-            object->setProperty (prop->getName (),
-                                 prop->getValue ());
-        }
-
-      g_assert_nonnull (object);
-      if (parent != nullptr)
-        parent->addChild (object);
-      this->addObject (object);
-      return object;
-    }
-  else
-    {
-      g_assert_not_reached ();
-    }
 }
 
 
@@ -972,13 +569,199 @@ list<Object *>
 Formatter::getObjectList (Event::State state)
 {
   list<Object *> buf;
-  for (auto obj: _objects)
+  for (auto obj: *_doc->getObjects ())
     {
       Event *lambda = obj->getLambda ();
       if (lambda->getState () == state)
         buf.push_back (obj);
     }
   return buf;
+}
+
+Object *
+Formatter::obtainExecutionObject (NclNode *node)
+{
+  string id;
+  NclNode *parentNode;
+  Composition *parent;
+  Object *object;
+
+  id = node->getId ();
+  g_assert (id != "");
+
+  if ((object = _doc->getObjectByIdOrAlias (id)) != nullptr)
+    return object;              // already created
+
+  // Get parent.
+  parentNode = node->getParent ();
+  if (parentNode == nullptr)
+    {
+      parent = nullptr;
+    }
+  else
+    {
+      parent = cast (Composition *, obtainExecutionObject (parentNode));
+      g_assert_nonnull (parent);
+      if ((object = _doc->getObjectByIdOrAlias (id)) != nullptr)
+        return object;
+    }
+
+  // Solve refer, if needed.
+  if (instanceof (NclMediaRefer *, node))
+    {
+      NclNode *target;
+
+      TRACE ("solving refer %s", node->getId ().c_str ());
+      target = node->derefer ();
+      g_assert (!instanceof (NclMediaRefer *, target));
+      object = obtainExecutionObject (target->derefer ());
+      object->addAlias (id);
+      return object;
+    }
+
+  if (instanceof (NclSwitch *, node)) // switch
+    {
+      TRACE ("creating switch %s", node->getId ().c_str ());
+      object = new Switch (id);
+      if (parent != nullptr)
+        parent->addChild (object);
+
+      for (auto item: *cast (NclSwitch *, node)->getRules ())
+        {
+          Object *obj;
+
+          g_assert_nonnull (item.first);
+          g_assert_nonnull (item.second);
+
+          obj = this->obtainExecutionObject (item.first);
+          g_assert_nonnull (obj);
+          cast (Switch *, object)->addRule (obj, item.second);
+        }
+      return object;
+    }
+  else if (instanceof (NclContext *, node)) // context
+    {
+      TRACE ("creating context %s", node->getId ().c_str ());
+      object = new Context (id);
+      if (parent != nullptr)
+        parent->addChild (object);
+
+      NclContext *ctx = cast (NclContext *, node);
+      for (auto port: *ctx->getPorts ())
+        {
+          NclNode *target;
+          NclAnchor *iface;
+          Object *child;
+          Event *e;
+
+          port->getTarget (&target, &iface);
+          child = this->obtainExecutionObject (target);
+          g_assert_nonnull (child);
+
+          if (!instanceof (NclArea *, iface))
+            continue;       // nothing to do
+
+          e = this->obtainEvent (child, Event::PRESENTATION, iface, "");
+          g_assert_nonnull (e);
+          cast (Context *, object)->addPort (e);
+        }
+      for (auto link: *(ctx->getLinks ()))
+        {
+          auto ell = obtainFormatterLink (link);
+          cast (Context *, object)->addLink (ell.first, ell.second);
+        }
+
+      return object;
+    }
+  else if (instanceof (NclMedia *, node)) // media
+    {
+      TRACE ("creating media %s", node->getId ().c_str ());
+      NclMedia *media;
+      media = cast (NclMedia *, node);
+      g_assert_nonnull (media);
+      if (media->isSettings ())
+        {
+          object = new MediaSettings (id);
+        }
+      else
+        {
+          object = new Media (id, media->getMimeType (),
+                              media->getSrc ());
+        }
+
+      // Initialize properties.
+      for (auto anchor: *media->getAnchors ())
+        {
+          NclProperty *prop = cast (NclProperty *, anchor);
+          if (prop != nullptr)
+            object->setProperty (prop->getName (),
+                                 prop->getValue ());
+        }
+
+      g_assert_nonnull (object);
+      if (parent != nullptr)
+        parent->addChild (object);
+      return object;
+    }
+  else
+    {
+      g_assert_not_reached ();
+    }
+}
+
+Event *
+Formatter::obtainEvent (Object *obj, Event::Type type,
+                        NclAnchor *anchor, const string &key)
+{
+  Event *event;
+
+  if (type == Event::SELECTION)
+    event = obj->getEvent (type, key);
+  else
+    event = obj->getEvent (type, anchor->getId ());
+
+  if (event != nullptr)
+    return event;
+
+  g_assert (instanceof (Media *, obj));
+
+  switch (type)
+    {
+    case Event::PRESENTATION:
+      {
+        NclArea *area = cast (NclArea *, anchor);
+        g_assert_nonnull (area);
+        obj->addPresentationEvent (anchor->getId (),
+                                    area->getBegin (),
+                                    area->getEnd ());
+        event = obj->getPresentationEvent (anchor->getId ());
+        g_assert_nonnull (event);
+        break;
+      }
+    case Event::ATTRIBUTION:
+      {
+        NclProperty *property = cast (NclProperty *, anchor);
+        g_assert_nonnull (property);
+        obj->addAttributionEvent (property->getId ());
+        event = obj->getAttributionEvent (property->getId ());
+        g_assert_nonnull (event);
+        event->setParameter ("value", property->getValue ());
+        break;
+      }
+    case Event::SELECTION:
+      {
+        obj->addSelectionEvent (key);
+        event = obj->getSelectionEvent (key);
+        g_assert_nonnull (event);
+        event->setParameter ("key", key);
+        break;
+      }
+    default:
+      g_assert_not_reached ();
+    }
+
+  g_assert_nonnull (event);
+  return event;
 }
 
 Event *
@@ -1021,7 +804,7 @@ Formatter::obtainFormatterEventFromBind (NclBind *bind)
       bind->getParameter ("key", &key);
     }
 
-  return obj->obtainEvent (eventType, iface, key);
+  return this->obtainEvent (obj, eventType, iface, key);
 }
 
 pair<list<Action>,list<Action>>
