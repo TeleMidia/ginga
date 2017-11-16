@@ -33,7 +33,7 @@ main (void)
   while ((entry = g_dir_read_name (dir)) != nullptr)
     {
       string entry_path;
-      set<Object *> *objs;
+      Document *doc;
       string errmsg;
 
       entry_path = xpathbuildabs (path, string (entry));
@@ -41,8 +41,8 @@ main (void)
         continue;
 
       errmsg = "";
-      objs = Parser::parseFile (entry_path, 100, 100, &errmsg);
-      if (objs == nullptr)
+      doc = Parser::parseFile (entry_path, 100, 100, &errmsg);
+      if (doc == nullptr)
         {
           g_printerr ("%s: %s\n", entry, errmsg.c_str ());
           g_assert_not_reached ();

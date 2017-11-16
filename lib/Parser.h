@@ -18,15 +18,15 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PARSER_H
 #define PARSER_H
 
-#include "Object.h"
+#include "Document.h"
 
 GINGA_NAMESPACE_BEGIN
 
 class Parser
 {
 public:
-  static set<Object *> *parseBuffer (const void *, size_t, int, int, string *);
-  static set<Object *> *parseFile (const string &, int, int, string *);
+  static Document *parseBuffer (const void *, size_t, int, int, string *);
+  static Document *parseFile (const string &, int, int, string *);
 };
 
 GINGA_NAMESPACE_END

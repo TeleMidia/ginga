@@ -25,35 +25,35 @@ static G_GNUC_UNUSED bool
 check_failure (const string &log, const string &buf)
 {
   static int i = 1;
-  set<Object *> *objs;
+  Document *doc;
   string msg = "";
 
   g_printerr ("xfail #%d: %s\n", i++, log.c_str ());
-  objs = Parser::parseBuffer (buf.c_str (), buf.length (), 100, 100, &msg);
-  if (objs == nullptr && msg != "")
+  doc = Parser::parseBuffer (buf.c_str (), buf.length (), 100, 100, &msg);
+  if (doc == nullptr && msg != "")
     {
       g_printerr ("%s\n\n", msg.c_str ());
       return true;
     }
-  delete objs;
+  delete doc;
   return false;
 }
 
-static G_GNUC_UNUSED set<Object *> *
+static G_GNUC_UNUSED Document *
 check_success (const string &log, const string &buf)
 {
   static int i = 1;
-  set<Object *> *objs;
+  Document *doc;
   string msg = "";
 
   g_printerr ("pass #%d: %s\n", i++, log.c_str ());
-  objs = Parser::parseBuffer (buf.c_str (), buf.length (), 100, 100, &msg);
+  doc = Parser::parseBuffer (buf.c_str (), buf.length (), 100, 100, &msg);
   if (msg != "")
     {
       g_printerr ("*** Unexpected error: %s", msg.c_str ());
       g_assert_not_reached ();
     }
-  return objs;
+  return doc;
 }
 
 #define XFAIL(log, str)\
@@ -514,21 +514,6 @@ main (void)
   <connectorBase>\n\
    <causalConnector id='c'>\n\
     <simpleCondition role='onBegin'/>\n\
-    <simpleAction role='start' eventType='presentation'/>\n\
-   </causalConnector>\n\
-  </connectorBase>\n\
- </head>\n\
- <body>\n\
- </body>\n\
-</ncl>\n\
-");
-
-  XFAIL ("simpleAction: Reserved role", "\
-<ncl>\n\
- <head>\n\
-  <connectorBase>\n\
-   <causalConnector id='c'>\n\
-    <simpleCondition role='onBegin'/>\n\
     <simpleAction role='start' actionType='starts'/>\n\
    </causalConnector>\n\
   </connectorBase>\n\
@@ -538,7 +523,7 @@ main (void)
 </ncl>\n\
 ");
 
-  XFAIL ("simpleAction: Missing eventType", "\
+  XFAIL ("simpleAction: Missing actionType", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -605,103 +590,101 @@ main (void)
 
   // Success: Empty document.
   {
-    set<Object *> *objs;
-    PASS (&objs, "Empty document", "\
+    Document *doc;
+    PASS (&doc, "Empty document", "\
 <ncl>\n\
  <head/>\n\
  <body/>\n\
 </ncl>\n\
 ");
-    g_assert_nonnull (objs);
-    g_assert (objs->size () == 1);
-    delete objs;
+    g_assert_nonnull (doc);
+    g_assert (doc->getObjects ()->size () == 2);
+    delete doc;
   }
 
   // Success: Misc checks.
   {
-#if 0
-    set<Object *> *objs;
-    PASS (&objs, "Misc checks", "\
-// <ncl>\n\
-//  <head>\n\
-//   <regionBase>\n\
-//    <region id='r' top='100%' left='25%'>\n\
-//     <region id='r1' width='30%'>\n\
-//      <region id='r2' bottom='25%' right='25%'>\n\
-//       <region id='r3' height='15%' width='50%' zIndex='1'/>\n\
-//      </region>\n\
-//     </region>\n\
-//    </region>\n\
-//   </regionBase>\n\
-//   <descriptorBase>\n\
-//    <descriptor id='d' left='50%' top='0%' region='r3'>\n\
-//     <descriptorParam name='top' value='50%'/>\n\
-//     <descriptorParam name='zIndex' value='2'/>\n\
-//    </descriptor>\n\
-//    <descriptor id='d1'/>\n\
-//   </descriptorBase>\n\
-//   <connectorBase>\n\
-//    <causalConnector id='conn1'>\n\
-//     <simpleCondition role='onBegin'/>\n\
-//     <simpleAction role='start'/>\n\
-//    </causalConnector>\n\
-//   </connectorBase>\n\
-//  </head>\n\
-//  <body>\n\
-//   <port id='p' component='m'/>\n\
-//   <port id='q' component='m' interface='background'/>\n\
-//   <media id='m' descriptor='d'>\n\
-//    <property name='background' value='red'/>\n\
-//    <property name='size' value='100%,100%'/>\n\
-//    <property name='zIndex' value='3'/>\n\
-//   </media>\n\
-//   <port id='p2' component='c'/>\n\
-//   <context id='c'>\n\
-//    <port id='p3' component='m2'/>\n\
-//    <media id='m2' src='samples/gnu.png'>\n\
-//    </media>\n\
-//   </context>\n\
-//  </body>\n\
-// </ncl>\n\
-// ");
-    g_assert_nonnull (ncl);
-    g_assert (ncl->getId () == "ncl");
-    NclContext *body = ncl->getRoot ();
-    g_assert_nonnull (body);
-    g_assert (body->getId () == ncl->getId ());
-    g_assert (body->getPorts ()->size () == 3);
-    g_assert (body->getNodes ()->size () == 2);
-    g_assert (body->getLinks ()->size () == 0);
+    Document *doc;
+    PASS (&doc, "Misc checks", "\
+<ncl>\n\
+  <head>\n\
+   <regionBase>\n\
+    <region id='r' top='100%' left='25%'>\n\
+     <region id='r1' width='30%'>\n\
+      <region id='r2' bottom='25%' right='25%'>\n\
+       <region id='r3' height='15%' width='50%' zIndex='1'/>\n\
+      </region>\n\
+     </region>\n\
+    </region>\n\
+   </regionBase>\n\
+   <descriptorBase>\n\
+    <descriptor id='d' left='50%' top='0%' region='r3'>\n\
+     <descriptorParam name='top' value='50%'/>\n\
+     <descriptorParam name='zIndex' value='2'/>\n\
+    </descriptor>\n\
+    <descriptor id='d1'/>\n\
+   </descriptorBase>\n\
+   <connectorBase>\n\
+    <causalConnector id='conn1'>\n\
+     <simpleCondition role='onBegin'/>\n\
+     <simpleAction role='start'/>\n\
+    </causalConnector>\n\
+   </connectorBase>\n\
+  </head>\n\
+  <body>\n\
+   <port id='p' component='m'/>\n\
+   <port id='q' component='m' interface='background'/>\n\
+   <media id='m' descriptor='d'>\n\
+    <property name='background' value='red'/>\n\
+    <property name='size' value='100%,100%'/>\n\
+    <property name='zIndex' value='3'/>\n\
+   </media>\n\
+   <port id='p2' component='c'/>\n\
+   <context id='c'>\n\
+    <port id='p3' component='m2'/>\n\
+    <media id='m2' src='samples/gnu.png'>\n\
+    </media>\n\
+   </context>\n\
+  </body>\n\
+ </ncl>\n\
+");
+    g_assert_nonnull (doc);
+    // g_assert (ncl->getId () == "ncl");
+    // NclContext *body = ncl->getRoot ();
+    // g_assert_nonnull (body);
+    // g_assert (body->getId () == ncl->getId ());
+    // g_assert (body->getPorts ()->size () == 3);
+    // g_assert (body->getNodes ()->size () == 2);
+    // g_assert (body->getLinks ()->size () == 0);
 
-    NclEntity *port = ncl->getEntityById ("p");
-    g_assert (instanceof (NclPort *, port));
-    NclPort *p = cast (NclPort *, port);
-    g_assert (p->getId () == "p");
+    // NclEntity *port = ncl->getEntityById ("p");
+    // g_assert (instanceof (NclPort *, port));
+    // NclPort *p = cast (NclPort *, port);
+    // g_assert (p->getId () == "p");
 
-    port = ncl->getEntityById ("q");
-    g_assert (instanceof (NclPort *, port));
-    NclPort *q = cast (NclPort *, port);
-    g_assert (q->getId () == "q");
+    // port = ncl->getEntityById ("q");
+    // g_assert (instanceof (NclPort *, port));
+    // NclPort *q = cast (NclPort *, port);
+    // g_assert (q->getId () == "q");
 
-    NclEntity *media = ncl->getEntityById ("m");
-    g_assert (instanceof (NclMedia *, media));
-    NclMedia *m = cast (NclMedia *, media);
-    g_assert (m->getId () == "m");
+    // NclEntity *media = ncl->getEntityById ("m");
+    // g_assert (instanceof (NclMedia *, media));
+    // NclMedia *m = cast (NclMedia *, media);
+    // g_assert (m->getId () == "m");
 
-    g_assert (p->getNode () == m);
-    g_assert (p->getInterface ()->getId () == "m@lambda");
-    g_assert (q->getNode () == m);
-    g_assert (q->getInterface ()->getId () == "background");
+    // g_assert (p->getNode () == m);
+    // g_assert (p->getInterface ()->getId () == "m@lambda");
+    // g_assert (q->getNode () == m);
+    // g_assert (q->getInterface ()->getId () == "background");
 
-    g_assert (m->getProperty ("background") == "red");
-    g_assert (m->getProperty ("top") == "50%");
-    g_assert (m->getProperty ("left") == "50%");
-    g_assert (m->getProperty ("width") == "15.00%");
-    g_assert (m->getProperty ("height") == "15.00%");
-    g_assert (m->getProperty ("zIndex") == "3");
+    // g_assert (m->getProperty ("background") == "red");
+    // g_assert (m->getProperty ("top") == "50%");
+    // g_assert (m->getProperty ("left") == "50%");
+    // g_assert (m->getProperty ("width") == "15.00%");
+    // g_assert (m->getProperty ("height") == "15.00%");
+    // g_assert (m->getProperty ("zIndex") == "3");
 
-    delete objs;
-#endif
+    delete doc;
   }
 
   exit (EXIT_SUCCESS);

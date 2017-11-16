@@ -19,6 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Parser.h"
 
 #include "Context.h"
+#include "Document.h"
 #include "Media.h"
 #include "MediaSettings.h"
 
@@ -26,8 +27,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <libxml/parser.h>
 
 GINGA_NAMESPACE_BEGIN
-
-GINGA_PRAGMA_DIAG_IGNORE (-Wunused-function)
 
 // Helper macros and functions.
 #define toCString(s) deconst (char *, (s))
@@ -48,23 +47,42 @@ xmlGetPropAsString (xmlNode *node, const string &name, string *result)
 
 // Parser internal state.
 
-typedef map<string, xmlNode *> ParserEltCache;
-typedef map<string, map<string, string>> ParserAttrCache;
+// Entry in element cache.
+typedef struct ParserCache
+{
+  string tag;                   // node tag
+  xmlNode *node;                // node object
+  map<string, string> attrs;    // node attributes
+} ParserCache;
 
+// Entry in connector cache.
+typedef struct ParserConnCache
+{
+  string role;                  // role label
+  Event::Type eventType;        // event type
+  Event::Transition transition; // transition
+  bool condition;               // whether role is condition
+  Predicate *predicate;         // associated predicate (if condition)
+  string value;                 // value (if attribution)
+  string key;                   // key (if selection)
+} ParserConnCache;
+
+// Parser state.
 typedef struct ParserState
 {
-  xmlDoc *doc;                  // DOM tree
+  Document *doc;                // NCL document
+  xmlDoc *xml;                  // DOM tree
   Rect rect;                    // screen dimensions
   int genid;                    // last generated id
   string errmsg;                // last error message
 
-  list<Object *> objStack;      // object stack
-  ParserAttrCache cachedAttrs;  // attrmap indexed by id
-  ParserEltCache cachedElts;    // xmlNode indexed by id
+  list<Object *> objStack;                     // object stack
+  map<string, ParserCache> cache;              // cached elements
+  map<string, list<ParserCache *>> cacheByTag; // cached elements (by tag)
 
-  set<Object *> *objects;       // all objects
-  map<string, Object *> objMap; // all objects
-  Object *root;                 // root object
+  map<string, list<ParserConnCache>> connCache; // cached connectors
+  list<ParserConnCache> *currentConn;           // current connector
+  list<Predicate *> predStack;                  // predicate stack
 } ParserState;
 
 static inline G_GNUC_PRINTF (2,3) void
@@ -117,18 +135,67 @@ _st_err (ParserState *st, const char *fmt, ...)
 #define ST_ERR_ELT_UNKNOWN_CHILD(st, elt, child)\
   ST_ERR_ELT ((st), (elt), "Unknown child <%s>", (child))
 
+#define ST_ERR_ELT_MISSING_CHILD(st, elt, child)\
+  ST_ERR_ELT ((st), (elt), "Missing child <%s>", (child))
+
 // Generates unique id.
 static string
 st_gen_id (ParserState *st)
 {
-  return xstrbuild (".unamed-%d", st->genid++);
+  return xstrbuild ("__unamed-%d__", st->genid++);
 }
 
-// Index object map.
+// Index element cache by id.
 static bool
-st_objmap_index (ParserState *st, const string &id, Object **obj)
+st_cache_index (ParserState *st, const string &key,
+                ParserCache **result)
 {
-  MAP_GET_IMPL (st->objMap, id, obj);
+  auto it = st->cache.find (key);
+  if (it == st->cache.end ())
+    return false;
+  tryset (result, &it->second);
+  return true;
+}
+
+// Index element cache by tag.
+static const list<ParserCache *> *
+st_cache_index_by_tag (ParserState *st, const string &tag)
+{
+  auto it = st->cacheByTag.find (tag);
+  if (it == st->cacheByTag.end ())
+    return nullptr;
+  return &it->second;
+}
+
+// Resolve id-ref using element cache.
+static bool
+st_cache_resolve_idref (ParserState *st, const string &id,
+                        set<string> tags, xmlNode **result_node,
+                        map<string,string> **result_attrs)
+{
+  ParserCache *entry;
+
+  if (st_cache_index (st, id, &entry))
+    return false;
+  if (entry->node->type != XML_ELEMENT_NODE)
+    return false;
+  if (tags.find (entry->tag) == tags.end ())
+    return false;
+
+  tryset (result_node, entry->node);
+  tryset (result_attrs, &entry->attrs);
+  return true;
+}
+
+// Index connector cache by id.
+static const list<ParserConnCache> *
+st_conn_cache_index (ParserState *st, const string &tag)
+{
+  auto it = st->connCache.find (tag);
+  if (it == st->connCache.end ())
+    return nullptr;
+  return &it->second;
+
 }
 
 
@@ -142,49 +209,57 @@ typedef bool (ParserPopFunc) (ParserState *, xmlNode *,
                               map<string, string> *, list<xmlNode *> *,
                               Object *);
 // Attribute info.
-typedef struct ParserAttrData
+typedef struct ParserSyntaxAttr
 {
   string name;                  // attribute name
   bool required;                // whether attribute is required
-} ParserAttrData;
+} ParserSyntaxAttr;
 
 // Element info.
-typedef struct ParserEltData
+typedef struct ParserSyntaxElt
 {
-  ParserPushFunc *push;              // push function
-  ParserPopFunc *pop;                // pop function
-  int flags;                         // processing flags
-  vector<string> parents;            // possible parents
-  vector<ParserAttrData> attributes; // attributes
-} ParserEltData;
+  ParserPushFunc *push;                // push function
+  ParserPopFunc *pop;                  // pop function
+  int flags;                           // processing flags
+  vector<string> parents;              // possible parents
+  vector<ParserSyntaxAttr> attributes; // attributes
+} ParserSyntaxElt;
 
 // Element processing flags.
 typedef enum
 {
-  PARSER_ELT_FLAG_CACHE  = 1<<0, // cache element
-  PARSER_ELT_FLAG_GEN_ID = 2<<0, // generate id if not present
-} ParserEltFlag;
+  PARSER_SYNTAX_FLAG_CACHE  = 1<<0, // cache element
+  PARSER_SYNTAX_FLAG_GEN_ID = 2<<0, // generate id if not present
+} ParserSyntaxFlag;
 
 // Forward declarations.
-#define PARSER_ELT_PUSH_DECL(elt)                       \
+#define PARSER_PUSH_DECL(elt)                           \
   static bool G_PASTE (parser_push_, elt)               \
     (ParserState *, xmlNode *, map<string, string> *,   \
      Object **);
 
-#define PARSER_ELT_POP_DECL(elt)                        \
+#define PARSER_POP_DECL(elt)                            \
   static bool G_PASTE (parser_pop_, elt)                \
     (ParserState *, xmlNode *, map<string, string> *,   \
      list<xmlNode *> *, Object *);
 
-PARSER_ELT_PUSH_DECL (ncl)
-PARSER_ELT_POP_DECL  (ncl)
-PARSER_ELT_PUSH_DECL (context)
-PARSER_ELT_POP_DECL  (context)
-PARSER_ELT_PUSH_DECL (media)
-PARSER_ELT_POP_DECL  (media)
+PARSER_PUSH_DECL (ncl)
+PARSER_POP_DECL  (ncl)
+PARSER_PUSH_DECL (region)
+PARSER_POP_DECL  (region)
+PARSER_PUSH_DECL (descriptorParam)
+PARSER_PUSH_DECL (causalConnector)
+PARSER_POP_DECL  (causalConnector)
+PARSER_PUSH_DECL (simpleCondition)
+PARSER_PUSH_DECL (simpleAction)
+PARSER_PUSH_DECL (context)
+PARSER_PUSH_DECL (port)
+PARSER_POP_DECL  (context)
+PARSER_PUSH_DECL (media)
+PARSER_PUSH_DECL (property)
 
 
-static map<string, ParserEltData> parser_eltmap =
+static map<string, ParserSyntaxElt> parser_syntax =
 {
  {"ncl",                        // element name
   {parser_push_ncl,             // push function
@@ -203,34 +278,151 @@ static map<string, ParserEltData> parser_eltmap =
    0,
    {"ncl"}, {}},
  },
+ {"regionBase",
+  {nullptr, nullptr,
+   0,
+   {"head"},
+   {{"id", false},
+    {"device", false},
+    {"region", false}}},
+ },
+ {"region",
+  {parser_push_region, parser_pop_region,
+   PARSER_SYNTAX_FLAG_CACHE,
+   {"region", "regionBase"},
+   {{"id", true},
+    {"title", false},
+    {"left", false},
+    {"right", false},
+    {"top", false},
+    {"bottom", false},
+    {"height", false},
+    {"width", false},
+    {"zIndex", false}}},
+ },
+ {"descriptorBase",
+  {nullptr, nullptr,
+   0,
+   {"head"},
+   {{"id", false}}},
+ },
+ {"descriptor",
+  {nullptr, nullptr,
+   PARSER_SYNTAX_FLAG_CACHE,
+   {"descriptorBase"},
+   {{"id", true},
+    {"left", false},
+    {"right", false},
+    {"top", false},
+    {"bottom", false},
+    {"width", false},
+    {"height", false},
+    {"zIndex", false},
+    {"region", false}}},
+ },
+ {"descriptorParam",
+  {parser_push_descriptorParam, nullptr,
+   0,
+   {"descriptor"},
+   {{"name", true},
+    {"value", true}}},
+ },
+ {"connectorBase",
+  {nullptr, nullptr,
+   0,
+   {"head"},
+   {{"id", false}}},
+ },
+ {"causalConnector",
+  {parser_push_causalConnector, parser_pop_causalConnector,
+   PARSER_SYNTAX_FLAG_CACHE,
+   {"connectorBase"},
+   {{"id", true}}},
+ },
+ {"connectorParam",
+  {nullptr, nullptr,
+   0,
+   {"causalConnector"},
+   {{"name", true}}},
+ },
+ {"simpleCondition",
+  {parser_push_simpleCondition, nullptr,
+   0,
+   {"causalConnector", "compoundCondition"},
+   {{"role", true},
+    {"eventType", false},
+    {"key", false},
+    {"transition", false},
+    {"delay", false},           // ignored
+    {"min", false},             // ignored
+    {"max", false},             // ignored
+    {"qualifier", false}}},     // ignored
+ },
+ {"simpleAction",
+  {parser_push_simpleAction, nullptr,
+   0,
+   {"causalConnector", "compoundAction"},
+   {{"role", true},
+    {"eventType", false},
+    {"actionType", false},
+    {"value", false},
+    {"delay", false},           // ignored
+    {"duration", false},        // ignored
+    {"min", false},             // ignored
+    {"max", false},             // ignored
+    {"min", false},             // ignored
+    {"qualifier", false},       // ignored
+    {"repeat", false},          // ignored
+    {"repeatDelay", false},     // ignored
+    {"by", false}}},            // ignored
+ },
  //
  // Body.
  //
  {"body",                       // -> Context
-  {parser_push_context,
-   parser_pop_context,
+  {parser_push_context, parser_pop_context,
    0,
    {"ncl"},
    {{"id", false}}},
  },
+ {"context",                    // -> Context
+  {parser_push_context, parser_pop_context,
+   PARSER_SYNTAX_FLAG_CACHE,
+   {"body", "context"},
+   {{"id", true}}},
+ },
+ {"port",
+  {parser_push_port, nullptr,
+   PARSER_SYNTAX_FLAG_CACHE,
+   {"body", "context"},
+   {{"id", true},
+    {"component", true},
+    {"interface", false}}},
+ },
  {"media",                      // -> Media
-  {parser_push_media,
-   nullptr,
-   0,
+  {parser_push_media, nullptr,
+   PARSER_SYNTAX_FLAG_CACHE,
    {"body", "context", "switch"},
    {{"id", true},
     {"src", false},
     {"type", false},
     {"descriptor", false}}},
  },
+ {"property",
+  {parser_push_property, nullptr,
+   0,
+   {"body", "context", "media"},
+   {{"name", true},
+    {"value", false}}},
+ },
 };
 
 // Indexes element map.
 static bool
-parser_eltmap_index (const string &tag, ParserEltData **result)
+parser_syntax_index (const string &tag, ParserSyntaxElt **result)
 {
-  map<string, ParserEltData>::iterator it;
-  if ((it = parser_eltmap.find (tag)) == parser_eltmap.end ())
+  map<string, ParserSyntaxElt>::iterator it;
+  if ((it = parser_syntax.find (tag)) == parser_syntax.end ())
     return false;
   tryset (result, &it->second);
   return true;
@@ -238,10 +430,10 @@ parser_eltmap_index (const string &tag, ParserEltData **result)
 
 // Gets possible children of a given element.
 static map<string, bool>
-parser_eltmap_get_possible_children (const string &tag)
+parser_syntax_get_possible_children (const string &tag)
 {
   map<string, bool> result;
-  for (auto it: parser_eltmap)
+  for (auto it: parser_syntax)
     for (auto parent: it.second.parents)
       if (parent == tag)
         result[it.first] = true;
@@ -249,69 +441,406 @@ parser_eltmap_get_possible_children (const string &tag)
 }
 
 
-// NCL attribute map helper functions.
+// Attribute map helper functions.
 
 static inline bool
-parser_attrmap_index (map<string, string> *attr, const string &name,
+parser_attrmap_index (map<string, string> *attrs, const string &name,
                       string *result)
 {
-  MAP_GET_IMPL (*attr, name, result);
+  MAP_GET_IMPL (*attrs, name, result);
 }
 
 static inline string
-parser_attrmap_get (map<string, string> *attr, const string &name)
+parser_attrmap_get (map<string, string> *attrs, const string &name)
 {
   string value;
-  g_assert (parser_attrmap_index (attr, name, &value));
+  g_assert (parser_attrmap_index (attrs, name, &value));
   return value;
 }
 
 static inline string
-parser_attrmap_opt_get (map<string, string> *attr,
-                        const string &name, const string &defvalue)
+parser_attrmap_opt_get (map<string, string> *attrs, const string &name,
+                        const string &defvalue)
 {
   string result;
-  return parser_attrmap_index (attr, name, &result) ? result : defvalue;
+  return parser_attrmap_index (attrs, name, &result) ? result : defvalue;
 }
+
+
+// Misc helper functions.
+
+static bool
+parser_get_role (const string &role, Event::Type *type,
+                 Event::Transition *transition)
+{
+  static map<string, pair<int,int>> reserved =
+    {
+     {"onBegin",
+      {(int) Event::PRESENTATION,
+       (int) Event::START}},
+     {"onEnd",
+      {(int) Event::PRESENTATION,
+       (int) Event::STOP}},
+     {"onAbort",
+      {(int) Event::PRESENTATION,
+       (int) Event::ABORT}},
+     {"onPause",
+      {(int) Event::PRESENTATION,
+       (int) Event::PAUSE}},
+     {"onResumes",
+      {(int) Event::PRESENTATION,
+       (int) Event::RESUME}},
+     {"onBeginAttribution",
+      {(int) Event::ATTRIBUTION,
+       (int) Event::START}},
+     {"onEndAttribution",
+      {(int) Event::SELECTION,
+       (int) Event::STOP}},
+     {"onSelection",
+      {(int) Event::SELECTION,
+       (int) Event::START}},
+     {"start",
+      {(int) Event::Type::PRESENTATION,
+       (int) Event::Transition::START}},
+     {"stop",
+      {(int) Event::Type::PRESENTATION,
+       (int) Event::Transition::STOP}},
+     {"abort",
+      {(int) Event::Type::PRESENTATION,
+       (int) Event::Transition::ABORT}},
+     {"pause",
+      {(int) Event::Type::PRESENTATION,
+       (int) Event::Transition::PAUSE}},
+     {"resume",
+      {(int) Event::Type::PRESENTATION,
+       (int) Event::Transition::RESUME}},
+     {"set",
+      {(int) Event::Type::ATTRIBUTION,
+       (int) Event::Transition::START}},
+    };
+  map<string, pair<int,int>>::iterator it;
+  if ((it = reserved.find (role)) == reserved.end ())
+    return false;
+  tryset (type, (Event::Type) it->second.first);
+  tryset (transition, (Event::Transition) it->second.second);
+  return true;
+}
+
+static bool
+parser_check_event_type (const string &str, Event::Type *result)
+{
+  static map<string, Event::Type> good =
+    {
+     {"presentation", Event::PRESENTATION},
+     {"attribution", Event::ATTRIBUTION},
+     {"selection", Event::SELECTION},
+    };
+  auto it = good.find (str);
+  if (it == good.end ())
+    return false;
+  tryset (result, it->second);
+  return true;
+}
+
+static bool
+parser_check_transition (const string &str, Event::Transition *result)
+{
+  static map<string, Event::Transition> good =
+    {
+     {"starts", Event::START},
+     {"stops", Event::STOP},
+     {"aborts", Event::ABORT},
+     {"pauses", Event::PAUSE},
+     {"resumes", Event::RESUME},
+    };
+  auto it = good.find (str);
+  if (it == good.end ())
+    return false;
+  tryset (result, it->second);
+  return true;
+}
+
 
 
 // Parse <ncl>.
 
 static bool
-parser_push_ncl (ParserState *st, unused (xmlNode *elt),
-                 unused (map<string, string> *attr),
-                 Object **result)
+parser_push_ncl (ParserState *st, unused (xmlNode *node),
+                 unused (map<string, string> *attrs), Object **result)
 {
-  g_assert_null (st->root);
-  st->root = new Context (parser_attrmap_opt_get (attr, "id", "__ncl__"));
-  *result = st->root;
+  Context *root;
+  string id;
+
+  root = st->doc->getRoot ();
+  g_assert_nonnull (root);
+
+  if (parser_attrmap_index (attrs, "id", &id))
+    root->addAlias (id);
+
+  *result = root;               // push onto stack
   return true;
 }
 
 static bool
-parser_pop_ncl (unused (ParserState *st), unused (xmlNode *elt),
-                unused (map<string, string> *attr),
-                unused (list<xmlNode *> *children),
-                unused (Object *object))
+parser_pop_ncl (unused (ParserState *st), unused (xmlNode *node),
+                unused (map<string, string> *attrs),
+                unused (list<xmlNode *> *children), unused (Object *object))
 {
+  const list<ParserCache *> *cachedDescriptors;
+  const list<ParserCache *> *cachedMedias;
+  bool status = true;
+
+  // Resolve descriptor's reference to region.
+  cachedDescriptors = st_cache_index_by_tag (st, "descriptor");
+  if (cachedDescriptors != nullptr)
+    {
+      for (auto entry: *cachedDescriptors)
+        {
+          string region_id;
+          xmlNode *region_node;
+          map<string, string> *region_attrs;
+
+          if (!parser_attrmap_index (&entry->attrs, "region", &region_id))
+            continue;           // nothing to do
+
+          if (unlikely (!st_cache_resolve_idref
+                        (st, region_id, {"region"}, &region_node,
+                         &region_attrs)))
+            {
+              status = ST_ERR_ELT_BAD_ATTR
+                (st, entry->node, "region", region_id.c_str (),
+                 "no such region");
+              goto done;
+            }
+        }
+    }
+
+  // Resolve media's reference to descriptor.
+  cachedMedias = st_cache_index_by_tag (st, "media");
+  if (cachedMedias != nullptr)
+    {
+      for (auto entry: *cachedMedias)
+        {
+          string id;
+          Media *media;
+
+          string desc_id;
+          xmlNode *desc_node;
+          map<string, string> *desc_attrs;
+
+          g_assert (parser_attrmap_index (&entry->attrs, "id", &id));
+          media = cast (Media *, st->doc->getObjectByIdOrAlias (id));
+          g_assert_nonnull (media);
+
+          if (!parser_attrmap_index (&entry->attrs, "descriptor", &desc_id))
+            continue;           // nothing to do
+
+          if (unlikely (!st_cache_resolve_idref
+                        (st, desc_id, {"descriptor"}, &desc_node,
+                         &desc_attrs)))
+            {
+              status = ST_ERR_ELT_BAD_ATTR
+                (st, entry->node, "descriptor", desc_id.c_str (),
+                 "no such descriptor");
+              goto done;
+            }
+
+          for (auto it: *desc_attrs)
+            {
+              if (it.first == "id" && it.first == "region")
+                continue;           // nothing to do
+              if (media->getProperty (it.first) != "")
+                continue;           // already defined
+              media->setProperty (it.first, it.second);
+            }
+        }
+    }
+
+  // Resolve link's reference to connector.
+  // TODO.
+
+ done:
+  return status;
+}
+
+
+// Parse <region>.
+
+static bool
+parser_push_region (ParserState *st, xmlNode *node,
+                    map<string, string> *attrs, unused (Object **result))
+{
+  (void) st;
+  (void) node;
+  (void) attrs;
   return true;
+}
+
+static bool
+parser_pop_region (unused (ParserState *st), unused (xmlNode *node),
+                   unused (map<string, string> *attrs),
+                   unused (list<xmlNode *> *children), Object *object)
+{
+  (void) object;
+  return true;
+}
+
+
+// Parse <descriptorParam>.
+
+static bool
+parser_push_descriptorParam (ParserState *st, xmlNode *node,
+                             map<string, string> *attrs,
+                             unused (Object **result))
+{
+  string desc_id;
+  ParserCache *entry;
+  string name;
+  string value;
+
+  g_assert (xmlGetPropAsString (node->parent, "id", &desc_id));
+  g_assert (st_cache_index (st, desc_id, &entry));
+  name = parser_attrmap_get (attrs, "name");
+  value = parser_attrmap_get (attrs, "value");
+  entry->attrs[name] = value;
+  return true;
+}
+
+
+// Parse <causalConnector>.
+
+static bool
+parser_push_causalConnector (ParserState *st,
+                             unused (xmlNode *node),
+                             map<string, string> *attrs,
+                             unused (Object **result))
+{
+  string id;
+
+  id = parser_attrmap_get (attrs, "id");
+  g_assert_null (st_conn_cache_index (st, id));
+  g_assert_null (st->currentConn);
+  st->currentConn = &st->connCache[id];
+
+  return true;
+}
+
+static bool
+parser_pop_causalConnector (unused (ParserState *st),
+                            unused (xmlNode *node),
+                            unused (map<string, string> *attrs),
+                            unused (list<xmlNode *> *children),
+                            unused (Object *object))
+{
+  bool status;
+  int nconds;
+  int nacts;
+
+  status = true;
+  nconds = 0;
+  nacts = 0;
+  for (auto &role: *st->currentConn)
+    {
+      if (role.condition)
+        nconds++;
+      else
+        nacts++;
+    }
+
+  if (unlikely (nconds == 0))
+    {
+      status = ST_ERR_ELT_MISSING_CHILD (st, node, "simpleCondition");
+      goto done;
+    }
+
+  if (unlikely (nacts == 0))
+    {
+      status = ST_ERR_ELT_MISSING_CHILD (st, node, "simpleAction");
+      goto done;
+    }
+
+ done:
+  g_assert_nonnull (st->currentConn);
+  st->currentConn = nullptr;
+  return status;
+}
+
+
+// Parse <simpleCondition>.
+
+static bool
+parser_push_simpleCondition (ParserState *st, xmlNode *node,
+                             map<string, string> *attrs,
+                             unused (Object **result))
+{
+  ParserConnCache role;
+  string eventType;
+  string key;
+
+  role.role = parser_attrmap_get (attrs, "role");
+  role.condition = (toString (node->name) == "simpleCondition");
+
+  eventType = (role.condition) ? "eventType" : "actionType";
+  if (!parser_get_role (role.role, &role.eventType, &role.transition))
+    {
+      string str;
+
+      if (unlikely (!parser_attrmap_index (attrs, eventType, &str)))
+        return ST_ERR_ELT_MISSING_ATTR (st, node, eventType.c_str ());
+      if (unlikely (!parser_check_event_type (str, &role.eventType)))
+        return ST_ERR_ELT_BAD_ATTR
+          (st, node, eventType.c_str (), str.c_str (), "");
+
+      if (unlikely (!parser_attrmap_index (attrs, "transition", &str)))
+        return ST_ERR_ELT_MISSING_ATTR (st, node, "transition");
+      if (unlikely (!parser_check_transition (str, &role.transition)))
+        return ST_ERR_ELT_BAD_ATTR
+          (st, node, "transition", str.c_str (), "");
+    }
+  else
+    {
+      string str;
+      if (unlikely (parser_attrmap_index (attrs, eventType, &str)))
+        return ST_ERR_ELT_BAD_ATTR
+          (st, node, eventType.c_str (), str.c_str (), "role is reserved");
+      if (unlikely (parser_attrmap_index (attrs, "transition", &str)))
+        return ST_ERR_ELT_BAD_ATTR
+          (st, node, "transition", str.c_str (), "role is reserved");
+    }
+
+  role.predicate = nullptr;
+  if (role.condition && st->predStack.size () > 0)
+    role.predicate = (st->predStack.back ())->clone ();
+
+  if (parser_attrmap_index (attrs, "key", &key))
+    role.key = key;
+
+  st->currentConn->push_back (role);
+  return true;
+}
+
+
+// Parse <simpleAction>.
+
+static bool
+parser_push_simpleAction (ParserState *st, xmlNode *node,
+                          map<string, string> *attrs, Object **result)
+{
+  return parser_push_simpleCondition (st, node, attrs, result);
 }
 
 
 // Parse <context>.
 
 static bool
-parser_push_context (ParserState *st,
-                     xmlNode *elt,
-                     map<string, string> *attr,
-                     Object **result)
+parser_push_context (ParserState *st, xmlNode *node,
+                     map<string, string> *attrs, Object **result)
 {
   Object *ctx;
   string id;
   list<string> *ports;
 
-  id = parser_attrmap_opt_get (attr, "id", st->root->getId ());
-  if (toString (elt->name) == "body")
+  if (toString (node->name) == "body")
     {
       g_assert (st->objStack.size () == 1);
       ctx = cast (Context *, st->objStack.back ());
@@ -324,7 +853,7 @@ parser_push_context (ParserState *st,
       parent = cast (Composition *, st->objStack.back ());
       g_assert_nonnull (parent);
 
-      ctx = new Context (id);
+      ctx = new Context (parser_attrmap_get (attrs, "id"));
       parent->addChild (ctx);
     }
 
@@ -339,23 +868,77 @@ parser_push_context (ParserState *st,
 }
 
 static bool
-parser_pop_context (unused (ParserState *st), unused (xmlNode *elt),
-                    unused (map<string, string> *attr),
-                    unused (list<xmlNode *> *children),
-                    Object *object)
+parser_pop_context (unused (ParserState *st), unused (xmlNode *node),
+                    unused (map<string, string> *attrs),
+                    unused (list<xmlNode *> *children), Object *object)
+{
+  bool status;
+  Context *ctx;
+  list<string> *ports;
+
+  status = true;
+  ctx = cast (Context *, object);
+  g_assert_nonnull (ctx);
+
+  // Resolve port's references.
+  g_assert (ctx->getData ("ports", (void **) &ports));
+  for (auto port_id: *ports)
+    {
+      ParserCache *entry;
+      Object *target_obj;
+      Event *target_evt;
+      string comp_id;
+      string iface_id;
+
+
+      g_assert (st_cache_index (st, port_id, &entry));
+      comp_id = parser_attrmap_get (&entry->attrs, "component");
+      target_obj = ctx->getChildById (comp_id);
+      if (unlikely (target_obj == nullptr))
+        {
+          status = ST_ERR_ELT_BAD_ATTR
+            (st, entry->node, "component", comp_id.c_str (),
+             "no such component in scope");
+          goto done;
+        }
+
+      if (!parser_attrmap_index (&entry->attrs, "interface", &iface_id))
+        iface_id = "@lambda";
+
+      target_evt = target_obj->getEvent (Event::PRESENTATION, iface_id);
+      if (target_evt == nullptr)
+        {
+          target_evt = target_obj->getEvent (Event::ATTRIBUTION, iface_id);
+          if (target_evt == nullptr)
+            {
+              status = ST_ERR_ELT_BAD_ATTR
+                (st, entry->node, "interface", iface_id.c_str (),
+                 "no such interface");
+              goto done;
+            }
+        }
+    }
+
+ done:
+  delete ports;
+  return status;
+}
+
+
+// Parse <port>.
+
+static bool
+parser_push_port (ParserState *st, unused (xmlNode *node),
+                  map<string, string> *attrs, unused (Object **result))
 {
   Context *ctx;
   list<string> *ports;
 
-  ctx = cast (Context *, object);
+  ctx = cast (Context *, st->objStack.back ());
   g_assert_nonnull (ctx);
-
-  // TODO: Resolve port's references.
-
-  // Destroy port list.
   g_assert (ctx->getData ("ports", (void **) &ports));
-  delete ports;
 
+  ports->push_back (parser_attrmap_get (attrs, "id"));
   return true;
 }
 
@@ -363,22 +946,17 @@ parser_pop_context (unused (ParserState *st), unused (xmlNode *elt),
 // Parse <media>.
 
 static bool
-parser_push_media (ParserState *st,
-                   unused (xmlNode *elt),
-                   map<string, string> *attr,
-                   Object **result)
+parser_push_media (ParserState *st, unused (xmlNode *node),
+                   map<string, string> *attrs, Object **result)
 {
   Composition *parent;
   Media *media;
   string id;
   string type;
 
-  id = parser_attrmap_get (attr, "id");
+  id = parser_attrmap_get (attrs, "id");
 
-  if (parser_attrmap_index (attr, "refer", nullptr))
-    g_assert_not_reached ();    // TODO
-
-  if (parser_attrmap_index (attr, "type", &type)
+  if (parser_attrmap_index (attrs, "type", &type)
       && type == "application/x-ginga-settings")
     {
       media = new MediaSettings (id);
@@ -386,18 +964,19 @@ parser_push_media (ParserState *st,
   else
     {
       string src = "";
-      if (parser_attrmap_index (attr, "src", &src)
+      if (parser_attrmap_index (attrs, "src", &src)
           && !xpathisuri (src) && !xpathisabs (src))
         {
           string dir;
-          if (st->doc->URL == nullptr)
+          if (st->xml->URL == nullptr)
             dir = "";
           else
-            dir = xpathdirname (toString (st->doc->URL));
+            dir = xpathdirname (toString (st->xml->URL));
           src = xpathbuildabs (dir, src);
         }
       media = new Media (id, type, src);
     }
+  g_assert_nonnull (media);
 
   parent = cast (Composition *, st->objStack.back ());
   g_assert_nonnull (parent);
@@ -408,45 +987,67 @@ parser_push_media (ParserState *st,
 }
 
 
+static bool
+parser_push_property (ParserState *st, unused (xmlNode *node),
+                      map<string, string> *attrs,
+                      unused (Object **result))
+{
+  Object *obj;
+  string name;
+  string value;
+
+  obj = cast (Object *, st->objStack.back ());
+  g_assert_nonnull (obj);
+
+  name = parser_attrmap_get (attrs, "name");
+  value = parser_attrmap_opt_get (attrs, "value", "");
+
+  obj->setProperty (name, value);
+  obj->addAttributionEvent (name);
+
+  return true;
+}
+
+
 // Internal functions.
 
 static bool
-processElt (ParserState *st, xmlNode *elt)
+processElt (ParserState *st, xmlNode *node)
 {
   string tag;
-  ParserEltData *edata;
+  ParserSyntaxElt *elt_syntax;
   bool status;
 
-  map<string, string> _attr;
-  map<string, string> *attr = &_attr;
+  map<string, string> _attrs;
+  map<string, string> *attrs = &_attrs;
   Object *object;
   map<string, bool> possible;
   list<xmlNode *> children;
 
   status = true;
-  tag = toString (elt->name);
-  if (unlikely (!parser_eltmap_index (tag, &edata)))
+  tag = toString (node->name);
+  if (unlikely (!parser_syntax_index (tag, &elt_syntax)))
     {
-      status = ST_ERR_ELT_UNKNOWN (st, elt);
+      status = ST_ERR_ELT_UNKNOWN (st, node);
       goto done;
     }
 
   // Check parent.
-  g_assert_nonnull (elt->parent);
-  if (edata->parents.size () > 0)
+  g_assert_nonnull (node->parent);
+  if (elt_syntax->parents.size () > 0)
     {
       string parent;
       bool found;
 
-      if (unlikely (elt->parent->type != XML_ELEMENT_NODE))
+      if (unlikely (node->parent->type != XML_ELEMENT_NODE))
         {
-          status = ST_ERR_ELT_MISSING_PARENT (st, elt);
+          status = ST_ERR_ELT_MISSING_PARENT (st, node);
           goto done;
         }
 
-      parent = toString (elt->parent->name);
+      parent = toString (node->parent->name);
       found = false;
-      for (auto par: edata->parents)
+      for (auto par: elt_syntax->parents)
         {
           if (parent == par)
             {
@@ -457,51 +1058,53 @@ processElt (ParserState *st, xmlNode *elt)
       if (unlikely (!found))
         {
           status = ST_ERR_ELT_BAD_PARENT
-            (st, elt, toCString (elt->parent->name));
+            (st, node, toCString (node->parent->name));
           goto done;
         }
     }
 
   // Store attributes in attr-map.
-  for (auto adata: edata->attributes)
+  for (auto attr_syntax: elt_syntax->attributes)
     {
       string value;
-      if (!xmlGetPropAsString (elt, adata.name, &value))
+      if (!xmlGetPropAsString (node, attr_syntax.name, &value))
         {
-          if (adata.name == "id" && edata->flags & PARSER_ELT_FLAG_GEN_ID)
+          if (attr_syntax.name == "id"
+              && elt_syntax->flags & PARSER_SYNTAX_FLAG_GEN_ID)
             {
-              (*attr)["id"] = st_gen_id (st);
+              (*attrs)["id"] = st_gen_id (st);
               continue;
             }
-          if (!adata.required)
+          if (!attr_syntax.required)
             {
               continue;
             }
-          status = ST_ERR_ELT_MISSING_ATTR (st, elt, adata.name.c_str ());
+          status = ST_ERR_ELT_MISSING_ATTR
+            (st, node, attr_syntax.name.c_str ());
           goto done;
         }
-      (*attr)[adata.name] = value;
+      (*attrs)[attr_syntax.name] = value;
     }
 
   // Check for unknown attributes.
-  for (xmlAttr *prop = elt->properties; prop != nullptr; prop = prop->next)
+  for (xmlAttr *prop = node->properties; prop != nullptr; prop = prop->next)
     {
       string name = toString (prop->name);
-      if (unlikely (attr->find (name) == attr->end ()))
+      if (unlikely (attrs->find (name) == attrs->end ()))
         {
-          status = ST_ERR_ELT_UNKNOWN_ATTR (st, elt, name.c_str ());
+          status = ST_ERR_ELT_UNKNOWN_ATTR (st, node, name.c_str ());
           goto done;
         }
     }
 
   // Collect id.
-  if (parser_attrmap_index (attr, "id", nullptr))
+  if (parser_attrmap_index (attrs, "id", nullptr))
     {
       string id;
       const char *str;
       char c;
 
-      id = parser_attrmap_get (attr, "id");
+      id = parser_attrmap_get (attrs, "id");
 
       // Check if id is valid.
       str = id.c_str ();
@@ -512,35 +1115,37 @@ processElt (ParserState *st, xmlNode *elt)
             {
               string explain = xstrbuild ("must not contain '%c'", c);
               status = ST_ERR_ELT_BAD_ATTR
-                (st, elt, "id", id.c_str (), explain.c_str ());
+                (st, node, "id", id.c_str (), explain.c_str ());
               goto done;
             }
         }
 
       // Check if id is unique.
-      if (unlikely (st_objmap_index (st, id, nullptr)))
+      if (unlikely (st->doc->getObjectByIdOrAlias (id)))
         {
           status = ST_ERR_ELT_BAD_ATTR
-            (st, elt, "id", id.c_str (), "duplicated id");
+            (st, node, "id", id.c_str (), "duplicated id");
           goto done;
         }
 
       // Insert attr-map and element's node into cache.
-      if (edata->flags & PARSER_ELT_FLAG_CACHE)
+      if (elt_syntax->flags & PARSER_SYNTAX_FLAG_CACHE)
         {
-          st->cachedAttrs[id] = map<string, string> (_attr);
-          st->cachedElts[id] = elt;
-          attr = &st->cachedAttrs[id];
+          string tag = toString (node->name);
+          st->cache[id] = {tag, node, map<string, string> (_attrs)};
+          st->cacheByTag[tag].push_back (&st->cache[id]);
+          attrs = &(st->cache[id].attrs);
         }
     }
   else
     {
-      g_assert_false (edata->flags & PARSER_ELT_FLAG_CACHE);
+      g_assert_false (elt_syntax->flags & PARSER_SYNTAX_FLAG_CACHE);
     }
 
   // Push element.
   object = nullptr;
-  if (unlikely (edata->push && !edata->push (st, elt, attr, &object)))
+  if (unlikely (elt_syntax->push
+                && !elt_syntax->push (st, node, attrs, &object)))
     {
       status = false;
       goto done;
@@ -551,8 +1156,8 @@ processElt (ParserState *st, xmlNode *elt)
     st->objStack.push_back (object);
 
   // Collect children.
-  possible = parser_eltmap_get_possible_children (tag);
-  for (xmlNode *child = elt->children; child; child = child->next)
+  possible = parser_syntax_get_possible_children (tag);
+  for (xmlNode *child = node->children; child; child = child->next)
     {
       if (child->type != XML_ELEMENT_NODE)
         continue;
@@ -560,7 +1165,7 @@ processElt (ParserState *st, xmlNode *elt)
       string child_tag = toString (child->name);
       if (unlikely (possible.find (child_tag) == possible.end ()))
         {
-          status = ST_ERR_ELT_UNKNOWN_CHILD (st, elt, child->name);
+          status = ST_ERR_ELT_UNKNOWN_CHILD (st, node, child->name);
           goto done;
         }
 
@@ -574,8 +1179,8 @@ processElt (ParserState *st, xmlNode *elt)
     }
 
   // Pop element.
-  if (edata->pop)
-    status = edata->pop (st, elt, attr, &children, object);
+  if (elt_syntax->pop)
+    status = elt_syntax->pop (st, node, attrs, &children, object);
 
   // Pop object stack.
   if (object != nullptr)
@@ -585,51 +1190,50 @@ processElt (ParserState *st, xmlNode *elt)
   return status;
 }
 
-static set<Object *> *
-processDoc (xmlDoc *doc, int width, int height, string *errmsg)
+static Document *
+processDoc (xmlDoc *xml, int width, int height, string *errmsg)
 {
   ParserState st;
   xmlNode *root;
 
-  g_assert_nonnull (doc);
-  st.doc = doc;
+  g_assert_nonnull (xml);
+  st.xml = xml;
 
   g_assert_cmpint (width, >, 0);
   g_assert_cmpint (height, >, 0);
   st.rect = {0, 0, width, height};
   st.genid = 0;
-  st.objects = new set<Object *> ();
-  st.root = nullptr;
+  st.doc = new Document ();
 
-  root = xmlDocGetRootElement (doc);
+  root = xmlDocGetRootElement (xml);
   g_assert_nonnull (root);
 
   if (!processElt (&st, root))
     {
       tryset (errmsg, st.errmsg);
-      if (st.objects != nullptr)
-        delete st.objects;
+      if (st.doc != nullptr)
+        delete st.doc;
       return nullptr;
     }
 
-  g_assert_nonnull (st.objects);
-  return st.objects;
+  g_assert_nonnull (st.doc);
+  return st.doc;
 }
 
 
 // External API.
 
-set<Object *> *
+Document *
 Parser::parseBuffer (const void *buf, size_t size,
                      int width, int height, string *errmsg)
 {
 # define FLAGS (XML_PARSE_NOERROR | XML_PARSE_NOWARNING)
-  xmlDoc *doc;
-  set<Object *> *objs;
+  xmlDoc *xml;
+  Document *doc;
 
-  doc = xmlReadMemory ((const char *) buf, (int) size,
+  xml = xmlReadMemory ((const char *) buf, (int) size,
                        nullptr, nullptr, FLAGS);
-  if (unlikely (doc == nullptr))
+  if (unlikely (xml == nullptr))
     {
       xmlError *err = xmlGetLastError ();
       g_assert_nonnull (err);
@@ -637,20 +1241,20 @@ Parser::parseBuffer (const void *buf, size_t size,
       return nullptr;
     }
 
-  objs = processDoc (doc, width, height, errmsg);
-  xmlFreeDoc (doc);
-  return objs;
+  doc = processDoc (xml, width, height, errmsg);
+  xmlFreeDoc (xml);
+  return doc;
 }
 
-set<Object *> *
+Document *
 Parser::parseFile (const string &path, int width, int height,
                    string *errmsg)
 {
-  xmlDoc *doc;
-  set<Object *> *objs;
+  xmlDoc *xml;
+  Document *doc;
 
-  doc = xmlReadFile (path.c_str (), nullptr, FLAGS);
-  if (unlikely (doc == nullptr))
+  xml = xmlReadFile (path.c_str (), nullptr, FLAGS);
+  if (unlikely (xml == nullptr))
     {
       xmlError *err = xmlGetLastError ();
       g_assert_nonnull (err);
@@ -658,10 +1262,9 @@ Parser::parseFile (const string &path, int width, int height,
       return nullptr;
     }
 
-  objs = processDoc (doc, width, height, errmsg);
-  xmlFreeDoc (doc);
-  return objs;
+  doc = processDoc (xml, width, height, errmsg);
+  xmlFreeDoc (xml);
+  return doc;
 }
-
 
 GINGA_NAMESPACE_END
