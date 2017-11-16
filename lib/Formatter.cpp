@@ -126,23 +126,19 @@ Formatter::start (const string &file, string *errmsg)
   if (!_opts.experimental)
     {
       _docLegacy = ParserXercesC::parse (file, w, h, errmsg);
+      if (unlikely (_docLegacy == nullptr))
+        return false;
+      _doc = new Document ();
     }
   else
     {
-      set<Object *> *objs;
-      objs = Parser::parseFile (file, w, h, errmsg);
-      if (unlikely (objs == nullptr))
+      _doc = Parser::parseFile (file, w, h, errmsg);
+      if (unlikely (_doc == nullptr))
         return false;
-      for (auto obj: *objs)
-        TRACE ("obj %s", obj->getId ().c_str ());
-      delete objs;
-      exit (0);
-      return true;
+      _docLegacy = nullptr;
     }
-  if (unlikely (_docLegacy == nullptr))
-    return false;
 
-  _doc = new Document ();
+  g_assert_nonnull (_doc);
   _doc->setData ("formatter", (void *) this);
 
   Context *root = _doc->getRoot ();
