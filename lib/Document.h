@@ -15,33 +15,47 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef BASE_H
-#define BASE_H
+#ifndef DOCUMENT_H
+#define DOCUMENT_H
+
+#include "Object.h"
 
 GINGA_NAMESPACE_BEGIN
 
-class Base
+class Context;
+class Media;
+
+class Document
 {
 public:
-  Base (Context *);
-  virtual ~Base ();
+  Document ();
+  virtual ~Document ();
 
   const set<Object *> *getObjects ();
   Object *getObjectById (const string &);
   Object *getObjectByIdOrAlias (const string &);
-  void addObject (Object *);
+  bool addObject (Object *);
 
   Context *getRoot ();
   MediaSettings *getSettings ();
   const set<Media *> *getMedias ();
 
+  bool getData (const string &, void **);
+  bool setData (const string &, void *);
+
+  int evalAction (Event *, Event::Transition, const string &value="");
+  int evalAction (Action);
+  bool evalPredicate (Predicate *);
+  bool evalPropertyRef (const string &, string *);
+
 private:
-  set<Object *> _objects;                    // all objects
-  Context *_root;                            // root object
-  MediaSettings *_settings;                  // settings object
-  set<Media *> _medias;                      // media objects
+  set<Object *> _objects;        // all objects
+  Context *_root;                // root object
+  MediaSettings *_settings;      // settings object
+  set<Media *> _medias;          // media objects
+  map<string, void *> _userdata; // user data
 };
 
 GINGA_NAMESPACE_END
 
-#endif // BASE_H
+#endif // DOCUMENT_H

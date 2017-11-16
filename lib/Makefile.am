@@ -36,6 +36,7 @@ libginga_la_SOURCES= $(src)
 src=
 src+= Composition.cpp
 src+= Context.cpp
+src+= Document.cpp
 src+= Event.cpp
 src+= Formatter.cpp
 src+= Ginga.cpp
