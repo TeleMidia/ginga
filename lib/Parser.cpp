@@ -280,6 +280,7 @@ PARSER_POP_DECL  (context)
 PARSER_PUSH_DECL (media)
 PARSER_PUSH_DECL (area)
 PARSER_PUSH_DECL (property)
+PARSER_PUSH_DECL (link)
 
 
 static map<string, ParserSyntaxElt> parser_syntax =
@@ -445,6 +446,28 @@ static map<string, ParserSyntaxElt> parser_syntax =
    {"body", "context", "media"},
    {{"name", true},
     {"value", false}}},
+ },
+ {"link",
+  {parser_push_link, nullptr,
+   0,
+   {"body", "context"},
+   {{"id", false},
+    {"xconnector", true}}},
+ },
+ {"bind",
+  {nullptr, nullptr,
+   0,
+   {"link"},
+   {{"role", true},
+    {"component", false},
+    {"interface", false}}},
+ },
+ {"bindParam",
+  {nullptr, nullptr,
+   0,
+   {"bind"},
+   {{"name", true},
+    {"value", true}}},
  },
 };
 
@@ -1128,6 +1151,23 @@ parser_push_property (ParserState *st, unused (xmlNode *node),
 
   obj->addAttributionEvent (name);
   obj->setProperty (name, value);
+
+  return true;
+}
+
+
+// Parse <link>.
+
+static bool
+parser_push_link (ParserState *st, unused (xmlNode *node),
+                  unused (map<string, string> *attrs),
+                  unused (Object **result))
+{
+  Context *ctx;
+  string conn_id;
+
+  ctx = cast (Context *, st->objStack.back ());
+  g_assert_nonnull (ctx);
 
   return true;
 }
