@@ -479,7 +479,8 @@ main (void)
  <head>\n\
   <connectorBase>\n\
    <causalConnector id='c'>\n\
-    <simpleCondition role='x' eventType='presentation' transition='unknown'/>\n\
+    <simpleCondition role='x' eventType='presentation'\n\
+                     transition='unknown'/>\n\
    </causalConnector>\n\
   </connectorBase>\n\
  </head>\n\
@@ -574,7 +575,8 @@ main (void)
   <connectorBase>\n\
    <causalConnector id='c'>\n\
     <simpleCondition role='onBegin'/>\n\
-    <simpleAction role='x' eventType='presentation' actionType='unknown'/>\n\
+    <simpleAction role='x' eventType='presentation'\n\
+                           actionType='unknown'/>\n\
    </causalConnector>\n\
   </connectorBase>\n\
  </head>\n\
