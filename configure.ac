@@ -72,12 +72,10 @@ m4_define([cef_required_version],        [3.0])
 m4_define([librsvg_required_version],    [2.40.0])
 m4_define([libxml_required_version],     [2.9])
 m4_define([opengl_required_version],     [17.0])
-m4_define([sdl_required_version],        [2.0])
 AC_SUBST([CEF_REQUIRED_VERSION],         cef_required_version)
 AC_SUBST([LIBRSVG_REQUIRED_VERSION],     librsvg_required_version)
 AC_SUBST([LIBXML_REQUIRED_VERSION],      libxml_required_version)
 AC_SUBST([OPENGL_REQUIRED_VERSION],      opengl_required_version)
-AC_SUBST([SDL_REQUIRED_VERSION],         sdl_required_version)
 
 # Compiler checks.
 AC_PROG_CXX
@@ -231,8 +229,8 @@ AU_CHECK_OPTIONAL_PKG([librsvg], [build with LibRsvg support], [],
 
 AU_CHECK_OPTIONAL_PKG([opengl], [build with OpenGL support], [],
  [OPENGL],
- [gl >= opengl_required_version sdl2 >= sdl_required_version])
-  
+ [gl >= opengl_required_version
+  sdl2])
 
 # Aliases for compiler flags.
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $WARN_CFLAGS $WERROR_CFLAGS "])
