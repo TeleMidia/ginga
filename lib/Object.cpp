@@ -45,6 +45,8 @@ Object::Object (const string &id)
 Object::~Object ()
 {
   this->doStop ();
+  for (auto evt: _events)
+    delete evt;
 }
 
 string
@@ -210,18 +212,6 @@ Object::setProperty (const string &name, const string &value, Time dur)
   _properties[name] = value;
 }
 
-bool
-Object::getData (const string &key, void **value)
-{
-  MAP_GET_IMPL (_userdata, key, value);
-}
-
-bool
-Object::setData (const string &key, void *value)
-{
-  MAP_SET_IMPL (_userdata, key, value);
-}
-
 list<pair<Action, Time>> *
 Object::getDelayedActions ()
 {
@@ -276,6 +266,18 @@ Object::sendTickEvent (unused (Time total), Time diff, unused (Time frame))
       else
         ++it;
     }
+}
+
+bool
+Object::getData (const string &key, void **value)
+{
+  return _udata.getData (key, value);
+}
+
+bool
+Object::setData (const string &key, void *value, UserDataCleanFunc fn)
+{
+  return _udata.setData (key, value, fn);
 }
 
 

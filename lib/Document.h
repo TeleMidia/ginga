@@ -40,20 +40,20 @@ public:
   MediaSettings *getSettings ();
   const set<Media *> *getMedias ();
 
-  bool getData (const string &, void **);
-  bool setData (const string &, void *);
-
   int evalAction (Event *, Event::Transition, const string &value="");
   int evalAction (Action);
   bool evalPredicate (Predicate *);
   bool evalPropertyRef (const string &, string *);
+
+  bool getData (const string &, void **);
+  bool setData (const string &, void *, UserDataCleanFunc fn=nullptr);
 
 private:
   set<Object *> _objects;        // all objects
   Context *_root;                // root object
   MediaSettings *_settings;      // settings object
   set<Media *> _medias;          // media objects
-  map<string, void *> _userdata; // user data
+  UserData _udata;               // user data
 };
 
 GINGA_NAMESPACE_END

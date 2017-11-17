@@ -180,6 +180,19 @@ string xpathmakeabs (string);
 string xpathbuild (const string &, const string &);
 string xpathbuildabs (const string &, const string &);
 
+// User data.
+typedef void (*UserDataCleanFunc)(void *);
+class UserData
+{
+public:
+  UserData ();
+  ~UserData ();
+  bool getData (const string &, void **);
+  bool setData (const string &, void *, UserDataCleanFunc fn=nullptr);
+private:
+  map<string,pair<void *, void (*)(void *)>> _udata;
+};
+
 GINGA_NAMESPACE_END
 using namespace ginga;
 

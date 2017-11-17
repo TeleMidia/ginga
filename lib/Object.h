@@ -60,9 +60,6 @@ public:
   virtual string getProperty (const string &);
   virtual void setProperty (const string &, const string &, Time dur=0);
 
-  bool getData (const string &, void **);
-  bool setData (const string &, void *);
-
   list<pair<Action, Time>> *getDelayedActions ();
   void addDelayedAction (Event *, Event::Transition,
                          const string &value="", Time delay=0);
@@ -73,19 +70,20 @@ public:
   virtual bool startTransition (Event *, Event::Transition) = 0;
   virtual void endTransition (Event *, Event::Transition) = 0;
 
+  bool getData (const string &, void **);
+  bool setData (const string &, void *, UserDataCleanFunc fn=nullptr);
+
 protected:
-  string _id;                      // id
-  Document *_doc;                  // parent document
-  Composition *_parent;            // parent object
-  vector<string> _aliases;         // aliases
-
-  Time _time;                      // playback time
-  map<string, string> _properties; // property map
-  map<string, void *> _userdata;   // userdata map
-
-  Event *_lambda;                    // lambda event
-  set<Event *> _events;              // all events
-  list<pair<Action, Time>> _delayed; // delayed actions
+  string _id;                                           // id
+  Document *_doc;                                       // parent document
+  Composition *_parent;                                 // parent object
+  vector<string> _aliases;                              // aliases
+  Time _time;                                           // playback time
+  map<string, string> _properties;                      // property map
+  Event *_lambda;                                       // lambda event
+  set<Event *> _events;                                 // all events
+  list<pair<Action, Time>> _delayed;                    // delayed actions
+  UserData _udata;                                      // user data
 
   virtual void doStart ();
   virtual void doStop ();

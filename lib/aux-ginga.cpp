@@ -577,4 +577,38 @@ xpathbuildabs (const string &a, const string &b)
   return xpathmakeabs (xpathbuild (a, b));
 }
 
+
+// User data ---------------------------------------------------------------
+
+UserData::UserData ()
+{
+}
+
+UserData::~UserData ()
+{
+  for (auto it: _udata)
+    if (it.second.second != nullptr)
+      it.second.second (it.second.first);
+}
+
+bool
+UserData::getData (const string &key, void **value)
+{
+  auto it = _udata.find (key);
+  if (it == _udata.end ())
+    return false;
+  tryset (value, it->second.first);
+  return true;
+}
+
+bool
+UserData::setData (const string &key, void *value, UserDataCleanFunc fn)
+{
+  auto it = _udata.find (key);
+  if (it != _udata.end () && it->second.second)
+    it->second.second (it->second.first);
+  _udata[key] = std::make_pair (value, fn);
+  return it == _udata.end ();
+}
+
 GINGA_NAMESPACE_END
