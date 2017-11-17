@@ -992,6 +992,7 @@ parser_pop_context (unused (ParserState *st), unused (xmlNode *node),
               goto done;
             }
         }
+      ctx->addPort (target_evt); // success
     }
 
  done:

@@ -17,7 +17,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include <string.h>
 #include "Parser.h"
-using namespace ::ginga;
+
+#include "Context.h"
+#include "Media.h"
+#include "MediaSettings.h"
+#include "Switch.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wunused-macros)
 
@@ -651,40 +655,24 @@ main (void)
  </ncl>\n\
 ");
     g_assert_nonnull (doc);
-    // g_assert (ncl->getId () == "ncl");
-    // NclContext *body = ncl->getRoot ();
-    // g_assert_nonnull (body);
-    // g_assert (body->getId () == ncl->getId ());
-    // g_assert (body->getPorts ()->size () == 3);
-    // g_assert (body->getNodes ()->size () == 2);
-    // g_assert (body->getLinks ()->size () == 0);
 
-    // NclEntity *port = ncl->getEntityById ("p");
-    // g_assert (instanceof (NclPort *, port));
-    // NclPort *p = cast (NclPort *, port);
-    // g_assert (p->getId () == "p");
+    MediaSettings *settings = doc->getSettings ();
+    g_assert_nonnull (settings);
 
-    // port = ncl->getEntityById ("q");
-    // g_assert (instanceof (NclPort *, port));
-    // NclPort *q = cast (NclPort *, port);
-    // g_assert (q->getId () == "q");
+    Context *body = doc->getRoot ();
+    g_assert_nonnull (body);
+    g_assert (body->getId () == "__root__");
+    g_assert (body->getPorts ()->size () == 3);
+    g_assert (body->getChildren ()->size () == 3);
+    g_assert (body->getLinks ()->size () == 0);
 
-    // NclEntity *media = ncl->getEntityById ("m");
-    // g_assert (instanceof (NclMedia *, media));
-    // NclMedia *m = cast (NclMedia *, media);
-    // g_assert (m->getId () == "m");
+    g_assert (doc->getMedias ()->size () == 3);
 
-    // g_assert (p->getNode () == m);
-    // g_assert (p->getInterface ()->getId () == "m@lambda");
-    // g_assert (q->getNode () == m);
-    // g_assert (q->getInterface ()->getId () == "background");
-
-    // g_assert (m->getProperty ("background") == "red");
-    // g_assert (m->getProperty ("top") == "50%");
-    // g_assert (m->getProperty ("left") == "50%");
-    // g_assert (m->getProperty ("width") == "15.00%");
-    // g_assert (m->getProperty ("height") == "15.00%");
-    // g_assert (m->getProperty ("zIndex") == "3");
+    Media *m = cast (Media *, doc->getObjectById ("m"));
+    g_assert_nonnull (m);
+    g_assert (m->getId () == "m");
+    g_assert_nonnull (m->getPresentationEvent ("@lambda"));
+    g_assert_nonnull (m->getAttributionEvent ("background"));
 
     delete doc;
   }
