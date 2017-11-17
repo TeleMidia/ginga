@@ -331,7 +331,10 @@ show_historicbox ()
 
   GtkListBoxRow *row
       = gtk_list_box_get_selected_row (GTK_LIST_BOX (historicBox));
+
+#if GTK_CHECK_VERSION(3, 14, 0)
   gtk_list_box_unselect_row (GTK_LIST_BOX (historicBox), row);
+#endif
 }
 
 void
@@ -536,7 +539,9 @@ create_window_components ()
                           gtk_label_get_text (GTK_LABEL (label)));
     }
 
+#if GTK_CHECK_VERSION(3, 14, 0)
   gtk_list_box_unselect_all (GTK_LIST_BOX (historicBox));
+#endif
   g_signal_connect (historicBox, "row-activated",
                     G_CALLBACK (select_historic_line), NULL);
   gtk_list_box_set_activate_on_single_click (GTK_LIST_BOX (historicBox),
