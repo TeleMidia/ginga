@@ -116,6 +116,7 @@ Formatter::start (const string &file, string *errmsg)
   int w, h;
   string id;
   NclContext *body;
+  Event *evt;
 
   if (_state != GINGA_STATE_STOPPED)
     return false;               // nothing to do
@@ -156,83 +157,93 @@ Formatter::start (const string &file, string *errmsg)
   // Run document.
   TRACE ("%s", file.c_str ());
 
-  id = _docLegacy->getId ();
-  body = _docLegacy->getRoot ();
-  g_assert_nonnull (body);
-
-  root->addAlias (id);
-
-  // Create settings node.
-  NclMedia *settingsNode =  new NclMedia (_docLegacy,
-                                          "__settings__", true);
-  NclProperty *prop = new NclProperty (_docLegacy,
-                                       "service.currentFocus");
-  prop->setValue ("");
-  settingsNode->addAnchor (prop);
-  g_assert_nonnull (this->obtainExecutionObject (settingsNode));
-  Event *evt = cast (Object *, settings)->getLambda ();
-  g_assert_nonnull (evt);
-  g_assert (evt->transition (Event::START));
-
-  // Initialize settings object.
-  vector<NclNode *> *nodes = _docLegacy->getSettingsNodes ();
-  for (auto node: *nodes)
+  if (_docLegacy != nullptr)
     {
-      NclMedia *content;
+      id = _docLegacy->getId ();
+      body = _docLegacy->getRoot ();
+      g_assert_nonnull (body);
 
-      content = (NclMedia *) node;
-      if (content != settingsNode)
-        settings->addAlias (content->getId ());
+      root->addAlias (id);
 
-      for (auto anchor: *content->getAnchors ())
+      // Create settings node.
+      NclMedia *settingsNode =  new NclMedia (_docLegacy,
+                                              "__settings__", true);
+      NclProperty *prop = new NclProperty (_docLegacy,
+                                           "service.currentFocus");
+      prop->setValue ("");
+      settingsNode->addAnchor (prop);
+      g_assert_nonnull (this->obtainExecutionObject (settingsNode->getId ()));
+      evt = cast (Object *, settings)->getLambda ();
+      g_assert_nonnull (evt);
+      g_assert (evt->transition (Event::START));
+
+      // Initialize settings object.
+      vector<NclNode *> *nodes = _docLegacy->getSettingsNodes ();
+      for (auto node: *nodes)
         {
-          NclProperty *prop;
-          string name;
-          string value;
+          NclMedia *content;
 
-          if (!instanceof (NclProperty *, anchor))
-            continue;           // nothing to do
+          content = (NclMedia *) node;
+          if (content != settingsNode)
+            settings->addAlias (content->getId ());
 
-          prop = cast (NclProperty *, anchor);
-          name = prop->getName ();
-          value = prop->getValue ();
-          if (value == "")
-            continue;           // nothing to do
+          for (auto anchor: *content->getAnchors ())
+            {
+              NclProperty *prop;
+              string name;
+              string value;
 
-          settings->setProperty (name, value, 0);
+              if (!instanceof (NclProperty *, anchor))
+                continue;           // nothing to do
+
+              prop = cast (NclProperty *, anchor);
+              name = prop->getName ();
+              value = prop->getValue ();
+              if (value == "")
+                continue;           // nothing to do
+
+              settings->setProperty (name, value, 0);
+            }
         }
-    }
-  delete nodes;
+      delete nodes;
 
-  // Start document.
-  Object *obj = this->obtainExecutionObject (body);
-  for (auto port: *body->getPorts ())
+      // Start document.
+      Object *obj = this->obtainExecutionObject (body->getId ());
+      for (auto port: *body->getPorts ())
+        {
+          NclNode *target;
+          NclAnchor *iface;
+          Object *child;
+          Event *e;
+
+          port->getTarget (&target, &iface);
+          child = this->obtainExecutionObject (target->getId ());
+          g_assert_nonnull (child);
+
+          if (!instanceof (NclArea *, iface))
+            continue;       // nothing to do
+
+          e = this->obtainEvent (child, Event::PRESENTATION, iface, "");
+          g_assert_nonnull (e);
+          cast (Context *, obj)->addPort (e);
+        }
+      for (auto link: *(body->getLinks ()))
+        {
+          auto ell = obtainFormatterLink (link);
+          cast (Context *, obj)->addLink (ell.first, ell.second);
+        }
+      evt = obj->getLambda ();
+      g_assert_nonnull (evt);
+      if (_doc->evalAction (evt, Event::START) == 0)
+        return false;
+    }
+  else
     {
-      NclNode *target;
-      NclAnchor *iface;
-      Object *child;
-      Event *e;
-
-      port->getTarget (&target, &iface);
-      child = this->obtainExecutionObject (target);
-      g_assert_nonnull (child);
-
-      if (!instanceof (NclArea *, iface))
-        continue;       // nothing to do
-
-      e = this->obtainEvent (child, Event::PRESENTATION, iface, "");
-      g_assert_nonnull (e);
-      cast (Context *, obj)->addPort (e);
+      evt = root->getLambda ();
+      g_assert_nonnull (evt);
+      if (_doc->evalAction (evt, Event::START) == 0)
+        return false;
     }
-  for (auto link: *(body->getLinks ()))
-    {
-      auto ell = obtainFormatterLink (link);
-      cast (Context *, obj)->addLink (ell.first, ell.second);
-    }
-  evt = obj->getLambda ();
-  g_assert_nonnull (evt);
-  if (_doc->evalAction (evt, Event::START) == 0)
-    return false;
 
   // Refresh current focus.
   settings->updateCurrentFocus ("");
@@ -575,18 +586,20 @@ Formatter::getObjectList (Event::State state)
 }
 
 Object *
-Formatter::obtainExecutionObject (NclNode *node)
+Formatter::obtainExecutionObject (const string &id)
 {
-  string id;
   NclNode *parentNode;
   Composition *parent;
   Object *object;
 
-  id = node->getId ();
-  g_assert (id != "");
-
   if ((object = _doc->getObjectByIdOrAlias (id)) != nullptr)
     return object;              // already created
+
+  NclEntity *entity = _docLegacy->getEntityById (id);
+  g_assert_nonnull (entity);
+
+  NclNode *node = cast (NclNode *, entity);
+  g_assert_nonnull (node);
 
   // Get parent.
   parentNode = node->getParent ();
@@ -596,7 +609,8 @@ Formatter::obtainExecutionObject (NclNode *node)
     }
   else
     {
-      parent = cast (Composition *, obtainExecutionObject (parentNode));
+      parent = cast (Composition *, obtainExecutionObject
+                     (parentNode->getId ()));
       g_assert_nonnull (parent);
       if ((object = _doc->getObjectByIdOrAlias (id)) != nullptr)
         return object;
@@ -610,7 +624,7 @@ Formatter::obtainExecutionObject (NclNode *node)
       TRACE ("solving refer %s", node->getId ().c_str ());
       target = node->derefer ();
       g_assert (!instanceof (NclMediaRefer *, target));
-      object = obtainExecutionObject (target->derefer ());
+      object = obtainExecutionObject (target->derefer ()->getId ());
       object->addAlias (id);
       return object;
     }
@@ -629,7 +643,7 @@ Formatter::obtainExecutionObject (NclNode *node)
           g_assert_nonnull (item.first);
           g_assert_nonnull (item.second);
 
-          obj = this->obtainExecutionObject (item.first);
+          obj = this->obtainExecutionObject (item.first->getId ());
           g_assert_nonnull (obj);
           cast (Switch *, object)->addRule (obj, item.second);
         }
@@ -651,7 +665,7 @@ Formatter::obtainExecutionObject (NclNode *node)
           Event *e;
 
           port->getTarget (&target, &iface);
-          child = this->obtainExecutionObject (target);
+          child = this->obtainExecutionObject (target->getId ());
           g_assert_nonnull (child);
 
           if (!instanceof (NclArea *, iface))
@@ -777,7 +791,7 @@ Formatter::obtainFormatterEventFromBind (NclBind *bind)
   if (iface != nullptr && instanceof (NclPort *, iface))
     cast (NclPort *, iface)->getTarget (&node, nullptr);
 
-  obj = obtainExecutionObject (node);
+  obj = obtainExecutionObject (node->getId ());
   g_assert_nonnull (obj);
 
   if (iface == nullptr)
