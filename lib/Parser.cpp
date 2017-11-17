@@ -966,7 +966,6 @@ parser_pop_context (unused (ParserState *st), unused (xmlNode *node),
       string comp_id;
       string iface_id;
 
-
       g_assert (st_cache_index (st, port_id, &entry));
       comp_id = parser_attrmap_get (&entry->attrs, "component");
       target_obj = ctx->getChildById (comp_id);
@@ -996,7 +995,7 @@ parser_pop_context (unused (ParserState *st), unused (xmlNode *node),
     }
 
  done:
-  delete ports;
+  g_assert_false (ctx->setData ("ports", nullptr, nullptr));
   return status;
 }
 

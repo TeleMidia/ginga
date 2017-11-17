@@ -607,8 +607,16 @@ UserData::setData (const string &key, void *value, UserDataCleanFunc fn)
   auto it = _udata.find (key);
   if (it != _udata.end () && it->second.second)
     it->second.second (it->second.first);
-  _udata[key] = std::make_pair (value, fn);
-  return it == _udata.end ();
+  if (value == nullptr)
+    {
+      _udata.erase (it);
+      return false;
+    }
+  else
+    {
+      _udata[key] = std::make_pair (value, fn);
+      return it == _udata.end ();
+    }
 }
 
 GINGA_NAMESPACE_END
