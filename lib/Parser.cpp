@@ -278,6 +278,7 @@ PARSER_PUSH_DECL (context)
 PARSER_PUSH_DECL (port)
 PARSER_POP_DECL  (context)
 PARSER_PUSH_DECL (media)
+PARSER_PUSH_DECL (area)
 PARSER_PUSH_DECL (property)
 
 
@@ -429,6 +430,14 @@ static map<string, ParserSyntaxElt> parser_syntax =
     {"src", false},
     {"type", false},
     {"descriptor", false}}},
+ },
+ {"area",
+  {parser_push_area, nullptr,
+   0,
+   {"media"},
+   {{"id", true},
+    {"begin", false},
+    {"end", false}}},
  },
  {"property",
   {parser_push_property, nullptr,
@@ -633,6 +642,13 @@ parser_pop_ncl (unused (ParserState *st), unused (xmlNode *node),
                  "no such region");
               goto done;
             }
+          for (auto it: *region_attrs)
+            {
+              if (it.first == "id")
+                continue;           // nothing to do
+              entry->attrs[it.first] = it.second;
+            }
+
         }
     }
 
@@ -668,7 +684,7 @@ parser_pop_ncl (unused (ParserState *st), unused (xmlNode *node),
 
           for (auto it: *desc_attrs)
             {
-              if (it.first == "id" && it.first == "region")
+              if (it.first == "id" || it.first == "region")
                 continue;           // nothing to do
               if (media->getProperty (it.first) != "")
                 continue;           // already defined
@@ -1063,6 +1079,35 @@ parser_push_media (ParserState *st, unused (xmlNode *node),
 }
 
 
+// Parse <area>.
+
+static bool
+parser_push_area (ParserState *st, unused (xmlNode *node),
+                  map<string, string> *attrs,
+                  unused (Object **result))
+{
+  Media *media;
+  string id;
+  string str;
+  Time begin, end;
+
+  media = cast (Media *, st->objStack.back ());
+  g_assert_nonnull (media);
+
+  id = parser_attrmap_get (attrs, "id");
+  begin = parser_attrmap_index (attrs, "begin", &str)
+    ? ginga::parse_time (str) : 0;
+  end = parser_attrmap_index (attrs, "end", &str)
+    ? ginga::parse_time (str) : GINGA_TIME_NONE;
+
+  media->addPresentationEvent (id, begin, end);
+
+  return true;
+}
+
+
+// Parse <property>.
+
 static bool
 parser_push_property (ParserState *st, unused (xmlNode *node),
                       map<string, string> *attrs,
@@ -1078,8 +1123,8 @@ parser_push_property (ParserState *st, unused (xmlNode *node),
   name = parser_attrmap_get (attrs, "name");
   value = parser_attrmap_opt_get (attrs, "value", "");
 
-  obj->setProperty (name, value);
   obj->addAttributionEvent (name);
+  obj->setProperty (name, value);
 
   return true;
 }
