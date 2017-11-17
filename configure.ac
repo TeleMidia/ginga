@@ -54,7 +54,7 @@ AU_LIBTOOL_VERSION([GINGA], [0], [0], [0])
 # Required dependencies version.
 m4_define([cairo_required_version],      [1.10.2])
 m4_define([glib_required_version],       [2.32.4])
-m4_define([gstreamer_required_version],  [1.4.0])
+m4_define([gstreamer_required_version],  [1.2.0])
 m4_define([gtk_required_version],        [3.4.2])
 m4_define([nclua_required_version],      [1.0])
 m4_define([pango_required_version],      [1.30.0])

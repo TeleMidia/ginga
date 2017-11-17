@@ -19,8 +19,19 @@ RUN mkdir -p /src/
 RUN git clone https://github.com/telemidia/ginga.git /src/ginga
 RUN mkdir -p /src/ginga/_build
  
-# Build
+# Build - cmake
 WORKDIR /src/ginga/_build
 RUN cmake ../build-cmake -DWITH_CEF=OFF
+RUN make -j4
+
+# Build - autotools
+RUN git clone https://github.com/gflima/nclua /src/nclua
+WORKDIR /src/nclua
+RUN ./bootstrap && ./configure
+RUN make -j8
+RUN make install
+
+WORKDIR /src/ginga/
+RUN ./bootstrap && ./configure
 RUN make -j4
 
