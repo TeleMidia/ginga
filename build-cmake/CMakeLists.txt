@@ -35,10 +35,14 @@ add_definitions (-DWITH_PANGO=1 -DWITH_GSTREAMER=1)
 
 find_package (Lua REQUIRED)
 
-find_package (SDL2)
-find_package (OpenGL)
+option (WITH_CEF "Build with chromium embedded support." OFF)
+option (WITH_OPENGL "Build Ginga with opengl." OFF)
+option (WITH_RUNVIEW "Build nclcomposer's ginga plugin." OFF)
+option (WITH_OPENGL "Build nclcomposer's ginga plugin." ON)
 
-if (OPENGL_FOUND)
+if (WITH_OPENGL)
+  find_package (SDL2)
+  find_package (OpenGL)
   set (WITH_OPENGL ON)
 else ()
   set (WITH_OPENGL OFF) # OpenGL not found, turn it off
@@ -48,10 +52,6 @@ find_package(GTK3)
 if (GTK3_FOUND)
   set (WITH_GINGAGUI_GTK ON)
 endif()
-
-option (WITH_CEF "Build with chromium embedded support." OFF)
-option (WITH_OPENGL "Build Ginga with opengl." OFF)
-option (WITH_RUNVIEW "Build nclcomposer's ginga plugin." OFF)
 
 if (WITH_OPENGL)
   add_definitions (-DWITH_OPENGL=1)
@@ -123,6 +123,7 @@ set (LIBGINGA_SOURCES
 
   ../lib/Composition.cpp
   ../lib/Context.cpp
+  ../lib/Document.cpp
   ../lib/Event.cpp
   ../lib/Formatter.cpp
   ../lib/Ginga.cpp
