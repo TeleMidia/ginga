@@ -471,38 +471,10 @@ parser_syntax_get_possible_children (const string &tag)
   return result;
 }
 
-
-// Attribute map helper functions.
-
-static inline bool
-parser_attrmap_index (map<string, string> *attrs, const string &name,
-                      string *result)
-{
-  MAP_GET_IMPL (*attrs, name, result);
-}
-
-static inline string
-parser_attrmap_get (map<string, string> *attrs, const string &name)
-{
-  string value;
-  g_assert (parser_attrmap_index (attrs, name, &value));
-  return value;
-}
-
-static inline string
-parser_attrmap_opt_get (map<string, string> *attrs, const string &name,
-                        const string &defvalue)
-{
-  string result;
-  return parser_attrmap_index (attrs, name, &result) ? result : defvalue;
-}
-
-
-// Misc helper functions.
-
+// Parses "role" attribute.
 static bool
-parser_get_role (const string &role, Event::Type *type,
-                 Event::Transition *transition)
+parser_syntax_parse_role (const string &role, Event::Type *type,
+                          Event::Transition *transition)
 {
   static map<string, pair<int,int>> reserved =
     {
@@ -557,8 +529,9 @@ parser_get_role (const string &role, Event::Type *type,
   return true;
 }
 
+// Parses "eventType" attribute.
 static bool
-parser_check_event_type (const string &str, Event::Type *result)
+parser_syntax_parse_event_type (const string &str, Event::Type *result)
 {
   static map<string, Event::Type> good =
     {
@@ -573,8 +546,10 @@ parser_check_event_type (const string &str, Event::Type *result)
   return true;
 }
 
+// Parses "transition" attribute.
 static bool
-parser_check_transition (const string &str, Event::Transition *result)
+parser_syntax_parse_transition (const string &str,
+                                Event::Transition *result)
 {
   static map<string, Event::Transition> good =
     {
@@ -589,6 +564,32 @@ parser_check_transition (const string &str, Event::Transition *result)
     return false;
   tryset (result, it->second);
   return true;
+}
+
+
+// Attribute map helper functions.
+
+static inline bool
+parser_attrmap_index (map<string, string> *attrs, const string &name,
+                      string *result)
+{
+  MAP_GET_IMPL (*attrs, name, result);
+}
+
+static inline string
+parser_attrmap_get (map<string, string> *attrs, const string &name)
+{
+  string value;
+  g_assert (parser_attrmap_index (attrs, name, &value));
+  return value;
+}
+
+static inline string
+parser_attrmap_opt_get (map<string, string> *attrs, const string &name,
+                        const string &defvalue)
+{
+  string result;
+  return parser_attrmap_index (attrs, name, &result) ? result : defvalue;
 }
 
 
@@ -821,12 +822,10 @@ parser_pop_causalConnector (unused (ParserState *st),
                             unused (Object *object))
 {
   bool status;
-  int nconds;
-  int nacts;
+  int nconds, nacts;
 
   status = true;
-  nconds = 0;
-  nacts = 0;
+  nconds = nacts = 0;
   for (auto &role: *st->currentConn)
     {
       if (role.condition)
@@ -869,21 +868,25 @@ parser_push_simpleCondition (ParserState *st, xmlNode *node,
   role.condition = (toString (node->name) == "simpleCondition");
 
   eventType = (role.condition) ? "eventType" : "actionType";
-  if (!parser_get_role (role.role, &role.eventType, &role.transition))
+  if (!parser_syntax_parse_role (role.role, &role.eventType,
+                                 &role.transition))
     {
       string str;
 
       if (unlikely (!parser_attrmap_index (attrs, eventType, &str)))
         return ST_ERR_ELT_MISSING_ATTR (st, node, eventType.c_str ());
-      if (unlikely (!parser_check_event_type (str, &role.eventType)))
+      if (unlikely (!parser_syntax_parse_event_type (str, &role.eventType)))
         return ST_ERR_ELT_BAD_ATTR
           (st, node, eventType.c_str (), str.c_str (), "");
 
       if (unlikely (!parser_attrmap_index (attrs, "transition", &str)))
         return ST_ERR_ELT_MISSING_ATTR (st, node, "transition");
-      if (unlikely (!parser_check_transition (str, &role.transition)))
-        return ST_ERR_ELT_BAD_ATTR
-          (st, node, "transition", str.c_str (), "");
+      if (unlikely (!parser_syntax_parse_transition (str,
+                                                     &role.transition)))
+        {
+          return ST_ERR_ELT_BAD_ATTR
+            (st, node, "transition", str.c_str (), "");
+        }
     }
   else
     {
