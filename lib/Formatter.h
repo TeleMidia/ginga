@@ -86,7 +86,7 @@ class Formatter: public Ginga
   list<Object *> getObjectList (Event::State);
 
   // fixme:
-  Object *obtainExecutionObject (NclNode *);
+  Object *obtainExecutionObject (const string &);
   Event *obtainEvent (Object *, Event::Type, NclAnchor *, const string &);
   Event *obtainFormatterEventFromBind (NclBind *);
   pair<list<Action>,list<Action>> obtainFormatterLink (NclLink *);
