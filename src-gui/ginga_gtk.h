@@ -82,6 +82,7 @@ void set_unfullscreen_mode (void);
 void create_bigpicture_window (void);
 void destroy_bigpicture_window (void);
 void carrousel_rotate (gint);
+void play_application_in_bigpicture(void);
 
 /* View/AboutWindow */
 void create_about_window (void);

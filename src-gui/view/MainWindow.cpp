@@ -410,7 +410,7 @@ keyboard_callback (unused (GtkWidget *widget), GdkEventKey *e, gpointer type)
     case GDK_KEY_Escape: /* quit */
       if (isFullScreenMode)
         set_unfullscreen_mode ();
-      else if (inBigPictureMode)
+      else if (inBigPictureMode && (g_strcmp0 ((const char *)type, "press") != 0))
         destroy_bigpicture_window ();
       break;
     case GDK_KEY_Meta_L:
@@ -449,6 +449,8 @@ keyboard_callback (unused (GtkWidget *widget), GdkEventKey *e, gpointer type)
       key = "#";
       break;
     case GDK_KEY_Return:
+      if(inBigPictureMode)
+        play_application_in_bigpicture();  
       key = "ENTER";
       break;
     case GDK_KEY_F1:

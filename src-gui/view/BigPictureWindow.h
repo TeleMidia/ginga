@@ -26,7 +26,8 @@ typedef struct{
    gdouble destPosition;
    gboolean animate;
    gchar *appName;
-   gchar *appDesc; 
+   gchar *appDesc;
+   gchar *src; 
 
 }BigPictureCard;
 
