@@ -107,18 +107,6 @@ Document::getMedias ()
   return &_medias;
 }
 
-bool
-Document::getData (const string &key, void **value)
-{
-  MAP_GET_IMPL (_userdata, key, value);
-}
-
-bool
-Document::setData (const string &key, void *value)
-{
-  MAP_SET_IMPL (_userdata, key, value);
-}
-
 int
 Document::evalAction (Event *event,
                       Event::Transition transition,
@@ -338,6 +326,18 @@ Document::evalPropertyRef (const string &ref, string *result)
 
   tryset (result, object->getProperty (name));
   return true;
+}
+
+bool
+Document::getData (const string &key, void **value)
+{
+  return _udata.getData (key, value);
+}
+
+bool
+Document::setData (const string &key, void *value, UserDataCleanFunc fn)
+{
+  return _udata.setData (key, value, fn);
 }
 
 GINGA_NAMESPACE_END

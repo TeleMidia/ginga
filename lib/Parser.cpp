@@ -73,17 +73,38 @@ typedef struct ParserState
   Document *doc;                // NCL document
   xmlDoc *xml;                  // DOM tree
   Rect rect;                    // screen dimensions
+  Rect saved_rect;              // saved screen dimensions
   int genid;                    // last generated id
   string errmsg;                // last error message
 
+  // objects
   list<Object *> objStack;                     // object stack
+
+  // element cache
   map<string, ParserCache> cache;              // cached elements
   map<string, list<ParserCache *>> cacheByTag; // cached elements (by tag)
 
+  // connector cache
   map<string, list<ParserConnCache>> connCache; // cached connectors
   list<ParserConnCache> *currentConn;           // current connector
-  list<Predicate *> predStack;                  // predicate stack
 } ParserState;
+
+#define PARSER_STATE_INIT(st,doc,xml,w,h)       \
+  G_STMT_START                                  \
+  {                                             \
+    g_assert_nonnull ((doc));                   \
+    (st)->doc = (doc);                          \
+    g_assert_nonnull ((xml));                   \
+    (st)->xml = (xml);                          \
+    g_assert_cmpint ((w), >, 0);                \
+    g_assert_cmpint ((h), >, 0);                \
+    (st)->rect = {0,0,(w),(h)};                 \
+    (st)->saved_rect = (st)->rect;              \
+    (st)->genid = 0;                            \
+    (st)->errmsg = "";                          \
+    (st)->currentConn = nullptr;                \
+  }                                             \
+  G_STMT_END
 
 static inline G_GNUC_PRINTF (2,3) void
 _st_err (ParserState *st, const char *fmt, ...)
@@ -147,10 +168,10 @@ st_gen_id (ParserState *st)
 
 // Index element cache by id.
 static bool
-st_cache_index (ParserState *st, const string &key,
+st_cache_index (ParserState *st, const string &id,
                 ParserCache **result)
 {
-  auto it = st->cache.find (key);
+  auto it = st->cache.find (id);
   if (it == st->cache.end ())
     return false;
   tryset (result, &it->second);
@@ -603,9 +624,9 @@ parser_pop_ncl (unused (ParserState *st), unused (xmlNode *node),
           if (!parser_attrmap_index (&entry->attrs, "region", &region_id))
             continue;           // nothing to do
 
-          if (unlikely (!st_cache_resolve_idref
-                        (st, region_id, {"region"}, &region_node,
-                         &region_attrs)))
+          if (unlikely (!st_cache_resolve_idref (st, region_id, {"region"},
+                                                 &region_node,
+                                                 &region_attrs)))
             {
               status = ST_ERR_ELT_BAD_ATTR
                 (st, entry->node, "region", region_id.c_str (),
@@ -670,18 +691,69 @@ static bool
 parser_push_region (ParserState *st, xmlNode *node,
                     map<string, string> *attrs, unused (Object **result))
 {
-  (void) st;
-  (void) node;
-  (void) attrs;
+  static int last_zorder = 0;
+  Rect screen;
+  Rect parent;
+  Rect rect;
+  string str;
+
+  g_assert_nonnull (node->parent);
+  if (toString (node->parent->name) != "region") // root region
+    screen = st->saved_rect = st->rect;
+  else
+    screen = st->saved_rect;
+
+  rect = parent = st->rect;
+  if (parser_attrmap_index (attrs, "left", &str))
+    {
+      rect.x += ginga::parse_percent (str, parent.width, 0, G_MAXINT);
+    }
+  if (parser_attrmap_index (attrs, "top", &str))
+    {
+      rect.y += ginga::parse_percent (str, parent.height, 0, G_MAXINT);
+    }
+  if (parser_attrmap_index (attrs, "width", &str))
+    {
+      rect.width = ginga::parse_percent (str, parent.width, 0, G_MAXINT);
+    }
+  if (parser_attrmap_index (attrs, "height", &str))
+    {
+      rect.height = ginga::parse_percent (str, parent.height, 0, G_MAXINT);
+    }
+  if (parser_attrmap_index (attrs, "right", &str))
+    {
+      rect.x += parent.width - rect.width
+        - ginga::parse_percent (str, parent.width, 0, G_MAXINT);
+    }
+  if (parser_attrmap_index (attrs, "bottom", &str))
+    {
+      rect.y += parent.height - rect.height
+        - ginga::parse_percent (str, parent.height, 0, G_MAXINT);
+    }
+
+  st->rect = rect;
+  (*attrs)["zorder"] = xstrbuild ("%d", last_zorder++);
+  (*attrs)["left"] = xstrbuild
+    ("%.2f%%", ((double) rect.x / screen.width) * 100.);
+  (*attrs)["top"] = xstrbuild
+    ("%.2f%%", ((double) rect.y / screen.height) * 100.);
+  (*attrs)["width"] = xstrbuild
+    ("%.2f%%", ((double) rect.width / screen.width) * 100.);
+  (*attrs)["height"] = xstrbuild
+    ("%.2f%%", ((double) rect.height / screen.height) * 100.);
+
   return true;
 }
 
 static bool
-parser_pop_region (unused (ParserState *st), unused (xmlNode *node),
+parser_pop_region (ParserState *st, xmlNode *node,
                    unused (map<string, string> *attrs),
-                   unused (list<xmlNode *> *children), Object *object)
+                   unused (list<xmlNode *> *children),
+                   unused (Object *object))
 {
-  (void) object;
+  g_assert_nonnull (node->parent);
+  if (toString (node->parent->name) != "region") // root region
+    st->rect = st->saved_rect;
   return true;
 }
 
@@ -809,9 +881,6 @@ parser_push_simpleCondition (ParserState *st, xmlNode *node,
     }
 
   role.predicate = nullptr;
-  if (role.condition && st->predStack.size () > 0)
-    role.predicate = (st->predStack.back ())->clone ();
-
   if (parser_attrmap_index (attrs, "key", &key))
     role.key = key;
 
@@ -831,6 +900,13 @@ parser_push_simpleAction (ParserState *st, xmlNode *node,
 
 
 // Parse <context>.
+
+static void
+parser_push_context_cleanup (void *ptr)
+{
+  list<string> *ports = (list <string> *) ptr;
+  delete ports;
+}
 
 static bool
 parser_push_context (ParserState *st, xmlNode *node,
@@ -859,7 +935,7 @@ parser_push_context (ParserState *st, xmlNode *node,
 
   // Create port list.
   ports = new list<string> ();
-  g_assert (ctx->setData ("ports", ports));
+  g_assert (ctx->setData ("ports", ports, parser_push_context_cleanup));
 
   // Push context onto stack.
   *result = ctx;
@@ -1194,17 +1270,11 @@ static Document *
 processDoc (xmlDoc *xml, int width, int height, string *errmsg)
 {
   ParserState st;
+  Document *doc;
   xmlNode *root;
 
-  g_assert_nonnull (xml);
-  st.xml = xml;
-
-  g_assert_cmpint (width, >, 0);
-  g_assert_cmpint (height, >, 0);
-  st.rect = {0, 0, width, height};
-  st.genid = 0;
-  st.doc = new Document ();
-
+  doc = new Document ();
+  PARSER_STATE_INIT (&st, doc, xml, width, height);
   root = xmlDocGetRootElement (xml);
   g_assert_nonnull (root);
 
