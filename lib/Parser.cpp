@@ -89,6 +89,7 @@ typedef struct ParserState
   list<ParserConnCache> *currentConn;           // current connector
 } ParserState;
 
+// Initializes parser state.
 #define PARSER_STATE_INIT(st,doc,xml,w,h)       \
   G_STMT_START                                  \
   {                                             \
@@ -196,7 +197,7 @@ st_cache_resolve_idref (ParserState *st, const string &id,
 {
   ParserCache *entry;
 
-  if (st_cache_index (st, id, &entry))
+  if (!st_cache_index (st, id, &entry))
     return false;
   if (entry->node->type != XML_ELEMENT_NODE)
     return false;
@@ -580,7 +581,6 @@ parser_check_transition (const string &str, Event::Transition *result)
   tryset (result, it->second);
   return true;
 }
-
 
 
 // Parse <ncl>.
