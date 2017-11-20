@@ -211,9 +211,9 @@ st_cache_resolve_idref (ParserState *st, const string &id,
 
 // Index connector cache by id.
 static const list<ParserConnCache> *
-st_conn_cache_index (ParserState *st, const string &tag)
+st_conn_cache_index (ParserState *st, const string &id)
 {
-  auto it = st->connCache.find (tag);
+  auto it = st->connCache.find (id);
   if (it == st->connCache.end ())
     return nullptr;
   return &it->second;
@@ -449,7 +449,7 @@ static map<string, ParserSyntaxElt> parser_syntax =
  },
  {"link",
   {parser_push_link, nullptr,
-   0,
+   PARSER_SYNTAX_FLAG_CACHE | PARSER_SYNTAX_FLAG_GEN_ID,
    {"body", "context"},
    {{"id", false},
     {"xconnector", true}}},
@@ -642,7 +642,7 @@ parser_pop_ncl (unused (ParserState *st), unused (xmlNode *node),
 {
   const list<ParserCache *> *cachedDescriptors;
   const list<ParserCache *> *cachedMedias;
-  bool status = true;
+  const list<ParserCache *> *cachedLinks;
 
   // Resolve descriptor's reference to region.
   cachedDescriptors = st_cache_index_by_tag (st, "descriptor");
@@ -661,10 +661,9 @@ parser_pop_ncl (unused (ParserState *st), unused (xmlNode *node),
                                                  &region_node,
                                                  &region_attrs)))
             {
-              status = ST_ERR_ELT_BAD_ATTR
-                (st, entry->node, "region", region_id.c_str (),
-                 "no such region");
-              goto done;
+              ST_ERR_ELT_BAD_ATTR (st, entry->node, "region",
+                                   region_id.c_str (), "no such region");
+              return false;
             }
           for (auto it: *region_attrs)
             {
@@ -689,7 +688,7 @@ parser_pop_ncl (unused (ParserState *st), unused (xmlNode *node),
           xmlNode *desc_node;
           map<string, string> *desc_attrs;
 
-          g_assert (parser_attrmap_index (&entry->attrs, "id", &id));
+          id = parser_attrmap_get (&entry->attrs, "id");
           media = cast (Media *, st->doc->getObjectByIdOrAlias (id));
           g_assert_nonnull (media);
 
@@ -700,10 +699,9 @@ parser_pop_ncl (unused (ParserState *st), unused (xmlNode *node),
                         (st, desc_id, {"descriptor"}, &desc_node,
                          &desc_attrs)))
             {
-              status = ST_ERR_ELT_BAD_ATTR
-                (st, entry->node, "descriptor", desc_id.c_str (),
-                 "no such descriptor");
-              goto done;
+              ST_ERR_ELT_BAD_ATTR (st, entry->node, "descriptor",
+                                   desc_id.c_str (), "no such descriptor");
+              return false;
             }
 
           for (auto it: *desc_attrs)
@@ -718,10 +716,29 @@ parser_pop_ncl (unused (ParserState *st), unused (xmlNode *node),
     }
 
   // Resolve link's reference to connector.
-  // TODO.
+  cachedLinks = st_cache_index_by_tag (st, "link");
+  if (cachedLinks != nullptr)
+    {
+      for (auto entry: *cachedLinks)
+        {
+          string id;
+          string conn_id;
+          const list <ParserConnCache> *conn;
 
- done:
-  return status;
+          id = parser_attrmap_get (&entry->attrs, "id");
+          conn_id = parser_attrmap_get (&entry->attrs, "xconnector");
+
+          conn = st_conn_cache_index (st, conn_id);
+          if (unlikely (conn == nullptr))
+            {
+              ST_ERR_ELT_BAD_ATTR (st, entry->node, "xconnector",
+                                   conn_id.c_str (), "no such connector");
+              return false;
+            }
+        }
+    }
+
+  return true;
 }
 
 
@@ -946,8 +963,7 @@ parser_push_simpleAction (ParserState *st, xmlNode *node,
 static void
 parser_push_context_cleanup (void *ptr)
 {
-  list<string> *ports = (list <string> *) ptr;
-  delete ports;
+  delete (list <string> *) ptr;
 }
 
 static bool
@@ -957,6 +973,7 @@ parser_push_context (ParserState *st, xmlNode *node,
   Object *ctx;
   string id;
   list<string> *ports;
+  list<string> *links;
 
   if (toString (node->name) == "body")
     {
@@ -978,6 +995,10 @@ parser_push_context (ParserState *st, xmlNode *node,
   // Create port list.
   ports = new list<string> ();
   g_assert (ctx->setData ("ports", ports, parser_push_context_cleanup));
+
+  // Create link list.
+  links = new list<string> ();
+  g_assert (ctx->setData ("links", links, parser_push_context_cleanup));
 
   // Push context onto stack.
   *result = ctx;
@@ -1039,6 +1060,7 @@ parser_pop_context (unused (ParserState *st), unused (xmlNode *node),
 
  done:
   g_assert_false (ctx->setData ("ports", nullptr, nullptr));
+  g_assert_false (ctx->setData ("links", nullptr, nullptr));
   return status;
 }
 
@@ -1164,10 +1186,13 @@ parser_push_link (ParserState *st, unused (xmlNode *node),
                   unused (Object **result))
 {
   Context *ctx;
-  string conn_id;
+  list<string> *links;
 
   ctx = cast (Context *, st->objStack.back ());
   g_assert_nonnull (ctx);
+  g_assert (ctx->getData ("links", (void **) &links));
+
+  links->push_back (parser_attrmap_get (attrs, "id"));
 
   return true;
 }
