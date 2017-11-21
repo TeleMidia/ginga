@@ -896,7 +896,7 @@ parser_pop_ncl (unused (ParserState *st), unused (xmlNode *node),
           // Update link parameters.
           parser_syntax_parse_ghost (&ghosts, &link->params);
 
-          // Check if link match connector.
+          // Check if link matches connector.
           if (unlikely (bound.size () < conn->roles.size ()))
             {
               ST_ERR_ELT_BAD_ATTR (st, entry->node, "xconnector",
