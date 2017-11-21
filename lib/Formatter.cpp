@@ -277,9 +277,19 @@ Formatter::redraw (cairo_t *cr)
           cairo_restore (cr);
         }
     }
-
+  
+  int line = 0;
+  int z1, zo1;
   for (auto media: _mediaObjects)
+  {
+    z1 = zo1 = 0;
+    media->getZ (&z1, &zo1);
+    line+=1;
+    TRACE (">>>> %d media %s %d-%d (%p)", line, media->getId ().c_str (), z1, zo1, media);
     medias.push_back (cast (Media *, media));
+    //medias.insert (medias.begin (), cast (Media *, media));
+  }
+  TRACE (">>>> %d medias [%s - %s]", medias.size (), medias.at (0)->getId ().c_str(), medias.at (medias.size ()-1)->getId ().c_str());
   std::sort (medias.begin (), medias.end (), cmpz);
   for (auto media: medias)
     media->redraw (cr);
