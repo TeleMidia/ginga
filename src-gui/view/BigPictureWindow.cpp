@@ -15,12 +15,16 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
+#include <libxml/xmlmemory.h>
+#include <libxml/parser.h>
+
 #include "ginga_gtk.h"
 #include "aux-glib.h"
 #include "BigPictureWindow.h"
 
 GList *cards_list = NULL;
 gboolean inBigPictureMode = FALSE;
+gboolean isPlayingApp = FALSE;
 GtkWidget *bigPictureWindow = NULL;
 guint timeOutTagB = 0;
 cairo_pattern_t *background_pattern;
@@ -33,9 +37,99 @@ gdouble speed = 3000.0; /* pixels/s */
 gdouble frameRate = 1.000 / 60.0;
 gdouble gradient = 1.0;
 
-guint numCards = 20;
+guint numCards = 0;
 gdouble cardWidth = 300;
 gdouble cardHeight = 169;
+
+void
+instantiateInAppLibrary(xmlDocPtr doc, xmlNodePtr cur) {
+  guint i=0;
+	cur = cur->xmlChildrenNode;
+	while (cur != NULL) {
+	    if ((!xmlStrcmp(cur->name, (const xmlChar *)"app"))) {
+		    xmlChar *src = xmlGetProp(cur, (const xmlChar *)"src");
+        xmlChar *thumbnail = xmlGetProp(cur, (const xmlChar *)"thumbnail");
+        xmlChar *cover = xmlGetProp(cur, (const xmlChar *)"cover");
+        xmlChar *title = xmlGetProp(cur, (const xmlChar *)"title");
+        xmlChar *description = xmlGetProp(cur, (const xmlChar *)"description");
+		    printf("src: %s\n", src);
+        printf("thumbnail: %s\n", thumbnail);
+        printf("cover: %s\n", cover);
+        printf("title: %s\n", title);
+        printf("description: %s\n", description);
+
+        BigPictureCard *bigPictureCard  = (BigPictureCard *)malloc (sizeof (BigPictureCard));
+
+        bigPictureCard->index = i;
+        bigPictureCard->drawOrder = i;
+        bigPictureCard->position = mid + (bigPictureCard[i].index * 200.0);
+        bigPictureCard->animate = FALSE;
+
+        if(g_file_test((gchar*)thumbnail,G_FILE_TEST_EXISTS))
+            bigPictureCard->surface = cairo_image_surface_create_from_png ((gchar*)thumbnail);
+        else
+            bigPictureCard->surface = cairo_image_surface_create_from_png (
+            g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                        "common", "app_thumbnail.png", NULL)); 
+
+        if(g_file_test((gchar*)cover,G_FILE_TEST_EXISTS))
+            bigPictureCard->print_surface = cairo_image_surface_create_from_png ((gchar*)cover);
+        else
+            bigPictureCard->print_surface = cairo_image_surface_create_from_png (
+            g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                        "common", "app_cover.png", NULL));
+
+
+        bigPictureCard->src = g_strdup ((gchar*)src);
+        bigPictureCard->appName = g_strdup ((gchar*)title); 
+        bigPictureCard->appDesc = g_strdup ((gchar*)description);
+   
+        cards_list = g_list_append (cards_list, (gpointer)bigPictureCard);
+        i++; 
+        numCards = i;
+
+        xmlFree(src);
+        xmlFree(thumbnail);
+        xmlFree(cover);
+        xmlFree(title);
+        xmlFree(description);
+	    }
+	    cur = cur->next;
+	}
+	return;
+}
+
+void loadApplicationsXML(){
+  const char *docname = g_strdup("/home/busson/ginga/src-gui/ncl-apps.xml");
+  
+  xmlDocPtr doc;
+	xmlNodePtr cur;
+
+	doc = xmlParseFile(docname);
+	
+	if (doc == NULL ) {
+		fprintf(stderr,"Document not parsed successfully. \n");
+		return;
+	}
+	
+	cur = xmlDocGetRootElement(doc);
+	
+	if (cur == NULL) {
+		fprintf(stderr,"empty document\n");
+		xmlFreeDoc(doc);
+		return;
+	}
+	
+	if (xmlStrcmp(cur->name, (const xmlChar *) "ncl-apps")) {
+		fprintf(stderr,"document of the wrong type, root node != ncl-apps");
+		xmlFreeDoc(doc);
+		return;
+	}
+	
+	instantiateInAppLibrary(doc, cur);
+	xmlFreeDoc(doc);
+
+}
 
 gint
 comp_card_list (gconstpointer a, gconstpointer b)
@@ -51,14 +145,45 @@ comp_card_list (gconstpointer a, gconstpointer b)
     return 0;
 }
 
+
+void
+draw_ginga_surface(GtkWidget *widget, cairo_t *cr, unused (gpointer data))
+{
+  int w, h;
+  w = gtk_widget_get_allocated_width (widget);
+  h = gtk_widget_get_allocated_height (widget);
+ 
+  cairo_set_source_rgb (cr, 0., 0., 0.);
+  cairo_rectangle (cr, 0, 0, w, h);
+  cairo_fill (cr);
+
+  if (presentationAttributes.aspectRatio == 0)
+    {
+      cairo_translate (cr, (w - (w * 0.75)) / 2, 0);
+      cairo_scale (cr, 0.75, 1.0);
+    }
+  else if (presentationAttributes.aspectRatio == 1)
+    {
+      cairo_translate (cr, 0, (h - (h * 0.5625)) / 2);
+      cairo_scale (cr, 1.0, 0.5625);
+    }
+  else if (presentationAttributes.aspectRatio == 2)
+    {
+      cairo_translate (cr, 0, (h - (h * 0.625)) / 2);
+      cairo_scale (cr, 1.0, 0.625);
+    }
+
+  GINGA->redraw (cr);
+}
+
 gboolean
 update_bigpicture_callback (GtkWidget *widget)
 {
 
   if(gradient < 1.0)
     gradient += (4.0 * frameRate);
-    if(gradient > 1.0)
-      gradient = 1.0;
+  if(gradient > 1.0)
+    gradient = 1.0;
 
   GList *l;
   for (l = cards_list; l != NULL; l = l->next)
@@ -81,7 +206,7 @@ update_bigpicture_callback (GtkWidget *widget)
           card->animate = FALSE;
         }
     }
-
+  
   gtk_widget_queue_draw (widget);
   return G_SOURCE_CONTINUE;
 }
@@ -90,6 +215,10 @@ void
 draw_bigpicture_callback (GtkWidget *widget, cairo_t *cr,
                           unused (gpointer data))
 {
+  if(isPlayingApp){
+    draw_ginga_surface(widget, cr, data);
+    return;
+  }
 
   int w, h;
   w = gtk_widget_get_allocated_width (widget);
@@ -173,6 +302,21 @@ draw_bigpicture_callback (GtkWidget *widget, cairo_t *cr,
 
   // cairo_paint (cr);
 }
+void
+play_application_in_bigpicture()
+{
+   GList *l;
+   for (l = cards_list; l != NULL; l = l->next)
+    {
+      BigPictureCard *card = (BigPictureCard *)l->data;
+
+      if (card->index == 0)
+        {
+            isPlayingApp = TRUE;
+            GINGA->start (card->src, nullptr);
+        }
+    }
+}
 
 void
 carrousel_rotate (gint dir)
@@ -216,6 +360,7 @@ carrousel_rotate (gint dir)
 void
 create_bigpicture_window ()
 {
+  loadApplicationsXML();
 
   if (bigPictureWindow != NULL)
     return;
@@ -244,87 +389,8 @@ create_bigpicture_window ()
   gdk_screen_get_monitor_geometry (GDK_SCREEN (screen), 0, &rect);
 #endif
 
-  // prov
-  // rect.width = 1800;
-  
   screen_width = rect.width;
   mid = (rect.width / 2.0);
-
-  BigPictureCard *bigPictureCard
-      = (BigPictureCard *)malloc (sizeof (BigPictureCard) * numCards);
-
-  // init cards
-  for (guint i = 0; i < numCards; i++)
-    {
-      bigPictureCard[i].index = i;
-      bigPictureCard[i].drawOrder = i;
-      bigPictureCard[i].position = mid + (bigPictureCard[i].index * 200.0);
-      bigPictureCard[i].animate = FALSE;
-
-      bigPictureCard[i].surface = cairo_image_surface_create_from_png (
-          g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
-                        "common", "app_cover.png", NULL));
-
-      bigPictureCard[i].print_surface = cairo_image_surface_create_from_png (
-          g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
-                        "common", "app_preview.png", NULL));
-
-      if (i % 5 == 0)
-        {
-          bigPictureCard[i].appName = g_strdup ("Lorem Ipsum Dolor sit Amet");
-          bigPictureCard[i].appDesc = g_strdup (
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, "
-              "sed do eiusmod tempor incididunt ut labore et dolore magna "
-              "aliqua. Ut enim ad minim veniam, quis nostrud exercitation "
-              "ullamco laboris nisi ut aliquip ex ea commodo consequat. "
-              "Duis aute irure dolor in reprehenderit in voluptate velit "
-              "esse cillum dolore eu fugiat nulla pariatur.");
-        }
-      else if (i % 5 == 1)
-        {
-          bigPictureCard[i].appName = g_strdup ("Sed ut Perspiciatis");
-          bigPictureCard[i].appDesc = g_strdup (
-              "Sed ut perspiciatis unde omnis iste natus error sit "
-              "voluptatem accusantium doloremque laudantium, totam rem "
-              "aperiam, eaque ipsa quae ab illo inventore veritatis et "
-              "quasi architecto beatae vitae dicta sunt explicabo. Nemo "
-              "enim ipsam voluptatem quia voluptas sit aspernatur aut odit "
-              "aut fugit, sed quia consequuntur magni dolores eos qui "
-              "ratione voluptatem sequi nesciunt.");
-        }
-      else if (i % 5 == 2)
-        {
-          bigPictureCard[i].appName = g_strdup ("Ut Enim ad Minima Veniam quis Nostrum");
-          bigPictureCard[i].appDesc = g_strdup (
-              "Ut enim ad minima veniam, quis nostrum exercitationem ullam "
-              "corporis suscipit laboriosam, nisi ut aliquid ex ea commodi "
-              "consequatur? Quis autem vel eum iure reprehenderit qui in "
-              "ea voluptate velit esse quam nihil molestiae consequatur, "
-              "vel illum qui dolorem eum fugiat quo voluptas nulla "
-              "pariatur?");
-        }
-      else if (i % 5 == 3)
-        {
-          bigPictureCard[i].appName = g_strdup ("At Vero eos Et Accusamus");
-          bigPictureCard[i].appDesc = g_strdup (
-              "At vero eos et accusamus et iusto odio dignissimos ducimus "
-              "qui blanditiis praesentium voluptatum deleniti atque "
-              "corrupti quos dolores et quas molestias excepturi sint "
-              "occaecati cupiditate non provident, similique sunt in culpa "
-              "qui officia deserunt mollitia animi, id est laborum et "
-              "dolorum fuga.");
-        }
-      else if (i % 5 == 4)
-        {
-          bigPictureCard[i].appName = g_strdup ("Nam Libero Tempore Cum Soluta");
-          bigPictureCard[i].appDesc = g_strdup (
-              "Nam libero tempore, cum soluta nobis est eligendi optio "
-              "cumque nihil impedit quo minus id quod maxime placeat "
-              "facere possimus, omnis voluptas assumenda est, omnis dolor "
-              "repellendus.");
-        }
-      cards_list = g_list_append (cards_list, (gpointer)&bigPictureCard[i]);
-    }
 
   bigPictureWindow = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   g_assert_nonnull (bigPictureWindow);
@@ -359,7 +425,11 @@ create_bigpicture_window ()
 
   carrousel_rotate(-1);
   carrousel_rotate(1);
+
+  GINGA->resize (rect.width, rect.height);
 }
+
+
 
 void
 destroy_card_list (gpointer data)
@@ -373,6 +443,13 @@ destroy_card_list (gpointer data)
 void
 destroy_bigpicture_window ()
 {
+  if(isPlayingApp)
+  {
+     isPlayingApp = FALSE;
+     GINGA->stop ();
+     return;
+  };
+
   inBigPictureMode = FALSE;
   g_source_remove (timeOutTagB);
   gtk_widget_destroy (bigPictureWindow);
@@ -380,4 +457,7 @@ destroy_bigpicture_window ()
   g_list_free_full (cards_list, destroy_card_list);
   cards_list = NULL;
   currentCard = 0;
+
+  GINGA->resize (presentationAttributes.resolutionWidth,
+                 presentationAttributes.resolutionHeight);
 }

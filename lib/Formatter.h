@@ -21,6 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "aux-ginga.h"
 
+#include "Document.h"
 #include "ncl/Ncl.h"
 
 GINGA_NAMESPACE_BEGIN
@@ -61,19 +62,6 @@ class Formatter: public Ginga
   bool getEOS ();
   void setEOS (bool);
 
-  const set<Object *> *getObjects ();
-  const set<Media *> *getMediaObjects ();
-  MediaSettings *getSettings ();
-  Object *getObjectById (const string &);
-  Object *getObjectByIdOrAlias (const string &);
-  bool getObjectPropertyByRef (const string &, string *);
-  void addObject (Object *);
-
-  int evalAction (Event *, Event::Transition, const string &value="");
-  int evalAction (Action);
-  bool evalPredicate (Predicate *);
-  Object *obtainExecutionObject (NclNode *);
-
   static void setOptionBackground (Formatter *, const string &, string);
   static void setOptionDebug (Formatter *, const string &, bool);
   static void setOptionExperimental (Formatter *, const string &, bool);
@@ -90,14 +78,16 @@ class Formatter: public Ginga
   uint64_t _last_tick_frameno;    // last frameno informed via sendTickEvent
   string _saved_G_MESSAGES_DEBUG; // saved G_MESSAGES_DEBUG value
 
-  NclDocument *_doc;            // current document
+  Document *_doc;               // current document
+  NclDocument *_docLegacy;      // current document (legacy)
   string _docPath;              // path to current document
   bool _eos;                    // true if EOS was reached
-  set<Object *> _objects;       // all objects
-  set<Media *> _mediaObjects;   // media objects
-  MediaSettings *_settings;     // settings object
 
   list<Object *> getObjectList (Event::State);
+
+  // fixme:
+  Object *obtainExecutionObject (const string &);
+  Event *obtainEvent (Object *, Event::Type, NclAnchor *, const string &);
   Event *obtainFormatterEventFromBind (NclBind *);
   pair<list<Action>,list<Action>> obtainFormatterLink (NclLink *);
 };

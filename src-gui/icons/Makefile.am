@@ -34,7 +34,7 @@ common_DATA=\
   common/yellow-icon.png\
   common/background_pattern.png\
   common/app_cover.png\
-  common/app_preview.png\
+  common/app_thumbnail.png\
   $(NULL)
 
 light_DATA=\

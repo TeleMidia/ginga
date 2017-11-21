@@ -159,7 +159,7 @@ Media::sendKeyEvent (const string &key, bool press)
                && (next = _player->getProperty ("moveRight")) != "")))
         {
           MediaSettings *settings;
-          settings = _formatter->getSettings ();
+          settings = _doc->getSettings ();
           g_assert_nonnull (settings);
           settings->scheduleFocusUpdate (next);
         }
@@ -191,8 +191,8 @@ Media::sendKeyEvent (const string &key, bool press)
   for (Event *evt: buf)
     {
       TRACE ("%s<%s>", _id.c_str (), evt->getId ().c_str ());
-      _formatter->evalAction (evt, Event::START);
-      _formatter->evalAction (evt, Event::STOP);
+      _doc->evalAction (evt, Event::START);
+      _doc->evalAction (evt, Event::STOP);
     }
 }
 
@@ -220,7 +220,7 @@ Media::sendTickEvent (Time total, Time diff, Time frame)
       g_assert_nonnull (lambda);
       TRACE ("eos %s@lambda at %" GINGA_TIME_FORMAT, _id.c_str (),
              GINGA_TIME_ARGS (_time));
-      _formatter->evalAction (lambda, Event::STOP);
+      _doc->evalAction (lambda, Event::STOP);
       return;
     }
 }
@@ -236,8 +236,11 @@ Media::startTransition (Event *evt, Event::Transition transition)
         case Event::START:
           if (evt->isLambda ())
             {
+              Formatter *formatter;
+
+              g_assert (_doc->getData ("formatter", (void **) &formatter));
               g_assert_null (_player);
-              _player = Player::createPlayer (_formatter, _id, _uri, _mime);
+              _player = Player::createPlayer (formatter, _id, _uri, _mime);
               if (unlikely (_player == nullptr))
                 return false;       // fail
 
@@ -344,12 +347,12 @@ Media::endTransition (Event *evt, Event::Transition transition)
             name = evt->getId ();
             evt->getParameter ("value", &value);
             if (value[0] == '$')
-              _formatter->getObjectPropertyByRef (value, &value);
+              _doc->evalPropertyRef (value, &value);
 
             if (evt->getParameter ("duration", &s))
               {
                 if (s[0] == '$')
-                  _formatter->getObjectPropertyByRef (s, &s);
+                  _doc->evalPropertyRef (s, &s);
                 dur = ginga::parse_time (s);
               }
             else
@@ -357,7 +360,7 @@ Media::endTransition (Event *evt, Event::Transition transition)
                 dur = 0;
               }
             this->setProperty (name, value, dur);
-            _formatter->evalAction (evt, Event::STOP);
+            _doc->evalAction (evt, Event::STOP);
 
             TRACE ("start %s.%s:=%s (duration=%s)", _id.c_str (),
                    name.c_str (), value.c_str (), s.c_str ());

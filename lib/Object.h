@@ -18,11 +18,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include "Formatter.h"
 #include "Event.h"
 
 GINGA_NAMESPACE_BEGIN
 
+class Document;
 class Composition;
 class MediaSettings;
 
@@ -34,8 +34,8 @@ public:
 
   string getId ();
 
-  Formatter *getFormatter ();
-  void initFormatter (Formatter *);
+  Document *getDocument ();
+  void initDocument (Document *);
 
   Composition *getParent ();
   void initParent (Composition *);
@@ -43,8 +43,6 @@ public:
   const vector <string> *getAliases ();
   bool hasAlias (const string &);
   void addAlias (const string &);
-
-  Event *obtainEvent (Event::Type, NclAnchor *, const string &);
 
   Event *getEvent (Event::Type, const string &);
   Event *getAttributionEvent (const string &);
@@ -72,19 +70,20 @@ public:
   virtual bool startTransition (Event *, Event::Transition) = 0;
   virtual void endTransition (Event *, Event::Transition) = 0;
 
+  bool getData (const string &, void **);
+  bool setData (const string &, void *, UserDataCleanFunc fn=nullptr);
+
 protected:
-  string _id;                      // id
-  Formatter *_formatter;           // formatter handle
-  Composition *_parent;            // parent object
-  vector<string> _aliases;         // aliases
-
-  Time _time;                      // playback time
-  map<string, string> _properties; // property map
-
-  Event *_lambda;               // lambda event
-  set<Event *> _events;         // all events
-
-  list<pair<Action, Time>> _delayed; // delayed actions
+  string _id;                                           // id
+  Document *_doc;                                       // parent document
+  Composition *_parent;                                 // parent object
+  vector<string> _aliases;                              // aliases
+  Time _time;                                           // playback time
+  map<string, string> _properties;                      // property map
+  Event *_lambda;                                       // lambda event
+  set<Event *> _events;                                 // all events
+  list<pair<Action, Time>> _delayed;                    // delayed actions
+  UserData _udata;                                      // user data
 
   virtual void doStart ();
   virtual void doStop ();
