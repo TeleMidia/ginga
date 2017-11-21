@@ -47,25 +47,51 @@ xmlGetPropAsString (xmlNode *node, const string &name, string *result)
 
 // Parser internal state.
 
-// Entry in element cache.
+// Element cache.
 typedef struct ParserCache
 {
+  string id;                    // node id
   string tag;                   // node tag
   xmlNode *node;                // node object
   map<string, string> attrs;    // node attributes
 } ParserCache;
 
-// Entry in connector cache.
-typedef struct ParserConnCache
+// Connector cache.
+typedef struct ParserConnRole
 {
   string role;                  // role label
-  Event::Type eventType;        // event type
-  Event::Transition transition; // transition
+  Event::Type eventType;        // role event type
+  Event::Transition transition; // role transition
   bool condition;               // whether role is condition
-  Predicate *predicate;         // associated predicate (if condition)
-  string value;                 // value (if attribution)
-  string key;                   // key (if selection)
+  Predicate *predicate;         // role associated predicate (if condition)
+  string value;                 // role value (if attribution)
+  string key;                   // role key (if selection)
+} ParserConnRole;
+
+typedef struct ParserConnCache
+{
+  string id;                    // connector id
+  list<ParserConnRole> roles;   // connector roles
 } ParserConnCache;
+
+// Link cache.
+typedef struct ParserLinkBind
+{
+  xmlNode *node;                // bind node
+  string role;                  // bind role
+  string component;             // bind component
+  string interface;             // bind interface
+  map<string, string> params;   // bind parameters
+} ParserLinkBind;
+
+typedef struct ParserLinkCache
+{
+  string id;                    // link id
+  string connector;             // link connector id
+  Context *context;             // parent context
+  map<string, string> params;   // link parameters
+  list<ParserLinkBind> binds;   // link binds
+} ParserLinkCache;
 
 // Parser state.
 typedef struct ParserState
@@ -78,15 +104,19 @@ typedef struct ParserState
   string errmsg;                // last error message
 
   // objects
-  list<Object *> objStack;                     // object stack
+  list<Object *> objStack;      // object stack
 
   // element cache
   map<string, ParserCache> cache;              // cached elements
   map<string, list<ParserCache *>> cacheByTag; // cached elements (by tag)
 
   // connector cache
-  map<string, list<ParserConnCache>> connCache; // cached connectors
-  list<ParserConnCache> *currentConn;           // current connector
+  map<string, ParserConnCache> connCache; // cached connectors
+  ParserConnCache *currentConn;           // current connector
+
+  // link cache
+  map<string, ParserLinkCache> linkCache; // cached links
+  ParserLinkCache *currentLink;           // current link
 } ParserState;
 
 // Initializes parser state.
@@ -104,6 +134,7 @@ typedef struct ParserState
     (st)->genid = 0;                            \
     (st)->errmsg = "";                          \
     (st)->currentConn = nullptr;                \
+    (st)->currentLink = nullptr;                \
   }                                             \
   G_STMT_END
 
@@ -210,14 +241,23 @@ st_cache_resolve_idref (ParserState *st, const string &id,
 }
 
 // Index connector cache by id.
-static const list<ParserConnCache> *
+static const ParserConnCache *
 st_conn_cache_index (ParserState *st, const string &id)
 {
   auto it = st->connCache.find (id);
   if (it == st->connCache.end ())
     return nullptr;
   return &it->second;
+}
 
+// Index link cache by id.
+static const ParserLinkCache *
+st_link_cache_index (ParserState *st, const string &id)
+{
+  auto it = st->linkCache.find (id);
+  if (it == st->linkCache.end ())
+    return nullptr;
+  return &it->second;
 }
 
 
@@ -281,6 +321,10 @@ PARSER_PUSH_DECL (media)
 PARSER_PUSH_DECL (area)
 PARSER_PUSH_DECL (property)
 PARSER_PUSH_DECL (link)
+PARSER_POP_DECL  (link)
+PARSER_PUSH_DECL (linkParam)
+PARSER_PUSH_DECL (bind)
+PARSER_PUSH_DECL (bindParam)
 
 
 static map<string, ParserSyntaxElt> parser_syntax =
@@ -448,22 +492,29 @@ static map<string, ParserSyntaxElt> parser_syntax =
     {"value", false}}},
  },
  {"link",
-  {parser_push_link, nullptr,
+  {parser_push_link, parser_pop_link,
    PARSER_SYNTAX_FLAG_CACHE | PARSER_SYNTAX_FLAG_GEN_ID,
    {"body", "context"},
    {{"id", false},
     {"xconnector", true}}},
  },
+ {"linkParam",
+  {parser_push_linkParam, nullptr,
+   0,
+   {"link"},
+   {{"name", true},
+    {"value", true}}}
+ },
  {"bind",
-  {nullptr, nullptr,
+  {parser_push_bind, nullptr,
    0,
    {"link"},
    {{"role", true},
-    {"component", false},
+    {"component", true},
     {"interface", false}}},
  },
  {"bindParam",
-  {nullptr, nullptr,
+  {parser_push_bindParam, nullptr,
    0,
    {"bind"},
    {{"name", true},
@@ -588,6 +639,56 @@ parser_syntax_parse_transition (const string &str,
   tryset (result, it->second);
   return true;
 }
+
+// Parses and solve references to ghost binds.
+static bool
+parser_syntax_parse_ghost (const map<string, string> *ghosts,
+                           const map<string, string> *params)
+{
+  bool modified = false;
+  for (auto it: *params)
+    {
+      auto ghost = ghosts->find ('$' + it.first);
+      if (ghost == ghosts->end ())
+        continue;
+      it.second = ghost->second;
+      modified = true;
+    }
+  return modified;
+}
+
+// Parses and solve references to bind or link parameters.
+static bool
+parser_syntax_parse_parameter (const string &value,
+                               const map<string, string> *bindParams,
+                               const map<string, string> *linkParams,
+                               string *result)
+{
+  string key;
+
+  if (value[0] != '$')
+    return false;
+
+  key = value.substr (1, value.length () - 1);
+  auto it = bindParams->find (key);
+  if (it != bindParams->end ())
+    {
+      tryset (result, it->second);
+      return true;
+    }
+  else
+    {
+      auto it = linkParams->find (key);
+      if (it != linkParams->end ())
+        {
+          tryset (result, it->second);
+          return true;
+        }
+    }
+
+  return false;
+}
+
 
 
 // Attribute map helper functions.
@@ -722,18 +823,154 @@ parser_pop_ncl (unused (ParserState *st), unused (xmlNode *node),
       for (auto entry: *cachedLinks)
         {
           string id;
-          string conn_id;
-          const list <ParserConnCache> *conn;
+          Context *ctx;
+          const ParserLinkCache *link;
+          const ParserConnCache *conn;
+
+          list<pair<const ParserConnRole *, const ParserLinkBind *>> bound;
+          map<string,string> ghosts; // ghost binds
+
+          list<Action> conditions;
+          list<Action> actions;
 
           id = parser_attrmap_get (&entry->attrs, "id");
-          conn_id = parser_attrmap_get (&entry->attrs, "xconnector");
 
-          conn = st_conn_cache_index (st, conn_id);
+          link = st_link_cache_index (st, id);
+          g_assert_nonnull (link);
+
+          ctx = link->context;
+          g_assert_nonnull (ctx);
+
+          conn = st_conn_cache_index (st, link->connector);
           if (unlikely (conn == nullptr))
             {
               ST_ERR_ELT_BAD_ATTR (st, entry->node, "xconnector",
-                                   conn_id.c_str (), "no such connector");
+                                   link->connector.c_str (),
+                                   "no such connector");
               return false;
+            }
+
+          // Collect active binds (vs ghost binds).
+          for (auto &bind: link->binds)
+            {
+              const ParserConnRole *role;
+              bool found = false;
+
+              for (auto &rl: conn->roles)
+                {
+                  if (bind.role == rl.role)
+                    {
+                      found = true;
+                      role = &rl;
+                      break;
+                    }
+                }
+
+              if (found)        // active bind
+                {
+                  bound.push_back (std::make_pair (role, &bind));
+                }
+              else              // ghost bind
+                {
+                  Object *obj = ctx->getChildById (bind.component);
+                  if (unlikely (obj == nullptr))
+                    {
+                      ST_ERR_ELT_BAD_ATTR (st, bind.node, "component",
+                                           bind.component.c_str (),
+                                           "no such component");
+                      return false;
+                    }
+                  if (bind.interface == "")
+                    {
+                      ST_ERR_ELT_BAD_ATTR (st, bind.node, "interface",
+                                           bind.interface.c_str (),
+                                           "no such interface");
+                      return false;
+                    }
+                  ghosts[bind.role]
+                    = "$" + bind.component
+                    + "." + bind.interface;
+                }
+            }
+
+          // Update link parameters.
+          parser_syntax_parse_ghost (&ghosts, &link->params);
+
+          // Check if link match connector.
+          if (unlikely (bound.size () < conn->roles.size ()))
+            {
+              ST_ERR_ELT_BAD_ATTR (st, entry->node, "xconnector",
+                                   link->connector.c_str (),
+                                   "link does not match connector");
+              return false;
+            }
+
+          // Process active binds.
+          for (auto it: bound)
+            {
+              const ParserConnRole *role;
+              const ParserLinkBind *bind;
+              Object *obj;
+              Event *evt;
+
+              role = it.first;
+              bind = it.second;
+
+              // Update bind parameters
+              parser_syntax_parse_ghost (&ghosts, &bind->params);
+
+              // Check component.
+              obj = ctx->getChildById (bind->component);
+              if (unlikely (obj == nullptr))
+                {
+                  ST_ERR_ELT_BAD_ATTR (st, bind->node, "component",
+                                       bind->component.c_str (),
+                                       "no such component");
+                  return false;
+                }
+
+              // Check interface.
+              evt = nullptr;
+              switch (role->eventType)
+                {
+                case Event::PRESENTATION:
+                  if (bind->interface == "")
+                    evt = obj->getLambda ();
+                  else
+                    evt = obj->getPresentationEvent (bind->interface);
+                  break;
+                case Event::ATTRIBUTION:
+                  if (bind->interface == "")
+                    break;    // fail
+
+                  evt = obj->getAttributionEvent (bind->interface);
+                  if (evt == nullptr)
+                    break;    // fail
+
+                  if (role->condition)
+                    {
+                      string value;
+                      value = role->value;
+                      parser_syntax_parse_parameter (value, &bind->params,
+                                                     &link->params, &value);
+                      TRACE ("SETTING VALUE TO %s", value.c_str ());
+                    }
+                  break;
+                case Event::SELECTION:
+                  g_assert_not_reached ();
+                  break;
+                default:
+                  g_assert_not_reached ();
+                }
+
+              if (unlikely (evt == nullptr))
+                {
+                  ST_ERR_ELT_BAD_ATTR (st, bind->node, "interface",
+                                       bind->interface.c_str (),
+                                       "no such interface");
+                  return false;
+                }
+
             }
         }
     }
@@ -866,7 +1103,7 @@ parser_pop_causalConnector (unused (ParserState *st),
 
   status = true;
   nconds = nacts = 0;
-  for (auto &role: *st->currentConn)
+  for (auto &role: st->currentConn->roles)
     {
       if (role.condition)
         nconds++;
@@ -900,7 +1137,7 @@ parser_push_simpleCondition (ParserState *st, xmlNode *node,
                              map<string, string> *attrs,
                              unused (Object **result))
 {
-  ParserConnCache role;
+  ParserConnRole role;
   string eventType;
   string key;
 
@@ -943,7 +1180,9 @@ parser_push_simpleCondition (ParserState *st, xmlNode *node,
   if (parser_attrmap_index (attrs, "key", &key))
     role.key = key;
 
-  st->currentConn->push_back (role);
+  g_assert_nonnull (st->currentConn);
+  st->currentConn->roles.push_back (role);
+
   return true;
 }
 
@@ -973,7 +1212,6 @@ parser_push_context (ParserState *st, xmlNode *node,
   Object *ctx;
   string id;
   list<string> *ports;
-  list<string> *links;
 
   if (toString (node->name) == "body")
     {
@@ -995,10 +1233,6 @@ parser_push_context (ParserState *st, xmlNode *node,
   // Create port list.
   ports = new list<string> ();
   g_assert (ctx->setData ("ports", ports, parser_push_context_cleanup));
-
-  // Create link list.
-  links = new list<string> ();
-  g_assert (ctx->setData ("links", links, parser_push_context_cleanup));
 
   // Push context onto stack.
   *result = ctx;
@@ -1060,7 +1294,6 @@ parser_pop_context (unused (ParserState *st), unused (xmlNode *node),
 
  done:
   g_assert_false (ctx->setData ("ports", nullptr, nullptr));
-  g_assert_false (ctx->setData ("links", nullptr, nullptr));
   return status;
 }
 
@@ -1182,17 +1415,95 @@ parser_push_property (ParserState *st, unused (xmlNode *node),
 
 static bool
 parser_push_link (ParserState *st, unused (xmlNode *node),
-                  unused (map<string, string> *attrs),
-                  unused (Object **result))
+                  map<string, string> *attrs, unused (Object **result))
 {
+  string id;
   Context *ctx;
-  list<string> *links;
+
+  id = parser_attrmap_get (attrs, "id");
+  g_assert_null (st_link_cache_index (st, id));
 
   ctx = cast (Context *, st->objStack.back ());
   g_assert_nonnull (ctx);
-  g_assert (ctx->getData ("links", (void **) &links));
 
-  links->push_back (parser_attrmap_get (attrs, "id"));
+  g_assert_null (st->currentLink);
+  st->currentLink = &st->linkCache[id];
+
+  st->currentLink->id = id;
+  st->currentLink->context = ctx;
+  st->currentLink->connector = parser_attrmap_get (attrs, "xconnector");
+
+  return true;
+}
+
+static bool
+parser_pop_link (unused (ParserState *st), unused (xmlNode *node),
+                 unused (map<string, string> *attrs),
+                 unused (list<xmlNode *> *children),
+                 unused (Object *object))
+{
+  g_assert_nonnull (st->currentLink);
+  st->currentLink = nullptr;
+  return true;
+}
+
+
+// Parser <linkParam>.
+
+static bool
+parser_push_linkParam (ParserState *st, unused (xmlNode *node),
+                       map<string, string> *attrs, unused (Object **result))
+{
+  string name;
+  string value;
+
+  name = parser_attrmap_get (attrs, "name");
+  value = parser_attrmap_get (attrs, "value");
+
+  g_assert_nonnull (st->currentLink);
+  st->currentLink->params[name] = value;
+
+  return true;
+}
+
+
+// Parse <bind>.
+
+static bool
+parser_push_bind (ParserState *st, xmlNode *node,
+                  map<string, string> *attrs, unused (Object **result))
+{
+  ParserLinkBind bind;
+
+  bind.node = node;
+  bind.role = parser_attrmap_get (attrs, "role");
+  bind.component = parser_attrmap_get (attrs, "component");
+  parser_attrmap_index (attrs, "interface", &bind.interface);
+
+  g_assert_nonnull (st->currentLink);
+  st->currentLink->binds.push_back (bind);
+
+  return true;
+}
+
+
+// Parse <bindParam>.
+
+static bool
+parser_push_bindParam (ParserState *st, unused (xmlNode *node),
+                       map<string, string> *attrs, unused (Object **result))
+{
+  string name;
+  string value;
+  ParserLinkBind *bind;
+
+  name = parser_attrmap_get (attrs, "name");
+  value = parser_attrmap_get (attrs, "value");
+
+  g_assert_nonnull (st->currentLink);
+  g_assert (st->currentLink->binds.size () > 0);
+  bind = &st->currentLink->binds.back ();
+  bind->params[name] = value;
 
   return true;
 }
@@ -1321,7 +1632,7 @@ processElt (ParserState *st, xmlNode *node)
       if (elt_syntax->flags & PARSER_SYNTAX_FLAG_CACHE)
         {
           string tag = toString (node->name);
-          st->cache[id] = {tag, node, map<string, string> (_attrs)};
+          st->cache[id] = {id, tag, node, map<string, string> (_attrs)};
           st->cacheByTag[tag].push_back (&st->cache[id]);
           attrs = &(st->cache[id].attrs);
         }
