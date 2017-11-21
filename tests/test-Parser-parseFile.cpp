@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ncl/ParserLibXML.h"
+#include "Parser.h"
 using namespace ::ginga;
 
 int
@@ -33,7 +33,7 @@ main (void)
   while ((entry = g_dir_read_name (dir)) != nullptr)
     {
       string entry_path;
-      NclDocument *doc;
+      Document *doc;
       string errmsg;
 
       entry_path = xpathbuildabs (path, string (entry));
@@ -41,7 +41,7 @@ main (void)
         continue;
 
       errmsg = "";
-      doc = ParserLibXML::parseFile (entry_path, 100, 100, &errmsg);
+      doc = Parser::parseFile (entry_path, 100, 100, &errmsg);
       if (doc == nullptr)
         {
           g_printerr ("%s: %s\n", entry, errmsg.c_str ());

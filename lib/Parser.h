@@ -15,20 +15,20 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
+#ifndef PARSER_H
+#define PARSER_H
 
-typedef struct{
-   gint index;
-   gint drawOrder; 
-   cairo_surface_t *surface;
-   cairo_surface_t *print_surface;
-   gdouble position;
-   gdouble scale; 
-   gdouble destPosition;
-   gboolean animate;
-   gchar *appName;
-   gchar *appDesc;
-   gchar *src; 
+#include "Document.h"
 
-}BigPictureCard;
+GINGA_NAMESPACE_BEGIN
 
-extern BigPictureCard *bigPictureCard;
+class Parser
+{
+public:
+  static Document *parseBuffer (const void *, size_t, int, int, string *);
+  static Document *parseFile (const string &, int, int, string *);
+};
+
+GINGA_NAMESPACE_END
+
+#endif // PARSER_H

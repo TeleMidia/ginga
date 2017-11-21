@@ -94,7 +94,7 @@ MediaSettings::updateCurrentFocus (const string &index)
     }
   else
     {
-      for (auto media: *_formatter->getMediaObjects ())
+      for (auto media: *_doc->getMedias ())
         {
           if (media->isOccurring ()
               && (i = media->getProperty ("focusIndex")) != ""
@@ -109,8 +109,8 @@ MediaSettings::updateCurrentFocus (const string &index)
   string value = next;
   Event *evt = this->getAttributionEvent ("service.currentFocus");
   g_assert_nonnull (evt);
-  _formatter->evalAction (evt, Event::START, value);
-  _formatter->evalAction (evt, Event::STOP, value);
+  _doc->evalAction (evt, Event::START, value);
+  _doc->evalAction (evt, Event::STOP, value);
 }
 
 void

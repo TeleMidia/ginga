@@ -111,8 +111,8 @@
 /tests/test-Ginga-version
 /tests/test-GingaInternal-getData
 /tests/test-GingaInternal-setData
-/tests/test-ParserLibXML-parseBuffer
-/tests/test-ParserLibXML-parseFile
+/tests/test-Parser-parseBuffer
+/tests/test-Parser-parseFile
 /tests/test-aux-ginga-parse-bool
 /tests/test-aux-ginga-parse-color
 /tests/test-aux-ginga-parse-list

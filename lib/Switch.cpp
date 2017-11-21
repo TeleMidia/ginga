@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "Switch.h"
 
+#include "Document.h"
+
 GINGA_NAMESPACE_BEGIN
 
 
@@ -60,7 +62,7 @@ Switch::startTransition (Event *event, Event::Transition transition)
               pred = item.second;
               g_assert_nonnull (pred);
 
-              if (_formatter->evalPredicate (pred))
+              if (_doc->evalPredicate (pred))
                 {
                   lambda = obj->getLambda ();
                   g_assert_nonnull (lambda);
@@ -107,7 +109,7 @@ Switch::endTransition (Event *event, Event::Transition transition)
           Object::doStart ();
           TRACE ("start %s@lambda", _id.c_str ());
           if (_selected == nullptr)
-            _formatter->evalAction (event, Event::STOP);
+            _doc->evalAction (event, Event::STOP);
           break;
 
         case Event::STOP:

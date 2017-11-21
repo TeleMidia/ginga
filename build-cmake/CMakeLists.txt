@@ -8,7 +8,7 @@ set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 set (CMAKE_INCLUDE_CURRENTDIR ON)
 if (UNIX)
-  add_definitions(-Wextra -Wall)
+  add_definitions (-Wextra -Wall)
 endif()
 
 # Ginga-related cmake's variables
@@ -35,10 +35,14 @@ add_definitions (-DWITH_PANGO=1 -DWITH_GSTREAMER=1)
 
 find_package (Lua REQUIRED)
 
-find_package (SDL2)
-find_package (OpenGL)
+option (WITH_CEF "Build with chromium embedded support." OFF)
+option (WITH_OPENGL "Build Ginga with opengl." OFF)
+option (WITH_RUNVIEW "Build nclcomposer's ginga plugin." OFF)
+option (WITH_OPENGL "Build nclcomposer's ginga plugin." ON)
 
-if (OPENGL_FOUND)
+if (WITH_OPENGL)
+  find_package (SDL2)
+  find_package (OpenGL)
   set (WITH_OPENGL ON)
 else ()
   set (WITH_OPENGL OFF) # OpenGL not found, turn it off
@@ -48,10 +52,6 @@ find_package(GTK3)
 if (GTK3_FOUND)
   set (WITH_GINGAGUI_GTK ON)
 endif()
-
-option (WITH_CEF "Build with chromium embedded support." OFF)
-option (WITH_OPENGL "Build Ginga with opengl." OFF)
-option (WITH_RUNVIEW "Build nclcomposer's ginga plugin." OFF)
 
 if (WITH_OPENGL)
   add_definitions (-DWITH_OPENGL=1)
@@ -78,6 +78,7 @@ ExternalProject_Get_Property (nclua_build install_dir)
 set (NCLUA_INCLUDE_DIRS "${install_dir}/include")
 set (NCLUA_LIBRARY "${install_dir}/lib/libnclua.a")
 link_directories ("${install_dir}/lib")
+add_definitions (-DWITH_NCLUA=1)
 #end NCLUA
 
 if (WITH_CEF) # Download, link, build with CEF
@@ -120,17 +121,16 @@ set (LIBGINGA_SOURCES
   ../lib/aux-ginga.cpp
   ../lib/aux-gl.cpp
 
-  ../lib/Action.cpp
   ../lib/Composition.cpp
-  ../lib/Condition.cpp
   ../lib/Context.cpp
+  ../lib/Document.cpp
   ../lib/Event.cpp
   ../lib/Formatter.cpp
   ../lib/Ginga.cpp
-  ../lib/Link.cpp
   ../lib/Media.cpp
   ../lib/MediaSettings.cpp
   ../lib/Object.cpp
+  ../lib/Parser.cpp
   ../lib/Predicate.cpp
   ../lib/Switch.cpp
 

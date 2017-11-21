@@ -331,7 +331,10 @@ show_historicbox ()
 
   GtkListBoxRow *row
       = gtk_list_box_get_selected_row (GTK_LIST_BOX (historicBox));
+
+#if GTK_CHECK_VERSION(3, 14, 0)
   gtk_list_box_unselect_row (GTK_LIST_BOX (historicBox), row);
+#endif
 }
 
 void
@@ -407,7 +410,7 @@ keyboard_callback (unused (GtkWidget *widget), GdkEventKey *e, gpointer type)
     case GDK_KEY_Escape: /* quit */
       if (isFullScreenMode)
         set_unfullscreen_mode ();
-      else if (inBigPictureMode)
+      else if (inBigPictureMode && (g_strcmp0 ((const char *)type, "press") != 0))
         destroy_bigpicture_window ();
       break;
     case GDK_KEY_Meta_L:
@@ -446,6 +449,8 @@ keyboard_callback (unused (GtkWidget *widget), GdkEventKey *e, gpointer type)
       key = "#";
       break;
     case GDK_KEY_Return:
+      if(inBigPictureMode)
+        play_application_in_bigpicture();  
       key = "ENTER";
       break;
     case GDK_KEY_F1:
@@ -536,7 +541,9 @@ create_window_components ()
                           gtk_label_get_text (GTK_LABEL (label)));
     }
 
+#if GTK_CHECK_VERSION(3, 14, 0)
   gtk_list_box_unselect_all (GTK_LIST_BOX (historicBox));
+#endif
   g_signal_connect (historicBox, "row-activated",
                     G_CALLBACK (select_historic_line), NULL);
   gtk_list_box_set_activate_on_single_click (GTK_LIST_BOX (historicBox),
