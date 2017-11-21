@@ -251,6 +251,107 @@ main (void)
 </ncl>\n\
 ");
 
+  XFAIL ("link: No such component", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+  <link xconnector='c'>\n\
+   <bind role='onBegin' component='x'/>\n\
+   <bind role='start' component='x'/>\n\
+  </link>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("link: No such component (ghost bind)", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+  <media id='x'/>\n\
+  <link xconnector='c'>\n\
+   <bind role='onBegin' component='x'/>\n\
+   <bind role='ghost' component='y'/>\n\
+   <bind role='start' component='x'/>\n\
+  </link>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("link: No such interface (area)", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+  <media id='x'/>\n\
+  <link xconnector='c'>\n\
+   <bind role='onBegin' component='x' interface='a'/>\n\
+   <bind role='start' component='x'/>\n\
+  </link>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("link: No such interface (property)", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='set' value='x'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+  <media id='x'/>\n\
+  <link xconnector='c'>\n\
+   <bind role='onBegin' component='x'/>\n\
+   <bind role='set' component='x' interface='a'/>\n\
+  </link>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("link: No such interface (ghost)", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='set' value='x'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+  <media id='x'/>\n\
+  <link xconnector='c'>\n\
+   <bind role='onBegin' component='x'/>\n\
+   <bind role='ghost' component='x'/>\n\
+   <bind role='set' component='x'/>\n\
+  </link>\n\
+ </body>\n\
+</ncl>\n\
+");
+
 
 // -------------------------------------------------------------------------
 // Region.
