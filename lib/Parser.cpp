@@ -116,6 +116,7 @@ typedef struct ParserState
   list<Predicate *> predStack;            // predicate stack
   struct                                  // current predicate data
   {
+    Predicate *pred;
     bool has_left;
     bool has_right;
     string left;
@@ -328,6 +329,8 @@ PARSER_POP_DECL  (region)
 PARSER_PUSH_DECL (descriptorParam)
 PARSER_PUSH_DECL (causalConnector)
 PARSER_POP_DECL  (causalConnector)
+PARSER_PUSH_DECL (compoundCondition)
+PARSER_POP_DECL  (compoundCondition)
 PARSER_PUSH_DECL (assessmentStatement)
 PARSER_POP_DECL  (assessmentStatement)
 PARSER_PUSH_DECL (attributeAssessment)
@@ -458,7 +461,7 @@ static map<string, ParserSyntaxElt> parser_syntax =
    {{"name", true, nullptr}}},
  },
  {"compoundCondition",
-  {nullptr, nullptr,
+  {parser_push_compoundCondition, parser_pop_compoundCondition,
    0,
    {"causalConnector", "compoundCondition"},
    {{"operator", false, nullptr}, // ignored
@@ -472,8 +475,7 @@ static map<string, ParserSyntaxElt> parser_syntax =
     {"isNegated", false, nullptr}}},
  },
  {"assessmentStatement",
-  {parser_push_assessmentStatement,
-   parser_pop_assessmentStatement,
+  {parser_push_assessmentStatement, parser_pop_assessmentStatement,
    0,
    {"compoundCondition", "compoundStatement"},
    {{"comparator", true, nullptr}}},
@@ -1262,6 +1264,40 @@ parser_pop_causalConnector (unused (ParserState *st),
 }
 
 
+// Parser <compoundCondition>.
+
+static bool
+parser_push_compoundCondition (ParserState *st,
+                               unused (xmlNode *node),
+                               unused (map<string, string> *attrs),
+                               unused (Object **result))
+{
+  Predicate *pred;
+
+  pred = new Predicate (Predicate::CONJUNCTION);
+  st->predStack.push_back (pred);
+
+  return true;
+}
+
+static bool
+parser_pop_compoundCondition (unused (ParserState *st),
+                              unused (xmlNode *node),
+                              unused (map<string, string> *attrs),
+                              unused (list<xmlNode *> *children),
+                              unused (Object *object))
+{
+  Predicate *pred;
+
+  g_assert (!st->predStack.empty ());
+  pred = st->predStack.back ();
+  st->predStack.pop_back ();
+  delete pred;
+
+  return true;
+}
+
+
 // Parse <assessmentStatement>.
 
 static bool
@@ -1271,6 +1307,8 @@ parser_push_assessmentStatement (ParserState *st, xmlNode *node,
 {
   string comp;
   Predicate::Test test;
+
+  Predicate *parent;
   Predicate *pred;
 
   comp = parser_attrmap_get (attrs, "comparator");
@@ -1290,28 +1328,25 @@ parser_push_assessmentStatement (ParserState *st, xmlNode *node,
     return ST_ERR_ELT_BAD_ATTR
       (st, node, "comparator", comp.c_str (), "no such comparator");
 
-  pred = new Predicate (Predicate::ATOM);
-  if (st->predStack.empty ())
+  g_assert (!st->predStack.empty ());
+  parent = st->predStack.back ();
+  g_assert_nonnull (parent);
+
+  switch (parent->getType ())
     {
-      st->predStack.push_back (pred);
-    }
-  else
-    {
-      Predicate *parent = st->predStack.back ();
-      g_assert_nonnull (parent);
-      switch (parent->getType ())
-        {
-        case Predicate::NEGATION:
-        case Predicate::CONJUNCTION:
-        case Predicate::DISJUNCTION:
-          break;
-        default:
-          g_assert_not_reached ();
-        }
-      parent->addChild (pred);
+    case Predicate::NEGATION:
+    case Predicate::CONJUNCTION:
+    case Predicate::DISJUNCTION:
+      break;
+    default:
+      g_assert_not_reached ();
     }
 
+  pred = new Predicate (Predicate::ATOM);
+  parent->addChild (pred);
+
   // Reset current predicate.
+  st->currentPred.pred = pred;
   st->currentPred.has_left = false;
   st->currentPred.has_right = false;
   st->currentPred.test = test;
@@ -1330,6 +1365,11 @@ parser_pop_assessmentStatement (ParserState *st, xmlNode *node,
 
   if (unlikely (!st->currentPred.has_right))
     return ST_ERR_ELT_MISSING_CHILD (st, node, "valueAssessment");
+
+  st->currentPred.pred->setTest
+    (st->currentPred.left,
+     st->currentPred.test,
+     st->currentPred.right);
 
   return true;
 }
@@ -1983,6 +2023,11 @@ processDoc (xmlDoc *xml, int width, int height, string *errmsg)
       tryset (errmsg, xstrstrip (st.errmsg));
       if (st.doc != nullptr)
         delete st.doc;
+      while (!st.predStack.empty ())
+        {
+          delete st.predStack.back ();
+          st.predStack.pop_back ();
+        }
       return nullptr;
     }
 

@@ -1403,6 +1403,7 @@ main (void)
 
     g_assert (m->getAttributionEvent ("focusIndex") != nullptr);
     g_assert (m->getProperty ("focusIndex") == "0");
+    delete doc;
   }
 
   // Success: Single media.
