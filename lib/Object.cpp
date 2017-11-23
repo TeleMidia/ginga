@@ -104,6 +104,12 @@ Object::addAlias (const string &alias)
   tryinsert (alias, _aliases, push_back);
 }
 
+const set<Event *> *
+Object::getEvents ()
+{
+  return &_events;
+}
+
 Event *
 Object::getEvent (Event::Type type, const string &id)
 {
