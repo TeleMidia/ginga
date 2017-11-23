@@ -282,8 +282,9 @@ typedef bool (ParserPopFunc) (ParserState *, xmlNode *,
 // Attribute info.
 typedef struct ParserSyntaxAttr
 {
-  string name;                  // attribute name
-  bool required;                // whether attribute is required
+  string name;                              // attribute name
+  bool required;                            // whether attribute is required
+  bool (*check) (const string &, string *); // syntax check function
 } ParserSyntaxAttr;
 
 // Element info.
@@ -304,6 +305,10 @@ typedef enum
 } ParserSyntaxFlag;
 
 // Forward declarations.
+#define PARSER_SYNTAX_ATTR_CHECK_DECL(attr)             \
+  static bool G_PASTE (parser_syntax_attr_check_, attr) \
+    (const string &, string *);
+
 #define PARSER_PUSH_DECL(elt)                           \
   static bool G_PASTE (parser_push_, elt)               \
     (ParserState *, xmlNode *, map<string, string> *,   \
@@ -313,6 +318,8 @@ typedef enum
   static bool G_PASTE (parser_pop_, elt)                \
     (ParserState *, xmlNode *, map<string, string> *,   \
      list<xmlNode *> *, Object *);
+
+PARSER_SYNTAX_ATTR_CHECK_DECL (id)
 
 PARSER_PUSH_DECL (ncl)
 PARSER_POP_DECL  (ncl)
@@ -339,17 +346,25 @@ PARSER_PUSH_DECL (linkParam)
 PARSER_PUSH_DECL (bind)
 PARSER_PUSH_DECL (bindParam)
 
+// Common attribute entries.
+#define PARSER_SYNTAX_ATTR_ID\
+  {"id", true, parser_syntax_attr_check_id}
+#define PARSER_SYNTAX_ATTR_OPT_ID\
+  {"id", false, parser_syntax_attr_check_id}
+#define PARSER_SYNTAX_ATTR_ROLE\
+  {"role", true, parser_syntax_attr_check_id}
+
 
 static map<string, ParserSyntaxElt> parser_syntax =
 {
- {"ncl",                        // element name
-  {parser_push_ncl,             // push function
-   parser_pop_ncl,              // pop function
-   0,                           // flags
-   {},                          // possible parents
-   {{"id", false},              // attributes (name, required)
-    {"title", false},
-    {"xmlns", false}}},
+ {"ncl",                                        // element name
+  {parser_push_ncl,                             // push function
+   parser_pop_ncl,                              // pop function
+   0,                                           // flags
+   {},                                          // possible parents
+   {PARSER_SYNTAX_ATTR_OPT_ID,                  // attributes
+    {"title", false, nullptr},
+    {"xmlns", false, nullptr}}},
  },
  //
  // Head.
@@ -363,159 +378,159 @@ static map<string, ParserSyntaxElt> parser_syntax =
   {nullptr, nullptr,
    0,
    {"head"},
-   {{"id", false},
-    {"device", false},
-    {"region", false}}},
+   {PARSER_SYNTAX_ATTR_OPT_ID,
+    {"device", false, nullptr},
+    {"region", false, nullptr}}},
  },
  {"region",
   {parser_push_region, parser_pop_region,
    PARSER_SYNTAX_FLAG_CACHE,
    {"region", "regionBase"},
-   {{"id", true},
-    {"title", false},
-    {"left", false},
-    {"right", false},
-    {"top", false},
-    {"bottom", false},
-    {"height", false},
-    {"width", false},
-    {"zIndex", false}}},
+   {PARSER_SYNTAX_ATTR_ID,
+    {"title", false, nullptr},
+    {"left", false, nullptr},
+    {"right", false, nullptr},
+    {"top", false, nullptr},
+    {"bottom", false, nullptr},
+    {"height", false, nullptr},
+    {"width", false, nullptr},
+    {"zIndex", false, nullptr}}},
  },
  {"descriptorBase",
   {nullptr, nullptr,
    0,
    {"head"},
-   {{"id", false}}},
+   {PARSER_SYNTAX_ATTR_OPT_ID}},
  },
  {"descriptor",
   {nullptr, nullptr,
    PARSER_SYNTAX_FLAG_CACHE,
    {"descriptorBase"},
-   {{"id", true},
-    {"left", false},
-    {"right", false},
-    {"top", false},
-    {"bottom", false},
-    {"height", false},
-    {"width", false},
-    {"zIndex", false},
-    {"region", false},
-    {"player", false},
-    {"explicitDur", false},
-    {"freeze", false},
-    {"moveLeft", false},
-    {"moveRight", false},
-    {"moveUp", false},
-    {"moveDown", false},
-    {"focusIndex", false},
-    {"focusBorderColor", false},
-    {"focusBorderWidth", false},
-    {"focusBorderTransparency", false},
-    {"focusSrc", false},
-    {"focusSelSrc", false},
-    {"selBorderColor", false},
-    {"transIn", false},
-    {"transOut", false}}},
+   {PARSER_SYNTAX_ATTR_ID,
+    {"left", false, nullptr},
+    {"right", false, nullptr},
+    {"top", false, nullptr},
+    {"bottom", false, nullptr},
+    {"height", false, nullptr},
+    {"width", false, nullptr},
+    {"zIndex", false, nullptr},
+    {"region", false, nullptr},
+    {"player", false, nullptr},
+    {"explicitDur", false, nullptr},
+    {"freeze", false, nullptr},
+    {"moveLeft", false, nullptr},
+    {"moveRight", false, nullptr},
+    {"moveUp", false, nullptr},
+    {"moveDown", false, nullptr},
+    {"focusIndex", false, nullptr},
+    {"focusBorderColor", false, nullptr},
+    {"focusBorderWidth", false, nullptr},
+    {"focusBorderTransparency", false, nullptr},
+    {"focusSrc", false, nullptr},
+    {"focusSelSrc", false, nullptr},
+    {"selBorderColor", false, nullptr},
+    {"transIn", false, nullptr},
+    {"transOut", false, nullptr}}},
  },
  {"descriptorParam",
   {parser_push_descriptorParam, nullptr,
    0,
    {"descriptor"},
-   {{"name", true},
-    {"value", true}}},
+   {{"name", true, nullptr},
+    {"value", true, nullptr}}},
  },
  {"connectorBase",
   {nullptr, nullptr,
    0,
    {"head"},
-   {{"id", false}}},
+   {PARSER_SYNTAX_ATTR_OPT_ID}},
  },
  {"causalConnector",
   {parser_push_causalConnector, parser_pop_causalConnector,
    PARSER_SYNTAX_FLAG_CACHE,
    {"connectorBase"},
-   {{"id", true}}},
+   {PARSER_SYNTAX_ATTR_ID}},
  },
  {"connectorParam",
   {nullptr, nullptr,
    0,
    {"causalConnector"},
-   {{"name", true}}},
+   {{"name", true, nullptr}}},
  },
  {"compoundCondition",
   {nullptr, nullptr,
    0,
    {"causalConnector", "compoundCondition"},
-   {{"operator", false},        // ignored
-    {"delay", false}}},         // ignored
+   {{"operator", false, nullptr}, // ignored
+    {"delay", false, nullptr}}},  // ignored
  },
  {"compoundStatement",
   {nullptr, nullptr,
    0,
    {"compoundCondition", "compoundStatement"},
-   {{"operator", true},
-    {"isNegated", false}}},
+   {{"operator", true, nullptr},
+    {"isNegated", false, nullptr}}},
  },
  {"assessmentStatement",
   {parser_push_assessmentStatement,
    parser_pop_assessmentStatement,
    0,
    {"compoundCondition", "compoundStatement"},
-   {{"comparator", true}}},
+   {{"comparator", true, nullptr}}},
  },
  {"attributeAssessment",
   {parser_push_attributeAssessment, nullptr,
    0,
    {"assessmentStatement"},
-   {{"role", true},
-    {"eventType", false},        // ignored
-    {"key", false},              // ignored
-    {"attributeType", false},    // ignored
-    {"offset", false}}},         // ignored
+   {PARSER_SYNTAX_ATTR_ROLE,
+    {"eventType", false, nullptr},     // ignored
+    {"key", false, nullptr},           // ignored
+    {"attributeType", false, nullptr}, // ignored
+    {"offset", false, nullptr}}},      // ignored
  },
  {"valueAssessment",
   {parser_push_valueAssessment, nullptr,
    0,
    {"assessmentStatement"},
-   {{"value", true}}},
+   {{"value", true, nullptr}}},
  },
  {"simpleCondition",
   {parser_push_simpleCondition, nullptr,
    0,
    {"causalConnector", "compoundCondition"},
-   {{"role", true},
-    {"eventType", false},
-    {"key", false},
-    {"transition", false},
-    {"delay", false},           // ignored
-    {"min", false},             // ignored
-    {"max", false},             // ignored
-    {"qualifier", false}}},     // ignored
+   {PARSER_SYNTAX_ATTR_ROLE,
+    {"eventType", false, nullptr},
+    {"key", false, nullptr},
+    {"transition", false, nullptr},
+    {"delay", false, nullptr},       // ignored
+    {"min", false, nullptr},         // ignored
+    {"max", false, nullptr},         // ignored
+    {"qualifier", false, nullptr}}}, // ignored
  },
  {"compoundAction",
   {nullptr, nullptr,
    0,
    {"causalConnector", "compoundAction"},
-   {{"operator", false},         // ignored
-    {"delay", false}}},           // ignored
+   {{"operator", false, nullptr}, // ignored
+    {"delay", false, nullptr}}},  // ignored
  },
  {"simpleAction",
   {parser_push_simpleAction, nullptr,
    0,
    {"causalConnector", "compoundAction"},
-   {{"role", true},
-    {"eventType", false},
-    {"actionType", false},
-    {"value", false},
-    {"delay", false},           // ignored
-    {"duration", false},        // ignored
-    {"min", false},             // ignored
-    {"max", false},             // ignored
-    {"min", false},             // ignored
-    {"qualifier", false},       // ignored
-    {"repeat", false},          // ignored
-    {"repeatDelay", false},     // ignored
-    {"by", false}}},            // ignored
+   {PARSER_SYNTAX_ATTR_ROLE,
+    {"eventType", false, nullptr},
+    {"actionType", false, nullptr},
+    {"value", false, nullptr},
+    {"delay", false, nullptr},       // ignored
+    {"duration", false, nullptr},    // ignored
+    {"min", false, nullptr},         // ignored
+    {"max", false, nullptr},         // ignored
+    {"min", false, nullptr},         // ignored
+    {"qualifier", false, nullptr},   // ignored
+    {"repeat", false, nullptr},      // ignored
+    {"repeatDelay", false, nullptr}, // ignored
+    {"by", false, nullptr}}},        // ignored
  },
  //
  // Body.
@@ -524,74 +539,74 @@ static map<string, ParserSyntaxElt> parser_syntax =
   {parser_push_context, parser_pop_context,
    0,
    {"ncl"},
-   {{"id", false}}},
+   {PARSER_SYNTAX_ATTR_OPT_ID}},
  },
  {"context",                    // -> Context
   {parser_push_context, parser_pop_context,
    PARSER_SYNTAX_FLAG_CACHE,
    {"body", "context"},
-   {{"id", true}}},
+   {PARSER_SYNTAX_ATTR_ID}},
  },
  {"port",
   {parser_push_port, nullptr,
    PARSER_SYNTAX_FLAG_CACHE,
    {"body", "context"},
-   {{"id", true},
-    {"component", true},
-    {"interface", false}}},
+   {PARSER_SYNTAX_ATTR_ID,
+    {"component", true, nullptr},
+    {"interface", false, nullptr}}},
  },
  {"media",                      // -> Media
   {parser_push_media, nullptr,
    PARSER_SYNTAX_FLAG_CACHE,
    {"body", "context", "switch"},
-   {{"id", true},
-    {"src", false},
-    {"type", false},
-    {"descriptor", false}}},
+   {PARSER_SYNTAX_ATTR_ID,
+    {"src", false, nullptr},
+    {"type", false, nullptr},
+    {"descriptor", false, nullptr}}},
  },
  {"area",
   {parser_push_area, nullptr,
    0,
    {"media"},
-   {{"id", true},
-    {"begin", false},
-    {"end", false}}},
+   {PARSER_SYNTAX_ATTR_ID,
+    {"begin", false, nullptr},
+    {"end", false, nullptr}}},
  },
  {"property",
   {parser_push_property, nullptr,
    0,
    {"body", "context", "media"},
-   {{"name", true},
-    {"value", false}}},
+   {{"name", true, nullptr},
+    {"value", false, nullptr}}},
  },
  {"link",
   {parser_push_link, parser_pop_link,
    PARSER_SYNTAX_FLAG_CACHE | PARSER_SYNTAX_FLAG_GEN_ID,
    {"body", "context"},
-   {{"id", false},
-    {"xconnector", true}}},
+   {PARSER_SYNTAX_ATTR_OPT_ID,
+    {"xconnector", true, nullptr}}},
  },
  {"linkParam",
   {parser_push_linkParam, nullptr,
    0,
    {"link"},
-   {{"name", true},
-    {"value", true}}}
+   {{"name", true, nullptr},
+    {"value", true, nullptr}}}
  },
  {"bind",
   {parser_push_bind, nullptr,
    0,
    {"link"},
-   {{"role", true},
-    {"component", true},
-    {"interface", false}}},
+   {PARSER_SYNTAX_ATTR_ROLE,
+    {"component", true, nullptr},
+    {"interface", false, nullptr}}},
  },
  {"bindParam",
   {parser_push_bindParam, nullptr,
    0,
    {"bind"},
-   {{"name", true},
-    {"value", true}}},
+   {{"name", true, nullptr},
+    {"value", true, nullptr}}},
  },
 };
 
@@ -620,10 +635,16 @@ parser_syntax_get_possible_children (const string &tag)
 
 // Checks if id is valid.
 static bool
-parser_syntax_check_id (const string &id, char *forbidden)
+parser_syntax_attr_check_id (const string &id, string *errmsg)
 {
   const char *str;
   char c;
+
+  if (id == "")
+    {
+      tryset (errmsg, "must not be empty");
+      return false;
+    }
 
   str = id.c_str ();
   while ((c = *str++) != '\0')
@@ -631,7 +652,7 @@ parser_syntax_check_id (const string &id, char *forbidden)
       if (!(g_ascii_isalnum (c) || c == '-' || c == '_'
             || c == ':' || c == '.'))
         {
-          tryset (forbidden, c);
+          tryset (errmsg, xstrbuild ("must not contain '%c'", c));
           return false;
         }
     }
@@ -1317,26 +1338,17 @@ parser_pop_assessmentStatement (ParserState *st, xmlNode *node,
 // Parse <attributeAssessment>.
 
 static bool
-parser_push_attributeAssessment (ParserState *st, xmlNode *node,
+parser_push_attributeAssessment (ParserState *st,
+                                 unused (xmlNode *node),
                                  map<string, string> *attrs,
                                  unused (Object **result))
 {
   string role;
 
-  if (st->currentPred.has_left && st->currentPred.has_right)
+  if (unlikely (st->currentPred.has_left && st->currentPred.has_right))
     return true;                // nothing to do
 
   role = parser_attrmap_get (attrs, "role");
-  if (unlikely (role == ""))
-    return ST_ERR_ELT_BAD_ATTR
-      (st, node, "role", role.c_str (), "empty role");
-
-  char forbidden;
-  if (unlikely (!parser_syntax_check_id (role, &forbidden)))
-    return ST_ERR_ELT_BAD_ATTR
-      (st, node, "role", role.c_str (),
-       xstrbuild ("must not contain '%c'", forbidden).c_str ());
-
   if (!st->currentPred.has_left)
     {
       st->currentPred.left = "$" + role;
@@ -1360,6 +1372,23 @@ parser_push_valueAssessment (unused (ParserState *st),
                              unused (map<string, string> *attrs),
                              unused (Object **result))
 {
+  string value;
+
+  if (unlikely (st->currentPred.has_left && st->currentPred.has_right))
+    return true;                // nothing to do
+
+  value = parser_attrmap_get (attrs, "value");
+  if (!st->currentPred.has_left)
+    {
+      st->currentPred.left = value;
+      st->currentPred.has_left = true;
+    }
+  else
+    {
+      st->currentPred.right = value;
+      st->currentPred.has_right = true;
+    }
+
   return true;
 }
 
@@ -1376,10 +1405,6 @@ parser_push_simpleCondition (ParserState *st, xmlNode *node,
   string key;
 
   role.role = parser_attrmap_get (attrs, "role");
-  if (unlikely (role.role == ""))
-    return ST_ERR_ELT_BAD_ATTR (st, node, "role", role.role.c_str (),
-                                "empty role");
-
   role.condition = (toString (node->name) == "simpleCondition");
   transition = (role.condition) ? "transition" : "actionType";
 
@@ -1824,6 +1849,8 @@ processElt (ParserState *st, xmlNode *node)
   for (auto attr_syntax: elt_syntax->attributes)
     {
       string value;
+      string explain;
+
       if (!xmlGetPropAsString (node, attr_syntax.name, &value))
         {
           if (attr_syntax.name == "id"
@@ -1841,6 +1868,14 @@ processElt (ParserState *st, xmlNode *node)
           goto done;
         }
       (*attrs)[attr_syntax.name] = value;
+      if (unlikely (attr_syntax.check != nullptr
+                    && !attr_syntax.check (value, &explain)))
+        {
+          status = ST_ERR_ELT_BAD_ATTR
+            (st, node, attr_syntax.name.c_str (),
+             value.c_str (), explain.c_str ());
+          goto done;
+        }
     }
 
   // Check for unknown attributes.
@@ -1858,23 +1893,8 @@ processElt (ParserState *st, xmlNode *node)
   if (parser_attrmap_index (attrs, "id", nullptr))
     {
       string id;
-      char forbidden;
 
       id = parser_attrmap_get (attrs, "id");
-      if (unlikely (id == ""))
-        {
-          status = ST_ERR_ELT_BAD_ATTR
-            (st, node, "id", id.c_str (), "empty id");
-          goto done;
-        }
-
-      if (unlikely (!parser_syntax_check_id (id, &forbidden)))
-        {
-          string explain = xstrbuild ("must not contain '%c'", forbidden);
-          status = ST_ERR_ELT_BAD_ATTR
-            (st, node, "id", id.c_str (), explain.c_str ());
-          goto done;
-        }
 
       // Check if id is unique.
       if (unlikely (st->doc->getObjectByIdOrAlias (id)))
