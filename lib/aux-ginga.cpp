@@ -388,7 +388,7 @@ xstrcasecmp (const string &s1, const string &s2)
 }
 
 /**
- * @brief Tests string string prefix.
+ * @brief Tests string prefix.
  * @param s String.
  * @param prefix Prefix.
  * @return True if successful, or false otherwise.
@@ -400,7 +400,7 @@ xstrhasprefix (const string &s, const string &prefix)
 }
 
 /**
- * @brief Tests if string suffix.
+ * @brief Tests string suffix.
  * @param s String.
  * @param suffix Suffix.
  * @return True if successful, or false otherwise.

@@ -113,6 +113,7 @@ typedef struct ParserState
   // connector cache
   map<string, ParserConnCache> connCache; // cached connectors
   ParserConnCache *currentConn;           // current connector
+  Predicate *predStack;                   // predicate stack
 
   // link cache
   map<string, ParserLinkCache> linkCache; // cached links
@@ -383,10 +384,26 @@ static map<string, ParserSyntaxElt> parser_syntax =
     {"right", false},
     {"top", false},
     {"bottom", false},
-    {"width", false},
     {"height", false},
+    {"width", false},
     {"zIndex", false},
-    {"region", false}}},
+    {"region", false},
+    {"player", false},
+    {"explicitDur", false},
+    {"freeze", false},
+    {"moveLeft", false},
+    {"moveRight", false},
+    {"moveUp", false},
+    {"moveDown", false},
+    {"focusIndex", false},
+    {"focusBorderColor", false},
+    {"focusBorderWidth", false},
+    {"focusBorderTransparency", false},
+    {"focusSrc", false},
+    {"focusSelSrc", false},
+    {"selBorderColor", false},
+    {"transIn", false},
+    {"transOut", false}}},
  },
  {"descriptorParam",
   {parser_push_descriptorParam, nullptr,
@@ -413,6 +430,26 @@ static map<string, ParserSyntaxElt> parser_syntax =
    {"causalConnector"},
    {{"name", true}}},
  },
+ {"compoundCondition",
+  {nullptr, nullptr,
+   0,
+   {"causalConnector", "compoundCondition"},
+   {{"operator", false},        // ignored
+    {"delay", false}}},         // ignored
+ },
+ {"compoundStatement",
+  {nullptr, nullptr,
+   0,
+   {"compoundCondition", "compoundStatement"},
+   {{"operator", true},
+    {"isNegated", false}}},
+ },
+ {"assessmentStatement",
+  {nullptr, nullptr,
+   0,
+   {"compoundCondition", "compoundStatement"},
+   {{"comparator", true}}},
+ },
  {"simpleCondition",
   {parser_push_simpleCondition, nullptr,
    0,
@@ -425,6 +462,13 @@ static map<string, ParserSyntaxElt> parser_syntax =
     {"min", false},             // ignored
     {"max", false},             // ignored
     {"qualifier", false}}},     // ignored
+ },
+ {"compoundAction",
+  {nullptr, nullptr,
+   0,
+   {"causalConnector", "compoundAction"},
+   {{"operator", false},         // ignored
+    {"delay", false}}},           // ignored
  },
  {"simpleAction",
   {parser_push_simpleAction, nullptr,
@@ -809,8 +853,9 @@ parser_pop_ncl (unused (ParserState *st), unused (xmlNode *node),
             {
               if (it.first == "id" || it.first == "region")
                 continue;           // nothing to do
-              if (media->getProperty (it.first) != "")
+              if (media->getAttributionEvent (it.first) != nullptr)
                 continue;           // already defined
+              media->addAttributionEvent (it.first);
               media->setProperty (it.first, it.second);
             }
         }
@@ -884,7 +929,8 @@ parser_pop_ncl (unused (ParserState *st), unused (xmlNode *node),
                     {
                       ST_ERR_ELT_BAD_ATTR (st, bind.node, "interface",
                                            bind.interface.c_str (),
-                                           "no such interface");
+                                           "ghost bind requires "
+                                           "nonempty interface");
                       return false;
                     }
                   ghosts[bind.role]
@@ -935,42 +981,59 @@ parser_pop_ncl (unused (ParserState *st), unused (xmlNode *node),
                 {
                 case Event::PRESENTATION:
                   if (bind->interface == "")
-                    evt = obj->getLambda ();
+                    {
+                      evt = obj->getLambda ();
+                      g_assert_nonnull (evt);
+                    }
                   else
-                    evt = obj->getPresentationEvent (bind->interface);
+                    {
+                      evt = obj->getPresentationEvent (bind->interface);
+                      if (unlikely (evt == nullptr))
+                        {
+                          string extra = "no such area in object '"
+                            + obj->getId () + "'";
+                          ST_ERR_ELT_BAD_ATTR (st, bind->node, "interface",
+                                               bind->interface.c_str (),
+                                               extra.c_str ());
+                          return false;
+                        }
+                    }
                   break;
+
                 case Event::ATTRIBUTION:
-                  if (bind->interface == "")
-                    break;    // fail
-
-                  evt = obj->getAttributionEvent (bind->interface);
-                  if (evt == nullptr)
-                    break;    // fail
-
+                  if (unlikely (bind->interface == ""
+                      || ((evt = obj->getAttributionEvent (bind->interface))
+                          == nullptr)))
+                    {
+                      string extra = "no such property in object '"
+                        + obj->getId () + "'";
+                      ST_ERR_ELT_BAD_ATTR (st, bind->node, "interface",
+                                           bind->interface.c_str (),
+                                           extra.c_str ());
+                      return false;
+                    }
                   if (role->condition)
                     {
                       string value;
                       value = role->value;
                       parser_syntax_parse_parameter (value, &bind->params,
                                                      &link->params, &value);
-                      TRACE ("SETTING VALUE TO %s", value.c_str ());
+                    }
+                  else
+                    {
+                      g_assert_not_reached ();
                     }
                   break;
+
                 case Event::SELECTION:
                   g_assert_not_reached ();
                   break;
+
                 default:
                   g_assert_not_reached ();
                 }
 
-              if (unlikely (evt == nullptr))
-                {
-                  ST_ERR_ELT_BAD_ATTR (st, bind->node, "interface",
-                                       bind->interface.c_str (),
-                                       "no such interface");
-                  return false;
-                }
-
+              g_assert_nonnull (evt);
             }
         }
     }
@@ -1138,42 +1201,54 @@ parser_push_simpleCondition (ParserState *st, xmlNode *node,
                              unused (Object **result))
 {
   ParserConnRole role;
-  string eventType;
+  string transition;
   string key;
 
   role.role = parser_attrmap_get (attrs, "role");
   role.condition = (toString (node->name) == "simpleCondition");
 
-  eventType = (role.condition) ? "eventType" : "actionType";
+  transition = (role.condition) ? "transition" : "actionType";
   if (!parser_syntax_parse_role (role.role, &role.eventType,
                                  &role.transition))
     {
       string str;
 
-      if (unlikely (!parser_attrmap_index (attrs, eventType, &str)))
-        return ST_ERR_ELT_MISSING_ATTR (st, node, eventType.c_str ());
+      if (unlikely (!parser_attrmap_index (attrs, "eventType", &str)))
+        return ST_ERR_ELT_MISSING_ATTR (st, node, "eventType");
       if (unlikely (!parser_syntax_parse_event_type (str, &role.eventType)))
         return ST_ERR_ELT_BAD_ATTR
-          (st, node, eventType.c_str (), str.c_str (), "");
+          (st, node, "eventType", str.c_str (), "no such event type");
 
-      if (unlikely (!parser_attrmap_index (attrs, "transition", &str)))
-        return ST_ERR_ELT_MISSING_ATTR (st, node, "transition");
+      if (unlikely (!parser_attrmap_index (attrs, transition, &str)))
+        return ST_ERR_ELT_MISSING_ATTR (st, node, transition.c_str ());
       if (unlikely (!parser_syntax_parse_transition (str,
                                                      &role.transition)))
         {
-          return ST_ERR_ELT_BAD_ATTR
-            (st, node, "transition", str.c_str (), "");
+          return ST_ERR_ELT_BAD_ATTR (st, node, transition.c_str (),
+                                      str.c_str (), "no such transition");
         }
     }
-  else
+  else                          // reserved role
     {
       string str;
-      if (unlikely (parser_attrmap_index (attrs, eventType, &str)))
+
+      if (unlikely (parser_attrmap_index (attrs, "eventType", &str)))
         return ST_ERR_ELT_BAD_ATTR
-          (st, node, eventType.c_str (), str.c_str (), "role is reserved");
-      if (unlikely (parser_attrmap_index (attrs, "transition", &str)))
+          (st, node, "eventType", str.c_str (),
+           ("role '" + role.role
+            +"' is reserved and cannot be overwritten").c_str ());
+
+      if (unlikely (parser_attrmap_index (attrs, transition, &str)))
         return ST_ERR_ELT_BAD_ATTR
-          (st, node, "transition", str.c_str (), "role is reserved");
+          (st, node, transition.c_str (), str.c_str (),
+           ("role '" + role.role
+            + "' is reserved and cannot be overwritten").c_str ());
+    }
+
+  if (!role.condition && role.eventType == Event::ATTRIBUTION)
+    {
+      if (unlikely (!parser_attrmap_index (attrs, "value", &role.value)))
+        return ST_ERR_ELT_MISSING_ATTR (st, node, "value");
     }
 
   role.predicate = nullptr;
@@ -1210,14 +1285,18 @@ parser_push_context (ParserState *st, xmlNode *node,
                      map<string, string> *attrs, Object **result)
 {
   Object *ctx;
-  string id;
   list<string> *ports;
 
   if (toString (node->name) == "body")
     {
+      string id;
+
       g_assert (st->objStack.size () == 1);
       ctx = cast (Context *, st->objStack.back ());
       g_assert_nonnull (ctx);
+
+      if (parser_attrmap_index (attrs, "id", &id))
+        ctx->addAlias (id);
     }
   else
     {
@@ -1270,7 +1349,7 @@ parser_pop_context (unused (ParserState *st), unused (xmlNode *node),
         {
           status = ST_ERR_ELT_BAD_ATTR
             (st, entry->node, "component", comp_id.c_str (),
-             "no such component in scope");
+             "no such object in scope");
           goto done;
         }
 
@@ -1285,7 +1364,8 @@ parser_pop_context (unused (ParserState *st), unused (xmlNode *node),
             {
               status = ST_ERR_ELT_BAD_ATTR
                 (st, entry->node, "interface", iface_id.c_str (),
-                 "no such interface");
+                 ("no such interface in object '"
+                  + comp_id + "'").c_str ());
               goto done;
             }
         }
@@ -1332,7 +1412,9 @@ parser_push_media (ParserState *st, unused (xmlNode *node),
   if (parser_attrmap_index (attrs, "type", &type)
       && type == "application/x-ginga-settings")
     {
-      media = new MediaSettings (id);
+      media = st->doc->getSettings ();
+      g_assert_nonnull (media);
+      media->addAlias (id);
     }
   else
     {
@@ -1348,8 +1430,8 @@ parser_push_media (ParserState *st, unused (xmlNode *node),
           src = xpathbuildabs (dir, src);
         }
       media = new Media (id, type, src);
+      g_assert_nonnull (media);
     }
-  g_assert_nonnull (media);
 
   parent = cast (Composition *, st->objStack.back ());
   g_assert_nonnull (parent);
@@ -1704,7 +1786,7 @@ processDoc (xmlDoc *xml, int width, int height, string *errmsg)
 
   if (!processElt (&st, root))
     {
-      tryset (errmsg, st.errmsg);
+      tryset (errmsg, xstrstrip (st.errmsg));
       if (st.doc != nullptr)
         delete st.doc;
       return nullptr;
@@ -1731,7 +1813,7 @@ Parser::parseBuffer (const void *buf, size_t size,
     {
       xmlError *err = xmlGetLastError ();
       g_assert_nonnull (err);
-      tryset (errmsg, "XML error: " + string (err->message));
+      tryset (errmsg, "XML error: " + xstrstrip (string (err->message)));
       return nullptr;
     }
 
@@ -1752,7 +1834,7 @@ Parser::parseFile (const string &path, int width, int height,
     {
       xmlError *err = xmlGetLastError ();
       g_assert_nonnull (err);
-      tryset (errmsg, "XML error: " + string (err->message));
+      tryset (errmsg, "XML error: " + xstrstrip (string (err->message)));
       return nullptr;
     }
 
