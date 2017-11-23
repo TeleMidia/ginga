@@ -114,6 +114,10 @@ main (void)
          "<ncl>: Unknown attribute 'unknown'",
          "<ncl unknown='unknown'/>");
 
+  XFAIL ("ncl: Empty id",
+         "<ncl>: Bad value '' for attribute 'id' (empty id)",
+         "<ncl id=''/>");
+
   XFAIL ("ncl: Bad id",
          "<ncl>: Bad value '@' for attribute 'id' (must not contain '@')",
          "<ncl id='@'/>");
@@ -276,6 +280,39 @@ main (void)
 </ncl>\n\
 ");
 
+  XFAIL ("causalConnector: Missing condition",
+         "<causalConnector>: Missing child <simpleCondition>", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <compoundCondition/>\n\
+    <compoundAction/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("causalConnector: Missing condition",
+         "<causalConnector>: Missing child <simpleCondition>", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <compoundCondition/>\n\
+    <compoundCondition/>\n\
+    <compoundAction/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
   XFAIL ("causalConnector: Missing action",
          "<causalConnector>: Missing child <simpleAction>", "\
 <ncl>\n\
@@ -319,6 +356,22 @@ main (void)
   <connectorBase>\n\
    <causalConnector id='c'>\n\
     <simpleCondition/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleCondition: Bad role",
+         "<simpleCondition>: Bad value '' for attribute 'role' "
+         "(empty role)", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role=''/>\n\
    </causalConnector>\n\
   </connectorBase>\n\
  </head>\n\
@@ -426,6 +479,93 @@ main (void)
 
 
 // -------------------------------------------------------------------------
+// <assessmentStatement>
+// -------------------------------------------------------------------------
+
+  XFAIL ("assessmentStatement: Missing comparator",
+         "<assessmentStatement>: Missing attribute 'comparator'", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <compoundCondition>\n\
+     <assessmentStatement/>\n\
+    </compoundCondition>\n\
+    <compoundAction/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("assessmentStatement: Missing child",
+         "<assessmentStatement>: Missing child <attributeAssessment>", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <compoundCondition>\n\
+     <assessmentStatement comparator='eq'/>\n\
+    </compoundCondition>\n\
+    <compoundAction/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+
+// -------------------------------------------------------------------------
+// <attributeAssessment>
+// -------------------------------------------------------------------------
+
+  XFAIL ("attributeAssessment: Missing role",
+         "<attributeAssessment>: Missing attribute 'role'", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <compoundCondition>\n\
+     <assessmentStatement comparator='eq'>\n\
+      <attributeAssessment/>\n\
+     </assessmentStatement>\n\
+    </compoundCondition>\n\
+    <compoundAction/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("attributeAssessment: Bad role",
+         "<attributeAssessment>: Bad value '' for attribute 'role' "
+         "(empty role)", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <compoundCondition>\n\
+     <assessmentStatement comparator='eq'>\n\
+      <attributeAssessment role=''/>\n\
+     </assessmentStatement>\n\
+    </compoundCondition>\n\
+    <compoundAction/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+
+// -------------------------------------------------------------------------
 // <simpleAction>
 // -------------------------------------------------------------------------
 
@@ -437,6 +577,23 @@ main (void)
    <causalConnector id='c'>\n\
     <simpleCondition role='onBegin'/>\n\
     <simpleAction/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Bad role",
+         "<simpleAction>: Bad value '' for attribute 'role' "
+         "(empty role)", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role=''/>\n\
    </causalConnector>\n\
   </connectorBase>\n\
  </head>\n\

@@ -113,7 +113,15 @@ typedef struct ParserState
   // connector cache
   map<string, ParserConnCache> connCache; // cached connectors
   ParserConnCache *currentConn;           // current connector
-  Predicate *predStack;                   // predicate stack
+  list<Predicate *> predStack;            // predicate stack
+  struct                                  // current predicate data
+  {
+    bool has_left;
+    bool has_right;
+    string left;
+    string right;
+    Predicate::Test test;
+  } currentPred;
 
   // link cache
   map<string, ParserLinkCache> linkCache; // cached links
@@ -313,6 +321,10 @@ PARSER_POP_DECL  (region)
 PARSER_PUSH_DECL (descriptorParam)
 PARSER_PUSH_DECL (causalConnector)
 PARSER_POP_DECL  (causalConnector)
+PARSER_PUSH_DECL (assessmentStatement)
+PARSER_POP_DECL  (assessmentStatement)
+PARSER_PUSH_DECL (attributeAssessment)
+PARSER_PUSH_DECL (valueAssessment)
 PARSER_PUSH_DECL (simpleCondition)
 PARSER_PUSH_DECL (simpleAction)
 PARSER_PUSH_DECL (context)
@@ -445,10 +457,27 @@ static map<string, ParserSyntaxElt> parser_syntax =
     {"isNegated", false}}},
  },
  {"assessmentStatement",
-  {nullptr, nullptr,
+  {parser_push_assessmentStatement,
+   parser_pop_assessmentStatement,
    0,
    {"compoundCondition", "compoundStatement"},
    {{"comparator", true}}},
+ },
+ {"attributeAssessment",
+  {parser_push_attributeAssessment, nullptr,
+   0,
+   {"assessmentStatement"},
+   {{"role", true},
+    {"eventType", false},        // ignored
+    {"key", false},              // ignored
+    {"attributeType", false},    // ignored
+    {"offset", false}}},         // ignored
+ },
+ {"valueAssessment",
+  {parser_push_valueAssessment, nullptr,
+   0,
+   {"assessmentStatement"},
+   {{"value", true}}},
  },
  {"simpleCondition",
   {parser_push_simpleCondition, nullptr,
@@ -587,6 +616,26 @@ parser_syntax_get_possible_children (const string &tag)
       if (parent == tag)
         result[it.first] = true;
   return result;
+}
+
+// Checks if id is valid.
+static bool
+parser_syntax_check_id (const string &id, char *forbidden)
+{
+  const char *str;
+  char c;
+
+  str = id.c_str ();
+  while ((c = *str++) != '\0')
+    {
+      if (!(g_ascii_isalnum (c) || c == '-' || c == '_'
+            || c == ':' || c == '.'))
+        {
+          tryset (forbidden, c);
+          return false;
+        }
+    }
+  return true;
 }
 
 // Parses "role" attribute.
@@ -732,7 +781,6 @@ parser_syntax_parse_parameter (const string &value,
 
   return false;
 }
-
 
 
 // Attribute map helper functions.
@@ -1193,6 +1241,129 @@ parser_pop_causalConnector (unused (ParserState *st),
 }
 
 
+// Parse <assessmentStatement>.
+
+static bool
+parser_push_assessmentStatement (ParserState *st, xmlNode *node,
+                                 map<string, string> *attrs,
+                                 unused (Object **result))
+{
+  string comp;
+  Predicate::Test test;
+  Predicate *pred;
+
+  comp = parser_attrmap_get (attrs, "comparator");
+  if (comp == "eq")
+    test = Predicate::EQ;
+  else if (comp == "ne")
+    test = Predicate::NE;
+  else if (comp == "lt")
+    test = Predicate::LT;
+  else if (comp == "lte")
+    test = Predicate::LE;
+  else if (comp == "gt")
+    test = Predicate::GT;
+  else if (comp == "gte")
+    test = Predicate::GE;
+  else
+    return ST_ERR_ELT_BAD_ATTR
+      (st, node, "comparator", comp.c_str (), "no such comparator");
+
+  pred = new Predicate (Predicate::ATOM);
+  if (st->predStack.empty ())
+    {
+      st->predStack.push_back (pred);
+    }
+  else
+    {
+      Predicate *parent = st->predStack.back ();
+      g_assert_nonnull (parent);
+      switch (parent->getType ())
+        {
+        case Predicate::NEGATION:
+        case Predicate::CONJUNCTION:
+        case Predicate::DISJUNCTION:
+          break;
+        default:
+          g_assert_not_reached ();
+        }
+      parent->addChild (pred);
+    }
+
+  // Reset current predicate.
+  st->currentPred.has_left = false;
+  st->currentPred.has_right = false;
+  st->currentPred.test = test;
+
+  return true;
+}
+
+static bool
+parser_pop_assessmentStatement (ParserState *st, xmlNode *node,
+                                unused (map<string, string> *attrs),
+                                unused (list<xmlNode *> *children),
+                                unused (Object *object))
+{
+  if (unlikely (!st->currentPred.has_left))
+    return ST_ERR_ELT_MISSING_CHILD (st, node, "attributeAssessment");
+
+  if (unlikely (!st->currentPred.has_right))
+    return ST_ERR_ELT_MISSING_CHILD (st, node, "valueAssessment");
+
+  return true;
+}
+
+
+// Parse <attributeAssessment>.
+
+static bool
+parser_push_attributeAssessment (ParserState *st, xmlNode *node,
+                                 map<string, string> *attrs,
+                                 unused (Object **result))
+{
+  string role;
+
+  if (st->currentPred.has_left && st->currentPred.has_right)
+    return true;                // nothing to do
+
+  role = parser_attrmap_get (attrs, "role");
+  if (unlikely (role == ""))
+    return ST_ERR_ELT_BAD_ATTR
+      (st, node, "role", role.c_str (), "empty role");
+
+  char forbidden;
+  if (unlikely (!parser_syntax_check_id (role, &forbidden)))
+    return ST_ERR_ELT_BAD_ATTR
+      (st, node, "role", role.c_str (),
+       xstrbuild ("must not contain '%c'", forbidden).c_str ());
+
+  if (!st->currentPred.has_left)
+    {
+      st->currentPred.left = "$" + role;
+      st->currentPred.has_left = true;
+    }
+  else
+    {
+      st->currentPred.right = "$" + role;
+      st->currentPred.has_right = true;
+    }
+
+  return true;
+}
+
+
+// Parse <valueAssessment>.
+
+static bool
+parser_push_valueAssessment (unused (ParserState *st),
+                             unused (xmlNode *node),
+                             unused (map<string, string> *attrs),
+                             unused (Object **result))
+{
+  return true;
+}
+
+
 // Parse <simpleCondition>.
 
 static bool
@@ -1205,9 +1376,13 @@ parser_push_simpleCondition (ParserState *st, xmlNode *node,
   string key;
 
   role.role = parser_attrmap_get (attrs, "role");
-  role.condition = (toString (node->name) == "simpleCondition");
+  if (unlikely (role.role == ""))
+    return ST_ERR_ELT_BAD_ATTR (st, node, "role", role.role.c_str (),
+                                "empty role");
 
+  role.condition = (toString (node->name) == "simpleCondition");
   transition = (role.condition) ? "transition" : "actionType";
+
   if (!parser_syntax_parse_role (role.role, &role.eventType,
                                  &role.transition))
     {
@@ -1683,23 +1858,22 @@ processElt (ParserState *st, xmlNode *node)
   if (parser_attrmap_index (attrs, "id", nullptr))
     {
       string id;
-      const char *str;
-      char c;
+      char forbidden;
 
       id = parser_attrmap_get (attrs, "id");
-
-      // Check if id is valid.
-      str = id.c_str ();
-      while ((c = *str++) != '\0')
+      if (unlikely (id == ""))
         {
-          if (unlikely (!(isalnum (c) || c == '-' || c == '_'
-                          || c == ':' || c == '.')))
-            {
-              string explain = xstrbuild ("must not contain '%c'", c);
-              status = ST_ERR_ELT_BAD_ATTR
-                (st, node, "id", id.c_str (), explain.c_str ());
-              goto done;
-            }
+          status = ST_ERR_ELT_BAD_ATTR
+            (st, node, "id", id.c_str (), "empty id");
+          goto done;
+        }
+
+      if (unlikely (!parser_syntax_check_id (id, &forbidden)))
+        {
+          string explain = xstrbuild ("must not contain '%c'", forbidden);
+          status = ST_ERR_ELT_BAD_ATTR
+            (st, node, "id", id.c_str (), explain.c_str ());
+          goto done;
         }
 
       // Check if id is unique.
