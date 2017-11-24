@@ -148,6 +148,7 @@ typedef struct ParserState
   }                                             \
   G_STMT_END
 
+// Sets parser state error message.
 static inline G_GNUC_PRINTF (2,3) void
 _st_err (ParserState *st, const char *fmt, ...)
 {
@@ -206,6 +207,31 @@ static string
 st_gen_id (ParserState *st)
 {
   return xstrbuild ("__unamed-%d__", st->genid++);
+}
+
+// Pushes object onto stack.
+static void
+st_obj_stack_push (ParserState *st, Object *obj)
+{
+  g_assert_nonnull (obj);
+  st->objStack.push_back (obj);
+}
+
+// Gets object on top of stack.
+static Object *
+st_obj_stack_peek (ParserState *st)
+{
+  g_assert (!st->objStack.empty ());
+  return st->objStack.back ();
+}
+
+// Pops object from stack.
+static Object *
+st_obj_stack_pop (ParserState *st)
+{
+  Object *obj = st_obj_stack_peek (st);
+  st->objStack.pop_back ();
+  return obj;
 }
 
 // Index element cache by id.
@@ -275,11 +301,10 @@ st_link_cache_index (ParserState *st, const string &id)
 
 // Element push function.
 typedef bool (ParserPushFunc) (ParserState *, xmlNode *,
-                               map<string, string> *, Object **);
+                               map<string, string> *);
 // Element pop function.
 typedef bool (ParserPopFunc) (ParserState *, xmlNode *,
-                              map<string, string> *, list<xmlNode *> *,
-                              Object *);
+                              map<string, string> *, list<xmlNode *> *);
 // Attribute info.
 typedef struct ParserSyntaxAttr
 {
@@ -312,13 +337,13 @@ typedef enum
 
 #define PARSER_PUSH_DECL(elt)                           \
   static bool G_PASTE (parser_push_, elt)               \
-    (ParserState *, xmlNode *, map<string, string> *,   \
-     Object **);
+    (ParserState *, xmlNode *, map<string, string> *);  \
+
 
 #define PARSER_POP_DECL(elt)                            \
   static bool G_PASTE (parser_pop_, elt)                \
     (ParserState *, xmlNode *, map<string, string> *,   \
-     list<xmlNode *> *, Object *);
+     list<xmlNode *> *);
 
 PARSER_SYNTAX_ATTR_CHECK_DECL (id)
 
@@ -341,6 +366,7 @@ PARSER_PUSH_DECL (context)
 PARSER_PUSH_DECL (port)
 PARSER_POP_DECL  (context)
 PARSER_PUSH_DECL (media)
+PARSER_POP_DECL  (media)
 PARSER_PUSH_DECL (area)
 PARSER_PUSH_DECL (property)
 PARSER_PUSH_DECL (link)
@@ -558,7 +584,7 @@ static map<string, ParserSyntaxElt> parser_syntax =
     {"interface", false, nullptr}}},
  },
  {"media",                      // -> Media
-  {parser_push_media, nullptr,
+  {parser_push_media, parser_pop_media,
    PARSER_SYNTAX_FLAG_CACHE,
    {"body", "context", "switch"},
    {PARSER_SYNTAX_ATTR_ID,
@@ -836,7 +862,7 @@ parser_attrmap_opt_get (map<string, string> *attrs, const string &name,
 
 static bool
 parser_push_ncl (ParserState *st, unused (xmlNode *node),
-                 unused (map<string, string> *attrs), Object **result)
+                 map<string, string> *attrs)
 {
   Context *root;
   string id;
@@ -847,20 +873,20 @@ parser_push_ncl (ParserState *st, unused (xmlNode *node),
   if (parser_attrmap_index (attrs, "id", &id))
     root->addAlias (id);
 
-  *result = root;               // push onto stack
+  st_obj_stack_push (st, root);
   return true;
 }
 
 static bool
-parser_pop_ncl (unused (ParserState *st), unused (xmlNode *node),
+parser_pop_ncl (ParserState *st, unused (xmlNode *node),
                 unused (map<string, string> *attrs),
-                unused (list<xmlNode *> *children), unused (Object *object))
+                unused (list<xmlNode *> *children))
 {
   const list<ParserCache *> *cachedDescriptors;
   const list<ParserCache *> *cachedMedias;
   const list<ParserCache *> *cachedLinks;
 
-  // Resolve descriptor's reference to region.
+  // Resolve descriptor reference to region.
   cachedDescriptors = st_cache_index_by_tag (st, "descriptor");
   if (cachedDescriptors != nullptr)
     {
@@ -891,7 +917,7 @@ parser_pop_ncl (unused (ParserState *st), unused (xmlNode *node),
         }
     }
 
-  // Resolve media's reference to descriptor.
+  // Resolve media reference to descriptor.
   cachedMedias = st_cache_index_by_tag (st, "media");
   if (cachedMedias != nullptr)
     {
@@ -932,7 +958,7 @@ parser_pop_ncl (unused (ParserState *st), unused (xmlNode *node),
         }
     }
 
-  // Resolve link's reference to connector.
+  // Resolve link reference to connector.
   cachedLinks = st_cache_index_by_tag (st, "link");
   if (cachedLinks != nullptr)
     {
@@ -1109,6 +1135,7 @@ parser_pop_ncl (unused (ParserState *st), unused (xmlNode *node),
         }
     }
 
+  st_obj_stack_pop (st);
   return true;
 }
 
@@ -1117,7 +1144,7 @@ parser_pop_ncl (unused (ParserState *st), unused (xmlNode *node),
 
 static bool
 parser_push_region (ParserState *st, xmlNode *node,
-                    map<string, string> *attrs, unused (Object **result))
+                    map<string, string> *attrs)
 {
   static int last_zorder = 0;
   Rect screen;
@@ -1126,7 +1153,7 @@ parser_push_region (ParserState *st, xmlNode *node,
   string str;
 
   g_assert_nonnull (node->parent);
-  if (toString (node->parent->name) != "region") // root region
+  if (toString (node->parent->name) != "region") // this is a root region
     screen = st->saved_rect = st->rect;
   else
     screen = st->saved_rect;
@@ -1176,8 +1203,7 @@ parser_push_region (ParserState *st, xmlNode *node,
 static bool
 parser_pop_region (ParserState *st, xmlNode *node,
                    unused (map<string, string> *attrs),
-                   unused (list<xmlNode *> *children),
-                   unused (Object *object))
+                   unused (list<xmlNode *> *children))
 {
   g_assert_nonnull (node->parent);
   if (toString (node->parent->name) != "region") // root region
@@ -1190,8 +1216,7 @@ parser_pop_region (ParserState *st, xmlNode *node,
 
 static bool
 parser_push_descriptorParam (ParserState *st, xmlNode *node,
-                             map<string, string> *attrs,
-                             unused (Object **result))
+                             map<string, string> *attrs)
 {
   string desc_id;
   ParserCache *entry;
@@ -1203,6 +1228,7 @@ parser_push_descriptorParam (ParserState *st, xmlNode *node,
   name = parser_attrmap_get (attrs, "name");
   value = parser_attrmap_get (attrs, "value");
   entry->attrs[name] = value;
+
   return true;
 }
 
@@ -1212,8 +1238,7 @@ parser_push_descriptorParam (ParserState *st, xmlNode *node,
 static bool
 parser_push_causalConnector (ParserState *st,
                              unused (xmlNode *node),
-                             map<string, string> *attrs,
-                             unused (Object **result))
+                             map<string, string> *attrs)
 {
   string id;
 
@@ -1229,14 +1254,16 @@ static bool
 parser_pop_causalConnector (unused (ParserState *st),
                             unused (xmlNode *node),
                             unused (map<string, string> *attrs),
-                            unused (list<xmlNode *> *children),
-                            unused (Object *object))
+                            unused (list<xmlNode *> *children))
 {
   bool status;
-  int nconds, nacts;
+  int nconds;
+  int nacts;
 
   status = true;
-  nconds = nacts = 0;
+  nconds = 0;
+  nacts = 0;
+
   for (auto &role: st->currentConn->roles)
     {
       if (role.condition)
@@ -1269,14 +1296,9 @@ parser_pop_causalConnector (unused (ParserState *st),
 static bool
 parser_push_compoundCondition (ParserState *st,
                                unused (xmlNode *node),
-                               unused (map<string, string> *attrs),
-                               unused (Object **result))
+                               unused (map<string, string> *attrs))
 {
-  Predicate *pred;
-
-  pred = new Predicate (Predicate::CONJUNCTION);
-  st->predStack.push_back (pred);
-
+  st->predStack.push_back (new Predicate (Predicate::CONJUNCTION));
   return true;
 }
 
@@ -1284,16 +1306,11 @@ static bool
 parser_pop_compoundCondition (unused (ParserState *st),
                               unused (xmlNode *node),
                               unused (map<string, string> *attrs),
-                              unused (list<xmlNode *> *children),
-                              unused (Object *object))
+                              unused (list<xmlNode *> *children))
 {
-  Predicate *pred;
-
   g_assert (!st->predStack.empty ());
-  pred = st->predStack.back ();
+  delete st->predStack.back ();
   st->predStack.pop_back ();
-  delete pred;
-
   return true;
 }
 
@@ -1302,8 +1319,7 @@ parser_pop_compoundCondition (unused (ParserState *st),
 
 static bool
 parser_push_assessmentStatement (ParserState *st, xmlNode *node,
-                                 map<string, string> *attrs,
-                                 unused (Object **result))
+                                 map<string, string> *attrs)
 {
   string comp;
   Predicate::Test test;
@@ -1357,8 +1373,7 @@ parser_push_assessmentStatement (ParserState *st, xmlNode *node,
 static bool
 parser_pop_assessmentStatement (ParserState *st, xmlNode *node,
                                 unused (map<string, string> *attrs),
-                                unused (list<xmlNode *> *children),
-                                unused (Object *object))
+                                unused (list<xmlNode *> *children))
 {
   if (unlikely (!st->currentPred.has_left))
     return ST_ERR_ELT_MISSING_CHILD (st, node, "attributeAssessment");
@@ -1380,13 +1395,15 @@ parser_pop_assessmentStatement (ParserState *st, xmlNode *node,
 static bool
 parser_push_attributeAssessment (ParserState *st,
                                  unused (xmlNode *node),
-                                 map<string, string> *attrs,
-                                 unused (Object **result))
+                                 map<string, string> *attrs)
 {
   string role;
 
   if (unlikely (st->currentPred.has_left && st->currentPred.has_right))
-    return true;                // nothing to do
+    {
+      // TODO: WARN
+      return true;              // nothing to do
+    }
 
   role = parser_attrmap_get (attrs, "role");
   if (!st->currentPred.has_left)
@@ -1409,13 +1426,15 @@ parser_push_attributeAssessment (ParserState *st,
 static bool
 parser_push_valueAssessment (unused (ParserState *st),
                              unused (xmlNode *node),
-                             unused (map<string, string> *attrs),
-                             unused (Object **result))
+                             unused (map<string, string> *attrs))
 {
   string value;
 
   if (unlikely (st->currentPred.has_left && st->currentPred.has_right))
-    return true;                // nothing to do
+    {
+      // TODO: WARN
+      return true;              // nothing to do
+    }
 
   value = parser_attrmap_get (attrs, "value");
   if (!st->currentPred.has_left)
@@ -1437,8 +1456,7 @@ parser_push_valueAssessment (unused (ParserState *st),
 
 static bool
 parser_push_simpleCondition (ParserState *st, xmlNode *node,
-                             map<string, string> *attrs,
-                             unused (Object **result))
+                             map<string, string> *attrs)
 {
   ParserConnRole role;
   string transition;
@@ -1506,9 +1524,9 @@ parser_push_simpleCondition (ParserState *st, xmlNode *node,
 
 static bool
 parser_push_simpleAction (ParserState *st, xmlNode *node,
-                          map<string, string> *attrs, Object **result)
+                          map<string, string> *attrs)
 {
-  return parser_push_simpleCondition (st, node, attrs, result);
+  return parser_push_simpleCondition (st, node, attrs);
 }
 
 
@@ -1522,7 +1540,7 @@ parser_push_context_cleanup (void *ptr)
 
 static bool
 parser_push_context (ParserState *st, xmlNode *node,
-                     map<string, string> *attrs, Object **result)
+                     map<string, string> *attrs)
 {
   Object *ctx;
   list<string> *ports;
@@ -1531,8 +1549,7 @@ parser_push_context (ParserState *st, xmlNode *node,
     {
       string id;
 
-      g_assert (st->objStack.size () == 1);
-      ctx = cast (Context *, st->objStack.back ());
+      ctx = cast (Context *, st_obj_stack_peek (st));
       g_assert_nonnull (ctx);
 
       if (parser_attrmap_index (attrs, "id", &id))
@@ -1542,7 +1559,7 @@ parser_push_context (ParserState *st, xmlNode *node,
     {
       Composition *parent;
 
-      parent = cast (Composition *, st->objStack.back ());
+      parent = cast (Composition *, st_obj_stack_peek (st));
       g_assert_nonnull (parent);
 
       ctx = new Context (parser_attrmap_get (attrs, "id"));
@@ -1553,23 +1570,21 @@ parser_push_context (ParserState *st, xmlNode *node,
   ports = new list<string> ();
   g_assert (ctx->setData ("ports", ports, parser_push_context_cleanup));
 
-  // Push context onto stack.
-  *result = ctx;
-
+  st_obj_stack_push (st, ctx);
   return true;
 }
 
 static bool
 parser_pop_context (unused (ParserState *st), unused (xmlNode *node),
                     unused (map<string, string> *attrs),
-                    unused (list<xmlNode *> *children), Object *object)
+                    unused (list<xmlNode *> *children))
 {
   bool status;
   Context *ctx;
   list<string> *ports;
 
   status = true;
-  ctx = cast (Context *, object);
+  ctx = cast (Context *, st_obj_stack_peek (st));
   g_assert_nonnull (ctx);
 
   // Resolve port's references.
@@ -1614,6 +1629,7 @@ parser_pop_context (unused (ParserState *st), unused (xmlNode *node),
 
  done:
   g_assert_false (ctx->setData ("ports", nullptr, nullptr));
+  st_obj_stack_pop (st);
   return status;
 }
 
@@ -1622,12 +1638,12 @@ parser_pop_context (unused (ParserState *st), unused (xmlNode *node),
 
 static bool
 parser_push_port (ParserState *st, unused (xmlNode *node),
-                  map<string, string> *attrs, unused (Object **result))
+                  map<string, string> *attrs)
 {
   Context *ctx;
   list<string> *ports;
 
-  ctx = cast (Context *, st->objStack.back ());
+  ctx = cast (Context *, st_obj_stack_peek (st));
   g_assert_nonnull (ctx);
   g_assert (ctx->getData ("ports", (void **) &ports));
 
@@ -1640,7 +1656,7 @@ parser_push_port (ParserState *st, unused (xmlNode *node),
 
 static bool
 parser_push_media (ParserState *st, unused (xmlNode *node),
-                   map<string, string> *attrs, Object **result)
+                   map<string, string> *attrs)
 {
   Composition *parent;
   Media *media;
@@ -1673,11 +1689,20 @@ parser_push_media (ParserState *st, unused (xmlNode *node),
       g_assert_nonnull (media);
     }
 
-  parent = cast (Composition *, st->objStack.back ());
+  parent = cast (Composition *, st_obj_stack_peek (st));
   g_assert_nonnull (parent);
   parent->addChild (media);
 
-  *result = media;              // push onto stack
+  st_obj_stack_push (st, media);
+  return true;
+}
+
+static bool
+parser_pop_media (unused (ParserState *st), unused (xmlNode *node),
+                  unused (map<string, string> *attrs),
+                  unused (list<xmlNode *> *children))
+{
+  g_assert (instanceof (Media *, st_obj_stack_pop (st)));
   return true;
 }
 
@@ -1686,15 +1711,14 @@ parser_push_media (ParserState *st, unused (xmlNode *node),
 
 static bool
 parser_push_area (ParserState *st, unused (xmlNode *node),
-                  map<string, string> *attrs,
-                  unused (Object **result))
+                  map<string, string> *attrs)
 {
   Media *media;
   string id;
   string str;
   Time begin, end;
 
-  media = cast (Media *, st->objStack.back ());
+  media = cast (Media *, st_obj_stack_peek (st));
   g_assert_nonnull (media);
 
   id = parser_attrmap_get (attrs, "id");
@@ -1713,14 +1737,13 @@ parser_push_area (ParserState *st, unused (xmlNode *node),
 
 static bool
 parser_push_property (ParserState *st, unused (xmlNode *node),
-                      map<string, string> *attrs,
-                      unused (Object **result))
+                      map<string, string> *attrs)
 {
   Object *obj;
   string name;
   string value;
 
-  obj = cast (Object *, st->objStack.back ());
+  obj = cast (Object *, st_obj_stack_peek (st));
   g_assert_nonnull (obj);
 
   name = parser_attrmap_get (attrs, "name");
@@ -1737,7 +1760,7 @@ parser_push_property (ParserState *st, unused (xmlNode *node),
 
 static bool
 parser_push_link (ParserState *st, unused (xmlNode *node),
-                  map<string, string> *attrs, unused (Object **result))
+                  map<string, string> *attrs)
 {
   string id;
   Context *ctx;
@@ -1745,7 +1768,7 @@ parser_push_link (ParserState *st, unused (xmlNode *node),
   id = parser_attrmap_get (attrs, "id");
   g_assert_null (st_link_cache_index (st, id));
 
-  ctx = cast (Context *, st->objStack.back ());
+  ctx = cast (Context *, st_obj_stack_peek (st));
   g_assert_nonnull (ctx);
 
   g_assert_null (st->currentLink);
@@ -1761,8 +1784,7 @@ parser_push_link (ParserState *st, unused (xmlNode *node),
 static bool
 parser_pop_link (unused (ParserState *st), unused (xmlNode *node),
                  unused (map<string, string> *attrs),
-                 unused (list<xmlNode *> *children),
-                 unused (Object *object))
+                 unused (list<xmlNode *> *children))
 {
   g_assert_nonnull (st->currentLink);
   st->currentLink = nullptr;
@@ -1774,7 +1796,7 @@ parser_pop_link (unused (ParserState *st), unused (xmlNode *node),
 
 static bool
 parser_push_linkParam (ParserState *st, unused (xmlNode *node),
-                       map<string, string> *attrs, unused (Object **result))
+                       map<string, string> *attrs)
 {
   string name;
   string value;
@@ -1793,7 +1815,7 @@ parser_push_linkParam (ParserState *st, unused (xmlNode *node),
 
 static bool
 parser_push_bind (ParserState *st, xmlNode *node,
-                  map<string, string> *attrs, unused (Object **result))
+                  map<string, string> *attrs)
 {
   ParserLinkBind bind;
 
@@ -1813,7 +1835,7 @@ parser_push_bind (ParserState *st, xmlNode *node,
 
 static bool
 parser_push_bindParam (ParserState *st, unused (xmlNode *node),
-                       map<string, string> *attrs, unused (Object **result))
+                       map<string, string> *attrs)
 {
   string name;
   string value;
@@ -1842,7 +1864,6 @@ processElt (ParserState *st, xmlNode *node)
 
   map<string, string> _attrs;
   map<string, string> *attrs = &_attrs;
-  Object *object;
   map<string, bool> possible;
   list<xmlNode *> children;
 
@@ -1885,7 +1906,7 @@ processElt (ParserState *st, xmlNode *node)
         }
     }
 
-  // Store attributes in attr-map.
+  // Build attr-map.
   for (auto attr_syntax: elt_syntax->attributes)
     {
       string value;
@@ -1959,17 +1980,11 @@ processElt (ParserState *st, xmlNode *node)
     }
 
   // Push element.
-  object = nullptr;
-  if (unlikely (elt_syntax->push
-                && !elt_syntax->push (st, node, attrs, &object)))
+  if (unlikely (elt_syntax->push && !elt_syntax->push (st, node, attrs)))
     {
       status = false;
       goto done;
     }
-
-  // Push newly created entity onto entity stack.
-  if (object != nullptr)
-    st->objStack.push_back (object);
 
   // Collect children.
   possible = parser_syntax_get_possible_children (tag);
@@ -1996,11 +2011,7 @@ processElt (ParserState *st, xmlNode *node)
 
   // Pop element.
   if (elt_syntax->pop)
-    status = elt_syntax->pop (st, node, attrs, &children, object);
-
-  // Pop object stack.
-  if (object != nullptr)
-    st->objStack.pop_back ();
+    status = elt_syntax->pop (st, node, attrs, &children);
 
  done:
   return status;
