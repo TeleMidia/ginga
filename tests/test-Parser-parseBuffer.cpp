@@ -313,28 +313,6 @@ main (void)
 </ncl>\n\
 ");
 
-  XFAIL ("causalConnector: Missing condition",
-         "<causalConnector>: Missing child <simpleCondition>", "\
-<ncl>\n\
- <head>\n\
-  <connectorBase>\n\
-   <causalConnector id='c'>\n\
-    <compoundCondition>\n\
-     <assessmentStatement comparator='eq'>\n\
-      <valueAssessment value='0'/>\n\
-      <valueAssessment value='0'/>\n\
-      <valueAssessment value='0'/>\n\
-     </assessmentStatement>\n\
-    </compoundCondition>\n\
-    <compoundAction/>\n\
-   </causalConnector>\n\
-  </connectorBase>\n\
- </head>\n\
- <body>\n\
- </body>\n\
-</ncl>\n\
-");
-
   XFAIL ("causalConnector: Missing action",
          "<causalConnector>: Missing child <simpleAction>", "\
 <ncl>\n\
@@ -419,14 +397,14 @@ main (void)
 ");
 
   XFAIL ("simpleCondition: Reserved role",
-         "<simpleCondition>: Bad value 'presentation' "
+         "<simpleCondition>: Bad value 'selection' "
          "for attribute 'eventType' "
-         "(role 'onBegin' is reserved and cannot be overwritten)", "\
+         "(reserved role 'onBegin' cannot be overwritten)", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
    <causalConnector id='c'>\n\
-    <simpleCondition role='onBegin' eventType='presentation'/>\n\
+    <simpleCondition role='onBegin' eventType='selection'/>\n\
    </causalConnector>\n\
   </connectorBase>\n\
  </head>\n\
@@ -436,14 +414,14 @@ main (void)
 ");
 
   XFAIL ("simpleCondition: Reserved role",
-         "<simpleCondition>: Bad value 'starts' "
+         "<simpleCondition>: Bad value 'stops' "
          "for attribute 'transition' "
-         "(role 'onBegin' is reserved and cannot be overwritten)", "\
+         "(reserved role 'onBegin' cannot be overwritten)", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
    <causalConnector id='c'>\n\
-    <simpleCondition role='onBegin' transition='starts'/>\n\
+    <simpleCondition role='onBegin' transition='stops'/>\n\
    </causalConnector>\n\
   </connectorBase>\n\
  </head>\n\
@@ -469,7 +447,7 @@ main (void)
 
   XFAIL ("simpleCondition: Bad eventType",
          "<simpleCondition>: Bad value 'unknown' "
-         "for attribute 'eventType' (no such event type)", "\
+         "for attribute 'eventType'", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -500,13 +478,213 @@ main (void)
 
   XFAIL ("simpleCondition: Bad transition",
          "<simpleCondition>: Bad value 'unknown' "
-         "for attribute 'transition' (no such transition)", "\
+         "for attribute 'transition'", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
    <causalConnector id='c'>\n\
     <simpleCondition role='x' eventType='presentation'\n\
                      transition='unknown'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+
+// -------------------------------------------------------------------------
+// <compoundStatement>
+// -------------------------------------------------------------------------
+
+  XFAIL ("compoundStatement: Missing operator",
+         "<compoundStatement>: Missing attribute 'operator'", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <compoundCondition>\n\
+     <simpleCondition role='onBegin'/>\n\
+     <compoundStatement>\n\
+      <assessmentStatement comparator='eq'>\n\
+       <valueAssessment value='x'/>\n\
+       <valueAssessment value='x'/>\n\
+      </assessmentStatement>\n\
+     </compoundStatement>\n\
+    </compoundCondition>\n\
+    <simpleAction role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("compoundStatement: Bad operator",
+         "<compoundStatement>: Bad value 'xx' for attribute 'operator'", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <compoundCondition>\n\
+     <simpleCondition role='onBegin'/>\n\
+     <compoundStatement operator='xx'>\n\
+      <assessmentStatement comparator='eq'>\n\
+       <valueAssessment value='x'/>\n\
+       <valueAssessment value='x'/>\n\
+      </assessmentStatement>\n\
+     </compoundStatement>\n\
+    </compoundCondition>\n\
+    <simpleAction role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("compoundStatement: Bad isNegated",
+         "<compoundStatement>: Bad value 'xx' for attribute 'isNegated'", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <compoundCondition>\n\
+     <simpleCondition role='onBegin'/>\n\
+     <compoundStatement operator='or' isNegated='xx'>\n\
+      <assessmentStatement comparator='eq'>\n\
+       <valueAssessment value='x'/>\n\
+       <valueAssessment value='x'/>\n\
+      </assessmentStatement>\n\
+     </compoundStatement>\n\
+    </compoundCondition>\n\
+    <simpleAction role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("compoundStatement: Missing child",
+         "<compoundStatement>: Missing child <compoundStatement> or "
+         "<assessmentStatement>", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <compoundCondition>\n\
+     <simpleCondition role='onBegin'/>\n\
+     <compoundStatement operator='not'>\n\
+     </compoundStatement>\n\
+    </compoundCondition>\n\
+    <simpleAction role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("compoundStatement: Missing child",
+         "<compoundStatement>: Missing child <compoundStatement> or "
+         "<assessmentStatement>", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <compoundCondition>\n\
+     <simpleCondition role='onBegin'/>\n\
+     <compoundStatement operator='and'>\n\
+     </compoundStatement>\n\
+    </compoundCondition>\n\
+    <simpleAction role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("compoundStatement: Missing child",
+         "<compoundStatement>: Missing child <compoundStatement> or "
+         "<assessmentStatement>", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <compoundCondition>\n\
+     <simpleCondition role='onBegin'/>\n\
+     <compoundStatement operator='or'>\n\
+     </compoundStatement>\n\
+    </compoundCondition>\n\
+    <simpleAction role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("compoundStatement: Too many children",
+         "<compoundStatement>: Bad child <assessmentStatement> "
+         "(too many children)", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <compoundCondition>\n\
+     <simpleCondition role='onBegin'/>\n\
+     <compoundStatement operator='not'>\n\
+      <assessmentStatement comparator='eq'>\n\
+       <valueAssessment value='x'/>\n\
+       <valueAssessment value='x'/>\n\
+      </assessmentStatement>\n\
+      <assessmentStatement comparator='eq'>\n\
+       <valueAssessment value='x'/>\n\
+       <valueAssessment value='x'/>\n\
+      </assessmentStatement>\n\
+     </compoundStatement>\n\
+    </compoundCondition>\n\
+    <simpleAction role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("compoundStatement: Too many children",
+         "<compoundStatement>: Bad child <compoundStatement> "
+         "(too many children)", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <compoundCondition>\n\
+     <simpleCondition role='onBegin'/>\n\
+     <compoundStatement operator='not'>\n\
+      <assessmentStatement comparator='eq'>\n\
+       <valueAssessment value='x'/>\n\
+       <valueAssessment value='x'/>\n\
+      </assessmentStatement>\n\
+      <compoundStatement operator='not'>\n\
+       <assessmentStatement comparator='eq'>\n\
+        <valueAssessment value='x'/>\n\
+        <valueAssessment value='x'/>\n\
+       </assessmentStatement>\n\
+      </compoundStatement>\n\
+     </compoundStatement>\n\
+    </compoundCondition>\n\
+    <simpleAction role='start'/>\n\
    </causalConnector>\n\
   </connectorBase>\n\
  </head>\n\
@@ -538,9 +716,9 @@ main (void)
 </ncl>\n\
 ");
 
-  XFAIL ("assessmentStatement: Missing comparator",
+  XFAIL ("assessmentStatement: Bad comparator",
          "<assessmentStatement>: Bad value 'xx' "
-         "for attribute 'comparator' (no such comparator)", "\
+         "for attribute 'comparator'", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -558,7 +736,8 @@ main (void)
 ");
 
   XFAIL ("assessmentStatement: Missing child",
-         "<assessmentStatement>: Missing child <attributeAssessment>", "\
+         "<assessmentStatement>: Missing child <attributeAssessment>"
+         " or <valueAssessment>", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -576,7 +755,8 @@ main (void)
 ");
 
   XFAIL ("assessmentStatement: Missing child",
-         "<assessmentStatement>: Missing child <valueAssessment>", "\
+         "<assessmentStatement>: Missing child <attributeAssessment>"
+         " or <valueAssessment>", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -584,6 +764,29 @@ main (void)
     <compoundCondition>\n\
      <assessmentStatement comparator='eq'>\n\
       <attributeAssessment role='x'/>\n\
+     </assessmentStatement>\n\
+    </compoundCondition>\n\
+    <compoundAction/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("assessmentStatement: Too many children",
+         "<assessmentStatement>: Bad child <valueAssessment>"
+         " (too many children)", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <compoundCondition>\n\
+     <assessmentStatement comparator='eq'>\n\
+      <valueAssessment value='0'/>\n\
+      <valueAssessment value='0'/>\n\
+      <valueAssessment value='0'/>\n\
      </assessmentStatement>\n\
     </compoundCondition>\n\
     <compoundAction/>\n\
@@ -743,15 +946,15 @@ main (void)
 ");
 
   XFAIL ("simpleAction: Reserved role",
-         "<simpleAction>: Bad value 'presentation' "
+         "<simpleAction>: Bad value 'selection' "
          "for attribute 'eventType' "
-         "(role 'start' is reserved and cannot be overwritten)", "\
+         "(reserved role 'start' cannot be overwritten)", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
    <causalConnector id='c'>\n\
     <simpleCondition role='onBegin'/>\n\
-    <simpleAction role='start' eventType='presentation'/>\n\
+    <simpleAction role='start' eventType='selection'/>\n\
    </causalConnector>\n\
   </connectorBase>\n\
  </head>\n\
@@ -761,15 +964,15 @@ main (void)
 ");
 
   XFAIL ("simpleAction: Reserved role",
-         "<simpleAction>: Bad value 'starts' "
+         "<simpleAction>: Bad value 'stops' "
          "for attribute 'actionType' "
-         "(role 'start' is reserved and cannot be overwritten)", "\
+         "(reserved role 'start' cannot be overwritten)", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
    <causalConnector id='c'>\n\
     <simpleCondition role='onBegin'/>\n\
-    <simpleAction role='start' actionType='starts'/>\n\
+    <simpleAction role='start' actionType='stops'/>\n\
    </causalConnector>\n\
   </connectorBase>\n\
  </head>\n\
@@ -795,8 +998,7 @@ main (void)
 ");
 
   XFAIL ("simpleAction: Bad eventType",
-         "<simpleAction>: Bad value 'unknown' for attribute 'eventType' "
-         "(no such event type)", "\
+         "<simpleAction>: Bad value 'unknown' for attribute 'eventType'", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -828,8 +1030,8 @@ main (void)
 ");
 
   XFAIL ("simpleAction: Bad actionType",
-         "<simpleAction>: Bad value 'unknown' for attribute 'actionType' "
-         "(no such transition)", "\
+         "<simpleAction>: Bad value 'unknown' for attribute 'actionType'",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -925,7 +1127,7 @@ main (void)
 
   XFAIL ("port: Bad interface",
          "<port>: Bad value 'r' for attribute 'interface' "
-         "(no such interface in object 'm')", "\
+         "(no such interface)", "\
 <ncl>\n\
  <head>\n\
   <regionBase id='r'/>\n\
@@ -939,7 +1141,7 @@ main (void)
 
   XFAIL ("port: Bad interface",
          "<port>: Bad value 'nonexistent' for attribute 'interface' "
-         "(no such interface in object 'm')", "\
+         "(no such interface)", "\
 <ncl>\n\
  <body>\n\
   <port id='p' component='m' interface='nonexistent'/>\n\
@@ -964,7 +1166,7 @@ main (void)
 ");
 
   XFAIL ("media: Duplicated id",
-         "<media>: Bad value 'a' for attribute 'id' (duplicated id)", "\
+         "<media>: Bad value 'a' for attribute 'id' (must be unique)", "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1030,7 +1232,8 @@ main (void)
 
   XFAIL ("link: Link does not match connector",
          "<link>: Bad value 'c' for attribute 'xconnector' "
-         "(link does not match connector)", "\
+         "(link does not match connector, "
+         "role 'onBegin' not bound)", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1106,7 +1309,7 @@ main (void)
 // <bind>
 // -------------------------------------------------------------------------
 
-  XFAIL ("bind: missing attribute role",
+  XFAIL ("bind: Missing role",
          "<bind>: Missing attribute 'role'", "\
 <ncl>\n\
  <head>\n\
@@ -1127,7 +1330,7 @@ main (void)
 </ncl>\n\
 ");
 
-  XFAIL ("bind: missing attribute component",
+  XFAIL ("bind: Missing component",
          "<bind>: Missing attribute 'component'", "\
 <ncl>\n\
  <head>\n\
@@ -1148,9 +1351,9 @@ main (void)
 </ncl>\n\
 ");
 
-  XFAIL ("bind: No such component",
+  XFAIL ("bind: Bad component",
          "<bind>: Bad value 'x' for attribute 'component' "
-         "(no such component)", "\
+         "(no such object in scope)", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1169,9 +1372,9 @@ main (void)
 </ncl>\n\
 ");
 
-  XFAIL ("bind: No such component (ghost bind)",
+  XFAIL ("bind: Bad component (ghost bind)",
          "<bind>: Bad value 'y' for attribute 'component' "
-         "(no such component)", "\
+         "(no such object in scope)", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1192,9 +1395,9 @@ main (void)
 </ncl>\n\
 ");
 
-  XFAIL ("bind: No such interface (area)",
+  XFAIL ("bind: Bad interface (area)",
          "<bind>: Bad value 'a' for attribute 'interface' "
-         "(no such area in object 'x')", "\
+         "(no such interface)", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1214,9 +1417,9 @@ main (void)
 </ncl>\n\
 ");
 
-  XFAIL ("bind: No such interface (property)",
-         "<bind>: Bad value 'a' for attribute 'interface' "
-         "(no such property in object 'x')", "\
+  XFAIL ("bind: Bad interface (property)",
+         "<bind>: Bad value '' for attribute 'interface' "
+         "(must not be empty)", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1230,15 +1433,15 @@ main (void)
   <media id='x'/>\n\
   <link xconnector='c'>\n\
    <bind role='onBegin' component='x'/>\n\
-   <bind role='set' component='x' interface='a'/>\n\
+   <bind role='set' component='x'/>\n\
   </link>\n\
  </body>\n\
 </ncl>\n\
 ");
 
-  XFAIL ("bind: No such interface (ghost bind)",
+  XFAIL ("bind: Bad interface (ghost bind)",
          "<bind>: Bad value '' for attribute 'interface' "
-         "(ghost bind requires nonempty interface)", "\
+         "(must not be empty)", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
