@@ -40,6 +40,12 @@ Switch::~Switch ()
 
 // Public: Object.
 
+string
+Switch::getObjectTypeAsString ()
+{
+  return "Switch";
+}
+
 bool
 Switch::startTransition (Event *event, Event::Transition transition)
 {

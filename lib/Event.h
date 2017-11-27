@@ -57,6 +57,7 @@ public:
   Object *getObject ();
   string getId ();
   Event::State getState ();
+  string toString ();
 
   bool isLambda ();
   void getInterval (Time *, Time *);

@@ -121,6 +121,12 @@ Media::~Media ()
 
 // Public: Object.
 
+string
+Media::getObjectTypeAsString ()
+{
+  return "Media";
+}
+
 void
 Media::setProperty (const string &name, const string &value, Time dur)
 {

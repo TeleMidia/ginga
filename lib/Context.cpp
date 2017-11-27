@@ -37,6 +37,12 @@ Context::~Context ()
 
 // Public: Object.
 
+string
+Context::getObjectTypeAsString ()
+{
+  return "Context";
+}
+
 string G_GNUC_NORETURN
 Context::getProperty (unused (const string &name))
 {
