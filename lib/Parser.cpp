@@ -1196,6 +1196,46 @@ ParserState::process (xmlDoc *xml)
 // ParserState: push & pop.
 
 // <ncl>
+
+static string
+resolveParamRef (const string &value,
+                 const map<string,string> *bindParams,
+                 const map<string,string> *linkParams,
+                 const map<string, ParserLinkBind *> *ghosts)
+{
+  string name;
+  string result;
+
+  if (value[0] != '$')
+    return value;
+
+  name = value.substr (1, value.length () - 1);
+  auto it_bind = bindParams->find (name);
+  if (it_bind != bindParams->end ())
+    {
+      result = it_bind->second;
+    }
+  else
+    {
+      auto it_link = linkParams->find (name);
+      if (it_link != linkParams->end ())
+        result = it_link->second;
+      else
+        return value;           // unknown reference
+    }
+
+  if (result[0] != '$')
+    return result;
+
+  name = result.substr (1, result.length () - 1);
+  auto it_ghost = ghosts->find (name);
+  if (it_ghost == ghosts->end ())
+    return result;              // unknown reference
+
+  return "$" + it_ghost->second->component
+    + "." + it_ghost->second->iface;
+}
+
 bool
 ParserState::pushNcl (ParserState *st, ParserElt *elt)
 {
@@ -1294,6 +1334,7 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
           set<string> *tests;
           list<ParserConnRole> *roles;
           list<ParserLinkBind> *binds;
+          map<string, string> *params;
           Context *ctx;
 
           list<pair<ParserConnRole *, ParserLinkBind *>> bound;
@@ -1311,6 +1352,7 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
           UDATA_GET (conn_elt, "tests", &tests);
           UDATA_GET (conn_elt, "roles", &roles);
           UDATA_GET (link_elt, "binds", &binds);
+          UDATA_GET (link_elt, "params", &params);
           UDATA_GET (link_elt, "context", &ctx);
 
           // Collect event, test and ghost binds.
@@ -1368,9 +1410,6 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
                  "role '" + role.role + "' not bound");
             }
 
-          // Merge link parameters into bind parameters.
-          // TODO:
-
           // Resolve ghost binds.
           for (auto it: ghosts)
             {
@@ -1400,20 +1439,30 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
           list<Action> actions;
           for (auto it: bound)
             {
+              ParserConnRole *role;
+              ParserLinkBind *bind;
               Object *obj;
               Action act;
               string iface;
 
-              obj = ctx->getChildById (it.second->component);
+              role = it.first;
+              g_assert_nonnull (role);
+
+              bind = it.second;
+              g_assert_nonnull (bind);
+
+              // Check component.
+              obj = ctx->getChildById (bind->component);
               if (unlikely (obj == nullptr))
                 {
                   return st->errEltBadAttribute
-                    (it.second->node, "component", it.second->component,
+                    (bind->node, "component", bind->component,
                      "no such object in scope");
                 }
 
-              iface = it.second->iface;
-              switch (it.first->eventType)
+              // Check interface.
+              iface = bind->iface;
+              switch (role->eventType)
                 {
                 case Event::PRESENTATION:
                   if (iface == "")
@@ -1422,7 +1471,7 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
                   if (unlikely (act.event == nullptr))
                     {
                       return st->errEltBadAttribute
-                        (it.second->node, "interface", it.second->iface,
+                        (bind->node, "interface", bind->iface,
                          "no such interface");
                     }
                   break;
@@ -1431,13 +1480,14 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
                   if (unlikely (iface == ""))
                     {
                       return st->errEltBadAttribute
-                        (it.second->node, "interface", iface,
+                        (bind->node, "interface", iface,
                          "must not be empty");
                     }
                   obj->addAttributionEvent (iface);
                   act.event = obj->getAttributionEvent (iface);
                   g_assert_nonnull (act.event);
-                  act.value = it.first->value; // fixme: resolve
+                  act.value = resolveParamRef (role->value, &bind->params,
+                                               params, &ghosts);
                   break;
 
                 case Event::SELECTION:
@@ -1448,10 +1498,11 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
                   if (unlikely (iface != ""))
                     {
                       return st->errEltBadAttribute
-                        (it.second->node, "interface", iface,
+                        (bind->node, "interface", iface,
                          "must be empty");
                     }
-                  act.value = it.first->key; // fixme: resolve
+                  act.value = resolveParamRef (role->value, &bind->params,
+                                               params, &ghosts);
                   obj->addSelectionEvent (act.value);
                   act.event = obj->getSelectionEvent (act.value);
                   g_assert_nonnull (act.event);
@@ -1461,9 +1512,35 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
                   g_assert_not_reached ();
                 }
               g_assert_nonnull (act.event);
-              act.transition = it.first->transition;
-              act.predicate = it.first->predicate; // fixme: resolve
+              act.transition = role->transition;
+              act.predicate = nullptr;
+              if (role->predicate != nullptr)
+                {
+                  Predicate::Type type = role->predicate->getType ();
+                  switch (type)
+                    {
+                    case Predicate::FALSUM:
+                    case Predicate::VERUM:
+                    case Predicate::ATOM:
+                      act.predicate = role->predicate->clone ();
+                      break;
+                    case Predicate::NEGATION:
+                    case Predicate::CONJUNCTION:
+                    case Predicate::DISJUNCTION:
+                      if (role->predicate->getChildren ()->size () > 0)
+                        act.predicate = role->predicate->clone ();
+                      break;
+                    default:
+                      g_assert_not_reached ();
+                    }
+                }
+
+              if (role->condition)
+                conditions.push_back (act);
+              else
+                actions.push_back (act);
             }
+          ctx->addLink (conditions, actions);
         }
     }
 
@@ -1638,34 +1715,11 @@ predCleanup (void *ptr)
 }
 
 bool
-ParserState::pushCompoundCondition (ParserState *st, ParserElt *elt)
+ParserState::pushCompoundCondition (unused (ParserState *st),
+                                    ParserElt *elt)
 {
-  Predicate *pred;
-  ParserElt *parent_elt;
-  string parent_tag;
-
-  pred = new Predicate (Predicate::CONJUNCTION);
-  UDATA_SET (elt, "pred", pred, predCleanup);
-
-  // Inherit parent compound condition predicate.
-  g_assert (st->eltCacheIndexParent (elt->getNode (), &parent_elt));
-  parent_tag = parent_elt->getTag ();
-  if (parent_tag == "compoundCondition")
-    {
-      Predicate *parent_pred;
-      UDATA_GET (parent_elt, "pred", &parent_pred);
-      parent_pred = parent_pred->clone ();
-      pred->addChild (pred);
-    }
-  else if (parent_tag == "causalConnector")
-    {
-      // nothing to do
-    }
-  else
-    {
-      g_assert_not_reached ();
-    }
-
+  UDATA_SET (elt, "pred", new Predicate (Predicate::CONJUNCTION),
+             predCleanup);
   return true;
 }
 
@@ -1765,17 +1819,17 @@ ParserState::pushSimpleCondition (ParserState *st, ParserElt *elt)
     elt->getAttribute ("key", &role.key);
 
   // Set role predicate.
-  g_assert (st->eltCacheIndexParent (node, &parent_elt));
-  if (parent_elt->getTag () == "compoundCondition")
+  role.predicate = nullptr;
+  if (elt->getTag () == "simpleCondition")
     {
-      Predicate *pred;
-      UDATA_GET (parent_elt, "pred", &pred);
-      role.predicate = pred->clone ();
-      g_assert_nonnull (role.predicate);
-    }
-  else
-    {
-      role.predicate = nullptr;
+      g_assert (st->eltCacheIndexParent (node, &parent_elt));
+      if (parent_elt->getTag () == "compoundCondition")
+        {
+          Predicate *pred;
+          UDATA_GET (parent_elt, "pred", &pred);
+          role.predicate = pred->clone ();
+          g_assert_nonnull (role.predicate);
+        }
     }
 
   UDATA_GET (st, "conn_elt", &conn_elt);
