@@ -63,6 +63,43 @@ Event::getState ()
   return _state;
 }
 
+string
+Event::toString ()
+{
+  string str;
+
+  str = xstrbuild
+    ("\
+Event (%p)\n\
+  Object: %p (%s, id: %s)\n\
+  Id: %s\n\
+  Type: %s\n\
+  State: %s\n",
+     this, _object, _object->getObjectTypeAsString ().c_str (),
+     _object->getId ().c_str (), _id.c_str (),
+     Event::getEventTypeAsString (_type).c_str (),
+     Event::getEventStateAsString (_state).c_str ());
+
+  if (_type == Event::PRESENTATION)
+    {
+      str += xstrbuild
+        ("\
+  Begin: %" GINGA_TIME_FORMAT "\n\
+  End: %" GINGA_TIME_FORMAT "\n",
+         GINGA_TIME_ARGS (_begin),
+         GINGA_TIME_ARGS (_end));
+    }
+
+  if (_parameters.size () > 0)
+    {
+      str += "  Params:\n";
+      for (auto it: _parameters)
+        str += "    " + it.first + "='" + it.second + "'\n";
+    }
+
+  return str;
+}
+
 bool
 Event::isLambda ()
 {

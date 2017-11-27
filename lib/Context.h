@@ -30,6 +30,7 @@ public:
   virtual ~Context ();
 
   // Object:
+  string getObjectTypeAsString () override;
   string getProperty (const string &) override;
   void setProperty (const string &, const string &,
                     Time dur=0) override;
