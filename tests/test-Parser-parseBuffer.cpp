@@ -1439,6 +1439,30 @@ main (void)
 </ncl>\n\
 ");
 
+  XFAIL ("bind: Bad interface (selection)",
+         "<bind>: Bad value 'a' for attribute 'interface' "
+         "(must be empty)", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onSelection'/>\n\
+    <simpleAction role='set' value='x'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+  <media id='x'>\n\
+   <area id='a'/>\n\
+  </media>\n\
+  <link xconnector='c'>\n\
+   <bind role='onSelection' component='x' interface='a'/>\n\
+   <bind role='set' component='x'/>\n\
+  </link>\n\
+ </body>\n\
+</ncl>\n\
+");
+
   XFAIL ("bind: Bad interface (ghost bind)",
          "<bind>: Bad value '' for attribute 'interface' "
          "(must not be empty)", "\
@@ -1725,6 +1749,150 @@ main (void)
     g_assert (m->getProperty ("zorder") == "1");
 
     delete doc;
+  }
+
+
+  // Success: Simple link.
+  {
+    Document *doc;
+    PASS (&doc, "Simple link", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='onBeginStart'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+  <media id='m'>\n\
+   <area id='a1'/>\n\
+   <area id='a2' begin='3s'/>\n\
+   <area id='a3' end='3s'/>\n\
+   <property name='top' value='50%'/>\n\
+   <property name='empty'/>\n\
+   <property name='x' value='y'/>\n\
+  </media>\n\
+  <link xconnector='onBeginStart'>\n\
+   <bind role='onBegin' component='m' interface='a1'/>\n\
+   <bind role='start' component='m'/>\n\
+  </link>\n\
+ </body>\n\
+</ncl>\n\
+");
+    g_assert_nonnull (doc);
+    g_assert (doc->getObjects ()->size () == 3);
+    g_assert (doc->getMedias ()->size () == 2);
+    g_assert (doc->getContexts ()->size () == 1);
+
+    Media *m = cast (Media *, doc->getObjectById ("m"));
+    g_assert_nonnull (m);
+
+    auto links = doc->getRoot ()->getLinks ();
+    g_assert (links->size () == 1);
+
+    auto &link = links->front ();
+    g_assert (link.first.size () == 1);
+    g_assert (link.second.size () == 1);
+
+    auto &cond = link.first.front ();
+    g_assert (cond.event == m->getPresentationEvent ("a1"));
+    g_assert (cond.transition == Event::START);
+    g_assert (cond.predicate == nullptr);
+    g_assert (cond.value == "");
+
+    auto &act = link.second.front ();
+    g_assert (act.event == m->getLambda ());
+    g_assert (act.transition == Event::START);
+    g_assert (act.predicate == nullptr);
+    g_assert (act.value == "");
+
+    delete doc;
+  }
+
+  // Success: Simple link (vacuous conditions and actions).
+  {
+    Document *doc;
+    PASS (&doc, "Complex links", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='onPauseSet'>\n\
+    <compoundCondition>\n\
+     <compoundCondition>\n\
+      <compoundCondition>\n\
+       <simpleCondition role='onPause'/>\n\
+      </compoundCondition>\n\
+     </compoundCondition>\n\
+    </compoundCondition>\n\
+    <compoundAction>\n\
+     <compoundAction>\n\
+      <compoundAction>\n\
+       <simpleAction role='set' value='33'/>\n\
+      </compoundAction>\n\
+     </compoundAction>\n\
+     <compoundAction/>\n\
+    </compoundAction>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+  <media id='m'>\n\
+   <area id='a1'/>\n\
+   <area id='a2' begin='3s'/>\n\
+   <area id='a3' end='3s'/>\n\
+   <property name='top' value='50%'/>\n\
+   <property name='empty'/>\n\
+   <property name='x' value='y'/>\n\
+  </media>\n\
+  <link xconnector='onPauseSet'>\n\
+   <bind role='onPause' component='m' interface='a1'/>\n\
+   <bind role='set' component='m' interface='x'/>\n\
+  </link>\n\
+ </body>\n\
+</ncl>\n\
+");
+    g_assert_nonnull (doc);
+    g_assert (doc->getObjects ()->size () == 3);
+    g_assert (doc->getMedias ()->size () == 2);
+    g_assert (doc->getContexts ()->size () == 1);
+
+    Media *m = cast (Media *, doc->getObjectById ("m"));
+    g_assert_nonnull (m);
+
+    auto links = doc->getRoot ()->getLinks ();
+    g_assert (links->size () == 1);
+
+    auto &link = links->front ();
+    g_assert (link.first.size () == 1);
+    g_assert (link.second.size () == 1);
+
+    auto &cond = link.first.front ();
+    g_assert (cond.event == m->getPresentationEvent ("a1"));
+    g_assert (cond.transition == Event::PAUSE);
+    g_assert (cond.predicate == nullptr);
+    g_assert (cond.value == "");
+
+    auto &act = link.second.front ();
+    g_assert (act.event == m->getAttributionEvent ("x"));
+    g_assert (act.transition == Event::START);
+    g_assert (act.predicate == nullptr);
+    g_assert (act.value == "33");
+
+    delete doc;
+  }
+
+  // Success: Link and bind parameters.
+  {
+  }
+
+  // Success: Simple statements.
+  {
+  }
+
+  // Success: Complex statements.
+  {
   }
 
   // Success: Misc checks.
