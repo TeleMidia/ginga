@@ -416,8 +416,8 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
    nullptr,
    ELT_CACHE,
    {"causalConnector", "compoundCondition"},
-   {{"operator", 0},            // ignored
-    {"delay", 0}}},             // ignored
+   {{"operator", 0},            // unused
+    {"delay", 0}}},             // unused
  },
  {"simpleCondition",
   {ParserState::pushSimpleCondition,
@@ -428,18 +428,18 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
     {"eventType", 0},
     {"key", 0},
     {"transition", 0},
-    {"delay", 0},               // ignored
-    {"min", 0},                 // ignored
-    {"max", 0},                 // ignored
-    {"qualifier", 0}}},         // ignored
+    {"delay", 0},               // unused
+    {"min", 0},                 // unused
+    {"max", 0},                 // unused
+    {"qualifier", 0}}},         // unused
  },
  {"compoundAction",
   {nullptr,
    nullptr,
    0,
    {"causalConnector", "compoundAction"},
-   {{"operator", 0},            // ignored
-    {"delay", 0}}},             // ignored
+   {{"operator", 0},            // unused
+    {"delay", 0}}},             // unused
  },
  {"simpleAction",
   {ParserState::pushSimpleCondition, // reused
@@ -450,15 +450,15 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
     {"eventType", 0},
     {"actionType", 0},
     {"value", 0},
-    {"delay", 0},               // ignored
-    {"duration", 0},            // ignored
-    {"min", 0},                 // ignored
-    {"max", 0},                 // ignored
-    {"min", 0},                 // ignored
-    {"qualifier", 0},           // ignored
-    {"repeat", 0},              // ignored
-    {"repeatDelay", 0},         // ignored
-    {"by", 0}}},                // ignored
+    {"delay", 0},               // unused
+    {"duration", 0},            // unused
+    {"min", 0},                 // unused
+    {"max", 0},                 // unused
+    {"min", 0},                 // unused
+    {"qualifier", 0},           // unused
+    {"repeat", 0},              // unused
+    {"repeatDelay", 0},         // unused
+    {"by", 0}}},                // unused
  },
  {"compoundStatement",
   {ParserState::pushCompoundStatement,
@@ -481,10 +481,10 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
    0,
    {"assessmentStatement"},
    {{"role", ATTR_REQUIRED_NONEMPTY_NAME},
-    {"eventType", 0},                  // ignored
-    {"key", 0},                        // ignored
-    {"attributeType", 0},              // ignored
-    {"offset", 0}}},                   // ignored
+    {"eventType", 0},                  // unused
+    {"key", 0},                        // unused
+    {"attributeType", 0},              // unused
+    {"offset", 0}}},                   // unused
  },
  {"valueAssessment",
   {ParserState::pushAttributeAssessment, // reused
