@@ -33,7 +33,7 @@ check_failure (const string &log, const string &expected, const string &buf)
   string msg = "";
   bool status;
 
-  g_printerr ("xfail #%d: %s\n", i++, log.c_str ());
+  g_printerr ("XFAIL #%d: %s\n", i++, log.c_str ());
   doc = Parser::parseBuffer (buf.c_str (), buf.length (), 100, 100, &msg);
   if (doc == nullptr)
     {
@@ -60,7 +60,7 @@ check_success (const string &log, const string &buf)
   Document *doc;
   string msg = "";
 
-  g_printerr ("pass #%d: %s\n", i++, log.c_str ());
+  g_printerr ("PASS #%d: %s\n", i++, log.c_str ());
   doc = Parser::parseBuffer (buf.c_str (), buf.length (), 100, 100, &msg);
   if (msg != "")
     {
@@ -1612,6 +1612,9 @@ main (void)
     g_assert (doc->getMedias ()->size () == 1);
     g_assert (doc->getContexts ()->size () == 1);
 
+    Context *root = cast (Context *, doc->getRoot ());
+    g_assert_nonnull (root);
+
     Media *m = cast (MediaSettings *, doc->getObjectByIdOrAlias ("m"));
     g_assert_nonnull (m);
     g_assert (m->getEvents ()->size () == 6);
@@ -1630,6 +1633,9 @@ main (void)
 
     g_assert (m->getAttributionEvent ("focusIndex") != nullptr);
     g_assert (m->getProperty ("focusIndex") == "0");
+
+    TRACE ("\n%s", m->toString ().c_str ());
+    TRACE ("\n%s", root->toString ().c_str ());
     delete doc;
   }
 
@@ -1786,35 +1792,40 @@ main (void)
     g_assert (doc->getMedias ()->size () == 2);
     g_assert (doc->getContexts ()->size () == 1);
 
+    Context *root = cast (Context *, doc->getRoot ());
+    g_assert_nonnull (root);
+
     Media *m = cast (Media *, doc->getObjectById ("m"));
     g_assert_nonnull (m);
 
     auto links = doc->getRoot ()->getLinks ();
     g_assert (links->size () == 1);
 
-    auto &link = links->front ();
-    g_assert (link.first.size () == 1);
-    g_assert (link.second.size () == 1);
+    auto link = links->begin ();
+    g_assert (link->first.size () == 1);
+    g_assert (link->second.size () == 1);
 
-    auto &cond = link.first.front ();
-    g_assert (cond.event == m->getPresentationEvent ("a1"));
-    g_assert (cond.transition == Event::START);
-    g_assert (cond.predicate == nullptr);
-    g_assert (cond.value == "");
+    auto cond = link->first.begin ();
+    g_assert (cond->event == m->getPresentationEvent ("a1"));
+    g_assert (cond->transition == Event::START);
+    g_assert (cond->predicate == nullptr);
+    g_assert (cond->value == "");
 
-    auto &act = link.second.front ();
-    g_assert (act.event == m->getLambda ());
-    g_assert (act.transition == Event::START);
-    g_assert (act.predicate == nullptr);
-    g_assert (act.value == "");
+    auto act = link->second.begin ();
+    g_assert (act->event == m->getLambda ());
+    g_assert (act->transition == Event::START);
+    g_assert (act->predicate == nullptr);
+    g_assert (act->value == "");
 
+    TRACE ("\n%s", m->toString ().c_str ());
+    TRACE ("\n%s", root->toString ().c_str ());
     delete doc;
   }
 
   // Success: Simple link (vacuous conditions and actions).
   {
     Document *doc;
-    PASS (&doc, "Complex links", "\
+    PASS (&doc, "Simple link (vacuous conditions and actiosn)", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1858,28 +1869,33 @@ main (void)
     g_assert (doc->getMedias ()->size () == 2);
     g_assert (doc->getContexts ()->size () == 1);
 
+    Context *root = cast (Context *, doc->getRoot ());
+    g_assert_nonnull (root);
+
     Media *m = cast (Media *, doc->getObjectById ("m"));
     g_assert_nonnull (m);
 
     auto links = doc->getRoot ()->getLinks ();
     g_assert (links->size () == 1);
 
-    const auto &link = links->begin ();
+    auto link = links->begin ();
     g_assert (link->first.size () == 1);
     g_assert (link->second.size () == 1);
 
-    const auto &cond = link->first.begin ();
+    auto cond = link->first.begin ();
     g_assert (cond->event == m->getPresentationEvent ("a1"));
     g_assert (cond->transition == Event::PAUSE);
     g_assert (cond->predicate == nullptr);
     g_assert (cond->value == "");
 
-    const auto &act = link->second.begin ();
+    auto act = link->second.begin ();
     g_assert (act->event == m->getAttributionEvent ("x"));
     g_assert (act->transition == Event::START);
     g_assert (act->predicate == nullptr);
     g_assert (act->value == "33");
 
+    TRACE ("\n%s", m->toString ().c_str ());
+    TRACE ("\n%s", root->toString ().c_str ());
     delete doc;
   }
 
@@ -1894,10 +1910,14 @@ main (void)
     <simpleCondition role='onBegin'/>\n\
     <simpleCondition role='onSelection' key='$key'/>\n\
     <simpleAction role='start'/>\n\
+    <simpleAction role='set' value='$key'/>\n\
    </causalConnector>\n\
   </connectorBase>\n\
  </head>\n\
- <body>\n\
+ <body id='body'>\n\
+  <port id='pt1' component='m'/>\n\
+  <port id='pt2' component='m'/>\n\
+  <property name='p'/>\n\
   <media id='m'>\n\
    <area id='a1'/>\n\
    <area id='a2' begin='3s'/>\n\
@@ -1911,6 +1931,20 @@ main (void)
    <bind role='onBegin' component='m' interface='a1'/>\n\
    <bind role='onSelection' component='m'/>\n\
    <bind role='start' component='m'/>\n\
+   <bind role='set' component='body' interface='p'>\n\
+    <bindParam name='key' value='GREEN'/>\n\
+   </bind>\n\
+  </link>\n\
+  <link xconnector='c'>\n\
+   <bind role='onBegin' component='__root__'/>\n\
+   <bind role='get' component='m' interface='top'/>\n\
+   <bind role='onSelection' component='m'>\n\
+     <bindParam name='key' value='$get'/>\n\
+   </bind>\n\
+   <bind role='start' component='m' interface='a1'/>\n\
+   <bind role='set' component='body' interface='p'>\n\
+    <bindParam name='key' value='$get'/>\n\
+   </bind>\n\
   </link>\n\
  </body>\n\
 </ncl>\n\
@@ -1920,15 +1954,18 @@ main (void)
     g_assert (doc->getMedias ()->size () == 2);
     g_assert (doc->getContexts ()->size () == 1);
 
+    Context *root = doc->getRoot ();
+    g_assert_nonnull (root);
+
     Media *m = cast (Media *, doc->getObjectById ("m"));
     g_assert_nonnull (m);
 
     auto links = doc->getRoot ()->getLinks ();
-    g_assert (links->size () == 1);
+    g_assert (links->size () == 2);
 
     auto link = links->begin ();
     g_assert_cmpint (link->first.size (), ==, 2);
-    g_assert (link->second.size () == 1);
+    g_assert_cmpint (link->second.size (), ==, 2);
 
     auto cond = link->first.begin ();
     g_assert (cond->event == m->getPresentationEvent ("a1"));
@@ -1937,12 +1974,10 @@ main (void)
     g_assert (cond->value == "");
 
     cond++;
-    TRACE ("\n%s", cond->event->toString ().c_str ());
     g_assert (cond->event == m->getSelectionEvent ("RED"));
     g_assert (cond->transition == Event::START);
     g_assert (cond->predicate == nullptr);
     g_assert (cond->value == "RED");
-
 
     auto act = link->second.begin ();
     g_assert (act->event == m->getLambda ());
@@ -1950,7 +1985,44 @@ main (void)
     g_assert (act->predicate == nullptr);
     g_assert (act->value == "");
 
+    act++;
+    g_assert (act->event == root->getAttributionEvent ("p"));
+    g_assert (act->transition == Event::START);
+    g_assert (act->predicate == nullptr);
+    g_assert (act->value == "GREEN");
+
+    link++;
+    cond = link->first.begin ();
+    g_assert (cond->event == root->getLambda ());
+    g_assert (cond->transition == Event::START);
+    g_assert (cond->predicate == nullptr);
+    g_assert (cond->value == "");
+
+    cond++;
+    g_assert (cond->event == m->getSelectionEvent ("$m.top"));
+    g_assert (cond->transition == Event::START);
+    g_assert (cond->predicate == nullptr);
+    g_assert (cond->value == "$m.top");
+
+    act = link->second.begin ();
+    g_assert (act->event == m->getPresentationEvent ("a1"));
+    g_assert (act->transition == Event::START);
+    g_assert (act->predicate == nullptr);
+    g_assert (act->value == "");
+
+    act++;
+    g_assert (act->event == root->getAttributionEvent ("p"));
+    g_assert (act->transition == Event::START);
+    g_assert (act->predicate == nullptr);
+    g_assert (act->value == "$m.top");
+
+    TRACE ("\n%s", m->toString ().c_str ());
+    TRACE ("\n%s", root->toString ().c_str ());
     delete doc;
+  }
+
+  // Success: Binds pointing to ports.
+  {
   }
 
   // Success: Simple statements.
@@ -2012,12 +2084,12 @@ main (void)
     MediaSettings *settings = doc->getSettings ();
     g_assert_nonnull (settings);
 
-    Context *body = doc->getRoot ();
-    g_assert_nonnull (body);
-    g_assert (body->getId () == "__root__");
-    g_assert (body->getPorts ()->size () == 3);
-    g_assert (body->getChildren ()->size () == 3);
-    g_assert (body->getLinks ()->size () == 0);
+    Context *root = doc->getRoot ();
+    g_assert_nonnull (root);
+    g_assert (root->getId () == "__root__");
+    g_assert (root->getPorts ()->size () == 3);
+    g_assert (root->getChildren ()->size () == 3);
+    g_assert (root->getLinks ()->size () == 0);
 
     g_assert (doc->getMedias ()->size () == 3);
 
@@ -2027,6 +2099,8 @@ main (void)
     g_assert_nonnull (m->getPresentationEvent ("@lambda"));
     g_assert_nonnull (m->getAttributionEvent ("background"));
 
+    TRACE ("\n%s", m->toString ().c_str ());
+    TRACE ("\n%s", root->toString ().c_str ());
     delete doc;
   }
 
