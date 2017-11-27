@@ -56,6 +56,7 @@ public:
   Event::Type getType ();
   Object *getObject ();
   string getId ();
+  string getFullId ();
   Event::State getState ();
   string toString ();
 

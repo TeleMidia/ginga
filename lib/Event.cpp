@@ -57,6 +57,29 @@ Event::getId ()
   return _id;
 }
 
+string
+Event::getFullId ()
+{
+  string obj_id;
+  g_assert_nonnull (_object);
+  obj_id = _object->getId ();
+  switch (_type)
+    {
+    case Event::PRESENTATION:
+      if (_id == "@lambda")
+        return obj_id + _id;
+      else
+        return obj_id + "@" + _id;
+    case Event::ATTRIBUTION:
+      return obj_id + "." + _id;
+    case Event::SELECTION:
+      return obj_id + "<" + _id + ">";
+    default:
+      g_assert_not_reached ();
+    }
+  g_assert_not_reached ();
+}
+
 Event::State
 Event::getState ()
 {
@@ -71,10 +94,10 @@ Event::toString ()
   str = xstrbuild
     ("\
 Event (%p)\n\
-  Object: %p (%s, id: %s)\n\
-  Id: %s\n\
-  Type: %s\n\
-  State: %s\n",
+  object: %p (%s, id: %s)\n\
+  id: %s\n\
+  type: %s\n\
+  state: %s\n",
      this, _object, _object->getObjectTypeAsString ().c_str (),
      _object->getId ().c_str (), _id.c_str (),
      Event::getEventTypeAsString (_type).c_str (),
@@ -84,15 +107,15 @@ Event (%p)\n\
     {
       str += xstrbuild
         ("\
-  Begin: %" GINGA_TIME_FORMAT "\n\
-  End: %" GINGA_TIME_FORMAT "\n",
+  begin: %" GINGA_TIME_FORMAT "\n\
+  end: %" GINGA_TIME_FORMAT "\n",
          GINGA_TIME_ARGS (_begin),
          GINGA_TIME_ARGS (_end));
     }
 
   if (_parameters.size () > 0)
     {
-      str += "  Params:\n";
+      str += "  params:\n";
       for (auto it: _parameters)
         str += "    " + it.first + "='" + it.second + "'\n";
     }

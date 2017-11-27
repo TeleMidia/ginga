@@ -43,18 +43,83 @@ Context::getObjectTypeAsString ()
   return "Context";
 }
 
-string G_GNUC_NORETURN
-Context::getProperty (unused (const string &name))
+string
+Context::toString ()
 {
-  g_assert_not_reached ();
+  string str;
+
+  str = Object::toString ();
+
+  if (_ports.size () > 0)
+    {
+      auto it = _ports.begin ();
+      str += "  ports: " + (*it)->getFullId ();
+      while (++it != _ports.end ())
+        str += ", " + (*it)->getFullId ();
+      str += "\n";
+    }
+
+  if (_links.size () > 0)
+    {
+
+#define COND_TOSTRING(str, act)                                 \
+      G_STMT_START                                              \
+        {                                                       \
+          (str) += Event::getEventTransitionAsString            \
+            ((act).transition);                                 \
+          (str) += "(" + (act).event->getFullId () + ")";       \
+        }                                                       \
+      G_STMT_END
+
+#define ACT_TOSTRING(str, act)                                  \
+      G_STMT_START                                              \
+        {                                                       \
+          (str) += Event::getEventTransitionAsString            \
+            ((act).transition);                                 \
+          (str) += "(" + (act).event->getFullId ();             \
+          if ((act).event->getType () == Event::ATTRIBUTION)    \
+            (str) += ":='" + (act).value + "'";                 \
+          (str) += ")";                                         \
+        }                                                       \
+      G_STMT_END
+
+      int i = 1;
+      str += "  links:\n";
+      for (auto link: _links)
+        {
+          str += xstrbuild ("    #%d ", i++);
+          auto it = link.first.begin ();
+          COND_TOSTRING (str, *it);
+          while (++it != link.first.end ())
+            {
+              str += ", ";
+              COND_TOSTRING (str, *it);
+            }
+          str += "\n    -> ";
+          it = link.second.begin ();
+          ACT_TOSTRING (str, *it);
+          while (++it != link.second.end ())
+            {
+              str += ", ";
+              ACT_TOSTRING (str, *it);
+            }
+          str += "\n";
+        }
+    }
+
+  return str;
 }
 
-void G_GNUC_NORETURN
-Context::setProperty (unused (const string &name),
-                      unused (const string &value),
-                      unused (Time dur))
+string
+Context::getProperty (unused (const string &name))
 {
-  g_assert_not_reached ();
+  return Object::getProperty (name);
+}
+
+void
+Context::setProperty (const string &name, const string &value, Time dur)
+{
+  Object::setProperty (name, value, dur);
 }
 
 void
@@ -78,12 +143,12 @@ Context::sendTickEvent (Time total, Time diff, Time frame)
 }
 
 bool
-Context::startTransition (Event *event, Event::Transition transition)
+Context::startTransition (Event *evt, Event::Transition transition)
 {
-  switch (event->getType ())
+  switch (evt->getType ())
     {
     case Event::PRESENTATION:
-      g_assert (event->isLambda ());
+      g_assert (evt->isLambda ());
       switch (transition)
         {
         case Event::START:
@@ -117,9 +182,9 @@ Context::startTransition (Event *event, Event::Transition transition)
 }
 
 void
-Context::endTransition (Event *event, Event::Transition transition)
+Context::endTransition (Event *evt, Event::Transition transition)
 {
-  switch (event->getType ())
+  switch (evt->getType ())
     {
     case Event::PRESENTATION:
       switch (transition)
@@ -128,11 +193,11 @@ Context::endTransition (Event *event, Event::Transition transition)
           Object::doStart ();
           for (auto port: _ports)
             _doc->evalAction (port, transition);
-          TRACE ("start %s@lambda", _id.c_str ());
+          TRACE ("start %s", evt->getFullId ().c_str ());
           break;
         case Event::STOP:
           Object::doStop ();
-          TRACE ("stop %s@lambda", _id.c_str ());
+          TRACE ("stop %s", evt->getFullId ().c_str ());
           break;
         default:
             g_assert_not_reached ();

@@ -1501,7 +1501,7 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
                         (bind->node, "interface", iface,
                          "must be empty");
                     }
-                  act.value = resolveParamRef (role->value, &bind->params,
+                  act.value = resolveParamRef (role->key, &bind->params,
                                                params, &ghosts);
                   obj->addSelectionEvent (act.value);
                   act.event = obj->getSelectionEvent (act.value);
