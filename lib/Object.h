@@ -41,7 +41,7 @@ public:
   void initParent (Composition *);
 
   virtual string getObjectTypeAsString () = 0;
-  // virtual string toString ();
+  virtual string toString ();
 
   const vector <string> *getAliases ();
   bool hasAlias (const string &);

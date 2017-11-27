@@ -31,6 +31,7 @@ public:
 
   // Object:
   string getObjectTypeAsString () override;
+  string toString () override;
   string getProperty (const string &) override;
   void setProperty (const string &, const string &,
                     Time dur=0) override;

@@ -1112,7 +1112,7 @@ main (void)
 </ncl>\n\
 ");
 
-  XFAIL ("port: Bad Component",
+  XFAIL ("port: Bad component",
          "<port>: Bad value 'b' for attribute 'component' "
          "(no such object in scope)", "\
 <ncl>\n\
@@ -1864,27 +1864,93 @@ main (void)
     auto links = doc->getRoot ()->getLinks ();
     g_assert (links->size () == 1);
 
-    auto &link = links->front ();
-    g_assert (link.first.size () == 1);
-    g_assert (link.second.size () == 1);
+    const auto &link = links->begin ();
+    g_assert (link->first.size () == 1);
+    g_assert (link->second.size () == 1);
 
-    auto &cond = link.first.front ();
-    g_assert (cond.event == m->getPresentationEvent ("a1"));
-    g_assert (cond.transition == Event::PAUSE);
-    g_assert (cond.predicate == nullptr);
-    g_assert (cond.value == "");
+    const auto &cond = link->first.begin ();
+    g_assert (cond->event == m->getPresentationEvent ("a1"));
+    g_assert (cond->transition == Event::PAUSE);
+    g_assert (cond->predicate == nullptr);
+    g_assert (cond->value == "");
 
-    auto &act = link.second.front ();
-    g_assert (act.event == m->getAttributionEvent ("x"));
-    g_assert (act.transition == Event::START);
-    g_assert (act.predicate == nullptr);
-    g_assert (act.value == "33");
+    const auto &act = link->second.begin ();
+    g_assert (act->event == m->getAttributionEvent ("x"));
+    g_assert (act->transition == Event::START);
+    g_assert (act->predicate == nullptr);
+    g_assert (act->value == "33");
 
     delete doc;
   }
 
   // Success: Link and bind parameters.
   {
+    Document *doc;
+    PASS (&doc, "Link and bind parameters", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleCondition role='onSelection' key='$key'/>\n\
+    <simpleAction role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+  <media id='m'>\n\
+   <area id='a1'/>\n\
+   <area id='a2' begin='3s'/>\n\
+   <area id='a3' end='3s'/>\n\
+   <property name='top' value='50%'/>\n\
+   <property name='empty'/>\n\
+   <property name='x' value='y'/>\n\
+  </media>\n\
+  <link xconnector='c'>\n\
+   <linkParam name='key' value='RED'/>\n\
+   <bind role='onBegin' component='m' interface='a1'/>\n\
+   <bind role='onSelection' component='m'/>\n\
+   <bind role='start' component='m'/>\n\
+  </link>\n\
+ </body>\n\
+</ncl>\n\
+");
+    g_assert_nonnull (doc);
+    g_assert (doc->getObjects ()->size () == 3);
+    g_assert (doc->getMedias ()->size () == 2);
+    g_assert (doc->getContexts ()->size () == 1);
+
+    Media *m = cast (Media *, doc->getObjectById ("m"));
+    g_assert_nonnull (m);
+
+    auto links = doc->getRoot ()->getLinks ();
+    g_assert (links->size () == 1);
+
+    auto link = links->begin ();
+    g_assert_cmpint (link->first.size (), ==, 2);
+    g_assert (link->second.size () == 1);
+
+    auto cond = link->first.begin ();
+    g_assert (cond->event == m->getPresentationEvent ("a1"));
+    g_assert (cond->transition == Event::START);
+    g_assert (cond->predicate == nullptr);
+    g_assert (cond->value == "");
+
+    cond++;
+    TRACE ("\n%s", cond->event->toString ().c_str ());
+    g_assert (cond->event == m->getSelectionEvent ("RED"));
+    g_assert (cond->transition == Event::START);
+    g_assert (cond->predicate == nullptr);
+    g_assert (cond->value == "RED");
+
+
+    auto act = link->second.begin ();
+    g_assert (act->event == m->getLambda ());
+    g_assert (act->transition == Event::START);
+    g_assert (act->predicate == nullptr);
+    g_assert (act->value == "");
+
+    delete doc;
   }
 
   // Success: Simple statements.

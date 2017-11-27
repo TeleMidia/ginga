@@ -103,24 +103,24 @@ Switch::startTransition (Event *event, Event::Transition transition)
 }
 
 void
-Switch::endTransition (Event *event, Event::Transition transition)
+Switch::endTransition (Event *evt, Event::Transition transition)
 {
-  switch (event->getType ())
+  switch (evt->getType ())
     {
     case Event::PRESENTATION:
-      g_assert (event->isLambda ());
+      g_assert (evt->isLambda ());
      switch (transition)
         {
         case Event::START:
           Object::doStart ();
-          TRACE ("start %s@lambda", _id.c_str ());
+          TRACE ("start %s", evt->getFullId ().c_str ());
           if (_selected == nullptr)
-            _doc->evalAction (event, Event::STOP);
+            _doc->evalAction (evt, Event::STOP);
           break;
 
         case Event::STOP:
           Object::doStop ();
-          TRACE ("stop %s@lambda", _id.c_str ());
+          TRACE ("stop %s", evt->getFullId ().c_str ());
           break;
 
         default:
