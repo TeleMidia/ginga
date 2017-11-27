@@ -1415,12 +1415,17 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
             {
               Object *obj;
 
-              obj = ctx->getChildById (it.second->component);
+              obj = ctx->getChildByIdOrAlias (it.second->component);
               if (unlikely (obj == nullptr))
                 {
-                  return st->errEltBadAttribute
-                    (it.second->node, "component", it.second->component,
-                     "no such object in scope");
+                  if (unlikely (ctx->getId () != it.second->component
+                                && !ctx->hasAlias (it.second->component)))
+                    {
+                      return st->errEltBadAttribute
+                        (it.second->node, "component", it.second->component,
+                         "no such object in scope");
+                    }
+                  obj = ctx;
                 }
 
               if (unlikely (it.second->iface == ""))
@@ -1452,12 +1457,17 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
               g_assert_nonnull (bind);
 
               // Check component.
-              obj = ctx->getChildById (bind->component);
-              if (unlikely (obj == nullptr))
+              obj = ctx->getChildByIdOrAlias (bind->component);
+              if (obj == nullptr)
                 {
-                  return st->errEltBadAttribute
-                    (bind->node, "component", bind->component,
-                     "no such object in scope");
+                  if (unlikely (ctx->getId () != it.second->component
+                                && !ctx->hasAlias (bind->component)))
+                    {
+                      return st->errEltBadAttribute
+                        (bind->node, "component", bind->component,
+                         "no such object in scope");
+                    }
+                  obj = ctx;
                 }
 
               // Check interface.
@@ -2068,7 +2078,7 @@ ParserState::popContext (ParserState *st, ParserElt *elt)
       g_assert (st->eltCacheIndexById (port_id, &port_elt, {"port"}));
       g_assert (port_elt->getAttribute ("component", &comp));
 
-      obj = ctx->getChildById (comp);
+      obj = ctx->getChildByIdOrAlias (comp);
       if (unlikely (obj == nullptr))
         {
           return st->errEltBadAttribute (port_elt->getNode (), "component",
@@ -2262,11 +2272,11 @@ ParserState::pushBind (ParserState *st, ParserElt *elt)
   g_assert (elt->getAttribute ("role", &bind.role));
   g_assert (elt->getAttribute ("component", &bind.component));
   elt->getAttribute ("interface", &bind.iface);
-  UDATA_SET (elt, "params", &bind.params, nullptr);
 
   g_assert (st->eltCacheIndexParent (elt->getNode (), &parent_elt));
   UDATA_GET (parent_elt, "binds", &binds);
   binds->push_back (bind);
+  UDATA_SET (elt, "params", &binds->back ().params, nullptr);
 
   return true;
 }
