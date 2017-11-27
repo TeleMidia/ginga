@@ -26,9 +26,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <libxml/tree.h>
 #include <libxml/parser.h>
 
-GINGA_PRAGMA_DIAG_IGNORE (-Wunused-function)
-GINGA_PRAGMA_DIAG_IGNORE (-Wunused-macros)
-
 GINGA_NAMESPACE_BEGIN
 
 
