@@ -2371,8 +2371,43 @@ main (void)
 
   // Success: Simple statements.
   {
-  }
+    Document *doc;
+    PASS (&doc, "Simple statements", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='conn1'>\n\
+    <compoundCondition>\n\
+     <simpleCondition role='onBegin'/>\n\
+     <assessmentStatement comparator='eq'>\n\
+      <valueAssessment value='0'/>\n\
+      <valueAssessment value='0'/>\n\
+     </assessmentStatement>\n\
+    </compoundCondition>\n\
+    <simpleAction role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body id='body'>\n\
+  <link xconnector='conn1'>\n\
+   <bind role='onBegin' component='body'/>\n\
+   <bind role='start' component='body'/>\n\
+  </link>\n\
+ </body>\n\
+</ncl>");
 
+    g_assert_nonnull (doc);
+    g_assert (doc->getObjects ()->size () == 2);
+    g_assert (doc->getMedias ()->size () == 1);
+    g_assert (doc->getContexts ()->size () == 1);
+
+    Context *root = doc->getRoot ();
+    g_assert_nonnull (root);
+
+    TRACE ("\n%s", root->toString ().c_str ());
+    delete doc;
+  }
+exit (0);
   // Success: Complex statements.
   {
   }
