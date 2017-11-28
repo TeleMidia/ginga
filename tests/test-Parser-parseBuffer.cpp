@@ -1485,9 +1485,33 @@ main (void)
 </ncl>\n\
 ");
 
+  XFAIL ("bind: Bad interface (area)",
+         "<bind>: Bad value 'p' for attribute 'interface' "
+         "(expected a presentation event)", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+  <media id='x'>\n\
+   <property name='p' value=''/>\n\
+  </media>\n\
+  <link xconnector='c'>\n\
+   <bind role='onBegin' component='x'/>\n\
+   <bind role='start' component='x' interface='p'/>\n\
+  </link>\n\
+ </body>\n\
+</ncl>\n\
+");
+
   XFAIL ("bind: Bad interface (property)",
          "<bind>: Bad value '' for attribute 'interface' "
-         "(must not be empty)", "\
+         "(expected an attribution event)", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1937,11 +1961,17 @@ main (void)
     g_assert (cond->predicate == nullptr);
     g_assert (cond->value == "");
 
+    cond++;
+    g_assert (cond == link->first.end ());
+
     auto act = link->second.begin ();
     g_assert (act->event == m->getLambda ());
     g_assert (act->transition == Event::START);
     g_assert (act->predicate == nullptr);
     g_assert (act->value == "");
+
+    act++;
+    g_assert (act == link->second.end ());
 
     TRACE ("\n%s", m->toString ().c_str ());
     TRACE ("\n%s", root->toString ().c_str ());
@@ -2014,11 +2044,17 @@ main (void)
     g_assert (cond->predicate == nullptr);
     g_assert (cond->value == "");
 
+    cond++;
+    g_assert (cond == link->first.end ());
+
     auto act = link->second.begin ();
     g_assert (act->event == m->getAttributionEvent ("x"));
     g_assert (act->transition == Event::START);
     g_assert (act->predicate == nullptr);
     g_assert (act->value == "33");
+
+    act++;
+    g_assert (act == link->second.end ());
 
     TRACE ("\n%s", m->toString ().c_str ());
     TRACE ("\n%s", root->toString ().c_str ());
@@ -2134,6 +2170,9 @@ main (void)
     g_assert (cond->predicate == nullptr);
     g_assert (cond->value == "$m.top");
 
+    cond++;
+    g_assert (cond == link->first.end ());
+
     act = link->second.begin ();
     g_assert (act->event == m->getPresentationEvent ("a1"));
     g_assert (act->transition == Event::START);
@@ -2158,14 +2197,143 @@ main (void)
     g_assert (act->predicate == nullptr);
     g_assert (act->value == "$key");
 
+    act++;
+    g_assert (act == link->second.end ());
+
     TRACE ("\n%s", m->toString ().c_str ());
     TRACE ("\n%s", root->toString ().c_str ());
     delete doc;
   }
-  exit (0);
 
-  // Success: Binds pointing to ports.
+  // Success: Binds pointing to ports and properties.
   {
+    Document *doc;
+    PASS (&doc, "Binds pointing to ports and properties", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='conn1'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='start'/>\n\
+    <simpleAction role='set' value='13'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body id='body'>\n\
+  <port id='pt1' component='m'/>\n\
+  <port id='pt2' component='m'/>\n\
+  <media id='m'>\n\
+   <area id='a1'/>\n\
+  </media>\n\
+  <link xconnector='conn1'>\n\
+   <bind role='onBegin' component='c1'/>\n\
+   <bind role='onBegin' component='c1' interface='pt14'/>\n\
+   <bind role='start' component='c1' interface='pt11'/>\n\
+   <bind role='start' component='c1' interface='pt12'/>\n\
+   <bind role='set' component='c1' interface='pt13'/>\n\
+   <bind role='set' component='c1' interface='pt15'/>\n\
+  </link>\n\
+  <context id='c1'>\n\
+   <port id='pt11' component='c1'/>\n\
+   <port id='pt12' component='m2'/>\n\
+   <port id='pt13' component='c1' interface='p11'/>\n\
+   <port id='pt14' component='c2' interface='pt21'/>\n\
+   <port id='pt15' component='c2' interface='pt22'/>\n\
+   <context id='c2'>\n\
+     <media id='m3'>\n\
+      <area id='a2'/>\n\
+      <property name='pm3'/>\n\
+     </media>\n\
+     <port id='pt21' component='m3' interface='a2'/>\n\
+     <port id='pt22' component='m3' interface='pm3'/>\n\
+   </context>\n\
+   <property name='p11' value=''/>\n\
+   <media id='m2'/>\n\
+   <link xconnector='conn1'>\n\
+    <bind role='onBegin' component='c1'/>\n\
+    <bind role='start' component='c1'/>\n\
+    <bind role='set' component='c1' interface='p11'/>\n\
+   </link>\n\
+  </context>\n\
+ </body>\n\
+</ncl>");
+
+    g_assert_nonnull (doc);
+    g_assert (doc->getObjects ()->size () == 7);
+    g_assert (doc->getMedias ()->size () == 4);
+    g_assert (doc->getContexts ()->size () == 3);
+
+    Context *root = doc->getRoot ();
+    g_assert_nonnull (root);
+
+    Media *m = cast (Media *, doc->getObjectById ("m"));
+    g_assert_nonnull (m);
+
+    Media *m2 = cast (Media *, doc->getObjectById ("m2"));
+    g_assert_nonnull (m2);
+
+    Media *m3 = cast (Media *, doc->getObjectById ("m3"));
+    g_assert_nonnull (m3);
+
+    Context *c1 = cast (Context *, doc->getObjectById ("c1"));
+    g_assert_nonnull (c1);
+
+    Context *c2 = cast (Context *, doc->getObjectById ("c2"));
+    g_assert_nonnull (c2);
+
+    auto links = doc->getRoot ()->getLinks ();
+    g_assert (links->size () == 1);
+
+    auto link = links->begin ();
+    g_assert (link->first.size () == 2);
+    g_assert (link->second.size () == 4);
+
+    auto cond = link->first.begin ();
+    g_assert (cond->event == c1->getLambda ());
+    g_assert (cond->transition == Event::START);
+    g_assert (cond->predicate == nullptr);
+    g_assert (cond->value == "");
+
+    cond++;
+    g_assert (cond->event == m3->getPresentationEvent ("a2"));
+    g_assert (cond->transition == Event::START);
+    g_assert (cond->predicate == nullptr);
+    g_assert (cond->value == "");
+
+    cond++;
+    g_assert (cond == link->first.end ());
+
+    auto act = link->second.begin ();
+    g_assert (act->event == c1->getLambda ());
+    g_assert (act->transition == Event::START);
+    g_assert (act->predicate == nullptr);
+    g_assert (act->value == "");
+
+    act++;
+    g_assert (act->event == m2->getLambda ());
+    g_assert (act->transition == Event::START);
+    g_assert (act->predicate == nullptr);
+    g_assert (act->value == "");
+
+    act++;
+    g_assert (act->event == c1->getAttributionEvent ("p11"));
+    g_assert (act->transition == Event::START);
+    g_assert (act->predicate == nullptr);
+    g_assert (act->value == "13");
+
+    act++;
+    g_assert (act->event == m3->getAttributionEvent ("pm3"));
+    g_assert (act->transition == Event::START);
+    g_assert (act->predicate == nullptr);
+    g_assert (act->value == "13");
+
+    act++;
+    g_assert (act == link->second.end ());
+
+    TRACE ("\n%s", root->toString ().c_str ());
+    TRACE ("\n%s", m->toString ().c_str ());
+    TRACE ("\n%s", c1->toString ().c_str ());
+    delete doc;
   }
 
   // Success: Simple statements.
