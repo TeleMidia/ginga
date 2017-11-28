@@ -1902,7 +1902,7 @@ ParserState::pushSimpleCondition (ParserState *st, ParserElt *elt)
         {
           return st->errEltBadAttribute
             (node, "role", role.role,
-             "reserved role '" + role.role + "' must be"
+             "reserved role '" + role.role + "' must be "
              + string ((condition) ? "a condition" : "an action"));
         }
 

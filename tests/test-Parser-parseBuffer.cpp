@@ -394,6 +394,22 @@ main (void)
 </ncl>\n\
 ");
 
+  XFAIL ("simpleCondition: Bad role",
+         "<simpleCondition>: Bad value 'start' for attribute 'role' "
+         "(reserved role 'start' must be an action)", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
   XFAIL ("simpleCondition: Reserved role",
          "<simpleCondition>: Bad value 'selection' "
          "for attribute 'eventType' "
@@ -483,6 +499,196 @@ main (void)
    <causalConnector id='c'>\n\
     <simpleCondition role='x' eventType='presentation'\n\
                      transition='unknown'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+
+// -------------------------------------------------------------------------
+// <simpleAction>
+// -------------------------------------------------------------------------
+
+  XFAIL ("simpleAction: Missing role",
+         "<simpleAction>: Missing attribute 'role'", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Bad role",
+         "<simpleAction>: Bad value '' for attribute 'role' "
+         "(must not be empty)", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role=''/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Bad role",
+         "<simpleAction>: Bad value '$x' for attribute 'role' "
+         "(must not contain '$')", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='$x'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Bad role",
+         "<simpleAction>: Bad value 'onBegin' for attribute 'role' "
+         "(reserved role 'onBegin' must be a condition)", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='onBegin'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Reserved role",
+         "<simpleAction>: Bad value 'selection' "
+         "for attribute 'eventType' "
+         "(reserved role 'start' cannot be overwritten)", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='start' eventType='selection'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Reserved role",
+         "<simpleAction>: Bad value 'stops' "
+         "for attribute 'actionType' "
+         "(reserved role 'start' cannot be overwritten)", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='start' actionType='stops'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Missing eventType",
+         "<simpleAction>: Missing attribute 'eventType'", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='x'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Bad eventType",
+         "<simpleAction>: Bad value 'unknown' for attribute 'eventType'", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='x' eventType='unknown'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Missing actionType",
+         "<simpleAction>: Missing attribute 'actionType'", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='x' eventType='presentation'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Bad actionType",
+         "<simpleAction>: Bad value 'unknown' for attribute 'actionType'",
+         "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='x' eventType='presentation'\n\
+                           actionType='unknown'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Missing value",
+         "<simpleAction>: Missing attribute 'value'", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='set'/>\n\
    </causalConnector>\n\
   </connectorBase>\n\
  </head>\n\
@@ -880,179 +1086,6 @@ main (void)
      </assessmentStatement>\n\
     </compoundCondition>\n\
     <compoundAction/>\n\
-   </causalConnector>\n\
-  </connectorBase>\n\
- </head>\n\
- <body>\n\
- </body>\n\
-</ncl>\n\
-");
-
-
-// -------------------------------------------------------------------------
-// <simpleAction>
-// -------------------------------------------------------------------------
-
-  XFAIL ("simpleAction: Missing role",
-         "<simpleAction>: Missing attribute 'role'", "\
-<ncl>\n\
- <head>\n\
-  <connectorBase>\n\
-   <causalConnector id='c'>\n\
-    <simpleCondition role='onBegin'/>\n\
-    <simpleAction/>\n\
-   </causalConnector>\n\
-  </connectorBase>\n\
- </head>\n\
- <body>\n\
- </body>\n\
-</ncl>\n\
-");
-
-  XFAIL ("simpleAction: Bad role",
-         "<simpleAction>: Bad value '' for attribute 'role' "
-         "(must not be empty)", "\
-<ncl>\n\
- <head>\n\
-  <connectorBase>\n\
-   <causalConnector id='c'>\n\
-    <simpleCondition role='onBegin'/>\n\
-    <simpleAction role=''/>\n\
-   </causalConnector>\n\
-  </connectorBase>\n\
- </head>\n\
- <body>\n\
- </body>\n\
-</ncl>\n\
-");
-
-  XFAIL ("simpleAction: Bad role",
-         "<simpleAction>: Bad value '$x' for attribute 'role' "
-         "(must not contain '$')", "\
-<ncl>\n\
- <head>\n\
-  <connectorBase>\n\
-   <causalConnector id='c'>\n\
-    <simpleCondition role='onBegin'/>\n\
-    <simpleAction role='$x'/>\n\
-   </causalConnector>\n\
-  </connectorBase>\n\
- </head>\n\
- <body>\n\
- </body>\n\
-</ncl>\n\
-");
-
-  XFAIL ("simpleAction: Reserved role",
-         "<simpleAction>: Bad value 'selection' "
-         "for attribute 'eventType' "
-         "(reserved role 'start' cannot be overwritten)", "\
-<ncl>\n\
- <head>\n\
-  <connectorBase>\n\
-   <causalConnector id='c'>\n\
-    <simpleCondition role='onBegin'/>\n\
-    <simpleAction role='start' eventType='selection'/>\n\
-   </causalConnector>\n\
-  </connectorBase>\n\
- </head>\n\
- <body>\n\
- </body>\n\
-</ncl>\n\
-");
-
-  XFAIL ("simpleAction: Reserved role",
-         "<simpleAction>: Bad value 'stops' "
-         "for attribute 'actionType' "
-         "(reserved role 'start' cannot be overwritten)", "\
-<ncl>\n\
- <head>\n\
-  <connectorBase>\n\
-   <causalConnector id='c'>\n\
-    <simpleCondition role='onBegin'/>\n\
-    <simpleAction role='start' actionType='stops'/>\n\
-   </causalConnector>\n\
-  </connectorBase>\n\
- </head>\n\
- <body>\n\
- </body>\n\
-</ncl>\n\
-");
-
-  XFAIL ("simpleAction: Missing eventType",
-         "<simpleAction>: Missing attribute 'eventType'", "\
-<ncl>\n\
- <head>\n\
-  <connectorBase>\n\
-   <causalConnector id='c'>\n\
-    <simpleCondition role='onBegin'/>\n\
-    <simpleAction role='x'/>\n\
-   </causalConnector>\n\
-  </connectorBase>\n\
- </head>\n\
- <body>\n\
- </body>\n\
-</ncl>\n\
-");
-
-  XFAIL ("simpleAction: Bad eventType",
-         "<simpleAction>: Bad value 'unknown' for attribute 'eventType'", "\
-<ncl>\n\
- <head>\n\
-  <connectorBase>\n\
-   <causalConnector id='c'>\n\
-    <simpleCondition role='onBegin'/>\n\
-    <simpleAction role='x' eventType='unknown'/>\n\
-   </causalConnector>\n\
-  </connectorBase>\n\
- </head>\n\
- <body>\n\
- </body>\n\
-</ncl>\n\
-");
-
-  XFAIL ("simpleAction: Missing actionType",
-         "<simpleAction>: Missing attribute 'actionType'", "\
-<ncl>\n\
- <head>\n\
-  <connectorBase>\n\
-   <causalConnector id='c'>\n\
-    <simpleCondition role='onBegin'/>\n\
-    <simpleAction role='x' eventType='presentation'/>\n\
-   </causalConnector>\n\
-  </connectorBase>\n\
- </head>\n\
- <body>\n\
- </body>\n\
-</ncl>\n\
-");
-
-  XFAIL ("simpleAction: Bad actionType",
-         "<simpleAction>: Bad value 'unknown' for attribute 'actionType'",
-         "\
-<ncl>\n\
- <head>\n\
-  <connectorBase>\n\
-   <causalConnector id='c'>\n\
-    <simpleCondition role='onBegin'/>\n\
-    <simpleAction role='x' eventType='presentation'\n\
-                           actionType='unknown'/>\n\
-   </causalConnector>\n\
-  </connectorBase>\n\
- </head>\n\
- <body>\n\
- </body>\n\
-</ncl>\n\
-");
-
-  XFAIL ("simpleAction: Missing value",
-         "<simpleAction>: Missing attribute 'value'", "\
-<ncl>\n\
- <head>\n\
-  <connectorBase>\n\
-   <causalConnector id='c'>\n\
-    <simpleCondition role='onBegin'/>\n\
-    <simpleAction role='set'/>\n\
    </causalConnector>\n\
   </connectorBase>\n\
  </head>\n\
