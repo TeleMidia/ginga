@@ -67,7 +67,10 @@ Context::toString ()
         {                                                       \
           (str) += Event::getEventTransitionAsString            \
             ((act).transition);                                 \
-          (str) += "(" + (act).event->getFullId () + ")";       \
+          (str) += "(" + (act).event->getFullId ();             \
+          if ((act).predicate != nullptr)                       \
+            (str) += " ? " + (act).predicate->toString ();      \
+          (str) += ")";                                         \
         }                                                       \
       G_STMT_END
 

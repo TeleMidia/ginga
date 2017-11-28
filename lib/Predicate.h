@@ -46,6 +46,7 @@ class Predicate
   Predicate (Predicate::Type);
   ~Predicate ();
   Predicate::Type getType ();
+  string toString ();
   Predicate *clone ();
 
   // Atomic only.
