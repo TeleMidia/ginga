@@ -2071,6 +2071,10 @@ main (void)
    <bind role='set' component='body' interface='p'>\n\
     <bindParam name='key' value='$get'/>\n\
    </bind>\n\
+   <bind role='set' component='body' interface='p'>\n\
+    <bindParam name='key' value='$unknown'/>\n\
+   </bind>\n\
+   <bind role='set' component='body' interface='p'/>\n\
   </link>\n\
  </body>\n\
 </ncl>\n\
@@ -2142,10 +2146,23 @@ main (void)
     g_assert (act->predicate == nullptr);
     g_assert (act->value == "$m.top");
 
+    act++;
+    g_assert (act->event == root->getAttributionEvent ("p"));
+    g_assert (act->transition == Event::START);
+    g_assert (act->predicate == nullptr);
+    g_assert (act->value == "$unknown");
+
+    act++;
+    g_assert (act->event == root->getAttributionEvent ("p"));
+    g_assert (act->transition == Event::START);
+    g_assert (act->predicate == nullptr);
+    g_assert (act->value == "$key");
+
     TRACE ("\n%s", m->toString ().c_str ());
     TRACE ("\n%s", root->toString ().c_str ());
     delete doc;
   }
+  exit (0);
 
   // Success: Binds pointing to ports.
   {
