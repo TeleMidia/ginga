@@ -30,6 +30,7 @@ class Composition: public Object
 
   const set<Object *> *getChildren ();
   Object *getChildById (const string &);
+  Object *getChildByIdOrAlias (const string &);
   void addChild (Object *);
 
  protected:

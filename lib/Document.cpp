@@ -22,6 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Media.h"
 #include "MediaSettings.h"
 #include "Object.h"
+#include "Switch.h"
 
 GINGA_NAMESPACE_BEGIN
 
@@ -84,6 +85,22 @@ Document::addObject (Object *obj)
       g_assert_nonnull (media);
       _medias.insert (media);
     }
+  else if (instanceof (Context *, obj))
+    {
+      Context *ctx = cast (Context *, obj);
+      g_assert_nonnull (ctx);
+      _contexts.insert (ctx);
+    }
+  else if (instanceof (Switch *, obj))
+    {
+      Switch *swtch = cast (Switch *, obj);
+      g_assert_nonnull (swtch);
+      _switches.insert (swtch);
+    }
+  else
+    {
+      g_assert_not_reached ();
+    }
   return true;
 }
 
@@ -105,6 +122,18 @@ const set<Media *> *
 Document::getMedias ()
 {
   return &_medias;
+}
+
+const set<Context *> *
+Document::getContexts ()
+{
+  return &_contexts;
+}
+
+const set<Switch *> *
+Document::getSwitches ()
+{
+  return &_switches;
 }
 
 int

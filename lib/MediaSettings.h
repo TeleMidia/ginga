@@ -29,6 +29,7 @@ public:
   ~MediaSettings ();
 
   // Object:
+  string getObjectTypeAsString () override;
   void setProperty (const string &, const string &, Time) override;
   void sendTickEvent (Time, Time, Time) override;
 

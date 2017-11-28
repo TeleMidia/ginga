@@ -53,8 +53,8 @@ class Predicate
   void setTest (const string &, Predicate::Test, const string &);
 
   // Non-atomic only.
-  void addChild (Predicate *);
   const vector <Predicate *> *getChildren ();
+  void addChild (Predicate *);
 
   // Both.
   Predicate *getParent ();

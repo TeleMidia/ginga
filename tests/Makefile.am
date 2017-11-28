@@ -194,13 +194,13 @@ test_Ginga_setOptionString_SOURCES= test-Ginga-setOptionString.cpp
 
 progs+= xfail-test-Ginga-getOptionString
 xfail_test_Ginga_getOptionString_SOURCES=\
-   xfail-test-Ginga-getOptionString.cpp
+  xfail-test-Ginga-getOptionString.cpp
 
 progs+= xfail-test-Ginga-setOptionString
 xfail_test_Ginga_setOptionString_SOURCES=\
-   xfail-test-Ginga-setOptionString.cpp
+  xfail-test-Ginga-setOptionString.cpp
 
-check_SCRIPTS= $(ncls)
+# check_SCRIPTS= $(ncls)
 check_PROGRAMS= $(progs)
 TESTS= $(check_SCRIPTS) $(check_PROGRAMS)
 XFAIL_TESTS=\

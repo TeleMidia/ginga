@@ -40,10 +40,14 @@ public:
   Composition *getParent ();
   void initParent (Composition *);
 
+  virtual string getObjectTypeAsString () = 0;
+  virtual string toString ();
+
   const vector <string> *getAliases ();
   bool hasAlias (const string &);
   void addAlias (const string &);
 
+  const set<Event *> *getEvents ();
   Event *getEvent (Event::Type, const string &);
   Event *getAttributionEvent (const string &);
   void addAttributionEvent (const string &);
