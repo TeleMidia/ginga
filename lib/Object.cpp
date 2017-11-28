@@ -83,6 +83,86 @@ Object::initParent (Composition *parent)
   _parent = parent;
 }
 
+string
+Object::toString ()
+{
+  string str;
+
+  str = xstrbuild
+    ("%s (%p):\n", this->getObjectTypeAsString ().c_str (), this);
+
+  if (_parent != nullptr)
+    {
+      str += xstrbuild
+        ("\
+  parent %p (%s, id: %s)\n",
+         _parent, _parent->getObjectTypeAsString ().c_str (),
+         _parent->getId ().c_str ());
+    }
+  str += "  id: " + _id + "\n";
+  auto it = _aliases.begin ();
+  if (it != _aliases.end ())
+    {
+      str += "  aliases: " + *it;
+      while (++it != _aliases.end ())
+        str += ", " + *it;
+      str += "\n";
+    }
+
+  str += "  time: ";
+  if (GINGA_TIME_IS_VALID (_time))
+    str += xstrbuild ("%" GINGA_TIME_FORMAT, GINGA_TIME_ARGS (_time));
+  else
+    str += "(none)";
+  str += "\n";
+
+  list<string> pres;
+  list<string> attr;
+  list<string> sel;
+  for (auto evt: _events)
+    switch (evt->getType ())
+      {
+      case Event::PRESENTATION:
+        pres.push_back (evt->getId ());
+        break;
+      case Event::ATTRIBUTION:
+        attr.push_back (evt->getId ());
+        break;
+      case Event::SELECTION:
+        sel.push_back (evt->getId ());
+        break;
+      default:
+        g_assert_not_reached ();
+      }
+
+  list<pair<string, list<string> *>> evts =
+  {
+   {"evts pres.", &pres},
+   {"evts attr.", &attr},
+   {"evts sel.", &sel},
+  };
+
+  for (auto it_evts: evts)
+    {
+      auto it_evt = it_evts.second->begin ();
+      if (it_evt == it_evts.second->end ())
+        continue;
+      str += "  " + it_evts.first + ": " + *it_evt;
+      while (++it_evt != it_evts.second->end ())
+        str += ", " + *it_evt;
+      str += "\n";
+    }
+
+  if (_properties.size () > 0)
+    {
+      str += "  properties:\n";
+      for (auto it: _properties)
+        str += "    " + it.first + "='" + it.second + "'\n";
+    }
+
+  return str;
+}
+
 const vector <string> *
 Object::getAliases ()
 {
@@ -102,6 +182,12 @@ void
 Object::addAlias (const string &alias)
 {
   tryinsert (alias, _aliases, push_back);
+}
+
+const set<Event *> *
+Object::getEvents ()
+{
+  return &_events;
 }
 
 Event *

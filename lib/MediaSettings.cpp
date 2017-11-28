@@ -39,6 +39,12 @@ MediaSettings::~MediaSettings ()
 
 // Public: Object.
 
+string
+MediaSettings::getObjectTypeAsString ()
+{
+  return "MediaSettings";
+}
+
 void
 MediaSettings::setProperty (const string &name, const string &value,
                             Time dur)

@@ -74,6 +74,12 @@ Predicate::getTest (string *left, Predicate::Test *test,
   tryset (right, _atom.right);
 }
 
+const vector<Predicate *> *
+Predicate::getChildren ()
+{
+  return &_children;
+}
+
 void
 Predicate::addChild (Predicate *child)
 {
@@ -81,7 +87,6 @@ Predicate::addChild (Predicate *child)
   switch (_type)
     {
     case Predicate::NEGATION:
-      g_assert (_children.size () == 0);
     case Predicate::CONJUNCTION:
     case Predicate::DISJUNCTION:
       break;
@@ -93,12 +98,6 @@ Predicate::addChild (Predicate *child)
     }
   child->initParent (this);
   _children.push_back (child);
-}
-
-const vector<Predicate *> *
-Predicate::getChildren ()
-{
-  return &_children;
 }
 
 void

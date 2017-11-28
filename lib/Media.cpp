@@ -121,6 +121,27 @@ Media::~Media ()
 
 // Public: Object.
 
+string
+Media::getObjectTypeAsString ()
+{
+  return "Media";
+}
+
+string
+Media::toString ()
+{
+  string str;
+
+  str = Object::toString ();
+  if (_mime != "")
+    str += "  mime: " + _mime + "\n";
+  if (_uri != "")
+    str += "  uri: " + _uri + "\n";
+  str += xstrbuild ("  player: %p\n", _player);
+
+  return str;
+}
+
 void
 Media::setProperty (const string &name, const string &value, Time dur)
 {
@@ -190,7 +211,7 @@ Media::sendKeyEvent (const string &key, bool press)
   // Run collected events.
   for (Event *evt: buf)
     {
-      TRACE ("%s<%s>", _id.c_str (), evt->getId ().c_str ());
+      TRACE ("%s", evt->getFullId ().c_str ());
       _doc->evalAction (evt, Event::START);
       _doc->evalAction (evt, Event::STOP);
     }
@@ -218,7 +239,7 @@ Media::sendTickEvent (Time total, Time diff, Time frame)
     {
       Event *lambda = this->getLambda ();
       g_assert_nonnull (lambda);
-      TRACE ("eos %s@lambda at %" GINGA_TIME_FORMAT, _id.c_str (),
+      TRACE ("eos %s at %" GINGA_TIME_FORMAT, lambda->getFullId ().c_str (),
              GINGA_TIME_ARGS (_time));
       _doc->evalAction (lambda, Event::STOP);
       return;
@@ -296,16 +317,16 @@ Media::endTransition (Event *evt, Event::Transition transition)
                         (e, Event::STOP, "", end);
                     }
                 }
-              TRACE ("start %s@lambda", _id.c_str ());
+              TRACE ("start %s", evt->getFullId ().c_str ());
             }
           else                  // non-lambda area
             {
               Time begin;
               g_assert (this->isOccurring ());
               evt->getInterval (&begin, nullptr);
-              TRACE ("start %s@%s (begin=%" GINGA_TIME_FORMAT
+              TRACE ("start %s (begin=%" GINGA_TIME_FORMAT
                      ") at %" GINGA_TIME_FORMAT,
-                     _id.c_str (), evt->getId ().c_str (),
+                     evt->getFullId ().c_str (),
                      GINGA_TIME_ARGS (begin), GINGA_TIME_ARGS (_time));
             }
           break;
@@ -315,16 +336,16 @@ Media::endTransition (Event *evt, Event::Transition transition)
             {
               g_assert_nonnull (_player);
               this->doStop ();
-              TRACE ("stop %s@lambda", _id.c_str ());
+              TRACE ("stop %s", evt->getFullId ().c_str ());
             }
           else                  // non-lambda area
             {
               Time end;
               g_assert (this->isOccurring ());
               evt->getInterval (nullptr, &end);
-              TRACE ("stop %s@%s (end=%" GINGA_TIME_FORMAT
+              TRACE ("stop %s (end=%" GINGA_TIME_FORMAT
                      ") at %" GINGA_TIME_FORMAT,
-                     _id.c_str (), evt->getId ().c_str (),
+                     evt->getFullId ().c_str (),
                      GINGA_TIME_ARGS (end), GINGA_TIME_ARGS (_time));
             }
           break;
@@ -362,12 +383,12 @@ Media::endTransition (Event *evt, Event::Transition transition)
             this->setProperty (name, value, dur);
             _doc->evalAction (evt, Event::STOP);
 
-            TRACE ("start %s.%s:=%s (duration=%s)", _id.c_str (),
-                   name.c_str (), value.c_str (), s.c_str ());
+            TRACE ("start %s:=%s (duration=%s)", evt->getFullId ().c_str (),
+                   value.c_str (), s.c_str ());
             break;
           }
         case Event::STOP:
-          TRACE ("stop %s.%s:=...", _id.c_str (), evt->getId ().c_str ());
+          TRACE ("stop %s:=...", evt->getFullId ().c_str ());
           break;
         default:
           g_assert_not_reached ();
@@ -384,10 +405,10 @@ Media::endTransition (Event *evt, Event::Transition transition)
         switch (transition)
           {
           case Event::START:
-            TRACE ("start %s<%s>", _id.c_str (), key.c_str ());
+            TRACE ("start %s", evt->getFullId ().c_str ());
             break;
           case Event::STOP:
-            TRACE ("stop %s<%s>", _id.c_str (), key.c_str ());
+            TRACE ("stop %s", evt->getFullId ().c_str ());
             break;
           default:
             g_assert_not_reached ();

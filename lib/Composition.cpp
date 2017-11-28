@@ -45,6 +45,18 @@ Composition::getChildById (const string &id)
   return nullptr;
 }
 
+Object *
+Composition::getChildByIdOrAlias (const string &id)
+{
+  Object *child;
+  if ((child = this->getChildById (id)) != nullptr)
+    return child;
+  for (auto child: _children)
+    if (child->hasAlias (id))
+      return child;
+  return nullptr;
+}
+
 void
 Composition::addChild (Object *child)
 {

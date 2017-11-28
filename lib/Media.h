@@ -30,6 +30,8 @@ public:
   virtual ~Media ();
 
   // Object:
+  string getObjectTypeAsString () override;
+  string toString () override;
   void setProperty (const string &, const string &, Time dur=0) override;
   void sendKeyEvent (const string &, bool) override;
   void sendTickEvent (Time, Time, Time) override;
