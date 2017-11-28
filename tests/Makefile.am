@@ -142,6 +142,23 @@ test_aux_xstrassign_SOURCES= test-aux-xstrassign.cpp
 progs+= test-aux-xstrbuild
 test_aux_xstrbuild_SOURCES= test-aux-xstrbuild.cpp
 
+# lib/Document.h -----------------------------------------------------------
+progs+= test-Document-new
+test_Document_new_SOURCES= test-Document-new.cpp
+
+progs+= test-Document-addObject
+test_Document_addObject_SOURCES= test-Document-addObject.cpp
+
+progs+= xfail-test-Document-addObject
+xfail_test_Document_addObject_SOURCES= xfail-test-Document-addObject.cpp
+
+progs+= test-Document-getObjectById
+test_Document_getObjectById_SOURCES= test-Document-getObjectById.cpp
+
+progs+= test-Document-getObjectByIdOrAlias
+test_Document_getObjectByIdOrAlias_SOURCES=\
+  test-Document-getObjectByIdOrAlias.cpp
+
 # lib/Parser.h -------------------------------------------------------------
 progs+= test-Parser-parseFile
 test_Parser_parseFile_SOURCES= test-Parser-parseFile.cpp
@@ -204,6 +221,7 @@ xfail_test_Ginga_setOptionString_SOURCES=\
 check_PROGRAMS= $(progs)
 TESTS= $(check_SCRIPTS) $(check_PROGRAMS)
 XFAIL_TESTS=\
+  xfail-test-Document-addObject\
   xfail-test-Ginga-getOptionBool\
   xfail-test-Ginga-getOptionInt\
   xfail-test-Ginga-getOptionString\
