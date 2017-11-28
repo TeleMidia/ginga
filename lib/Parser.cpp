@@ -1639,7 +1639,7 @@ ParserState::popRegion (ParserState *st, ParserElt *elt)
   parent_node = elt->getParentNode ();
   g_assert_nonnull (parent_node);
   if (toString (parent_node->name) != "region") // root region
-    g_assert (st->getData ("saved_rect", (void **) &st->_rect));
+    g_assert (st->getData ("saved_rect", (void **) pointerof (&st->_rect)));
   return true;
 }
 

@@ -31,26 +31,24 @@ check_failure (const string &log, const string &expected, const string &buf)
   static int i = 1;
   Document *doc;
   string msg = "";
-  bool status;
 
   g_printerr ("XFAIL #%d: %s\n", i++, log.c_str ());
   doc = Parser::parseBuffer (buf.c_str (), buf.length (), 100, 100, &msg);
-  if (doc == nullptr)
+  if (doc != nullptr)
     {
-      if (expected != "" && !xstrhassuffix (msg, expected))
-        {
-          g_printerr ("*** Expected:\t\"%s\"\n", expected.c_str ());
-          g_printerr ("*** Got:\t\"%s\"\n", msg.c_str ());
-          status = false;
-        }
-      else
-        {
-          status = true;
-        }
-      g_printerr ("\n");
+      delete doc;
+      return false;
     }
-  delete doc;
-  return status;
+
+  if (expected != "" && !xstrhassuffix (msg, expected))
+    {
+      g_printerr ("*** Expected:\t\"%s\"\n", expected.c_str ());
+      g_printerr ("*** Got:\t\"%s\"\n", msg.c_str ());
+      return false;
+    }
+
+  g_printerr ("\n");
+  return true;
 }
 
 static G_GNUC_UNUSED Document *
@@ -1964,8 +1962,8 @@ main (void)
     g_assert (links->size () == 2);
 
     auto link = links->begin ();
-    g_assert_cmpint (link->first.size (), ==, 2);
-    g_assert_cmpint (link->second.size (), ==, 2);
+    g_assert (link->first.size () == 2);
+    g_assert (link->second.size () == 2);
 
     auto cond = link->first.begin ();
     g_assert (cond->event == m->getPresentationEvent ("a1"));
