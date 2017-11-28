@@ -30,9 +30,9 @@ GINGA_NAMESPACE_BEGIN
 
 
 // XML helper macros and functions.
-#define toCString(s) deconst (char *, (s))
-#define toXmlChar(s) (xmlChar *)(deconst (char *, (s).c_str ()))
-#define toString(s)  string (deconst (char *, (s)))
+#define toCString(s)   deconst (char *, (s))
+#define toXmlChar(s)   (xmlChar *)(deconst (char *, (s).c_str ()))
+#define toCPPString(s) string (deconst (char *, (s)))
 
 static inline bool
 xmlGetPropAsString (xmlNode *node, const string &name, string *result)
@@ -40,7 +40,7 @@ xmlGetPropAsString (xmlNode *node, const string &name, string *result)
   xmlChar *str = xmlGetProp (node, toXmlChar (name));
   if (str == nullptr)
     return false;
-  tryset (result, toString (str));
+  tryset (result, toCPPString (str));
   g_free (str);
   return true;
 }
@@ -206,6 +206,15 @@ private:
   Object *objStackPeek ();
   Object *objStackPop ();
   void objStackPush (Object *);
+
+  // reference solving
+  string resolveLinkParamRef (const string &,
+                              const map<string, string> *,
+                              const map<string, string> *,
+                              const map<string, ParserLinkBind *> *);
+
+  bool resolvePortRef (Context *, ParserElt *, Event **);
+  bool resolveBindRef (ParserElt *, Event **);
 
   // node processing
   bool processNode (xmlNode *);
@@ -698,7 +707,7 @@ ParserElt::ParserElt (xmlNode *node)
 {
   g_assert_nonnull (node);
   _node = node;
-  _tag = toString (node->name);
+  _tag = toCPPString (node->name);
 }
 
 ParserElt::~ParserElt ()
@@ -792,6 +801,7 @@ ParserState::setData (const string &key, void *value, UserDataCleanFunc fn)
   return _udata.setData (key, value, fn);
 }
 
+// errors
 bool
 ParserState::errElt (xmlNode *node, ParserState::Error error,
                      const string &message)
@@ -881,6 +891,7 @@ ParserState::errEltBadChild (xmlNode *node, const string &child,
   return this->errElt (node, ParserState::ERROR_ELT_BAD_CHILD, msg);
 }
 
+// element cache
 bool
 ParserState::eltCacheIndex (xmlNode *node, ParserElt **result)
 {
@@ -951,6 +962,7 @@ ParserState::eltCacheAdd (ParserElt *elt)
   return true;
 }
 
+// object stack
 Object *
 ParserState::objStackPeek ()
 {
@@ -974,6 +986,146 @@ ParserState::objStackPush (Object *obj)
   _objStack.push_back (obj);
 }
 
+// reference solving
+string
+ParserState::resolveLinkParamRef (const string &value,
+                                  const map<string,string> *bindParams,
+                                  const map<string,string> *linkParams,
+                                  const map<string, ParserLinkBind *>
+                                  *ghosts)
+{
+  string name;
+  string result;
+
+  if (value[0] != '$')
+    return value;
+
+  name = value.substr (1, value.length () - 1);
+  auto it_bind = bindParams->find (name);
+  if (it_bind != bindParams->end ())
+    {
+      result = it_bind->second;
+    }
+  else
+    {
+      auto it_link = linkParams->find (name);
+      if (it_link != linkParams->end ())
+        result = it_link->second;
+      else
+        return value;           // unknown reference
+    }
+
+  if (result[0] != '$')
+    return result;
+
+  name = result.substr (1, result.length () - 1);
+  auto it_ghost = ghosts->find (name);
+  if (it_ghost == ghosts->end ())
+    return result;              // unknown reference
+
+  return "$" + it_ghost->second->component
+    + "." + it_ghost->second->iface;
+}
+
+bool
+ParserState::resolvePortRef (Context *parent, ParserElt *port_elt,
+                             Event **result)
+{
+  string comp;
+  string iface;
+  Object *obj;
+  Event *evt;
+
+  g_assert (port_elt->getTag () == "port");
+  g_assert (port_elt->getAttribute ("component", &comp));
+  if (comp == parent->getId ()  // ref is parent context itself
+      || parent->hasAlias (comp))
+    {
+      obj = parent;
+    }
+  else                          // ref is child object
+    {
+      obj = parent->getChildByIdOrAlias (comp);
+      if (unlikely (obj == nullptr))
+        {
+          return this->errEltBadAttribute
+            (port_elt->getNode (), "component", comp,
+             "no such object in scope");
+        }
+    }
+
+  if (!port_elt->getAttribute ("interface", &iface))
+    {
+      tryset (result, obj->getLambda ());
+      return true;
+    }
+
+  evt = nullptr;
+  if (instanceof (Media *, obj))
+    {
+      evt = obj->getPresentationEvent (iface);
+      if (evt == nullptr)
+        {
+          evt = obj->getAttributionEvent (iface);
+          if (unlikely (evt == nullptr))
+            goto fail;
+        }
+    }
+  else if (instanceof (Context *, obj))
+    {
+      if (obj == parent)
+        {
+          evt = obj->getAttributionEvent (iface);
+          if (unlikely (evt == nullptr))
+            goto fail;
+        }
+      else
+        {
+          ParserElt *iface_elt;
+          ParserElt *parent_elt;
+
+          if (unlikely (!this->eltCacheIndexById
+                        (iface, &iface_elt, {"port"})))
+            {
+              goto fail;
+            }
+
+          g_assert (this->eltCacheIndexParent
+                    (iface_elt->getNode (), &parent_elt));
+          if (parent_elt->getTag () == "body")
+            {
+              parent = _doc->getRoot ();
+            }
+          else
+            {
+              string id;
+              g_assert (parent_elt->getAttribute ("id", &id));
+              parent = cast (Context *, _doc->getObjectById (id));
+              g_assert_nonnull (parent);
+            }
+
+          if (parent->getId () != obj->getId ())
+            goto fail;
+
+          return this->resolvePortRef (parent, iface_elt, result);
+        }
+    }
+  else
+    {
+      g_assert_not_reached ();
+    }
+
+  g_assert_nonnull (evt);
+  tryset (result, evt);
+  return true;
+
+ fail:
+  return this->errEltBadAttribute (port_elt->getNode (),
+                                   "interface", iface,
+                                   "no such interface");
+}
+
+// node processing
 bool
 ParserState::processNode (xmlNode *node)
 {
@@ -987,7 +1139,7 @@ ParserState::processNode (xmlNode *node)
   bool status;
 
   g_assert_nonnull (node);
-  tag = toString (node->name);
+  tag = toCPPString (node->name);
 
   // Check if element is known.
   if (unlikely (!parser_syntax_table_index (tag, &eltsyn)))
@@ -1003,7 +1155,7 @@ ParserState::processNode (xmlNode *node)
       if (unlikely (node->parent->type != XML_ELEMENT_NODE))
         return this->errEltMissingParent (node);
 
-      parent = toString (node->parent->name);
+      parent = toCPPString (node->parent->name);
       found = false;
       for (auto par: eltsyn->parents)
         {
@@ -1073,7 +1225,7 @@ ParserState::processNode (xmlNode *node)
   for (xmlAttr *prop = node->properties;
        prop != nullptr; prop = prop->next)
     {
-      string name = toString (prop->name);
+      string name = toCPPString (prop->name);
       if (unlikely (attrs.find (name) == attrs.end ()))
         return this->errEltUnknownAttribute (node, name);
     }
@@ -1085,7 +1237,7 @@ ParserState::processNode (xmlNode *node)
       if (child->type != XML_ELEMENT_NODE)
         continue;
 
-      string child_tag = toString (child->name);
+      string child_tag = toCPPString (child->name);
       if (unlikely (possible.find (child_tag) == possible.end ()))
         return this->errEltUnknownChild (node, child_tag);
 
@@ -1193,46 +1345,6 @@ ParserState::process (xmlDoc *xml)
 // ParserState: push & pop.
 
 // <ncl>
-
-static string
-resolveParamRef (const string &value,
-                 const map<string,string> *bindParams,
-                 const map<string,string> *linkParams,
-                 const map<string, ParserLinkBind *> *ghosts)
-{
-  string name;
-  string result;
-
-  if (value[0] != '$')
-    return value;
-
-  name = value.substr (1, value.length () - 1);
-  auto it_bind = bindParams->find (name);
-  if (it_bind != bindParams->end ())
-    {
-      result = it_bind->second;
-    }
-  else
-    {
-      auto it_link = linkParams->find (name);
-      if (it_link != linkParams->end ())
-        result = it_link->second;
-      else
-        return value;           // unknown reference
-    }
-
-  if (result[0] != '$')
-    return result;
-
-  name = result.substr (1, result.length () - 1);
-  auto it_ghost = ghosts->find (name);
-  if (it_ghost == ghosts->end ())
-    return result;              // unknown reference
-
-  return "$" + it_ghost->second->component
-    + "." + it_ghost->second->iface;
-}
-
 bool
 ParserState::pushNcl (ParserState *st, ParserElt *elt)
 {
@@ -1493,8 +1605,8 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
                   obj->addAttributionEvent (iface);
                   act.event = obj->getAttributionEvent (iface);
                   g_assert_nonnull (act.event);
-                  act.value = resolveParamRef (role->value, &bind->params,
-                                               params, &ghosts);
+                  act.value = st->resolveLinkParamRef
+                    (role->value, &bind->params, params, &ghosts);
                   break;
 
                 case Event::SELECTION:
@@ -1508,8 +1620,8 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
                         (bind->node, "interface", iface,
                          "must be empty");
                     }
-                  act.value = resolveParamRef (role->key, &bind->params,
-                                               params, &ghosts);
+                  act.value = st->resolveLinkParamRef
+                    (role->key, &bind->params, params, &ghosts);
                   obj->addSelectionEvent (act.value);
                   act.event = obj->getSelectionEvent (act.value);
                   g_assert_nonnull (act.event);
@@ -1576,7 +1688,7 @@ ParserState::pushRegion (ParserState *st, ParserElt *elt)
   parent_node = elt->getParentNode ();
   g_assert_nonnull (parent_node);
 
-  if (toString (parent_node->name) != "region") // this is a root region
+  if (toCPPString (parent_node->name) != "region") // this is a root region
     {
       saved_rect = new Rect;
       screen = *saved_rect = st->_rect;
@@ -1638,7 +1750,7 @@ ParserState::popRegion (ParserState *st, ParserElt *elt)
 
   parent_node = elt->getParentNode ();
   g_assert_nonnull (parent_node);
-  if (toString (parent_node->name) != "region") // root region
+  if (toCPPString (parent_node->name) != "region") // root region
     g_assert (st->getData ("saved_rect", (void **) pointerof (&st->_rect)));
   return true;
 }
@@ -2067,35 +2179,11 @@ ParserState::popContext (ParserState *st, ParserElt *elt)
   for (auto port_id: *ports)
     {
       ParserElt *port_elt;
-      string comp;
-      string iface;
-      Object *obj;
       Event *evt;
 
       g_assert (st->eltCacheIndexById (port_id, &port_elt, {"port"}));
-      g_assert (port_elt->getAttribute ("component", &comp));
-
-      obj = ctx->getChildByIdOrAlias (comp);
-      if (unlikely (obj == nullptr))
-        {
-          return st->errEltBadAttribute (port_elt->getNode (), "component",
-                                         comp, "no such object in scope");
-        }
-
-      if (!port_elt->getAttribute ("interface", &iface))
-        iface = "@lambda";
-
-      evt = obj->getEvent (Event::PRESENTATION, iface);
-      if (evt == nullptr)
-        {
-          evt = obj->getEvent (Event::ATTRIBUTION, iface);
-          if (unlikely (evt == nullptr))
-            {
-              return st->errEltBadAttribute (port_elt->getNode (),
-                                             "interface", iface,
-                                             "no such interface");
-            }
-        }
+      if (unlikely (!st->resolvePortRef (ctx, port_elt, &evt)))
+        return false;
 
       ctx->addPort (evt);
     }
@@ -2147,7 +2235,7 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
           if (st->_xml->URL == nullptr)
             dir = "";
           else
-            dir = xpathdirname (toString (st->_xml->URL));
+            dir = xpathdirname (toCPPString (st->_xml->URL));
           src = xpathbuildabs (dir, src);
         }
       media = new Media (id, type, src);

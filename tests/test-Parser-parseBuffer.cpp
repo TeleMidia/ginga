@@ -1148,6 +1148,76 @@ main (void)
 </ncl>\n\
 ");
 
+  XFAIL ("port: Bad interface",
+         "<port>: Bad value 'nonexistent' for attribute 'interface' "
+         "(no such interface)", "\
+<ncl>\n\
+ <body>\n\
+  <port id='p' component='c' interface='nonexistent'/>\n\
+  <context id='c'/>\n\
+  <media id='m'/>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("port: Bad interface",
+         "<port>: Bad value 'p' for attribute 'interface' "
+         "(no such interface)", "\
+<ncl>\n\
+ <body>\n\
+  <port id='p' component='c' interface='p'/>\n\
+  <context id='c'/>\n\
+  <media id='m'/>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("port: Bad interface",
+         "<port>: Bad value 'm' for attribute 'interface' "
+         "(no such interface)", "\
+<ncl>\n\
+ <body>\n\
+  <port id='p' component='c' interface='m'/>\n\
+  <context id='c'/>\n\
+  <media id='m'/>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("port: Bad interface",
+         "<port>: Bad value 'p2' for attribute 'interface' "
+         "(no such interface)", "\
+<ncl>\n\
+ <body>\n\
+  <port id='p0' component='c1' interface='p1'/>\n\
+  <context id='c1'>\n\
+   <port id='p1' component='c2' interface='p2'/>\n\
+   <context id='c2'>\n\
+    <port id='p2' component='c2' interface='p2'/>\n\
+   </context>\n\
+  </context>\n\
+  <media id='m'/>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("port: Bad interface",
+         "<port>: Bad value 'p2' for attribute 'interface' "
+         "(no such interface)", "\
+<ncl>\n\
+ <body>\n\
+  <port id='p0' component='c1' interface='p2'/>\n\
+  <context id='c1'>\n\
+   <port id='p1' component='c2' interface='p2'/>\n\
+   <context id='c2'>\n\
+    <port id='p2' component='c2'/>\n\
+   </context>\n\
+  </context>\n\
+  <media id='m'/>\n\
+ </body>\n\
+</ncl>\n\
+");
+
 
 // -------------------------------------------------------------------------
 // <media>
@@ -1755,6 +1825,64 @@ main (void)
     delete doc;
   }
 
+  // Success: Nested contexts and ports.
+  {
+    Document *doc;
+    PASS (&doc, "Nested contexts and ports", "\
+<ncl>\n\
+ <head>\n\
+ </head>\n\
+ <body id='body'>\n\
+  <port id='p1' component='c1'/>\n\
+  <port id='p2' component='__root__'/>\n\
+  <port id='p3' component='body' interface='x'/>\n\
+  <port id='p4' component='c1' interface='p11'/>\n\
+  <port id='p5' component='c1' interface='p12'/>\n\
+  <context id='c1'>\n\
+   <port id='p11' component='c2' interface='p21'/>\n\
+   <port id='p12' component='c2' interface='p22'/>\n\
+   <context id='c2'>\n\
+    <port id='p21' component='c2' interface='y'/>\n\
+    <port id='p22' component='m' interface='a'/>\n\
+    <property name='y' value='2'/>\n\
+    <media id='m'>\n\
+     <area id='a'/>\n\
+    </media>\n\
+   </context>\n\
+  </context>\n\
+  <property name='x' value='1'/>\n\
+ </body>\n\
+</ncl>\n\
+");
+    g_assert_nonnull (doc);
+    g_assert (doc->getObjects ()->size () == 5);
+    g_assert (doc->getMedias ()->size () == 2);
+    g_assert (doc->getContexts ()->size () == 3);
+
+    Context *root = cast (Context *, doc->getRoot ());
+    g_assert_nonnull (root);
+
+    Context *c1 = cast (Context *, doc->getObjectById ("c1"));
+    g_assert_nonnull (c1);
+
+    Context *c2 = cast (Context *, doc->getObjectById ("c2"));
+    g_assert_nonnull (c2);
+
+    Media *m = cast (Media *, doc->getObjectById ("m"));
+    g_assert_nonnull (m);
+
+    g_assert (root->getPorts ()->size () == 5);
+    auto port = root->getPorts ()->begin ();
+    g_assert (*port++ == c1->getLambda ());
+    g_assert (*port++ == root->getLambda ());
+    g_assert (*port++ == root->getAttributionEvent ("x"));
+    g_assert (*port++ == c2->getAttributionEvent ("y"));
+    g_assert (*port++ == m->getPresentationEvent ("a"));
+    g_assert (port == root->getPorts ()->end ());
+
+    TRACE ("\n%s", root->toString ().c_str ());
+    delete doc;
+  }
 
   // Success: Simple link.
   {
