@@ -95,7 +95,7 @@ Object::toString ()
     {
       str += xstrbuild
         ("\
-  parent %p (%s, id: %s)\n",
+  parent: %p (%s, id: %s)\n",
          _parent, _parent->getObjectTypeAsString ().c_str (),
          _parent->getId ().c_str ());
     }

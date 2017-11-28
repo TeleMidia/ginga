@@ -192,7 +192,8 @@ Context::endTransition (Event *evt, Event::Transition transition)
         case Event::START:
           Object::doStart ();
           for (auto port: _ports)
-            _doc->evalAction (port, transition);
+            if (port->getType () == Event::PRESENTATION)
+              _doc->evalAction (port, transition);
           TRACE ("start %s", evt->getFullId ().c_str ());
           break;
         case Event::STOP:
