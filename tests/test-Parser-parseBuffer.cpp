@@ -2385,6 +2385,10 @@ main (void)
       <valueAssessment value='0'/>\n\
       <valueAssessment value='0'/>\n\
      </assessmentStatement>\n\
+     <assessmentStatement comparator='ne'>\n\
+      <valueAssessment value='0'/>\n\
+      <valueAssessment value='0'/>\n\
+     </assessmentStatement>\n\
     </compoundCondition>\n\
     <simpleAction role='start'/>\n\
    </causalConnector>\n\
