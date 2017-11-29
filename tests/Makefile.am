@@ -159,6 +159,10 @@ progs+= test-Document-getObjectByIdOrAlias
 test_Document_getObjectByIdOrAlias_SOURCES=\
   test-Document-getObjectByIdOrAlias.cpp
 
+# lib/Media.h --------------------------------------------------------------
+progs+= test-Media-new
+test_Media_new_SOURCES= test-Media-new.cpp
+
 # lib/Predicate.h ----------------------------------------------------------
 progs+= test-Predicate-new
 test_Predicate_new_SOURCES= test-Predicate-new.cpp
