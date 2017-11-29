@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PREDICATE_H
 #define PREDICATE_H
 
+#include "aux-ginga.h"
+
 GINGA_NAMESPACE_BEGIN
 
 class Predicate

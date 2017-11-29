@@ -117,6 +117,8 @@
 /tests/test-GingaInternal-setData
 /tests/test-Parser-parseBuffer
 /tests/test-Parser-parseFile
+/tests/test-Predicate-atom
+/tests/test-Predicate-new
 /tests/test-aux-ginga-parse-bool
 /tests/test-aux-ginga-parse-color
 /tests/test-aux-ginga-parse-list
