@@ -99,10 +99,12 @@
 /tests/env.sh
 /tests/gdb.cfg
 /tests/suppfile
+/tests/test-Context-new
 /tests/test-Document-addObject
 /tests/test-Document-getObjectById
 /tests/test-Document-getObjectByIdOrAlias
 /tests/test-Document-new
+/tests/test-Event-new
 /tests/test-Ginga-create
 /tests/test-Ginga-getOptionBool
 /tests/test-Ginga-getOptionInt
@@ -116,10 +118,13 @@
 /tests/test-GingaInternal-getData
 /tests/test-GingaInternal-setData
 /tests/test-Media-new
+/tests/test-MediaSettings-new
+/tests/test-Object-addAlias
 /tests/test-Parser-parseBuffer
 /tests/test-Parser-parseFile
 /tests/test-Predicate-atom
 /tests/test-Predicate-new
+/tests/test-Switch-new
 /tests/test-aux-ginga-parse-bool
 /tests/test-aux-ginga-parse-color
 /tests/test-aux-ginga-parse-list
