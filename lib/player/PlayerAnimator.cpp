@@ -44,34 +44,40 @@ void
 PlayerAnimator::schedule (const string &name, const string &from,
                           const string &to, Time dur)
 {
-  vector<string> pre = {"", "", "", ""};
-  vector<string> pos;
+  list<string> list_pre = {"", "", "", ""};
+  list<string> list_pos;
 
   if (name == "bounds")
     {
       if (from != "")
-        pre = ginga::parse_list (from, ',', 4, 4);
-      pos = ginga::parse_list (to, ',', 4, 4);
-      this->doSchedule ("left", pre[0], pos[0], dur);
-      this->doSchedule ("top", pre[1], pos[1], dur);
-      this->doSchedule ("width", pre[2], pos[2], dur);
-      this->doSchedule ("height", pre[3], pos[3], dur);
+        list_pre = ginga::parse_list (from, ',', 4, 4);
+      list_pos = ginga::parse_list (to, ',', 4, 4);
+      auto pre = list_pre.begin ();
+      auto pos = list_pos.end ();
+      this->doSchedule ("left", *pre++, *pos++, dur);
+      this->doSchedule ("top", *pre++, *pos++, dur);
+      this->doSchedule ("width", *pre++, *pos++, dur);
+      this->doSchedule ("height", *pre++, *pos++, dur);
     }
   else if (name == "location")
     {
       if (from != "")
-        pre = ginga::parse_list (from, ',', 2, 2);
-      pos = ginga::parse_list (to, ',', 2, 2);
-      this->doSchedule ("left", pre[0], pos[0], dur);
-      this->doSchedule ("top", pre[1], pos[1], dur);
+        list_pre = ginga::parse_list (from, ',', 2, 2);
+      list_pos = ginga::parse_list (to, ',', 2, 2);
+      auto pre = list_pre.begin ();
+      auto pos = list_pos.end ();
+      this->doSchedule ("left", *pre++, *pos++, dur);
+      this->doSchedule ("top", *pre++, *pos++, dur);
     }
   else if (name == "size")
     {
       if (from != "")
-        pre = ginga::parse_list (from, ',', 2, 2);
-      pos = ginga::parse_list (to, ',', 2, 2);
-      this->doSchedule ("width", pre[0], pos[0], dur);
-      this->doSchedule ("height", pre[1], pos[1], dur);
+        list_pre = ginga::parse_list (from, ',', 2, 2);
+      list_pos = ginga::parse_list (to, ',', 2, 2);
+      auto pre = list_pre.begin ();
+      auto pos = list_pos.end ();
+      this->doSchedule ("width", *pre++, *pos++, dur);
+      this->doSchedule ("height", *pre++, *pos++, dur);
     }
   else if (name == "background")
     {
@@ -79,17 +85,25 @@ PlayerAnimator::schedule (const string &name, const string &from,
       if (from != "")
         {
           Color _pre = ginga::parse_color (from);
-          pre = {xstrbuild ("%d", (int) CLAMP (_pre.red * 255, 0, 255)),
-                 xstrbuild ("%d", (int) CLAMP (_pre.green * 255, 0, 255)),
-                 xstrbuild ("%d", (int) CLAMP (_pre.blue * 255, 0, 255))};
+          list_pre =
+            {
+             xstrbuild ("%d", (int) CLAMP (_pre.red * 255, 0, 255)),
+             xstrbuild ("%d", (int) CLAMP (_pre.green * 255, 0, 255)),
+             xstrbuild ("%d", (int) CLAMP (_pre.blue * 255, 0, 255))
+            };
         }
       _pos = ginga::parse_color (to);
-      pos = {xstrbuild ("%d", (int) CLAMP (_pos.red * 255, 0, 255)),
-             xstrbuild ("%d", (int) CLAMP (_pos.green * 255, 0, 255)),
-             xstrbuild ("%d", (int) CLAMP (_pos.blue * 255, 0, 255))};
-      this->doSchedule ("background:r", pre[0], pos[0], dur);
-      this->doSchedule ("background:g", pre[1], pos[1], dur);
-      this->doSchedule ("background:b", pre[2], pos[2], dur);
+      list_pos =
+        {
+         xstrbuild ("%d", (int) CLAMP (_pos.red * 255, 0, 255)),
+         xstrbuild ("%d", (int) CLAMP (_pos.green * 255, 0, 255)),
+         xstrbuild ("%d", (int) CLAMP (_pos.blue * 255, 0, 255))
+        };
+      auto pre = list_pre.begin ();
+      auto pos = list_pos.end ();
+      this->doSchedule ("background:r", *pre++, *pos++, dur);
+      this->doSchedule ("background:g", *pre++, *pos++, dur);
+      this->doSchedule ("background:b", *pre++, *pos++, dur);
     }
   else
     {

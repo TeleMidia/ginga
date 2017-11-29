@@ -1697,7 +1697,7 @@ main (void)
 </ncl>\n\
 ");
     g_assert_nonnull (doc);
-    g_assert ((*(doc->getRoot ()->getAliases ()))[0] == "x");
+    g_assert (doc->getRoot ()->getAliases ()->front () == "x");
     delete doc;
 
     PASS (&doc, "Root alias in <body>", "\
@@ -1707,8 +1707,10 @@ main (void)
 </ncl>\n\
 ");
     g_assert_nonnull (doc);
-    g_assert ((*(doc->getRoot ()->getAliases ()))[0] == "x");
-    g_assert ((*(doc->getRoot ()->getAliases ()))[1] == "y");
+    auto it = doc->getRoot ()->getAliases ()->begin ();
+    g_assert (*it++ == "x");
+    g_assert (*it++ == "y");
+    g_assert (it == doc->getRoot ()->getAliases ()->end ());
     delete doc;
   }
 

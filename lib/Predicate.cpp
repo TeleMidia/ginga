@@ -146,7 +146,7 @@ Predicate::getTest (string *left, Predicate::Test *test,
   tryset (right, _atom.right);
 }
 
-const vector<Predicate *> *
+const list<Predicate *> *
 Predicate::getChildren ()
 {
   return &_children;

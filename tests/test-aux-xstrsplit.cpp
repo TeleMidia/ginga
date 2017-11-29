@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  vector <string> list;
+  list<string> list;
 
   list.push_back ("");
   g_assert (xstrsplit (" ", ' ') == list);

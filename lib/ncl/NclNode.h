@@ -33,7 +33,7 @@ public:
   void initParent (NclComposition *);
 
   void addAnchor (NclAnchor *);
-  const vector<NclAnchor *> *getAnchors ();
+  const list<NclAnchor *> *getAnchors ();
   NclAnchor *getAnchor (const string &);
   NclAnchor *getLambda ();
 
@@ -45,7 +45,7 @@ public:
 
 private:
   NclComposition *_parent;
-  vector<NclAnchor *> _anchors;
+  list<NclAnchor *> _anchors;
   NclAnchor *_lambda;
 };
 

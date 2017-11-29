@@ -43,7 +43,7 @@ NclComposition::addNode (NclNode *node)
   node->initParent (this);
 }
 
-const vector<NclNode *> *
+const list<NclNode *> *
 NclComposition::getNodes ()
 {
   return &_nodes;
@@ -83,7 +83,7 @@ NclComposition::addPort (NclPort *port)
   port->initParent (this);
 }
 
-const vector<NclPort *> *
+const list<NclPort *> *
 NclComposition::getPorts ()
 {
   return &_ports;

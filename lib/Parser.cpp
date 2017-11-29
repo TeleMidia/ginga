@@ -259,8 +259,8 @@ typedef struct ParserSyntaxElt
   ParserSyntaxEltPush *push;           // push function
   ParserSyntaxEltPop *pop;             // pop function
   int flags;                           // processing flags
-  vector<string> parents;              // possible parents
-  vector<ParserSyntaxAttr> attributes; // attributes
+  list<string> parents;                // possible parents
+  list<ParserSyntaxAttr> attributes;   // attributes
 } ParserSyntaxElt;
 
 // Attribute processing flags.
