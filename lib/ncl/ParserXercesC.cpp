@@ -89,10 +89,10 @@ dom_elt_try_get_attribute (string &value, const DOMElement *elt,
 }
 
 // Gets element children.
-static vector <DOMElement *>
+static list<DOMElement *>
 dom_elt_get_children (DOMElement *elt)
 {
-  vector <DOMElement *> vet;
+  list<DOMElement *> vet;
   for (DOMElement *child = elt->getFirstElementChild ();
        child != nullptr; child = child->getNextElementSibling ())
     {
@@ -902,7 +902,7 @@ void
 ParserXercesC::parseDescriptor (DOMElement *elt)
 {
   // List of attributes that should be collected as parameters.
-  static vector<string> supported =
+  static list<string> supported =
     {
      "explicitDur",
      "focusBorderColor",
@@ -923,7 +923,7 @@ ParserXercesC::parseDescriptor (DOMElement *elt)
     };
 
   // List of transition attributes.
-  static vector<string> transattr = {"transIn", "transOut"};
+  static list<string> transattr = {"transIn", "transOut"};
 
   string id;
   string value;
@@ -1187,7 +1187,7 @@ ParserXercesC::parseCompoundCondition (DOMElement *elt,
   string value;
 
   Predicate *pred;
-  vector <Predicate *> preds;
+  list<Predicate *> preds;
 
   CHECK_ELT_TAG (elt, "compoundCondition", nullptr);
   CHECK_ELT_ATTRIBUTE (elt, "operator", &op);
@@ -1499,12 +1499,12 @@ ParserXercesC::posCompileSwitch (DOMElement *elt, NclSwitch *swtch)
 void
 ParserXercesC::solveNodeReferences (NclComposition *comp)
 {
-  const vector<NclNode *> *nodes;
+  const list<NclNode *> *nodes;
   bool del = false;
 
   if (instanceof (NclSwitch *, comp))
     {
-      vector<NclNode *> *aux_nodes = new vector<NclNode *>;
+      list<NclNode *> *aux_nodes = new list<NclNode *>;
       del = true;
       for (auto item: *cast (NclSwitch *, comp)->getRules ())
         aux_nodes->push_back (item.first);

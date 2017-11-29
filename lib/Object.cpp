@@ -163,7 +163,7 @@ Object::toString ()
   return str;
 }
 
-const vector <string> *
+const list<string> *
 Object::getAliases ()
 {
   return &_aliases;

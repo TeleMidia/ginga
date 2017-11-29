@@ -32,10 +32,10 @@ public:
   void addNode (NclNode *, Predicate *);
   NclNode *getNode (const string &);
 
-  const vector <pair<NclNode *, Predicate *>> *getRules ();
+  const list<pair<NclNode *, Predicate *>> *getRules ();
 
 private:
-  vector<pair<NclNode *, Predicate *>> _rules;
+  list<pair<NclNode *, Predicate *>> _rules;
 };
 
 GINGA_NAMESPACE_END

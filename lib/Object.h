@@ -43,7 +43,7 @@ public:
   virtual string getObjectTypeAsString () = 0;
   virtual string toString ();
 
-  const vector <string> *getAliases ();
+  const list<string> *getAliases ();
   bool hasAlias (const string &);
   void addAlias (const string &);
 
@@ -81,7 +81,7 @@ protected:
   string _id;                                           // id
   Document *_doc;                                       // parent document
   Composition *_parent;                                 // parent object
-  vector<string> _aliases;                              // aliases
+  list<string> _aliases;                                // aliases
   Time _time;                                           // playback time
   map<string, string> _properties;                      // property map
   Event *_lambda;                                       // lambda event

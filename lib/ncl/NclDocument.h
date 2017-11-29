@@ -36,7 +36,7 @@ public:
   bool registerEntity (NclEntity *);
   bool unregisterEntity (NclEntity *);
 
-  vector<NclNode *> *getSettingsNodes ();
+  list<NclNode *> *getSettingsNodes ();
 
 private:
   string _id;

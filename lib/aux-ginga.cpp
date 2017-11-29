@@ -105,9 +105,9 @@ try_parse_color (const string &s, Color *result)
  */
 bool
 try_parse_list (const string &s, char sep, size_t min, size_t max,
-                vector<string> *result)
+                list<string> *result)
 {
-  vector<string> items;
+  list<string> items;
   size_t n;
 
   items = xstrsplit (s, sep);
@@ -115,10 +115,12 @@ try_parse_list (const string &s, char sep, size_t min, size_t max,
   if (n < min || n > max)
     return false;
 
-  for (size_t i = 0; i < n; i++)
-    items[i] = xstrstrip (items[i]);
+  if (result == nullptr)
+    return true;
 
-  tryset (result, items);
+  for (auto it: items)
+    result->push_back (xstrstrip (it));
+
   return true;
 }
 
@@ -180,10 +182,10 @@ _GINGA_PARSE_DEFN (bool, bool, "boolean")
 _GINGA_PARSE_DEFN (Color, color, "color")
 _GINGA_PARSE_DEFN (Time, time, "time")
 
-vector<string>
+list<string>
 parse_list (const string &s, char sep, size_t min, size_t max)
 {
-  vector<string> result;
+  list<string> result;
   if (unlikely (!ginga::try_parse_list (s, sep, min, max, &result)))
     ERROR ("invalid list string '%s'", s.c_str ());
   return result;
@@ -479,10 +481,10 @@ xstrstrip (string s)
  * @param sep Separator.
  * @return The resulting vector.
  */
-vector<string>
+list<string>
 xstrsplit (const string &s, char sep)
 {
-  vector<string> result;
+  list<string> result;
   stringstream ss (s);
   string tok;
 

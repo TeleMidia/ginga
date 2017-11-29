@@ -59,7 +59,7 @@ NclNode::addAnchor (NclAnchor *anchor)
   _anchors.push_back (anchor);
 }
 
-const vector<NclAnchor *> *
+const list<NclAnchor *> *
 NclNode::getAnchors ()
 {
   return &_anchors;
