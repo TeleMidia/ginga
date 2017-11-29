@@ -23,5 +23,6 @@ main (void)
 {
   Ginga *ginga = Ginga::create (0, nullptr, nullptr);
   g_assert_nonnull (ginga);
+  delete ginga;
   exit (EXIT_SUCCESS);
 }
