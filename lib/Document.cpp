@@ -28,15 +28,16 @@ GINGA_NAMESPACE_BEGIN
 
 Document::Document ()
 {
-  MediaSettings *settings;
+  MediaSettings *obj;
 
   _root = new Context ("__root__");
+  _settings = nullptr;
+
   this->addObject (_root);
 
-  _settings = nullptr;
-  settings = new MediaSettings ("__settings__");
-  _root->addChild (settings);
-  _settings = settings;
+  obj = new MediaSettings ("__settings__");
+  _root->addChild (obj);
+  _settings = obj;
 }
 
 Document::~Document ()
