@@ -159,16 +159,36 @@ progs+= test-Document-getObjectByIdOrAlias
 test_Document_getObjectByIdOrAlias_SOURCES=\
   test-Document-getObjectByIdOrAlias.cpp
 
-# lib/Media.h --------------------------------------------------------------
-progs+= test-Media-new
-test_Media_new_SOURCES= test-Media-new.cpp
-
 # lib/Predicate.h ----------------------------------------------------------
 progs+= test-Predicate-new
 test_Predicate_new_SOURCES= test-Predicate-new.cpp
 
 progs+= test-Predicate-atom
 test_Predicate_atom_SOURCES= test-Predicate-atom.cpp
+
+# lib/Event.h --------------------------------------------------------------
+progs+= test-Event-new
+test_Event_new_SOURCES= test-Event-new.cpp
+
+# lib/Object.h -------------------------------------------------------------
+progs+= test-Object-addAlias
+test_Object_addAlias_SOURCES= test-Object-addAlias.cpp
+
+# lib/Media.h --------------------------------------------------------------
+progs+= test-Media-new
+test_Media_new_SOURCES= test-Media-new.cpp
+
+# lib/MediaSettings.h ------------------------------------------------------
+progs+= test-MediaSettings-new
+test_MediaSettings_new_SOURCES= test-MediaSettings-new.cpp
+
+# lib/Context.h ------------------------------------------------------------
+progs+= test-Context-new
+test_Context_new_SOURCES= test-Context-new.cpp
+
+# lib/Switch.h ------------------------------------------------------------
+progs+= test-Switch-new
+test_Switch_new_SOURCES= test-Switch-new.cpp
 
 # lib/Parser.h -------------------------------------------------------------
 progs+= test-Parser-parseFile
