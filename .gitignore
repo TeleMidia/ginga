@@ -115,6 +115,7 @@
 /tests/test-Ginga-version
 /tests/test-GingaInternal-getData
 /tests/test-GingaInternal-setData
+/tests/test-Media-new
 /tests/test-Parser-parseBuffer
 /tests/test-Parser-parseFile
 /tests/test-Predicate-atom
