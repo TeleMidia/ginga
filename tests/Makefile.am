@@ -159,6 +159,13 @@ progs+= test-Document-getObjectByIdOrAlias
 test_Document_getObjectByIdOrAlias_SOURCES=\
   test-Document-getObjectByIdOrAlias.cpp
 
+# lib/Predicate.h ----------------------------------------------------------
+progs+= test-Predicate-new
+test_Predicate_new_SOURCES= test-Predicate-new.cpp
+
+progs+= test-Predicate-atom
+test_Predicate_atom_SOURCES= test-Predicate-atom.cpp
+
 # lib/Parser.h -------------------------------------------------------------
 progs+= test-Parser-parseFile
 test_Parser_parseFile_SOURCES= test-Parser-parseFile.cpp
