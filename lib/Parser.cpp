@@ -2023,6 +2023,7 @@ ParserState::pushCompoundStatement (ParserState *st, ParserElt *elt)
     {
       parent_pred->addChild (pred);
     }
+  TRACE ("\n%s", parent_pred->toString ().c_str ());
   UDATA_SET (elt, "pred", pred, nullptr);
 
   return true;
@@ -2094,6 +2095,7 @@ ParserState::popAssessmentStatement (ParserState *st, ParserElt *elt)
   pred = new Predicate (Predicate::ATOM);
   pred->setTest (*left, test, *right);
   parent_pred->addChild (pred);
+  TRACE ("\n%s", parent_pred->toString ().c_str ());
 
   return true;
 }

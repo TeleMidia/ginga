@@ -174,6 +174,9 @@ test_Event_new_SOURCES= test-Event-new.cpp
 progs+= test-Object-addAlias
 test_Object_addAlias_SOURCES= test-Object-addAlias.cpp
 
+progs+= test-Object-addEvent
+test_Object_addEvent_SOURCES= test-Object-addEvent.cpp
+
 # lib/Media.h --------------------------------------------------------------
 progs+= test-Media-new
 test_Media_new_SOURCES= test-Media-new.cpp
