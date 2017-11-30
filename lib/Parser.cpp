@@ -1512,6 +1512,21 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
                 {
                   if (bind.role == role.role)
                     {
+                      // Attach predicate to condition.
+                      if (toCPPString (role.node->name)
+                          == "simpleCondition")
+                        {
+                          ParserElt *parent_elt;
+                          Predicate *pred = nullptr;
+                          g_assert (st->eltCacheIndexParent
+                                    (role.node, &parent_elt));
+                          if (parent_elt->getData ("pred", (void **) &pred))
+                            {
+                              g_assert_nonnull (pred);
+                              role.predicate = pred->clone ();
+                            }
+                        }
+                      // Mark role-bind pair as bound.
                       bound.push_back (std::make_pair (&role, &bind));
                       found = true;
                       break;
@@ -1873,7 +1888,6 @@ ParserState::pushSimpleCondition (ParserState *st, ParserElt *elt)
   string transition;
   xmlNode *node;
   bool condition;
-  ParserElt *parent_elt;
   ParserElt *conn_elt;
   list<ParserConnRole> *roles;
 
@@ -1889,6 +1903,7 @@ ParserState::pushSimpleCondition (ParserState *st, ParserElt *elt)
       role.condition = false;
       transition = "actionType";
     }
+  role.predicate = nullptr;
 
   node = elt->getNode ();
   g_assert_nonnull (node);
@@ -1959,20 +1974,6 @@ ParserState::pushSimpleCondition (ParserState *st, ParserElt *elt)
 
   if (role.eventType == Event::SELECTION)
     elt->getAttribute ("key", &role.key);
-
-  // Set role predicate.
-  role.predicate = nullptr;
-  if (elt->getTag () == "simpleCondition")
-    {
-      g_assert (st->eltCacheIndexParent (node, &parent_elt));
-      if (parent_elt->getTag () == "compoundCondition")
-        {
-          Predicate *pred;
-          UDATA_GET (parent_elt, "pred", &pred);
-          role.predicate = pred->clone ();
-          g_assert_nonnull (role.predicate);
-        }
-    }
 
   UDATA_GET (st, "conn_elt", &conn_elt);
   UDATA_GET (conn_elt, "roles", &roles);
