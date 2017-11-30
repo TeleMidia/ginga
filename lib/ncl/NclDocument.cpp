@@ -80,19 +80,19 @@ NclDocument::unregisterEntity (NclEntity *entity)
   return true;
 }
 
-vector<NclNode *> *
+list<NclNode *> *
 NclDocument::getSettingsNodes ()
 {
   NclContext *body;
   list<NclNode *> compositions;
 
-  const vector<NclNode *> *nodes;
-  vector<NclNode *> *settings;
+  const list<NclNode *> *nodes;
+  list<NclNode *> *settings;
 
   body = this->getRoot ();
   g_assert_nonnull (body);
 
-  settings = new vector<NclNode *>;
+  settings = new list<NclNode *>;
   compositions.push_back (body);
 
  next:
@@ -101,15 +101,13 @@ NclDocument::getSettingsNodes ()
   g_assert_nonnull (nodes);
   compositions.pop_front ();
 
-  for (guint i = 0; i < nodes->size (); i++)
+  for (auto node: *nodes)
     {
-      NclNode *node = cast (NclNode *, nodes->at (i)->derefer ());
       g_assert_nonnull (node);
-
       if (instanceof (NclMedia *, node)
           && ((NclMedia *) node)->isSettings ())
         {
-          settings->push_back (nodes->at (i)); // found
+          settings->push_back (node); // found
         }
       else if (instanceof (NclComposition *, node))
         {

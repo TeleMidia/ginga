@@ -22,6 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Document.h"
 #include "Media.h"
 #include "MediaSettings.h"
+#include "Switch.h"
 
 #include <libxml/tree.h>
 #include <libxml/parser.h>
@@ -30,9 +31,9 @@ GINGA_NAMESPACE_BEGIN
 
 
 // XML helper macros and functions.
-#define toCString(s) deconst (char *, (s))
-#define toXmlChar(s) (xmlChar *)(deconst (char *, (s).c_str ()))
-#define toString(s)  string (deconst (char *, (s)))
+#define toCString(s)   deconst (char *, (s))
+#define toXmlChar(s)   (xmlChar *)(deconst (char *, (s).c_str ()))
+#define toCPPString(s) string (deconst (char *, (s)))
 
 static inline bool
 xmlGetPropAsString (xmlNode *node, const string &name, string *result)
@@ -40,7 +41,7 @@ xmlGetPropAsString (xmlNode *node, const string &name, string *result)
   xmlChar *str = xmlGetProp (node, toXmlChar (name));
   if (str == nullptr)
     return false;
-  tryset (result, toString (str));
+  tryset (result, toCPPString (str));
   g_free (str);
   return true;
 }
@@ -207,6 +208,15 @@ private:
   Object *objStackPop ();
   void objStackPush (Object *);
 
+  // reference solving
+  bool resolveComponentRef (Context *, ParserElt *, Object **);
+  bool resolveGhostBindRef (Context *, ParserElt *, string *);
+  bool resolveInterfaceRef (Context *, ParserElt *, Event **);
+
+  string resolveLinkParamRef (const string &,
+                              const map<string, string> *,
+                              const map<string, string> *,
+                              const map<string, string> *);
   // node processing
   bool processNode (xmlNode *);
 };
@@ -249,8 +259,8 @@ typedef struct ParserSyntaxElt
   ParserSyntaxEltPush *push;           // push function
   ParserSyntaxEltPop *pop;             // pop function
   int flags;                           // processing flags
-  vector<string> parents;              // possible parents
-  vector<ParserSyntaxAttr> attributes; // attributes
+  list<string> parents;                // possible parents
+  list<ParserSyntaxAttr> attributes;   // attributes
 } ParserSyntaxElt;
 
 // Attribute processing flags.
@@ -611,8 +621,10 @@ parser_syntax_reserved_role_table =
  {"onPause",            {Event::PRESENTATION, Event::PAUSE}},
  {"onResumes",          {Event::PRESENTATION, Event::RESUME}},
  {"onBeginAttribution", {Event::ATTRIBUTION,  Event::START}},
- {"onEndAttribution",   {Event::SELECTION,    Event::STOP}},
+ {"onEndAttribution",   {Event::ATTRIBUTION,  Event::STOP}},
  {"onSelection",        {Event::SELECTION,    Event::START}},
+ {"onBeginSelection",   {Event::SELECTION,    Event::START}},
+ {"onEndSelection",     {Event::SELECTION,    Event::STOP}},
  {"start",              {Event::PRESENTATION, Event::START}}, // actions
  {"stop",               {Event::PRESENTATION, Event::STOP}},
  {"abort",              {Event::PRESENTATION, Event::ABORT}},
@@ -698,7 +710,7 @@ ParserElt::ParserElt (xmlNode *node)
 {
   g_assert_nonnull (node);
   _node = node;
-  _tag = toString (node->name);
+  _tag = toCPPString (node->name);
 }
 
 ParserElt::~ParserElt ()
@@ -792,6 +804,7 @@ ParserState::setData (const string &key, void *value, UserDataCleanFunc fn)
   return _udata.setData (key, value, fn);
 }
 
+// errors
 bool
 ParserState::errElt (xmlNode *node, ParserState::Error error,
                      const string &message)
@@ -881,6 +894,7 @@ ParserState::errEltBadChild (xmlNode *node, const string &child,
   return this->errElt (node, ParserState::ERROR_ELT_BAD_CHILD, msg);
 }
 
+// element cache
 bool
 ParserState::eltCacheIndex (xmlNode *node, ParserElt **result)
 {
@@ -951,6 +965,7 @@ ParserState::eltCacheAdd (ParserElt *elt)
   return true;
 }
 
+// object stack
 Object *
 ParserState::objStackPeek ()
 {
@@ -974,6 +989,181 @@ ParserState::objStackPush (Object *obj)
   _objStack.push_back (obj);
 }
 
+// reference solving
+bool
+ParserState::resolveComponentRef (Context *parent, ParserElt *elt,
+                                  Object **result)
+{
+  string comp;
+
+  g_assert (elt->getAttribute ("component", &comp));
+  if (comp == parent->getId ()  // ref is parent context itself
+      || parent->hasAlias (comp))
+    {
+      tryset (result, parent);
+    }
+  else                          // ref is child object
+    {
+      Object *obj = parent->getChildByIdOrAlias (comp);
+      if (unlikely (obj == nullptr))
+        {
+          return this->errEltBadAttribute
+            (elt->getNode (), "component", comp, "no such object in scope");
+        }
+      tryset (result, obj);
+    }
+  return true;
+}
+
+bool
+ParserState::resolveGhostBindRef (Context *parent, ParserElt *bind_elt,
+                                  string *result)
+{
+  string iface;
+  Object *obj;
+
+  g_assert (bind_elt->getTag () == "bind");
+  if (unlikely (!this->resolveComponentRef (parent, bind_elt, &obj)))
+    return false;
+
+  if (unlikely (!bind_elt->getAttribute ("interface", &iface)
+                || iface == ""))
+    {
+      return this->errEltBadAttribute
+        (bind_elt->getNode (), "interface", iface, "must not be empty");
+    }
+
+  tryset (result, "$" + obj->getId () + "." + iface);
+  return true;
+}
+
+bool
+ParserState::resolveInterfaceRef (Context *parent, ParserElt *elt,
+                                  Event **result)
+{
+  string comp;
+  string iface;
+  Object *obj;
+  Event *evt;
+
+  if (unlikely (!this->resolveComponentRef (parent, elt, &obj)))
+    {
+      return false;
+    }
+
+  if (!elt->getAttribute ("interface", &iface))
+    {
+      tryset (result, obj->getLambda ());
+      return true;
+    }
+
+  evt = nullptr;
+  if (instanceof (Media *, obj))
+    {
+      evt = obj->getPresentationEvent (iface);
+      if (evt == nullptr)
+        {
+          evt = obj->getAttributionEvent (iface);
+          if (unlikely (evt == nullptr))
+            goto fail;
+        }
+    }
+  else if (instanceof (Switch *, obj))
+    {
+      g_assert_not_reached ();  // not implemented
+    }
+  else if (instanceof (Context *, obj))
+    {
+      if (obj == parent)
+        {
+          evt = obj->getAttributionEvent (iface);
+          if (unlikely (evt == nullptr))
+            goto fail;
+        }
+      else
+        {
+          ParserElt *iface_elt;
+          ParserElt *parent_elt;
+
+          if (unlikely (!this->eltCacheIndexById
+                        (iface, &iface_elt, {"port"})))
+            {
+              goto fail;
+            }
+
+          g_assert (this->eltCacheIndexParent
+                    (iface_elt->getNode (), &parent_elt));
+          if (parent_elt->getTag () == "body")
+            {
+              parent = _doc->getRoot ();
+            }
+          else
+            {
+              string id;
+              g_assert (parent_elt->getAttribute ("id", &id));
+              parent = cast (Context *, _doc->getObjectById (id));
+              g_assert_nonnull (parent);
+            }
+
+          if (parent->getId () != obj->getId ())
+            goto fail;
+
+          return this->resolveInterfaceRef (parent, iface_elt, result);
+        }
+    }
+  else
+    {
+      g_assert_not_reached ();
+    }
+
+  g_assert_nonnull (evt);
+  tryset (result, evt);
+  return true;
+
+ fail:
+  return this->errEltBadAttribute
+    (elt->getNode (), "interface", iface, "no such interface");
+}
+
+string
+ParserState::resolveLinkParamRef (const string &value,
+                                  const map<string, string> *bindParams,
+                                  const map<string, string> *linkParams,
+                                  const map<string, string> *ghosts)
+{
+  string name;
+  string result;
+
+  if (value[0] != '$')
+    return value;
+
+  name = value.substr (1, value.length () - 1);
+  auto it_bind = bindParams->find (name);
+  if (it_bind != bindParams->end ())
+    {
+      result = it_bind->second;
+    }
+  else
+    {
+      auto it_link = linkParams->find (name);
+      if (it_link != linkParams->end ())
+        result = it_link->second;
+      else
+        return value;           // unknown reference
+    }
+
+  if (result[0] != '$')
+    return result;
+
+  name = result.substr (1, result.length () - 1);
+  auto it_ghost = ghosts->find (name);
+  if (it_ghost == ghosts->end ())
+    return result;              // unknown reference
+
+  return it_ghost->second;
+}
+
+// node processing
 bool
 ParserState::processNode (xmlNode *node)
 {
@@ -987,7 +1177,7 @@ ParserState::processNode (xmlNode *node)
   bool status;
 
   g_assert_nonnull (node);
-  tag = toString (node->name);
+  tag = toCPPString (node->name);
 
   // Check if element is known.
   if (unlikely (!parser_syntax_table_index (tag, &eltsyn)))
@@ -1003,7 +1193,7 @@ ParserState::processNode (xmlNode *node)
       if (unlikely (node->parent->type != XML_ELEMENT_NODE))
         return this->errEltMissingParent (node);
 
-      parent = toString (node->parent->name);
+      parent = toCPPString (node->parent->name);
       found = false;
       for (auto par: eltsyn->parents)
         {
@@ -1073,7 +1263,7 @@ ParserState::processNode (xmlNode *node)
   for (xmlAttr *prop = node->properties;
        prop != nullptr; prop = prop->next)
     {
-      string name = toString (prop->name);
+      string name = toCPPString (prop->name);
       if (unlikely (attrs.find (name) == attrs.end ()))
         return this->errEltUnknownAttribute (node, name);
     }
@@ -1085,7 +1275,7 @@ ParserState::processNode (xmlNode *node)
       if (child->type != XML_ELEMENT_NODE)
         continue;
 
-      string child_tag = toString (child->name);
+      string child_tag = toCPPString (child->name);
       if (unlikely (possible.find (child_tag) == possible.end ()))
         return this->errEltUnknownChild (node, child_tag);
 
@@ -1193,46 +1383,6 @@ ParserState::process (xmlDoc *xml)
 // ParserState: push & pop.
 
 // <ncl>
-
-static string
-resolveParamRef (const string &value,
-                 const map<string,string> *bindParams,
-                 const map<string,string> *linkParams,
-                 const map<string, ParserLinkBind *> *ghosts)
-{
-  string name;
-  string result;
-
-  if (value[0] != '$')
-    return value;
-
-  name = value.substr (1, value.length () - 1);
-  auto it_bind = bindParams->find (name);
-  if (it_bind != bindParams->end ())
-    {
-      result = it_bind->second;
-    }
-  else
-    {
-      auto it_link = linkParams->find (name);
-      if (it_link != linkParams->end ())
-        result = it_link->second;
-      else
-        return value;           // unknown reference
-    }
-
-  if (result[0] != '$')
-    return result;
-
-  name = result.substr (1, result.length () - 1);
-  auto it_ghost = ghosts->find (name);
-  if (it_ghost == ghosts->end ())
-    return result;              // unknown reference
-
-  return "$" + it_ghost->second->component
-    + "." + it_ghost->second->iface;
-}
-
 bool
 ParserState::pushNcl (ParserState *st, ParserElt *elt)
 {
@@ -1336,7 +1486,9 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
 
           list<pair<ParserConnRole *, ParserLinkBind *>> bound;
           list<pair<string, ParserLinkBind *>> bound_tests;
-          map<string, ParserLinkBind *> ghosts;
+
+          list<ParserLinkBind *> ghosts_buf;
+          map<string, string> ghosts;
 
           g_assert (link_elt->getAttribute ("xconnector", &conn_id));
           if (unlikely (!st->eltCacheIndexById (conn_id, &conn_elt,
@@ -1374,7 +1526,7 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
                   bound_tests.push_back (std::make_pair (bind.role, &bind));
                   continue;     // found
                 }
-              ghosts[bind.role] = &bind; // ghost bind
+              ghosts_buf.push_back (&bind); // ghost bind
             }
 
           // Check if link matches connector.
@@ -1408,33 +1560,21 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
             }
 
           // Resolve ghost binds.
-          for (auto it: ghosts)
+          for (auto bind: ghosts_buf)
             {
-              Object *obj;
-
-              obj = ctx->getChildByIdOrAlias (it.second->component);
-              if (unlikely (obj == nullptr))
+              ParserElt *bind_elt;
+              string ref;
+              g_assert_nonnull (bind->node);
+              g_assert (st->eltCacheIndex (bind->node, &bind_elt));
+              if (unlikely (!st->resolveGhostBindRef (ctx, bind_elt, &ref)))
                 {
-                  if (unlikely (ctx->getId () != it.second->component
-                                && !ctx->hasAlias (it.second->component)))
-                    {
-                      return st->errEltBadAttribute
-                        (it.second->node, "component", it.second->component,
-                         "no such object in scope");
-                    }
-                  obj = ctx;
+                  return false;
                 }
-
-              if (unlikely (it.second->iface == ""))
-                {
-                  return st->errEltBadAttribute
-                    (it.second->node, "interface", it.second->iface,
-                     "must not be empty");
-                }
+              ghosts[bind->role] = ref;
             }
 
           // Resolve tests.
-          // TODO:
+          // TODO!!!
 
           // Resolve events.
           list<Action> conditions;
@@ -1443,7 +1583,10 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
             {
               ParserConnRole *role;
               ParserLinkBind *bind;
+              ParserElt *bind_elt;
               Object *obj;
+              Event *evt;
+              Event::Type evtType;
               Action act;
               string iface;
 
@@ -1452,74 +1595,66 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
 
               bind = it.second;
               g_assert_nonnull (bind);
+              g_assert_nonnull (bind->node);
+              g_assert (st->eltCacheIndex (bind->node, &bind_elt));
 
-              // Check component.
-              obj = ctx->getChildByIdOrAlias (bind->component);
-              if (obj == nullptr)
-                {
-                  if (unlikely (ctx->getId () != it.second->component
-                                && !ctx->hasAlias (bind->component)))
-                    {
-                      return st->errEltBadAttribute
-                        (bind->node, "component", bind->component,
-                         "no such object in scope");
-                    }
-                  obj = ctx;
-                }
+              if (unlikely (!st->resolveInterfaceRef (ctx, bind_elt, &evt)))
+                return false;
 
-              // Check interface.
-              iface = bind->iface;
+              evtType = evt->getType ();
+              obj = evt->getObject ();
+              g_assert_nonnull (obj);
+
               switch (role->eventType)
                 {
                 case Event::PRESENTATION:
-                  if (iface == "")
-                    iface = "@lambda";
-                  act.event = obj->getPresentationEvent (iface);
-                  if (unlikely (act.event == nullptr))
-                    {
-                      return st->errEltBadAttribute
-                        (bind->node, "interface", bind->iface,
-                         "no such interface");
-                    }
-                  break;
-
+                  {
+                    if (unlikely (evtType != role->eventType))
+                      {
+                        return st->errEltBadAttribute
+                          (bind->node, "interface", bind->iface,
+                           "expected a presentation event");
+                      }
+                    act.event = evt;
+                    break;
+                  }
                 case Event::ATTRIBUTION:
-                  if (unlikely (iface == ""))
-                    {
-                      return st->errEltBadAttribute
-                        (bind->node, "interface", iface,
-                         "must not be empty");
-                    }
-                  obj->addAttributionEvent (iface);
-                  act.event = obj->getAttributionEvent (iface);
-                  g_assert_nonnull (act.event);
-                  act.value = resolveParamRef (role->value, &bind->params,
-                                               params, &ghosts);
-                  break;
-
+                  {
+                    if (unlikely (evtType != role->eventType))
+                      {
+                        return st->errEltBadAttribute
+                          (bind->node, "interface", bind->iface,
+                           "expected an attribution event");
+                      }
+                    act.event = evt;
+                    act.value = st->resolveLinkParamRef
+                      (role->value, &bind->params, params, &ghosts);
+                    break;
+                  }
                 case Event::SELECTION:
-                  //
-                  // FIXME: Handle selection events mapped by context ports.
-                  //
-                  g_assert (instanceof (Media *, obj));
-                  if (unlikely (iface != ""))
-                    {
-                      return st->errEltBadAttribute
-                        (bind->node, "interface", iface,
-                         "must be empty");
-                    }
-                  act.value = resolveParamRef (role->key, &bind->params,
-                                               params, &ghosts);
-                  obj->addSelectionEvent (act.value);
-                  act.event = obj->getSelectionEvent (act.value);
-                  g_assert_nonnull (act.event);
-                  act.event->setParameter ("key", act.value);
-                  break;
+                  {
+                    if (unlikely ((evtType == Event::PRESENTATION
+                                   && evt->getId () != "@lambda")
+                                  || evtType == Event::ATTRIBUTION))
+                      {
+                        return st->errEltBadAttribute
+                          (bind->node, "interface", evt->getId (),
+                           "must be empty");
+                      }
+                    act.value = st->resolveLinkParamRef
+                      (role->key, &bind->params, params, &ghosts);
+                    obj->addSelectionEvent (act.value);
+                    act.event = obj->getSelectionEvent (act.value);
+                    g_assert_nonnull (act.event);
+                    act.event->setParameter ("key", act.value);
+                    break;
+                  }
                 default:
                   g_assert_not_reached ();
                 }
               g_assert_nonnull (act.event);
               act.transition = role->transition;
+
               act.predicate = nullptr;
               if (role->predicate != nullptr)
                 {
@@ -1576,7 +1711,7 @@ ParserState::pushRegion (ParserState *st, ParserElt *elt)
   parent_node = elt->getParentNode ();
   g_assert_nonnull (parent_node);
 
-  if (toString (parent_node->name) != "region") // this is a root region
+  if (toCPPString (parent_node->name) != "region") // this is a root region
     {
       saved_rect = new Rect;
       screen = *saved_rect = st->_rect;
@@ -1638,7 +1773,7 @@ ParserState::popRegion (ParserState *st, ParserElt *elt)
 
   parent_node = elt->getParentNode ();
   g_assert_nonnull (parent_node);
-  if (toString (parent_node->name) != "region") // root region
+  if (toCPPString (parent_node->name) != "region") // root region
     g_assert (st->getData ("saved_rect", (void **) pointerof (&st->_rect)));
   return true;
 }
@@ -1769,7 +1904,7 @@ ParserState::pushSimpleCondition (ParserState *st, ParserElt *elt)
         {
           return st->errEltBadAttribute
             (node, "role", role.role,
-             "reserved role '" + role.role + "' must be"
+             "reserved role '" + role.role + "' must be "
              + string ((condition) ? "a condition" : "an action"));
         }
 
@@ -1890,6 +2025,7 @@ ParserState::pushCompoundStatement (ParserState *st, ParserElt *elt)
     {
       parent_pred->addChild (pred);
     }
+  TRACE ("\n%s", parent_pred->toString ().c_str ());
   UDATA_SET (elt, "pred", pred, nullptr);
 
   return true;
@@ -1961,6 +2097,7 @@ ParserState::popAssessmentStatement (ParserState *st, ParserElt *elt)
   pred = new Predicate (Predicate::ATOM);
   pred->setTest (*left, test, *right);
   parent_pred->addChild (pred);
+  TRACE ("\n%s", parent_pred->toString ().c_str ());
 
   return true;
 }
@@ -2067,35 +2204,11 @@ ParserState::popContext (ParserState *st, ParserElt *elt)
   for (auto port_id: *ports)
     {
       ParserElt *port_elt;
-      string comp;
-      string iface;
-      Object *obj;
       Event *evt;
 
       g_assert (st->eltCacheIndexById (port_id, &port_elt, {"port"}));
-      g_assert (port_elt->getAttribute ("component", &comp));
-
-      obj = ctx->getChildByIdOrAlias (comp);
-      if (unlikely (obj == nullptr))
-        {
-          return st->errEltBadAttribute (port_elt->getNode (), "component",
-                                         comp, "no such object in scope");
-        }
-
-      if (!port_elt->getAttribute ("interface", &iface))
-        iface = "@lambda";
-
-      evt = obj->getEvent (Event::PRESENTATION, iface);
-      if (evt == nullptr)
-        {
-          evt = obj->getEvent (Event::ATTRIBUTION, iface);
-          if (unlikely (evt == nullptr))
-            {
-              return st->errEltBadAttribute (port_elt->getNode (),
-                                             "interface", iface,
-                                             "no such interface");
-            }
-        }
+      if (unlikely (!st->resolveInterfaceRef (ctx, port_elt, &evt)))
+        return false;
 
       ctx->addPort (evt);
     }
@@ -2147,7 +2260,7 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
           if (st->_xml->URL == nullptr)
             dir = "";
           else
-            dir = xpathdirname (toString (st->_xml->URL));
+            dir = xpathdirname (toCPPString (st->_xml->URL));
           src = xpathbuildabs (dir, src);
         }
       media = new Media (id, type, src);

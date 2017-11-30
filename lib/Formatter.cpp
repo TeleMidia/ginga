@@ -178,7 +178,7 @@ Formatter::start (const string &file, string *errmsg)
       g_assert (evt->transition (Event::START));
 
       // Initialize settings object.
-      vector<NclNode *> *nodes = _docLegacy->getSettingsNodes ();
+      list<NclNode *> *nodes = _docLegacy->getSettingsNodes ();
       for (auto node: *nodes)
         {
           NclMedia *content;
@@ -832,7 +832,7 @@ Formatter::obtainFormatterLink (NclLink *docLink)
             Predicate *pred = bind->getPredicate ();
             if (pred != nullptr) // solve ghost binds in predicate
               {
-                vector <Predicate *> buf;
+                list<Predicate *> buf;
 
                 pred = pred->clone ();
                 g_assert_nonnull (pred);

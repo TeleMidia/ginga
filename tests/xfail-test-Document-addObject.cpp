@@ -15,14 +15,19 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "aux-ginga.h"
-#include "ginga.h"
+#include "Document.h"
+#include "MediaSettings.h"
 
 int
 main (void)
 {
-  Ginga *ginga = Ginga::create (0, nullptr, nullptr);
-  g_assert_nonnull (ginga);
-  delete ginga;
+  Document *doc;
+
+  doc = new Document ();
+  g_assert_nonnull (doc);
+  g_assert (doc->getObjects ()->size () == 2);
+  doc->addObject (new MediaSettings ("s")); // die
+  delete doc;
+
   exit (EXIT_SUCCESS);
 }

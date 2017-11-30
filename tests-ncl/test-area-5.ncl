@@ -28,18 +28,18 @@
   <body>
     <port id="start" component="img1"/>
     <media id="img1" src="samples/gnu.png" descriptor="desc1">
-      <area id="segText" end=".25s"/>
+      <area id="segText1" end=".25s"/>
     </media>
     <media id="img2" src="samples/vector.svg" descriptor="desc2">
-      <area id="segText" begin=".25s"/>
+      <area id="segText2" begin=".25s"/>
     </media>
     <link xconnector="onEndStopStart">
-      <bind role="onEnd" component="img1" interface="segText"/>
+      <bind role="onEnd" component="img1" interface="segText1"/>
       <bind role="stop" component="img1"/>
       <bind role="start" component="img2"/>
     </link>
     <link xconnector="onBeginStartStop">
-      <bind role="onBegin" component="img2" interface="segText"/>
+      <bind role="onBegin" component="img2" interface="segText2"/>
       <bind role="start" component="img1"/>
       <bind role="stop" component="img2"/>
     </link>

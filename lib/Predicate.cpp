@@ -24,6 +24,9 @@ Predicate::Predicate (Predicate::Type type)
 {
   _type = type;
   _parent = nullptr;
+  _atom.test = Predicate::EQ;
+  _atom.left = "";
+  _atom.right = "";
 }
 
 Predicate::~Predicate ()
@@ -36,6 +39,75 @@ Predicate::Type
 Predicate::getType ()
 {
   return _type;
+}
+
+string
+Predicate::toString ()
+{
+  switch (_type)
+    {
+    case Predicate::FALSUM:
+      return "false";
+    case Predicate::VERUM:
+      return "true";
+    case Predicate::ATOM:
+      {
+        string test;
+        switch (_atom.test)
+          {
+          case Predicate::EQ:
+            test = "==";
+            break;
+          case Predicate::NE:
+            test = "!=";
+            break;
+          case Predicate::LT:
+            test = "<";
+            break;
+          case Predicate::LE:
+            test = "<=";
+            break;
+          case Predicate::GT:
+            test = ">";
+            break;
+          case Predicate::GE:
+            test = ">=";
+            break;
+          default:
+            g_assert_not_reached ();
+          }
+        return "'" + _atom.left + "'" + test + "'" + _atom.right + "'";
+      }
+    default:
+      {
+        string conn;
+        switch (_type)
+          {
+          case Predicate::NEGATION:
+            conn = "not";
+            break;
+          case Predicate::CONJUNCTION:
+            conn = "and";
+            break;
+          case Predicate::DISJUNCTION:
+            conn = "or";
+            break;
+          default:
+            g_assert_not_reached ();
+          }
+        conn += "(";
+        if (_children.size () > 0)
+          {
+            auto it = _children.begin ();
+            conn += (*it)->toString ();
+            while (++it != _children.end ())
+              conn += ", " + (*it)->toString ();
+          }
+        conn += ")";
+        return conn;
+      }
+    }
+  g_assert_not_reached ();
 }
 
 Predicate *
@@ -56,7 +128,7 @@ Predicate::clone ()
 
 void
 Predicate::setTest (const string &left, Predicate::Test test,
-                             const string &right)
+                    const string &right)
 {
   g_assert (_type == Predicate::ATOM);
   _atom.test = test;
@@ -74,7 +146,7 @@ Predicate::getTest (string *left, Predicate::Test *test,
   tryset (right, _atom.right);
 }
 
-const vector<Predicate *> *
+const list<Predicate *> *
 Predicate::getChildren ()
 {
   return &_children;

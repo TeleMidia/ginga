@@ -50,7 +50,7 @@ NclSwitch::getNode (const string &id)
 
 }
 
-const vector <pair<NclNode *, Predicate *>> *
+const list<pair<NclNode *, Predicate *>> *
 NclSwitch::getRules ()
 {
   return &_rules;

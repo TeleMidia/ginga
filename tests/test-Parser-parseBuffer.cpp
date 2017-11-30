@@ -394,6 +394,22 @@ main (void)
 </ncl>\n\
 ");
 
+  XFAIL ("simpleCondition: Bad role",
+         "<simpleCondition>: Bad value 'start' for attribute 'role' "
+         "(reserved role 'start' must be an action)", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
   XFAIL ("simpleCondition: Reserved role",
          "<simpleCondition>: Bad value 'selection' "
          "for attribute 'eventType' "
@@ -483,6 +499,196 @@ main (void)
    <causalConnector id='c'>\n\
     <simpleCondition role='x' eventType='presentation'\n\
                      transition='unknown'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+
+// -------------------------------------------------------------------------
+// <simpleAction>
+// -------------------------------------------------------------------------
+
+  XFAIL ("simpleAction: Missing role",
+         "<simpleAction>: Missing attribute 'role'", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Bad role",
+         "<simpleAction>: Bad value '' for attribute 'role' "
+         "(must not be empty)", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role=''/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Bad role",
+         "<simpleAction>: Bad value '$x' for attribute 'role' "
+         "(must not contain '$')", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='$x'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Bad role",
+         "<simpleAction>: Bad value 'onBegin' for attribute 'role' "
+         "(reserved role 'onBegin' must be a condition)", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='onBegin'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Reserved role",
+         "<simpleAction>: Bad value 'selection' "
+         "for attribute 'eventType' "
+         "(reserved role 'start' cannot be overwritten)", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='start' eventType='selection'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Reserved role",
+         "<simpleAction>: Bad value 'stops' "
+         "for attribute 'actionType' "
+         "(reserved role 'start' cannot be overwritten)", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='start' actionType='stops'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Missing eventType",
+         "<simpleAction>: Missing attribute 'eventType'", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='x'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Bad eventType",
+         "<simpleAction>: Bad value 'unknown' for attribute 'eventType'", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='x' eventType='unknown'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Missing actionType",
+         "<simpleAction>: Missing attribute 'actionType'", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='x' eventType='presentation'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Bad actionType",
+         "<simpleAction>: Bad value 'unknown' for attribute 'actionType'",
+         "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='x' eventType='presentation'\n\
+                           actionType='unknown'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("simpleAction: Missing value",
+         "<simpleAction>: Missing attribute 'value'", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='set'/>\n\
    </causalConnector>\n\
   </connectorBase>\n\
  </head>\n\
@@ -890,179 +1096,6 @@ main (void)
 
 
 // -------------------------------------------------------------------------
-// <simpleAction>
-// -------------------------------------------------------------------------
-
-  XFAIL ("simpleAction: Missing role",
-         "<simpleAction>: Missing attribute 'role'", "\
-<ncl>\n\
- <head>\n\
-  <connectorBase>\n\
-   <causalConnector id='c'>\n\
-    <simpleCondition role='onBegin'/>\n\
-    <simpleAction/>\n\
-   </causalConnector>\n\
-  </connectorBase>\n\
- </head>\n\
- <body>\n\
- </body>\n\
-</ncl>\n\
-");
-
-  XFAIL ("simpleAction: Bad role",
-         "<simpleAction>: Bad value '' for attribute 'role' "
-         "(must not be empty)", "\
-<ncl>\n\
- <head>\n\
-  <connectorBase>\n\
-   <causalConnector id='c'>\n\
-    <simpleCondition role='onBegin'/>\n\
-    <simpleAction role=''/>\n\
-   </causalConnector>\n\
-  </connectorBase>\n\
- </head>\n\
- <body>\n\
- </body>\n\
-</ncl>\n\
-");
-
-  XFAIL ("simpleAction: Bad role",
-         "<simpleAction>: Bad value '$x' for attribute 'role' "
-         "(must not contain '$')", "\
-<ncl>\n\
- <head>\n\
-  <connectorBase>\n\
-   <causalConnector id='c'>\n\
-    <simpleCondition role='onBegin'/>\n\
-    <simpleAction role='$x'/>\n\
-   </causalConnector>\n\
-  </connectorBase>\n\
- </head>\n\
- <body>\n\
- </body>\n\
-</ncl>\n\
-");
-
-  XFAIL ("simpleAction: Reserved role",
-         "<simpleAction>: Bad value 'selection' "
-         "for attribute 'eventType' "
-         "(reserved role 'start' cannot be overwritten)", "\
-<ncl>\n\
- <head>\n\
-  <connectorBase>\n\
-   <causalConnector id='c'>\n\
-    <simpleCondition role='onBegin'/>\n\
-    <simpleAction role='start' eventType='selection'/>\n\
-   </causalConnector>\n\
-  </connectorBase>\n\
- </head>\n\
- <body>\n\
- </body>\n\
-</ncl>\n\
-");
-
-  XFAIL ("simpleAction: Reserved role",
-         "<simpleAction>: Bad value 'stops' "
-         "for attribute 'actionType' "
-         "(reserved role 'start' cannot be overwritten)", "\
-<ncl>\n\
- <head>\n\
-  <connectorBase>\n\
-   <causalConnector id='c'>\n\
-    <simpleCondition role='onBegin'/>\n\
-    <simpleAction role='start' actionType='stops'/>\n\
-   </causalConnector>\n\
-  </connectorBase>\n\
- </head>\n\
- <body>\n\
- </body>\n\
-</ncl>\n\
-");
-
-  XFAIL ("simpleAction: Missing eventType",
-         "<simpleAction>: Missing attribute 'eventType'", "\
-<ncl>\n\
- <head>\n\
-  <connectorBase>\n\
-   <causalConnector id='c'>\n\
-    <simpleCondition role='onBegin'/>\n\
-    <simpleAction role='x'/>\n\
-   </causalConnector>\n\
-  </connectorBase>\n\
- </head>\n\
- <body>\n\
- </body>\n\
-</ncl>\n\
-");
-
-  XFAIL ("simpleAction: Bad eventType",
-         "<simpleAction>: Bad value 'unknown' for attribute 'eventType'", "\
-<ncl>\n\
- <head>\n\
-  <connectorBase>\n\
-   <causalConnector id='c'>\n\
-    <simpleCondition role='onBegin'/>\n\
-    <simpleAction role='x' eventType='unknown'/>\n\
-   </causalConnector>\n\
-  </connectorBase>\n\
- </head>\n\
- <body>\n\
- </body>\n\
-</ncl>\n\
-");
-
-  XFAIL ("simpleAction: Missing actionType",
-         "<simpleAction>: Missing attribute 'actionType'", "\
-<ncl>\n\
- <head>\n\
-  <connectorBase>\n\
-   <causalConnector id='c'>\n\
-    <simpleCondition role='onBegin'/>\n\
-    <simpleAction role='x' eventType='presentation'/>\n\
-   </causalConnector>\n\
-  </connectorBase>\n\
- </head>\n\
- <body>\n\
- </body>\n\
-</ncl>\n\
-");
-
-  XFAIL ("simpleAction: Bad actionType",
-         "<simpleAction>: Bad value 'unknown' for attribute 'actionType'",
-         "\
-<ncl>\n\
- <head>\n\
-  <connectorBase>\n\
-   <causalConnector id='c'>\n\
-    <simpleCondition role='onBegin'/>\n\
-    <simpleAction role='x' eventType='presentation'\n\
-                           actionType='unknown'/>\n\
-   </causalConnector>\n\
-  </connectorBase>\n\
- </head>\n\
- <body>\n\
- </body>\n\
-</ncl>\n\
-");
-
-  XFAIL ("simpleAction: Missing value",
-         "<simpleAction>: Missing attribute 'value'", "\
-<ncl>\n\
- <head>\n\
-  <connectorBase>\n\
-   <causalConnector id='c'>\n\
-    <simpleCondition role='onBegin'/>\n\
-    <simpleAction role='set'/>\n\
-   </causalConnector>\n\
-  </connectorBase>\n\
- </head>\n\
- <body>\n\
- </body>\n\
-</ncl>\n\
-");
-
-
-// -------------------------------------------------------------------------
 // <port>
 // -------------------------------------------------------------------------
 
@@ -1143,6 +1176,76 @@ main (void)
 <ncl>\n\
  <body>\n\
   <port id='p' component='m' interface='nonexistent'/>\n\
+  <media id='m'/>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("port: Bad interface",
+         "<port>: Bad value 'nonexistent' for attribute 'interface' "
+         "(no such interface)", "\
+<ncl>\n\
+ <body>\n\
+  <port id='p' component='c' interface='nonexistent'/>\n\
+  <context id='c'/>\n\
+  <media id='m'/>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("port: Bad interface",
+         "<port>: Bad value 'p' for attribute 'interface' "
+         "(no such interface)", "\
+<ncl>\n\
+ <body>\n\
+  <port id='p' component='c' interface='p'/>\n\
+  <context id='c'/>\n\
+  <media id='m'/>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("port: Bad interface",
+         "<port>: Bad value 'm' for attribute 'interface' "
+         "(no such interface)", "\
+<ncl>\n\
+ <body>\n\
+  <port id='p' component='c' interface='m'/>\n\
+  <context id='c'/>\n\
+  <media id='m'/>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("port: Bad interface",
+         "<port>: Bad value 'p2' for attribute 'interface' "
+         "(no such interface)", "\
+<ncl>\n\
+ <body>\n\
+  <port id='p0' component='c1' interface='p1'/>\n\
+  <context id='c1'>\n\
+   <port id='p1' component='c2' interface='p2'/>\n\
+   <context id='c2'>\n\
+    <port id='p2' component='c2' interface='p2'/>\n\
+   </context>\n\
+  </context>\n\
+  <media id='m'/>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("port: Bad interface",
+         "<port>: Bad value 'p2' for attribute 'interface' "
+         "(no such interface)", "\
+<ncl>\n\
+ <body>\n\
+  <port id='p0' component='c1' interface='p2'/>\n\
+  <context id='c1'>\n\
+   <port id='p1' component='c2' interface='p2'/>\n\
+   <context id='c2'>\n\
+    <port id='p2' component='c2'/>\n\
+   </context>\n\
+  </context>\n\
   <media id='m'/>\n\
  </body>\n\
 </ncl>\n\
@@ -1415,9 +1518,33 @@ main (void)
 </ncl>\n\
 ");
 
+  XFAIL ("bind: Bad interface (area)",
+         "<bind>: Bad value 'p' for attribute 'interface' "
+         "(expected a presentation event)", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+  <media id='x'>\n\
+   <property name='p' value=''/>\n\
+  </media>\n\
+  <link xconnector='c'>\n\
+   <bind role='onBegin' component='x'/>\n\
+   <bind role='start' component='x' interface='p'/>\n\
+  </link>\n\
+ </body>\n\
+</ncl>\n\
+");
+
   XFAIL ("bind: Bad interface (property)",
          "<bind>: Bad value '' for attribute 'interface' "
-         "(must not be empty)", "\
+         "(expected an attribution event)", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1570,7 +1697,7 @@ main (void)
 </ncl>\n\
 ");
     g_assert_nonnull (doc);
-    g_assert ((*(doc->getRoot ()->getAliases ()))[0] == "x");
+    g_assert (doc->getRoot ()->getAliases ()->front () == "x");
     delete doc;
 
     PASS (&doc, "Root alias in <body>", "\
@@ -1580,8 +1707,10 @@ main (void)
 </ncl>\n\
 ");
     g_assert_nonnull (doc);
-    g_assert ((*(doc->getRoot ()->getAliases ()))[0] == "x");
-    g_assert ((*(doc->getRoot ()->getAliases ()))[1] == "y");
+    auto it = doc->getRoot ()->getAliases ()->begin ();
+    g_assert (*it++ == "x");
+    g_assert (*it++ == "y");
+    g_assert (it == doc->getRoot ()->getAliases ()->end ());
     delete doc;
   }
 
@@ -1755,6 +1884,64 @@ main (void)
     delete doc;
   }
 
+  // Success: Nested contexts and ports.
+  {
+    Document *doc;
+    PASS (&doc, "Nested contexts and ports", "\
+<ncl>\n\
+ <head>\n\
+ </head>\n\
+ <body id='body'>\n\
+  <port id='p1' component='c1'/>\n\
+  <port id='p2' component='__root__'/>\n\
+  <port id='p3' component='body' interface='x'/>\n\
+  <port id='p4' component='c1' interface='p11'/>\n\
+  <port id='p5' component='c1' interface='p12'/>\n\
+  <context id='c1'>\n\
+   <port id='p11' component='c2' interface='p21'/>\n\
+   <port id='p12' component='c2' interface='p22'/>\n\
+   <context id='c2'>\n\
+    <port id='p21' component='c2' interface='y'/>\n\
+    <port id='p22' component='m' interface='a'/>\n\
+    <property name='y' value='2'/>\n\
+    <media id='m'>\n\
+     <area id='a'/>\n\
+    </media>\n\
+   </context>\n\
+  </context>\n\
+  <property name='x' value='1'/>\n\
+ </body>\n\
+</ncl>\n\
+");
+    g_assert_nonnull (doc);
+    g_assert (doc->getObjects ()->size () == 5);
+    g_assert (doc->getMedias ()->size () == 2);
+    g_assert (doc->getContexts ()->size () == 3);
+
+    Context *root = cast (Context *, doc->getRoot ());
+    g_assert_nonnull (root);
+
+    Context *c1 = cast (Context *, doc->getObjectById ("c1"));
+    g_assert_nonnull (c1);
+
+    Context *c2 = cast (Context *, doc->getObjectById ("c2"));
+    g_assert_nonnull (c2);
+
+    Media *m = cast (Media *, doc->getObjectById ("m"));
+    g_assert_nonnull (m);
+
+    g_assert (root->getPorts ()->size () == 5);
+    auto port = root->getPorts ()->begin ();
+    g_assert (*port++ == c1->getLambda ());
+    g_assert (*port++ == root->getLambda ());
+    g_assert (*port++ == root->getAttributionEvent ("x"));
+    g_assert (*port++ == c2->getAttributionEvent ("y"));
+    g_assert (*port++ == m->getPresentationEvent ("a"));
+    g_assert (port == root->getPorts ()->end ());
+
+    TRACE ("\n%s", root->toString ().c_str ());
+    delete doc;
+  }
 
   // Success: Simple link.
   {
@@ -1809,11 +1996,17 @@ main (void)
     g_assert (cond->predicate == nullptr);
     g_assert (cond->value == "");
 
+    cond++;
+    g_assert (cond == link->first.end ());
+
     auto act = link->second.begin ();
     g_assert (act->event == m->getLambda ());
     g_assert (act->transition == Event::START);
     g_assert (act->predicate == nullptr);
     g_assert (act->value == "");
+
+    act++;
+    g_assert (act == link->second.end ());
 
     TRACE ("\n%s", m->toString ().c_str ());
     TRACE ("\n%s", root->toString ().c_str ());
@@ -1886,11 +2079,17 @@ main (void)
     g_assert (cond->predicate == nullptr);
     g_assert (cond->value == "");
 
+    cond++;
+    g_assert (cond == link->first.end ());
+
     auto act = link->second.begin ();
     g_assert (act->event == m->getAttributionEvent ("x"));
     g_assert (act->transition == Event::START);
     g_assert (act->predicate == nullptr);
     g_assert (act->value == "33");
+
+    act++;
+    g_assert (act == link->second.end ());
 
     TRACE ("\n%s", m->toString ().c_str ());
     TRACE ("\n%s", root->toString ().c_str ());
@@ -1943,6 +2142,10 @@ main (void)
    <bind role='set' component='body' interface='p'>\n\
     <bindParam name='key' value='$get'/>\n\
    </bind>\n\
+   <bind role='set' component='body' interface='p'>\n\
+    <bindParam name='key' value='$unknown'/>\n\
+   </bind>\n\
+   <bind role='set' component='body' interface='p'/>\n\
   </link>\n\
  </body>\n\
 </ncl>\n\
@@ -2002,6 +2205,9 @@ main (void)
     g_assert (cond->predicate == nullptr);
     g_assert (cond->value == "$m.top");
 
+    cond++;
+    g_assert (cond == link->first.end ());
+
     act = link->second.begin ();
     g_assert (act->event == m->getPresentationEvent ("a1"));
     g_assert (act->transition == Event::START);
@@ -2014,19 +2220,200 @@ main (void)
     g_assert (act->predicate == nullptr);
     g_assert (act->value == "$m.top");
 
+    act++;
+    g_assert (act->event == root->getAttributionEvent ("p"));
+    g_assert (act->transition == Event::START);
+    g_assert (act->predicate == nullptr);
+    g_assert (act->value == "$unknown");
+
+    act++;
+    g_assert (act->event == root->getAttributionEvent ("p"));
+    g_assert (act->transition == Event::START);
+    g_assert (act->predicate == nullptr);
+    g_assert (act->value == "$key");
+
+    act++;
+    g_assert (act == link->second.end ());
+
     TRACE ("\n%s", m->toString ().c_str ());
     TRACE ("\n%s", root->toString ().c_str ());
     delete doc;
   }
 
-  // Success: Binds pointing to ports.
+  // Success: Binds pointing to ports and properties.
   {
+    Document *doc;
+    PASS (&doc, "Binds pointing to ports and properties", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='conn1'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='start'/>\n\
+    <simpleAction role='set' value='13'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body id='body'>\n\
+  <port id='pt1' component='m'/>\n\
+  <port id='pt2' component='m'/>\n\
+  <media id='m'>\n\
+   <area id='a1'/>\n\
+  </media>\n\
+  <link xconnector='conn1'>\n\
+   <bind role='onBegin' component='c1'/>\n\
+   <bind role='onBegin' component='c1' interface='pt14'/>\n\
+   <bind role='start' component='c1' interface='pt11'/>\n\
+   <bind role='start' component='c1' interface='pt12'/>\n\
+   <bind role='set' component='c1' interface='pt13'/>\n\
+   <bind role='set' component='c1' interface='pt15'/>\n\
+  </link>\n\
+  <context id='c1'>\n\
+   <port id='pt11' component='c1'/>\n\
+   <port id='pt12' component='m2'/>\n\
+   <port id='pt13' component='c1' interface='p11'/>\n\
+   <port id='pt14' component='c2' interface='pt21'/>\n\
+   <port id='pt15' component='c2' interface='pt22'/>\n\
+   <context id='c2'>\n\
+     <media id='m3'>\n\
+      <area id='a2'/>\n\
+      <property name='pm3'/>\n\
+     </media>\n\
+     <port id='pt21' component='m3' interface='a2'/>\n\
+     <port id='pt22' component='m3' interface='pm3'/>\n\
+   </context>\n\
+   <property name='p11' value=''/>\n\
+   <media id='m2'/>\n\
+   <link xconnector='conn1'>\n\
+    <bind role='onBegin' component='c1'/>\n\
+    <bind role='start' component='c1'/>\n\
+    <bind role='set' component='c1' interface='p11'/>\n\
+   </link>\n\
+  </context>\n\
+ </body>\n\
+</ncl>");
+
+    g_assert_nonnull (doc);
+    g_assert (doc->getObjects ()->size () == 7);
+    g_assert (doc->getMedias ()->size () == 4);
+    g_assert (doc->getContexts ()->size () == 3);
+
+    Context *root = doc->getRoot ();
+    g_assert_nonnull (root);
+
+    Media *m = cast (Media *, doc->getObjectById ("m"));
+    g_assert_nonnull (m);
+
+    Media *m2 = cast (Media *, doc->getObjectById ("m2"));
+    g_assert_nonnull (m2);
+
+    Media *m3 = cast (Media *, doc->getObjectById ("m3"));
+    g_assert_nonnull (m3);
+
+    Context *c1 = cast (Context *, doc->getObjectById ("c1"));
+    g_assert_nonnull (c1);
+
+    Context *c2 = cast (Context *, doc->getObjectById ("c2"));
+    g_assert_nonnull (c2);
+
+    auto links = doc->getRoot ()->getLinks ();
+    g_assert (links->size () == 1);
+
+    auto link = links->begin ();
+    g_assert (link->first.size () == 2);
+    g_assert (link->second.size () == 4);
+
+    auto cond = link->first.begin ();
+    g_assert (cond->event == c1->getLambda ());
+    g_assert (cond->transition == Event::START);
+    g_assert (cond->predicate == nullptr);
+    g_assert (cond->value == "");
+
+    cond++;
+    g_assert (cond->event == m3->getPresentationEvent ("a2"));
+    g_assert (cond->transition == Event::START);
+    g_assert (cond->predicate == nullptr);
+    g_assert (cond->value == "");
+
+    cond++;
+    g_assert (cond == link->first.end ());
+
+    auto act = link->second.begin ();
+    g_assert (act->event == c1->getLambda ());
+    g_assert (act->transition == Event::START);
+    g_assert (act->predicate == nullptr);
+    g_assert (act->value == "");
+
+    act++;
+    g_assert (act->event == m2->getLambda ());
+    g_assert (act->transition == Event::START);
+    g_assert (act->predicate == nullptr);
+    g_assert (act->value == "");
+
+    act++;
+    g_assert (act->event == c1->getAttributionEvent ("p11"));
+    g_assert (act->transition == Event::START);
+    g_assert (act->predicate == nullptr);
+    g_assert (act->value == "13");
+
+    act++;
+    g_assert (act->event == m3->getAttributionEvent ("pm3"));
+    g_assert (act->transition == Event::START);
+    g_assert (act->predicate == nullptr);
+    g_assert (act->value == "13");
+
+    act++;
+    g_assert (act == link->second.end ());
+
+    TRACE ("\n%s", root->toString ().c_str ());
+    TRACE ("\n%s", m->toString ().c_str ());
+    TRACE ("\n%s", c1->toString ().c_str ());
+    delete doc;
   }
 
   // Success: Simple statements.
   {
-  }
+    Document *doc;
+    PASS (&doc, "Simple statements", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='conn1'>\n\
+    <compoundCondition>\n\
+     <simpleCondition role='onBegin'/>\n\
+     <assessmentStatement comparator='eq'>\n\
+      <valueAssessment value='0'/>\n\
+      <valueAssessment value='0'/>\n\
+     </assessmentStatement>\n\
+     <assessmentStatement comparator='ne'>\n\
+      <valueAssessment value='0'/>\n\
+      <valueAssessment value='0'/>\n\
+     </assessmentStatement>\n\
+    </compoundCondition>\n\
+    <simpleAction role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body id='body'>\n\
+  <link xconnector='conn1'>\n\
+   <bind role='onBegin' component='body'/>\n\
+   <bind role='start' component='body'/>\n\
+  </link>\n\
+ </body>\n\
+</ncl>");
 
+    g_assert_nonnull (doc);
+    g_assert (doc->getObjects ()->size () == 2);
+    g_assert (doc->getMedias ()->size () == 1);
+    g_assert (doc->getContexts ()->size () == 1);
+
+    Context *root = doc->getRoot ();
+    g_assert_nonnull (root);
+
+    TRACE ("\n%s", root->toString ().c_str ());
+    delete doc;
+  }
+exit (0);
   // Success: Complex statements.
   {
   }
