@@ -179,6 +179,17 @@ test_Event_setInterval_SOURCES= test-Event-setInterval.cpp
 progs+= test-Event-setParameter
 test_Event_setParameter_SOURCES= test-Event-setParameter.cpp
 
+progs+= test-Event-getEventTypeAsString
+test_Event_getEventTypeAsString_SOURCES= test-Event-getEventTypeAsString.cpp
+
+progs+= test-Event-getEventStateAsString
+test_Event_getEventStateAsString_SOURCES=\
+  test-Event-getEventStateAsString.cpp
+
+progs+= test-Event-getEventTransitionAsString
+test_Event_getEventTransitionAsString_SOURCES=\
+  test-Event-getEventTransitionAsString.cpp
+
 # lib/Object.h -------------------------------------------------------------
 progs+= test-Object-addAlias
 test_Object_addAlias_SOURCES= test-Object-addAlias.cpp
