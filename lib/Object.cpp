@@ -324,7 +324,9 @@ Object::sendKeyEvent (unused (const string &key), unused (bool press))
 void
 Object::sendTickEvent (unused (Time total), Time diff, unused (Time frame))
 {
-  g_assert (this->isOccurring ());
+  if (!this->isOccurring ())
+    return;
+
   g_assert (GINGA_TIME_IS_VALID (_time));
   _time += diff;
 
