@@ -35,8 +35,8 @@ public:
   void setProperty (const string &, const string &, Time dur=0) override;
   void sendKeyEvent (const string &, bool) override;
   void sendTickEvent (Time, Time, Time) override;
-  bool startTransition (Event *, Event::Transition) override;
-  void endTransition (Event *, Event::Transition) override;
+  bool beforeTransition (Event *, Event::Transition) override;
+  bool afterTransition (Event *, Event::Transition) override;
 
   // Media:
   virtual bool isFocused ();

@@ -47,7 +47,7 @@ Switch::getObjectTypeAsString ()
 }
 
 bool
-Switch::startTransition (Event *event, Event::Transition transition)
+Switch::beforeTransition (Event *event, Event::Transition transition)
 {
   switch (event->getType ())
     {
@@ -102,8 +102,8 @@ Switch::startTransition (Event *event, Event::Transition transition)
   return true;
 }
 
-void
-Switch::endTransition (Event *evt, Event::Transition transition)
+bool
+Switch::afterTransition (Event *evt, Event::Transition transition)
 {
   switch (evt->getType ())
     {
@@ -133,6 +133,7 @@ Switch::endTransition (Event *evt, Event::Transition transition)
     default:
       g_assert_not_reached ();
     }
+  return true;
 }
 
 

@@ -247,7 +247,7 @@ Media::sendTickEvent (Time total, Time diff, Time frame)
 }
 
 bool
-Media::startTransition (Event *evt, Event::Transition transition)
+Media::beforeTransition (Event *evt, Event::Transition transition)
 {
   switch (evt->getType ())
     {
@@ -291,8 +291,8 @@ Media::startTransition (Event *evt, Event::Transition transition)
   return true;
 }
 
-void
-Media::endTransition (Event *evt, Event::Transition transition)
+bool
+Media::afterTransition (Event *evt, Event::Transition transition)
 {
   switch (evt->getType ())
     {
@@ -418,6 +418,7 @@ Media::endTransition (Event *evt, Event::Transition transition)
     default:
       g_assert_not_reached ();
     }
+  return true;
 }
 
 
