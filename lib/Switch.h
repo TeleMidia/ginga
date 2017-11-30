@@ -31,8 +31,8 @@ public:
 
   // Object:
   string getObjectTypeAsString () override;
-  bool startTransition (Event *, Event::Transition) override;
-  void endTransition (Event *, Event::Transition) override;
+  bool beforeTransition (Event *, Event::Transition) override;
+  bool afterTransition (Event *, Event::Transition) override;
 
   // Switch:
   const list<pair<Object *, Predicate *>> *getRules ();
