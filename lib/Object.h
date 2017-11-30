@@ -71,8 +71,8 @@ public:
   virtual void sendKeyEvent (const string &, bool);
   virtual void sendTickEvent (Time, Time, Time);
 
-  virtual bool startTransition (Event *, Event::Transition) = 0;
-  virtual void endTransition (Event *, Event::Transition) = 0;
+  virtual bool beforeTransition (Event *, Event::Transition) = 0;
+  virtual bool afterTransition (Event *, Event::Transition) = 0;
 
   bool getData (const string &, void **);
   bool setData (const string &, void *, UserDataCleanFunc fn=nullptr);

@@ -186,10 +186,21 @@ Event::transition (Event::Transition trans)
     default:
       g_assert_not_reached ();
     }
-  if (!unlikely (_object->startTransition (this, trans)))
+
+  // Initiate transition.
+  if (!unlikely (_object->beforeTransition (this, trans)))
     return false;
+
+  // Update event state.
   _state = next;
-  _object->endTransition (this, trans);
+
+  // Finish transition.
+  if (unlikely (!_object->afterTransition (this, trans)))
+    {
+      _state = curr;
+      return false;
+    }
+
   return true;
 }
 
