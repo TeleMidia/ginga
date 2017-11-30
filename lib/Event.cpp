@@ -87,37 +87,46 @@ Event::getState ()
 }
 
 string
-Event::toString ()
+Event::toString (int indent)
 {
+  const char *prefix;
   string str;
 
+  prefix = std::string (MAX (0, indent) * 2, ' ').c_str ();
   str = xstrbuild
     ("\
-Event (%p)\n\
-  object: %p (%s, id: %s)\n\
-  id: %s\n\
-  type: %s\n\
-  state: %s\n",
-     this, _object, _object->getObjectTypeAsString ().c_str (),
-     _object->getId ().c_str (), _id.c_str (),
-     Event::getEventTypeAsString (_type).c_str (),
-     Event::getEventStateAsString (_state).c_str ());
+%sEvent (%p)\n\
+%s  object: %p (%s, id: %s)\n\
+%s  id: %s\n\
+%s  full-id: %s\n\
+%s  type: %s\n\
+%s  state: %s\n",
+     prefix, this,
+     prefix, _object,
+     _object->getObjectTypeAsString ().c_str (), _object->getId ().c_str (),
+     prefix, _id.c_str (),
+     prefix, this->getFullId ().c_str (),
+     prefix, Event::getEventTypeAsString (_type).c_str (),
+     prefix, Event::getEventStateAsString (_state).c_str ());
 
   if (_type == Event::PRESENTATION)
     {
       str += xstrbuild
         ("\
-  begin: %" GINGA_TIME_FORMAT "\n\
-  end: %" GINGA_TIME_FORMAT "\n",
-         GINGA_TIME_ARGS (_begin),
-         GINGA_TIME_ARGS (_end));
+%s  begin: %" GINGA_TIME_FORMAT "\n\
+%s  end: %" GINGA_TIME_FORMAT "\n",
+         prefix, GINGA_TIME_ARGS (_begin),
+         prefix, GINGA_TIME_ARGS (_end));
     }
 
   if (_parameters.size () > 0)
     {
-      str += "  params:\n";
+      str += xstrbuild ("%s  params:\n", prefix);
       for (auto it: _parameters)
-        str += "    " + it.first + "='" + it.second + "'\n";
+        {
+          str += xstrbuild ("%s  %s='%s'\n", prefix,
+                            it.first.c_str (), it.second.c_str ());
+        }
     }
 
   return str;

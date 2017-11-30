@@ -58,7 +58,7 @@ public:
   string getId ();
   string getFullId ();
   Event::State getState ();
-  string toString ();
+  string toString (int indent=0);
 
   bool isLambda ();
   void getInterval (Time *, Time *);
