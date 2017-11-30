@@ -29,7 +29,7 @@
   <body>
     <port id="start" component="img1"/>
     <media id="img1" src="samples/gnu.png" descriptor="desc1">
-      <area id="seg" begin="0.5s"/>
+      <area id="seg0" begin="0.5s"/>
       <area id="seg1" begin="1s"/>
     </media>
     <media id="img2" src="samples/vector.svg" descriptor="desc2">
@@ -45,7 +45,7 @@
       <property name="bounds" value="50%,0,50%,50%"/>
     </media>
     <link xconnector="onBeginStart">
-      <bind role="onBegin" component="img1" interface="seg"/>
+      <bind role="onBegin" component="img1" interface="seg0"/>
       <bind role="start" component="img2"/>
       <bind role="start" component="vid"/>
       <bind role="start" component="lua"/>
