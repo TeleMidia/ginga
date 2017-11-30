@@ -257,21 +257,58 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
         case Event::START:
           if (evt->isLambda ())
             {
-              Formatter *formatter;
+              if (_player == nullptr)
+              {
+                Formatter *formatter;
 
-              g_assert (_doc->getData ("formatter", (void **) &formatter));
-              g_assert_null (_player);
-              _player = Player::createPlayer (formatter, _id, _uri, _mime);
-              if (unlikely (_player == nullptr))
-                return false;       // fail
+                g_assert (_doc->getData ("formatter", (void **) &formatter));
+                g_assert_null (_player);
+                _player = Player::createPlayer (formatter, _id, _uri, _mime);
+                if (unlikely (_player == nullptr))
+                  return false;       // fail
 
-              for (auto it: _properties)
-                _player->setProperty (it.first, it.second);
-
+                for (auto it: _properties)
+                  _player->setProperty (it.first, it.second);
+              }
               _player->start ();    // TODO: check failure
             }
           break;
-
+        case Event::PAUSE:
+          // TODO
+          if (evt->isLambda ())
+          {
+            g_assert_nonnull (_player);
+            for (auto e: _events)
+            {
+              if (!e->isLambda ()
+                  && e->getType () == Event::PRESENTATION)
+              {
+                _doc->evalAction (e, Event::PAUSE);
+              }
+            }
+            _player->pause ();
+          }          
+          break;
+        case Event::RESUME:
+          //TODO
+          if (evt->isLambda ())
+          {
+            g_assert_nonnull (_player);
+            for (auto e: _events)
+            {
+              if (!e->isLambda ()
+                  && e->getType () == Event::PRESENTATION)
+              {
+                _doc->evalAction (e, Event::RESUME);
+              }
+            }
+            _player->resume ();
+          }
+          break;
+        case Event::ABORT:
+          //TODO
+          g_assert_not_reached ();
+          break;
         case Event::STOP:
           break;
         default:
@@ -329,6 +366,19 @@ Media::afterTransition (Event *evt, Event::Transition transition)
                      evt->getFullId ().c_str (),
                      GINGA_TIME_ARGS (begin), GINGA_TIME_ARGS (_time));
             }
+          break;
+        
+        case Event::PAUSE:
+          // TODO
+          //g_assert_not_reached ();
+         break;
+        case Event::RESUME:
+          //TODO
+          //g_assert_not_reached ();
+         break;
+        case Event::ABORT:
+          //TODO
+          g_assert_not_reached ();
           break;
 
         case Event::STOP:
