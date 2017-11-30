@@ -140,8 +140,8 @@ bool parse_bool (const string &);
 bool try_parse_color (const string &, Color *);
 Color parse_color (const string &);
 
-bool try_parse_list (const string &, char, size_t, size_t, vector<string> *);
-vector<string> parse_list (const string &, char, size_t, size_t);
+bool try_parse_list (const string &, char, size_t, size_t, list<string> *);
+list<string> parse_list (const string &, char, size_t, size_t);
 
 bool try_parse_time (const string &, Time *);
 Time parse_time (const string &);
@@ -169,7 +169,7 @@ bool xstrhassuffix (const string &, const string &);
 int G_GNUC_PRINTF (2,3) xstrassign (string &, const char *, ...);
 string G_GNUC_PRINTF (1,2) xstrbuild (const char *, ...);
 string xstrstrip (string);
-vector<string> xstrsplit (const string &, char);
+list<string> xstrsplit (const string &, char);
 
 // Path functions.
 string xpathbasename (string);

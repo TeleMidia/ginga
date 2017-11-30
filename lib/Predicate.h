@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PREDICATE_H
 #define PREDICATE_H
 
+#include "aux-ginga.h"
+
 GINGA_NAMESPACE_BEGIN
 
 class Predicate
@@ -46,6 +48,7 @@ class Predicate
   Predicate (Predicate::Type);
   ~Predicate ();
   Predicate::Type getType ();
+  string toString ();
   Predicate *clone ();
 
   // Atomic only.
@@ -53,7 +56,7 @@ class Predicate
   void setTest (const string &, Predicate::Test, const string &);
 
   // Non-atomic only.
-  const vector <Predicate *> *getChildren ();
+  const list<Predicate *> *getChildren ();
   void addChild (Predicate *);
 
   // Both.
@@ -68,7 +71,7 @@ private:
     string left;
     string right;
   } _atom;
-  vector<Predicate *> _children;
+  list<Predicate *> _children;
   Predicate *_parent;
 };
 

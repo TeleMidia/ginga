@@ -507,31 +507,37 @@ Player::doSetProperty (PlayerProperty code, unused (const string &name),
       break;
     case PROP_BOUNDS:
       {
-        vector<string> v;
-        if (unlikely (!ginga::try_parse_list (value, ',', 4, 4, &v)))
+        list<string> lst;
+        if (unlikely (!ginga::try_parse_list (value, ',', 4, 4, &lst)))
           return false;
-        this->setProperty ("left", v[0]);
-        this->setProperty ("top", v[1]);
-        this->setProperty ("width", v[2]);
-        this->setProperty ("height", v[3]);
+        auto it = lst.begin ();
+        this->setProperty ("left", *it++);
+        this->setProperty ("top", *it++);
+        this->setProperty ("width", *it++);
+        this->setProperty ("height", *it++);
+        g_assert (it == lst.end ());
         break;
       }
     case PROP_LOCATION:
       {
-        vector<string> v;
-        if (unlikely (!ginga::try_parse_list (value, ',', 2, 2, &v)))
+        list<string> lst;
+        if (unlikely (!ginga::try_parse_list (value, ',', 2, 2, &lst)))
           return false;
-        this->setProperty ("left", v[0]);
-        this->setProperty ("top", v[1]);
+        auto it = lst.begin ();
+        this->setProperty ("left", *it++);
+        this->setProperty ("top", *it++);
+        g_assert (it == lst.end ());
         break;
       }
     case PROP_SIZE:
       {
-        vector<string> v;
-        if (unlikely (!ginga::try_parse_list (value, ',', 2, 2, &v)))
+        list<string> lst;
+        if (unlikely (!ginga::try_parse_list (value, ',', 2, 2, &lst)))
           return false;
-        this->setProperty ("width", v[0]);
-        this->setProperty ("height", v[1]);
+        auto it = lst.begin ();
+        this->setProperty ("width", *it++);
+        this->setProperty ("height", *it++);
+        g_assert (it == lst.end ());
         break;
       }
     case PROP_LEFT:

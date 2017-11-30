@@ -30,19 +30,19 @@ public:
   ~NclComposition ();
 
   void addNode (NclNode *);
-  const vector<NclNode *> *getNodes ();
+  const list<NclNode *> *getNodes ();
   NclNode *getNode (const string &);
   NclNode *getNestedNode (const string &);
 
   void addPort (NclPort *);
-  const vector<NclPort *> *getPorts ();
+  const list<NclPort *> *getPorts ();
   NclPort *getPort (const string &);
 
   NclAnchor *getMapInterface (NclPort *);
 
 protected:
-  vector<NclNode *> _nodes;
-  vector<NclPort *> _ports;
+  list<NclNode *> _nodes;
+  list<NclPort *> _ports;
 };
 
 GINGA_NAMESPACE_END

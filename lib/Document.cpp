@@ -28,11 +28,16 @@ GINGA_NAMESPACE_BEGIN
 
 Document::Document ()
 {
+  MediaSettings *obj;
+
   _root = new Context ("__root__");
+  _settings = nullptr;
+
   this->addObject (_root);
 
-  _settings = new MediaSettings ("__settings__");
-  _root->addChild (_settings);
+  obj = new MediaSettings ("__settings__");
+  _root->addChild (obj);
+  _settings = obj;
 }
 
 Document::~Document ()
@@ -68,17 +73,23 @@ Document::getObjectByIdOrAlias (const string &id)
   return nullptr;
 }
 
-bool
+void
 Document::addObject (Object *obj)
 {
   g_assert_nonnull (obj);
+
   if (_objects.find (obj) != _objects.end ()
       || getObjectByIdOrAlias (obj->getId ()) != nullptr)
     {
-      return false;
+      return;                   // nothing to do
     }
+
+  if (unlikely (_settings != nullptr && instanceof (MediaSettings *, obj)))
+    g_assert (!instanceof (MediaSettings *, obj)); // cannot be added
+
   obj->initDocument (this);
   _objects.insert (obj);
+
   if (instanceof (Media *, obj))
     {
       Media *media = cast (Media *, obj);
@@ -101,7 +112,6 @@ Document::addObject (Object *obj)
     {
       g_assert_not_reached ();
     }
-  return true;
 }
 
 Context *

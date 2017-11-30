@@ -15,14 +15,34 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "aux-ginga.h"
-#include "ginga.h"
+#include "Media.h"
 
 int
 main (void)
 {
-  Ginga *ginga = Ginga::create (0, nullptr, nullptr);
-  g_assert_nonnull (ginga);
-  delete ginga;
+  Media *m;
+
+  m = new Media ("m", "src", "uri");
+  g_assert_nonnull (m);
+  g_assert (m->getId () == "m");
+  g_assert_null (m->getDocument ());
+  g_assert_null (m->getParent ());
+  g_assert (m->getObjectTypeAsString () == "Media");
+  g_assert (m->toString () != "");
+  g_assert (m->getAliases ()->size () == 0);
+  g_assert (m->getEvents ()->size () == 1);
+  g_assert_nonnull (m->getLambda ());
+  g_assert_false (m->isOccurring ());
+  g_assert_false (m->isPaused ());
+  g_assert_true (m->isSleeping ());
+  g_assert (m->getProperty ("zIndex") == "");
+  g_assert (m->getDelayedActions ()->size () == 0);
+
+  // Media-only.
+  g_assert_false (m->isFocused ());
+  g_assert_false (m->getZ (nullptr, nullptr));
+
+  delete m;
+
   exit (EXIT_SUCCESS);
 }

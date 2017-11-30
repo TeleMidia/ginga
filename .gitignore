@@ -99,6 +99,12 @@
 /tests/env.sh
 /tests/gdb.cfg
 /tests/suppfile
+/tests/test-Context-new
+/tests/test-Document-addObject
+/tests/test-Document-getObjectById
+/tests/test-Document-getObjectByIdOrAlias
+/tests/test-Document-new
+/tests/test-Event-new
 /tests/test-Ginga-create
 /tests/test-Ginga-getOptionBool
 /tests/test-Ginga-getOptionInt
@@ -111,8 +117,15 @@
 /tests/test-Ginga-version
 /tests/test-GingaInternal-getData
 /tests/test-GingaInternal-setData
+/tests/test-Media-new
+/tests/test-MediaSettings-new
+/tests/test-Object-addAlias
+/tests/test-Object-addEvent
 /tests/test-Parser-parseBuffer
 /tests/test-Parser-parseFile
+/tests/test-Predicate-atom
+/tests/test-Predicate-new
+/tests/test-Switch-new
 /tests/test-aux-ginga-parse-bool
 /tests/test-aux-ginga-parse-color
 /tests/test-aux-ginga-parse-list
@@ -139,6 +152,7 @@
 /tests/test-aux-xstrtodorpercent
 /tests/test-aux-xstrtoll
 /tests/test-aux-xstrup
+/tests/xfail-test-Document-addObject
 /tests/xfail-test-Ginga-getOptionBool
 /tests/xfail-test-Ginga-getOptionInt
 /tests/xfail-test-Ginga-getOptionString

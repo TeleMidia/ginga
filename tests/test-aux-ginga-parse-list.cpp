@@ -20,37 +20,45 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  vector<string> v;
+  list<string> lst;
 
   g_assert (ginga::try_parse_list ("a,b,c", ',', 0, G_MAXSIZE, NULL));
   g_assert (!ginga::try_parse_list ("a,b,c", ',', 2, 2, NULL));
   g_assert (!ginga::try_parse_list ("a,b,c,d", ',', 1, 2, NULL));
 
-  v = ginga::parse_list ("a,b,c", ',', 0, 3);
-  g_assert (v.size () == 3);
-  g_assert (v[0] == "a");
-  g_assert (v[1] == "b");
-  g_assert (v[2] == "c");
+  lst = ginga::parse_list ("a,b,c", ',', 0, 3);
+  g_assert (lst.size () == 3);
+  auto it = lst.begin ();
+  g_assert (*it++ == "a");
+  g_assert (*it++ == "b");
+  g_assert (*it++ == "c");
+  g_assert (it == lst.end ());
 
-  v = ginga::parse_list ("", ';', 0, 3);
-  g_assert (v.size () == 0);
+  lst = ginga::parse_list ("", ';', 0, 3);
+  g_assert (lst.size () == 0);
 
-  v = ginga::parse_list ("x", ';', 0, 3);
-  g_assert (v.size () == 1);
-  g_assert (v[0] == "x");
+  lst = ginga::parse_list ("x", ';', 0, 3);
+  g_assert (lst.size () == 1);
+  it = lst.begin ();
+  g_assert (*it++ == "x");
+  g_assert (it == lst.end ());
 
-  v = ginga::parse_list ("x;y;z", ';', 2, 5);
-  g_assert (v.size () == 3);
-  g_assert (v[0] == "x");
-  g_assert (v[1] == "y");
-  g_assert (v[2] == "z");
+  lst = ginga::parse_list ("x;y;z", ';', 2, 5);
+  g_assert (lst.size () == 3);
+  it = lst.begin ();
+  g_assert (*it++ == "x");
+  g_assert (*it++ == "y");
+  g_assert (*it++ == "z");
+  g_assert (it == lst.end ());
 
-  v = ginga::parse_list (" aa , bb , cc , dd", ',', 0, 10);
-  g_assert (v.size () == 4);
-  g_assert (v[0] == "aa");
-  g_assert (v[1] == "bb");
-  g_assert (v[2] == "cc");
-  g_assert (v[3] == "dd");
+  lst = ginga::parse_list (" aa , bb , cc , dd", ',', 0, 10);
+  g_assert (lst.size () == 4);
+  it = lst.begin ();
+  g_assert (*it++ == "aa");
+  g_assert (*it++ == "bb");
+  g_assert (*it++ == "cc");
+  g_assert (*it++ == "dd");
+  g_assert (it == lst.end ());
 
   exit (EXIT_SUCCESS);
 }

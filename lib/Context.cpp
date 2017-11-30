@@ -67,7 +67,10 @@ Context::toString ()
         {                                                       \
           (str) += Event::getEventTransitionAsString            \
             ((act).transition);                                 \
-          (str) += "(" + (act).event->getFullId () + ")";       \
+          (str) += "(" + (act).event->getFullId ();             \
+          if ((act).predicate != nullptr)                       \
+            (str) += " ? " + (act).predicate->toString ();      \
+          (str) += ")";                                         \
         }                                                       \
       G_STMT_END
 
@@ -192,7 +195,8 @@ Context::endTransition (Event *evt, Event::Transition transition)
         case Event::START:
           Object::doStart ();
           for (auto port: _ports)
-            _doc->evalAction (port, transition);
+            if (port->getType () == Event::PRESENTATION)
+              _doc->evalAction (port, transition);
           TRACE ("start %s", evt->getFullId ().c_str ());
           break;
         case Event::STOP:

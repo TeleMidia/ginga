@@ -35,7 +35,7 @@ public:
   const set<Object *> *getObjects ();
   Object *getObjectById (const string &);
   Object *getObjectByIdOrAlias (const string &);
-  bool addObject (Object *);
+  void addObject (Object *);
 
   Context *getRoot ();
   MediaSettings *getSettings ();

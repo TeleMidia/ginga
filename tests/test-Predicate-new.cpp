@@ -15,14 +15,27 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "aux-ginga.h"
-#include "ginga.h"
+#include "Predicate.h"
 
 int
 main (void)
 {
-  Ginga *ginga = Ginga::create (0, nullptr, nullptr);
-  g_assert_nonnull (ginga);
-  delete ginga;
+  list<Predicate::Type> types =
+    {
+     Predicate::FALSUM,
+     Predicate::VERUM,
+     Predicate::ATOM,
+     Predicate::NEGATION,
+     Predicate::CONJUNCTION,
+     Predicate::DISJUNCTION,
+    };
+
+  for (auto type: types)
+    {
+      Predicate *pred = new Predicate (type);
+      g_assert (pred->getType () == type);
+      delete pred;
+    }
+
   exit (EXIT_SUCCESS);
 }
