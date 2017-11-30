@@ -36,6 +36,7 @@ main (void)
     g_assert (e->getFullId () == "m@pres");
     g_assert (e->getState () == Event::SLEEPING);
     g_assert_false (e->isLambda ());
+    TRACE ("\n%s", e->toString ().c_str ());
     delete e;
   }
 
@@ -49,6 +50,7 @@ main (void)
     g_assert (e->getFullId () == "m.attr");
     g_assert (e->getState () == Event::SLEEPING);
     g_assert_false (e->isLambda ());
+    TRACE ("\n%s", e->toString ().c_str ());
     delete e;
   }
 
@@ -62,6 +64,7 @@ main (void)
     g_assert (e->getFullId () == "m<sel>");
     g_assert (e->getState () == Event::SLEEPING);
     g_assert_false (e->isLambda ());
+    TRACE ("\n%s", e->toString ().c_str ());
     delete e;
   }
 
