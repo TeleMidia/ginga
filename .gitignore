@@ -104,7 +104,9 @@
 /tests/test-Document-getObjectById
 /tests/test-Document-getObjectByIdOrAlias
 /tests/test-Document-new
+/tests/test-Event-isLambda
 /tests/test-Event-new
+/tests/test-Event-setInterval
 /tests/test-Event-setParameter
 /tests/test-Ginga-create
 /tests/test-Ginga-getOptionBool

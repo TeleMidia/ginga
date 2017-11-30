@@ -170,6 +170,12 @@ test_Predicate_atom_SOURCES= test-Predicate-atom.cpp
 progs+= test-Event-new
 test_Event_new_SOURCES= test-Event-new.cpp
 
+progs+= test-Event-isLambda
+test_Event_isLambda_SOURCES= test-Event-isLambda.cpp
+
+progs+= test-Event-setInterval
+test_Event_setInterval_SOURCES= test-Event-setInterval.cpp
+
 progs+= test-Event-setParameter
 test_Event_setParameter_SOURCES= test-Event-setParameter.cpp
 
