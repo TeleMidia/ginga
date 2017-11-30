@@ -172,7 +172,7 @@ Context::beforeTransition (Event *evt, Event::Transition transition)
       break;
 
     case Event::ATTRIBUTION:
-      g_assert_not_reached ();
+      // g_assert_not_reached ();
       break;
 
     case Event::SELECTION:
@@ -209,6 +209,31 @@ Context::afterTransition (Event *evt, Event::Transition transition)
       break;
 
     case Event::ATTRIBUTION:
+      {
+        string name;
+        string value;
+        string s;
+        Time dur;
+
+        name = evt->getId();
+        evt->getParameter("value", &value);
+        if (value[0] == '$')
+          _doc->evalPropertyRef(value, &value);
+
+        if (evt->getParameter("duration", &s)) {
+          if (s[0] == '$')
+            _doc->evalPropertyRef(s, &s);
+          dur = ginga::parse_time(s);
+        } else {
+          dur = 0;
+        }
+        this->setProperty(name, value, dur);
+        _doc->evalAction(evt, Event::STOP);
+
+        TRACE("start %s:=%s (duration=%s)", evt->getFullId().c_str(),
+              value.c_str(), s.c_str());
+        break;
+      }
     case Event::SELECTION:
     default:
       g_assert_not_reached ();
