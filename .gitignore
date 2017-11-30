@@ -105,6 +105,7 @@
 /tests/test-Document-getObjectByIdOrAlias
 /tests/test-Document-new
 /tests/test-Event-new
+/tests/test-Event-setParameter
 /tests/test-Ginga-create
 /tests/test-Ginga-getOptionBool
 /tests/test-Ginga-getOptionInt
