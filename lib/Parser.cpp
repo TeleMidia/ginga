@@ -1053,8 +1053,8 @@ ParserState::resolveInterfaceRef (Context *parent, ParserElt *elt,
 
   if (!elt->getAttribute ("interface", &iface))
     {
-      tryset (result, obj->getLambda ());
-      return true;
+      evt = obj->getLambda();
+      goto success;
     }
 
   evt = nullptr;
@@ -1088,9 +1088,13 @@ ParserState::resolveInterfaceRef (Context *parent, ParserElt *elt,
           if (unlikely (!this->eltCacheIndexById
                         (iface, &iface_elt, {"port"})))
             {
-              goto fail;
+              evt = obj->getAttributionEvent(iface);
+              if (unlikely(evt == nullptr))
+                goto fail;
+              goto success;
             }
 
+          // resolving the port
           g_assert (this->eltCacheIndexParent
                     (iface_elt->getNode (), &parent_elt));
           if (parent_elt->getTag () == "body")
@@ -1116,9 +1120,10 @@ ParserState::resolveInterfaceRef (Context *parent, ParserElt *elt,
       g_assert_not_reached ();
     }
 
-  g_assert_nonnull (evt);
-  tryset (result, evt);
-  return true;
+  success:
+    g_assert_nonnull (evt);
+    tryset (result, evt);
+    return true;
 
  fail:
   return this->errEltBadAttribute
