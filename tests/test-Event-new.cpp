@@ -31,6 +31,7 @@ main (void)
     Event *e = new Event (Event::PRESENTATION, m, "pres");
     g_assert_nonnull (e);
     g_assert (e->getType () == Event::PRESENTATION);
+    g_assert (e->getObject () == m);
     g_assert (e->getId () == "pres");
     g_assert (e->getFullId () == "m@pres");
     g_assert (e->getState () == Event::SLEEPING);
@@ -43,6 +44,7 @@ main (void)
     Event *e = new Event (Event::ATTRIBUTION, m, "attr");
     g_assert_nonnull (e);
     g_assert (e->getType () == Event::ATTRIBUTION);
+    g_assert (e->getObject () == m);
     g_assert (e->getId () == "attr");
     g_assert (e->getFullId () == "m.attr");
     g_assert (e->getState () == Event::SLEEPING);
@@ -55,6 +57,7 @@ main (void)
     Event *e = new Event (Event::SELECTION, m, "sel");
     g_assert_nonnull (e);
     g_assert (e->getType () == Event::SELECTION);
+    g_assert (e->getObject () == m);
     g_assert (e->getId () == "sel");
     g_assert (e->getFullId () == "m<sel>");
     g_assert (e->getState () == Event::SLEEPING);

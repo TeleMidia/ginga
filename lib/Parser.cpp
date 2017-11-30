@@ -621,8 +621,10 @@ parser_syntax_reserved_role_table =
  {"onPause",            {Event::PRESENTATION, Event::PAUSE}},
  {"onResumes",          {Event::PRESENTATION, Event::RESUME}},
  {"onBeginAttribution", {Event::ATTRIBUTION,  Event::START}},
- {"onEndAttribution",   {Event::SELECTION,    Event::STOP}},
+ {"onEndAttribution",   {Event::ATTRIBUTION,  Event::STOP}},
  {"onSelection",        {Event::SELECTION,    Event::START}},
+ {"onBeginSelection",   {Event::SELECTION,    Event::START}},
+ {"onEndSelection",     {Event::SELECTION,    Event::STOP}},
  {"start",              {Event::PRESENTATION, Event::START}}, // actions
  {"stop",               {Event::PRESENTATION, Event::STOP}},
  {"abort",              {Event::PRESENTATION, Event::ABORT}},
