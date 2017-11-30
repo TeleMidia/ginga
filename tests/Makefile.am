@@ -170,6 +170,9 @@ test_Predicate_atom_SOURCES= test-Predicate-atom.cpp
 progs+= test-Event-new
 test_Event_new_SOURCES= test-Event-new.cpp
 
+progs+= test-Event-setParameter
+test_Event_setParameter_SOURCES= test-Event-setParameter.cpp
+
 # lib/Object.h -------------------------------------------------------------
 progs+= test-Object-addAlias
 test_Object_addAlias_SOURCES= test-Object-addAlias.cpp
