@@ -201,6 +201,7 @@ Event::transition (Event::Transition trans)
     return false;
 
   // Update event state.
+  
   _state = next;
 
   // Finish transition.
