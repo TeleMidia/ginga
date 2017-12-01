@@ -1070,7 +1070,7 @@ ParserState::resolveInterfaceRef (Context *parent, ParserElt *elt,
     }
   else if (instanceof (Switch *, obj))
     {
-      g_assert_not_reached ();  // not implemented
+      ERROR_NOT_IMPLEMENTED ("interface pointing to switch");
     }
   else if (instanceof (Context *, obj))
     {
@@ -1088,13 +1088,14 @@ ParserState::resolveInterfaceRef (Context *parent, ParserElt *elt,
           if (unlikely (!this->eltCacheIndexById
                         (iface, &iface_elt, {"port"})))
             {
-              evt = obj->getAttributionEvent(iface);
-              if (unlikely(evt == nullptr))
+              evt = obj->getAttributionEvent (iface);
+              if (likely (evt != nullptr))
+                goto success;   // interface point to context property
+              else
                 goto fail;
-              goto success;
             }
 
-          // resolving the port
+          // Interface points to context port: resolve it recursively.
           g_assert (this->eltCacheIndexParent
                     (iface_elt->getNode (), &parent_elt));
           if (parent_elt->getTag () == "body")
@@ -1120,10 +1121,10 @@ ParserState::resolveInterfaceRef (Context *parent, ParserElt *elt,
       g_assert_not_reached ();
     }
 
-  success:
-    g_assert_nonnull (evt);
-    tryset (result, evt);
-    return true;
+ success:
+  g_assert_nonnull (evt);
+  tryset (result, evt);
+  return true;
 
  fail:
   return this->errEltBadAttribute
