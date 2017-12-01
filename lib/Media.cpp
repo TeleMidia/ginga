@@ -258,65 +258,63 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
       switch (transition)
         {
         case Event::START:
-          TRACE ("START");
-          if (evt->isLambda ())
+          if (!evt->isLambda ())
             {
-              if (_player == nullptr)
-              {
-                Formatter *formatter;
-
-                g_assert (_doc->getData ("formatter", (void **) &formatter));
-                g_assert_null (_player);
-                _player = Player::createPlayer (formatter, _id, _uri, _mime);
-                if (unlikely (_player == nullptr))
-                  return false;       // fail
-
-                for (auto it: _properties)
-                  _player->setProperty (it.first, it.second);
-              }
-              _player->start ();    // TODO: check failure
+              break;            // nothing to do
             }
+          if (evt->getState () == Event::SLEEPING) // create player
+            {
+              Formatter *fmt;
+
+              g_assert (_doc->getData ("formatter", (void **) &fmt));
+              g_assert_null (_player);
+              _player = Player::createPlayer (fmt, _id, _uri, _mime);
+              if (unlikely (_player == nullptr))
+                return false;   // fail
+
+              for (auto it: _properties)
+                _player->setProperty (it.first, it.second);
+            }
+          g_assert_nonnull (_player);
+          _player->start ();    // TODO: check failure
           break;
+
         case Event::PAUSE:
-          TRACE ("PAUSE");
-          if (evt->isLambda ())
-          {
-            g_assert_nonnull (_player);
-            for (auto e: _events)
+	  TRACE ("PAUSE");
+          if (!evt->isLambda ())
             {
-              if (!e->isLambda ()
-                  && e->getType () == Event::PRESENTATION)
-              {
-                _doc->evalAction (e, Event::PAUSE);                
-              }
+              break;            // nothing to do
             }
-            _player->pause ();
-          }
+          g_assert_nonnull (_player);
+          for (auto e: _events)
+            if (!e->isLambda () && e->getType () == Event::PRESENTATION)
+              _doc->evalAction (e, Event::PAUSE);
+          _player->pause ();
           break;
+
         case Event::RESUME:
-          TRACE ("RESUME");          
-          if (evt->isLambda ())
-          {
-            g_assert_nonnull (_player);
-            for (auto e: _events)
+          if (!evt->isLambda ())
             {
-              if (!e->isLambda ()
-                  && e->getType () == Event::PRESENTATION)
-              {
-                _doc->evalAction (e, Event::RESUME);
-              }
+              break;            // nothing to do
             }
-            _player->resume ();
-          }
+          g_assert_nonnull (_player);
+          for (auto e: _events)
+            if (!e->isLambda () && e->getType () == Event::PRESENTATION)
+              _doc->evalAction (e, Event::RESUME);
+
+          _player->resume ();
           break;
+
         case Event::ABORT:
           TRACE ("ABORT");
-          //TODO
-          g_assert_not_reached ();
+          //TODO          
+	  ERROR_NOT_IMPLEMENTED ("abort action is not supported");
           break;
+
         case Event::STOP:
           TRACE ("STOP");
           break;
+
         default:
           g_assert_not_reached ();
         }
@@ -336,7 +334,7 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
 
     default:
       g_assert_not_reached ();
-    }  
+    }
   return true;
 }
 
@@ -379,15 +377,10 @@ Media::afterTransition (Event *evt, Event::Transition transition)
                      GINGA_TIME_ARGS (begin), GINGA_TIME_ARGS (_time));
             }
           break;
-        
+
         case Event::PAUSE:
-         break;
-        case Event::RESUME:        
-         break;
-        case Event::ABORT:
-          //TODO
-          g_assert_not_reached ();
-          break;
+        case Event::RESUME:
+         break;                 // nothing to do
 
         case Event::STOP:
           if (evt->isLambda ())
@@ -408,6 +401,10 @@ Media::afterTransition (Event *evt, Event::Transition transition)
             }
           break;
 
+        case Event::ABORT:
+          ERROR_NOT_IMPLEMENTED ("abort action is not supported");
+          break;
+
         default:
           g_assert_not_reached ();
         }
@@ -425,13 +422,11 @@ Media::afterTransition (Event *evt, Event::Transition transition)
 
             name = evt->getId ();
             evt->getParameter ("value", &value);
-            if (value[0] == '$')
-              _doc->evalPropertyRef (value, &value);
+            _doc->evalPropertyRef (value, &value);
 
             if (evt->getParameter ("duration", &s))
               {
-                if (s[0] == '$')
-                  _doc->evalPropertyRef (s, &s);
+                _doc->evalPropertyRef (s, &s);
                 dur = ginga::parse_time (s);
               }
             else
@@ -439,15 +434,17 @@ Media::afterTransition (Event *evt, Event::Transition transition)
                 dur = 0;
               }
             this->setProperty (name, value, dur);
-            _doc->evalAction (evt, Event::STOP);
+            this->addDelayedAction (evt, Event::STOP, value, dur);
 
-            TRACE ("start %s:=%s (duration=%s)", evt->getFullId ().c_str (),
-                   value.c_str (), s.c_str ());
+            TRACE ("start %s:='%s' (duration=%s)", evt->getFullId ().c_str (),
+                   value.c_str (), (s != "") ? s.c_str () : "0s");
             break;
           }
+
         case Event::STOP:
           TRACE ("stop %s:=...", evt->getFullId ().c_str ());
           break;
+
         default:
           g_assert_not_reached ();
         }
