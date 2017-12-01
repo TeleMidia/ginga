@@ -39,7 +39,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  // Check START from state OCCURRING.
+  
+  // Presentation events ---------------------------------------------------
+
+  // @lambda: START from state OCCURRING.
   {
     Formatter *fmt;
     Document *doc;
@@ -67,11 +70,11 @@ main (void)
     delete fmt;
   }
 
-  // Check START from state PAUSED.
+  // @lambda: START from state PAUSED.
   {
   }
 
-  // Check START from state SLEEPING.
+  // @lambda: START from state SLEEPING.
   {
     Formatter *fmt;
     Document *doc;
@@ -117,6 +120,12 @@ main (void)
 
     delete fmt;
   }
+
+
+  // Attribution events ----------------------------------------------------
+
+
+  // Selection events ------------------------------------------------------
 
   exit (EXIT_SUCCESS);
 }
