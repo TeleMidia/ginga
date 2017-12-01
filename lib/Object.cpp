@@ -325,7 +325,7 @@ void
 Object::sendTickEvent (unused (Time total), Time diff, unused (Time frame))
 {
   if (!this->isOccurring ())
-    return;
+    return;                     // nothing to do
 
   g_assert (GINGA_TIME_IS_VALID (_time));
   _time += diff;
