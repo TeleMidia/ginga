@@ -33,8 +33,10 @@
   <body>
     <port id='start' component='video'/>
     <port id='start2' component='video2'/>
-    <media id='video' src='../samples/bunny.ogg' descriptor='desc' />
-    <media id='video2' src='../samples/animGar.mp4' descriptor='desc2'>
+    <media id='video' src='../samples/bunny.ogg' descriptor='desc' >
+      <property name="soundLevel" value="0"/>
+    </media>
+    <media id='video2' src='../samples/animGar.mp4' descriptor='desc2'>      
       <area id='area1' begin='5s' />
     </media>
     <link xconnector="onKeySelectionPause">
@@ -44,12 +46,12 @@
       <bind role="pause" component="video" />
     </link>
 
-    <link xconnector="onKeySelectionResume">
+    <!-- <link xconnector="onKeySelectionResume">
       <bind role='onSelection' component='video'>
         <bindParam name='keyCode' value='GREEN'/>
       </bind>
       <bind role="resume" component="video" />
-    </link>
+    </link> -->
 
    <!--  <link xconnector="onBeginResume">
       <bind role="onBegin" component="video2" interface="area1" />

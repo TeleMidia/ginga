@@ -248,13 +248,17 @@ Media::sendTickEvent (Time total, Time diff, Time frame)
 
 bool
 Media::beforeTransition (Event *evt, Event::Transition transition)
-{
+{  
+  TRACE ("------Init_Transition------\n%s",_uri.c_str());
+  
   switch (evt->getType ())
     {
     case Event::PRESENTATION:
+      TRACE ("PRESENTATION");
       switch (transition)
         {
         case Event::START:
+          TRACE ("START");
           if (evt->isLambda ())
             {
               if (_player == nullptr)
@@ -274,7 +278,7 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
             }
           break;
         case Event::PAUSE:
-          // TODO
+          TRACE ("PAUSE");
           if (evt->isLambda ())
           {
             g_assert_nonnull (_player);
@@ -283,14 +287,14 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
               if (!e->isLambda ()
                   && e->getType () == Event::PRESENTATION)
               {
-                _doc->evalAction (e, Event::PAUSE);
+                _doc->evalAction (e, Event::PAUSE);                
               }
             }
             _player->pause ();
-          }          
+          }
           break;
         case Event::RESUME:
-          //TODO
+          TRACE ("RESUME");          
           if (evt->isLambda ())
           {
             g_assert_nonnull (_player);
@@ -306,10 +310,12 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
           }
           break;
         case Event::ABORT:
+          TRACE ("ABORT");
           //TODO
           g_assert_not_reached ();
           break;
         case Event::STOP:
+          TRACE ("STOP");
           break;
         default:
           g_assert_not_reached ();
@@ -317,14 +323,20 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
       break;
 
     case Event::ATTRIBUTION:
+      TRACE ("ATTRIBUTION");
+      break;
     case Event::SELECTION:
-      if (!this->isOccurring ())
-        return false;           // fail
+      TRACE ("SELECTION");
+      // if (!this->isOccurring ())
+      // {
+      //   TRACE ("Not Occurring!");
+      //   return false;           // fail
+      // }      
       break;
 
     default:
       g_assert_not_reached ();
-    }
+    }  
   return true;
 }
 
@@ -369,12 +381,8 @@ Media::afterTransition (Event *evt, Event::Transition transition)
           break;
         
         case Event::PAUSE:
-          // TODO
-          //g_assert_not_reached ();
          break;
-        case Event::RESUME:
-          //TODO
-          //g_assert_not_reached ();
+        case Event::RESUME:        
          break;
         case Event::ABORT:
           //TODO
@@ -447,9 +455,9 @@ Media::afterTransition (Event *evt, Event::Transition transition)
 
     case Event::SELECTION:
       {
-        string key;
-
-        g_assert (this->isOccurring ());
+        string key;        
+        // g_assert (this->isOccurring ());
+        TRACE ("Occurring!");
         evt->getParameter ("key", &key);
 
         switch (transition)
@@ -468,6 +476,7 @@ Media::afterTransition (Event *evt, Event::Transition transition)
     default:
       g_assert_not_reached ();
     }
+  TRACE ("------End_Transition------");
   return true;
 }
 
