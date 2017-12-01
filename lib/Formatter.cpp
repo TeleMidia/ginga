@@ -253,6 +253,46 @@ Formatter::start (const string &file, string *errmsg)
 }
 
 bool
+Formatter::start (const string &buf, size_t size, string *errmsg)
+{
+  Context *root;
+  MediaSettings *settings;
+
+  if (_state != GINGA_STATE_STOPPED)
+    return false;               // nothing to do
+
+  _doc = Parser::parseBuffer
+    (buf.c_str (), size, _opts.width, _opts.height, errmsg);
+  if (unlikely (_doc == nullptr))
+    return false;
+
+  g_assert_nonnull (_doc);
+  _doc->setData ("formatter", (void *) this);
+
+  // Initialize formatter variables.
+  _docPath = "(buffer)";
+  _eos = false;
+  _last_tick_total = 0;
+  _last_tick_diff = 0;
+  _last_tick_frameno = 0;
+
+  // Start root context (body).
+  root = _doc->getRoot ();
+  g_assert_nonnull (root);
+  if (unlikely (_doc->evalAction (root->getLambda (), Event::START) == 0))
+    return false;
+
+  // Refresh current focus.
+  settings = _doc->getSettings ();
+  g_assert_nonnull (settings);
+  settings->updateCurrentFocus ("");
+
+  // Success.
+  _state = GINGA_STATE_PLAYING;
+  return true;
+}
+
+bool
 Formatter::stop ()
 {
   if (_state == GINGA_STATE_STOPPED)
@@ -488,6 +528,12 @@ Formatter::~Formatter ()
   this->stop ();
 }
 
+Document *
+Formatter::getDocument ()
+{
+  return _doc;
+}
+
 bool
 Formatter::getEOS ()
 {
@@ -547,10 +593,7 @@ void
 Formatter::setOptionOpenGL (unused (Formatter *self),
                             const string &name, bool value)
 {
-  static int n = 0;
   g_assert (name == "opengl");
-  if (unlikely (n++ > 0))
-    ERROR ("Cannot change to 'opengl' on-the-fly");
 #if !(defined WITH_OPENGL && WITH_OPENGL)
   if (unlikely (value))
     ERROR ("Not compiled with OpenGL support");

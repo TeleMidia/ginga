@@ -190,6 +190,10 @@ progs+= test-Event-getEventTransitionAsString
 test_Event_getEventTransitionAsString_SOURCES=\
   test-Event-getEventTransitionAsString.cpp
 
+progs+= test-Event-transition-Media-START
+test_Event_transition_Media_START_SOURCES=\
+  test-Event-transition-Media-START.cpp
+
 # lib/Object.h -------------------------------------------------------------
 progs+= test-Object-addAlias
 test_Object_addAlias_SOURCES= test-Object-addAlias.cpp
