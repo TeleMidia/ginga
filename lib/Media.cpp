@@ -409,13 +409,11 @@ Media::afterTransition (Event *evt, Event::Transition transition)
 
             name = evt->getId ();
             evt->getParameter ("value", &value);
-            if (value[0] == '$')
-              _doc->evalPropertyRef (value, &value);
+            _doc->evalPropertyRef (value, &value);
 
             if (evt->getParameter ("duration", &s))
               {
-                if (s[0] == '$')
-                  _doc->evalPropertyRef (s, &s);
+                _doc->evalPropertyRef (s, &s);
                 dur = ginga::parse_time (s);
               }
             else
@@ -423,15 +421,17 @@ Media::afterTransition (Event *evt, Event::Transition transition)
                 dur = 0;
               }
             this->setProperty (name, value, dur);
-            _doc->evalAction (evt, Event::STOP);
+            this->addDelayedAction (evt, Event::STOP, value, dur);
 
-            TRACE ("start %s:=%s (duration=%s)", evt->getFullId ().c_str (),
-                   value.c_str (), s.c_str ());
+            TRACE ("start %s:='%s' (duration=%s)", evt->getFullId ().c_str (),
+                   value.c_str (), (s != "") ? s.c_str () : "0s");
             break;
           }
+
         case Event::STOP:
           TRACE ("stop %s:=...", evt->getFullId ().c_str ());
           break;
+
         default:
           g_assert_not_reached ();
         }

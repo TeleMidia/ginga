@@ -39,6 +39,7 @@ class Formatter: public Ginga
   GingaState getState ();
 
   bool start (const string &, string *);
+  bool start (const string &, size_t, string *);
   bool stop ();
 
   void resize (int, int);
@@ -59,6 +60,7 @@ class Formatter: public Ginga
   Formatter (int, char **, GingaOptions *);
   ~Formatter ();
 
+  Document *getDocument ();
   bool getEOS ();
   void setEOS (bool);
 

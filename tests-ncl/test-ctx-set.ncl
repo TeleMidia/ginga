@@ -17,7 +17,7 @@
         <property name="bounds" value="10%,10%,100%,100%"/>
         <property name="background" value="red"/>
       </media>
-    </context>        
+    </context>
     <link xconnector="onBeginSet_var">
       <bind role="onBegin" component="ctx"/>
       <bind role="set" component="ctx" interface="propName">

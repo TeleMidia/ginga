@@ -135,14 +135,9 @@ void
 Context::sendTickEvent (Time total, Time diff, Time frame)
 {
   Object::sendTickEvent (total, diff, frame);
-
-  // g_assert (this->isOccurring ());
-  // for (auto child: _children)
-  //   if (child->isOccurring ())
-  //     return;
-  // Event *lambda = this->getLambda ();
-  // g_assert_nonnull (lambda);
-  // _formatter->evalAction (lambda, Event::STOP);
+  //
+  // TODO: Should we detect context EOS here?
+  //
 }
 
 bool
@@ -172,8 +167,7 @@ Context::beforeTransition (Event *evt, Event::Transition transition)
       break;
 
     case Event::ATTRIBUTION:
-      // g_assert_not_reached ();
-      break;
+      break;                    // nothing to do
 
     case Event::SELECTION:
       return false;             // fail
@@ -209,32 +203,49 @@ Context::afterTransition (Event *evt, Event::Transition transition)
       break;
 
     case Event::ATTRIBUTION:
-      {
-        string name;
-        string value;
-        string s;
-        Time dur;
+      switch (transition)
+        {
+        case Event::START:
+          {
+            string name;
+            string value;
+            string s;
+            Time dur;
 
-        name = evt->getId();
-        evt->getParameter("value", &value);
-        if (value[0] == '$')
-          _doc->evalPropertyRef(value, &value);
+            name = evt->getId ();
+            evt->getParameter ("value", &value);
+            _doc->evalPropertyRef (value, &value);
 
-        if (evt->getParameter("duration", &s)) {
-          if (s[0] == '$')
-            _doc->evalPropertyRef(s, &s);
-          dur = ginga::parse_time(s);
-        } else {
-          dur = 0;
+            if (evt->getParameter ("duration", &s))
+              {
+                _doc->evalPropertyRef (s, &s);
+                dur = ginga::parse_time (s);
+              }
+            else
+              {
+                dur = 0;
+              }
+            this->setProperty (name, value, dur);
+            this->addDelayedAction (evt, Event::STOP, value, dur);
+
+            TRACE ("start %s:='%s' (duration=%s)", evt->getFullId ().c_str (),
+                   value.c_str (), (s != "") ? s.c_str () : "0s");
+            break;
+          }
+
+        case Event::STOP:
+          TRACE ("stop %s:=...", evt->getFullId ().c_str ());
+          break;
+
+        default:
+          g_assert_not_reached ();
         }
-        this->setProperty(name, value, dur);
-        _doc->evalAction(evt, Event::STOP);
+      break;
 
-        TRACE("start %s:=%s (duration=%s)", evt->getFullId().c_str(),
-              value.c_str(), s.c_str());
-        break;
-      }
     case Event::SELECTION:
+      g_assert_not_reached ();  // should not get here
+      break;
+
     default:
       g_assert_not_reached ();
     }
