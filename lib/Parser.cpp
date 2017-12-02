@@ -35,6 +35,7 @@ GINGA_NAMESPACE_BEGIN
 #define toXmlChar(s)   (xmlChar *)(deconst (char *, (s).c_str ()))
 #define toCPPString(s) string (deconst (char *, (s)))
 
+// Gets node property as C++ string.
 static inline bool
 xmlGetPropAsString (xmlNode *node, const string &name, string *result)
 {
@@ -46,6 +47,8 @@ xmlGetPropAsString (xmlNode *node, const string &name, string *result)
   return true;
 }
 
+// Tests whether value is a valid XML name.
+// Also, if not, returns by argument the first offending character.
 static bool
 xmlIsValidName (const string &value, char *offending)
 {
@@ -217,10 +220,14 @@ private:
                               const map<string, string> *,
                               const map<string, string> *,
                               const map<string, string> *);
+  Predicate *resolvePredicateTests (Predicate *,
+                                    const map<string, string> *);
+
   // node processing
   bool processNode (xmlNode *);
 };
 
+// Asserted version of UserData::getData().
 #define UDATA_GET(obj, key, ptr)                        \
   G_STMT_START                                          \
   {                                                     \
@@ -230,6 +237,7 @@ private:
   }                                                     \
   G_STMT_END
 
+// Asserted version of UserData::setData().
 #define UDATA_SET(obj, key, ptr, fn)                    \
   G_STMT_START                                          \
   {                                                     \
@@ -691,6 +699,7 @@ static map<string, Predicate::Test> parser_syntax_comparator_table =
  {"gte", Predicate::GE},
 };
 
+// Index functions.
 PARSER_SYNTAX_TABLE_INDEX_DEFN (event_type, Event::Type);
 PARSER_SYNTAX_TABLE_INDEX_DEFN (transition, Event::Transition);
 PARSER_SYNTAX_TABLE_INDEX_DEFN (connective, Predicate::Type);
@@ -1169,6 +1178,56 @@ ParserState::resolveLinkParamRef (const string &value,
   return it_ghost->second;
 }
 
+Predicate *
+ParserState::resolvePredicateTests (Predicate *pred,
+                                    const map<string, string> *tr)
+{
+  list<Predicate *> buf;
+  pred = pred->clone ();
+  g_assert_nonnull (pred);
+  buf.push_back (pred);
+  while (!buf.empty ())
+    {
+      Predicate *p = buf.back ();
+      buf.pop_back ();
+      switch (p->getType ())
+        {
+        case Predicate::FALSUM:
+        case Predicate::VERUM:
+          break;                // nothing to do
+        case Predicate::ATOM:
+          {
+            Predicate::Test test;
+            string left, right, ghost;
+            p->getTest (&left, &test, &right);
+            if (left[0] == '$')
+              {
+                auto it = tr->find (left.substr (1, left.length () - 1));
+                if (it != tr->end ())
+                  left = it->second;
+              }
+            if (right[0] == '$')
+              {
+                auto it = tr->find (right.substr (1, right.length () - 1));
+                if (it != tr->end ())
+                  right = it->second;
+              }
+            p->setTest (left, test, right);
+            break;
+          }
+        case Predicate::NEGATION:
+        case Predicate::CONJUNCTION:
+        case Predicate::DISJUNCTION:
+          for (auto child: *p->getChildren ())
+            buf.push_back (child);
+          break;
+        default:
+          g_assert_not_reached ();
+        }
+    }
+  return pred;
+}
+
 // node processing
 bool
 ParserState::processNode (xmlNode *node)
@@ -1491,10 +1550,10 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
           Context *ctx;
 
           list<pair<ParserConnRole *, ParserLinkBind *>> bound;
-          list<pair<string, ParserLinkBind *>> bound_tests;
-
+          list<ParserLinkBind *> tests_buf;
+          map<string, string> tests_map;
           list<ParserLinkBind *> ghosts_buf;
-          map<string, string> ghosts;
+          map<string, string> ghosts_map;
 
           g_assert (link_elt->getAttribute ("xconnector", &conn_id));
           if (unlikely (!st->eltCacheIndexById (conn_id, &conn_elt,
@@ -1510,47 +1569,46 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
           UDATA_GET (link_elt, "params", &params);
           UDATA_GET (link_elt, "context", &ctx);
 
-          // Collect event, test and ghost binds.
+          // Process binds.
           for (auto &bind: *binds)
             {
-              bool found = false;
               for (auto &role: *roles)
                 {
-                  if (bind.role == role.role)
+                  if (bind.role != role.role)
+                    continue;
+
+                  // Attach predicate to condition.
+                  if (toCPPString (role.node->name) == "simpleCondition")
                     {
-                      // Attach predicate to condition.
-                      if (toCPPString (role.node->name)
-                          == "simpleCondition")
-                        {
-                          ParserElt *parent_elt;
-                          Predicate *pred = nullptr;
-                          g_assert (st->eltCacheIndexParent
-                                    (role.node, &parent_elt));
-                          if (parent_elt->getData ("pred", (void **) &pred))
-                            {
-                              g_assert_nonnull (pred);
-                              role.predicate = pred->clone ();
-                            }
-                        }
-                      // Mark role-bind pair as bound.
-                      bound.push_back (std::make_pair (&role, &bind));
-                      found = true;
-                      break;
+                      ParserElt *parent_elt;
+                      Predicate *pred;
+                      g_assert (st->eltCacheIndexParent
+                                (role.node, &parent_elt));
+                      if (parent_elt->getData ("pred", (void **) &pred))
+                        role.predicate = pred->clone ();
                     }
+
+                  // Mark role-bind pair as bound.
+                  bound.push_back (std::make_pair (&role, &bind));
+                  break;
                 }
-              if (found)
+              if (bound.size () > 0 && bound.back ().second == &bind)
                 {
-                  continue;     // found
+                  continue;     // done
                 }
-              if (tests->find (bind.role) != tests->end ())
+              else if (tests->find (bind.role) != tests->end ())
                 {
-                  bound_tests.push_back (std::make_pair (bind.role, &bind));
-                  continue;     // found
+                  // Mark bind as test.
+                  tests_buf.push_back (&bind);
                 }
-              ghosts_buf.push_back (&bind); // ghost bind
+              else
+                {
+                  // Mark bind as ghost.
+                  ghosts_buf.push_back (&bind);
+                }
             }
 
-          // Check if link matches connector.
+          // Check if all event roles are bound.
           for (auto &role: *roles)
             {
               bool found = false;
@@ -1562,42 +1620,56 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
                       break;
                     }
                 }
-              if (found)
-                continue;
-              for (auto it: bound_tests)
+              if (unlikely (!found))
                 {
-                  if (role.role == it.first)
+                  return st->errEltBadAttribute
+                    (link_elt->getNode (), "xconnector", conn_id,
+                     "link does not match connector, "
+                     "role '" + role.role + "' not bound");
+                }
+            }
+
+          // Check if all test roles are bound.
+          for (auto label: *tests)
+            {
+              bool found = false;
+              for (auto bind: tests_buf)
+                {
+                  if (label == bind->role)
                     {
                       found = true;
                       break;
                     }
                 }
-              if (found)
-                continue;
-              return st->errEltBadAttribute
-                (link_elt->getNode (), "xconnector", conn_id,
-                 "link does not match connector, "
-                 "role '" + role.role + "' not bound");
-            }
-
-          // Resolve ghost binds.
-          for (auto bind: ghosts_buf)
-            {
-              ParserElt *bind_elt;
-              string ref;
-              g_assert_nonnull (bind->node);
-              g_assert (st->eltCacheIndex (bind->node, &bind_elt));
-              if (unlikely (!st->resolveGhostBindRef (ctx, bind_elt, &ref)))
+              if (unlikely (!found))
                 {
-                  return false;
+                  return st->errEltBadAttribute
+                    (link_elt->getNode (), "xconnector", conn_id,
+                     "link does not match connector, "
+                     "role '" + label + "' not bound");
                 }
-              ghosts[bind->role] = ref;
             }
 
-          // Resolve tests.
-          // TODO!!!
+          // Resolve test and binds.
+          for (auto &it: {std::make_pair (&tests_buf, &tests_map),
+                          std::make_pair (&ghosts_buf, &ghosts_map)})
+            {
+              for (auto &bind: *it.first)
+                {
+                  ParserElt *bind_elt;
+                  string ref;
+                  g_assert_nonnull (bind->node);
+                  g_assert (st->eltCacheIndex (bind->node, &bind_elt));
+                  if (unlikely (!st->resolveGhostBindRef
+                                (ctx, bind_elt, &ref)))
+                    {
+                      return false;
+                    }
+                  (*it.second)[bind->role] = ref;
+                }
+            }
 
-          // Resolve events.
+          // Resolve event roles.
           list<Action> conditions;
           list<Action> actions;
           for (auto it: bound)
@@ -1649,7 +1721,7 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
                       }
                     act.event = evt;
                     act.value = st->resolveLinkParamRef
-                      (role->value, &bind->params, params, &ghosts);
+                      (role->value, &bind->params, params, &ghosts_map);
                     break;
                   }
                 case Event::SELECTION:
@@ -1663,7 +1735,7 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
                            "must be empty");
                       }
                     act.value = st->resolveLinkParamRef
-                      (role->key, &bind->params, params, &ghosts);
+                      (role->key, &bind->params, params, &ghosts_map);
                     obj->addSelectionEvent (act.value);
                     act.event = obj->getSelectionEvent (act.value);
                     g_assert_nonnull (act.event);
@@ -1685,13 +1757,15 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
                     case Predicate::FALSUM:
                     case Predicate::VERUM:
                     case Predicate::ATOM:
-                      act.predicate = role->predicate->clone ();
+                      act.predicate = st->resolvePredicateTests
+                        (role->predicate, &tests_map);
                       break;
                     case Predicate::NEGATION:
                     case Predicate::CONJUNCTION:
                     case Predicate::DISJUNCTION:
                       if (role->predicate->getChildren ()->size () > 0)
-                        act.predicate = role->predicate->clone ();
+                        act.predicate = st->resolvePredicateTests
+                          (role->predicate, &tests_map);
                       break;
                     default:
                       g_assert_not_reached ();

@@ -2200,6 +2200,7 @@ main (void)
     g_assert (cond->value == "");
 
     cond++;
+    TRACE ("%s", cond->event->getFullId ().c_str ());
     g_assert (cond->event == m->getSelectionEvent ("$m.top"));
     g_assert (cond->transition == Event::START);
     g_assert (cond->predicate == nullptr);
@@ -2382,12 +2383,12 @@ main (void)
     <compoundCondition>\n\
      <simpleCondition role='onBegin'/>\n\
      <assessmentStatement comparator='eq'>\n\
-      <valueAssessment value='0'/>\n\
-      <valueAssessment value='0'/>\n\
+      <attributeAssessment role='test1'/>\n\
+      <valueAssessment value='1'/>\n\
      </assessmentStatement>\n\
      <assessmentStatement comparator='ne'>\n\
-      <valueAssessment value='0'/>\n\
-      <valueAssessment value='0'/>\n\
+      <valueAssessment value='2'/>\n\
+      <attributeAssessment role='test2'/>\n\
      </assessmentStatement>\n\
     </compoundCondition>\n\
     <simpleAction role='start'/>\n\
@@ -2395,20 +2396,77 @@ main (void)
   </connectorBase>\n\
  </head>\n\
  <body id='body'>\n\
+  <property name='p'/>\n\
+  <property name='q'/>\n\
+  <media id='m'>\n\
+   <property name='x'/>\n\
+  </media>\n\
   <link xconnector='conn1'>\n\
    <bind role='onBegin' component='body'/>\n\
+   <bind role='test1' component='body' interface='p'/>\n\
+   <bind role='test2' component='body' interface='p'/>\n\
    <bind role='start' component='body'/>\n\
+  </link>\n\
+  <link xconnector='conn1'>\n\
+   <bind role='onBegin' component='m'/>\n\
+   <bind role='test1' component='m' interface='x'/>\n\
+   <bind role='test2' component='body' interface='q'/>\n\
+   <bind role='start' component='m'/>\n\
   </link>\n\
  </body>\n\
 </ncl>");
 
     g_assert_nonnull (doc);
-    g_assert (doc->getObjects ()->size () == 2);
-    g_assert (doc->getMedias ()->size () == 1);
+    g_assert (doc->getObjects ()->size () == 3);
+    g_assert (doc->getMedias ()->size () == 2);
     g_assert (doc->getContexts ()->size () == 1);
 
     Context *root = doc->getRoot ();
     g_assert_nonnull (root);
+
+    Media *m = cast (Media *, doc->getObjectById ("m"));
+    g_assert_nonnull (m);
+
+    auto links = doc->getRoot ()->getLinks ();
+    g_assert (links->size () == 2);
+
+    // First link.
+    auto link = links->begin ();
+    g_assert (link->first.size () == 1);
+    g_assert (link->second.size () == 1);
+
+    auto cond = link->first.begin ();
+    g_assert (cond->event == root->getLambda ());
+    g_assert (cond->transition == Event::START);
+    g_assert (cond->predicate->toString ()
+              == "and('$__root__.p'=='1', '2'!='$__root__.p')");
+    g_assert (cond->value == "");
+    g_assert (++cond == link->first.end ());
+
+    auto act = link->second.begin ();
+    g_assert (act->event == root->getLambda ());
+    g_assert (act->transition == Event::START);
+    g_assert (act->predicate == nullptr);
+    g_assert (act->value == "");
+    g_assert (++act == link->second.end ());
+
+    // Second link.
+    link++;
+    cond = link->first.begin ();
+    g_assert (cond->event == m->getLambda ());
+    g_assert (cond->transition == Event::START);
+    g_assert (cond->predicate->toString ()
+              == "and('$m.x'=='1', '2'!='$__root__.q')");
+    g_assert (cond->value == "");
+    g_assert (++cond == link->first.end ());
+
+    act = link->second.begin ();
+    g_assert (act->event == m->getLambda ());
+    g_assert (act->transition == Event::START);
+    g_assert (act->predicate == nullptr);
+    g_assert (act->value == "");
+    g_assert (++act == link->second.end ());
+    g_assert (++link == links->end ());
 
     TRACE ("\n%s", root->toString ().c_str ());
     delete doc;
