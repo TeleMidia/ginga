@@ -25,23 +25,23 @@
   <body>
     <port id="start" component="img1"/>
     <media id="img1" src="samples/gnu.png" descriptor="desc1">
-      <area id="seg" begin="2s"/>
+      <area id="seg1" begin="2s"/>
     </media>
     <media id="img2" src="samples/vector.svg" descriptor="desc2">
-      <area id="seg" end="2s"/>
+      <area id="seg2" end="2s"/>
     </media>
     <media id="vid" src="samples/clock.ogv" descriptor="desc3"/>
     <media id="lua" src="samples/fps.lua">
       <property name="bounds" value="50%,0,50%,50%"/>
     </media>
     <link xconnector="onBeginStart">
-      <bind role="onBegin" component="img1" interface="seg"/>
+      <bind role="onBegin" component="img1" interface="seg1"/>
       <bind role="start" component="img2"/>
       <bind role="start" component="vid"/>
       <bind role="start" component="lua"/>
     </link>
     <link xconnector="onEndStop">
-      <bind role="onEnd" component="img2" interface="seg"/>
+      <bind role="onEnd" component="img2" interface="seg2"/>
       <bind role="stop" component="img1"/>
       <bind role="stop" component="vid"/>
       <bind role="stop" component="lua"/>

@@ -35,7 +35,7 @@ GINGA_NAMESPACE_BEGIN
 #define toXmlChar(s)   (xmlChar *)(deconst (char *, (s).c_str ()))
 #define toCPPString(s) string (deconst (char *, (s)))
 
-// Gets node property as C++ string.
+/// Gets node property as C++ string.
 static inline bool
 xmlGetPropAsString (xmlNode *node, const string &name, string *result)
 {
@@ -47,8 +47,7 @@ xmlGetPropAsString (xmlNode *node, const string &name, string *result)
   return true;
 }
 
-// Tests whether value is a valid XML name.
-// Also, if not, returns by argument the first offending character.
+/// Tests whether value is a valid XML name.
 static bool
 xmlIsValidName (const string &value, char *offending)
 {
@@ -71,7 +70,11 @@ xmlIsValidName (const string &value, char *offending)
 
 // Parser internal types.
 
-// Element wrapper.
+/**
+ * @brief Parser element wrapper.
+ *
+ * Maintains data associated with a specific \c xmlNode.
+ */
 class ParserElt
 {
 public:
@@ -90,51 +93,66 @@ public:
   bool setData (const string &, void *, UserDataCleanFunc fn=nullptr);
 
 private:
-  string _tag;                  // tag
-  xmlNode *_node;               // XML node
-  map<string, string> _attrs;   // attributes
-  UserData _udata;              // user data
+  string _tag;                  ///< Element tag.
+  xmlNode *_node;               ///< Corresponding node in document tree.
+  map<string, string> _attrs;   ///< Element attributes.
+  UserData _udata;              ///< Attached user data.
 };
 
-// Connector role data.
+/**
+ * @brief Connector role data.
+ *
+ * Maintains data associated with a \<simpleCondition\> element or
+ * \<simpleAction\> element occurring in NCL document.
+ */
 typedef struct ParserConnRole
 {
-  xmlNode *node;                // source node
-  string role;                  // role label
-  Event::Type eventType;        // role event type
-  Event::Transition transition; // role transition
-  bool condition;               // whether role is condition
-  Predicate *predicate;         // role predicate (if condition)
-  string value;                 // role value (if attribution)
-  string key;                   // role key (if selection)
+  xmlNode *node;                ///< Source node.
+  string role;                  ///< Role label.
+  Event::Type eventType;        ///< Role event type.
+  Event::Transition transition; ///< Role transition.
+  bool condition;               ///< Whether role is a condition.
+  Predicate *predicate;         ///< Role predicate (if condition).
+  string value;                 ///< Role value (if attribution).
+  string key;                   ///< Role key (if selection).
 } ParserConnRole;
 
-// Link bind data.
+/**
+ * @brief Link bind data.
+ *
+ * Maintains data associated with a \<bind\> element occurring in the NCL
+ * document.
+ */
 typedef struct ParserLinkBind
 {
-  xmlNode *node;                // source node
-  string role;                  // bind role
-  string component;             // bind component
-  string iface;                 // bind interface
-  map<string, string> params;   // bind parameters
+  xmlNode *node;                ///< Source node.
+  string role;                  ///< Bind role label.
+  string component;             ///< Bind component.
+  string iface;                 ///< Bind interface.
+  map<string, string> params;   ///< Bind parameters.
 } ParserLinkBind;
 
-// Parser state.
+/**
+ * @brief Parser state.
+ *
+ * Maintains the Parser state while it's parsing the document.
+ */
 class ParserState
 {
 public:
+  /// Parser error codes.
   enum Error
     {
-     ERROR_NONE = 0,            // no error
-     ERROR_ELT_UNKNOWN,
-     ERROR_ELT_MISSING_PARENT,
-     ERROR_ELT_BAD_PARENT,
-     ERROR_ELT_UNKNOWN_ATTRIBUTE,
-     ERROR_ELT_MISSING_ATTRIBUTE,
-     ERROR_ELT_BAD_ATTRIBUTE,
-     ERROR_ELT_UNKNOWN_CHILD,
-     ERROR_ELT_MISSING_CHILD,
-     ERROR_ELT_BAD_CHILD,
+     ERROR_NONE = 0,              ///< No error.
+     ERROR_ELT_UNKNOWN,           ///< Unknown element.
+     ERROR_ELT_MISSING_PARENT,    ///< Missing parent element.
+     ERROR_ELT_BAD_PARENT,        ///< Bad parent element.
+     ERROR_ELT_UNKNOWN_ATTRIBUTE, ///< Unknown attribute.
+     ERROR_ELT_MISSING_ATTRIBUTE, ///< Missing attribute.
+     ERROR_ELT_BAD_ATTRIBUTE,     ///< Bad attribute.
+     ERROR_ELT_UNKNOWN_CHILD,     ///< Unknown child element.
+     ERROR_ELT_MISSING_CHILD,     ///< Missing child element.
+     ERROR_ELT_BAD_CHILD,         ///< Bad child element.
     };
 
   ParserState (int, int);
@@ -168,16 +186,17 @@ public:
   static bool pushBind (ParserState *, ParserElt *);
 
 private:
-  Document *_doc;                               // NCL document
-  xmlDoc *_xml;                                 // DOM tree
-  Rect _rect;                                   // screen dimensions
-  int _genid;                                   // last generated id
-  set<string> _unique;                          // unique attributes
-  UserData _udata;                              // user data
-  ParserState::Error _error;                    // last error
-  string _errorMsg;                             // last error message
-  map<xmlNode *, ParserElt *> _eltCache;        // element cache
-  list<Object *> _objStack;                     // object stack
+  Document *_doc;               ///< The resulting #Document.
+  xmlDoc *_xml;                 ///< The DOM tree being processed.
+  Rect _rect;                   ///< Initial screen dimensions.
+  int _genid;                   ///< Last generated id.
+  set<string> _unique;          ///< Unique attributes seen so far.
+  UserData _udata;              ///< Attached user data.
+  ParserState::Error _error;    ///< Last error code.
+  string _errorMsg;             ///< Last error message.
+  map<xmlNode *, ParserElt *> _eltCache;         ///< Element cache.
+  map<string, list<ParserElt *>> _eltCacheByTag; ///< Element cache by tag.
+  list<Object *> _objStack;                      ///< #Object stack.
 
   string genId ();
   bool isInUniqueSet (const string &);
@@ -185,11 +204,11 @@ private:
   bool getData (const string &, void **);
   bool setData (const string &, void *, UserDataCleanFunc fn=nullptr);
 
-  // errors
+  // Errors.
   bool errElt (xmlNode *, ParserState::Error, const string &);
   bool errEltUnknown (xmlNode *);
   bool errEltMissingParent (xmlNode *);
-  bool errEltBadParent (xmlNode *, const string &);
+  bool errEltBadParent (xmlNode *);
   bool errEltUnknownAttribute (xmlNode *, const string &);
   bool errEltMissingAttribute (xmlNode *, const string &);
   bool errEltBadAttribute (xmlNode *, const string &, const string &,
@@ -198,36 +217,35 @@ private:
   bool errEltMissingChild (xmlNode *, const list<string> &);
   bool errEltBadChild (xmlNode *, const string &, const string &explain="");
 
-  // element cache
+  // Element cache.
   bool eltCacheIndex (xmlNode *, ParserElt **);
   bool eltCacheIndexParent (xmlNode *, ParserElt **);
   bool eltCacheIndexById (const string &, ParserElt **,
                           const list<string> &);
-  bool eltCacheIndexByTag (const list<string> &, list<ParserElt *> *);
+  size_t eltCacheIndexByTag (const list<string> &, list<ParserElt *> *);
   bool eltCacheAdd (ParserElt *);
 
-  // object stack
+  // Object stack.
   Object *objStackPeek ();
   Object *objStackPop ();
   void objStackPush (Object *);
 
-  // reference solving
-  bool resolveComponentRef (Context *, ParserElt *, Object **);
-  bool resolveGhostBindRef (Context *, ParserElt *, string *);
-  bool resolveInterfaceRef (Context *, ParserElt *, Event **);
+  // Reference solving.
+  bool resolveComponent (Context *, ParserElt *, Object **);
+  bool resolveInterface (Context *, ParserElt *, Event **);
+  string resolveParameter (const string &, const map<string, string> *,
+                           const map<string, string> *,
+                           const map<string, string> *);
 
-  string resolveLinkParamRef (const string &,
-                              const map<string, string> *,
-                              const map<string, string> *,
-                              const map<string, string> *);
-  Predicate *resolvePredicateTests (Predicate *,
-                                    const map<string, string> *);
+  // Predicate solving.
+  Predicate *obtainPredicate (xmlNode *);
+  Predicate *solvePredicate (Predicate *, const map<string, string> *);
 
-  // node processing
+  // Node processing.
   bool processNode (xmlNode *);
 };
 
-// Asserted version of UserData::getData().
+/// Asserted version of UserData::getData().
 #define UDATA_GET(obj, key, ptr)                        \
   G_STMT_START                                          \
   {                                                     \
@@ -237,7 +255,7 @@ private:
   }                                                     \
   G_STMT_END
 
-// Asserted version of UserData::setData().
+/// Asserted version of UserData::setData().
 #define UDATA_SET(obj, key, ptr, fn)                    \
   G_STMT_START                                          \
   {                                                     \
@@ -248,36 +266,42 @@ private:
 
 // NCL syntax.
 
-// Element push functions.
+/// Type for element push function.
 typedef bool (ParserSyntaxEltPush) (ParserState *, ParserElt *);
 
-// Element pop function.
+/// Type for element pop function.
 typedef bool (ParserSyntaxEltPop) (ParserState *, ParserElt *);
 
-// NCL attribute info.
+/**
+ * @brief NCL attribute syntax.
+ */
 typedef struct ParserSyntaxAttr
 {
-  string name;                  // attribute name
-  int flags;                    // processing flags
+  string name;                  ///< Attribute name.
+  int flags;                    ///< Processing flags.
 } ParserSyntaxAttr;
 
-// NCL element info.
+/**
+ * @brief NCL element syntax.
+ */
 typedef struct ParserSyntaxElt
 {
-  ParserSyntaxEltPush *push;           // push function
-  ParserSyntaxEltPop *pop;             // pop function
-  int flags;                           // processing flags
-  list<string> parents;                // possible parents
-  list<ParserSyntaxAttr> attributes;   // attributes
+  ParserSyntaxEltPush *push;         ///< Push function.
+  ParserSyntaxEltPop *pop;           ///< Pop function.
+  int flags;                         ///< Processing flags.
+  list<string> parents;              ///< Possible parents.
+  list<ParserSyntaxAttr> attributes; ///< Attributes.
 } ParserSyntaxElt;
 
-// Attribute processing flags.
+/**
+ * @brief NCL attribute processing flags.
+ */
 typedef enum
 {
-  PARSER_SYNTAX_ATTR_REQUIRED = 1<<1, // required
-  PARSER_SYNTAX_ATTR_UNIQUE   = 1<<2, // unique in document
-  PARSER_SYNTAX_ATTR_NONEMPTY = 1<<3, // not empty
-  PARSER_SYNTAX_ATTR_NAME     = 1<<4, // XML name
+  PARSER_SYNTAX_ATTR_REQUIRED = 1<<1, ///< Is required.
+  PARSER_SYNTAX_ATTR_UNIQUE   = 1<<2, ///< Must be unique in document.
+  PARSER_SYNTAX_ATTR_NONEMPTY = 1<<3, ///< Cannot be not empty.
+  PARSER_SYNTAX_ATTR_NAME     = 1<<4, ///< Is a XML name.
 } ParserSyntaxAttrFlag;
 
 #define ATTR_REQUIRED  (PARSER_SYNTAX_ATTR_REQUIRED)
@@ -293,11 +317,13 @@ typedef enum
 #define ATTR_IDREF     (ATTR_REQUIRED_NONEMPTY_NAME)
 #define ATTR_OPT_IDREF (ATTR_NONEMPTY_NAME)
 
-// Element processing flags.
+/**
+ * @brief NCL element processing flags.
+ */
 typedef enum
 {
-  PARSER_SYNTAX_ELT_CACHE  = 1<<1, // cache element
-  PARSER_SYNTAX_ELT_GEN_ID = 1<<2, // generate id if not present
+  PARSER_SYNTAX_ELT_CACHE  = 1<<1, ///< Save element in #Parser cache.
+  PARSER_SYNTAX_ELT_GEN_ID = 1<<2, ///< Generate id if not present.
 } ParserSyntaxEltFlag;
 
 #define ELT_CACHE  (PARSER_SYNTAX_ELT_CACHE)
@@ -316,7 +342,7 @@ typedef enum
     return true;                                                \
   }
 
-// NCL Grammar.
+/// NCL syntax table (grammar).
 static map<string, ParserSyntaxElt> parser_syntax_table =
 {
  {"ncl",                        // element name
@@ -596,7 +622,7 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
  },
 };
 
-// Indexes syntax table.
+/// Indexes syntax table.
 static bool
 parser_syntax_table_index (const string &tag, ParserSyntaxElt **result)
 {
@@ -607,7 +633,7 @@ parser_syntax_table_index (const string &tag, ParserSyntaxElt **result)
   return true;
 }
 
-// Gets possible children of a given element.
+/// Gets possible children of a given element.
 static map<string, bool>
 parser_syntax_table_get_possible_children (const string &tag)
 {
@@ -619,7 +645,7 @@ parser_syntax_table_get_possible_children (const string &tag)
   return result;
 }
 
-// Reserved connector roles.
+/// Reserved connector roles.
 static map<string, pair<Event::Type, Event::Transition>>
 parser_syntax_reserved_role_table =
 {
@@ -641,7 +667,7 @@ parser_syntax_reserved_role_table =
  {"set",                {Event::ATTRIBUTION,  Event::START}},
 };
 
-// Index reserved role table.
+/// Index reserved role table.
 static bool
 parser_syntax_reserved_role_table_index (const string &role,
                                          bool *condition,
@@ -657,7 +683,7 @@ parser_syntax_reserved_role_table_index (const string &role,
   return true;
 }
 
-// Known event types.
+/// Known event types.
 static map<string, Event::Type> parser_syntax_event_type_table =
 {
  {"presentation", Event::PRESENTATION},
@@ -665,7 +691,7 @@ static map<string, Event::Type> parser_syntax_event_type_table =
  {"selection",    Event::SELECTION},
 };
 
-// Known transitions.
+/// Known transitions.
 static map<string, Event::Transition> parser_syntax_transition_table =
 {
  {"start",   Event::START},
@@ -680,7 +706,7 @@ static map<string, Event::Transition> parser_syntax_transition_table =
  {"aborts",  Event::ABORT},
 };
 
-// Known connectives.
+/// Known logical connectives.
 static map<string, Predicate::Type> parser_syntax_connective_table =
 {
  {"not", Predicate::NEGATION},
@@ -688,15 +714,15 @@ static map<string, Predicate::Type> parser_syntax_connective_table =
  {"or",  Predicate::DISJUNCTION},
 };
 
-// Known comparators.
+/// Known string comparators.
 static map<string, Predicate::Test> parser_syntax_comparator_table =
 {
- {"eq",  Predicate::EQ},
- {"ne",  Predicate::NE},
- {"lt",  Predicate::LT},
- {"lte", Predicate::LE},
- {"gt",  Predicate::GT},
- {"gte", Predicate::GE},
+ {"eq",  Predicate::EQ},        // ==
+ {"ne",  Predicate::NE},        // !=
+ {"lt",  Predicate::LT},        // <
+ {"lte", Predicate::LE},        // <=
+ {"gt",  Predicate::GT},        // >
+ {"gte", Predicate::GE},        // >=
 };
 
 // Index functions.
@@ -705,7 +731,7 @@ PARSER_SYNTAX_TABLE_INDEX_DEFN (transition, Event::Transition);
 PARSER_SYNTAX_TABLE_INDEX_DEFN (connective, Predicate::Type);
 PARSER_SYNTAX_TABLE_INDEX_DEFN (comparator, Predicate::Test);
 
-// Parse boolean.
+/// Parses boolean.
 static bool
 parser_syntax_parse_bool (const string &str, bool *result)
 {
@@ -715,6 +741,11 @@ parser_syntax_parse_bool (const string &str, bool *result)
 
 // ParserElt: public.
 
+/**
+ * @brief Creates a new element.
+ * @param node The node to wrap.
+ * @return New #ParserElt.
+ */
 ParserElt::ParserElt (xmlNode *node)
 {
   g_assert_nonnull (node);
@@ -722,44 +753,76 @@ ParserElt::ParserElt (xmlNode *node)
   _tag = toCPPString (node->name);
 }
 
+/**
+ * @brief Destroys element.
+ */
 ParserElt::~ParserElt ()
 {
 }
 
+/**
+ * @brief Gets element tag.
+ * @return Tag.
+ */
 string
 ParserElt::getTag ()
 {
   return _tag;
 }
 
+/**
+ * @brief Gets element node.
+ * @return Associated node.
+ */
 xmlNode *
 ParserElt::getNode ()
 {
   return _node;
 }
 
+/**
+ * @brief Gets element parent node.
+ * @return Parent of associated node.
+ */
 xmlNode *
 ParserElt::getParentNode ()
 {
   return _node->parent;
 }
 
+/**
+ * @brief Gets element attribute map.
+ * @return Attribute map.
+ */
 const map<string, string> *
 ParserElt::getAttributes ()
 {
   return &_attrs;
 }
 
+/**
+ * @brief Gets element attribute value
+ * @param name Attribute name.
+ * @param[out] value Variable to store the attribute value (if any).
+ * @return \c true if successful, or false otherwise.
+ */
 bool
-ParserElt::getAttribute (const string &name, string *result)
+ParserElt::getAttribute (const string &name, string *value)
 {
   auto it = _attrs.find (name);
   if (it == _attrs.end ())
     return false;
-  tryset (result, it->second);
+  tryset (value, it->second);
   return true;
 }
 
+/**
+ * @brief Sets element attribute value.
+ * @param name Attribute name.
+ * @param value Attribute value.
+ * @return \c true if the attribute was previously unset, or \c false
+ * otherwise.
+ */
 bool
 ParserElt::setAttribute (const string &name, const string &value)
 {
@@ -768,12 +831,26 @@ ParserElt::setAttribute (const string &name, const string &value)
   return result;
 }
 
+/**
+ * @brief Gets user data attached to element.
+ * @param key User data key.
+ * @param[out] value Variable to store the user data value (if any).
+ * @return \c true if successful, or \c false otherwise.
+ */
 bool
-ParserElt::getData (const string &key, void **result)
+ParserElt::getData (const string &key, void **value)
 {
-  return _udata.getData (key, result);
+  return _udata.getData (key, value);
 }
 
+/**
+ * @brief Attaches user data to element.
+ * @param key User data key.
+ * @param value User data value.
+ * @param fn Cleanup function (used to destroy data when #ParserElt is
+ * destroyed or key is overwritten).
+ * @return \c true if key was previously unset, or \c false otherwise.
+ */
 bool
 ParserElt::setData (const string &key, void *value, UserDataCleanFunc fn)
 {
@@ -783,37 +860,75 @@ ParserElt::setData (const string &key, void *value, UserDataCleanFunc fn)
 
 // ParserState: private.
 
+/**
+ * @brief Generates an unique id.
+ * @return Unique id.
+ */
 string
 ParserState::genId ()
 {
-  return xstrbuild ("__unamed-%d__", _genid++);
+  string id = xstrbuild ("__unamed-%d__", _genid++);
+  g_assert_false (isInUniqueSet (id));
+  return id;
 }
 
+/**
+ * @brief Tests whether id is unique (hasn't been seen yet).
+ * @param id The id to test.
+ * @return \c true if successful, or false otherwise.
+ */
 bool
-ParserState::isInUniqueSet (const string &str)
+ParserState::isInUniqueSet (const string &id)
 {
-  return _unique.find (str) != _unique.end ();
+  return _unique.find (id) != _unique.end ();
 }
 
+/**
+ * @brief Adds id to the set of known ids.
+ * @param id The id to add.
+ */
 void
-ParserState::addToUniqueSet (const string &str)
+ParserState::addToUniqueSet (const string &id)
 {
-  _unique.insert (str);
+  _unique.insert (id);
 }
 
+/**
+ * @brief Gets user data attached to parser state.
+ * @param key User data key.
+ * @param[out] value Variable to store user data value (if any).
+ * @return \c true if successful, or \c false otherwise.
+ */
 bool
-ParserState::getData (const string &key, void **result)
+ParserState::getData (const string &key, void **value)
 {
-  return _udata.getData (key, result);
+  return _udata.getData (key, value);
 }
 
+/**
+ * @brief Attaches user data to parser state.
+ * @param key User data key.
+ * @param value User data value.
+ * @param fn Cleanup function (used to destroy data when #ParserElt is
+ * destroyed or key is overwritten).
+ * @return \c true if key was previously unset, or \c false otherwise.
+ */
 bool
 ParserState::setData (const string &key, void *value, UserDataCleanFunc fn)
 {
   return _udata.setData (key, value, fn);
 }
 
-// errors
+
+// ParserState: private (error handling).
+
+/**
+ * @brief Sets parser error code and error message.
+ * @param node The node that caused the error.
+ * @param error The error code to be set.
+ * @param message The error message to be set.
+ * @return \c false.
+ */
 bool
 ParserState::errElt (xmlNode *node, ParserState::Error error,
                      const string &message)
@@ -826,6 +941,11 @@ ParserState::errElt (xmlNode *node, ParserState::Error error,
   return false;
 }
 
+/**
+ * @brief Sets parser error to "Unknown element".
+ * @param node The node that caused the error.
+ * @return \c false.
+ */
 bool
 ParserState::errEltUnknown (xmlNode *node)
 {
@@ -833,6 +953,11 @@ ParserState::errEltUnknown (xmlNode *node)
                        "Unknown element");
 }
 
+/**
+ * @brief Sets parser error to "Missing parent".
+ * @param node The node that caused the error.
+ * @return \c false.
+ */
 bool
 ParserState::errEltMissingParent (xmlNode *node)
 {
@@ -840,13 +965,27 @@ ParserState::errEltMissingParent (xmlNode *node)
                        "Missing parent");
 }
 
+/**
+ * @brief Sets parser error to "Bad parent".
+ * @param node The node that caused the error.
+ * @return \c false.
+ */
 bool
-ParserState::errEltBadParent (xmlNode *node, const string &parent)
+ParserState::errEltBadParent (xmlNode *node)
 {
+  string parent;
+  g_assert_nonnull (node->parent);
+  parent = toCPPString (node->parent->name);
   return this->errElt (node, ParserState::ERROR_ELT_BAD_PARENT,
                        "Bad parent <" + parent + ">");
 }
 
+/**
+ * @brief Sets parser error to "Unknown attribute".
+ * @param node The node that caused the error.
+ * @param name The name of the attribute that caused the error.
+ * @return \c false.
+ */
 bool
 ParserState::errEltUnknownAttribute (xmlNode *node, const string &name)
 {
@@ -854,6 +993,12 @@ ParserState::errEltUnknownAttribute (xmlNode *node, const string &name)
                        "Unknown attribute '" + name + "'");
 }
 
+/**
+ * @brief Sets parser error to "Missing attribute".
+ * @param node The node that caused the error.
+ * @param name The name of the attribute that caused the error.
+ * @return \c false.
+ */
 bool
 ParserState::errEltMissingAttribute (xmlNode *node, const string &name)
 {
@@ -861,6 +1006,14 @@ ParserState::errEltMissingAttribute (xmlNode *node, const string &name)
                        "Missing attribute '" + name + "'");
 }
 
+/**
+ * @brief Sets parser error to "Bad value for attribute".
+ * @param node The node that caused the error.
+ * @param name The name of the attribute that caused the error.
+ * @param value The value of the attribute that caused the error.
+ * @param explain Further explanation.
+ * @return \c false.
+ */
 bool
 ParserState::errEltBadAttribute (xmlNode *node, const string &name,
                                  const string &value, const string &explain)
@@ -871,6 +1024,12 @@ ParserState::errEltBadAttribute (xmlNode *node, const string &name,
   return this->errElt (node, ParserState::ERROR_ELT_BAD_ATTRIBUTE, msg);
 }
 
+/**
+ * @brief Sets parser error to "Unknown child".
+ * @param node The node that caused the error.
+ * @param name The name of the child element that caused the error.
+ * @return \c false.
+ */
 bool
 ParserState::errEltUnknownChild (xmlNode *node, const string &name)
 {
@@ -878,6 +1037,12 @@ ParserState::errEltUnknownChild (xmlNode *node, const string &name)
                        "Unknown child <" + name + ">");
 }
 
+/**
+ * @brief Sets parser error to "Missing child".
+ * @param node The node that caused the error.
+ * @param children The list of names of children that caused the error.
+ * @return \c false.
+ */
 bool
 ParserState::errEltMissingChild (xmlNode *node,
                                  const list<string> &children)
@@ -893,94 +1058,149 @@ ParserState::errEltMissingChild (xmlNode *node,
   return this->errElt (node, ParserState::ERROR_ELT_MISSING_CHILD, msg);
 }
 
+/**
+ * @brief Sets parser error to "Bad child".
+ * @param node The node that caused the error.
+ * @param name The name of the child that caused the error.
+ * @param explain Further explanation.
+ * @return \c false.
+ */
 bool
-ParserState::errEltBadChild (xmlNode *node, const string &child,
+ParserState::errEltBadChild (xmlNode *node, const string &name,
                              const string &explain)
 {
-  string msg = "Bad child <" + child + ">";
+  string msg = "Bad child <" + name + ">";
   if (explain != "")
     msg += " (" + explain + ")";
   return this->errElt (node, ParserState::ERROR_ELT_BAD_CHILD, msg);
 }
 
-// element cache
+
+// ParserState: private (element cache).
+
+/**
+ * @brief Indexes element cache by node.
+ * @param node The node to be used as key.
+ * @param[out] elt Variable to store the element associated with \p node (if
+ * any).
+ * @return \c true if successful, or \c false otherwise.
+ */
 bool
-ParserState::eltCacheIndex (xmlNode *node, ParserElt **result)
+ParserState::eltCacheIndex (xmlNode *node, ParserElt **elt)
 {
   auto it = _eltCache.find (node);
   if (it == _eltCache.end ())
     return false;
   g_assert_nonnull (it->second);
-  tryset (result, it->second);
+  tryset (elt, it->second);
   return true;
 }
 
+/**
+ * @brief Indexes element cache by node parent.
+ * @param node The node whose parent will be used as key.
+ * @param[out] elt Variable to store the element associated with \p node (if
+ * any).
+ * @return \c true if successful, or \c false otherwise.
+ */
 bool
-ParserState::eltCacheIndexParent (xmlNode *node, ParserElt **result)
+ParserState::eltCacheIndexParent (xmlNode *node, ParserElt **elt)
 {
-  if (node->parent == nullptr)
-    return false;
-  return this->eltCacheIndex (node->parent, result);
+  return (node->parent != nullptr)
+    ? this->eltCacheIndex (node->parent, elt) : false;
 }
 
+/**
+ * @brief Indexes element cache by id.
+ * @param id The id to be used as key.
+ * @param[out] elt Variable to store the element associated with \p id (if
+ * any).
+ * @param tags Accepted tags (match only elements with one of these).
+ * @return \c true if successful, or \c false otherwise.
+ */
 bool
-ParserState::eltCacheIndexById (const string &id, ParserElt **result,
+ParserState::eltCacheIndexById (const string &id, ParserElt **elt,
                                 const list<string> &tags)
 {
-  string elt_tag;
-  string elt_id;
-  for (auto it: _eltCache)
+  for (auto tag: tags)
     {
-      // Check tag.
-      elt_tag = it.second->getTag ();
-      if (std::find (tags.begin (), tags.end (), elt_tag) == tags.end ())
+      auto it = _eltCacheByTag.find (tag);
+      if (it == _eltCacheByTag.end ())
         continue;
-
-      // Check id.
-      if (it.second->getAttribute ("id", &elt_id) && id == elt_id)
+      for (auto other: it->second)
         {
-          tryset (result, it.second);
-          return true;
+          string other_id;
+          if (other->getAttribute ("id", &other_id) && other_id == id)
+            {
+              tryset (elt, other);
+              return true;
+            }
         }
     }
   return false;
 }
 
-bool
+/**
+ * @brief Indexes element cache by tag.
+ * @param tags The tags to be used as keys.
+ * @param[out] result Variable to store the list of matched elements.
+ * @return The number of matched elements.
+ */
+size_t
 ParserState::eltCacheIndexByTag (const list<string> &tags,
                                  list<ParserElt *> *result)
 {
-  bool flag = false;
+  size_t n = 0;
   g_assert_nonnull (result);
-  for (auto it: _eltCache)
+  for (auto tag: tags)
     {
-      if (std::find (tags.begin (), tags.end (), it.second->getTag ())
-          != tags.end ())
+      auto it = _eltCacheByTag.find (tag);
+      if (it == _eltCacheByTag.end ())
+        continue;
+      for (auto elt: it->second)
         {
-          result->push_back (it.second);
-          flag = true;
+          result->push_back (elt);
+          n++;
         }
     }
-  return flag;
+  return n;
 }
 
+/**
+ * @brief Adds element to cache.
+ * @param elt The element to add.
+ * @return \c true if successful, or \c false otherwise (already in cache).
+ */
 bool
 ParserState::eltCacheAdd (ParserElt *elt)
 {
-  xmlNode *node = elt->getNode ();
+  xmlNode *node;
+
+  node = elt->getNode ();
   if (_eltCache.find (node) != _eltCache.end ())
     return false;
   _eltCache[node] = elt;
+  _eltCacheByTag[elt->getTag ()].push_back (elt);
   return true;
 }
 
-// object stack
+
+// ParserState: private (object stack).
+
+/**
+ * @brief Peeks at object stack.
+ * @return The top of object stack.
+ */
 Object *
 ParserState::objStackPeek ()
 {
   return (_objStack.empty ()) ? nullptr : _objStack.back ();
 }
 
+/**
+ * @brief Pops object from stack.
+ * @return The popped object.
+ */
 Object *
 ParserState::objStackPop ()
 {
@@ -991,6 +1211,10 @@ ParserState::objStackPop ()
   return obj;
 }
 
+/**
+ * @brief Pushes object onto stack.
+ * @param obj The object to push.
+ */
 void
 ParserState::objStackPush (Object *obj)
 {
@@ -998,82 +1222,82 @@ ParserState::objStackPush (Object *obj)
   _objStack.push_back (obj);
 }
 
-// reference solving
+
+// ParserState: private (reference solving).
+
+/**
+ * @brief Resolves reference to component within a context.
+ *
+ * This function assumes that \p elt has an attribute "component" which
+ * contains the id of the component to be resolved.  In case resolution
+ * fails, the function sets #Parser error accordingly.
+ *
+ * @param ctx The context that determines the resolution scope.
+ * @param elt The element to be resolved.
+ * @param[out] obj Variable to store the resulting object (if any).
+ * @return \c true if successful, or \c false otherwise.
+ *
+ */
 bool
-ParserState::resolveComponentRef (Context *parent, ParserElt *elt,
-                                  Object **result)
+ParserState::resolveComponent (Context *ctx, ParserElt *elt, Object **obj)
 {
   string comp;
 
   g_assert (elt->getAttribute ("component", &comp));
-  if (comp == parent->getId ()  // ref is parent context itself
-      || parent->hasAlias (comp))
+  if (comp == ctx->getId () || ctx->hasAlias (comp)) // ref is ctx
     {
-      tryset (result, parent);
+      tryset (obj, ctx);
     }
   else                          // ref is child object
     {
-      Object *obj = parent->getChildByIdOrAlias (comp);
-      if (unlikely (obj == nullptr))
+      Object *ref = ctx->getChildByIdOrAlias (comp);
+      if (unlikely (ref == nullptr))
         {
           return this->errEltBadAttribute
             (elt->getNode (), "component", comp, "no such object in scope");
         }
-      tryset (result, obj);
+      tryset (obj, ref);
     }
   return true;
 }
 
+/**
+ * @brief Resolves reference to an interface within a context.
+ *
+ * This function assumes that \p elt has attributes "component" and
+ * "interface" which identify the interface to be resolved.  In case
+ * resolution fails, the function sets #Parser error accordingly.
+ *
+ * @param ctx The contexts that determines the resolution scope.
+ * @param elt The element to be resolved.
+ * @param[out] evt Variable to store the resulting event (if any).
+ * @return \c true if successful, or \c false otherwise.
+ */
 bool
-ParserState::resolveGhostBindRef (Context *parent, ParserElt *bind_elt,
-                                  string *result)
-{
-  string iface;
-  Object *obj;
-
-  g_assert (bind_elt->getTag () == "bind");
-  if (unlikely (!this->resolveComponentRef (parent, bind_elt, &obj)))
-    return false;
-
-  if (unlikely (!bind_elt->getAttribute ("interface", &iface)
-                || iface == ""))
-    {
-      return this->errEltBadAttribute
-        (bind_elt->getNode (), "interface", iface, "must not be empty");
-    }
-
-  tryset (result, "$" + obj->getId () + "." + iface);
-  return true;
-}
-
-bool
-ParserState::resolveInterfaceRef (Context *parent, ParserElt *elt,
-                                  Event **result)
+ParserState::resolveInterface (Context *ctx, ParserElt *elt, Event **evt)
 {
   string comp;
   string iface;
   Object *obj;
-  Event *evt;
+  Event *result;
 
-  if (unlikely (!this->resolveComponentRef (parent, elt, &obj)))
-    {
-      return false;
-    }
+  if (unlikely (!this->resolveComponent (ctx, elt, &obj)))
+    return false;
 
   if (!elt->getAttribute ("interface", &iface))
     {
-      evt = obj->getLambda();
+      result = obj->getLambda();
       goto success;
     }
 
-  evt = nullptr;
+  result = nullptr;
   if (instanceof (Media *, obj))
     {
-      evt = obj->getPresentationEvent (iface);
-      if (evt == nullptr)
+      result = obj->getPresentationEvent (iface);
+      if (result == nullptr)
         {
-          evt = obj->getAttributionEvent (iface);
-          if (unlikely (evt == nullptr))
+          result = obj->getAttributionEvent (iface);
+          if (unlikely (result == nullptr))
             goto fail;
         }
     }
@@ -1083,10 +1307,10 @@ ParserState::resolveInterfaceRef (Context *parent, ParserElt *elt,
     }
   else if (instanceof (Context *, obj))
     {
-      if (obj == parent)
+      if (obj == ctx)
         {
-          evt = obj->getAttributionEvent (iface);
-          if (unlikely (evt == nullptr))
+          result = obj->getAttributionEvent (iface);
+          if (unlikely (result == nullptr))
             goto fail;
         }
       else
@@ -1097,8 +1321,8 @@ ParserState::resolveInterfaceRef (Context *parent, ParserElt *elt,
           if (unlikely (!this->eltCacheIndexById
                         (iface, &iface_elt, {"port"})))
             {
-              evt = obj->getAttributionEvent (iface);
-              if (likely (evt != nullptr))
+              result = obj->getAttributionEvent (iface);
+              if (likely (result != nullptr))
                 goto success;   // interface point to context property
               else
                 goto fail;
@@ -1109,20 +1333,20 @@ ParserState::resolveInterfaceRef (Context *parent, ParserElt *elt,
                     (iface_elt->getNode (), &parent_elt));
           if (parent_elt->getTag () == "body")
             {
-              parent = _doc->getRoot ();
+              ctx = _doc->getRoot ();
             }
           else
             {
               string id;
               g_assert (parent_elt->getAttribute ("id", &id));
-              parent = cast (Context *, _doc->getObjectById (id));
-              g_assert_nonnull (parent);
+              ctx = cast (Context *, _doc->getObjectById (id));
+              g_assert_nonnull (ctx);
             }
 
-          if (parent->getId () != obj->getId ())
+          if (ctx->getId () != obj->getId ())
             goto fail;
 
-          return this->resolveInterfaceRef (parent, iface_elt, result);
+          return this->resolveInterface (ctx, iface_elt, evt);
         }
     }
   else
@@ -1131,8 +1355,8 @@ ParserState::resolveInterfaceRef (Context *parent, ParserElt *elt,
     }
 
  success:
-  g_assert_nonnull (evt);
-  tryset (result, evt);
+  g_assert_nonnull (result);
+  tryset (evt, result);
   return true;
 
  fail:
@@ -1140,19 +1364,31 @@ ParserState::resolveInterfaceRef (Context *parent, ParserElt *elt,
     (elt->getNode (), "interface", iface, "no such interface");
 }
 
+/**
+ * @brief Resolve reference to (bind, link, or ghost) parameter.
+ *
+ * The function uses the translation tables in the order they were given,
+ * and returns when any of them resolves the reference.
+ *
+ * @param ref The reference to resolve.
+ * @param bindParams The bind parameter translation table.
+ * @param linkParams The link parameter translation table.
+ * @param ghosts The ghost binds translation table.
+ * @return The resolved reference or \p ref itself if it is not a reference.
+ */
 string
-ParserState::resolveLinkParamRef (const string &value,
-                                  const map<string, string> *bindParams,
-                                  const map<string, string> *linkParams,
-                                  const map<string, string> *ghosts)
+ParserState::resolveParameter (const string &ref,
+                               const map<string, string> *bindParams,
+                               const map<string, string> *linkParams,
+                               const map<string, string> *ghosts)
 {
   string name;
   string result;
 
-  if (value[0] != '$')
-    return value;
+  if (ref[0] != '$')
+    return ref;                 // nothing to do
 
-  name = value.substr (1, value.length () - 1);
+  name = ref.substr (1, ref.length () - 1);
   auto it_bind = bindParams->find (name);
   if (it_bind != bindParams->end ())
     {
@@ -1164,7 +1400,7 @@ ParserState::resolveLinkParamRef (const string &value,
       if (it_link != linkParams->end ())
         result = it_link->second;
       else
-        return value;           // unknown reference
+        return ref;           // unknown reference
     }
 
   if (result[0] != '$')
@@ -1178,14 +1414,106 @@ ParserState::resolveLinkParamRef (const string &value,
   return it_ghost->second;
 }
 
+
+// ParserState: private (predicate solving).
+
+/**
+ * @brief Obtains predicate associated with a \<simpleCondition\> node.
+ *
+ * This function collects all predicates inherited by \c node and, if there
+ * are such predicates, combines them into a new predicate and returns it.
+ *
+ * @param node The simple condition node.
+ * @return A new predicate for \p node, or \c nullptr if \p node has no
+ * associated predicate.
+ */
 Predicate *
-ParserState::resolvePredicateTests (Predicate *pred,
-                                    const map<string, string> *tr)
+ParserState::obtainPredicate (xmlNode *node)
+{
+  list<Predicate *> pred_list;
+  ParserElt *elt;
+  Predicate *pred;
+
+  g_assert (toCPPString (node->name) == "simpleCondition");
+  g_assert_nonnull (node->parent);
+  node = node->parent;
+
+  g_assert (this->eltCacheIndex (node, &elt));
+  while (elt->getTag () != "causalConnector")
+    {
+      g_assert (elt->getTag () == "compoundCondition");
+      if (elt->getData ("pred", (void **) &pred))
+        pred_list.push_front (pred);
+      g_assert (this->eltCacheIndexParent (elt->getNode (), &elt));
+    }
+
+  switch (pred_list.size ())
+    {
+    case 0:                     // no predicate
+      {
+        return nullptr;
+      }
+    case 1:
+      {                         // single predicate
+        pred = pred_list.back ();
+        g_assert (pred->getType () == Predicate::CONJUNCTION);
+        auto children = pred->getChildren ();
+        switch (children->size ())
+          {
+          case 0:
+            return nullptr;
+          case 1:
+            return children->front ()->clone ();
+          default:
+            return pred->clone ();
+          }
+        break;
+      }
+    default:                    // multiple predicates
+      {
+        pred = new Predicate (Predicate::CONJUNCTION);
+        for (auto p: pred_list)
+          {
+            g_assert (p->getType () == Predicate::CONJUNCTION);
+            auto children = p->getChildren ();
+            switch (children->size ())
+              {
+              case 0:
+                continue;
+              case 1:
+                pred->addChild (children->front ()->clone ());
+                break;
+              default:
+                pred->addChild (p->clone ());
+                break;
+              }
+          }
+        return pred;
+      }
+    }
+  g_assert_not_reached ();
+}
+
+/**
+ * @brief Obtains predicate by solving role references in another predicate.
+ *
+ * This function does not modify predicate \p pred.
+ *
+ * @param pred The predicate to solve.
+ * @param tr The role translation table mapping role references to property
+ * references.
+ * @return A new predicate obtained by solving \p pred via table \p tr.
+ */
+Predicate *
+ParserState::solvePredicate (Predicate *pred, const map<string, string> *tr)
 {
   list<Predicate *> buf;
-  pred = pred->clone ();
-  g_assert_nonnull (pred);
-  buf.push_back (pred);
+  Predicate *result;
+
+  result = pred->clone ();
+  g_assert_nonnull (result);
+
+  buf.push_back (result);
   while (!buf.empty ())
     {
       Predicate *p = buf.back ();
@@ -1225,10 +1553,26 @@ ParserState::resolvePredicateTests (Predicate *pred,
           g_assert_not_reached ();
         }
     }
-  return pred;
+  return result;
 }
 
-// node processing
+
+// ParserState: private (node processing).
+
+/**
+ * @brief Processes node of the input document tree.
+
+ * After being called by ParserState::process(), starting from the root
+ * node, this function proceeds recursively, processing each node in the
+ * input document tree.  For each node, it checks its syntax (according to
+ * #parser_syntax_table), calls the corresponding push function (if any),
+ * processes the node's children, and calls the corresponding pop function
+ * (if any).  At any moment, if something goes wrong the function sets
+ * #Parser error and returns false.
+ *
+ * @param node The node to process.
+ * @return \c true if successful, otherwise returns \c false.
+ */
 bool
 ParserState::processNode (xmlNode *node)
 {
@@ -1269,7 +1613,7 @@ ParserState::processNode (xmlNode *node)
             }
         }
       if (unlikely (!found))
-        return this->errEltBadParent (node, parent);
+        return this->errEltBadParent (node);
     }
 
   // Collect attributes.
@@ -1396,6 +1740,12 @@ ParserState::processNode (xmlNode *node)
 
 // ParserState: public.
 
+/**
+ * @brief Creates a new state.
+ * @param width Initial screen width (in pixels).
+ * @param height Initial screen height (in pixels).
+ * @return New #ParserState.
+ */
 ParserState::ParserState (int width, int height)
 {
   _doc = nullptr;
@@ -1408,12 +1758,20 @@ ParserState::ParserState (int width, int height)
   _errorMsg = "no error";
 }
 
+/**
+ * @brief Destroys state.
+ */
 ParserState::~ParserState ()
 {
   for (auto it: _eltCache)
     delete it.second;
 }
 
+/**
+ * @brief Gets last parser error.
+ * @param[out] message Variable to store the last error message (if any).
+ * @return Last error code.
+ */
 ParserState::Error
 ParserState::getError (string *message)
 {
@@ -1421,6 +1779,16 @@ ParserState::getError (string *message)
   return _error;
 }
 
+/**
+ * @brief Processes XML document.
+ *
+ * This function is a wrapper over ParserState::processNode().  It calls the
+ * later with the root node of the given XML document and, if nothing goes
+ * wrong, returns the resulting document.
+ *
+ * @param xml The XML document to process.
+ * @return The resulting document if successful, or \c nullptr otherwise.
+ */
 Document *
 ParserState::process (xmlDoc *xml)
 {
@@ -1447,7 +1815,12 @@ ParserState::process (xmlDoc *xml)
 
 // ParserState: push & pop.
 
-// <ncl>
+/**
+ * @brief Starts the processing of \<ncl\> element.
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
 bool
 ParserState::pushNcl (ParserState *st, ParserElt *elt)
 {
@@ -1464,6 +1837,15 @@ ParserState::pushNcl (ParserState *st, ParserElt *elt)
   return true;
 }
 
+/**
+ * @brief Ends the processing of \<ncl\> element.
+ *
+ * This function resolves all non-local references.
+ *
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
 bool
 ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
 {
@@ -1473,7 +1855,7 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
 
   // Resolve descriptor reference to region.
   // (I.e., move region attributes to associated descriptor.)
-  if (st->eltCacheIndexByTag ({"descriptor"}, &desc_list))
+  if (st->eltCacheIndexByTag ({"descriptor"}, &desc_list) > 0)
     {
       for (auto desc_elt: desc_list)
         {
@@ -1499,7 +1881,7 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
 
   // Resolve media reference to descriptor.
   // (I.e., move descriptor attributes to associated media.)
-  if (st->eltCacheIndexByTag ({"media"}, &media_list))
+  if (st->eltCacheIndexByTag ({"media"}, &media_list) > 0)
     {
       for (auto media_elt: media_list)
         {
@@ -1537,7 +1919,7 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
 
   // Resolve link reference to connector.
   // (I.e., finish links parsing and add them to contexts.)
-  if (st->eltCacheIndexByTag ({"link"}, &link_list))
+  if (st->eltCacheIndexByTag ({"link"}, &link_list) > 0)
     {
       for (auto link_elt: link_list)
         {
@@ -1580,12 +1962,10 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
                   // Attach predicate to condition.
                   if (toCPPString (role.node->name) == "simpleCondition")
                     {
-                      ParserElt *parent_elt;
-                      Predicate *pred;
-                      g_assert (st->eltCacheIndexParent
-                                (role.node, &parent_elt));
-                      if (parent_elt->getData ("pred", (void **) &pred))
-                        role.predicate = pred->clone ();
+                      Predicate *pred = st->obtainPredicate (role.node);
+                      if (role.predicate != nullptr)
+                        delete role.predicate;
+                      role.predicate = pred;
                     }
 
                   // Mark role-bind pair as bound.
@@ -1656,16 +2036,13 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
             {
               for (auto &bind: *it.first)
                 {
-                  ParserElt *bind_elt;
-                  string ref;
+                  ParserElt *elt;
+                  Event *evt;
                   g_assert_nonnull (bind->node);
-                  g_assert (st->eltCacheIndex (bind->node, &bind_elt));
-                  if (unlikely (!st->resolveGhostBindRef
-                                (ctx, bind_elt, &ref)))
-                    {
-                      return false;
-                    }
-                  (*it.second)[bind->role] = ref;
+                  g_assert (st->eltCacheIndex (bind->node, &elt));
+                  if (unlikely (!st->resolveInterface (ctx, elt, &evt)))
+                    return false;
+                  (*it.second)[bind->role] = "$" + evt->getFullId ();
                 }
             }
 
@@ -1691,7 +2068,7 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
               g_assert_nonnull (bind->node);
               g_assert (st->eltCacheIndex (bind->node, &bind_elt));
 
-              if (unlikely (!st->resolveInterfaceRef (ctx, bind_elt, &evt)))
+              if (unlikely (!st->resolveInterface (ctx, bind_elt, &evt)))
                 return false;
 
               evtType = evt->getType ();
@@ -1720,7 +2097,7 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
                            "expected an attribution event");
                       }
                     act.event = evt;
-                    act.value = st->resolveLinkParamRef
+                    act.value = st->resolveParameter
                       (role->value, &bind->params, params, &ghosts_map);
                     break;
                   }
@@ -1734,7 +2111,7 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
                           (bind->node, "interface", evt->getId (),
                            "must be empty");
                       }
-                    act.value = st->resolveLinkParamRef
+                    act.value = st->resolveParameter
                       (role->key, &bind->params, params, &ghosts_map);
                     obj->addSelectionEvent (act.value);
                     act.event = obj->getSelectionEvent (act.value);
@@ -1757,14 +2134,14 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
                     case Predicate::FALSUM:
                     case Predicate::VERUM:
                     case Predicate::ATOM:
-                      act.predicate = st->resolvePredicateTests
+                      act.predicate = st->solvePredicate
                         (role->predicate, &tests_map);
                       break;
                     case Predicate::NEGATION:
                     case Predicate::CONJUNCTION:
                     case Predicate::DISJUNCTION:
                       if (role->predicate->getChildren ()->size () > 0)
-                        act.predicate = st->resolvePredicateTests
+                        act.predicate = st->solvePredicate
                           (role->predicate, &tests_map);
                       break;
                     default:
@@ -1785,7 +2162,20 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
   return true;
 }
 
-// <region>
+/**
+ * @brief Starts the processing of \<region\> element.
+ *
+ * This function uses the initial screen dimensions stored in #ParserState
+ * to convert into absolute values any relative values used in \<region\>
+ * attributes.
+ *
+ * @fn ParserState::pushRegion
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
+
+/// Cleans up the rectangle attached to region #ParserElt.
 static void
 savedRectCleanup (void *ptr)
 {
@@ -1810,11 +2200,11 @@ ParserState::pushRegion (ParserState *st, ParserElt *elt)
     {
       saved_rect = new Rect;
       screen = *saved_rect = st->_rect;
-      UDATA_SET (st, "saved_rect", saved_rect, savedRectCleanup);
+      UDATA_SET (st, "saved-rect", saved_rect, savedRectCleanup);
     }
   else
     {
-      UDATA_GET (st, "saved_rect", &saved_rect);
+      UDATA_GET (st, "saved-rect", &saved_rect);
       screen = *saved_rect;
     }
 
@@ -1861,6 +2251,12 @@ ParserState::pushRegion (ParserState *st, ParserElt *elt)
   return true;
 }
 
+/**
+ * @brief Ends the processing of \<region\> element.
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
 bool
 ParserState::popRegion (ParserState *st, ParserElt *elt)
 {
@@ -1869,11 +2265,16 @@ ParserState::popRegion (ParserState *st, ParserElt *elt)
   parent_node = elt->getParentNode ();
   g_assert_nonnull (parent_node);
   if (toCPPString (parent_node->name) != "region") // root region
-    g_assert (st->getData ("saved_rect", (void **) pointerof (&st->_rect)));
+    g_assert (st->getData ("saved-rect", (void **) pointerof (&st->_rect)));
   return true;
 }
 
-// <descriptorParam>
+/**
+ * @brief Starts the processing of \<descriptorParam\> element.
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
 bool
 ParserState::pushDescriptorParam (ParserState *st, ParserElt *elt)
 {
@@ -1891,13 +2292,22 @@ ParserState::pushDescriptorParam (ParserState *st, ParserElt *elt)
   return true;
 }
 
-// <causalConnector>
+/**
+ * @brief Starts the processing of \<causalConnector\> element.
+ * @fn ParserState::pushCausalConnector
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
+
+/// Cleans up the set of test roles attached to connector #ParserElt.
 static void
-assessCleanup (void *ptr)
+testsCleanup (void *ptr)
 {
   delete (set<string> *) ptr;
 }
 
+/// Cleans up the list of #ParserConnRole attached to connector #ParserElt.
 static void
 rolesCleanup (void *ptr)
 {
@@ -1911,12 +2321,18 @@ rolesCleanup (void *ptr)
 bool
 ParserState::pushCausalConnector (ParserState *st, ParserElt *elt)
 {
-  UDATA_SET (st, "conn_elt", elt, nullptr);
-  UDATA_SET (elt, "tests", new set<string> (), assessCleanup);
+  UDATA_SET (st, "conn-elt", elt, nullptr);
+  UDATA_SET (elt, "tests", new set<string> (), testsCleanup);
   UDATA_SET (elt, "roles", new list<ParserConnRole> (), rolesCleanup);
   return true;
 }
 
+/**
+ * @brief Ends the processing of \<causalConnector\> element.
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
 bool
 ParserState::popCausalConnector (ParserState *st, ParserElt *elt)
 {
@@ -1924,7 +2340,7 @@ ParserState::popCausalConnector (ParserState *st, ParserElt *elt)
   int nconds;
   int nacts;
 
-  UDATA_SET (st, "conn_elt", nullptr, nullptr);
+  UDATA_SET (st, "conn-elt", nullptr, nullptr);
   UDATA_GET (elt, "roles", &roles);
   nconds = nacts = 0;
 
@@ -1944,7 +2360,15 @@ ParserState::popCausalConnector (ParserState *st, ParserElt *elt)
   return true;
 }
 
-// <compoundCondition>
+/**
+ * @brief Starts the processing of \<compoundCondition\> element.
+ * @fn ParserState::pushCompoundCondition
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
+
+/// Cleans up the #Predicate attached to compound condition #ParserElt.
 static void
 predCleanup (void *ptr)
 {
@@ -1960,7 +2384,17 @@ ParserState::pushCompoundCondition (unused (ParserState *st),
   return true;
 }
 
-// <simpleCondition> or <simpleAction>
+/**
+ * @brief Starts the processing of \<simpleCondition\> or \<simpleAction\>
+ * element.
+ *
+ * This function parsers \p elt and stores it as a #ParserConnRole in the
+ * list of rules of the current connector.
+ *
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
 bool
 ParserState::pushSimpleCondition (ParserState *st, ParserElt *elt)
 {
@@ -2055,14 +2489,22 @@ ParserState::pushSimpleCondition (ParserState *st, ParserElt *elt)
   if (role.eventType == Event::SELECTION)
     elt->getAttribute ("key", &role.key);
 
-  UDATA_GET (st, "conn_elt", &conn_elt);
+  UDATA_GET (st, "conn-elt", &conn_elt);
   UDATA_GET (conn_elt, "roles", &roles);
   roles->push_back (role);
 
   return true;
 }
 
-// <compoundStatement>
+/**
+ * @brief Starts the processing of \<compoundStatement\> element.
+ *
+ * This function creates an associated compound #Predicate for \p elt.
+ *
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
 bool
 ParserState::pushCompoundStatement (ParserState *st, ParserElt *elt)
 {
@@ -2106,12 +2548,17 @@ ParserState::pushCompoundStatement (ParserState *st, ParserElt *elt)
     {
       parent_pred->addChild (pred);
     }
-  TRACE ("\n%s", parent_pred->toString ().c_str ());
   UDATA_SET (elt, "pred", pred, nullptr);
 
   return true;
 }
 
+/**
+ * @brief Ends the processing of \<compoundStatement\> element.
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
 bool
 ParserState::popCompoundStatement (ParserState *st, ParserElt *elt)
 {
@@ -2139,7 +2586,15 @@ ParserState::popCompoundStatement (ParserState *st, ParserElt *elt)
   return true;
 }
 
-// <assessmentStatement>
+/**
+ * @brief Ends the processing of \<assessmentStatement\> element.
+ *
+ * This function creates an associated atomic #Predicate for \p elt.
+ *
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
 bool
 ParserState::popAssessmentStatement (ParserState *st, ParserElt *elt)
 {
@@ -2178,12 +2633,20 @@ ParserState::popAssessmentStatement (ParserState *st, ParserElt *elt)
   pred = new Predicate (Predicate::ATOM);
   pred->setTest (*left, test, *right);
   parent_pred->addChild (pred);
-  TRACE ("\n%s", parent_pred->toString ().c_str ());
 
   return true;
 }
 
-// <attributeAssessment> or <valueAssessment>
+/**
+ * @brief Starts the processing of \<attributeAssessment\> or
+ * \<valueAssessment\> element.
+ * @fn ParserState::pushAttributeAssessment
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
+
+/// Cleans up the strings attached to attribute assessment #ParserElt.
 static void
 leftOrRightCleanup (void *ptr)
 {
@@ -2204,7 +2667,7 @@ ParserState::pushAttributeAssessment (ParserState *st, ParserElt *elt)
       set<string> *tests;
 
       g_assert (elt->getAttribute ("role", &str));
-      UDATA_GET (st, "conn_elt", &conn_elt);
+      UDATA_GET (st, "conn-elt", &conn_elt);
       UDATA_GET (conn_elt, "tests", &tests);
       tests->insert (str);
       str = "$" + str;
@@ -2229,7 +2692,19 @@ ParserState::pushAttributeAssessment (ParserState *st, ParserElt *elt)
   return true;
 }
 
-// <body> and <context>
+/**
+ * @brief Starts the processing of \<body\> or \<context\> elements.
+ *
+ * This function parsers \p elt and pushes it as a #Context onto the object
+ * stack.
+ *
+ * @fn ParserState::pushContext
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
+
+/// Cleans up the list of port ids attached to context #ParserElt.
 static void
 portsCleanup (void *ptr)
 {
@@ -2271,6 +2746,15 @@ ParserState::pushContext (ParserState *st, ParserElt *elt)
   return true;
 }
 
+/**
+ * @brief Ends the processing of \<body\> or \<context\> elements.
+ *
+ * This function resolves context ports and pops the object stack.
+ *
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
 bool
 ParserState::popContext (ParserState *st, ParserElt *elt)
 {
@@ -2288,7 +2772,7 @@ ParserState::popContext (ParserState *st, ParserElt *elt)
       Event *evt;
 
       g_assert (st->eltCacheIndexById (port_id, &port_elt, {"port"}));
-      if (unlikely (!st->resolveInterfaceRef (ctx, port_elt, &evt)))
+      if (unlikely (!st->resolveInterface (ctx, port_elt, &evt)))
         return false;
 
       ctx->addPort (evt);
@@ -2298,7 +2782,12 @@ ParserState::popContext (ParserState *st, ParserElt *elt)
   return true;
 }
 
-// <port>
+/**
+ * @brief Starts the processing of \<port\> element.
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
 bool
 ParserState::pushPort (ParserState *st, ParserElt *elt)
 {
@@ -2314,7 +2803,16 @@ ParserState::pushPort (ParserState *st, ParserElt *elt)
   return true;
 }
 
-// <media>
+/**
+ * @brief Starts the processing of \<media\> element.
+ *
+ * This function parsers \p elt and pushes it as a #Media onto the object
+ * stack.
+ *
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
 bool
 ParserState::pushMedia (ParserState *st, ParserElt *elt)
 {
@@ -2356,14 +2854,28 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
   return true;
 }
 
+/**
+ * @brief Ends the processing of \<media\> element.
+ *
+ * This function pops the object stack.
+ *
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
 bool
-ParserState::popMedia (ParserState *st, unused (ParserElt *elt))
+ParserState::popMedia (ParserState *st, unused (ParserElt * elt))
 {
   g_assert (instanceof (Media *, st->objStackPop ()));
   return true;
 }
 
-// <area>
+/**
+ * @brief Starts the processing of \<area\> element.
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
 bool
 ParserState::pushArea (ParserState *st, ParserElt *elt)
 {
@@ -2385,7 +2897,12 @@ ParserState::pushArea (ParserState *st, ParserElt *elt)
   return true;
 }
 
-// <property>
+/**
+ * @brief Starts the processing of \<property\> element.
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
 bool
 ParserState::pushProperty (ParserState *st, ParserElt *elt)
 {
@@ -2405,13 +2922,22 @@ ParserState::pushProperty (ParserState *st, ParserElt *elt)
   return true;
 }
 
-// <link>
+/**
+ * @brief Starts the processing of \<link\> element.
+ * @fn ParserState::pushLink
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
+
+/// Cleans up list of #ParserLinkBind attached to link #ParserElt.
 static void
 bindsCleanup (void *ptr)
 {
   delete (list<ParserLinkBind> *) ptr;
 }
 
+/// Cleans up parameter map attached to link #ParserElt.
 static void
 paramsCleanup (void *ptr)
 {
@@ -2433,7 +2959,12 @@ ParserState::pushLink (unused (ParserState *st), ParserElt *elt)
   return true;
 }
 
-// <linkParam> and <bindParam>
+/**
+ * @brief Starts the processing of \<linkParam\> or \<bindParam\> element.
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
 bool
 ParserState::pushLinkParam (ParserState *st, ParserElt *elt)
 {
@@ -2451,7 +2982,16 @@ ParserState::pushLinkParam (ParserState *st, ParserElt *elt)
   return true;
 }
 
-// <bind>
+/**
+ * @brief Starts the processing of \<bind\> element.
+ *
+ * This function parsers \p elt and stores it as a #ParserLinkBind in the
+ * list of binds of the current link.
+ *
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
 bool
 ParserState::pushBind (ParserState *st, ParserElt *elt)
 {
@@ -2475,6 +3015,7 @@ ParserState::pushBind (ParserState *st, ParserElt *elt)
 
 // External API.
 
+/// Helper function used by Parser::parserBuffer() and Parser::parseFile().
 static Document *
 process (xmlDoc *xml, int width, int height, string *errmsg)
 {
@@ -2491,6 +3032,16 @@ process (xmlDoc *xml, int width, int height, string *errmsg)
   return doc;
 }
 
+/**
+ * @brief Parses NCL document from memory buffer.
+ * @fn Parser::parseBuffer
+ * @param buf Buffer.
+ * @param size Buffer size in bytes.
+ * @param width Initial screen width (in pixels).
+ * @param height Initial screen height (in pixels).
+ * @param[out] errmsg Variable to store the error message (if any).
+ * @return The resulting #Document if successful, or \c nullptr otherwise.
+ */
 Document *
 Parser::parseBuffer (const void *buf, size_t size,
                      int width, int height, string *errmsg)
@@ -2514,6 +3065,14 @@ Parser::parseBuffer (const void *buf, size_t size,
   return doc;
 }
 
+/**
+ * @brief Parses NCL document from file.
+ * @param path File path.
+ * @param width Initial screen width (in pixels).
+ * @param height Initial screen height (in pixels).
+ * @param[out] errmsg Variable to store the error message (if any).
+ * @return The resulting #Document if successful, or \c nullptr otherwise.
+ */
 Document *
 Parser::parseFile (const string &path, int width, int height,
                    string *errmsg)
