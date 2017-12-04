@@ -32,6 +32,16 @@ Context::Context (const string &id): Composition (id)
 
 Context::~Context ()
 {
+  // Delete predicate in links.
+  for (auto link: _links)
+    {
+      for (auto &cond: link.first)
+        if (cond.predicate != nullptr)
+          delete cond.predicate;
+      for (auto &act: link.second)
+        if (act.predicate != nullptr)
+          delete act.predicate;
+    }
 }
 
 

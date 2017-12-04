@@ -64,7 +64,7 @@ Composition::addChild (Object *child)
   if (tryinsert (child, _children, insert))
     {
       child->initParent (this);
-      _doc->addObject (child);
+      g_assert (_doc->addObject (child));
     }
 }
 
