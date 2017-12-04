@@ -418,8 +418,8 @@ Formatter::sendKeyEvent (const string &key, bool press)
   _GINGA_CHECK_EOS (this);
   if (_state != GINGA_STATE_PLAYING)
     return false;               // nothing to do
-
-  for (auto obj: this->getObjectList (Event::OCCURRING))
+  
+  for (auto obj: *_doc->getObjects ())  
     obj->sendKeyEvent (key, press);
 
   return true;

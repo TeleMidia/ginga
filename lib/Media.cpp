@@ -162,12 +162,10 @@ Media::sendKeyEvent (const string &key, bool press)
 {
   list<Event *> buf;
 
-  if (!press)
-    return;                     // nothing to do
   if (_player == nullptr)
     return;                     // nothing to do
 
-  if (xstrhasprefix (key, "CURSOR_") && _player->isFocused ())
+  if (xstrhasprefix (key, "CURSOR_") && _player->isFocused () && press)
     {
       string next;
       if ((key == "CURSOR_UP"
@@ -212,8 +210,10 @@ Media::sendKeyEvent (const string &key, bool press)
   for (Event *evt: buf)
     {
       TRACE ("%s", evt->getFullId ().c_str ());
-      _doc->evalAction (evt, Event::START);
-      _doc->evalAction (evt, Event::STOP);
+      if (press)
+        _doc->evalAction (evt, Event::START);
+      else
+        _doc->evalAction (evt, Event::STOP);
     }
 }
 
@@ -324,12 +324,12 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
       TRACE ("ATTRIBUTION");
       break;
     case Event::SELECTION:
-      TRACE ("SELECTION");
+      TRACE ("SELECTION");  //It's possible to select a paused media.
       // if (!this->isOccurring ())
       // {
       //   TRACE ("Not Occurring!");
       //   return false;           // fail
-      // }      
+      // }
       break;
 
     default:
@@ -379,8 +379,11 @@ Media::afterTransition (Event *evt, Event::Transition transition)
           break;
 
         case Event::PAUSE:
+            TRACE ("pause %s", evt->getFullId ().c_str ());
+            break;
         case Event::RESUME:
-         break;                 // nothing to do
+            TRACE ("resume %s", evt->getFullId ().c_str ());
+            break;                 // nothing to do
 
         case Event::STOP:
           if (evt->isLambda ())
