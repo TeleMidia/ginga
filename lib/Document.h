@@ -26,6 +26,11 @@ class Context;
 class Media;
 class Switch;
 
+/**
+ * @brief NCL document.
+ *
+ * Maintains all objects in document.
+ */
 class Document
 {
 public:
@@ -35,7 +40,7 @@ public:
   const set<Object *> *getObjects ();
   Object *getObjectById (const string &);
   Object *getObjectByIdOrAlias (const string &);
-  void addObject (Object *);
+  bool addObject (Object *);
 
   Context *getRoot ();
   MediaSettings *getSettings ();
@@ -52,13 +57,14 @@ public:
   bool setData (const string &, void *, UserDataCleanFunc fn=nullptr);
 
 private:
-  set<Object *> _objects;       // all objects
-  Context *_root;               // root object
-  MediaSettings *_settings;     // settings object
-  set<Media *> _medias;         // media objects
-  set<Context *> _contexts;     // context objects
-  set<Switch *> _switches;      // switch objects
-  UserData _udata;              // user data
+  set<Object *> _objects;                ///< Objects.
+  map<string, Object *> _objectsById;    ///< Objects indexed by id.
+  Context *_root;                        ///< Root context (body).
+  MediaSettings *_settings;              ///< Settings object.
+  set<Media *> _medias;                  ///< Media objects.
+  set<Context *> _contexts;              ///< Context objects.
+  set<Switch *> _switches;               ///< Switch objects.
+  UserData _udata;                       ///< Attached user data.
 };
 
 GINGA_NAMESPACE_END

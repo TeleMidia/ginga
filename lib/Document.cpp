@@ -26,41 +26,68 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
+/**
+ * @brief Creates a new document.
+ *
+ * This function creates a new NCL document containing a root context (the
+ * document body) with id "__root__" and a child settings media object with
+ * id "__settings__".
+ *
+ * @return New #Document.
+ */
 Document::Document ()
 {
   MediaSettings *obj;
 
   _root = new Context ("__root__");
   _settings = nullptr;
-
-  this->addObject (_root);
+  g_assert (this->addObject (_root));
 
   obj = new MediaSettings ("__settings__");
   _root->addChild (obj);
   _settings = obj;
 }
 
+/**
+ * @brief Destroys document.
+ *
+ * This function destroys the document and all its child objects.
+ */
 Document::~Document ()
 {
   for (auto obj: _objects)
     delete obj;
 }
 
+/**
+ * @brief Gets document objects.
+ * @return The set of objects in document.
+ */
 const set<Object *> *
 Document::getObjects ()
 {
   return &_objects;
 }
 
+/**
+ * @brief Gets document object by id.
+ * @param id Object id.
+ * @return The object if successful, or \c nullptr otherwise.
+ */
 Object *
 Document::getObjectById (const string &id)
 {
-  for (auto obj: _objects)
-    if (obj->getId () == id)
-      return obj;
-  return nullptr;
+  auto it = _objectsById.find (id);
+  if (it == _objectsById.end ())
+    return nullptr;
+  return it->second;
 }
 
+/**
+ * @brief Gets document object by id or alias.
+ * @param id Object id or alias.
+ * @return The object if successful, or \c nullptr otherwise.
+ */
 Object *
 Document::getObjectByIdOrAlias (const string &id)
 {
@@ -73,7 +100,16 @@ Document::getObjectByIdOrAlias (const string &id)
   return nullptr;
 }
 
-void
+/**
+ * @brief Adds object to document.
+ *
+ * This function assumes that \p obj is not in another document.
+ *
+ * @param obj The object to add.
+ * @return \c true if successful, or \c false otherwise (object already in
+ * document).
+ */
+bool
 Document::addObject (Object *obj)
 {
   g_assert_nonnull (obj);
@@ -81,14 +117,16 @@ Document::addObject (Object *obj)
   if (_objects.find (obj) != _objects.end ()
       || getObjectByIdOrAlias (obj->getId ()) != nullptr)
     {
-      return;                   // nothing to do
+      return false;             // already in document
     }
 
+  // Settings can only be added once.
   if (unlikely (_settings != nullptr && instanceof (MediaSettings *, obj)))
-    g_assert (!instanceof (MediaSettings *, obj)); // cannot be added
+    g_assert (!instanceof (MediaSettings *, obj));
 
   obj->initDocument (this);
   _objects.insert (obj);
+  _objectsById[obj->getId ()] = obj;
 
   if (instanceof (Media *, obj))
     {
@@ -112,8 +150,13 @@ Document::addObject (Object *obj)
     {
       g_assert_not_reached ();
     }
+  return true;
 }
 
+/**
+ * @brief Gets document's root object.
+ * @return The root object.
+ */
 Context *
 Document::getRoot ()
 {
@@ -121,6 +164,10 @@ Document::getRoot ()
   return _root;
 }
 
+/**
+ * @brief Gets document's settings object.
+ * @return The settings object.
+ */
 MediaSettings *
 Document::getSettings ()
 {
