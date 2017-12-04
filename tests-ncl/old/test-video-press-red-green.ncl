@@ -59,7 +59,7 @@
     </link> -->
 
     <link xconnector="onKeySelectionResume">
-      <bind role='onSelection' component='video2'>
+      <bind role='onSelection' component='video'>
         <bindParam name='keyCode' value='BLUE'/>
       </bind>
       <bind role="resume" component="video" />
