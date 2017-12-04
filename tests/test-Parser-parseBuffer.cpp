@@ -1351,6 +1351,55 @@ main (void)
 </ncl>\n\
 ");
 
+  XFAIL ("link: Link does not match connector",
+         "<link>: Bad value 'c' for attribute 'xconnector' "
+         "(link does not match connector, "
+         "role 'start' not bound)", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+  <link xconnector='c'>\n\
+   <bind role='onBegin' component='__root__'/>\n\
+  </link>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("link: Link does not match connector",
+         "<link>: Bad value 'c' for attribute 'xconnector' "
+         "(link does not match connector, "
+         "role 'test' not bound)", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <compoundCondition>\n\
+     <simpleCondition role='onBegin'/>\n\
+     <assessmentStatement comparator='eq'>\n\
+      <attributeAssessment role='test'/>\n\
+      <valueAssessment value='0'/>\n\
+     </assessmentStatement>\n\
+    </compoundCondition>\n\
+    <simpleAction role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+  <link xconnector='c'>\n\
+   <bind role='onBegin' component='__root__'/>\n\
+   <bind role='start' component='__root__'/>\n\
+  </link>\n\
+ </body>\n\
+</ncl>\n\
+");
+
 
 // -------------------------------------------------------------------------
 // <linkParam>
@@ -1590,7 +1639,7 @@ main (void)
 
   XFAIL ("bind: Bad interface (ghost bind)",
          "<bind>: Bad value '' for attribute 'interface' "
-         "(must not be empty)", "\
+         "(expected an attribution event)", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -2200,6 +2249,7 @@ main (void)
     g_assert (cond->value == "");
 
     cond++;
+    TRACE ("%s", cond->event->getFullId ().c_str ());
     g_assert (cond->event == m->getSelectionEvent ("$m.top"));
     g_assert (cond->transition == Event::START);
     g_assert (cond->predicate == nullptr);
@@ -2371,23 +2421,19 @@ main (void)
     delete doc;
   }
 
-  // Success: Simple statements.
+  // Success: Simple statement.
   {
     Document *doc;
-    PASS (&doc, "Simple statements", "\
+    PASS (&doc, "Simple statement", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
-   <causalConnector id='conn1'>\n\
+   <causalConnector id='conn'>\n\
     <compoundCondition>\n\
      <simpleCondition role='onBegin'/>\n\
      <assessmentStatement comparator='eq'>\n\
-      <valueAssessment value='0'/>\n\
-      <valueAssessment value='0'/>\n\
-     </assessmentStatement>\n\
-     <assessmentStatement comparator='ne'>\n\
-      <valueAssessment value='0'/>\n\
-      <valueAssessment value='0'/>\n\
+      <attributeAssessment role='test1'/>\n\
+      <valueAssessment value='1'/>\n\
      </assessmentStatement>\n\
     </compoundCondition>\n\
     <simpleAction role='start'/>\n\
@@ -2395,8 +2441,10 @@ main (void)
   </connectorBase>\n\
  </head>\n\
  <body id='body'>\n\
-  <link xconnector='conn1'>\n\
+  <property name='p'/>\n\
+  <link xconnector='conn'>\n\
    <bind role='onBegin' component='body'/>\n\
+   <bind role='test1' component='body' interface='p'/>\n\
    <bind role='start' component='body'/>\n\
   </link>\n\
  </body>\n\
@@ -2410,12 +2458,333 @@ main (void)
     Context *root = doc->getRoot ();
     g_assert_nonnull (root);
 
+    auto links = doc->getRoot ()->getLinks ();
+    g_assert (links->size () == 1);
+
+    auto link = links->begin ();
+    g_assert (link->first.size () == 1);
+    g_assert (link->second.size () == 1);
+
+    auto cond = link->first.begin ();
+    g_assert (cond->event == root->getLambda ());
+    g_assert (cond->transition == Event::START);
+    g_assert (cond->predicate->toString () == "'$__root__.p'=='1'");
+    g_assert (cond->value == "");
+    g_assert (++cond == link->first.end ());
+
+    auto act = link->second.begin ();
+    g_assert (act->event == root->getLambda ());
+    g_assert (act->transition == Event::START);
+    g_assert (act->predicate == nullptr);
+    g_assert (act->value == "");
+    g_assert (++act == link->second.end ());
+
     TRACE ("\n%s", root->toString ().c_str ());
     delete doc;
   }
-exit (0);
+
+  // Success: More simple statements.
+  {
+    Document *doc;
+    PASS (&doc, "More simple statements", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='conn1'>\n\
+    <compoundCondition>\n\
+     <simpleCondition role='onBegin'/>\n\
+     <assessmentStatement comparator='eq'>\n\
+      <attributeAssessment role='test1'/>\n\
+      <valueAssessment value='1'/>\n\
+     </assessmentStatement>\n\
+     <assessmentStatement comparator='ne'>\n\
+      <valueAssessment value='2'/>\n\
+      <attributeAssessment role='test2'/>\n\
+     </assessmentStatement>\n\
+    </compoundCondition>\n\
+    <simpleAction role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body id='body'>\n\
+  <property name='p'/>\n\
+  <property name='q'/>\n\
+  <media id='m'>\n\
+   <property name='x'/>\n\
+  </media>\n\
+  <link xconnector='conn1'>\n\
+   <bind role='onBegin' component='body'/>\n\
+   <bind role='test1' component='body' interface='p'/>\n\
+   <bind role='test2' component='body' interface='p'/>\n\
+   <bind role='start' component='body'/>\n\
+  </link>\n\
+  <link xconnector='conn1'>\n\
+   <bind role='onBegin' component='m'/>\n\
+   <bind role='test1' component='m' interface='x'/>\n\
+   <bind role='test2' component='body' interface='q'/>\n\
+   <bind role='start' component='m'/>\n\
+  </link>\n\
+ </body>\n\
+</ncl>");
+
+    g_assert_nonnull (doc);
+    g_assert (doc->getObjects ()->size () == 3);
+    g_assert (doc->getMedias ()->size () == 2);
+    g_assert (doc->getContexts ()->size () == 1);
+
+    Context *root = doc->getRoot ();
+    g_assert_nonnull (root);
+
+    Media *m = cast (Media *, doc->getObjectById ("m"));
+    g_assert_nonnull (m);
+
+    auto links = doc->getRoot ()->getLinks ();
+    g_assert (links->size () == 2);
+
+    // First link.
+    auto link = links->begin ();
+    g_assert (link->first.size () == 1);
+    g_assert (link->second.size () == 1);
+
+    auto cond = link->first.begin ();
+    g_assert (cond->event == root->getLambda ());
+    g_assert (cond->transition == Event::START);
+    g_assert (cond->predicate->toString ()
+              == "and('$__root__.p'=='1', '2'!='$__root__.p')");
+    g_assert (cond->value == "");
+    g_assert (++cond == link->first.end ());
+
+    auto act = link->second.begin ();
+    g_assert (act->event == root->getLambda ());
+    g_assert (act->transition == Event::START);
+    g_assert (act->predicate == nullptr);
+    g_assert (act->value == "");
+    g_assert (++act == link->second.end ());
+
+    // Second link.
+    link++;
+    cond = link->first.begin ();
+    g_assert (cond->event == m->getLambda ());
+    g_assert (cond->transition == Event::START);
+    g_assert (cond->predicate->toString ()
+              == "and('$m.x'=='1', '2'!='$__root__.q')");
+    g_assert (cond->value == "");
+    g_assert (++cond == link->first.end ());
+
+    act = link->second.begin ();
+    g_assert (act->event == m->getLambda ());
+    g_assert (act->transition == Event::START);
+    g_assert (act->predicate == nullptr);
+    g_assert (act->value == "");
+    g_assert (++act == link->second.end ());
+    g_assert (++link == links->end ());
+
+    TRACE ("\n%s", root->toString ().c_str ());
+    delete doc;
+  }
+
   // Success: Complex statements.
   {
+    Document *doc;
+    PASS (&doc, "Complex statements", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='conn1'>\n\
+    <compoundCondition>\n\
+     <simpleCondition role='onAbort'/>\n\
+     <assessmentStatement comparator='lte'>\n\
+      <attributeAssessment role='test1'/>\n\
+      <valueAssessment value='1'/>\n\
+     </assessmentStatement>\n\
+     <compoundStatement operator='and'>\n\
+      <assessmentStatement comparator='ne'>\n\
+       <valueAssessment value='2'/>\n\
+       <attributeAssessment role='test2'/>\n\
+      </assessmentStatement>\n\
+      <compoundStatement operator='not'>\n\
+       <compoundStatement operator='or' isNegated='true'>\n\
+        <assessmentStatement comparator='gt'>\n\
+         <valueAssessment value='3'/>\n\
+         <valueAssessment value='4'/>\n\
+        </assessmentStatement>\n\
+        <assessmentStatement comparator='gte'>\n\
+         <valueAssessment value='4'/>\n\
+         <valueAssessment value='3'/>\n\
+        </assessmentStatement>\n\
+       </compoundStatement>\n\
+      </compoundStatement>\n\
+     </compoundStatement>\n\
+    </compoundCondition>\n\
+    <simpleAction role='resume'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body id='body'>\n\
+  <property name='p'/>\n\
+  <property name='q'/>\n\
+  <link xconnector='conn1'>\n\
+   <bind role='onAbort' component='body'/>\n\
+   <bind role='test1' component='body' interface='p'/>\n\
+   <bind role='test2' component='body' interface='q'/>\n\
+   <bind role='resume' component='body'/>\n\
+  </link>\n\
+ </body>\n\
+</ncl>");
+
+    g_assert_nonnull (doc);
+    g_assert (doc->getObjects ()->size () == 2);
+    g_assert (doc->getMedias ()->size () == 1);
+    g_assert (doc->getContexts ()->size () == 1);
+
+    Context *root = doc->getRoot ();
+    g_assert_nonnull (root);
+
+    auto links = doc->getRoot ()->getLinks ();
+    g_assert (links->size () == 1);
+
+    auto link = links->begin ();
+    g_assert (link->first.size () == 1);
+    g_assert (link->second.size () == 1);
+
+    auto cond = link->first.begin ();
+    g_assert (cond->event == root->getLambda ());
+    g_assert (cond->transition == Event::ABORT);
+    g_assert (cond->predicate->toString () == "\
+and('$__root__.p'<='1',\
+ and('2'!='$__root__.q', not(not(or('3'>'4', '4'>='3')))))");
+    g_assert (cond->value == "");
+    g_assert (++cond == link->first.end ());
+
+    auto act = link->second.begin ();
+    g_assert (act->event == root->getLambda ());
+    g_assert (act->transition == Event::RESUME);
+    g_assert (act->predicate == nullptr);
+    g_assert (act->value == "");
+    g_assert (++act == link->second.end ());
+    g_assert (++link == links->end ());
+
+    TRACE ("\n%s", root->toString ().c_str ());
+    delete doc;
+  }
+
+  // Success: Complex conditions and statements.
+  {
+    Document *doc;
+    PASS (&doc, "Complex statements", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='conn1'>\n\
+    <compoundCondition>\n\
+     <simpleCondition role='onEndSelection' key='RED'/>\n\
+     <assessmentStatement comparator='ne'>\n\
+      <valueAssessment value='0'/>\n\
+      <valueAssessment value='0'/>\n\
+     </assessmentStatement>\n\
+     <assessmentStatement comparator='gt'>\n\
+      <valueAssessment value='1'/>\n\
+      <valueAssessment value='1'/>\n\
+     </assessmentStatement>\n\
+     <compoundCondition operator='not'>\n\
+      <simpleCondition role='onEndAttribution'/>\n\
+      <compoundStatement operator='not'>\n\
+        <assessmentStatement comparator='eq'>\n\
+         <attributeAssessment role='test1'/>\n\
+         <attributeAssessment role='test2'/>\n\
+        </assessmentStatement>\n\
+      </compoundStatement>\n\
+      <compoundCondition>\n\
+       <assessmentStatement comparator='lt'>\n\
+        <attributeAssessment role='test3'/>\n\
+        <valueAssessment value='33'/>\n\
+       </assessmentStatement>\n\
+       <compoundCondition>\n\
+        <compoundCondition>\n\
+         <compoundCondition>\n\
+          <simpleCondition role='onPause'/>\n\
+         </compoundCondition>\n\
+        </compoundCondition>\n\
+       </compoundCondition>\n\
+      </compoundCondition>\n\
+     </compoundCondition>\n\
+    </compoundCondition>\n\
+    <simpleAction role='abort'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body id='body'>\n\
+  <property name='q'/>\n\
+  <context id='c'>\n\
+   <property name='p'/>\n\
+   <port id='pt' component='c' interface='p'/>\n\
+   <port id='pt2' component='m2' interface='a2'/>\n\
+   <media id='m2'>\n\
+    <area id='a2'/>\n\
+   </media>\n\
+  </context>\n\
+  <media id='m'>\n\
+   <property name='r'/>\n\
+  </media>\n\
+  <link xconnector='conn1'>\n\
+   <bind role='onEndSelection' component='m'/>\n\
+   <bind role='onEndAttribution' component='c' interface='pt'/>\n\
+   <bind role='onPause' component='c' interface='pt2'/>\n\
+   <bind role='test1' component='body' interface='q'/>\n\
+   <bind role='test2' component='c' interface='pt'/>\n\
+   <bind role='test3' component='m' interface='r'/>\n\
+   <bind role='abort' component='__root__'/>\n\
+  </link>\n\
+ </body>\n\
+</ncl>");
+
+    g_assert_nonnull (doc);
+    g_assert (doc->getObjects ()->size () == 5);
+    g_assert (doc->getMedias ()->size () == 3);
+    g_assert (doc->getContexts ()->size () == 2);
+
+    Context *root = doc->getRoot ();
+    g_assert_nonnull (root);
+
+    Context *c = cast (Context *, doc->getObjectById ("c"));
+    g_assert_nonnull (c);
+
+    Media *m = cast (Media *, doc->getObjectById ("m"));
+    g_assert_nonnull (m);
+
+    Media *m2 = cast (Media *, doc->getObjectById ("m2"));
+    g_assert_nonnull (m2);
+
+    auto links = doc->getRoot ()->getLinks ();
+    g_assert (links->size () == 1);
+
+    auto link = links->begin ();
+    g_assert (link->first.size () == 3);
+    g_assert (link->second.size () == 1);
+
+    auto cond = link->first.begin ();
+    g_assert (cond->event == m->getSelectionEvent ("RED"));
+    g_assert (cond->transition == Event::STOP);
+    g_assert (cond->predicate->toString () == "and('0'!='0', '1'>'1')");
+    g_assert (cond->value == "RED");
+
+    cond++;
+    g_assert (cond->event == c->getAttributionEvent ("p"));
+    g_assert (cond->transition == Event::STOP);
+    g_assert (cond->predicate->toString ()
+              == "and(and('0'!='0', '1'>'1'), not('$__root__.q'=='$c.p'))");
+    g_assert (cond->value == "");
+
+    cond++;
+    g_assert (cond->event == m2->getPresentationEvent ("a2"));
+    g_assert (cond->transition == Event::PAUSE);
+    g_assert (cond->predicate->toString () == "\
+and(and('0'!='0', '1'>'1'), not('$__root__.q'=='$c.p'), '$m.r'<'33')");
+    g_assert (cond->value == "");
+    g_assert (++cond == link->first.end ());
+
+    TRACE ("\n%s", root->toString ().c_str ());
+    delete doc;
   }
 
   // Success: Misc checks.

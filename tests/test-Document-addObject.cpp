@@ -32,18 +32,18 @@ main (void)
 
   Context *root = doc->getRoot ();
   g_assert_nonnull (root);
-  doc->addObject (root);
+  g_assert_false (doc->addObject (root));
   g_assert (doc->getObjects ()->size () == 2);
 
   MediaSettings *settings = doc->getSettings ();
   g_assert_nonnull (settings);
-  doc->addObject (settings);
+  g_assert_false (doc->addObject (settings));
   g_assert (doc->getObjects ()->size () == 2);
 
   // Add media.
   {
     Media *m = new Media ("m", "", "");
-    doc->addObject (m);
+    g_assert (doc->addObject (m));
     g_assert (doc->getObjects ()->size () == 3);
     g_assert (doc->getMedias ()->size () == 2);
     auto it = doc->getMedias ()->find (m);
@@ -53,7 +53,7 @@ main (void)
   // Add context.
   {
     Context *c = new Context ("c");
-    doc->addObject (c);
+    g_assert (doc->addObject (c));
     g_assert (doc->getObjects ()->size () == 4);
     g_assert (doc->getContexts ()->size () == 2);
     auto it = doc->getContexts ()->find (c);
@@ -63,7 +63,7 @@ main (void)
   // Add switch.
   {
     Switch *s = new Switch ("s");
-    doc->addObject (s);
+    g_assert (doc->addObject (s));
     g_assert (doc->getObjects ()->size () == 5);
     g_assert (doc->getSwitches ()->size () == 1);
     auto it = doc->getSwitches ()->find (s);
