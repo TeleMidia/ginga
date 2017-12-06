@@ -30,7 +30,7 @@
     <link xconnector="onEndAttributionSet">
       <bind role="onEndAttribution" component="self" interface="var"/>
       <bind role="set" component="dummy" interface="background">
-        <bindParam name="var" value="blue"/>
+        <bindParam name="var" value="green"/>
       </bind>
     </link>
   </body>
