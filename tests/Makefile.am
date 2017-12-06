@@ -275,7 +275,7 @@ progs+= xfail-test-Ginga-setOptionString
 xfail_test_Ginga_setOptionString_SOURCES=\
   xfail-test-Ginga-setOptionString.cpp
 
-# check_SCRIPTS= $(ncls)
+check_SCRIPTS= $(ncls)
 check_PROGRAMS= $(progs)
 TESTS= $(check_SCRIPTS) $(check_PROGRAMS)
 XFAIL_TESTS=\
