@@ -55,14 +55,14 @@ MediaSettings::setProperty (const string &name, const string &value,
 }
 
 void
-MediaSettings::sendTickEvent (Time total, Time diff, Time frame)
+MediaSettings::sendTick (Time total, Time diff, Time frame)
 {
   if (_hasNextFocus)            // effectuate pending focus index update
     {
       this->updateCurrentFocus (_nextFocus);
       _hasNextFocus = false;
     }
-  Media::sendTickEvent (total, diff, frame);
+  Media::sendTick (total, diff, frame);
 }
 
 

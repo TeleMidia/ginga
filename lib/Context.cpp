@@ -136,18 +136,18 @@ Context::setProperty (const string &name, const string &value, Time dur)
 }
 
 void
-Context::sendKeyEvent (unused (const string &key),
-                       unused (bool press))
+Context::sendKey (unused (const string &key),
+                  unused (bool press))
 {
 }
 
 void
-Context::sendTickEvent (Time total, Time diff, Time frame)
+Context::sendTick (Time total, Time diff, Time frame)
 {
-  Object::sendTickEvent (total, diff, frame);
   //
   // TODO: Should we detect context EOS here?
   //
+  Object::sendTick (total, diff, frame);
 }
 
 bool

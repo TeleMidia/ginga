@@ -71,8 +71,8 @@ public:
   virtual void resize (int, int) = 0;
   virtual void redraw (cairo_t *) = 0;
 
-  virtual bool sendKeyEvent (const std::string &, bool) = 0;
-  virtual bool sendTickEvent (uint64_t, uint64_t, uint64_t) = 0;
+  virtual bool sendKey (const std::string &, bool) = 0;
+  virtual bool sendTick (uint64_t, uint64_t, uint64_t) = 0;
 
   virtual const GingaOptions *getOptions () = 0;
   virtual bool getOptionBool (const std::string &) = 0;

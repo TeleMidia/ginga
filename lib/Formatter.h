@@ -45,8 +45,8 @@ class Formatter: public Ginga
   void resize (int, int);
   void redraw (cairo_t *);
 
-  bool sendKeyEvent (const string &, bool);
-  bool sendTickEvent (uint64_t, uint64_t, uint64_t);
+  bool sendKey (const string &, bool);
+  bool sendTick (uint64_t, uint64_t, uint64_t);
 
   const GingaOptions *getOptions ();
   bool getOptionBool (const string &);

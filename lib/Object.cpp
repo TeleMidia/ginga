@@ -317,12 +317,12 @@ Object::addDelayedAction (Event *event, Event::Transition transition,
 }
 
 void
-Object::sendKeyEvent (unused (const string &key), unused (bool press))
+Object::sendKey (unused (const string &key), unused (bool press))
 {
 }
 
 void
-Object::sendTickEvent (unused (Time total), Time diff, unused (Time frame))
+Object::sendTick (unused (Time total), Time diff, unused (Time frame))
 {
   g_assert (this->isOccurring ());
   g_assert (GINGA_TIME_IS_VALID (_time));

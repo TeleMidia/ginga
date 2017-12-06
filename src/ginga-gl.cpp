@@ -156,11 +156,10 @@ sendTickEvent ()
       last = time;
     }
 
-  if (!GINGA->sendTickEvent (time - first, time - last, frame))
+  if (!GINGA->sendTick (time - first, time - last, frame))
     {
       g_assert (GINGA->getState () == GINGA_STATE_STOPPED);
-      // all done
-      return;
+      return;                   // all done
     }
 
   last = time;

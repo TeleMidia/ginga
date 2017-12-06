@@ -46,7 +46,7 @@ update_draw_callback (GtkWidget *widget)
       first = time;
       last = time;
     }
-  GINGA->sendTickEvent (time - first, time - last, frame);
+  GINGA->sendTick (time - first, time - last, frame);
   last = time;
   gtk_widget_queue_draw (widget);
   return G_SOURCE_CONTINUE;
@@ -59,7 +59,6 @@ draw_callback (GtkWidget *widget, cairo_t *cr, unused (gpointer data))
   int w, h;
   w = gtk_widget_get_allocated_width (widget);
   h = gtk_widget_get_allocated_height (widget);
- 
 
   cairo_set_source_rgb (cr, 0., 0., 0.);
   cairo_rectangle (cr, 0, 0, w, h);

@@ -35,8 +35,8 @@ public:
   string getProperty (const string &) override;
   void setProperty (const string &, const string &,
                     Time dur=0) override;
-  void sendKeyEvent (const string &, bool) override;
-  void sendTickEvent (Time, Time, Time) override;
+  void sendKey (const string &, bool) override;
+  void sendTick (Time, Time, Time) override;
   bool beforeTransition (Event *, Event::Transition) override;
   bool afterTransition (Event *, Event::Transition) override;
 

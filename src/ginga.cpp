@@ -260,7 +260,7 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
       break;
     }
 
-  bool status = GINGA->sendKeyEvent
+  bool status = GINGA->sendKey
     (string (key), g_str_equal ((const char *) type, "press") == 0);
 
   if (free_key)
@@ -303,7 +303,7 @@ tick_callback (GtkWidget *widget)
       last = time;
     }
 
-  if (!GINGA->sendTickEvent (time - first, time - last, frame))
+  if (!GINGA->sendTick (time - first, time - last, frame))
     {
       g_assert (GINGA->getState () == GINGA_STATE_STOPPED);
       gtk_main_quit ();         // all done
