@@ -194,6 +194,10 @@ progs+= test-Event-transition-Media-START
 test_Event_transition_Media_START_SOURCES=\
   test-Event-transition-Media-START.cpp
 
+progs+= test-Event-transition-Context-START
+test_Event_transition_Context_START_SOURCES=\
+  test-Event-transition-Context-START.cpp
+
 # lib/Object.h -------------------------------------------------------------
 progs+= test-Object-addAlias
 test_Object_addAlias_SOURCES= test-Object-addAlias.cpp
