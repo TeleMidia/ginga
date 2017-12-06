@@ -31,7 +31,7 @@ public:
   // Object:
   string getObjectTypeAsString () override;
   void setProperty (const string &, const string &, Time) override;
-  void sendTickEvent (Time, Time, Time) override;
+  void sendTick (Time, Time, Time) override;
 
   // Media;
   bool isFocused () override;

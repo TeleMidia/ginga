@@ -413,7 +413,7 @@ Formatter::redraw (cairo_t *cr)
   G_STMT_END
 
 bool
-Formatter::sendKeyEvent (const string &key, bool press)
+Formatter::sendKey (const string &key, bool press)
 {
   list<Object *> buf;
 
@@ -430,13 +430,13 @@ Formatter::sendKeyEvent (const string &key, bool press)
     if (!obj->isSleeping ())
       buf.push_back (obj);
   for (auto obj: buf)
-    obj->sendKeyEvent (key, press);
+    obj->sendKey (key, press);
 
   return true;
 }
 
 bool
-Formatter::sendTickEvent (uint64_t total, uint64_t diff, uint64_t frame)
+Formatter::sendTick (uint64_t total, uint64_t diff, uint64_t frame)
 {
   list<Object *> buf;
 
@@ -455,7 +455,7 @@ Formatter::sendTickEvent (uint64_t total, uint64_t diff, uint64_t frame)
     if (obj->isOccurring ())
       buf.push_back (obj);
   for (auto obj: buf)
-    obj->sendTickEvent (total, diff, frame);
+    obj->sendTick (total, diff, frame);
 
   return true;
 }

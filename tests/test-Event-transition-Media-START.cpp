@@ -111,7 +111,7 @@ main (void)
     g_assert_nonnull (p1);
     g_assert (p1->getState () == Event::SLEEPING);
 
-    fmt->sendTickEvent (1, 1, 1);
+    fmt->sendTick (1, 1, 1);
 
     g_assert (lambda->getState () == Event::OCCURRING);
     g_assert (a1->getState () == Event::OCCURRING);

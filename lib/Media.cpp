@@ -158,7 +158,7 @@ Media::setProperty (const string &name, const string &value, Time dur)
 }
 
 void
-Media::sendKeyEvent (const string &key, bool press)
+Media::sendKey (const string &key, bool press)
 {
   list<Event *> buf;
 
@@ -213,12 +213,12 @@ Media::sendKeyEvent (const string &key, bool press)
 }
 
 void
-Media::sendTickEvent (Time total, Time diff, Time frame)
+Media::sendTick (Time total, Time diff, Time frame)
 {
   Time dur;
 
   // Update object time.
-  Object::sendTickEvent (total, diff, frame);
+  Object::sendTick (total, diff, frame);
 
   if (_player == nullptr)
     return;                     // nothing to do.

@@ -68,8 +68,8 @@ public:
   void addDelayedAction (Event *, Event::Transition,
                          const string &value="", Time delay=0);
 
-  virtual void sendKeyEvent (const string &, bool);
-  virtual void sendTickEvent (Time, Time, Time);
+  virtual void sendKey (const string &, bool);
+  virtual void sendTick (Time, Time, Time);
 
   virtual bool beforeTransition (Event *, Event::Transition) = 0;
   virtual bool afterTransition (Event *, Event::Transition) = 0;
