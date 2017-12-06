@@ -208,7 +208,7 @@ Context::afterTransition (Event *evt, Event::Transition transition)
           TRACE ("stop %s", evt->getFullId ().c_str ());
           break;
         default:
-            g_assert_not_reached ();
+          g_assert_not_reached ();
         }
       break;
 
