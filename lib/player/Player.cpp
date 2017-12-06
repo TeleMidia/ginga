@@ -184,8 +184,6 @@ void
 Player::start ()
 {
   g_assert (_state != OCCURRING);
-  TRACE ("%s", _id.c_str ());
-
   _state = OCCURRING;
   _time = 0;
   _eos = false;
@@ -196,8 +194,6 @@ void
 Player::stop ()
 {
   g_assert (_state != SLEEPING);
-  TRACE ("%s", _id.c_str ());
-
   _state = SLEEPING;
   this->resetProperties ();
 }
@@ -206,8 +202,6 @@ void
 Player::pause ()
 {
   g_assert (_state != PAUSED && _state != SLEEPING);
-  TRACE ("%s", _id.c_str ());
-
   _state = PAUSED;
 }
 
@@ -215,8 +209,6 @@ void
 Player::resume ()
 {
   g_assert (_state == PAUSED);
-  TRACE ("%s", _id.c_str ());
-
   _state = OCCURRING;
 }
 
@@ -290,7 +282,6 @@ Player::schedulePropertyAnimation (const string &name, const string &from,
 void
 Player::reload ()
 {
-  TRACE ("%s", _id.c_str ());
   _dirty = false;
 }
 
@@ -410,7 +401,6 @@ Player::getCurrentFocus ()
 void
 Player::setCurrentFocus (const string &index)
 {
-  TRACE ("from '%s' to '%s'", _currentFocus.c_str (), index.c_str ());
   _currentFocus = index;
 }
 

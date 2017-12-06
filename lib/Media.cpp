@@ -162,10 +162,11 @@ Media::sendKeyEvent (const string &key, bool press)
 {
   list<Event *> buf;
 
+  g_assert (!this->isSleeping ());
   if (_player == nullptr)
     return;                     // nothing to do
 
-  if (xstrhasprefix (key, "CURSOR_") && _player->isFocused () && press)
+  if (press && xstrhasprefix (key, "CURSOR_") && _player->isFocused ())
     {
       string next;
       if ((key == "CURSOR_UP"
@@ -208,13 +209,7 @@ Media::sendKeyEvent (const string &key, bool press)
 
   // Run collected events.
   for (Event *evt: buf)
-    {
-      TRACE ("%s", evt->getFullId ().c_str ());
-      if (press)
-        _doc->evalAction (evt, Event::START);
-      else
-        _doc->evalAction (evt, Event::STOP);
-    }
+    _doc->evalAction (evt, press ? Event::START : Event::STOP);
 }
 
 void
@@ -246,73 +241,78 @@ Media::sendTickEvent (Time total, Time diff, Time frame)
     }
 }
 
+/**
+ * @brief Initiates event transition.
+ *
+ * This function is called by Event::transition() immediately before
+ * transitioning \p evt.  If the transition can go on, the function returns
+ * \c true.  Otherwise, if the transition must be cancelled, e.g., due to
+ * some error, the function returns false.
+ *
+ * @param evt Event to be transitioned.
+ * @param transition The desired transition.
+ * @return \c true if successful, or \c false otherwise (cancel transition).
+ */
 bool
 Media::beforeTransition (Event *evt, Event::Transition transition)
-{  
-  TRACE ("------Init_Transition------\n%s",_uri.c_str());
-  
+{
   switch (evt->getType ())
     {
     case Event::PRESENTATION:
-      TRACE ("PRESENTATION");
       switch (transition)
         {
         case Event::START:
-          if (!evt->isLambda ())
-            {
+          {
+            if (!evt->isLambda ())
               break;            // nothing to do
-            }
-          if (evt->getState () == Event::SLEEPING) // create player
-            {
-              Formatter *fmt;
 
-              g_assert (_doc->getData ("formatter", (void **) &fmt));
-              g_assert_null (_player);
-              _player = Player::createPlayer (fmt, _id, _uri, _mime);
-              if (unlikely (_player == nullptr))
-                return false;   // fail
+            // Create underlying player.
+            if (evt->getState () == Event::SLEEPING)
+              {
+                Formatter *fmt;
 
-              for (auto it: _properties)
-                _player->setProperty (it.first, it.second);
-            }
-          g_assert_nonnull (_player);
-          _player->start ();    // TODO: check failure
-          break;
+                g_assert (_doc->getData ("formatter", (void **) &fmt));
+                g_assert_null (_player);
+                _player = Player::createPlayer (fmt, _id, _uri, _mime);
+                if (unlikely (_player == nullptr))
+                  return false; // fail
+
+                for (auto it: _properties)
+                  _player->setProperty (it.first, it.second);
+              }
+            g_assert_nonnull (_player);
+
+            // Start underlying player.
+            // TODO: Check player failure.
+            _player->start ();
+            break;
+          }
 
         case Event::PAUSE:
-	  TRACE ("PAUSE");
-          if (!evt->isLambda ())
-            {
-              break;            // nothing to do
-            }
-          g_assert_nonnull (_player);
-          for (auto e: _events)
-            if (!e->isLambda () && e->getType () == Event::PRESENTATION)
-              _doc->evalAction (e, Event::PAUSE);
-          _player->pause ();
-          break;
-
         case Event::RESUME:
-          if (!evt->isLambda ())
-            {
+          {
+            if (!evt->isLambda ())
               break;            // nothing to do
-            }
-          g_assert_nonnull (_player);
-          for (auto e: _events)
-            if (!e->isLambda () && e->getType () == Event::PRESENTATION)
-              _doc->evalAction (e, Event::RESUME);
 
-          _player->resume ();
-          break;
+            // Pause/resume all the media anchors.
+            for (auto e: _events)
+              if (!e->isLambda () && e->getType () == Event::PRESENTATION)
+                _doc->evalAction (e, transition);
 
-        case Event::ABORT:
-          TRACE ("ABORT");
-          //TODO          
-	  ERROR_NOT_IMPLEMENTED ("abort action is not supported");
-          break;
+            // Pause/resume the underlying player.
+            g_assert_nonnull (_player);
+            if (transition == Event::PAUSE)
+              _player->pause ();
+            else
+              _player->resume ();
+            break;
+          }
 
         case Event::STOP:
-          TRACE ("STOP");
+          break;                // nothing to do
+
+        case Event::ABORT:
+          ERROR_NOT_IMPLEMENTED ("abort action is not supported");
           break;
 
         default:
@@ -321,16 +321,10 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
       break;
 
     case Event::ATTRIBUTION:
-      TRACE ("ATTRIBUTION");
-      break;
+      break;                    // nothing to do
+
     case Event::SELECTION:
-      TRACE ("SELECTION");  //It's possible to select a paused media.
-      // if (!this->isOccurring ())
-      // {
-      //   TRACE ("Not Occurring!");
-      //   return false;           // fail
-      // }
-      break;
+      break;                    // nothing to do
 
     default:
       g_assert_not_reached ();
@@ -338,6 +332,18 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
   return true;
 }
 
+/**
+ * @brief Finishes event transition.
+ *
+ * This function is called by Event::transition() immediately after
+ * transitioning \p evt.  If the transition can finish successfully, the
+ * function returns \c true.  Otherwise, if the transition must be reverted,
+ * e.g., due to some error, the function returns false.
+ *
+ * @param evt Event that was transitioned.
+ * @param transition The transition.
+ * @return \c true if successful, or \c false otherwise (cancel transition).
+ */
 bool
 Media::afterTransition (Event *evt, Event::Transition transition)
 {
@@ -349,9 +355,12 @@ Media::afterTransition (Event *evt, Event::Transition transition)
         case Event::START:
           if (evt->isLambda ())
             {
+              // Start object.
               g_assert_nonnull (_player);
               Object::doStart ();
-              for (auto e: _events) // schedule time anchors
+
+              // Schedule anchors.
+              for (auto e: _events)
                 {
                   if (!e->isLambda ()
                       && e->getType () == Event::PRESENTATION)
@@ -379,15 +388,17 @@ Media::afterTransition (Event *evt, Event::Transition transition)
           break;
 
         case Event::PAUSE:
-            TRACE ("pause %s", evt->getFullId ().c_str ());
-            break;
+          TRACE ("pause %s", evt->getFullId ().c_str ());
+          break;              // nothing to do
+
         case Event::RESUME:
-            TRACE ("resume %s", evt->getFullId ().c_str ());
-            break;                 // nothing to do
+          TRACE ("resume %s", evt->getFullId ().c_str ());
+          break;              // nothing to do
 
         case Event::STOP:
           if (evt->isLambda ())
             {
+              // Stop object.
               g_assert_nonnull (_player);
               this->doStop ();
               TRACE ("stop %s", evt->getFullId ().c_str ());
@@ -427,19 +438,16 @@ Media::afterTransition (Event *evt, Event::Transition transition)
             evt->getParameter ("value", &value);
             _doc->evalPropertyRef (value, &value);
 
+            dur = 0;
             if (evt->getParameter ("duration", &s))
               {
                 _doc->evalPropertyRef (s, &s);
                 dur = ginga::parse_time (s);
               }
-            else
-              {
-                dur = 0;
-              }
             this->setProperty (name, value, dur);
             this->addDelayedAction (evt, Event::STOP, value, dur);
 
-            TRACE ("start %s:='%s' (duration=%s)", evt->getFullId ().c_str (),
+            TRACE ("start %s:='%s' (dur=%s)", evt->getFullId ().c_str (),
                    value.c_str (), (s != "") ? s.c_str () : "0s");
             break;
           }
@@ -455,11 +463,8 @@ Media::afterTransition (Event *evt, Event::Transition transition)
 
     case Event::SELECTION:
       {
-        string key;        
-        // g_assert (this->isOccurring ());
-        TRACE ("Occurring!");
+        string key;
         evt->getParameter ("key", &key);
-
         switch (transition)
           {
           case Event::START:
@@ -473,10 +478,11 @@ Media::afterTransition (Event *evt, Event::Transition transition)
           }
         break;
       }
+
     default:
       g_assert_not_reached ();
     }
-  TRACE ("------End_Transition------");
+
   return true;
 }
 

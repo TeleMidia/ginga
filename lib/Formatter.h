@@ -85,8 +85,6 @@ class Formatter: public Ginga
   string _docPath;              // path to current document
   bool _eos;                    // true if EOS was reached
 
-  list<Object *> getObjectList (Event::State);
-
   // fixme:
   Object *obtainExecutionObject (const string &);
   Event *obtainEvent (Object *, Event::Type, NclAnchor *, const string &);
