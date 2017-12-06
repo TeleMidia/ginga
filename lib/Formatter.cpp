@@ -415,11 +415,21 @@ Formatter::redraw (cairo_t *cr)
 bool
 Formatter::sendKeyEvent (const string &key, bool press)
 {
+  list<Object *> buf;
+
   _GINGA_CHECK_EOS (this);
   if (_state != GINGA_STATE_PLAYING)
     return false;               // nothing to do
-  
-  for (auto obj: *_doc->getObjects ())  
+
+  // IMPORTANT: When propagating a key to the objects, we cannot traverse
+  // the object set directly, as the reception of a key may cause this set
+  // to be modified.  We thus need to create a buffer with the objects that
+  // should receive the key, i.e., those that are not sleeping, and then
+  // propagate the key only to the objects in this buffer.
+  for (auto obj: *_doc->getObjects ())
+    if (!obj->isSleeping ())
+      buf.push_back (obj);
+  for (auto obj: buf)
     obj->sendKeyEvent (key, press);
 
   return true;
@@ -438,13 +448,12 @@ Formatter::sendTickEvent (uint64_t total, uint64_t diff, uint64_t frame)
   _last_tick_diff = diff;
   _last_tick_frameno = frame;
 
-  buf = this->getObjectList (Event::OCCURRING);
-  if (buf.empty ())
-    {
-      this->setEOS (true);
-      return true;
-    }
-
+  // IMPORTANT: The same warning about propagation that appear in
+  // Formatter::sendKeyEvent() applies here.  The difference is that ticks
+  // should only be propagated to objects that are occurring.
+  for (auto obj: *_doc->getObjects ())
+    if (obj->isOccurring ())
+      buf.push_back (obj);
   for (auto obj: buf)
     obj->sendTickEvent (total, diff, frame);
 
@@ -614,19 +623,6 @@ Formatter::setOptionSize (Formatter *self, const string &name,
 
 
 // Private.
-
-list<Object *>
-Formatter::getObjectList (Event::State state)
-{
-  list<Object *> buf;
-  for (auto obj: *_doc->getObjects ())
-    {
-      Event *lambda = obj->getLambda ();
-      if (lambda->getState () == state)
-        buf.push_back (obj);
-    }
-  return buf;
-}
 
 Object *
 Formatter::obtainExecutionObject (const string &id)
