@@ -199,8 +199,13 @@ Context::afterTransition (Event *evt, Event::Transition transition)
         case Event::START:
           Object::doStart ();
           for (auto port: _ports)
-            if (port->getType () == Event::PRESENTATION)
-              _doc->evalAction (port, transition);
+            if (port->getType() == Event::PRESENTATION) 
+            {
+              Time begin, end;
+              port->getInterval(&begin, &end);
+              this->addDelayedAction(port, Event::START, "", begin);
+              this->addDelayedAction(port, Event::STOP, "", end);
+            }
           TRACE ("start %s", evt->getFullId ().c_str ());
           break;
         case Event::STOP:
