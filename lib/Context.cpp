@@ -238,7 +238,7 @@ Context::afterTransition (Event *evt, Event::Transition transition)
             this->setProperty (name, value, dur);
             this->addDelayedAction (evt, Event::STOP, value, dur);
 
-            TRACE ("start %s:='%s' (duration=%s)", evt->getFullId ().c_str (),
+            TRACE ("start %s:='%s' (dur=%s)", evt->getFullId ().c_str (),
                    value.c_str (), (s != "") ? s.c_str () : "0s");
             break;
           }
