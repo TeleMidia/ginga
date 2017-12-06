@@ -89,6 +89,7 @@ main (void)
  </body>\n\
 </ncl>");
 
+    // Check lambda
     Media *m = cast (Media *, doc->getObjectById ("m"));
     g_assert_nonnull (m);
 
@@ -99,6 +100,11 @@ main (void)
     g_assert (lambda->transition (Event::START));
     g_assert (lambda->getState () == Event::OCCURRING);
 
+    // Check anchors
+    // In the reaction that lambda goes to OCCURRING, 
+    // the anchors must be on SLEEPING.
+    // They only change to OCCURRING on the reaction of 
+    // time advance, i.e. sendTickEvent.
     Event *a1 = m->getPresentationEvent ("a1");
     g_assert_nonnull (a1);
     g_assert (a1->getState () == Event::SLEEPING);
