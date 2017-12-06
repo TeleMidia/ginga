@@ -157,7 +157,5 @@ int main(void) {
     delete fmt;
   }
 
-  // Selection events ------------------------------------------------------
-
   exit(EXIT_SUCCESS);
 }
