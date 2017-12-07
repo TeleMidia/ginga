@@ -75,9 +75,9 @@ class Formatter: public Ginga
   GingaOptions _opts;           // current options
   Color _background;            // current background color
 
-  uint64_t _last_tick_total;      // last total informed via sendTickEvent
-  uint64_t _last_tick_diff;       // last diff informed via sendTickEvent
-  uint64_t _last_tick_frameno;    // last frameno informed via sendTickEvent
+  uint64_t _last_tick_total;      // last total informed via sendTick
+  uint64_t _last_tick_diff;       // last diff informed via sendTick
+  uint64_t _last_tick_frameno;    // last frameno informed via sendTick
   string _saved_G_MESSAGES_DEBUG; // saved G_MESSAGES_DEBUG value
 
   Document *_doc;               // current document
