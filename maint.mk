@@ -312,6 +312,7 @@ INDENT_OPTIONS?=\
   -l76\
   $(NULL)
 
+INDENT_INCLUDE?=
 INDENT_EXCLUDE?=
 INDENT_EXCLUDE+= $(REMOTE_FILES)
 
@@ -339,7 +340,8 @@ perl_indent_join_empty_lines=\
   $(NULL)
 
 indent_vc_list_c=\
-  $(call vc_list_exclude, $(VC_LIST_C), $(INDENT_EXCLUDE))\
+  $(call vc_list_exclude, $(VC_LIST_C) $(INDENT_INCLUDE),\
+    $(INDENT_EXCLUDE))\
   $(NULL)
 
 # Formats source code.
