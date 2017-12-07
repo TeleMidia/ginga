@@ -116,7 +116,6 @@ MediaSettings::updateCurrentFocus (const string &index)
   Event *evt = this->getAttributionEvent ("service.currentFocus");
   g_assert_nonnull (evt);
   _doc->evalAction (evt, Event::START, value);
-  _doc->evalAction (evt, Event::STOP, value);
 }
 
 void

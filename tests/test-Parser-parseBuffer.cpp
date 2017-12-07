@@ -1096,6 +1096,125 @@ main (void)
 
 
 // -------------------------------------------------------------------------
+// <rule>
+// -------------------------------------------------------------------------
+
+  XFAIL ("rule: Missing id",
+         "<rule>: Missing attribute 'id'", "\
+<ncl>\n\
+ <head>\n\
+  <ruleBase>\n\
+   <rule/>\n\
+  </ruleBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("rule: Missing var",
+         "<rule>: Missing attribute 'var'", "\
+<ncl>\n\
+ <head>\n\
+  <ruleBase>\n\
+   <rule id='r'/>\n\
+  </ruleBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("rule: Bad var",
+         "<rule>: Bad value '$' for attribute 'var' "
+         "(must not contain '$')", "\
+<ncl>\n\
+ <head>\n\
+  <ruleBase>\n\
+   <rule id='r' var='$'/>\n\
+  </ruleBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("rule: Missing comparator",
+         "<rule>: Missing attribute 'comparator'", "\
+<ncl>\n\
+ <head>\n\
+  <ruleBase>\n\
+   <rule id='r' var='v'/>\n\
+  </ruleBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("rule: Bad comparator",
+         "<rule>: Bad value '$' for attribute 'comparator' "
+         "(must not contain '$')", "\
+<ncl>\n\
+ <head>\n\
+  <ruleBase>\n\
+   <rule id='r' var='v' comparator='$'/>\n\
+  </ruleBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("rule: Bad comparator",
+         "<rule>: Bad value 'x' for attribute 'comparator'", "\
+<ncl>\n\
+ <head>\n\
+  <ruleBase>\n\
+   <rule id='r' var='v' comparator='x' value='x'/>\n\
+  </ruleBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("rule: Missing value",
+         "<rule>: Missing attribute 'value'", "\
+<ncl>\n\
+ <head>\n\
+  <ruleBase>\n\
+   <rule id='r' var='v' comparator='eq'/>\n\
+  </ruleBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+
+// -------------------------------------------------------------------------
+// <compositeRule>
+// -------------------------------------------------------------------------
+
+
+// -------------------------------------------------------------------------
+// <context>
+// -------------------------------------------------------------------------
+
+  XFAIL ("context: Missing id",
+         "<context>: Missing attribute 'id'", "\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <context/>\n\
+ <port/>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+
+// -------------------------------------------------------------------------
 // <port>
 // -------------------------------------------------------------------------
 
@@ -1247,6 +1366,134 @@ main (void)
    </context>\n\
   </context>\n\
   <media id='m'/>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+
+// -------------------------------------------------------------------------
+// <switch>
+// -------------------------------------------------------------------------
+
+  XFAIL ("switch: Missing id",
+         "<switch>: Missing attribute 'id'", "\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <switch/>\n\
+ <port/>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+
+// -------------------------------------------------------------------------
+// <defaultComponent>
+// -------------------------------------------------------------------------
+
+  XFAIL ("defaultComponent: Missing component",
+         "<defaultComponent>: Missing attribute 'component'", "\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <switch id='s'>\n\
+   <defaultComponent/>\n\
+  </switch>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("defaultComponent: Bad constituent",
+         "<defaultComponent>: Bad value 'x' for attribute 'component' "
+         "(no such object in scope)", "\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <switch id='s'>\n\
+   <defaultComponent component='x'/>\n\
+  </switch>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("defaultComponent: Bad constituent",
+         "<defaultComponent>: Bad value '__root__' for attribute "
+         "'component' (no such object in scope)", "\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <switch id='s'>\n\
+   <defaultComponent component='__root__'/>\n\
+  </switch>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+
+// -------------------------------------------------------------------------
+// <bindRule>
+// -------------------------------------------------------------------------
+
+  XFAIL ("bindRule: Missing constituent",
+         "<bindRule>: Missing attribute 'constituent'", "\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <switch id='s'>\n\
+   <bindRule/>\n\
+  </switch>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("bindRule: Missing rule",
+         "<bindRule>: Missing attribute 'rule'", "\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <switch id='s'>\n\
+   <bindRule constituent='x'/>\n\
+  </switch>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("bindRule: Bad constituent",
+         "<bindRule>: Bad value 'x' for attribute 'constituent' "
+         "(no such object in scope)", "\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <switch id='s'>\n\
+   <bindRule constituent='x' rule='x'/>\n\
+  </switch>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("bindRule: Bad constituent",
+         "<bindRule>: Bad value '__root__' for attribute 'constituent' "
+         "(no such object in scope)", "\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <switch id='s'>\n\
+   <bindRule constituent='__root__' rule='x'/>\n\
+  </switch>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("bindRule: Bad constituent",
+         "<bindRule>: Bad value 'x' for attribute 'rule' "
+         "(no such rule)", "\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <switch id='s'>\n\
+   <media id='m'/>\n\
+   <bindRule constituent='m' rule='x'/>\n\
+  </switch>\n\
  </body>\n\
 </ncl>\n\
 ");
@@ -2787,52 +3034,158 @@ and(and('0'!='0', '1'>'1'), not('$__root__.q'=='$c.p'), '$m.r'<'33')");
     delete doc;
   }
 
+  // Success: Single switch with default components.
+  {
+    Document *doc;
+    PASS (&doc, "Misc checks", "\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <switch id='s'>\n\
+   <media id='m'/>\n\
+   <media id='n'/>\n\
+   <defaultComponent component='m'/>\n\
+   <defaultComponent component='n'/>\n\
+   <defaultComponent component='m'/>\n\
+  </switch>\n\
+ </body>\n\
+</ncl>");
+    g_assert_nonnull (doc);
+
+    Switch *s = cast (Switch *, doc->getObjectById ("s"));
+    g_assert_nonnull (s);
+
+    Media *m = cast (Media *, doc->getObjectById ("m"));
+    g_assert_nonnull (m);
+
+    Media *n = cast (Media *, doc->getObjectById ("n"));
+    g_assert_nonnull (n);
+
+    auto rules = s->getRules ();
+    auto it = rules->begin ();
+
+    g_assert (it->first == m);
+    g_assert (it->second->getType () == Predicate::VERUM);
+
+    it++;
+    g_assert (it->first == n);
+    g_assert (it->second->getType () == Predicate::VERUM);
+
+    it++;
+    g_assert (it->first == m);
+    g_assert (it->second->getType () == Predicate::VERUM);
+    g_assert (++it == rules->end ());
+
+    TRACE ("\n%s", s->toString ().c_str ());
+    delete doc;
+  }
+
+  // Success: Single switch with atomic rules and default components.
+  {
+    Document *doc;
+    PASS (&doc, "Misc checks", "\
+<ncl>\n\
+ <head>\n\
+  <ruleBase>\n\
+   <rule id='r1' var='x' comparator='eq' value='1'/>\n\
+   <rule id='r2' var='y' comparator='lte' value='0'/>\n\
+  </ruleBase>\n\
+ </head>\n\
+ <body>\n\
+  <switch id='s'>\n\
+   <media id='m1'/>\n\
+   <media id='m2'/>\n\
+   <media id='m3'/>\n\
+   <defaultComponent component='m1'/>\n\
+   <bindRule constituent='m2' rule='r1'/>\n\
+   <bindRule constituent='m3' rule='r2'/>\n\
+   <defaultComponent component='m3'/>\n\
+  </switch>\n\
+ </body>\n\
+</ncl>");
+    g_assert_nonnull (doc);
+
+    Switch *s = cast (Switch *, doc->getObjectById ("s"));
+    g_assert_nonnull (s);
+
+    Media *m1 = cast (Media *, doc->getObjectById ("m1"));
+    g_assert_nonnull (m1);
+
+    Media *m2 = cast (Media *, doc->getObjectById ("m2"));
+    g_assert_nonnull (m2);
+
+    Media *m3 = cast (Media *, doc->getObjectById ("m3"));
+    g_assert_nonnull (m3);
+
+    auto rules = s->getRules ();
+    auto it = rules->begin ();
+
+    g_assert (it->first == m2);
+    g_assert (it->second->toString () == "'$__settings__.x'=='1'");
+
+    it++;
+    g_assert (it->first == m3);
+    g_assert (it->second->toString () == "'$__settings__.y'<='0'");
+
+    it++;
+    g_assert (it->first == m1);
+    g_assert (it->second->getType () == Predicate::VERUM);
+
+    it++;
+    g_assert (it->first == m3);
+    g_assert (it->second->getType () == Predicate::VERUM);
+    g_assert (++it == rules->end ());
+
+    TRACE ("\n%s", s->toString ().c_str ());
+    delete doc;
+  }
+  exit (0);
+
   // Success: Misc checks.
   {
     Document *doc;
     PASS (&doc, "Misc checks", "\
 <ncl>\n\
-  <head>\n\
-   <regionBase>\n\
-    <region id='r' top='100%' left='25%'>\n\
-     <region id='r1' width='30%'>\n\
-      <region id='r2' bottom='25%' right='25%'>\n\
-       <region id='r3' height='15%' width='50%' zIndex='1'/>\n\
-      </region>\n\
+ <head>\n\
+  <regionBase>\n\
+   <region id='r' top='100%' left='25%'>\n\
+    <region id='r1' width='30%'>\n\
+     <region id='r2' bottom='25%' right='25%'>\n\
+      <region id='r3' height='15%' width='50%' zIndex='1'/>\n\
      </region>\n\
     </region>\n\
-   </regionBase>\n\
-   <descriptorBase>\n\
-    <descriptor id='d' left='50%' top='0%' region='r3'>\n\
-     <descriptorParam name='top' value='50%'/>\n\
-     <descriptorParam name='zIndex' value='2'/>\n\
-    </descriptor>\n\
-    <descriptor id='d1'/>\n\
-   </descriptorBase>\n\
-   <connectorBase>\n\
-    <causalConnector id='conn1'>\n\
-     <simpleCondition role='onBegin'/>\n\
-     <simpleAction role='start'/>\n\
-    </causalConnector>\n\
-   </connectorBase>\n\
-  </head>\n\
-  <body>\n\
-   <port id='p' component='m'/>\n\
-   <port id='q' component='m' interface='background'/>\n\
-   <media id='m' descriptor='d'>\n\
-    <property name='background' value='red'/>\n\
-    <property name='size' value='100%,100%'/>\n\
-    <property name='zIndex' value='3'/>\n\
+   </region>\n\
+  </regionBase>\n\
+  <descriptorBase>\n\
+   <descriptor id='d' left='50%' top='0%' region='r3'>\n\
+    <descriptorParam name='top' value='50%'/>\n\
+    <descriptorParam name='zIndex' value='2'/>\n\
+   </descriptor>\n\
+   <descriptor id='d1'/>\n\
+  </descriptorBase>\n\
+  <connectorBase>\n\
+   <causalConnector id='conn1'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+  <port id='p' component='m'/>\n\
+  <port id='q' component='m' interface='background'/>\n\
+  <media id='m' descriptor='d'>\n\
+   <property name='background' value='red'/>\n\
+   <property name='size' value='100%,100%'/>\n\
+   <property name='zIndex' value='3'/>\n\
+  </media>\n\
+  <port id='p2' component='c'/>\n\
+  <context id='c'>\n\
+   <port id='p3' component='m2'/>\n\
+   <media id='m2' src='samples/gnu.png'>\n\
    </media>\n\
-   <port id='p2' component='c'/>\n\
-   <context id='c'>\n\
-    <port id='p3' component='m2'/>\n\
-    <media id='m2' src='samples/gnu.png'>\n\
-    </media>\n\
-   </context>\n\
-  </body>\n\
- </ncl>\n\
-");
+  </context>\n\
+ </body>\n\
+</ncl>");
     g_assert_nonnull (doc);
 
     MediaSettings *settings = doc->getSettings ();

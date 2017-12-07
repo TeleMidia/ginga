@@ -174,9 +174,13 @@ public:
   static bool popCompoundStatement (ParserState *, ParserElt *);
   static bool popAssessmentStatement (ParserState *, ParserElt *);
   static bool pushAttributeAssessment (ParserState *, ParserElt *);
+  static bool pushRule (ParserState *, ParserElt *);
   static bool pushContext (ParserState *, ParserElt *);
   static bool popContext (ParserState *, ParserElt *);
   static bool pushPort (ParserState *, ParserElt *);
+  static bool pushSwitch (ParserState *, ParserElt *);
+  static bool popSwitch (ParserState *, ParserElt *);
+  static bool pushBindRule (ParserState *, ParserElt *);
   static bool pushMedia (ParserState *, ParserElt *);
   static bool popMedia (ParserState *, ParserElt *);
   static bool pushArea (ParserState *, ParserElt *);
@@ -231,7 +235,7 @@ private:
   void objStackPush (Object *);
 
   // Reference solving.
-  bool resolveComponent (Context *, ParserElt *, Object **);
+  bool resolveComponent (Composition *, ParserElt *, Object **);
   bool resolveInterface (Context *, ParserElt *, Event **);
   string resolveParameter (const string &, const map<string, string> *,
                            const map<string, string> *,
@@ -534,6 +538,31 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
    {"assessmentStatement"},
    {{"value", ATTR_REQUIRED}}},
  },
+ {"ruleBase",
+  {nullptr,
+   nullptr,
+   ELT_CACHE,
+   {"head"},
+   {{"id", ATTR_OPT_ID}}},      // unused
+ },
+ {"compositeRule",
+  {nullptr,
+   nullptr,
+   ELT_CACHE,
+   {"ruleBase", "compositeRule"},
+   {{"id", ATTR_ID},
+    {"operator", 0}}},
+ },
+ {"rule",
+  {ParserState::pushRule,
+   nullptr,
+   ELT_CACHE,
+   {"ruleBase", "compositeRule"},
+   {{"id", ATTR_ID},
+    {"var", ATTR_REQUIRED_NONEMPTY_NAME},
+    {"comparator", ATTR_REQUIRED_NONEMPTY_NAME},
+    {"value", ATTR_REQUIRED}}},
+ },
  {"body",
   {ParserState::pushContext,    // reused
    ParserState::popContext,     // reused
@@ -557,6 +586,28 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
    {{"id", ATTR_ID},
     {"component", ATTR_IDREF},
     {"interface", ATTR_OPT_IDREF}}},
+ },
+ {"switch",
+  {ParserState::pushSwitch,
+   ParserState::popSwitch,
+   ELT_CACHE,
+   {"body", "context", "switch"},
+   {{"id", ATTR_ID}}},
+ },
+ {"bindRule",
+  {ParserState::pushBindRule,
+   nullptr,
+   ELT_CACHE,
+   {"switch"},
+   {{"constituent", ATTR_IDREF},
+    {"rule", ATTR_IDREF}}},
+ },
+ {"defaultComponent",
+  {ParserState::pushBindRule,
+   nullptr,
+   ELT_CACHE,
+   {"switch"},
+   {{"component", ATTR_IDREF}}},
  },
  {"media",
   {ParserState::pushMedia,
@@ -1232,29 +1283,32 @@ ParserState::objStackPush (Object *obj)
  * contains the id of the component to be resolved.  In case resolution
  * fails, the function sets #Parser error accordingly.
  *
- * @param ctx The context that determines the resolution scope.
+ * @param scope The composition that determines the resolution scope.
  * @param elt The element to be resolved.
  * @param[out] obj Variable to store the resulting object (if any).
  * @return \c true if successful, or \c false otherwise.
  *
  */
 bool
-ParserState::resolveComponent (Context *ctx, ParserElt *elt, Object **obj)
+ParserState::resolveComponent (Composition *scope, ParserElt *elt,
+                               Object **obj)
 {
+  string label;
   string comp;
 
-  g_assert (elt->getAttribute ("component", &comp));
-  if (comp == ctx->getId () || ctx->hasAlias (comp)) // ref is ctx
+  label = (elt->getTag () == "bindRule") ? "constituent" : "component";
+  g_assert (elt->getAttribute (label, &comp));
+  if (comp == scope->getId () || scope->hasAlias (comp)) // ref is scope
     {
-      tryset (obj, ctx);
+      tryset (obj, scope);
     }
   else                          // ref is child object
     {
-      Object *ref = ctx->getChildByIdOrAlias (comp);
+      Object *ref = scope->getChildByIdOrAlias (comp);
       if (unlikely (ref == nullptr))
         {
           return this->errEltBadAttribute
-            (elt->getNode (), "component", comp, "no such object in scope");
+            (elt->getNode (), label, comp, "no such object in scope");
         }
       tryset (obj, ref);
     }
@@ -1851,6 +1905,7 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
 {
   list<ParserElt *> desc_list;
   list<ParserElt *> media_list;
+  list<ParserElt *> switch_list;
   list<ParserElt *> link_list;
 
   // Resolve descriptor reference to region.
@@ -1910,10 +1965,67 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
               if (it.first == "id" || it.first == "region")
                 continue;       // nothing to do
               if (media->getAttributionEvent (it.first) != nullptr)
-                continue;           // already defined
+                continue;       // already defined
               media->addAttributionEvent (it.first);
               media->setProperty (it.first, it.second);
             }
+        }
+    }
+
+  // Resolve bind rules and default components in switches.
+  // (I.e., finish parsing <bindRule> and <defaultComponent>.)
+  if (st->eltCacheIndexByTag ({"switch"}, &switch_list) > 0)
+    {
+      for (auto switch_elt: switch_list)
+        {
+          string switch_id;
+          Switch *swtch;
+
+          list<pair<ParserElt *, Object *>> *rules;
+          list<Object *> defaults;
+
+          g_assert (switch_elt->getAttribute ("id", &switch_id));
+          swtch = cast (Switch *, st->_doc->getObjectByIdOrAlias
+                        (switch_id));
+          g_assert_nonnull (swtch);
+
+          UDATA_GET (switch_elt, "rules", &rules);
+          for (auto it: *rules)
+            {
+              ParserElt *bind_elt;
+              Object *obj;
+
+              string rule_id;
+              ParserElt *rule_elt;
+              Predicate *pred;
+
+              bind_elt = it.first;
+              g_assert_nonnull (bind_elt);
+
+              obj = it.second;
+              g_assert_nonnull (obj);
+
+              if (bind_elt->getTag () == "defaultComponent")
+                {
+                  defaults.push_back (obj);
+                  continue;
+                }
+
+              g_assert (bind_elt->getAttribute ("rule", &rule_id));
+              if (!st->eltCacheIndexById (rule_id, &rule_elt,
+                                          {"rule", "compositeRule"}))
+                {
+                  return st->errEltBadAttribute
+                    (bind_elt->getNode (), "rule", rule_id, "no such rule");
+                }
+
+              UDATA_GET (rule_elt, "pred", &pred);
+              swtch->addRule (obj, pred->clone ());
+            }
+
+          // Add defaults to the end of rule list.
+          for (auto obj: defaults)
+            swtch->addRule (obj, new Predicate (Predicate::VERUM));
         }
     }
 
@@ -2693,7 +2805,67 @@ ParserState::pushAttributeAssessment (ParserState *st, ParserElt *elt)
 }
 
 /**
- * @brief Starts the processing of \<body\> or \<context\> elements.
+ * @brief Starts the processing of \<rule\> element.
+ * @fn ParserState::pushRule
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
+
+/// Cleans up the #Predicate attached to rule or composite rule #ParserElt.
+static void
+rulePredCleanup (void *ptr)
+{
+  delete (Predicate *) ptr;
+}
+
+bool
+ParserState::pushRule (ParserState *st, ParserElt *elt)
+{
+  string var;
+  string comp;
+  string value;
+
+  Predicate::Test test;
+  Predicate *pred;
+
+  ParserElt *parent_elt;
+  Predicate *parent_pred;
+
+  g_assert (elt->getAttribute ("var", &var));
+  g_assert (elt->getAttribute ("comparator", &comp));
+  if (unlikely (!parser_syntax_comparator_table_index (comp, &test)))
+    {
+      return st->errEltBadAttribute (elt->getNode (), "comparator", comp);
+    }
+  g_assert (elt->getAttribute ("value", &value));
+
+  pred = new Predicate (Predicate::ATOM);
+  pred->setTest ("$__settings__." + var, test, value);
+
+  g_assert (st->eltCacheIndexParent (elt->getNode (), &parent_elt));
+  if (parent_elt->getTag () == "ruleBase")
+    {
+      UDATA_SET (elt, "pred", pred, rulePredCleanup);
+    }
+  else
+    {
+      UDATA_GET (parent_elt, "pred", &parent_pred);
+      if (unlikely (parent_pred->getType () == Predicate::NEGATION
+                    && parent_pred->getChildren ()->size () == 1))
+        {
+          return st->errEltBadChild (parent_elt->getNode (), elt->getTag (),
+                                     "too many children");
+        }
+      UDATA_SET (elt, "pred", pred, nullptr);
+      parent_pred->addChild (pred);
+    }
+
+  return true;
+}
+
+/**
+ * @brief Starts the processing of \<body\> or \<context\> element.
  *
  * This function parsers \p elt and pushes it as a #Context onto the object
  * stack.
@@ -2747,7 +2919,7 @@ ParserState::pushContext (ParserState *st, ParserElt *elt)
 }
 
 /**
- * @brief Ends the processing of \<body\> or \<context\> elements.
+ * @brief Ends the processing of \<body\> or \<context\> element.
  *
  * This function resolves context ports and pops the object stack.
  *
@@ -2799,6 +2971,122 @@ ParserState::pushPort (ParserState *st, ParserElt *elt)
   g_assert (st->eltCacheIndexParent (elt->getNode (), &parent_elt));
   UDATA_GET (parent_elt, "ports", &ports);
   ports->push_back (id);
+
+  return true;
+}
+
+/**
+ * @brief Starts the processing of \<switch\>.
+ *
+ * This function parsers \p elt and pushes it as a #Switch onto the object
+ * stack.
+ *
+ * @fn ParserState::pushSwitch
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
+
+/// Cleans up the rules attached to switch #ParserElt.
+static void
+rulesCleanup (void *ptr)
+{
+  delete (list<pair<ParserElt *, Object *>> *) ptr;
+}
+
+bool
+ParserState::pushSwitch (ParserState *st, ParserElt *elt)
+{
+  Composition *parent;
+  Object *swtch;
+  string id;
+
+  parent = cast (Composition *, st->objStackPeek ());
+  g_assert_nonnull (parent);
+
+  g_assert (elt->getAttribute ("id", &id));
+  swtch = new Switch (id);
+  parent->addChild (swtch);
+
+  // Create rule list.
+  UDATA_SET (elt, "rules", (new list<pair<ParserElt *, Object *>> ()),
+             rulesCleanup);
+
+  // Push context onto stack.
+  st->objStackPush (swtch);
+
+  return true;
+}
+
+/**
+ * @brief Ends the processing of \<switch\> element.
+ *
+ * This function pops the object stack.
+ *
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
+bool
+ParserState::popSwitch (ParserState *st, unused (ParserElt *elt))
+{
+  Switch *swtch;
+  list<pair<ParserElt *, Object *>> *rules;
+
+  swtch = cast (Switch *, st->objStackPeek ());
+  g_assert_nonnull (swtch);
+
+  // Resolve bind-rule and default-component  references.
+  UDATA_GET (elt, "rules", &rules);
+  for (auto &it: *rules)
+    {
+      ParserElt *bind_elt;
+      Object *obj;
+
+      bind_elt = it.first;
+      g_assert_nonnull (bind_elt);
+
+      if (unlikely (!st->resolveComponent (swtch, bind_elt, &obj)))
+        return false;
+
+      g_assert_nonnull (obj);
+      it.second = obj;
+    }
+
+  st->objStackPop ();
+  return true;
+}
+
+/**
+ * @brief Starts the processing of \<bindRule\> or \<defaultComponent\>
+ * element.
+ *
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
+bool
+ParserState::pushBindRule (ParserState *st, ParserElt *elt)
+{
+  ParserElt *parent_elt;
+  list<pair<ParserElt *, Object *>> *rules;
+
+  if (elt->getTag () == "bindRule")
+    {
+      g_assert (elt->getAttribute ("constituent", nullptr));
+      g_assert (elt->getAttribute ("rule", nullptr));
+    }
+  else if (elt->getTag () == "defaultComponent")
+    {
+      g_assert (elt->getAttribute ("component", nullptr));
+    }
+  else
+    {
+      g_assert_not_reached ();
+    }
+  g_assert (st->eltCacheIndexParent (elt->getNode (), &parent_elt));
+  UDATA_GET (parent_elt, "rules", &rules);
+  rules->push_back (std::make_pair (elt, nullptr));
 
   return true;
 }
