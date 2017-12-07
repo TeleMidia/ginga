@@ -355,7 +355,7 @@ Media::afterTransition (Event *evt, Event::Transition transition)
         case Event::START:
           if (evt->isLambda ())
             {
-              // Start object.
+              // Start media as a whole.
               g_assert_nonnull (_player);
               Object::doStart ();
 
@@ -446,7 +446,6 @@ Media::afterTransition (Event *evt, Event::Transition transition)
               }
             this->setProperty (name, value, dur);
             this->addDelayedAction (evt, Event::STOP, value, dur);
-
             TRACE ("start %s:='%s' (dur=%s)", evt->getFullId ().c_str (),
                    value.c_str (), (s != "") ? s.c_str () : "0s");
             break;

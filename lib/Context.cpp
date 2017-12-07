@@ -194,17 +194,22 @@ Context::afterTransition (Event *evt, Event::Transition transition)
   switch (evt->getType ())
     {
     case Event::PRESENTATION:
+      g_assert (evt->isLambda ());
       switch (transition)
         {
         case Event::START:
+          // Start context as a whole.
           Object::doStart ();
+
+          // Start all ports in the next tick.
           for (auto port: _ports)
-            if (port->getType() == Event::PRESENTATION) 
             {
-              Time begin, end;
-              port->getInterval(&begin, &end);
-              this->addDelayedAction(port, Event::START, "", begin);
-              this->addDelayedAction(port, Event::STOP, "", end);
+              if (port->getType() == Event::PRESENTATION)
+                {
+                  Time begin, end;
+                  port->getInterval (&begin, &end);
+                  this->addDelayedAction (port, Event::START, "", begin);
+                }
             }
           TRACE ("start %s", evt->getFullId ().c_str ());
           break;
@@ -231,18 +236,14 @@ Context::afterTransition (Event *evt, Event::Transition transition)
             evt->getParameter ("value", &value);
             _doc->evalPropertyRef (value, &value);
 
+            dur = 0;
             if (evt->getParameter ("duration", &s))
               {
                 _doc->evalPropertyRef (s, &s);
                 dur = ginga::parse_time (s);
               }
-            else
-              {
-                dur = 0;
-              }
             this->setProperty (name, value, dur);
             this->addDelayedAction (evt, Event::STOP, value, dur);
-
             TRACE ("start %s:='%s' (dur=%s)", evt->getFullId ().c_str (),
                    value.c_str (), (s != "") ? s.c_str () : "0s");
             break;
