@@ -198,6 +198,14 @@ progs+= test-Event-transition-Context-START
 test_Event_transition_Context_START_SOURCES=\
   test-Event-transition-Context-START.cpp
 
+progs+= test-Event-transition-Media-STOP
+test_Event_transition_Media_STOP_SOURCES=\
+  test-Event-transition-Media-STOP.cpp
+
+progs+= test-Event-transition-Context-STOP
+test_Event_transition_Context_STOP_SOURCES=\
+  test-Event-transition-Context-STOP.cpp
+
 # lib/Object.h -------------------------------------------------------------
 progs+= test-Object-addAlias
 test_Object_addAlias_SOURCES= test-Object-addAlias.cpp

@@ -25,13 +25,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
     string buf = str;                                           \
     string errmsg;                                              \
     *fmt = new Formatter(0, nullptr, nullptr);                  \
-    g_assert_nonnull(*fmt);                                     \
-    if (!(*fmt)->start(buf.c_str(), buf.length(), &errmsg)) {   \
-      g_printerr("*** Unexpected error: %s", errmsg.c_str());   \
+    g_assert_nonnull (*fmt);                                     \
+    if (!(*fmt)->start(buf.c_str (), buf.length(), &errmsg)) {   \
+      g_printerr("*** Unexpected error: %s", errmsg.c_str ());   \
       g_assert_not_reached();                                   \
     }                                                           \
     *doc = (*fmt)->getDocument();                               \
-    g_assert_nonnull(*doc);                                     \
+    g_assert_nonnull (*doc);                                     \
   }                                                             \
   G_STMT_END
 
@@ -52,19 +52,19 @@ int main(void)
 </body>\n\
 </ncl>");
 
-    Context *c = cast(Context *, doc->getObjectById("c"));
-    g_assert_nonnull(c);
+    Context *c = cast(Context *, doc->getObjectById ("c"));
+    g_assert_nonnull (c);
 
-    Event *lambda = c->getLambda();
-    g_assert_nonnull(lambda);
+    Event *lambda = c->getLambda ();
+    g_assert_nonnull (lambda);
 
-    g_assert(lambda->getState() == Event::SLEEPING);
-    g_assert(lambda->transition(Event::START));
-    g_assert(lambda->getState() == Event::OCCURRING);
+    g_assert(lambda->getState () == Event::SLEEPING);
+    g_assert(lambda->transition (Event::START));
+    g_assert(lambda->getState () == Event::OCCURRING);
 
     // Main check
-    g_assert_false(lambda->transition(Event::START));
-    g_assert(lambda->getState() == Event::OCCURRING);
+    g_assert_false(lambda->transition (Event::START));
+    g_assert(lambda->getState () == Event::OCCURRING);
 
     delete fmt;
   }
@@ -81,6 +81,7 @@ int main(void)
 <ncl>\n\
 <body>\n\
   <context id='c'>\n\
+    <property name='p1' value='0'/>\n\
     <port id='port1' component='m1'/>\n\
     <port id='port2' component='m2'/>\n\
     <media id='m1'/>\n\
@@ -89,35 +90,46 @@ int main(void)
 </body>\n\
 </ncl>");
 
-    // Check lambda
-    Context *c = cast(Context *, doc->getObjectById("c"));
-    g_assert_nonnull(c);
+    Context *c = cast(Context *, doc->getObjectById ("c"));
+    g_assert_nonnull (c);
 
-    Event *lambda = c->getLambda();
-    g_assert_nonnull(lambda);
+    Event *lambda = c->getLambda ();
+    g_assert_nonnull (lambda);
+    auto iter = c->getPorts ()->begin ();
+    Event *port1 = *iter;
+    g_assert_nonnull (port1);
+    iter++;
+    Event *port2 = *iter;
+    g_assert_nonnull (port2);
+    Event *p1 = c->getAttributionEvent("p1");
 
-    g_assert(lambda->getState() == Event::SLEEPING);
-    g_assert(lambda->transition(Event::START));
-    g_assert(lambda->getState() == Event::OCCURRING);
+    // before START lambda, anchors events an properties
+    // events are in SLEEPING
+    g_assert(lambda->getState () == Event::SLEEPING);
+    g_assert(port1->getState () == Event::SLEEPING);
+    g_assert(port2->getState () == Event::SLEEPING);
+    g_assert(p1->getState () == Event::SLEEPING);
 
-    // Check anchors.  In the reaction that lambda goes to OCCURRING, the
-    // anchors must be SLEEPING.  They only change to OCCURRING in the next
-    // reaction, i.e., after Media::sendTick() is called.
-    printf("%s\n", c->toString().c_str());
-    for (auto port : *c->getPorts()){
-      printf("%s\n", port->toString().c_str());
-      if (port->getType() == Event::PRESENTATION){
-        g_assert_nonnull(port);
-        g_assert(port->getState() == Event::SLEEPING);
-      }
-    }
+    // START
+    g_assert(lambda->transition (Event::START));
+
+    // after START, lambda is in OCCURRING and
+    // anchors are in SLEEPING
+    g_assert(lambda->getState () == Event::OCCURRING);
+    g_assert(port1->getState () == Event::SLEEPING);
+    g_assert(port2->getState () == Event::SLEEPING);
+    g_assert(p1->getState () == Event::SLEEPING);
+
+    // advance time
     fmt->sendTick(1, 1, 1);
-    for (auto port : *c->getPorts()) {
-      if (port->getType() == Event::PRESENTATION) {
-        g_assert_nonnull(port);
-        g_assert(port->getState() == Event::OCCURRING);
-      }
-    }
+
+    // when advance time, anchors events go to OCCURRING
+    // and properties events are SLEEPING
+    g_assert(lambda->getState () == Event::OCCURRING);
+    g_assert(port1->getState () == Event::OCCURRING);
+    g_assert(port2->getState () == Event::OCCURRING);
+    g_assert(p1->getState () == Event::SLEEPING);
+
     delete fmt;
   }
 
@@ -138,10 +150,10 @@ int main(void)
   </ncl>");
 
     // Check lambda.
-    Context *c = cast (Context *, doc->getObjectById ("c"));
+    Context *c = cast (Context *, doc->getObjectById  ("c"));
     g_assert_nonnull (c);
 
-    Event *lambda = c->getLambda ();
+    Event *lambda = c->getLambda  ();
     g_assert_nonnull (lambda);
 
     g_assert (lambda->getState () == Event::SLEEPING);
@@ -152,10 +164,10 @@ int main(void)
     Event *p1 = c->getAttributionEvent ("p1");
     g_assert_nonnull (p1);
     g_assert (p1->getState () == Event::SLEEPING);
-    g_assert (p1->setParameter ("value", "33"));
+    g_assert (p1->setParameter ("value", "1"));
     g_assert (p1->transition (Event::START));
     g_assert (p1->getState () == Event::OCCURRING);
-    g_assert (c->getProperty ("p1") == "33");
+    g_assert (c->getProperty ("p1") == "1");
 
     fmt->sendTick (1, 1, 1);
     g_assert (p1->getState () == Event::SLEEPING);
