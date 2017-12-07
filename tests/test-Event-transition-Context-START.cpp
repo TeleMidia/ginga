@@ -20,22 +20,23 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Context.h"
 #include "Parser.h"
 
-#define PARSE(fmt, doc, str)                                                   \
-  G_STMT_START {                                                               \
-    string buf = str;                                                          \
-    string errmsg;                                                             \
-    *fmt = new Formatter(0, nullptr, nullptr);                                 \
-    g_assert_nonnull(*fmt);                                                    \
-    if (!(*fmt)->start(buf.c_str(), buf.length(), &errmsg)) {                  \
-      g_printerr("*** Unexpected error: %s", errmsg.c_str());                  \
-      g_assert_not_reached();                                                  \
-    }                                                                          \
-    *doc = (*fmt)->getDocument();                                              \
-    g_assert_nonnull(*doc);                                                    \
-  }                                                                            \
+#define PARSE(fmt, doc, str)                                    \
+  G_STMT_START {                                                \
+    string buf = str;                                           \
+    string errmsg;                                              \
+    *fmt = new Formatter(0, nullptr, nullptr);                  \
+    g_assert_nonnull(*fmt);                                     \
+    if (!(*fmt)->start(buf.c_str(), buf.length(), &errmsg)) {   \
+      g_printerr("*** Unexpected error: %s", errmsg.c_str());   \
+      g_assert_not_reached();                                   \
+    }                                                           \
+    *doc = (*fmt)->getDocument();                               \
+    g_assert_nonnull(*doc);                                     \
+  }                                                             \
   G_STMT_END
 
-int main(void) {
+int main(void)
+{
 
 
   // Presentation events ---------------------------------------------------
@@ -99,11 +100,9 @@ int main(void) {
     g_assert(lambda->transition(Event::START));
     g_assert(lambda->getState() == Event::OCCURRING);
 
-    // Check anchors
-    // In the reaction that lambda goes to OCCURRING,
-    // the anchors must be SLEEPING.
-    // They only change to OCCURRING in the reaction of
-    // time advance, i.e. sendTickEvent.
+    // Check anchors.  In the reaction that lambda goes to OCCURRING, the
+    // anchors must be SLEEPING.  They only change to OCCURRING in the next
+    // reaction, i.e., after Media::sendTick() is called.
     printf("%s\n", c->toString().c_str());
     for (auto port : *c->getPorts()){
       printf("%s\n", port->toString().c_str());
@@ -122,8 +121,10 @@ int main(void) {
     delete fmt;
   }
 
+
   // Attribution events ----------------------------------------------------
 
+  // START from state SLEEPING.
   {
     Formatter *fmt;
     Document *doc;
@@ -136,26 +137,31 @@ int main(void) {
   </body>\n\
   </ncl>");
 
-    // Check lambda
-    Context *c = cast(Context *, doc->getObjectById("c"));
-    g_assert_nonnull(c);
+    // Check lambda.
+    Context *c = cast (Context *, doc->getObjectById ("c"));
+    g_assert_nonnull (c);
 
-    Event *lambda = c->getLambda();
-    g_assert_nonnull(lambda);
+    Event *lambda = c->getLambda ();
+    g_assert_nonnull (lambda);
 
-    g_assert(lambda->getState() == Event::SLEEPING);
-    g_assert(lambda->transition(Event::START));
-    g_assert(lambda->getState() == Event::OCCURRING);
+    g_assert (lambda->getState () == Event::SLEEPING);
+    g_assert (lambda->transition (Event::START));
+    g_assert (lambda->getState () == Event::OCCURRING);
 
-    // Check property
-    Event *p1 = c->getAttributionEvent("p1");
-    g_assert_nonnull(p1);
-    g_assert(p1->getState() == Event::SLEEPING);
-    g_assert(p1->transition(Event::START));
-    g_assert(p1->getState() == Event::OCCURRING);
+    // Check property.
+    Event *p1 = c->getAttributionEvent ("p1");
+    g_assert_nonnull (p1);
+    g_assert (p1->getState () == Event::SLEEPING);
+    g_assert (p1->setParameter ("value", "33"));
+    g_assert (p1->transition (Event::START));
+    g_assert (p1->getState () == Event::OCCURRING);
+    g_assert (c->getProperty ("p1") == "33");
+
+    fmt->sendTick (1, 1, 1);
+    g_assert (p1->getState () == Event::SLEEPING);
 
     delete fmt;
   }
 
-  exit(EXIT_SUCCESS);
+  exit (EXIT_SUCCESS);
 }

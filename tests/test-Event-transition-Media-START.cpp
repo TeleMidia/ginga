@@ -154,15 +154,21 @@ main (void)
     g_assert(lambda->getState() == Event::OCCURRING);
 
     // Check property
-    Event *p1 = m->getAttributionEvent("p1");
-    g_assert_nonnull(p1);
-    g_assert(p1->getState() == Event::SLEEPING);
-    g_assert(p1->transition(Event::START));
-    g_assert(p1->getState() == Event::OCCURRING);
+    Event *p1 = m->getAttributionEvent ("p1");
+    g_assert_nonnull (p1);
+    g_assert (p1->getState () == Event::SLEEPING);
+    g_assert (p1->setParameter ("value", "33"));
+    g_assert (p1->transition (Event::START));
+    g_assert (p1->getState () == Event::OCCURRING);
+    g_assert (m->getProperty ("p1") == "33");
+
+    fmt->sendTick (1, 1, 1);
+    g_assert (p1->getState () == Event::SLEEPING);
 
     delete fmt;
   }
 
+
   // Selection events ------------------------------------------------------
 
   exit (EXIT_SUCCESS);
