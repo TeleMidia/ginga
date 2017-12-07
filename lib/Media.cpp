@@ -162,7 +162,9 @@ Media::sendKey (const string &key, bool press)
 {
   list<Event *> buf;
 
-  g_assert (!this->isSleeping ());
+  if (unlikely (this->isSleeping ()))
+    return;                     // nothing to do
+
   if (_player == nullptr)
     return;                     // nothing to do
 
