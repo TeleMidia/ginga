@@ -31,6 +31,7 @@ public:
 
   // Object:
   string getObjectTypeAsString () override;
+  string toString () override;
   bool beforeTransition (Event *, Event::Transition) override;
   bool afterTransition (Event *, Event::Transition) override;
 
