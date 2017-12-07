@@ -546,12 +546,12 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
    {{"id", ATTR_OPT_ID}}},      // unused
  },
  {"compositeRule",
-  {nullptr,
+  {ParserState::pushRule,
    nullptr,
    ELT_CACHE,
    {"ruleBase", "compositeRule"},
    {{"id", ATTR_ID},
-    {"operator", 0}}},
+    {"operator", ATTR_REQUIRED}}},
  },
  {"rule",
   {ParserState::pushRule,
@@ -560,7 +560,7 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
    {"ruleBase", "compositeRule"},
    {{"id", ATTR_ID},
     {"var", ATTR_REQUIRED_NONEMPTY_NAME},
-    {"comparator", ATTR_REQUIRED_NONEMPTY_NAME},
+    {"comparator", ATTR_REQUIRED},
     {"value", ATTR_REQUIRED}}},
  },
  {"body",
@@ -1355,10 +1355,6 @@ ParserState::resolveInterface (Context *ctx, ParserElt *elt, Event **evt)
             goto fail;
         }
     }
-  else if (instanceof (Switch *, obj))
-    {
-      ERROR_NOT_IMPLEMENTED ("interface pointing to switch");
-    }
   else if (instanceof (Context *, obj))
     {
       if (obj == ctx)
@@ -1403,6 +1399,10 @@ ParserState::resolveInterface (Context *ctx, ParserElt *elt, Event **evt)
           return this->resolveInterface (ctx, iface_elt, evt);
         }
     }
+  else if (instanceof (Switch *, obj))
+    {
+      goto fail;                // not accessible by external elements
+    }
   else
     {
       g_assert_not_reached ();
@@ -1422,7 +1422,7 @@ ParserState::resolveInterface (Context *ctx, ParserElt *elt, Event **evt)
  * @brief Resolve reference to (bind, link, or ghost) parameter.
  *
  * The function uses the translation tables in the order they were given,
- * and returns when any of them resolves the reference.
+ * and returns as soon as any of them resolves the reference.
  *
  * @param ref The reference to resolve.
  * @param bindParams The bind parameter translation table.
@@ -2020,7 +2020,15 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
                 }
 
               UDATA_GET (rule_elt, "pred", &pred);
-              swtch->addRule (obj, pred->clone ());
+              if (pred->getType () != Predicate::ATOM
+                  && pred->getChildren ()->size () == 0)
+                {
+                  swtch->addRule (obj, new Predicate (Predicate::FALSUM));
+                }
+              else
+                {
+                  swtch->addRule (obj, pred->clone ());
+                }
             }
 
           // Add defaults to the end of rule list.
@@ -2805,7 +2813,7 @@ ParserState::pushAttributeAssessment (ParserState *st, ParserElt *elt)
 }
 
 /**
- * @brief Starts the processing of \<rule\> element.
+ * @brief Starts the processing of \<rule\> or \<compositeRule\> element.
  * @fn ParserState::pushRule
  * @param st #ParserState.
  * @param elt Element wrapper.
@@ -2822,26 +2830,42 @@ rulePredCleanup (void *ptr)
 bool
 ParserState::pushRule (ParserState *st, ParserElt *elt)
 {
-  string var;
-  string comp;
-  string value;
-
-  Predicate::Test test;
   Predicate *pred;
-
   ParserElt *parent_elt;
   Predicate *parent_pred;
 
-  g_assert (elt->getAttribute ("var", &var));
-  g_assert (elt->getAttribute ("comparator", &comp));
-  if (unlikely (!parser_syntax_comparator_table_index (comp, &test)))
+  if (elt->getTag () == "rule")
     {
-      return st->errEltBadAttribute (elt->getNode (), "comparator", comp);
-    }
-  g_assert (elt->getAttribute ("value", &value));
+      string var;
+      string comp;
+      string value;
+      Predicate::Test test;
 
-  pred = new Predicate (Predicate::ATOM);
-  pred->setTest ("$__settings__." + var, test, value);
+      g_assert (elt->getAttribute ("var", &var));
+      g_assert (elt->getAttribute ("comparator", &comp));
+      if (unlikely (!parser_syntax_comparator_table_index (comp, &test)))
+        return st->errEltBadAttribute (elt->getNode (), "comparator", comp);
+
+      g_assert (elt->getAttribute ("value", &value));
+      pred = new Predicate (Predicate::ATOM);
+      pred->setTest ("$__settings__." + var, test, value);
+    }
+  else if (elt->getTag () == "compositeRule")
+    {
+      string op;
+      Predicate::Type type;
+
+      g_assert (elt->getAttribute ("operator", &op));
+      if (unlikely (!parser_syntax_connective_table_index (op, &type)))
+        return st->errEltBadAttribute (elt->getNode (), "operator", op);
+
+      pred = new Predicate (type);
+    }
+  else
+    {
+      g_assert_not_reached ();
+    }
+  g_assert_nonnull (pred);
 
   g_assert (st->eltCacheIndexParent (elt->getNode (), &parent_elt));
   if (parent_elt->getTag () == "ruleBase")
@@ -2854,6 +2878,7 @@ ParserState::pushRule (ParserState *st, ParserElt *elt)
       if (unlikely (parent_pred->getType () == Predicate::NEGATION
                     && parent_pred->getChildren ()->size () == 1))
         {
+          delete pred;
           return st->errEltBadChild (parent_elt->getNode (), elt->getTag (),
                                      "too many children");
         }
@@ -3303,7 +3328,7 @@ ParserState::pushBind (ParserState *st, ParserElt *elt)
 
 // External API.
 
-/// Helper function used by Parser::parserBuffer() and Parser::parseFile().
+/// Helper function used by Parser::parseBuffer() and Parser::parseFile().
 static Document *
 process (xmlDoc *xml, int width, int height, string *errmsg)
 {

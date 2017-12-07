@@ -76,7 +76,11 @@ Predicate::toString ()
           default:
             g_assert_not_reached ();
           }
-        return "'" + _atom.left + "'" + test + "'" + _atom.right + "'";
+        test = (_atom.left[0] == '$')
+          ? _atom.left + test : "'" + _atom.left + "'" + test;
+        test = (_atom.right[0] == '$')
+          ? test + _atom.right : test + "'" + _atom.right + "'";
+        return test;
       }
     default:
       {

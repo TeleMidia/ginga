@@ -1153,20 +1153,6 @@ main (void)
 ");
 
   XFAIL ("rule: Bad comparator",
-         "<rule>: Bad value '$' for attribute 'comparator' "
-         "(must not contain '$')", "\
-<ncl>\n\
- <head>\n\
-  <ruleBase>\n\
-   <rule id='r' var='v' comparator='$'/>\n\
-  </ruleBase>\n\
- </head>\n\
- <body>\n\
- </body>\n\
-</ncl>\n\
-");
-
-  XFAIL ("rule: Bad comparator",
          "<rule>: Bad value 'x' for attribute 'comparator'", "\
 <ncl>\n\
  <head>\n\
@@ -1196,6 +1182,73 @@ main (void)
 // -------------------------------------------------------------------------
 // <compositeRule>
 // -------------------------------------------------------------------------
+
+  XFAIL ("compositeRule:",
+         "<compositeRule>: Missing attribute 'id'", "\
+<ncl>\n\
+ <head>\n\
+  <ruleBase>\n\
+   <compositeRule/>\n\
+  </ruleBase>\n\
+ </head>\n\
+ <body/>\n\
+</ncl>\n\
+");
+
+  XFAIL ("compositeRule: Missing operator",
+         "<compositeRule>: Missing attribute 'operator'", "\
+<ncl>\n\
+ <head>\n\
+  <ruleBase>\n\
+   <compositeRule id='r'/>\n\
+  </ruleBase>\n\
+ </head>\n\
+ <body/>\n\
+</ncl>\n\
+");
+
+  XFAIL ("compositeRule: Bad operator",
+         "<compositeRule>: Bad value 'x' for attribute 'operator'", "\
+<ncl>\n\
+ <head>\n\
+  <ruleBase>\n\
+   <compositeRule id='r' operator='x'/>\n\
+  </ruleBase>\n\
+ </head>\n\
+ <body/>\n\
+</ncl>\n\
+");
+
+  XFAIL ("compositeRule: Too many children",
+         "<compositeRule>: Bad child <compositeRule> (too many children)",
+         "\
+<ncl>\n\
+ <head>\n\
+  <ruleBase>\n\
+   <compositeRule id='r' operator='not'>\n\
+    <compositeRule id='r1' operator='not'/>\n\
+    <compositeRule id='r2' operator='not'/>\n\
+   </compositeRule>\n\
+  </ruleBase>\n\
+ </head>\n\
+ <body/>\n\
+</ncl>\n\
+");
+
+  XFAIL ("compositeRule: Too many children",
+         "<compositeRule>: Bad child <rule> (too many children)", "\
+<ncl>\n\
+ <head>\n\
+  <ruleBase>\n\
+   <compositeRule id='r' operator='not'>\n\
+    <rule id='r1' var='x' comparator='eq' value='1'/>\n\
+    <rule id='r2' var='y' comparator='eq' value='2'/>\n\
+   </compositeRule>\n\
+  </ruleBase>\n\
+ </head>\n\
+ <body/>\n\
+</ncl>\n\
+");
 
 
 // -------------------------------------------------------------------------
@@ -1902,6 +1955,31 @@ main (void)
    <bind role='onBegin' component='x'/>\n\
    <bind role='ghost' component='x'/>\n\
    <bind role='set' component='x'/>\n\
+  </link>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("bind: Bad interface (switch child)",
+         "<bind>: Bad value 'm' for attribute 'interface' "
+         "(no such interface)", "\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='c'>\n\
+    <simpleCondition role='onBegin'/>\n\
+    <simpleAction role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+ <body>\n\
+  <media id='x'/>\n\
+  <switch id='s'>\n\
+   <media id='m'/>\n\
+  </switch>\n\
+  <link xconnector='c'>\n\
+   <bind role='onBegin' component='x'/>\n\
+   <bind role='start' component='s' interface='m'/>\n\
   </link>\n\
  </body>\n\
 </ncl>\n\
@@ -2715,7 +2793,7 @@ main (void)
     auto cond = link->first.begin ();
     g_assert (cond->event == root->getLambda ());
     g_assert (cond->transition == Event::START);
-    g_assert (cond->predicate->toString () == "'$__root__.p'=='1'");
+    g_assert (cond->predicate->toString () == "$__root__.p=='1'");
     g_assert (cond->value == "");
     g_assert (++cond == link->first.end ());
 
@@ -2797,7 +2875,7 @@ main (void)
     g_assert (cond->event == root->getLambda ());
     g_assert (cond->transition == Event::START);
     g_assert (cond->predicate->toString ()
-              == "and('$__root__.p'=='1', '2'!='$__root__.p')");
+              == "and($__root__.p=='1', '2'!=$__root__.p)");
     g_assert (cond->value == "");
     g_assert (++cond == link->first.end ());
 
@@ -2814,7 +2892,7 @@ main (void)
     g_assert (cond->event == m->getLambda ());
     g_assert (cond->transition == Event::START);
     g_assert (cond->predicate->toString ()
-              == "and('$m.x'=='1', '2'!='$__root__.q')");
+              == "and($m.x=='1', '2'!=$__root__.q)");
     g_assert (cond->value == "");
     g_assert (++cond == link->first.end ());
 
@@ -2898,8 +2976,8 @@ main (void)
     g_assert (cond->event == root->getLambda ());
     g_assert (cond->transition == Event::ABORT);
     g_assert (cond->predicate->toString () == "\
-and('$__root__.p'<='1',\
- and('2'!='$__root__.q', not(not(or('3'>'4', '4'>='3')))))");
+and($__root__.p<='1',\
+ and('2'!=$__root__.q, not(not(or('3'>'4', '4'>='3')))))");
     g_assert (cond->value == "");
     g_assert (++cond == link->first.end ());
 
@@ -3019,14 +3097,14 @@ and('$__root__.p'<='1',\
     g_assert (cond->event == c->getAttributionEvent ("p"));
     g_assert (cond->transition == Event::STOP);
     g_assert (cond->predicate->toString ()
-              == "and(and('0'!='0', '1'>'1'), not('$__root__.q'=='$c.p'))");
+              == "and(and('0'!='0', '1'>'1'), not($__root__.q==$c.p))");
     g_assert (cond->value == "");
 
     cond++;
     g_assert (cond->event == m2->getPresentationEvent ("a2"));
     g_assert (cond->transition == Event::PAUSE);
     g_assert (cond->predicate->toString () == "\
-and(and('0'!='0', '1'>'1'), not('$__root__.q'=='$c.p'), '$m.r'<'33')");
+and(and('0'!='0', '1'>'1'), not($__root__.q==$c.p), $m.r<'33')");
     g_assert (cond->value == "");
     g_assert (++cond == link->first.end ());
 
@@ -3121,11 +3199,11 @@ and(and('0'!='0', '1'>'1'), not('$__root__.q'=='$c.p'), '$m.r'<'33')");
     auto it = rules->begin ();
 
     g_assert (it->first == m2);
-    g_assert (it->second->toString () == "'$__settings__.x'=='1'");
+    g_assert (it->second->toString () == "$__settings__.x=='1'");
 
     it++;
     g_assert (it->first == m3);
-    g_assert (it->second->toString () == "'$__settings__.y'<='0'");
+    g_assert (it->second->toString () == "$__settings__.y<='0'");
 
     it++;
     g_assert (it->first == m1);
@@ -3139,7 +3217,76 @@ and(and('0'!='0', '1'>'1'), not('$__root__.q'=='$c.p'), '$m.r'<'33')");
     TRACE ("\n%s", s->toString ().c_str ());
     delete doc;
   }
-  exit (0);
+
+  // Success: Single switch with complex rules.
+  {
+    Document *doc;
+    PASS (&doc, "Misc checks", "\
+<ncl>\n\
+ <head>\n\
+  <ruleBase>\n\
+   <compositeRule id='r0' operator='not'/>\n\
+   <rule id='r1' var='x' comparator='eq' value='1'/>\n\
+   <compositeRule id='r2' operator='and'>\n\
+    <rule id='r3' var='y' comparator='lte' value='0'/>\n\
+    <compositeRule id='r4' operator='or'>\n\
+     <compositeRule id='r5' operator='not'>\n\
+      <rule id='r6' var='z' comparator='gte' value='2'/>\n\
+     </compositeRule>\n\
+     <rule id='r7' var='w' comparator='lt' value='3'/>\n\
+    </compositeRule>\n\
+   </compositeRule>\n\
+  </ruleBase>\n\
+ </head>\n\
+ <body>\n\
+  <switch id='s'>\n\
+   <media id='m1'/>\n\
+   <media id='m2'/>\n\
+   <media id='m3'/>\n\
+   <defaultComponent component='m1'/>\n\
+   <bindRule constituent='m2' rule='r0'/>\n\
+   <bindRule constituent='m3' rule='r2'/>\n\
+   <bindRule constituent='m3' rule='r5'/>\n\
+  </switch>\n\
+ </body>\n\
+</ncl>");
+    g_assert_nonnull (doc);
+
+    Switch *s = cast (Switch *, doc->getObjectById ("s"));
+    g_assert_nonnull (s);
+
+    Media *m1 = cast (Media *, doc->getObjectById ("m1"));
+    g_assert_nonnull (m1);
+
+    Media *m2 = cast (Media *, doc->getObjectById ("m2"));
+    g_assert_nonnull (m2);
+
+    Media *m3 = cast (Media *, doc->getObjectById ("m3"));
+    g_assert_nonnull (m3);
+
+    auto rules = s->getRules ();
+    auto it = rules->begin ();
+
+    g_assert (it->first == m2);
+    g_assert (it->second->toString () == "false");
+
+    it++;
+    g_assert (it->first == m3);
+    g_assert (it->second->toString () ==
+              "and($__settings__.y<='0', or(not($__settings__.z>='2'), "
+              "$__settings__.w<'3'))");
+
+    it++;
+    g_assert (it->first == m3);
+    g_assert (it->second->toString () == "not($__settings__.z>='2')");
+
+    it++;
+    g_assert (it->first == m1);
+    g_assert (it->second->getType () == Predicate::VERUM);
+
+    TRACE ("\n%s", s->toString ().c_str ());
+    delete doc;
+  }
 
   // Success: Misc checks.
   {
