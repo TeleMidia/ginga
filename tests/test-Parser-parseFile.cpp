@@ -26,6 +26,10 @@ main (void)
   string path;
   const gchar *entry;
 
+  // Check bad path.
+  g_assert_null (Parser::parseFile ("nonexistent", 100, 100, nullptr));
+
+  // Sanity checks.
   path = xpathbuildabs (TOP_SRCDIR, "tests-ncl");
   dir = g_dir_open (path.c_str (), 0, nullptr);
   g_assert_nonnull (dir);
@@ -51,6 +55,7 @@ main (void)
         {
           g_assert (errmsg == "");
         }
+      delete doc;
     }
 
   g_dir_close (dir);
