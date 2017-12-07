@@ -96,33 +96,39 @@ main (void)
     Event *lambda = m->getLambda ();
     g_assert_nonnull (lambda);
 
-    g_assert (lambda->getState () == Event::SLEEPING);
+    Event *a1 = m->getPresentationEvent("a1");
+    g_assert_nonnull(a1);
+    Event *a2 = m->getPresentationEvent("a1");
+    g_assert_nonnull(a2);
+    Event *p1 = m->getAttributionEvent("p1");
+    g_assert_nonnull(p1);
+
+    // before START lambda, anchors events an properties
+    // events are in SLEEPING
+    g_assert(lambda->getState() == Event::SLEEPING);
+    g_assert(a1->getState() == Event::SLEEPING);
+    g_assert(a2->getState() == Event::SLEEPING);
+    g_assert(p1->getState() == Event::SLEEPING);
+
+    // START
     g_assert (lambda->transition (Event::START));
-    g_assert (lambda->getState () == Event::OCCURRING);
 
-    // Check anchors
-    // In the reaction that lambda goes to OCCURRING, 
-    // the anchors must be on SLEEPING.
-    // They only change to OCCURRING on the reaction of 
-    // time advance, i.e. sendTickEvent.
-    Event *a1 = m->getPresentationEvent ("a1");
-    g_assert_nonnull (a1);
-    g_assert (a1->getState () == Event::SLEEPING);
+    // after START lambda is in OCCURRING and
+    // anchors are in SLEEPING
+    g_assert(lambda->getState() == Event::OCCURRING);
+    g_assert(a1->getState() == Event::SLEEPING);
+    g_assert(a2->getState() == Event::SLEEPING);
+    g_assert(p1->getState() == Event::SLEEPING);
 
-    Event *a2 = m->getPresentationEvent ("a1");
-    g_assert_nonnull (a2);
-    g_assert (a2->getState () == Event::SLEEPING);
+    // advance time
+    fmt->sendTick(1, 1, 1);
 
-    Event *p1 = m->getAttributionEvent ("p1");
-    g_assert_nonnull (p1);
-    g_assert (p1->getState () == Event::SLEEPING);
-
-    fmt->sendTick (1, 1, 1);
-
-    g_assert (lambda->getState () == Event::OCCURRING);
-    g_assert (a1->getState () == Event::OCCURRING);
-    g_assert (a2->getState () == Event::OCCURRING);
-    g_assert (p1->getState () == Event::SLEEPING);
+    // when advance time, anchors events go to OCCURRING
+    // and properties events are SLEEPING
+    g_assert(lambda->getState() == Event::OCCURRING);
+    g_assert(a1->getState() == Event::OCCURRING);
+    g_assert(a2->getState() == Event::OCCURRING);
+    g_assert(p1->getState() == Event::SLEEPING);
 
     delete fmt;
   }
@@ -157,10 +163,10 @@ main (void)
     Event *p1 = m->getAttributionEvent ("p1");
     g_assert_nonnull (p1);
     g_assert (p1->getState () == Event::SLEEPING);
-    g_assert (p1->setParameter ("value", "33"));
+    g_assert (p1->setParameter ("value", "1"));
     g_assert (p1->transition (Event::START));
     g_assert (p1->getState () == Event::OCCURRING);
-    g_assert (m->getProperty ("p1") == "33");
+    g_assert (m->getProperty ("p1") == "1");
 
     fmt->sendTick (1, 1, 1);
     g_assert (p1->getState () == Event::SLEEPING);

@@ -112,7 +112,9 @@
 /tests/test-Event-setInterval
 /tests/test-Event-setParameter
 /tests/test-Event-transition-Context-START
+/tests/test-Event-transition-Context-STOP
 /tests/test-Event-transition-Media-START
+/tests/test-Event-transition-Media-STOP
 /tests/test-Ginga-create
 /tests/test-Ginga-getOptionBool
 /tests/test-Ginga-getOptionInt
