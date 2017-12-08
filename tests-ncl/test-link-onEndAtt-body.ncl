@@ -19,10 +19,11 @@
     <port id="start" component="dummy"/>
     <media id="dummy">
       <property name="size" value="100%,100%"/>
-      <property name="background" value="green"/>
+      <property name="background" value="red"/>
+      <area id="a1" begin="1s"/>
     </media>
     <link xconnector="onBeginSet">
-      <bind role="onBegin" component="dummy"/>
+      <bind role="onBegin" component="dummy" interface="a1"/>
       <bind role="set" component="self" interface="var">
         <bindParam name="var" value="1"/>
       </bind>
