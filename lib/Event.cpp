@@ -92,7 +92,8 @@ Event::toString (int indent)
   const char *prefix;
   string str;
 
-  prefix = std::string (MAX (0, indent) * 2, ' ').c_str ();
+  prefix = std::string
+    (string::size_type (MAX (0, indent) * 2), ' ').c_str ();
   str = xstrbuild
     ("\
 %sEvent (%p)\n\
