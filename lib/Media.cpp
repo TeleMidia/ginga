@@ -314,8 +314,7 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
           break;                // nothing to do
 
         case Event::ABORT:
-          ERROR_NOT_IMPLEMENTED ("abort action is not supported");
-          break;
+          break;                // nothing to do
 
         default:
           g_assert_not_reached ();
@@ -418,7 +417,23 @@ Media::afterTransition (Event *evt, Event::Transition transition)
           break;
 
         case Event::ABORT:
-          ERROR_NOT_IMPLEMENTED ("abort action is not supported");
+          if (evt->isLambda ())
+            {
+              // Stop object.
+              g_assert_nonnull (_player);
+              this->doStop ();
+              TRACE ("abort %s", evt->getFullId ().c_str ());
+            }
+          else                  // non-lambda area
+            {
+              Time end;
+              g_assert (this->isOccurring ());
+              evt->getInterval (nullptr, &end);
+              TRACE ("abort %s (end=%" GINGA_TIME_FORMAT
+                     ") at %" GINGA_TIME_FORMAT,
+                     evt->getFullId ().c_str (),
+                     GINGA_TIME_ARGS (end), GINGA_TIME_ARGS (_time));
+            }          break;
           break;
 
         default:

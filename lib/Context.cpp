@@ -171,6 +171,15 @@ Context::beforeTransition (Event *evt, Event::Transition transition)
             }
           break;
 
+        case Event::ABORT:
+          for (auto child: _children)
+            {
+              Event *lambda = child->getLambda ();
+              g_assert_nonnull (lambda);
+              lambda->transition (Event::ABORT);
+            }
+          break;
+
         default:
           g_assert_not_reached ();
         }
@@ -216,6 +225,10 @@ Context::afterTransition (Event *evt, Event::Transition transition)
         case Event::STOP:
           Object::doStop ();
           TRACE ("stop %s", evt->getFullId ().c_str ());
+          break;
+        case Event::ABORT:
+          Object::doStop ();
+          TRACE ("abort %s", evt->getFullId ().c_str ());
           break;
         default:
           g_assert_not_reached ();
