@@ -180,6 +180,15 @@ Context::beforeTransition (Event *evt, Event::Transition transition)
             }
           break;
 
+        case Event::RESUME:
+          for (auto child: _children)
+            {
+              Event *lambda = child->getLambda ();
+              g_assert_nonnull (lambda);
+              lambda->transition (Event::RESUME);
+            }
+          break;
+
         case Event::ABORT:
           for (auto child: _children)
             {
@@ -233,6 +242,9 @@ Context::afterTransition (Event *evt, Event::Transition transition)
           break;
         case Event::PAUSE:
           TRACE ("pause %s", evt->getFullId ().c_str ());
+          break;
+        case Event::RESUME:
+          TRACE ("resume %s", evt->getFullId ().c_str ());
           break;
         case Event::STOP:
           Object::doStop ();
