@@ -19,7 +19,6 @@
       <property name="background" value="red"/>
       <property name="bounds" value="25%,25%,50%,50%"/>
       <area id="a1" begin="1s"/>
-      <area id="a2" begin="2s"/>
     </media>
     <link xconnector="onBeginSet">
       <bind role="onBegin" component="time" interface="a1"/>
