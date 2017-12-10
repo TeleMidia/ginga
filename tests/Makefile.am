@@ -222,6 +222,14 @@ progs+= test-Event-transition-Context-PAUSE
 test_Event_transition_Context_PAUSE_SOURCES=\
   test-Event-transition-Context-PAUSE.cpp
 
+progs+= test-Event-transition-Media-RESUME
+test_Event_transition_Media_RESUME_SOURCES=\
+  test-Event-transition-Media-RESUME.cpp
+
+progs+= test-Event-transition-Context-RESUME
+test_Event_transition_Context_RESUME_SOURCES=\
+  test-Event-transition-Context-RESUME.cpp
+
 # lib/Object.h -------------------------------------------------------------
 progs+= test-Object-addAlias
 test_Object_addAlias_SOURCES= test-Object-addAlias.cpp
