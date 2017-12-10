@@ -114,9 +114,13 @@
 /tests/test-Event-transition-Context-START
 /tests/test-Event-transition-Context-STOP
 /tests/test-Event-transition-Context-ABORT
+/tests/test-Event-transition-Context-PAUSE
+/tests/test-Event-transition-Context-RESUME
 /tests/test-Event-transition-Media-START
 /tests/test-Event-transition-Media-STOP
 /tests/test-Event-transition-Media-ABORT
+/tests/test-Event-transition-Media-PAUSE
+/tests/test-Event-transition-Media-RESUME
 /tests/test-Ginga-create
 /tests/test-Ginga-getOptionBool
 /tests/test-Ginga-getOptionInt
