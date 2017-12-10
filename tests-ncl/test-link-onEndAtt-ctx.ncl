@@ -15,27 +15,27 @@
     </connectorBase>
   </head>
   <body>
-    <port id="start1" component="dummy"/>
+    <port id="start1" component="time"/>
     <port id="start2" component="ctx"/>
-    <media id="dummy">
+    <media id="time">
       <property name="size" value="100%,100%"/>
       <property name="background" value="red"/>
       <area id="a1" begin="1s"/>
     </media>
     <context id="ctx">
       <property name="propName" value=""/>
-      <port id="start0a" component="time0"/>
-      <media id="time0"/>
+      <port id="start0a" component="dummy"/>
+      <media id="dummy"/>
     </context>
     <link xconnector="onBeginSet">
-      <bind role="onBegin" component="dummy" interface="a1"/>
+      <bind role="onBegin" component="time" interface="a1"/>
       <bind role="set" component="ctx" interface="propName">
         <bindParam name="var" value="newPropValue"/>
       </bind>
     </link>
     <link xconnector="onEndAttributionSet">
       <bind role="onEndAttribution" component="ctx" interface="propName"/>
-      <bind role="set" component="dummy" interface="background">
+      <bind role="set" component="time" interface="background">
         <bindParam name="var" value="green"/>
       </bind>
     </link>

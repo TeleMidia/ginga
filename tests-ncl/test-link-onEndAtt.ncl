@@ -16,10 +16,10 @@
   <body>
     <port id="start" component="time"/>
     <media id="time">
+      <property name="propName" value=""/>
       <property name="background" value="red"/>
-      <property name="bounds" value="25%,25%,50%,50%"/>
+      <property name="size" value="100%,100%"/>
       <area id="a1" begin="1s"/>
-      <area id="a2" begin="2s"/>
     </media>
     <link xconnector="onBeginSet">
       <bind role="onBegin" component="time" interface="a1"/>
@@ -28,9 +28,9 @@
       </bind>
     </link>
     <link xconnector="onEndAttributionSet">
-      <bind role="onEndAttribution" component="time" interface="background"/>
-      <bind role="set" component="time" interface="bounds">
-        <bindParam name="var" value="0%,0%,100%,100%"/>
+      <bind role="onEndAttribution" component="time" interface="propName"/>
+      <bind role="set" component="time" interface="background">
+        <bindParam name="var" value="green"/>
       </bind>
     </link>
   </body>
