@@ -331,7 +331,7 @@ Object::sendTick (unused (Time total), Time diff, unused (Time frame))
   _time += diff;
 
   list<Action> trigger;
-  for (auto it: _delayed)
+  for (auto &it: _delayed)
     {
       if (_time >= it.second)
         {

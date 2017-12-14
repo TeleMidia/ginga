@@ -87,46 +87,45 @@ Event::getState ()
 }
 
 string
-Event::toString (int indent)
+Event::toString ()
 {
-  const char *prefix;
   string str;
 
-  prefix = std::string
-    (string::size_type (MAX (0, indent) * 2), ' ').c_str ();
   str = xstrbuild
     ("\
-%sEvent (%p)\n\
-%s  object: %p (%s, id: %s)\n\
-%s  id: %s\n\
-%s  full-id: %s\n\
-%s  type: %s\n\
-%s  state: %s\n",
-     prefix, this,
-     prefix, _object,
-     _object->getObjectTypeAsString ().c_str (), _object->getId ().c_str (),
-     prefix, _id.c_str (),
-     prefix, this->getFullId ().c_str (),
-     prefix, Event::getEventTypeAsString (_type).c_str (),
-     prefix, Event::getEventStateAsString (_state).c_str ());
+Event (%p)\n\
+  object: %p (%s, id: %s)\n\
+  id: %s\n\
+  full-id: %s\n\
+  type: %s\n\
+  state: %s\n",
+     this,
+     _object,
+     _object->getObjectTypeAsString ().c_str (),
+     _object->getId ().c_str (),
+     _id.c_str (),
+     this->getFullId ().c_str (),
+     Event::getEventTypeAsString (_type).c_str (),
+     Event::getEventStateAsString (_state).c_str ());
 
   if (_type == Event::PRESENTATION)
     {
       str += xstrbuild
         ("\
-%s  begin: %" GINGA_TIME_FORMAT "\n\
-%s  end: %" GINGA_TIME_FORMAT "\n",
-         prefix, GINGA_TIME_ARGS (_begin),
-         prefix, GINGA_TIME_ARGS (_end));
+    begin: %" GINGA_TIME_FORMAT "\n\
+    end: %" GINGA_TIME_FORMAT "\n",
+         GINGA_TIME_ARGS (_begin),
+         GINGA_TIME_ARGS (_end));
     }
 
   if (_parameters.size () > 0)
     {
-      str += xstrbuild ("%s  params:\n", prefix);
+      str += xstrbuild ("    params:\n");
       for (auto it: _parameters)
         {
-          str += xstrbuild ("%s  %s='%s'\n", prefix,
-                            it.first.c_str (), it.second.c_str ());
+          str += xstrbuild ("    %s='%s'\n",
+                            it.first.c_str (),
+                            it.second.c_str ());
         }
     }
 
@@ -202,7 +201,6 @@ Event::transition (Event::Transition trans)
     return false;
 
   // Update event state.
-  
   _state = next;
 
   // Finish transition.
