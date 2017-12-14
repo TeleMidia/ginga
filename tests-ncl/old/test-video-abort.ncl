@@ -8,16 +8,10 @@
       <descriptor id='desc' region='reg'/>
     </descriptorBase>
     <connectorBase>
-      <causalConnector id="onBeginPause">
+      <causalConnector id="onBeginAbort">
         <simpleCondition role="onBegin"/>
-        <simpleAction role="pause"/>
+        <simpleAction role="abort"/>
       </causalConnector>
-
-      <causalConnector id="onBeginResume">
-        <simpleCondition role="onBegin"/>
-        <simpleAction role="resume" delay="6s"/>
-      </causalConnector>
-
     </connectorBase>
   </head>
   <body>
@@ -26,13 +20,9 @@
     <media id='video' src='../samples/bunny.ogg' descriptor='desc' >
       <area id='area1' begin='3s' />
     </media>
-    <link xconnector="onBeginPause">
+    <link xconnector="onBeginAbort">
       <bind role="onBegin" component="video" interface="area1"/>
-      <bind role="pause" component="video" />
+      <bind role="abort" component="video" />
     </link>    
-    <!-- <link xconnector="onBeginResume">
-      <bind role="onBegin" component="video" />
-      <bind role="resume" component="video" />
-    </link> -->
   </body>
 </ncl>
