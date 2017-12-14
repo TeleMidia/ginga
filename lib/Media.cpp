@@ -403,18 +403,27 @@ Media::afterTransition (Event *evt, Event::Transition transition)
               // Stop object.
               g_assert_nonnull (_player);
               this->doStop ();
-              TRACE ("abort %s", evt->getFullId ().c_str ());
+              if (transition == Event::ABORT)
+                TRACE ("abort %s", evt->getFullId ().c_str ());
+              else
+                TRACE ("stop %s", evt->getFullId ().c_str ());
             }
           else                  // non-lambda area
             {
               Time end;
               g_assert (this->isOccurring ());
               evt->getInterval (nullptr, &end);
-              TRACE ("abort %s (end=%" GINGA_TIME_FORMAT
-                     ") at %" GINGA_TIME_FORMAT,
-                     evt->getFullId ().c_str (),
-                     GINGA_TIME_ARGS (end), GINGA_TIME_ARGS (_time));
-            }          break;
+              if (transition == Event::ABORT)
+                TRACE ("abort %s (end=%" GINGA_TIME_FORMAT
+                      ") at %" GINGA_TIME_FORMAT,
+                      evt->getFullId ().c_str (),
+                      GINGA_TIME_ARGS (end), GINGA_TIME_ARGS (_time));
+              else
+                TRACE ("stop %s (end=%" GINGA_TIME_FORMAT
+                      ") at %" GINGA_TIME_FORMAT,
+                      evt->getFullId ().c_str (),
+                      GINGA_TIME_ARGS (end), GINGA_TIME_ARGS (_time));
+            }          
           break;
 
         default:
