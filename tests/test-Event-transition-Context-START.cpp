@@ -72,7 +72,34 @@ main (void)
   }
 
   // @lambda: START from state PAUSED.
-  {}
+  {
+    Formatter *fmt;
+    Document *doc;
+    PARSE (&fmt, &doc, "\
+<ncl>\n\
+<body>\n\
+  <context id='c'/>\n\
+</body>\n\
+</ncl>");
+
+    Context *c = cast (Context *, doc->getObjectById ("c"));
+    g_assert_nonnull (c);
+
+    Event *lambda = c->getLambda ();
+    g_assert_nonnull (lambda);
+
+    g_assert (lambda->getState () == Event::SLEEPING);
+    g_assert_true (lambda->transition (Event::START));
+    g_assert (lambda->getState () == Event::OCCURRING);
+    g_assert_true (lambda->transition (Event::PAUSE));
+    g_assert (lambda->getState () == Event::PAUSED);
+
+    // Main check
+    g_assert_true (lambda->transition (Event::START));
+    g_assert (lambda->getState () == Event::OCCURRING);
+
+    delete fmt;
+  }
 
   // @lambda: START from state SLEEPING.
   {
