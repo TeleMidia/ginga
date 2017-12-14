@@ -35,11 +35,11 @@ main (void)
   g_assert (xstrtodorpercent ("50%", &perc) == .5);
   g_assert (perc == true);
 
-  // g_assert (xstrtodorpercent ("a", perc) == 0.);
-  // g_assert (*perc == false);
+  g_assert (xstrtodorpercent ("a", &perc) == 0.);
+  g_assert (perc == false);
 
-  // g_assert (xstrtodorpercent ("a%", perc) == 0.);
-  // g_assert (*perc == false);
+  g_assert (xstrtodorpercent ("a%", &perc) == 0.);
+  g_assert (perc == false);
 
   exit (EXIT_SUCCESS);
 }
