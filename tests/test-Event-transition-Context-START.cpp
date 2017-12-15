@@ -1,4 +1,4 @@
-/* Copyright (C) 2006-2017 PUC-Rio/Laboratorio TeleMidia
+/* Copyright (Ctx) 2006-2017 PUC-Rio/Laboratorio TeleMidia
 
 This file is part of Ginga (Ginga-NCL).
 
@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Context.h"
 #include "Parser.h"
 
-#define PARSE(fmt, doc, str)                                               \
+#define PARSE_AND_START(fmt, doc, str)                                     \
   G_STMT_START                                                             \
   {                                                                        \
     string buf = str;                                                      \
@@ -47,26 +47,75 @@ main (void)
   {
     Formatter *fmt;
     Document *doc;
-    PARSE (&fmt, &doc, "\
+    PARSE_AND_START (&fmt, &doc, "\
 <ncl>\n\
 <body>\n\
-  <context id='c'/>\n\
+  <port id='p1' component='ctx'/>\n\
+  <context id='ctx'>\n\
+    <property name='p1' value='0'/>\n\
+    <port id='port1' component='m1'/>\n\
+    <port id='port2' component='m2'/>\n\
+    <media id='m1'/>\n\
+    <media id='m2'/>\n\
+  </context>\n\
 </body>\n\
 </ncl>");
 
-    Context *c = cast (Context *, doc->getObjectById ("c"));
-    g_assert_nonnull (c);
+    Event *root_lambda = doc->getRoot ()->getLambda ();
+    g_assert_nonnull (root_lambda);
+    Context *ctx = cast (Context *, doc->getObjectById ("ctx"));
+    g_assert_nonnull (ctx);
+    Event *ctx_lambda = ctx->getLambda ();
+    g_assert_nonnull (ctx_lambda);
+    auto iter = ctx->getPorts ()->begin ();
+    Event *ctx_port1 = *iter;
+    g_assert_nonnull (ctx_port1);
+    iter++;
+    Event *ctx_port2 = *iter;
+    g_assert_nonnull (ctx_port2);
+    Event *ctx_p1 = ctx->getAttributionEvent ("p1");
 
-    Event *lambda = c->getLambda ();
-    g_assert_nonnull (lambda);
+    // --------------------------------
+    // check start document
 
-    g_assert (lambda->getState () == Event::SLEEPING);
-    g_assert_true (lambda->transition (Event::START));
-    g_assert (lambda->getState () == Event::OCCURRING);
+    // when start the document, only the lambda@root is OCCURING
+    g_assert (root_lambda->getState () == Event::OCCURRING);
+    g_assert (ctx_lambda->getState () == Event::SLEEPING);
+    g_assert (ctx_port1->getState () == Event::SLEEPING);
+    g_assert (ctx_port2->getState () == Event::SLEEPING);
+    g_assert (ctx_p1->getState () == Event::SLEEPING);
 
-    // Main check
-    g_assert_false (lambda->transition (Event::START));
-    g_assert (lambda->getState () == Event::OCCURRING);
+    // after advance time, lambda@ctx is OCCURRING, and its
+    // anchors and properties are SLEEPING
+    fmt->sendTick (0, 0, 0);
+    g_assert (root_lambda->getState () == Event::OCCURRING);
+    g_assert (ctx_lambda->getState () == Event::OCCURRING);
+    g_assert (ctx_port1->getState () == Event::SLEEPING);
+    g_assert (ctx_port2->getState () == Event::SLEEPING);
+    g_assert (ctx_p1->getState () == Event::SLEEPING);
+
+    // after advance time, lambda@ctx and its anchors
+    // are OCCURRING, and its properties are SLEEPING
+    fmt->sendTick (0, 0, 0);
+    g_assert (root_lambda->getState () == Event::OCCURRING);
+    g_assert (ctx_lambda->getState () == Event::OCCURRING);
+    g_assert (ctx_port1->getState () == Event::OCCURRING);
+    g_assert (ctx_port2->getState () == Event::OCCURRING);
+    g_assert (ctx_p1->getState () == Event::SLEEPING);
+
+    // --------------------------------
+    // main check
+
+    // START is not done and return false
+    g_assert_false (ctx_lambda->transition (Event::START));
+
+    // after start, lambda@ctx and its anchors
+    // are OCCURRING, and its properties are SLEEPING
+    g_assert (root_lambda->getState () == Event::OCCURRING);
+    g_assert (ctx_lambda->getState () == Event::OCCURRING);
+    g_assert (ctx_port1->getState () == Event::OCCURRING);
+    g_assert (ctx_port2->getState () == Event::OCCURRING);
+    g_assert (ctx_p1->getState () == Event::SLEEPING);
 
     delete fmt;
   }
@@ -105,10 +154,11 @@ main (void)
   {
     Formatter *fmt;
     Document *doc;
-    PARSE (&fmt, &doc, "\
+    PARSE_AND_START (&fmt, &doc, "\
 <ncl>\n\
 <body>\n\
-  <context id='c'>\n\
+  <port id='p1' component='ctx'/>\n\
+  <context id='ctx'>\n\
     <property name='p1' value='0'/>\n\
     <port id='port1' component='m1'/>\n\
     <port id='port2' component='m2'/>\n\
@@ -118,45 +168,77 @@ main (void)
 </body>\n\
 </ncl>");
 
-    Context *c = cast (Context *, doc->getObjectById ("c"));
-    g_assert_nonnull (c);
-
-    Event *lambda = c->getLambda ();
-    g_assert_nonnull (lambda);
-    auto iter = c->getPorts ()->begin ();
-    Event *port1 = *iter;
-    g_assert_nonnull (port1);
+    Event *root_lambda = doc->getRoot ()->getLambda ();
+    g_assert_nonnull (root_lambda);
+    Context *ctx = cast (Context *, doc->getObjectById ("ctx"));
+    g_assert_nonnull (ctx);
+    Event *ctx_lambda = ctx->getLambda ();
+    g_assert_nonnull (ctx_lambda);
+    auto iter = ctx->getPorts ()->begin ();
+    Event *ctx_port1 = *iter;
+    g_assert_nonnull (ctx_port1);
     iter++;
-    Event *port2 = *iter;
-    g_assert_nonnull (port2);
-    Event *p1 = c->getAttributionEvent ("p1");
+    Event *ctx_port2 = *iter;
+    g_assert_nonnull (ctx_port2);
+    Event *ctx_p1 = ctx->getAttributionEvent ("p1");
 
-    // before START lambda, anchors events an properties
-    // events are in SLEEPING
-    g_assert (lambda->getState () == Event::SLEEPING);
-    g_assert (port1->getState () == Event::SLEEPING);
-    g_assert (port2->getState () == Event::SLEEPING);
-    g_assert (p1->getState () == Event::SLEEPING);
+    // --------------------------------
+    // check start document
+
+    // when start the document, only the lambda@root is OCCURING
+    g_assert (root_lambda->getState () == Event::OCCURRING);
+    g_assert (ctx_lambda->getState () == Event::SLEEPING);
+    g_assert (ctx_port1->getState () == Event::SLEEPING);
+    g_assert (ctx_port2->getState () == Event::SLEEPING);
+    g_assert (ctx_p1->getState () == Event::SLEEPING);
+
+    // after advance time, lambda@ctx is OCCURRING, and its
+    // anchors and properties are SLEEPING
+    fmt->sendTick (0, 0, 0);
+    g_assert (ctx_lambda->getState () == Event::OCCURRING);
+    g_assert (ctx_port1->getState () == Event::SLEEPING);
+    g_assert (ctx_port2->getState () == Event::SLEEPING);
+    g_assert (ctx_p1->getState () == Event::SLEEPING);
+
+    // after advance time, lambda@ctx and its anchors
+    // are OCCURRING, and its properties are SLEEPING
+    fmt->sendTick (0, 0, 0);
+    g_assert (ctx_lambda->getState () == Event::OCCURRING);
+    g_assert (ctx_port1->getState () == Event::OCCURRING);
+    g_assert (ctx_port2->getState () == Event::OCCURRING);
+    g_assert (ctx_p1->getState () == Event::SLEEPING);
+
+    // --------------------------------
+    // main check
+
+    // STOP is done and return true
+    g_assert (ctx_lambda->transition (Event::STOP));
+
+    // after STOP time,lambda@ctx and its anchors
+    // are OCCURRING, and its properties are SLEEPING
+    fmt->sendTick (0, 0, 0);
+    g_assert (ctx_lambda->getState () == Event::SLEEPING);
+    g_assert (ctx_port1->getState () == Event::SLEEPING);
+    g_assert (ctx_port2->getState () == Event::SLEEPING);
+    g_assert (ctx_p1->getState () == Event::SLEEPING);
 
     // START is done and return true
-    g_assert_true (lambda->transition (Event::START));
+    g_assert_true (ctx_lambda->transition (Event::START));
 
-    // after START, lambda is in OCCURRING and
-    // anchors are in SLEEPING
-    g_assert (lambda->getState () == Event::OCCURRING);
-    g_assert (port1->getState () == Event::SLEEPING);
-    g_assert (port2->getState () == Event::SLEEPING);
-    g_assert (p1->getState () == Event::SLEEPING);
+    // after START, lambda@ctx is SLEEPING and its anchors
+    // and properties are SLEEPING
+    g_assert (ctx_lambda->getState () == Event::OCCURRING);
+    g_assert (ctx_port1->getState () == Event::SLEEPING);
+    g_assert (ctx_port2->getState () == Event::SLEEPING);
+    g_assert (ctx_p1->getState () == Event::SLEEPING);
 
-    // advance time
-    fmt->sendTick (1, 1, 1);
-
-    // when advance time, anchors events go to OCCURRING
-    // and properties events are SLEEPING
-    g_assert (lambda->getState () == Event::OCCURRING);
-    g_assert (port1->getState () == Event::OCCURRING);
-    g_assert (port2->getState () == Event::OCCURRING);
-    g_assert (p1->getState () == Event::SLEEPING);
+    // after advance time, lambda@ctx and its anchors
+    // are OCCURRING, and its properties are SLEEPING
+    fmt->sendTick (0, 0, 0);
+    g_assert (ctx_lambda->getState () == Event::OCCURRING);
+    g_assert (ctx_port1->getState () == Event::OCCURRING);
+    g_assert (ctx_port2->getState () == Event::OCCURRING);
+    g_assert (ctx_p1->getState () == Event::SLEEPING);
 
     delete fmt;
   }
@@ -167,42 +249,76 @@ main (void)
   {
     Formatter *fmt;
     Document *doc;
-    PARSE (&fmt, &doc, "\
-  <ncl>\n\
-  <body>\n\
-    <context id='c'>\n\
-      <property name='p1' value='0'/>\n\
-    </context>\n\
-  </body>\n\
-  </ncl>");
+    PARSE_AND_START (&fmt, &doc, "\
+<ncl>\n\
+<body>\n\
+  <port id='p1' component='ctx'/>\n\
+  <context id='ctx'>\n\
+    <property name='p1' value='0'/>\n\
+    <port id='port1' component='m1'/>\n\
+    <port id='port2' component='m2'/>\n\
+    <media id='m1'/>\n\
+    <media id='m2'/>\n\
+  </context>\n\
+</body>\n\
+</ncl>");
 
-    // Check lambda.
-    Context *c = cast (Context *, doc->getObjectById ("c"));
-    g_assert_nonnull (c);
+    Event *root_lambda = doc->getRoot ()->getLambda ();
+    g_assert_nonnull (root_lambda);
+    Context *ctx = cast (Context *, doc->getObjectById ("ctx"));
+    g_assert_nonnull (ctx);
+    Event *ctx_lambda = ctx->getLambda ();
+    g_assert_nonnull (ctx_lambda);
+    auto iter = ctx->getPorts ()->begin ();
+    Event *ctx_port1 = *iter;
+    g_assert_nonnull (ctx_port1);
+    iter++;
+    Event *ctx_port2 = *iter;
+    g_assert_nonnull (ctx_port2);
+    Event *ctx_p1 = ctx->getAttributionEvent ("p1");
 
-    Event *lambda = c->getLambda ();
-    g_assert_nonnull (lambda);
-    Event *p1 = c->getAttributionEvent ("p1");
-    g_assert_nonnull (p1);
+    // --------------------------------
+    // check start document
 
-    g_assert (lambda->getState () == Event::SLEEPING);
-    g_assert_true (lambda->transition (Event::START));
-    g_assert (lambda->getState () == Event::OCCURRING);
+    // when start the document, only the lambda@root is OCCURING
+    g_assert (root_lambda->getState () == Event::OCCURRING);
+    g_assert (ctx_lambda->getState () == Event::SLEEPING);
+    g_assert (ctx_port1->getState () == Event::SLEEPING);
+    g_assert (ctx_port2->getState () == Event::SLEEPING);
+    g_assert (ctx_p1->getState () == Event::SLEEPING);
 
-    // before START AttributionEvent is SLEEPING
-    g_assert (p1->getState () == Event::SLEEPING);
+    // after advance time, lambda@ctx is OCCURRING, and its
+    // anchors and properties are SLEEPING
+    fmt->sendTick (0, 0, 0);
+    g_assert (root_lambda->getState () == Event::OCCURRING);
+    g_assert (ctx_lambda->getState () == Event::OCCURRING);
+    g_assert (ctx_port1->getState () == Event::SLEEPING);
+    g_assert (ctx_port2->getState () == Event::SLEEPING);
+    g_assert (ctx_p1->getState () == Event::SLEEPING);
+
+    // after advance time, lambda@ctx and its anchors
+    // are OCCURRING, and its properties are SLEEPING
+    fmt->sendTick (0, 0, 0);
+    g_assert (root_lambda->getState () == Event::OCCURRING);
+    g_assert (ctx_lambda->getState () == Event::OCCURRING);
+    g_assert (ctx_port1->getState () == Event::OCCURRING);
+    g_assert (ctx_port2->getState () == Event::OCCURRING);
+    g_assert (ctx_p1->getState () == Event::SLEEPING);
+
+    // --------------------------------
+    // main check
 
     // START AttributionEvent is done and return true
-    g_assert (p1->setParameter ("value", "1"));
-    g_assert_true (p1->transition (Event::START));
+    g_assert (ctx_p1->setParameter ("value", "1"));
+    g_assert_true (ctx_p1->transition (Event::START));
 
     // after START AttributionEvent is OCCURRING
-    g_assert (p1->getState () == Event::OCCURRING);
-    g_assert (c->getProperty ("p1") == "1");
+    g_assert (ctx_p1->getState () == Event::OCCURRING);
+    g_assert (ctx->getProperty ("p1") == "1");
 
     // when advance time AttributionEvent is SLEEPING
-    fmt->sendTick (1, 1, 1);
-    g_assert (p1->getState () == Event::SLEEPING);
+    fmt->sendTick (0, 0, 0);
+    g_assert (ctx_p1->getState () == Event::SLEEPING);
 
     delete fmt;
   }

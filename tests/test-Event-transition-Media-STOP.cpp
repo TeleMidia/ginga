@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Media.h"
 #include "Parser.h"
 
-#define PARSE(fmt, doc, str)                                               \
+#define PARSE_AND_START(fmt, doc, str)                                     \
   G_STMT_START                                                             \
   {                                                                        \
     string buf = str;                                                      \
@@ -45,7 +45,7 @@ main (void)
   {
     Formatter *fmt;
     Document *doc;
-    PARSE (&fmt, &doc, "\
+    PARSE_AND_START (&fmt, &doc, "\
 <ncl>\n\
  <body>\n\
   <media id='m'>\n\
@@ -116,7 +116,7 @@ main (void)
   {
     Formatter *fmt;
     Document *doc;
-    PARSE (&fmt, &doc, "\
+    PARSE_AND_START (&fmt, &doc, "\
 <ncl>\n\
  <body>\n\
   <media id='m'/>\n\
