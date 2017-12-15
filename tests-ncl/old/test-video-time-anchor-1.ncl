@@ -1,4 +1,5 @@
-<ncl>
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ncl id="menuEx" xmlns="http://www.ncl.org.br/NCL3.0/EDTVProfile">
   <head>
     <regionBase>
       <region id='reg' width='50%' height='50%'/>
@@ -39,15 +40,17 @@
     </connectorBase>
   </head>
   <body>
-     <port id='start' component='vid1'/>
-     <media id='vid1' src='samples/animGar.mp4' descriptor='desc' type='video/x-new-video-player' >
-         <area id="segText" begin="3s" end="5s" />
-     </media>
+    <port id='start' component='imagem'/>
 
-     <link xconnector="onBeginStop">
-        <bind role="onBegin" component="vid1" interface="segText" />
-        <bind role="stop" component="vid1"  />
-     </link>
+    <media id='imagem' src='../samples/gnu.png' descriptor='desc2' />
+    <media id='video' src='../samples/bunny.ogg' descriptor='desc' >
+      <area id="anchor" begin="10s" end="20s" />
+    </media>
+
+    <link xconnector="onBeginStart">
+      <bind role="onBegin" component="imagem" />
+      <bind role="start" component="video" interface='anchor' />
+    </link>
 
   </body>
 </ncl>
