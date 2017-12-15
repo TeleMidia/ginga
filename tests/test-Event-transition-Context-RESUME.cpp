@@ -43,7 +43,7 @@ main (void)
 
   // Presentation events ---------------------------------------------------
 
-  // @lambda: PAUSE from state OCCURRING.
+  // @lambda: RESUME from state OCCURRING.
   {
     Formatter *fmt;
     Document *doc;
@@ -113,7 +113,7 @@ main (void)
     delete fmt;
   }
 
-  // @lambda: PAUSE from state PAUSED.
+  // @lambda: RESUME from state PAUSED.
   {
     Formatter *fmt;
     Document *doc;
@@ -193,7 +193,7 @@ main (void)
     delete fmt;
   }
 
-  // @lambda: PAUSE from state SLEEPING.
+  // @lambda: RESUME from state SLEEPING.
 
   {
     Formatter *fmt;
@@ -213,7 +213,7 @@ main (void)
 
     g_assert (lambda->getState () == Event::SLEEPING);
 
-    // PAUSE is not done and return false
+    // RESUME is not done and return false
     g_assert_false (lambda->transition (Event::RESUME));
     g_assert (lambda->getState () == Event::SLEEPING);
 
