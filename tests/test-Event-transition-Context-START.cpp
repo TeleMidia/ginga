@@ -199,8 +199,15 @@ main (void)
     // are OCCURRING, and its properties are SLEEPING
     g_assert (root_lambda->getState () == Event::OCCURRING);
     g_assert (ctx_lambda->getState () == Event::OCCURRING);
-    g_assert (ctx_port1->getState () == Event::OCCURRING); //not working
-    g_assert (ctx_port2->getState () == Event::OCCURRING); //not working
+    g_assert (ctx_port1->getState () == Event::PAUSED);
+    g_assert (ctx_port2->getState () == Event::PAUSED);
+    g_assert (ctx_p1->getState () == Event::SLEEPING);
+
+    fmt->sendTick (0, 0, 0);
+    g_assert (root_lambda->getState () == Event::OCCURRING);
+    g_assert (ctx_lambda->getState () == Event::OCCURRING);
+    g_assert (ctx_port1->getState () == Event::OCCURRING);
+    g_assert (ctx_port2->getState () == Event::OCCURRING);
     g_assert (ctx_p1->getState () == Event::SLEEPING);
 
     delete fmt;
