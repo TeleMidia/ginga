@@ -30,7 +30,7 @@ find_package (GDK3 REQUIRED)
 find_package (Cairo REQUIRED)
 find_package (Pango REQUIRED)
 find_package (RSVG REQUIRED)
-find_package (GStreamer REQUIRED)
+find_package (GStreamer 1.0 REQUIRED)
 add_definitions (-DWITH_PANGO=1 -DWITH_GSTREAMER=1)
 
 find_package (Lua REQUIRED)
