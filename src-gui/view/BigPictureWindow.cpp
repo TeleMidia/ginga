@@ -42,7 +42,7 @@ gdouble cardWidth = 300;
 gdouble cardHeight = 169;
 
 void
-instantiateInAppLibrary(xmlDocPtr doc, xmlNodePtr cur) {
+instantiateInAppLibrary(unused (xmlDocPtr doc), xmlNodePtr cur) {
   guint i=0;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
@@ -220,9 +220,7 @@ draw_bigpicture_callback (GtkWidget *widget, cairo_t *cr,
     return;
   }
 
-  int w, h;
-  w = gtk_widget_get_allocated_width (widget);
-  h = gtk_widget_get_allocated_height (widget);
+  int h = gtk_widget_get_allocated_height (widget);
 
   // clear with pattern
   cairo_set_source (cr, background_pattern);
