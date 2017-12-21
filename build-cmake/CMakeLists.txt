@@ -154,6 +154,7 @@ set (LIBGINGA_SOURCES
   ../lib/player/PlayerAnimator.cpp
   ../lib/player/PlayerImage.cpp
   ../lib/player/PlayerLua.cpp
+  ../lib/player/PlayerSigGen.cpp
   ../lib/player/PlayerText.cpp
   ../lib/player/PlayerVideo.cpp
 
