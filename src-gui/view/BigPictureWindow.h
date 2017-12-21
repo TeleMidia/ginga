@@ -15,20 +15,24 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
+#ifndef BIG_PICTURE_WINDOW_H
+#define BIG_PICTURE_WINDOW_H
 
-typedef struct{
-   gint index;
-   gint drawOrder; 
-   cairo_surface_t *surface;
-   cairo_surface_t *print_surface;
-   gdouble position;
-   gdouble scale; 
-   gdouble destPosition;
-   gboolean animate;
-   gchar *appName;
-   gchar *appDesc;
-   gchar *src; 
-
-}BigPictureCard;
+typedef struct
+{
+  gint index;
+  gint drawOrder;
+  cairo_surface_t *surface;
+  cairo_surface_t *print_surface;
+  gdouble position;
+  gdouble scale;
+  gdouble destPosition;
+  gboolean animate;
+  gchar *appName;
+  gchar *appDesc;
+  gchar *src;
+} BigPictureCard;
 
 extern BigPictureCard *bigPictureCard;
+
+#endif // BIG_PICTURE_WINDOW_H
