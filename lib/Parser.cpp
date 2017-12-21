@@ -563,6 +563,31 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
     {"comparator", ATTR_REQUIRED},
     {"value", ATTR_REQUIRED}}},
  },
+ {"transitionBase",
+  {nullptr,
+   nullptr,
+   ELT_CACHE,
+   {"head"},
+   {{"id", ATTR_OPT_ID}}},
+ },
+ {"transition",
+  {nullptr,
+   nullptr,
+   ELT_CACHE,
+   {"transitionBase"},
+   {{"id", ATTR_ID},
+    {"type", ATTR_REQUIRED_NONEMPTY_NAME},
+    {"subtype", ATTR_NONEMPTY_NAME},
+    {"dur", 0},                 // unused
+    {"startProgress", 0},       // unused
+    {"endProgress", 0},         // unused
+    {"direction", 0},           // unused
+    {"fadeColor", 0},           // unused
+    {"horzRepeat", 0},          // unused
+    {"vertRepeat", 0},          // unused
+    {"borderWidth", 0},         // unused
+    {"borderColor", 0}}},       // unused
+ },
  {"body",
   {ParserState::pushContext,    // reused
    ParserState::popContext,     // reused
@@ -1908,8 +1933,8 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
   list<ParserElt *> switch_list;
   list<ParserElt *> link_list;
 
-  // Resolve descriptor reference to region.
-  // (I.e., move region attributes to associated descriptor.)
+  // Resolve descriptor references to region/transition.
+  // (I.e., move region/transition attributes to associated descriptor.)
   if (st->eltCacheIndexByTag ({"descriptor"}, &desc_list) > 0)
     {
       for (auto desc_elt: desc_list)
@@ -1917,20 +1942,78 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
           string region_id;
           ParserElt *region_elt;
 
-          if (!desc_elt->getAttribute ("region", &region_id))
-            continue;           // nothing to do
+          static const string trans_attr[] = {"transIn", "transOut"};
+          string trans_id;
+          ParserElt *trans_elt;
 
-          if (unlikely (!st->eltCacheIndexById
-                        (region_id, &region_elt, {"region"})))
+          if (desc_elt->getAttribute ("region", &region_id))
             {
-              return st->errEltBadAttribute
-                (desc_elt->getNode (), "region", region_id,
-                 "no such region");
+              if (unlikely (!st->eltCacheIndexById
+                            (region_id, &region_elt, {"region"})))
+                {
+                  return st->errEltBadAttribute
+                    (desc_elt->getNode (), "region", region_id,
+                     "no such region");
+                }
+              for (auto it: *region_elt->getAttributes ())
+                if (it.first != "id")
+                  desc_elt->setAttribute (it.first, it.second);
             }
 
-          for (auto it: *region_elt->getAttributes ())
-            if (it.first != "id")
-              desc_elt->setAttribute (it.first, it.second);
+          for (gsize i = 0; i < G_N_ELEMENTS (trans_attr); i++)
+            {
+              string val;
+              string str;
+
+              if (!desc_elt->getAttribute (trans_attr[i], &trans_id))
+                continue;
+
+              if (unlikely (!st->eltCacheIndexById
+                            (trans_id, &trans_elt, {"transition"})))
+                {
+                  return st->errEltBadAttribute
+                    (desc_elt->getNode (), trans_attr[i], trans_id,
+                     "no such transition");
+                }
+
+              g_assert (trans_elt->getAttribute ("type", &str));
+              val = xstrbuild
+                ("{\
+type='%s',\
+subtype='%s',\
+dur='%s',\
+startProgress='%s',\
+endProgress='%s',\
+direction='%s',\
+fadeColor='%s',\
+horzRepeat='%s',\
+vertRepeat='%s',\
+borderWidth='%s',\
+borderColor='%s'\
+}",
+                 str.c_str (),
+                 (trans_elt->getAttribute ("subtype", &str))
+                 ? str.c_str () : "",
+                 + (trans_elt->getAttribute ("dur", &str))
+                 ? str.c_str () : "0",
+                 + (trans_elt->getAttribute ("startProgress", &str))
+                 ? str.c_str () : "0",
+                 + (trans_elt->getAttribute ("endProgress", &str))
+                 ? str.c_str () : "0",
+                 + (trans_elt->getAttribute ("direction", &str))
+                 ? str.c_str () : "forward",
+                 + (trans_elt->getAttribute ("fadeColor", &str))
+                 ? str.c_str () : "",
+                 + (trans_elt->getAttribute ("horzRepeat", &str))
+                 ? str.c_str () : "0",
+                 + (trans_elt->getAttribute ("vertRepeat", &str))
+                 ? str.c_str () : "0",
+                 + (trans_elt->getAttribute ("borderWidth", &str))
+                 ? str.c_str () : "0",
+                 + (trans_elt->getAttribute ("borderColor", &str))
+                 ? str.c_str () : "");
+              desc_elt->setAttribute (trans_attr[i], val);
+            }
         }
     }
 

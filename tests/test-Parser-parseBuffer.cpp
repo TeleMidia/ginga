@@ -183,6 +183,60 @@ main (void)
 </ncl>\n\
 ");
 
+  XFAIL ("descriptor: Bad transIn",
+         "<descriptor>: Bad value 'nonexistent' for attribute 'transIn' "
+         "(no such transition)", "\
+<ncl>\n\
+ <head>\n\
+  <descriptorBase>\n\
+   <descriptor id='d' transIn='nonexistent'/>\n\
+  </descriptorBase>\n\
+ </head>\n\
+ <body/>\n\
+</ncl>\n\
+");
+
+  XFAIL ("descriptor: Bad transIn",
+         "<descriptor>: Bad value 't' for attribute 'transIn' "
+         "(no such transition)", "\
+<ncl>\n\
+ <head>\n\
+  <descriptorBase>\n\
+   <descriptor id='t'/>\n\
+   <descriptor id='d' transIn='t'/>\n\
+  </descriptorBase>\n\
+ </head>\n\
+ <body/>\n\
+</ncl>\n\
+");
+
+  XFAIL ("descriptor: Bad transOut",
+         "<descriptor>: Bad value 'nonexistent' for attribute 'transOut' "
+         "(no such transition)", "\
+<ncl>\n\
+ <head>\n\
+  <descriptorBase>\n\
+   <descriptor id='d' transOut='nonexistent'/>\n\
+  </descriptorBase>\n\
+ </head>\n\
+ <body/>\n\
+</ncl>\n\
+");
+
+  XFAIL ("descriptor: Bad transOut",
+         "<descriptor>: Bad value 't' for attribute 'transOut' "
+         "(no such transition)", "\
+<ncl>\n\
+ <head>\n\
+  <descriptorBase>\n\
+   <descriptor id='t'/>\n\
+   <descriptor id='d' transOut='t'/>\n\
+  </descriptorBase>\n\
+ </head>\n\
+ <body/>\n\
+</ncl>\n\
+");
+
 
 // -------------------------------------------------------------------------
 // <descriptorParam>
@@ -1252,6 +1306,65 @@ main (void)
 
 
 // -------------------------------------------------------------------------
+// <transition>
+// -------------------------------------------------------------------------
+
+  XFAIL ("transition: Missing id",
+         "<transition>: Missing attribute 'id'", "\
+<ncl>\n\
+ <head>\n\
+  <transitionBase>\n\
+   <transition/>\n\
+  </transitionBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("transition: Missing type",
+         "<transition>: Missing attribute 'type'", "\
+<ncl>\n\
+ <head>\n\
+  <transitionBase>\n\
+   <transition id='t'/>\n\
+  </transitionBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("transition: Bad type",
+         "<transition>: Bad value '$' for attribute 'type' "
+         "(must not contain '$')", "\
+<ncl>\n\
+ <head>\n\
+  <transitionBase>\n\
+   <transition id='t' type='$'/>\n\
+  </transitionBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("transition: Bad subtype",
+         "<transition>: Bad value '$' for attribute 'subtype' "
+         "(must not contain '$')", "\
+<ncl>\n\
+ <head>\n\
+  <transitionBase>\n\
+   <transition id='t' type='x' subtype='$'/>\n\
+  </transitionBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+
+// -------------------------------------------------------------------------
 // <context>
 // -------------------------------------------------------------------------
 
@@ -2255,6 +2368,52 @@ main (void)
     g_assert (m->getAttributionEvent ("zorder") != nullptr);
     g_assert (m->getProperty ("zorder") == "1");
 
+    delete doc;
+  }
+
+  // Success: Single media with descriptor and transitions.
+  {
+    Document *doc;
+    PASS (&doc, "Single media with descriptor and transitions", "\
+<ncl>\n\
+ <head>\n\
+  <descriptorBase>\n\
+   <descriptor id='d' transIn='t1' transOut='t1'/>\n\
+  </descriptorBase>\n\
+  <transitionBase>\n\
+   <transition id='t1' type='barWipe'/>\n\
+  </transitionBase>\n\
+ </head>\n\
+ <body>\n\
+  <media id='m' descriptor='d'>\n\
+  </media>\n\
+ </body>\n\
+</ncl>\n\
+");
+    g_assert_nonnull (doc);
+    g_assert (doc->getObjects ()->size () == 3);
+    g_assert (doc->getMedias ()->size () == 2);
+    g_assert (doc->getContexts ()->size () == 1);
+
+    Media *m = cast (Media *, doc->getObjectById ("m"));
+    g_assert_nonnull (m);
+
+
+    g_assert (m->getEvents ()->size () == 3);
+
+    g_assert (m->getAttributionEvent ("transIn") != nullptr);
+    g_assert (m->getProperty ("transIn") == "\
+{type='barWipe',subtype='',dur='0',startProgress='0',endProgress='0',\
+direction='forward',fadeColor='',horzRepeat='0',vertRepeat='0',\
+borderWidth='0',borderColor=''}");
+
+    g_assert (m->getAttributionEvent ("transOut") != nullptr);
+    g_assert (m->getProperty ("transOut") == "\
+{type='barWipe',subtype='',dur='0',startProgress='0',endProgress='0',\
+direction='forward',fadeColor='',horzRepeat='0',vertRepeat='0',\
+borderWidth='0',borderColor=''}");
+
+    TRACE ("\n%s", m->toString ().c_str ());
     delete doc;
   }
 
