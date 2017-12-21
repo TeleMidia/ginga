@@ -69,6 +69,7 @@ public:
      PROP_VOLUME,
      PROP_WIDTH,
      PROP_Z_INDEX,
+     PROP_FREQ,
     };
 
   Player (Formatter *, const string &, const string &);

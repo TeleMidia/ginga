@@ -21,6 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "player/PlayerImage.h"
 #include "player/PlayerText.h"
 #include "player/PlayerVideo.h"
+#include "player/PlayerSigGen.h"
 
 #if defined WITH_NCLUA && WITH_NCLUA
 # include "player/PlayerLua.h"
@@ -439,6 +440,10 @@ Player::createPlayer (Formatter *formatter, const string &id,
   if (xstrhasprefix (mime, "audio") || xstrhasprefix (mime, "video"))
     {
       player = new PlayerVideo (formatter, id, uri);
+    }
+  else if (xstrhasprefix (mime, "siggen"))
+    {
+      player = new PlayerSigGen (formatter, id, uri);
     }
   else if (xstrhasprefix (mime, "image"))
     {
