@@ -160,7 +160,7 @@ TEST_MEDIA+= test-media-lua-anim-transparency.ncl
 TEST_MEDIA+= test-media-nil-anim-transparency.ncl
 TEST_MEDIA+= test-media-svg-anim-transparency.ncl
 TEST_MEDIA+= test-media-txt-anim-transparency.ncl
-TEST_MEDIA+=test-media-vid-anim-transparency.ncl
+TEST_MEDIA+= test-media-vid-anim-transparency.ncl
 
 CLEANFILES+= $(TEST_MIME)
 $(TEST_MIME): test-mime*.ncl.in
