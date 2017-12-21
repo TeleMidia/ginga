@@ -2397,8 +2397,6 @@ main (void)
 
     Media *m = cast (Media *, doc->getObjectById ("m"));
     g_assert_nonnull (m);
-
-
     g_assert (m->getEvents ()->size () == 3);
 
     g_assert (m->getAttributionEvent ("transIn") != nullptr);
@@ -2407,11 +2405,37 @@ main (void)
 direction='forward',fadeColor='',horzRepeat='0',vertRepeat='0',\
 borderWidth='0',borderColor=''}");
 
+    map<string,string> tab = parse_table (m->getProperty ("transIn"));
+    g_assert (tab["type"] == "barWipe");
+    g_assert (tab["subtype"] == "");
+    g_assert (tab["dur"] == "0");
+    g_assert (tab["startProgress"] == "0");
+    g_assert (tab["endProgress"] == "0");
+    g_assert (tab["direction"] == "forward");
+    g_assert (tab["fadeColor"] == "");
+    g_assert (tab["horzRepeat"] == "0");
+    g_assert (tab["vertRepeat"] == "0");
+    g_assert (tab["borderWidth"] == "0");
+    g_assert (tab["borderColor"] == "");
+
     g_assert (m->getAttributionEvent ("transOut") != nullptr);
     g_assert (m->getProperty ("transOut") == "\
 {type='barWipe',subtype='',dur='0',startProgress='0',endProgress='0',\
 direction='forward',fadeColor='',horzRepeat='0',vertRepeat='0',\
 borderWidth='0',borderColor=''}");
+
+    tab = parse_table (m->getProperty ("transIn"));
+    g_assert (tab["type"] == "barWipe");
+    g_assert (tab["subtype"] == "");
+    g_assert (tab["dur"] == "0");
+    g_assert (tab["startProgress"] == "0");
+    g_assert (tab["endProgress"] == "0");
+    g_assert (tab["direction"] == "forward");
+    g_assert (tab["fadeColor"] == "");
+    g_assert (tab["horzRepeat"] == "0");
+    g_assert (tab["vertRepeat"] == "0");
+    g_assert (tab["borderWidth"] == "0");
+    g_assert (tab["borderColor"] == "");
 
     TRACE ("\n%s", m->toString ().c_str ());
     delete doc;
