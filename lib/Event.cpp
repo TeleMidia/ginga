@@ -197,7 +197,7 @@ Event::transition (Event::Transition trans)
     }
 
   // Initiate transition.
-  if (!unlikely (_object->beforeTransition (this, trans)))
+  if (unlikely (!_object->beforeTransition (this, trans)))
     return false;
 
   // Update event state.
