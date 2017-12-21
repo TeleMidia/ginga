@@ -1,0 +1,258 @@
+/* Copyright (C) 2006-2017 PUC-Rio/Laboratorio TeleMidia
+
+This file is part of Ginga (Ginga-NCL).
+
+Ginga is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 2 of the License, or
+(at your option) any later version.
+
+Ginga is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
+
+
+#include "aux-ginga.h"
+#include "aux-gl.h"
+#include "PlayerSigGen.h"
+
+GINGA_NAMESPACE_BEGIN
+
+#define gstx_element_get_state(elt, st, pend, tout)             \
+  g_assert (gst_element_get_state ((elt), (st), (pend), (tout)) \
+            != GST_STATE_CHANGE_FAILURE)
+
+#define gstx_element_get_state_sync(elt, st, pend)\
+  gstx_element_get_state ((elt), (st), (pend), GST_CLOCK_TIME_NONE)
+
+#define gstx_element_set_state(elt, st)         \
+  g_assert (gst_element_set_state ((elt), (st)) \
+            != GST_STATE_CHANGE_FAILURE)
+
+#define gstx_element_set_state_sync(elt, st)                    \
+  G_STMT_START                                                  \
+  {                                                             \
+    gstx_element_set_state ((elt), (st));                       \
+    gstx_element_get_state_sync ((elt), nullptr, nullptr);      \
+  }                                                             \
+  G_STMT_END
+
+
+// Public.
+
+PlayerSigGen::PlayerSigGen (Formatter *formatter, const string &id,
+                          const string &uri)
+  :Player (formatter, id, uri)
+{
+  GstBus *bus;
+  gulong ret;
+  char *buf;
+
+  GstPad *pad;
+  GstPad *ghost;
+
+  _pipeline = nullptr;
+  _audio.bin = nullptr;
+  _audio.convert = nullptr;
+  _audio.sink = nullptr;
+
+  if (!gst_is_initialized ())
+    {
+      GError *error = nullptr;
+      if (unlikely (!gst_init_check (nullptr, nullptr, &error)))
+        {
+          g_assert_nonnull (error);
+          ERROR ("%s", error->message);
+          g_error_free (error);
+        }
+    }
+
+  _pipeline = gst_pipeline_new ("pipeline");
+  g_assert_nonnull (_pipeline);
+
+  bus = gst_pipeline_get_bus (GST_PIPELINE (_pipeline));
+  g_assert_nonnull (bus);
+  ret = gst_bus_add_watch (bus, (GstBusFunc) cb_Bus, this);
+  g_assert (ret > 0);
+  gst_object_unref (bus);
+
+  // Setup audio pipeline.
+  _audio.bin = gst_element_factory_make ("audiotestsrc", "audio.bin");
+  g_assert_nonnull (_audio.bin);
+  _audio.convert = gst_element_factory_make ("audioconvert", "convert");
+  g_assert_nonnull (_audio.convert);
+
+  // Try to use ALSA if available.
+  _audio.sink = gst_element_factory_make ("alsasink", "audio.sink");
+  if (_audio.sink == nullptr)
+    _audio.sink = gst_element_factory_make ("autoaudiosink", "audio.sink");
+  g_assert_nonnull (_audio.sink);
+
+
+  g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.bin));
+  g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.convert));
+  g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.sink));
+  g_assert (gst_element_link (_audio.bin, _audio.convert));
+  g_assert (gst_element_link (_audio.convert, _audio.sink));
+
+
+  g_object_set (G_OBJECT (_pipeline), "audio-sink", nullptr);
+
+  // Initialize handled properties.
+  static set<string> handled =
+    {
+     "freq",
+    };
+  this->resetProperties (&handled);
+}
+
+PlayerSigGen::~PlayerSigGen ()
+{
+}
+
+void
+PlayerSigGen::start ()
+{
+  GstCaps *caps;
+  GstStructure *st;
+  GstStateChangeReturn ret;
+
+  g_assert (_state != OCCURRING);
+  TRACE ("starting");
+
+  st = gst_structure_new_empty ("audio/x-raw");
+  gst_structure_set (st, "format", G_TYPE_STRING, "BGRA", nullptr);
+
+  caps = gst_caps_new_full (st, nullptr);
+  g_assert_nonnull (caps);
+
+  Player::setEOS (false);
+  g_atomic_int_set (&_sample_flag, 0);
+
+  // Initialize properties.
+  g_object_set (_audio.freq,
+                "freq", _prop.freq,
+                nullptr);
+
+  ret = gst_element_set_state (_pipeline, GST_STATE_PLAYING);
+  if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
+    Player::setEOS (true);
+
+  Player::start ();
+}
+
+void
+PlayerSigGen::stop ()
+{
+  g_assert (_state != SLEEPING);
+  TRACE ("stopping");
+
+  gstx_element_set_state_sync (_pipeline, GST_STATE_NULL);
+  gst_object_unref (_pipeline);
+  Player::stop ();
+}
+
+void
+PlayerSigGen::pause ()
+{
+  g_assert (_state != PAUSED && _state != SLEEPING);
+  TRACE ("pausing");
+
+  gstx_element_set_state_sync (_pipeline, GST_STATE_PAUSED);
+  Player::pause ();
+}
+
+void
+PlayerSigGen::resume ()
+{
+  g_assert (_state == PAUSED);
+  TRACE ("resuming");
+
+  gstx_element_set_state_sync (_pipeline, GST_STATE_PLAYING);
+  Player::resume ();
+}
+
+
+// Protected.
+
+bool
+PlayerSigGen::doSetProperty (PlayerProperty code,
+                            unused (const string &name),
+                            const string &value)
+{
+  switch (code)
+    {
+      case PROP_FREQ:
+        _prop.freq = xstrtodorpercent (value, nullptr);
+        if (_state != SLEEPING)
+          g_object_set (_audio.freq,
+                        "freq", _prop.freq,
+                        nullptr);
+        break;
+      default:
+        return Player::doSetProperty (code, name, value);
+    }
+  return true;
+}
+
+
+// Private: Static (GStreamer callbacks).
+
+gboolean
+PlayerSigGen::cb_Bus (GstBus *bus, GstMessage *msg, PlayerSigGen *player)
+{
+  g_assert_nonnull (bus);
+  g_assert_nonnull (msg);
+  g_assert_nonnull (player);
+
+  switch (GST_MESSAGE_TYPE (msg))
+    {
+    case GST_MESSAGE_EOS:
+      {
+        TRACE ("EOS");
+        break;
+      }
+    case GST_MESSAGE_ERROR:
+    case GST_MESSAGE_WARNING:
+      {
+        GstObject *obj = nullptr;
+        GError *error = nullptr;
+
+        obj = GST_MESSAGE_SRC (msg);
+        g_assert_nonnull (obj);
+
+        if (GST_MESSAGE_TYPE (msg) == GST_MESSAGE_ERROR)
+          {
+            gst_message_parse_error (msg, &error, nullptr);
+            g_assert_nonnull (error);
+            ERROR ("%s", error->message);
+          }
+        else
+          {
+            gst_message_parse_warning (msg, &error, nullptr);
+            g_assert_nonnull (error);
+            WARNING ("%s", error->message);
+          }
+        g_error_free (error);
+        break;
+      }
+    default:
+      break;
+    }
+  return TRUE;
+}
+
+GstFlowReturn
+PlayerSigGen::cb_NewSample (unused (GstAppSink *appsink), gpointer data)
+{
+  PlayerSigGen *player = (PlayerSigGen *) data;
+  g_assert_nonnull (player);
+  g_atomic_int_compare_and_exchange (&player->_sample_flag, 0, 1);
+  return GST_FLOW_OK;
+}
+
+GINGA_NAMESPACE_END

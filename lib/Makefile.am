@@ -67,6 +67,7 @@ src+= player/PlayerAnimator.cpp
 src+= player/PlayerImage.cpp
 src+= player/PlayerText.cpp
 src+= player/PlayerVideo.cpp
+src+= player/PlayerSigGen.cpp
 
 if WITH_NCLUA
 src+= player/PlayerLua.cpp
