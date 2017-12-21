@@ -425,7 +425,7 @@ main (int argc, char **argv)
   for (int i = 1; i < saved_argc; i++)
     {
       string errmsg;
-      if (!unlikely (GINGA->start (string (saved_argv[i]), &errmsg)))
+      if (unlikely (!GINGA->start (string (saved_argv[i]), &errmsg)))
         {
           if (saved_argc > 2)
             error ("%s: %s", saved_argv[i], errmsg.c_str ());
