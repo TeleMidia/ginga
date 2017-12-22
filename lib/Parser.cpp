@@ -156,7 +156,7 @@ public:
      ERROR_ELT_UNKNOWN_CHILD,     ///< Unknown child element.
      ERROR_ELT_MISSING_CHILD,     ///< Missing child element.
      ERROR_ELT_BAD_CHILD,         ///< Bad child element.
-     ERROR_ELT_NESTED,            ///< Syntax error in nested document.
+     ERROR_ELT_SUB_DOCUMENT,      ///< Syntax error in sub-document.
     };
 
   ParserState (int, int);
@@ -3010,11 +3010,19 @@ ParserState::pushRule (ParserState *st, ParserElt *elt)
 
 /**
  * @brief Starts the processing of \<importBase\> element.
- *
+ * @fn ParserState::pushRegion
  * @param st #ParserState.
  * @param elt Element wrapper.
  * @return \c true if successful, or \c false otherwise.
  */
+
+/// Cleans up the #xmlDoc associated with \<importBase\> element.
+static void
+xmlDocCleanup (void *ptr)
+{
+  xmlFreeDoc ((xmlDoc *) ptr);
+}
+
 bool
 ParserState::pushImportBase (ParserState *st, ParserElt *elt)
 {
@@ -3046,12 +3054,16 @@ ParserState::pushImportBase (ParserState *st, ParserElt *elt)
       string errmsg;
       g_assert (parser.getError (&errmsg) != ParserState::ERROR_NONE);
       xmlFreeDoc (xml);
-      return st->errElt (elt->getNode (), ParserState::ERROR_ELT_NESTED,
+      return st->errElt (elt->getNode (),
+                         ParserState::ERROR_ELT_SUB_DOCUMENT,
                          ": " + errmsg);
     }
 
-  // TODO: Add "parser", "doc", and "xml", to the list of nested document
-  // data of "st".  These should be indexed by "alias".
+  // 1. Get parent elt tag.
+  // 2. Get the elements in parsing with this tag (e.g., connector base).
+  // 3. Process them recursively, adding their elements to st.
+
+  UDATA_SET (elt, "xmlDoc", xml, xmlDocCleanup);
   g_assert_not_reached ();
 
   return true;
