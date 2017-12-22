@@ -35,6 +35,9 @@ GINGA_NAMESPACE_BEGIN
 #define toXmlChar(s)   (xmlChar *)(deconst (char *, (s).c_str ()))
 #define toCPPString(s) string (deconst (char *, (s)))
 
+/// Flags to LibXML parser.
+#define PARSER_LIBXML_FLAGS (XML_PARSE_NOERROR | XML_PARSE_NOWARNING)
+
 /// Gets node property as C++ string.
 static inline bool
 xmlGetPropAsString (xmlNode *node, const string &name, string *result)
@@ -103,7 +106,7 @@ private:
  * @brief Connector role data.
  *
  * Maintains data associated with a \<simpleCondition\> element or
- * \<simpleAction\> element occurring in NCL document.
+ * \<simpleAction\> element occurring in the NCL document.
  */
 typedef struct ParserConnRole
 {
@@ -153,6 +156,7 @@ public:
      ERROR_ELT_UNKNOWN_CHILD,     ///< Unknown child element.
      ERROR_ELT_MISSING_CHILD,     ///< Missing child element.
      ERROR_ELT_BAD_CHILD,         ///< Bad child element.
+     ERROR_ELT_NESTED,            ///< Syntax error in nested document.
     };
 
   ParserState (int, int);
@@ -175,6 +179,7 @@ public:
   static bool popAssessmentStatement (ParserState *, ParserElt *);
   static bool pushAttributeAssessment (ParserState *, ParserElt *);
   static bool pushRule (ParserState *, ParserElt *);
+  static bool pushImportBase (ParserState *, ParserElt *);
   static bool pushContext (ParserState *, ParserElt *);
   static bool popContext (ParserState *, ParserElt *);
   static bool pushPort (ParserState *, ParserElt *);
@@ -203,6 +208,7 @@ private:
   list<Object *> _objStack;                      ///< #Object stack.
 
   string genId ();
+  string getDirname ();
   bool isInUniqueSet (const string &);
   void addToUniqueSet (const string &);
   bool getData (const string &, void **);
@@ -588,6 +594,17 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
     {"borderWidth", 0},         // unused
     {"borderColor", 0}}},       // unused
  },
+ {"importBase",
+  {ParserState::pushImportBase,
+   nullptr,
+   0,
+   {"connectorBase", "descriptorBase", "regionBase", "ruleBase",
+    "transitionBase"},
+   {{"alias", ATTR_REQUIRED_NONEMPTY_NAME},
+    {"documentURI", ATTR_REQUIRED},
+    {"region", 0},              // unused
+    {"baseId", 0}}},
+ },
  {"body",
   {ParserState::pushContext,    // reused
    ParserState::popContext,     // reused
@@ -946,6 +963,18 @@ ParserState::genId ()
   string id = xstrbuild ("__unamed-%d__", _genid++);
   g_assert_false (isInUniqueSet (id));
   return id;
+}
+
+/**
+ * @brief Gets the directory part of current loaded XML file.
+ * @return Directory part if there is a loaded XML file, or the empty string
+ * otherwise.
+ */
+string
+ParserState::getDirname ()
+{
+  return (_xml != nullptr && _xml->URL != nullptr)
+    ? xpathdirname (toCPPString (_xml->URL)) : "";
 }
 
 /**
@@ -1831,7 +1860,10 @@ ParserState::ParserState (int width, int height)
   _xml = nullptr;
   g_assert_cmpint (width, >, 0);
   g_assert_cmpint (height, >, 0);
-  _rect = {0, 0, width, height};
+  _rect.x = 0;
+  _rect.y = 0;
+  _rect.width = width;
+  _rect.height = height;
   _genid = 0;
   _error = ParserState::ERROR_NONE;
   _errorMsg = "no error";
@@ -2468,7 +2500,11 @@ ParserState::popRegion (ParserState *st, ParserElt *elt)
   parent_node = elt->getParentNode ();
   g_assert_nonnull (parent_node);
   if (toCPPString (parent_node->name) != "region") // root region
-    g_assert (st->getData ("saved-rect", (void **) pointerof (&st->_rect)));
+    {
+      Rect *rect;
+      g_assert (st->getData ("saved-rect", (void **) &rect));
+      st->_rect = *rect;
+    }
   return true;
 }
 
@@ -2973,6 +3009,55 @@ ParserState::pushRule (ParserState *st, ParserElt *elt)
 }
 
 /**
+ * @brief Starts the processing of \<importBase\> element.
+ *
+ * @param st #ParserState.
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
+bool
+ParserState::pushImportBase (ParserState *st, ParserElt *elt)
+{
+  string alias;
+  string path;
+
+  xmlDoc *xml;
+  Document *doc;
+
+  g_assert (elt->getAttribute ("alias", &alias));
+  g_assert (elt->getAttribute ("documentURI", &path));
+
+  if (!xpathisabs (path))
+    path = xpathbuildabs (st->getDirname (), path);
+
+  xml = xmlReadFile (path.c_str (), nullptr, PARSER_LIBXML_FLAGS);
+  if (unlikely (xml == nullptr))
+    {
+      xmlError *err = xmlGetLastError ();
+      g_assert_nonnull (err);
+      return st->errEltBadAttribute (elt->getNode (), "documentUri",
+                                     xstrstrip (string (err->message)));
+    }
+
+  ParserState parser (st->_rect.width, st->_rect.height);
+  doc = parser.process (xml);
+  if (unlikely (doc == nullptr))
+    {
+      string errmsg;
+      g_assert (parser.getError (&errmsg) != ParserState::ERROR_NONE);
+      xmlFreeDoc (xml);
+      return st->errElt (elt->getNode (), ParserState::ERROR_ELT_NESTED,
+                         ": " + errmsg);
+    }
+
+  // TODO: Add "parser", "doc", and "xml", to the list of nested document
+  // data of "st".  These should be indexed by "alias".
+  g_assert_not_reached ();
+
+  return true;
+}
+
+/**
  * @brief Starts the processing of \<body\> or \<context\> element.
  *
  * This function parsers \p elt and pushes it as a #Context onto the object
@@ -3231,12 +3316,7 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
       if (elt->getAttribute ("src", &src)
           && !xpathisuri (src) && !xpathisabs (src))
         {
-          string dir;
-          if (st->_xml->URL == nullptr)
-            dir = "";
-          else
-            dir = xpathdirname (toCPPString (st->_xml->URL));
-          src = xpathbuildabs (dir, src);
+          src = xpathbuildabs (st->getDirname (), src);
         }
       media = new Media (id, type, src);
       g_assert_nonnull (media);
@@ -3442,12 +3522,11 @@ Document *
 Parser::parseBuffer (const void *buf, size_t size,
                      int width, int height, string *errmsg)
 {
-# define FLAGS (XML_PARSE_NOERROR | XML_PARSE_NOWARNING)
   xmlDoc *xml;
   Document *doc;
 
   xml = xmlReadMemory ((const char *) buf, (int) size,
-                       nullptr, nullptr, FLAGS);
+                       nullptr, nullptr, PARSER_LIBXML_FLAGS);
   if (unlikely (xml == nullptr))
     {
       xmlError *err = xmlGetLastError ();
@@ -3476,7 +3555,7 @@ Parser::parseFile (const string &path, int width, int height,
   xmlDoc *xml;
   Document *doc;
 
-  xml = xmlReadFile (path.c_str (), nullptr, FLAGS);
+  xml = xmlReadFile (path.c_str (), nullptr, PARSER_LIBXML_FLAGS);
   if (unlikely (xml == nullptr))
     {
       xmlError *err = xmlGetLastError ();
