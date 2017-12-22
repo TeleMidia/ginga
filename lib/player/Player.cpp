@@ -77,6 +77,7 @@ static map<string, PlayerPropertyInfo> player_property_map =
  {"volume",       {Player::PROP_VOLUME,        true,  "100%"}},
  {"width",        {Player::PROP_WIDTH,         true,  "100%"}},
  {"zIndex",       {Player::PROP_Z_INDEX,       true,  "0"}},
+ {"freq",         {Player::PROP_FREQ,          true,  "440"}},
 };
 
 static map<string, string> player_property_aliases =
@@ -441,7 +442,7 @@ Player::createPlayer (Formatter *formatter, const string &id,
     {
       player = new PlayerVideo (formatter, id, uri);
     }
-  else if (xstrhasprefix (mime, "siggen"))
+  else if (mime == "application/x-ginga-siggen")
     {
       player = new PlayerSigGen (formatter, id, uri);
     }
