@@ -79,6 +79,9 @@ test_aux_ginga_parse_color_SOURCES= test-aux-ginga-parse-color.cpp
 progs+= test-aux-ginga-parse-list
 test_aux_ginga_parse_list_SOURCES= test-aux-ginga-parse-list.cpp
 
+progs+= test-aux-ginga-parse-table
+test_aux_ginga_parse_table_SOURCES= test-aux-ginga-parse-table.cpp
+
 progs+= test-aux-ginga-parse-percent
 test_aux_ginga_parse_percent_SOURCES= test-aux-ginga-parse-percent.cpp
 

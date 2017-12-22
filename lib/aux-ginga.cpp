@@ -129,6 +129,10 @@ try_parse_list (const string &s, char sep, size_t min, size_t max,
  * @param s Table string.
  * @param result Variable to store the resulting table.
  * @return True if successful, or false otherwise.
+ *
+ * @todo Add support for keys or values containing embedded commas and
+ * scaped quotes.  Put another way, replace xstrsplit() call by real parsing
+ * code.
  */
 bool
 try_parse_table (const string &s, map<string,string> *result)
