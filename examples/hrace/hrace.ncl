@@ -9,7 +9,7 @@ Corrida de cavalos.
 
 <ncl id="hrace" xmlns="http://www.ncl.org.br/NCL3.0/EDTVProfile">
 <head>
-  <regionBase>
+  <regionBase device="1">
     <region id="rgScreen" left="80" top="60" width="640" height="480" zIndex="0">
       <region id="rgHeader" width="640" height="100"
               top="0" left="0" zIndex="1" />
@@ -83,7 +83,7 @@ Corrida de cavalos.
     <descriptor id="dStripeYellow" region="rgStripeYellow" />
     <descriptor id="dStripeBlue" region="rgStripeBlue" />
     <descriptor id="dStanding" region="rgStanding" />
-    <descriptor id="dLuaHorses" region="rgLuaHorses" border="true" />
+    <descriptor id="dLuaHorses" region="rgLuaHorses" />
 
     <!-- Bet menu -->
     <descriptor id="dBetMenuTitle" region="rgBetMenuTitle" />
@@ -148,15 +148,15 @@ Corrida de cavalos.
       <simpleCondition role="onBegin" />
       <compoundAction operator="seq">
         <simpleAction role="set" value="$val" max="unbounded" />
-        <simpleAction role="start" max="unbounded" operator="par" />
+        <simpleAction role="start" max="unbounded" />
       </compoundAction>
     </causalConnector>
 
     <causalConnector id="onBeginStopStart">
       <simpleCondition role="onBegin" />
       <compoundAction operator="seq">
-        <simpleAction role="stop" max="unbounded" operator="par" />
-        <simpleAction role="start" max="unbounded" operator="par" />
+        <simpleAction role="stop" max="unbounded" />
+        <simpleAction role="start" max="unbounded" />
       </compoundAction>
     </causalConnector>
 
@@ -167,7 +167,7 @@ Corrida de cavalos.
                          transition="starts" key="$key" />
         <simpleCondition role="onSelection" key="$key" />
       </compoundCondition>
-      <simpleAction role="stop" max="unbounded" operator="par" />
+      <simpleAction role="stop" max="unbounded" />
     </causalConnector>
 
     <causalConnector id="onKeySelectionStopStart">
@@ -178,8 +178,8 @@ Corrida de cavalos.
         <simpleCondition role="onSelection" key="$key" />
       </compoundCondition>
       <compoundAction operator="seq">
-        <simpleAction role="stop" max="unbounded" operator="par" />
-        <simpleAction role="start" max="unbounded" operator="par" />
+        <simpleAction role="stop" max="unbounded" />
+        <simpleAction role="start" max="unbounded" />
       </compoundAction>
     </causalConnector>
 
@@ -193,8 +193,8 @@ Corrida de cavalos.
       </compoundCondition>
       <compoundAction operator="seq">
         <simpleAction role="set" value="$val" max="unbounded" />
-        <simpleAction role="stop" max="unbounded" operator="par" />
-        <simpleAction role="start" max="unbounded" operator="par" />
+        <simpleAction role="stop" max="unbounded" />
+        <simpleAction role="start" max="unbounded" />
       </compoundAction>
     </causalConnector>
   </connectorBase>
@@ -203,31 +203,31 @@ Corrida de cavalos.
   <ruleBase>
     <!-- Red results -->
     <compositeRule id="rBetRedWin" operator="and">
-      <rule id="rBetRed" var="player_bet" comparator="eq" value="red" />
+      <rule id="rBetRed0" var="player_bet" comparator="eq" value="red" />
       <rule id="rRedWin" var="winner" comparator="eq" value="red" />
     </compositeRule>
 
     <compositeRule id="rBetRedLose" operator="and">
-      <rule id="rBetRed" var="player_bet" comparator="eq" value="red" />
+      <rule id="rBetRed1" var="player_bet" comparator="eq" value="red" />
       <rule id="rRedLose" var="winner" comparator="ne" value="red" />
     </compositeRule>
 
     <!-- Green results -->
     <compositeRule id="rBetGreenWin" operator="and">
-      <rule id="rBetGreen" var="player_bet" comparator="eq" value="green" />
+      <rule id="rBetGreen0" var="player_bet" comparator="eq" value="green" />
       <rule id="rGreenWin" var="winner" comparator="eq" value="green" />
     </compositeRule>
 
     <compositeRule id="rBetGreenLose" operator="and">
-      <rule id="rBetGreen" var="player_bet" comparator="eq" value="green" />
+      <rule id="rBetGreen1" var="player_bet" comparator="eq" value="green" />
       <rule id="rGreenLose" var="winner" comparator="ne" value="green" />
     </compositeRule>
 
     <!-- Yellow results -->
     <compositeRule id="rBetYellowWin" operator="and">
-      <rule id="rBetYellow" var="player_bet" comparator="eq"
+      <rule id="rBetYellow0" var="player_bet" comparator="eq"
             value="yellow" />
-      <rule id="rYellowWin" var="winner" comparator="eq" value="yellow" />
+      <rule id="rYellowWin1" var="winner" comparator="eq" value="yellow" />
     </compositeRule>
 
     <compositeRule id="rBetYellowLose" operator="and">
@@ -238,12 +238,12 @@ Corrida de cavalos.
 
     <!-- Blue results -->
     <compositeRule id="rBetBlueWin" operator="and">
-      <rule id="rBetBlue" var="player_bet" comparator="eq" value="blue" />
+      <rule id="rBetBlue0" var="player_bet" comparator="eq" value="blue" />
       <rule id="rBlueWin" var="winner" comparator="eq" value="blue" />
     </compositeRule>
 
     <compositeRule id="rBetBlueLose" operator="and">
-      <rule id="rBetBlue" var="player_bet" comparator="eq" value="blue" />
+      <rule id="rBetBlue1" var="player_bet" comparator="eq" value="blue" />
       <rule id="rBlueLose" var="winner" comparator="ne" value="blue" />
     </compositeRule>
   </ruleBase>
@@ -266,10 +266,10 @@ Corrida de cavalos.
 
   <context id="bet_menu">
     <port id="pTitle" component="bm_title" />
-    <port id="pRed" component="bm_red" />
-    <port id="pGreen" component="bm_green" />
-    <port id="pYellow" component="bm_yellow" />
-    <port id="pBlue" component="bm_blue" />
+    <port id="pRed0" component="bm_red" />
+    <port id="pGreen0" component="bm_green" />
+    <port id="pYellow0" component="bm_yellow" />
+    <port id="pBlue0" component="bm_blue" />
 
     <media id="bm_title" src="media/bet_title.png"
            descriptor="dBetMenuTitle" />
@@ -311,74 +311,74 @@ Corrida de cavalos.
     <bindRule rule="rBetRedWin" constituent="win_red" />
     <context id="win_red">
       <port id="pWinRedImg" component="win_red_img" />
-      <port id="pApplause" component="applause_sound" />
+      <port id="pApplauseSound0" component="applause_sound0" />
       <media id="win_red_img" src="media/win_red.png"
              descriptor="dResult" />
-      <media id="applause_sound" src="media/applause.mp3" />
+      <media id="applause_sound0" src="media/applause.mp3" />
     </context>
 
     <bindRule rule="rBetGreenWin" constituent="win_green" />
     <context id="win_green">
       <port id="pWinGreenImg" component="win_green_img" />
-      <port id="pApplauseSound" component="applause_sound" />
+      <port id="pApplauseSound1" component="applause_sound1" />
       <media id="win_green_img" src="media/win_green.png"
              descriptor="dResult" />
-      <media id="applause_sound" src="media/applause.mp3" />
+      <media id="applause_sound1" src="media/applause.mp3" />
     </context>
 
     <bindRule rule="rBetYellowWin" constituent="win_yellow" />
     <context id="win_yellow">
       <port id="pWinYellowImg" component="win_yellow_img" />
-      <port id="pApplauseSound" component="applause_sound" />
+      <port id="pApplauseSound2" component="applause_sound2" />
       <media id="win_yellow_img" src="media/win_yellow.png"
              descriptor="dResult" />
-      <media id="applause_sound" src="media/applause.mp3" />
+      <media id="applause_sound2" src="media/applause.mp3" />
     </context>
 
     <bindRule rule="rBetBlueWin" constituent="win_blue" />
     <context id="win_blue">
       <port id="pWinBlueImg" component="win_blue_img" />
-      <port id="pApplauseSound" component="applause_sound" />
+      <port id="pApplauseSound3" component="applause_sound3" />
       <media id="win_blue_img" src="media/win_blue.png"
              descriptor="dResult" />
-      <media id="applause_sound" src="media/applause.mp3" />
+      <media id="applause_sound3" src="media/applause.mp3" />
     </context>
 
     <!-- Player loses -->
     <bindRule rule="rBetRedLose" constituent="lose_red" />
     <context id="lose_red">
       <port id="pLoseRedImg" component="lose_red_img" />
-      <port id="pLoseSound" component="lose_sound" />
+      <port id="pLoseSound0" component="lose_sound0" />
       <media id="lose_red_img" src="media/lose_red.png"
              descriptor="dResult" />
-      <media id="lose_sound" src="media/lose.mp3" />
+      <media id="lose_sound0" src="media/lose.mp3" />
     </context>
 
     <bindRule rule="rBetGreenLose"  constituent="lose_green" />
     <context id="lose_green">
       <port id="pLoseGreenImg" component="lose_green_img" />
-      <port id="pLoseSound" component="lose_sound" />
+      <port id="pLoseSound1" component="lose_sound1" />
       <media id="lose_green_img" src="media/lose_green.png"
              descriptor="dResult" />
-      <media id="lose_sound" src="media/lose.mp3" />
+      <media id="lose_sound1" src="media/lose.mp3" />
     </context>
 
     <bindRule rule="rBetYellowLose" constituent="lose_yellow" />
     <context id="lose_yellow">
       <port id="pLoseYellowImg" component="lose_yellow_img" />
-      <port id="pLoseSound" component="lose_sound" />
+      <port id="pLoseSound2" component="lose_sound2" />
       <media id="lose_yellow_img" src="media/lose_yellow.png"
              descriptor="dResult" />
-      <media id="lose_sound" src="media/lose.mp3" />
+      <media id="lose_sound2" src="media/lose.mp3" />
     </context>
 
     <bindRule rule="rBetBlueLose" constituent="lose_blue" />
     <context id="lose_blue">
       <port id="pLoseBlueImg" component="lose_blue_img" />
-      <port id="pLoseSound" component="lose_sound" />
+      <port id="pLoseSound3" component="lose_sound3" />
       <media id="lose_blue_img" src="media/lose_blue.png"
              descriptor="dResult" />
-      <media id="lose_sound" src="media/lose.mp3" />
+      <media id="lose_sound3" src="media/lose.mp3" />
     </context>
   </switch>
 
@@ -402,7 +402,7 @@ Corrida de cavalos.
 
   <!-- Initialize settings -->
   <link xconnector="onBeginSet">
-    <bind component="bet_menu" interface="pRed" role="onBegin" />
+    <bind component="bet_menu" interface="pRed0" role="onBegin" />
     <bind component="settings" interface="player_bet" role="set">
       <bindParam name="val" value="empty"/>
     </bind>
@@ -416,8 +416,8 @@ Corrida de cavalos.
 
   <!-- Bet red -->
   <link xconnector="onKeySelectionSetStopStart">
-    <bind component="bet_menu" interface="pRed" role="onSelection" />
-    <bind component="bet_menu" interface="pRed" role="onKeySelection">
+    <bind component="bet_menu" interface="pRed0" role="onSelection" />
+    <bind component="bet_menu" interface="pRed0" role="onKeySelection">
       <bindParam name="key" value="RED" />
     </bind>
     <bind component="settings" interface="player_bet" role="set">
@@ -430,8 +430,8 @@ Corrida de cavalos.
 
   <!-- Bet green -->
   <link xconnector="onKeySelectionSetStopStart">
-    <bind component="bet_menu" interface="pGreen" role="onSelection" />
-    <bind component="bet_menu" interface="pGreen" role="onKeySelection">
+    <bind component="bet_menu" interface="pGreen0" role="onSelection" />
+    <bind component="bet_menu" interface="pGreen0" role="onKeySelection">
       <bindParam name="key" value="GREEN" />
     </bind>
     <bind component="settings" interface="player_bet" role="set">
@@ -444,8 +444,8 @@ Corrida de cavalos.
 
   <!-- Bet yellow -->
   <link xconnector="onKeySelectionSetStopStart">
-    <bind component="bet_menu" interface="pYellow" role="onSelection" />
-    <bind component="bet_menu" interface="pYellow" role="onKeySelection">
+    <bind component="bet_menu" interface="pYellow0" role="onSelection" />
+    <bind component="bet_menu" interface="pYellow0" role="onKeySelection">
       <bindParam name="key" value="YELLOW" />
     </bind>
     <bind component="settings" interface="player_bet" role="set">
@@ -458,8 +458,8 @@ Corrida de cavalos.
 
   <!-- Bet blue -->
   <link xconnector="onKeySelectionSetStopStart">
-    <bind component="bet_menu" interface="pBlue" role="onSelection" />
-    <bind component="bet_menu" interface="pBlue" role="onKeySelection">
+    <bind component="bet_menu" interface="pBlue0" role="onSelection" />
+    <bind component="bet_menu" interface="pBlue0" role="onKeySelection">
       <bindParam name="key" value="BLUE" />
     </bind>
     <bind component="settings" interface="player_bet" role="set">
