@@ -616,7 +616,7 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
   {ParserState::pushContext,
    ParserState::popContext,
    ELT_CACHE,
-   {"body", "context"},
+   {"body", "context", "switch"},
    {{"id", ATTR_ID},
     {"refer", ATTR_OPT_IDREF}}}, // unused
  },
@@ -670,7 +670,8 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
    {"media"},
    {{"id", ATTR_ID},
     {"begin", 0},
-    {"end", 0}}},
+    {"end", 0},
+    {"label", 0}}},             // unused
  },
  {"property",
   {ParserState::pushProperty,
