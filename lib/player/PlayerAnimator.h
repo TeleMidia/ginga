@@ -34,7 +34,7 @@ typedef struct
   guint32 horzRepeat;
   guint32 vertRepeat;
   guint32 borderWidth;
-  ColorborderColor;
+  Color borderColor;
 } TransitionData;
 
 // Entry in scheduled animations list.
