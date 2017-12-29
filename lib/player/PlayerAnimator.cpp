@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-
 // PlayerAnimator: Public.
 
 PlayerAnimator::PlayerAnimator (Formatter *formatter)
@@ -44,7 +43,7 @@ void
 PlayerAnimator::schedule (const string &name, const string &from,
                           const string &to, Time dur)
 {
-  list<string> list_pre = {"", "", "", ""};
+  list<string> list_pre = { "", "", "", "" };
   list<string> list_pos;
 
   if (name == "bounds")
@@ -85,20 +84,16 @@ PlayerAnimator::schedule (const string &name, const string &from,
       if (from != "")
         {
           Color _pre = ginga::parse_color (from);
-          list_pre =
-            {
-             xstrbuild ("%d", (int) CLAMP (_pre.red * 255, 0, 255)),
-             xstrbuild ("%d", (int) CLAMP (_pre.green * 255, 0, 255)),
-             xstrbuild ("%d", (int) CLAMP (_pre.blue * 255, 0, 255))
-            };
+          list_pre
+              = { xstrbuild ("%d", (int) CLAMP (_pre.red * 255, 0, 255)),
+                  xstrbuild ("%d", (int) CLAMP (_pre.green * 255, 0, 255)),
+                  xstrbuild ("%d", (int) CLAMP (_pre.blue * 255, 0, 255)) };
         }
       _pos = ginga::parse_color (to);
-      list_pos =
-        {
-         xstrbuild ("%d", (int) CLAMP (_pos.red * 255, 0, 255)),
-         xstrbuild ("%d", (int) CLAMP (_pos.green * 255, 0, 255)),
-         xstrbuild ("%d", (int) CLAMP (_pos.blue * 255, 0, 255))
-        };
+      list_pos
+          = { xstrbuild ("%d", (int) CLAMP (_pos.red * 255, 0, 255)),
+              xstrbuild ("%d", (int) CLAMP (_pos.green * 255, 0, 255)),
+              xstrbuild ("%d", (int) CLAMP (_pos.blue * 255, 0, 255)) };
       auto pre = list_pre.begin ();
       auto pos = list_pos.end ();
       this->doSchedule ("background:r", *pre++, *pos++, dur);
@@ -121,21 +116,21 @@ void
 PlayerAnimator::update (Rect *rect, Color *bgColor, guint8 *alpha)
 {
 
-#define UPDATE(info, Type, var, rnd, min, max)                          \
-  G_STMT_START                                                          \
-    {                                                                   \
-      if (!(info)->isInit ())                                           \
-        (info)->init (var);                                             \
-      (info)->update ();                                                \
-      var = (Type) CLAMP (rnd ((info)->getCurrent ()), min, max);       \
-    }                                                                   \
+#define UPDATE(info, Type, var, rnd, min, max)                             \
+  G_STMT_START                                                             \
+  {                                                                        \
+    if (!(info)->isInit ())                                                \
+      (info)->init (var);                                                  \
+    (info)->update ();                                                     \
+    var = (Type) CLAMP (rnd ((info)->getCurrent ()), min, max);            \
+  }                                                                        \
   G_STMT_END
 
   g_assert_nonnull (rect);
   g_assert_nonnull (bgColor);
   g_assert_nonnull (alpha);
 
-  for (AnimInfo *info: _scheduled)
+  for (AnimInfo *info : _scheduled)
     {
       string name;
 
@@ -185,7 +180,16 @@ PlayerAnimator::update (Rect *rect, Color *bgColor, guint8 *alpha)
   _scheduled.remove_if (isDone);
 }
 
-
+void
+PlayerAnimator::setTransitionProperties (const string &name,
+                                         const string &value)
+{
+  WARNING ("property '%s': value '%s'", name.c_str (), value.c_str ());
+
+  // if(name == "transIn")
+
+}
+
 // PlayerAnimator: Private.
 
 void
@@ -234,11 +238,9 @@ PlayerAnimator::doSchedule (const string &name, const string &from,
   _scheduled.push_back (info);
 }
 
-
 // AnimInfo.
 
-AnimInfo::AnimInfo (const string &name, double from,
-                    double to, Time dur)
+AnimInfo::AnimInfo (const string &name, double from, double to, Time dur)
 {
   _name = name;
   _current = from;
@@ -314,8 +316,7 @@ AnimInfo::update ()
   _current += dir * _speed * (double) (_current_time - _last_update);
   _last_update = _current_time;
 
-  if (_duration == 0
-      || (dir > 0 && _current >= _target)
+  if (_duration == 0 || (dir > 0 && _current >= _target)
       || (dir < 0 && _current <= _target))
     {
       _done = true;
