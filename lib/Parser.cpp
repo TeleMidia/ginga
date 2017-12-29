@@ -3198,8 +3198,8 @@ ParserState::pushImportBase (ParserState *st, ParserElt *elt)
   return st->processNode (base, alias);
 
  fail_no_such_base:
-  return st->errEltBadAttribute
-    (elt->getNode (), "documentUri", path,
+  return st->errEltImport
+    (elt->getNode (),
      "no <" + parent_elt->getTag () + "> in imported document");
 }
 
