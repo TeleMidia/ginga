@@ -23,9 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "MediaSettings.h"
 #include "Switch.h"
 
-GINGA_PRAGMA_DIAG_IGNORE (-Wunused-macros)
-
-static G_GNUC_UNUSED bool
+static bool
 check_failure (const string &log, const string &expected, const string &buf)
 {
   static int i = 1;
@@ -51,7 +49,7 @@ check_failure (const string &log, const string &expected, const string &buf)
   return true;
 }
 
-static G_GNUC_UNUSED Document *
+static Document *
 check_success (const string &log, const string &buf)
 {
   static int i = 1;
@@ -68,6 +66,17 @@ check_success (const string &log, const string &buf)
   return doc;
 }
 
+static string
+writetmp (const string &buf)
+{
+  string path;
+
+  path = xpathbuildabs (string (g_get_tmp_dir ()), string (__FILE__) + ".ncl");
+  g_assert (g_file_set_contents (path.c_str (), buf.c_str (), -1, nullptr));
+
+  return path;
+}
+
 #define XFAIL(log, exp, str)\
   g_assert (check_failure ((log), (exp), (str)))
 
@@ -82,6 +91,7 @@ check_success (const string &log, const string &buf)
 int
 main (void)
 {
+  string tmp;
 
 
 // -------------------------------------------------------------------------
@@ -1394,6 +1404,19 @@ XFAIL ("importBase: Missing alias",
 </ncl>\n\
 ");
 
+XFAIL ("importBase: Bad alias",
+       "<importBase> at line 4: Bad value '$' "
+       "for attribute 'alias' (must not contain '$')", "\
+<ncl>\n\
+ <head>\n\
+  <regionBase>\n\
+   <importBase alias='$'/>\n\
+  </regionBase>\n\
+ </head>\n\
+</ncl>\n\
+");
+
+
 XFAIL ("importBase: Missing documentURI",
        "<importBase> at line 4: Missing attribute 'documentURI'", "\
 <ncl>\n\
@@ -1404,6 +1427,64 @@ XFAIL ("importBase: Missing documentURI",
  </head>\n\
 </ncl>\n\
 ");
+
+XFAIL ("importBase: Bad documentURI",
+       xstrbuild ("<importBase> at line 4: "
+                  "Syntax error in imported document "
+                  "(XML error: failed to load external entity \"%s\")",
+                  xpathbuildabs (".", "nonexistent").c_str ()),
+       "\
+<ncl>\n\
+ <head>\n\
+  <regionBase>\n\
+   <importBase alias='r' documentURI='nonexistent'/>\n\
+  </regionBase>\n\
+ </head>\n\
+</ncl>\n\
+");
+
+ tmp = writetmp ("<x>\n");
+ XFAIL ("importBase: Bad imported document",
+        "<importBase> at line 4: Syntax error in imported document "
+        + xstrbuild ("(%s: XML error at line 2: Premature end of data "
+                     "in tag x line 1)", tmp.c_str ()),
+        xstrbuild ("\
+<ncl>\n\
+ <head>\n\
+  <regionBase>\n\
+   <importBase alias='r' documentURI='%s'/>\n\
+  </regionBase>\n\
+ </head>\n\
+</ncl>\n\
+", tmp.c_str ()));
+
+tmp = writetmp ("<ncl/>");
+ XFAIL ("importBase: Bad imported document",
+        "<importBase> at line 4: Syntax error in imported document "
+        "(no <regionBase> in imported document)",
+        xstrbuild ("\
+<ncl>\n\
+ <head>\n\
+  <regionBase>\n\
+   <importBase alias='r' documentURI='%s'/>\n\
+  </regionBase>\n\
+ </head>\n\
+</ncl>\n\
+", tmp.c_str ()));
+
+tmp = writetmp ("<ncl><head/></ncl>");
+ XFAIL ("importBase: Bad imported document",
+        "<importBase> at line 4: Syntax error in imported document "
+        "(no <regionBase> in imported document)",
+        xstrbuild ("\
+<ncl>\n\
+ <head>\n\
+  <regionBase>\n\
+   <importBase alias='r' documentURI='%s'/>\n\
+  </regionBase>\n\
+ </head>\n\
+</ncl>\n\
+", tmp.c_str ()));
 
 
 // -------------------------------------------------------------------------
