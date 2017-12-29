@@ -1978,8 +1978,7 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
 
               g_assert (trans_elt->getAttribute ("type", &str));
               val = xstrbuild
-                ("{\
-type='%s',\
+                ("type='%s',\
 subtype='%s',\
 dur='%s',\
 startProgress='%s',\
@@ -1989,8 +1988,7 @@ fadeColor='%s',\
 horzRepeat='%s',\
 vertRepeat='%s',\
 borderWidth='%s',\
-borderColor='%s'\
-}",
+borderColor='%s'",
                  str.c_str (),
                  (trans_elt->getAttribute ("subtype", &str))
                  ? str.c_str () : "",

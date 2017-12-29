@@ -24,72 +24,69 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "player/PlayerSigGen.h"
 
 #if defined WITH_NCLUA && WITH_NCLUA
-# include "player/PlayerLua.h"
+#include "player/PlayerLua.h"
 #endif
 
 #if defined WITH_LIBRSVG && WITH_LIBRSVG
-# include "player/PlayerSvg.h"
+#include "player/PlayerSvg.h"
 #endif
 
 #if defined WITH_CEF && WITH_CEF
-# include "player/PlayerHTML.h"
+#include "player/PlayerHTML.h"
 #endif
 
 GINGA_NAMESPACE_BEGIN
 
 typedef struct PlayerPropertyInfo
 {
-  Player::PlayerProperty code;  // property code
-  bool init;                    // whether it should be initialized
-  string defval;                // default value
+  Player::PlayerProperty code; // property code
+  bool init;                   // whether it should be initialized
+  string defval;               // default value
 } PlayerPropertyInfo;
 
-static map<string, PlayerPropertyInfo> player_property_map =
-{
- {"background",   {Player::PROP_BACKGROUND,    true,  ""}},
- {"balance",      {Player::PROP_BALANCE,       false,  "0.0"}},
- {"bass",         {Player::PROP_BASS,          false,  "0"}},
- {"bottom",       {Player::PROP_BOTTOM,        false, "0%"}},
- {"bounds",       {Player::PROP_BOUNDS,        false, "0%,0%,100%,100%"}},
- {"debug",        {Player::PROP_DEBUG,         true,  "false"}},
- {"duration",     {Player::PROP_DURATION,      true,  "indefinite"}},
- {"focusIndex",   {Player::PROP_FOCUS_INDEX,   true,  ""}},
- {"fontBgColor",  {Player::PROP_FONT_BG_COLOR, true,  ""}},
- {"fontColor",    {Player::PROP_FONT_COLOR,    true,  "black"}},
- {"fontFamily",   {Player::PROP_FONT_FAMILY,   true,  "sans"}},
- {"fontSize",     {Player::PROP_FONT_SIZE,     true,  "12"}},
- {"fontStyle",    {Player::PROP_FONT_STYLE,    true,  ""}},
- {"fontVariant",  {Player::PROP_FONT_VARIANT,  true,  ""}},
- {"fontWeight",   {Player::PROP_FONT_WEIGHT,   true,  ""}},
- {"freeze",       {Player::PROP_FREEZE,        true,  "false"}},
- {"height",       {Player::PROP_HEIGHT,        true,  "100%"}},
- {"horzAlign",    {Player::PROP_HORZ_ALIGN,    true,  "left"}},
- {"left",         {Player::PROP_LEFT,          true,  "0"}},
- {"location",     {Player::PROP_LOCATION,      false, "0,0"}},
- {"mute",         {Player::PROP_MUTE,          false,  "false"}},
- {"right",        {Player::PROP_RIGHT,         false, "0%"}},
- {"size",         {Player::PROP_SIZE,          false, "100%,100%"}},
- {"top",          {Player::PROP_TOP,           true,  "0"}},
- {"transparency", {Player::PROP_TRANSPARENCY,  true,  "0%"}},
- {"treble",       {Player::PROP_TREBLE,        false,  "0"}},
- {"vertAlign",    {Player::PROP_VERT_ALIGN,    true,  "top"}},
- {"visible",      {Player::PROP_VISIBLE,       true,  "true"}},
- {"volume",       {Player::PROP_VOLUME,        true,  "100%"}},
- {"width",        {Player::PROP_WIDTH,         true,  "100%"}},
- {"zIndex",       {Player::PROP_Z_INDEX,       true,  "0"}},
+static map<string, PlayerPropertyInfo> player_property_map = {
+  { "background", { Player::PROP_BACKGROUND, true, "" } },
+  { "balance", { Player::PROP_BALANCE, false, "0.0" } },
+  { "bass", { Player::PROP_BASS, false, "0" } },
+  { "bottom", { Player::PROP_BOTTOM, false, "0%" } },
+  { "bounds", { Player::PROP_BOUNDS, false, "0%,0%,100%,100%" } },
+  { "debug", { Player::PROP_DEBUG, true, "false" } },
+  { "duration", { Player::PROP_DURATION, true, "indefinite" } },
+  { "focusIndex", { Player::PROP_FOCUS_INDEX, true, "" } },
+  { "fontBgColor", { Player::PROP_FONT_BG_COLOR, true, "" } },
+  { "fontColor", { Player::PROP_FONT_COLOR, true, "black" } },
+  { "fontFamily", { Player::PROP_FONT_FAMILY, true, "sans" } },
+  { "fontSize", { Player::PROP_FONT_SIZE, true, "12" } },
+  { "fontStyle", { Player::PROP_FONT_STYLE, true, "" } },
+  { "fontVariant", { Player::PROP_FONT_VARIANT, true, "" } },
+  { "fontWeight", { Player::PROP_FONT_WEIGHT, true, "" } },
+  { "freeze", { Player::PROP_FREEZE, true, "false" } },
+  { "height", { Player::PROP_HEIGHT, true, "100%" } },
+  { "horzAlign", { Player::PROP_HORZ_ALIGN, true, "left" } },
+  { "left", { Player::PROP_LEFT, true, "0" } },
+  { "location", { Player::PROP_LOCATION, false, "0,0" } },
+  { "mute", { Player::PROP_MUTE, false, "false" } },
+  { "right", { Player::PROP_RIGHT, false, "0%" } },
+  { "size", { Player::PROP_SIZE, false, "100%,100%" } },
+  { "top", { Player::PROP_TOP, true, "0" } },
+  { "transparency", { Player::PROP_TRANSPARENCY, true, "0%" } },
+  { "treble", { Player::PROP_TREBLE, false, "0" } },
+  { "vertAlign", { Player::PROP_VERT_ALIGN, true, "top" } },
+  { "visible", { Player::PROP_VISIBLE, true, "true" } },
+  { "volume", { Player::PROP_VOLUME, true, "100%" } },
+  { "width", { Player::PROP_WIDTH, true, "100%" } },
+  { "zIndex", { Player::PROP_Z_INDEX, true, "0" } },
 };
 
-static map<string, string> player_property_aliases =
-{
- {"backgroundColor", "background"},
- {"balanceLevel",    "balance"},
- {"bassLevel",      "bass"},
- {"explicitDur",     "duration"},
- {"soundLevel",      "volume"},
- {"trebleLevel",    "treble"},
+static map<string, string> player_property_aliases = {
+  { "backgroundColor", "background" },
+  { "balanceLevel", "balance" },
+  { "bassLevel", "bass" },
+  { "explicitDur", "duration" },
+  { "soundLevel", "volume" },
+  { "trebleLevel", "treble" },
 };
 
-
 // Public.
 
 Player::Player (Formatter *formatter, const string &id, const string &uri)
@@ -122,7 +119,7 @@ Player::~Player ()
 Player::PlayerState
 Player::getState ()
 {
-   return _state;
+  return _state;
 }
 
 bool
@@ -170,8 +167,8 @@ Player::setEOS (bool eos)
 void
 Player::getZ (int *z, int *zorder)
 {
-  tryset (z , _prop.z);
-  tryset (zorder , _prop.zorder);
+  tryset (z, _prop.z);
+  tryset (zorder, _prop.zorder);
 }
 
 void
@@ -222,10 +219,14 @@ Player::getProperty (string const &name)
 void
 Player::setProperty (const string &name, const string &value)
 {
+
   Player::PlayerProperty code;
   bool use_defval;
   string defval;
   string _value;
+
+  if (name == "transIn" || name == "transOut")
+    _animator->setTransitionProperties (name, value);
 
   use_defval = false;
   _value = value;
@@ -246,10 +247,10 @@ Player::setProperty (const string &name, const string &value)
              _value.c_str ());
     }
 
-  if (use_defval)               // restore value
+  if (use_defval) // restore value
     _value = "";
 
- done:
+done:
   _properties[name] = _value;
   return;
 }
@@ -257,7 +258,7 @@ Player::setProperty (const string &name, const string &value)
 void
 Player::resetProperties ()
 {
-  for (auto it: player_property_map)
+  for (auto it : player_property_map)
     if (it.second.init)
       this->setProperty (it.first, "");
   _properties.clear ();
@@ -266,7 +267,7 @@ Player::resetProperties ()
 void
 Player::resetProperties (set<string> *props)
 {
-  for (auto name: *props)
+  for (auto name : *props)
     this->setProperty (name, "");
 }
 
@@ -293,7 +294,7 @@ Player::redraw (cairo_t *cr)
   _animator->update (&_prop.rect, &_prop.bgColor, &_prop.alpha);
 
   if (!_prop.visible || !(_prop.rect.width > 0 && _prop.rect.height > 0))
-    return;                     // nothing to do
+    return; // nothing to do
 
   if (_dirty)
     {
@@ -304,26 +305,19 @@ Player::redraw (cairo_t *cr)
     {
       if (_opengl)
         {
-          GL::draw_quad (_prop.rect.x, _prop.rect.y,
-                         _prop.rect.width, _prop.rect.height,
-                         // Color
-                         (GLfloat) _prop.bgColor.red,
-                         (GLfloat) _prop.bgColor.green,
-                         (GLfloat) _prop.bgColor.blue,
-                         (GLfloat)(_prop.alpha / 255.));
+          GL::draw_quad (
+              _prop.rect.x, _prop.rect.y, _prop.rect.width,
+              _prop.rect.height,
+              // Color
+              (GLfloat) _prop.bgColor.red, (GLfloat) _prop.bgColor.green,
+              (GLfloat) _prop.bgColor.blue, (GLfloat) (_prop.alpha / 255.));
         }
       else
         {
           cairo_save (cr);
-          cairo_set_source_rgba (cr,
-                                 _prop.bgColor.red,
-                                 _prop.bgColor.green,
-                                 _prop.bgColor.blue,
-                                 _prop.alpha / 255.);
-          cairo_rectangle (cr,
-                           _prop.rect.x,
-                           _prop.rect.y,
-                           _prop.rect.width,
+          cairo_set_source_rgba (cr, _prop.bgColor.red, _prop.bgColor.green,
+                                 _prop.bgColor.blue, _prop.alpha / 255.);
+          cairo_rectangle (cr, _prop.rect.x, _prop.rect.y, _prop.rect.width,
                            _prop.rect.height);
           cairo_fill (cr);
           cairo_restore (cr);
@@ -334,9 +328,9 @@ Player::redraw (cairo_t *cr)
     {
       if (_gltexture)
         {
-          GL::draw_quad (_prop.rect.x, _prop.rect.y,
-                         _prop.rect.width, _prop.rect.height,
-                         _gltexture, (GLfloat)(_prop.alpha / 255.));
+          GL::draw_quad (_prop.rect.x, _prop.rect.y, _prop.rect.width,
+                         _prop.rect.height, _gltexture,
+                         (GLfloat) (_prop.alpha / 255.));
         }
     }
   else
@@ -345,9 +339,9 @@ Player::redraw (cairo_t *cr)
         {
           double sx, sy;
           sx = (double) _prop.rect.width
-              / cairo_image_surface_get_width (_surface);
+               / cairo_image_surface_get_width (_surface);
           sy = (double) _prop.rect.height
-              / cairo_image_surface_get_height (_surface);
+               / cairo_image_surface_get_height (_surface);
           cairo_save (cr);
           cairo_translate (cr, _prop.rect.x, _prop.rect.y);
           cairo_scale (cr, sx, sy);
@@ -368,10 +362,7 @@ Player::redraw (cairo_t *cr)
           cairo_save (cr);
           cairo_set_source_rgba (cr, 1., 1., 0., 1.);
           cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
-          cairo_rectangle (cr,
-                           _prop.rect.x,
-                           _prop.rect.y,
-                           _prop.rect.width,
+          cairo_rectangle (cr, _prop.rect.x, _prop.rect.y, _prop.rect.width,
                            _prop.rect.height);
           cairo_stroke (cr);
           cairo_restore (cr);
@@ -387,7 +378,6 @@ Player::sendKeyEvent (unused (const string &key), unused (bool press))
 {
 }
 
-
 // Public: Static.
 
 // Current focus index value.
@@ -485,7 +475,6 @@ Player::createPlayer (Formatter *formatter, const string &id,
   return player;
 }
 
-
 // Protected.
 
 bool
@@ -545,8 +534,9 @@ Player::doSetProperty (PlayerProperty code, unused (const string &name),
     case PROP_RIGHT:
       {
         int width = _formatter->getOptionInt ("width");
-        _prop.rect.x = width - _prop.rect.width
-          - ginga::parse_percent (value, _prop.rect.width, 0, G_MAXINT);
+        _prop.rect.x
+            = width - _prop.rect.width
+              - ginga::parse_percent (value, _prop.rect.width, 0, G_MAXINT);
         _dirty = true;
         break;
       }
@@ -561,7 +551,8 @@ Player::doSetProperty (PlayerProperty code, unused (const string &name),
       {
         int height = _formatter->getOptionInt ("height");
         _prop.rect.y = height - _prop.rect.height
-          - ginga::parse_percent (value, _prop.rect.height, 0, G_MAXINT);
+                       - ginga::parse_percent (value, _prop.rect.height, 0,
+                                               G_MAXINT);
         _dirty = true;
         break;
       }
@@ -575,8 +566,8 @@ Player::doSetProperty (PlayerProperty code, unused (const string &name),
     case PROP_HEIGHT:
       {
         int height = _formatter->getOptionInt ("height");
-        _prop.rect.height = ginga::parse_percent
-          (value, height, 0, G_MAXINT);
+        _prop.rect.height
+            = ginga::parse_percent (value, height, 0, G_MAXINT);
         _dirty = true;
         break;
       }
@@ -584,12 +575,12 @@ Player::doSetProperty (PlayerProperty code, unused (const string &name),
       this->setZ (xstrtoint (value, 10), _prop.zorder);
       break;
     case PROP_TRANSPARENCY:
-      _prop.alpha = (guint8) CLAMP
-        (255 - ginga::parse_pixel (value), 0, 255);
+      _prop.alpha
+          = (guint8) CLAMP (255 - ginga::parse_pixel (value), 0, 255);
       break;
     case PROP_BACKGROUND:
       if (value == "")
-        _prop.bgColor = {0, 0, 0, 0};
+        _prop.bgColor = { 0, 0, 0, 0 };
       else
         _prop.bgColor = ginga::parse_color (value);
       break;
@@ -610,7 +601,6 @@ Player::doSetProperty (PlayerProperty code, unused (const string &name),
   return true;
 }
 
-
 // Private.
 
 void
@@ -630,15 +620,14 @@ Player::redrawDebuggingInfo (cairo_t *cr)
     }
 
   // Draw info.
-  str = xstrbuild ("%s:%.1fs\n%dx%d:(%d,%d):%d",
-                   id.c_str (),
+  str = xstrbuild ("%s:%.1fs\n%dx%d:(%d,%d):%d", id.c_str (),
                    ((double) GINGA_TIME_AS_MSECONDS (_time)) / 1000.,
-                   _prop.rect.width, _prop.rect.height,
-                   _prop.rect.x, _prop.rect.y, _prop.z);
+                   _prop.rect.width, _prop.rect.height, _prop.rect.x,
+                   _prop.rect.y, _prop.z);
 
-  debug = PlayerText::renderSurface
-    (str, "monospace", "", "", "7", {1.,0,0,1.}, {0,0,0,.75},
-     _prop.rect, "center", "middle", true, nullptr);
+  debug = PlayerText::renderSurface (
+      str, "monospace", "", "", "7", { 1., 0, 0, 1. }, { 0, 0, 0, .75 },
+      _prop.rect, "center", "middle", true, nullptr);
   g_assert_nonnull (debug);
 
   sx = (double) _prop.rect.width / cairo_image_surface_get_width (debug);

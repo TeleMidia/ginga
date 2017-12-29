@@ -22,6 +22,21 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
+typedef struct
+{
+  string type;
+  string subtype;
+  Time dur;
+  gdouble startProgress;
+  gdouble endProgress;
+  string direction;
+  Color faceColor;
+  guint32 horzRepeat;
+  guint32 vertRepeat;
+  guint32 borderWidth;
+  ColorborderColor;
+} TransitionData;
+
 // Entry in scheduled animations list.
 class AnimInfo
 {
@@ -41,14 +56,16 @@ public:
   void update ();
 
 private:
-  string _name;                  // property name
-  double _current;               // current value
-  double _target;                // target value
-  Time _duration;           // animation duration
-  Time _last_update;        // time of the last update
-  double _speed;                 // animation speed
-  bool _done;                    // true if animation is done
-  bool _init;                    // true if animation is initialized
+  string _name;      // property name
+  double _current;   // current value
+  double _target;    // target value
+  Time _duration;    // animation duration
+  Time _last_update; // time of the last update
+  double _speed;     // animation speed
+  bool _done;        // true if animation is done
+  bool _init;        // true if animation is initialized
+  TransitionData _transIn;  
+  TransitionData _transOut;
 };
 
 class PlayerAnimator
@@ -59,13 +76,13 @@ public:
   void clear ();
   void schedule (const string &, const string &, const string &, Time);
   void update (Rect *, Color *, guint8 *);
+  void setTransitionProperties (const string &, const string &);
 
 private:
-  Formatter *_formatter;        // formatter handle
-  list <AnimInfo *> _scheduled; // scheduled animations
+  Formatter *_formatter;       // formatter handle
+  list<AnimInfo *> _scheduled; // scheduled animations
 
-  void doSchedule (const string &, const string &,
-                   const string &, Time);
+  void doSchedule (const string &, const string &, const string &, Time);
 };
 
 GINGA_NAMESPACE_END
