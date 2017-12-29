@@ -143,8 +143,8 @@ Color parse_color (const string &);
 bool try_parse_list (const string &, char, size_t, size_t, list<string> *);
 list<string> parse_list (const string &, char, size_t, size_t);
 
-bool try_parse_table (const string &, map<string,string> *);
-map<string,string> parse_table (const string &);
+bool try_parse_table (const string &, map<string, string> *);
+map<string, string> parse_table (const string &);
 
 bool try_parse_time (const string &, Time *);
 Time parse_time (const string &);
