@@ -78,8 +78,8 @@ opts_table_index (const string &key, GingaOptionData **result)
 }
 
 // Compares the z-index and z-order of two media objects.
-static bool
-cmpz (Media *a, Media *b)
+static int
+zcmp (Media *a, Media *b)
 {
   int z1, zo1, z2, zo2;
 
@@ -91,14 +91,14 @@ cmpz (Media *a, Media *b)
   b->getZ (&z2, &zo2);
 
   if (z1 < z2)
-    return true;
+    return -1;
   if (z1 > z2)
-    return false;
+    return 1;
   if (zo1 < zo2)
-    return true;
+    return -1;
   if (zo1 > zo2)
-    return false;
-  return true;
+    return 1;
+  return 0;
 }
 
 
@@ -327,7 +327,8 @@ Formatter::resize (int width, int height)
 void
 Formatter::redraw (cairo_t *cr)
 {
-  vector<Media *> medias;
+  GList *zlist;
+  GList *l;
 
   if (_state != GINGA_STATE_PLAYING)
     return;                     // nothing to do
@@ -362,11 +363,19 @@ Formatter::redraw (cairo_t *cr)
         }
     }
 
-  for (auto media: *_doc->getMedias ())
-    medias.push_back (cast (Media *, media));
-  std::sort (medias.begin (), medias.end (), cmpz);
-  for (auto media: medias)
-    media->redraw (cr);
+  zlist = nullptr;
+  for (auto &media: *_doc->getMedias ())
+    zlist = g_list_insert_sorted (zlist, media, (GCompareFunc) zcmp);
+
+  l = zlist;
+  while (l != NULL)
+    {
+      GList *next = l->next;
+      ((Media *) l->data)->redraw (cr);
+      zlist = g_list_delete_link (zlist, l);
+      l = next;
+    }
+  g_assert_null (zlist);
 
   if (_opts.debug)
     {

@@ -15,10 +15,11 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-
 #include "aux-ginga.h"
 #include "aux-gl.h"
 #include "PlayerSigGen.h"
+
+GINGA_PRAGMA_DIAG_IGNORE (-Wunused-variable)
 
 GINGA_NAMESPACE_BEGIN
 
@@ -56,7 +57,7 @@ PlayerSigGen::PlayerSigGen (Formatter *formatter, const string &id,
   GstPad *ghost;
 
   _pipeline = nullptr;
-  _audio.bin = nullptr;
+  _audio.src = nullptr;
   _audio.convert = nullptr;
   _audio.sink = nullptr;
 
@@ -81,8 +82,8 @@ PlayerSigGen::PlayerSigGen (Formatter *formatter, const string &id,
   gst_object_unref (bus);
 
   // Setup audio pipeline.
-  _audio.bin = gst_element_factory_make ("audiotestsrc", "audio.bin");
-  g_assert_nonnull (_audio.bin);
+  _audio.src = gst_element_factory_make ("audiotestsrc", "audio.bin");
+  g_assert_nonnull (_audio.src);
   _audio.convert = gst_element_factory_make ("audioconvert", "convert");
   g_assert_nonnull (_audio.convert);
 
@@ -93,14 +94,12 @@ PlayerSigGen::PlayerSigGen (Formatter *formatter, const string &id,
   g_assert_nonnull (_audio.sink);
 
 
-  g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.bin));
+  g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.src));
   g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.convert));
   g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.sink));
-  g_assert (gst_element_link (_audio.bin, _audio.convert));
+  g_assert (gst_element_link (_audio.src, _audio.convert));
   g_assert (gst_element_link (_audio.convert, _audio.sink));
-
-
-  g_object_set (G_OBJECT (_pipeline), "audio-sink", nullptr);
+  
 
   // Initialize handled properties.
   static set<string> handled =
@@ -108,6 +107,7 @@ PlayerSigGen::PlayerSigGen (Formatter *formatter, const string &id,
      "freq",
     };
   this->resetProperties (&handled);
+
 }
 
 PlayerSigGen::~PlayerSigGen ()
@@ -134,7 +134,7 @@ PlayerSigGen::start ()
   g_atomic_int_set (&_sample_flag, 0);
 
   // Initialize properties.
-  g_object_set (_audio.freq,
+  g_object_set (_audio.src,
                 "freq", _prop.freq,
                 nullptr);
 
@@ -143,6 +143,7 @@ PlayerSigGen::start ()
     Player::setEOS (true);
 
   Player::start ();
+  TRACE ("started");
 }
 
 void
@@ -184,12 +185,13 @@ PlayerSigGen::doSetProperty (PlayerProperty code,
                             unused (const string &name),
                             const string &value)
 {
+ 
   switch (code)
     {
       case PROP_FREQ:
         _prop.freq = xstrtodorpercent (value, nullptr);
         if (_state != SLEEPING)
-          g_object_set (_audio.freq,
+          g_object_set (_audio.src,
                         "freq", _prop.freq,
                         nullptr);
         break;

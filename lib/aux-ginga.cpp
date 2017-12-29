@@ -125,6 +125,52 @@ try_parse_list (const string &s, char sep, size_t min, size_t max,
 }
 
 /**
+ * @brief Parses Lua-like table with string keys and values.
+ * @param s Table string.
+ * @param result Variable to store the resulting table.
+ * @return True if successful, or false otherwise.
+ *
+ * @todo Add support for keys or values containing embedded commas and
+ * scaped quotes.  Put another way, replace xstrsplit() call by real parsing
+ * code.
+ */
+bool
+try_parse_table (const string &s, map<string,string> *result)
+{
+  string str;
+  map<string,string> tab;
+
+  str = xstrstrip (s);
+  if (str.front () != '{' || str.back () != '}')
+    return false;
+
+  str.assign (str.substr (1, str.length () - 2));
+  for (auto &it: xstrsplit (str, ','))
+    {
+      list<string> pr;
+      string key;
+      string val;
+
+      if (unlikely (!try_parse_list (it, '=', 2, 2, &pr)))
+        return false;
+
+      auto pr_it = pr.begin ();
+      key = xstrstrip (*pr_it++);
+      val = xstrstrip (*pr_it++);
+      g_assert (pr_it == pr.end ());
+      if (unlikely (!((val.front () == '\'' && val.back () == '\'')
+                      || (val.front () == '"' && val.back () == '"'))))
+        {
+          return false;
+        }
+      tab[key] = val.substr (1, val.length () - 2);
+    }
+
+  tryset (result, tab);
+  return true;
+}
+
+/**
  * Parses time string ("Ns" or "NN:NN:NN").
  * @param s Time string.
  * @param result Variable to store the resulting time.
@@ -138,6 +184,7 @@ try_parse_time (const string &s, Time *result)
   double secs;
 
   dup = g_strdup (s.c_str ());
+  g_assert_nonnull (dup);
   g_strchomp (dup);
 
   secs = g_strtod (dup, &end);
@@ -188,6 +235,15 @@ parse_list (const string &s, char sep, size_t min, size_t max)
   list<string> result;
   if (unlikely (!ginga::try_parse_list (s, sep, min, max, &result)))
     ERROR ("invalid list string '%s'", s.c_str ());
+  return result;
+}
+
+map<string,string>
+parse_table (const string &s)
+{
+  map<string,string> result;
+  if (unlikely (!ginga::try_parse_table (s, &result)))
+    ERROR ("invalid Lua-like table string '%s'", s.c_str ());
   return result;
 }
 
@@ -576,7 +632,7 @@ xpathbuild (const string &a, const string &b)
 string
 xpathbuildabs (const string &a, const string &b)
 {
-  return xpathmakeabs (xpathbuild (a, b));
+  return  xpathmakeabs ((a == ".") ? b : xpathbuild (a, b));
 }
 
 
