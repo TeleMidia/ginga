@@ -39,8 +39,7 @@ protected:
 private:
   GstElement *_pipeline;         // pipeline
   struct {                      // audio pipeline
-    GstElement *freq;           // frequency format
-    GstElement *bin;            // Audio Test Src format
+    GstElement *src;            // Audio Test Src format
     GstElement *convert;        // convert audio format
     GstElement *sink;           // audio sink
   } _audio;

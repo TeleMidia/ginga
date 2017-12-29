@@ -403,7 +403,7 @@ ParserXercesC::parse0 (const string &path)
   g_assert_nonnull (elt);
 
   g_assert_null (_doc);
-  if (!unlikely (parseNcl (elt)))
+  if (unlikely (!parseNcl (elt)))
     {
       if (_doc != nullptr)
         delete _doc;

@@ -44,38 +44,40 @@ typedef struct PlayerPropertyInfo
   string defval;               // default value
 } PlayerPropertyInfo;
 
-static map<string, PlayerPropertyInfo> player_property_map = {
-  { "background", { Player::PROP_BACKGROUND, true, "" } },
-  { "balance", { Player::PROP_BALANCE, false, "0.0" } },
-  { "bass", { Player::PROP_BASS, false, "0" } },
-  { "bottom", { Player::PROP_BOTTOM, false, "0%" } },
-  { "bounds", { Player::PROP_BOUNDS, false, "0%,0%,100%,100%" } },
-  { "debug", { Player::PROP_DEBUG, true, "false" } },
-  { "duration", { Player::PROP_DURATION, true, "indefinite" } },
-  { "focusIndex", { Player::PROP_FOCUS_INDEX, true, "" } },
-  { "fontBgColor", { Player::PROP_FONT_BG_COLOR, true, "" } },
-  { "fontColor", { Player::PROP_FONT_COLOR, true, "black" } },
-  { "fontFamily", { Player::PROP_FONT_FAMILY, true, "sans" } },
-  { "fontSize", { Player::PROP_FONT_SIZE, true, "12" } },
-  { "fontStyle", { Player::PROP_FONT_STYLE, true, "" } },
-  { "fontVariant", { Player::PROP_FONT_VARIANT, true, "" } },
-  { "fontWeight", { Player::PROP_FONT_WEIGHT, true, "" } },
-  { "freeze", { Player::PROP_FREEZE, true, "false" } },
-  { "height", { Player::PROP_HEIGHT, true, "100%" } },
-  { "horzAlign", { Player::PROP_HORZ_ALIGN, true, "left" } },
-  { "left", { Player::PROP_LEFT, true, "0" } },
-  { "location", { Player::PROP_LOCATION, false, "0,0" } },
-  { "mute", { Player::PROP_MUTE, false, "false" } },
-  { "right", { Player::PROP_RIGHT, false, "0%" } },
-  { "size", { Player::PROP_SIZE, false, "100%,100%" } },
-  { "top", { Player::PROP_TOP, true, "0" } },
-  { "transparency", { Player::PROP_TRANSPARENCY, true, "0%" } },
-  { "treble", { Player::PROP_TREBLE, false, "0" } },
-  { "vertAlign", { Player::PROP_VERT_ALIGN, true, "top" } },
-  { "visible", { Player::PROP_VISIBLE, true, "true" } },
-  { "volume", { Player::PROP_VOLUME, true, "100%" } },
-  { "width", { Player::PROP_WIDTH, true, "100%" } },
-  { "zIndex", { Player::PROP_Z_INDEX, true, "0" } },
+static map<string, PlayerPropertyInfo> player_property_map =
+{
+ {"background",   {Player::PROP_BACKGROUND,    true,  ""}},
+ {"balance",      {Player::PROP_BALANCE,       false,  "0.0"}},
+ {"bass",         {Player::PROP_BASS,          false,  "0"}},
+ {"bottom",       {Player::PROP_BOTTOM,        false, "0%"}},
+ {"bounds",       {Player::PROP_BOUNDS,        false, "0%,0%,100%,100%"}},
+ {"debug",        {Player::PROP_DEBUG,         true,  "false"}},
+ {"duration",     {Player::PROP_DURATION,      true,  "indefinite"}},
+ {"focusIndex",   {Player::PROP_FOCUS_INDEX,   true,  ""}},
+ {"fontBgColor",  {Player::PROP_FONT_BG_COLOR, true,  ""}},
+ {"fontColor",    {Player::PROP_FONT_COLOR,    true,  "black"}},
+ {"fontFamily",   {Player::PROP_FONT_FAMILY,   true,  "sans"}},
+ {"fontSize",     {Player::PROP_FONT_SIZE,     true,  "12"}},
+ {"fontStyle",    {Player::PROP_FONT_STYLE,    true,  ""}},
+ {"fontVariant",  {Player::PROP_FONT_VARIANT,  true,  ""}},
+ {"fontWeight",   {Player::PROP_FONT_WEIGHT,   true,  ""}},
+ {"freeze",       {Player::PROP_FREEZE,        true,  "false"}},
+ {"height",       {Player::PROP_HEIGHT,        true,  "100%"}},
+ {"horzAlign",    {Player::PROP_HORZ_ALIGN,    true,  "left"}},
+ {"left",         {Player::PROP_LEFT,          true,  "0"}},
+ {"location",     {Player::PROP_LOCATION,      false, "0,0"}},
+ {"mute",         {Player::PROP_MUTE,          false,  "false"}},
+ {"right",        {Player::PROP_RIGHT,         false, "0%"}},
+ {"size",         {Player::PROP_SIZE,          false, "100%,100%"}},
+ {"top",          {Player::PROP_TOP,           true,  "0"}},
+ {"transparency", {Player::PROP_TRANSPARENCY,  true,  "0%"}},
+ {"treble",       {Player::PROP_TREBLE,        false,  "0"}},
+ {"vertAlign",    {Player::PROP_VERT_ALIGN,    true,  "top"}},
+ {"visible",      {Player::PROP_VISIBLE,       true,  "true"}},
+ {"volume",       {Player::PROP_VOLUME,        true,  "100%"}},
+ {"width",        {Player::PROP_WIDTH,         true,  "100%"}},
+ {"zIndex",       {Player::PROP_Z_INDEX,       true,  "0"}},
+ {"freq",         {Player::PROP_FREQ,          true,  "440"}},
 };
 
 static map<string, string> player_property_aliases = {
@@ -431,7 +433,7 @@ Player::createPlayer (Formatter *formatter, const string &id,
     {
       player = new PlayerVideo (formatter, id, uri);
     }
-  else if (xstrhasprefix (mime, "siggen"))
+  else if (mime == "application/x-ginga-siggen")
     {
       player = new PlayerSigGen (formatter, id, uri);
     }
