@@ -38,6 +38,25 @@ GINGA_NAMESPACE_BEGIN
 /// Flags to LibXML parser.
 #define PARSER_LIBXML_FLAGS (XML_PARSE_NOERROR | XML_PARSE_NOWARNING)
 
+/// Gets last XML error as C++ string.
+static inline string
+xmlGetLastErrorAsString ()
+{
+  xmlError *err;
+  string errmsg;
+
+  err = xmlGetLastError ();
+  g_assert_nonnull (err);
+
+  errmsg = (err->file != nullptr) ? toCPPString (err->file) + ": " : "";
+  errmsg += "XML error";
+  if (err->line > 0)
+    errmsg += xstrbuild (" at line %d", err->line);
+  errmsg += ": " + xstrstrip (string (err->message));
+
+  return errmsg;
+}
+
 /// Gets node property as C++ string.
 static inline bool
 xmlGetPropAsString (xmlNode *node, const string &name, string *result)
@@ -48,6 +67,22 @@ xmlGetPropAsString (xmlNode *node, const string &name, string *result)
   tryset (result, toCPPString (str));
   g_free (str);
   return true;
+}
+
+/// Finds node child by tag.
+static bool
+xmlFindChild (xmlNode *node, const string &tag, xmlNode **result)
+{
+  for (xmlNode *child = node->children; child; child = child->next)
+    {
+      if (child->type == XML_ELEMENT_NODE
+          && toCPPString (child->name) == tag)
+        {
+          tryset (result, child);
+          return true;
+        }
+    }
+  return false;
 }
 
 /// Tests whether value is a valid XML name.
@@ -61,7 +96,7 @@ xmlIsValidName (const string &value, char *offending)
   while ((c = *str++) != '\0')
     {
       if (!(g_ascii_isalnum (c) || c == '-' || c == '_'
-            || c == ':' || c == '.'))
+            || c == ':' || c == '.' || c == '#'))
         {
           tryset (offending, c);
           return false;
@@ -72,6 +107,10 @@ xmlIsValidName (const string &value, char *offending)
 
 
 // Parser internal types.
+
+// Forward declarations.
+typedef struct ParserSyntaxAttr ParserSyntaxAttr;
+typedef struct ParserSyntaxElt ParserSyntaxElt;
 
 /**
  * @brief Parser element wrapper.
@@ -156,7 +195,7 @@ public:
      ERROR_ELT_UNKNOWN_CHILD,     ///< Unknown child element.
      ERROR_ELT_MISSING_CHILD,     ///< Missing child element.
      ERROR_ELT_BAD_CHILD,         ///< Bad child element.
-     ERROR_ELT_SUB_DOCUMENT,      ///< Syntax error in sub-document.
+     ERROR_ELT_IMPORT,            ///< Syntax error in imported document.
     };
 
   ParserState (int, int);
@@ -226,6 +265,7 @@ private:
   bool errEltUnknownChild (xmlNode *, const string &);
   bool errEltMissingChild (xmlNode *, const list<string> &);
   bool errEltBadChild (xmlNode *, const string &, const string &explain="");
+  bool errEltImport (xmlNode *, const string &explain="");
 
   // Element cache.
   bool eltCacheIndex (xmlNode *, ParserElt **);
@@ -252,7 +292,9 @@ private:
   Predicate *solvePredicate (Predicate *, const map<string, string> *);
 
   // Node processing.
-  bool processNode (xmlNode *);
+  ParserSyntaxElt *checkNode (xmlNode *, map<string, string> *,
+                              list<xmlNode *> *);
+  bool processNode (xmlNode *, const string &alias="");
 };
 
 /// Asserted version of UserData::getData().
@@ -311,7 +353,7 @@ typedef enum
   PARSER_SYNTAX_ATTR_REQUIRED = 1<<1, ///< Is required.
   PARSER_SYNTAX_ATTR_UNIQUE   = 1<<2, ///< Must be unique in document.
   PARSER_SYNTAX_ATTR_NONEMPTY = 1<<3, ///< Cannot be not empty.
-  PARSER_SYNTAX_ATTR_NAME     = 1<<4, ///< Is a XML name.
+  PARSER_SYNTAX_ATTR_NAME     = 1<<4, ///< Is an XML name.
 } ParserSyntaxAttrFlag;
 
 #define ATTR_REQUIRED  (PARSER_SYNTAX_ATTR_REQUIRED)
@@ -374,7 +416,7 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
  {"regionBase",
   {nullptr,
    nullptr,
-   0,
+   ELT_CACHE,
    {"head"},
    {{"id", ATTR_OPT_ID},        // unused
     {"device", 0},              // unused
@@ -398,7 +440,7 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
  {"descriptorBase",
   {nullptr,
    nullptr,
-   0,
+   ELT_CACHE,
    {"head"},
    {{"id", ATTR_OPT_ID}}},      // unused
  },
@@ -444,7 +486,7 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
  {"connectorBase",
   {nullptr,
    nullptr,
-   0,
+   ELT_CACHE,
    {"head"},
    {{"id", ATTR_OPT_ID}}},       // unused
  },
@@ -597,7 +639,7 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
  {"importBase",
   {ParserState::pushImportBase,
    nullptr,
-   0,
+   ELT_CACHE,
    {"connectorBase", "descriptorBase", "regionBase", "ruleBase",
     "transitionBase"},
    {{"alias", ATTR_REQUIRED_NONEMPTY_NAME},
@@ -1041,9 +1083,18 @@ ParserState::errElt (xmlNode *node, ParserState::Error error,
 {
   g_assert (error != ParserState::ERROR_NONE);
   g_assert_nonnull (node);
+
   _error = error;
-  _errorMsg = xstrbuild ("Syntax error at line %d: Element <%s>: ",
-                         node->line, toCString (node->name)) + message;
+  _errorMsg = "";
+  if (node->doc->URL != nullptr)
+    {
+      string path = toCPPString (node->doc->URL);
+      if (!xpathisabs (path))
+        path = xpathbuildabs (this->getDirname (), path);
+      _errorMsg = path + ": ";
+    }
+  _errorMsg += xstrbuild ("Element <%s> at line %d: ",
+                          toCString (node->name), node->line) + message;
   return false;
 }
 
@@ -1179,6 +1230,22 @@ ParserState::errEltBadChild (xmlNode *node, const string &name,
   if (explain != "")
     msg += " (" + explain + ")";
   return this->errElt (node, ParserState::ERROR_ELT_BAD_CHILD, msg);
+}
+
+/**
+ * @brief Sets parser error to "Syntax error in imported document".
+ * @param node The \<importBase\> node that caused the error.
+ * @param path The path to the document that caused the error.
+ * @param explain Further explanation.
+ * return \c false
+ */
+bool
+ParserState::errEltImport (xmlNode *node, const string &explain)
+{
+  string msg = "Syntax error in imported document";
+  if (explain != "")
+    msg += " (" + explain + ")";
+  return this->errElt (node, ParserState::ERROR_ELT_IMPORT, msg);
 }
 
 
@@ -1342,7 +1409,6 @@ ParserState::objStackPush (Object *obj)
  * @param elt The element to be resolved.
  * @param[out] obj Variable to store the resulting object (if any).
  * @return \c true if successful, or \c false otherwise.
- *
  */
 bool
 ParserState::resolveComponent (Composition *scope, ParserElt *elt,
@@ -1353,21 +1419,36 @@ ParserState::resolveComponent (Composition *scope, ParserElt *elt,
 
   label = (elt->getTag () == "bindRule") ? "constituent" : "component";
   g_assert (elt->getAttribute (label, &comp));
-  if (comp == scope->getId () || scope->hasAlias (comp)) // ref is scope
+
+  // Check if component refers to scope itself.
+  if (comp == scope->getId () || scope->hasAlias (comp))
     {
       tryset (obj, scope);
+      return true;
     }
-  else                          // ref is child object
+
+  // Check if component refers to a child of scope.
+  Object *ref = scope->getChildByIdOrAlias (comp);
+  if (ref != nullptr)
     {
-      Object *ref = scope->getChildByIdOrAlias (comp);
-      if (unlikely (ref == nullptr))
-        {
-          return this->errEltBadAttribute
-            (elt->getNode (), label, comp, "no such object in scope");
-        }
       tryset (obj, ref);
+      return true;
     }
-  return true;
+
+  // Check if component refers to the settings object.
+  Document *doc = scope->getDocument ();
+  g_assert_nonnull (doc);
+  MediaSettings *sett = doc->getSettings ();
+  g_assert_nonnull (sett);
+  if (comp == sett->getId () || sett->hasAlias (comp))
+    {
+      tryset (obj, sett);
+      return true;
+    }
+
+  // Not found.
+  return this->errEltBadAttribute
+    (elt->getNode (), label, comp, "no such object in scope");
 }
 
 /**
@@ -1669,37 +1750,26 @@ ParserState::solvePredicate (Predicate *pred, const map<string, string> *tr)
 // ParserState: private (node processing).
 
 /**
- * @brief Processes node of the input document tree.
-
- * After being called by ParserState::process(), starting from the root
- * node, this function proceeds recursively, processing each node in the
- * input document tree.  For each node, it checks its syntax (according to
- * #parser_syntax_table), calls the corresponding push function (if any),
- * processes the node's children, and calls the corresponding pop function
- * (if any).  At any moment, if something goes wrong the function sets
- * #Parser error and returns false.
- *
- * @param node The node to process.
- * @return \c true if successful, otherwise returns \c false.
+ * @brief Checks node syntax according to syntax table.
+ * @param[out] attrs Variable to store node's attributes.
+ * @param[out] children Variable to store node's children.
+ * @return Pointer to entry in syntax table if successful, otherwise returns
+ * \c nullptr and sets #Parser error accordingly.
  */
-bool
-ParserState::processNode (xmlNode *node)
+ParserSyntaxElt *
+ParserState::checkNode (xmlNode *node, map<string,string> *attrs,
+                        list<xmlNode *> *children)
 {
   string tag;
   ParserSyntaxElt *eltsyn;
-  map<string, string> attrs;
   map<string, bool> possible;
-  list<xmlNode *> children;
-  ParserElt *elt;
-  bool cached;
-  bool status;
 
   g_assert_nonnull (node);
   tag = toCPPString (node->name);
 
   // Check if element is known.
   if (unlikely (!parser_syntax_table_index (tag, &eltsyn)))
-    return this->errEltUnknown (node);
+    return (this->errEltUnknown (node), nullptr);
 
   // Check parent.
   g_assert_nonnull (node->parent);
@@ -1709,7 +1779,7 @@ ParserState::processNode (xmlNode *node)
       bool found;
 
       if (unlikely (node->parent->type != XML_ELEMENT_NODE))
-        return this->errEltMissingParent (node);
+        return (this->errEltMissingParent (node), nullptr);
 
       parent = toCPPString (node->parent->name);
       found = false;
@@ -1722,7 +1792,7 @@ ParserState::processNode (xmlNode *node)
             }
         }
       if (unlikely (!found))
-        return this->errEltBadParent (node);
+        return (this->errEltBadParent (node), nullptr);
     }
 
   // Collect attributes.
@@ -1735,19 +1805,26 @@ ParserState::processNode (xmlNode *node)
         {
           if (attrsyn.name == "id" && eltsyn->flags & ELT_GEN_ID)
             {
-              attrs["id"] = this->genId ();
+              if (attrs != nullptr)
+                (*attrs)["id"] = this->genId ();
               continue;
             }
           if (unlikely (attrsyn.flags & ATTR_REQUIRED))
-            return this->errEltMissingAttribute (node, attrsyn.name);
+            {
+              return (this->errEltMissingAttribute (node, attrsyn.name),
+                      nullptr);
+            }
           else
-            continue;
+            {
+              continue;
+            }
         }
 
       if (unlikely ((attrsyn.flags & ATTR_NONEMPTY) && value == ""))
         {
-          return this->errEltBadAttribute
-            (node, attrsyn.name, value, "must not be empty");
+          return (this->errEltBadAttribute
+                  (node, attrsyn.name, value, "must not be empty"),
+                  nullptr);
         }
 
       if (attrsyn.flags & ATTR_NAME)
@@ -1755,9 +1832,10 @@ ParserState::processNode (xmlNode *node)
           char offending;
           if (unlikely (!xmlIsValidName (value, &offending)))
             {
-              return this->errEltBadAttribute
-              (node, attrsyn.name, value,
-               xstrbuild ("must not contain '%c'", offending));
+              return (this->errEltBadAttribute
+                      (node, attrsyn.name, value,
+                       xstrbuild ("must not contain '%c'", offending)),
+                      nullptr);
             }
         }
 
@@ -1765,8 +1843,9 @@ ParserState::processNode (xmlNode *node)
         {
           if (unlikely (this->isInUniqueSet (value)))
             {
-              return this->errEltBadAttribute
-                (node, attrsyn.name, value, "must be unique");
+              return (this->errEltBadAttribute
+                      (node, attrsyn.name, value, "must be unique"),
+                      nullptr);
             }
           else
             {
@@ -1774,16 +1853,20 @@ ParserState::processNode (xmlNode *node)
             }
         }
 
-      attrs[attrsyn.name] = value;
+      if (attrs != nullptr)
+        (*attrs)[attrsyn.name] = value;
     }
 
   // Check for unknown attributes.
-  for (xmlAttr *prop = node->properties;
-       prop != nullptr; prop = prop->next)
+  if (attrs != nullptr)
     {
-      string name = toCPPString (prop->name);
-      if (unlikely (attrs.find (name) == attrs.end ()))
-        return this->errEltUnknownAttribute (node, name);
+      for (xmlAttr *prop = node->properties;
+           prop != nullptr; prop = prop->next)
+        {
+          string name = toCPPString (prop->name);
+          if (unlikely (attrs->find (name) == attrs->end ()))
+            return (this->errEltUnknownAttribute (node, name), nullptr);
+        }
     }
 
   // Collect children.
@@ -1795,15 +1878,53 @@ ParserState::processNode (xmlNode *node)
 
       string child_tag = toCPPString (child->name);
       if (unlikely (possible.find (child_tag) == possible.end ()))
-        return this->errEltUnknownChild (node, child_tag);
+        return (this->errEltUnknownChild (node, child_tag), nullptr);
 
-      children.push_back (child);
+      if (children != nullptr)
+        children->push_back (child);
     }
+
+  return eltsyn;
+}
+
+/**
+ * @brief Processes node.
+ *
+ * After being called by ParserState::process(), starting from the root
+ * node, this function proceeds recursively, processing each node in the
+ * input document tree.  For each node, it checks its syntax (according to
+ * #parser_syntax_table), calls the corresponding push function (if any),
+ * processes the node's children, and calls the corresponding pop function
+ * (if any).  At any moment, if something goes wrong the function sets
+ * #Parser error and returns false.
+ *
+ * @param node The node to process.
+ * @return \c true if successful, otherwise returns \c false.
+ */
+bool
+ParserState::processNode (xmlNode *node, const string &alias)
+{
+  map<string, string> attrs;
+  list<xmlNode *> children;
+  ParserSyntaxElt *eltsyn;
+  ParserElt *elt;
+  string id;
+  bool cached;
+  bool status;
+
+  // Check node.
+  eltsyn = this->checkNode (node, &attrs, &children);
+  if (unlikely (eltsyn == nullptr))
+    return false;
 
   // Allocate and initialize element wrapper.
   elt = new ParserElt (node);
   for (auto it: attrs)
     g_assert (elt->setAttribute (it.first, it.second));
+
+  // Prefix alias to element id.
+  if (alias != "" && elt->getAttribute ("id", &id))
+    elt->setAttribute ("id", alias + "#" + id);
 
   // Initialize flags.
   cached = false;
@@ -1826,7 +1947,7 @@ ParserState::processNode (xmlNode *node)
   // Process each child.
   for (auto child: children)
     {
-      if (unlikely (!this->processNode (child)))
+      if (unlikely (!this->processNode (child, alias)))
         {
           status = false;
           goto done;
@@ -1978,6 +2099,9 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
           static const string trans_attr[] = {"transIn", "transOut"};
           string trans_id;
           ParserElt *trans_elt;
+
+          string desc_id;
+          g_assert (desc_elt->getAttribute ("id", &desc_id));
 
           if (desc_elt->getAttribute ("region", &region_id))
             {
@@ -3015,9 +3139,11 @@ ParserState::pushRule (ParserState *st, ParserElt *elt)
  * @param st #ParserState.
  * @param elt Element wrapper.
  * @return \c true if successful, or \c false otherwise.
+ *
+ * @todo Check for circular imports.
  */
 
-/// Cleans up the #xmlDoc associated with \<importBase\> element.
+/// Cleans up the document associated with \<importBase\> element.
 static void
 xmlDocCleanup (void *ptr)
 {
@@ -3027,12 +3153,17 @@ xmlDocCleanup (void *ptr)
 bool
 ParserState::pushImportBase (ParserState *st, ParserElt *elt)
 {
+  ParserElt *parent_elt;
   string alias;
   string path;
 
   xmlDoc *xml;
-  Document *doc;
+  xmlNode *root;
+  xmlNode *head;
+  xmlNode *base;
+  string tag;
 
+  g_assert (st->eltCacheIndexParent (elt->getNode (), &parent_elt));
   g_assert (elt->getAttribute ("alias", &alias));
   g_assert (elt->getAttribute ("documentURI", &path));
 
@@ -3042,32 +3173,35 @@ ParserState::pushImportBase (ParserState *st, ParserElt *elt)
   xml = xmlReadFile (path.c_str (), nullptr, PARSER_LIBXML_FLAGS);
   if (unlikely (xml == nullptr))
     {
-      xmlError *err = xmlGetLastError ();
-      g_assert_nonnull (err);
-      return st->errEltBadAttribute (elt->getNode (), "documentUri",
-                                     xstrstrip (string (err->message)));
+      string errmsg = xmlGetLastErrorAsString ();
+      return st->errEltImport (elt->getNode (), errmsg);
     }
-
-  ParserState parser (st->_rect.width, st->_rect.height);
-  doc = parser.process (xml);
-  if (unlikely (doc == nullptr))
-    {
-      string errmsg;
-      g_assert (parser.getError (&errmsg) != ParserState::ERROR_NONE);
-      xmlFreeDoc (xml);
-      return st->errElt (elt->getNode (),
-                         ParserState::ERROR_ELT_SUB_DOCUMENT,
-                         ": " + errmsg);
-    }
-
-  // 1. Get parent elt tag.
-  // 2. Get the elements in parsing with this tag (e.g., connector base).
-  // 3. Process them recursively, adding their elements to st.
 
   UDATA_SET (elt, "xmlDoc", xml, xmlDocCleanup);
-  g_assert_not_reached ();
+  root = xmlDocGetRootElement (xml);
+  g_assert_nonnull (root);
 
-  return true;
+  // Check root.
+  if (unlikely (st->checkNode (root, nullptr, nullptr) == nullptr))
+    return false;
+
+  // Get and check head.
+  if (unlikely (!xmlFindChild (root, "head", &head)))
+    goto fail_no_such_base;
+  if (unlikely (st->checkNode (head, nullptr, nullptr) == nullptr))
+    return false;
+
+  // Get base.
+  if (unlikely (!xmlFindChild (head, parent_elt->getTag (), &base)))
+    goto fail_no_such_base;
+
+  // Process import base elements prefixing alias to their id.
+  return st->processNode (base, alias);
+
+ fail_no_such_base:
+  return st->errEltBadAttribute
+    (elt->getNode (), "documentUri", path,
+     "no <" + parent_elt->getTag () + "> in imported document");
 }
 
 /**
@@ -3310,7 +3444,6 @@ ParserState::pushBindRule (ParserState *st, ParserElt *elt)
 bool
 ParserState::pushMedia (ParserState *st, ParserElt *elt)
 {
-  Composition *parent;
   Media *media;
   string id;
   string type;
@@ -3325,7 +3458,9 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
     }
   else
     {
+      Composition *parent;
       string src = "";
+
       if (elt->getAttribute ("src", &src)
           && !xpathisuri (src) && !xpathisabs (src))
         {
@@ -3333,11 +3468,10 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
         }
       media = new Media (id, type, src);
       g_assert_nonnull (media);
+      parent = cast (Composition *, st->objStackPeek ());
+      g_assert_nonnull (parent);
+      parent->addChild (media);
     }
-
-  parent = cast (Composition *, st->objStackPeek ());
-  g_assert_nonnull (parent);
-  parent->addChild (media);
 
   st->objStackPush (media);
   return true;
@@ -3542,9 +3676,7 @@ Parser::parseBuffer (const void *buf, size_t size,
                        nullptr, nullptr, PARSER_LIBXML_FLAGS);
   if (unlikely (xml == nullptr))
     {
-      xmlError *err = xmlGetLastError ();
-      g_assert_nonnull (err);
-      tryset (errmsg, "XML error: " + xstrstrip (string (err->message)));
+      tryset (errmsg, xmlGetLastErrorAsString ());
       return nullptr;
     }
 
@@ -3571,9 +3703,7 @@ Parser::parseFile (const string &path, int width, int height,
   xml = xmlReadFile (path.c_str (), nullptr, PARSER_LIBXML_FLAGS);
   if (unlikely (xml == nullptr))
     {
-      xmlError *err = xmlGetLastError ();
-      g_assert_nonnull (err);
-      tryset (errmsg, "XML error: " + xstrstrip (string (err->message)));
+      tryset (errmsg, xmlGetLastErrorAsString ());
       return nullptr;
     }
 

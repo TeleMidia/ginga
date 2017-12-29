@@ -97,27 +97,29 @@ main (void)
          "<unknown/>");
 
   XFAIL ("Missing parent",
-         "<head>: Missing parent",
+         "<head> at line 1: Missing parent",
          "<head/>");
 
   XFAIL ("Unknown child",
-         "<ncl>: Unknown child <media>",
+         "<ncl> at line 1: Unknown child <media>",
          "<ncl><media/></ncl>");
 
   XFAIL ("Unknown child",
-         "<ncl>: Unknown child <unknown>",
+         "<ncl> at line 1: Unknown child <unknown>",
          "<ncl><unknown/></ncl>");
 
   XFAIL ("Unknown attribute",
-         "<ncl>: Unknown attribute 'unknown'",
+         "<ncl> at line 1: Unknown attribute 'unknown'",
          "<ncl unknown='unknown'/>");
 
   XFAIL ("ncl: Empty id",
-         "<ncl>: Bad value '' for attribute 'id' (must not be empty)",
+         "<ncl> at line 1: Bad value '' for attribute 'id' "
+         "(must not be empty)",
          "<ncl id=''/>");
 
   XFAIL ("ncl: Bad id",
-         "<ncl>: Bad value '@' for attribute 'id' (must not contain '@')",
+         "<ncl> at line 1: Bad value '@' for attribute 'id' "
+         "(must not contain '@')",
          "<ncl id='@'/>");
 
 
@@ -126,7 +128,7 @@ main (void)
 // -------------------------------------------------------------------------
 
   XFAIL ("region: Missing id",
-         "<region>: Missing attribute 'id'", "\
+         "<region> at line 4: Missing attribute 'id'", "\
 <ncl>\n\
  <head>\n\
   <regionBase>\n\
@@ -144,7 +146,7 @@ main (void)
 // -------------------------------------------------------------------------
 
   XFAIL ("descriptor: Missing id",
-         "<descriptor>: Missing attribute 'id'", "\
+         "<descriptor> at line 4: Missing attribute 'id'", "\
 <ncl>\n\
  <head>\n\
   <descriptorBase>\n\
@@ -157,7 +159,8 @@ main (void)
 ");
 
   XFAIL ("descriptor: Bad region",
-         "<descriptor>: Bad value 'nonexistent' for attribute 'region' "
+         "<descriptor> at line 4: Bad value 'nonexistent' "
+         "for attribute 'region' "
          "(no such region)", "\
 <ncl>\n\
  <head>\n\
@@ -170,7 +173,7 @@ main (void)
 ");
 
   XFAIL ("descriptor: Bad region",
-         "<descriptor>: Bad value 'r' for attribute 'region' "
+         "<descriptor> at line 5: Bad value 'r' for attribute 'region' "
          "(no such region)", "\
 <ncl>\n\
  <head>\n\
@@ -184,7 +187,8 @@ main (void)
 ");
 
   XFAIL ("descriptor: Bad transIn",
-         "<descriptor>: Bad value 'nonexistent' for attribute 'transIn' "
+         "<descriptor> at line 4: Bad value 'nonexistent' "
+         "for attribute 'transIn' "
          "(no such transition)", "\
 <ncl>\n\
  <head>\n\
@@ -197,7 +201,7 @@ main (void)
 ");
 
   XFAIL ("descriptor: Bad transIn",
-         "<descriptor>: Bad value 't' for attribute 'transIn' "
+         "<descriptor> at line 5: Bad value 't' for attribute 'transIn' "
          "(no such transition)", "\
 <ncl>\n\
  <head>\n\
@@ -211,7 +215,8 @@ main (void)
 ");
 
   XFAIL ("descriptor: Bad transOut",
-         "<descriptor>: Bad value 'nonexistent' for attribute 'transOut' "
+         "<descriptor> at line 4: Bad value 'nonexistent' "
+         "for attribute 'transOut' "
          "(no such transition)", "\
 <ncl>\n\
  <head>\n\
@@ -224,7 +229,7 @@ main (void)
 ");
 
   XFAIL ("descriptor: Bad transOut",
-         "<descriptor>: Bad value 't' for attribute 'transOut' "
+         "<descriptor> at line 5: Bad value 't' for attribute 'transOut' "
          "(no such transition)", "\
 <ncl>\n\
  <head>\n\
@@ -243,7 +248,7 @@ main (void)
 // -------------------------------------------------------------------------
 
   XFAIL ("descriptorParam: Missing name",
-         "<descriptorParam>: Missing attribute 'name'", "\
+         "<descriptorParam> at line 5: Missing attribute 'name'", "\
 <ncl>\n\
  <head>\n\
   <descriptorBase>\n\
@@ -257,7 +262,7 @@ main (void)
 ");
 
   XFAIL ("descriptorParam: Missing value",
-         "<descriptorParam>: Missing attribute 'value'", "\
+         "<descriptorParam> at line 5: Missing attribute 'value'", "\
 <ncl>\n\
  <head>\n\
   <descriptorBase>\n\
@@ -276,7 +281,7 @@ main (void)
 // -------------------------------------------------------------------------
 
   XFAIL ("causalConnector: Missing id",
-         "<causalConnector>: Missing attribute 'id'", "\
+         "<causalConnector> at line 4: Missing attribute 'id'", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -289,7 +294,7 @@ main (void)
 ");
 
   XFAIL ("causalConnector: Missing condition",
-         "<causalConnector>: Missing child <simpleCondition>", "\
+         "<causalConnector> at line 4: Missing child <simpleCondition>", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -302,7 +307,7 @@ main (void)
 ");
 
   XFAIL ("causalConnector: Missing condition",
-         "<causalConnector>: Missing child <simpleCondition>", "\
+         "<causalConnector> at line 4: Missing child <simpleCondition>", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -317,7 +322,7 @@ main (void)
 ");
 
   XFAIL ("causalConnector: Missing condition",
-         "<causalConnector>: Missing child <simpleCondition>", "\
+         "<causalConnector> at line 4: Missing child <simpleCondition>", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -333,7 +338,7 @@ main (void)
 ");
 
   XFAIL ("causalConnector: Missing condition",
-         "<causalConnector>: Missing child <simpleCondition>", "\
+         "<causalConnector> at line 4: Missing child <simpleCondition>", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -349,7 +354,7 @@ main (void)
 ");
 
   XFAIL ("causalConnector: Missing condition",
-         "<causalConnector>: Missing child <simpleCondition>", "\
+         "<causalConnector> at line 4: Missing child <simpleCondition>", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -366,7 +371,7 @@ main (void)
 ");
 
   XFAIL ("causalConnector: Missing action",
-         "<causalConnector>: Missing child <simpleAction>", "\
+         "<causalConnector> at line 4: Missing child <simpleAction>", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -381,7 +386,7 @@ main (void)
 ");
 
   XFAIL ("causalConnector: Missing action",
-         "<causalConnector>: Missing child <simpleAction>", "\
+         "<causalConnector> at line 4: Missing child <simpleAction>", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -402,7 +407,7 @@ main (void)
 // -------------------------------------------------------------------------
 
   XFAIL ("simpleCondition: Missing role",
-         "<simpleCondition>: Missing attribute 'role'", "\
+         "<simpleCondition> at line 5: Missing attribute 'role'", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -417,7 +422,7 @@ main (void)
 ");
 
   XFAIL ("simpleCondition: Bad role",
-         "<simpleCondition>: Bad value '' for attribute 'role' "
+         "<simpleCondition> at line 5: Bad value '' for attribute 'role' "
          "(must not be empty)", "\
 <ncl>\n\
  <head>\n\
@@ -433,7 +438,7 @@ main (void)
 ");
 
   XFAIL ("simpleCondition: Bad role",
-         "<simpleCondition>: Bad value '$x' for attribute 'role' "
+         "<simpleCondition> at line 5: Bad value '$x' for attribute 'role' "
          "(must not contain '$')", "\
 <ncl>\n\
  <head>\n\
@@ -449,7 +454,8 @@ main (void)
 ");
 
   XFAIL ("simpleCondition: Bad role",
-         "<simpleCondition>: Bad value 'start' for attribute 'role' "
+         "<simpleCondition> at line 5: Bad value 'start' "
+         "for attribute 'role' "
          "(reserved role 'start' must be an action)", "\
 <ncl>\n\
  <head>\n\
@@ -465,7 +471,7 @@ main (void)
 ");
 
   XFAIL ("simpleCondition: Reserved role",
-         "<simpleCondition>: Bad value 'selection' "
+         "<simpleCondition> at line 5: Bad value 'selection' "
          "for attribute 'eventType' "
          "(reserved role 'onBegin' cannot be overwritten)", "\
 <ncl>\n\
@@ -482,7 +488,7 @@ main (void)
 ");
 
   XFAIL ("simpleCondition: Reserved role",
-         "<simpleCondition>: Bad value 'stops' "
+         "<simpleCondition> at line 5: Bad value 'stops' "
          "for attribute 'transition' "
          "(reserved role 'onBegin' cannot be overwritten)", "\
 <ncl>\n\
@@ -499,7 +505,7 @@ main (void)
 ");
 
   XFAIL ("simpleCondition: Missing eventType",
-         "<simpleCondition>: Missing attribute 'eventType'", "\
+         "<simpleCondition> at line 5: Missing attribute 'eventType'", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -514,7 +520,7 @@ main (void)
 ");
 
   XFAIL ("simpleCondition: Bad eventType",
-         "<simpleCondition>: Bad value 'unknown' "
+         "<simpleCondition> at line 5: Bad value 'unknown' "
          "for attribute 'eventType'", "\
 <ncl>\n\
  <head>\n\
@@ -530,7 +536,7 @@ main (void)
 ");
 
   XFAIL ("simpleCondition: Missing transition",
-         "<simpleCondition>: Missing attribute 'transition'", "\
+         "<simpleCondition> at line 5: Missing attribute 'transition'", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -545,7 +551,7 @@ main (void)
 ");
 
   XFAIL ("simpleCondition: Bad transition",
-         "<simpleCondition>: Bad value 'unknown' "
+         "<simpleCondition> at line 6: Bad value 'unknown' "
          "for attribute 'transition'", "\
 <ncl>\n\
  <head>\n\
@@ -567,7 +573,7 @@ main (void)
 // -------------------------------------------------------------------------
 
   XFAIL ("simpleAction: Missing role",
-         "<simpleAction>: Missing attribute 'role'", "\
+         "<simpleAction> at line 6: Missing attribute 'role'", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -583,7 +589,7 @@ main (void)
 ");
 
   XFAIL ("simpleAction: Bad role",
-         "<simpleAction>: Bad value '' for attribute 'role' "
+         "<simpleAction> at line 6: Bad value '' for attribute 'role' "
          "(must not be empty)", "\
 <ncl>\n\
  <head>\n\
@@ -600,7 +606,7 @@ main (void)
 ");
 
   XFAIL ("simpleAction: Bad role",
-         "<simpleAction>: Bad value '$x' for attribute 'role' "
+         "<simpleAction> at line 6: Bad value '$x' for attribute 'role' "
          "(must not contain '$')", "\
 <ncl>\n\
  <head>\n\
@@ -617,7 +623,8 @@ main (void)
 ");
 
   XFAIL ("simpleAction: Bad role",
-         "<simpleAction>: Bad value 'onBegin' for attribute 'role' "
+         "<simpleAction> at line 6: Bad value 'onBegin' "
+         "for attribute 'role' "
          "(reserved role 'onBegin' must be a condition)", "\
 <ncl>\n\
  <head>\n\
@@ -634,7 +641,7 @@ main (void)
 ");
 
   XFAIL ("simpleAction: Reserved role",
-         "<simpleAction>: Bad value 'selection' "
+         "<simpleAction> at line 6: Bad value 'selection' "
          "for attribute 'eventType' "
          "(reserved role 'start' cannot be overwritten)", "\
 <ncl>\n\
@@ -652,7 +659,7 @@ main (void)
 ");
 
   XFAIL ("simpleAction: Reserved role",
-         "<simpleAction>: Bad value 'stops' "
+         "<simpleAction> at line 6: Bad value 'stops' "
          "for attribute 'actionType' "
          "(reserved role 'start' cannot be overwritten)", "\
 <ncl>\n\
@@ -670,7 +677,7 @@ main (void)
 ");
 
   XFAIL ("simpleAction: Missing eventType",
-         "<simpleAction>: Missing attribute 'eventType'", "\
+         "<simpleAction> at line 6: Missing attribute 'eventType'", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -686,7 +693,8 @@ main (void)
 ");
 
   XFAIL ("simpleAction: Bad eventType",
-         "<simpleAction>: Bad value 'unknown' for attribute 'eventType'", "\
+         "<simpleAction> at line 6: Bad value 'unknown' "
+         "for attribute 'eventType'", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -702,7 +710,7 @@ main (void)
 ");
 
   XFAIL ("simpleAction: Missing actionType",
-         "<simpleAction>: Missing attribute 'actionType'", "\
+         "<simpleAction> at line 6: Missing attribute 'actionType'", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -718,8 +726,8 @@ main (void)
 ");
 
   XFAIL ("simpleAction: Bad actionType",
-         "<simpleAction>: Bad value 'unknown' for attribute 'actionType'",
-         "\
+         "<simpleAction> at line 7: Bad value 'unknown' "
+         "for attribute 'actionType'","\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -736,7 +744,7 @@ main (void)
 ");
 
   XFAIL ("simpleAction: Missing value",
-         "<simpleAction>: Missing attribute 'value'", "\
+         "<simpleAction> at line 6: Missing attribute 'value'", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -757,7 +765,7 @@ main (void)
 // -------------------------------------------------------------------------
 
   XFAIL ("compoundStatement: Missing operator",
-         "<compoundStatement>: Missing attribute 'operator'", "\
+         "<compoundStatement> at line 7: Missing attribute 'operator'", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -781,7 +789,8 @@ main (void)
 ");
 
   XFAIL ("compoundStatement: Bad operator",
-         "<compoundStatement>: Bad value 'xx' for attribute 'operator'", "\
+         "<compoundStatement> at line 7: Bad value 'xx' "
+         "for attribute 'operator'", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -805,7 +814,8 @@ main (void)
 ");
 
   XFAIL ("compoundStatement: Bad isNegated",
-         "<compoundStatement>: Bad value 'xx' for attribute 'isNegated'", "\
+         "<compoundStatement> at line 7: Bad value 'xx' "
+         "for attribute 'isNegated'", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -829,8 +839,8 @@ main (void)
 ");
 
   XFAIL ("compoundStatement: Missing child",
-         "<compoundStatement>: Missing child <compoundStatement> or "
-         "<assessmentStatement>", "\
+         "<compoundStatement> at line 7: Missing child "
+         "<compoundStatement> or <assessmentStatement>", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -850,8 +860,8 @@ main (void)
 ");
 
   XFAIL ("compoundStatement: Missing child",
-         "<compoundStatement>: Missing child <compoundStatement> or "
-         "<assessmentStatement>", "\
+         "<compoundStatement> at line 7: Missing child "
+         "<compoundStatement> or <assessmentStatement>", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -871,8 +881,8 @@ main (void)
 ");
 
   XFAIL ("compoundStatement: Missing child",
-         "<compoundStatement>: Missing child <compoundStatement> or "
-         "<assessmentStatement>", "\
+         "<compoundStatement> at line 7: Missing child "
+         "<compoundStatement> or <assessmentStatement>", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -892,7 +902,7 @@ main (void)
 ");
 
   XFAIL ("compoundStatement: Too many children",
-         "<compoundStatement>: Bad child <assessmentStatement> "
+         "<compoundStatement> at line 7: Bad child <assessmentStatement> "
          "(too many children)", "\
 <ncl>\n\
  <head>\n\
@@ -921,7 +931,7 @@ main (void)
 ");
 
   XFAIL ("compoundStatement: Too many children",
-         "<compoundStatement>: Bad child <compoundStatement> "
+         "<compoundStatement> at line 7: Bad child <compoundStatement> "
          "(too many children)", "\
 <ncl>\n\
  <head>\n\
@@ -957,7 +967,8 @@ main (void)
 // -------------------------------------------------------------------------
 
   XFAIL ("assessmentStatement: Missing comparator",
-         "<assessmentStatement>: Missing attribute 'comparator'", "\
+         "<assessmentStatement> at line 6: "
+         "Missing attribute 'comparator'", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -975,7 +986,7 @@ main (void)
 ");
 
   XFAIL ("assessmentStatement: Bad comparator",
-         "<assessmentStatement>: Bad value 'xx' "
+         "<assessmentStatement> at line 6: Bad value 'xx' "
          "for attribute 'comparator'", "\
 <ncl>\n\
  <head>\n\
@@ -994,8 +1005,8 @@ main (void)
 ");
 
   XFAIL ("assessmentStatement: Missing child",
-         "<assessmentStatement>: Missing child <attributeAssessment>"
-         " or <valueAssessment>", "\
+         "<assessmentStatement> at line 6: Missing child "
+         "<attributeAssessment> or <valueAssessment>", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1013,8 +1024,8 @@ main (void)
 ");
 
   XFAIL ("assessmentStatement: Missing child",
-         "<assessmentStatement>: Missing child <attributeAssessment>"
-         " or <valueAssessment>", "\
+         "<assessmentStatement> at line 6: Missing child "
+         "<attributeAssessment> or <valueAssessment>", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1034,8 +1045,8 @@ main (void)
 ");
 
   XFAIL ("assessmentStatement: Too many children",
-         "<assessmentStatement>: Bad child <valueAssessment>"
-         " (too many children)", "\
+         "<assessmentStatement> at line 6: Bad child "
+         "<valueAssessment> (too many children)", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1062,7 +1073,7 @@ main (void)
 // -------------------------------------------------------------------------
 
   XFAIL ("attributeAssessment: Missing role",
-         "<attributeAssessment>: Missing attribute 'role'", "\
+         "<attributeAssessment> at line 7: Missing attribute 'role'", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1082,7 +1093,8 @@ main (void)
 ");
 
   XFAIL ("attributeAssessment: Bad role",
-         "<attributeAssessment>: Bad value '' for attribute 'role' "
+         "<attributeAssessment> at line 7: Bad value '' "
+         "for attribute 'role' "
          "(must not be empty)", "\
 <ncl>\n\
  <head>\n\
@@ -1103,7 +1115,8 @@ main (void)
 ");
 
   XFAIL ("attributeAssessment: Bad role",
-         "<attributeAssessment>: Bad value '$x' for attribute 'role' "
+         "<attributeAssessment> at line 7: Bad value '$x' "
+         "for attribute 'role' "
          "(must not contain '$')", "\
 <ncl>\n\
  <head>\n\
@@ -1129,7 +1142,7 @@ main (void)
 // -------------------------------------------------------------------------
 
   XFAIL ("valueAssessment: Missing value",
-         "<valueAssessment>: Missing attribute 'value'", "\
+         "<valueAssessment> at line 7: Missing attribute 'value'", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1154,7 +1167,7 @@ main (void)
 // -------------------------------------------------------------------------
 
   XFAIL ("rule: Missing id",
-         "<rule>: Missing attribute 'id'", "\
+         "<rule> at line 4: Missing attribute 'id'", "\
 <ncl>\n\
  <head>\n\
   <ruleBase>\n\
@@ -1167,7 +1180,7 @@ main (void)
 ");
 
   XFAIL ("rule: Missing var",
-         "<rule>: Missing attribute 'var'", "\
+         "<rule> at line 4: Missing attribute 'var'", "\
 <ncl>\n\
  <head>\n\
   <ruleBase>\n\
@@ -1180,7 +1193,7 @@ main (void)
 ");
 
   XFAIL ("rule: Bad var",
-         "<rule>: Bad value '$' for attribute 'var' "
+         "<rule> at line 4: Bad value '$' for attribute 'var' "
          "(must not contain '$')", "\
 <ncl>\n\
  <head>\n\
@@ -1194,7 +1207,7 @@ main (void)
 ");
 
   XFAIL ("rule: Missing comparator",
-         "<rule>: Missing attribute 'comparator'", "\
+         "<rule> at line 4: Missing attribute 'comparator'", "\
 <ncl>\n\
  <head>\n\
   <ruleBase>\n\
@@ -1207,7 +1220,7 @@ main (void)
 ");
 
   XFAIL ("rule: Bad comparator",
-         "<rule>: Bad value 'x' for attribute 'comparator'", "\
+         "<rule> at line 4: Bad value 'x' for attribute 'comparator'", "\
 <ncl>\n\
  <head>\n\
   <ruleBase>\n\
@@ -1220,7 +1233,7 @@ main (void)
 ");
 
   XFAIL ("rule: Missing value",
-         "<rule>: Missing attribute 'value'", "\
+         "<rule> at line 4: Missing attribute 'value'", "\
 <ncl>\n\
  <head>\n\
   <ruleBase>\n\
@@ -1238,7 +1251,7 @@ main (void)
 // -------------------------------------------------------------------------
 
   XFAIL ("compositeRule:",
-         "<compositeRule>: Missing attribute 'id'", "\
+         "<compositeRule> at line 4: Missing attribute 'id'", "\
 <ncl>\n\
  <head>\n\
   <ruleBase>\n\
@@ -1250,7 +1263,7 @@ main (void)
 ");
 
   XFAIL ("compositeRule: Missing operator",
-         "<compositeRule>: Missing attribute 'operator'", "\
+         "<compositeRule> at line 4: Missing attribute 'operator'", "\
 <ncl>\n\
  <head>\n\
   <ruleBase>\n\
@@ -1262,7 +1275,8 @@ main (void)
 ");
 
   XFAIL ("compositeRule: Bad operator",
-         "<compositeRule>: Bad value 'x' for attribute 'operator'", "\
+         "<compositeRule> at line 4: Bad value 'x' "
+         "for attribute 'operator'", "\
 <ncl>\n\
  <head>\n\
   <ruleBase>\n\
@@ -1274,8 +1288,8 @@ main (void)
 ");
 
   XFAIL ("compositeRule: Too many children",
-         "<compositeRule>: Bad child <compositeRule> (too many children)",
-         "\
+         "<compositeRule> at line 4: Bad child <compositeRule> "
+         "(too many children)","\
 <ncl>\n\
  <head>\n\
   <ruleBase>\n\
@@ -1290,7 +1304,8 @@ main (void)
 ");
 
   XFAIL ("compositeRule: Too many children",
-         "<compositeRule>: Bad child <rule> (too many children)", "\
+         "<compositeRule> at line 4: Bad child <rule> "
+         "(too many children)", "\
 <ncl>\n\
  <head>\n\
   <ruleBase>\n\
@@ -1310,7 +1325,7 @@ main (void)
 // -------------------------------------------------------------------------
 
   XFAIL ("transition: Missing id",
-         "<transition>: Missing attribute 'id'", "\
+         "<transition> at line 4: Missing attribute 'id'", "\
 <ncl>\n\
  <head>\n\
   <transitionBase>\n\
@@ -1323,7 +1338,7 @@ main (void)
 ");
 
   XFAIL ("transition: Missing type",
-         "<transition>: Missing attribute 'type'", "\
+         "<transition> at line 4: Missing attribute 'type'", "\
 <ncl>\n\
  <head>\n\
   <transitionBase>\n\
@@ -1336,7 +1351,7 @@ main (void)
 ");
 
   XFAIL ("transition: Bad type",
-         "<transition>: Bad value '$' for attribute 'type' "
+         "<transition> at line 4: Bad value '$' for attribute 'type' "
          "(must not contain '$')", "\
 <ncl>\n\
  <head>\n\
@@ -1350,7 +1365,7 @@ main (void)
 ");
 
   XFAIL ("transition: Bad subtype",
-         "<transition>: Bad value '$' for attribute 'subtype' "
+         "<transition> at line 4: Bad value '$' for attribute 'subtype' "
          "(must not contain '$')", "\
 <ncl>\n\
  <head>\n\
@@ -1365,11 +1380,38 @@ main (void)
 
 
 // -------------------------------------------------------------------------
+// <importBase>
+// -------------------------------------------------------------------------
+
+XFAIL ("importBase: Missing alias",
+       "<importBase> at line 4: Missing attribute 'alias'", "\
+<ncl>\n\
+ <head>\n\
+  <regionBase>\n\
+   <importBase/>\n\
+  </regionBase>\n\
+ </head>\n\
+</ncl>\n\
+");
+
+XFAIL ("importBase: Missing documentURI",
+       "<importBase> at line 4: Missing attribute 'documentURI'", "\
+<ncl>\n\
+ <head>\n\
+  <regionBase>\n\
+   <importBase alias='r'/>\n\
+  </regionBase>\n\
+ </head>\n\
+</ncl>\n\
+");
+
+
+// -------------------------------------------------------------------------
 // <context>
 // -------------------------------------------------------------------------
 
   XFAIL ("context: Missing id",
-         "<context>: Missing attribute 'id'", "\
+         "<context> at line 4: Missing attribute 'id'", "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1385,7 +1427,7 @@ main (void)
 // -------------------------------------------------------------------------
 
   XFAIL ("port: Missing id",
-         "<port>: Missing attribute 'id'", "\
+         "<port> at line 4: Missing attribute 'id'", "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1395,7 +1437,7 @@ main (void)
 ");
 
   XFAIL ("port: Missing component",
-         "<port>: Missing attribute 'component'", "\
+         "<port> at line 4: Missing attribute 'component'", "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1405,7 +1447,7 @@ main (void)
 ");
 
   XFAIL ("port: Bad component",
-         "<port>: Bad value 'p' for attribute 'component' "
+         "<port> at line 4: Bad value 'p' for attribute 'component' "
          "(no such object in scope)", "\
 <ncl>\n\
  <head/>\n\
@@ -1416,7 +1458,7 @@ main (void)
 ");
 
   XFAIL ("port: Bad component",
-         "<port>: Bad value 'r' for attribute 'component' "
+         "<port> at line 6: Bad value 'r' for attribute 'component' "
          "(no such object in scope)", "\
 <ncl>\n\
  <head>\n\
@@ -1429,7 +1471,7 @@ main (void)
 ");
 
   XFAIL ("port: Bad component",
-         "<port>: Bad value 'b' for attribute 'component' "
+         "<port> at line 3: Bad value 'b' for attribute 'component' "
          "(no such object in scope)", "\
 <ncl>\n\
  <body>\n\
@@ -1442,7 +1484,7 @@ main (void)
 ");
 
   XFAIL ("port: Bad interface",
-         "<port>: Bad value 'r' for attribute 'interface' "
+         "<port> at line 6: Bad value 'r' for attribute 'interface' "
          "(no such interface)", "\
 <ncl>\n\
  <head>\n\
@@ -1456,7 +1498,8 @@ main (void)
 ");
 
   XFAIL ("port: Bad interface",
-         "<port>: Bad value 'nonexistent' for attribute 'interface' "
+         "<port> at line 3: Bad value 'nonexistent' "
+         "for attribute 'interface' "
          "(no such interface)", "\
 <ncl>\n\
  <body>\n\
@@ -1467,7 +1510,8 @@ main (void)
 ");
 
   XFAIL ("port: Bad interface",
-         "<port>: Bad value 'nonexistent' for attribute 'interface' "
+         "<port> at line 3: Bad value 'nonexistent' "
+         "for attribute 'interface' "
          "(no such interface)", "\
 <ncl>\n\
  <body>\n\
@@ -1479,7 +1523,7 @@ main (void)
 ");
 
   XFAIL ("port: Bad interface",
-         "<port>: Bad value 'p' for attribute 'interface' "
+         "<port> at line 3: Bad value 'p' for attribute 'interface' "
          "(no such interface)", "\
 <ncl>\n\
  <body>\n\
@@ -1491,7 +1535,7 @@ main (void)
 ");
 
   XFAIL ("port: Bad interface",
-         "<port>: Bad value 'm' for attribute 'interface' "
+         "<port> at line 3: Bad value 'm' for attribute 'interface' "
          "(no such interface)", "\
 <ncl>\n\
  <body>\n\
@@ -1503,7 +1547,7 @@ main (void)
 ");
 
   XFAIL ("port: Bad interface",
-         "<port>: Bad value 'p2' for attribute 'interface' "
+         "<port> at line 7: Bad value 'p2' for attribute 'interface' "
          "(no such interface)", "\
 <ncl>\n\
  <body>\n\
@@ -1520,7 +1564,7 @@ main (void)
 ");
 
   XFAIL ("port: Bad interface",
-         "<port>: Bad value 'p2' for attribute 'interface' "
+         "<port> at line 3: Bad value 'p2' for attribute 'interface' "
          "(no such interface)", "\
 <ncl>\n\
  <body>\n\
@@ -1542,7 +1586,7 @@ main (void)
 // -------------------------------------------------------------------------
 
   XFAIL ("switch: Missing id",
-         "<switch>: Missing attribute 'id'", "\
+         "<switch> at line 4: Missing attribute 'id'", "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1558,7 +1602,7 @@ main (void)
 // -------------------------------------------------------------------------
 
   XFAIL ("defaultComponent: Missing component",
-         "<defaultComponent>: Missing attribute 'component'", "\
+         "<defaultComponent> at line 5: Missing attribute 'component'", "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1570,7 +1614,8 @@ main (void)
 ");
 
   XFAIL ("defaultComponent: Bad constituent",
-         "<defaultComponent>: Bad value 'x' for attribute 'component' "
+         "<defaultComponent> at line 5: Bad value 'x' "
+         "for attribute 'component' "
          "(no such object in scope)", "\
 <ncl>\n\
  <head/>\n\
@@ -1583,8 +1628,8 @@ main (void)
 ");
 
   XFAIL ("defaultComponent: Bad constituent",
-         "<defaultComponent>: Bad value '__root__' for attribute "
-         "'component' (no such object in scope)", "\
+         "<defaultComponent> at line 5: Bad value '__root__' "
+         "for attribute 'component' (no such object in scope)", "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1601,7 +1646,7 @@ main (void)
 // -------------------------------------------------------------------------
 
   XFAIL ("bindRule: Missing constituent",
-         "<bindRule>: Missing attribute 'constituent'", "\
+         "<bindRule> at line 5: Missing attribute 'constituent'", "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1613,7 +1658,7 @@ main (void)
 ");
 
   XFAIL ("bindRule: Missing rule",
-         "<bindRule>: Missing attribute 'rule'", "\
+         "<bindRule> at line 5: Missing attribute 'rule'", "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1625,7 +1670,7 @@ main (void)
 ");
 
   XFAIL ("bindRule: Bad constituent",
-         "<bindRule>: Bad value 'x' for attribute 'constituent' "
+         "<bindRule> at line 5: Bad value 'x' for attribute 'constituent' "
          "(no such object in scope)", "\
 <ncl>\n\
  <head/>\n\
@@ -1638,7 +1683,8 @@ main (void)
 ");
 
   XFAIL ("bindRule: Bad constituent",
-         "<bindRule>: Bad value '__root__' for attribute 'constituent' "
+         "<bindRule> at line 5: Bad value '__root__' "
+         "for attribute 'constituent' "
          "(no such object in scope)", "\
 <ncl>\n\
  <head/>\n\
@@ -1651,7 +1697,7 @@ main (void)
 ");
 
   XFAIL ("bindRule: Bad constituent",
-         "<bindRule>: Bad value 'x' for attribute 'rule' "
+         "<bindRule> at line 6: Bad value 'x' for attribute 'rule' "
          "(no such rule)", "\
 <ncl>\n\
  <head/>\n\
@@ -1670,7 +1716,7 @@ main (void)
 // -------------------------------------------------------------------------
 
   XFAIL ("media: Missing id",
-         "<media>: Missing attribute 'id'", "\
+         "<media> at line 4: Missing attribute 'id'", "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1680,7 +1726,8 @@ main (void)
 ");
 
   XFAIL ("media: Duplicated id",
-         "<media>: Bad value 'a' for attribute 'id' (must be unique)", "\
+         "<media> at line 5: Bad value 'a' "
+         "for attribute 'id' (must be unique)", "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1691,7 +1738,8 @@ main (void)
 ");
 
   XFAIL ("media: Bad descriptor",
-         "<media>: Bad value 'nonexistent' for attribute 'descriptor' "
+         "<media> at line 4: Bad value 'nonexistent' "
+         "for attribute 'descriptor' "
          "(no such descriptor)", "\
 <ncl>\n\
  <head/>\n\
@@ -1702,7 +1750,7 @@ main (void)
 ");
 
   XFAIL ("media: Bad descriptor",
-         "<media>: Bad value 'r' for attribute 'descriptor' "
+         "<media> at line 8: Bad value 'r' for attribute 'descriptor' "
          "(no such descriptor)", "\
 <ncl>\n\
  <head>\n\
@@ -1722,7 +1770,7 @@ main (void)
 // -------------------------------------------------------------------------
 
   XFAIL ("link: Missing xconnector",
-         "<link>: Missing attribute 'xconnector'", "\
+         "<link> at line 4: Missing attribute 'xconnector'", "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1733,7 +1781,7 @@ main (void)
 ");
 
   XFAIL ("link: No such xconnector",
-         "<link>: Bad value 'c' for attribute 'xconnector' "
+         "<link> at line 4: Bad value 'c' for attribute 'xconnector' "
          "(no such connector)", "\
 <ncl>\n\
  <head/>\n\
@@ -1745,7 +1793,7 @@ main (void)
 ");
 
   XFAIL ("link: Link does not match connector",
-         "<link>: Bad value 'c' for attribute 'xconnector' "
+         "<link> at line 11: Bad value 'c' for attribute 'xconnector' "
          "(link does not match connector, "
          "role 'onBegin' not bound)", "\
 <ncl>\n\
@@ -1765,7 +1813,7 @@ main (void)
 ");
 
   XFAIL ("link: Link does not match connector",
-         "<link>: Bad value 'c' for attribute 'xconnector' "
+         "<link> at line 11: Bad value 'c' for attribute 'xconnector' "
          "(link does not match connector, "
          "role 'start' not bound)", "\
 <ncl>\n\
@@ -1786,7 +1834,7 @@ main (void)
 ");
 
   XFAIL ("link: Link does not match connector",
-         "<link>: Bad value 'c' for attribute 'xconnector' "
+         "<link> at line 17: Bad value 'c' for attribute 'xconnector' "
          "(link does not match connector, "
          "role 'test' not bound)", "\
 <ncl>\n\
@@ -1819,7 +1867,7 @@ main (void)
 // -------------------------------------------------------------------------
 
   XFAIL ("linkParam: Missing name",
-         "<linkParam>: Missing attribute 'name'", "\
+         "<linkParam> at line 15: Missing attribute 'name'", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1843,7 +1891,7 @@ main (void)
 ");
 
   XFAIL ("linkParam: Missing value",
-         "<linkParam>: Missing attribute 'value'", "\
+         "<linkParam> at line 15: Missing attribute 'value'", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1873,7 +1921,7 @@ main (void)
 // -------------------------------------------------------------------------
 
   XFAIL ("bind: Missing role",
-         "<bind>: Missing attribute 'role'", "\
+         "<bind> at line 13: Missing attribute 'role'", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1894,7 +1942,7 @@ main (void)
 ");
 
   XFAIL ("bind: Missing component",
-         "<bind>: Missing attribute 'component'", "\
+         "<bind> at line 13: Missing attribute 'component'", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1915,7 +1963,7 @@ main (void)
 ");
 
   XFAIL ("bind: Bad component",
-         "<bind>: Bad value 'x' for attribute 'component' "
+         "<bind> at line 12: Bad value 'x' for attribute 'component' "
          "(no such object in scope)", "\
 <ncl>\n\
  <head>\n\
@@ -1936,7 +1984,7 @@ main (void)
 ");
 
   XFAIL ("bind: Bad component (ghost bind)",
-         "<bind>: Bad value 'y' for attribute 'component' "
+         "<bind> at line 14: Bad value 'y' for attribute 'component' "
          "(no such object in scope)", "\
 <ncl>\n\
  <head>\n\
@@ -1959,7 +2007,7 @@ main (void)
 ");
 
   XFAIL ("bind: Bad interface (area)",
-         "<bind>: Bad value 'a' for attribute 'interface' "
+         "<bind> at line 13: Bad value 'a' for attribute 'interface' "
          "(no such interface)", "\
 <ncl>\n\
  <head>\n\
@@ -1981,7 +2029,7 @@ main (void)
 ");
 
   XFAIL ("bind: Bad interface (area)",
-         "<bind>: Bad value 'p' for attribute 'interface' "
+         "<bind> at line 16: Bad value 'p' for attribute 'interface' "
          "(expected a presentation event)", "\
 <ncl>\n\
  <head>\n\
@@ -2005,7 +2053,7 @@ main (void)
 ");
 
   XFAIL ("bind: Bad interface (property)",
-         "<bind>: Bad value '' for attribute 'interface' "
+         "<bind> at line 14: Bad value '' for attribute 'interface' "
          "(expected an attribution event)", "\
 <ncl>\n\
  <head>\n\
@@ -2027,7 +2075,7 @@ main (void)
 ");
 
   XFAIL ("bind: Bad interface (selection)",
-         "<bind>: Bad value 'a' for attribute 'interface' "
+         "<bind> at line 15: Bad value 'a' for attribute 'interface' "
          "(must be empty)", "\
 <ncl>\n\
  <head>\n\
@@ -2051,7 +2099,7 @@ main (void)
 ");
 
   XFAIL ("bind: Bad interface (ghost bind)",
-         "<bind>: Bad value '' for attribute 'interface' "
+         "<bind> at line 15: Bad value '' for attribute 'interface' "
          "(expected an attribution event)", "\
 <ncl>\n\
  <head>\n\
@@ -2074,7 +2122,7 @@ main (void)
 ");
 
   XFAIL ("bind: Bad interface (switch child)",
-         "<bind>: Bad value 'm' for attribute 'interface' "
+         "<bind> at line 17: Bad value 'm' for attribute 'interface' "
          "(no such interface)", "\
 <ncl>\n\
  <head>\n\
@@ -2104,7 +2152,7 @@ main (void)
 // -------------------------------------------------------------------------
 
   XFAIL ("bindParam: Missing name",
-         "<bindParam>: Missing attribute 'name'", "\
+         "<bindParam> at line 17: Missing attribute 'name'", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -2129,7 +2177,7 @@ main (void)
 ");
 
   XFAIL ("bindParam: Missing value",
-         "<bindParam>: Missing attribute 'value'", "\
+         "<bindParam> at line 17: Missing attribute 'value'", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
