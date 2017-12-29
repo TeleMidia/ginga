@@ -632,7 +632,7 @@ xpathbuild (const string &a, const string &b)
 string
 xpathbuildabs (const string &a, const string &b)
 {
-  return xpathmakeabs (xpathbuild (a, b));
+  return  xpathmakeabs ((a == ".") ? b : xpathbuild (a, b));
 }
 
 
