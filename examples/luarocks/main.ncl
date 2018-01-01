@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<!-- Copyright (C) 2006-2017 PUC-Rio/Laboratorio TeleMidia
+<!-- Copyright (C) 2006-2018 PUC-Rio/Laboratorio TeleMidia
 
 This file is part of Ginga (Ginga-NCL).
 
