@@ -13,7 +13,7 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
 License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
+along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #ifndef APPLICATION_LOCATION_DESCRIPTOR_H
 #define APPLICATION_LOCATION_DESCRIPTOR_H
