@@ -1,5 +1,5 @@
 # cfg.mk -- Setup maintainer's makefile.
-# Copyright (C) 2006-2017 PUC-Rio/Laboratorio TeleMidia
+# Copyright (C) 2006-2018 PUC-Rio/Laboratorio TeleMidia
 #
 # This file is part of Ginga (Ginga-NCL).
 #
@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Ginga.  If not, see <https://www.gnu.org/licenses/>.
 
-COPYRIGHT_YEAR= 2017
+COPYRIGHT_YEAR= 2018
 COPYRIGHT_HOLDER= PUC-Rio/Laboratorio TeleMidia
 
 INDENT= clang-format
