@@ -69,20 +69,20 @@ xmlGetPropAsString (xmlNode *node, const string &name, string *result)
   return true;
 }
 
-/// Finds node child by tag.
-static bool
-xmlFindChild (xmlNode *node, const string &tag, xmlNode **result)
+/// Finds node children by tag.
+static list<xmlNode *>
+xmlFindAllChildren (xmlNode *node, const string &tag)
 {
+  list<xmlNode *> children;
   for (xmlNode *child = node->children; child; child = child->next)
     {
       if (child->type == XML_ELEMENT_NODE
           && toCPPString (child->name) == tag)
         {
-          tryset (result, child);
-          return true;
+          children.push_back (child);
         }
     }
-  return false;
+  return children;
 }
 
 /// Tests whether value is a valid XML name.
@@ -115,7 +115,7 @@ typedef struct ParserSyntaxElt ParserSyntaxElt;
 /**
  * @brief Parser element wrapper.
  *
- * Maintains data associated with a specific \c xmlNode.
+ * Data associated with a specific \c xmlNode.
  */
 class ParserElt
 {
@@ -144,8 +144,8 @@ private:
 /**
  * @brief Connector role data.
  *
- * Maintains data associated with a \<simpleCondition\> element or
- * \<simpleAction\> element occurring in the NCL document.
+ * Data associated with a \<simpleCondition\> element or \<simpleAction\>
+ * element occurring in the NCL document.
  */
 typedef struct ParserConnRole
 {
@@ -162,8 +162,7 @@ typedef struct ParserConnRole
 /**
  * @brief Link bind data.
  *
- * Maintains data associated with a \<bind\> element occurring in the NCL
- * document.
+ * Data associated with a \<bind\> element occurring in the NCL document.
  */
 typedef struct ParserLinkBind
 {
@@ -177,7 +176,7 @@ typedef struct ParserLinkBind
 /**
  * @brief Parser state.
  *
- * Maintains the Parser state while it's parsing the document.
+ * Parser state while it's parsing the document.
  */
 class ParserState
 {
@@ -238,13 +237,17 @@ private:
   xmlDoc *_xml;                 ///< The DOM tree being processed.
   Rect _rect;                   ///< Initial screen dimensions.
   int _genid;                   ///< Last generated id.
-  set<string> _unique;          ///< Unique attributes seen so far.
   UserData _udata;              ///< Attached user data.
+  set<string> _unique;          ///< Unique attributes seen so far.
+
   ParserState::Error _error;    ///< Last error code.
   string _errorMsg;             ///< Last error message.
+
   map<xmlNode *, ParserElt *> _eltCache;         ///< Element cache.
   map<string, list<ParserElt *>> _eltCacheByTag; ///< Element cache by tag.
-  list<Object *> _objStack;                      ///< #Object stack.
+
+  list<pair<string, string>> _aliasStack; ///< Alias stack.
+  list<Object *> _objStack;               ///< #Object stack.
 
   string genId ();
   string getDirname ();
@@ -275,6 +278,12 @@ private:
   size_t eltCacheIndexByTag (const list<string> &, list<ParserElt *> *);
   bool eltCacheAdd (ParserElt *);
 
+  // Alias stack.
+  string aliasStackCombine ();
+  bool aliasStackPeek (string *, string *);
+  bool aliasStackPop (string *, string *);
+  bool aliasStackPush (const string &, const string &);
+
   // Object stack.
   Object *objStackPeek ();
   Object *objStackPop ();
@@ -294,7 +303,7 @@ private:
   // Node processing.
   ParserSyntaxElt *checkNode (xmlNode *, map<string, string> *,
                               list<xmlNode *> *);
-  bool processNode (xmlNode *, const string &alias="");
+  bool processNode (xmlNode *);
 };
 
 /// Asserted version of UserData::getData().
@@ -350,24 +359,29 @@ typedef struct ParserSyntaxElt
  */
 typedef enum
 {
-  PARSER_SYNTAX_ATTR_REQUIRED = 1<<1, ///< Is required.
-  PARSER_SYNTAX_ATTR_UNIQUE   = 1<<2, ///< Must be unique in document.
-  PARSER_SYNTAX_ATTR_NONEMPTY = 1<<3, ///< Cannot be not empty.
-  PARSER_SYNTAX_ATTR_NAME     = 1<<4, ///< Is an XML name.
+  PARSER_SYNTAX_ATTR_NONEMPTY   = 1<<1, ///< Cannot be not empty.
+  PARSER_SYNTAX_ATTR_REQUIRED   = 1<<2, ///< Is required.
+  PARSER_SYNTAX_ATTR_TYPE_ID    = 1<<3, ///< Is an id.
+  PARSER_SYNTAX_ATTR_TYPE_IDREF = 1<<4, ///< Is an id-ref.
+  PARSER_SYNTAX_ATTR_TYPE_NAME  = 1<<5, ///< Is a name.
+  PARSER_SYNTAX_ATTR_UNIQUE     = 1<<6, ///< Must be unique in document.
 } ParserSyntaxAttrFlag;
 
-#define ATTR_REQUIRED  (PARSER_SYNTAX_ATTR_REQUIRED)
-#define ATTR_UNIQUE    (PARSER_SYNTAX_ATTR_UNIQUE)
-#define ATTR_NONEMPTY  (PARSER_SYNTAX_ATTR_NONEMPTY)
-#define ATTR_NAME      (PARSER_SYNTAX_ATTR_NAME)
+#define ATTR_NONEMPTY    (PARSER_SYNTAX_ATTR_NONEMPTY)
+#define ATTR_REQUIRED    (PARSER_SYNTAX_ATTR_REQUIRED)
+#define ATTR_TYPE_ID     (PARSER_SYNTAX_ATTR_TYPE_ID)
+#define ATTR_TYPE_IDREF  (PARSER_SYNTAX_ATTR_TYPE_IDREF)
+#define ATTR_TYPE_NAME   (PARSER_SYNTAX_ATTR_TYPE_NAME)
+#define ATTR_UNIQUE      (PARSER_SYNTAX_ATTR_UNIQUE)
 
-#define ATTR_NONEMPTY_NAME           (ATTR_NONEMPTY | ATTR_NAME)
+#define ATTR_NONEMPTY_NAME           (ATTR_NONEMPTY | ATTR_TYPE_NAME)
 #define ATTR_REQUIRED_NONEMPTY_NAME  (ATTR_REQUIRED | ATTR_NONEMPTY_NAME)
 
-#define ATTR_ID        (ATTR_UNIQUE | ATTR_REQUIRED_NONEMPTY_NAME)
-#define ATTR_OPT_ID    (ATTR_UNIQUE | ATTR_NONEMPTY_NAME)
-#define ATTR_IDREF     (ATTR_REQUIRED_NONEMPTY_NAME)
-#define ATTR_OPT_IDREF (ATTR_NONEMPTY_NAME)
+#define ATTR_ID  (ATTR_UNIQUE | ATTR_REQUIRED_NONEMPTY_NAME | ATTR_TYPE_ID)
+#define ATTR_OPT_ID  (ATTR_UNIQUE | ATTR_NONEMPTY_NAME | ATTR_TYPE_ID)
+
+#define ATTR_IDREF      (ATTR_REQUIRED_NONEMPTY_NAME | ATTR_TYPE_IDREF)
+#define ATTR_OPT_IDREF  (ATTR_NONEMPTY_NAME | ATTR_TYPE_IDREF)
 
 /**
  * @brief NCL element processing flags.
@@ -574,10 +588,10 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
    0,
    {"assessmentStatement"},
    {{"role", ATTR_REQUIRED_NONEMPTY_NAME},
-    {"eventType", 0},                  // unused
-    {"key", 0},                        // unused
-    {"attributeType", 0},              // unused
-    {"offset", 0}}},                   // unused
+    {"eventType", 0},           // unused
+    {"key", 0},                 // unused
+    {"attributeType", 0},       // unused
+    {"offset", 0}}},            // unused
  },
  {"valueAssessment",
   {ParserState::pushAttributeAssessment, // reused
@@ -645,7 +659,7 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
    {{"alias", ATTR_REQUIRED_NONEMPTY_NAME},
     {"documentURI", ATTR_REQUIRED},
     {"region", 0},              // unused
-    {"baseId", 0}}},
+    {"baseId", 0}}},            // unused
  },
  {"body",
   {ParserState::pushContext,    // reused
@@ -1023,7 +1037,7 @@ ParserState::getDirname ()
 /**
  * @brief Tests whether id is unique (hasn't been seen yet).
  * @param id The id to test.
- * @return \c true if successful, or false otherwise.
+ * @return \c true if successful, or \c false otherwise.
  */
 bool
 ParserState::isInUniqueSet (const string &id)
@@ -1354,6 +1368,76 @@ ParserState::eltCacheAdd (ParserElt *elt)
     return false;
   _eltCache[node] = elt;
   _eltCacheByTag[elt->getTag ()].push_back (elt);
+  return true;
+}
+
+
+// ParserState: private (alias stack).
+
+/**
+ * @brief Combines all aliases in alias stack.
+ * @return The combined alias.
+ */
+string
+ParserState::aliasStackCombine ()
+{
+  string result = "";
+  for (auto &it: _aliasStack)
+    result += it.first + "#";
+  return result;
+}
+
+/**
+ * @brief Peeks at alias stack.
+ * @param alias Variable to store the alias at top of stack.
+ * @param path Variable to store the path at top of stack.
+ * @return \c true if successful, or \c false otherwise
+ * (alias stack is empty).
+ */
+bool
+ParserState::aliasStackPeek (string *alias, string *path)
+{
+  pair<string, string> top;
+
+  if (_aliasStack.empty ())
+    return false;
+
+  top = _aliasStack.back ();
+  tryset (alias, top.first);
+  tryset (path, top.second);
+  return true;
+}
+
+/**
+ * @brief Pops alias stack.
+ * @param alias Variable to store the popped alias.
+ * @param path Variable to store the popped path.
+ * @return \c true if successful, or \c false otherwise
+ * (alias stack is empty).
+ */
+bool
+ParserState::aliasStackPop (string *alias, string *path)
+{
+  if (!this->aliasStackPeek (alias, path))
+    return false;
+  _aliasStack.pop_back ();
+  return true;
+}
+
+/**
+ * @brief Pushes alias and path onto alias stack.
+ * @param alias The alias to push.
+ * @param path The path to push.
+ * @return \c true if successful, or \c false otherwise
+ * (path already in stack).
+ */
+bool
+ParserState::aliasStackPush (const string &alias, const string &path)
+{
+  for (auto &it: _aliasStack)
+    if (it.second == path)
+      return false;
+  _aliasStack.push_back (std::make_pair (alias, path));
   return true;
 }
 
@@ -1827,7 +1911,7 @@ ParserState::checkNode (xmlNode *node, map<string,string> *attrs,
                   nullptr);
         }
 
-      if (attrsyn.flags & ATTR_NAME)
+      if (attrsyn.flags & ATTR_TYPE_NAME)
         {
           char offending;
           if (unlikely (!xmlIsValidName (value, &offending)))
@@ -1837,6 +1921,12 @@ ParserState::checkNode (xmlNode *node, map<string,string> *attrs,
                        xstrbuild ("must not contain '%c'", offending)),
                       nullptr);
             }
+        }
+
+      if ((attrsyn.flags & ATTR_TYPE_ID)
+          || (attrsyn.flags & ATTR_TYPE_IDREF))
+        {
+          value = this->aliasStackCombine () + value;
         }
 
       if (attrsyn.flags & ATTR_UNIQUE)
@@ -1899,16 +1989,15 @@ ParserState::checkNode (xmlNode *node, map<string,string> *attrs,
  * #Parser error and returns false.
  *
  * @param node The node to process.
- * @return \c true if successful, otherwise returns \c false.
+ * @return \c true if successful, or \c false otherwise.
  */
 bool
-ParserState::processNode (xmlNode *node, const string &alias)
+ParserState::processNode (xmlNode *node)
 {
   map<string, string> attrs;
   list<xmlNode *> children;
   ParserSyntaxElt *eltsyn;
   ParserElt *elt;
-  string id;
   bool cached;
   bool status;
 
@@ -1921,10 +2010,6 @@ ParserState::processNode (xmlNode *node, const string &alias)
   elt = new ParserElt (node);
   for (auto it: attrs)
     g_assert (elt->setAttribute (it.first, it.second));
-
-  // Prefix alias to element id.
-  if (alias != "" && elt->getAttribute ("id", &id))
-    elt->setAttribute ("id", alias + "#" + id);
 
   // Initialize flags.
   cached = false;
@@ -1947,7 +2032,7 @@ ParserState::processNode (xmlNode *node, const string &alias)
   // Process each child.
   for (auto child: children)
     {
-      if (unlikely (!this->processNode (child, alias)))
+      if (unlikely (!this->processNode (child)))
         {
           status = false;
           goto done;
@@ -3134,7 +3219,11 @@ ParserState::pushRule (ParserState *st, ParserElt *elt)
 
 /**
  * @brief Starts the processing of \<importBase\> element.
- * @fn ParserState::pushRegion
+ *
+ * This function uses the #ParserState alias stack to collect and process
+ * nested imports.
+ *
+ * @fn ParserState::pushImportBase
  * @param st #ParserState.
  * @param elt Element wrapper.
  * @return \c true if successful, or \c false otherwise.
@@ -3159,16 +3248,30 @@ ParserState::pushImportBase (ParserState *st, ParserElt *elt)
   xmlDoc *xml;
   xmlNode *root;
   xmlNode *head;
-  xmlNode *base;
-  string tag;
+
+  list<xmlNode *> children;
+  bool status;
 
   g_assert (st->eltCacheIndexParent (elt->getNode (), &parent_elt));
   g_assert (elt->getAttribute ("alias", &alias));
   g_assert (elt->getAttribute ("documentURI", &path));
 
+  // Make import path absolute.
   if (!xpathisabs (path))
-    path = xpathbuildabs (st->getDirname (), path);
+    {
+      string dir;
+      dir = (st->aliasStackPeek (nullptr, &dir))
+        ? xpathdirname (dir) : st->getDirname ();
+      path = xpathbuildabs (dir, path);
+    }
 
+  // Push import alias and path to alias stack.
+  if (unlikely (!st->aliasStackPush (alias, path)))
+    {
+      return st->errEltImport (elt->getNode (), "circular import");
+    }
+
+  // Read the imported document.
   xml = xmlReadFile (path.c_str (), nullptr, PARSER_LIBXML_FLAGS);
   if (unlikely (xml == nullptr))
     {
@@ -3180,22 +3283,43 @@ ParserState::pushImportBase (ParserState *st, ParserElt *elt)
   root = xmlDocGetRootElement (xml);
   g_assert_nonnull (root);
 
-  // Check root.
+  // Check imported document root.
   if (unlikely (st->checkNode (root, nullptr, nullptr) == nullptr))
     return false;
 
-  // Get and check head.
-  if (unlikely (!xmlFindChild (root, "head", &head)))
+  // Get imported document head.
+  children = xmlFindAllChildren (root, "head");
+  if (unlikely (children.size () == 0))
     goto fail_no_such_base;
+
+  // Check imported document head.
+  // (We're assuming that there is only one imported head.)
+  head = children.front ();
   if (unlikely (st->checkNode (head, nullptr, nullptr) == nullptr))
     return false;
 
-  // Get base.
-  if (unlikely (!xmlFindChild (head, parent_elt->getTag (), &base)))
+  // Get all occurrences of the desired base.
+  children = xmlFindAllChildren (head, parent_elt->getTag ());
+  if (unlikely (children.size () == 0))
     goto fail_no_such_base;
 
-  // Process import base elements prefixing alias to their id.
-  return st->processNode (base, alias);
+  // If we're importing a descriptor base, make sure we also import region
+  // and transition bases.
+  if (parent_elt->getTag () == "descriptorBase")
+    {
+      list<string> extra = {"regionBase", "transitionBase"};
+      for (auto &it: extra)
+        for (auto child: xmlFindAllChildren (head, it))
+          children.push_back (child);
+    }
+
+  // Process all imported base.
+  for (auto base: children)
+    if (unlikely (!(status = st->processNode (base))))
+      break;
+
+  g_assert (st->aliasStackPop (nullptr, nullptr));
+  return status;
 
  fail_no_such_base:
   return st->errEltImport
@@ -3206,7 +3330,7 @@ ParserState::pushImportBase (ParserState *st, ParserElt *elt)
 /**
  * @brief Starts the processing of \<body\> or \<context\> element.
  *
- * This function parsers \p elt and pushes it as a #Context onto the object
+ * This function parses \p elt and pushes it as a #Context onto the object
  * stack.
  *
  * @fn ParserState::pushContext

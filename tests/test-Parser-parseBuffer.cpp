@@ -67,11 +67,12 @@ check_success (const string &log, const string &buf)
 }
 
 static string
-writetmp (const string &buf)
+writetmp (unsigned int serial, const string &buf)
 {
   string path;
 
-  path = xpathbuildabs (string (g_get_tmp_dir ()), string (__FILE__) + ".ncl");
+  path = xpathbuildabs
+    (string (g_get_tmp_dir ()), xstrbuild ("%s-%u.ncl", __FILE__, serial));
   g_assert (g_file_set_contents (path.c_str (), buf.c_str (), -1, nullptr));
 
   return path;
@@ -1443,7 +1444,7 @@ XFAIL ("importBase: Bad documentURI",
 </ncl>\n\
 ");
 
- tmp = writetmp ("<x>\n");
+ tmp = writetmp (0, "<x>\n");
  XFAIL ("importBase: Bad imported document",
         "<importBase> at line 4: Syntax error in imported document "
         + xstrbuild ("(%s: XML error at line 2: Premature end of data "
@@ -1458,7 +1459,20 @@ XFAIL ("importBase: Bad documentURI",
 </ncl>\n\
 ", tmp.c_str ()));
 
-tmp = writetmp ("<ncl/>");
+ tmp = writetmp (0, "<x/>\n");
+ XFAIL ("importBase: Missing root",
+        "<x> at line 1: Unknown element",
+        xstrbuild ("\
+<ncl>\n\
+ <head>\n\
+  <regionBase>\n\
+   <importBase alias='r' documentURI='%s'/>\n\
+  </regionBase>\n\
+ </head>\n\
+</ncl>\n\
+", tmp.c_str ()));
+
+tmp = writetmp (0, "<ncl/>");
  XFAIL ("importBase: Bad imported document",
         "<importBase> at line 4: Syntax error in imported document "
         "(no <regionBase> in imported document)",
@@ -1472,7 +1486,7 @@ tmp = writetmp ("<ncl/>");
 </ncl>\n\
 ", tmp.c_str ()));
 
-tmp = writetmp ("<ncl><head/></ncl>");
+tmp = writetmp (0, "<ncl><head/></ncl>");
  XFAIL ("importBase: Bad imported document",
         "<importBase> at line 4: Syntax error in imported document "
         "(no <regionBase> in imported document)",
@@ -1485,6 +1499,58 @@ tmp = writetmp ("<ncl><head/></ncl>");
  </head>\n\
 </ncl>\n\
 ", tmp.c_str ()));
+
+tmp = writetmp (0, "<ncl><x/></ncl>");
+ XFAIL ("importBase: Missing head",
+        "<ncl> at line 1: Unknown child <x>",
+        xstrbuild ("\
+<ncl>\n\
+ <head>\n\
+  <regionBase>\n\
+   <importBase alias='r' documentURI='%s'/>\n\
+  </regionBase>\n\
+ </head>\n\
+</ncl>\n\
+", tmp.c_str ()));
+
+tmp = writetmp (0, "<ncl><head><connectorBase/></head></ncl>");
+ XFAIL ("importBase: Bad imported document",
+        "<importBase> at line 4: Syntax error in imported document "
+        "(no <regionBase> in imported document)",
+        xstrbuild ("\
+<ncl>\n\
+ <head>\n\
+  <regionBase>\n\
+   <importBase alias='r' documentURI='%s'/>\n\
+  </regionBase>\n\
+ </head>\n\
+</ncl>\n\
+", tmp.c_str ()));
+
+tmp = writetmp (0, "");
+tmp = writetmp (0, xstrbuild ("\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <importBase alias='b' documentURI='%s'/>\n\
+  </connectorBase>\n\
+ </head>\n\
+</ncl>\n\
+", tmp.c_str ()));
+
+ XFAIL ("importBase: Circular import",
+        "<importBase> at line 4: Syntax error in imported document "
+        "(circular import)",
+        xstrbuild ("\
+<ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <importBase alias='r' documentURI='%s'/>\n\
+  </connectorBase>\n\
+ </head>\n\
+</ncl>\n\
+", tmp.c_str ()));
+
 
 
 // -------------------------------------------------------------------------
@@ -2287,6 +2353,7 @@ tmp = writetmp ("<ncl><head/></ncl>");
 // Sanity checks.
 // -------------------------------------------------------------------------
 
+
   // Success: Empty document.
   {
     Document *doc;
@@ -2303,6 +2370,7 @@ tmp = writetmp ("<ncl><head/></ncl>");
     delete doc;
   }
 
+
   // Success: Root aliases.
   {
     Document *doc;
@@ -2330,6 +2398,7 @@ tmp = writetmp ("<ncl><head/></ncl>");
     delete doc;
   }
 
+
   // Success: Settings media.
   {
     Document *doc;
@@ -2382,6 +2451,7 @@ tmp = writetmp ("<ncl><head/></ncl>");
     delete doc;
   }
 
+
   // Success: Single media.
   {
     Document *doc;
@@ -2436,6 +2506,7 @@ tmp = writetmp ("<ncl><head/></ncl>");
     delete doc;
   }
 
+
   // Success: Single media with descriptor and region overrides.
   {
     Document *doc;
@@ -2500,6 +2571,7 @@ tmp = writetmp ("<ncl><head/></ncl>");
     delete doc;
   }
 
+
   // Success: Single media with descriptor and transitions.
   {
     Document *doc;
@@ -2570,6 +2642,106 @@ borderWidth='0',borderColor=''}");
     delete doc;
   }
 
+
+  // Success: Single media with imported bases.
+  {
+    string B0 = writetmp (0, "\
+<ncl>\n\
+ <head>\n\
+  <regionBase>\n\
+   <region id='r' top='50%' left='30%'/>\n\
+  </regionBase>\n\
+  <descriptorBase>\n\
+   <descriptor id='d' focusIndex='3' region='r'/>\n\
+  </descriptorBase>\n\
+ </head>\n\
+</ncl>\n\
+");
+
+    string B1 = writetmp (1, "\
+<ncl>\n\
+ <head>\n\
+  <transitionBase>\n\
+   <transition id='t' type='barWipe'/>\n\
+  </transitionBase>\n\
+ </head>\n\
+ <body/>\n\
+</ncl>\n\
+");
+
+    string B2 = writetmp (2, xstrbuild ("\
+<ncl>\n\
+ <head>\n\
+  <descriptorBase>\n\
+   <importBase alias='X' documentURI='%s'/>\n\
+  </descriptorBase>\n\
+ </head>\n\
+</ncl>\n\
+", B0.c_str ()));
+
+    Document *doc;
+    PASS (&doc, "Single media with imported bases", xstrbuild ("\
+<ncl>\n\
+ <head>\n\
+  <descriptorBase>\n\
+   <importBase alias='B0' documentURI='%s'/>\n\
+   <descriptor id='d' transIn='B1#t'/>\n\
+  </descriptorBase>\n\
+  <transitionBase>\n\
+   <importBase alias='B1' documentURI='%s'/>\n\
+  </transitionBase>\n\
+  <descriptorBase>\n\
+   <importBase alias='B2' documentURI='%s'/>\n\
+  </descriptorBase>\n\
+ </head>\n\
+ <body>\n\
+  <media id='m1' descriptor='B0#d'/>\n\
+  <media id='m2' descriptor='d'/>\n\
+  <media id='m3' descriptor='B2#X#d'/>\n\
+ </body>\n\
+</ncl>\n\
+", B0.c_str (), B1.c_str (), B2.c_str ()));
+    g_assert_nonnull (doc);
+    g_assert (doc->getObjects ()->size () == 5);
+    g_assert (doc->getMedias ()->size () == 4);
+    g_assert (doc->getContexts ()->size () == 1);
+
+    Media *m1 = cast (Media *, doc->getObjectById ("m1"));
+    g_assert_nonnull (m1);
+    g_assert (m1->getProperty ("top") == "50.00%");
+    g_assert (m1->getProperty ("left") == "30.00%");
+    g_assert (m1->getProperty ("width") == "100.00%");
+    g_assert (m1->getProperty ("height") == "100.00%");
+    g_assert (m1->getProperty ("focusIndex") == "3");
+    g_assert (m1->getProperty ("transIn") == "");
+
+    Media *m2 = cast (Media *, doc->getObjectById ("m2"));
+    g_assert_nonnull (m2);
+    g_assert (m2->getProperty ("top") == "");
+    g_assert (m2->getProperty ("left") == "");
+    g_assert (m2->getProperty ("width") == "");
+    g_assert (m2->getProperty ("height") == "");
+    g_assert (m2->getProperty ("transIn") == "{type='barWipe',subtype='',\
+dur='0',startProgress='0',endProgress='0',direction='forward',fadeColor='',\
+horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
+
+    Media *m3 = cast (Media *, doc->getObjectById ("m3"));
+    g_assert_nonnull (m3);
+    g_assert (m3->getProperty ("top") == "50.00%");
+    g_assert (m3->getProperty ("left") == "30.00%");
+    g_assert (m3->getProperty ("width") == "100.00%");
+    g_assert (m3->getProperty ("height") == "100.00%");
+    g_assert (m3->getProperty ("focusIndex") == "3");
+    g_assert (m3->getProperty ("transIn") == "");
+
+    TRACE ("%s", m1->toString ().c_str ());
+    TRACE ("%s", m2->toString ().c_str ());
+    TRACE ("%s", m3->toString ().c_str ());
+    delete doc;
+  }
+exit (0);
+
+
   // Success: Nested contexts and ports.
   {
     Document *doc;
@@ -2629,6 +2801,7 @@ borderWidth='0',borderColor=''}");
     delete doc;
   }
 
+
   // Success: Simple link.
   {
     Document *doc;
@@ -2699,6 +2872,7 @@ borderWidth='0',borderColor=''}");
     delete doc;
   }
 
+
   // Success: Simple link (vacuous conditions and actions).
   {
     Document *doc;
@@ -2782,6 +2956,7 @@ borderWidth='0',borderColor=''}");
     delete doc;
   }
 
+
   // Success: Link and bind parameters.
   {
     Document *doc;
@@ -2927,6 +3102,7 @@ borderWidth='0',borderColor=''}");
     delete doc;
   }
 
+
   // Success: Binds pointing to ports and properties.
   {
     Document *doc;
@@ -3058,6 +3234,7 @@ borderWidth='0',borderColor=''}");
     delete doc;
   }
 
+
   // Success: Simple statement.
   {
     Document *doc;
@@ -3120,6 +3297,7 @@ borderWidth='0',borderColor=''}");
     delete doc;
   }
 
+
   // Success: More simple statements.
   {
     Document *doc;
@@ -3220,6 +3398,7 @@ borderWidth='0',borderColor=''}");
     delete doc;
   }
 
+
   // Success: Complex statements.
   {
     Document *doc;
@@ -3305,6 +3484,7 @@ and($__root__.p<='1',\
     delete doc;
   }
 
+
   // Success: Complex conditions and statements.
   {
     Document *doc;
@@ -3424,6 +3604,7 @@ and(and('0'!='0', '1'>'1'), not($__root__.q==$c.p), $m.r<'33')");
     delete doc;
   }
 
+
   // Success: Single switch with default components.
   {
     Document *doc;
@@ -3470,6 +3651,7 @@ and(and('0'!='0', '1'>'1'), not($__root__.q==$c.p), $m.r<'33')");
     delete doc;
   }
 
+
   // Success: Single switch with atomic rules and default components.
   {
     Document *doc;
@@ -3530,6 +3712,7 @@ and(and('0'!='0', '1'>'1'), not($__root__.q==$c.p), $m.r<'33')");
     delete doc;
   }
 
+
   // Success: Single switch with complex rules.
   {
     Document *doc;
@@ -3600,6 +3783,7 @@ and(and('0'!='0', '1'>'1'), not($__root__.q==$c.p), $m.r<'33')");
     delete doc;
   }
 
+
   // Success: Misc checks.
   {
     Document *doc;
