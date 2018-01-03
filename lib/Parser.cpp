@@ -1249,7 +1249,6 @@ ParserState::errEltBadChild (xmlNode *node, const string &name,
 /**
  * @brief Sets parser error to "Syntax error in imported document".
  * @param node The \<importBase\> node that caused the error.
- * @param path The path to the document that caused the error.
  * @param explain Further explanation.
  * return \c false
  */
@@ -1835,6 +1834,7 @@ ParserState::solvePredicate (Predicate *pred, const map<string, string> *tr)
 
 /**
  * @brief Checks node syntax according to syntax table.
+ * @param node The node to check.
  * @param[out] attrs Variable to store node's attributes.
  * @param[out] children Variable to store node's children.
  * @return Pointer to entry in syntax table if successful, otherwise returns
@@ -3265,7 +3265,7 @@ ParserState::pushImportBase (ParserState *st, ParserElt *elt)
       path = xpathbuildabs (dir, path);
     }
 
-  // Push import alias and path to alias stack.
+  // Push import alias and path onto alias stack.
   if (unlikely (!st->aliasStackPush (alias, path)))
     {
       return st->errEltImport (elt->getNode (), "circular import");
