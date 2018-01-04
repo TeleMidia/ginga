@@ -1,11 +1,12 @@
-<p>
 <a href="https://semaphoreci.com/telemidia/ginga">
-  <img src="https://semaphoreci.com/api/v1/projects/067d8fed-5ecc-4408-b10a-20e615756bf2/1327970/shields_badge.svg" alt="Build Status (Ubuntu 14.04)" title="Build Status (Ubuntu 14.04)">
-</a>
+  Ubuntu 14.04: <img src="https://semaphoreci.com/api/v1/projects/067d8fed-5ecc-4408-b10a-20e615756bf2/1327970/shields_badge.svg" alt="Build Status (Ubuntu 14.04)" title="Build Status (Ubuntu 14.04)">
+</a> |
 <a href="https://travis-ci.org/TeleMidia/ginga/builds">
-    <img src="https://travis-ci.org/TeleMidia/ginga.svg?branch=master" alt="Build Status (Ubuntu 16.04)" title="Build Status (Ubuntu 16.04)">
+  Ubuntu 16.04: <img src="https://travis-ci.org/TeleMidia/ginga.svg?branch=master" alt="Build Status (Ubuntu 16.04)" title="Build Status (Ubuntu 16.04)">
+</a> |
+<a href="https://ci.appveyor.com/project/robertogerson/ginga">
+  Windows: <img src="https://ci.appveyor.com/api/projects/status/1j9m853yd87o4691?svg=true" alt="Build Status (Win32)" title="Build Status (Win32)">
 </a>
-</p>
 
 # Ginga
 
