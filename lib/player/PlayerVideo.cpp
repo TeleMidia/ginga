@@ -101,11 +101,10 @@ PlayerVideo::PlayerVideo (Formatter *formatter, const string &id,
   _audio.pan = gst_element_factory_make ("audiopanorama", "audio.pan");
   g_assert_nonnull (_audio.pan);
 
-  _audio.equalizer = gst_element_factory_make
-    ("equalizer-3bands", "equalizer");
+  _audio.equalizer = gst_element_factory_make ("equalizer-3bands", "audio.equalizer");
   g_assert_nonnull (_audio.equalizer);
 
-  _audio.convert = gst_element_factory_make ("audioconvert", "convert");
+  _audio.convert = gst_element_factory_make ("audioconvert", "audio.convert");
   g_assert_nonnull (_audio.convert);
 
   // Try to use ALSA if available.
@@ -170,6 +169,8 @@ PlayerVideo::PlayerVideo (Formatter *formatter, const string &id,
      "mute",
      "treble",
      "volume",
+     "time",
+     "rate"
     };
   this->resetProperties (&handled);
 }
@@ -256,6 +257,20 @@ PlayerVideo::resume ()
 }
 
 void
+PlayerVideo::seek (double time)
+{
+  TRACE ("seek");
+  
+  gint64 time_nanoseconds = time*GINGA_SECOND;
+
+  if (!gst_element_seek (_playbin, 1.0, GST_FORMAT_TIME, 
+                          GST_SEEK_FLAG_FLUSH, GST_SEEK_TYPE_SET, 
+                          time_nanoseconds, GST_SEEK_TYPE_NONE, 
+                          GST_CLOCK_TIME_NONE))
+    TRACE ("seek failed");
+}
+
+void
 PlayerVideo::redraw (cairo_t *cr)
 {
   GstSample *sample;
@@ -325,7 +340,6 @@ PlayerVideo::redraw (cairo_t *cr)
   Player::redraw (cr);
 }
 
-
 // Protected.
 
 bool
@@ -374,13 +388,21 @@ PlayerVideo::doSetProperty (PlayerProperty code,
                         "volume", _prop.volume,
                         nullptr);
         break;
+      case PROP_TIME:
+        TRACE("%s",value.c_str());
+        _prop.time = xstrtod (value);
+        seek(_prop.time);
+        break;
+      case PROP_RATE:
+        _prop.rate = xstrtod (value);
+        //TODO;
+        break;
       default:
         return Player::doSetProperty (code, name, value);
     }
   return true;
 }
 
-
 // Private.
 
 bool
@@ -389,7 +411,6 @@ PlayerVideo::getFreeze ()
   return _prop.freeze;
 }
 
-
 // Private: Static (GStreamer callbacks).
 
 gboolean
