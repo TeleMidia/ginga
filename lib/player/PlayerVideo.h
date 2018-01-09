@@ -31,6 +31,7 @@ public:
   void stop () override;
   void pause () override;
   void resume () override;
+  void seek (double time);
   void redraw (cairo_t *) override;
 
 protected:
@@ -63,6 +64,8 @@ private:
     double treble;          // treble level (Default: 0; Range: -24 and +12)
     double bass;            // bass level (Default: 0; Range: -24 and +12)
     bool freeze;            // true if player should freeze
+    double time;            // seek to time 
+    double rate;            // 
   } _prop;
 
   bool getFreeze ();
