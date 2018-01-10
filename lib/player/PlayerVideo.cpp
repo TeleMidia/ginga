@@ -101,11 +101,10 @@ PlayerVideo::PlayerVideo (Formatter *formatter, const string &id,
   _audio.pan = gst_element_factory_make ("audiopanorama", "audio.pan");
   g_assert_nonnull (_audio.pan);
 
-  _audio.equalizer = gst_element_factory_make
-    ("equalizer-3bands", "equalizer");
+  _audio.equalizer = gst_element_factory_make ("equalizer-3bands", "audio.equalizer");
   g_assert_nonnull (_audio.equalizer);
 
-  _audio.convert = gst_element_factory_make ("audioconvert", "convert");
+  _audio.convert = gst_element_factory_make ("audioconvert", "audio.convert");
   g_assert_nonnull (_audio.convert);
 
   // Try to use ALSA if available.
@@ -170,6 +169,8 @@ PlayerVideo::PlayerVideo (Formatter *formatter, const string &id,
      "mute",
      "treble",
      "volume",
+     "time",
+     "rate"
     };
   this->resetProperties (&handled);
 }
@@ -256,6 +257,50 @@ PlayerVideo::resume ()
 }
 
 void
+PlayerVideo::seek (double value)
+{
+  TRACE ("seek");
+  
+  gint64 time_nanoseconds = value*GINGA_SECOND;
+
+  if (!gst_element_seek (_playbin, _prop.rate, GST_FORMAT_TIME, 
+                          GST_SEEK_FLAG_FLUSH, GST_SEEK_TYPE_SET, 
+                          time_nanoseconds, GST_SEEK_TYPE_NONE, 
+                          GST_CLOCK_TIME_NONE))
+    TRACE ("seek failed");
+}
+
+void
+PlayerVideo::rate (double value)
+{
+  TRACE ("rate");
+
+  gint64 position;
+  GstFormat format = GST_FORMAT_TIME;
+  GstEvent *seek_event;
+
+  if (!gst_element_query_position (_playbin, format, &position))
+    TRACE ("rate failed");
+  
+  if (value > 0)
+  {
+    seek_event = gst_event_new_seek (value, GST_FORMAT_TIME, 
+                                      GST_SEEK_FLAG_FLUSH,
+                                      GST_SEEK_TYPE_SET, position,
+                                      GST_SEEK_TYPE_NONE, 0);
+  }
+  else
+  {
+     seek_event = gst_event_new_seek (value, GST_FORMAT_TIME, 
+                                      GST_SEEK_FLAG_FLUSH,
+                                      GST_SEEK_TYPE_SET, 0,
+                                      GST_SEEK_TYPE_NONE, position);
+  }
+
+  gst_element_send_event (_video.sink, seek_event);
+}
+
+void
 PlayerVideo::redraw (cairo_t *cr)
 {
   GstSample *sample;
@@ -325,7 +370,6 @@ PlayerVideo::redraw (cairo_t *cr)
   Player::redraw (cr);
 }
 
-
 // Protected.
 
 bool
@@ -374,13 +418,21 @@ PlayerVideo::doSetProperty (PlayerProperty code,
                         "volume", _prop.volume,
                         nullptr);
         break;
+      case PROP_TIME:
+        //TRACE ("%s",value.c_str());
+        _prop.time = xstrtod (value);
+        seek (_prop.time);
+        break;
+      case PROP_RATE:
+        _prop.rate = xstrtod (value);
+        rate (_prop.rate);
+        break;
       default:
         return Player::doSetProperty (code, name, value);
     }
   return true;
 }
 
-
 // Private.
 
 bool
@@ -389,7 +441,6 @@ PlayerVideo::getFreeze ()
   return _prop.freeze;
 }
 
-
 // Private: Static (GStreamer callbacks).
 
 gboolean

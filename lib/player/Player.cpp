@@ -66,16 +66,18 @@ static map<string, PlayerPropertyInfo> player_property_map =
  {"horzAlign",    {Player::PROP_HORZ_ALIGN,    true,  "left"}},
  {"left",         {Player::PROP_LEFT,          true,  "0"}},
  {"location",     {Player::PROP_LOCATION,      false, "0,0"}},
- {"mute",         {Player::PROP_MUTE,          false,  "false"}},
+ {"mute",         {Player::PROP_MUTE,          false, "false"}},
+ {"rate",         {Player::PROP_RATE,          true,  "1"}},
  {"right",        {Player::PROP_RIGHT,         false, "0%"}},
  {"size",         {Player::PROP_SIZE,          false, "100%,100%"}},
+ {"time",         {Player::PROP_TIME,          false, "0"}},
  {"top",          {Player::PROP_TOP,           true,  "0"}},
  {"transparency", {Player::PROP_TRANSPARENCY,  true,  "0%"}},
- {"treble",       {Player::PROP_TREBLE,        false,  "0"}},
+ {"treble",       {Player::PROP_TREBLE,        false, "0"}}, 
  {"vertAlign",    {Player::PROP_VERT_ALIGN,    true,  "top"}},
  {"visible",      {Player::PROP_VISIBLE,       true,  "true"}},
  {"volume",       {Player::PROP_VOLUME,        true,  "100%"}},
- {"width",        {Player::PROP_WIDTH,         true,  "100%"}},
+ {"width",        {Player::PROP_WIDTH,         true,  "100%"}}, 
  {"zIndex",       {Player::PROP_Z_INDEX,       true,  "0"}},
  {"freq",         {Player::PROP_FREQ,          true,  "440"}},
  {"wave",         {Player::PROP_WAVE,          true,  "0"}},
@@ -481,7 +483,8 @@ Player::createPlayer (Formatter *formatter, const string &id,
 // Protected.
 
 bool
-Player::doSetProperty (PlayerProperty code, unused (const string &name),
+Player::doSetProperty (PlayerProperty code, 
+                       unused (const string &name),
                        const string &value)
 {
   switch (code)
