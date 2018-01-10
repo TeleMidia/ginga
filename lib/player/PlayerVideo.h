@@ -31,7 +31,8 @@ public:
   void stop () override;
   void pause () override;
   void resume () override;
-  void seek (double time);
+  void seek (double value);
+  void rate (double value);
   void redraw (cairo_t *) override;
 
 protected:

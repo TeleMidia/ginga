@@ -482,7 +482,8 @@ Player::createPlayer (Formatter *formatter, const string &id,
 // Protected.
 
 bool
-Player::doSetProperty (PlayerProperty code, unused (const string &name),
+Player::doSetProperty (PlayerProperty code, 
+                       unused (const string &name),
                        const string &value)
 {
   switch (code)
