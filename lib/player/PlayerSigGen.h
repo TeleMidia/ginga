@@ -37,7 +37,7 @@ protected:
                       const string &) override;
 
 private:
-  GstElement *_pipeline;         // pipeline
+  GstElement *_pipeline;        // pipeline
   struct {                      // audio pipeline
     GstElement *src;            // Audio Test Src format
     GstElement *convert;        // convert audio format
@@ -47,7 +47,8 @@ private:
 
   struct
   {
-    double freq;                 // frequency
+    double freq;                // frequency
+    int wave;                   // wave
   } _prop;
 
   // GStreamer callbacks.
