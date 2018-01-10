@@ -257,17 +257,47 @@ PlayerVideo::resume ()
 }
 
 void
-PlayerVideo::seek (double time)
+PlayerVideo::seek (double value)
 {
   TRACE ("seek");
   
-  gint64 time_nanoseconds = time*GINGA_SECOND;
+  gint64 time_nanoseconds = value*GINGA_SECOND;
 
-  if (!gst_element_seek (_playbin, 1.0, GST_FORMAT_TIME, 
+  if (!gst_element_seek (_playbin, _prop.rate, GST_FORMAT_TIME, 
                           GST_SEEK_FLAG_FLUSH, GST_SEEK_TYPE_SET, 
                           time_nanoseconds, GST_SEEK_TYPE_NONE, 
                           GST_CLOCK_TIME_NONE))
     TRACE ("seek failed");
+}
+
+void
+PlayerVideo::rate (double value)
+{
+  TRACE ("rate");
+
+  gint64 position;
+  GstFormat format = GST_FORMAT_TIME;
+  GstEvent *seek_event;
+
+  if (!gst_element_query_position (_playbin, format, &position))
+    TRACE ("rate failed");
+  
+  if (value > 0)
+  {
+    seek_event = gst_event_new_seek (value, GST_FORMAT_TIME, 
+                                      GST_SEEK_FLAG_FLUSH,
+                                      GST_SEEK_TYPE_SET, position,
+                                      GST_SEEK_TYPE_NONE, 0);
+  }
+  else
+  {
+     seek_event = gst_event_new_seek (value, GST_FORMAT_TIME, 
+                                      GST_SEEK_FLAG_FLUSH,
+                                      GST_SEEK_TYPE_SET, 0,
+                                      GST_SEEK_TYPE_NONE, position);
+  }
+
+  gst_element_send_event (_video.sink, seek_event);
 }
 
 void
@@ -389,13 +419,13 @@ PlayerVideo::doSetProperty (PlayerProperty code,
                         nullptr);
         break;
       case PROP_TIME:
-        TRACE("%s",value.c_str());
+        //TRACE ("%s",value.c_str());
         _prop.time = xstrtod (value);
-        seek(_prop.time);
+        seek (_prop.time);
         break;
       case PROP_RATE:
         _prop.rate = xstrtod (value);
-        //TODO;
+        rate (_prop.rate);
         break;
       default:
         return Player::doSetProperty (code, name, value);
