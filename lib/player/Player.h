@@ -70,6 +70,7 @@ public:
      PROP_WIDTH,
      PROP_Z_INDEX,
      PROP_FREQ,
+     PROP_WAVE,
     };
 
   Player (Formatter *, const string &, const string &);
