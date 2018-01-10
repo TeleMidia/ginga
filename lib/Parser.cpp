@@ -561,7 +561,6 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
     {"duration", 0},            // unused
     {"min", 0},                 // unused
     {"max", 0},                 // unused
-    {"min", 0},                 // unused
     {"qualifier", 0},           // unused
     {"repeat", 0},              // unused
     {"repeatDelay", 0},         // unused
