@@ -486,8 +486,8 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
     {"focusSelSrc", 0},
     {"selBorderColor", 0},
     {"player", 0},              // unused
-    {"transIn", 0},             // unused
-    {"transOut", 0}}},          // unused
+    {"transIn", 0},
+    {"transOut", 0}}},
  },
  {"descriptorParam",
   {ParserState::pushDescriptorParam,
