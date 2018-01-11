@@ -639,15 +639,15 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
    {{"id", ATTR_ID},
     {"type", ATTR_REQUIRED_NONEMPTY_NAME},
     {"subtype", ATTR_NONEMPTY_NAME},
-    {"dur", 0},                 // unused
-    {"startProgress", 0},       // unused
-    {"endProgress", 0},         // unused
-    {"direction", 0},           // unused
-    {"fadeColor", 0},           // unused
-    {"horzRepeat", 0},          // unused
-    {"vertRepeat", 0},          // unused
-    {"borderWidth", 0},         // unused
-    {"borderColor", 0}}},       // unused
+    {"dur", 0},
+    {"startProgress", 0},
+    {"endProgress", 0},
+    {"direction", 0},
+    {"fadeColor", 0},
+    {"horzRepeat", 0},
+    {"vertRepeat", 0},
+    {"borderWidth", 0},
+    {"borderColor", 0}}},
  },
  {"importBase",
   {ParserState::pushImportBase,
@@ -2218,9 +2218,9 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
                 }
 
               g_assert (trans_elt->getAttribute ("type", &str));
-              val = xstrbuild
+              val = "{type='" + str + "',";
+              val += xstrbuild
                 ("\
-{type='%s',\
 subtype='%s',\
 dur='%s',\
 startProgress='%s',\
@@ -2231,7 +2231,6 @@ horzRepeat='%s',\
 vertRepeat='%s',\
 borderWidth='%s',\
 borderColor='%s'}",
-                 str.c_str (),
                  (trans_elt->getAttribute ("subtype", &str))
                  ? str.c_str () : "",
                  + (trans_elt->getAttribute ("dur", &str))

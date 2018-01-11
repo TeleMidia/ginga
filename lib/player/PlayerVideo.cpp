@@ -260,12 +260,12 @@ void
 PlayerVideo::seek (double value)
 {
   TRACE ("seek");
-  
-  gint64 time_nanoseconds = value*GINGA_SECOND;
 
-  if (!gst_element_seek (_playbin, _prop.rate, GST_FORMAT_TIME, 
-                          GST_SEEK_FLAG_FLUSH, GST_SEEK_TYPE_SET, 
-                          time_nanoseconds, GST_SEEK_TYPE_NONE, 
+  gint64 time_nanoseconds = (gint64)(value * GINGA_SECOND);
+
+  if (!gst_element_seek (_playbin, _prop.rate, GST_FORMAT_TIME,
+                          GST_SEEK_FLAG_FLUSH, GST_SEEK_TYPE_SET,
+                          time_nanoseconds, GST_SEEK_TYPE_NONE,
                           GST_CLOCK_TIME_NONE))
     TRACE ("seek failed");
 }
@@ -281,17 +281,17 @@ PlayerVideo::rate (double value)
 
   if (!gst_element_query_position (_playbin, format, &position))
     TRACE ("rate failed");
-  
+
   if (value > 0)
   {
-    seek_event = gst_event_new_seek (value, GST_FORMAT_TIME, 
+    seek_event = gst_event_new_seek (value, GST_FORMAT_TIME,
                                       GST_SEEK_FLAG_FLUSH,
                                       GST_SEEK_TYPE_SET, position,
                                       GST_SEEK_TYPE_NONE, 0);
   }
   else
   {
-     seek_event = gst_event_new_seek (value, GST_FORMAT_TIME, 
+     seek_event = gst_event_new_seek (value, GST_FORMAT_TIME,
                                       GST_SEEK_FLAG_FLUSH,
                                       GST_SEEK_TYPE_SET, 0,
                                       GST_SEEK_TYPE_NONE, position);
