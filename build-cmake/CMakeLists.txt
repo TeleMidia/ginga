@@ -395,7 +395,14 @@ ginga-gl:               ${WITH_OPENGL}
 set (CPACK_PACKAGE_NAME ${PACKAGE})
 set (CPACK_PACKAGE_CONTACT robertogerson@telemidia.puc-rio.br)
 
+set (CPACK_DEBIAN_PACKAGE_DEPENDS
+     "libxerces-c3.1, liblua5.3-0, libpangocairo-1.0-0, librsvg2-2,\
+     libgstreamer1.0-0, libgstreamer-plugins-base1.0-0, \
+     libgstreamer-plugins-good1.0-0, libgtk-3-0")
+
 install (DIRECTORY ${CMAKE_BINARY_OUTPUT_DIR} DESTINATION bin)
 install (TARGETS ginga DESTINATION bin)
 install (TARGETS gingagui DESTINATION bin)
+install (DIRECTORY ../examples DESTINATION share/ginga/)
+
 include (CPack)
