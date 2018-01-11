@@ -415,15 +415,15 @@ Media::afterTransition (Event *evt, Event::Transition transition)
               evt->getInterval (nullptr, &end);
               if (transition == Event::ABORT)
                 TRACE ("abort %s (end=%" GINGA_TIME_FORMAT
-                      ") at %" GINGA_TIME_FORMAT,
-                      evt->getFullId ().c_str (),
-                      GINGA_TIME_ARGS (end), GINGA_TIME_ARGS (_time));
+                       ") at %" GINGA_TIME_FORMAT,
+                       evt->getFullId ().c_str (),
+                       GINGA_TIME_ARGS (end), GINGA_TIME_ARGS (_time));
               else
                 TRACE ("stop %s (end=%" GINGA_TIME_FORMAT
-                      ") at %" GINGA_TIME_FORMAT,
-                      evt->getFullId ().c_str (),
-                      GINGA_TIME_ARGS (end), GINGA_TIME_ARGS (_time));
-            }          
+                       ") at %" GINGA_TIME_FORMAT,
+                       evt->getFullId ().c_str (),
+                       GINGA_TIME_ARGS (end), GINGA_TIME_ARGS (_time));
+            }
           break;
 
         default:
