@@ -22,21 +22,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-typedef struct
-{
-  string type;
-  string subtype;
-  Time dur;
-  gdouble startProgress;
-  gdouble endProgress;
-  string direction;
-  Color faceColor;
-  guint32 horzRepeat;
-  guint32 vertRepeat;
-  guint32 borderWidth;
-  Color borderColor;
-} TransitionData;
-
 // Entry in scheduled animations list.
 class AnimInfo
 {
@@ -64,8 +49,39 @@ private:
   double _speed;     // animation speed
   bool _done;        // true if animation is done
   bool _init;        // true if animation is initialized
-  TransitionData _transIn;  
-  TransitionData _transOut;
+};
+
+class TransitionInfo
+{
+public:
+  TransitionInfo (const string &, const string &, Time, gdouble, gdouble,
+                  const string &, Color, guint32, guint32, guint32, Color);
+  ~TransitionInfo ();
+
+  string getType();
+  string getSubType();
+  Time getDur();
+  gdouble getStartProgress();
+  gdouble getEndProgress();
+  string getDirection();
+  Color getFadeColor();
+  guint32 getHorzRepeat();
+  guint32 getVertRepeat();
+  guint32 getBorderWidth();
+  Color getBorderColor();
+
+private:
+  string _type;
+  string _subtype;
+  Time _dur;
+  gdouble _startProgress;
+  gdouble _endProgress;
+  string _direction;
+  Color _fadeColor;
+  guint32 _horzRepeat;
+  guint32 _vertRepeat;
+  guint32 _borderWidth;
+  Color _borderColor;
 };
 
 class PlayerAnimator
@@ -77,10 +93,13 @@ public:
   void schedule (const string &, const string &, const string &, Time);
   void update (Rect *, Color *, guint8 *);
   void setTransitionProperties (const string &, const string &);
+  void notifyPlayerStartOrStop(const string&);
 
 private:
   Formatter *_formatter;       // formatter handle
   list<AnimInfo *> _scheduled; // scheduled animations
+  TransitionInfo *_transIn;
+  TransitionInfo *_transOut;
 
   void doSchedule (const string &, const string &, const string &, Time);
 };

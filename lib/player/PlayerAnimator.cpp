@@ -26,10 +26,14 @@ PlayerAnimator::PlayerAnimator (Formatter *formatter)
 {
   g_assert_nonnull (formatter);
   _formatter = formatter;
+  _transIn = NULL;
+  _transOut = NULL;
 }
 
 PlayerAnimator::~PlayerAnimator ()
 {
+  delete _transIn;
+  delete _transOut;
   this->clear ();
 }
 
@@ -184,10 +188,52 @@ void
 PlayerAnimator::setTransitionProperties (const string &name,
                                          const string &value)
 {
+
   WARNING ("property '%s': value '%s'", name.c_str (), value.c_str ());
+  map<string, string> tab;
+  tab = ginga::parse_table (value);
 
-  // if(name == "transIn")
+  string type = tab["type"];
+  string subtype = tab["subType"];
+  Time dur = ginga::parse_time (tab["dur"]);
+  gdouble startProgress = stod (tab["startProgress"]);
+  gdouble endProgress = stod (tab["endProgress"]);
+  string direction = tab["direction"];
+  Color fadeColor = ginga::parse_color (tab["fadeColor"]);
+  guint32 horzRepeat = stoi (tab["horzRepeat"]);
+  guint32 vertRepeat = stoi (tab["vertRepeat"]);
+  guint32 borderWidth = stoi (tab["borderWidth"]);
+  Color borderColor = ginga::parse_color (tab["borderColor"]);
 
+  if (name == "transIn")
+    {
+      _transIn = new TransitionInfo (
+          type, subtype, dur, startProgress, endProgress, direction,
+          fadeColor, horzRepeat, vertRepeat, borderWidth, borderColor);
+    }
+  else if (name == "transOut")
+    {
+      _transOut = new TransitionInfo (
+          type, subtype, dur, startProgress, endProgress, direction,
+          fadeColor, horzRepeat, vertRepeat, borderWidth, borderColor);
+    }
+}
+
+void
+PlayerAnimator::notifyPlayerStartOrStop (const string &notificationType)
+{
+  if (notificationType == "start")
+    {
+      if (_transIn == NULL)
+        return;
+
+      this->doSchedule ("transparency", "100%", "0%", _transIn->getDur ());
+    }
+  else
+    {
+      if (_transOut == NULL)
+        return;
+    }
 }
 
 // PlayerAnimator: Private.
@@ -321,6 +367,97 @@ AnimInfo::update ()
     {
       _done = true;
     }
+}
+
+// Transition Info
+
+TransitionInfo::TransitionInfo (const string &type, const string &subtype,
+                                Time dur, gdouble startProgress,
+                                gdouble endProgres, const string &direction,
+                                Color fadeColor, guint32 horzRepeat,
+                                guint32 vertRepeat, guint32 borderWidth,
+                                Color borderColor)
+{
+  _type = type;
+  _subtype = subtype;
+  _dur = dur;
+  _startProgress = startProgress;
+  _endProgress = endProgres;
+  _direction = direction;
+  _fadeColor = fadeColor;
+  _horzRepeat = horzRepeat;
+  _vertRepeat = vertRepeat;
+  _borderWidth = borderWidth;
+  _borderColor = borderColor;
+}
+TransitionInfo::~TransitionInfo ()
+{
+}
+
+string
+TransitionInfo::getType ()
+{
+  return _type;
+}
+
+string
+TransitionInfo::getSubType ()
+{
+  return _subtype;
+}
+
+Time
+TransitionInfo::getDur ()
+{
+  return _dur;
+}
+
+gdouble
+TransitionInfo::getStartProgress ()
+{
+  return _startProgress;
+}
+
+gdouble
+TransitionInfo::getEndProgress ()
+{
+  return _endProgress;
+}
+
+string
+TransitionInfo::getDirection ()
+{
+  return _direction;
+}
+
+Color
+TransitionInfo::getFadeColor ()
+{
+  return _fadeColor;
+}
+
+guint32
+TransitionInfo::getHorzRepeat ()
+{
+  return _horzRepeat;
+}
+
+guint32
+TransitionInfo::getVertRepeat ()
+{
+  return _vertRepeat;
+}
+
+guint32
+TransitionInfo::getBorderWidth ()
+{
+  return _borderWidth;
+}
+
+Color
+TransitionInfo::getBorderColor ()
+{
+  return _borderColor;
 }
 
 GINGA_NAMESPACE_END
