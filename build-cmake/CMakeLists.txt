@@ -403,4 +403,6 @@ set (CPACK_DEBIAN_PACKAGE_DEPENDS
 install (DIRECTORY ${CMAKE_BINARY_OUTPUT_DIR} DESTINATION bin)
 install (TARGETS ginga DESTINATION bin)
 install (TARGETS gingagui DESTINATION bin)
+install (DIRECTORY ../examples DESTINATION share/ginga/)
+
 include (CPack)
