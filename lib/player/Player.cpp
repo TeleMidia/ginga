@@ -189,6 +189,7 @@ Player::start ()
   _state = OCCURRING;
   _time = 0;
   _eos = false;
+  _animator->notifyPlayerStartOrStop("start");
   this->reload ();
 }
 
@@ -197,6 +198,7 @@ Player::stop ()
 {
   g_assert (_state != SLEEPING);
   _state = SLEEPING;
+  _animator->notifyPlayerStartOrStop("stop");
   this->resetProperties ();
 }
 
