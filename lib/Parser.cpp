@@ -155,8 +155,9 @@ typedef struct ParserConnRole
   Event::Transition transition; ///< Role transition.
   bool condition;               ///< Whether role is a condition.
   Predicate *predicate;         ///< Role predicate (if condition).
-  string value;                 ///< Role value (if attribution).
+  string duration;              ///< Role duration (if action).
   string key;                   ///< Role key (if selection).
+  string value;                 ///< Role value (if attribution).
 } ParserConnRole;
 
 /**
@@ -556,9 +557,9 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
    {{"role", ATTR_REQUIRED_NONEMPTY_NAME},
     {"eventType", 0},
     {"actionType", 0},
+    {"duration", 0},
     {"value", 0},
     {"delay", 0},               // unused
-    {"duration", 0},            // unused
     {"min", 0},                 // unused
     {"max", 0},                 // unused
     {"qualifier", 0},           // unused
@@ -689,7 +690,8 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
    ParserState::popSwitch,
    ELT_CACHE,
    {"body", "context", "switch"},
-   {{"id", ATTR_ID}}},
+   {{"id", ATTR_ID},
+    {"refer", ATTR_OPT_IDREF}}},
  },
  {"bindRule",
   {ParserState::pushBindRule,
@@ -2567,6 +2569,9 @@ borderColor='%s'}",
               g_assert_nonnull (act.event);
               act.transition = role->transition;
 
+              act.duration = st->resolveParameter
+                (role->duration, &bind->params, params, &ghosts_map);
+
               act.predicate = nullptr;
               if (role->predicate != nullptr)
                 {
@@ -2924,6 +2929,12 @@ ParserState::pushSimpleCondition (ParserState *st, ParserElt *elt)
         }
     }
 
+  if (!role.condition)
+    elt->getAttribute ("duration", &role.duration);
+
+  if (role.eventType == Event::SELECTION)
+    elt->getAttribute ("key", &role.key);
+
   if (unlikely
       (!role.condition
        && role.eventType == Event::ATTRIBUTION
@@ -2932,8 +2943,6 @@ ParserState::pushSimpleCondition (ParserState *st, ParserElt *elt)
       return st->errEltMissingAttribute (node, "value");
     }
 
-  if (role.eventType == Event::SELECTION)
-    elt->getAttribute ("key", &role.key);
 
   UDATA_GET (st, "conn-elt", &conn_elt);
   UDATA_GET (conn_elt, "roles", &roles);
