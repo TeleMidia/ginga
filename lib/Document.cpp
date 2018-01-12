@@ -230,6 +230,8 @@ Document::evalAction (Action init)
 
       evt = act.event;
       g_assert_nonnull (evt);
+
+      evt->setParameter ("duration", act.duration);
       if (evt->getType () == Event::ATTRIBUTION)
         evt->setParameter ("value", act.value);
 
