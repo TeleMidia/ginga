@@ -107,6 +107,7 @@ PlayerSigGen::PlayerSigGen (Formatter *formatter, const string &id,
     {
      "freq",
      "wave",
+     "volume",
     };
   this->resetProperties (&handled);
 
@@ -139,6 +140,7 @@ PlayerSigGen::start ()
   g_object_set (_audio.src,
                 "freq", _prop.freq,
                 "wave", _prop.wave,
+                "volume", _prop.volume,
                 nullptr);
 
   ret = gst_element_set_state (_pipeline, GST_STATE_PLAYING);
@@ -199,42 +201,49 @@ PlayerSigGen::doSetProperty (PlayerProperty code,
                         nullptr);
         break;
       case PROP_WAVE:
-      TRACE("Changed wave");
-      TRACE("Evaluation: %s", value.c_str());
+        TRACE("Changed wave");
+        TRACE("Evaluation: %s", value.c_str());
       
         if (value == "sine")
-            _prop.wave = 0;
-        else if (value == "square"){
+          _prop.wave = 0;
+        else if (value == "square")
           _prop.wave = 1;
-          }
         else if (value == "saw")
-            _prop.wave = 2;
+          _prop.wave = 2;
         else if (value == "triangle")
-            _prop.wave = 3;
+          _prop.wave = 3;
         else if (value == "silence")
-            _prop.wave = 4;
+          _prop.wave = 4;
         else if (value == "white-noise")
-            _prop.wave = 5;
+          _prop.wave = 5;
         else if (value == "pink-noise")
-            _prop.wave = 6;
+          _prop.wave = 6;
         else if (value == "sine-table")
-            _prop.wave = 7;
+          _prop.wave = 7;
         else if (value == "ticks")
-            _prop.wave = 8;
+          _prop.wave = 8;
         else if (value == "gaussian-noise")
-            _prop.wave = 9;
+          _prop.wave = 9;
         else if (value == "red-noise")
-            _prop.wave = 10;
+          _prop.wave = 10;
         else if (value == "blue-noise")
-            _prop.wave = 11;
+          _prop.wave = 11;
         else if (value == "violet-noise")
-            _prop.wave = 12;
+          _prop.wave = 12;
         
         if (_state != SLEEPING){
           g_object_set (_audio.src,
                         "wave", _prop.wave,
                         nullptr);
-       }
+        }
+        break;
+      case PROP_VOLUME:
+        _prop.volume = xstrtodorpercent (value, nullptr);
+        TRACE("Vol: %f", _prop.volume);
+        if (_state != SLEEPING)
+          g_object_set (_audio.src,
+                        "volume", _prop.volume,
+                        nullptr);
         break;
       default:
         return Player::doSetProperty (code, name, value);
