@@ -197,7 +197,7 @@
         <bindParam name='keyCode' value='RED'/>        
       </bind>
       <bind role="set" component="video" interface="time">
-        <bindParam name="var" value="15"/>
+        <bindParam name="var" value="+15"/>
       </bind>
     </link>
 
@@ -206,7 +206,7 @@
         <bindParam name='keyCode' value='GREEN'/>        
       </bind>
       <bind role="set" component="video" interface="time">
-        <bindParam name="var" value="5"/>
+        <bindParam name="var" value="5s"/>
       </bind>
     </link>
 
