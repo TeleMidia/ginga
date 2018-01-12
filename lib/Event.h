@@ -87,10 +87,11 @@ private:
 
 typedef struct
 {
-  Event *event;                 // Target event
-  Event::Transition transition; // Target transition
-  Predicate *predicate;         // if appears in condition
-  string value;                 // if attribution event
+  Event *event;
+  Event::Transition transition;
+  Predicate *predicate;
+  string value;
+  string duration;
 } Action;
 
 GINGA_NAMESPACE_END

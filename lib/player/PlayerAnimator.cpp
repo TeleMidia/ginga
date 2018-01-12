@@ -200,9 +200,9 @@ PlayerAnimator::setTransitionProperties (const string &name,
   gdouble endProgress = stod (tab["endProgress"]);
   string direction = tab["direction"];
   Color fadeColor = ginga::parse_color (tab["fadeColor"]);
-  guint32 horzRepeat = stoi (tab["horzRepeat"]);
-  guint32 vertRepeat = stoi (tab["vertRepeat"]);
-  guint32 borderWidth = stoi (tab["borderWidth"]);
+  guint horzRepeat = xstrtouint (tab["horzRepeat"], 10);
+  guint vertRepeat = xstrtouint (tab["vertRepeat"], 10);
+  guint borderWidth = xstrtouint (tab["borderWidth"], 10);
   Color borderColor = ginga::parse_color (tab["borderColor"]);
 
   if (name == "transIn")
