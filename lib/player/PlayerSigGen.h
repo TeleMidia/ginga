@@ -49,6 +49,7 @@ private:
   {
     double freq;                // frequency
     int wave;                   // wave
+    double volume;              // sound level
   } _prop;
 
   // GStreamer callbacks.

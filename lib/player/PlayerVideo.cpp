@@ -430,7 +430,6 @@ PlayerVideo::doSetProperty (PlayerProperty code,
         if (xstrhasprefix (value, "+"))
         {
           //value = tempo do playbin + value
-          ns += ;
         }
         else if (xstrhasprefix (value, "-"))
         {
