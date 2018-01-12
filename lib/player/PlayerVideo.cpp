@@ -370,6 +370,30 @@ PlayerVideo::redraw (cairo_t *cr)
   Player::redraw (cr);
 }
 
+gint64 
+PlayerVideo::getPipelineTime ()
+{
+g_print ("AQUI TBM: %" G_GUINT64_FORMAT "\n", GST_TIME_AS_NSECONDS (gst_clock_get_time (gst_element_get_clock (_playbin) )) );
+  
+  return GST_TIME_AS_NSECONDS (gst_clock_get_time (gst_element_get_clock (_playbin))); 
+}
+
+gint64
+PlayerVideo::getStreamTime ()
+{
+  gint64 cur;
+  gst_element_query_position (_playbin, GST_FORMAT_TIME, &cur);
+  return cur;
+}
+
+gint64 
+PlayerVideo::getStreamDuration ()
+{
+  gint64 dur;
+  gst_element_query_duration (_playbin, GST_FORMAT_TIME, &dur);
+  return dur;
+}
+
 // Protected.
 
 bool
@@ -419,24 +443,30 @@ PlayerVideo::doSetProperty (PlayerProperty code,
                         nullptr);
         break;
       case PROP_TIME:
-        TRACE ("AQUI %s",value.c_str());
-        Time *t;
-        gint64 ns;
+        TRACE ("%s",value.c_str());
+        Time t;        
+        gint64 cur;
+        gint64 dur;
+        gint64 next;
+        
+        cur = this->getStreamTime ();
+        dur = this->getStreamDuration ();
 
-        try_parse_time (value, t);
-
-        ns = (gint64)(*t);
+        try_parse_time (value, &t);
+        next = (gint64)(t);
 
         if (xstrhasprefix (value, "+"))
         {
-          //value = tempo do playbin + value
+          if (next+cur>=dur)
+            setEOS (true);
+
+          next+=cur;
         }
         else if (xstrhasprefix (value, "-"))
         {
-          //value = tempo do playbin - value
+          next=(next-cur<0)?0:next-cur;
         }
-        
-        seek (ns);
+        seek (next);
         break;
       case PROP_RATE:
         _prop.rate = xstrtod (value);
