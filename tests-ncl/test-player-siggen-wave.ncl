@@ -6,7 +6,7 @@
 <body>
   <port id="start" component="m"/>
   <media id="m" type="application/x-ginga-siggen">
-  	<property name="wave" value="2"/>
+  	<property name="wave" value="square"/>
   </media>
 </body>
 
