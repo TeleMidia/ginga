@@ -189,7 +189,7 @@ PlayerAnimator::setTransitionProperties (const string &name,
                                          const string &value)
 {
 
-  WARNING ("property '%s': value '%s'", name.c_str (), value.c_str ());
+  //WARNING ("property '%s': value '%s'", name.c_str (), value.c_str ());
   map<string, string> tab;
   tab = ginga::parse_table (value);
 
@@ -207,6 +207,7 @@ PlayerAnimator::setTransitionProperties (const string &name,
 
   if (name == "transIn")
     {
+      TRACE("CREATE TRANS_IN TIME:");
       _transIn = new TransitionInfo (
           type, subtype, dur, startProgress, endProgress, direction,
           fadeColor, horzRepeat, vertRepeat, borderWidth, borderColor);
@@ -226,8 +227,8 @@ PlayerAnimator::notifyPlayerStartOrStop (const string &notificationType)
     {
       if (_transIn == NULL)
         return;
-
-      this->doSchedule ("transparency", "100%", "0%", _transIn->getDur ());
+      TRACE("START SCHEDULE WITH DUR: %ld", _transIn->getDur ());
+      this->schedule ("transparency", "80%", "50%", _transIn->getDur ());
     }
   else
     {
@@ -281,6 +282,7 @@ PlayerAnimator::doSchedule (const string &name, const string &from,
   if (from != "")
     info->init (current);
 
+ 
   _scheduled.push_back (info);
 }
 
@@ -354,6 +356,7 @@ AnimInfo::update ()
 {
   Time _current_time = (Time) g_get_monotonic_time (); // fixme
   int dir;
+
 
   g_assert (_init);
   g_assert (!_done);
