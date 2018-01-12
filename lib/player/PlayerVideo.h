@@ -34,6 +34,9 @@ public:
   void redraw (cairo_t *) override;
   void seek (gint64 value);
   void rate (double value);
+  gint64 getPipelineTime ();
+  gint64 getStreamTime ();
+  gint64 getStreamDuration ();
 
 protected:
   bool doSetProperty (PlayerProperty, const string &,
