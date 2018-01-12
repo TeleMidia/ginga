@@ -557,9 +557,9 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
    {{"role", ATTR_REQUIRED_NONEMPTY_NAME},
     {"eventType", 0},
     {"actionType", 0},
+    {"duration", 0},
     {"value", 0},
     {"delay", 0},               // unused
-    {"duration", 0},            // unused
     {"min", 0},                 // unused
     {"max", 0},                 // unused
     {"qualifier", 0},           // unused
@@ -690,7 +690,8 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
    ParserState::popSwitch,
    ELT_CACHE,
    {"body", "context", "switch"},
-   {{"id", ATTR_ID}}},
+   {{"id", ATTR_ID},
+    {"refer", ATTR_OPT_IDREF}}},
  },
  {"bindRule",
   {ParserState::pushBindRule,

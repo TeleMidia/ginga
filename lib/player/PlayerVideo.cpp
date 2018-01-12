@@ -266,7 +266,7 @@ PlayerVideo::seek (double value)
   if (!gst_element_seek (_playbin, _prop.rate, GST_FORMAT_TIME,
                           GST_SEEK_FLAG_FLUSH, GST_SEEK_TYPE_SET,
                           time_nanoseconds, GST_SEEK_TYPE_NONE,
-                          GST_CLOCK_TIME_NONE))
+                          GST_CLOCK_STIME_NONE))
     TRACE ("seek failed");
 }
 
