@@ -190,8 +190,8 @@ Player::start ()
   _state = OCCURRING;
   _time = 0;
   _eos = false;
-  _animator->notifyPlayerStartOrStop("start");
   this->reload ();
+  _animator->notifyPlayerStartOrStop("start");
 }
 
 void
@@ -285,6 +285,7 @@ Player::schedulePropertyAnimation (const string &name, const string &from,
   // TRACE ("%s.%s from '%s' to '%s' in %" GINGA_TIME_FORMAT,
   //        _id.c_str (), name.c_str (), from.c_str (), to.c_str (),
   //        GINGA_TIME_ARGS (dur));
+  
   _animator->schedule (name, from, to, dur);
 }
 
