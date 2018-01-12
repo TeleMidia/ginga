@@ -373,8 +373,6 @@ PlayerVideo::redraw (cairo_t *cr)
 gint64 
 PlayerVideo::getPipelineTime ()
 {
-g_print ("AQUI TBM: %" G_GUINT64_FORMAT "\n", GST_TIME_AS_NSECONDS (gst_clock_get_time (gst_element_get_clock (_playbin) )) );
-  
   return GST_TIME_AS_NSECONDS (gst_clock_get_time (gst_element_get_clock (_playbin))); 
 }
 
