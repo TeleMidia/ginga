@@ -166,17 +166,30 @@ PlayerLua::redraw (cairo_t *cr)
   {
     if (evt->cls == NCLUAW_EVENT_NCL)
     {
-      if (g_str_equal (evt->u.ncl.type, "presentation")
-          && g_str_equal (evt->u.ncl.name, ""))
-      {
-        Object *obj = _formatter->getDocument()->getObjectById (_id);
-        g_assert_nonnull (obj);
+      Object *obj = _formatter->getDocument()->getObjectById (_id);
+      g_assert_nonnull (obj);
 
-        Event *nclEvt = obj->getPresentationEvent ("@lambda");
+      if (g_str_equal (evt->u.ncl.type, "presentation"))
+      {
+        std::string label = evt->u.ncl.name;
+        if (label == "")
+          label = "@lambda";
+
+        Event *nclEvt = obj->getPresentationEvent (label);
         g_assert_nonnull (nclEvt);
 
         g_assert (nclua_act_to_ncl.count (evt->u.ncl.action) != 0);
-        obj->addDelayedAction(nclEvt, nclua_act_to_ncl.at (evt->u.ncl.action));
+        obj->addDelayedAction (nclEvt, nclua_act_to_ncl.at (evt->u.ncl.action));
+      }
+      else if (g_str_equal (evt->u.ncl.type, "attribution"))
+      {
+        Event *nclEvt = obj->getAttributionEvent (evt->u.ncl.name);
+        g_assert_nonnull (nclEvt);
+
+        g_assert (nclua_act_to_ncl.count (evt->u.ncl.action));
+        obj->addDelayedAction (nclEvt,
+                               nclua_act_to_ncl.at (evt->u.ncl.action),
+                               evt->u.ncl.value);
       }
     }
 
