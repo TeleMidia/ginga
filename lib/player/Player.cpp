@@ -80,7 +80,7 @@ static map<string, PlayerPropertyInfo> player_property_map =
  {"width",        {Player::PROP_WIDTH,         true,  "100%"}}, 
  {"zIndex",       {Player::PROP_Z_INDEX,       true,  "0"}},
  {"freq",         {Player::PROP_FREQ,          true,  "440"}},
- {"wave",         {Player::PROP_WAVE,          true,  "0"}},
+ {"wave",         {Player::PROP_WAVE,          true,  "sine"}},
 };
 
 static map<string, string> player_property_aliases = {

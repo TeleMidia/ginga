@@ -30,10 +30,13 @@ public:
   void start () override;
   void stop () override;
   void pause () override;
-  void resume () override;
-  void seek (double value);
-  void rate (double value);
+  void resume () override;  
   void redraw (cairo_t *) override;
+  void seek (gint64 value);
+  void rate (double value);
+  gint64 getPipelineTime ();
+  gint64 getStreamTime ();
+  gint64 getStreamDuration ();
 
 protected:
   bool doSetProperty (PlayerProperty, const string &,
@@ -65,7 +68,6 @@ private:
     double treble;          // treble level (Default: 0; Range: -24 and +12)
     double bass;            // bass level (Default: 0; Range: -24 and +12)
     bool freeze;            // true if player should freeze
-    double time;            // seek to time 
     double rate;            // 
   } _prop;
 

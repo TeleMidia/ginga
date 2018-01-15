@@ -257,16 +257,16 @@ PlayerVideo::resume ()
 }
 
 void
-PlayerVideo::seek (double value)
+PlayerVideo::seek (gint64 value)
 {
   TRACE ("seek");
 
-  gint64 time_nanoseconds = (gint64)(value * GINGA_SECOND);
+  //gint64 time_nanoseconds = (gint64)(value * GINGA_SECOND);
 
   if (!gst_element_seek (_playbin, _prop.rate, GST_FORMAT_TIME,
                           GST_SEEK_FLAG_FLUSH, GST_SEEK_TYPE_SET,
-                          time_nanoseconds, GST_SEEK_TYPE_NONE,
-                          GST_CLOCK_STIME_NONE))
+                          value, GST_SEEK_TYPE_NONE,
+                          GST_CLOCK_TIME_NONE))
     TRACE ("seek failed");
 }
 
@@ -370,6 +370,28 @@ PlayerVideo::redraw (cairo_t *cr)
   Player::redraw (cr);
 }
 
+gint64 
+PlayerVideo::getPipelineTime ()
+{
+  return GST_TIME_AS_NSECONDS (gst_clock_get_time (gst_element_get_clock (_playbin))); 
+}
+
+gint64
+PlayerVideo::getStreamTime ()
+{
+  gint64 cur;
+  gst_element_query_position (_playbin, GST_FORMAT_TIME, &cur);
+  return cur;
+}
+
+gint64 
+PlayerVideo::getStreamDuration ()
+{
+  gint64 dur;
+  gst_element_query_duration (_playbin, GST_FORMAT_TIME, &dur);
+  return dur;
+}
+
 // Protected.
 
 bool
@@ -419,9 +441,30 @@ PlayerVideo::doSetProperty (PlayerProperty code,
                         nullptr);
         break;
       case PROP_TIME:
-        //TRACE ("%s",value.c_str());
-        _prop.time = xstrtod (value);
-        seek (_prop.time);
+        TRACE ("%s",value.c_str());
+        Time t;        
+        gint64 cur;
+        gint64 dur;
+        gint64 next;
+        
+        cur = this->getStreamTime ();
+        dur = this->getStreamDuration ();
+
+        try_parse_time (value, &t);
+        next = (gint64)(t);
+
+        if (xstrhasprefix (value, "+"))
+        {
+          if (next+cur>=dur)
+            setEOS (true);
+
+          next+=cur;
+        }
+        else if (xstrhasprefix (value, "-"))
+        {
+          next=(next-cur<0)?0:next-cur;
+        }
+        seek (next);
         break;
       case PROP_RATE:
         _prop.rate = xstrtod (value);
