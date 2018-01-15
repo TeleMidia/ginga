@@ -10,3 +10,10 @@ before_install:
 script:
  - docker build .
 
+notifications:
+  email:
+    recipients:
+      - alan@telemidia.puc-rio.br
+      - gflima@telemidia.puc-rio.br
+      - robertogerson@telemidia.puc-rio.br
+
