@@ -93,7 +93,7 @@ public:
   void schedule (const string &, const string &, const string &, Time);
   void update (Rect *, Color *, guint8 *);
   void setTransitionProperties (const string &, const string &);
-  void notifyPlayerStartOrStop(const string&);
+  void notifyPlayerStartOrStop(const string&, Rect *, Color *, guint8 *);
 
 private:
   Formatter *_formatter;       // formatter handle

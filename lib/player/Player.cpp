@@ -191,7 +191,7 @@ Player::start ()
   _time = 0;
   _eos = false;
   this->reload ();
-  _animator->notifyPlayerStartOrStop("start");
+  _animator->notifyPlayerStartOrStop("start",&_prop.rect, &_prop.bgColor, &_prop.alpha);
 }
 
 void
@@ -199,7 +199,7 @@ Player::stop ()
 {
   g_assert (_state != SLEEPING);
   _state = SLEEPING;
-  _animator->notifyPlayerStartOrStop("stop");
+  //_animator->notifyPlayerStartOrStop("stop");
   this->resetProperties ();
 }
 
