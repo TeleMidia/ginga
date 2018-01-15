@@ -47,6 +47,10 @@ void
 PlayerAnimator::schedule (const string &name, const string &from,
                           const string &to, Time dur)
 {
+
+  TRACE ("%s from '%s' to '%s' in %" GINGA_TIME_FORMAT, name.c_str (),
+         from.c_str (), to.c_str (), GINGA_TIME_ARGS (dur));
+
   list<string> list_pre = { "", "", "", "" };
   list<string> list_pos;
 
@@ -189,7 +193,7 @@ PlayerAnimator::setTransitionProperties (const string &name,
                                          const string &value)
 {
 
-  //WARNING ("property '%s': value '%s'", name.c_str (), value.c_str ());
+  // WARNING ("property '%s': value '%s'", name.c_str (), value.c_str ());
   map<string, string> tab;
   tab = ginga::parse_table (value);
 
@@ -207,7 +211,6 @@ PlayerAnimator::setTransitionProperties (const string &name,
 
   if (name == "transIn")
     {
-      TRACE("CREATE TRANS_IN TIME:");
       _transIn = new TransitionInfo (
           type, subtype, dur, startProgress, endProgress, direction,
           fadeColor, horzRepeat, vertRepeat, borderWidth, borderColor);
@@ -221,14 +224,23 @@ PlayerAnimator::setTransitionProperties (const string &name,
 }
 
 void
-PlayerAnimator::notifyPlayerStartOrStop (const string &notificationType)
+PlayerAnimator::notifyPlayerStartOrStop (const string &notificationType, Rect *rect, Color *bgColor, guint8 *alpha)
 {
+
   if (notificationType == "start")
     {
       if (_transIn == NULL)
         return;
-      TRACE("START SCHEDULE WITH DUR: %ld", _transIn->getDur ());
-      this->schedule ("transparency", "80%", "50%", _transIn->getDur ());
+
+      if (_transIn->getType () == "fade")
+      {
+        this->schedule ("transparency", "0", to_string(*alpha), _transIn->getDur ());
+      }
+      else if (_transIn->getType () == "barWipe")
+      {
+       
+      }
+
     }
   else
     {
@@ -243,6 +255,7 @@ void
 PlayerAnimator::doSchedule (const string &name, const string &from,
                             const string &to, Time dur)
 {
+
   AnimInfo *info;
   double current;
   double target;
@@ -282,7 +295,6 @@ PlayerAnimator::doSchedule (const string &name, const string &from,
   if (from != "")
     info->init (current);
 
- 
   _scheduled.push_back (info);
 }
 
@@ -348,21 +360,22 @@ AnimInfo::init (double current)
   else
     _speed = 0;
   _init = true;
-  _last_update = (Time) g_get_monotonic_time (); // fixme
+  _last_update = (Time) g_get_monotonic_time () * 1000; // micro to mili
 }
 
 void
 AnimInfo::update ()
 {
-  Time _current_time = (Time) g_get_monotonic_time (); // fixme
+  Time _current_time
+      = (Time) g_get_monotonic_time () * 1000; // micro to mili
   int dir;
-
 
   g_assert (_init);
   g_assert (!_done);
 
   dir = (_current < _target) ? 1 : -1;
   _current += dir * _speed * (double) (_current_time - _last_update);
+
   _last_update = _current_time;
 
   if (_duration == 0 || (dir > 0 && _current >= _target)
