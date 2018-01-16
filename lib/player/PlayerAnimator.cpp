@@ -67,18 +67,6 @@ PlayerAnimator::schedule (const string &name, const string &from,
       this->doSchedule ("width", *pre++, *pos++, dur);
       this->doSchedule ("height", *pre++, *pos++, dur);
     }
-  else if (name == "crop")
-    {
-      if (from != "")
-        list_pre = ginga::parse_list (from, ',', 4, 4);
-      list_pos = ginga::parse_list (to, ',', 4, 4);
-      auto pre = list_pre.begin ();
-      auto pos = list_pos.end ();
-      this->doSchedule ("crop:left", *pre++, *pos++, dur);
-      this->doSchedule ("crop:top", *pre++, *pos++, dur);
-      this->doSchedule ("crop:width", *pre++, *pos++, dur);
-      this->doSchedule ("crop:height", *pre++, *pos++, dur);
-    }
   else if (name == "location")
     {
       if (from != "")
@@ -135,7 +123,7 @@ isDone (AnimInfo *info)
 
 void
 PlayerAnimator::update (Rect *rect, Color *bgColor, guint8 *alpha,
-                        Rect *crop)
+                        list<int> *cropPolygon)
 {
 
 #define UPDATE(info, Type, var, rnd, min, max)                             \
@@ -176,21 +164,20 @@ PlayerAnimator::update (Rect *rect, Color *bgColor, guint8 *alpha,
         {
           UPDATE (info, int, rect->height, lround, G_MININT, G_MAXINT);
         }
-      else if (name == "crop:top")
+      else if (name == "barwipe:topToBottom")
         {
-          UPDATE (info, int, crop->y, lround, G_MININT, G_MAXINT);
+          list<int>::iterator it = cropPolygon->begin ();
+          advance (it, 1);
+          UPDATE (info, int, *it, lround, G_MININT, G_MAXINT);
+          advance (it, 2);
+          UPDATE (info, int, *it, lround, G_MININT, G_MAXINT);
         }
-      else if (name == "crop:left")
+      else if (name == "barwipe:leftToRight")
         {
-          UPDATE (info, int, crop->x, lround, G_MININT, G_MAXINT);
-        }
-      else if (name == "crop:width")
-        {
-          UPDATE (info, int, crop->width, lround, G_MININT, G_MAXINT);
-        }
-      else if (name == "crop:height")
-        {
-          UPDATE (info, int, crop->height, lround, G_MININT, G_MAXINT);
+          list<int>::iterator it = cropPolygon->begin ();
+          UPDATE (info, int, *it, lround, G_MININT, G_MAXINT);
+          advance (it, 6);
+          UPDATE (info, int, *it, lround, G_MININT, G_MAXINT);
         }
       else if (name == "background:r")
         {
@@ -256,8 +243,9 @@ PlayerAnimator::setTransitionProperties (const string &name,
 void
 PlayerAnimator::scheduleTransition (const string &notificationType,
                                     Rect *rect, Color *bgColor,
-                                    guint8 *alpha, Rect *crop)
+                                    guint8 *alpha, list<int> *cropPoly)
 {
+  cropPoly->clear ();
 
   if (notificationType == "start")
     {
@@ -266,35 +254,35 @@ PlayerAnimator::scheduleTransition (const string &notificationType,
 
       if (_transIn->getType () == "barWipe")
         {
-          crop->x = rect->x;
-          crop->y = rect->y;
-          crop->width = rect->width;
-          crop->height = rect->height;
 
-          if (_transIn->getType () == "barWipe")
+          cropPoly->insert (cropPoly->end (), rect->x); // dot1 (x,y)
+          cropPoly->insert (cropPoly->end (), rect->y); //
+          cropPoly->insert (cropPoly->end (),
+                            rect->x + rect->width);     // dot1 (x+w,y)
+          cropPoly->insert (cropPoly->end (), rect->y); //
+          cropPoly->insert (cropPoly->end (),
+                            rect->x + rect->width); // dot3 (x+w,y+h)
+          cropPoly->insert (cropPoly->end (), rect->y + rect->height); //
+          cropPoly->insert (cropPoly->end (), rect->x); // dot4 (x,y+h)
+          cropPoly->insert (cropPoly->end (), rect->y + rect->height); //
+
+          if (_transIn->getSubType () == "topToBottom")
             {
-              if (_transIn->getSubType () == "topToBottom")
-                {
-                  this->schedule ("crop:top", to_string (crop->y),
-                                  to_string (crop->y + crop->height),
-                                  _transIn->getDur ());
-                  this->schedule ("crop:height", to_string (rect->height),
-                                  to_string (0), _transIn->getDur ());
-                }
-              else
-                {
-                  this->schedule ("crop:left", to_string (crop->x),
-                                  to_string (crop->x + crop->width),
-                                  _transIn->getDur ());
-                  this->schedule ("crop:width", to_string (rect->width),
-                                  to_string (0), _transIn->getDur ());
-                }
+              this->schedule ("barwipe:topToBottom", to_string (rect->y),
+                              to_string (rect->y + rect->height),
+                              _transIn->getDur ());
             }
           else
             {
-              this->schedule ("transparency", "0", to_string (*alpha),
+              this->schedule ("barwipe:leftToRight", to_string (rect->x),
+                              to_string (rect->x + rect->width),
                               _transIn->getDur ());
             }
+        }
+      else
+        {
+          this->schedule ("transparency", "0", to_string (*alpha),
+                          _transIn->getDur ());
         }
     }
   else
@@ -425,7 +413,7 @@ AnimInfo::update (Time time)
   int dir;
 
   g_assert (_init);
-  g_assert (!_done);
+  //g_assert (!_done);
 
   dir = (_current < _target) ? 1 : -1;
   _current += dir * _speed * (double) (_current_time - _last_update);
