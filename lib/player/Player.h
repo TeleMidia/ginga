@@ -127,6 +127,7 @@ protected:
   guint _gltexture;             // OpenGL texture (if OpenGL is used)
   bool _dirty;                  // true if surface should be reloaded
   PlayerAnimator *_animator;    // associated animator
+  Rect cropRect;
 
   map<string, string> _properties; // property table
   struct
