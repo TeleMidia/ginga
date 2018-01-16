@@ -191,7 +191,7 @@ Player::start ()
   _eos = false;
   this->reload ();
   _animator->scheduleTransition ("start", &_prop.rect, &_prop.bgColor,
-                                 &_prop.alpha, &cropRect);
+                                 &_prop.alpha, &_cropPoly);
 }
 
 void
@@ -299,7 +299,7 @@ void
 Player::redraw (cairo_t *cr)
 {
   g_assert (_state != SLEEPING);
-  _animator->update (&_prop.rect, &_prop.bgColor, &_prop.alpha, &cropRect);
+  _animator->update (&_prop.rect, &_prop.bgColor, &_prop.alpha, &_cropPoly);
 
   if (!_prop.visible || !(_prop.rect.width > 0 && _prop.rect.height > 0))
     return; // nothing to do
@@ -377,12 +377,32 @@ Player::redraw (cairo_t *cr)
         }
     }
 
+  // begin crop
   cairo_set_operator (cr, CAIRO_OPERATOR_CLEAR);
-  cairo_rectangle (cr, cropRect.x, cropRect.y, cropRect.width,
-                   cropRect.height);
   cairo_set_source_rgba (cr, 1., 1., 1., 1.);
+
+  for (list<int>::iterator it = _cropPoly.begin (); it != _cropPoly.end ();
+       ++it)
+    {
+      bool fdot = false;
+      if (it == _cropPoly.begin ())
+        fdot = true;
+
+      int x = *it;
+      advance (it, 1);
+      int y = *it;
+
+      if (fdot)
+        cairo_move_to (cr, x, y);
+      else
+        cairo_line_to (cr, x, y);
+    }
+
+  cairo_close_path (cr);
+  cairo_stroke_preserve (cr);
   cairo_fill (cr);
   cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
+  // end crop
 
   if (_prop.debug || _formatter->getOptionBool ("debug"))
     this->redrawDebuggingInfo (cr);

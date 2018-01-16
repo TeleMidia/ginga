@@ -10,7 +10,7 @@
       <descriptor id='desc1' region='reg1' transIn="trans1" transOut="trans1" />
       <descriptor id='desc2' region='reg2' transIn="trans1" transOut="trans1" />
       <descriptor id='desc3' region='reg3' transIn="trans2" transOut="trans2" />
-      <descriptor id='desc4' region='reg4' transIn="trans3" transOut="trans3" />
+      <descriptor id='desc4' region='reg4' transIn="trans2" transOut="trans2" />
     </descriptorBase>
     <transitionBase>
       <transition id="trans1" type="fade" dur="1s"/>
@@ -19,7 +19,9 @@
     </transitionBase>
   </head>
   <body>
-   
+    <port id='start1' component='img1'/>
+    <port id='start2' component='img2'/>
+    <port id='start3' component='img3'/>
     <port id='start4' component='img4'/>
 
     <media id='img1' src='samples/gnu.png' descriptor='desc1' />

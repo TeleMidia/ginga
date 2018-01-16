@@ -91,9 +91,9 @@ public:
   ~PlayerAnimator ();
   void clear ();
   void schedule (const string &, const string &, const string &, Time);
-  void update (Rect *, Color *, guint8 *, Rect *);
+  void update (Rect *, Color *, guint8 *, list<int> *);
   void setTransitionProperties (const string &, const string &);
-  void scheduleTransition(const string&, Rect *, Color *, guint8 *, Rect *);
+  void scheduleTransition(const string&, Rect *, Color *, guint8 *, list<int> *);
 
 private:
   Formatter *_formatter;       // formatter handle

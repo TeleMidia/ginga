@@ -128,6 +128,7 @@ protected:
   bool _dirty;                  // true if surface should be reloaded
   PlayerAnimator *_animator;    // associated animator
   Rect cropRect;
+  list<int> _cropPoly;  //polygon for cropping effect
 
   map<string, string> _properties; // property table
   struct
