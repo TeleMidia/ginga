@@ -22,12 +22,13 @@ GINGA_NAMESPACE_BEGIN
 
 // PlayerAnimator: Public.
 
-PlayerAnimator::PlayerAnimator (Formatter *formatter)
+PlayerAnimator::PlayerAnimator (Formatter *formatter, Time *time)
 {
   g_assert_nonnull (formatter);
   _formatter = formatter;
   _transIn = NULL;
   _transOut = NULL;
+  _time = time;
 }
 
 PlayerAnimator::~PlayerAnimator ()
@@ -65,6 +66,18 @@ PlayerAnimator::schedule (const string &name, const string &from,
       this->doSchedule ("top", *pre++, *pos++, dur);
       this->doSchedule ("width", *pre++, *pos++, dur);
       this->doSchedule ("height", *pre++, *pos++, dur);
+    }
+  else if (name == "crop")
+    {
+      if (from != "")
+        list_pre = ginga::parse_list (from, ',', 4, 4);
+      list_pos = ginga::parse_list (to, ',', 4, 4);
+      auto pre = list_pre.begin ();
+      auto pos = list_pos.end ();
+      this->doSchedule ("crop:left", *pre++, *pos++, dur);
+      this->doSchedule ("crop:top", *pre++, *pos++, dur);
+      this->doSchedule ("crop:width", *pre++, *pos++, dur);
+      this->doSchedule ("crop:height", *pre++, *pos++, dur);
     }
   else if (name == "location")
     {
@@ -121,15 +134,16 @@ isDone (AnimInfo *info)
 }
 
 void
-PlayerAnimator::update (Rect *rect, Color *bgColor, guint8 *alpha)
+PlayerAnimator::update (Rect *rect, Color *bgColor, guint8 *alpha,
+                        Rect *crop)
 {
 
 #define UPDATE(info, Type, var, rnd, min, max)                             \
   G_STMT_START                                                             \
   {                                                                        \
     if (!(info)->isInit ())                                                \
-      (info)->init (var);                                                  \
-    (info)->update ();                                                     \
+      (info)->init (var, *_time);                                          \
+    (info)->update (*_time);                                               \
     var = (Type) CLAMP (rnd ((info)->getCurrent ()), min, max);            \
   }                                                                        \
   G_STMT_END
@@ -161,6 +175,22 @@ PlayerAnimator::update (Rect *rect, Color *bgColor, guint8 *alpha)
       else if (name == "height")
         {
           UPDATE (info, int, rect->height, lround, G_MININT, G_MAXINT);
+        }
+      else if (name == "crop:top")
+        {
+          UPDATE (info, int, crop->y, lround, G_MININT, G_MAXINT);
+        }
+      else if (name == "crop:left")
+        {
+          UPDATE (info, int, crop->x, lround, G_MININT, G_MAXINT);
+        }
+      else if (name == "crop:width")
+        {
+          UPDATE (info, int, crop->width, lround, G_MININT, G_MAXINT);
+        }
+      else if (name == "crop:height")
+        {
+          UPDATE (info, int, crop->height, lround, G_MININT, G_MAXINT);
         }
       else if (name == "background:r")
         {
@@ -198,7 +228,7 @@ PlayerAnimator::setTransitionProperties (const string &name,
   tab = ginga::parse_table (value);
 
   string type = tab["type"];
-  string subtype = tab["subType"];
+  string subtype = tab["subtype"];
   Time dur = ginga::parse_time (tab["dur"]);
   gdouble startProgress = stod (tab["startProgress"]);
   gdouble endProgress = stod (tab["endProgress"]);
@@ -224,7 +254,9 @@ PlayerAnimator::setTransitionProperties (const string &name,
 }
 
 void
-PlayerAnimator::notifyPlayerStartOrStop (const string &notificationType, Rect *rect, Color *bgColor, guint8 *alpha)
+PlayerAnimator::scheduleTransition (const string &notificationType,
+                                    Rect *rect, Color *bgColor,
+                                    guint8 *alpha, Rect *crop)
 {
 
   if (notificationType == "start")
@@ -232,15 +264,38 @@ PlayerAnimator::notifyPlayerStartOrStop (const string &notificationType, Rect *r
       if (_transIn == NULL)
         return;
 
-      if (_transIn->getType () == "fade")
-      {
-        this->schedule ("transparency", "0", to_string(*alpha), _transIn->getDur ());
-      }
-      else if (_transIn->getType () == "barWipe")
-      {
-       
-      }
+      if (_transIn->getType () == "barWipe")
+        {
+          crop->x = rect->x;
+          crop->y = rect->y;
+          crop->width = rect->width;
+          crop->height = rect->height;
 
+          if (_transIn->getType () == "barWipe")
+            {
+              if (_transIn->getSubType () == "topToBottom")
+                {
+                  this->schedule ("crop:top", to_string (crop->y),
+                                  to_string (crop->y + crop->height),
+                                  _transIn->getDur ());
+                  this->schedule ("crop:height", to_string (rect->height),
+                                  to_string (0), _transIn->getDur ());
+                }
+              else
+                {
+                  this->schedule ("crop:left", to_string (crop->x),
+                                  to_string (crop->x + crop->width),
+                                  _transIn->getDur ());
+                  this->schedule ("crop:width", to_string (rect->width),
+                                  to_string (0), _transIn->getDur ());
+                }
+            }
+          else
+            {
+              this->schedule ("transparency", "0", to_string (*alpha),
+                              _transIn->getDur ());
+            }
+        }
     }
   else
     {
@@ -293,7 +348,7 @@ PlayerAnimator::doSchedule (const string &name, const string &from,
 
   info = new AnimInfo (name, current, target, dur);
   if (from != "")
-    info->init (current);
+    info->init (current, *_time);
 
   _scheduled.push_back (info);
 }
@@ -351,7 +406,7 @@ AnimInfo::isInit ()
 }
 
 void
-AnimInfo::init (double current)
+AnimInfo::init (double current, Time time)
 {
   g_assert (!_init);
   _current = current;
@@ -360,14 +415,13 @@ AnimInfo::init (double current)
   else
     _speed = 0;
   _init = true;
-  _last_update = (Time) g_get_monotonic_time () * 1000; // micro to mili
+  _last_update = time;
 }
 
 void
-AnimInfo::update ()
+AnimInfo::update (Time time)
 {
-  Time _current_time
-      = (Time) g_get_monotonic_time () * 1000; // micro to mili
+  Time _current_time = time; // micro to mili
   int dir;
 
   g_assert (_init);
@@ -381,6 +435,7 @@ AnimInfo::update ()
   if (_duration == 0 || (dir > 0 && _current >= _target)
       || (dir < 0 && _current <= _target))
     {
+      _current = _target;
       _done = true;
     }
 }
