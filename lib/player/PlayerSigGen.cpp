@@ -60,7 +60,13 @@ PlayerSigGen::PlayerSigGen (Formatter *formatter, const string &id,
   _pipeline = nullptr;
   _audio.src = nullptr;
   _audio.convert = nullptr;
-  _audio.sink = nullptr;
+  _audio.tee = nullptr;
+  _audio.audioQueue = nullptr;
+  _audio.audioSink = nullptr;
+  _audio.videoQueue = nullptr;
+  _audio.videoScope = nullptr;
+  _audio.videoConvert = nullptr;
+  _audio.videoSink = nullptr;
 
   if (!gst_is_initialized ())
     {
@@ -85,22 +91,86 @@ PlayerSigGen::PlayerSigGen (Formatter *formatter, const string &id,
   // Setup audio pipeline.
   _audio.src = gst_element_factory_make ("audiotestsrc", "audio.src");
   g_assert_nonnull (_audio.src);
-  _audio.convert = gst_element_factory_make ("audioconvert", "convert");
+  _audio.convert = gst_element_factory_make ("audioconvert",
+                                             "audioconvert");
   g_assert_nonnull (_audio.convert);
+  _audio.tee = gst_element_factory_make ("tee", "teesplit");
+  g_assert_nonnull (_audio.tee);
 
+  // Audio thread
+  _audio.audioQueue = gst_element_factory_make ("queue", "audioqueue");
+  g_assert_nonnull (_audio.audioQueue);
   // Try to use ALSA if available.
-  _audio.sink = gst_element_factory_make ("alsasink", "audio.sink");
-  if (_audio.sink == nullptr)
-    _audio.sink = gst_element_factory_make ("autoaudiosink", "audio.sink");
-  g_assert_nonnull (_audio.sink);
+  _audio.audioSink = gst_element_factory_make ("alsasink", "audio.sink");
+  if (_audio.audioSink == nullptr)
+    _audio.audioSink = gst_element_factory_make ("autoaudiosink",
+                                                 "audio.sink");
+  g_assert_nonnull (_audio.audioSink);
+
+  // Video thread
+  _audio.videoQueue = gst_element_factory_make ("queue", "videoqueue");
+  g_assert_nonnull (_audio.videoQueue);
+  _audio.videoScope = gst_element_factory_make ("spectrascope",
+                                                "scope");
+  g_assert_nonnull (_audio.videoScope);
+  _audio.videoConvert = gst_element_factory_make ("videoconvert",
+                                                  "videoconvert");
+  g_assert_nonnull (_audio.videoConvert);
+  _audio.videoSink = gst_element_factory_make ("autovideosink","videosink");
+  g_assert_nonnull (_audio.videoSink);
 
 
+  // Pipeline add
   g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.src));
   g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.convert));
-  g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.sink));
+  g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.tee));
+  g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.audioQueue));
+  g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.audioSink));
+  g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.videoQueue));
+  g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.videoScope));
+  g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.videoConvert));
+  g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.videoSink));
+
+  // Pipeline common link
   g_assert (gst_element_link (_audio.src, _audio.convert));
-  g_assert (gst_element_link (_audio.convert, _audio.sink));
-  
+  g_assert (gst_element_link (_audio.convert, _audio.tee));
+
+  // Pipeline audio link
+  g_assert (gst_element_link (_audio.audioQueue, _audio.audioSink));
+
+  // Pipeline video link
+  g_assert (gst_element_link (_audio.videoQueue, _audio.videoScope));
+  g_assert (gst_element_link (_audio.videoScope, _audio.videoConvert));
+  g_assert (gst_element_link (_audio.videoConvert, _audio.videoSink));
+
+  // Audio pad linking
+  _audio.teeAudioPad = gst_element_get_request_pad(_audio.tee, "src_%u");
+  g_assert_nonnull (_audio.teeAudioPad);
+  _audio.queueAudioPad = gst_element_get_static_pad(_audio.audioQueue,
+                                                    "sink");
+  g_assert_nonnull (_audio.queueAudioPad);
+
+  if(gst_pad_link(_audio.teeAudioPad, _audio.queueAudioPad)
+                                                      != GST_PAD_LINK_OK){
+    ERROR("Tee and audio queue not linked");
+  }
+
+  // Video pad linking
+  _audio.teeVideoPad = gst_element_get_request_pad(_audio.tee, "src_%u");
+  g_assert_nonnull (_audio.teeVideoPad);
+  _audio.queueVideoPad = gst_element_get_static_pad(_audio.videoQueue,
+                                                    "sink");
+  g_assert_nonnull (_audio.queueVideoPad);
+
+  if(gst_pad_link(_audio.teeVideoPad, _audio.queueVideoPad)
+                                                      != GST_PAD_LINK_OK){
+    ERROR("Tee and video queue not linked");
+  }
+
+
+  gst_object_unref(_audio.queueAudioPad);
+  gst_object_unref(_audio.queueVideoPad);
+
 
   // Initialize handled properties.
   static set<string> handled =
