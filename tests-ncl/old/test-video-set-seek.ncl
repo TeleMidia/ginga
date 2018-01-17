@@ -172,9 +172,9 @@
     
     <media id='video' src='../samples/bunny.ogg' descriptor='desc' > <!-- Video com audio -->
       <property name='time' />
-      <property name="soundLevel" value="0"/>
-      <area id='videoArea1' begin='5s'/>
-      <area id='videoArea2' begin='10s'/>
+      <property name="soundLevel" value="1"/>
+      <area id='videoArea1' begin='9s'/>
+      <area id='videoArea2' begin='18s'/>
     </media>
 
     <media id='video2' src='../samples/animGar.mp4' descriptor='desc3' > <!-- Video sem audio -->
@@ -185,25 +185,27 @@
        
     <link xconnector="onBeginStart">
       <bind role="onBegin" component="audio" />
-      <bind role="start" component="video" /> <!-- Video com audio -->
+      <bind role="start" component="video" interface="videoArea1"/> <!-- Video com audio -->
       <bind role="start" component="video2" /> <!-- Video sem audio -->
       <bind role="start" component="img" />
     </link>
 
     <!-- Set seek video. 
-         RED: 15s. -->
+         GREEN: +15s. -->
     <link xconnector="onKeySelectionSet">
       <bind role='onSelection' component='img'>
-        <bindParam name='keyCode' value='RED'/>        
+        <bindParam name='keyCode' value='GREEN'/>        
       </bind>
       <bind role="set" component="video" interface="time">
         <bindParam name="var" value="+15"/>
       </bind>
     </link>
 
+    <!-- Set seek video. 
+         RED: 5s. -->
     <link xconnector="onKeySelectionSet">
       <bind role='onSelection' component='img'>
-        <bindParam name='keyCode' value='GREEN'/>        
+        <bindParam name='keyCode' value='RED'/>        
       </bind>
       <bind role="set" component="video" interface="time">
         <bindParam name="var" value="5s"/>

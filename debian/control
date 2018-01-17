@@ -1,4 +1,4 @@
-Source: ginga
+Source: ginga-itv
 Section: misc
 Priority: optional
 Maintainer: Rafael Diniz <rafaeldiniz@telemidia.puc-rio.br>
@@ -6,7 +6,7 @@ Standards-Version: 3.9.5
 Build-Depends: debhelper (>= 9)
 Homepage: http://www.gingancl.org.br/
 
-Package: ginga
+Package: ginga-itv
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: The Ginga middleware

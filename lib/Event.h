@@ -31,7 +31,7 @@ public:
     {
      SELECTION = 0,
      PRESENTATION,
-     ATTRIBUTION,
+     ATTRIBUTION
     };
 
   enum State
