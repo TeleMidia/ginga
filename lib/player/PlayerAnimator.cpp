@@ -179,6 +179,42 @@ PlayerAnimator::update (Rect *rect, Color *bgColor, guint8 *alpha,
           advance (it, 6);
           UPDATE (info, int, *it, lround, G_MININT, G_MAXINT);
         }
+      else if (name == "diagonalwipe:topLeft:x")
+        {
+          list<int>::iterator it = cropPolygon->begin ();
+          if (info->getStateNode () == 1)
+            advance (it, 3);
+          else 
+            advance (it, 2);
+
+          UPDATE (info, int, *it, lround, G_MININT, G_MAXINT);
+
+          if ((info->getStateNode () == 0)
+              && (*it >= (rect->x + rect->width)))
+            {
+              info->setStateNode (1);
+              this->updateSchedule (
+                  info, "diagonalwipe:topLeft:x", to_string (rect->y),
+                  to_string (rect->y + rect->height), info->getDuration ()); 
+            }
+        }
+      else if (name == "diagonalwipe:topLeft:y")
+        {
+         list<int>::iterator it = cropPolygon->begin ();
+          if (info->getStateNode () == 0)
+            advance (it, 1);
+         
+          UPDATE (info, int, *it, lround, G_MININT, G_MAXINT);
+
+          if ((info->getStateNode () == 0)
+              && (*it >= (rect->y + rect->height)))
+            {
+              info->setStateNode (1);
+              this->updateSchedule (
+                  info, "diagonalwipe:topLeft:y", to_string (rect->x),
+                  to_string (rect->x + rect->width), info->getDuration ());   
+            }
+        }
       else if (name == "background:r")
         {
           UPDATE (info, double, bgColor->red, round, 0., 1.);
@@ -240,6 +276,39 @@ PlayerAnimator::setTransitionProperties (const string &name,
     }
 }
 
+static bool
+createPolygon (string name, Rect *rect, list<int> *cropPoly)
+{
+  if (name == "barWipe")
+    {
+      cropPoly->insert (cropPoly->end (), rect->x); // dot1 (x,y)
+      cropPoly->insert (cropPoly->end (), rect->y); //
+      cropPoly->insert (cropPoly->end (),
+                        rect->x + rect->width);     // dot1 (x+w,y)
+      cropPoly->insert (cropPoly->end (), rect->y); //
+      cropPoly->insert (cropPoly->end (),
+                        rect->x + rect->width); // dot3 (x+w,y+h)
+      cropPoly->insert (cropPoly->end (), rect->y + rect->height); //
+      cropPoly->insert (cropPoly->end (), rect->x); // dot4 (x,y+h)
+      cropPoly->insert (cropPoly->end (), rect->y + rect->height); //
+    }
+  else if (name == "diagonalWipe")
+    {
+      cropPoly->insert (cropPoly->end (), rect->x); // dot1 (x,y)
+      cropPoly->insert (cropPoly->end (), rect->y); //
+      cropPoly->insert (cropPoly->end (), rect->x); // dot2 (x,y)
+      cropPoly->insert (cropPoly->end (), rect->y); //
+      cropPoly->insert (cropPoly->end (),
+                        rect->x + rect->width);     // dot3 (x+w,y)
+      cropPoly->insert (cropPoly->end (), rect->y); //
+      cropPoly->insert (cropPoly->end (),
+                        rect->x + rect->width); // dot4 (x+w,y+h)
+      cropPoly->insert (cropPoly->end (), rect->y + rect->height); //
+      cropPoly->insert (cropPoly->end (), rect->x); // dot5 (x,y+h)
+      cropPoly->insert (cropPoly->end (), rect->y + rect->height); //
+    }
+}
+
 void
 PlayerAnimator::scheduleTransition (const string &notificationType,
                                     Rect *rect, Color *bgColor,
@@ -254,17 +323,7 @@ PlayerAnimator::scheduleTransition (const string &notificationType,
 
       if (_transIn->getType () == "barWipe")
         {
-
-          cropPoly->insert (cropPoly->end (), rect->x); // dot1 (x,y)
-          cropPoly->insert (cropPoly->end (), rect->y); //
-          cropPoly->insert (cropPoly->end (),
-                            rect->x + rect->width);     // dot1 (x+w,y)
-          cropPoly->insert (cropPoly->end (), rect->y); //
-          cropPoly->insert (cropPoly->end (),
-                            rect->x + rect->width); // dot3 (x+w,y+h)
-          cropPoly->insert (cropPoly->end (), rect->y + rect->height); //
-          cropPoly->insert (cropPoly->end (), rect->x); // dot4 (x,y+h)
-          cropPoly->insert (cropPoly->end (), rect->y + rect->height); //
+          createPolygon (_transIn->getType (), rect, cropPoly);
 
           if (_transIn->getSubType () == "topToBottom")
             {
@@ -278,6 +337,17 @@ PlayerAnimator::scheduleTransition (const string &notificationType,
                               to_string (rect->x + rect->width),
                               _transIn->getDur ());
             }
+        }
+      else if (_transIn->getType () == "diagonalWipe")
+        {
+          createPolygon (_transIn->getType (), rect, cropPoly);
+
+          this->schedule ("diagonalwipe:topLeft:x", to_string (rect->x),
+                          to_string (rect->x + rect->width),
+                          _transIn->getDur ()/2);
+          this->schedule ("diagonalwipe:topLeft:y", to_string (rect->y),
+                          to_string (rect->y + rect->height),
+                          _transIn->getDur ()/2);
         }
       else
         {
@@ -293,6 +363,48 @@ PlayerAnimator::scheduleTransition (const string &notificationType,
 }
 
 // PlayerAnimator: Private.
+
+void
+PlayerAnimator::updateSchedule (AnimInfo *info, const string &name,
+                                const string &from, const string &to,
+                                Time dur)
+{
+  double current;
+  double target;
+  int width;
+  int height;
+
+  current = 0;
+  width = _formatter->getOptionInt ("width");
+  height = _formatter->getOptionInt ("height");
+
+  if (name == "top" || name == "height")
+    {
+      if (from != "")
+        current = ginga::parse_percent (from, height, 0, G_MAXINT);
+      target = ginga::parse_percent (to, height, 0, G_MAXINT);
+    }
+  else if (name == "left" || name == "width")
+    {
+      if (from != "")
+        current = ginga::parse_percent (from, width, 0, G_MAXINT);
+      target = ginga::parse_percent (to, width, 0, G_MAXINT);
+    }
+  else if (name == "transparency" || name == "background")
+    {
+      if (from != "")
+        current = ginga::parse_percent (from, 255, 0, 255);
+      target = ginga::parse_percent (to, 255, 0, 255);
+    }
+  else
+    {
+      if (from != "")
+        current = ginga::parse_percent (from, 100, 0, G_MAXINT);
+      target = ginga::parse_percent (to, 100, 0, G_MAXINT);
+    }
+
+  info->update (name, current, target, dur);
+}
 
 void
 PlayerAnimator::doSchedule (const string &name, const string &from,
@@ -351,6 +463,18 @@ AnimInfo::AnimInfo (const string &name, double from, double to, Time dur)
   _duration = dur;
   _done = false;
   _init = false;
+  _stateNode = 0;
+}
+
+void
+AnimInfo::update (const string &name, double from, double to, Time dur)
+{
+  _name = name;
+  _current = from;
+  _target = to;
+  _duration = dur;
+  _done = false;
+  _init = false;
 }
 
 AnimInfo::~AnimInfo ()
@@ -393,6 +517,18 @@ AnimInfo::isInit ()
   return _init;
 }
 
+int
+AnimInfo::getStateNode ()
+{
+  return _stateNode;
+}
+
+void
+AnimInfo::setStateNode (int state)
+{
+  _stateNode = state;
+}
+
 void
 AnimInfo::init (double current, Time time)
 {
@@ -413,7 +549,7 @@ AnimInfo::update (Time time)
   int dir;
 
   g_assert (_init);
-  //g_assert (!_done);
+  // g_assert (!_done);
 
   dir = (_current < _target) ? 1 : -1;
   _current += dir * _speed * (double) (_current_time - _last_update);
