@@ -116,7 +116,7 @@ PlayerSigGen::PlayerSigGen (Formatter *formatter, const string &id,
   _audio.videoConvert = gst_element_factory_make ("videoconvert",
                                                   "videoconvert");
   g_assert_nonnull (_audio.videoConvert);
-  _audio.videoSink = gst_element_factory_make ("autovideosink","videosink");
+  _audio.videoSink = gst_element_factory_make ("appsink","videosink");
   g_assert_nonnull (_audio.videoSink);
 
 
@@ -167,10 +167,15 @@ PlayerSigGen::PlayerSigGen (Formatter *formatter, const string &id,
     ERROR("Tee and video queue not linked");
   }
 
-
   gst_object_unref(_audio.queueAudioPad);
   gst_object_unref(_audio.queueVideoPad);
 
+  // Callbacks.
+  _callbacks.eos = nullptr;
+  _callbacks.new_preroll = nullptr;
+  _callbacks.new_sample = cb_NewSample;
+  gst_app_sink_set_callbacks (GST_APP_SINK (_audio.videoSink),
+                              &_callbacks, this, nullptr);
 
   // Initialize handled properties.
   static set<string> handled =
@@ -250,6 +255,76 @@ PlayerSigGen::resume ()
 
   gstx_element_set_state_sync (_pipeline, GST_STATE_PLAYING);
   Player::resume ();
+}
+
+void
+PlayerSigGen::redraw (cairo_t *cr)
+{
+  GstSample *sample;
+  GstVideoFrame v_frame;
+  GstVideoInfo v_info;
+  GstBuffer *buf;
+  GstCaps *caps;
+  guint8 *pixels;
+  int width;
+  int height;
+  int stride;
+
+  static cairo_user_data_key_t key;
+  cairo_status_t status;
+
+  g_assert (_state != SLEEPING);
+
+  if (Player::getEOS ())
+    goto done;
+
+  if (!g_atomic_int_compare_and_exchange (&_sample_flag, 1, 0))
+    goto done;
+
+  sample = gst_app_sink_pull_sample (GST_APP_SINK (_audio.videoSink));
+  if (sample == nullptr)
+    goto done;
+
+  buf = gst_sample_get_buffer (sample);
+  g_assert_nonnull (buf);
+
+  caps = gst_sample_get_caps (sample);
+  g_assert_nonnull (caps);
+
+  g_assert (gst_video_info_from_caps (&v_info, caps));
+  g_assert (gst_video_frame_map (&v_frame, &v_info, buf, GST_MAP_READ));
+
+  pixels = (guint8 *) GST_VIDEO_FRAME_PLANE_DATA (&v_frame, 0);
+  width = GST_VIDEO_FRAME_WIDTH (&v_frame);
+  height = GST_VIDEO_FRAME_HEIGHT (&v_frame);
+  stride = (int) GST_VIDEO_FRAME_PLANE_STRIDE (&v_frame, 0);
+
+  if (_opengl)
+    {
+      if (_gltexture)
+        GL::delete_texture (&_gltexture);
+      // FIXME: Do not create a new texture for each frame.
+      GL::create_texture (&_gltexture, width, height, pixels);
+      gst_video_frame_unmap (&v_frame);
+      gst_sample_unref (sample);
+    }
+  else
+    {
+      if (_surface != nullptr)
+        cairo_surface_destroy (_surface);
+
+      _surface = cairo_image_surface_create_for_data
+        (pixels, CAIRO_FORMAT_ARGB32, width, height, stride);
+      g_assert_nonnull (_surface);
+      gst_video_frame_unmap (&v_frame);
+      status = cairo_surface_set_user_data
+          (_surface, &key, (void *) sample,
+           (cairo_destroy_func_t) gst_sample_unref);
+      g_assert (status == CAIRO_STATUS_SUCCESS);
+    }
+
+ done:
+  Player::redraw (cr);
 }
 
 
