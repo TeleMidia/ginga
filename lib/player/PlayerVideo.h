@@ -38,7 +38,7 @@ protected:
   bool doSetProperty (PlayerProperty, const string &,
                       const string &) override;
   void seek (gint64 value);
-  void rate (double value);
+  void speed (double value);
   gint64 getPipelineTime ();
   gint64 getStreamMediaTime ();
   gint64 getStreamMediaDuration ();
@@ -60,17 +60,19 @@ private:
   } _video;
   int _sample_flag;               // true if new sample is available
   GstAppSinkCallbacks _callbacks; // video app-sink callback data
-
-  struct
-  {
+  struct  {
     bool mute;              // true if mute is on
     double balance;         // balance sound level
     double volume;          // sound level
     double treble;          // treble level (Default: 0; Range: -24 and +12)
     double bass;            // bass level (Default: 0; Range: -24 and +12)
     bool freeze;            // true if player should freeze
-    double rate;            // 
+    double speed;           // playback speed (Default: 1) 
   } _prop;
+  typedef struct {
+    string action;
+    string value;
+  }PlayerVideoAction;
 
   bool getFreeze ();
 

@@ -284,7 +284,7 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
               }
               else if (lambda->getState () == Event::OCCURRING)
               {
-                
+                break;  
               }
               else if (lambda->getState () == Event::PAUSED)
               {

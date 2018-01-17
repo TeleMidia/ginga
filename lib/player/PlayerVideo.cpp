@@ -167,10 +167,10 @@ PlayerVideo::PlayerVideo (Formatter *formatter, const string &id,
      "bass",
      "freeze",
      "mute",
-     "treble",
-     "volume",
+     "speed",
      "time",
-     "rate"
+     "treble",
+     "volume"
     };
   this->resetProperties (&handled);
 }
@@ -261,7 +261,7 @@ PlayerVideo::seek (gint64 value)
 {
   TRACE ("seek to: %" GST_TIME_FORMAT, GST_TIME_ARGS (value));
 
-  if (unlikely (!gst_element_seek (_playbin, _prop.rate, GST_FORMAT_TIME,
+  if (unlikely (!gst_element_seek (_playbin, _prop.speed, GST_FORMAT_TIME,
                           GST_SEEK_FLAG_FLUSH, GST_SEEK_TYPE_SET,
                           value, GST_SEEK_TYPE_NONE,
                           GST_CLOCK_TIME_NONE)))
@@ -269,16 +269,15 @@ PlayerVideo::seek (gint64 value)
 }
 
 void
-PlayerVideo::rate (double value)
+PlayerVideo::speed (double value)
 {
-  TRACE ("rate");
+  TRACE ("speed to: %f", value);
 
-  gint64 position;
-  GstFormat format = GST_FORMAT_TIME;
+  if (unlikely (value == 0))
+    return;
+  
+  gint64 position = getStreamMediaTime ();
   GstEvent *seek_event;
-
-  if (unlikely (!gst_element_query_position (_playbin, format, &position)))
-    TRACE ("rate failed");
 
   if (value > 0)
   {
@@ -295,7 +294,8 @@ PlayerVideo::rate (double value)
                                       GST_SEEK_TYPE_NONE, position);
   }
 
-  gst_element_send_event (_video.sink, seek_event);
+  if (unlikely (!gst_element_send_event (_video.sink, seek_event)))
+    TRACE ("speed failed");
 }
 
 void
@@ -470,9 +470,9 @@ PlayerVideo::doSetProperty (PlayerProperty code,
 
         seek (next);
         break;
-      case PROP_RATE:
-        _prop.rate = xstrtod (value);
-        rate (_prop.rate);
+        case PROP_SPEED:
+        _prop.speed = xstrtod (value);
+        speed (_prop.speed);
         break;
       default:
         return Player::doSetProperty (code, name, value);
