@@ -266,7 +266,31 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
         case Event::START:
           {
             if (!evt->isLambda ())
-              break;            // nothing to do
+            {
+              //break;
+              Event *lambda = getPresentationEvent ("@lambda");
+              if (lambda->getState () == Event::SLEEPING)
+              {
+                _doc->evalAction (lambda, Event::START);
+
+                Time begin;
+                gint64 time_forward;
+
+                evt->getInterval (&begin, nullptr);
+                time_forward = (gint64)(begin);
+
+                //_player->seek (time_forward);
+                break;
+              }
+              else if (lambda->getState () == Event::OCCURRING)
+              {
+                
+              }
+              else if (lambda->getState () == Event::PAUSED)
+              {
+                break;
+              }
+            }
 
             // Create underlying player.
             if (evt->getState () == Event::SLEEPING)
@@ -378,13 +402,18 @@ Media::afterTransition (Event *evt, Event::Transition transition)
             }
           else                  // non-lambda area
             {
-              Time begin;
+              Time begin; 
               g_assert (this->isOccurring ());
               evt->getInterval (&begin, nullptr);
               TRACE ("start %s (begin=%" GINGA_TIME_FORMAT
                      ") at %" GINGA_TIME_FORMAT,
                      evt->getFullId ().c_str (),
                      GINGA_TIME_ARGS (begin), GINGA_TIME_ARGS (_time));
+
+             string time_seek = xstrbuild ("%"G_GUINT64_FORMAT, begin);
+
+             TRACE ("time_seek %s", time_seek.c_str());
+              _player->setProperty ("time", time_seek);
             }
           break;
 

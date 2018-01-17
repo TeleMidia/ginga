@@ -259,14 +259,12 @@ PlayerVideo::resume ()
 void
 PlayerVideo::seek (gint64 value)
 {
-  TRACE ("seek");
+  TRACE ("seek to: %" GST_TIME_FORMAT, GST_TIME_ARGS (value));
 
-  //gint64 time_nanoseconds = (gint64)(value * GINGA_SECOND);
-
-  if (!gst_element_seek (_playbin, _prop.rate, GST_FORMAT_TIME,
+  if (unlikely (!gst_element_seek (_playbin, _prop.rate, GST_FORMAT_TIME,
                           GST_SEEK_FLAG_FLUSH, GST_SEEK_TYPE_SET,
                           value, GST_SEEK_TYPE_NONE,
-                          GST_CLOCK_TIME_NONE))
+                          GST_CLOCK_TIME_NONE)))
     TRACE ("seek failed");
 }
 
@@ -279,7 +277,7 @@ PlayerVideo::rate (double value)
   GstFormat format = GST_FORMAT_TIME;
   GstEvent *seek_event;
 
-  if (!gst_element_query_position (_playbin, format, &position))
+  if (unlikely (!gst_element_query_position (_playbin, format, &position)))
     TRACE ("rate failed");
 
   if (value > 0)
@@ -377,18 +375,20 @@ PlayerVideo::getPipelineTime ()
 }
 
 gint64
-PlayerVideo::getStreamTime ()
+PlayerVideo::getStreamMediaTime ()
 {
   gint64 cur;
-  gst_element_query_position (_playbin, GST_FORMAT_TIME, &cur);
+  if (unlikely (!gst_element_query_position (_playbin, GST_FORMAT_TIME, &cur)))
+    TRACE ("Get media time failed");
   return cur;
 }
 
 gint64 
-PlayerVideo::getStreamDuration ()
+PlayerVideo::getStreamMediaDuration ()
 {
   gint64 dur;
-  gst_element_query_duration (_playbin, GST_FORMAT_TIME, &dur);
+  if (unlikely (!gst_element_query_duration (_playbin, GST_FORMAT_TIME, &dur)))
+    TRACE ("Get media duration failed");
   return dur;
 }
 
@@ -447,8 +447,8 @@ PlayerVideo::doSetProperty (PlayerProperty code,
         gint64 dur;
         gint64 next;
         
-        cur = this->getStreamTime ();
-        dur = this->getStreamDuration ();
+        cur = this->getStreamMediaTime ();
+        dur = this->getStreamMediaDuration ();
 
         try_parse_time (value, &t);
         next = (gint64)(t);
@@ -464,6 +464,10 @@ PlayerVideo::doSetProperty (PlayerProperty code,
         {
           next=(next-cur<0)?0:next-cur;
         }
+        
+        TRACE ("time: %" GST_TIME_FORMAT " / %" GST_TIME_FORMAT, 
+                GST_TIME_ARGS (cur), GST_TIME_ARGS (dur));
+
         seek (next);
         break;
       case PROP_RATE:
