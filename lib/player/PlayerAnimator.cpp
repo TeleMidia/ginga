@@ -22,12 +22,13 @@ GINGA_NAMESPACE_BEGIN
 
 // PlayerAnimator: Public.
 
-PlayerAnimator::PlayerAnimator (Formatter *formatter)
+PlayerAnimator::PlayerAnimator (Formatter *formatter, Time *time)
 {
   g_assert_nonnull (formatter);
   _formatter = formatter;
   _transIn = NULL;
   _transOut = NULL;
+  _time = time;
 }
 
 PlayerAnimator::~PlayerAnimator ()
@@ -121,15 +122,16 @@ isDone (AnimInfo *info)
 }
 
 void
-PlayerAnimator::update (Rect *rect, Color *bgColor, guint8 *alpha)
+PlayerAnimator::update (Rect *rect, Color *bgColor, guint8 *alpha,
+                        list<int> *cropPolygon)
 {
 
 #define UPDATE(info, Type, var, rnd, min, max)                             \
   G_STMT_START                                                             \
   {                                                                        \
     if (!(info)->isInit ())                                                \
-      (info)->init (var);                                                  \
-    (info)->update ();                                                     \
+      (info)->init (var, *_time);                                          \
+    (info)->update (*_time);                                               \
     var = (Type) CLAMP (rnd ((info)->getCurrent ()), min, max);            \
   }                                                                        \
   G_STMT_END
@@ -161,6 +163,21 @@ PlayerAnimator::update (Rect *rect, Color *bgColor, guint8 *alpha)
       else if (name == "height")
         {
           UPDATE (info, int, rect->height, lround, G_MININT, G_MAXINT);
+        }
+      else if (name == "barwipe:topToBottom")
+        {
+          list<int>::iterator it = cropPolygon->begin ();
+          advance (it, 1);
+          UPDATE (info, int, *it, lround, G_MININT, G_MAXINT);
+          advance (it, 2);
+          UPDATE (info, int, *it, lround, G_MININT, G_MAXINT);
+        }
+      else if (name == "barwipe:leftToRight")
+        {
+          list<int>::iterator it = cropPolygon->begin ();
+          UPDATE (info, int, *it, lround, G_MININT, G_MAXINT);
+          advance (it, 6);
+          UPDATE (info, int, *it, lround, G_MININT, G_MAXINT);
         }
       else if (name == "background:r")
         {
@@ -198,7 +215,7 @@ PlayerAnimator::setTransitionProperties (const string &name,
   tab = ginga::parse_table (value);
 
   string type = tab["type"];
-  string subtype = tab["subType"];
+  string subtype = tab["subtype"];
   Time dur = ginga::parse_time (tab["dur"]);
   gdouble startProgress = stod (tab["startProgress"]);
   gdouble endProgress = stod (tab["endProgress"]);
@@ -224,23 +241,49 @@ PlayerAnimator::setTransitionProperties (const string &name,
 }
 
 void
-PlayerAnimator::notifyPlayerStartOrStop (const string &notificationType, Rect *rect, Color *bgColor, guint8 *alpha)
+PlayerAnimator::scheduleTransition (const string &notificationType,
+                                    Rect *rect, Color *bgColor,
+                                    guint8 *alpha, list<int> *cropPoly)
 {
+  cropPoly->clear ();
 
   if (notificationType == "start")
     {
       if (_transIn == NULL)
         return;
 
-      if (_transIn->getType () == "fade")
-      {
-        this->schedule ("transparency", "0", to_string(*alpha), _transIn->getDur ());
-      }
-      else if (_transIn->getType () == "barWipe")
-      {
-       
-      }
+      if (_transIn->getType () == "barWipe")
+        {
 
+          cropPoly->insert (cropPoly->end (), rect->x); // dot1 (x,y)
+          cropPoly->insert (cropPoly->end (), rect->y); //
+          cropPoly->insert (cropPoly->end (),
+                            rect->x + rect->width);     // dot1 (x+w,y)
+          cropPoly->insert (cropPoly->end (), rect->y); //
+          cropPoly->insert (cropPoly->end (),
+                            rect->x + rect->width); // dot3 (x+w,y+h)
+          cropPoly->insert (cropPoly->end (), rect->y + rect->height); //
+          cropPoly->insert (cropPoly->end (), rect->x); // dot4 (x,y+h)
+          cropPoly->insert (cropPoly->end (), rect->y + rect->height); //
+
+          if (_transIn->getSubType () == "topToBottom")
+            {
+              this->schedule ("barwipe:topToBottom", to_string (rect->y),
+                              to_string (rect->y + rect->height),
+                              _transIn->getDur ());
+            }
+          else
+            {
+              this->schedule ("barwipe:leftToRight", to_string (rect->x),
+                              to_string (rect->x + rect->width),
+                              _transIn->getDur ());
+            }
+        }
+      else
+        {
+          this->schedule ("transparency", "0", to_string (*alpha),
+                          _transIn->getDur ());
+        }
     }
   else
     {
@@ -293,7 +336,7 @@ PlayerAnimator::doSchedule (const string &name, const string &from,
 
   info = new AnimInfo (name, current, target, dur);
   if (from != "")
-    info->init (current);
+    info->init (current, *_time);
 
   _scheduled.push_back (info);
 }
@@ -351,7 +394,7 @@ AnimInfo::isInit ()
 }
 
 void
-AnimInfo::init (double current)
+AnimInfo::init (double current, Time time)
 {
   g_assert (!_init);
   _current = current;
@@ -360,18 +403,17 @@ AnimInfo::init (double current)
   else
     _speed = 0;
   _init = true;
-  _last_update = (Time) g_get_monotonic_time () * 1000; // micro to mili
+  _last_update = time;
 }
 
 void
-AnimInfo::update ()
+AnimInfo::update (Time time)
 {
-  Time _current_time
-      = (Time) g_get_monotonic_time () * 1000; // micro to mili
+  Time _current_time = time; // micro to mili
   int dir;
 
   g_assert (_init);
-  g_assert (!_done);
+  //g_assert (!_done);
 
   dir = (_current < _target) ? 1 : -1;
   _current += dir * _speed * (double) (_current_time - _last_update);
@@ -381,6 +423,7 @@ AnimInfo::update ()
   if (_duration == 0 || (dir > 0 && _current >= _target)
       || (dir < 0 && _current <= _target))
     {
+      _current = _target;
       _done = true;
     }
 }
