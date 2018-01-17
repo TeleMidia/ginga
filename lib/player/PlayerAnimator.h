@@ -37,8 +37,8 @@ public:
   bool isDone ();
   bool isInit ();
 
-  void init (double current);
-  void update ();
+  void init (double current, Time time);
+  void update (Time time);
 
 private:
   string _name;      // property name
@@ -87,19 +87,20 @@ private:
 class PlayerAnimator
 {
 public:
-  PlayerAnimator (Formatter *);
+  PlayerAnimator (Formatter *, Time *);
   ~PlayerAnimator ();
   void clear ();
   void schedule (const string &, const string &, const string &, Time);
-  void update (Rect *, Color *, guint8 *);
+  void update (Rect *, Color *, guint8 *, list<int> *);
   void setTransitionProperties (const string &, const string &);
-  void notifyPlayerStartOrStop(const string&, Rect *, Color *, guint8 *);
+  void scheduleTransition(const string&, Rect *, Color *, guint8 *, list<int> *);
 
 private:
   Formatter *_formatter;       // formatter handle
   list<AnimInfo *> _scheduled; // scheduled animations
   TransitionInfo *_transIn;
   TransitionInfo *_transOut;
+  Time *_time; 
 
   void doSchedule (const string &, const string &, const string &, Time);
 };
