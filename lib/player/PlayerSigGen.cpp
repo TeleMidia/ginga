@@ -60,7 +60,13 @@ PlayerSigGen::PlayerSigGen (Formatter *formatter, const string &id,
   _pipeline = nullptr;
   _audio.src = nullptr;
   _audio.convert = nullptr;
-  _audio.sink = nullptr;
+  _audio.tee = nullptr;
+  _audio.audioQueue = nullptr;
+  _audio.audioSink = nullptr;
+  _audio.videoQueue = nullptr;
+  _audio.videoScope = nullptr;
+  _audio.videoConvert = nullptr;
+  _audio.videoSink = nullptr;
 
   if (!gst_is_initialized ())
     {
@@ -85,22 +91,91 @@ PlayerSigGen::PlayerSigGen (Formatter *formatter, const string &id,
   // Setup audio pipeline.
   _audio.src = gst_element_factory_make ("audiotestsrc", "audio.src");
   g_assert_nonnull (_audio.src);
-  _audio.convert = gst_element_factory_make ("audioconvert", "convert");
+  _audio.convert = gst_element_factory_make ("audioconvert",
+                                             "audioconvert");
   g_assert_nonnull (_audio.convert);
+  _audio.tee = gst_element_factory_make ("tee", "teesplit");
+  g_assert_nonnull (_audio.tee);
 
+  // Audio thread
+  _audio.audioQueue = gst_element_factory_make ("queue", "audioqueue");
+  g_assert_nonnull (_audio.audioQueue);
   // Try to use ALSA if available.
-  _audio.sink = gst_element_factory_make ("alsasink", "audio.sink");
-  if (_audio.sink == nullptr)
-    _audio.sink = gst_element_factory_make ("autoaudiosink", "audio.sink");
-  g_assert_nonnull (_audio.sink);
+  _audio.audioSink = gst_element_factory_make ("alsasink", "audio.sink");
+  if (_audio.audioSink == nullptr)
+    _audio.audioSink = gst_element_factory_make ("autoaudiosink",
+                                                 "audio.sink");
+  g_assert_nonnull (_audio.audioSink);
+
+  // Video thread
+  _audio.videoQueue = gst_element_factory_make ("queue", "videoqueue");
+  g_assert_nonnull (_audio.videoQueue);
+  _audio.videoScope = gst_element_factory_make ("spectrascope",
+                                                "scope");
+  g_assert_nonnull (_audio.videoScope);
+  _audio.videoConvert = gst_element_factory_make ("videoconvert",
+                                                  "videoconvert");
+  g_assert_nonnull (_audio.videoConvert);
+  _audio.videoSink = gst_element_factory_make ("appsink","videosink");
+  g_assert_nonnull (_audio.videoSink);
 
 
+  // Pipeline add
   g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.src));
   g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.convert));
-  g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.sink));
+  g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.tee));
+  g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.audioQueue));
+  g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.audioSink));
+  g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.videoQueue));
+  g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.videoScope));
+  g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.videoConvert));
+  g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.videoSink));
+
+  // Pipeline common link
   g_assert (gst_element_link (_audio.src, _audio.convert));
-  g_assert (gst_element_link (_audio.convert, _audio.sink));
-  
+  g_assert (gst_element_link (_audio.convert, _audio.tee));
+
+  // Pipeline audio link
+  g_assert (gst_element_link (_audio.audioQueue, _audio.audioSink));
+
+  // Pipeline video link
+  g_assert (gst_element_link (_audio.videoQueue, _audio.videoScope));
+  g_assert (gst_element_link (_audio.videoScope, _audio.videoConvert));
+  g_assert (gst_element_link (_audio.videoConvert, _audio.videoSink));
+
+  // Audio pad linking
+  _audio.teeAudioPad = gst_element_get_request_pad(_audio.tee, "src_%u");
+  g_assert_nonnull (_audio.teeAudioPad);
+  _audio.queueAudioPad = gst_element_get_static_pad(_audio.audioQueue,
+                                                    "sink");
+  g_assert_nonnull (_audio.queueAudioPad);
+
+  if(gst_pad_link(_audio.teeAudioPad, _audio.queueAudioPad)
+                                                      != GST_PAD_LINK_OK){
+    ERROR("Tee and audio queue not linked");
+  }
+
+  // Video pad linking
+  _audio.teeVideoPad = gst_element_get_request_pad(_audio.tee, "src_%u");
+  g_assert_nonnull (_audio.teeVideoPad);
+  _audio.queueVideoPad = gst_element_get_static_pad(_audio.videoQueue,
+                                                    "sink");
+  g_assert_nonnull (_audio.queueVideoPad);
+
+  if(gst_pad_link(_audio.teeVideoPad, _audio.queueVideoPad)
+                                                      != GST_PAD_LINK_OK){
+    ERROR("Tee and video queue not linked");
+  }
+
+  gst_object_unref(_audio.queueAudioPad);
+  gst_object_unref(_audio.queueVideoPad);
+
+  // Callbacks.
+  _callbacks.eos = nullptr;
+  _callbacks.new_preroll = nullptr;
+  _callbacks.new_sample = cb_NewSample;
+  gst_app_sink_set_callbacks (GST_APP_SINK (_audio.videoSink),
+                              &_callbacks, this, nullptr);
 
   // Initialize handled properties.
   static set<string> handled =
@@ -180,6 +255,76 @@ PlayerSigGen::resume ()
 
   gstx_element_set_state_sync (_pipeline, GST_STATE_PLAYING);
   Player::resume ();
+}
+
+void
+PlayerSigGen::redraw (cairo_t *cr)
+{
+  GstSample *sample;
+  GstVideoFrame v_frame;
+  GstVideoInfo v_info;
+  GstBuffer *buf;
+  GstCaps *caps;
+  guint8 *pixels;
+  int width;
+  int height;
+  int stride;
+
+  static cairo_user_data_key_t key;
+  cairo_status_t status;
+
+  g_assert (_state != SLEEPING);
+
+  if (Player::getEOS ())
+    goto done;
+
+  if (!g_atomic_int_compare_and_exchange (&_sample_flag, 1, 0))
+    goto done;
+
+  sample = gst_app_sink_pull_sample (GST_APP_SINK (_audio.videoSink));
+  if (sample == nullptr)
+    goto done;
+
+  buf = gst_sample_get_buffer (sample);
+  g_assert_nonnull (buf);
+
+  caps = gst_sample_get_caps (sample);
+  g_assert_nonnull (caps);
+
+  g_assert (gst_video_info_from_caps (&v_info, caps));
+  g_assert (gst_video_frame_map (&v_frame, &v_info, buf, GST_MAP_READ));
+
+  pixels = (guint8 *) GST_VIDEO_FRAME_PLANE_DATA (&v_frame, 0);
+  width = GST_VIDEO_FRAME_WIDTH (&v_frame);
+  height = GST_VIDEO_FRAME_HEIGHT (&v_frame);
+  stride = (int) GST_VIDEO_FRAME_PLANE_STRIDE (&v_frame, 0);
+
+  if (_opengl)
+    {
+      if (_gltexture)
+        GL::delete_texture (&_gltexture);
+      // FIXME: Do not create a new texture for each frame.
+      GL::create_texture (&_gltexture, width, height, pixels);
+      gst_video_frame_unmap (&v_frame);
+      gst_sample_unref (sample);
+    }
+  else
+    {
+      if (_surface != nullptr)
+        cairo_surface_destroy (_surface);
+
+      _surface = cairo_image_surface_create_for_data
+        (pixels, CAIRO_FORMAT_ARGB32, width, height, stride);
+      g_assert_nonnull (_surface);
+      gst_video_frame_unmap (&v_frame);
+      status = cairo_surface_set_user_data
+          (_surface, &key, (void *) sample,
+           (cairo_destroy_func_t) gst_sample_unref);
+      g_assert (status == CAIRO_STATUS_SUCCESS);
+    }
+
+ done:
+  Player::redraw (cr);
 }
 
 
