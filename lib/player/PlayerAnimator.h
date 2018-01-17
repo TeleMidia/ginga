@@ -34,6 +34,9 @@ public:
   double getTarget ();
   Time getDuration ();
   double getSpeed ();
+  int getStateNode ();
+  void setStateNode (int);
+  void update(const string &, double, double, Time);
   bool isDone ();
   bool isInit ();
 
@@ -49,6 +52,7 @@ private:
   double _speed;     // animation speed
   bool _done;        // true if animation is done
   bool _init;        // true if animation is initialized
+  int _stateNode;    // for complex animations
 };
 
 class TransitionInfo
@@ -58,17 +62,17 @@ public:
                   const string &, Color, guint32, guint32, guint32, Color);
   ~TransitionInfo ();
 
-  string getType();
-  string getSubType();
-  Time getDur();
-  gdouble getStartProgress();
-  gdouble getEndProgress();
-  string getDirection();
-  Color getFadeColor();
-  guint32 getHorzRepeat();
-  guint32 getVertRepeat();
-  guint32 getBorderWidth();
-  Color getBorderColor();
+  string getType ();
+  string getSubType ();
+  Time getDur ();
+  gdouble getStartProgress ();
+  gdouble getEndProgress ();
+  string getDirection ();
+  Color getFadeColor ();
+  guint32 getHorzRepeat ();
+  guint32 getVertRepeat ();
+  guint32 getBorderWidth ();
+  Color getBorderColor ();
 
 private:
   string _type;
@@ -93,16 +97,19 @@ public:
   void schedule (const string &, const string &, const string &, Time);
   void update (Rect *, Color *, guint8 *, list<int> *);
   void setTransitionProperties (const string &, const string &);
-  void scheduleTransition(const string&, Rect *, Color *, guint8 *, list<int> *);
+  void scheduleTransition (const string &, Rect *, Color *, guint8 *,
+                           list<int> *);
 
 private:
   Formatter *_formatter;       // formatter handle
   list<AnimInfo *> _scheduled; // scheduled animations
   TransitionInfo *_transIn;
   TransitionInfo *_transOut;
-  Time *_time; 
+  Time *_time;
 
   void doSchedule (const string &, const string &, const string &, Time);
+  void updateSchedule (AnimInfo *, const string &, const string &,
+                       const string &, Time);
 };
 
 GINGA_NAMESPACE_END
