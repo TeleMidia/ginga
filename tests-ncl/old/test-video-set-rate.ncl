@@ -172,7 +172,7 @@
     
     <media id='video' src='../samples/bunny.ogg' descriptor='desc' > <!-- Video com audio -->
       <property name='rate' />
-      <property name="soundLevel" value="0"/>
+      <property name="soundLevel" value="1"/>
       <area id='videoArea1' begin='5s'/>
       <area id='videoArea2' begin='10s'/>
     </media>
@@ -197,7 +197,7 @@
         <bindParam name='keyCode' value='RED'/>        
       </bind>
       <bind role="set" component="video" interface="rate">
-        <bindParam name="var" value="10"/>
+        <bindParam name="var" value="-1"/>
       </bind>
     </link>
 
@@ -206,9 +206,26 @@
         <bindParam name='keyCode' value='GREEN'/>        
       </bind>
       <bind role="set" component="video" interface="rate">
+        <bindParam name="var" value="0"/>
+      </bind>
+    </link>
+    
+    <link xconnector="onKeySelectionSet">
+      <bind role='onSelection' component='img'>
+        <bindParam name='keyCode' value='YELLOW'/>        
+      </bind>
+      <bind role="set" component="video" interface="rate">
         <bindParam name="var" value="1"/>
       </bind>
     </link>
 
+    <link xconnector="onKeySelectionSet">
+      <bind role='onSelection' component='img'>
+        <bindParam name='keyCode' value='BLUE'/>        
+      </bind>
+      <bind role="set" component="video" interface="rate">
+        <bindParam name="var" value="2"/>
+      </bind>
+    </link>
   </body>
 </ncl>

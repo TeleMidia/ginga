@@ -66,9 +66,9 @@ static map<string, PlayerPropertyInfo> player_property_map = {
   { "left", { Player::PROP_LEFT, true, "0" } },
   { "location", { Player::PROP_LOCATION, false, "0,0" } },
   { "mute", { Player::PROP_MUTE, false, "false" } },
-  { "rate", { Player::PROP_RATE, true, "1" } },
   { "right", { Player::PROP_RIGHT, false, "0%" } },
   { "size", { Player::PROP_SIZE, false, "100%,100%" } },
+  { "speed", { Player::PROP_SPEED, true, "1" } },
   { "time", { Player::PROP_TIME, false, "0" } },
   { "top", { Player::PROP_TOP, true, "0" } },
   { "transparency", { Player::PROP_TRANSPARENCY, true, "0%" } },
@@ -88,6 +88,7 @@ static map<string, string> player_property_aliases = {
   { "bassLevel", "bass" },
   { "explicitDur", "duration" },
   { "soundLevel", "volume" },
+  { "rate", "speed" },
   { "trebleLevel", "treble" },
 };
 
