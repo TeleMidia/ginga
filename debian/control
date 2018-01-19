@@ -3,7 +3,7 @@ Section: misc
 Priority: optional
 Maintainer: Rafael Diniz <rafaeldiniz@telemidia.puc-rio.br>
 Standards-Version: 3.9.5
-Build-Depends: debhelper (>= 9)
+Build-Depends: debhelper (>= 9), pkg-config, dh-autoreconf
 Homepage: http://www.gingancl.org.br/
 
 Package: ginga-itv
