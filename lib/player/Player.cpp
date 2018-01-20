@@ -378,6 +378,7 @@ Player::redraw (cairo_t *cr)
         }
     }
 
+  cairo_save (cr);
   // begin crop
   cairo_set_operator (cr, CAIRO_OPERATOR_CLEAR);
   cairo_set_source_rgba (cr, 1., 1., 1., 1.);
@@ -403,6 +404,7 @@ Player::redraw (cairo_t *cr)
   cairo_stroke_preserve (cr);
   cairo_fill (cr);
   cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
+  cairo_restore (cr);
   // end crop
 
   if (_prop.debug || _formatter->getOptionBool ("debug"))
