@@ -31,10 +31,11 @@ main (int argc, char **argv)
   opts.height = presentationAttributes.resolutionHeight;
   opts.debug = false;
   opts.opengl = false;
+  opts.experimental = true;
+
   GINGA = Ginga::create (argc, argv, &opts);
   g_assert_nonnull (GINGA);
   
-
   gtk_init (&argc, &argv);
 
   setlocale (LC_ALL, "C");

@@ -3594,7 +3594,12 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
       if (elt->getAttribute ("src", &src)
           && !xpathisuri (src) && !xpathisabs (src))
         {
-          src = xpathbuildabs (st->getDirname (), src);
+            string dirName = st->getDirname();
+#if defined(_WIN32) || defined(_WIN64)
+           gchar** spl_str = g_strsplit(dirName.c_str(),"/",-1);
+           dirName = spl_str[g_strv_length(spl_str)-1];     
+#endif
+            src = xpathbuildabs (dirName, src);
         }
       media = new Media (id, type, src);
       g_assert_nonnull (media);
