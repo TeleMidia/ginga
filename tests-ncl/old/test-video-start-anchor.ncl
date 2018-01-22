@@ -17,7 +17,7 @@
     </connectorBase>
   </head>
   <body>
-    <port id='start' component='video1' interface="area1"/>
+    <port id='start' component='video1' />
     <media id='video1' src='../samples/bunny.ogg' descriptor='desc' >
       <area id='area1' begin='16s' />
       <property name="soundLevel" value="0"/>
