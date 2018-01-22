@@ -163,7 +163,7 @@
     <!-- <port id='start7' component='audio2'/> -->
 
     <media id='audio' src='../samples/arcade.mp3' descriptor='desc'>
-      <property name='balanceLevel' value='0'/>
+      <property name='balanceLevel' value='-1'/>
     </media>
 
     <media id='audio2' src='../samples/bunny.mp3'>
