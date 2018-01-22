@@ -333,11 +333,23 @@ Formatter::redraw (cairo_t *cr)
   if (_state != GINGA_STATE_PLAYING)
     return;                     // nothing to do
 
-  if (_opts.opengl)
+  if (_opts.opengl)  //clear screen opengl
     {
       GL::beginDraw ();
       GL::clear_scene (_opts.width, _opts.height);
     }
+   else  //clear screen cairo
+   {
+      cairo_save (cr);
+      cairo_set_source_rgba (cr,
+                    0,
+                    0,
+                    0,
+                    1.0);
+      cairo_rectangle (cr, 0, 0, _opts.width, _opts.height);
+      cairo_fill (cr);
+      cairo_restore (cr);
+   }
 
   if (_background.alpha > 0)
     {
