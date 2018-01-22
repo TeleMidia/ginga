@@ -278,8 +278,6 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
 
                 evt->getInterval (&begin, nullptr);
                 time_forward = (gint64)(begin);
-
-                //_player->seek (time_forward);
                 break;
               }
               else if (lambda->getState () == Event::OCCURRING)
@@ -294,7 +292,7 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
 
             // Create underlying player.
             if (evt->getState () == Event::SLEEPING)
-              {
+            {
                 Formatter *fmt;
 
                 g_assert (_doc->getData ("formatter", (void **) &fmt));
@@ -305,12 +303,12 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
 
                 for (auto it: _properties)
                   _player->setProperty (it.first, it.second);
-              }
+            }
             g_assert_nonnull (_player);
 
             // Start underlying player.
             // TODO: Check player failure.
-            _player->start ();
+            _player->start (); //Just lambda events reaches this!
             break;
           }
 
@@ -413,7 +411,7 @@ Media::afterTransition (Event *evt, Event::Transition transition)
              string time_seek = xstrbuild ("%"G_GUINT64_FORMAT, begin);
 
              TRACE ("time_seek %s", time_seek.c_str());
-              _player->setProperty ("time", time_seek);
+             // _player->setProperty ("time", time_seek);
             }
           break;
 

@@ -75,7 +75,7 @@ static map<string, PlayerPropertyInfo> player_property_map = {
   { "treble", { Player::PROP_TREBLE, false, "0" } },
   { "vertAlign", { Player::PROP_VERT_ALIGN, true, "top" } },
   { "visible", { Player::PROP_VISIBLE, true, "true" } },
-  { "volume", { Player::PROP_VOLUME, true, "100%" } },
+  { "volume", { Player::PROP_VOLUME, false, "100%" } },
   { "width", { Player::PROP_WIDTH, true, "100%" } },
   { "zIndex", { Player::PROP_Z_INDEX, true, "0" } },
   { "freq", { Player::PROP_FREQ, true, "440" } },
