@@ -203,7 +203,7 @@ PlayerVideo::start ()
   g_atomic_int_set (&_sample_flag, 0);
 
   // Initialize properties.
-  g_object_set (_audio.volume,
+  /*g_object_set (_audio.volume,
                 "volume", _prop.volume,
                 "mute", _prop.mute,
                 nullptr);
@@ -216,12 +216,12 @@ PlayerVideo::start ()
                 "band0", _prop.bass,
                 "band1", _prop.treble,
                 "band2", _prop.treble,
-                nullptr);
-
+                nullptr);*/
+  
   ret = gst_element_set_state (_playbin, GST_STATE_PLAYING);
   if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
     Player::setEOS (true);
-
+ 
   Player::start ();
 }
 
@@ -271,14 +271,12 @@ PlayerVideo::seek (gint64 value)
 void
 PlayerVideo::speed (double value)
 {
-  TRACE ("speed to: %f", value);
-
+  TRACE ("speed to: %f", value);  
   if (unlikely (value == 0))
     return;
   
   gint64 position = getStreamMediaTime ();
   GstEvent *seek_event;
-
   if (value > 0)
   {
     seek_event = gst_event_new_seek (value, GST_FORMAT_TIME,
@@ -293,7 +291,6 @@ PlayerVideo::speed (double value)
                                       GST_SEEK_TYPE_SET, 0,
                                       GST_SEEK_TYPE_NONE, position);
   }
-
   if (unlikely (!gst_element_send_event (_video.sink, seek_event)))
     TRACE ("speed failed");
 }
@@ -399,6 +396,29 @@ PlayerVideo::doSetProperty (PlayerProperty code,
                             unused (const string &name),
                             const string &value)
 {
+  //TRACE ("PlayerVideo State: %s", this->getPipelineState().c_str());
+
+  if (unlikely (this->getPipelineState()!="PAUSED" && 
+                this->getPipelineState()!="PLAYING"))
+  {
+    if (code == PROP_BALANCE || code == PROP_BASS ||
+        code == PROP_FREEZE || code == PROP_TREBLE ||
+        code == PROP_VOLUME || code == PROP_TIME ||
+        code == PROP_SPEED)
+    {
+      PlayerVideoAction act;
+      act.code = code;
+      act.name = name;
+      act.value = value;
+      _stackActions.push_back(act);
+
+      //TRACE ("Property Name: %s; Value %s; Size: %d; URI: %s", name.c_str(), value.c_str(), _stackActions.size(), _uri.c_str());
+      return true;
+    }
+
+    return Player::doSetProperty (code, name, value);
+  }
+
   switch (code)
     {
       case PROP_BALANCE:
@@ -441,7 +461,8 @@ PlayerVideo::doSetProperty (PlayerProperty code,
                         nullptr);
         break;
       case PROP_TIME:
-        TRACE ("%s",value.c_str());
+        TRACE ("Property value: %s",value.c_str());
+        TRACE ("State: %s", this->getPipelineState().c_str());
         Time t;        
         gint64 cur;
         gint64 dur;
@@ -449,6 +470,8 @@ PlayerVideo::doSetProperty (PlayerProperty code,
         
         cur = this->getStreamMediaTime ();
         dur = this->getStreamMediaDuration ();
+        TRACE ("time: %" GST_TIME_FORMAT " / %" GST_TIME_FORMAT, 
+                GST_TIME_ARGS (cur), GST_TIME_ARGS (dur));
 
         try_parse_time (value, &t);
         next = (gint64)(t);
@@ -464,13 +487,9 @@ PlayerVideo::doSetProperty (PlayerProperty code,
         {
           next=(next-cur<0)?0:next-cur;
         }
-        
-        TRACE ("time: %" GST_TIME_FORMAT " / %" GST_TIME_FORMAT, 
-                GST_TIME_ARGS (cur), GST_TIME_ARGS (dur));
-
         seek (next);
         break;
-        case PROP_SPEED:
+      case PROP_SPEED:
         _prop.speed = xstrtod (value);
         speed (_prop.speed);
         break;
@@ -482,10 +501,41 @@ PlayerVideo::doSetProperty (PlayerProperty code,
 
 // Private.
 
+void
+PlayerVideo::doStackedActions()
+{
+  //TRACE ("============================================State: %s - %s", this->getPipelineState().c_str(), this->_uri.c_str());
+  //TRACE ("****************Size: %d; URI: %s", _stackActions.size (), _uri.c_str());
+  while (!_stackActions.empty ())
+  {
+    PlayerVideoAction act;
+
+    act = _stackActions.front ();
+    _stackActions.pop_front ();
+
+    //TRACE ("****************Act - Name: %s; Value: %s", act.name.c_str (), act.value.c_str());
+
+    this->doSetProperty (act.code, act.name, act.value);
+  }
+  //TRACE ("****************Size: %d", _stackActions.size ());
+}
+
 bool
 PlayerVideo::getFreeze ()
 {
   return _prop.freeze;
+}
+
+string
+PlayerVideo::getPipelineState ()
+{
+  GstState curr;
+  GstState pending;
+  GstStateChangeReturn ret;
+  ret = gst_element_get_state (_playbin, &curr, &pending, 0);
+  if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
+    return "NULL";
+  return gst_element_state_get_name (curr);
 }
 
 // Private: Static (GStreamer callbacks).
@@ -501,8 +551,8 @@ PlayerVideo::cb_Bus (GstBus *bus, GstMessage *msg, PlayerVideo *player)
     {
     case GST_MESSAGE_EOS:
       {
-        if(!player->getFreeze ())
-          player->setEOS (true);
+        if (unlikely (!player->getFreeze ()))
+           player->setEOS (true);
         TRACE ("EOS");
         break;
       }
@@ -528,6 +578,15 @@ PlayerVideo::cb_Bus (GstBus *bus, GstMessage *msg, PlayerVideo *player)
             WARNING ("%s", error->message);
           }
         g_error_free (error);
+        break;
+      }
+    case GST_MESSAGE_STATE_CHANGED:
+      {
+        if (unlikely (player->getPipelineState()=="PAUSED" || 
+           player->getPipelineState()=="PLAYING"))
+          {
+            player->doStackedActions ();
+          }
         break;
       }
     default:

@@ -70,11 +70,14 @@ private:
     double speed;           // playback speed (Default: 1) 
   } _prop;
   typedef struct {
-    string action;
+    PlayerProperty code;
+    string name;
     string value;
   }PlayerVideoAction;
-
+  list<PlayerVideoAction> _stackActions;
+  void doStackedActions ();
   bool getFreeze ();
+  string getPipelineState();
 
   // GStreamer callbacks.
   static gboolean cb_Bus (GstBus *, GstMessage *, PlayerVideo *);
