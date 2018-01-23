@@ -3595,12 +3595,14 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
           && !xpathisuri (src) && !xpathisabs (src))
         {
             string dirName = st->getDirname();
-#if defined(_WIN32) || defined(_WIN64)
-           gchar** spl_str = g_strsplit(dirName.c_str(),"/",-1);
-           dirName = spl_str[g_strv_length(spl_str)-1];     
-#endif
-            src = xpathbuildabs (dirName, src);
-        }
+            string prefix = dirName.substr (0,6);
+            if(prefix == "file:/"){
+               src =  dirName.erase(0,6)+'/'+src;
+            }
+            else 
+               src = xpathbuildabs (dirName, src);
+          
+        }  
       media = new Media (id, type, src);
       g_assert_nonnull (media);
       parent = cast (Composition *, st->objStackPeek ());
