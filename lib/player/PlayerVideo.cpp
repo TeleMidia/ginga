@@ -159,20 +159,6 @@ PlayerVideo::PlayerVideo (Formatter *formatter, const string &id,
   _callbacks.new_sample = cb_NewSample;
   gst_app_sink_set_callbacks (GST_APP_SINK (_video.sink),
                               &_callbacks, this, nullptr);
-
-  // Initialize handled properties.
-  static set<string> handled =
-    {
-     "balance",
-     "bass",
-     "freeze",
-     "mute",
-     "speed",
-     "time",
-     "treble",
-     "volume"
-    };
-  this->resetProperties (&handled);
 }
 
 PlayerVideo::~PlayerVideo ()
@@ -201,23 +187,7 @@ PlayerVideo::start ()
 
   Player::setEOS (false);
   g_atomic_int_set (&_sample_flag, 0);
-
-  // Initialize properties.
-  /*g_object_set (_audio.volume,
-                "volume", _prop.volume,
-                "mute", _prop.mute,
-                nullptr);
-
-  g_object_set (_audio.pan,
-                "panorama", _prop.balance,
-                nullptr);
-
-  g_object_set (_audio.equalizer,
-                "band0", _prop.bass,
-                "band1", _prop.treble,
-                "band2", _prop.treble,
-                nullptr);*/
-  
+ 
   ret = gst_element_set_state (_playbin, GST_STATE_PLAYING);
   if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
     Player::setEOS (true);
@@ -233,6 +203,8 @@ PlayerVideo::stop ()
 
   gstx_element_set_state_sync (_playbin, GST_STATE_NULL);
   gst_object_unref (_playbin);
+  _playbin=nullptr;
+  _stack_actions.clear ();
   Player::stop ();
 }
 
@@ -260,8 +232,12 @@ void
 PlayerVideo::seek (gint64 value)
 {
   TRACE ("seek to: %" GST_TIME_FORMAT, GST_TIME_ARGS (value));
+  double rate = 1;
 
-  if (unlikely (!gst_element_seek (_playbin, _prop.speed, GST_FORMAT_TIME,
+  if (_prop.speed!=0)
+    rate=_prop.speed;
+
+  if (unlikely (!gst_element_seek (_playbin, rate, GST_FORMAT_TIME,
                           GST_SEEK_FLAG_FLUSH, GST_SEEK_TYPE_SET,
                           value, GST_SEEK_TYPE_NONE,
                           GST_CLOCK_TIME_NONE)))
@@ -396,103 +372,174 @@ PlayerVideo::doSetProperty (PlayerProperty code,
                             unused (const string &name),
                             const string &value)
 {
-  //TRACE ("PlayerVideo State: %s", this->getPipelineState().c_str());
-
-  if (unlikely (this->getPipelineState()!="PAUSED" && 
-                this->getPipelineState()!="PLAYING"))
-  {
-    if (code == PROP_BALANCE || code == PROP_BASS ||
-        code == PROP_FREEZE || code == PROP_TREBLE ||
-        code == PROP_VOLUME || code == PROP_TIME ||
-        code == PROP_SPEED)
-    {
-      PlayerVideoAction act;
-      act.code = code;
-      act.name = name;
-      act.value = value;
-      _stackActions.push_back(act);
-
-      //TRACE ("Property Name: %s; Value %s; Size: %d; URI: %s", name.c_str(), value.c_str(), _stackActions.size(), _uri.c_str());
-      return true;
-    }
-
+  if (unlikely (_playbin==nullptr))
     return Player::doSetProperty (code, name, value);
-  }
 
   switch (code)
     {
       case PROP_BALANCE:
-        _prop.balance = xstrtodorpercent (value, nullptr);
+      {
+        if (unlikely (this->getPipelineState()!="PAUSED" && 
+            this->getPipelineState()!="PLAYING"))
+        {
+          stackAction (code, name, value);
+          break;
+        }
+
         if (_state != SLEEPING)
+        {
+          _prop.balance = xstrtodorpercent (value, nullptr);
           g_object_set (_audio.pan,
                         "panorama", _prop.balance,
                         nullptr);
+        }
         break;
+      }
       case PROP_BASS:
-        _prop.bass = xstrtodorpercent (value, nullptr);
+      {
+        if (unlikely (this->getPipelineState()!="PAUSED" && 
+            this->getPipelineState()!="PLAYING"))
+        {
+          stackAction (code, name, value);
+          break;
+        }
+
         if (_state != SLEEPING)
+        {
+          _prop.bass = xstrtodorpercent (value, nullptr);
           g_object_set (_audio.equalizer,
                         "band0", _prop.bass,
                         nullptr);
+        }
         break;
+      }
       case PROP_FREEZE:
-        _prop.freeze = ginga::parse_bool (value);
-        break;
-      case PROP_MUTE:
-        _prop.mute = ginga::parse_bool (value);
+      {
+        if (unlikely (this->getPipelineState()!="PAUSED" && 
+            this->getPipelineState()!="PLAYING"))
+        {
+          stackAction (code, name, value);
+          break;
+        }
+
         if (_state != SLEEPING)
+          _prop.freeze = ginga::parse_bool (value);
+        break;
+      }
+      case PROP_MUTE:
+      {
+        if (unlikely (this->getPipelineState()!="PAUSED" && 
+            this->getPipelineState()!="PLAYING"))
+        {
+          stackAction (code, name, value);
+          break;
+        }
+       
+        if (_state != SLEEPING)
+        {
+          _prop.mute = ginga::parse_bool (value);
           g_object_set (_audio.volume,
                         "mute", _prop.mute,
                         nullptr);
+        }
         break;
+      }
       case PROP_TREBLE:
-        _prop.treble = xstrtodorpercent (value, nullptr);
+      {
+        if (unlikely (this->getPipelineState()!="PAUSED" && 
+            this->getPipelineState()!="PLAYING"))
+        {
+          stackAction (code, name, value);
+          break;
+        }
+
         if (_state != SLEEPING)
+        {
+          _prop.treble = xstrtodorpercent (value, nullptr);
           g_object_set (_audio.equalizer,
                         "band1", _prop.treble,
                         "band2", _prop.treble,
                         nullptr);
+        }
         break;
+      }
       case PROP_VOLUME:
-        _prop.volume = xstrtodorpercent (value, nullptr);
+      {
+        if (unlikely (this->getPipelineState()!="PAUSED" && 
+            this->getPipelineState()!="PLAYING"))
+        {
+          stackAction (code, name, value);
+          break;
+        }
+
         if (_state != SLEEPING)
+        {
+          _prop.volume = xstrtodorpercent (value, nullptr);
           g_object_set (_audio.volume,
                         "volume", _prop.volume,
                         nullptr);
+        }
         break;
+      }
       case PROP_TIME:
-        TRACE ("Property value: %s",value.c_str());
-        TRACE ("State: %s", this->getPipelineState().c_str());
-        Time t;        
-        gint64 cur;
-        gint64 dur;
-        gint64 next;
+      {
+        if (unlikely (this->getPipelineState()!="PAUSED" && 
+            this->getPipelineState()!="PLAYING"))
+        {
+          stackAction (code, name, value);
+          break;
+        }
+
+        if (_state != SLEEPING)
+        {
+          TRACE ("Property value: %s",value.c_str());
+          TRACE ("State: %s", this->getPipelineState().c_str());
+          Time t;        
+          gint64 cur;
+          gint64 dur;
+          gint64 next;
         
-        cur = this->getStreamMediaTime ();
-        dur = this->getStreamMediaDuration ();
-        TRACE ("time: %" GST_TIME_FORMAT " / %" GST_TIME_FORMAT, 
+          cur = this->getStreamMediaTime ();
+          dur = this->getStreamMediaDuration ();
+          TRACE ("time: %" GST_TIME_FORMAT " / %" GST_TIME_FORMAT, 
                 GST_TIME_ARGS (cur), GST_TIME_ARGS (dur));
+        
+          try_parse_time (value, &t);
+          next = (gint64)(t);
+          if (xstrhasprefix (value, "+"))
+          {
+            if (next+cur>=dur)
+              setEOS (true);
 
-        try_parse_time (value, &t);
-        next = (gint64)(t);
-
-        if (xstrhasprefix (value, "+"))
-        {
-          if (next+cur>=dur)
-            setEOS (true);
-
-          next+=cur;
+            next+=cur;
+          }
+          else if (xstrhasprefix (value, "-"))
+          {
+            next=(next-cur<0)?0:next-cur;
+          }
+          seek (next);
         }
-        else if (xstrhasprefix (value, "-"))
-        {
-          next=(next-cur<0)?0:next-cur;
-        }
-        seek (next);
         break;
+      }
       case PROP_SPEED:
-        _prop.speed = xstrtod (value);
-        speed (_prop.speed);
+      {
+        if (unlikely (this->getPipelineState()!="PAUSED" && 
+            this->getPipelineState()!="PLAYING"))
+        {
+          stackAction (code, name, value);
+          break;
+        }
+
+        if (_state != SLEEPING)
+        {
+          if (_prop.speed!=xstrtod (value))
+          {
+            _prop.speed = xstrtod (value);
+            speed (_prop.speed);
+          }
+        }
         break;
+      }
       default:
         return Player::doSetProperty (code, name, value);
     }
@@ -502,22 +549,35 @@ PlayerVideo::doSetProperty (PlayerProperty code,
 // Private.
 
 void
+PlayerVideo::stackAction (PlayerProperty code,
+                            unused (const string &name),
+                            const string &value)
+{
+  TRACE ("Stacked Property Name: %s; Value %s; Size: %d; URI: %s", name.c_str(), value.c_str(), _stack_actions.size(), _uri.c_str());
+  PlayerVideoAction act;
+  act.code = code;
+  act.name = name;
+  act.value = value;
+  _stack_actions.push_back(act); 
+}
+
+void
 PlayerVideo::doStackedActions()
 {
   //TRACE ("============================================State: %s - %s", this->getPipelineState().c_str(), this->_uri.c_str());
-  //TRACE ("****************Size: %d; URI: %s", _stackActions.size (), _uri.c_str());
-  while (!_stackActions.empty ())
+  //TRACE ("****************Size: %d; URI: %s", _stack_actions.size (), _uri.c_str());
+  while (!_stack_actions.empty ())
   {
     PlayerVideoAction act;
 
-    act = _stackActions.front ();
-    _stackActions.pop_front ();
+    act = _stack_actions.front ();
+    _stack_actions.pop_front ();
 
     //TRACE ("****************Act - Name: %s; Value: %s", act.name.c_str (), act.value.c_str());
 
     this->doSetProperty (act.code, act.name, act.value);
   }
-  //TRACE ("****************Size: %d", _stackActions.size ());
+  //TRACE ("****************Size: %d", _stack_actions.size ());
 }
 
 bool
@@ -582,8 +642,8 @@ PlayerVideo::cb_Bus (GstBus *bus, GstMessage *msg, PlayerVideo *player)
       }
     case GST_MESSAGE_STATE_CHANGED:
       {
-        if (unlikely (player->getPipelineState()=="PAUSED" || 
-           player->getPipelineState()=="PLAYING"))
+        if (player->getPipelineState()=="PAUSED" || 
+           player->getPipelineState()=="PLAYING")
           {
             player->doStackedActions ();
           }
