@@ -171,6 +171,9 @@ PlayerAnimator::update (Rect *rect, Color *bgColor, guint8 *alpha,
           UPDATE (info, int, *it, lround, G_MININT, G_MAXINT);
           advance (it, 2);
           UPDATE (info, int, *it, lround, G_MININT, G_MAXINT);
+          
+          if(info->isDone ())
+            cropPolygon->clear();
         }
       else if (name == "barwipe:leftToRight")
         {
@@ -178,6 +181,9 @@ PlayerAnimator::update (Rect *rect, Color *bgColor, guint8 *alpha,
           UPDATE (info, int, *it, lround, G_MININT, G_MAXINT);
           advance (it, 6);
           UPDATE (info, int, *it, lround, G_MININT, G_MAXINT);
+
+          if(info->isDone ())
+            cropPolygon->clear();
         }
       else if (name == "diagonalwipe:topLeft:x")
         {
@@ -197,6 +203,9 @@ PlayerAnimator::update (Rect *rect, Color *bgColor, guint8 *alpha,
                   info, "diagonalwipe:topLeft:x", to_string (rect->y),
                   to_string (rect->y + rect->height), info->getDuration ()); 
             }
+
+          if(info->isDone ())
+            cropPolygon->clear();  
         }
       else if (name == "diagonalwipe:topLeft:y")
         {
@@ -214,6 +223,9 @@ PlayerAnimator::update (Rect *rect, Color *bgColor, guint8 *alpha,
                   info, "diagonalwipe:topLeft:y", to_string (rect->x),
                   to_string (rect->x + rect->width), info->getDuration ());   
             }
+
+          if(info->isDone ())
+            cropPolygon->clear();
         }
       else if (name == "background:r")
         {
