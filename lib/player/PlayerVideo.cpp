@@ -160,11 +160,15 @@ PlayerVideo::PlayerVideo (Formatter *formatter, const string &id,
   gst_app_sink_set_callbacks (GST_APP_SINK (_video.sink),
                               &_callbacks, this, nullptr);
 
-  // Initialize handled properties.
+  // Initialize some handled properties.
   static set<string> handled =
   {
+    "balance",
+    "bass",
     "freeze",
-    "speed",
+    "mute",
+    "speed"
+    "treble",    
     "volume"
   };
   this->initProperties (&handled);
@@ -172,7 +176,6 @@ PlayerVideo::PlayerVideo (Formatter *formatter, const string &id,
 
 PlayerVideo::~PlayerVideo ()
 {
-
 }
 
 void
@@ -197,7 +200,22 @@ PlayerVideo::start ()
 
   Player::setEOS (false);
   g_atomic_int_set (&_sample_flag, 0);
- 
+
+  g_object_set (_audio.volume,
+                "volume", _prop.volume,
+                "mute", _prop.mute,
+                nullptr);
+
+  g_object_set (_audio.pan,
+                "panorama", _prop.balance,
+                nullptr);
+
+  g_object_set (_audio.equalizer,
+                "band0", _prop.bass,
+                "band1", _prop.treble,
+                "band2", _prop.treble,
+                nullptr);
+
   ret = gst_element_set_state (_playbin, GST_STATE_PLAYING);
   if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
     Player::setEOS (true);
@@ -389,72 +407,34 @@ PlayerVideo::doSetProperty (PlayerProperty code,
     {
       case PROP_BALANCE:
       {
-        if (unlikely (this->getPipelineState()!="PAUSED" && 
-            this->getPipelineState()!="PLAYING"))
-        {
-          stackAction (code, name, value);
-          break;
-        }
-
-        if (_state != SLEEPING)
-        {
-          _prop.balance = xstrtodorpercent (value, nullptr);
-          g_object_set (_audio.pan,
-                        "panorama", _prop.balance,
-                        nullptr);
-        }
+        _prop.balance = xstrtodorpercent (value, nullptr);
+        g_object_set (_audio.pan,
+                      "panorama", _prop.balance,
+                      nullptr);
         break;
       }
       case PROP_BASS:
       {
-        if (unlikely (this->getPipelineState()!="PAUSED" && 
-            this->getPipelineState()!="PLAYING"))
-        {
-          stackAction (code, name, value);
-          break;
-        }
-
-        if (_state != SLEEPING)
-        {
-          _prop.bass = xstrtodorpercent (value, nullptr);
-          g_object_set (_audio.equalizer,
-                        "band0", _prop.bass,
-                        nullptr);
-        }
+        _prop.bass = xstrtodorpercent (value, nullptr);
+        g_object_set (_audio.equalizer,
+                      "band0", _prop.bass,
+                      nullptr);
         break;
       }
       case PROP_FREEZE:
       {
-        if (unlikely (this->getPipelineState()!="PAUSED" && 
-            this->getPipelineState()!="PLAYING"))
-        {
-          stackAction (code, name, value);
-          break;
-        }
-
-        if (_state != SLEEPING)
-          _prop.freeze = ginga::parse_bool (value);
+        _prop.freeze = ginga::parse_bool (value);
         break;
       }
       case PROP_MUTE:
       {
-        if (unlikely (this->getPipelineState()!="PAUSED" && 
-            this->getPipelineState()!="PLAYING"))
-        {
-          stackAction (code, name, value);
-          break;
-        }
-       
-        if (_state != SLEEPING)
-        {
-          _prop.mute = ginga::parse_bool (value);
-          g_object_set (_audio.volume,
-                        "mute", _prop.mute,
-                        nullptr);
-        }
+        _prop.mute = ginga::parse_bool (value);
+        g_object_set (_audio.volume,
+                      "mute", _prop.mute,
+                      nullptr);
         break;
       }
-      case PROP_TREBLE:
+      case PROP_SPEED:
       {
         if (unlikely (this->getPipelineState()!="PAUSED" && 
             this->getPipelineState()!="PLAYING"))
@@ -465,29 +445,11 @@ PlayerVideo::doSetProperty (PlayerProperty code,
 
         if (_state != SLEEPING)
         {
-          _prop.treble = xstrtodorpercent (value, nullptr);
-          g_object_set (_audio.equalizer,
-                        "band1", _prop.treble,
-                        "band2", _prop.treble,
-                        nullptr);
-        }
-        break;
-      }
-      case PROP_VOLUME:
-      {
-        if (unlikely (this->getPipelineState()!="PAUSED" && 
-            this->getPipelineState()!="PLAYING"))
-        {
-          stackAction (code, name, value);
-          break;
-        }
-
-        if (_state != SLEEPING)
-        {
-          _prop.volume = xstrtodorpercent (value, nullptr);
-          g_object_set (_audio.volume,
-                        "volume", _prop.volume,
-                        nullptr);
+          if (_prop.speed!=xstrtod (value))
+          {
+            _prop.speed = xstrtod (value);
+            speed (_prop.speed);
+          }        
         }
         break;
       }
@@ -502,12 +464,13 @@ PlayerVideo::doSetProperty (PlayerProperty code,
 
         if (_state != SLEEPING)
         {
+          if (value=="")
+            break;
+
           TRACE ("Property value: %s",value.c_str());
           TRACE ("State: %s", this->getPipelineState().c_str());
           Time t;        
-          gint64 cur;
-          gint64 dur;
-          gint64 next;
+          gint64 cur, dur, next;
         
           cur = this->getStreamMediaTime ();
           dur = this->getStreamMediaDuration ();
@@ -531,23 +494,21 @@ PlayerVideo::doSetProperty (PlayerProperty code,
         }
         break;
       }
-      case PROP_SPEED:
+      case PROP_TREBLE:
       {
-        if (unlikely (this->getPipelineState()!="PAUSED" && 
-            this->getPipelineState()!="PLAYING"))
-        {
-          stackAction (code, name, value);
-          break;
-        }
-
-        if (_state != SLEEPING)
-        {
-          if (_prop.speed!=xstrtod (value))
-          {
-            _prop.speed = xstrtod (value);
-            speed (_prop.speed);
-          }
-        }
+        _prop.treble = xstrtodorpercent (value, nullptr);
+        g_object_set (_audio.equalizer,
+                      "band1", _prop.treble,
+                      "band2", _prop.treble,
+                      nullptr);
+        break;
+      }
+      case PROP_VOLUME:
+      {
+        _prop.volume = xstrtodorpercent (value, nullptr);
+        g_object_set (_audio.volume,
+                      "volume", _prop.volume,
+                      nullptr);
         break;
       }
       default:
