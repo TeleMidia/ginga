@@ -74,7 +74,9 @@ private:
     string name;
     string value;
   }PlayerVideoAction;
-  list<PlayerVideoAction> _stackActions;
+  list<PlayerVideoAction> _stack_actions;
+  void stackAction (PlayerProperty, const string &,
+                     const string &);
   void doStackedActions ();
   bool getFreeze ();
   string getPipelineState();
