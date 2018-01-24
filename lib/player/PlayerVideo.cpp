@@ -159,10 +159,20 @@ PlayerVideo::PlayerVideo (Formatter *formatter, const string &id,
   _callbacks.new_sample = cb_NewSample;
   gst_app_sink_set_callbacks (GST_APP_SINK (_video.sink),
                               &_callbacks, this, nullptr);
+
+  // Initialize handled properties.
+  static set<string> handled =
+  {
+    "freeze",
+    "speed",
+    "volume"
+  };
+  this->initProperties (&handled);
 }
 
 PlayerVideo::~PlayerVideo ()
 {
+
 }
 
 void
@@ -547,6 +557,46 @@ PlayerVideo::doSetProperty (PlayerProperty code,
 }
 
 // Private.
+
+void
+PlayerVideo::initProperties (set<string> *props)
+{
+  PlayerProperty code;
+  string defval;
+  for (auto name : *props)
+  {
+    code = Player::getPlayerProperty (name, &defval);
+    if (code == Player::PROP_UNKNOWN)
+      continue;
+    
+    switch (code)
+    {
+      case PROP_BALANCE:
+        _prop.balance = xstrtodorpercent (defval, nullptr);
+        break;
+      case PROP_BASS:
+        _prop.bass = xstrtodorpercent (defval, nullptr);
+        break;
+      case PROP_FREEZE:
+        _prop.freeze = ginga::parse_bool (defval); 
+        break;
+      case PROP_MUTE:
+        _prop.mute = ginga::parse_bool (defval);     
+        break;
+      case PROP_SPEED:
+        _prop.speed = xstrtod (defval);
+        break;
+      case PROP_TREBLE:
+        _prop.treble = xstrtodorpercent (defval, nullptr);
+        break;
+      case PROP_VOLUME:
+        _prop.volume = xstrtodorpercent (defval, nullptr);   
+        break;
+      default:
+        break;
+    }
+  }  
+}
 
 void
 PlayerVideo::stackAction (PlayerProperty code,
