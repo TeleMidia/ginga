@@ -232,11 +232,7 @@ Context::afterTransition (Event *evt, Event::Transition transition)
           for (auto port: _ports)
             {
               if (port->getType() == Event::PRESENTATION)
-                {
-                  Time begin, end;
-                  port->getInterval (&begin, &end);
-                  this->addDelayedAction (port, Event::START, "", begin);
-                }
+                this->addDelayedAction (port, Event::START, "", 0);
             }
           TRACE ("start %s", evt->getFullId ().c_str ());
           break;
