@@ -461,7 +461,12 @@ Formatter::sendTick (uint64_t total, uint64_t diff, uint64_t frame)
 {
   list<Object *> buf;
 
-  _GINGA_CHECK_EOS (this);
+  // natural end of the document
+  if (_doc->getRoot()->isOccurring () == false)
+    this->setEOS(true);
+
+    _GINGA_CHECK_EOS (this);
+
   if (_state != GINGA_STATE_PLAYING)
     return false;               // nothing to do
 
