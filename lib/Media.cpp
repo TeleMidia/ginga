@@ -265,34 +265,11 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
         {
         case Event::START:
           {
-            if (!evt->isLambda ())
-            {
-              //break;
-              Event *lambda = getPresentationEvent ("@lambda");
-              if (lambda->getState () == Event::SLEEPING)
-              {
-                _doc->evalAction (lambda, Event::START);
-
-                Time begin;
-                gint64 time_forward;
-
-                evt->getInterval (&begin, nullptr);
-                time_forward = (gint64)(begin);
-                break;
-              }
-              else if (lambda->getState () == Event::OCCURRING)
-              {
-                break;  
-              }
-              else if (lambda->getState () == Event::PAUSED)
-              {
-                break;
-              }
-            }
-
             // Create underlying player.
-            if (evt->getState () == Event::SLEEPING)
-            {
+            //if (evt->getState () == Event::SLEEPING)
+            //{
+              if (_player==nullptr)
+              {                
                 Formatter *fmt;
 
                 g_assert (_doc->getData ("formatter", (void **) &fmt));
@@ -303,12 +280,51 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
 
                 for (auto it: _properties)
                   _player->setProperty (it.first, it.second);
-            }
-            g_assert_nonnull (_player);
 
+                g_assert_nonnull (_player);
+        
+                // Start underlying player.
+                // TODO: Check player failure.
+                _player->start (); //Just lambda events reaches this!
+              }
+            //}
+            
+            //if (!evt->isLambda ())
+            //{
+              //break;
+              /*Event *lambda = getPresentationEvent ("@lambda");
+            
+              if (lambda->getState () == Event::SLEEPING )
+              {
+                Time begin; 
+                //g_assert (this->isOccurring ());
+                evt->getInterval (&begin, nullptr);
+                TRACE ("start %s (begin=%" GINGA_TIME_FORMAT
+                     ") at %" GINGA_TIME_FORMAT,
+                     evt->getFullId ().c_str (),
+                     GINGA_TIME_ARGS (begin), GINGA_TIME_ARGS (_time));
+
+                string time_seek = xstrbuild ("%"G_GUINT64_FORMAT, begin);
+
+                TRACE ("time_seek %s", time_seek.c_str());
+                _player->setProperty ("time", time_seek);
+
+                _doc->evalAction (lambda, Event::START);
+                break;
+              }
+              else if (lambda->getState () == Event::OCCURRING)
+              {
+                break;  
+              }
+              else if (lambda->getState () == Event::PAUSED)
+              {
+                break;
+              }*/
+            //}
+            
             // Start underlying player.
             // TODO: Check player failure.
-            _player->start (); //Just lambda events reaches this!
+            //_player->start (); //Just lambda events reaches this!
             break;
           }
 
@@ -397,22 +413,7 @@ Media::afterTransition (Event *evt, Event::Transition transition)
                     }
                 }
               TRACE ("start %s", evt->getFullId ().c_str ());
-            }
-          else                  // non-lambda area
-            {
-              Time begin; 
-              g_assert (this->isOccurring ());
-              evt->getInterval (&begin, nullptr);
-              TRACE ("start %s (begin=%" GINGA_TIME_FORMAT
-                     ") at %" GINGA_TIME_FORMAT,
-                     evt->getFullId ().c_str (),
-                     GINGA_TIME_ARGS (begin), GINGA_TIME_ARGS (_time));
-
-             string time_seek = xstrbuild ("%"G_GUINT64_FORMAT, begin);
-
-             TRACE ("time_seek %s", time_seek.c_str());
-             // _player->setProperty ("time", time_seek);
-            }
+            }          
           break;
 
         case Event::PAUSE:
