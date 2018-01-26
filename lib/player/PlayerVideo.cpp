@@ -167,11 +167,13 @@ PlayerVideo::PlayerVideo (Formatter *formatter, const string &id,
     "bass",
     "freeze",
     "mute",
-    "speed"
+    "speed",
     "treble",    
     "volume"
   };
   this->initProperties (&handled);
+
+  //stackAction (Player::PROP_TIME, "time", "16s");
 }
 
 PlayerVideo::~PlayerVideo ()
@@ -258,18 +260,24 @@ PlayerVideo::resume ()
 
 void
 PlayerVideo::seek (gint64 value)
-{
+{ 
   TRACE ("seek to: %" GST_TIME_FORMAT, GST_TIME_ARGS (value));
-  double rate = 1;
 
-  if (_prop.speed!=0)
-    rate=_prop.speed;
+  GstState curr, pending;
+  GstStateChangeReturn ret;
 
-  if (unlikely (!gst_element_seek (_playbin, rate, GST_FORMAT_TIME,
+  if (unlikely (!gst_element_seek (_playbin, _prop.speed, GST_FORMAT_TIME,
                           GST_SEEK_FLAG_FLUSH, GST_SEEK_TYPE_SET,
                           value, GST_SEEK_TYPE_NONE,
                           GST_CLOCK_TIME_NONE)))
     TRACE ("seek failed");
+  
+  ret = gst_element_get_state (_playbin, &curr, &pending, GST_CLOCK_TIME_NONE);
+  if (unlikely (ret == GST_STATE_CHANGE_FAILURE)) 
+  {
+    string m = gst_element_state_change_return_get_name (ret);
+    TRACE ("%s to change tate", m.c_str());
+  }
 }
 
 void
