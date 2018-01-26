@@ -252,6 +252,12 @@ test_MediaSettings_new_SOURCES= test-MediaSettings-new.cpp
 progs+= test-Context-new
 test_Context_new_SOURCES= test-Context-new.cpp
 
+progs+= test-Context-naturalend
+test_Context_naturalend_SOURCES= test-Context-naturalend.cpp
+
+progs+= test-Context-nested-naturalend
+test_Context_nested_naturalend_SOURCES= test-Context-nested-naturalend.cpp
+
 # lib/Switch.h ------------------------------------------------------------
 progs+= test-Switch-new
 test_Switch_new_SOURCES= test-Switch-new.cpp
