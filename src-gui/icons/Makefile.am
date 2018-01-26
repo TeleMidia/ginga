@@ -49,7 +49,9 @@ light_DATA=\
   light-theme/history-icon.png\
   light-theme/info-icon.png\
   light-theme/leftarrow-icon.png\
+  light-theme/max-icon.png\
   light-theme/menu-icon.png\
+  light-theme/min-icon.png\
   light-theme/number_eight.png\
   light-theme/number_five.png\
   light-theme/number_four.png\
@@ -91,7 +93,9 @@ dark_DATA=\
   dark-theme/history-icon.png\
   dark-theme/info-icon.png\
   dark-theme/leftarrow-icon.png\
+  dark-theme/max-icon.png\
   dark-theme/menu-icon.png\
+  dark-theme/min-icon.png\
   dark-theme/number_eight.png\
   dark-theme/number_five.png\
   dark-theme/number_four.png\

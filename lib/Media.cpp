@@ -410,7 +410,7 @@ Media::afterTransition (Event *evt, Event::Transition transition)
                      evt->getFullId ().c_str (),
                      GINGA_TIME_ARGS (begin), GINGA_TIME_ARGS (_time));
 
-             string time_seek = xstrbuild ("%"G_GUINT64_FORMAT, begin);
+             string time_seek = xstrbuild ("%" G_GUINT64_FORMAT, begin);
 
              TRACE ("time_seek %s", time_seek.c_str());
               _player->setProperty ("time", time_seek);

@@ -35,6 +35,8 @@ typedef struct
   guint guiTheme = 0; /* 0=30 1=60 2=Free  */
 } PresentationAttributes;
 
+extern gchar* DATADIR;
+
 extern Ginga *GINGA; /* Ginga Scheduler */
 extern GtkWidget *mainWindow;
 extern GtkWidget *tvcontrolWindow;
