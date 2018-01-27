@@ -117,10 +117,17 @@ PlayerLua::resume ()
 }
 
 void
-PlayerLua::sendKeyEvent (string const &key, bool press)
+PlayerLua::sendKeyEvent (const string &key, bool press)
 {
   g_assert_nonnull (_nw);
   evt_key_send (_nw, press ? "press" : "release", key.c_str ());
+}
+
+void
+PlayerLua::sendPresentationEvent (const string &action, const string &label)
+{
+  g_assert_nonnull (_nw);
+  evt_ncl_send_presentation (_nw, action.c_str (), label.c_str ());
 }
 
 void
@@ -171,13 +178,15 @@ PlayerLua::redraw (cairo_t *cr)
 
       if (g_str_equal (evt->u.ncl.type, "presentation"))
       {
+        Event *nclEvt;
         std::string label = evt->u.ncl.name;
+
         if (label == "")
-          label = "@lambda";
+          nclEvt = obj->getPresentationEvent ("@lambda");
+        else
+          nclEvt = obj->getPresentationEventByLabel (label);
 
-        Event *nclEvt = obj->getPresentationEvent (label);
         g_assert_nonnull (nclEvt);
-
         g_assert (nclua_act_to_ncl.count (evt->u.ncl.action) != 0);
         obj->addDelayedAction (nclEvt, nclua_act_to_ncl.at (evt->u.ncl.action));
       }

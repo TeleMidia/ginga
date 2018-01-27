@@ -399,10 +399,11 @@ Media::afterTransition (Event *evt, Event::Transition transition)
               Object::doStart ();
 
               // Schedule anchors.
-              for (auto e: _events)
+              for (Event *e: _events)
                 {
                   if (!e->isLambda ()
-                      && e->getType () == Event::PRESENTATION)
+                      && (e->getType () == Event::PRESENTATION)
+                      && (e->getLabel () == ""))
                     {
                       Time begin, end;
                       e->getInterval (&begin, &end);
@@ -413,7 +414,11 @@ Media::afterTransition (Event *evt, Event::Transition transition)
                     }
                 }
               TRACE ("start %s", evt->getFullId ().c_str ());
-            }          
+            }
+          else if (evt->getLabel () != "")
+            {
+              _player->sendPresentationEvent ("start", evt->getLabel());
+            }
           break;
 
         case Event::PAUSE:
@@ -435,6 +440,10 @@ Media::afterTransition (Event *evt, Event::Transition transition)
                 TRACE ("abort %s", evt->getFullId ().c_str ());
               else
                 TRACE ("stop %s", evt->getFullId ().c_str ());
+            }
+          else if (evt->getLabel () != "")
+            {
+              _player->sendPresentationEvent ("stop", evt->getLabel());
             }
           else                  // non-lambda area
             {
