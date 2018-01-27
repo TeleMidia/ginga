@@ -1,6 +1,4 @@
 #include "runview.h"
-#include "ui_runview.h"
-
 #include <glib.h>
 
 #include <QPainter>
@@ -10,11 +8,8 @@ using namespace std;
 
 RunView::RunView (QWidget *parent) :
   QWidget (parent),
-  _ui (new Ui::RunView),
   _timer (this)
 {
-  _ui->setupUi(this);
-
   _ginga_surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
                                                width (), height ());
   _cr = cairo_create (_ginga_surface);
@@ -24,8 +19,9 @@ RunView::RunView (QWidget *parent) :
   _ginga_opts.height = height ();
   _ginga_opts.experimental = FALSE;
   _ginga_opts.background = "black";
+  _ginga_opts.opengl = false;
 
-  char **argv;
+  char **argv = {};
   _ginga = Ginga::create (0, argv, &_ginga_opts);
 
   g_assert_nonnull (_ginga);
@@ -64,7 +60,6 @@ RunView::stop ()
 
 RunView::~RunView()
 {
-  delete _ui;
   delete _ginga;
 
   cairo_destroy (_cr);
@@ -107,6 +102,8 @@ RunView::redrawGinga ()
 void
 RunView::paintEvent (QPaintEvent *e)
 {
+  Q_UNUSED (e);
+
   QPainter painter (this);
 
   if (!_img.isNull())
