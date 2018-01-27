@@ -12,32 +12,60 @@
 
 The iTV middleware.
 
-* http://www.ginga.org.br
-* http://www.ncl.org.br
-* http://www.telemidia.puc-rio.br
+  * http://www.ginga.org.br
+  * http://www.ncl.org.br
+  * http://www.telemidia.puc-rio.br
 
 ## Dependencies
 
 Required:
 
-* cairo >= 1.10
-* glib >= 2.32
-* gstreamer >= 1.8
-* GTK+ >= 3.4
-* nclua >= 1.0, http://github.com/gflima/nclua
-* pango >= 1.30
-* xercesc >= 2.7
+  * cairo >= 1.10
+  * glib >= 2.32
+  * gstreamer >= 1.8
+  * GTK+ >= 3.4
+  * pango >= 1.30
+  * xercesc >= 2.7
 
 Optional:
 
-* cef >= 3.0, https://bitbucket.org/chromiumembedded/cef
-* librsvg >= 2.40
+  * cef >= 3.0, https://bitbucket.org/chromiumembedded/cef
+  * librsvg >= 2.40
+  * nclua >= 1.0, http://github.com/gflima/nclua
+
+## Installation
+
+### Development version (nightly builds)
+
+**Linux Debian/Ubuntu/Linux Mint**:
+
+In a Debian-based system you can easily install a (nightly built) development
+version of ginga using:
+
+    $ sudo add-apt-repository ppa:telemidia/daily-builds
+    $ sudo apt-get update
+    $ sudo apt-get install ginga-itv
+
+**Windows**
+
+TODO.
+
+## Usage
+
+The basic way of running ginga is passing a `.ncl` document to be played as a
+parameter, e.g.:
+
+    $ ginga examples/primeiro-joao/01sync.ncl
+
+You can check the available options for the `ginga` executable with:
+
+    $ ginga --help
 
 ## Building
 
-We currently support both autotools and cmake build systems.
+### Linux
 
-### autotools
+**autotools**
 
     $ ./bootstrap
     $ ./configure
@@ -48,7 +76,7 @@ above configure step to:
 
     $ ./configure --with-cef=${CEF_ROOT}
 
-### cmake
+**cmake**
 
     $ mkdir _build && cd _build
     $ cmake ../build-cmake
@@ -57,9 +85,12 @@ above configure step to:
 When using cmake, nclua and chromium embedded will be automatically
 downloaded and built.
 
-### MSYS | MinGW --- Windows only build
-Download MSYS and install the dependencies through MinGW ("$ pacman -S base-devel"
-and others).
+### Windows
+
+**msys2 and mingw**
+
+Download MSYS2 and install the dependencies through MinGW ("$ pacman -S
+base-devel" and others).
 
     $ ./bootstrap
     $ ./configure
