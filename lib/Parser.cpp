@@ -3643,18 +3643,31 @@ ParserState::pushArea (ParserState *st, ParserElt *elt)
   Media *media;
   string id;
   string str;
+  string label;
   Time begin, end;
 
   media = cast (Media *, st->objStackPeek ());
   g_assert_nonnull (media);
 
   g_assert (elt->getAttribute ("id", &id));
-  begin = elt->getAttribute ("begin", &str)
-    ? ginga::parse_time (str) : 0;
-  end = elt->getAttribute ("end", &str)
-    ? ginga::parse_time (str) : GINGA_TIME_NONE;
 
-  media->addPresentationEvent (id, begin, end);
+  if (elt->getAttribute ("label", &label))
+  {
+    g_assert (!elt->getAttribute ("begin", &str));
+    g_assert (!elt->getAttribute ("end", &str));
+
+    media->addPresentationEvent (id, label);
+  }
+  else
+  {
+    begin = elt->getAttribute ("begin", &str)
+      ? ginga::parse_time (str) : 0;
+    end = elt->getAttribute ("end", &str)
+      ? ginga::parse_time (str) : GINGA_TIME_NONE;
+
+    media->addPresentationEvent (id, begin, end);
+  }
+
   return true;
 }
 
