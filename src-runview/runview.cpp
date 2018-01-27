@@ -86,7 +86,7 @@ RunView::redrawGinga ()
       last = time;
     }
 
-  _ginga->sendTickEvent (time - first, time - last, frame);
+  _ginga->sendTick (time - first, time - last, frame);
   last = time;
 
   _ginga->redraw (_cr);
