@@ -110,10 +110,7 @@ public:
   virtual void sendKeyEvent (const string &, bool);
 
   // For now, only for the lua player (which reimplements it).
-  virtual void sendPresentationEvent (const string &, const string &)
-    {
-      ERROR ("This method is not implemented!");
-    }
+  virtual void sendPresentationEvent (const string &, const string &) {}
 
   // Static.
   static string getCurrentFocus ();
