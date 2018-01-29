@@ -144,10 +144,19 @@ Context::sendKey (unused (const string &key),
 void
 Context::sendTick (Time total, Time diff, Time frame)
 {
-  //
-  // TODO: Should we detect context EOS here?
-  //
+  // Update object time.
   Object::sendTick (total, diff, frame);
+
+  // Check EOS.
+  if (_occurringChildren == 0)
+    {
+      Event *lambda = this->getLambda ();
+      g_assert_nonnull (lambda);
+      TRACE ("eos %s at %" GINGA_TIME_FORMAT, lambda->getFullId ().c_str (),
+             GINGA_TIME_ARGS (_time));
+      _doc->evalAction (lambda, Event::STOP);
+      return;
+    }
 }
 
 bool
@@ -232,11 +241,7 @@ Context::afterTransition (Event *evt, Event::Transition transition)
           for (auto port: _ports)
             {
               if (port->getType() == Event::PRESENTATION)
-                {
-                  Time begin, end;
-                  port->getInterval (&begin, &end);
-                  this->addDelayedAction (port, Event::START, "", begin);
-                }
+                this->addDelayedAction (port, Event::START, "", 0);
             }
           TRACE ("start %s", evt->getFullId ().c_str ());
           break;

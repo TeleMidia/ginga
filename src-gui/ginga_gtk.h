@@ -32,10 +32,8 @@ typedef struct
   guint resolutionWidth = 700;
   guint resolutionHeight = 525;
   guint frameRate = 0; /* 0=30 1=60 2=Free  */
-  guint guiTheme = 0; /* 0=30 1=60 2=Free  */
+  guint guiTheme = 0;  /* 0=30 1=60 2=Free  */
 } PresentationAttributes;
-
-extern gchar* DATADIR;
 
 extern Ginga *GINGA; /* Ginga Scheduler */
 extern GtkWidget *mainWindow;
@@ -67,7 +65,7 @@ void play_pause_button_callback (void);
 void stop_button_callback (void);
 void keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type);
 void create_window_components (void);
-gchar* get_icon_folder(void);
+gchar *get_icon_folder (void);
 
 /* View/TvControlWindow */
 void create_tvcontrol_window (void);
@@ -84,15 +82,15 @@ void set_unfullscreen_mode (void);
 void create_bigpicture_window (void);
 void destroy_bigpicture_window (void);
 void carrousel_rotate (gint);
-void play_application_in_bigpicture(void);
+void play_application_in_bigpicture (void);
 
 /* View/AboutWindow */
 void create_about_window (void);
 void destroy_about_window (void);
 
 /*View/HelpWindow */
-void create_help_window(void);
-void destroy_help_window(void);
+void create_help_window (void);
+void destroy_help_window (void);
 
 /* View/Draw */
 #if GTK_CHECK_VERSION(3, 8, 0)

@@ -22,15 +22,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 // Global formatter.
 Ginga *GINGA = nullptr;
 
-gchar *DATADIR;
-
-typedef struct
-{
-  int std_in;
-  int std_out;
-  int std_err;
-} child_fds;
-
 int
 main (int argc, char **argv)
 {
@@ -41,9 +32,7 @@ main (int argc, char **argv)
   opts.debug = false;
   opts.opengl = false;
   opts.experimental = true;
-
-  DATADIR = (gchar *) GINGADATADIR;
-
+  
   GINGA = Ginga::create (argc, argv, &opts);
   g_assert_nonnull (GINGA);
 
@@ -53,7 +42,7 @@ main (int argc, char **argv)
 
   GError *err = NULL;
   gtk_window_set_default_icon_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, DATADIR, "icons", "common",
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons", "common",
                     "ginga_icon.png", NULL),
       &err);
 

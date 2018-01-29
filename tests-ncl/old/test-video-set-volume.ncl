@@ -163,7 +163,7 @@
     <!-- <port id='start7' component='audio2'/> -->
 
     <media id='audio' src='../samples/arcade.mp3' descriptor='desc'>
-      <property name='soundLevel' value='0.5'/>
+      <property name='soundLevel' value='0'/>
     </media>
 
     <media id='audio2' src='../samples/bunny.mp3'>
@@ -175,7 +175,7 @@
     </media>
     
     <media id='video' src='../samples/bunny.ogg' descriptor='desc' > <!-- Video com audio -->
-      <property name='soundLevel' value="0"/>
+      <property name='soundLevel' value="1"/>
       <area id='videoArea1' begin='5s'/>
       <area id='videoArea2' begin='10s'/>
     </media>
@@ -200,7 +200,7 @@
       <bind role='onSelection' component='img'>
         <bindParam name='keyCode' value='RED'/>        
       </bind>
-      <bind role="set" component="audio" interface="soundLevel">
+      <bind role="set" component="video" interface="soundLevel">
         <bindParam name="var" value="0%"/>
       </bind>
     </link>
@@ -209,7 +209,7 @@
       <bind role='onSelection' component='img'>
         <bindParam name='keyCode' value='GREEN'/>        
       </bind>
-      <bind role="set" component="audio" interface="soundLevel">
+      <bind role="set" component="video" interface="soundLevel">
         <bindParam name="var" value="0.5"/>
       </bind>
     </link>
@@ -218,7 +218,7 @@
       <bind role='onSelection' component='img'>
         <bindParam name='keyCode' value='YELLOW'/>        
       </bind>
-      <bind role="set" component="audio" interface="soundLevel">
+      <bind role="set" component="video" interface="soundLevel">
         <bindParam name="var" value="100%"/>
       </bind>
     </link>
@@ -242,14 +242,5 @@
       <bind role="resume" component="video" />
     </link>
     
-    
-    <!-- Set soundLevel audio to 0.5 when video is 5s. -->
-    <link xconnector="onBeginSet">
-      <bind role='onBegin' component='video' interface='videoArea1'/> <!-- Video sem audio -->
-      <bind role="set" component="audio" interface="soundLevel">
-        <bindParam name="var" value="0.5"/>
-      </bind>
-    </link>
-
   </body>
 </ncl>

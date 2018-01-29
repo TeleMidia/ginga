@@ -171,7 +171,7 @@
     </media>
     
     <media id='video' src='../samples/bunny.ogg' descriptor='desc' > <!-- Video com audio -->
-      <property name='rate' />
+      <property name='rate' value='2'/>
       <property name="soundLevel" value="1"/>
       <area id='videoArea1' begin='5s'/>
       <area id='videoArea2' begin='10s'/>

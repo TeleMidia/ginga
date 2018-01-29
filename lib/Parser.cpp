@@ -419,6 +419,7 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
    {},                          // possible parents
    {{"id", ATTR_OPT_ID},        // attributes
     {"title", 0},
+    {"schemaLocation", 0},
     {"xmlns", 0}}},
  },
  {"head",
@@ -3594,7 +3595,14 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
       if (elt->getAttribute ("src", &src)
           && !xpathisuri (src) && !xpathisabs (src))
         {
-          src = xpathbuildabs (st->getDirname (), src);
+            string dirName = st->getDirname();
+            string prefix = dirName.substr (0,6);
+            if(prefix == "file:/"){
+               src =  dirName.erase(0,6)+'/'+src;
+            }
+            else
+               src = xpathbuildabs (dirName, src);
+
         }
       media = new Media (id, type, src);
       g_assert_nonnull (media);

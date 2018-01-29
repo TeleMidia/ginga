@@ -118,10 +118,10 @@ apply_theme ()
 
   gchar *filename;
   if (presentationAttributes.guiTheme == 0)
-    filename = g_build_path (G_DIR_SEPARATOR_S, DATADIR, "style",
+    filename = g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "style",
                              "light.css", NULL);
   else
-    filename = g_build_path (G_DIR_SEPARATOR_S, DATADIR, "style",
+    filename = g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "style",
                              "dark.css", NULL);
 
   GFile *file = g_file_new_for_path (filename);
@@ -138,83 +138,83 @@ apply_theme ()
     }
 
   GtkWidget *img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, DATADIR, "icons", get_icon_folder (),
-                    "play-icon.png", NULL));
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                    get_icon_folder (), "play-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (playButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, DATADIR, "icons", get_icon_folder (),
-                    "stop-icon.png", NULL));
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                    get_icon_folder (), "stop-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (stopButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, DATADIR, "icons", get_icon_folder (),
-                    "fullscreen-icon.png", NULL));
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                    get_icon_folder (), "fullscreen-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (fullscreenButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, DATADIR, "icons", get_icon_folder (),
-                    "settings-icon.png", NULL));
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                    get_icon_folder (), "settings-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (settingsButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, DATADIR, "icons", get_icon_folder (),
-                    "remote-icon.png", NULL));
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                    get_icon_folder (), "remote-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (remoteButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, DATADIR, "icons", get_icon_folder (),
-                    "debug-icon.png", NULL));
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                    get_icon_folder (), "debug-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (debugButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, DATADIR, "icons", get_icon_folder (),
-                    "openfile-icon.png", NULL));
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                    get_icon_folder (), "openfile-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (openButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, DATADIR, "icons", get_icon_folder (),
-                    "history-icon.png", NULL));
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                    get_icon_folder (), "history-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (histButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, DATADIR, "icons", get_icon_folder (),
-                    "tools-icon.png", NULL));
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                    get_icon_folder (), "tools-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (toolsButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, DATADIR, "icons", get_icon_folder (),
-                    "info-icon.png", NULL));
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                    get_icon_folder (), "info-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (aboutButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, DATADIR, "icons", get_icon_folder (),
-                    "question-icon.png", NULL));
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                    get_icon_folder (), "question-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (helpButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, DATADIR, "icons", get_icon_folder (),
-                    "question-icon.png", NULL));
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                    get_icon_folder (), "question-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (helpButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, DATADIR, "icons", get_icon_folder (),
-                    "screen-icon.png", NULL));
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                    get_icon_folder (), "screen-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (bigpictureButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, DATADIR, "icons", get_icon_folder (),
-                    "bottomhide-icon.png", NULL));
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                    get_icon_folder (), "bottomhide-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (consoleHideButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, DATADIR, "icons", get_icon_folder (),
-                    "rightride-icon.png", NULL));
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                    get_icon_folder (), "rightride-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (sidebarHideButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, DATADIR, "icons", get_icon_folder (),
-                    "window-icon.png", NULL));
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                    get_icon_folder (), "window-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (sidebarWinButton), img_icon);
 
   gtk_widget_destroy (tvRemoteView);
@@ -526,13 +526,13 @@ create_window_components ()
   GtkWidget *header_bar = gtk_header_bar_new ();
   g_assert_nonnull (header_bar);
   gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header_bar), true);
-  gtk_header_bar_set_decoration_layout (GTK_HEADER_BAR
-   (header_bar), "menu:minimize,maximize,close");
+  gtk_header_bar_set_decoration_layout (GTK_HEADER_BAR (header_bar),
+                                        "menu:minimize,maximize,close");
   /* begin hist box */
   if (historicBox == NULL)
     {
-    historicBox = gtk_list_box_new ();
-    g_assert_nonnull (historicBox);
+      historicBox = gtk_list_box_new ();
+      g_assert_nonnull (historicBox);
     }
 
   fileEntry = gtk_entry_new ();
@@ -552,9 +552,9 @@ create_window_components ()
       = gtk_list_box_get_row_at_index (GTK_LIST_BOX (historicBox), 0);
   if (row_0 != NULL)
     {
-    GtkWidget *label = gtk_bin_get_child (GTK_BIN (row_0));
-    gtk_entry_set_text (GTK_ENTRY (fileEntry),
-                        gtk_label_get_text (GTK_LABEL (label)));
+      GtkWidget *label = gtk_bin_get_child (GTK_BIN (row_0));
+      gtk_entry_set_text (GTK_ENTRY (fileEntry),
+                          gtk_label_get_text (GTK_LABEL (label)));
     }
 
 #if GTK_CHECK_VERSION(3, 14, 0)
@@ -627,7 +627,6 @@ create_window_components ()
   g_signal_connect (debugButton, "clicked",
                     G_CALLBACK (enable_disable_debug), NULL);
 
-
   /* begin tool box */
   GtkWidget *tool_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
   g_assert_nonnull (tool_box);
@@ -661,23 +660,11 @@ create_window_components ()
   gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (aspect_combobox), -1,
                                   "LCD (16:10)");
   gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (aspect_combobox), -1,
-                                  "Expand");
+                                  "Expanded");
   gtk_combo_box_set_active (GTK_COMBO_BOX (aspect_combobox),
                             presentationAttributes.aspectRatio);
   g_signal_connect (aspect_combobox, "changed",
                     G_CALLBACK (aspect_combobox_changed), NULL);
-
-  /*  GtkWidget *fps_combobox = gtk_combo_box_text_new ();
-    g_assert_nonnull (fps_combobox);
-    g_object_set (fps_combobox, "margin", 5, NULL);
-
-    gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (fps_combobox), -1,
-                                    "30");
-    gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (fps_combobox), -1,
-                                    "60");
-    gtk_combo_box_text_insert_text (GTK_COMBO_BOX_TEXT (fps_combobox), -1,
-                                    "Go Horse!");
-    gtk_combo_box_set_active (GTK_COMBO_BOX (fps_combobox), 0); */
 
   GtkWidget *theme_combobox = gtk_combo_box_text_new ();
   g_assert_nonnull (theme_combobox);
@@ -699,10 +686,6 @@ create_window_components ()
   gtk_box_pack_start (GTK_BOX (opt_box), gtk_label_new ("Aspect Ratio:"),
                       false, false, 0);
   gtk_box_pack_start (GTK_BOX (opt_box), aspect_combobox, false, true, 0);
-  // gtk_box_pack_start (GTK_BOX (opt_box), gtk_label_new ("Frame Rate:"),
-  //                    false, false, 0);
-  // gtk_box_pack_start (GTK_BOX (opt_box), fps_combobox, false, true, 0);
-  // gtk_box_pack_start (GTK_BOX (opt_box), theme_combobox, false, true, 0);
 
   aboutButton = gtk_button_new ();
   g_assert_nonnull (aboutButton);
@@ -724,6 +707,7 @@ create_window_components ()
   gtk_widget_set_tooltip_text (bigpictureButton, "Presentation Mode");
   g_signal_connect (bigpictureButton, "clicked",
                     G_CALLBACK (press_bigpicture_button_callback), NULL);
+  gtk_widget_set_sensitive (bigpictureButton, false);
 
   GtkWidget *info_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
   g_assert_nonnull (info_box);
@@ -736,7 +720,6 @@ create_window_components ()
 
   optBoxPopOver = gtk_popover_new (settingsButton);
   g_assert_nonnull (optBoxPopOver);
-  // gtk_widget_set_size_request (toolBoxPopOver, 200, 100);
 
   gtk_container_add (GTK_CONTAINER (opt_video_frame), opt_box);
   gtk_container_add (GTK_CONTAINER (opt_gui_frame), theme_combobox);
@@ -771,7 +754,6 @@ create_window_components ()
 
   gtk_header_bar_set_custom_title (GTK_HEADER_BAR (header_bar), file_box);
 
-
   gtk_header_bar_pack_end (GTK_HEADER_BAR (header_bar), settingsButton);
   gtk_header_bar_pack_end (GTK_HEADER_BAR (header_bar), fullscreenButton);
   gtk_header_bar_pack_end (GTK_HEADER_BAR (header_bar), sep2);
@@ -788,6 +770,7 @@ create_window_components ()
   gingaView = gtk_drawing_area_new ();
   g_assert_nonnull (gingaView);
   gtk_widget_set_app_paintable (gingaView, TRUE);
+
   g_signal_connect (gingaView, "draw", G_CALLBACK (draw_callback), NULL);
   gtk_widget_set_size_request (gingaView,
                                presentationAttributes.resolutionWidth,
@@ -935,6 +918,9 @@ create_main_window ()
                     G_CALLBACK (keyboard_callback), (void *) "release");
   g_signal_connect (mainWindow, "destroy", G_CALLBACK (destroy_main_window),
                     NULL);
+  // g_signal_connect (window, "delete-event", G_CALLBACK
+  // (gtk_widget_hide_on_delete), NULL);
+
   g_signal_connect (gingaView, "configure-event",
                     G_CALLBACK (resize_callback), NULL);
 
@@ -943,19 +929,17 @@ create_main_window ()
   gtk_widget_hide (debugView);
   gtk_widget_hide (sideView);
   gtk_widget_hide (infoBar);
-
-  /* GtkAllocation alloc;
-   gtk_widget_get_allocation (mainBox, &alloc);
-   GINGA->resize (alloc.width, alloc.height);
-   */
 }
 
 void
 destroy_main_window (void)
 {
-  //  stop_application ();
+  if (GINGA != NULL)
+    GINGA->stop ();
+
   gtk_widget_destroy (mainWindow);
   mainWindow = NULL;
+
   gtk_main_quit ();
 }
 
@@ -1009,8 +993,8 @@ stop_button_callback (void)
 {
   inPlayMode = false;
   GtkWidget *play_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, DATADIR, "icons", get_icon_folder (),
-                    "play-icon.png", NULL));
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                    get_icon_folder (), "play-icon.png", NULL));
   gtk_button_set_image (GTK_BUTTON (playButton), play_icon);
   gtk_widget_set_sensitive (fileEntry, true);
   gtk_widget_set_sensitive (openButton, true);
@@ -1024,8 +1008,8 @@ play_pause_button_callback (void)
 {
   inPlayMode = !inPlayMode;
   GtkWidget *play_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, DATADIR, "icons", get_icon_folder (),
-                    "play-icon.png", NULL));
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                    get_icon_folder (), "play-icon.png", NULL));
   if (inPlayMode)
     {
       const gchar *file = gtk_entry_get_text (GTK_ENTRY (fileEntry));
@@ -1039,7 +1023,7 @@ play_pause_button_callback (void)
         }
 
       play_icon = gtk_image_new_from_file (
-          g_build_path (G_DIR_SEPARATOR_S, DATADIR, "icons",
+          g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
                         get_icon_folder (), "pause-icon.png", NULL));
       gtk_widget_set_sensitive (fileEntry, false);
       gtk_widget_set_sensitive (openButton, false);

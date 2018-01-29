@@ -22,13 +22,13 @@
       <area id='area1' begin='16s' />
       <property name="soundLevel" value="0"/>
     </media>
-    <media id='video2' src='../samples/animGar.mp4' descriptor='desc2'>      
-      <area id='area2' begin='15s' />
+    <!-- <media id='video2' src='../samples/animGar.mp4' descriptor='desc2'>      
+      <area id='area2' begin='15s' /> 
     </media>
     
     <link xconnector="onBeginStart">
       <bind role='onBegin' component='video1' />
       <bind role="start" component="video2" interface="area2" />
-    </link>
+    </link> -->
   </body>
 </ncl>

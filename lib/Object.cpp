@@ -375,6 +375,8 @@ void
 Object::doStart ()
 {
   _time = 0;
+  if (_parent != nullptr) // when object is not the body
+    this->_parent->increaseOccurringChildren ();
 }
 
 void
@@ -384,6 +386,8 @@ Object::doStop ()
   for (auto evt: _events)
     evt->reset ();
   _delayed.clear ();
+  if(_parent != nullptr) // when object is not the body
+    this->_parent->decreaseOccurringChildren ();
 }
 
 GINGA_NAMESPACE_END

@@ -24,15 +24,11 @@
     <port id='start' component='video'/>
     
     <media id='video' src='../samples/bunny.ogg' descriptor='desc' >
-      <area id='area1' begin='3s' />
+      <area id='area1' begin='5s' />
     </media>
     <link xconnector="onBeginPause">
       <bind role="onBegin" component="video" interface="area1"/>
       <bind role="pause" component="video" />
     </link>    
-    <!-- <link xconnector="onBeginResume">
-      <bind role="onBegin" component="video" />
-      <bind role="resume" component="video" />
-    </link> -->
   </body>
 </ncl>
