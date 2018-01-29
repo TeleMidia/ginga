@@ -172,7 +172,7 @@
     
     <media id='video' src='../samples/bunny.ogg' descriptor='desc' > <!-- Video com audio -->
       <property name='time' />
-      <property name="soundLevel" value="0"/>
+      <property name="soundLevel" value="1"/>
       <!-- <area id='videoArea1' begin='9s'/>
       <area id='videoArea2' begin='18s'/> -->
     </media>

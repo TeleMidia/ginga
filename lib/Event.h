@@ -64,6 +64,9 @@ public:
   void getInterval (Time *, Time *);
   void setInterval (Time, Time);
 
+  std::string getLabel ();
+  void setLabel (const std::string &);
+
   bool getParameter (const string &, string *);
   bool setParameter (const string &, const string &);
 
@@ -82,6 +85,7 @@ private:
   Event::State _state;             // event state
   Time _begin;                     // begin-time
   Time _end;                       // end-time
+  std::string _label;              // label
   map<string, string> _parameters; // parameters
 };
 

@@ -296,8 +296,6 @@ if (WITH_RUNVIEW)
     ../src-runview/main.cpp
     ../src-runview/runview.cpp
     ../src-runview/runview.h
-
-    ../src-runview/runview.ui
   )
 
   target_link_libraries (runview

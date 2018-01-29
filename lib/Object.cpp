@@ -223,6 +223,15 @@ Object::getPresentationEvent (const string &id)
   return this->getEvent (Event::PRESENTATION, id);
 }
 
+Event *
+Object::getPresentationEventByLabel (const string &label)
+{
+  for (Event *evt: _events)
+    if (evt->getType () == Event::PRESENTATION && evt->getLabel () == label)
+      return evt;
+  return nullptr;
+}
+
 void
 Object::addPresentationEvent (const string &id, Time begin, Time end)
 {
@@ -233,6 +242,18 @@ Object::addPresentationEvent (const string &id, Time begin, Time end)
 
   evt = new Event (Event::PRESENTATION, this, id);
   evt->setInterval (begin, end);
+  _events.insert (evt);
+}
+
+void
+Object::addPresentationEvent (const string &id, const string &label)
+{
+  Event *evt;
+  if (this->getPresentationEvent (id))
+    return;
+
+  evt = new Event (Event::PRESENTATION, this, id);
+  evt->setLabel (label);
   _events.insert (evt);
 }
 
