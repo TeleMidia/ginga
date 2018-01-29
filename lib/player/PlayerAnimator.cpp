@@ -319,11 +319,13 @@ createPolygon (string name, Rect *rect, list<int> *cropPoly)
       cropPoly->insert (cropPoly->end (), rect->x); // dot5 (x,y+h)
       cropPoly->insert (cropPoly->end (), rect->y + rect->height); //
     }
+
+  return true;
 }
 
 void
 PlayerAnimator::scheduleTransition (const string &notificationType,
-                                    Rect *rect, Color *bgColor,
+                                    Rect *rect, unused (Color *bgColor),
                                     guint8 *alpha, list<int> *cropPoly)
 {
   cropPoly->clear ();
