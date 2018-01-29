@@ -57,6 +57,7 @@ NCLUA_FILES+= build-aux/Makefile.am.gitlog
 NCLUA_FILES+= build-aux/Makefile.am.valgrind
 NCLUA_FILES+= build-aux/util.m4
 NCLUA_FILES+= lib/aux-glib.h
+NCLUA_FILES+= lib/aux-lua.h
 NCLUA_FILES+= maint.mk
 NCLUA_SCRIPTS+= bootstrap
 NCLUA_SCRIPTS+= build-aux/syntax-check

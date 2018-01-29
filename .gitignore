@@ -141,6 +141,7 @@
 /tests/test-Object-addEvent
 /tests/test-Parser-parseBuffer
 /tests/test-Parser-parseFile
+/tests/test-ParserLua-parseBuffer
 /tests/test-Predicate-atom
 /tests/test-Predicate-new
 /tests/test-Switch-new

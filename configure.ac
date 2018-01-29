@@ -56,14 +56,12 @@ m4_define([cairo_required_version],      [1.10.2])
 m4_define([glib_required_version],       [2.32.4])
 m4_define([gstreamer_required_version],  [1.2.0])
 m4_define([gtk_required_version],        [3.4.2])
-m4_define([nclua_required_version],      [1.0])
 m4_define([pango_required_version],      [1.30.0])
 m4_define([xercesc_required_version],    [2.7])
 AC_SUBST([CAIRO_REQUIRED_VERSION],       cairo_required_version)
 AC_SUBST([GLIB_REQUIRED_VERSION],        glib_required_version)
 AC_SUBST([GSTREAMER_REQUIRED_VERSION],   gstreamer_required_version)
 AC_SUBST([GTK_REQUIRED_VERSION],         gtk_required_version)
-AC_SUBST([NCLUA_REQUIRED_VERSION],       nclua_required_version)
 AC_SUBST([PANGO_REQUIRED_VERSION],       pango_required_version)
 AC_SUBST([XERCESC_REQUIRED_VERSION],     xercesc_required_version)
 
@@ -71,10 +69,14 @@ AC_SUBST([XERCESC_REQUIRED_VERSION],     xercesc_required_version)
 m4_define([cef_required_version],        [3.0])
 m4_define([librsvg_required_version],    [2.40.0])
 m4_define([libxml_required_version],     [2.9])
+m4_define([lua_required_version],        [5.2])
+m4_define([nclua_required_version],      [1.0])
 m4_define([opengl_required_version],     [17.0])
 AC_SUBST([CEF_REQUIRED_VERSION],         cef_required_version)
 AC_SUBST([LIBRSVG_REQUIRED_VERSION],     librsvg_required_version)
 AC_SUBST([LIBXML_REQUIRED_VERSION],      libxml_required_version)
+AC_SUBST([LUA_REQUIRED_VERSION],         cef_required_version)
+AC_SUBST([NCLUA_REQUIRED_VERSION],       nclua_required_version)
 AC_SUBST([OPENGL_REQUIRED_VERSION],      opengl_required_version)
 
 # Compiler checks.
@@ -219,13 +221,28 @@ AS_IF([test -n "$with_cef"],
 AC_SUBST([cef_dir])
 AM_CONDITIONAL([WITH_CEF], [test "$with_cef" = yes])
 
-AU_CHECK_OPTIONAL_PKG([nclua], [build with NCLua support], [],
- [NCLUA],
- [nclua >= nclua_required_version])
-
 AU_CHECK_OPTIONAL_PKG([librsvg], [build with LibRsvg support], [],
  [LIBRSVG],
  [librsvg-2.0 >= librsvg_required_version])
+
+AU_CHECK_LUA([lua_required_version], [with_lua=yes], [with_lua=no])
+AS_IF([test "$au_lua_version" = 5.3],
+ [AC_DEFINE([LUA_COMPAT_APIINTCASTS], [1],
+  [Define to 1 to enable Lua macros for integer manipulation])])
+AS_IF([test "$with_lua" = yes],
+ [with_lua=yes
+  with_lua_result="yes"
+  LUA_LIBS="$LUA_LIBS -export-dynamic"
+  AC_SUBST([LUA_LIBS])
+  AC_DEFINE([WITH_LUA], [1], [Define to 1 if you have Lua.])],
+ [with_lua=no
+  with_lua_result="no	(requires: lua >= $au_lua_min_version_num)"
+  AC_DEFINE([WITH_LUA], [0], [Define to 1 if you have Lua.])])
+AM_CONDITIONAL([WITH_LUA], [test "$with_lua" = yes])
+
+AU_CHECK_OPTIONAL_PKG([nclua], [build with NCLua support], [],
+ [NCLUA],
+ [nclua >= nclua_required_version])
 
 AU_CHECK_OPTIONAL_PKG([opengl], [build with OpenGL support], [],
  [OPENGL],
@@ -241,6 +258,7 @@ AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $GSTREAMER_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $GTK_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $LIBRSVG_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $LIBXML_CFLAGS"])
+AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $LUA_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $NCLUA_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $OPENGL_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $PANGO_CFLAGS"])
@@ -254,6 +272,7 @@ AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $GSTREAMER_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $GTK_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $LIBRSVG_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $LIBXML_LIBS"])
+AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $LUA_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $NCLUA_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $OPENGL_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $PANGO_LIBS"])
@@ -290,9 +309,10 @@ AC_MSG_NOTICE([summary of main build options:
   warning flags:  ${WERROR_CFLAGS} ${WARN_CFLAGS}
   valgrind:       ${VALGRIND}
 
-  build html player:    ${with_cef_result}
-  build lua player:     ${with_nclua_result}
-  build svg player:     ${with_librsvg_result}
+  build html player:     ${with_cef_result}
+  build nclua player:    ${with_nclua_result}
+  build svg player:      ${with_librsvg_result}
 
-  build opengl support: ${with_opengl_result}
+  build opengl backend:  ${with_opengl_result}
+  build ncl-ltab parser: ${with_lua_result}
 ])

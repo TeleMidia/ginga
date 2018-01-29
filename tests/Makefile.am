@@ -269,6 +269,12 @@ test_Parser_parseFile_SOURCES= test-Parser-parseFile.cpp
 progs+= test-Parser-parseBuffer
 test_Parser_parseBuffer_SOURCES= test-Parser-parseBuffer.cpp
 
+# lib/ParserLua.h ----------------------------------------------------------
+if WITH_LUA
+progs+= test-ParserLua-parseBuffer
+test_ParserLua_parseBuffer_SOURCES= test-ParserLua-parseBuffer.cpp
+endif
+
 # lib/ginga.h (Ginga Library API) ------------------------------------------
 progs+= test-Ginga-version
 test_Ginga_version_SOURCES= test-Ginga-version.cpp
