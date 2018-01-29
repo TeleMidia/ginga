@@ -276,7 +276,7 @@ PlayerVideo::seek (gint64 value)
   if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
   {
     string m = gst_element_state_change_return_get_name (ret);
-    TRACE ("%s to change tate", m.c_str());
+    TRACE ("%s to change state", m.c_str());
   }
 }
 
