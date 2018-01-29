@@ -472,7 +472,7 @@ PlayerVideo::doSetProperty (PlayerProperty code,
 
         if (_state != SLEEPING)
         {
-          if (value=="")
+          if (value=="indefinite" || value =="")
             break;
 
           TRACE ("Property value: %s",value.c_str());

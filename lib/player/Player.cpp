@@ -69,7 +69,7 @@ static map<string, PlayerPropertyInfo> player_property_map = {
   { "right", { Player::PROP_RIGHT, false, "0%" } },
   { "size", { Player::PROP_SIZE, false, "100%,100%" } },
   { "speed", { Player::PROP_SPEED, false, "1" } },
-  { "time", { Player::PROP_TIME, false, "" } },
+  { "time", { Player::PROP_TIME, false, "indefinite" } },
   { "top", { Player::PROP_TOP, true, "0" } },
   { "transparency", { Player::PROP_TRANSPARENCY, true, "0%" } },
   { "treble", { Player::PROP_TREBLE, false, "0" } },
