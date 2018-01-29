@@ -22,9 +22,9 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-class Composition: public Object
+class Composition : public Object
 {
- public:
+public:
   Composition (const string &);
   virtual ~Composition () = 0;
 
@@ -32,9 +32,12 @@ class Composition: public Object
   Object *getChildById (const string &);
   Object *getChildByIdOrAlias (const string &);
   void addChild (Object *);
+  void increaseOccurringChildren ();
+  void decreaseOccurringChildren ();
 
- protected:
+protected:
   set<Object *> _children;
+  int _occurringChildren;
 };
 
 GINGA_NAMESPACE_END

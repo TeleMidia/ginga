@@ -277,9 +277,12 @@ main (void)
     // STOP is done and return true
     g_assert (ctx_lambda->transition (Event::STOP));
 
-    // after STOP time,lambda@ctx and its anchors
+    // if advance time, the whole body will end,
+    // because the ctx is not OCCURRING
+    // fmt->sendTick (0, 0, 0);
+
+    // after STOP, lambda@ctx and its anchors
     // are OCCURRING, and its properties are SLEEPING
-    fmt->sendTick (0, 0, 0);
     g_assert (ctx_lambda->getState () == Event::SLEEPING);
     g_assert (ctx_port1->getState () == Event::SLEEPING);
     g_assert (ctx_port2->getState () == Event::SLEEPING);

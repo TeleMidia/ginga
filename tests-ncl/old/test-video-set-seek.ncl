@@ -172,9 +172,9 @@
     
     <media id='video' src='../samples/bunny.ogg' descriptor='desc' > <!-- Video com audio -->
       <property name='time' />
-      <property name="soundLevel" value="1"/>
-      <area id='videoArea1' begin='9s'/>
-      <area id='videoArea2' begin='18s'/>
+      <property name="soundLevel" value="0"/>
+      <!-- <area id='videoArea1' begin='9s'/>
+      <area id='videoArea2' begin='18s'/> -->
     </media>
 
     <media id='video2' src='../samples/animGar.mp4' descriptor='desc3' > <!-- Video sem audio -->
@@ -185,7 +185,7 @@
        
     <link xconnector="onBeginStart">
       <bind role="onBegin" component="audio" />
-      <bind role="start" component="video" interface="videoArea1"/> <!-- Video com audio -->
+      <bind role="start" component="video" /> <!-- Video com audio -->
       <bind role="start" component="video2" /> <!-- Video sem audio -->
       <bind role="start" component="img" />
     </link>

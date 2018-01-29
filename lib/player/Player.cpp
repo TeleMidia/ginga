@@ -68,14 +68,14 @@ static map<string, PlayerPropertyInfo> player_property_map = {
   { "mute", { Player::PROP_MUTE, false, "false" } },
   { "right", { Player::PROP_RIGHT, false, "0%" } },
   { "size", { Player::PROP_SIZE, false, "100%,100%" } },
-  { "speed", { Player::PROP_SPEED, true, "1" } },
-  { "time", { Player::PROP_TIME, false, "0" } },
+  { "speed", { Player::PROP_SPEED, false, "1" } },
+  { "time", { Player::PROP_TIME, false, "" } },
   { "top", { Player::PROP_TOP, true, "0" } },
   { "transparency", { Player::PROP_TRANSPARENCY, true, "0%" } },
   { "treble", { Player::PROP_TREBLE, false, "0" } },
   { "vertAlign", { Player::PROP_VERT_ALIGN, true, "top" } },
   { "visible", { Player::PROP_VISIBLE, true, "true" } },
-  { "volume", { Player::PROP_VOLUME, true, "100%" } },
+  { "volume", { Player::PROP_VOLUME, false, "100%" } },
   { "width", { Player::PROP_WIDTH, true, "100%" } },
   { "zIndex", { Player::PROP_Z_INDEX, true, "0" } },
   { "freq", { Player::PROP_FREQ, true, "440" } },
@@ -378,6 +378,7 @@ Player::redraw (cairo_t *cr)
         }
     }
 
+  cairo_save (cr);
   // begin crop
   cairo_set_operator (cr, CAIRO_OPERATOR_CLEAR);
   cairo_set_source_rgba (cr, 1., 1., 1., 1.);
@@ -403,6 +404,7 @@ Player::redraw (cairo_t *cr)
   cairo_stroke_preserve (cr);
   cairo_fill (cr);
   cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
+  cairo_restore (cr);
   // end crop
 
   if (_prop.debug || _formatter->getOptionBool ("debug"))

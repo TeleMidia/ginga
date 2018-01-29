@@ -22,22 +22,25 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #if GTK_CHECK_VERSION(3, 8, 0)
 gboolean
 update_draw_callback (GtkWidget *widget, GdkFrameClock *frame_clock,
-                      unused (gpointer data) )
+                      unused (gpointer data))
 #else
 gboolean
 update_draw_callback (GtkWidget *widget)
 #endif
 {
+  if (GINGA->getState () == GINGA_STATE_STOPPED)
+    return G_SOURCE_CONTINUE;
+
   guint64 time;
-  static guint64 frame = (guint64)-1;
+  static guint64 frame = (guint64) -1;
   static guint64 last;
   static guint64 first;
 
 #if GTK_CHECK_VERSION(3, 8, 0)
   time = (guint64) (gdk_frame_clock_get_frame_time (frame_clock) * 1000);
-  frame = (guint64)gdk_frame_clock_get_frame_counter (frame_clock);
+  frame = (guint64) gdk_frame_clock_get_frame_counter (frame_clock);
 #else
-  time = ginga_gettime ();
+  time = (guint64) g_get_monotonic_time ();
   frame++;
 #endif
 
@@ -46,7 +49,14 @@ update_draw_callback (GtkWidget *widget)
       first = time;
       last = time;
     }
-  GINGA->sendTick (time - first, time - last, frame);
+
+  if (!GINGA->sendTick (time - first, time - last, frame))
+    {
+      g_assert (GINGA->getState () == GINGA_STATE_STOPPED);
+      // gtk_main_quit (); // all done
+      // return G_SOURCE_REMOVE;
+    }
+
   last = time;
   gtk_widget_queue_draw (widget);
   return G_SOURCE_CONTINUE;

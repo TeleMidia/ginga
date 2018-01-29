@@ -22,8 +22,9 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-Composition::Composition (const string &id): Object (id)
+Composition::Composition (const string &id) : Object (id)
 {
+  _occurringChildren = 0;
 }
 
 Composition::~Composition ()
@@ -39,7 +40,7 @@ Composition::getChildren ()
 Object *
 Composition::getChildById (const string &id)
 {
-  for (auto child: _children)
+  for (auto child : _children)
     if (child->getId () == id)
       return child;
   return nullptr;
@@ -51,10 +52,23 @@ Composition::getChildByIdOrAlias (const string &id)
   Object *child;
   if ((child = this->getChildById (id)) != nullptr)
     return child;
-  for (auto child: _children)
+  for (auto child : _children)
     if (child->hasAlias (id))
       return child;
   return nullptr;
+}
+
+void
+Composition::increaseOccurringChildren ()
+{
+  _occurringChildren++;
+}
+
+void
+Composition::decreaseOccurringChildren ()
+{
+  if (_occurringChildren > 0)
+    _occurringChildren--;
 }
 
 void
