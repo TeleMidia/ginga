@@ -33,7 +33,7 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DisableDirPage=yes
 DisableProgramGroupPage=yes
-OutputBaseFilename=programsetup
+OutputBaseFilename=gingasetup
 Compression=lzma
 SolidCompression=yes
 ; Tell Windows Explorer to reload the environment
@@ -52,6 +52,12 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 ; Ginga
 Source: "C:\msys64\mingw64\bin\ginga.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\msys64\mingw64\bin\gingagui.exe"; DestDir: "{app}"; Flags: ignoreversion 
+
+; Ginga-gui GTK icons & depends 
+Source: "C:\msys64\mingw64\share\icons\Adwaita\16x16\*"; DestDir: "{app}\share\icons\Adwaita\16x16"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\msys64\mingw64\share\icons\hicolor\16x16\*"; DestDir: "{app}\share\icons\hicolor\16x16"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\msys64\mingw64\share\icons\hicolor\index.theme"; DestDir: "{app}\share\icons\hicolor"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\msys64\mingw64\share\glib-2.0\schemas\*"; DestDir: "{app}\share\glib-2.0\schemas"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 ; Nclua deps
 Source: "C:\msys64\mingw64\lib\lua\*"; DestDir: "{app}\lib\lua"; Flags: ignoreversion recursesubdirs createallsubdirs
