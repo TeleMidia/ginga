@@ -3,7 +3,7 @@ Section: misc
 Priority: optional
 Maintainer: Rafael Diniz <rafaeldiniz@telemidia.puc-rio.br>
 Standards-Version: 3.9.5
-Build-Depends: debhelper (>= 9), pkg-config, dh-autoreconf, libltdl-dev, liblua5.2-dev, libglib2.0-dev, libxerces-c-dev, libpango1.0-dev, librsvg2-dev, libgstreamer1.0-dev, libgstreamer-plugins-base1.0-dev, libgstreamer-plugins-good1.0-dev, libgtk-3-dev
+Build-Depends: debhelper (>=9), pkg-config, dpkg-dev, dh-autoreconf, libltdl-dev, liblua5.2-dev, libglib2.0-dev, libxerces-c-dev, libpango1.0-dev, librsvg2-dev, libgstreamer1.0-dev, libgstreamer-plugins-base1.0-dev, libgstreamer-plugins-good1.0-dev, libgtk-3-dev, nclua (> 1.2)
 Homepage: http://www.gingancl.org.br/
 
 Package: ginga-itv

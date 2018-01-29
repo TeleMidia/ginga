@@ -1,8 +1,10 @@
 #!/usr/bin/make -f
+include /usr/share/dpkg/pkg-info.mk
 
 export LDFLAGS=-Wl,--no-as-needed
 
 override_dh_auto_configure:
+	echo "${DEB_VERSION_UPSTREAM}" > .tarball-version
 	./bootstrap
 	dh_auto_configure -- --disable-valgrind-tests
 

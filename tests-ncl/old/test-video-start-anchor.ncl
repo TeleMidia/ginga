@@ -20,7 +20,7 @@
     <port id='start' component='video1' interface="area1"/>
     <media id='video1' src='../samples/bunny.ogg' descriptor='desc' >
       <area id='area1' begin='16s' />
-      <property name="soundLevel" value="0"/>
+      <property name="soundLevel" value="1"/>
     </media>
     <!-- <media id='video2' src='../samples/animGar.mp4' descriptor='desc2'>      
       <area id='area2' begin='15s' /> 

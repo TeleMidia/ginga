@@ -152,6 +152,18 @@ Event::setInterval (Time begin, Time end)
   _end = end;
 }
 
+string
+Event::getLabel ()
+{
+  return _label;
+}
+
+void
+Event::setLabel (const string &label)
+{
+  _label = label;
+}
+
 bool
 Event::getParameter (const string &name, string *value)
 {

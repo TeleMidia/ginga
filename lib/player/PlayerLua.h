@@ -37,6 +37,7 @@ public:
   void resume () override;
   void redraw (cairo_t *) override;
   void sendKeyEvent (const string &, bool) override;
+  void sendPresentationEvent (const string &, const string &) override;
 
 protected:
   virtual bool doSetProperty (PlayerProperty, const string &,

@@ -25,10 +25,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-namespace Ui {
-  class RunView;
-}
-
 class RunView : public QWidget
 {
   Q_OBJECT
@@ -54,7 +50,6 @@ private:
   cairo_surface_t *_ginga_surface;
   cairo_t *_cr;
 
-  Ui::RunView *_ui;
   QImage _img;
   QTimer _timer;
   QElapsedTimer _elapsedTime;

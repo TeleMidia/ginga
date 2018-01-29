@@ -364,7 +364,7 @@ Player::redraw (cairo_t *cr)
     {
       if (_opengl)
         {
-          // TODO
+          // TODO.
         }
       else
         {
@@ -378,34 +378,42 @@ Player::redraw (cairo_t *cr)
         }
     }
 
-  cairo_save (cr);
-  // begin crop
-  cairo_set_operator (cr, CAIRO_OPERATOR_CLEAR);
-  cairo_set_source_rgba (cr, 1., 1., 1., 1.);
 
-  for (list<int>::iterator it = _cropPoly.begin (); it != _cropPoly.end ();
-       ++it)
-    {
-      bool fdot = false;
-      if (it == _cropPoly.begin ())
-        fdot = true;
+  if (_opengl)
+  {
+    // TODO.
+  }
+  else
+  {
+    // begin crop.
+    cairo_save (cr);
+    cairo_set_operator (cr, CAIRO_OPERATOR_CLEAR);
+    cairo_set_source_rgba (cr, 1., 1., 1., 1.);
 
-      int x = *it;
-      advance (it, 1);
-      int y = *it;
+    for (list<int>::iterator it = _cropPoly.begin (); it != _cropPoly.end ();
+         ++it)
+      {
+        bool fdot = false;
+        if (it == _cropPoly.begin ())
+          fdot = true;
 
-      if (fdot)
-        cairo_move_to (cr, x, y);
-      else
-        cairo_line_to (cr, x, y);
-    }
+        int x = *it;
+        advance (it, 1);
+        int y = *it;
 
-  cairo_close_path (cr);
-  cairo_stroke_preserve (cr);
-  cairo_fill (cr);
-  cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
-  cairo_restore (cr);
-  // end crop
+        if (fdot)
+          cairo_move_to (cr, x, y);
+        else
+          cairo_line_to (cr, x, y);
+      }
+
+    cairo_close_path (cr);
+    cairo_stroke_preserve (cr);
+    cairo_fill (cr);
+    cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
+    cairo_restore (cr);
+    // end crop.
+  }
 
   if (_prop.debug || _formatter->getOptionBool ("debug"))
     this->redrawDebuggingInfo (cr);

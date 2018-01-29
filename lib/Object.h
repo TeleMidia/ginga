@@ -52,7 +52,9 @@ public:
   Event *getAttributionEvent (const string &);
   void addAttributionEvent (const string &);
   Event *getPresentationEvent (const string &);
+  Event *getPresentationEventByLabel (const string &);
   void addPresentationEvent (const string &, Time, Time);
+  void addPresentationEvent (const string &, const string &);
   Event *getSelectionEvent (const string &);
   void addSelectionEvent (const string &);
 
