@@ -46,6 +46,23 @@ __ginga_strfunc (const string &strfunc)
 }
 
 
+// Numeric functions.
+
+/**
+ * @brief Tests whether floating-point numbers are equal up to a given
+ * threshold.
+ * @param x Floating-point number.
+ * @param y Floating-point number.
+ * @param epsilon Error threshold.
+ * @return True if successful, or false otherwise.
+ */
+bool
+floateq (double x, double y, double epsilon)
+{
+  return ABS (x - y) <= ABS (epsilon);
+}
+
+
 // Parsing and evaluation --------------------------------------------------
 
 /**
@@ -285,6 +302,7 @@ parse_pixel (const string &s)
   return (guint8) parse_percent (s, 255, 0, 255);
 }
 
+
 // Strings -----------------------------------------------------------------
 
 /**
@@ -550,7 +568,7 @@ xstrsplit (const string &s, char sep)
   return result;
 }
 
-
+
 // Paths -------------------------------------------------------------------
 
 /**

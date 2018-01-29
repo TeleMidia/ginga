@@ -133,6 +133,10 @@ typedef GstClockTime Time;
 #define GINGA_STIME_FORMAT         GST_STIME_FORMAT
 #define GINGA_STIME_ARGS(t)        GST_STIME_ARGS ((t))
 
+// Numeric functions.
+bool floateq (double, double, double epsilon=.0000001);
+#define doubleeq floateq
+
 // Parsing and evaluation functions.
 bool try_parse_bool (const string &, bool *);
 bool parse_bool (const string &);
