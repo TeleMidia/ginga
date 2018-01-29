@@ -29,6 +29,10 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Parser.h"
 #include "player/PlayerText.h"
 
+#if defined WITH_LUA && WITH_LUA
+# include "ParserLua.h"         // for ncl-tab support
+#endif
+
 GINGA_NAMESPACE_BEGIN
 
 // Option defaults.
@@ -122,8 +126,10 @@ Formatter::start (const string &file, string *errmsg)
     return false;               // nothing to do
 
   // Parse document.
+  g_assert_null (_doc);
   w = _opts.width;
   h = _opts.height;
+
   if (!_opts.experimental)
     {
       _docLegacy = ParserXercesC::parse (file, w, h, errmsg);
@@ -133,7 +139,17 @@ Formatter::start (const string &file, string *errmsg)
     }
   else
     {
-      _doc = Parser::parseFile (file, w, h, errmsg);
+      _doc = nullptr;
+#if defined WITH_LUA && WITH_LUA
+      if (xstrhassuffix (file, ".lua"))
+        {
+          _doc = ParserLua::parseFile (file, errmsg);
+          if (unlikely (_doc == nullptr))
+            return false;
+        }
+#endif
+      if (_doc == nullptr)
+        _doc = Parser::parseFile (file, w, h, errmsg);
       if (unlikely (_doc == nullptr))
         return false;
       _docLegacy = nullptr;

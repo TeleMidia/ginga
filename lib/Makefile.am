@@ -69,13 +69,17 @@ src+= player/PlayerSigGen.cpp
 src+= player/PlayerText.cpp
 src+= player/PlayerVideo.cpp
 
-if WITH_NCLUA
-src+= player/PlayerLua.cpp
-endif # WITH_NCLUA
-
 if WITH_LIBRSVG
 src+= player/PlayerSvg.cpp
 endif # WITH_LIBRSVG
+
+if WITH_LUA
+src+= ParserLua.cpp
+endif # WITH_LUA
+
+if WITH_NCLUA
+src+= player/PlayerLua.cpp
+endif # WITH_NCLUA
 
 if WITH_CEF
 src+= player/PlayerHTML.cpp
