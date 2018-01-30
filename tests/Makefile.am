@@ -244,6 +244,12 @@ test_Object_addEvent_SOURCES= test-Object-addEvent.cpp
 progs+= test-Media-new
 test_Media_new_SOURCES= test-Media-new.cpp
 
+progs+= test-Media-explicitDur
+test_Media_explicitDur_SOURCES= test-Media-explicitDur.cpp
+
+progs+= test-Media-nested-explicitDur
+test_Media_nested_explicitDur_SOURCES= test-Media-nested-explicitDur.cpp
+
 # lib/MediaSettings.h ------------------------------------------------------
 progs+= test-MediaSettings-new
 test_MediaSettings_new_SOURCES= test-MediaSettings-new.cpp
