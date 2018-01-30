@@ -33,3 +33,6 @@ for app in $APPS; do
   wget --show-progress -q -r -N -np -nH --cut-dirs 3\
        -R "index.html*" "$URI/$app/"
 done
+
+git clone https://github.com/robertogerson/nclua-tutorial.git
+
