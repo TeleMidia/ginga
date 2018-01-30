@@ -24,6 +24,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 GINGA_NAMESPACE_BEGIN
 
 class Formatter;
+class Media;
 class Player
 {
 public:
@@ -75,7 +76,7 @@ public:
      PROP_WAVE,
     };
 
-  Player (Formatter *, const string &, const string &);
+  Player (Formatter *, Media *, const string &);
   virtual ~Player ();
 
   PlayerState getState ();
@@ -116,17 +117,17 @@ public:
   static string getCurrentFocus ();
   static void setCurrentFocus (const string &);
   static PlayerProperty getPlayerProperty (const string &, string *);
-  static Player *createPlayer (Formatter *, const string &,
+  static Player *createPlayer (Formatter *, Media *,
                                const string &, const string &);
 protected:
   Formatter *_formatter;        // formatter handle
-  bool _opengl;                 // true if OpenGL is used
-  string _id;                   // associated object id
+  Media *_media;                // associated media object
   string _uri;                  // source uri
   PlayerState _state;           // current state
   Time _time;                   // playback time
   bool _eos;                    // true if content was exhausted
   cairo_surface_t *_surface;    // player surface
+  bool _opengl;                 // true if OpenGL is used
   guint _gltexture;             // OpenGL texture (if OpenGL is used)
   bool _dirty;                  // true if surface should be reloaded
   PlayerAnimator *_animator;    // associated animator

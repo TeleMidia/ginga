@@ -315,6 +315,8 @@ Formatter::stop ()
     return false;               // nothing to do
 
   delete _doc;
+  _doc = nullptr;
+
   _state = GINGA_STATE_STOPPED;
   return true;
 }
@@ -332,7 +334,9 @@ Formatter::resize (int width, int height)
   for (auto obj: *_doc->getObjects ())
     {
       string top;
+      string bottom;
       string left;
+      string right;
       string width;
       string height;
 
@@ -340,18 +344,25 @@ Formatter::resize (int width, int height)
         continue;
 
       top = obj->getProperty ("top");
+      if (top != "")
+        obj->setProperty ("top", top);
+
+      bottom = obj->getProperty ("bottom");
+      if (bottom != "")
+        obj->setProperty ("bottom", bottom);
+
       left = obj->getProperty ("left");
+      if (left != "")
+        obj->setProperty ("left", left);
+
+      right = obj->getProperty ("right");
+      if (right != "")
+        obj->setProperty ("right", right);
+
       width = obj->getProperty ("width");
-      height = obj->getProperty ("height");
-
-      // TRACE ("%s", obj->toString ().c_str ());
-
-      // TRACE ("resize %s %s,%s,%s,%s", obj->getId ().c_str (),
-      //        top.c_str (), left.c_str (), width.c_str (), height.c_str ());
-
-      obj->setProperty ("top", top);
-      obj->setProperty ("left", left);
       obj->setProperty ("width", width);
+
+      height = obj->getProperty ("height");
       obj->setProperty ("height", height);
     }
 }
