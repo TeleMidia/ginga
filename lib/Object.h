@@ -66,7 +66,7 @@ public:
   virtual string getProperty (const string &);
   virtual void setProperty (const string &, const string &, Time dur=0);
 
-  list<pair<Action, Time>> *getDelayedActions ();
+  const list<pair<Action, Time>> *getDelayedActions ();
   void addDelayedAction (Event *, Event::Transition,
                          const string &value="", Time delay=0);
 

@@ -52,7 +52,7 @@ PlayerAnimator::schedule (const string &name, const string &from,
   TRACE ("%s from '%s' to '%s' in %" GINGA_TIME_FORMAT, name.c_str (),
          from.c_str (), to.c_str (), GINGA_TIME_ARGS (dur));
 
-  list<string> list_pre = { "", "", "", "" };
+  list<string> list_pre = {"", "", "", ""};
   list<string> list_pos;
 
   if (name == "bounds")
@@ -89,25 +89,25 @@ PlayerAnimator::schedule (const string &name, const string &from,
     }
   else if (name == "background")
     {
-      Color _pos;
-      if (from != "")
-        {
-          Color _pre = ginga::parse_color (from);
-          list_pre
-              = { xstrbuild ("%d", (int) CLAMP (_pre.red * 255, 0, 255)),
-                  xstrbuild ("%d", (int) CLAMP (_pre.green * 255, 0, 255)),
-                  xstrbuild ("%d", (int) CLAMP (_pre.blue * 255, 0, 255)) };
-        }
-      _pos = ginga::parse_color (to);
-      list_pos
-          = { xstrbuild ("%d", (int) CLAMP (_pos.red * 255, 0, 255)),
-              xstrbuild ("%d", (int) CLAMP (_pos.green * 255, 0, 255)),
-              xstrbuild ("%d", (int) CLAMP (_pos.blue * 255, 0, 255)) };
-      auto pre = list_pre.begin ();
-      auto pos = list_pos.end ();
-      this->doSchedule ("background:r", *pre++, *pos++, dur);
-      this->doSchedule ("background:g", *pre++, *pos++, dur);
-      this->doSchedule ("background:b", *pre++, *pos++, dur);
+      Color pre = {0, 0, 0, 255};
+      Color pos;
+
+      string pre_r, pre_g, pre_b;
+      string pos_r, pos_g, pos_b;
+
+      pre = ginga::parse_color (from);
+      pre_r = xstrbuild ("%d", (int) CLAMP (pre.red * 255, 0, 255));
+      pre_g = xstrbuild ("%d", (int) CLAMP (pre.green * 255, 0, 255));
+      pre_b = xstrbuild ("%d", (int) CLAMP (pre.blue * 255, 0, 255));
+
+      pos = ginga::parse_color (to);
+      pos_r = xstrbuild ("%d", (int) CLAMP (pos.red * 255, 0, 255));
+      pos_g = xstrbuild ("%d", (int) CLAMP (pos.green * 255, 0, 255));
+      pos_b = xstrbuild ("%d", (int) CLAMP (pos.blue * 255, 0, 255));
+
+      this->doSchedule ("background:r", pre_r, pos_r, dur);
+      this->doSchedule ("background:g", pre_g, pos_g, dur);
+      this->doSchedule ("background:b", pre_b, pos_b, dur);
     }
   else
     {
@@ -257,7 +257,6 @@ void
 PlayerAnimator::setTransitionProperties (const string &name,
                                          const string &value)
 {
-
   // WARNING ("property '%s': value '%s'", name.c_str (), value.c_str ());
   map<string, string> tab;
   tab = ginga::parse_table (value);
@@ -434,6 +433,9 @@ PlayerAnimator::doSchedule (const string &name, const string &from,
   current = 0;
   width = _formatter->getOptionInt ("width");
   height = _formatter->getOptionInt ("height");
+
+  TRACE ("---> from %s", from.c_str ());
+  TRACE ("---> to %s", to.c_str ());
 
   if (name == "top" || name == "height")
     {

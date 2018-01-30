@@ -17,7 +17,9 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 #include "aux-gl.h"
+
 #include "PlayerLua.h"
+#include "Media.h"
 
 GINGA_NAMESPACE_BEGIN
 
@@ -47,9 +49,9 @@ static map<string, Event::Transition> nclua_act_to_ncl =
 
 // Public.
 
-PlayerLua::PlayerLua (Formatter *formatter, const string &id,
+PlayerLua::PlayerLua (Formatter *formatter, Media *media,
                       const string &uri)
-  :Player (formatter, id, uri)
+  :Player (formatter, media, uri)
 {
   _nw = NULL;
   _init_rect = {0, 0, 0, 0};
@@ -170,40 +172,40 @@ PlayerLua::redraw (cairo_t *cr)
 
   // Get events posted from NCLua.
   while ((evt = ncluaw_receive (_nw)) != nullptr)
-  {
-    if (evt->cls == NCLUAW_EVENT_NCL)
     {
-      Object *obj = _formatter->getDocument()->getObjectById (_id);
-      g_assert_nonnull (obj);
+      if (evt->cls != NCLUAW_EVENT_NCL)
+        {
+          ncluaw_event_free (evt);
+          continue;               // nothing to do
+        }
 
       if (g_str_equal (evt->u.ncl.type, "presentation"))
-      {
-        Event *nclEvt;
-        std::string label = evt->u.ncl.name;
+        {
+          Event *nclEvt;
+          std::string label = evt->u.ncl.name;
 
-        if (label == "")
-          nclEvt = obj->getPresentationEvent ("@lambda");
-        else
-          nclEvt = obj->getPresentationEventByLabel (label);
+          if (label == "")
+            nclEvt = _media->getPresentationEvent ("@lambda");
+          else
+            nclEvt = _media->getPresentationEventByLabel (label);
 
-        g_assert_nonnull (nclEvt);
-        g_assert (nclua_act_to_ncl.count (evt->u.ncl.action) != 0);
-        obj->addDelayedAction (nclEvt, nclua_act_to_ncl.at (evt->u.ncl.action));
-      }
+          g_assert_nonnull (nclEvt);
+          g_assert (nclua_act_to_ncl.count (evt->u.ncl.action) != 0);
+          _media->addDelayedAction
+            (nclEvt, nclua_act_to_ncl.at (evt->u.ncl.action));
+        }
       else if (g_str_equal (evt->u.ncl.type, "attribution"))
-      {
-        Event *nclEvt = obj->getAttributionEvent (evt->u.ncl.name);
-        g_assert_nonnull (nclEvt);
+        {
+          Event *nclEvt = _media->getAttributionEvent (evt->u.ncl.name);
+          g_assert_nonnull (nclEvt);
 
-        g_assert (nclua_act_to_ncl.count (evt->u.ncl.action));
-        obj->addDelayedAction (nclEvt,
-                               nclua_act_to_ncl.at (evt->u.ncl.action),
-                               evt->u.ncl.value);
-      }
+          g_assert (nclua_act_to_ncl.count (evt->u.ncl.action));
+          _media->addDelayedAction
+            (nclEvt, nclua_act_to_ncl.at (evt->u.ncl.action),
+             evt->u.ncl.value);
+        }
+      ncluaw_event_free (evt);
     }
-
-    ncluaw_event_free (evt);
-  }
 }
 
 

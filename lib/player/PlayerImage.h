@@ -25,7 +25,7 @@ GINGA_NAMESPACE_BEGIN
 class PlayerImage: public Player
 {
 public:
-  PlayerImage (Formatter *, const string &, const string &);
+  PlayerImage (Formatter *, Media *, const string &);
   ~PlayerImage ();
   void reload () override;
 };

@@ -43,9 +43,9 @@ GINGA_NAMESPACE_BEGIN
 
 // Public.
 
-PlayerVideo::PlayerVideo (Formatter *formatter, const string &id,
+PlayerVideo::PlayerVideo (Formatter *formatter, Media *media,
                           const string &uri)
-  :Player (formatter, id, uri)
+  :Player (formatter, media, uri)
 {
   GstBus *bus;
   gulong ret;
