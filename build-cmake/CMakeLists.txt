@@ -128,9 +128,11 @@ set (LIBGINGA_SOURCES
   ../lib/Formatter.cpp
   ../lib/Ginga.cpp
   ../lib/Media.cpp
+  ../lib/MediaRefer.cpp
   ../lib/MediaSettings.cpp
   ../lib/Object.cpp
   ../lib/Parser.cpp
+  ../lib/ParserLua.cpp
   ../lib/Predicate.cpp
   ../lib/Switch.cpp
 
@@ -163,6 +165,8 @@ set (LIBGINGA_SOURCES
 #WITH_LIBRSVG
 )
 
+message ("Lua includedirs: " ${LUA_INCLUDE_DIR})
+
 set (LIBGINGA_INCLUDE_DIRS
   ${CMAKE_CURRENT_SOURCE_DIR}/../lib
 
@@ -179,6 +183,7 @@ set (LIBGINGA_INCLUDE_DIRS
   ${GSTREAMER_INCLUDE_DIRS}
   ${GSTREAMER_BASE_INCLUDE_DIRS}
 
+  ${LUA_INCLUDE_DIR}
   ${NCLUA_INCLUDE_DIRS}
 )
 
@@ -201,8 +206,8 @@ set (LIBGINGA_LIBS
   ${GSTREAMER_APP_LIBRARIES}
   ${GSTREAMER_VIDEO_LIBRARIES}
 
-  ${NCLUA_LIBRARY}
   ${LUA_LIBRARIES}
+  ${NCLUA_LIBRARY}
 )
 
 if (WITH_OPENGL)
