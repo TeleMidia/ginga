@@ -17,7 +17,10 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 #include "aux-gl.h"
+
 #include "Player.h"
+#include "Media.h"
+
 #include "player/PlayerImage.h"
 #include "player/PlayerText.h"
 #include "player/PlayerVideo.h"
@@ -95,12 +98,14 @@ static map<string, string> player_property_aliases = {
 
 // Public.
 
-Player::Player (Formatter *formatter, const string &id, const string &uri)
+Player::Player (Formatter *formatter, Media *media, const string &uri)
 {
   g_assert_nonnull (formatter);
   _formatter = formatter;
-  _opengl = _formatter->getOptionBool ("opengl");
-  _id = id;
+
+  g_assert_nonnull (media);
+  _media = media;
+
   _uri = uri;
   _state = SLEEPING;
   _time = 0;
@@ -108,6 +113,7 @@ Player::Player (Formatter *formatter, const string &id, const string &uri)
   _dirty = true;
   _animator = new PlayerAnimator (_formatter, &_time);
   _surface = nullptr;
+  _opengl = _formatter->getOptionBool ("opengl");
   _gltexture = 0;
   this->resetProperties ();
 }
@@ -201,7 +207,6 @@ Player::stop ()
 {
   g_assert (_state != SLEEPING);
   _state = SLEEPING;
-  //_animator->scheduleTransition("stop");
   this->resetProperties ();
 }
 
@@ -478,49 +483,49 @@ Player::getPlayerProperty (const string &name, string *defval)
 }
 
 Player *
-Player::createPlayer (Formatter *fmt, const string &id,
+Player::createPlayer (Formatter *formatter, Media *media,
                       const string &uri, const string &mime)
 {
   Player *player = nullptr;
-  g_assert_nonnull (fmt);
+  g_assert_nonnull (formatter);
 
   if (xstrhasprefix (mime, "audio") || xstrhasprefix (mime, "video"))
     {
-      player = new PlayerVideo (fmt, id, uri);
+      player = new PlayerVideo (formatter, media, uri);
     }
   else if (mime == "application/x-ginga-siggen")
     {
-      player = new PlayerSigGen (fmt, id, uri);
+      player = new PlayerSigGen (formatter, media, uri);
     }
   else if (xstrhasprefix (mime, "image"))
     {
-      player = new PlayerImage (fmt, id, uri);
+      player = new PlayerImage (formatter, media, uri);
     }
   else if (mime == "text/plain")
     {
-      player = new PlayerText (fmt, id, uri);
+      player = new PlayerText (formatter, media, uri);
     }
 #if defined WITH_CEF && WITH_CEF
   else if (xstrhasprefix (mime, "text/html"))
     {
-      player = new PlayerHTML (fmt, id, uri);
+      player = new PlayerHTML (formatter, media, uri);
     }
 #endif // WITH_CEF
 #if WITH_LIBRSVG && WITH_LIBRSVG
   else if (xstrhasprefix (mime, "image/svg"))
     {
-      player = new PlayerSvg (fmt, id, uri);
+      player = new PlayerSvg (formatter, media, uri);
     }
 #endif // WITH_LIBRSVG
 #if defined WITH_NCLUA && WITH_NCLUA
   else if (mime == "application/x-ginga-NCLua")
     {
-      player = new PlayerLua (fmt, id, uri);
+      player = new PlayerLua (formatter, media, uri);
     }
 #endif // WITH_NCLUA
   else
     {
-      player = new Player (fmt, id, uri);
+      player = new Player (formatter, media, uri);
       if (unlikely (mime != "application/x-ginga-timer" && uri != ""))
         {
           WARNING ("unknown mime '%s': creating an empty player",
@@ -539,7 +544,10 @@ bool
 Player::doSetProperty (PlayerProperty code, unused (const string &name),
                        const string &value)
 {
-  TRACE ("%s=%s", name.c_str (), value.c_str ());
+  if (name == "top" || name == "left" || name == "bottom"
+      || name == "right" || name == "width" || name == "height")
+    TRACE ("%s %s:=%s", _media->getId ().c_str (), name.c_str (), value.c_str ());
+
   switch (code)
     {
     case PROP_DEBUG:
@@ -558,10 +566,10 @@ Player::doSetProperty (PlayerProperty code, unused (const string &name),
         if (unlikely (!ginga::try_parse_list (value, ',', 4, 4, &lst)))
           return false;
         auto it = lst.begin ();
-        this->setProperty ("left", *it++);
-        this->setProperty ("top", *it++);
-        this->setProperty ("width", *it++);
-        this->setProperty ("height", *it++);
+        _media->setProperty ("left", *it++);
+        _media->setProperty ("top", *it++);
+        _media->setProperty ("width", *it++);
+        _media->setProperty ("height", *it++);
         g_assert (it == lst.end ());
         break;
       }
@@ -571,8 +579,8 @@ Player::doSetProperty (PlayerProperty code, unused (const string &name),
         if (unlikely (!ginga::try_parse_list (value, ',', 2, 2, &lst)))
           return false;
         auto it = lst.begin ();
-        this->setProperty ("left", *it++);
-        this->setProperty ("top", *it++);
+        _media->setProperty ("left", *it++);
+        _media->setProperty ("top", *it++);
         g_assert (it == lst.end ());
         break;
       }
@@ -582,8 +590,8 @@ Player::doSetProperty (PlayerProperty code, unused (const string &name),
         if (unlikely (!ginga::try_parse_list (value, ',', 2, 2, &lst)))
           return false;
         auto it = lst.begin ();
-        this->setProperty ("width", *it++);
-        this->setProperty ("height", *it++);
+        _media->setProperty ("width", *it++);
+        _media->setProperty ("height", *it++);
         g_assert (it == lst.end ());
         break;
       }
@@ -680,7 +688,7 @@ Player::redrawDebuggingInfo (cairo_t *cr)
   string str;
   double sx, sy;
 
-  id = _id;
+  id = _media->getId ();
   if (id.find ("/") != std::string::npos)
     {
       id = xpathdirname (id);
@@ -694,9 +702,9 @@ Player::redrawDebuggingInfo (cairo_t *cr)
                    _prop.rect.width, _prop.rect.height, _prop.rect.x,
                    _prop.rect.y, _prop.z);
 
-  debug = PlayerText::renderSurface (
-      str, "monospace", "", "", "7", { 1., 0, 0, 1. }, { 0, 0, 0, .75 },
-      _prop.rect, "center", "middle", true, nullptr);
+  debug = PlayerText::renderSurface
+    (str, "monospace", "", "", "7", { 1., 0, 0, 1. }, { 0, 0, 0, .75 },
+     _prop.rect, "center", "middle", true, nullptr);
   g_assert_nonnull (debug);
 
   sx = (double) _prop.rect.width / cairo_image_surface_get_width (debug);

@@ -25,14 +25,13 @@ GINGA_NAMESPACE_BEGIN
 class PlayerVideo: public Player
 {
 public:
-  PlayerVideo (Formatter *, const string &, const string &);
+  PlayerVideo (Formatter *, Media *, const string &);
   ~PlayerVideo ();
   void start () override;
   void stop () override;
   void pause () override;
-  void resume () override;  
+  void resume () override;
   void redraw (cairo_t *) override;
-  
 
 protected:
   bool doSetProperty (PlayerProperty, const string &,
