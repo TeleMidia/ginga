@@ -269,86 +269,63 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
             if (evt->getState () == Event::SLEEPING)
             {
               if (evt->isLambda ())
-              {
-                if (_player==nullptr)
-                {                 
-                  Formatter *fmt;
+              {//Lambda
+                Formatter *fmt;
 
-                  g_assert (_doc->getData ("formatter", (void **) &fmt));
-                  g_assert_null (_player);
-                  _player = Player::createPlayer (fmt, this, _uri, _mime);
-                  if (unlikely (_player == nullptr))
-                    return false; // fail
+                g_assert (_doc->getData ("formatter", (void **) &fmt));
+                g_assert_null (_player);
+                _player = Player::createPlayer (fmt, this, _uri, _mime);
+                if (unlikely (_player == nullptr))
+                  return false; // fail
 
-                  for (auto it: _properties)
-                    _player->setProperty (it.first, it.second);
+                for (auto it: _properties)
+                  _player->setProperty (it.first, it.second);
 
-                  g_assert_nonnull (_player);
-        
-                  // Start underlying player.
-                  // TODO: Check player failure.
-                  _player->start (); //Just lambda events reaches this!
-                }
+                g_assert_nonnull (_player);
+                // Start underlying player.
+                // TODO: Check player failure.
+                _player->start (); //Just lambda events reaches this!
               }            
               else
-              {
-                //break;
+              {//Anchor
                 Event *lambda = getPresentationEvent ("@lambda");
-                
-                Time begin, end,duration; 
-                //g_assert (this->isOccurring ());
+                if (lambda->getState () != Event::SLEEPING)
+                  break;
+
+                lambda->transition (Event::START);
+
+                Time begin, end, dur;
                 evt->getInterval (&begin, &end);
-                duration = end - begin;
+
+                //Begin
+                if (begin == GINGA_TIME_NONE)
+                  begin = 0;
+
+                string time_seek = xstrbuild ("%"G_GUINT64_FORMAT, begin/GINGA_SECOND);
+                TRACE ("time_seek %ss", time_seek.c_str());
+                _player->setProperty ("time", time_seek);
+
+                //End
+                if (end != GINGA_TIME_NONE )
+                {
+                  dur = end - begin;
+                  string time_end = xstrbuild ("%"G_GUINT64_FORMAT, dur/GINGA_SECOND);
+                  TRACE ("time_end in %ss", time_end.c_str());
+                  _player->setProperty ("duration", time_end);
+                  this->addDelayedAction (evt, Event::STOP, "", dur);
+                }
+
                 TRACE ("start %s (begin=%" GINGA_TIME_FORMAT
                        " and end=%" GINGA_TIME_FORMAT
                        ") at %" GINGA_TIME_FORMAT,
                        evt->getFullId ().c_str (),
                        GINGA_TIME_ARGS (begin), GINGA_TIME_ARGS (end),
                        GINGA_TIME_ARGS (_time));
-                  
-                string time_seek = xstrbuild ("%" G_GUINT64_FORMAT, begin/GINGA_SECOND);
-                string time_end = xstrbuild ("%" G_GUINT64_FORMAT, duration/GINGA_SECOND); 
-                TRACE ("time_seek %ss", time_seek.c_str());
-                TRACE ("time_end %ss", time_end.c_str());
 
-                if (lambda->getState () == Event::SLEEPING )
-                {
-                  if (_player==nullptr)
-                  {                
-                    Formatter *fmt;
-  
-                    g_assert (_doc->getData ("formatter", (void **) &fmt));
-                    g_assert_null (_player);
-                    _player = Player::createPlayer (fmt, this, _uri, _mime);
-                    if (unlikely (_player == nullptr))
-                      return false; // fail
-  
-                    for (auto it: _properties)
-                      _player->setProperty (it.first, it.second);
-  
-                    g_assert_nonnull (_player);
-  
-                    TRACE ("time_seek %ss", time_seek.c_str());
-                    _player->setProperty ("time", time_seek);
-                    _player->setProperty ("duration", time_end);
-                    // Start underlying player.
-                    // TODO: Check player failure.
-                    _player->start (); //Just lambda events reaches this!
-                  }
-                
-                  _doc->evalAction (lambda, Event::START);
-                  break;
-                }
-                else if (lambda->getState () == Event::OCCURRING ||
-                          lambda->getState () == Event::PAUSED)
-                {
-                  _player->setProperty ("time", time_seek);
-                  _player->setProperty ("duration", time_end);
-                  break;  
-                }
+                //TODO
+                //remove anchors.
               }
             }
-            
             break;
           }
 

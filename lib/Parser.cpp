@@ -21,7 +21,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Context.h"
 #include "Document.h"
 #include "Media.h"
-#include "MediaRefer.h"
 #include "MediaSettings.h"
 #include "Switch.h"
 
@@ -2275,7 +2274,8 @@ borderColor='%s'}",
           if (!media_elt->getAttribute ("descriptor", &desc_id))
             continue;           // nothing to do
 
-          if (!st->eltCacheIndexById (desc_id, &desc_elt, {"descriptor"}))
+          if (unlikely (!st->eltCacheIndexById
+                        (desc_id, &desc_elt, {"descriptor"})))
             {
               return st->errEltBadAttribute (media_elt->getNode (),
                                              "descriptor", desc_id,
@@ -3592,27 +3592,16 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
   else
     {
       Composition *parent;
+      string src;
 
-      if (elt->getAttribute ("refer", &refer))
+      elt->getAttribute ("src", &src);
+      if (!xpathisuri (src) && !xpathisabs (src))
         {
-          media = new MediaRefer (id);
-          media->setData ("refer", g_strdup (refer.c_str ()), g_free);
-        }
-      else
-        {
-          string src;
-
-          elt->getAttribute ("src", &src);
-          if (!xpathisuri (src) && !xpathisabs (src))
-            {
-              string dir = st->getDirname();
-              src = xpathbuildabs (dir, src);
-            }
-
-          media = new Media (id, type, src);
+          string dir = st->getDirname();
+          src = xpathbuildabs (dir, src);
         }
 
-      g_assert_nonnull (media);
+      media = new Media (id, type, src);
       parent = cast (Composition *, st->objStackPeek ());
       g_assert_nonnull (parent);
       parent->addChild (media);
