@@ -92,6 +92,7 @@ static map<string, string> player_property_aliases = {
   { "trebleLevel", "treble" },
 };
 
+
 // Public.
 
 Player::Player (Formatter *formatter, const string &id, const string &uri)
@@ -192,7 +193,7 @@ Player::start ()
   _eos = false;
   this->reload ();
   _animator->scheduleTransition ("start", &_prop.rect, &_prop.bgColor,
-                                 &_prop.alpha, &_cropPoly);
+                                 &_prop.alpha, &_crop);
 }
 
 void
@@ -300,10 +301,12 @@ void
 Player::redraw (cairo_t *cr)
 {
   g_assert (_state != SLEEPING);
-  _animator->update (&_prop.rect, &_prop.bgColor, &_prop.alpha, &_cropPoly);
+  _animator->update (&_prop.rect, &_prop.bgColor, &_prop.alpha, &_crop);
 
   if (!_prop.visible || !(_prop.rect.width > 0 && _prop.rect.height > 0))
-    return; // nothing to do
+    {
+      return;                   // nothing to do
+    }
 
   if (_dirty)
     {
@@ -314,19 +317,25 @@ Player::redraw (cairo_t *cr)
     {
       if (_opengl)
         {
-          GL::draw_quad (
-              _prop.rect.x, _prop.rect.y, _prop.rect.width,
-              _prop.rect.height,
-              // Color
-              (GLfloat) _prop.bgColor.red, (GLfloat) _prop.bgColor.green,
-              (GLfloat) _prop.bgColor.blue, (GLfloat) (_prop.alpha / 255.));
+          GL::draw_quad
+            (_prop.rect.x, _prop.rect.y,
+             _prop.rect.width, _prop.rect.height,
+             (GLfloat) _prop.bgColor.red, (GLfloat) _prop.bgColor.green,
+             (GLfloat) _prop.bgColor.blue, (GLfloat) (_prop.alpha / 255.));
         }
       else
         {
           cairo_save (cr);
-          cairo_set_source_rgba (cr, _prop.bgColor.red, _prop.bgColor.green,
-                                 _prop.bgColor.blue, _prop.alpha / 255.);
-          cairo_rectangle (cr, _prop.rect.x, _prop.rect.y, _prop.rect.width,
+          cairo_set_source_rgba (cr,
+                                 _prop.bgColor.red,
+                                 _prop.bgColor.green,
+                                 _prop.bgColor.blue,
+                                 _prop.alpha / 255.);
+
+          cairo_rectangle (cr,
+                           _prop.rect.x,
+                           _prop.rect.y,
+                           _prop.rect.width,
                            _prop.rect.height);
           cairo_fill (cr);
           cairo_restore (cr);
@@ -337,8 +346,11 @@ Player::redraw (cairo_t *cr)
     {
       if (_gltexture)
         {
-          GL::draw_quad (_prop.rect.x, _prop.rect.y, _prop.rect.width,
-                         _prop.rect.height, _gltexture,
+          GL::draw_quad (_prop.rect.x,
+                         _prop.rect.y,
+                         _prop.rect.width,
+                         _prop.rect.height,
+                         _gltexture,
                          (GLfloat) (_prop.alpha / 255.));
         }
     }
@@ -380,49 +392,49 @@ Player::redraw (cairo_t *cr)
 
 
   if (_opengl)
-  {
-    // TODO.
-  }
+    {
+      // TODO.
+    }
   else
-  {
-    // begin crop.
-    cairo_save (cr);
-    cairo_set_operator (cr, CAIRO_OPERATOR_CLEAR);
-    cairo_set_source_rgba (cr, 1., 1., 1., 1.);
+    {
+      cairo_save (cr);
+      cairo_set_operator (cr, CAIRO_OPERATOR_CLEAR);
+      cairo_set_source_rgba (cr, 1., 1., 1., 1.);
 
-    for (list<int>::iterator it = _cropPoly.begin (); it != _cropPoly.end ();
-         ++it)
-      {
-        bool fdot = false;
-        if (it == _cropPoly.begin ())
-          fdot = true;
+      for (auto it = _crop.begin (); it != _crop.end (); ++it)
+        {
+          bool fdot = false;
+          if (it == _crop.begin ())
+            fdot = true;
 
-        int x = *it;
-        advance (it, 1);
-        int y = *it;
+          int x = *it;
+          advance (it, 1);
+          int y = *it;
 
-        if (fdot)
-          cairo_move_to (cr, x, y);
-        else
-          cairo_line_to (cr, x, y);
-      }
+          if (fdot)
+            cairo_move_to (cr, x, y);
+          else
+            cairo_line_to (cr, x, y);
+        }
 
-    cairo_close_path (cr);
-    cairo_stroke_preserve (cr);
-    cairo_fill (cr);
-    cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
-    cairo_restore (cr);
-    // end crop.
-  }
+      cairo_close_path (cr);
+      cairo_stroke_preserve (cr);
+      cairo_fill (cr);
+      cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
+      cairo_restore (cr);
+    }
 
   if (_prop.debug || _formatter->getOptionBool ("debug"))
-    this->redrawDebuggingInfo (cr);
+    {
+      this->redrawDebuggingInfo (cr);
+    }
 }
 
 void Player::sendKeyEvent (unused (const string &key), unused (bool press))
 {
 }
 
+
 // Public: Static.
 
 // Current focus index value.
@@ -466,49 +478,49 @@ Player::getPlayerProperty (const string &name, string *defval)
 }
 
 Player *
-Player::createPlayer (Formatter *formatter, const string &id,
+Player::createPlayer (Formatter *fmt, const string &id,
                       const string &uri, const string &mime)
 {
   Player *player = nullptr;
-  g_assert_nonnull (formatter);
+  g_assert_nonnull (fmt);
 
   if (xstrhasprefix (mime, "audio") || xstrhasprefix (mime, "video"))
     {
-      player = new PlayerVideo (formatter, id, uri);
+      player = new PlayerVideo (fmt, id, uri);
     }
   else if (mime == "application/x-ginga-siggen")
     {
-      player = new PlayerSigGen (formatter, id, uri);
+      player = new PlayerSigGen (fmt, id, uri);
     }
   else if (xstrhasprefix (mime, "image"))
     {
-      player = new PlayerImage (formatter, id, uri);
+      player = new PlayerImage (fmt, id, uri);
     }
   else if (mime == "text/plain")
     {
-      player = new PlayerText (formatter, id, uri);
+      player = new PlayerText (fmt, id, uri);
     }
 #if defined WITH_CEF && WITH_CEF
   else if (xstrhasprefix (mime, "text/html"))
     {
-      player = new PlayerHTML (formatter, id, uri);
+      player = new PlayerHTML (fmt, id, uri);
     }
 #endif // WITH_CEF
-#if defined WITH_NCLUA && WITH_NCLUA
-  else if (mime == "application/x-ginga-NCLua")
-    {
-      player = new PlayerLua (formatter, id, uri);
-    }
-#endif // WITH_NCLUA
 #if WITH_LIBRSVG && WITH_LIBRSVG
   else if (xstrhasprefix (mime, "image/svg"))
     {
-      player = new PlayerSvg (formatter, id, uri);
+      player = new PlayerSvg (fmt, id, uri);
     }
 #endif // WITH_LIBRSVG
+#if defined WITH_NCLUA && WITH_NCLUA
+  else if (mime == "application/x-ginga-NCLua")
+    {
+      player = new PlayerLua (fmt, id, uri);
+    }
+#endif // WITH_NCLUA
   else
     {
-      player = new Player (formatter, id, uri);
+      player = new Player (fmt, id, uri);
       if (unlikely (mime != "application/x-ginga-timer" && uri != ""))
         {
           WARNING ("unknown mime '%s': creating an empty player",
@@ -520,20 +532,26 @@ Player::createPlayer (Formatter *formatter, const string &id,
   return player;
 }
 
+
 // Protected.
 
 bool
 Player::doSetProperty (PlayerProperty code, unused (const string &name),
                        const string &value)
 {
+  TRACE ("%s=%s", name.c_str (), value.c_str ());
   switch (code)
     {
     case PROP_DEBUG:
-      _prop.debug = ginga::parse_bool (value);
-      break;
+      {
+        _prop.debug = ginga::parse_bool (value);
+        break;
+      }
     case PROP_FOCUS_INDEX:
-      _prop.focusIndex = value;
-      break;
+      {
+        _prop.focusIndex = value;
+        break;
+      }
     case PROP_BOUNDS:
       {
         list<string> lst;
@@ -579,9 +597,8 @@ Player::doSetProperty (PlayerProperty code, unused (const string &name),
     case PROP_RIGHT:
       {
         int width = _formatter->getOptionInt ("width");
-        _prop.rect.x
-            = width - _prop.rect.width
-              - ginga::parse_percent (value, _prop.rect.width, 0, G_MAXINT);
+        _prop.rect.x = width - _prop.rect.width
+          - ginga::parse_percent (value, _prop.rect.width, 0, G_MAXINT);
         _dirty = true;
         break;
       }
@@ -596,8 +613,7 @@ Player::doSetProperty (PlayerProperty code, unused (const string &name),
       {
         int height = _formatter->getOptionInt ("height");
         _prop.rect.y = height - _prop.rect.height
-                       - ginga::parse_percent (value, _prop.rect.height, 0,
-                                               G_MAXINT);
+          - ginga::parse_percent (value, _prop.rect.height, 0, G_MAXINT);
         _dirty = true;
         break;
       }
@@ -617,21 +633,29 @@ Player::doSetProperty (PlayerProperty code, unused (const string &name),
         break;
       }
     case PROP_Z_INDEX:
-      this->setZ (xstrtoint (value, 10), _prop.zorder);
-      break;
+      {
+        this->setZ (xstrtoint (value, 10), _prop.zorder);
+        break;
+      }
     case PROP_TRANSPARENCY:
-      _prop.alpha
-          = (guint8) CLAMP (255 - ginga::parse_pixel (value), 0, 255);
-      break;
+      {
+        _prop.alpha = (guint8)
+          CLAMP (255 - ginga::parse_pixel (value), 0, 255);
+        break;
+      }
     case PROP_BACKGROUND:
-      if (value == "")
-        _prop.bgColor = { 0, 0, 0, 0 };
-      else
-        _prop.bgColor = ginga::parse_color (value);
-      break;
+      {
+        if (value == "")
+          _prop.bgColor = {0, 0, 0, 0};
+        else
+          _prop.bgColor = ginga::parse_color (value);
+        break;
+      }
     case PROP_VISIBLE:
-      _prop.visible = ginga::parse_bool (value);
-      break;
+      {
+        _prop.visible = ginga::parse_bool (value);
+        break;
+      }
     case PROP_DURATION:
       {
         if (value == "indefinite")

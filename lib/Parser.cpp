@@ -21,6 +21,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Context.h"
 #include "Document.h"
 #include "Media.h"
+#include "MediaRefer.h"
 #include "MediaSettings.h"
 #include "Switch.h"
 
@@ -718,7 +719,7 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
     {"src", 0},
     {"type", 0},
     {"descriptor", ATTR_OPT_IDREF},
-    {"refer", ATTR_OPT_IDREF},  // unused
+    {"refer", ATTR_OPT_IDREF},
     {"instance", 0}}},          // unused
  },
  {"area",
@@ -3578,6 +3579,7 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
   Media *media;
   string id;
   string type;
+  string refer;
 
   g_assert (elt->getAttribute ("id", &id));
   if (elt->getAttribute ("type", &type)
@@ -3590,21 +3592,26 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
   else
     {
       Composition *parent;
-      string src = "";
 
-      if (elt->getAttribute ("src", &src)
-          && !xpathisuri (src) && !xpathisabs (src))
+      if (elt->getAttribute ("refer", &refer))
         {
-            string dirName = st->getDirname();
-            string prefix = dirName.substr (0,6);
-            if(prefix == "file:/"){
-               src =  dirName.erase(0,6)+'/'+src;
-            }
-            else
-               src = xpathbuildabs (dirName, src);
-
+          media = new MediaRefer (id);
+          media->setData ("refer", g_strdup (refer.c_str ()), g_free);
         }
-      media = new Media (id, type, src);
+      else
+        {
+          string src;
+
+          elt->getAttribute ("src", &src);
+          if (!xpathisuri (src) && !xpathisabs (src))
+            {
+              string dir = st->getDirname();
+              src = xpathbuildabs (dir, src);
+            }
+
+          media = new Media (id, type, src);
+        }
+
       g_assert_nonnull (media);
       parent = cast (Composition *, st->objStackPeek ());
       g_assert_nonnull (parent);

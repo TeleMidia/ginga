@@ -124,14 +124,13 @@ protected:
   string _id;                   // associated object id
   string _uri;                  // source uri
   PlayerState _state;           // current state
-  Time _time;              // playback time
+  Time _time;                   // playback time
   bool _eos;                    // true if content was exhausted
   cairo_surface_t *_surface;    // player surface
   guint _gltexture;             // OpenGL texture (if OpenGL is used)
   bool _dirty;                  // true if surface should be reloaded
   PlayerAnimator *_animator;    // associated animator
-  Rect cropRect;
-  list<int> _cropPoly;  //polygon for cropping effect
+  list<int> _crop;              //polygon for cropping effect
 
   map<string, string> _properties; // property table
   struct
@@ -144,7 +143,7 @@ protected:
     guint8 alpha;               // alpha
     Color bgColor;              // background color
     bool visible;               // true if visible
-    Time duration;         // explicit duration
+    Time duration;              // explicit duration
   } _prop;
 
 protected:
