@@ -289,39 +289,41 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
               else
               {//Anchor
                 Event *lambda = getPresentationEvent ("@lambda");
-                g_assert (lambda->getState () == Event::SLEEPING);
-                lambda->transition (Event::START);
-
-                Time begin, end, dur;
-                evt->getInterval (&begin, &end);
-
-                //Begin
-                if (begin == GINGA_TIME_NONE)
-                  begin = 0;
-
-                string time_seek = xstrbuild ("%"G_GUINT64_FORMAT, begin/GINGA_SECOND);
-                TRACE ("time_seek %ss", time_seek.c_str());
-                _player->setProperty ("time", time_seek);
-
-                //End
-                if (end != GINGA_TIME_NONE )
+                if (lambda->getState () == Event::SLEEPING)
                 {
-                  dur = end - begin;
-                  string time_end = xstrbuild ("%"G_GUINT64_FORMAT, dur/GINGA_SECOND);
-                  TRACE ("time_end in %ss", time_end.c_str());
-                  _player->setProperty ("duration", time_end);
-                  this->addDelayedAction (evt, Event::STOP, "", dur);
+                  lambda->transition (Event::START);
+
+                  Time begin, end, dur;
+                  evt->getInterval (&begin, &end);
+
+                  //Begin
+                  if (begin == GINGA_TIME_NONE)
+                    begin = 0;
+
+                  string time_seek = xstrbuild ("%"G_GUINT64_FORMAT, begin/GINGA_SECOND);
+                  TRACE ("time_seek %ss", time_seek.c_str());
+                  _player->setProperty ("time", time_seek);
+
+                  //End
+                  if (end != GINGA_TIME_NONE )
+                  {
+                    dur = end - begin;
+                    string time_end = xstrbuild ("%"G_GUINT64_FORMAT, dur/GINGA_SECOND);
+                    TRACE ("time_end in %ss", time_end.c_str());
+                    _player->setProperty ("duration", time_end);
+                    this->addDelayedAction (evt, Event::STOP, "", dur);
+                  }
+
+                  TRACE ("start %s (begin=%" GINGA_TIME_FORMAT
+                         " and end=%" GINGA_TIME_FORMAT
+                         ") at %" GINGA_TIME_FORMAT,
+                         evt->getFullId ().c_str (),
+                         GINGA_TIME_ARGS (begin), GINGA_TIME_ARGS (end),
+                         GINGA_TIME_ARGS (_time));
+
+                  //TODO
+                  //remove anchors.
                 }
-
-                TRACE ("start %s (begin=%" GINGA_TIME_FORMAT
-                       " and end=%" GINGA_TIME_FORMAT
-                       ") at %" GINGA_TIME_FORMAT,
-                       evt->getFullId ().c_str (),
-                       GINGA_TIME_ARGS (begin), GINGA_TIME_ARGS (end),
-                       GINGA_TIME_ARGS (_time));
-
-                //TODO
-                //remove anchors.
                 break;
               }
             }
