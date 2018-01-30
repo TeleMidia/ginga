@@ -41,7 +41,6 @@ src+= Event.cpp
 src+= Formatter.cpp
 src+= Ginga.cpp
 src+= Media.cpp
-src+= MediaRefer.cpp
 src+= MediaSettings.cpp
 src+= Object.cpp
 src+= Parser.cpp

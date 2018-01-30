@@ -331,7 +331,7 @@ Formatter::resize (int width, int height)
   if (_state != GINGA_STATE_PLAYING)
     return;                     // nothing to do
 
-  for (auto obj: *_doc->getObjects ())
+  for (auto media: *_doc->getMedias ())
     {
       string top;
       string bottom;
@@ -340,30 +340,27 @@ Formatter::resize (int width, int height)
       string width;
       string height;
 
-      if (!instanceof (Media *, obj))
-        continue;
-
-      top = obj->getProperty ("top");
+      top = media->getProperty ("top");
       if (top != "")
-        obj->setProperty ("top", top);
+        media->setProperty ("top", top);
 
-      bottom = obj->getProperty ("bottom");
+      bottom = media->getProperty ("bottom");
       if (bottom != "")
-        obj->setProperty ("bottom", bottom);
+        media->setProperty ("bottom", bottom);
 
-      left = obj->getProperty ("left");
+      left = media->getProperty ("left");
       if (left != "")
-        obj->setProperty ("left", left);
+        media->setProperty ("left", left);
 
-      right = obj->getProperty ("right");
+      right = media->getProperty ("right");
       if (right != "")
-        obj->setProperty ("right", right);
+        media->setProperty ("right", right);
 
-      width = obj->getProperty ("width");
-      obj->setProperty ("width", width);
+      width = media->getProperty ("width");
+      media->setProperty ("width", width);
 
-      height = obj->getProperty ("height");
-      obj->setProperty ("height", height);
+      height = media->getProperty ("height");
+      media->setProperty ("height", height);
     }
 }
 
