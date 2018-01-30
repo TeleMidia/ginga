@@ -36,9 +36,8 @@ add_definitions (-DWITH_PANGO=1 -DWITH_GSTREAMER=1)
 find_package (Lua REQUIRED 5.2)
 
 option (WITH_CEF "Build with chromium embedded support." OFF)
-option (WITH_OPENGL "Build Ginga with opengl." OFF)
-option (WITH_RUNVIEW "Build nclcomposer's ginga plugin." OFF)
-option (WITH_OPENGL "Build nclcomposer's ginga plugin." ON)
+option (WITH_OPENGL "Build Ginga with opengl support." OFF)
+option (WITH_GINGAQT "Build nclcomposer's ginga plugin." OFF)
 
 if (WITH_OPENGL)
   find_package (SDL2)
@@ -128,7 +127,6 @@ set (LIBGINGA_SOURCES
   ../lib/Formatter.cpp
   ../lib/Ginga.cpp
   ../lib/Media.cpp
-  ../lib/MediaRefer.cpp
   ../lib/MediaSettings.cpp
   ../lib/Object.cpp
   ../lib/Parser.cpp
@@ -285,8 +283,8 @@ if (WITH_GINGAGUI_GTK)
   target_link_libraries (gingagui PRIVATE libginga ${GTK3_LIBRARIES})
 endif()
 
-# nclcomposer's run-view target
-if (WITH_RUNVIEW)
+# ginga-qt executable.
+if (WITH_GINGAQT)
   set (CMAKE_INCLUDE_CURRENTDIR ON)
   set (CMAKE_AUTOMOC ON)
   set (CMAKE_AUTORCC ON)
@@ -295,22 +293,20 @@ if (WITH_RUNVIEW)
   # Find the QtWidgets library
   find_package (Qt5 REQUIRED COMPONENTS Core Widgets)
 
-  add_executable (runview
-    ../src-runview/main.cpp
-    ../src-runview/runview.cpp
-    ../src-runview/runview.h
+  add_executable (ginga-qt
+    ../src/ginga-qt.cpp
   )
 
-  target_link_libraries (runview
+  target_link_libraries (ginga-qt
     Qt5::Core
     Qt5::Widgets
 
     libginga
   )
 
-  target_compile_definitions(runview PRIVATE -DQT_NO_KEYWORDS)
+  target_compile_definitions(ginga-qt PRIVATE -DQT_NO_KEYWORDS)
 
-  target_include_directories(runview PRIVATE
+  target_include_directories(ginga-qt PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_BINARY_DIR}
 
@@ -377,20 +373,20 @@ message ( "
 ---
 summary of main build options:
 
-version:		${VERSION}
-install prefix:		${CMAKE_INSTALL_PREFIX}
-CMAKE_SYSTEM_NAME:	${CMAKE_SYSTEM_NAME}
-CMAKE_BUILD_TYPE:	${CMAKE_BUILD_TYPE}
-CMAKE_C_COMPILER:	${CMAKE_CXX_COMPILER}
-CMAKE_CXX_FLAGS:	${CMAKE_CXX_FLAGS}
+version:            ${VERSION}
+install prefix:     ${CMAKE_INSTALL_PREFIX}
+CMAKE_SYSTEM_NAME:  ${CMAKE_SYSTEM_NAME}
+CMAKE_BUILD_TYPE:   ${CMAKE_BUILD_TYPE}
+CMAKE_C_COMPILER:   ${CMAKE_CXX_COMPILER}
+CMAKE_CXX_FLAGS:    ${CMAKE_CXX_FLAGS}
 
 Optional dependencies:
-with cef:		${WITH_CEF}
+with cef:           ${WITH_CEF}
 
 Optional executables:
-ginga-gui (gtk):	${WITH_GINGAGUI_GTK}
-ginga-runview:          ${WITH_RUNVIEW}
-ginga-gl:               ${WITH_OPENGL}
+ginga-gui (gtk):    ${WITH_GINGAGUI_GTK}
+ginga-qt:           ${WITH_GINGAQT}
+ginga-gl:           ${WITH_OPENGL}
 ")
 
 set (CPACK_PACKAGE_NAME ${PACKAGE})
