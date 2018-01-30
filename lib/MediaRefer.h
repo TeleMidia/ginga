@@ -15,38 +15,36 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef MEDIA_SETTINGS_H
-#define MEDIA_SETTINGS_H
+#ifndef MEDIA_REFER_H
+#define MEDIA_REFER_H
 
 #include "Media.h"
 
 GINGA_NAMESPACE_BEGIN
 
-class MediaSettings: public Media
+class MediaRefer: public Media
 {
 public:
-  MediaSettings (const string &);
-  ~MediaSettings ();
+  MediaRefer (const string &);
+  ~MediaRefer ();
 
   // Object:
   string getObjectTypeAsString () override;
-  void setProperty (const string &, const string &, Time) override;
+  // void setProperty (const string &, const string &, Time) override;
   void sendTick (Time, Time, Time) override;
 
   // Media;
-  bool isFocused () override;
-  bool getZ (int *, int *) override;
-  void redraw (cairo_t *) override;
+  // bool isFocused () override;
+  // bool getZ (int *, int *) override;
+  // void redraw (cairo_t *) override;
 
-  // MediaSettings:
-  void updateCurrentFocus (const string &);
-  void scheduleFocusUpdate (const string &);
+  // MediaRefer:
+  void initRefer (Media *);
 
  private:
-  string _nextFocus;            // next focus index
-  bool _hasNextFocus;           // true if a focus update is scheduled
+  Media *_refer;                // referred media
 };
 
 GINGA_NAMESPACE_END
 
-#endif // MEDIA_SETTINGS_H
+#endif // MEDIA_REFER_H

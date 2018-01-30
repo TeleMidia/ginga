@@ -306,8 +306,8 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
                        GINGA_TIME_ARGS (begin), GINGA_TIME_ARGS (end),
                        GINGA_TIME_ARGS (_time));
                   
-                string time_seek = xstrbuild ("%"G_GUINT64_FORMAT, begin/GINGA_SECOND);
-                string time_end = xstrbuild ("%"G_GUINT64_FORMAT, duration/GINGA_SECOND); 
+                string time_seek = xstrbuild ("%" G_GUINT64_FORMAT, begin/GINGA_SECOND);
+                string time_end = xstrbuild ("%" G_GUINT64_FORMAT, duration/GINGA_SECOND); 
                 TRACE ("time_seek %ss", time_seek.c_str());
                 TRACE ("time_end %ss", time_end.c_str());
 
