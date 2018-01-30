@@ -33,7 +33,7 @@ find_package (RSVG REQUIRED)
 find_package (GStreamer 1.0 REQUIRED)
 add_definitions (-DWITH_PANGO=1 -DWITH_GSTREAMER=1)
 
-find_package (Lua REQUIRED)
+find_package (Lua REQUIRED 5.2)
 
 option (WITH_CEF "Build with chromium embedded support." OFF)
 option (WITH_OPENGL "Build Ginga with opengl." OFF)
@@ -128,9 +128,11 @@ set (LIBGINGA_SOURCES
   ../lib/Formatter.cpp
   ../lib/Ginga.cpp
   ../lib/Media.cpp
+  ../lib/MediaRefer.cpp
   ../lib/MediaSettings.cpp
   ../lib/Object.cpp
   ../lib/Parser.cpp
+  ../lib/ParserLua.cpp
   ../lib/Predicate.cpp
   ../lib/Switch.cpp
 
@@ -180,6 +182,7 @@ set (LIBGINGA_INCLUDE_DIRS
   ${GSTREAMER_BASE_INCLUDE_DIRS}
 
   ${NCLUA_INCLUDE_DIRS}
+  ${LUA_INCLUDE_DIR}
 )
 
 set (LIBGINGA_LIBS

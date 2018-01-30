@@ -319,7 +319,7 @@ Object::setProperty (const string &name, const string &value, Time dur)
   _properties[name] = value;
 }
 
-list<pair<Action, Time>> *
+const list<pair<Action, Time>> *
 Object::getDelayedActions ()
 {
   return &_delayed;

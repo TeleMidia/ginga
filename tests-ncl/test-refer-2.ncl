@@ -1,6 +1,6 @@
 <ncl>
   <body>
-    <port id="start" component="m"/>
+    <port id="start" component="r"/>
     <media id="m" src="samples/gnu.png">
       <property name="background" value="red"/>
       <property name="bounds" value="25%,25%,50%,50%"/>
