@@ -38,7 +38,7 @@ public:
   bool getZ (int *, int *) override;
   void redraw (cairo_t *) override;
 
-  // FormatterSettings:
+  // MediaSettings:
   void updateCurrentFocus (const string &);
   void scheduleFocusUpdate (const string &);
 

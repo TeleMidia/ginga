@@ -315,6 +315,8 @@ Formatter::stop ()
     return false;               // nothing to do
 
   delete _doc;
+  _doc = nullptr;
+
   _state = GINGA_STATE_STOPPED;
   return true;
 }
@@ -329,14 +331,36 @@ Formatter::resize (int width, int height)
   if (_state != GINGA_STATE_PLAYING)
     return;                     // nothing to do
 
-  for (auto obj: *_doc->getObjects ())
+  for (auto media: *_doc->getMedias ())
     {
-      if (!instanceof (Media *, obj))
-        continue;
-      obj->setProperty ("top", obj->getProperty ("top"));
-      obj->setProperty ("left", obj->getProperty ("left"));
-      obj->setProperty ("width", obj->getProperty ("width"));
-      obj->setProperty ("height", obj->getProperty ("height"));
+      string top;
+      string bottom;
+      string left;
+      string right;
+      string width;
+      string height;
+
+      top = media->getProperty ("top");
+      if (top != "")
+        media->setProperty ("top", top);
+
+      bottom = media->getProperty ("bottom");
+      if (bottom != "")
+        media->setProperty ("bottom", bottom);
+
+      left = media->getProperty ("left");
+      if (left != "")
+        media->setProperty ("left", left);
+
+      right = media->getProperty ("right");
+      if (right != "")
+        media->setProperty ("right", right);
+
+      width = media->getProperty ("width");
+      media->setProperty ("width", width);
+
+      height = media->getProperty ("height");
+      media->setProperty ("height", height);
     }
 }
 
