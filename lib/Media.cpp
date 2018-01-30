@@ -274,7 +274,7 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
 
                 g_assert (_doc->getData ("formatter", (void **) &fmt));
                 g_assert_null (_player);
-                _player = Player::createPlayer (fmt, _id, _uri, _mime);
+                _player = Player::createPlayer (fmt, this, _uri, _mime);
                 if (unlikely (_player == nullptr))
                   return false; // fail
 
