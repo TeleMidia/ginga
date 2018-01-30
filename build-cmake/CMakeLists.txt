@@ -33,7 +33,7 @@ find_package (RSVG REQUIRED)
 find_package (GStreamer 1.0 REQUIRED)
 add_definitions (-DWITH_PANGO=1 -DWITH_GSTREAMER=1)
 
-find_package (Lua REQUIRED)
+find_package (Lua REQUIRED 5.2)
 
 option (WITH_CEF "Build with chromium embedded support." OFF)
 option (WITH_OPENGL "Build Ginga with opengl." OFF)
@@ -165,8 +165,6 @@ set (LIBGINGA_SOURCES
 #WITH_LIBRSVG
 )
 
-message ("Lua includedirs: " ${LUA_INCLUDE_DIR})
-
 set (LIBGINGA_INCLUDE_DIRS
   ${CMAKE_CURRENT_SOURCE_DIR}/../lib
 
@@ -183,8 +181,8 @@ set (LIBGINGA_INCLUDE_DIRS
   ${GSTREAMER_INCLUDE_DIRS}
   ${GSTREAMER_BASE_INCLUDE_DIRS}
 
-  ${LUA_INCLUDE_DIR}
   ${NCLUA_INCLUDE_DIRS}
+  ${LUA_INCLUDE_DIR}
 )
 
 set (LIBGINGA_LIBS
@@ -206,8 +204,8 @@ set (LIBGINGA_LIBS
   ${GSTREAMER_APP_LIBRARIES}
   ${GSTREAMER_VIDEO_LIBRARIES}
 
-  ${LUA_LIBRARIES}
   ${NCLUA_LIBRARY}
+  ${LUA_LIBRARIES}
 )
 
 if (WITH_OPENGL)
