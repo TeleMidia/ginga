@@ -49,6 +49,7 @@ GtkWidget *optBoxPopOver = NULL;
 GtkWidget *historicBoxPopOver = NULL;
 GtkWidget *mainBox = NULL;
 GtkWidget *visualDebugSwitch = NULL;
+GtkTextBuffer *textBufer = NULL;
 
 gboolean isDebugMode = FALSE;
 gboolean visualDebugEnabled = FALSE;
@@ -58,6 +59,17 @@ gboolean inPlayMode = FALSE;
 gboolean isCrtlModifierActive = FALSE;
 
 PresentationAttributes presentationAttributes;
+
+void
+g_log_default_handler (const gchar *log_domain, GLogLevelFlags log_level,
+                       const gchar *message, gpointer unused_data)
+{
+  
+  gtk_text_buffer_insert_at_cursor (GTK_TEXT_BUFFER (textBufer), message,
+                                    g_utf8_strlen (message, -1));
+  gtk_text_buffer_insert_at_cursor (GTK_TEXT_BUFFER (textBufer), "\n",
+                                    g_utf8_strlen ("\n", -1));
+}
 
 gboolean
 resize_callback (GtkWidget *widget, GdkEventConfigure *e, gpointer data)
@@ -137,9 +149,9 @@ apply_theme ()
         }
     }
 
-  GtkWidget *img_icon = gtk_image_new_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
-                    get_icon_folder (), "play-icon.png", NULL));
+  GtkWidget *img_icon = gtk_image_new_from_file (g_build_path (
+      G_DIR_SEPARATOR_S, GINGADATADIR, "icons", get_icon_folder (),
+      (inPlayMode ? "pause-icon.png" : "play-icon.png"), NULL));
   gtk_button_set_image (GTK_BUTTON (playButton), img_icon);
 
   img_icon = gtk_image_new_from_file (
@@ -526,8 +538,13 @@ create_window_components ()
   GtkWidget *header_bar = gtk_header_bar_new ();
   g_assert_nonnull (header_bar);
   gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header_bar), true);
+#if G_OS_WIN32
   gtk_header_bar_set_decoration_layout (GTK_HEADER_BAR (header_bar),
                                         "menu:minimize,maximize,close");
+#else
+  gtk_header_bar_set_decoration_layout (GTK_HEADER_BAR (header_bar),
+                                        "menu:maximize,close");
+#endif
   /* begin hist box */
   if (historicBox == NULL)
     {
@@ -785,11 +802,13 @@ create_window_components ()
 
   /* begin debug view   */
 
-  GtkWidget *textArea = gtk_text_view_new ();
-  g_assert_nonnull (textArea);
+  GtkWidget *debugTextArea = gtk_text_view_new ();
+  g_assert_nonnull (debugTextArea);
+  textBufer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (debugTextArea));
+  gtk_text_view_set_editable (GTK_TEXT_VIEW (debugTextArea), false);
   GtkWidget *scrolledWLog = gtk_scrolled_window_new (NULL, NULL);
   g_assert_nonnull (scrolledWLog);
-  gtk_container_add (GTK_CONTAINER (scrolledWLog), textArea);
+  gtk_container_add (GTK_CONTAINER (scrolledWLog), debugTextArea);
 
   debugView = gtk_notebook_new ();
   g_assert_nonnull (debugView);
@@ -929,12 +948,14 @@ create_main_window ()
   gtk_widget_hide (debugView);
   gtk_widget_hide (sideView);
   gtk_widget_hide (infoBar);
+
+  g_log_set_default_handler (g_log_default_handler, NULL);
 }
 
 void
 destroy_main_window (void)
 {
-  if (GINGA != NULL)
+  if (GINGA->getState () != GINGA_STATE_STOPPED)
     GINGA->stop ();
 
   gtk_widget_destroy (mainWindow);
