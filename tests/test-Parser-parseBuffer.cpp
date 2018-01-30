@@ -1911,6 +1911,30 @@ tmp = writetmp (0, xstrbuild ("\
 </ncl>\n\
 ");
 
+#if 0
+  XFAIL ("media: Bad refer",
+         "<media> at line 3: Bad value 'r' for attribute 'refer' "
+         "(no such media object)", "\
+<ncl>\n\
+ <body>\n\
+  <media id='a' refer='r'/>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("media: Bad refer",
+         "<media> at line 5: Bad value 'b' for attribute 'refer' "
+         "(cannot refer to a reference)", "\
+<ncl>\n\
+ <body>\n\
+  <media id='a'/>\n\
+  <media id='b' refer='a'/>\n\
+  <media id='c' refer='b'/>\n\
+ </body>\n\
+</ncl>\n\
+");
+#endif
+
 
 // -------------------------------------------------------------------------
 // <link>
@@ -2739,7 +2763,56 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
     TRACE ("%s", m3->toString ().c_str ());
     delete doc;
   }
-exit (0);
+
+#if 0
+
+  // Success: Media with refer.
+  {
+    Document *doc;
+    PASS (&doc, "Media with refer", "\
+<ncl>\n\
+ <body>\n\
+  <media id='m'>\n\
+   <property name='x' value='1'/>\n\
+  </media>\n\
+  <context id='c'>\n\
+    <media id='r1' refer='m'>\n\
+     <property name='x' value='2'/>\n\
+     <property name='y' value='a'/>\n\
+    </media>\n\
+    <media id='r2' refer='m'>\n\
+     <property name='y' value='b'/>\n\
+    </media>\n\
+  </context>\n\
+ </body>\n\
+</ncl>\n\
+");
+    g_assert_nonnull (doc);
+    g_assert (doc->getObjects ()->size () == 6);
+    g_assert (doc->getMedias ()->size () == 4);
+    g_assert (doc->getContexts ()->size () == 2);
+
+    Media *m = cast (Media *, doc->getObjectById ("m"));
+    g_assert_nonnull (m);
+
+    Media *r1 = cast (Media *, doc->getObjectById ("r1"));
+    g_assert_nonnull (r1);
+
+    Media *r2 = cast (Media *, doc->getObjectById ("r2"));
+    g_assert_nonnull (r2);
+
+    g_assert (m->getAttributionEvent ("x") != nullptr);
+    g_assert (m->getProperty ("x") == "2");
+    g_assert (m->getAttributionEvent ("y") != nullptr);
+    g_assert (m->getProperty ("y") == "b");
+
+    TRACE ("\n%s", m->toString ().c_str ());
+    TRACE ("\n%s", r1->toString ().c_str ());
+    TRACE ("\n%s", r2->toString ().c_str ());
+
+    delete doc;
+  }
+#endif
 
 
   // Success: Nested contexts and ports.
