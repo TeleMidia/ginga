@@ -22,9 +22,11 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 // Global formatter.
 Ginga *GINGA = nullptr;
 
+
 int
 main (int argc, char **argv)
 {
+  
   GingaOptions opts;
 
   opts.width = presentationAttributes.resolutionWidth;
@@ -32,14 +34,14 @@ main (int argc, char **argv)
   opts.debug = false;
   opts.opengl = false;
   opts.experimental = true;
-  
-  GINGA = Ginga::create (argc, argv, &opts);
-  g_assert_nonnull (GINGA);
 
   gtk_init (&argc, &argv);
 
-  setlocale (LC_ALL, "C");
+  GINGA = Ginga::create (argc, argv, &opts);
+  g_assert_nonnull (GINGA);
 
+  setlocale (LC_ALL, "C");
+  
   GError *err = NULL;
   gtk_window_set_default_icon_from_file (
       g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons", "common",
@@ -47,6 +49,7 @@ main (int argc, char **argv)
       &err);
 
   load_settings ();
+  g_assert (g_setenv ("G_MESSAGES_DEBUG", "all", true));
   create_main_window ();
   gtk_main ();
 

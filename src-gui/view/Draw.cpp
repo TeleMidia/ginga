@@ -29,7 +29,7 @@ update_draw_callback (GtkWidget *widget)
 #endif
 {
   if (GINGA->getState () == GINGA_STATE_STOPPED)
-    return G_SOURCE_CONTINUE;
+    goto queue_draw;
 
   guint64 time;
   static guint64 frame = (guint64) -1;
@@ -50,14 +50,10 @@ update_draw_callback (GtkWidget *widget)
       last = time;
     }
 
-  if (!GINGA->sendTick (time - first, time - last, frame))
-    {
-      g_assert (GINGA->getState () == GINGA_STATE_STOPPED);
-      // gtk_main_quit (); // all done
-      // return G_SOURCE_REMOVE;
-    }
+  GINGA->sendTick (time - first, time - last, frame);
 
   last = time;
+queue_draw:
   gtk_widget_queue_draw (widget);
   return G_SOURCE_CONTINUE;
 }
