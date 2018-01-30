@@ -544,10 +544,6 @@ bool
 Player::doSetProperty (PlayerProperty code, unused (const string &name),
                        const string &value)
 {
-  if (name == "top" || name == "left" || name == "bottom"
-      || name == "right" || name == "width" || name == "height")
-    TRACE ("%s %s:=%s", _media->getId ().c_str (), name.c_str (), value.c_str ());
-
   switch (code)
     {
     case PROP_DEBUG:
