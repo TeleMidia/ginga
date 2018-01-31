@@ -22,7 +22,7 @@
   <port id="startctx" component="ctx"/>
   <context id="ctx">
     <port id="start3" component="m3"/>
-    <port id="start4" component="m4"/>
+    <!-- <port id="start4" component="m4"/> -->
     <media id="m3" src='../samples/bunny.ogg' descriptor="desc3"/>
     <media id="m4" src='../samples/bunny.ogg' descriptor="desc4"/>
   </context>

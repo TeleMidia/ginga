@@ -140,6 +140,7 @@ PlayerVideo::PlayerVideo (Formatter *formatter, Media *media,
 
   _video.sink = gst_element_factory_make ("appsink", "video.sink");
   g_assert_nonnull (_video.sink);
+  g_object_set (_video.sink, "max-buffers", 100, "drop", true, nullptr);
 
   g_assert (gst_bin_add (GST_BIN (_video.bin), _video.caps));
   g_assert (gst_bin_add (GST_BIN (_video.bin), _video.sink));
@@ -305,6 +306,7 @@ PlayerVideo::speed (double value)
   }
   if (unlikely (!gst_element_send_event (_video.sink, seek_event)))
     TRACE ("speed failed");
+  gst_event_unref(seek_event);
 }
 
 void
@@ -569,7 +571,6 @@ PlayerVideo::stackAction (PlayerProperty code,
                             unused (const string &name),
                             const string &value)
 {
-  TRACE ("Stacked Property Name: %s; Value %s; Size: %d; URI: %s", name.c_str(), value.c_str(), (int) _stack_actions.size(), _uri.c_str());
   PlayerVideoAction act;
   act.code = code;
   act.name = name;
@@ -580,20 +581,14 @@ PlayerVideo::stackAction (PlayerProperty code,
 void
 PlayerVideo::doStackedActions()
 {
-  //TRACE ("============================================State: %s - %s", this->getPipelineState().c_str(), this->_uri.c_str());
-  //TRACE ("****************Size: %d; URI: %s", _stack_actions.size (), _uri.c_str());
   while (!_stack_actions.empty ())
   {
     PlayerVideoAction act;
-
     act = _stack_actions.front ();
     _stack_actions.pop_front ();
 
-    //TRACE ("****************Act - Name: %s; Value: %s", act.name.c_str (), act.value.c_str());
-
     this->doSetProperty (act.code, act.name, act.value);
   }
-  //TRACE ("****************Size: %d", _stack_actions.size ());
 }
 
 bool
@@ -609,8 +604,11 @@ PlayerVideo::getPipelineState ()
   GstState pending;
   GstStateChangeReturn ret;
   ret = gst_element_get_state (_playbin, &curr, &pending, 0);
+
   if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
+  {
     return "NULL";
+  }
   return gst_element_state_get_name (curr);
 }
 
@@ -654,6 +652,7 @@ PlayerVideo::cb_Bus (GstBus *bus, GstMessage *msg, PlayerVideo *player)
             WARNING ("%s", error->message);
           }
         g_error_free (error);
+        gst_object_unref (obj);     
         break;
       }
     case GST_MESSAGE_STATE_CHANGED:
@@ -668,6 +667,7 @@ PlayerVideo::cb_Bus (GstBus *bus, GstMessage *msg, PlayerVideo *player)
     default:
       break;
     }
+  //gst_object_unref (msg);
   return TRUE;
 }
 
