@@ -152,6 +152,12 @@ Event::setInterval (Time begin, Time end)
   _end = end;
 }
 
+bool
+Event::hasLabel ()
+{
+  return _label != "";
+}
+
 string
 Event::getLabel ()
 {

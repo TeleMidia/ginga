@@ -64,6 +64,7 @@ public:
   void getInterval (Time *, Time *);
   void setInterval (Time, Time);
 
+  bool hasLabel ();
   std::string getLabel ();
   void setLabel (const std::string &);
 

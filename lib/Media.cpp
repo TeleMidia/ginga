@@ -301,7 +301,8 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
                 if (begin == GINGA_TIME_NONE)
                   begin = 0;
 
-                string time_seek = xstrbuild ("%"G_GUINT64_FORMAT, begin/GINGA_SECOND);
+                string time_seek = xstrbuild ("%" G_GUINT64_FORMAT,
+                                              begin/GINGA_SECOND);
                 TRACE ("time_seek %ss", time_seek.c_str());
                 _player->setProperty ("time", time_seek);
 
@@ -309,7 +310,8 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
                 if (end != GINGA_TIME_NONE)
                 {
                   dur = end - begin;
-                  string time_end = xstrbuild ("%"G_GUINT64_FORMAT, dur/GINGA_SECOND);
+                  string time_end = xstrbuild ("%" G_GUINT64_FORMAT,
+                                               dur/GINGA_SECOND);
                   TRACE ("time_end in %ss", time_end.c_str());
                   _player->setProperty ("duration", time_end);
                   this->addDelayedAction (evt, Event::STOP, "", end);
@@ -423,7 +425,7 @@ Media::afterTransition (Event *evt, Event::Transition transition)
                 {
                   if (!e->isLambda ()
                       && (e->getType () == Event::PRESENTATION)
-                      && (e->getLabel () == ""))
+                      && !(e->hasLabel()))
                     {
                       Time begin, end;
                       e->getInterval (&begin, &end);
@@ -435,7 +437,7 @@ Media::afterTransition (Event *evt, Event::Transition transition)
                 }
               TRACE ("start %s", evt->getFullId ().c_str ());
             }
-          else if (evt->getLabel () != "")
+          else if (evt->hasLabel ())
             {
               _player->sendPresentationEvent ("start", evt->getLabel());
             }
