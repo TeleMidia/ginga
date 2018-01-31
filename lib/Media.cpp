@@ -285,7 +285,7 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
                 // Start underlying player.
                 // TODO: Check player failure.
                 _player->start (); //Just lambda events reaches this!
-              }            
+              }
               else
               {//Anchor
                 Event *lambda = getPresentationEvent ("@lambda");
@@ -325,8 +325,8 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
                 //remove events of anchors that happens before or after anchor started.
                 for (auto it = _delayed.begin (); it != _delayed.end ();)
                 {
-                  if (it->second == GINGA_TIME_NONE || 
-                      it->second < begin || 
+                  if (it->second == GINGA_TIME_NONE ||
+                      it->second < begin ||
                       (end != GINGA_TIME_NONE && it->second > end))
                   {
                     Action act = it->first;
