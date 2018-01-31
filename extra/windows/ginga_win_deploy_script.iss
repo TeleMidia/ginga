@@ -5,7 +5,7 @@
 #define MyAppVersion "1.5"
 #define MyAppPublisher "Telemidia"
 #define MyAppURL "www.telemidia.puc-rio.br"
-#define MyAppExeName "ginga.exe"
+#define MyAppExeName "gingagui.exe"
 
 ;[Registry]
 ;Root: HKCU; Subkey: "Environment"; ValueType:string; ValueName: "GST_PLUGIN_PATH_1_0"; \
