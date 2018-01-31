@@ -49,7 +49,7 @@ GtkWidget *optBoxPopOver = NULL;
 GtkWidget *historicBoxPopOver = NULL;
 GtkWidget *mainBox = NULL;
 GtkWidget *visualDebugSwitch = NULL;
-GtkTextBuffer *textBufer = NULL;
+GtkTextBuffer *consoleTxtBuffer = NULL;
 
 gboolean isDebugMode = FALSE;
 gboolean visualDebugEnabled = FALSE;
@@ -61,14 +61,78 @@ gboolean isCrtlModifierActive = FALSE;
 PresentationAttributes presentationAttributes;
 
 void
+update_window ()
+{
+  gtk_widget_show_all (mainWindow);
+  if (!isDebugMode)
+    gtk_widget_hide (debugView);
+  if (!needShowSideBar || !tvcontrolAsSidebar)
+    gtk_widget_hide (sideView);
+}
+
+void
+hide_infobar ()
+{
+  gtk_widget_destroy (infoBar);
+  infoBar = NULL;
+}
+
+void
+show_infobar (gchar *messageError)
+{
+
+  if (infoBar != NULL)
+    hide_infobar ();
+
+  infoBar = gtk_info_bar_new ();
+  g_assert_nonnull (infoBar);
+  GtkWidget *content_area
+      = gtk_info_bar_get_content_area (GTK_INFO_BAR (infoBar));
+  gtk_container_add (GTK_CONTAINER (content_area),
+                     gtk_label_new (messageError));
+  gtk_info_bar_set_show_close_button (GTK_INFO_BAR (infoBar), true);
+  gtk_info_bar_set_message_type (GTK_INFO_BAR (infoBar), GTK_MESSAGE_ERROR);
+  g_signal_connect (GTK_INFO_BAR (infoBar), "response",
+                    G_CALLBACK (hide_infobar), NULL);
+
+  gtk_box_pack_start (GTK_BOX (mainBox), infoBar, false, false, 0);
+  gtk_box_reorder_child (GTK_BOX (mainBox), infoBar, 0);
+
+  update_window ();
+}
+
+void
 g_log_default_handler (const gchar *log_domain, GLogLevelFlags log_level,
                        const gchar *message, gpointer unused_data)
 {
-  
-  gtk_text_buffer_insert_at_cursor (GTK_TEXT_BUFFER (textBufer), message,
+
+  printf ("%s", message);
+  // insert message in console text view
+  gtk_text_buffer_insert_at_cursor (GTK_TEXT_BUFFER (consoleTxtBuffer), message,
                                     g_utf8_strlen (message, -1));
-  gtk_text_buffer_insert_at_cursor (GTK_TEXT_BUFFER (textBufer), "\n",
+  gtk_text_buffer_insert_at_cursor (GTK_TEXT_BUFFER (consoleTxtBuffer), "\n",
                                     g_utf8_strlen ("\n", -1));
+
+  if ((log_level == G_LOG_LEVEL_ERROR) || (log_level == G_LOG_FLAG_FATAL))
+    {
+      if (!strcmp (message,
+                   "ginga::PlayerVideo::cb_Bus(): No decoder available "
+                   "for type 'video/ogg'."))
+        {
+          show_infobar (
+              (gchar *) "No decoder available for type 'video/ogg'.");
+          GINGA->stop ();
+        }
+    }
+  /*
+  GtkTextIter start, end;
+
+    GtkTextTag *tag = gtk_text_buffer_create_tag (
+        consoleTxtBuffer, "blue_foreground", "foreground", "blue", NULL);
+    gtk_text_buffer_get_iter_at_offset (consoleTxtBuffer, &start, 7);
+    gtk_text_buffer_get_iter_at_offset (consoleTxtBuffer, &end, 12);
+    gtk_text_buffer_apply_tag (consoleTxtBuffer, GTK_TEXT_TAG(tag), &start, &end);
+  */
 }
 
 gboolean
@@ -110,16 +174,6 @@ void
 press_minimize_button_callback ()
 {
   gtk_window_iconify (GTK_WINDOW (mainWindow));
-}
-
-void
-update_window ()
-{
-  gtk_widget_show_all (mainWindow);
-  if (!isDebugMode)
-    gtk_widget_hide (debugView);
-  if (!needShowSideBar || !tvcontrolAsSidebar)
-    gtk_widget_hide (sideView);
 }
 
 void
@@ -261,37 +315,6 @@ get_icon_folder ()
     return g_strdup ("light-theme");
   else
     return g_strdup ("dark-theme");
-}
-
-void
-hide_infobar ()
-{
-  gtk_widget_destroy (infoBar);
-  infoBar = NULL;
-}
-
-void
-show_infobar (gchar *messageError)
-{
-
-  if (infoBar != NULL)
-    hide_infobar ();
-
-  infoBar = gtk_info_bar_new ();
-  g_assert_nonnull (infoBar);
-  GtkWidget *content_area
-      = gtk_info_bar_get_content_area (GTK_INFO_BAR (infoBar));
-  gtk_container_add (GTK_CONTAINER (content_area),
-                     gtk_label_new (messageError));
-  gtk_info_bar_set_show_close_button (GTK_INFO_BAR (infoBar), true);
-  gtk_info_bar_set_message_type (GTK_INFO_BAR (infoBar), GTK_MESSAGE_ERROR);
-  g_signal_connect (GTK_INFO_BAR (infoBar), "response",
-                    G_CALLBACK (hide_infobar), NULL);
-
-  gtk_box_pack_start (GTK_BOX (mainBox), infoBar, false, false, 0);
-  gtk_box_reorder_child (GTK_BOX (mainBox), infoBar, 0);
-
-  update_window ();
 }
 
 void
@@ -804,7 +827,7 @@ create_window_components ()
 
   GtkWidget *debugTextArea = gtk_text_view_new ();
   g_assert_nonnull (debugTextArea);
-  textBufer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (debugTextArea));
+  consoleTxtBuffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (debugTextArea));
   gtk_text_view_set_editable (GTK_TEXT_VIEW (debugTextArea), false);
   GtkWidget *scrolledWLog = gtk_scrolled_window_new (NULL, NULL);
   g_assert_nonnull (scrolledWLog);
@@ -1052,6 +1075,9 @@ play_pause_button_callback (void)
 
       // Start Ginga.
       GINGA->start (file, nullptr);
+
+      // clear log
+      gtk_text_buffer_set_text (consoleTxtBuffer, "", 0);
     }
 
   gtk_button_set_image (GTK_BUTTON (playButton), play_icon);
