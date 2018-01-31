@@ -306,13 +306,13 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
                 _player->setProperty ("time", time_seek);
 
                 //End
-                if (end != GINGA_TIME_NONE )
+                if (end != GINGA_TIME_NONE)
                 {
                   dur = end - begin;
                   string time_end = xstrbuild ("%" G_GUINT64_FORMAT, dur/GINGA_SECOND);
                   TRACE ("time_end in %ss", time_end.c_str());
                   _player->setProperty ("duration", time_end);
-                  this->addDelayedAction (evt, Event::STOP, "", dur);
+                  this->addDelayedAction (evt, Event::STOP, "", end);
                 }
 
                 TRACE ("start %s (begin=%" GINGA_TIME_FORMAT
@@ -322,8 +322,27 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
                        GINGA_TIME_ARGS (begin), GINGA_TIME_ARGS (end),
                        GINGA_TIME_ARGS (_time));
 
-                //TODO
-                //remove anchors.
+                //remove events of anchors that happens before or after anchor started.
+                for (auto it = _delayed.begin (); it != _delayed.end ();)
+                {
+                  if (it->second == GINGA_TIME_NONE || 
+                      it->second < begin || 
+                      (end != GINGA_TIME_NONE && it->second > end))
+                  {
+                    Action act = it->first;
+                    Event *evt = act.event;
+                    if (act.transition == Event::START)
+                      evt->transition (act.transition);
+                    it = _delayed.erase (it);
+                  }
+                  else if (it->second >= begin)
+                  {
+                    it->second = it->second - begin;
+                    ++it;
+                  }
+                  else
+                    ++it;
+                }
               }
             }
             break;

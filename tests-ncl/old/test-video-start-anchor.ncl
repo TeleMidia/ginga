@@ -23,24 +23,28 @@
     </connectorBase>
   </head>
   <body>
-    <port id='start' component='video1' interface='area1'/>
+    <port id='start' component='video1' interface='video1area1'/>
     <media id='video1' src='../samples/bunny.ogg' descriptor='desc' >
-      <area id='area1' begin="16s" end='20s' />
-      <property name="soundLevel" value="1"/>
+      <area id='video1area1' begin="33s" end='40s' />
+      <area id='video1area3' begin="22s" end="35s" />
+      <!-- <area id='video1area2' begin="5s" /> 
+      <area id='video1area4' end="9s" />
+      <area id='video1area5' end="22s" /> -->
+      <property name="soundLevel" value="0"/>
     </media>
     <media id='video2' src='../samples/animGar.mp4' descriptor='desc2'>      
-      <area id='area2' begin='15s' /> 
+      <area id='video2area1' begin='25s' /> 
     </media>
     <media id='img1' src='../samples/gnu.png' descriptor='desc3'/> 
 
     <link xconnector="onBeginStart">
-      <bind role='onBegin' component='video1' interface='area1'/>
-      <bind role="start" component="video2" interface="area2"/>
+      <bind role='onBegin' component='video1' interface='video1area1'/>
+      <bind role="start" component="video2" interface="video2area1"/>
       <bind role="start" component="img1"/>
     </link> 
 
     <link xconnector="onEndStop">
-      <bind role='onEnd' component='video1' interface='area1'/>
+      <bind role='onEnd' component='video1' interface='video1area3'/>
       <bind role="stop" component="video2" />
     </link>
   </body>
