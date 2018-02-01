@@ -19,6 +19,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Object.h"
 
 #include "Composition.h"
+#include "Context.h"
 #include "Document.h"
 #include "Event.h"
 #include "Media.h"
@@ -44,7 +45,6 @@ Object::Object (const string &id)
 
 Object::~Object ()
 {
-  this->doStop ();
   for (auto evt: _events)
     delete evt;
 }
@@ -396,8 +396,8 @@ void
 Object::doStart ()
 {
   _time = 0;
-  if (_parent != nullptr) // when object is not the body
-    this->_parent->increaseOccurringChildren ();
+  if (_parent != nullptr && instanceof (Context *, _parent))
+    cast (Context *, _parent)->incAwakeChildren ();
 }
 
 void
@@ -407,8 +407,8 @@ Object::doStop ()
   for (auto evt: _events)
     evt->reset ();
   _delayed.clear ();
-  if(_parent != nullptr) // when object is not the body
-    this->_parent->decreaseOccurringChildren ();
+  if(_parent != nullptr && instanceof (Context *, _parent))
+    cast (Context *, _parent)->decAwakeChildren ();
 }
 
 GINGA_NAMESPACE_END

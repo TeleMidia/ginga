@@ -55,8 +55,7 @@ Document::Document ()
  */
 Document::~Document ()
 {
-  for (auto obj: _objects)
-    delete obj;
+  delete _root;
 }
 
 /**

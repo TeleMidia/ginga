@@ -463,6 +463,13 @@ Formatter::redraw (cairo_t *cr)
 #define _GINGA_CHECK_EOS(ginga)                                 \
   G_STMT_START                                                  \
   {                                                             \
+    Context *root;                                              \
+    root = _doc->getRoot ();                                    \
+    g_assert_nonnull (root);                                    \
+    if (root->isSleeping ())                                    \
+      {                                                         \
+        (ginga)->setEOS (true);                                 \
+      }                                                         \
     if ((ginga)->getEOS ())                                     \
       {                                                         \
         g_assert ((ginga)->_state == GINGA_STATE_PLAYING);      \

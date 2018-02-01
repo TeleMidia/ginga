@@ -47,13 +47,17 @@ public:
   const list<pair<list<Action>,list<Action>>> *getLinks ();
   void addLink (list<Action>, list<Action>);
 
+  void incAwakeChildren ();
+  void decAwakeChildren ();
+
   bool getLinksStatus ();
   void setLinksStatus (bool);
 
 private:
-  list<Event *> _ports;
-  list<pair<list<Action>,list<Action>>> _links;
-  bool _status;                 // whether links are active
+  list<Event *> _ports;                         // list of ports
+  list<pair<list<Action>,list<Action>>> _links; // list of links
+  int _awakeChildren;                           // count awake children
+  bool _status;                                 // whether links are active
 };
 
 GINGA_NAMESPACE_END

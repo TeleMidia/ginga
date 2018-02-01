@@ -569,6 +569,7 @@ Media::getZ (int *z, int *zorder)
   if (this->isSleeping () || _player == nullptr)
     return false;               // nothing to do
   g_assert_nonnull (_player);
+  z = zorder = 0;
   _player->getZ (z, zorder);
   return true;
 }
@@ -587,13 +588,16 @@ Media::redraw (cairo_t *cr)
 void
 Media::doStop ()
 {
-  if (_player != nullptr)
+  if (_player == nullptr)
     {
-      if (_player->getState () != Player::SLEEPING)
-        _player->stop ();
-      delete _player;
-      _player = nullptr;
+      g_assert (this->isSleeping ());
+      return;                   // nothing to do
     }
+
+  if (_player->getState () != Player::SLEEPING)
+    _player->stop ();
+  delete _player;
+  _player = nullptr;
   Object::doStop ();
 }
 

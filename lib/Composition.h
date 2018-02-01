@@ -32,12 +32,9 @@ public:
   Object *getChildById (const string &);
   Object *getChildByIdOrAlias (const string &);
   void addChild (Object *);
-  void increaseOccurringChildren ();
-  void decreaseOccurringChildren ();
 
 protected:
   set<Object *> _children;
-  int _occurringChildren;
 };
 
 GINGA_NAMESPACE_END
