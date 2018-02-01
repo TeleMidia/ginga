@@ -118,6 +118,7 @@ PlayerSigGen::PlayerSigGen (Formatter *formatter, Media *media,
   g_assert_nonnull (_audio.videoConvert);
   _audio.videoSink = gst_element_factory_make ("appsink","videosink");
   g_assert_nonnull (_audio.videoSink);
+  g_object_set (_audio.videoSink,"max-buffers", 100, "drop", true, nullptr);
 
 
   // Pipeline add
