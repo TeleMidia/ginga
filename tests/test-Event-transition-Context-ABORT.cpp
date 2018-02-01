@@ -104,7 +104,7 @@ main (void)
     // main check
 
     // ABORT is done and return true
-    g_assert_true (lambda->transition (Event::STOP));
+    g_assert_true (lambda->transition (Event::ABORT));
 
     // after ABORT all events are SLEEPING
     g_assert (lambda->getState () == Event::SLEEPING);
@@ -184,7 +184,7 @@ main (void)
     // main check
 
     // ABORT is done and return true
-    g_assert_true (lambda->transition (Event::STOP));
+    g_assert_true (lambda->transition (Event::ABORT));
 
     // after ABORT all events are SLEEPING
     g_assert (lambda->getState () == Event::SLEEPING);
