@@ -21,21 +21,21 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Player.h"
 #include "Media.h"
 
-#include "player/PlayerImage.h"
-#include "player/PlayerText.h"
-#include "player/PlayerVideo.h"
-#include "player/PlayerSigGen.h"
+#include "PlayerImage.h"
+#include "PlayerText.h"
+#include "PlayerVideo.h"
+#include "PlayerSigGen.h"
 
 #if defined WITH_NCLUA && WITH_NCLUA
-#include "player/PlayerLua.h"
+#include "PlayerLua.h"
 #endif
 
 #if defined WITH_LIBRSVG && WITH_LIBRSVG
-#include "player/PlayerSvg.h"
+#include "PlayerSvg.h"
 #endif
 
 #if defined WITH_CEF && WITH_CEF
-#include "player/PlayerHTML.h"
+#include "PlayerHTML.h"
 #endif
 
 GINGA_NAMESPACE_BEGIN

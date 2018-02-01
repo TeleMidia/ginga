@@ -22,8 +22,9 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "MediaSettings.h"
 #include "Switch.h"
 #include "Event.h"
+#include "Player.h"
+
 #include "ncl/Ncl.h"
-#include "player/Player.h"
 
 GINGA_NAMESPACE_BEGIN
 

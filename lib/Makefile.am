@@ -44,6 +44,12 @@ src+= Media.cpp
 src+= MediaSettings.cpp
 src+= Object.cpp
 src+= Parser.cpp
+src+= Player.cpp
+src+= PlayerAnimator.cpp
+src+= PlayerImage.cpp
+src+= PlayerSigGen.cpp
+src+= PlayerText.cpp
+src+= PlayerVideo.cpp
 src+= Predicate.cpp
 src+= Switch.cpp
 src+= aux-ginga.cpp
@@ -62,15 +68,9 @@ src+= ncl/NclPort.cpp
 src+= ncl/NclProperty.cpp
 src+= ncl/NclSwitch.cpp
 src+= ncl/ParserXercesC.cpp
-src+= player/Player.cpp
-src+= player/PlayerAnimator.cpp
-src+= player/PlayerImage.cpp
-src+= player/PlayerSigGen.cpp
-src+= player/PlayerText.cpp
-src+= player/PlayerVideo.cpp
 
 if WITH_LIBRSVG
-src+= player/PlayerSvg.cpp
+src+= PlayerSvg.cpp
 endif # WITH_LIBRSVG
 
 if WITH_LUA
@@ -78,11 +78,11 @@ src+= ParserLua.cpp
 endif # WITH_LUA
 
 if WITH_NCLUA
-src+= player/PlayerLua.cpp
+src+= PlayerLua.cpp
 endif # WITH_NCLUA
 
 if WITH_CEF
-src+= player/PlayerHTML.cpp
+src+= PlayerHTML.cpp
 cef_filesdir= $(bindir)
 cef_files_DATA=\
   $(cef_dir)/Release/chrome-sandbox\

@@ -19,7 +19,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #define MEDIA_H
 
 #include "Object.h"
-#include "player/Player.h"
+#include "Player.h"
 
 GINGA_NAMESPACE_BEGIN
 
