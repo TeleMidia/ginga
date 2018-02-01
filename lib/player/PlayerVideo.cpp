@@ -140,7 +140,12 @@ PlayerVideo::PlayerVideo (Formatter *formatter, Media *media,
 
   _video.sink = gst_element_factory_make ("appsink", "video.sink");
   g_assert_nonnull (_video.sink);
+
+#ifdef __APPLE__ 
+  g_object_set (_video.sink, "max-buffers", 1, "drop", true, nullptr);
+#else 
   g_object_set (_video.sink, "max-buffers", 100, "drop", true, nullptr);
+#endif  
 
   g_assert (gst_bin_add (GST_BIN (_video.bin), _video.caps));
   g_assert (gst_bin_add (GST_BIN (_video.bin), _video.sink));
@@ -235,7 +240,7 @@ PlayerVideo::stop ()
   gstx_element_set_state_sync (_playbin, GST_STATE_NULL);
   gst_object_unref (_playbin);
   _playbin=nullptr;
-  _stack_actions.clear ();
+  _stack_actions.clear (); 
   Player::stop ();
 }
 
