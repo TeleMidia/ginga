@@ -19,6 +19,10 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "aux-glib.h"
 #include <locale.h>
 
+#ifdef G_OS_WIN32  
+  #include <windows.h>
+#endif
+
 // Global formatter.
 Ginga *GINGA = nullptr;
 
@@ -34,6 +38,11 @@ main (int argc, char **argv)
   opts.debug = false;
   opts.opengl = false;
   opts.experimental = true;
+
+  #ifdef G_OS_WIN32
+    HWND var=GetConsoleWindow();
+    ShowWindow(var,SW_HIDE);
+  #endif
 
   gtk_init (&argc, &argv);
 
