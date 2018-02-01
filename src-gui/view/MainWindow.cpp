@@ -561,7 +561,7 @@ create_window_components ()
   GtkWidget *header_bar = gtk_header_bar_new ();
   g_assert_nonnull (header_bar);
   gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header_bar), true);
-#if G_OS_WIN32
+#ifdef G_OS_WIN32
   gtk_header_bar_set_decoration_layout (GTK_HEADER_BAR (header_bar),
                                         "menu:minimize,maximize,close");
 #else
