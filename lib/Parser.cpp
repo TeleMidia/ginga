@@ -185,17 +185,18 @@ public:
   /// Parser error codes.
   enum Error
     {
-     ERROR_NONE = 0,              ///< No error.
-     ERROR_ELT_UNKNOWN,           ///< Unknown element.
-     ERROR_ELT_MISSING_PARENT,    ///< Missing parent element.
-     ERROR_ELT_BAD_PARENT,        ///< Bad parent element.
-     ERROR_ELT_UNKNOWN_ATTRIBUTE, ///< Unknown attribute.
-     ERROR_ELT_MISSING_ATTRIBUTE, ///< Missing attribute.
-     ERROR_ELT_BAD_ATTRIBUTE,     ///< Bad attribute.
-     ERROR_ELT_UNKNOWN_CHILD,     ///< Unknown child element.
-     ERROR_ELT_MISSING_CHILD,     ///< Missing child element.
-     ERROR_ELT_BAD_CHILD,         ///< Bad child element.
-     ERROR_ELT_IMPORT,            ///< Syntax error in imported document.
+     ERROR_NONE = 0,                     ///< No error.
+     ERROR_ELT_UNKNOWN,                  ///< Unknown element.
+     ERROR_ELT_MISSING_PARENT,           ///< Missing parent element.
+     ERROR_ELT_BAD_PARENT,               ///< Bad parent element.
+     ERROR_ELT_UNKNOWN_ATTRIBUTE,        ///< Unknown attribute.
+     ERROR_ELT_MISSING_ATTRIBUTE,        ///< Missing attribute.
+     ERROR_ELT_BAD_ATTRIBUTE,            ///< Bad attribute.
+     ERROR_ELT_MUTUALLY_EXCL_ATTRIBUTES, ///< Mutually exclusive attributes.
+     ERROR_ELT_UNKNOWN_CHILD,            ///< Unknown child element.
+     ERROR_ELT_MISSING_CHILD,            ///< Missing child element.
+     ERROR_ELT_BAD_CHILD,                ///< Bad child element.
+     ERROR_ELT_IMPORT,                   ///< Error in imported document.
     };
 
   ParserState (int, int);
@@ -266,6 +267,8 @@ private:
   bool errEltMissingAttribute (xmlNode *, const string &);
   bool errEltBadAttribute (xmlNode *, const string &, const string &,
                            const string &explain="");
+  bool errEltMutuallyExclAttributes (xmlNode *, const string &,
+                                     const string &);
   bool errEltUnknownChild (xmlNode *, const string &);
   bool errEltMissingChild (xmlNode *, const list<string> &);
   bool errEltBadChild (xmlNode *, const string &, const string &explain="");
@@ -1195,6 +1198,24 @@ ParserState::errEltBadAttribute (xmlNode *node, const string &name,
   if (explain != "")
     msg += " (" + explain + ")";
   return this->errElt (node, ParserState::ERROR_ELT_BAD_ATTRIBUTE, msg);
+}
+
+/**
+ * @brief Sets parser error to "Attributes are mutually exclusive".
+ * @param node The node that caused the error.
+ * @param attr1 The name of the first attribute.
+ * @param attr2 The name of the second attribute.
+ * @return \c false.
+ */
+bool
+ParserState::errEltMutuallyExclAttributes (xmlNode *node,
+                                           const string &attr1,
+                                           const string &attr2)
+{
+  return this->errElt
+    (node, ParserState::ERROR_ELT_MUTUALLY_EXCL_ATTRIBUTES,
+     "Attributes '" + attr1 + "' and '" + attr2
+     + "' are mutually exclusive");
 }
 
 /**
@@ -3647,22 +3668,44 @@ ParserState::pushArea (ParserState *st, ParserElt *elt)
 
   g_assert (elt->getAttribute ("id", &id));
 
-  if (elt->getAttribute ("label", &label))
-  {
-    g_assert (!elt->getAttribute ("begin", &str));
-    g_assert (!elt->getAttribute ("end", &str));
-
-    media->addPresentationEvent (id, label);
-  }
+  if (elt->getAttribute ("label", &label) && label != "")
+    {
+      if (unlikely (elt->getAttribute ("begin", &str)))
+        {
+          return st->errEltMutuallyExclAttributes
+            (elt->getNode (), "label", "begin");
+        }
+      if (unlikely (elt->getAttribute ("end", &str)))
+        {
+          return st->errEltMutuallyExclAttributes
+            (elt->getNode (), "label", "end");
+        }
+      media->addPresentationEvent (id, label);
+    }
   else
-  {
-    begin = elt->getAttribute ("begin", &str)
-      ? ginga::parse_time (str) : 0;
-    end = elt->getAttribute ("end", &str)
-      ? ginga::parse_time (str) : GINGA_TIME_NONE;
+    {
+      begin = 0;
+      if (elt->getAttribute ("begin", &str))
+        {
+          if (unlikely (!ginga::try_parse_time (str, &begin)))
+            {
+              return st->errEltBadAttribute
+                (elt->getNode (), "begin", str);
+            }
+        }
 
-    media->addPresentationEvent (id, begin, end);
-  }
+      end = GINGA_TIME_NONE;
+      if (elt->getAttribute ("end", &str))
+        {
+          if (unlikely (!ginga::try_parse_time (str, &end)))
+            {
+              return st->errEltBadAttribute
+                (elt->getNode (), "end", str);
+            }
+        }
+
+      media->addPresentationEvent (id, begin, end);
+    }
 
   return true;
 }
