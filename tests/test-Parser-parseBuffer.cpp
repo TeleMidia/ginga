@@ -1937,6 +1937,88 @@ tmp = writetmp (0, xstrbuild ("\
 
 
 // -------------------------------------------------------------------------
+// <area>
+// -------------------------------------------------------------------------
+
+  XFAIL ("area: Missing id",
+         "Element <area> at line 5: Missing attribute 'id'", "\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <media id='m'>\n\
+   <area/>\n\
+  </media>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("area: Duplicated id",
+         "Element <area> at line 5: Bad value 'm'"
+         " for attribute 'id' (must be unique)", "\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <media id='m'>\n\
+   <area id='m'/>\n\
+  </media>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("area: Bad begin",
+         "Element <area> at line 5: Bad value 'a'"
+         " for attribute 'begin'", "\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <media id='m'>\n\
+   <area id='a' begin='a'/>\n\
+  </media>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("area: Bad end",
+         "Element <area> at line 5: Bad value 'a' "
+         "for attribute 'end'", "\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <media id='m'>\n\
+   <area id='a' end='a'/>\n\
+  </media>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("area: Mutually exclusive",
+         "Element <area> at line 5: Attributes 'label' and 'begin' "
+         "are mutually exclusive", "\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <media id='m'>\n\
+   <area id='a' begin='1' label='a'/>\n\
+  </media>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("area: Mutually exclusive",
+         "Element <area> at line 5: Attributes 'label' and 'end' "
+         "are mutually exclusive", "\
+<ncl>\n\
+ <head/>\n\
+ <body>\n\
+  <media id='m'>\n\
+   <area id='a' end='1' label='a'/>\n\
+  </media>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+
+// -------------------------------------------------------------------------
 // <link>
 // -------------------------------------------------------------------------
 
