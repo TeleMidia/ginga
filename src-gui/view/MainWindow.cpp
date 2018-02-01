@@ -106,7 +106,7 @@ g_log_default_handler (const gchar *log_domain, GLogLevelFlags log_level,
                        const gchar *message, gpointer unused_data)
 {
 
-  printf ("%s", message);
+  //printf ("%s \n", message);
   // insert message in console text view
   gtk_text_buffer_insert_at_cursor (GTK_TEXT_BUFFER (consoleTxtBuffer), message,
                                     g_utf8_strlen (message, -1));

@@ -34,7 +34,8 @@ create_fullscreen_window (void)
   g_assert_nonnull (display);
 
 #if GTK_CHECK_VERSION(3, 22, 0)
-  GdkMonitor *monitor = gdk_display_get_monitor (GDK_DISPLAY (display), 0);
+  GdkMonitor *monitor = gdk_display_get_monitor_at_window (
+      GDK_DISPLAY (display), GDK_WINDOW (mainWindow));
   g_assert_nonnull (monitor);
   gdk_monitor_get_geometry (GDK_MONITOR (monitor), &rect);
 #else
@@ -53,16 +54,16 @@ create_fullscreen_window (void)
 
 #if GTK_CHECK_VERSION(3, 8, 0)
   gtk_widget_add_tick_callback (
-      fullscreenWindow, (GtkTickCallback)update_draw_callback, NULL, NULL);
+      fullscreenWindow, (GtkTickCallback) update_draw_callback, NULL, NULL);
 #else
-  g_timeout_add (1000 / 60, (GSourceFunc)update_draw_callback,
+  g_timeout_add (1000 / 60, (GSourceFunc) update_draw_callback,
                  fullscreenWindow);
 #endif
 
   g_signal_connect (fullscreenWindow, "key-press-event",
-                    G_CALLBACK (keyboard_callback), (void *)"press");
+                    G_CALLBACK (keyboard_callback), (void *) "press");
   g_signal_connect (fullscreenWindow, "key-release-event",
-                    G_CALLBACK (keyboard_callback), (void *)"release");
+                    G_CALLBACK (keyboard_callback), (void *) "release");
   gtk_container_set_border_width (GTK_CONTAINER (fullscreenWindow), 0);
 
   // Create Drawing area
@@ -81,6 +82,8 @@ create_fullscreen_window (void)
   gtk_widget_show_all (fullscreenWindow);
 
   GINGA->resize (rect.width, rect.height);
+
+  // printf("Fullscreen size is: %dx%d", rect.width, rect.height);
 }
 void
 destroy_fullscreen_window (void)
