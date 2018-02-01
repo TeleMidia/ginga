@@ -75,31 +75,22 @@ On Ubuntu-based distros, we suggest install the dependencies through apt-get.
         liblua5.2-dev libglib2.0-dev libxerces-c-dev libpango1.0-dev librsvg2-dev \
         libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
         libgstreamer-plugins-good1.0-dev libgtk-3-dev -qq
-<!--
-**autotools**-->
+
 Build with autotools.
 
     $ ./bootstrap
     $ ./configure
     $ make
 
-<!-- To build with cef (chromium embedded framework) support change the
-above configure step to:
+Or build with cmake. When using cmake, nclua will be automatically
+downloaded and built.
 
-    $ ./configure --with-cef=${CEF_ROOT}
-
-**cmake**
 
     $ mkdir _build && cd _build
     $ cmake ../build-cmake
     $ make
 
-When using cmake, nclua and chromium embedded will be automatically
-downloaded and built. -->
-
 ### Windows
-
-<!-- **msys2 and mingw** -->
 
 Download MSYS2 and install the dependencies through MinGW.
 
