@@ -27,10 +27,10 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "ncl/ParserXercesC.h"
 #include "Parser.h"
-#include "player/PlayerText.h"
+#include "PlayerText.h"
 
 #if defined WITH_LUA && WITH_LUA
-# include "ParserLua.h"         // for ncl-tab support
+# include "ParserLua.h"         // for ncl-ltab support
 #endif
 
 GINGA_NAMESPACE_BEGIN
