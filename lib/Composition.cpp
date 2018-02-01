@@ -24,7 +24,6 @@ GINGA_NAMESPACE_BEGIN
 
 Composition::Composition (const string &id) : Object (id)
 {
-  _occurringChildren = 0;
 }
 
 Composition::~Composition ()
@@ -56,19 +55,6 @@ Composition::getChildByIdOrAlias (const string &id)
     if (child->hasAlias (id))
       return child;
   return nullptr;
-}
-
-void
-Composition::increaseOccurringChildren ()
-{
-  _occurringChildren++;
-}
-
-void
-Composition::decreaseOccurringChildren ()
-{
-  if (_occurringChildren > 0)
-    _occurringChildren--;
 }
 
 void

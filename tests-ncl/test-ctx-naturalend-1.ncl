@@ -8,16 +8,13 @@
     </connectorBase>
   </head>
   <body>
-    <port id="start1" component="ctx1"/>
-    <context id="ctx1">
-      <port id="ctx-start1" component="m1"/>
-      <media id="m1" src="samples/bunny.ogg">
-        <area id="a1" begin="3s"/>
-      </media>
-      <link xconnector="onBeginStop">
-        <bind role="onBegin" component="m1" interface="a1"/>
-        <bind role="stop" component="m1"/>
-      </link>
-    </context>
+    <port id="ctx-start1" component="m1"/>
+    <media id="m1" src="samples/gnu.png">
+      <area id="a1" begin="2s"/>
+    </media>
+    <link xconnector="onBeginStop">
+      <bind role="onBegin" component="m1" interface="a1"/>
+      <bind role="stop" component="m1"/>
+    </link>
   </body>
 </ncl>

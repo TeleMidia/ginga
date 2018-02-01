@@ -19,6 +19,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Context.h"
 
 #include "Document.h"
+#include "MediaSettings.h"
 
 GINGA_NAMESPACE_BEGIN
 
@@ -27,12 +28,18 @@ GINGA_NAMESPACE_BEGIN
 
 Context::Context (const string &id): Composition (id)
 {
+  _awakeChildren = 0;
   _status = true;
 }
 
 Context::~Context ()
 {
-  // Delete predicate in links.
+  // Stop and delete children.
+  _lambda->transition (Event::STOP);
+  for (auto child: _children)
+    delete child;
+
+  // Delete predicates in links.
   for (auto link: _links)
     {
       for (auto &cond: link.first)
@@ -147,15 +154,10 @@ Context::sendTick (Time total, Time diff, Time frame)
   // Update object time.
   Object::sendTick (total, diff, frame);
 
-  // Check EOS.
-  if (_occurringChildren == 0)
+  // Check for EOS.
+  if (_awakeChildren == 0)
     {
-      Event *lambda = this->getLambda ();
-      g_assert_nonnull (lambda);
-      TRACE ("eos %s at %" GINGA_TIME_FORMAT, lambda->getFullId ().c_str (),
-             GINGA_TIME_ARGS (_time));
-      _doc->evalAction (lambda, Event::STOP);
-      return;
+      _doc->evalAction (_lambda, Event::STOP);
     }
 }
 
@@ -338,6 +340,20 @@ Context::addLink (list<Action> conds, list<Action> acts)
   g_assert (conds.size () > 0);
   g_assert (acts.size () > 0);
   _links.push_back (std::make_pair (conds, acts));
+}
+
+void
+Context::incAwakeChildren ()
+{
+  TRACE ("awake++ from %d to %d", _awakeChildren, _awakeChildren+1);
+  _awakeChildren++;
+}
+
+void
+Context::decAwakeChildren ()
+{
+  TRACE ("awake-- from %d to %d", _awakeChildren, _awakeChildren-1);
+  _awakeChildren--;
 }
 
 bool
