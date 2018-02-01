@@ -65,7 +65,7 @@ Optional:
 
   * cef >= 3.0, https://bitbucket.org/chromiumembedded/cef
   * librsvg >= 2.40
-  * nclua >= 1.0, http://github.com/gflima/nclua
+  * nclua >= 1.0, http://github.com/telemidia/nclua
 
 ### Linux
 

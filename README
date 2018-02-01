@@ -23,7 +23,7 @@ Required:
 * glib >= 2.32
 * gstreamer >= 1.8
 * GTK+ >= 3.4
-* nclua >= 1.0, http://github.com/gflima/nclua
+* nclua >= 1.0, http://github.com/telemidia/nclua
 * pango >= 1.30
 * xercesc >= 2.7
 

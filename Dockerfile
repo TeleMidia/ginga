@@ -18,14 +18,14 @@ RUN apt-get install -y git gcc g++ autotools-dev dh-autoreconf cmake cmake-data 
 RUN mkdir -p /src/
 RUN git clone https://github.com/telemidia/ginga.git /src/ginga
 RUN mkdir -p /src/ginga/_build
- 
+
 # Build - cmake
 WORKDIR /src/ginga/_build
 RUN cmake ../build-cmake -DWITH_CEF=OFF
 RUN make -j4
 
 # Build - autotools
-RUN git clone https://github.com/gflima/nclua /src/nclua
+RUN git clone https://github.com/telemidia/nclua /src/nclua
 WORKDIR /src/nclua
 RUN ./bootstrap && ./configure
 RUN make -j8
