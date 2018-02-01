@@ -109,8 +109,8 @@ Download MSYS2 and install the dependencies through MinGW.
         mingw64/mingw-w64-x86_64-cairo mingw64/mingw-w64-x86_64-gst-plugins-base \
         mingw64/mingw-w64-x86_64-gst-plugins-good mingw64/mingw-w64-x86_64-gst-plugins-bad \
         mingw64/mingw-w64-x86_64-gtk3 mingw64/mingw-w64-x86_64-pango \
-        mingw64/mingw-w64-x86_64-xerces-c mingw-w64-x86_64-lua mingw-w64-x86_64-rtmpdump-git \
-        mingw-w64-x86_64-gcc mingw-w64-x86_64-make
+        mingw64/mingw-w64-x86_64-xerces-c mingw-w64-x86_64-lua mingw64/mingw-w64-x86_64-gst-plugins-ugly \
+        mingw-w64-x86_64-gst-libav-1.12.4-1 mingw-w64-x86_64-gcc mingw-w64-x86_64-make
 
 Build with autotools.
 
