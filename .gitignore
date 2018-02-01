@@ -27,6 +27,7 @@
 .libs
 .patch_number
 /INSTALL
+/README
 /Makefile
 /Makefile.in
 /TAGS
