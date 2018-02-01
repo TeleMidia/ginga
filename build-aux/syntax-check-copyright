@@ -2,7 +2,7 @@ eval '(exit $?0)' && eval 'exec perl -s -0777 -wnl "$0" ${1+"$@"}'
   & eval 'exec perl -s -0777 -wnl "$0" $argv:q'
     if 0;
 # Check the syntax of copyright notice of input files.
-my $VERSION = '2018-01-01 13:26 UTC';
+my $VERSION = '2018-02-01 13:38 UTC';
 
 # Copyright (C) 2014-2018 Free Software Foundation, Inc.
 #

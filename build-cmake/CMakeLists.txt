@@ -59,7 +59,7 @@ endif ()
 # NCLUA download/configure/build/install
 include(ExternalProject)
 ExternalProject_Add(nclua_build
-  GIT_REPOSITORY "https://github.com/gflima/nclua.git"
+  GIT_REPOSITORY "https://github.com/telemidia/nclua.git"
   GIT_TAG master
   UPDATE_COMMAND ""
 

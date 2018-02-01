@@ -14,8 +14,6 @@ dnl
 dnl You should have received a copy of the GNU General Public License
 dnl along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-dnl Written by Guilherme F. Lima
-
 # AU_ARG_ENABLE(NAME, DESCRIPTION, [DEFAULT=no])
 # ----------------------------------------------
 # Adds option --enable-[NAME], with description DESCRIPTION and default
