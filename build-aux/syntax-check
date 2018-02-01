@@ -2,7 +2,7 @@ eval '(exit $?0)' && eval 'exec perl -wnl "$0" ${1+"$@"}'
   & eval 'exec perl -wnl "$0" $argv:q'
     if 0;
 # Check the syntax of input files.
-my $VERSION = '2018-01-01 13:25 UTC';
+my $VERSION = '2018-02-01 13:38 UTC';
 
 # Copyright (C) 2014-2018 Free Software Foundation, Inc.
 #
@@ -18,8 +18,6 @@ my $VERSION = '2018-01-01 13:25 UTC';
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-# Written by Guilherme F. Lima
 
 use strict;
 (my $ME = $0) =~ s|.*/||;

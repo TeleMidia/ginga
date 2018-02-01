@@ -48,31 +48,29 @@ sc-copyright:
 	    $(VC_LIST_SH),\
 	    $(SC_COPYRIGHT_EXCLUDE))
 
-# Files copied from the NCLua project.
-nclua:= https://github.com/gflima/nclua/raw/master
-NCLUA_FILES+= build-aux/Makefile.am.common
-NCLUA_FILES+= build-aux/Makefile.am.coverage
-NCLUA_FILES+= build-aux/Makefile.am.env
-NCLUA_FILES+= build-aux/Makefile.am.gitlog
-NCLUA_FILES+= build-aux/Makefile.am.valgrind
-NCLUA_FILES+= build-aux/util.m4
-NCLUA_FILES+= lib/aux-glib.h
-NCLUA_FILES+= lib/aux-lua.h
-NCLUA_FILES+= maint.mk
-NCLUA_SCRIPTS+= bootstrap
-NCLUA_SCRIPTS+= build-aux/syntax-check
-NCLUA_SCRIPTS+= build-aux/syntax-check-copyright
-REMOTE_FILES+= $(NCLUA_FILES)
-REMOTE_SCRIPTS+= $(NCLUA_SCRIPTS)
+# Copy utility stuff from gflima/autoutils project.
+util:= https://github.com/gflima/autoutils/raw/master
+UTIL_FILES+= build-aux/Makefile.am.common
+UTIL_FILES+= build-aux/Makefile.am.coverage
+UTIL_FILES+= build-aux/Makefile.am.env
+UTIL_FILES+= build-aux/Makefile.am.gitlog
+UTIL_FILES+= build-aux/Makefile.am.valgrind
+UTIL_FILES+= build-aux/util.m4
+UTIL_FILES+= maint.mk
+UTIL_SCRIPTS+= bootstrap
+UTIL_SCRIPTS+= build-aux/syntax-check
+UTIL_SCRIPTS+= build-aux/syntax-check-copyright
+REMOTE_FILES+= $(UTIL_FILES)
+REMOTE_SCRIPTS+= $(UTIL_SCRIPTS)
 
-.PHONY: fetch-remote-local-nclua
-fetch-remote-local-nclua:
-	$(V_at)for path in $(NCLUA_FILES) $(NCLUA_SCRIPTS); do\
+.PHONY: fetch-remote-local-util
+fetch-remote-local-util:
+	$(V_at)for path in $(UTIL_FILES) $(UTIL_SCRIPTS); do\
 	  dir=`dirname "$$path"`;\
-	  $(FETCH) -dir="$$dir" "$(nclua)/$$path" || exit 1;\
+	  $(FETCH) -dir="$$dir" "$(util)/$$path" || exit 1;\
 	done
 
-fetch-remote-local: fetch-remote-local-nclua
+fetch-remote-local: fetch-remote-local-util
 
 
 # Generates TAGS file.
