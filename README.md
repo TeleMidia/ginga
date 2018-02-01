@@ -16,23 +16,6 @@ The iTV middleware.
   * http://www.ncl.org.br
   * http://www.telemidia.puc-rio.br
 
-## Dependencies
-
-Required:
-
-  * cairo >= 1.10
-  * glib >= 2.32
-  * gstreamer >= 1.8
-  * GTK+ >= 3.4
-  * pango >= 1.30
-  * xercesc >= 2.7
-
-Optional:
-
-  * cef >= 3.0, https://bitbucket.org/chromiumembedded/cef
-  * librsvg >= 2.40
-  * nclua >= 1.0, http://github.com/gflima/nclua
-
 ## Installation
 
 ### Development version (nightly builds)
@@ -50,6 +33,10 @@ version of ginga using:
 
 TODO.
 
+**macOS**
+
+TODO.
+
 ## Usage
 
 The basic way of running ginga is passing a `.ncl` document to be played as a
@@ -63,15 +50,40 @@ You can check the available options for the `ginga` executable with:
 
 ## Building
 
+### Dependencies
+
+Required:
+
+  * cairo >= 1.10
+  * glib >= 2.32
+  * gstreamer >= 1.8
+  * GTK+ >= 3.4
+  * pango >= 1.30
+  * xercesc >= 2.7
+
+Optional:
+
+  * cef >= 3.0, https://bitbucket.org/chromiumembedded/cef
+  * librsvg >= 2.40
+  * nclua >= 1.0, http://github.com/gflima/nclua
+
 ### Linux
 
-**autotools**
+On Ubuntu-based distros, we suggest install the dependencies through apt-get.
+
+    $ sudo apt-get install -y git gcc g++ autotools-dev dh-autoreconf cmake cmake-data \
+        liblua5.2-dev libglib2.0-dev libxerces-c-dev libpango1.0-dev librsvg2-dev \
+        libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
+        libgstreamer-plugins-good1.0-dev libgtk-3-dev -qq
+<!--
+**autotools**-->
+Build with autotools.
 
     $ ./bootstrap
     $ ./configure
     $ make
 
-To build with cef (chromium embedded framework) support change the
+<!-- To build with cef (chromium embedded framework) support change the
 above configure step to:
 
     $ ./configure --with-cef=${CEF_ROOT}
@@ -83,18 +95,33 @@ above configure step to:
     $ make
 
 When using cmake, nclua and chromium embedded will be automatically
-downloaded and built.
+downloaded and built. -->
 
 ### Windows
 
-**msys2 and mingw**
+<!-- **msys2 and mingw** -->
 
-Download MSYS2 and install the dependencies through MinGW ("$ pacman -S
-base-devel" and others).
+Download MSYS2 and install the dependencies through MinGW.
+
+    $ pacman -Syu --noconfirm
+
+    $ pacman -Sy --noconfirm base-devel mpfr cmake mingw64/mingw-w64-x86_64-glib2 glib2-devel \
+        mingw64/mingw-w64-x86_64-cairo mingw64/mingw-w64-x86_64-gst-plugins-base \
+        mingw64/mingw-w64-x86_64-gst-plugins-good mingw64/mingw-w64-x86_64-gst-plugins-bad \
+        mingw64/mingw-w64-x86_64-gtk3 mingw64/mingw-w64-x86_64-pango \
+        mingw64/mingw-w64-x86_64-xerces-c mingw-w64-x86_64-lua mingw-w64-x86_64-rtmpdump-git \
+        mingw-w64-x86_64-gcc mingw-w64-x86_64-make
+
+Build with autotools.
 
     $ ./bootstrap
     $ ./configure
-    $ mingw32-make
+    $ make
+
+### macOS
+
+TODO
+
 
 ---
 Copyright (C) 2006-2018 PUC-Rio/Laboratorio TeleMidia
