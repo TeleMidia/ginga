@@ -345,14 +345,12 @@ Context::addLink (list<Action> conds, list<Action> acts)
 void
 Context::incAwakeChildren ()
 {
-  TRACE ("awake++ from %d to %d", _awakeChildren, _awakeChildren+1);
   _awakeChildren++;
 }
 
 void
 Context::decAwakeChildren ()
 {
-  TRACE ("awake-- from %d to %d", _awakeChildren, _awakeChildren-1);
   _awakeChildren--;
 }
 
