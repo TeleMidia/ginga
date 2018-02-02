@@ -18,21 +18,25 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
+rm -rf mnt
+rm -rf app
 mkdir mnt
 mkdir app
 demuxfs -o backend=filesrc -o filesrc=$1 -o fileloop=-1 mnt
 
 cd mnt
 
-echo "Waiting for DSM-CC assembly"
+echo -n "Waiting for DSM-CC assembly"
 while [ ! -d DSM-CC ]; do
   echo -n "."
   sleep 1
 done
 
+echo
+
 cp -a DSM-CC/*/* ../app
-cd ../app/*
+cd ../app/
 ginga main.ncl
-cd ../..
+cd ../
 umount mnt
 rmdir mnt
