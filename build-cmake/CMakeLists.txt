@@ -150,16 +150,16 @@ set (LIBGINGA_SOURCES
   #  ../lib/ncl/ParserLibXML.cpp
   ../lib/ncl/ParserXercesC.cpp
 
-  ../lib/player/Player.cpp
-  ../lib/player/PlayerAnimator.cpp
-  ../lib/player/PlayerImage.cpp
-  ../lib/player/PlayerLua.cpp
-  ../lib/player/PlayerSigGen.cpp
-  ../lib/player/PlayerText.cpp
-  ../lib/player/PlayerVideo.cpp
+  ../lib/Player.cpp
+  ../lib/PlayerAnimator.cpp
+  ../lib/PlayerImage.cpp
+  ../lib/PlayerLua.cpp
+  ../lib/PlayerSigGen.cpp
+  ../lib/PlayerText.cpp
+  ../lib/PlayerVideo.cpp
 
 #if WITH_LIBRSVG
-  ../lib/player/PlayerSvg.cpp
+  ../lib/PlayerSvg.cpp
 #WITH_LIBRSVG
 )
 
