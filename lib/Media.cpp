@@ -570,7 +570,6 @@ Media::getZ (int *z, int *zorder)
   if (this->isSleeping () || _player == nullptr)
     return false;               // nothing to do
   g_assert_nonnull (_player);
-  z = zorder = 0;
   _player->getZ (z, zorder);
   return true;
 }

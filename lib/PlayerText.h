@@ -37,8 +37,8 @@ public:
   void reload () override;
 
 protected:
-  bool doSetProperty (PlayerProperty, const string &,
-                      const string &) override;
+  bool doSetProperty (Property, const string &, const string &) override;
+
 private:
   struct
   {

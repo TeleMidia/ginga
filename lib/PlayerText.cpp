@@ -234,7 +234,7 @@ PlayerText::reload ()
 // Protected.
 
 bool
-PlayerText::doSetProperty (PlayerProperty code, unused (const string &name),
+PlayerText::doSetProperty (Property code, unused (const string &name),
                            const string &value)
 {
   switch (code)

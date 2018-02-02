@@ -28,14 +28,14 @@ class Media;
 class Player
 {
 public:
-  enum PlayerState
+  enum State
     {
      SLEEPING = 1,              // stopped
      OCCURRING,                 // playing
      PAUSED,                    // paused
     };
 
-  enum PlayerProperty           // known properties
+  enum Property                 // known properties
     {
      PROP_UNKNOWN = 0,
      PROP_BACKGROUND,
@@ -80,7 +80,8 @@ public:
   Player (Formatter *, Media *, const string &);
   virtual ~Player ();
 
-  PlayerState getState ();
+  State getState ();
+  void getZ (int *, int *);
   bool isFocused ();
 
   Time getTime ();
@@ -91,9 +92,6 @@ public:
 
   bool getEOS ();
   void setEOS (bool);
-
-  void getZ (int *, int *);
-  void setZ (int, int);
 
   virtual void start ();
   virtual void stop ();
@@ -117,7 +115,7 @@ public:
   // Static.
   static string getCurrentFocus ();
   static void setCurrentFocus (const string &);
-  static PlayerProperty getPlayerProperty (const string &, string *);
+  static Property getPlayerProperty (const string &, string *);
   static Player *createPlayer (Formatter *, Media *,
                                const string &, const string &);
 protected:
@@ -125,7 +123,7 @@ protected:
   Media *_media;                // associated media object
   string _id;                   // id of the associated media object
   string _uri;                  // source uri
-  PlayerState _state;           // current state
+  State _state;                 // current state
   Time _time;                   // playback time
   bool _eos;                    // true if content was exhausted
   cairo_surface_t *_surface;    // player surface
@@ -150,8 +148,8 @@ protected:
   } _prop;
 
 protected:
-  virtual bool doSetProperty (PlayerProperty, const string &,
-                              const string &);
+  virtual bool doSetProperty (Property, const string &, const string &);
+
 private:
   void redrawDebuggingInfo (cairo_t *);
 

@@ -212,7 +212,7 @@ PlayerLua::redraw (cairo_t *cr)
 // Protected.
 
 bool
-PlayerLua::doSetProperty (PlayerProperty code, const string &name,
+PlayerLua::doSetProperty (Property code, const string &name,
                           const string &value)
 {
   if (_nw != nullptr && _state == OCCURRING)

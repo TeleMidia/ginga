@@ -34,10 +34,9 @@ public:
   void redraw (cairo_t *) override;
 
 protected:
-  bool doSetProperty (PlayerProperty, const string &,
-                      const string &) override;
-  void seek (gint64 value);
-  void speed (double value);
+  bool doSetProperty (Property, const string &, const string &) override;
+  void seek (gint64);
+  void speed (double);
   gint64 getPipelineTime ();
   gint64 getStreamMediaTime ();
   gint64 getStreamMediaDuration ();
@@ -69,15 +68,15 @@ private:
     double speed;           // playback speed (Default: 1) 
   } _prop;
   typedef struct {
-    PlayerProperty code;
+    Property code;
     string name;
     string value;
   }PlayerVideoAction;
   list<PlayerVideoAction> _stack_actions;
   void initProperties (set<string> *);   //Init default values to properties          
                                          //without go to doSetProperty function
-  void stackAction (PlayerProperty,       
-                     const string &,      
+  void stackAction (Property,
+                     const string &,
                      const string &);
   void doStackedActions ();
   bool getFreeze ();
