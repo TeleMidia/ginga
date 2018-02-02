@@ -105,13 +105,19 @@ void
 g_log_default_handler (const gchar *log_domain, GLogLevelFlags log_level,
                        const gchar *message, gpointer unused_data)
 {
+  if (!g_str_has_prefix (message, "ginga::"))
+    return; // is not a ginga message
 
-  //printf ("%s \n", message);
+  // printf ("%s \n", message);
   // insert message in console text view
-  gtk_text_buffer_insert_at_cursor (GTK_TEXT_BUFFER (consoleTxtBuffer), message,
-                                    g_utf8_strlen (message, -1));
-  gtk_text_buffer_insert_at_cursor (GTK_TEXT_BUFFER (consoleTxtBuffer), "\n",
-                                    g_utf8_strlen ("\n", -1));
+  gchar *time_label = "[00:00] ";
+  gtk_text_buffer_insert_at_cursor (GTK_TEXT_BUFFER (consoleTxtBuffer),
+                                    time_label,
+                                    g_utf8_strlen (time_label, -1));
+  gtk_text_buffer_insert_at_cursor (GTK_TEXT_BUFFER (consoleTxtBuffer),
+                                    message, g_utf8_strlen (message, -1));
+  gtk_text_buffer_insert_at_cursor (GTK_TEXT_BUFFER (consoleTxtBuffer),
+                                    "\n", g_utf8_strlen ("\n", -1));
 
   if ((log_level == G_LOG_LEVEL_ERROR) || (log_level == G_LOG_FLAG_FATAL))
     {
@@ -131,7 +137,8 @@ g_log_default_handler (const gchar *log_domain, GLogLevelFlags log_level,
         consoleTxtBuffer, "blue_foreground", "foreground", "blue", NULL);
     gtk_text_buffer_get_iter_at_offset (consoleTxtBuffer, &start, 7);
     gtk_text_buffer_get_iter_at_offset (consoleTxtBuffer, &end, 12);
-    gtk_text_buffer_apply_tag (consoleTxtBuffer, GTK_TEXT_TAG(tag), &start, &end);
+    gtk_text_buffer_apply_tag (consoleTxtBuffer, GTK_TEXT_TAG(tag), &start,
+  &end);
   */
 }
 
@@ -548,8 +555,9 @@ keyboard_callback (unused (GtkWidget *widget), GdkEventKey *e,
       break;
     }
 
-  GINGA->sendKey (std::string (key),
-                  g_strcmp0 ((const char *) type, "press") == 0);
+  if (GINGA->getState () == GINGA_STATE_PLAYING)
+    GINGA->sendKey (std::string (key),
+                    g_strcmp0 ((const char *) type, "press") == 0);
   /*  if (free_key)
       g_free (key); */
 }
@@ -827,7 +835,8 @@ create_window_components ()
 
   GtkWidget *debugTextArea = gtk_text_view_new ();
   g_assert_nonnull (debugTextArea);
-  consoleTxtBuffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (debugTextArea));
+  consoleTxtBuffer
+      = gtk_text_view_get_buffer (GTK_TEXT_VIEW (debugTextArea));
   gtk_text_view_set_editable (GTK_TEXT_VIEW (debugTextArea), false);
   GtkWidget *scrolledWLog = gtk_scrolled_window_new (NULL, NULL);
   g_assert_nonnull (scrolledWLog);
@@ -941,6 +950,8 @@ create_window_components ()
 void
 create_main_window ()
 {
+  g_log_set_default_handler (g_log_default_handler, NULL);
+
   // Create application window.
   mainWindow = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   g_assert_nonnull (mainWindow);
@@ -971,8 +982,6 @@ create_main_window ()
   gtk_widget_hide (debugView);
   gtk_widget_hide (sideView);
   gtk_widget_hide (infoBar);
-
-  g_log_set_default_handler (g_log_default_handler, NULL);
 }
 
 void
