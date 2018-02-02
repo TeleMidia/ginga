@@ -50,7 +50,6 @@ PlayerVideo::PlayerVideo (Formatter *formatter, Media *media,
   GstBus *bus;
   gulong ret;
   char *buf;
-
   GstPad *pad;
   GstPad *ghost;
 
@@ -179,7 +178,7 @@ PlayerVideo::PlayerVideo (Formatter *formatter, Media *media,
   };
   this->initProperties (&handled);
 
-  //stackAction (Player::PROP_TIME, "time", "16s");
+  //stackAction (Player::PROP_TIME, "time", "76s");
 }
 
 PlayerVideo::~PlayerVideo ()
@@ -194,7 +193,7 @@ PlayerVideo::start ()
   GstStateChangeReturn ret;
 
   g_assert (_state != OCCURRING);
-  TRACE ("starting");
+  TRACE ("starting %s",_idMedia.c_str());
 
   st = gst_structure_new_empty ("video/x-raw");
   gst_structure_set (st, "format", G_TYPE_STRING, "BGRA", nullptr);
@@ -235,7 +234,7 @@ void
 PlayerVideo::stop ()
 {
   g_assert (_state != SLEEPING);
-  TRACE ("stopping");
+  TRACE ("stopping %s",_idMedia.c_str());
 
   gstx_element_set_state_sync (_playbin, GST_STATE_NULL);
   gst_object_unref (_playbin);
@@ -248,7 +247,7 @@ void
 PlayerVideo::pause ()
 {
   g_assert (_state != PAUSED && _state != SLEEPING);
-  TRACE ("pausing");
+  TRACE ("pausing %s",_idMedia.c_str());
 
   gstx_element_set_state_sync (_playbin, GST_STATE_PAUSED);
   Player::pause ();
@@ -258,7 +257,7 @@ void
 PlayerVideo::resume ()
 {
   g_assert (_state == PAUSED);
-  TRACE ("resuming");
+  TRACE ("resuming %s",_idMedia.c_str());
 
   gstx_element_set_state_sync (_playbin, GST_STATE_PLAYING);
   Player::resume ();
@@ -267,7 +266,7 @@ PlayerVideo::resume ()
 void
 PlayerVideo::seek (gint64 value)
 {
-  TRACE ("seek to: %" GST_TIME_FORMAT, GST_TIME_ARGS (value));
+  TRACE ("seek %s to: %" GST_TIME_FORMAT, _idMedia.c_str(), GST_TIME_ARGS (value));
 
   GstState curr, pending;
   GstStateChangeReturn ret;
@@ -289,7 +288,7 @@ PlayerVideo::seek (gint64 value)
 void
 PlayerVideo::speed (double value)
 {
-  TRACE ("speed to: %f", value);
+  TRACE ("speed %s to: %f", _idMedia.c_str(), value);
   if (unlikely (doubleeq (value, 0.)))
     return;
 
@@ -395,7 +394,7 @@ PlayerVideo::getStreamMediaTime ()
 {
   gint64 cur;
   if (unlikely (!gst_element_query_position (_playbin, GST_FORMAT_TIME, &cur)))
-    TRACE ("Get media time failed");
+    TRACE ("Get %s time failed", _idMedia.c_str());
   return cur;
 }
 
@@ -404,7 +403,7 @@ PlayerVideo::getStreamMediaDuration ()
 {
   gint64 dur;
   if (unlikely (!gst_element_query_duration (_playbin, GST_FORMAT_TIME, &dur)))
-    TRACE ("Get media duration failed");
+    TRACE ("Get %s duration failed", _idMedia.c_str());
   return dur;
 }
 
@@ -632,7 +631,7 @@ PlayerVideo::cb_Bus (GstBus *bus, GstMessage *msg, PlayerVideo *player)
       {
         if (unlikely (!player->getFreeze ()))
            player->setEOS (true);
-        TRACE ("EOS");
+        TRACE ("EOS of %s", player->_idMedia.c_str());
         break;
       }
     case GST_MESSAGE_ERROR:

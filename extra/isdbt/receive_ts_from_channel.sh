@@ -14,4 +14,4 @@ if [ -z "$1" ]; then
   fi
 fi
 
-isdbt-capture -c $1 $2
+isdbt-capture -c $1 -o $2

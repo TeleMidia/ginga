@@ -122,6 +122,7 @@ public:
 protected:
   Formatter *_formatter;        // formatter handle
   Media *_media;                // associated media object
+  string _idMedia;              // id media;
   string _uri;                  // source uri
   PlayerState _state;           // current state
   Time _time;                   // playback time
