@@ -332,9 +332,9 @@ PlayerSigGen::redraw (cairo_t *cr)
 // Protected.
 
 bool
-PlayerSigGen::doSetProperty (PlayerProperty code,
-                            unused (const string &name),
-                            const string &value)
+PlayerSigGen::doSetProperty (Property code,
+                             unused (const string &name),
+                             const string &value)
 {
  
   switch (code)

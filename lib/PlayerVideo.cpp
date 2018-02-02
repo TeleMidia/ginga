@@ -410,7 +410,7 @@ PlayerVideo::getStreamMediaDuration ()
 // Protected.
 
 bool
-PlayerVideo::doSetProperty (PlayerProperty code,
+PlayerVideo::doSetProperty (Property code,
                             unused (const string &name),
                             const string &value)
 {
@@ -533,9 +533,9 @@ PlayerVideo::doSetProperty (PlayerProperty code,
 void
 PlayerVideo::initProperties (set<string> *props)
 {
-  PlayerProperty code;
+  Property code;
   string defval;
-  for (auto name : *props)
+  for (auto name: *props)
   {
     code = Player::getPlayerProperty (name, &defval);
     if (code == Player::PROP_UNKNOWN)
@@ -571,9 +571,9 @@ PlayerVideo::initProperties (set<string> *props)
 }
 
 void
-PlayerVideo::stackAction (PlayerProperty code,
-                            unused (const string &name),
-                            const string &value)
+PlayerVideo::stackAction (Property code,
+                          unused (const string &name),
+                          const string &value)
 {
   PlayerVideoAction act;
   act.code = code;

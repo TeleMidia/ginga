@@ -42,57 +42,58 @@ GINGA_NAMESPACE_BEGIN
 
 typedef struct PlayerPropertyInfo
 {
-  Player::PlayerProperty code; // property code
-  bool init;                   // whether it should be initialized
-  string defval;               // default value
+  Player::Property code;  // property code
+  bool init;              // whether it should be initialized
+  string defval;          // default value
 } PlayerPropertyInfo;
 
 static map<string, PlayerPropertyInfo> player_property_map = {
-  { "background", { Player::PROP_BACKGROUND, true, "" } },
-  { "balance", { Player::PROP_BALANCE, false, "0.0" } },
-  { "bass", { Player::PROP_BASS, false, "0" } },
-  { "bottom", { Player::PROP_BOTTOM, false, "0%" } },
-  { "bounds", { Player::PROP_BOUNDS, false, "0%,0%,100%,100%" } },
-  { "debug", { Player::PROP_DEBUG, true, "false" } },
-  { "duration", { Player::PROP_DURATION, true, "indefinite" } },
-  { "focusIndex", { Player::PROP_FOCUS_INDEX, true, "" } },
-  { "fontBgColor", { Player::PROP_FONT_BG_COLOR, true, "" } },
-  { "fontColor", { Player::PROP_FONT_COLOR, true, "black" } },
-  { "fontFamily", { Player::PROP_FONT_FAMILY, true, "sans" } },
-  { "fontSize", { Player::PROP_FONT_SIZE, true, "12" } },
-  { "fontStyle", { Player::PROP_FONT_STYLE, true, "" } },
-  { "fontVariant", { Player::PROP_FONT_VARIANT, true, "" } },
-  { "fontWeight", { Player::PROP_FONT_WEIGHT, true, "" } },
-  { "freeze", { Player::PROP_FREEZE, true, "false" } },
-  { "height", { Player::PROP_HEIGHT, true, "100%" } },
-  { "horzAlign", { Player::PROP_HORZ_ALIGN, true, "left" } },
-  { "left", { Player::PROP_LEFT, true, "0" } },
-  { "location", { Player::PROP_LOCATION, false, "0,0" } },
-  { "mute", { Player::PROP_MUTE, false, "false" } },
-  { "right", { Player::PROP_RIGHT, false, "0%" } },
-  { "size", { Player::PROP_SIZE, false, "100%,100%" } },
-  { "speed", { Player::PROP_SPEED, false, "1" } },
-  { "time", { Player::PROP_TIME, false, "indefinite" } },
-  { "top", { Player::PROP_TOP, true, "0" } },
-  { "transparency", { Player::PROP_TRANSPARENCY, true, "0%" } },
-  { "treble", { Player::PROP_TREBLE, false, "0" } },
-  { "vertAlign", { Player::PROP_VERT_ALIGN, true, "top" } },
-  { "visible", { Player::PROP_VISIBLE, true, "true" } },
-  { "volume", { Player::PROP_VOLUME, false, "100%" } },
-  { "width", { Player::PROP_WIDTH, true, "100%" } },
-  { "zIndex", { Player::PROP_Z_INDEX, true, "0" } },
-  { "freq", { Player::PROP_FREQ, true, "440" } },
-  { "wave", { Player::PROP_WAVE, true, "sine" } },
+  {"background",   {Player::PROP_BACKGROUND,    true, ""}},
+  {"balance",      {Player::PROP_BALANCE,       false, "0.0"}},
+  {"bass",         {Player::PROP_BASS,          false, "0"}},
+  {"bottom",       {Player::PROP_BOTTOM,        false, "0%"}},
+  {"bounds",       {Player::PROP_BOUNDS,        false, "0%,0%,100%,100%"}},
+  {"debug",        {Player::PROP_DEBUG,         true,  "false"}},
+  {"duration",     {Player::PROP_DURATION,      true,  "indefinite"}},
+  {"focusIndex",   {Player::PROP_FOCUS_INDEX,   true,  ""}},
+  {"fontBgColor",  {Player::PROP_FONT_BG_COLOR, true,  ""}},
+  {"fontColor",    {Player::PROP_FONT_COLOR,    true,  "black"}},
+  {"fontFamily",   {Player::PROP_FONT_FAMILY,   true,  "sans"}},
+  {"fontSize",     {Player::PROP_FONT_SIZE,     true,  "12"}},
+  {"fontStyle",    {Player::PROP_FONT_STYLE,    true,  ""}},
+  {"fontVariant",  {Player::PROP_FONT_VARIANT,  true,  ""}},
+  {"fontWeight",   {Player::PROP_FONT_WEIGHT,   true,  ""}},
+  {"freeze",       {Player::PROP_FREEZE,        true,  "false"}},
+  {"freq",         {Player::PROP_FREQ,          true,  "440"}},
+  {"height",       {Player::PROP_HEIGHT,        true,  "100%"}},
+  {"horzAlign",    {Player::PROP_HORZ_ALIGN,    true,  "left"}},
+  {"left",         {Player::PROP_LEFT,          true,  "0"}},
+  {"location",     {Player::PROP_LOCATION,      false, "0,0"}},
+  {"mute",         {Player::PROP_MUTE,          false, "false"}},
+  {"right",        {Player::PROP_RIGHT,         false, "0%"}},
+  {"size",         {Player::PROP_SIZE,          false, "100%,100%"}},
+  {"speed",        {Player::PROP_SPEED,         false, "1"}},
+  {"time",         {Player::PROP_TIME,          false, "indefinite"}},
+  {"top",          {Player::PROP_TOP,           true,  "0"}},
+  {"transparency", {Player::PROP_TRANSPARENCY,  true,  "0%"}},
+  {"treble",       {Player::PROP_TREBLE,        false, "0"}},
+  {"vertAlign",    {Player::PROP_VERT_ALIGN,    true,  "top"}},
+  {"visible",      {Player::PROP_VISIBLE,       true,  "true"}},
+  {"volume",       {Player::PROP_VOLUME,        false, "100%"}},
+  {"wave",         {Player::PROP_WAVE,          true,  "sine"}},
+  {"width",        {Player::PROP_WIDTH,         true,  "100%"}},
+  {"zIndex",       {Player::PROP_Z_INDEX,       true,  "0"}},
+  {"zOrder",       {Player::PROP_Z_ORDER,       true,  "0"}},
 };
 
 static map<string, string> player_property_aliases = {
-  { "backgroundColor", "background" },
-  { "balanceLevel", "balance" },
-  { "bassLevel", "bass" },
-  { "explicitDur", "duration" },
-  { "soundLevel", "volume" },
-  { "rate", "speed" },
-  { "trebleLevel", "treble" },
+  {"backgroundColor", "background"},
+  {"balanceLevel",    "balance"},
+  {"bassLevel",       "bass"},
+  {"explicitDur",     "duration"},
+  {"soundLevel",      "volume"},
+  {"rate",            "speed"},
+  {"trebleLevel",     "treble"},
 };
 
 
@@ -129,10 +130,17 @@ Player::~Player ()
   _properties.clear ();
 }
 
-Player::PlayerState
+Player::State
 Player::getState ()
 {
   return _state;
+}
+
+void
+Player::getZ (int *z, int *zorder)
+{
+  tryset (z, _prop.z);
+  tryset (zorder, _prop.zorder);
 }
 
 bool
@@ -175,20 +183,6 @@ void
 Player::setEOS (bool eos)
 {
   _eos = eos;
-}
-
-void
-Player::getZ (int *z, int *zorder)
-{
-  tryset (z, _prop.z);
-  tryset (zorder, _prop.zorder);
-}
-
-void
-Player::setZ (int z, int zorder)
-{
-  _prop.z = z;
-  _prop.zorder = zorder;
 }
 
 void
@@ -235,7 +229,7 @@ void
 Player::setProperty (const string &name, const string &value)
 {
 
-  Player::PlayerProperty code;
+  Player::Property code;
   bool use_defval;
   string defval;
   string _value;
@@ -458,7 +452,7 @@ Player::setCurrentFocus (const string &index)
   _currentFocus = index;
 }
 
-Player::PlayerProperty
+Player::Property
 Player::getPlayerProperty (const string &name, string *defval)
 {
   map<string, PlayerPropertyInfo>::iterator it;
@@ -542,7 +536,7 @@ Player::createPlayer (Formatter *formatter, Media *media,
 // Protected.
 
 bool
-Player::doSetProperty (PlayerProperty code, unused (const string &name),
+Player::doSetProperty (Property code, unused (const string &name),
                        const string &value)
 {
   switch (code)
@@ -639,7 +633,12 @@ Player::doSetProperty (PlayerProperty code, unused (const string &name),
       }
     case PROP_Z_INDEX:
       {
-        this->setZ (xstrtoint (value, 10), _prop.zorder);
+        _prop.z = xstrtoint (value, 10);
+        break;
+      }
+    case PROP_Z_ORDER:
+      {
+        _prop.zorder = xstrtoint (value, 10);
         break;
       }
     case PROP_TRANSPARENCY:

@@ -40,8 +40,8 @@ public:
   void sendPresentationEvent (const string &, const string &) override;
 
 protected:
-  virtual bool doSetProperty (PlayerProperty, const string &,
-                              const string &) override;
+  virtual bool doSetProperty (Property,
+                              const string &, const string &) override;
 private:
   ncluaw_t *_nw;                // the NCLua state
   Rect _init_rect;              // initial output rectangle
