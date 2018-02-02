@@ -259,6 +259,11 @@ Formatter::start (const string &file, string *errmsg)
       g_assert_nonnull (evt);
       if (_doc->evalAction (evt, Event::START) == 0)
         return false;
+
+      // start settings
+      evt = _doc->getSettings()->getLambda ();
+      g_assert_nonnull (evt);
+      g_assert (evt->transition (Event::START));
     }
 
   // Refresh current focus.
@@ -297,6 +302,11 @@ Formatter::start (const string &buf, size_t size, string *errmsg)
   g_assert_nonnull (root);
   if (unlikely (_doc->evalAction (root->getLambda (), Event::START) == 0))
     return false;
+
+  // start settings
+  Event* evt = _doc->getSettings()->getLambda ();
+  g_assert_nonnull (evt);
+  g_assert (evt->transition (Event::START));
 
   // Refresh current focus.
   settings = _doc->getSettings ();
