@@ -21,7 +21,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Player.h"
 
 GINGA_NAMESPACE_BEGIN
-
+class Media;
 class PlayerVideo: public Player
 {
 public:

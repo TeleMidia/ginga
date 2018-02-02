@@ -105,7 +105,8 @@ Player::Player (Formatter *formatter, Media *media, const string &uri)
 
   g_assert_nonnull (media);
   _media = media;
-
+  
+  _idMedia = media->getId ();
   _uri = uri;
   _state = SLEEPING;
   _time = 0;
@@ -684,7 +685,7 @@ Player::redrawDebuggingInfo (cairo_t *cr)
   string str;
   double sx, sy;
 
-  id = _media->getId ();
+  id = _idMedia;
   if (id.find ("/") != std::string::npos)
     {
       id = xpathdirname (id);
