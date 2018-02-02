@@ -155,7 +155,19 @@ Context::sendTick (Time total, Time diff, Time frame)
   Object::sendTick (total, diff, frame);
 
   // Check for EOS.
-  if (_awakeChildren == 0)
+  // if the context is the body there is only one awake
+  if (_parent == nullptr && _awakeChildren == 1)
+    {
+      // the settings should be the only one awake
+      if (_doc->getSettings ()->isOccurring ()){
+        _doc->evalAction (_lambda, Event::STOP);
+      }
+      else{
+        g_assert_not_reached ();
+      }
+    }
+  // if the context is not the body
+  else if ( _awakeChildren == 0)
     {
       _doc->evalAction (_lambda, Event::STOP);
     }
