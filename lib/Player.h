@@ -72,6 +72,7 @@ public:
      PROP_VOLUME,
      PROP_WIDTH,
      PROP_Z_INDEX,
+     PROP_Z_ORDER,
      PROP_FREQ,
      PROP_WAVE,
     };
@@ -122,7 +123,7 @@ public:
 protected:
   Formatter *_formatter;        // formatter handle
   Media *_media;                // associated media object
-  string _idMedia;              // id media;
+  string _id;                   // id of the associated media object
   string _uri;                  // source uri
   PlayerState _state;           // current state
   Time _time;                   // playback time
