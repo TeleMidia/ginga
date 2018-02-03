@@ -76,9 +76,6 @@ public:
   virtual bool beforeTransition (Event *, Event::Transition) = 0;
   virtual bool afterTransition (Event *, Event::Transition) = 0;
 
-  bool getData (const string &, void **);
-  bool setData (const string &, void *, UserDataCleanFunc fn = nullptr);
-
 protected:
   string _id;                         // id
   Document *_doc;                     // parent document
@@ -89,7 +86,6 @@ protected:
   Event *_lambda;                     // lambda event
   set<Event *> _events;               // all events
   list<pair<Action, Time> > _delayed; // delayed actions
-  UserData _udata;                    // user data
 
   virtual void doStart ();
   virtual void doStop ();
