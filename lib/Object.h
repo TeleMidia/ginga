@@ -64,11 +64,11 @@ public:
   bool isSleeping ();
 
   virtual string getProperty (const string &);
-  virtual void setProperty (const string &, const string &, Time dur=0);
+  virtual void setProperty (const string &, const string &, Time dur = 0);
 
-  const list<pair<Action, Time>> *getDelayedActions ();
+  const list<pair<Action, Time> > *getDelayedActions ();
   void addDelayedAction (Event *, Event::Transition,
-                         const string &value="", Time delay=0);
+                         const string &value = "", Time delay = 0);
 
   virtual void sendKey (const string &, bool);
   virtual void sendTick (Time, Time, Time);
@@ -77,19 +77,19 @@ public:
   virtual bool afterTransition (Event *, Event::Transition) = 0;
 
   bool getData (const string &, void **);
-  bool setData (const string &, void *, UserDataCleanFunc fn=nullptr);
+  bool setData (const string &, void *, UserDataCleanFunc fn = nullptr);
 
 protected:
-  string _id;                                           // id
-  Document *_doc;                                       // parent document
-  Composition *_parent;                                 // parent object
-  list<string> _aliases;                                // aliases
-  Time _time;                                           // playback time
-  map<string, string> _properties;                      // property map
-  Event *_lambda;                                       // lambda event
-  set<Event *> _events;                                 // all events
-  list<pair<Action, Time>> _delayed;                    // delayed actions
-  UserData _udata;                                      // user data
+  string _id;                         // id
+  Document *_doc;                     // parent document
+  Composition *_parent;               // parent object
+  list<string> _aliases;              // aliases
+  Time _time;                         // playback time
+  map<string, string> _properties;    // property map
+  Event *_lambda;                     // lambda event
+  set<Event *> _events;               // all events
+  list<pair<Action, Time> > _delayed; // delayed actions
+  UserData _udata;                    // user data
 
   virtual void doStart ();
   virtual void doStop ();

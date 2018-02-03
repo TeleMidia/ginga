@@ -20,17 +20,12 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  list<Predicate::Type> types =
-    {
-     Predicate::FALSUM,
-     Predicate::VERUM,
-     Predicate::ATOM,
-     Predicate::NEGATION,
-     Predicate::CONJUNCTION,
-     Predicate::DISJUNCTION,
-    };
+  list<Predicate::Type> types = {
+    Predicate::FALSUM,   Predicate::VERUM,       Predicate::ATOM,
+    Predicate::NEGATION, Predicate::CONJUNCTION, Predicate::DISJUNCTION,
+  };
 
-  for (auto type: types)
+  for (auto type : types)
     {
       Predicate *pred = new Predicate (type);
       g_assert (pred->getType () == type);

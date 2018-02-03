@@ -23,7 +23,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-class Context: public Composition
+class Context : public Composition
 {
 public:
   Context (const string &);
@@ -33,8 +33,7 @@ public:
   string getObjectTypeAsString () override;
   string toString () override;
   string getProperty (const string &) override;
-  void setProperty (const string &, const string &,
-                    Time dur=0) override;
+  void setProperty (const string &, const string &, Time dur = 0) override;
   void sendKey (const string &, bool) override;
   void sendTick (Time, Time, Time) override;
   bool beforeTransition (Event *, Event::Transition) override;
@@ -44,7 +43,7 @@ public:
   const list<Event *> *getPorts ();
   void addPort (Event *);
 
-  const list<pair<list<Action>,list<Action>>> *getLinks ();
+  const list<pair<list<Action>, list<Action> > > *getLinks ();
   void addLink (list<Action>, list<Action>);
 
   void incAwakeChildren ();
@@ -54,10 +53,10 @@ public:
   void setLinksStatus (bool);
 
 private:
-  list<Event *> _ports;                         // list of ports
-  list<pair<list<Action>,list<Action>>> _links; // list of links
-  int _awakeChildren;                           // count awake children
-  bool _status;                                 // whether links are active
+  list<Event *> _ports;                            // list of ports
+  list<pair<list<Action>, list<Action> > > _links; // list of links
+  int _awakeChildren;                              // count awake children
+  bool _status; // whether links are active
 };
 
 GINGA_NAMESPACE_END

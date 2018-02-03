@@ -31,12 +31,12 @@ create_about_window (void)
 
   GtkWidget *header_bar = gtk_header_bar_new ();
   g_assert_nonnull (header_bar);
-  gtk_header_bar_set_title(GTK_HEADER_BAR (header_bar), "About Ginga");
+  gtk_header_bar_set_title (GTK_HEADER_BAR (header_bar), "About Ginga");
   gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header_bar), true);
   gtk_header_bar_set_decoration_layout (GTK_HEADER_BAR (header_bar),
-                                        "menu:close"); 
+                                        "menu:close");
 
-  gtk_window_set_titlebar (GTK_WINDOW (aboutWindow), header_bar);                                      
+  gtk_window_set_titlebar (GTK_WINDOW (aboutWindow), header_bar);
 
   gtk_about_dialog_set_copyright (
       GTK_ABOUT_DIALOG (aboutWindow),
@@ -50,7 +50,7 @@ create_about_window (void)
   gtk_about_dialog_set_website_label (GTK_ABOUT_DIALOG (aboutWindow),
                                       "http://ginga.org.br");
 
-  const gchar **authors = (const gchar **)malloc (sizeof (gchar *) * 2);
+  const gchar **authors = (const gchar **) malloc (sizeof (gchar *) * 2);
   authors[0] = g_strconcat (
       "PUC-Rio/TeleMidia Lab. \nwww.telemidia.puc-rio.br", NULL);
   authors[1] = NULL;

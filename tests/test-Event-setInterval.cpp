@@ -18,14 +18,14 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Event.h"
 #include "Media.h"
 
-#define CHECK_INTERVAL(e, exp_begin, exp_end)   \
-  G_STMT_START                                  \
-  {                                             \
-    Time begin, end;                            \
-    (e)->getInterval (&begin, &end);            \
-    g_assert (begin == (exp_begin));            \
-    g_assert (end == (exp_end));                \
-  }                                             \
+#define CHECK_INTERVAL(e, exp_begin, exp_end)                              \
+  G_STMT_START                                                             \
+  {                                                                        \
+    Time begin, end;                                                       \
+    (e)->getInterval (&begin, &end);                                       \
+    g_assert (begin == (exp_begin));                                       \
+    g_assert (end == (exp_end));                                           \
+  }                                                                        \
   G_STMT_END
 
 int

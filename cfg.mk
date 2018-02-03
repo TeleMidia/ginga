@@ -22,7 +22,13 @@ COPYRIGHT_HOLDER= PUC-Rio/Laboratorio TeleMidia
 INDENT= clang-format
 INDENT_OPTIONS= -i
 INDENT_INCLUDE= $(shell $(GIT) ls-files '*.cpp')
-INDENT_EXCLUDE= COPYING contrib/% src/ginga.h
+INDENT_EXCLUDE= COPYING extra/%
+INDENT_EXCLUDE+= lib/aux-ginga.h
+INDENT_EXCLUDE+= lib/aux-gl.cpp
+INDENT_EXCLUDE+= lib/aux-gl.h
+INDENT_EXCLUDE+= lib/aux-glib.h
+INDENT_EXCLUDE+= lib/aux-lua.h
+INDENT_EXCLUDE+= lib/ginga.h
 INDENT_JOIN_EMPTY_LINES_EXCLUDE= $(INDENT_EXCLUDE)
 SC_USELESS_IF_BEFORE_FREE_ALIASES= g_free
 

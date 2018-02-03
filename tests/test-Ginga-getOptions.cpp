@@ -22,15 +22,14 @@ int
 main (void)
 {
   const GingaOptions *out;
-  GingaOptions opts =
-    {
-     10,                        // width
-     20,                        // height
-     false,                     // debug
-     false,                     // experimental
-     false,                     // opengl
-     "green",                   // background
-    };
+  GingaOptions opts = {
+    10,      // width
+    20,      // height
+    false,   // debug
+    false,   // experimental
+    false,   // opengl
+    "green", // background
+  };
   Ginga *ginga = Ginga::create (0, nullptr, &opts);
   g_assert_nonnull (ginga);
 

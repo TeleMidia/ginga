@@ -29,7 +29,6 @@ Ginga::~Ginga ()
 {
 }
 
-
 // Class methods.
 
 /**

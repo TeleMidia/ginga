@@ -36,7 +36,7 @@ public:
   double getSpeed ();
   int getStateNode ();
   void setStateNode (int);
-  void update(const string &, double, double, Time);
+  void update (const string &, double, double, Time);
   bool isDone ();
   bool isInit ();
 

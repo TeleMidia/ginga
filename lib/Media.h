@@ -23,7 +23,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-class Media: public Object
+class Media : public Object
 {
 public:
   Media (const string &);
@@ -32,7 +32,7 @@ public:
   // Object:
   string getObjectTypeAsString () override;
   string toString () override;
-  void setProperty (const string &, const string &, Time dur=0) override;
+  void setProperty (const string &, const string &, Time dur = 0) override;
   void sendKey (const string &, bool) override;
   void sendTick (Time, Time, Time) override;
   bool beforeTransition (Event *, Event::Transition) override;
@@ -44,7 +44,7 @@ public:
   virtual void redraw (cairo_t *);
 
 protected:
-  Player *_player;              // underlying player
+  Player *_player; // underlying player
 
   void doStop () override;
 };

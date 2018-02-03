@@ -199,7 +199,6 @@ Corrida de cavalos.
     </causalConnector>
   </connectorBase>
 
-
   <ruleBase>
     <!-- Red results -->
     <compositeRule id="rBetRedWin" operator="and">

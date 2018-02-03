@@ -30,7 +30,6 @@ main (void)
   g_assert (xstrsplit ("hello world", 'a') == list);
   list.clear ();
 
-
   list.push_back ("hello");
   list.push_back ("world");
   g_assert (xstrsplit ("hello world", ' ') == list);

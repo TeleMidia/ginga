@@ -171,9 +171,9 @@ PlayerAnimator::update (Rect *rect, Color *bgColor, guint8 *alpha,
           UPDATE (info, int, *it, lround, G_MININT, G_MAXINT);
           advance (it, 2);
           UPDATE (info, int, *it, lround, G_MININT, G_MAXINT);
-          
-          if(info->isDone ())
-            cropPolygon->clear();
+
+          if (info->isDone ())
+            cropPolygon->clear ();
         }
       else if (name == "barwipe:leftToRight")
         {
@@ -182,15 +182,15 @@ PlayerAnimator::update (Rect *rect, Color *bgColor, guint8 *alpha,
           advance (it, 6);
           UPDATE (info, int, *it, lround, G_MININT, G_MAXINT);
 
-          if(info->isDone ())
-            cropPolygon->clear();
+          if (info->isDone ())
+            cropPolygon->clear ();
         }
       else if (name == "diagonalwipe:topLeft:x")
         {
           list<int>::iterator it = cropPolygon->begin ();
           if (info->getStateNode () == 1)
             advance (it, 3);
-          else 
+          else
             advance (it, 2);
 
           UPDATE (info, int, *it, lround, G_MININT, G_MAXINT);
@@ -201,18 +201,18 @@ PlayerAnimator::update (Rect *rect, Color *bgColor, guint8 *alpha,
               info->setStateNode (1);
               this->updateSchedule (
                   info, "diagonalwipe:topLeft:x", to_string (rect->y),
-                  to_string (rect->y + rect->height), info->getDuration ()); 
+                  to_string (rect->y + rect->height), info->getDuration ());
             }
 
-          if(info->isDone ())
-            cropPolygon->clear();  
+          if (info->isDone ())
+            cropPolygon->clear ();
         }
       else if (name == "diagonalwipe:topLeft:y")
         {
-         list<int>::iterator it = cropPolygon->begin ();
+          list<int>::iterator it = cropPolygon->begin ();
           if (info->getStateNode () == 0)
             advance (it, 1);
-         
+
           UPDATE (info, int, *it, lround, G_MININT, G_MAXINT);
 
           if ((info->getStateNode () == 0)
@@ -221,11 +221,11 @@ PlayerAnimator::update (Rect *rect, Color *bgColor, guint8 *alpha,
               info->setStateNode (1);
               this->updateSchedule (
                   info, "diagonalwipe:topLeft:y", to_string (rect->x),
-                  to_string (rect->x + rect->width), info->getDuration ());   
+                  to_string (rect->x + rect->width), info->getDuration ());
             }
 
-          if(info->isDone ())
-            cropPolygon->clear();
+          if (info->isDone ())
+            cropPolygon->clear ();
         }
       else if (name == "background:r")
         {
@@ -357,10 +357,10 @@ PlayerAnimator::scheduleTransition (const string &notificationType,
 
           this->schedule ("diagonalwipe:topLeft:x", to_string (rect->x),
                           to_string (rect->x + rect->width),
-                          _transIn->getDur ()/2);
+                          _transIn->getDur () / 2);
           this->schedule ("diagonalwipe:topLeft:y", to_string (rect->y),
                           to_string (rect->y + rect->height),
-                          _transIn->getDur ()/2);
+                          _transIn->getDur () / 2);
         }
       else
         {

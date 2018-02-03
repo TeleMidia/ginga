@@ -18,7 +18,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Event.h"
 #include "Media.h"
 
-#define CHECK_TYPE(type, str)\
+#define CHECK_TYPE(type, str)                                              \
   g_assert (Event::getEventTypeAsString ((type)) == (str))
 
 int

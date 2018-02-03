@@ -112,7 +112,6 @@ FIND_LIBRARY(GSTREAMER_gstvideo_LIBRARY NAMES gstvideo-1.0 libgstvideo-1.0
                                         DOC "gstvideo library to link with"
                                         NO_SYSTEM_ENVIRONMENT_PATH)
 
-
 IF (GSTREAMER_gst_INCLUDE_DIR AND GSTREAMER_gstconfig_INCLUDE_DIR AND
     GSTREAMER_gstaudio_LIBRARY AND GSTREAMER_gstbase_LIBRARY AND GSTREAMER_gstcontroller_LIBRARY AND
     GSTREAMER_gstdataprotocol_LIBRARY AND GSTREAMER_gstinterfaces_LIBRARY AND GSTREAMER_gstnet_LIBRARY AND

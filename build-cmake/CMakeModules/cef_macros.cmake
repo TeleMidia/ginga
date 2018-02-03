@@ -7,7 +7,6 @@ if(NOT DEFINED _CEF_ROOT_EXPLICIT)
   message(FATAL_ERROR "Use find_package(CEF) to load this file.")
 endif()
 
-
 #
 # Shared macros.
 #
@@ -120,7 +119,6 @@ macro(COPY_FILES target file_list source_dir target_dir)
   endforeach()
 endmacro()
 
-
 #
 # Linux macros.
 #
@@ -166,7 +164,6 @@ macro(SET_LINUX_SUID_PERMISSIONS target executable)
 endmacro()
 
 endif(OS_LINUX)
-
 
 #
 # Mac OS X macros.
@@ -235,7 +232,6 @@ endmacro()
 
 endif(OS_MACOSX)
 
-
 #
 # Windows macros.
 #
@@ -255,7 +251,6 @@ macro(ADD_WINDOWS_MANIFEST manifest_path target extension)
 endmacro()
 
 endif(OS_WINDOWS)
-
 
 #
 # Target configuration macros.

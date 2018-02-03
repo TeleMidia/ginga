@@ -58,7 +58,7 @@ main (void)
 </ncl>");
 
     // Check lambda
-    Context *c = cast (Context *, doc->getRoot());
+    Context *c = cast (Context *, doc->getRoot ());
     g_assert_nonnull (c);
 
     Event *lambda = c->getLambda ();
@@ -137,7 +137,7 @@ main (void)
 </ncl>");
 
     // Check lambda
-    Context *c = cast (Context *, doc->getRoot());
+    Context *c = cast (Context *, doc->getRoot ());
     g_assert_nonnull (c);
 
     Event *lambda = c->getLambda ();
@@ -226,7 +226,7 @@ main (void)
  </body>\n\
 </ncl>");
 
-    Context *c = cast (Context *, doc->getRoot());
+    Context *c = cast (Context *, doc->getRoot ());
     g_assert_nonnull (c);
 
     Event *lambda = c->getLambda ();

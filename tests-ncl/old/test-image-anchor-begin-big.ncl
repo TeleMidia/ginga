@@ -64,7 +64,6 @@
         <bind role="start" component="text2"  />
      </link>
 
-
     <link xconnector="onBeginStop">
         <bind role="onBegin" component="text2" interface="segText" />
         <bind role="stop" component="text1"  />

@@ -28,7 +28,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-
 // Public.
 
 Object::Object (const string &id)
@@ -45,7 +44,7 @@ Object::Object (const string &id)
 
 Object::~Object ()
 {
-  for (auto evt: _events)
+  for (auto evt : _events)
     delete evt;
 }
 
@@ -88,16 +87,15 @@ Object::toString ()
 {
   string str;
 
-  str = xstrbuild
-    ("%s (%p):\n", this->getObjectTypeAsString ().c_str (), this);
+  str = xstrbuild ("%s (%p):\n", this->getObjectTypeAsString ().c_str (),
+                   this);
 
   if (_parent != nullptr)
     {
-      str += xstrbuild
-        ("\
+      str += xstrbuild ("\
   parent: %p (%s, id: %s)\n",
-         _parent, _parent->getObjectTypeAsString ().c_str (),
-         _parent->getId ().c_str ());
+                        _parent, _parent->getObjectTypeAsString ().c_str (),
+                        _parent->getId ().c_str ());
     }
   str += "  id: " + _id + "\n";
   auto it = _aliases.begin ();
@@ -119,7 +117,7 @@ Object::toString ()
   list<string> pres;
   list<string> attr;
   list<string> sel;
-  for (auto evt: _events)
+  for (auto evt : _events)
     switch (evt->getType ())
       {
       case Event::PRESENTATION:
@@ -135,14 +133,13 @@ Object::toString ()
         g_assert_not_reached ();
       }
 
-  list<pair<string, list<string> *>> evts =
-  {
-   {"evts pres.", &pres},
-   {"evts attr.", &attr},
-   {"evts sel.", &sel},
+  list<pair<string, list<string> *> > evts = {
+    {"evts pres.", &pres},
+    {"evts attr.", &attr},
+    {"evts sel.", &sel},
   };
 
-  for (auto it_evts: evts)
+  for (auto it_evts : evts)
     {
       auto it_evt = it_evts.second->begin ();
       if (it_evt == it_evts.second->end ())
@@ -156,7 +153,7 @@ Object::toString ()
   if (_properties.size () > 0)
     {
       str += "  properties:\n";
-      for (auto it: _properties)
+      for (auto it : _properties)
         str += "    " + it.first + "='" + it.second + "'\n";
     }
 
@@ -172,7 +169,7 @@ Object::getAliases ()
 bool
 Object::hasAlias (const string &alias)
 {
-  for (auto curr: _aliases)
+  for (auto curr : _aliases)
     if (curr == alias)
       return true;
   return false;
@@ -193,7 +190,7 @@ Object::getEvents ()
 Event *
 Object::getEvent (Event::Type type, const string &id)
 {
-  for (auto evt: _events)
+  for (auto evt : _events)
     if (evt->getType () == type && evt->getId () == id)
       return evt;
   return nullptr;
@@ -226,7 +223,7 @@ Object::getPresentationEvent (const string &id)
 Event *
 Object::getPresentationEventByLabel (const string &label)
 {
-  for (Event *evt: _events)
+  for (Event *evt : _events)
     if (evt->getType () == Event::PRESENTATION && evt->getLabel () == label)
       return evt;
   return nullptr;
@@ -319,7 +316,7 @@ Object::setProperty (const string &name, const string &value, Time dur)
   _properties[name] = value;
 }
 
-const list<pair<Action, Time>> *
+const list<pair<Action, Time> > *
 Object::getDelayedActions ()
 {
   return &_delayed;
@@ -337,8 +334,7 @@ Object::addDelayedAction (Event *event, Event::Transition transition,
   _delayed.push_back (std::make_pair (act, _time + delay));
 }
 
-void
-Object::sendKey (unused (const string &key), unused (bool press))
+void Object::sendKey (unused (const string &key), unused (bool press))
 {
 }
 
@@ -346,13 +342,13 @@ void
 Object::sendTick (unused (Time total), Time diff, unused (Time frame))
 {
   if (unlikely (!this->isOccurring ()))
-    return;                     // nothing to do
+    return; // nothing to do
 
   g_assert (GINGA_TIME_IS_VALID (_time));
   _time += diff;
 
   list<Action> trigger;
-  for (auto &it: _delayed)
+  for (auto &it : _delayed)
     {
       if (_time >= it.second)
         {
@@ -361,7 +357,7 @@ Object::sendTick (unused (Time total), Time diff, unused (Time frame))
         }
     }
 
-  for (auto action: trigger)
+  for (auto action : trigger)
     {
       _doc->evalAction (action);
       if (!this->isOccurring ())
@@ -389,7 +385,6 @@ Object::setData (const string &key, void *value, UserDataCleanFunc fn)
   return _udata.setData (key, value, fn);
 }
 
-
 // Private.
 
 void
@@ -404,10 +399,10 @@ void
 Object::doStop ()
 {
   _time = GINGA_TIME_NONE;
-  for (auto evt: _events)
+  for (auto evt : _events)
     evt->reset ();
   _delayed.clear ();
-  if(_parent != nullptr && instanceof (Context *, _parent))
+  if (_parent != nullptr && instanceof (Context *, _parent))
     cast (Context *, _parent)->decAwakeChildren ();
 }
 

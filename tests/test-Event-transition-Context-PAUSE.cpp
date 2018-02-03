@@ -176,7 +176,7 @@ main (void)
     g_assert (port2->getState () == Event::PAUSED);
     g_assert (p1->getState () == Event::SLEEPING);
 
-    //PAUSE
+    // PAUSE
     g_assert_false (lambda->transition (Event::PAUSE));
 
     // after STOP all events are SLEEPING

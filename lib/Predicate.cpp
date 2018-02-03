@@ -31,7 +31,7 @@ Predicate::Predicate (Predicate::Type type)
 
 Predicate::~Predicate ()
 {
-  for (auto child: _children)
+  for (auto child : _children)
     delete child;
 }
 
@@ -76,10 +76,10 @@ Predicate::toString ()
           default:
             g_assert_not_reached ();
           }
-        test = (_atom.left[0] == '$')
-          ? _atom.left + test : "'" + _atom.left + "'" + test;
-        test = (_atom.right[0] == '$')
-          ? test + _atom.right : test + "'" + _atom.right + "'";
+        test = (_atom.left[0] == '$') ? _atom.left + test
+                                      : "'" + _atom.left + "'" + test;
+        test = (_atom.right[0] == '$') ? test + _atom.right
+                                       : test + "'" + _atom.right + "'";
         return test;
       }
     default:
@@ -124,7 +124,7 @@ Predicate::clone ()
     }
   else
     {
-      for (auto child: _children)
+      for (auto child : _children)
         clone->addChild (child->clone ());
     }
   return clone;
@@ -141,8 +141,7 @@ Predicate::setTest (const string &left, Predicate::Test test,
 }
 
 void
-Predicate::getTest (string *left, Predicate::Test *test,
-                             string *right)
+Predicate::getTest (string *left, Predicate::Test *test, string *right)
 {
   g_assert (_type == Predicate::ATOM);
   tryset (left, _atom.left);
@@ -170,7 +169,7 @@ Predicate::addChild (Predicate *child)
     case Predicate::VERUM:
     case Predicate::ATOM:
     default:
-      g_assert_not_reached  ();
+      g_assert_not_reached ();
     }
   child->initParent (this);
   _children.push_back (child);

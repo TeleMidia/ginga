@@ -29,44 +29,46 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "PlayerText.h"
 
 #if defined WITH_LUA && WITH_LUA
-# include "ParserLua.h"         // for ncl-ltab support
+#include "ParserLua.h" // for ncl-ltab support
 #endif
 
 GINGA_NAMESPACE_BEGIN
 
 // Option defaults.
-static GingaOptions opts_defaults =
-{
-  800,                          // width
-  600,                          // height
-  false,                        // debug
-  false,                        // experimental
-  false,                        // opengl
-  "",                           // background ("" == none)
+static GingaOptions opts_defaults = {
+  800,   // width
+  600,   // height
+  false, // debug
+  false, // experimental
+  false, // opengl
+  "",    // background ("" == none)
 };
 
 // Option data.
 typedef struct GingaOptionData
 {
-  GType type;                   // option type
-  int offset;                   // offset in GingaOption struct
-  void *func;                   // update function
+  GType type; // option type
+  int offset; // offset in GingaOption struct
+  void *func; // update function
 } OptionTab;
 
-#define OPTS_ENTRY(name,type,func)                              \
-  {G_STRINGIFY (name),                                          \
-      {(type), offsetof (GingaOptions, name),                   \
-         pointerof (G_PASTE (Formatter::setOption, func))}}
+#define OPTS_ENTRY(name, type, func)                                       \
+  {                                                                        \
+    G_STRINGIFY (name),                                                    \
+    {                                                                      \
+      (type), offsetof (GingaOptions, name),                               \
+          pointerof (G_PASTE (Formatter::setOption, func))                 \
+    }                                                                      \
+  }
 
 // Option table.
-static map<string, GingaOptionData> opts_table =
-{
-  OPTS_ENTRY (background,   G_TYPE_STRING,  Background),
-  OPTS_ENTRY (debug,        G_TYPE_BOOLEAN, Debug),
+static map<string, GingaOptionData> opts_table = {
+  OPTS_ENTRY (background, G_TYPE_STRING, Background),
+  OPTS_ENTRY (debug, G_TYPE_BOOLEAN, Debug),
   OPTS_ENTRY (experimental, G_TYPE_BOOLEAN, Experimental),
-  OPTS_ENTRY (height,       G_TYPE_INT,     Size),
-  OPTS_ENTRY (opengl,       G_TYPE_BOOLEAN, OpenGL),
-  OPTS_ENTRY (width,        G_TYPE_INT,     Size),
+  OPTS_ENTRY (height, G_TYPE_INT, Size),
+  OPTS_ENTRY (opengl, G_TYPE_BOOLEAN, OpenGL),
+  OPTS_ENTRY (width, G_TYPE_INT, Size),
 };
 
 // Indexes option table.
@@ -104,7 +106,6 @@ zcmp (Media *a, Media *b)
   return 0;
 }
 
-
 // Public: External API.
 
 GingaState
@@ -121,7 +122,7 @@ Formatter::start (const string &file, string *errmsg)
   Event *evt;
 
   if (_state != GINGA_STATE_STOPPED)
-    return false;               // nothing to do
+    return false; // nothing to do
 
   // Parse document.
   g_assert_null (_doc);
@@ -164,7 +165,7 @@ Formatter::start (const string &file, string *errmsg)
     return false;
 
   // Start settings.
-  evt = _doc->getSettings()->getLambda ();
+  evt = _doc->getSettings ()->getLambda ();
   g_assert_nonnull (evt);
   g_assert (evt->transition (Event::START));
 
@@ -182,10 +183,10 @@ Formatter::start (const string &buf, size_t size, string *errmsg)
   MediaSettings *settings;
 
   if (_state != GINGA_STATE_STOPPED)
-    return false;               // nothing to do
+    return false; // nothing to do
 
-  _doc = Parser::parseBuffer
-    (buf.c_str (), size, _opts.width, _opts.height, errmsg);
+  _doc = Parser::parseBuffer (buf.c_str (), size, _opts.width, _opts.height,
+                              errmsg);
   if (unlikely (_doc == nullptr))
     return false;
 
@@ -206,7 +207,7 @@ Formatter::start (const string &buf, size_t size, string *errmsg)
     return false;
 
   // start settings
-  Event* evt = _doc->getSettings()->getLambda ();
+  Event *evt = _doc->getSettings ()->getLambda ();
   g_assert_nonnull (evt);
   g_assert (evt->transition (Event::START));
 
@@ -224,7 +225,7 @@ bool
 Formatter::stop ()
 {
   if (_state == GINGA_STATE_STOPPED)
-    return false;               // nothing to do
+    return false; // nothing to do
 
   delete _doc;
   _doc = nullptr;
@@ -241,9 +242,9 @@ Formatter::resize (int width, int height)
   _opts.height = height;
 
   if (_state != GINGA_STATE_PLAYING)
-    return;                     // nothing to do
+    return; // nothing to do
 
-  for (auto media: *_doc->getMedias ())
+  for (auto media : *_doc->getMedias ())
     {
       string top;
       string bottom;
@@ -283,44 +284,36 @@ Formatter::redraw (cairo_t *cr)
   GList *l;
 
   if (_state != GINGA_STATE_PLAYING)
-    return;                     // nothing to do
+    return; // nothing to do
 
-  if (_opts.opengl)  //clear screen opengl
+  if (_opts.opengl) // clear screen opengl
     {
       GL::beginDraw ();
       GL::clear_scene (_opts.width, _opts.height);
     }
-   else  //clear screen cairo
-   {
+  else // clear screen cairo
+    {
       cairo_save (cr);
-      cairo_set_source_rgba (cr,
-                    0,
-                    0,
-                    0,
-                    1.0);
+      cairo_set_source_rgba (cr, 0, 0, 0, 1.0);
       cairo_rectangle (cr, 0, 0, _opts.width, _opts.height);
       cairo_fill (cr);
       cairo_restore (cr);
-   }
+    }
 
   if (_background.alpha > 0)
     {
       if (_opts.opengl)
         {
           GL::draw_quad (0, 0, _opts.width, _opts.height,
-                         (float) _background.red,
-                         (float) _background.green,
+                         (float) _background.red, (float) _background.green,
                          (float) _background.blue,
                          (float) _background.alpha);
         }
       else
         {
           cairo_save (cr);
-          cairo_set_source_rgba (cr,
-                                 _background.red,
-                                 _background.green,
-                                 _background.blue,
-                                 _background.alpha);
+          cairo_set_source_rgba (cr, _background.red, _background.green,
+                                 _background.blue, _background.alpha);
           cairo_rectangle (cr, 0, 0, _opts.width, _opts.height);
           cairo_fill (cr);
           cairo_restore (cr);
@@ -328,7 +321,7 @@ Formatter::redraw (cairo_t *cr)
     }
 
   zlist = nullptr;
-  for (auto &media: *_doc->getMedias ())
+  for (auto &media : *_doc->getMedias ())
     zlist = g_list_insert_sorted (zlist, media, (GCompareFunc) zcmp);
 
   l = zlist;
@@ -343,22 +336,21 @@ Formatter::redraw (cairo_t *cr)
 
   if (_opts.debug)
     {
-      static Color fg = {1., 1., 1., 1.};
+      static Color fg = {1., 1., 1., 1. };
       static Color bg = {0, 0, 0, 0};
       static Rect rect = {0, 0, 0, 0};
       string info;
       cairo_surface_t *debug;
       Rect ink;
       info = xstrbuild ("%s: #%lu %" GINGA_TIME_FORMAT " %.1ffps",
-                        _docPath.c_str (),
-                        _last_tick_frameno,
+                        _docPath.c_str (), _last_tick_frameno,
                         GINGA_TIME_ARGS (_last_tick_total),
                         1 * GINGA_SECOND / (double) _last_tick_diff);
       rect.width = _opts.width;
       rect.height = _opts.height;
-      debug = PlayerText::renderSurface
-        (info, "monospace", "", "bold", "9", fg, bg,
-         rect, "center", "", true, &ink);
+      debug = PlayerText::renderSurface (info, "monospace", "", "bold", "9",
+                                         fg, bg, rect, "center", "", true,
+                                         &ink);
       ink = {0, 0, rect.width, ink.height - ink.y + 4};
       cairo_save (cr);
       cairo_set_source_rgba (cr, 1., 0., 0., .5);
@@ -372,24 +364,24 @@ Formatter::redraw (cairo_t *cr)
 }
 
 // Stops formatter if EOS has been seen.
-#define _GINGA_CHECK_EOS(ginga)                                 \
-  G_STMT_START                                                  \
-  {                                                             \
-    Context *root;                                              \
-    root = _doc->getRoot ();                                    \
-    g_assert_nonnull (root);                                    \
-    if (root->isSleeping ())                                    \
-      {                                                         \
-        (ginga)->setEOS (true);                                 \
-      }                                                         \
-    if ((ginga)->getEOS ())                                     \
-      {                                                         \
-        g_assert ((ginga)->_state == GINGA_STATE_PLAYING);      \
-        (ginga)->setEOS (false);                                \
-        g_assert ((ginga)->stop ());                            \
-        g_assert ((ginga)->_state == GINGA_STATE_STOPPED);      \
-      }                                                         \
-  }                                                             \
+#define _GINGA_CHECK_EOS(ginga)                                            \
+  G_STMT_START                                                             \
+  {                                                                        \
+    Context *root;                                                         \
+    root = _doc->getRoot ();                                               \
+    g_assert_nonnull (root);                                               \
+    if (root->isSleeping ())                                               \
+      {                                                                    \
+        (ginga)->setEOS (true);                                            \
+      }                                                                    \
+    if ((ginga)->getEOS ())                                                \
+      {                                                                    \
+        g_assert ((ginga)->_state == GINGA_STATE_PLAYING);                 \
+        (ginga)->setEOS (false);                                           \
+        g_assert ((ginga)->stop ());                                       \
+        g_assert ((ginga)->_state == GINGA_STATE_STOPPED);                 \
+      }                                                                    \
+  }                                                                        \
   G_STMT_END
 
 bool
@@ -399,17 +391,17 @@ Formatter::sendKey (const string &key, bool press)
 
   _GINGA_CHECK_EOS (this);
   if (_state != GINGA_STATE_PLAYING)
-    return false;               // nothing to do
+    return false; // nothing to do
 
   // IMPORTANT: When propagating a key to the objects, we cannot traverse
   // the object set directly, as the reception of a key may cause this set
   // to be modified.  We thus need to create a buffer with the objects that
   // should receive the key, i.e., those that are not sleeping, and then
   // propagate the key only to the objects in this buffer.
-  for (auto obj: *_doc->getObjects ())
+  for (auto obj : *_doc->getObjects ())
     if (!obj->isSleeping ())
       buf.push_back (obj);
-  for (auto obj: buf)
+  for (auto obj : buf)
     obj->sendKey (key, press);
 
   return true;
@@ -421,13 +413,13 @@ Formatter::sendTick (uint64_t total, uint64_t diff, uint64_t frame)
   list<Object *> buf;
 
   // natural end of the document
-  if (_doc->getRoot()->isOccurring () == false)
-    this->setEOS(true);
+  if (_doc->getRoot ()->isOccurring () == false)
+    this->setEOS (true);
 
-    _GINGA_CHECK_EOS (this);
+  _GINGA_CHECK_EOS (this);
 
   if (_state != GINGA_STATE_PLAYING)
-    return false;               // nothing to do
+    return false; // nothing to do
 
   _last_tick_total = total;
   _last_tick_diff = diff;
@@ -436,10 +428,10 @@ Formatter::sendTick (uint64_t total, uint64_t diff, uint64_t frame)
   // IMPORTANT: The same warning about propagation that appear in
   // Formatter::sendKeyEvent() applies here.  The difference is that ticks
   // should only be propagated to objects that are occurring.
-  for (auto obj: *_doc->getObjects ())
+  for (auto obj : *_doc->getObjects ())
     if (obj->isOccurring ())
       buf.push_back (obj);
-  for (auto obj: buf)
+  for (auto obj : buf)
     obj->sendTick (total, diff, frame);
 
   return true;
@@ -451,59 +443,56 @@ Formatter::getOptions ()
   return &_opts;
 }
 
-#define OPT_ERR_UNKNOWN(name)\
-  ERROR ("unknown GingaOption '%s'", (name))
-#define OPT_ERR_BAD_TYPE(name, typename)\
+#define OPT_ERR_UNKNOWN(name) ERROR ("unknown GingaOption '%s'", (name))
+#define OPT_ERR_BAD_TYPE(name, typename)                                   \
   ERROR ("GingaOption '%s' is of type '%s'", (name), (typename))
 
-#define OPT_GETSET_DEFN(Name, Type, GType)                              \
-  Type                                                                  \
-  Formatter::getOption##Name (const string &name)                       \
-  {                                                                     \
-    GingaOptionData *opt;                                               \
-    if (unlikely (!opts_table_index (name, &opt)))                      \
-      OPT_ERR_UNKNOWN (name.c_str ());                                  \
-    if (unlikely (opt->type != (GType)))                                \
-      OPT_ERR_BAD_TYPE (name.c_str (), G_STRINGIFY (Type));             \
-    return *((Type *)(((ptrdiff_t) &_opts) + opt->offset));             \
-  }                                                                     \
-  void                                                                  \
-  Formatter::setOption##Name (const string &name, Type value)           \
-  {                                                                     \
-    GingaOptionData *opt;                                               \
-    if (unlikely (!opts_table_index (name, &opt)))                      \
-      OPT_ERR_UNKNOWN (name.c_str ());                                  \
-    if (unlikely (opt->type != (GType)))                                \
-      OPT_ERR_BAD_TYPE (name.c_str (), G_STRINGIFY (Type));             \
-    *((Type *)(((ptrdiff_t) &_opts) + opt->offset)) = value;            \
-    if (opt->func)                                                      \
-      {                                                                 \
-        ((void (*) (Formatter *, const string &, Type)) opt->func)      \
-          (this, name, value);                                          \
-      }                                                                 \
+#define OPT_GETSET_DEFN(Name, Type, GType)                                 \
+  Type Formatter::getOption##Name (const string &name)                     \
+  {                                                                        \
+    GingaOptionData *opt;                                                  \
+    if (unlikely (!opts_table_index (name, &opt)))                         \
+      OPT_ERR_UNKNOWN (name.c_str ());                                     \
+    if (unlikely (opt->type != (GType)))                                   \
+      OPT_ERR_BAD_TYPE (name.c_str (), G_STRINGIFY (Type));                \
+    return *((Type *) (((ptrdiff_t) &_opts) + opt->offset));               \
+  }                                                                        \
+  void Formatter::setOption##Name (const string &name, Type value)         \
+  {                                                                        \
+    GingaOptionData *opt;                                                  \
+    if (unlikely (!opts_table_index (name, &opt)))                         \
+      OPT_ERR_UNKNOWN (name.c_str ());                                     \
+    if (unlikely (opt->type != (GType)))                                   \
+      OPT_ERR_BAD_TYPE (name.c_str (), G_STRINGIFY (Type));                \
+    *((Type *) (((ptrdiff_t) &_opts) + opt->offset)) = value;              \
+    if (opt->func)                                                         \
+      {                                                                    \
+        ((void (*) (Formatter *, const string &, Type)) opt->func) (       \
+            this, name, value);                                            \
+      }                                                                    \
   }
 
 OPT_GETSET_DEFN (Bool, bool, G_TYPE_BOOLEAN)
 OPT_GETSET_DEFN (Int, int, G_TYPE_INT)
 OPT_GETSET_DEFN (String, string, G_TYPE_STRING)
 
-
 // Public: Internal API.
 
 Formatter::Formatter (unused (int argc), unused (char **argv),
-                      GingaOptions *opts) : Ginga (argc, argv, opts)
+                      GingaOptions *opts)
+    : Ginga (argc, argv, opts)
 {
   const char *s;
 
   _state = GINGA_STATE_STOPPED;
   _opts = (opts) ? *opts : opts_defaults;
-  _background = {0., 0., 0., 0.};
+  _background = {0., 0., 0., 0. };
 
   _last_tick_total = 0;
   _last_tick_diff = 0;
   _last_tick_frameno = 0;
-  _saved_G_MESSAGES_DEBUG = (s = g_getenv ("G_MESSAGES_DEBUG"))
-    ? string (s) : "";
+  _saved_G_MESSAGES_DEBUG
+      = (s = g_getenv ("G_MESSAGES_DEBUG")) ? string (s) : "";
 
   _doc = nullptr;
   _docPath = "";
@@ -539,7 +528,6 @@ Formatter::setEOS (bool eos)
   _eos = eos;
 }
 
-
 // Public: Static.
 
 void
@@ -548,15 +536,14 @@ Formatter::setOptionBackground (Formatter *self, const string &name,
 {
   g_assert (name == "background");
   if (value == "")
-    self->_background = {0.,0.,0.,0.};
+    self->_background = {0., 0., 0., 0. };
   else
     self->_background = ginga::parse_color (value);
   TRACE ("%s:='%s'", name.c_str (), value.c_str ());
 }
 
 void
-Formatter::setOptionDebug (Formatter *self, const string &name,
-                           bool value)
+Formatter::setOptionDebug (Formatter *self, const string &name, bool value)
 {
   g_assert (name == "debug");
   if (value)
@@ -583,8 +570,8 @@ Formatter::setOptionExperimental (unused (Formatter *self),
 }
 
 void
-Formatter::setOptionOpenGL (unused (Formatter *self),
-                            const string &name, bool value)
+Formatter::setOptionOpenGL (unused (Formatter *self), const string &name,
+                            bool value)
 {
   g_assert (name == "opengl");
 #if !(defined WITH_OPENGL && WITH_OPENGL)
@@ -595,8 +582,7 @@ Formatter::setOptionOpenGL (unused (Formatter *self),
 }
 
 void
-Formatter::setOptionSize (Formatter *self, const string &name,
-                              int value)
+Formatter::setOptionSize (Formatter *self, const string &name, int value)
 {
   const GingaOptions *opts;
   g_assert (name == "width" || name == "height");

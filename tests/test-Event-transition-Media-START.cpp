@@ -60,7 +60,7 @@ main (void)
 </ncl>");
 
     // Check lambda
-    Context *c = cast (Context *, doc->getRoot());
+    Context *c = cast (Context *, doc->getRoot ());
     g_assert_nonnull (c);
 
     Event *lambda = c->getLambda ();
@@ -146,7 +146,7 @@ main (void)
 </ncl>");
 
     // Check lambda
-    Context *c = cast (Context *, doc->getRoot());
+    Context *c = cast (Context *, doc->getRoot ());
     g_assert_nonnull (c);
 
     Event *lambda = c->getLambda ();
@@ -213,7 +213,6 @@ main (void)
     g_assert (a3->getState () == Event::SLEEPING);
     g_assert (p1->getState () == Event::SLEEPING);
 
-
     // START is done and return true
     g_assert_true (lambdaMedia->transition (Event::START));
 
@@ -257,7 +256,7 @@ main (void)
 </ncl>");
 
     // Check lambda
-    Context *c = cast (Context *, doc->getRoot());
+    Context *c = cast (Context *, doc->getRoot ());
     g_assert_nonnull (c);
 
     Event *lambda = c->getLambda ();
@@ -332,7 +331,7 @@ main (void)
 </ncl>");
 
     // Check lambda
-    Context *c = cast (Context *, doc->getRoot());
+    Context *c = cast (Context *, doc->getRoot ());
     g_assert_nonnull (c);
 
     Event *lambda = c->getLambda ();
@@ -422,7 +421,7 @@ main (void)
 </ncl>");
 
     // Check lambda
-    Context *c = cast (Context *, doc->getRoot());
+    Context *c = cast (Context *, doc->getRoot ());
     g_assert_nonnull (c);
 
     Event *lambda = c->getLambda ();

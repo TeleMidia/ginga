@@ -223,7 +223,6 @@
       </bind>
     </link>
 
-
     <!-- Set pause and resume video. 
          BLUE: pause; ENTER: resume. -->
     <link xconnector="onKeySelectionPause">
