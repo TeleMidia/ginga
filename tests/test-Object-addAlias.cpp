@@ -31,7 +31,7 @@ main (void)
   objs.push_back (new Context ("c"));
   objs.push_back (new Switch ("s"));
 
-  for (auto obj: objs)
+  for (auto obj : objs)
     {
       g_assert (obj->getAliases ()->size () == 0);
 

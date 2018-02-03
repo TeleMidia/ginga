@@ -43,7 +43,7 @@ save_settings (void)
   GList *childs = gtk_container_get_children (GTK_CONTAINER (historicBox));
   for (GList *l = childs; l != NULL; l = l->next)
     {
-      GtkWidget *row = (GtkWidget *)l->data;
+      GtkWidget *row = (GtkWidget *) l->data;
       GtkWidget *label = gtk_bin_get_child (GTK_BIN (row));
       hist_str = g_strconcat (hist_str, "##",
                               gtk_label_get_text (GTK_LABEL (label)), NULL);

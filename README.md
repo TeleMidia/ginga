@@ -86,7 +86,6 @@ Build with autotools.
 Or build with cmake. When using cmake, nclua will be automatically
 downloaded and built.
 
-
     $ mkdir _build && cd _build
     $ cmake ../build-cmake
     $ make
@@ -113,7 +112,6 @@ Build with autotools.
 ### macOS
 
 TODO
-
 
 ---
 Copyright (C) 2006-2018 PUC-Rio/Laboratorio TeleMidia

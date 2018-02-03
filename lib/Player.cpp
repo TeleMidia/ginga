@@ -41,8 +41,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 GINGA_NAMESPACE_BEGIN
 
 // Mime-type table.
-static map<string, string> mime_table =
-{
+static map<string, string> mime_table = {
   {"ac3", "audio/ac3"},
   {"avi", "video/x-msvideo"},
   {"bmp", "image/bmp"},
@@ -98,63 +97,62 @@ mime_table_index (const string &key, string *result)
 // Property table.
 typedef struct PlayerPropertyInfo
 {
-  Player::Property code;  // property code
-  bool init;              // whether it should be initialized
-  string defval;          // default value
+  Player::Property code; // property code
+  bool init;             // whether it should be initialized
+  string defval;         // default value
 } PlayerPropertyInfo;
 
 static map<string, PlayerPropertyInfo> player_property_map = {
-  {"background",   {Player::PROP_BACKGROUND,    true, ""}},
-  {"balance",      {Player::PROP_BALANCE,       false, "0.0"}},
-  {"bass",         {Player::PROP_BASS,          false, "0"}},
-  {"bottom",       {Player::PROP_BOTTOM,        false, "0%"}},
-  {"bounds",       {Player::PROP_BOUNDS,        false, "0%,0%,100%,100%"}},
-  {"debug",        {Player::PROP_DEBUG,         true,  "false"}},
-  {"duration",     {Player::PROP_DURATION,      true,  "indefinite"}},
-  {"focusIndex",   {Player::PROP_FOCUS_INDEX,   true,  ""}},
-  {"fontBgColor",  {Player::PROP_FONT_BG_COLOR, true,  ""}},
-  {"fontColor",    {Player::PROP_FONT_COLOR,    true,  "black"}},
-  {"fontFamily",   {Player::PROP_FONT_FAMILY,   true,  "sans"}},
-  {"fontSize",     {Player::PROP_FONT_SIZE,     true,  "12"}},
-  {"fontStyle",    {Player::PROP_FONT_STYLE,    true,  ""}},
-  {"fontVariant",  {Player::PROP_FONT_VARIANT,  true,  ""}},
-  {"fontWeight",   {Player::PROP_FONT_WEIGHT,   true,  ""}},
-  {"freeze",       {Player::PROP_FREEZE,        true,  "false"}},
-  {"freq",         {Player::PROP_FREQ,          true,  "440"}},
-  {"height",       {Player::PROP_HEIGHT,        true,  "100%"}},
-  {"horzAlign",    {Player::PROP_HORZ_ALIGN,    true,  "left"}},
-  {"left",         {Player::PROP_LEFT,          true,  "0"}},
-  {"location",     {Player::PROP_LOCATION,      false, "0,0"}},
-  {"mute",         {Player::PROP_MUTE,          false, "false"}},
-  {"right",        {Player::PROP_RIGHT,         false, "0%"}},
-  {"size",         {Player::PROP_SIZE,          false, "100%,100%"}},
-  {"speed",        {Player::PROP_SPEED,         false, "1"}},
-  {"time",         {Player::PROP_TIME,          false, "indefinite"}},
-  {"top",          {Player::PROP_TOP,           true,  "0"}},
-  {"transparency", {Player::PROP_TRANSPARENCY,  true,  "0%"}},
-  {"treble",       {Player::PROP_TREBLE,        false, "0"}},
-  {"vertAlign",    {Player::PROP_VERT_ALIGN,    true,  "top"}},
-  {"visible",      {Player::PROP_VISIBLE,       true,  "true"}},
-  {"volume",       {Player::PROP_VOLUME,        false, "100%"}},
-  {"wave",         {Player::PROP_WAVE,          true,  "sine"}},
-  {"width",        {Player::PROP_WIDTH,         true,  "100%"}},
-  {"zIndex",       {Player::PROP_Z_INDEX,       true,  "0"}},
-  {"zOrder",       {Player::PROP_Z_ORDER,       true,  "0"}},
-  {"uri",          {Player::PROP_URI,           true,  ""}},
-  {"type",         {Player::PROP_TYPE, true, "application/x-ginga-timer"}},
+  {"background", {Player::PROP_BACKGROUND, true, ""} },
+  {"balance", {Player::PROP_BALANCE, false, "0.0"} },
+  {"bass", {Player::PROP_BASS, false, "0"} },
+  {"bottom", {Player::PROP_BOTTOM, false, "0%"} },
+  {"bounds", {Player::PROP_BOUNDS, false, "0%,0%,100%,100%"} },
+  {"debug", {Player::PROP_DEBUG, true, "false"} },
+  {"duration", {Player::PROP_DURATION, true, "indefinite"} },
+  {"focusIndex", {Player::PROP_FOCUS_INDEX, true, ""} },
+  {"fontBgColor", {Player::PROP_FONT_BG_COLOR, true, ""} },
+  {"fontColor", {Player::PROP_FONT_COLOR, true, "black"} },
+  {"fontFamily", {Player::PROP_FONT_FAMILY, true, "sans"} },
+  {"fontSize", {Player::PROP_FONT_SIZE, true, "12"} },
+  {"fontStyle", {Player::PROP_FONT_STYLE, true, ""} },
+  {"fontVariant", {Player::PROP_FONT_VARIANT, true, ""} },
+  {"fontWeight", {Player::PROP_FONT_WEIGHT, true, ""} },
+  {"freeze", {Player::PROP_FREEZE, true, "false"} },
+  {"freq", {Player::PROP_FREQ, true, "440"} },
+  {"height", {Player::PROP_HEIGHT, true, "100%"} },
+  {"horzAlign", {Player::PROP_HORZ_ALIGN, true, "left"} },
+  {"left", {Player::PROP_LEFT, true, "0"} },
+  {"location", {Player::PROP_LOCATION, false, "0,0"} },
+  {"mute", {Player::PROP_MUTE, false, "false"} },
+  {"right", {Player::PROP_RIGHT, false, "0%"} },
+  {"size", {Player::PROP_SIZE, false, "100%,100%"} },
+  {"speed", {Player::PROP_SPEED, false, "1"} },
+  {"time", {Player::PROP_TIME, false, "indefinite"} },
+  {"top", {Player::PROP_TOP, true, "0"} },
+  {"transparency", {Player::PROP_TRANSPARENCY, true, "0%"} },
+  {"treble", {Player::PROP_TREBLE, false, "0"} },
+  {"vertAlign", {Player::PROP_VERT_ALIGN, true, "top"} },
+  {"visible", {Player::PROP_VISIBLE, true, "true"} },
+  {"volume", {Player::PROP_VOLUME, false, "100%"} },
+  {"wave", {Player::PROP_WAVE, true, "sine"} },
+  {"width", {Player::PROP_WIDTH, true, "100%"} },
+  {"zIndex", {Player::PROP_Z_INDEX, true, "0"} },
+  {"zOrder", {Player::PROP_Z_ORDER, true, "0"} },
+  {"uri", {Player::PROP_URI, true, ""} },
+  {"type", {Player::PROP_TYPE, true, "application/x-ginga-timer"} },
 };
 
 static map<string, string> player_property_aliases = {
   {"backgroundColor", "background"},
-  {"balanceLevel",    "balance"},
-  {"bassLevel",       "bass"},
-  {"explicitDur",     "duration"},
-  {"soundLevel",      "volume"},
-  {"rate",            "speed"},
-  {"trebleLevel",     "treble"},
+  {"balanceLevel", "balance"},
+  {"bassLevel", "bass"},
+  {"explicitDur", "duration"},
+  {"soundLevel", "volume"},
+  {"rate", "speed"},
+  {"trebleLevel", "treble"},
 };
 
-
 // Public.
 
 Player::Player (Formatter *formatter, Media *media)
@@ -362,7 +360,7 @@ Player::redraw (cairo_t *cr)
 
   if (!_prop.visible || !(_prop.rect.width > 0 && _prop.rect.height > 0))
     {
-      return;                   // nothing to do
+      return; // nothing to do
     }
 
   if (_dirty)
@@ -374,25 +372,19 @@ Player::redraw (cairo_t *cr)
     {
       if (_opengl)
         {
-          GL::draw_quad
-            (_prop.rect.x, _prop.rect.y,
-             _prop.rect.width, _prop.rect.height,
-             (GLfloat) _prop.bgColor.red, (GLfloat) _prop.bgColor.green,
-             (GLfloat) _prop.bgColor.blue, (GLfloat) (_prop.alpha / 255.));
+          GL::draw_quad (_prop.rect.x, _prop.rect.y, _prop.rect.width,
+                         _prop.rect.height, (GLfloat) _prop.bgColor.red,
+                         (GLfloat) _prop.bgColor.green,
+                         (GLfloat) _prop.bgColor.blue,
+                         (GLfloat) (_prop.alpha / 255.));
         }
       else
         {
           cairo_save (cr);
-          cairo_set_source_rgba (cr,
-                                 _prop.bgColor.red,
-                                 _prop.bgColor.green,
-                                 _prop.bgColor.blue,
-                                 _prop.alpha / 255.);
+          cairo_set_source_rgba (cr, _prop.bgColor.red, _prop.bgColor.green,
+                                 _prop.bgColor.blue, _prop.alpha / 255.);
 
-          cairo_rectangle (cr,
-                           _prop.rect.x,
-                           _prop.rect.y,
-                           _prop.rect.width,
+          cairo_rectangle (cr, _prop.rect.x, _prop.rect.y, _prop.rect.width,
                            _prop.rect.height);
           cairo_fill (cr);
           cairo_restore (cr);
@@ -403,11 +395,8 @@ Player::redraw (cairo_t *cr)
     {
       if (_gltexture)
         {
-          GL::draw_quad (_prop.rect.x,
-                         _prop.rect.y,
-                         _prop.rect.width,
-                         _prop.rect.height,
-                         _gltexture,
+          GL::draw_quad (_prop.rect.x, _prop.rect.y, _prop.rect.width,
+                         _prop.rect.height, _gltexture,
                          (GLfloat) (_prop.alpha / 255.));
         }
     }
@@ -446,7 +435,6 @@ Player::redraw (cairo_t *cr)
           cairo_restore (cr);
         }
     }
-
 
   if (_opengl)
     {
@@ -491,7 +479,6 @@ void Player::sendKeyEvent (unused (const string &key), unused (bool press))
 {
 }
 
-
 // Public: Static.
 
 // Current focus index value.
@@ -535,8 +522,8 @@ Player::getPlayerProperty (const string &name, string *defval)
 }
 
 Player *
-Player::createPlayer (Formatter *formatter, Media *media,
-                      const string &uri, const string &type)
+Player::createPlayer (Formatter *formatter, Media *media, const string &uri,
+                      const string &type)
 {
   Player *player;
   string mime;
@@ -613,7 +600,6 @@ Player::createPlayer (Formatter *formatter, Media *media,
   return player;
 }
 
-
 // Protected.
 
 bool
@@ -677,8 +663,9 @@ Player::doSetProperty (Property code, unused (const string &name),
     case PROP_RIGHT:
       {
         int width = _formatter->getOptionInt ("width");
-        _prop.rect.x = width - _prop.rect.width
-          - ginga::parse_percent (value, _prop.rect.width, 0, G_MAXINT);
+        _prop.rect.x
+            = width - _prop.rect.width
+              - ginga::parse_percent (value, _prop.rect.width, 0, G_MAXINT);
         _dirty = true;
         break;
       }
@@ -693,7 +680,8 @@ Player::doSetProperty (Property code, unused (const string &name),
       {
         int height = _formatter->getOptionInt ("height");
         _prop.rect.y = height - _prop.rect.height
-          - ginga::parse_percent (value, _prop.rect.height, 0, G_MAXINT);
+                       - ginga::parse_percent (value, _prop.rect.height, 0,
+                                               G_MAXINT);
         _dirty = true;
         break;
       }
@@ -724,8 +712,8 @@ Player::doSetProperty (Property code, unused (const string &name),
       }
     case PROP_TRANSPARENCY:
       {
-        _prop.alpha = (guint8)
-          CLAMP (255 - ginga::parse_pixel (value), 0, 255);
+        _prop.alpha
+            = (guint8) CLAMP (255 - ginga::parse_pixel (value), 0, 255);
         break;
       }
     case PROP_BACKGROUND:
@@ -791,9 +779,9 @@ Player::redrawDebuggingInfo (cairo_t *cr)
                    _prop.rect.width, _prop.rect.height, _prop.rect.x,
                    _prop.rect.y, _prop.z);
 
-  debug = PlayerText::renderSurface
-    (str, "monospace", "", "", "7", { 1., 0, 0, 1. }, { 0, 0, 0, .75 },
-     _prop.rect, "center", "middle", true, nullptr);
+  debug = PlayerText::renderSurface (
+      str, "monospace", "", "", "7", {1., 0, 0, 1. }, {0, 0, 0, .75},
+      _prop.rect, "center", "middle", true, nullptr);
   g_assert_nonnull (debug);
 
   sx = (double) _prop.rect.width / cairo_image_surface_get_width (debug);

@@ -19,13 +19,13 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "PlayerSvg.h"
 
 #if defined WITH_LIBRSVG && WITH_LIBRSVG
-# include <librsvg/rsvg.h>
+#include <librsvg/rsvg.h>
 #endif
 
 GINGA_NAMESPACE_BEGIN
 
 PlayerSvg::PlayerSvg (Formatter *formatter, Media *media)
-  :Player (formatter, media)
+    : Player (formatter, media)
 {
 }
 
@@ -36,7 +36,7 @@ PlayerSvg::~PlayerSvg ()
 void
 PlayerSvg::reload ()
 {
-  RsvgHandle* svg;
+  RsvgHandle *svg;
   RsvgDimensionData dim;
   GError *err = NULL;
 
@@ -58,11 +58,11 @@ PlayerSvg::reload ()
   rsvg_handle_get_dimensions (svg, &dim);
 
   scale = (dim.width > dim.height)
-    ? (double) _prop.rect.width / dim.width
-    : (double) _prop.rect.height / dim.height;
+              ? (double) _prop.rect.width / dim.width
+              : (double) _prop.rect.height / dim.height;
 
-  width = (int)(floor (dim.width * scale) + 1);
-  height = (int)(floor (dim.height * scale) + 1);
+  width = (int) (floor (dim.width * scale) + 1);
+  height = (int) (floor (dim.height * scale) + 1);
 
   sfc = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
   g_assert_nonnull (sfc);

@@ -21,7 +21,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "MediaSettings.h"
 
 #define N 128
-#define M N/8
+#define M N / 8
 
 int
 main (void)
@@ -70,7 +70,6 @@ main (void)
           string alias = xstrbuild ("m%d:%d", (int) i, (int) j);
           g_assert (doc->getObjectByIdOrAlias (alias) == m[i]);
         }
-
     }
 
   g_assert_null (doc->getObjectByIdOrAlias ("a"));

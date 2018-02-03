@@ -31,9 +31,9 @@ class Media;
 class MediaSettings;
 class Object;
 
-class Formatter: public Ginga
+class Formatter : public Ginga
 {
- public:
+public:
   // External API.
   GingaState getState ();
 
@@ -69,19 +69,19 @@ class Formatter: public Ginga
   static void setOptionOpenGL (Formatter *, const string &, bool);
   static void setOptionSize (Formatter *, const string &, int);
 
- private:
-  GingaState _state;            // current state
-  GingaOptions _opts;           // current options
-  Color _background;            // current background color
+private:
+  GingaState _state;  // current state
+  GingaOptions _opts; // current options
+  Color _background;  // current background color
 
   uint64_t _last_tick_total;      // last total informed via sendTick
   uint64_t _last_tick_diff;       // last diff informed via sendTick
   uint64_t _last_tick_frameno;    // last frameno informed via sendTick
   string _saved_G_MESSAGES_DEBUG; // saved G_MESSAGES_DEBUG value
 
-  Document *_doc;               // current document
-  string _docPath;              // path to current document
-  bool _eos;                    // true if EOS was reached
+  Document *_doc;  // current document
+  string _docPath; // path to current document
+  bool _eos;       // true if EOS was reached
 };
 
 GINGA_NAMESPACE_END

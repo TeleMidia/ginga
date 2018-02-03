@@ -36,7 +36,7 @@ main (void)
     g_assert (e->getFullId () == "m@pres");
     g_assert (e->getState () == Event::SLEEPING);
     g_assert (e->getLabel () == "");
-    g_assert (!e->hasLabel());
+    g_assert (!e->hasLabel ());
     g_assert_false (e->isLambda ());
     TRACE ("\n%s", e->toString ().c_str ());
     delete e;

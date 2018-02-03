@@ -48,23 +48,23 @@ public:
   const set<Context *> *getContexts ();
   const set<Switch *> *getSwitches ();
 
-  int evalAction (Event *, Event::Transition, const string &value="");
+  int evalAction (Event *, Event::Transition, const string &value = "");
   int evalAction (Action);
   bool evalPredicate (Predicate *);
   bool evalPropertyRef (const string &, string *);
 
   bool getData (const string &, void **);
-  bool setData (const string &, void *, UserDataCleanFunc fn=nullptr);
+  bool setData (const string &, void *, UserDataCleanFunc fn = nullptr);
 
 private:
-  set<Object *> _objects;                ///< Objects.
-  map<string, Object *> _objectsById;    ///< Objects indexed by id.
-  Context *_root;                        ///< Root context (body).
-  MediaSettings *_settings;              ///< Settings object.
-  set<Media *> _medias;                  ///< Media objects.
-  set<Context *> _contexts;              ///< Context objects.
-  set<Switch *> _switches;               ///< Switch objects.
-  UserData _udata;                       ///< Attached user data.
+  set<Object *> _objects;             ///< Objects.
+  map<string, Object *> _objectsById; ///< Objects indexed by id.
+  Context *_root;                     ///< Root context (body).
+  MediaSettings *_settings;           ///< Settings object.
+  set<Media *> _medias;               ///< Media objects.
+  set<Context *> _contexts;           ///< Context objects.
+  set<Switch *> _switches;            ///< Switch objects.
+  UserData _udata;                    ///< Attached user data.
 };
 
 GINGA_NAMESPACE_END

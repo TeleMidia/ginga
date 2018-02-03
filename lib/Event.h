@@ -28,27 +28,27 @@ class Event
 {
 public:
   enum Type
-    {
-     SELECTION = 0,
-     PRESENTATION,
-     ATTRIBUTION
-    };
+  {
+    SELECTION = 0,
+    PRESENTATION,
+    ATTRIBUTION
+  };
 
   enum State
-    {
-     SLEEPING = 0,
-     OCCURRING,
-     PAUSED
-    };
+  {
+    SLEEPING = 0,
+    OCCURRING,
+    PAUSED
+  };
 
   enum Transition
-    {
-     START = 0,
-     PAUSE,
-     RESUME,
-     STOP,
-     ABORT
-    };
+  {
+    START = 0,
+    PAUSE,
+    RESUME,
+    STOP,
+    ABORT
+  };
 
   Event (Event::Type, Object *, const string &id);
   ~Event ();

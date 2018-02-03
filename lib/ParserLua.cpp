@@ -30,7 +30,6 @@ GINGA_END_DECLS
 
 GINGA_NAMESPACE_BEGIN
 
-
 // Parsing functions.
 
 // parse_context (doc, [parent], t)
@@ -58,12 +57,12 @@ l_parse_context (lua_State *L)
   lua_rawgeti (L, 3, 2);
   id = luaL_checkstring (L, -1);
 
-  if (parent == nullptr)        // root
+  if (parent == nullptr) // root
     {
       Context *root = doc->getRoot ();
       root->addAlias (string (id));
     }
-  else                          // non-root
+  else // non-root
     {
       g_assert_not_reached ();
     }
@@ -71,7 +70,6 @@ l_parse_context (lua_State *L)
   return 0;
 }
 
-
 // External API.
 
 /// Helper function used by Parser::parseBuffer() and Parser::parseFile().
@@ -128,7 +126,7 @@ ParserLua::parseBuffer (const void *buf, size_t size, string *errmsg)
 
   doc = process (L, errmsg);
 
- done:
+done:
   g_free (str);
   lua_close (L);
   return doc;
@@ -161,7 +159,7 @@ ParserLua::parseFile (const string &path, string *errmsg)
 
   doc = process (L, errmsg);
 
- done:
+done:
   lua_close (L);
   return doc;
 }

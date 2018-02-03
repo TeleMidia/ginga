@@ -21,12 +21,12 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Player.h"
 
 #if defined WITH_NCLUA && WITH_NCLUA
-# include <ncluaw.h>
+#include <ncluaw.h>
 #endif
 
 GINGA_NAMESPACE_BEGIN
 
-class PlayerLua: public Player
+class PlayerLua : public Player
 {
 public:
   PlayerLua (Formatter *, Media *);
@@ -40,13 +40,14 @@ public:
   void sendPresentationEvent (const string &, const string &) override;
 
 protected:
-  virtual bool doSetProperty (Property,
-                              const string &, const string &) override;
+  virtual bool doSetProperty (Property, const string &,
+                              const string &) override;
+
 private:
-  ncluaw_t *_nw;                // the NCLua state
-  Rect _init_rect;              // initial output rectangle
-  string _pwd;                  // script's working dir
-  string _saved_pwd;            // saved working dir
+  ncluaw_t *_nw;     // the NCLua state
+  Rect _init_rect;   // initial output rectangle
+  string _pwd;       // script's working dir
+  string _saved_pwd; // saved working dir
 
   void pwdSave (const string &);
   void pwdSave ();

@@ -21,7 +21,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-
 // Public.
 
 Event::Event (Event::Type type, Object *object, const string &id)
@@ -91,40 +90,33 @@ Event::toString ()
 {
   string str;
 
-  str = xstrbuild
-    ("\
+  str = xstrbuild (
+      "\
 Event (%p)\n\
   object: %p (%s, id: %s)\n\
   id: %s\n\
   full-id: %s\n\
   type: %s\n\
   state: %s\n",
-     this,
-     _object,
-     _object->getObjectTypeAsString ().c_str (),
-     _object->getId ().c_str (),
-     _id.c_str (),
-     this->getFullId ().c_str (),
-     Event::getEventTypeAsString (_type).c_str (),
-     Event::getEventStateAsString (_state).c_str ());
+      this, _object, _object->getObjectTypeAsString ().c_str (),
+      _object->getId ().c_str (), _id.c_str (), this->getFullId ().c_str (),
+      Event::getEventTypeAsString (_type).c_str (),
+      Event::getEventStateAsString (_state).c_str ());
 
   if (_type == Event::PRESENTATION)
     {
-      str += xstrbuild
-        ("\
+      str += xstrbuild ("\
     begin: %" GINGA_TIME_FORMAT "\n\
     end: %" GINGA_TIME_FORMAT "\n",
-         GINGA_TIME_ARGS (_begin),
-         GINGA_TIME_ARGS (_end));
+                        GINGA_TIME_ARGS (_begin), GINGA_TIME_ARGS (_end));
     }
 
   if (_parameters.size () > 0)
     {
       str += xstrbuild ("    params:\n");
-      for (auto it: _parameters)
+      for (auto it : _parameters)
         {
-          str += xstrbuild ("    %s='%s'\n",
-                            it.first.c_str (),
+          str += xstrbuild ("    %s='%s'\n", it.first.c_str (),
                             it.second.c_str ());
         }
     }
@@ -237,7 +229,6 @@ Event::reset ()
   _state = Event::SLEEPING;
 }
 
-
 // Public: Static.
 
 string

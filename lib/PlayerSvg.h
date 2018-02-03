@@ -22,7 +22,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-class PlayerSvg: public Player
+class PlayerSvg : public Player
 {
 public:
   PlayerSvg (Formatter *, Media *);

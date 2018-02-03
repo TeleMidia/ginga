@@ -21,30 +21,28 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-#define gstx_element_get_state(elt, st, pend, tout)             \
-  g_assert (gst_element_get_state ((elt), (st), (pend), (tout)) \
+#define gstx_element_get_state(elt, st, pend, tout)                        \
+  g_assert (gst_element_get_state ((elt), (st), (pend), (tout))            \
             != GST_STATE_CHANGE_FAILURE)
 
-#define gstx_element_get_state_sync(elt, st, pend)\
+#define gstx_element_get_state_sync(elt, st, pend)                         \
   gstx_element_get_state ((elt), (st), (pend), GST_CLOCK_TIME_NONE)
 
-#define gstx_element_set_state(elt, st)         \
-  g_assert (gst_element_set_state ((elt), (st)) \
-            != GST_STATE_CHANGE_FAILURE)
+#define gstx_element_set_state(elt, st)                                    \
+  g_assert (gst_element_set_state ((elt), (st)) != GST_STATE_CHANGE_FAILURE)
 
-#define gstx_element_set_state_sync(elt, st)                    \
-  G_STMT_START                                                  \
-  {                                                             \
-    gstx_element_set_state ((elt), (st));                       \
-    gstx_element_get_state_sync ((elt), nullptr, nullptr);      \
-  }                                                             \
+#define gstx_element_set_state_sync(elt, st)                               \
+  G_STMT_START                                                             \
+  {                                                                        \
+    gstx_element_set_state ((elt), (st));                                  \
+    gstx_element_get_state_sync ((elt), nullptr, nullptr);                 \
+  }                                                                        \
   G_STMT_END
 
-
 // Public.
 
 PlayerVideo::PlayerVideo (Formatter *formatter, Media *media)
-  :Player (formatter, media)
+    : Player (formatter, media)
 {
   GstBus *bus;
   gulong ret;
@@ -92,10 +90,12 @@ PlayerVideo::PlayerVideo (Formatter *formatter, Media *media)
   _audio.pan = gst_element_factory_make ("audiopanorama", "audio.pan");
   g_assert_nonnull (_audio.pan);
 
-  _audio.equalizer = gst_element_factory_make ("equalizer-3bands", "audio.equalizer");
+  _audio.equalizer
+      = gst_element_factory_make ("equalizer-3bands", "audio.equalizer");
   g_assert_nonnull (_audio.equalizer);
 
-  _audio.convert = gst_element_factory_make ("audioconvert", "audio.convert");
+  _audio.convert
+      = gst_element_factory_make ("audioconvert", "audio.convert");
   g_assert_nonnull (_audio.convert);
 
   // Try to use ALSA if available.
@@ -132,11 +132,11 @@ PlayerVideo::PlayerVideo (Formatter *formatter, Media *media)
   _video.sink = gst_element_factory_make ("appsink", "video.sink");
   g_assert_nonnull (_video.sink);
 
-#ifdef __APPLE__ 
+#ifdef __APPLE__
   g_object_set (_video.sink, "max-buffers", 1, "drop", true, nullptr);
-#else 
+#else
   g_object_set (_video.sink, "max-buffers", 100, "drop", true, nullptr);
-#endif  
+#endif
 
   g_assert (gst_bin_add (GST_BIN (_video.bin), _video.caps));
   g_assert (gst_bin_add (GST_BIN (_video.bin), _video.sink));
@@ -154,23 +154,15 @@ PlayerVideo::PlayerVideo (Formatter *formatter, Media *media)
   _callbacks.eos = nullptr;
   _callbacks.new_preroll = nullptr;
   _callbacks.new_sample = cb_NewSample;
-  gst_app_sink_set_callbacks (GST_APP_SINK (_video.sink),
-                              &_callbacks, this, nullptr);
+  gst_app_sink_set_callbacks (GST_APP_SINK (_video.sink), &_callbacks, this,
+                              nullptr);
 
   // Initialize some handled properties.
-  static set<string> handled =
-  {
-    "balance",
-    "bass",
-    "freeze",
-    "mute",
-    "speed",
-    "treble",
-    "volume"
-  };
+  static set<string> handled = {"balance", "bass",   "freeze", "mute",
+                                 "speed",   "treble", "volume"};
   this->initProperties (&handled);
 
-  //stackAction (Player::PROP_TIME, "time", "76s");
+  // stackAction (Player::PROP_TIME, "time", "76s");
 }
 
 PlayerVideo::~PlayerVideo ()
@@ -198,20 +190,13 @@ PlayerVideo::start ()
   Player::setEOS (false);
   g_atomic_int_set (&_sample_flag, 0);
 
-  g_object_set (_audio.volume,
-                "volume", _prop.volume,
-                "mute", _prop.mute,
+  g_object_set (_audio.volume, "volume", _prop.volume, "mute", _prop.mute,
                 nullptr);
 
-  g_object_set (_audio.pan,
-                "panorama", _prop.balance,
-                nullptr);
+  g_object_set (_audio.pan, "panorama", _prop.balance, nullptr);
 
-  g_object_set (_audio.equalizer,
-                "band0", _prop.bass,
-                "band1", _prop.treble,
-                "band2", _prop.treble,
-                nullptr);
+  g_object_set (_audio.equalizer, "band0", _prop.bass, "band1",
+                _prop.treble, "band2", _prop.treble, nullptr);
 
   ret = gst_element_set_state (_playbin, GST_STATE_PLAYING);
   if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
@@ -224,7 +209,7 @@ void
 PlayerVideo::stop ()
 {
   g_assert (_state != SLEEPING);
-  TRACE ("stopping %s", _id.c_str());
+  TRACE ("stopping %s", _id.c_str ());
 
   gstx_element_set_state_sync (_playbin, GST_STATE_NULL);
   gst_object_unref (_playbin);
@@ -237,7 +222,7 @@ void
 PlayerVideo::pause ()
 {
   g_assert (_state != PAUSED && _state != SLEEPING);
-  TRACE ("pausing %s", _id.c_str());
+  TRACE ("pausing %s", _id.c_str ());
 
   gstx_element_set_state_sync (_playbin, GST_STATE_PAUSED);
   Player::pause ();
@@ -256,23 +241,25 @@ PlayerVideo::resume ()
 void
 PlayerVideo::seek (gint64 value)
 {
-  TRACE ("seek %s to: %" GST_TIME_FORMAT, _id.c_str(), GST_TIME_ARGS (value));
+  TRACE ("seek %s to: %" GST_TIME_FORMAT, _id.c_str (),
+         GST_TIME_ARGS (value));
 
   GstState curr, pending;
   GstStateChangeReturn ret;
 
   if (unlikely (!gst_element_seek (_playbin, _prop.speed, GST_FORMAT_TIME,
-                          GST_SEEK_FLAG_FLUSH, GST_SEEK_TYPE_SET,
-                          value, GST_SEEK_TYPE_NONE,
-                          GST_CLOCK_TIME_NONE)))
+                                   GST_SEEK_FLAG_FLUSH, GST_SEEK_TYPE_SET,
+                                   value, GST_SEEK_TYPE_NONE,
+                                   GST_CLOCK_TIME_NONE)))
     TRACE ("seek failed");
 
-  ret = gst_element_get_state (_playbin, &curr, &pending, GST_CLOCK_TIME_NONE);
+  ret = gst_element_get_state (_playbin, &curr, &pending,
+                               GST_CLOCK_TIME_NONE);
   if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
-  {
-    string m = gst_element_state_change_return_get_name (ret);
-    TRACE ("%s to change state", m.c_str());
-  }
+    {
+      string m = gst_element_state_change_return_get_name (ret);
+      TRACE ("%s to change state", m.c_str ());
+    }
 }
 
 void
@@ -281,28 +268,26 @@ PlayerVideo::speed (double value)
   TRACE ("speed %s to: %f", _id.c_str (), value);
   if (doubleeq (value, 0.))
     {
-      return;                   // nothing to do
+      return; // nothing to do
     }
 
   gint64 position = getStreamMediaTime ();
   GstEvent *seek_event;
   if (value > 0)
-  {
-    seek_event = gst_event_new_seek (value, GST_FORMAT_TIME,
-                                      GST_SEEK_FLAG_FLUSH,
-                                      GST_SEEK_TYPE_SET, position,
-                                      GST_SEEK_TYPE_NONE, 0);
-  }
+    {
+      seek_event = gst_event_new_seek (
+          value, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH, GST_SEEK_TYPE_SET,
+          position, GST_SEEK_TYPE_NONE, 0);
+    }
   else
-  {
-     seek_event = gst_event_new_seek (value, GST_FORMAT_TIME,
-                                      GST_SEEK_FLAG_FLUSH,
-                                      GST_SEEK_TYPE_SET, 0,
-                                      GST_SEEK_TYPE_NONE, position);
-  }
+    {
+      seek_event = gst_event_new_seek (
+          value, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH, GST_SEEK_TYPE_SET, 0,
+          GST_SEEK_TYPE_NONE, position);
+    }
   if (unlikely (!gst_element_send_event (_video.sink, seek_event)))
     TRACE ("speed failed");
-  gst_event_unref(seek_event);
+  gst_event_unref (seek_event);
 }
 
 void
@@ -361,31 +346,33 @@ PlayerVideo::redraw (cairo_t *cr)
       if (_surface != nullptr)
         cairo_surface_destroy (_surface);
 
-      _surface = cairo_image_surface_create_for_data
-        (pixels, CAIRO_FORMAT_ARGB32, width, height, stride);
+      _surface = cairo_image_surface_create_for_data (
+          pixels, CAIRO_FORMAT_ARGB32, width, height, stride);
       g_assert_nonnull (_surface);
       gst_video_frame_unmap (&v_frame);
-      status = cairo_surface_set_user_data
-          (_surface, &key, (void *) sample,
-           (cairo_destroy_func_t) gst_sample_unref);
+      status = cairo_surface_set_user_data (
+          _surface, &key, (void *) sample,
+          (cairo_destroy_func_t) gst_sample_unref);
       g_assert (status == CAIRO_STATUS_SUCCESS);
     }
 
- done:
+done:
   Player::redraw (cr);
 }
 
 gint64
 PlayerVideo::getPipelineTime ()
 {
-  return GST_TIME_AS_NSECONDS (gst_clock_get_time (gst_element_get_clock (_playbin)));
+  return GST_TIME_AS_NSECONDS (
+      gst_clock_get_time (gst_element_get_clock (_playbin)));
 }
 
 gint64
 PlayerVideo::getStreamMediaTime ()
 {
   gint64 cur;
-  if (unlikely (!gst_element_query_position (_playbin, GST_FORMAT_TIME, &cur)))
+  if (unlikely (
+          !gst_element_query_position (_playbin, GST_FORMAT_TIME, &cur)))
     TRACE ("Get %s time failed", _id.c_str ());
   return cur;
 }
@@ -394,7 +381,8 @@ gint64
 PlayerVideo::getStreamMediaDuration ()
 {
   gint64 dur;
-  if (unlikely (!gst_element_query_duration (_playbin, GST_FORMAT_TIME, &dur)))
+  if (unlikely (
+          !gst_element_query_duration (_playbin, GST_FORMAT_TIME, &dur)))
     TRACE ("Get %s duration failed", _id.c_str ());
   return dur;
 }
@@ -402,8 +390,7 @@ PlayerVideo::getStreamMediaDuration ()
 // Protected.
 
 bool
-PlayerVideo::doSetProperty (Property code,
-                            unused (const string &name),
+PlayerVideo::doSetProperty (Property code, unused (const string &name),
                             const string &value)
 {
   if (unlikely (_playbin == nullptr))
@@ -414,17 +401,13 @@ PlayerVideo::doSetProperty (Property code,
     case PROP_BALANCE:
       {
         _prop.balance = xstrtodorpercent (value, nullptr);
-        g_object_set (_audio.pan,
-                      "panorama", _prop.balance,
-                      nullptr);
+        g_object_set (_audio.pan, "panorama", _prop.balance, nullptr);
         break;
       }
     case PROP_BASS:
       {
         _prop.bass = xstrtodorpercent (value, nullptr);
-        g_object_set (_audio.equalizer,
-                      "band0", _prop.bass,
-                      nullptr);
+        g_object_set (_audio.equalizer, "band0", _prop.bass, nullptr);
         break;
       }
     case PROP_FREEZE:
@@ -435,15 +418,13 @@ PlayerVideo::doSetProperty (Property code,
     case PROP_MUTE:
       {
         _prop.mute = ginga::parse_bool (value);
-        g_object_set (_audio.volume,
-                      "mute", _prop.mute,
-                      nullptr);
+        g_object_set (_audio.volume, "mute", _prop.mute, nullptr);
         break;
       }
     case PROP_SPEED:
       {
-        if (unlikely (this->getPipelineState()!="PAUSED" &&
-                      this->getPipelineState()!="PLAYING"))
+        if (unlikely (this->getPipelineState () != "PAUSED"
+                      && this->getPipelineState () != "PLAYING"))
           {
             stackAction (code, name, value);
             break;
@@ -458,8 +439,8 @@ PlayerVideo::doSetProperty (Property code,
       }
     case PROP_TIME:
       {
-        if (unlikely (this->getPipelineState()!="PAUSED" &&
-                      this->getPipelineState()!="PLAYING"))
+        if (unlikely (this->getPipelineState () != "PAUSED"
+                      && this->getPipelineState () != "PLAYING"))
           {
             stackAction (code, name, value);
             break;
@@ -467,11 +448,11 @@ PlayerVideo::doSetProperty (Property code,
 
         if (_state != SLEEPING)
           {
-            if (value=="indefinite" || value =="")
+            if (value == "indefinite" || value == "")
               break;
 
-            TRACE ("Property value: %s",value.c_str());
-            TRACE ("State: %s", this->getPipelineState().c_str());
+            TRACE ("Property value: %s", value.c_str ());
+            TRACE ("State: %s", this->getPipelineState ().c_str ());
             Time t;
             gint64 cur, dur, next;
 
@@ -481,17 +462,17 @@ PlayerVideo::doSetProperty (Property code,
                    GST_TIME_ARGS (cur), GST_TIME_ARGS (dur));
 
             try_parse_time (value, &t);
-            next = (gint64)(t);
+            next = (gint64) (t);
             if (xstrhasprefix (value, "+"))
               {
-                if (next+cur>=dur)
+                if (next + cur >= dur)
                   setEOS (true);
 
-                next+=cur;
+                next += cur;
               }
             else if (xstrhasprefix (value, "-"))
               {
-                next=(next-cur<0)?0:next-cur;
+                next = (next - cur < 0) ? 0 : next - cur;
               }
             seek (next);
           }
@@ -500,10 +481,8 @@ PlayerVideo::doSetProperty (Property code,
     case PROP_TREBLE:
       {
         _prop.treble = xstrtodorpercent (value, nullptr);
-        g_object_set (_audio.equalizer,
-                      "band1", _prop.treble,
-                      "band2", _prop.treble,
-                      nullptr);
+        g_object_set (_audio.equalizer, "band1", _prop.treble, "band2",
+                      _prop.treble, nullptr);
         break;
       }
     case PROP_URI:
@@ -519,9 +498,7 @@ PlayerVideo::doSetProperty (Property code,
     case PROP_VOLUME:
       {
         _prop.volume = xstrtodorpercent (value, nullptr);
-        g_object_set (_audio.volume,
-                      "volume", _prop.volume,
-                      nullptr);
+        g_object_set (_audio.volume, "volume", _prop.volume, nullptr);
         break;
       }
     default:
@@ -539,64 +516,63 @@ PlayerVideo::initProperties (set<string> *props)
 {
   Property code;
   string defval;
-  for (auto name: *props)
-  {
-    code = Player::getPlayerProperty (name, &defval);
-    if (code == Player::PROP_UNKNOWN)
-      continue;
-
-    switch (code)
+  for (auto name : *props)
     {
-      case PROP_BALANCE:
-        _prop.balance = xstrtodorpercent (defval, nullptr);
-        break;
-      case PROP_BASS:
-        _prop.bass = xstrtodorpercent (defval, nullptr);
-        break;
-      case PROP_FREEZE:
-        _prop.freeze = ginga::parse_bool (defval);
-        break;
-      case PROP_MUTE:
-        _prop.mute = ginga::parse_bool (defval);
-        break;
-      case PROP_SPEED:
-        _prop.speed = xstrtod (defval);
-        break;
-      case PROP_TREBLE:
-        _prop.treble = xstrtodorpercent (defval, nullptr);
-        break;
-      case PROP_VOLUME:
-        _prop.volume = xstrtodorpercent (defval, nullptr);
-        break;
-      default:
-        break;
+      code = Player::getPlayerProperty (name, &defval);
+      if (code == Player::PROP_UNKNOWN)
+        continue;
+
+      switch (code)
+        {
+        case PROP_BALANCE:
+          _prop.balance = xstrtodorpercent (defval, nullptr);
+          break;
+        case PROP_BASS:
+          _prop.bass = xstrtodorpercent (defval, nullptr);
+          break;
+        case PROP_FREEZE:
+          _prop.freeze = ginga::parse_bool (defval);
+          break;
+        case PROP_MUTE:
+          _prop.mute = ginga::parse_bool (defval);
+          break;
+        case PROP_SPEED:
+          _prop.speed = xstrtod (defval);
+          break;
+        case PROP_TREBLE:
+          _prop.treble = xstrtodorpercent (defval, nullptr);
+          break;
+        case PROP_VOLUME:
+          _prop.volume = xstrtodorpercent (defval, nullptr);
+          break;
+        default:
+          break;
+        }
     }
-  }
 }
 
 void
-PlayerVideo::stackAction (Property code,
-                          unused (const string &name),
+PlayerVideo::stackAction (Property code, unused (const string &name),
                           const string &value)
 {
   PlayerVideoAction act;
   act.code = code;
   act.name = name;
   act.value = value;
-  _stack_actions.push_back(act);
+  _stack_actions.push_back (act);
 }
 
 void
-PlayerVideo::doStackedActions()
+PlayerVideo::doStackedActions ()
 {
   while (!_stack_actions.empty ())
-  {
-    PlayerVideoAction act;
-    act = _stack_actions.front ();
-    _stack_actions.pop_front ();
+    {
+      PlayerVideoAction act;
+      act = _stack_actions.front ();
+      _stack_actions.pop_front ();
 
-    this->doSetProperty (act.code, act.name, act.value);
-  }
+      this->doSetProperty (act.code, act.name, act.value);
+    }
 }
 
 bool
@@ -614,9 +590,9 @@ PlayerVideo::getPipelineState ()
   ret = gst_element_get_state (_playbin, &curr, &pending, 0);
 
   if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
-  {
-    return "NULL";
-  }
+    {
+      return "NULL";
+    }
   return gst_element_state_get_name (curr);
 }
 
@@ -634,7 +610,7 @@ PlayerVideo::cb_Bus (GstBus *bus, GstMessage *msg, PlayerVideo *player)
     case GST_MESSAGE_EOS:
       {
         if (unlikely (!player->getFreeze ()))
-           player->setEOS (true);
+          player->setEOS (true);
         TRACE ("EOS of %s", player->_id.c_str ());
         break;
       }
@@ -660,13 +636,13 @@ PlayerVideo::cb_Bus (GstBus *bus, GstMessage *msg, PlayerVideo *player)
             WARNING ("%s", error->message);
           }
         g_error_free (error);
-        gst_object_unref (obj);     
+        gst_object_unref (obj);
         break;
       }
     case GST_MESSAGE_STATE_CHANGED:
       {
-        if (player->getPipelineState()=="PAUSED" ||
-           player->getPipelineState()=="PLAYING")
+        if (player->getPipelineState () == "PAUSED"
+            || player->getPipelineState () == "PLAYING")
           {
             player->doStackedActions ();
           }
@@ -675,7 +651,7 @@ PlayerVideo::cb_Bus (GstBus *bus, GstMessage *msg, PlayerVideo *player)
     default:
       break;
     }
-  //gst_object_unref (msg);
+  // gst_object_unref (msg);
   return TRUE;
 }
 

@@ -110,7 +110,7 @@ g_log_default_handler (const gchar *log_domain, GLogLevelFlags log_level,
 
   // printf ("%s \n", message);
   // insert message in console text view
-  gchar *time_label = "[00:00] ";
+  const char *time_label = "[00:00] ";
   gtk_text_buffer_insert_at_cursor (GTK_TEXT_BUFFER (consoleTxtBuffer),
                                     time_label,
                                     g_utf8_strlen (time_label, -1));

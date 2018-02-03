@@ -7,7 +7,6 @@ if(NOT DEFINED _CEF_ROOT_EXPLICIT)
   message(FATAL_ERROR "Use find_package(CEF) to load this file.")
 endif()
 
-
 #
 # Shared configuration.
 #
@@ -45,13 +44,11 @@ if(NOT CMAKE_BUILD_TYPE AND
   message(WARNING "No CMAKE_BUILD_TYPE value selected, using ${CMAKE_BUILD_TYPE}")
 endif()
 
-
 # Path to the include directory.
 set(CEF_INCLUDE_PATH "${_CEF_ROOT}")
 
 # Path to the libcef_dll_wrapper target.
 set(CEF_LIBCEF_DLL_WRAPPER_PATH "${_CEF_ROOT}/libcef_dll")
-
 
 # Shared compiler/linker flags.
 list(APPEND CEF_COMPILER_DEFINES
@@ -59,7 +56,6 @@ list(APPEND CEF_COMPILER_DEFINES
   # in the C++ standard (e.g. UINT8_MAX, INT64_MIN, etc)
   __STDC_CONSTANT_MACROS __STDC_FORMAT_MACROS
   )
-
 
 #
 # Linux configuration.
@@ -208,7 +204,6 @@ if(OS_LINUX)
     )
 endif()
 
-
 #
 # Mac OS X configuration.
 #
@@ -307,7 +302,6 @@ if(OS_MACOSX)
   set(CEF_LIB_DEBUG   "${CEF_BINARY_DIR_DEBUG}/Chromium Embedded Framework.framework/Chromium Embedded Framework")
   set(CEF_LIB_RELEASE "${CEF_BINARY_DIR_RELEASE}/Chromium Embedded Framework.framework/Chromium Embedded Framework")
 endif()
-
 
 #
 # Windows configuration.

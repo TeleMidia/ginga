@@ -21,7 +21,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-
 // Public: Static.
 
 /**
@@ -42,15 +41,14 @@ GINGA_NAMESPACE_BEGIN
  * @return The resulting surface.
  */
 cairo_surface_t *
-PlayerText::renderSurface (const string &text,
-                           const string &family, const string &weight,
-                           const string &style, const string &size,
-                           Color fg, Color bg, Rect rect,
-                           const string &halign, const string &valign,
-                           bool antialias, Rect *ink)
+PlayerText::renderSurface (const string &text, const string &family,
+                           const string &weight, const string &style,
+                           const string &size, Color fg, Color bg,
+                           Rect rect, const string &halign,
+                           const string &valign, bool antialias, Rect *ink)
 {
   cairo_t *cr;
-  cairo_surface_t *sfc;         // result
+  cairo_surface_t *sfc; // result
 
   PangoLayout *layout;
   cairo_font_options_t *opts;
@@ -63,8 +61,8 @@ PlayerText::renderSurface (const string &text,
   g_assert_cmpint (rect.width, >, 0);
   g_assert_cmpint (rect.height, >, 0);
 
-  sfc = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-                                    rect.width, rect.height);
+  sfc = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, rect.width,
+                                    rect.height);
   g_assert_nonnull (sfc);
 
   cr = cairo_create (sfc);
@@ -77,16 +75,13 @@ PlayerText::renderSurface (const string &text,
   if (!antialias)
     cairo_font_options_set_antialias (opts, CAIRO_ANTIALIAS_NONE);
 
-  pango_cairo_context_set_font_options
-    (pango_layout_get_context (layout), opts);
+  pango_cairo_context_set_font_options (pango_layout_get_context (layout),
+                                        opts);
   cairo_font_options_destroy (opts);
 
   pango_layout_set_text (layout, text.c_str (), -1);
-  font = xstrbuild ("%s %s %s %s",
-                    family.c_str (),
-                    weight.c_str (),
-                    style.c_str (),
-                    size.c_str ());
+  font = xstrbuild ("%s %s %s %s", family.c_str (), weight.c_str (),
+                    style.c_str (), size.c_str ());
 
   desc = pango_font_description_from_string (font.c_str ());
   g_assert_nonnull (desc);
@@ -96,9 +91,9 @@ PlayerText::renderSurface (const string &text,
 
   if (halign == "" || halign == "left")
     pango_layout_set_alignment (layout, PANGO_ALIGN_LEFT);
-  else if(halign == "center")
+  else if (halign == "center")
     pango_layout_set_alignment (layout, PANGO_ALIGN_CENTER);
-  else if(halign == "right")
+  else if (halign == "right")
     pango_layout_set_alignment (layout, PANGO_ALIGN_RIGHT);
   else if (halign == "justified")
     pango_layout_set_justify (layout, true);
@@ -152,25 +147,16 @@ PlayerText::renderSurface (const string &text,
   return sfc;
 }
 
-
 // Public.
 
 PlayerText::PlayerText (Formatter *formatter, Media *media)
-  :Player (formatter, media)
+    : Player (formatter, media)
 {
   // Initialize handled properties.
-  static set<string> handled =
-    {
-     "fontColor",
-     "bgColor",
-     "fontFamily",
-     "fontSize",
-     "fontStyle",
-     "fontVariant",
-     "fontWeight",
-     "horzAlign",
-     "vertAlign",
-    };
+  static set<string> handled = {
+    "fontColor",   "bgColor",    "fontFamily", "fontSize",  "fontStyle",
+    "fontVariant", "fontWeight", "horzAlign",  "vertAlign",
+  };
   this->resetProperties (&handled);
 }
 
@@ -205,18 +191,10 @@ PlayerText::reload ()
         GL::delete_texture (&_gltexture);
     }
 
-  _surface = PlayerText::renderSurface (text,
-                                        _prop.fontFamily,
-                                        _prop.fontWeight,
-                                        _prop.fontStyle,
-                                        _prop.fontSize,
-                                        _prop.fontColor,
-                                        _prop.fontBgColor,
-                                        Player::_prop.rect,
-                                        _prop.horzAlign,
-                                        _prop.vertAlign,
-                                        true,
-                                        nullptr);
+  _surface = PlayerText::renderSurface (
+      text, _prop.fontFamily, _prop.fontWeight, _prop.fontStyle,
+      _prop.fontSize, _prop.fontColor, _prop.fontBgColor,
+      Player::_prop.rect, _prop.horzAlign, _prop.vertAlign, true, nullptr);
 
   g_assert_nonnull (_surface);
 
@@ -229,7 +207,6 @@ PlayerText::reload ()
   Player::reload ();
 }
 
-
 // Protected.
 
 bool
@@ -284,8 +261,8 @@ PlayerText::doSetProperty (Property code, unused (const string &name),
       _dirty = true;
       break;
     case PROP_VERT_ALIGN:
-      if (unlikely (value != "" && value != "top"
-                    && value != "middle" && value != "bottom"))
+      if (unlikely (value != "" && value != "top" && value != "middle"
+                    && value != "bottom"))
         {
           return false;
         }

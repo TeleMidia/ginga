@@ -20,7 +20,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Context.h"
 #include "Parser.h"
 
-
 #define PARSE_AND_START(fmt, doc, str)                                     \
   G_STMT_START                                                             \
   {                                                                        \

@@ -23,7 +23,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-class Switch: public Composition
+class Switch : public Composition
 {
 public:
   Switch (const string &);
@@ -36,11 +36,11 @@ public:
   bool afterTransition (Event *, Event::Transition) override;
 
   // Switch:
-  const list<pair<Object *, Predicate *>> *getRules ();
+  const list<pair<Object *, Predicate *> > *getRules ();
   void addRule (Object *, Predicate *);
 
 private:
-  list<pair<Object *, Predicate *>> _rules;
+  list<pair<Object *, Predicate *> > _rules;
   Object *_selected;
 };
 

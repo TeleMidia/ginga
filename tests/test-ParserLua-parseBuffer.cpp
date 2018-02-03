@@ -66,15 +66,14 @@ check_success (const string &log, const string &buf)
   return doc;
 }
 
-#define XFAIL(log, exp, str)\
-  g_assert (check_failure ((log), (exp), (str)))
+#define XFAIL(log, exp, str) g_assert (check_failure ((log), (exp), (str)))
 
-#define PASS(obj, log, str)                     \
-  G_STMT_START                                  \
-  {                                             \
-    tryset (obj, check_success ((log), (str))); \
-    g_assert_nonnull (*(obj));                  \
-  }                                             \
+#define PASS(obj, log, str)                                                \
+  G_STMT_START                                                             \
+  {                                                                        \
+    tryset (obj, check_success ((log), (str)));                            \
+    g_assert_nonnull (*(obj));                                             \
+  }                                                                        \
   G_STMT_END
 
 int
@@ -82,32 +81,26 @@ main (void)
 {
   string tmp;
 
-
-// -------------------------------------------------------------------------
-// General errors.
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // General errors.
+  // -------------------------------------------------------------------------
 
-  XFAIL ("Syntax error",
-         "unexpected symbol near '<'",
-         "<a>");
+  XFAIL ("Syntax error", "unexpected symbol near '<'", "<a>");
 
   XFAIL ("Bad body",
-         "",                    // ignored
+         "", // ignored
          "return 0");
 
   XFAIL ("Bad body",
-         "",                    // ignored
+         "", // ignored
          "return nil");
 
   XFAIL ("Bad body",
-         "",                    // ignored
+         "", // ignored
          "return {}");
 
-  XFAIL ("Bad body",
-         "unexpected tag: unknown",
-         "return {'unknown', 5}");
+  XFAIL ("Bad body", "unexpected tag: unknown", "return {'unknown', 5}");
 
-
   // Success: Empty body.
   {
     Document *doc;

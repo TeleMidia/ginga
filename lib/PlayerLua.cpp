@@ -24,33 +24,30 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 GINGA_NAMESPACE_BEGIN
 
 // Event handling.
-#define evt_ncl_send_attribution(nw, action, name, value)\
+#define evt_ncl_send_attribution(nw, action, name, value)                  \
   ncluaw_send_ncl_event (nw, "attribution", action, name, value)
 
-#define evt_ncl_send_presentation(nw, action, name)\
+#define evt_ncl_send_presentation(nw, action, name)                        \
   ncluaw_send_ncl_event (nw, "presentation", action, name, NULL)
 
 #if 0
-# define evt_ncl_send_selection(nw, action, name)\
+#define evt_ncl_send_selection(nw, action, name)                           \
   ncluaw_send_ncl_event (nw, "selection", action, name, NULL)
 #endif
 
 #define evt_key_send ncluaw_send_key_event
 
 /// Conversion from NCLua actions to NCL transitions
-static map<string, Event::Transition> nclua_act_to_ncl =
-{
- {"start",   Event::START},
- {"pause",   Event::PAUSE},
- {"resume",  Event::RESUME},
- {"stop",    Event::STOP},
- {"abort",   Event::ABORT},
+static map<string, Event::Transition> nclua_act_to_ncl = {
+  {"start", Event::START},   {"pause", Event::PAUSE},
+  {"resume", Event::RESUME}, {"stop", Event::STOP},
+  {"abort", Event::ABORT},
 };
-
+
 // Public.
 
 PlayerLua::PlayerLua (Formatter *formatter, Media *media)
-  :Player (formatter, media)
+    : Player (formatter, media)
 {
   _nw = NULL;
   _init_rect = {0, 0, 0, 0};
@@ -71,8 +68,8 @@ PlayerLua::start ()
 
   this->pwdSave (_prop.uri);
   _init_rect = _prop.rect;
-  _nw = ncluaw_open
-    (_prop.uri.c_str (), _init_rect.width, _init_rect.height, &errmsg);
+  _nw = ncluaw_open (_prop.uri.c_str (), _init_rect.width,
+                     _init_rect.height, &errmsg);
   if (unlikely (_nw == nullptr))
     ERROR ("%s", errmsg);
   this->pwdRestore ();
@@ -175,7 +172,7 @@ PlayerLua::redraw (cairo_t *cr)
       if (evt->cls != NCLUAW_EVENT_NCL)
         {
           ncluaw_event_free (evt);
-          continue;               // nothing to do
+          continue; // nothing to do
         }
 
       if (g_str_equal (evt->u.ncl.type, "presentation"))
@@ -190,8 +187,8 @@ PlayerLua::redraw (cairo_t *cr)
 
           g_assert_nonnull (nclEvt);
           g_assert (nclua_act_to_ncl.count (evt->u.ncl.action) != 0);
-          _media->addDelayedAction
-            (nclEvt, nclua_act_to_ncl.at (evt->u.ncl.action));
+          _media->addDelayedAction (
+              nclEvt, nclua_act_to_ncl.at (evt->u.ncl.action));
         }
       else if (g_str_equal (evt->u.ncl.type, "attribution"))
         {
@@ -199,15 +196,14 @@ PlayerLua::redraw (cairo_t *cr)
           g_assert_nonnull (nclEvt);
 
           g_assert (nclua_act_to_ncl.count (evt->u.ncl.action));
-          _media->addDelayedAction
-            (nclEvt, nclua_act_to_ncl.at (evt->u.ncl.action),
-             evt->u.ncl.value);
+          _media->addDelayedAction (nclEvt,
+                                    nclua_act_to_ncl.at (evt->u.ncl.action),
+                                    evt->u.ncl.value);
         }
       ncluaw_event_free (evt);
     }
 }
 
-
 // Protected.
 
 bool
@@ -224,7 +220,6 @@ PlayerLua::doSetProperty (Property code, const string &name,
   return Player::doSetProperty (code, name, value);
 }
 
-
 // Private.
 
 static void
