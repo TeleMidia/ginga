@@ -46,9 +46,8 @@ GINGA_NAMESPACE_BEGIN
 
 // Public.
 
-PlayerSigGen::PlayerSigGen (Formatter *formatter, Media *media,
-                            const string &uri)
-  :Player (formatter, media, uri)
+PlayerSigGen::PlayerSigGen (Formatter *formatter, Media *media)
+  :Player (formatter, media)
 {
   GstBus *bus;
   gulong ret;

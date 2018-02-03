@@ -155,9 +155,8 @@ PlayerText::renderSurface (const string &text,
 
 // Public.
 
-PlayerText::PlayerText (Formatter *formatter, Media *media,
-                        const string &uri)
-  :Player (formatter, media, uri)
+PlayerText::PlayerText (Formatter *formatter, Media *media)
+  :Player (formatter, media)
 {
   // Initialize handled properties.
   static set<string> handled =
@@ -187,7 +186,7 @@ PlayerText::reload ()
   GError *err = NULL;
   string text;
 
-  path = _uri.c_str ();
+  path = Player::_prop.uri.c_str ();
   if (unlikely (!g_file_get_contents (path, &contents, NULL, &err)))
     {
       g_assert_nonnull (err);

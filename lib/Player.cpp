@@ -40,6 +40,62 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
+// Mime-type table.
+static map<string, string> mime_table =
+{
+  {"ac3", "audio/ac3"},
+  {"avi", "video/x-msvideo"},
+  {"bmp", "image/bmp"},
+  {"bpg", "image/x-bpg"},
+  {"class", "application/x-ginga-NCLet"},
+  {"css", "text/css"},
+  {"gif", "image/gif"},
+  {"htm", "text/html"},
+  {"html", "text/html"},
+  {"jpeg", "image/jpeg"},
+  {"jpg", "image/jpeg"},
+  {"lua", "application/x-ginga-NCLua"},
+  {"mov", "video/quicktime"},
+  {"mp2", "audio/mp2"},
+  {"mp3", "audio/mp3"},
+  {"mp4", "video/mp4"},
+  {"mpa", "audio/mpa"},
+  {"mpeg", "video/mpeg"},
+  {"mpg", "video/mpeg"},
+  {"mpv", "video/mpv"},
+  {"ncl", "application/x-ginga-ncl"},
+  {"oga", "audio/ogg"},
+  {"ogg", "audio/ogg"},
+  {"ogv", "video/ogg"},
+  {"opus", "audio/ogg"},
+  {"png", "image/png"},
+  {"smil", "application/smil"},
+  {"spx", "audio/ogg"},
+  {"srt", "text/srt"},
+  {"ssml", "application/ssml+xml"},
+  {"svg", "image/svg+xml"},
+  {"svgz", "image/svg+xml"},
+  {"ts", "video/mpeg"},
+  {"txt", "text/plain"},
+  {"wav", "audio/basic"},
+  {"webp", "image/x-webp"},
+  {"wmv", "video/x-ms-wmv"},
+  {"xlet", "application/x-ginga-NCLet"},
+  {"xlt", "application/x-ginga-NCLet"},
+  {"xml", "text/xml"},
+};
+
+static bool
+mime_table_index (const string &key, string *result)
+{
+  map<string, string>::iterator it;
+  if ((it = mime_table.find (key)) == mime_table.end ())
+    return false;
+  tryset (result, it->second);
+  return true;
+}
+
+// Property table.
 typedef struct PlayerPropertyInfo
 {
   Player::Property code;  // property code
@@ -84,6 +140,8 @@ static map<string, PlayerPropertyInfo> player_property_map = {
   {"width",        {Player::PROP_WIDTH,         true,  "100%"}},
   {"zIndex",       {Player::PROP_Z_INDEX,       true,  "0"}},
   {"zOrder",       {Player::PROP_Z_ORDER,       true,  "0"}},
+  {"uri",          {Player::PROP_URI,           true,  ""}},
+  {"type",         {Player::PROP_TYPE, true, "application/x-ginga-timer"}},
 };
 
 static map<string, string> player_property_aliases = {
@@ -99,7 +157,7 @@ static map<string, string> player_property_aliases = {
 
 // Public.
 
-Player::Player (Formatter *formatter, Media *media, const string &uri)
+Player::Player (Formatter *formatter, Media *media)
 {
   g_assert_nonnull (formatter);
   _formatter = formatter;
@@ -108,7 +166,6 @@ Player::Player (Formatter *formatter, Media *media, const string &uri)
   _media = media;
   _id = media->getId ();
 
-  _uri = uri;
   _state = SLEEPING;
   _time = 0;
   _eos = false;
@@ -479,48 +536,72 @@ Player::getPlayerProperty (const string &name, string *defval)
 
 Player *
 Player::createPlayer (Formatter *formatter, Media *media,
-                      const string &uri, const string &mime)
+                      const string &uri, const string &type)
 {
-  Player *player = nullptr;
+  Player *player;
+  string mime;
+
   g_assert_nonnull (formatter);
+  player = nullptr;
+  mime = type;
+
+  if (mime == "" && uri != "")
+    {
+      string::size_type index, len;
+      index = uri.find_last_of (".");
+      if (index != std::string::npos)
+        {
+          index++;
+          len = uri.length ();
+          if (index < len)
+            {
+              string extension = uri.substr (index, (len - index));
+              if (extension != "")
+                mime_table_index (extension, &mime);
+            }
+        }
+    }
+
+  if (mime == "")
+    mime = "application/x-ginga-timer";
 
   if (xstrhasprefix (mime, "audio") || xstrhasprefix (mime, "video"))
     {
-      player = new PlayerVideo (formatter, media, uri);
+      player = new PlayerVideo (formatter, media);
     }
   else if (mime == "application/x-ginga-siggen")
     {
-      player = new PlayerSigGen (formatter, media, uri);
+      player = new PlayerSigGen (formatter, media);
     }
   else if (xstrhasprefix (mime, "image"))
     {
-      player = new PlayerImage (formatter, media, uri);
+      player = new PlayerImage (formatter, media);
     }
   else if (mime == "text/plain")
     {
-      player = new PlayerText (formatter, media, uri);
+      player = new PlayerText (formatter, media);
     }
 #if defined WITH_CEF && WITH_CEF
   else if (xstrhasprefix (mime, "text/html"))
     {
-      player = new PlayerHTML (formatter, media, uri);
+      player = new PlayerHTML (formatter, media);
     }
 #endif // WITH_CEF
 #if WITH_LIBRSVG && WITH_LIBRSVG
   else if (xstrhasprefix (mime, "image/svg"))
     {
-      player = new PlayerSvg (formatter, media, uri);
+      player = new PlayerSvg (formatter, media);
     }
 #endif // WITH_LIBRSVG
 #if defined WITH_NCLUA && WITH_NCLUA
   else if (mime == "application/x-ginga-NCLua")
     {
-      player = new PlayerLua (formatter, media, uri);
+      player = new PlayerLua (formatter, media);
     }
 #endif // WITH_NCLUA
   else
     {
-      player = new Player (formatter, media, uri);
+      player = new Player (formatter, media);
       if (unlikely (mime != "application/x-ginga-timer" && uri != ""))
         {
           WARNING ("unknown mime '%s': creating an empty player",
@@ -546,11 +627,6 @@ Player::doSetProperty (Property code, unused (const string &name),
         _prop.debug = ginga::parse_bool (value);
         break;
       }
-    case PROP_FOCUS_INDEX:
-      {
-        _prop.focusIndex = value;
-        break;
-      }
     case PROP_BOUNDS:
       {
         list<string> lst;
@@ -562,6 +638,11 @@ Player::doSetProperty (Property code, unused (const string &name),
         _media->setProperty ("width", *it++);
         _media->setProperty ("height", *it++);
         g_assert (it == lst.end ());
+        break;
+      }
+    case PROP_FOCUS_INDEX:
+      {
+        _prop.focusIndex = value;
         break;
       }
     case PROP_LOCATION:
@@ -668,8 +749,20 @@ Player::doSetProperty (Property code, unused (const string &name),
           _prop.duration = ginga::parse_time (value);
         break;
       }
+    case PROP_URI:
+      {
+        _prop.uri = value;
+        break;
+      }
+    case PROP_TYPE:
+      {
+        _prop.type = value;
+        break;
+      }
     default:
-      break;
+      {
+        break;
+      }
     }
   return true;
 }

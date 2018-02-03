@@ -67,9 +67,8 @@ cairox_surface_create_from_file (const char *path, cairo_surface_t **dup)
   return CAIRO_STATUS_SUCCESS;
 }
 
-PlayerImage::PlayerImage (Formatter *formatter, Media *media,
-                          const string &uri)
-  :Player (formatter, media, uri)
+PlayerImage::PlayerImage (Formatter *formatter, Media *media)
+  :Player (formatter, media)
 {
 }
 
@@ -90,11 +89,11 @@ PlayerImage::reload ()
         GL::delete_texture (&_gltexture);
     }
 
-  status = cairox_surface_create_from_file (_uri.c_str (), &_surface);
+  status = cairox_surface_create_from_file (_prop.uri.c_str (), &_surface);
   if (unlikely (status != CAIRO_STATUS_SUCCESS))
     {
       ERROR ("cannot load image file %s: %s",
-             _uri.c_str (), cairo_status_to_string (status));
+             _prop.uri.c_str (), cairo_status_to_string (status));
     }
   g_assert_nonnull (_surface);
 

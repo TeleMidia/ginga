@@ -32,7 +32,7 @@ public:
                                          const string &, const string &,
                                          bool, Rect *);
 
-  PlayerText (Formatter *, Media *, const string &);
+  PlayerText (Formatter *, Media *);
   ~PlayerText ();
   void reload () override;
 

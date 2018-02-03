@@ -33,7 +33,7 @@ main (void)
 {
   Media *m;
 
-  m = new Media ("m", "", "");
+  m = new Media ("m");
   g_assert_nonnull (m);
 
   m->addPresentationEvent ("pres", 0, 0);

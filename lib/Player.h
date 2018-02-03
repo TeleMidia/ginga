@@ -55,6 +55,7 @@ public:
      PROP_FONT_VARIANT,
      PROP_FONT_WEIGHT,
      PROP_FREEZE,
+     PROP_FREQ,
      PROP_HEIGHT,
      PROP_HORZ_ALIGN,
      PROP_LEFT,
@@ -67,17 +68,18 @@ public:
      PROP_TOP,
      PROP_TRANSPARENCY,
      PROP_TREBLE,
+     PROP_TYPE,
+     PROP_URI,
      PROP_VERT_ALIGN,
      PROP_VISIBLE,
      PROP_VOLUME,
+     PROP_WAVE,
      PROP_WIDTH,
      PROP_Z_INDEX,
      PROP_Z_ORDER,
-     PROP_FREQ,
-     PROP_WAVE,
     };
 
-  Player (Formatter *, Media *, const string &);
+  Player (Formatter *, Media *);
   virtual ~Player ();
 
   State getState ();
@@ -117,12 +119,11 @@ public:
   static void setCurrentFocus (const string &);
   static Property getPlayerProperty (const string &, string *);
   static Player *createPlayer (Formatter *, Media *,
-                               const string &, const string &);
+                               const string &, const string &type="");
 protected:
   Formatter *_formatter;        // formatter handle
   Media *_media;                // associated media object
   string _id;                   // id of the associated media object
-  string _uri;                  // source uri
   State _state;                 // current state
   Time _time;                   // playback time
   bool _eos;                    // true if content was exhausted
@@ -136,15 +137,17 @@ protected:
   map<string, string> _properties; // property table
   struct
   {
-    bool debug;                 // true if debugging mode is on
-    string focusIndex;          // focus index
+    Color bgColor;              // background color
     Rect rect;                  // x, y, w, h in pixels
+    Time duration;              // explicit duration
+    bool debug;                 // true if debugging mode is on
+    bool visible;               // true if visible
+    guint8 alpha;               // alpha
     int z;                      // z-index
     int zorder;                 // z-order
-    guint8 alpha;               // alpha
-    Color bgColor;              // background color
-    bool visible;               // true if visible
-    Time duration;              // explicit duration
+    string focusIndex;          // focus index
+    string type;                // content mime-type
+    string uri;                 // content URI
   } _prop;
 
 protected:

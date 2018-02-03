@@ -24,9 +24,8 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-PlayerSvg::PlayerSvg (Formatter *formatter, Media *media,
-                      const string &uri)
-  :Player (formatter, media, uri)
+PlayerSvg::PlayerSvg (Formatter *formatter, Media *media)
+  :Player (formatter, media)
 {
 }
 
@@ -50,9 +49,9 @@ PlayerSvg::reload ()
 
   g_assert (_state != SLEEPING);
 
-  svg = rsvg_handle_new_from_file (_uri.c_str (), &err);
+  svg = rsvg_handle_new_from_file (_prop.uri.c_str (), &err);
   if (unlikely (svg == NULL))
-    ERROR ("cannot load SVG file %s: %s", _uri.c_str (), err->message);
+    ERROR ("cannot load SVG file %s: %s", _prop.uri.c_str (), err->message);
 
   g_assert_cmpint (_prop.rect.width, >, 0);
   g_assert_cmpint (_prop.rect.height, >, 0);

@@ -237,7 +237,6 @@ public:
 private:
   Document *_doc;               ///< The resulting #Document.
   xmlDoc *_xml;                 ///< The DOM tree being processed.
-  Rect _rect;                   ///< Initial screen dimensions.
   int _genid;                   ///< Last generated id.
   UserData _udata;              ///< Attached user data.
   set<string> _unique;          ///< Unique attributes seen so far.
@@ -248,8 +247,17 @@ private:
   map<xmlNode *, ParserElt *> _eltCache;         ///< Element cache.
   map<string, list<ParserElt *>> _eltCacheByTag; ///< Element cache by tag.
 
-  list<pair<string, string>> _aliasStack; ///< Alias stack.
-  list<Object *> _objStack;               ///< #Object stack.
+  /// Alias stack for solving imports.
+  list<pair<string, string>> _aliasStack;
+
+  ///< #Object stack for solving object hierarchy.
+  list<Object *> _objStack;
+
+  ///< Rectangle stack for solving region hierarchy.
+  list<Rect> _rectStack;
+
+  ///< Reference map for solving the refer attribute in \<media\>.
+  map<string, Media *> _referMap;
 
   string genId ();
   string getDirname ();
@@ -293,13 +301,21 @@ private:
   Object *objStackPop ();
   void objStackPush (Object *);
 
+  // Rectangle stack.
+  Rect rectStackPeek ();
+  Rect rectStackPop ();
+  void rectStackPush (Rect);
+
+  // Reference map.
+  bool referMapIndex (const string &, Media **);
+  bool referMapAdd (const string &, Media *);
+
   // Reference solving.
   bool resolveComponent (Composition *, ParserElt *, Object **);
   bool resolveInterface (Context *, ParserElt *, Event **);
   string resolveParameter (const string &, const map<string, string> *,
                            const map<string, string> *,
                            const map<string, string> *);
-
   // Predicate solving.
   Predicate *obtainPredicate (xmlNode *);
   Predicate *solvePredicate (Predicate *, const map<string, string> *);
@@ -1468,7 +1484,7 @@ ParserState::aliasStackPush (const string &alias, const string &path)
 
 /**
  * @brief Peeks at object stack.
- * @return The top of object stack.
+ * @return The top of object stack or null if stack is empty.
  */
 Object *
 ParserState::objStackPeek ()
@@ -1478,7 +1494,7 @@ ParserState::objStackPeek ()
 
 /**
  * @brief Pops object from stack.
- * @return The popped object.
+ * @return The popped object or null if the stack is empty.
  */
 Object *
 ParserState::objStackPop ()
@@ -1502,6 +1518,81 @@ ParserState::objStackPush (Object *obj)
 }
 
 
+// ParserState: private (rectangle stack).
+
+/**
+ * @brief Peeks at rectangle stack.
+ * @return The top of rectangle stack.
+ *
+ * This function aborts when called with the empty stack.
+ */
+Rect
+ParserState::rectStackPeek ()
+{
+  g_assert_false (_rectStack.empty ());
+  return _rectStack.back ();
+}
+
+/**
+ * @brief Pops rectangle from stack.
+ * @return The popped rectangle.
+ *
+ * This function aborts when called with the empty stack.
+ */
+Rect
+ParserState::rectStackPop ()
+{
+  Rect rect = this->rectStackPeek ();
+  _rectStack.pop_back ();
+  return rect;
+}
+
+/**
+ * @brief Pushes rectangle onto stack.
+ * @param rect The rectangle to push.
+ */
+void
+ParserState::rectStackPush (Rect rect)
+{
+  _rectStack.push_back (rect);
+}
+
+
+// ParserState: private (refer map).
+
+/**
+ * @brief Indexes refer map.
+ * @param id The id of the reference.
+ * @param[out] media Variable to store referenced media.
+ * @return \c true if successful, or \c false otherwise.
+ */
+bool
+ParserState::referMapIndex (const string &id, Media **media)
+{
+  auto it = _referMap.find (id);
+  if (it == _referMap.end ())
+    return false;
+  tryset (media, it->second);
+  return true;
+}
+
+/**
+ * @brief Adds entry to refer map.
+ * @param id The id of the reference.
+ * @param media The referenced media.
+ * @return \c true if successful, or \c false otherwise (already in map).
+ */
+bool
+ParserState::referMapAdd (const string &id, Media *media)
+{
+  auto it = _referMap.find (id);
+  if (it != _referMap.end ())
+    return false;
+  _referMap[id] = media;
+  return true;
+}
+
+
 // ParserState: private (reference solving).
 
 /**
@@ -1522,6 +1613,7 @@ ParserState::resolveComponent (Composition *scope, ParserElt *elt,
 {
   string label;
   string comp;
+  string refer;
 
   label = (elt->getTag () == "bindRule") ? "constituent" : "component";
   g_assert (elt->getAttribute (label, &comp));
@@ -1534,21 +1626,18 @@ ParserState::resolveComponent (Composition *scope, ParserElt *elt,
     }
 
   // Check if component refers to a child of scope.
-  Object *ref = scope->getChildByIdOrAlias (comp);
-  if (ref != nullptr)
+  Object *child = scope->getChildByIdOrAlias (comp);
+  if (child != nullptr)
     {
-      tryset (obj, ref);
+      tryset (obj, child);
       return true;
     }
 
-  // Check if component refers to the settings object.
-  Document *doc = scope->getDocument ();
-  g_assert_nonnull (doc);
-  MediaSettings *sett = doc->getSettings ();
-  g_assert_nonnull (sett);
-  if (comp == sett->getId () || sett->hasAlias (comp))
+  // Check if component refers to a reference (refer) object.
+  Media *media;
+  if (this->referMapIndex (comp, &media))
     {
-      tryset (obj, sett);
+      tryset (obj, media);
       return true;
     }
 
@@ -2090,13 +2179,10 @@ ParserState::ParserState (int width, int height)
   _xml = nullptr;
   g_assert_cmpint (width, >, 0);
   g_assert_cmpint (height, >, 0);
-  _rect.x = 0;
-  _rect.y = 0;
-  _rect.width = width;
-  _rect.height = height;
   _genid = 0;
   _error = ParserState::ERROR_NONE;
   _errorMsg = "no error";
+  this->rectStackPush ({0, 0, width, height});
 }
 
 /**
@@ -2280,8 +2366,8 @@ borderColor='%s'}",
         }
     }
 
-  // Resolve media reference to descriptor.
-  // (I.e., move descriptor attributes to associated media.)
+  // Resolve media reference to descriptor, i.e., move descriptor attributes
+  // to associated media, and check for unresolved refers.
   if (st->eltCacheIndexByTag ({"media"}, &media_list) > 0)
     {
       for (auto media_elt: media_list)
@@ -2290,31 +2376,55 @@ borderColor='%s'}",
           Media *media;
 
           string desc_id;
-          ParserElt *desc_elt;
+          string refer;
 
-          if (!media_elt->getAttribute ("descriptor", &desc_id))
-            continue;           // nothing to do
-
-          if (unlikely (!st->eltCacheIndexById
-                        (desc_id, &desc_elt, {"descriptor"})))
+          // Move descriptor attributes.
+          if (media_elt->getAttribute ("descriptor", &desc_id))
             {
-              return st->errEltBadAttribute (media_elt->getNode (),
-                                             "descriptor", desc_id,
-                                             "no such descriptor");
+              ParserElt *desc_elt;
+
+              if (unlikely (!st->eltCacheIndexById
+                            (desc_id, &desc_elt, {"descriptor"})))
+                {
+                  return st->errEltBadAttribute (media_elt->getNode (),
+                                                 "descriptor", desc_id,
+                                                 "no such descriptor");
+                }
+
+              g_assert (media_elt->getAttribute ("id", &media_id));
+              media = cast
+                (Media *, st->_doc->getObjectByIdOrAlias (media_id));
+              g_assert_nonnull (media);
+
+              for (auto it: *desc_elt->getAttributes ())
+                {
+                  if (it.first == "id" || it.first == "region")
+                    continue;       // nothing to do
+                  if (media->getAttributionEvent (it.first) != nullptr)
+                    continue;       // already defined
+                  media->addAttributionEvent (it.first);
+                  media->setProperty (it.first, it.second);
+                }
             }
 
-          g_assert (media_elt->getAttribute ("id", &media_id));
-          media = cast (Media *, st->_doc->getObjectByIdOrAlias (media_id));
-          g_assert_nonnull (media);
-
-          for (auto it: *desc_elt->getAttributes ())
+          // Check refer.
+          if (media_elt->getAttribute ("refer", &refer))
             {
-              if (it.first == "id" || it.first == "region")
-                continue;       // nothing to do
-              if (media->getAttributionEvent (it.first) != nullptr)
-                continue;       // already defined
-              media->addAttributionEvent (it.first);
-              media->setProperty (it.first, it.second);
+              ParserElt *refer_elt;
+
+              if (unlikely (!st->eltCacheIndexById
+                            (refer, &refer_elt, {"media"})))
+                {
+                  return st->errEltBadAttribute
+                    (media_elt->getNode (), "refer",
+                     refer, "no such media object");
+                }
+              if (refer_elt->getAttribute ("refer", nullptr))
+                {
+                  return st->errEltBadAttribute
+                    (media_elt->getNode (), "refer",
+                     refer, "cannot refer to a reference");
+                }
             }
         }
     }
@@ -2644,20 +2754,11 @@ borderColor='%s'}",
  * @param elt Element wrapper.
  * @return \c true if successful, or \c false otherwise.
  */
-
-/// Cleans up the rectangle attached to region #ParserElt.
-static void
-savedRectCleanup (void *ptr)
-{
-  delete (Rect *) ptr;
-}
-
 bool
 ParserState::pushRegion (ParserState *st, ParserElt *elt)
 {
   static int last_zorder = 0;
   xmlNode *parent_node;
-  Rect *saved_rect;
   Rect screen;
   Rect parent;
   Rect rect;
@@ -2666,19 +2767,7 @@ ParserState::pushRegion (ParserState *st, ParserElt *elt)
   parent_node = elt->getParentNode ();
   g_assert_nonnull (parent_node);
 
-  if (toCPPString (parent_node->name) != "region") // this is a root region
-    {
-      saved_rect = new Rect;
-      screen = *saved_rect = st->_rect;
-      UDATA_SET (st, "saved-rect", saved_rect, savedRectCleanup);
-    }
-  else
-    {
-      UDATA_GET (st, "saved-rect", &saved_rect);
-      screen = *saved_rect;
-    }
-
-  rect = parent = st->_rect;
+  rect = parent = screen = st->rectStackPeek ();
   if (elt->getAttribute ("left", &str))
     {
       rect.x += ginga::parse_percent (str, parent.width, 0, G_MAXINT);
@@ -2707,16 +2796,17 @@ ParserState::pushRegion (ParserState *st, ParserElt *elt)
     }
 
   // Update region position to absolute values.
-  st->_rect = rect;
+  st->rectStackPush (rect);
   double left = ((double) rect.x / screen.width) * 100.;
   double top = ((double) rect.y / screen.height) * 100.;
   double width = ((double) rect.width / screen.width) * 100.;
   double height = ((double) rect.height / screen.height) * 100.;
-  elt->setAttribute ("zorder", xstrbuild ("%d", last_zorder++));
-  elt->setAttribute ("left", xstrbuild ("%.2f%%", left));
-  elt->setAttribute ( "top", xstrbuild ("%.2f%%", top));
-  elt->setAttribute ("width", xstrbuild ("%.2f%%", width));
-  elt->setAttribute ("height", xstrbuild ("%.2f%%", height));
+
+  elt->setAttribute ("zOrder", xstrbuild ("%d", last_zorder++));
+  elt->setAttribute ("left", xstrbuild ("%g%%", left));
+  elt->setAttribute ("top", xstrbuild ("%g%%", top));
+  elt->setAttribute ("width", xstrbuild ("%g%%", width));
+  elt->setAttribute ("height", xstrbuild ("%g%%", height));
 
   return true;
 }
@@ -2728,18 +2818,9 @@ ParserState::pushRegion (ParserState *st, ParserElt *elt)
  * @return \c true if successful, or \c false otherwise.
  */
 bool
-ParserState::popRegion (ParserState *st, ParserElt *elt)
+ParserState::popRegion (ParserState *st, unused (ParserElt *elt))
 {
-  xmlNode *parent_node;
-
-  parent_node = elt->getParentNode ();
-  g_assert_nonnull (parent_node);
-  if (toCPPString (parent_node->name) != "region") // root region
-    {
-      Rect *rect;
-      g_assert (st->getData ("saved-rect", (void **) &rect));
-      st->_rect = *rect;
-    }
+  st->rectStackPop ();
   return true;
 }
 
@@ -3597,10 +3678,12 @@ ParserState::pushBindRule (ParserState *st, ParserElt *elt)
 bool
 ParserState::pushMedia (ParserState *st, ParserElt *elt)
 {
+  Composition *parent;
   Media *media;
   string id;
   string type;
   string refer;
+  string src;
 
   g_assert (elt->getAttribute ("id", &id));
   if (elt->getAttribute ("type", &type)
@@ -3609,25 +3692,54 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
       media = st->_doc->getSettings ();
       g_assert_nonnull (media);
       media->addAlias (id);
+      goto done;
+    }
+
+  if (elt->getAttribute ("refer", &refer))
+    {
+      if (unlikely (elt->getAttribute ("src", &src)))
+        {
+          return st->errEltMutuallyExclAttributes
+            (elt->getNode (), "src", "refer");
+        }
+
+      media = cast (Media *, st->_doc->getObjectByIdOrAlias (refer));
+      if (media != nullptr)
+        goto almost_done;
     }
   else
     {
-      Composition *parent;
-      string src;
-
       elt->getAttribute ("src", &src);
-      if (!xpathisuri (src) && !xpathisabs (src))
+      if (src != "" && !xpathisuri (src) && !xpathisabs (src))
         {
           string dir = st->getDirname();
           src = xpathbuildabs (dir, src);
         }
 
-      media = new Media (id, type, src);
-      parent = cast (Composition *, st->objStackPeek ());
-      g_assert_nonnull (parent);
-      parent->addChild (media);
+      if (st->referMapIndex (id, &media))
+        {
+          media->setProperty ("uri", src);
+          goto done;
+        }
     }
 
+  media = new Media (id);
+  media->setProperty ("uri", src);
+  media->setProperty ("type", type);
+
+  parent = cast (Composition *, st->objStackPeek ());
+  g_assert_nonnull (parent);
+  parent->addChild (media);
+
+ almost_done:
+  if (refer != "")
+    {
+      media->addAlias (id);
+      st->referMapAdd (refer, media);
+      g_assert (st->referMapAdd (id, media));
+    }
+
+ done:
   st->objStackPush (media);
   return true;
 }

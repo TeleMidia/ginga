@@ -51,7 +51,7 @@ main (void)
 
   for (size_t i = 0; i < N; i++)
     {
-      m[i] = new Media (xstrbuild ("m%d", (int) i), "", "");
+      m[i] = new Media (xstrbuild ("m%d", (int) i));
       doc->addObject (m[i]);
       for (size_t j = 0; j < M; j++)
         {

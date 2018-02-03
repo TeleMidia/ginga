@@ -25,7 +25,7 @@ class Media;
 class PlayerVideo: public Player
 {
 public:
-  PlayerVideo (Formatter *, Media *, const string &);
+  PlayerVideo (Formatter *, Media *);
   ~PlayerVideo ();
   void start () override;
   void stop () override;

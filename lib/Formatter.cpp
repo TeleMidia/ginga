@@ -817,8 +817,7 @@ Formatter::obtainExecutionObject (const string &id)
         }
       else
         {
-          object = new Media (id, media->getMimeType (),
-                              media->getSrc ());
+          object = new Media (id);
         }
 
       // Initialize properties.

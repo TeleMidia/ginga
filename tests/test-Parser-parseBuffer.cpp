@@ -23,6 +23,9 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "MediaSettings.h"
 #include "Switch.h"
 
+#define DOUBLE_PROP_EQ(m, prop, value)\
+    doubleeq (xstrtodorpercent ((m)->getProperty (prop), nullptr), (value))
+
 static bool
 check_failure (const string &log, const string &expected, const string &buf)
 {
@@ -1911,7 +1914,6 @@ tmp = writetmp (0, xstrbuild ("\
 </ncl>\n\
 ");
 
-#if 0
   XFAIL ("media: Bad refer",
          "<media> at line 3: Bad value 'r' for attribute 'refer' "
          "(no such media object)", "\
@@ -1933,7 +1935,6 @@ tmp = writetmp (0, xstrbuild ("\
  </body>\n\
 </ncl>\n\
 ");
-#endif
 
 
 // -------------------------------------------------------------------------
@@ -2660,19 +2661,19 @@ tmp = writetmp (0, xstrbuild ("\
     g_assert (m->getProperty ("y") == "2");
 
     g_assert (m->getAttributionEvent ("top") != nullptr);
-    g_assert (m->getProperty ("top") == "50.00%");
+    g_assert (DOUBLE_PROP_EQ (m, "top", .5));
 
     g_assert (m->getAttributionEvent ("left") != nullptr);
-    g_assert (m->getProperty ("left") == "0.00%");
+    g_assert (DOUBLE_PROP_EQ (m, "left", 0.));
 
     g_assert (m->getAttributionEvent ("width") != nullptr);
-    g_assert (m->getProperty ("width") == "100.00%");
+    g_assert (DOUBLE_PROP_EQ (m, "width", 1.));
 
     g_assert (m->getAttributionEvent ("height") != nullptr);
-    g_assert (m->getProperty ("height") == "100.00%");
+    g_assert (DOUBLE_PROP_EQ (m, "height", 1.));
 
-    g_assert (m->getAttributionEvent ("zorder") != nullptr);
-    g_assert (m->getProperty ("zorder") == "1");
+    g_assert (m->getAttributionEvent ("zOrder") != nullptr);
+    g_assert (m->getProperty ("zOrder") == "1");
 
     delete doc;
   }
@@ -2814,10 +2815,10 @@ borderWidth='0',borderColor=''}");
 
     Media *m1 = cast (Media *, doc->getObjectById ("m1"));
     g_assert_nonnull (m1);
-    g_assert (m1->getProperty ("top") == "50.00%");
-    g_assert (m1->getProperty ("left") == "30.00%");
-    g_assert (m1->getProperty ("width") == "100.00%");
-    g_assert (m1->getProperty ("height") == "100.00%");
+    g_assert (DOUBLE_PROP_EQ (m1, "top", .5));
+    g_assert (DOUBLE_PROP_EQ (m1, "left", .3));
+    g_assert (DOUBLE_PROP_EQ (m1, "width", 1.0));
+    g_assert (DOUBLE_PROP_EQ (m1, "height", 1.0));
     g_assert (m1->getProperty ("focusIndex") == "3");
     g_assert (m1->getProperty ("transIn") == "");
 
@@ -2833,10 +2834,10 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
 
     Media *m3 = cast (Media *, doc->getObjectById ("m3"));
     g_assert_nonnull (m3);
-    g_assert (m3->getProperty ("top") == "50.00%");
-    g_assert (m3->getProperty ("left") == "30.00%");
-    g_assert (m3->getProperty ("width") == "100.00%");
-    g_assert (m3->getProperty ("height") == "100.00%");
+    g_assert (DOUBLE_PROP_EQ (m3, "top", .5));
+    g_assert (DOUBLE_PROP_EQ (m3, "left", .3));
+    g_assert (DOUBLE_PROP_EQ (m3, "width", 1.));
+    g_assert (DOUBLE_PROP_EQ (m3, "height", 1.));
     g_assert (m3->getProperty ("focusIndex") == "3");
     g_assert (m3->getProperty ("transIn") == "");
 
@@ -2846,7 +2847,6 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
     delete doc;
   }
 
-#if 0
 
   // Success: Media with refer.
   {
@@ -2870,17 +2870,17 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
 </ncl>\n\
 ");
     g_assert_nonnull (doc);
-    g_assert (doc->getObjects ()->size () == 6);
-    g_assert (doc->getMedias ()->size () == 4);
+    g_assert (doc->getObjects ()->size () == 4);
+    g_assert (doc->getMedias ()->size () == 2);
     g_assert (doc->getContexts ()->size () == 2);
 
     Media *m = cast (Media *, doc->getObjectById ("m"));
     g_assert_nonnull (m);
 
-    Media *r1 = cast (Media *, doc->getObjectById ("r1"));
+    Media *r1 = cast (Media *, doc->getObjectByIdOrAlias ("r1"));
     g_assert_nonnull (r1);
 
-    Media *r2 = cast (Media *, doc->getObjectById ("r2"));
+    Media *r2 = cast (Media *, doc->getObjectByIdOrAlias ("r2"));
     g_assert_nonnull (r2);
 
     g_assert (m->getAttributionEvent ("x") != nullptr);
@@ -2894,7 +2894,6 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
 
     delete doc;
   }
-#endif
 
 
   // Success: Nested contexts and ports.
