@@ -2767,7 +2767,8 @@ ParserState::pushRegion (ParserState *st, ParserElt *elt)
   parent_node = elt->getParentNode ();
   g_assert_nonnull (parent_node);
 
-  rect = parent = screen = st->rectStackPeek ();
+  screen = st->_rectStack.front ();
+  rect = parent = st->rectStackPeek ();
   if (elt->getAttribute ("left", &str))
     {
       rect.x += ginga::parse_percent (str, parent.width, 0, G_MAXINT);
