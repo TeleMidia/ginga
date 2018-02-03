@@ -26,7 +26,7 @@ GINGA_NAMESPACE_BEGIN
 class Media: public Object
 {
 public:
-  Media (const string &, const string &, const string &);
+  Media (const string &);
   virtual ~Media ();
 
   // Object:
@@ -44,8 +44,6 @@ public:
   virtual void redraw (cairo_t *);
 
 protected:
-  string _mime;                 // mime-type
-  string _uri;                  // content URI
   Player *_player;              // underlying player
 
   void doStop () override;

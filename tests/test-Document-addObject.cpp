@@ -42,7 +42,7 @@ main (void)
 
   // Add media.
   {
-    Media *m = new Media ("m", "", "");
+    Media *m = new Media ("m");
     g_assert (doc->addObject (m));
     g_assert (doc->getObjects ()->size () == 3);
     g_assert (doc->getMedias ()->size () == 2);

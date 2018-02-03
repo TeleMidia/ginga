@@ -49,9 +49,8 @@ static map<string, Event::Transition> nclua_act_to_ncl =
 
 // Public.
 
-PlayerLua::PlayerLua (Formatter *formatter, Media *media,
-                      const string &uri)
-  :Player (formatter, media, uri)
+PlayerLua::PlayerLua (Formatter *formatter, Media *media)
+  :Player (formatter, media)
 {
   _nw = NULL;
   _init_rect = {0, 0, 0, 0};
@@ -70,10 +69,10 @@ PlayerLua::start ()
   g_assert_null (_nw);
   TRACE ("starting");
 
-  this->pwdSave (_uri);
+  this->pwdSave (_prop.uri);
   _init_rect = _prop.rect;
   _nw = ncluaw_open
-    (_uri.c_str (), _init_rect.width, _init_rect.height, &errmsg);
+    (_prop.uri.c_str (), _init_rect.width, _init_rect.height, &errmsg);
   if (unlikely (_nw == nullptr))
     ERROR ("%s", errmsg);
   this->pwdRestore ();

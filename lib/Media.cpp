@@ -28,89 +28,11 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-static map<string, string> mime_table =
-{
-  {"ac3", "audio/ac3"},
-  {"avi", "video/x-msvideo"},
-  {"bmp", "image/bmp"},
-  {"bpg", "image/x-bpg"},
-  {"class", "application/x-ginga-NCLet"},
-  {"css", "text/css"},
-  {"gif", "image/gif"},
-  {"htm", "text/html"},
-  {"html", "text/html"},
-  {"jpeg", "image/jpeg"},
-  {"jpg", "image/jpeg"},
-  {"lua", "application/x-ginga-NCLua"},
-  {"mov", "video/quicktime"},
-  {"mp2", "audio/mp2"},
-  {"mp3", "audio/mp3"},
-  {"mp4", "video/mp4"},
-  {"mpa", "audio/mpa"},
-  {"mpeg", "video/mpeg"},
-  {"mpg", "video/mpeg"},
-  {"mpv", "video/mpv"},
-  {"ncl", "application/x-ginga-ncl"},
-  {"oga", "audio/ogg"},
-  {"ogg", "audio/ogg"},
-  {"ogv", "video/ogg"},
-  {"opus", "audio/ogg"},
-  {"png", "image/png"},
-  {"smil", "application/smil"},
-  {"spx", "audio/ogg"},
-  {"srt", "text/srt"},
-  {"ssml", "application/ssml+xml"},
-  {"svg", "image/svg+xml"},
-  {"svgz", "image/svg+xml"},
-  {"ts", "video/mpeg"},
-  {"txt", "text/plain"},
-  {"wav", "audio/basic"},
-  {"webp", "image/x-webp"},
-  {"wmv", "video/x-ms-wmv"},
-  {"xlet", "application/x-ginga-NCLet"},
-  {"xlt", "application/x-ginga-NCLet"},
-  {"xml", "text/xml"},
-};
-
-static bool
-mime_table_index (const string &key, string *result)
-{
-  map<string, string>::iterator it;
-  if ((it = mime_table.find (key)) == mime_table.end ())
-    return false;
-  tryset (result, it->second);
-  return true;
-}
-
 
 // Public.
 
-Media::Media (const string &id, const string &mime, const string &uri)
-  :Object (id)
+Media::Media (const string &id): Object (id)
 {
-  _mime = mime;
-  _uri = uri;
-
-  if (_mime == "" && _uri != "")
-    {
-      string::size_type index, len;
-      index = _uri.find_last_of (".");
-      if (index != std::string::npos)
-        {
-          index++;
-          len = _uri.length ();
-          if (index < len)
-            {
-              string extension = _uri.substr (index, (len - index));
-              if (extension != "")
-                mime_table_index (extension, &_mime);
-            }
-        }
-    }
-
-  if (_mime == "")
-    _mime = "application/x-ginga-timer";
-
   _player = nullptr;
 }
 
@@ -132,12 +54,16 @@ string
 Media::toString ()
 {
   string str;
+  string type;
+  string uri;
 
   str = Object::toString ();
-  if (_mime != "")
-    str += "  mime: " + _mime + "\n";
-  if (_uri != "")
-    str += "  uri: " + _uri + "\n";
+  type = _properties["type"];
+  if (type != "")
+    str += "  type: " + type + "\n";
+  uri = _properties["uri"];
+  if (uri != "")
+    str += "  uri: " + uri + "\n";
   str += xstrbuild ("  player: %p\n", _player);
 
   return str;
@@ -275,7 +201,8 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
 
                 g_assert (_doc->getData ("formatter", (void **) &fmt));
                 g_assert_null (_player);
-                _player = Player::createPlayer (fmt, this, _uri, _mime);
+                _player = Player::createPlayer
+                  (fmt, this, _properties["uri"], _properties["type"]);
                 if (unlikely (_player == nullptr))
                   return false; // fail
 

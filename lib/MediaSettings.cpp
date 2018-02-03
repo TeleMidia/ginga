@@ -26,11 +26,11 @@ GINGA_NAMESPACE_BEGIN
 
 // Public.
 
-MediaSettings::MediaSettings (const string &id)
-  :Media (id, "application/x-ginga-settings", "")
+MediaSettings::MediaSettings (const string &id): Media (id)
 {
   _nextFocus = "";
   _hasNextFocus = false;
+  _properties["type"] = "application/x-ginga-settings";
   this->addAttributionEvent ("service.currentFocus");
 }
 

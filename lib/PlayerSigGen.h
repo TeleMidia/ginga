@@ -25,7 +25,7 @@ GINGA_NAMESPACE_BEGIN
 class PlayerSigGen: public Player
 {
 public:
-  PlayerSigGen (Formatter *, Media *, const string &);
+  PlayerSigGen (Formatter *, Media *);
   ~PlayerSigGen();
   void start () override;
   void stop () override;

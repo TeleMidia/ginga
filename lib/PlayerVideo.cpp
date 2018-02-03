@@ -43,13 +43,11 @@ GINGA_NAMESPACE_BEGIN
 
 // Public.
 
-PlayerVideo::PlayerVideo (Formatter *formatter, Media *media,
-                          const string &uri)
-  :Player (formatter, media, uri)
+PlayerVideo::PlayerVideo (Formatter *formatter, Media *media)
+  :Player (formatter, media)
 {
   GstBus *bus;
   gulong ret;
-  char *buf;
   GstPad *pad;
   GstPad *ghost;
 
@@ -83,12 +81,6 @@ PlayerVideo::PlayerVideo (Formatter *formatter, Media *media,
   ret = gst_bus_add_watch (bus, (GstBusFunc) cb_Bus, this);
   g_assert (ret > 0);
   gst_object_unref (bus);
-
-  buf = gst_filename_to_uri (uri.c_str (), nullptr);
-  g_assert_nonnull (buf);
-
-  g_object_set (G_OBJECT (_playbin), "uri", buf, nullptr);
-  g_free (buf);
 
   // Setup audio pipeline.
   _audio.bin = gst_bin_new ("audio.bin");
@@ -414,12 +406,12 @@ PlayerVideo::doSetProperty (Property code,
                             unused (const string &name),
                             const string &value)
 {
-  if (unlikely (_playbin==nullptr))
+  if (unlikely (_playbin == nullptr))
     return Player::doSetProperty (code, name, value);
 
   switch (code)
     {
-      case PROP_BALANCE:
+    case PROP_BALANCE:
       {
         _prop.balance = xstrtodorpercent (value, nullptr);
         g_object_set (_audio.pan,
@@ -427,7 +419,7 @@ PlayerVideo::doSetProperty (Property code,
                       nullptr);
         break;
       }
-      case PROP_BASS:
+    case PROP_BASS:
       {
         _prop.bass = xstrtodorpercent (value, nullptr);
         g_object_set (_audio.equalizer,
@@ -435,12 +427,12 @@ PlayerVideo::doSetProperty (Property code,
                       nullptr);
         break;
       }
-      case PROP_FREEZE:
+    case PROP_FREEZE:
       {
         _prop.freeze = ginga::parse_bool (value);
         break;
       }
-      case PROP_MUTE:
+    case PROP_MUTE:
       {
         _prop.mute = ginga::parse_bool (value);
         g_object_set (_audio.volume,
@@ -448,64 +440,64 @@ PlayerVideo::doSetProperty (Property code,
                       nullptr);
         break;
       }
-      case PROP_SPEED:
+    case PROP_SPEED:
       {
         if (unlikely (this->getPipelineState()!="PAUSED" &&
-            this->getPipelineState()!="PLAYING"))
-        {
-          stackAction (code, name, value);
-          break;
-        }
-
-        if (_state != SLEEPING)
-        {
-          _prop.speed = xstrtod (value);
-          speed (_prop.speed);
-        }
-        break;
-      }
-      case PROP_TIME:
-      {
-        if (unlikely (this->getPipelineState()!="PAUSED" &&
-            this->getPipelineState()!="PLAYING"))
-        {
-          stackAction (code, name, value);
-          break;
-        }
-
-        if (_state != SLEEPING)
-        {
-          if (value=="indefinite" || value =="")
+                      this->getPipelineState()!="PLAYING"))
+          {
+            stackAction (code, name, value);
             break;
-
-          TRACE ("Property value: %s",value.c_str());
-          TRACE ("State: %s", this->getPipelineState().c_str());
-          Time t;
-          gint64 cur, dur, next;
-
-          cur = this->getStreamMediaTime ();
-          dur = this->getStreamMediaDuration ();
-          TRACE ("time: %" GST_TIME_FORMAT " / %" GST_TIME_FORMAT,
-                GST_TIME_ARGS (cur), GST_TIME_ARGS (dur));
-
-          try_parse_time (value, &t);
-          next = (gint64)(t);
-          if (xstrhasprefix (value, "+"))
-          {
-            if (next+cur>=dur)
-              setEOS (true);
-
-            next+=cur;
           }
-          else if (xstrhasprefix (value, "-"))
+
+        if (_state != SLEEPING)
           {
-            next=(next-cur<0)?0:next-cur;
+            _prop.speed = xstrtod (value);
+            speed (_prop.speed);
           }
-          seek (next);
-        }
         break;
       }
-      case PROP_TREBLE:
+    case PROP_TIME:
+      {
+        if (unlikely (this->getPipelineState()!="PAUSED" &&
+                      this->getPipelineState()!="PLAYING"))
+          {
+            stackAction (code, name, value);
+            break;
+          }
+
+        if (_state != SLEEPING)
+          {
+            if (value=="indefinite" || value =="")
+              break;
+
+            TRACE ("Property value: %s",value.c_str());
+            TRACE ("State: %s", this->getPipelineState().c_str());
+            Time t;
+            gint64 cur, dur, next;
+
+            cur = this->getStreamMediaTime ();
+            dur = this->getStreamMediaDuration ();
+            TRACE ("time: %" GST_TIME_FORMAT " / %" GST_TIME_FORMAT,
+                   GST_TIME_ARGS (cur), GST_TIME_ARGS (dur));
+
+            try_parse_time (value, &t);
+            next = (gint64)(t);
+            if (xstrhasprefix (value, "+"))
+              {
+                if (next+cur>=dur)
+                  setEOS (true);
+
+                next+=cur;
+              }
+            else if (xstrhasprefix (value, "-"))
+              {
+                next=(next-cur<0)?0:next-cur;
+              }
+            seek (next);
+          }
+        break;
+      }
+    case PROP_TREBLE:
       {
         _prop.treble = xstrtodorpercent (value, nullptr);
         g_object_set (_audio.equalizer,
@@ -514,7 +506,17 @@ PlayerVideo::doSetProperty (Property code,
                       nullptr);
         break;
       }
-      case PROP_VOLUME:
+    case PROP_URI:
+      {
+        gchar *str;
+        Player::_prop.uri = value;
+        str = gst_filename_to_uri (value.c_str (), nullptr);
+        g_assert_nonnull (str);
+        g_object_set (G_OBJECT (_playbin), "uri", str, nullptr);
+        g_free (str);
+        break;
+      }
+    case PROP_VOLUME:
       {
         _prop.volume = xstrtodorpercent (value, nullptr);
         g_object_set (_audio.volume,
@@ -522,8 +524,10 @@ PlayerVideo::doSetProperty (Property code,
                       nullptr);
         break;
       }
-      default:
+    default:
+      {
         return Player::doSetProperty (code, name, value);
+      }
     }
   return true;
 }
