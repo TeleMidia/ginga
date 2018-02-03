@@ -59,12 +59,13 @@ Required:
   * gstreamer >= 1.8
   * GTK+ >= 3.4
   * pango >= 1.30
-  * xercesc >= 2.7
+  * libxml >= 2.9
 
 Optional:
 
   * cef >= 3.0, https://bitbucket.org/chromiumembedded/cef
   * librsvg >= 2.40
+  * lua >= 5.2
   * nclua >= 1.0, http://github.com/telemidia/nclua
 
 ### Linux

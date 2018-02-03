@@ -25,7 +25,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Object.h"
 #include "Switch.h"
 
-#include "ncl/ParserXercesC.h"
 #include "Parser.h"
 #include "PlayerText.h"
 
@@ -119,7 +118,6 @@ Formatter::start (const string &file, string *errmsg)
 {
   int w, h;
   string id;
-  NclContext *body;
   Event *evt;
 
   if (_state != GINGA_STATE_STOPPED)
@@ -129,31 +127,19 @@ Formatter::start (const string &file, string *errmsg)
   g_assert_null (_doc);
   w = _opts.width;
   h = _opts.height;
-
-  if (!_opts.experimental)
-    {
-      _docLegacy = ParserXercesC::parse (file, w, h, errmsg);
-      if (unlikely (_docLegacy == nullptr))
-        return false;
-      _doc = new Document ();
-    }
-  else
-    {
-      _doc = nullptr;
+  _doc = nullptr;
 #if defined WITH_LUA && WITH_LUA
-      if (xstrhassuffix (file, ".lua"))
-        {
-          _doc = ParserLua::parseFile (file, errmsg);
-          if (unlikely (_doc == nullptr))
-            return false;
-        }
-#endif
-      if (_doc == nullptr)
-        _doc = Parser::parseFile (file, w, h, errmsg);
+  if (xstrhassuffix (file, ".lua"))
+    {
+      _doc = ParserLua::parseFile (file, errmsg);
       if (unlikely (_doc == nullptr))
         return false;
-      _docLegacy = nullptr;
     }
+#endif
+  if (_doc == nullptr)
+    _doc = Parser::parseFile (file, w, h, errmsg);
+  if (unlikely (_doc == nullptr))
+    return false;
 
   g_assert_nonnull (_doc);
   _doc->setData ("formatter", (void *) this);
@@ -172,99 +158,15 @@ Formatter::start (const string &file, string *errmsg)
 
   // Run document.
   TRACE ("%s", file.c_str ());
+  evt = root->getLambda ();
+  g_assert_nonnull (evt);
+  if (_doc->evalAction (evt, Event::START) == 0)
+    return false;
 
-  if (_docLegacy != nullptr)
-    {
-      id = _docLegacy->getId ();
-      body = _docLegacy->getRoot ();
-      g_assert_nonnull (body);
-
-      root->addAlias (id);
-
-      // Create settings node.
-      NclMedia *settingsNode =  new NclMedia (_docLegacy,
-                                              "__settings__", true);
-      NclProperty *prop = new NclProperty (_docLegacy,
-                                           "service.currentFocus");
-      prop->setValue ("");
-      settingsNode->addAnchor (prop);
-      g_assert_nonnull (this->obtainExecutionObject (settingsNode->getId ()));
-      evt = cast (Object *, settings)->getLambda ();
-      g_assert_nonnull (evt);
-      g_assert (evt->transition (Event::START));
-
-      // Initialize settings object.
-      list<NclNode *> *nodes = _docLegacy->getSettingsNodes ();
-      for (auto node: *nodes)
-        {
-          NclMedia *content;
-
-          content = (NclMedia *) node;
-          if (content != settingsNode)
-            settings->addAlias (content->getId ());
-
-          for (auto anchor: *content->getAnchors ())
-            {
-              NclProperty *prop;
-              string name;
-              string value;
-
-              if (!instanceof (NclProperty *, anchor))
-                continue;           // nothing to do
-
-              prop = cast (NclProperty *, anchor);
-              name = prop->getName ();
-              value = prop->getValue ();
-              if (value == "")
-                continue;           // nothing to do
-
-              settings->setProperty (name, value, 0);
-            }
-        }
-      delete nodes;
-
-      // Start document.
-      Object *obj = this->obtainExecutionObject (body->getId ());
-      for (auto port: *body->getPorts ())
-        {
-          NclNode *target;
-          NclAnchor *iface;
-          Object *child;
-          Event *e;
-
-          port->getTarget (&target, &iface);
-          child = this->obtainExecutionObject (target->getId ());
-          g_assert_nonnull (child);
-
-          if (!instanceof (NclArea *, iface))
-            continue;       // nothing to do
-
-          e = this->obtainEvent (child, Event::PRESENTATION, iface, "");
-          g_assert_nonnull (e);
-          cast (Context *, obj)->addPort (e);
-        }
-      for (auto link: *(body->getLinks ()))
-        {
-          auto ell = obtainFormatterLink (link);
-          cast (Context *, obj)->addLink (ell.first, ell.second);
-        }
-      evt = obj->getLambda ();
-      g_assert_nonnull (evt);
-      if (_doc->evalAction (evt, Event::START) == 0)
-        return false;
-    }
-  else
-    {
-      evt = root->getLambda ();
-      g_assert_nonnull (evt);
-      if (_doc->evalAction (evt, Event::START) == 0)
-        return false;
-
-      // start settings
-      evt = _doc->getSettings()->getLambda ();
-      g_assert_nonnull (evt);
-      g_assert (evt->transition (Event::START));
-    }
+  // Start settings.
+  evt = _doc->getSettings()->getLambda ();
+  g_assert_nonnull (evt);
+  g_assert (evt->transition (Event::START));
 
   // Refresh current focus.
   settings->updateCurrentFocus ("");
@@ -604,7 +506,6 @@ Formatter::Formatter (unused (int argc), unused (char **argv),
     ? string (s) : "";
 
   _doc = nullptr;
-  _docLegacy = nullptr;
   _docPath = "";
   _eos = false;
 
@@ -702,335 +603,6 @@ Formatter::setOptionSize (Formatter *self, const string &name,
   opts = self->getOptions ();
   self->resize (opts->width, opts->height);
   TRACE ("%s:=%d", name.c_str (), value);
-}
-
-
-// Private.
-
-Object *
-Formatter::obtainExecutionObject (const string &id)
-{
-  NclNode *parentNode;
-  Composition *parent;
-  Object *object;
-
-  if ((object = _doc->getObjectByIdOrAlias (id)) != nullptr)
-    return object;              // already created
-
-  NclEntity *entity = _docLegacy->getEntityById (id);
-  g_assert_nonnull (entity);
-
-  NclNode *node = cast (NclNode *, entity);
-  g_assert_nonnull (node);
-
-  // Get parent.
-  parentNode = node->getParent ();
-  if (parentNode == nullptr)
-    {
-      parent = nullptr;
-    }
-  else
-    {
-      parent = cast (Composition *, obtainExecutionObject
-                     (parentNode->getId ()));
-      g_assert_nonnull (parent);
-      if ((object = _doc->getObjectByIdOrAlias (id)) != nullptr)
-        return object;
-    }
-
-  // Solve refer, if needed.
-  if (instanceof (NclMediaRefer *, node))
-    {
-      NclNode *target;
-
-      TRACE ("solving refer %s", node->getId ().c_str ());
-      target = node->derefer ();
-      g_assert (!instanceof (NclMediaRefer *, target));
-      object = obtainExecutionObject (target->derefer ()->getId ());
-      object->addAlias (id);
-      return object;
-    }
-
-  if (instanceof (NclSwitch *, node)) // switch
-    {
-      TRACE ("creating switch %s", node->getId ().c_str ());
-      object = new Switch (id);
-      if (parent != nullptr)
-        parent->addChild (object);
-
-      for (auto item: *cast (NclSwitch *, node)->getRules ())
-        {
-          Object *obj;
-
-          g_assert_nonnull (item.first);
-          g_assert_nonnull (item.second);
-
-          obj = this->obtainExecutionObject (item.first->getId ());
-          g_assert_nonnull (obj);
-          cast (Switch *, object)->addRule (obj, item.second);
-        }
-      return object;
-    }
-  else if (instanceof (NclContext *, node)) // context
-    {
-      TRACE ("creating context %s", node->getId ().c_str ());
-      object = new Context (id);
-      if (parent != nullptr)
-        parent->addChild (object);
-
-      NclContext *ctx = cast (NclContext *, node);
-      for (auto port: *ctx->getPorts ())
-        {
-          NclNode *target;
-          NclAnchor *iface;
-          Object *child;
-          Event *e;
-
-          port->getTarget (&target, &iface);
-          child = this->obtainExecutionObject (target->getId ());
-          g_assert_nonnull (child);
-
-          if (!instanceof (NclArea *, iface))
-            continue;       // nothing to do
-
-          e = this->obtainEvent (child, Event::PRESENTATION, iface, "");
-          g_assert_nonnull (e);
-          cast (Context *, object)->addPort (e);
-        }
-      for (auto link: *(ctx->getLinks ()))
-        {
-          auto ell = obtainFormatterLink (link);
-          cast (Context *, object)->addLink (ell.first, ell.second);
-        }
-
-      return object;
-    }
-  else if (instanceof (NclMedia *, node)) // media
-    {
-      TRACE ("creating media %s", node->getId ().c_str ());
-      NclMedia *media;
-      media = cast (NclMedia *, node);
-      g_assert_nonnull (media);
-      if (media->isSettings ())
-        {
-          object = new MediaSettings (id);
-        }
-      else
-        {
-          object = new Media (id);
-        }
-
-      // Initialize properties.
-      for (auto anchor: *media->getAnchors ())
-        {
-          NclProperty *prop = cast (NclProperty *, anchor);
-          if (prop != nullptr)
-            object->setProperty (prop->getName (),
-                                 prop->getValue ());
-        }
-
-      g_assert_nonnull (object);
-      if (parent != nullptr)
-        parent->addChild (object);
-      return object;
-    }
-  else
-    {
-      g_assert_not_reached ();
-    }
-}
-
-Event *
-Formatter::obtainEvent (Object *obj, Event::Type type,
-                        NclAnchor *anchor, const string &key)
-{
-  Event *event;
-
-  if (type == Event::SELECTION)
-    event = obj->getEvent (type, key);
-  else
-    event = obj->getEvent (type, anchor->getId ());
-
-  if (event != nullptr)
-    return event;
-
-  g_assert (instanceof (Media *, obj));
-
-  switch (type)
-    {
-    case Event::PRESENTATION:
-      {
-        NclArea *area = cast (NclArea *, anchor);
-        g_assert_nonnull (area);
-        obj->addPresentationEvent (anchor->getId (),
-                                    area->getBegin (),
-                                    area->getEnd ());
-        event = obj->getPresentationEvent (anchor->getId ());
-        g_assert_nonnull (event);
-        break;
-      }
-    case Event::ATTRIBUTION:
-      {
-        NclProperty *property = cast (NclProperty *, anchor);
-        g_assert_nonnull (property);
-        obj->addAttributionEvent (property->getId ());
-        event = obj->getAttributionEvent (property->getId ());
-        g_assert_nonnull (event);
-        event->setParameter ("value", property->getValue ());
-        break;
-      }
-    case Event::SELECTION:
-      {
-        obj->addSelectionEvent (key);
-        event = obj->getSelectionEvent (key);
-        g_assert_nonnull (event);
-        event->setParameter ("key", key);
-        break;
-      }
-    default:
-      g_assert_not_reached ();
-    }
-
-  g_assert_nonnull (event);
-  return event;
-}
-
-Event *
-Formatter::obtainFormatterEventFromBind (NclBind *bind)
-{
-  NclNode *node;
-  Object *obj;
-  NclAnchor *iface;
-  Event::Type eventType;
-  NclBind::RoleType roleType;
-  string key = "";
-
-  node = bind->getNode ();
-  g_assert_nonnull (node);
-
-  iface = bind->getInterface ();
-  if (iface != nullptr && instanceof (NclPort *, iface))
-    cast (NclPort *, iface)->getTarget (&node, nullptr);
-
-  obj = obtainExecutionObject (node->getId ());
-  g_assert_nonnull (obj);
-
-  if (iface == nullptr)
-    return obj->getLambda ();
-
-  if (instanceof (NclComposition *, node)
-      && instanceof (NclPort *, iface))
-    {
-      NclComposition *comp = cast (NclComposition *, node);
-      NclPort *port = cast (NclPort *, iface);
-      iface = comp->getMapInterface (port);
-    }
-
-  roleType = bind->getRoleType ();
-  eventType = bind->getEventType ();
-
-  if (eventType == Event::SELECTION
-      && roleType == NclBind::CONDITION)
-    {
-      bind->getParameter ("key", &key);
-    }
-
-  return this->obtainEvent (obj, eventType, iface, key);
-}
-
-pair<list<Action>,list<Action>>
-Formatter::obtainFormatterLink (NclLink *docLink)
-{
-  pair<list<Action>,list<Action>> link;
-
-  g_assert_nonnull (docLink);
-  for (auto bind: *docLink->getBinds ())
-    {
-      switch (bind->getRoleType ())
-        {
-        case NclBind::CONDITION:
-          {
-            Predicate *pred = bind->getPredicate ();
-            if (pred != nullptr) // solve ghost binds in predicate
-              {
-                list<Predicate *> buf;
-
-                pred = pred->clone ();
-                g_assert_nonnull (pred);
-                buf.push_back (pred);
-                while (!buf.empty ())
-                  {
-                    Predicate *p = buf.back ();
-                    buf.pop_back ();
-                    switch (p->getType ())
-                      {
-                      case Predicate::FALSUM:
-                      case Predicate::VERUM:
-                        break;        // nothing to do
-                      case Predicate::ATOM:
-                        {
-                          Predicate::Test test;
-                          string left, right, ghost;
-                          p->getTest (&left, &test, &right);
-                          if (left[0] == '$')
-                            {
-                              ghost = docLink->getGhostBind
-                                (left.substr (1, left.length () - 1));
-                              if (ghost != "")
-                                left = ghost;
-                            }
-                          if (right[0] == '$')
-                            {
-                              ghost = docLink->getGhostBind
-                                (right.substr (1, right.length () - 1));
-                              if (ghost != "")
-                                right = ghost;
-                            }
-                          p->setTest (left, test, right);
-                          break;
-                        }
-                      case Predicate::NEGATION:
-                      case Predicate::CONJUNCTION:
-                      case Predicate::DISJUNCTION:
-                        for (auto child: *p->getChildren ())
-                          buf.push_back (child);
-                        break;
-                      default:
-                        g_assert_not_reached ();
-                      }
-                  }
-              }
-
-            Action cond;
-
-            cond.event = this->obtainFormatterEventFromBind (bind);
-            g_assert_nonnull (cond.event);
-            cond.transition = bind->getTransition ();
-            cond.predicate = pred;
-            link.first.push_back (cond);
-            break;
-          }
-
-        case NclBind::ACTION:
-          {
-            Action act;
-            string value;
-
-            act.event = this->obtainFormatterEventFromBind (bind);
-            g_assert_nonnull (act.event);
-            act.transition = bind->getTransition ();
-            act.predicate = nullptr;
-            bind->getParameter ("value", &act.value);
-            link.second.push_back (act);
-            break;
-          }
-
-          default:
-            g_assert_not_reached ();
-        }
-    }
-
-  return link;
 }
 
 GINGA_NAMESPACE_END

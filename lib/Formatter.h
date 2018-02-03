@@ -22,7 +22,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 
 #include "Document.h"
-#include "ncl/Ncl.h"
 
 GINGA_NAMESPACE_BEGIN
 
@@ -81,15 +80,8 @@ class Formatter: public Ginga
   string _saved_G_MESSAGES_DEBUG; // saved G_MESSAGES_DEBUG value
 
   Document *_doc;               // current document
-  NclDocument *_docLegacy;      // current document (legacy)
   string _docPath;              // path to current document
   bool _eos;                    // true if EOS was reached
-
-  // fixme:
-  Object *obtainExecutionObject (const string &);
-  Event *obtainEvent (Object *, Event::Type, NclAnchor *, const string &);
-  Event *obtainFormatterEventFromBind (NclBind *);
-  pair<list<Action>,list<Action>> obtainFormatterLink (NclLink *);
 };
 
 GINGA_NAMESPACE_END
