@@ -56,25 +56,23 @@ m4_define([cairo_required_version],      [1.10.2])
 m4_define([glib_required_version],       [2.32.4])
 m4_define([gstreamer_required_version],  [1.2.0])
 m4_define([gtk_required_version],        [3.4.2])
+m4_define([libxml_required_version],     [2.9])
 m4_define([pango_required_version],      [1.30.0])
-m4_define([xercesc_required_version],    [2.7])
 AC_SUBST([CAIRO_REQUIRED_VERSION],       cairo_required_version)
 AC_SUBST([GLIB_REQUIRED_VERSION],        glib_required_version)
 AC_SUBST([GSTREAMER_REQUIRED_VERSION],   gstreamer_required_version)
 AC_SUBST([GTK_REQUIRED_VERSION],         gtk_required_version)
+AC_SUBST([LIBXML_REQUIRED_VERSION],      libxml_required_version)
 AC_SUBST([PANGO_REQUIRED_VERSION],       pango_required_version)
-AC_SUBST([XERCESC_REQUIRED_VERSION],     xercesc_required_version)
 
 # Optional dependencies version.
 m4_define([cef_required_version],        [3.0])
 m4_define([librsvg_required_version],    [2.40.0])
-m4_define([libxml_required_version],     [2.9])
 m4_define([lua_required_version],        [5.2])
 m4_define([nclua_required_version],      [1.0])
 m4_define([opengl_required_version],     [17.0])
 AC_SUBST([CEF_REQUIRED_VERSION],         cef_required_version)
 AC_SUBST([LIBRSVG_REQUIRED_VERSION],     librsvg_required_version)
-AC_SUBST([LIBXML_REQUIRED_VERSION],      libxml_required_version)
 AC_SUBST([LUA_REQUIRED_VERSION],         cef_required_version)
 AC_SUBST([NCLUA_REQUIRED_VERSION],       nclua_required_version)
 AC_SUBST([OPENGL_REQUIRED_VERSION],      opengl_required_version)
@@ -180,15 +178,12 @@ gst_video_info_from_caps (0, 0);
 AU_CHECK_PKG([GTK],
  [gtk+-3.0 >= gtk_required_version])
 
-AU_CHECK_PKG([PANGO],
- [pango >= pango_required_version
-  pangocairo >= pango_required_version])
-
 AU_CHECK_PKG([LIBXML],
  [libxml-2.0 >= libxml_required_version])
 
-AU_CHECK_PKG([XERCESC],
- [xerces-c >= xercesc_required_version])
+AU_CHECK_PKG([PANGO],
+ [pango >= pango_required_version
+  pangocairo >= pango_required_version])
 
 # Optional dependencies.
 AC_ARG_WITH([cef],
@@ -262,7 +257,6 @@ AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $LUA_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $NCLUA_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $OPENGL_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $PANGO_CFLAGS"])
-AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $XERCESC_CFLAGS"])
 AC_SUBST([GINGA_ALL_CXXFLAGS])
 
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $CAIRO_LIBS"])
@@ -276,7 +270,6 @@ AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $LUA_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $NCLUA_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $OPENGL_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $PANGO_LIBS"])
-AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $XERCESC_LIBS"])
 AC_SUBST([GINGA_ALL_LDFLAGS])
 
 # Directories.
