@@ -373,18 +373,6 @@ Object::sendTick (unused (Time total), Time diff, unused (Time frame))
     }
 }
 
-bool
-Object::getData (const string &key, void **value)
-{
-  return _udata.getData (key, value);
-}
-
-bool
-Object::setData (const string &key, void *value, UserDataCleanFunc fn)
-{
-  return _udata.setData (key, value, fn);
-}
-
 // Private.
 
 void
