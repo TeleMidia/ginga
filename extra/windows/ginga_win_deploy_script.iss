@@ -46,14 +46,14 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-     
-[Files]                                                                                            
+
+[Files]
 
 ; Ginga
 Source: "C:\msys64\mingw64\bin\ginga.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\msys64\mingw64\bin\gingagui.exe"; DestDir: "{app}"; Flags: ignoreversion 
+Source: "C:\msys64\mingw64\bin\gingagui.exe"; DestDir: "{app}"; Flags: ignoreversion
 
-; Ginga-gui GTK icons & depends 
+; Ginga-gui GTK icons & depends
 Source: "C:\msys64\mingw64\share\icons\Adwaita\16x16\*"; DestDir: "{app}\share\icons\Adwaita\16x16"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "C:\msys64\mingw64\share\icons\hicolor\16x16\*"; DestDir: "{app}\share\icons\hicolor\16x16"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "C:\msys64\mingw64\share\icons\hicolor\index.theme"; DestDir: "{app}\share\icons\hicolor"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -111,13 +111,12 @@ Source: "C:\msys64\mingw64\bin\libssh2-1.dll"; DestDir: "{app}"; Flags: ignoreve
 Source: "C:\msys64\mingw64\bin\libstdc++-6.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\msys64\mingw64\bin\libunistring-2.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\msys64\mingw64\bin\libwinpthread-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\msys64\mingw64\bin\libxerces-c-3-1.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\msys64\mingw64\bin\libxml2-2.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\msys64\mingw64\bin\lua53.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\msys64\mingw64\bin\ssleay32.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\msys64\mingw64\bin\zlib1.dll"; DestDir: "{app}"; Flags: ignoreversion
 
-; Gstreamer plugin libs    
+; Gstreamer plugin libs
 
 Source: "C:\msys64\mingw64\lib\gstreamer-1.0\*"; DestDir: "{app}\lib\gstreamer-1.0"; Flags: ignoreversion recursesubdirs createallsubdirs
 
