@@ -3691,13 +3691,20 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
   string src;
 
   g_assert (elt->getAttribute ("id", &id));
-  if (elt->getAttribute ("type", &type)
-      && type == "application/x-ginga-settings")
+  if (elt->getAttribute ("type", &type))
     {
-      media = st->_doc->getSettings ();
-      g_assert_nonnull (media);
-      media->addAlias (id);
-      goto done;
+      if (unlikely (elt->getAttribute ("refer", &refer)))
+        {
+          return st->errEltMutuallyExclAttributes (elt->getNode (), "type",
+                                                   "refer");
+        }
+      if (type == "application/x-ginga-settings")
+        {
+          media = st->_doc->getSettings ();
+          g_assert_nonnull (media);
+          media->addAlias (id);
+          goto done;
+        }
     }
 
   if (elt->getAttribute ("refer", &refer))
@@ -3740,6 +3747,7 @@ almost_done:
   if (refer != "")
     {
       media->addAlias (id);
+      media->addAlias (refer);
       st->referMapAdd (refer, media);
       g_assert (st->referMapAdd (id, media));
     }

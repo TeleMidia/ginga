@@ -1954,6 +1954,28 @@ main (void)
 </ncl>\n\
 ");
 
+  XFAIL ("media: Mutually exclusive src and refer",
+         "<media> at line 3: Attributes 'src' and 'refer' "
+         "are mutually exclusive",
+         "\
+<ncl>\n\
+ <body>\n\
+  <media id='a' src='b' refer='r'/>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("media: Mutually exclusive type and refer",
+         "<media> at line 3: Attributes 'type' and 'refer' "
+         "are mutually exclusive",
+         "\
+<ncl>\n\
+ <body>\n\
+  <media id='a' type='b' refer='r'/>\n\
+ </body>\n\
+</ncl>\n\
+");
+
   XFAIL ("media: Bad refer",
          "<media> at line 3: Bad value 'r' for attribute 'refer' "
          "(no such media object)",
@@ -2902,9 +2924,6 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
     PASS (&doc, "Media with refer", "\
 <ncl>\n\
  <body>\n\
-  <media id='m'>\n\
-   <property name='x' value='1'/>\n\
-  </media>\n\
   <context id='c'>\n\
     <media id='r1' refer='m'>\n\
      <property name='x' value='2'/>\n\
@@ -2914,6 +2933,9 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
      <property name='y' value='b'/>\n\
     </media>\n\
   </context>\n\
+  <media id='m'>\n\
+   <property name='x' value='1'/>\n\
+  </media>\n\
  </body>\n\
 </ncl>\n\
 ");
@@ -2922,7 +2944,7 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
     g_assert (doc->getMedias ()->size () == 2);
     g_assert (doc->getContexts ()->size () == 2);
 
-    Media *m = cast (Media *, doc->getObjectById ("m"));
+    Media *m = cast (Media *, doc->getObjectByIdOrAlias ("m"));
     g_assert_nonnull (m);
 
     Media *r1 = cast (Media *, doc->getObjectByIdOrAlias ("r1"));
@@ -2932,7 +2954,7 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
     g_assert_nonnull (r2);
 
     g_assert (m->getAttributionEvent ("x") != nullptr);
-    g_assert (m->getProperty ("x") == "2");
+    g_assert (m->getProperty ("x") == "1");
     g_assert (m->getAttributionEvent ("y") != nullptr);
     g_assert (m->getProperty ("y") == "b");
 
