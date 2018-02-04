@@ -550,9 +550,13 @@ Player::createPlayer (Formatter *formatter, Media *media, const string &uri,
     }
 
   if (mime == "")
-    mime = "application/x-ginga-timer";
+      mime = "application/x-ginga-timer";
 
-  if (xstrhasprefix (mime, "audio") || xstrhasprefix (mime, "video"))
+  if (mime == "application/x-ginga-ncl")
+    {
+      ERROR_NOT_IMPLEMENTED ("NCL as Media object is not supported");
+    }
+  else if (xstrhasprefix (mime, "audio") || xstrhasprefix (mime, "video"))
     {
       player = new PlayerVideo (formatter, media);
     }
