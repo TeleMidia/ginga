@@ -15,13 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <string.h>
-#include "ParserLua.h"
-
-#include "Context.h"
-#include "Media.h"
-#include "MediaSettings.h"
-#include "Switch.h"
+#include "tests.h"
 
 static bool
 check_failure (const string &log, const string &expected, const string &buf)

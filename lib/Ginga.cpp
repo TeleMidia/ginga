@@ -21,7 +21,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "Formatter.h"
 
-Ginga::Ginga (int, char **, GingaOptions *)
+Ginga::Ginga (GingaOptions *)
 {
 }
 
@@ -33,16 +33,14 @@ Ginga::~Ginga ()
 
 /**
  * @brief Creates a new Ginga handle.
- * @param argc Number arguments passed to main.
- * @param argv Arguments passed to main.
- * @param opts State options.
+ * @param opts Ginga options.
  * @return A new formatter handle.
  */
 Ginga *
-Ginga::create (int argc, char **argv, GingaOptions *opts)
+Ginga::create (GingaOptions *opts)
 {
   setlocale (LC_ALL, "C");
-  return new Formatter (argc, argv, opts);
+  return new Formatter (opts);
 }
 
 /**
@@ -54,3 +52,11 @@ Ginga::version ()
 {
   return PACKAGE_VERSION;
 }
+
+/**
+ * @fn Ginga::start
+ * @brief Starts the presentation of an NCL file.
+ * @param path Path to NCL file.
+ * @param[out] errmsg Error message.
+ * @return \c true if successful or \c false otherwise.
+ */

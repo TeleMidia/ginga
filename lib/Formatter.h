@@ -34,7 +34,7 @@ class Object;
 class Formatter : public Ginga
 {
 public:
-  // External API.
+  // Ginga:
   GingaState getState ();
 
   bool start (const string &, string *);
@@ -55,8 +55,8 @@ public:
   string getOptionString (const string &);
   void setOptionString (const string &, string);
 
-  // Internal API.
-  Formatter (int, char **, GingaOptions *);
+  // Formatter:
+  Formatter (GingaOptions *);
   ~Formatter ();
 
   Document *getDocument ();

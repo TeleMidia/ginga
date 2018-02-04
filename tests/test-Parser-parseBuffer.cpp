@@ -15,13 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <string.h>
-#include "Parser.h"
-
-#include "Context.h"
-#include "Media.h"
-#include "MediaSettings.h"
-#include "Switch.h"
+#include "tests.h"
 
 #define DOUBLE_PROP_EQ(m, prop, value)                                     \
   doubleeq (xstrtodorpercent ((m)->getProperty (prop), nullptr), (value))

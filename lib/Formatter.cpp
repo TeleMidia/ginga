@@ -478,9 +478,7 @@ OPT_GETSET_DEFN (String, string, G_TYPE_STRING)
 
 // Public: Internal API.
 
-Formatter::Formatter (unused (int argc), unused (char **argv),
-                      GingaOptions *opts)
-    : Ginga (argc, argv, opts)
+Formatter::Formatter (GingaOptions *opts) : Ginga (opts)
 {
   const char *s;
 

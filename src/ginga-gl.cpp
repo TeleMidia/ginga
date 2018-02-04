@@ -239,7 +239,7 @@ main (int argc, char **argv)
   opts.opengl = true;
   opts.background = string (opt_background);
   opts.opengl = true;
-  GINGA = Ginga::create (argc, argv, &opts);
+  GINGA = Ginga::create (&opts);
   g_assert_nonnull (GINGA);
 
   string errmsg;

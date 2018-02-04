@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include "Predicate.h"
+#include "tests.h"
 
 #define CHECK_TEST(pred, exp_left, exp_test, exp_right)                    \
   G_STMT_START                                                             \

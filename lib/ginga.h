@@ -38,12 +38,12 @@ GINGA_END_DECLS
  */
 struct GingaOptions
 {
-  int width;
-  int height;
-  bool debug;
-  bool experimental;
-  bool opengl;
-  std::string background;
+  int width;                    ///< Screen width (in pixels).
+  int height;                   ///< Screen height (in pixels).
+  bool debug;                   ///< Whether to enable debug output.
+  bool experimental;            ///< Whether to enable experimental stuff.
+  bool opengl;                  ///< Whether to use OpenGL backend.
+  std::string background;       ///< Background color.
 };
 
 /**
@@ -61,7 +61,7 @@ typedef enum
 class Ginga
 {
 public:
-  Ginga (int, char **, GingaOptions *);
+  Ginga (GingaOptions *);
   virtual ~Ginga () = 0;
 
   virtual GingaState getState () = 0;
@@ -83,7 +83,7 @@ public:
   virtual void setOptionString (const std::string &, std::string) = 0;
 
 public:
-  static Ginga *create (int, char **, GingaOptions *);
+  static Ginga *create (GingaOptions *);
   static std::string version ();
 };
 
