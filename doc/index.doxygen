@@ -32,13 +32,35 @@ libginga itself.
 
 ## Links
 
+  - Page \ref projdirs describes the directory structure of the %Ginga
+    source distribution.
+
   - Page \ref extapi describes libginga external API.
+
   - Page \ref intapi describes libginga architecture and its internal API.
 
 */
+
+/*! \page projdirs Project Structure
+
+The source distribution of %Ginga consists of the following directories.
+
+  - build-aux: Auxiliary build scripts and macros for Autotools.
+  - build-cmake: Configuration for CMake build.
+  - debian: Configuration for Debian distribution.
+  - doc: Documentation.
+  - examples: Complete NCL examples.
+  - extra: Extra stuff.
+  - lib: The libginga sources.
+  - src: The sources of the command-line players.
+  - src-gui: The sources of the GUI player.
+  - tests: Automated tests.
+  - tests-ncl: NCL test files.
+*/
+
 /*! \page extapi External API
 
-# %Ginga as an NCL Player
+# %Ginga as an NCL %Player
 
 Libginga external API is the library public interface.  It can used by
 application programmers to build iTV players that reproduce NCL files.  An
@@ -62,9 +84,6 @@ use libginga external API to play NCL files:
 
  4. src-gui/ginga-gtk.cpp: A full-fledged GUI player based on <a
     href="https://www.gtk.org/">GTK+</a>
-
-The %Ginga distribution also comes with example NCL files which are stored
-in the "examples" directory.
 
 # External API Overview
 
@@ -105,5 +124,4 @@ presentation is stopped.
 # Architecture
 
 # Internal API
-
 */

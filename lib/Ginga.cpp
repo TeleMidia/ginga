@@ -22,6 +22,11 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Formatter.h"
 
 /**
+ * @file Ginga.cpp
+ * @brief The libginga API.
+ */
+
+/**
  * @brief Creates a new Ginga object.
  * @param opts Options to initialize the object with.
  * @return New #Ginga.

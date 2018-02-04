@@ -34,6 +34,11 @@ GINGA_END_DECLS
 #include <string>
 
 /**
+ * @file ginga.h
+ * @brief The libginga API.
+ */
+
+/**
  * @brief Ginga control options.
  */
 struct GingaOptions
