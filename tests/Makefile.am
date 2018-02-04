@@ -240,6 +240,9 @@ test_Object_addAlias_SOURCES= test-Object-addAlias.cpp
 progs+= test-Object-addEvent
 test_Object_addEvent_SOURCES= test-Object-addEvent.cpp
 
+progs+= xfail-test-Object-addEvent-unknown
+xfail_test_Object_addEvent_unknown_SOURCES= xfail-test-Object-addEvent-unknown.cpp
+
 # lib/Media.h --------------------------------------------------------------
 progs+= test-Media-new
 test_Media_new_SOURCES= test-Media-new.cpp
@@ -337,6 +340,7 @@ check_PROGRAMS= $(progs)
 TESTS= $(check_SCRIPTS) $(check_PROGRAMS)
 XFAIL_TESTS=\
   xfail-test-Document-addObject\
+  xfail-test-Object-addEvent-unknown\
   xfail-test-Ginga-getOptionBool\
   xfail-test-Ginga-getOptionInt\
   xfail-test-Ginga-getOptionString\
