@@ -22,15 +22,15 @@
     </connectorBase>
   </head>
   <body>
-    <port id="entry" component="animation"/>
-    <media id="animation" src="../media/animGar.mp4" descriptor="screenDesc">
+    <port id="entry" component="advert"/>
+    <media id="animation" src="media/animGar.mp4" descriptor="screenDesc">
       <area id="segDrible" begin="12s"/>
       <area id="segPhoto" begin="41s"/>
       <area id="segIcon" begin="45s" end="51s"/>
     </media>
-    <media id="choro" src="../media/choro.mp4" descriptor="audioDesc"/>
-    <media id="drible" src="../media/drible.mp4" descriptor="dribleDesc"/>
-    <media id="photo" src="../media/photo.png" descriptor="photoDesc"/>
+    <media id="choro" src="media/choro.mp4" descriptor="audioDesc"/>
+    <media id="drible" src="media/drible.mp4" descriptor="dribleDesc"/>
+    <media id="photo" src="media/photo.png" descriptor="photoDesc"/>
     <media id="advert" src="advert.ncl" descriptor="passiveAdvDesc"/>
     <link id="lMusic" xconnector="conEx#onBeginStart_delay">
       <bind role="onBegin" component="animation"/>
