@@ -31,7 +31,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
  * @param opts Options to initialize the object with.
  * @return New #Ginga.
  */
-Ginga::Ginga (const GingaOptions *opts)
+Ginga::Ginga (unused (const GingaOptions *opts))
 {
 }
 

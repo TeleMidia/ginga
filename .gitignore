@@ -177,7 +177,6 @@
 /tests/test-aux-xstrtodorpercent
 /tests/test-aux-xstrtoll
 /tests/test-aux-xstrup
-/tests/xfail-test-Object-addEvent-unknown
 /tests/xfail-test-Document-addObject
 /tests/xfail-test-Ginga-getOptionBool
 /tests/xfail-test-Ginga-getOptionInt

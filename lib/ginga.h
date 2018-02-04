@@ -73,7 +73,7 @@ typedef enum
 } GingaState;
 
 /**
- * @brief Ginga object.
+ * @brief Ginga handle.
  *
  * Opaque handle that represents an NCL formatter.
  */

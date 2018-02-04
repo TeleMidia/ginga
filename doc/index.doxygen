@@ -1,7 +1,7 @@
 /*! \mainpage Preface and License
 
-\author Guilherme F. Lima <gflima@telemidia.puc-rio.br>
-<!-- Include another author: \author Foo Bar <foo@bar> -->
+\author Guilherme F. Lima \<gflima@telemidia.puc-rio.br\>
+<!-- Include another author: \author Foo Bar \<foo@bar\> -->
 
 # Preface
 
@@ -71,8 +71,8 @@ use libginga external API to play NCL files:
 
 Libginga external API consists of a single header file, ginga.h, containing
 the class Ginga.  A Ginga object represents an NCL player (also called \e
-formatter).  Multiple Ginga instances can coexist within the same program.
-The external API is fully reentrant but not thread-safe.
+formatter).  Multiple Ginga instances can coexist within the same
+program---the external API is fully reentrant (but not thread-safe).
 
 To play an NCL file, after creating a Ginga object using Ginga::create, the
 program must call Ginga::start with the path of the file.  The Ginga::start
@@ -95,7 +95,7 @@ terminate).  After the Ginga object is stopped, the previous presentation
 state is lost and the same object can be used to play another file.
 
 Some control options (GingaOptions) can be set on the Ginga object when it
-is created.  Most of these option can also be changed later via
+is created.  Most of these options can also be changed later via
 Ginga::setOption* calls.  The set options are preserved even after the
 presentation is stopped.
 
@@ -104,9 +104,24 @@ presentation is stopped.
 
 # Architecture
 
-\image html arch.png
+The external API of libginga consists of the abstract class Ginga.
+Internally, the functionality exposed by the Ginga class is implemented by
+the class Formatter.  Along with Formatter, the other main components
+internal API libginga are the classes Parser and Document.  The next diagram
+depicts the flow of information between the external world and the three
+main classes of libginga's internal API.
+
+\image html dia-architecture.png
 
 # Internal API
+
+The Document is contains the objects.
+
+\image html dia-objects.png
+
+Each Media maintains a single Player.
+
+\image html dia-players.png
 
 <!-- ------------------------------------------------------------------- -->
 \page devel Development
@@ -127,9 +142,9 @@ GitHub.  Fell free to contact us on info@telemidia.puc-rio.br.
 Bugs should be reported on the <a
 href="https://github.com/TeleMidia/ginga">issues page</a> on %Ginga's
 GitHub.  When reporting bugs, try to be as clear as possible and to keep one
-bug per report.  We recommend adopting the style of the <a
+bug per report.  We recommend following the <a
 href="https://bugzilla.gnome.org/page.cgi?id=bug-writing.html">GNOME
-guidelines</a> for bug reporting.
+guidelines for bug reporting</a>.
 
 # Best Practices
 
@@ -150,12 +165,11 @@ following practices*.
 
   - Keep the inclusions in the global headers sorted alphabetically.
 
-  - Use GLib assertions as much as possible to check for erroneous
-    conditions.
+  - Use GLib assertions to check for unrecoverable or impossible conditions.
 
 ## Coding Standards and Style
 
-  - Read <a href="http://www.gnu.org/prep/standards/standards.html">the GNU
+  - Read the <a href="http://www.gnu.org/prep/standards/standards.html">GNU
     coding standards</a>.  We try to follow this document as much as
     possible, including the coding-style, which we adapted to C++11.
 

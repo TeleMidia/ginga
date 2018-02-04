@@ -30,21 +30,36 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "ParserLua.h"
 #include "Switch.h"
 
-#define PARSE_AND_START(fmt, doc, str)                                     \
-  G_STMT_START                                                             \
-  {                                                                        \
-    string buf = str;                                                      \
-    string errmsg;                                                         \
-    *fmt = new Formatter (0);                                              \
-    g_assert_nonnull (*fmt);                                               \
-    if (!(*fmt)->start (buf.c_str (), buf.length (), &errmsg))             \
-      {                                                                    \
-        g_printerr ("*** Unexpected error: %s", errmsg.c_str ());          \
-        g_assert_not_reached ();                                           \
-      }                                                                    \
-    *doc = (*fmt)->getDocument ();                                         \
-    g_assert_nonnull (*doc);                                               \
-  }                                                                        \
-  G_STMT_END
+static G_GNUC_UNUSED string
+tests_write_tmp_file (unsigned int serial, const string &buf)
+{
+  string path;
+
+  path = xpathbuildabs (string (g_get_tmp_dir ()),
+                        xstrbuild ("%s-%u.ncl", __FILE__, serial));
+  g_assert (g_file_set_contents (path.c_str (), buf.c_str (), -1, nullptr));
+
+  return path;
+}
+
+static G_GNUC_UNUSED void
+tests_parse_and_start (Formatter **fmt, Document **doc, const string &buf)
+{
+  string errmsg;
+  string file;
+
+  tryset (fmt, new Formatter (nullptr));
+  g_assert_nonnull (*fmt);
+
+  file = tests_write_tmp_file (0, buf);
+  if (!(*fmt)->start (file, &errmsg))
+    {
+      g_printerr ("*** Unexpected error: %s", errmsg.c_str ());
+      g_assert_not_reached ();
+    }
+
+  tryset (doc, (*fmt)->getDocument ());
+  g_assert_nonnull (*doc);
+}
 
 #endif // TESTS_H

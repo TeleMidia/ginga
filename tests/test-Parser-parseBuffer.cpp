@@ -63,18 +63,6 @@ check_success (const string &log, const string &buf)
   return doc;
 }
 
-static string
-writetmp (unsigned int serial, const string &buf)
-{
-  string path;
-
-  path = xpathbuildabs (string (g_get_tmp_dir ()),
-                        xstrbuild ("%s-%u.ncl", __FILE__, serial));
-  g_assert (g_file_set_contents (path.c_str (), buf.c_str (), -1, nullptr));
-
-  return path;
-}
-
 #define XFAIL(log, exp, str) g_assert (check_failure ((log), (exp), (str)))
 
 #define PASS(obj, log, str)                                                \
@@ -1464,7 +1452,7 @@ main (void)
 </ncl>\n\
 ");
 
-  tmp = writetmp (0, "<x>\n");
+  tmp = tests_write_tmp_file (0, "<x>\n");
   XFAIL ("importBase: Bad imported document",
          "<importBase> at line 4: Syntax error in imported document "
              + xstrbuild ("(%s: XML error at line 2: Premature end of data "
@@ -1481,7 +1469,7 @@ main (void)
 ",
                     tmp.c_str ()));
 
-  tmp = writetmp (0, "<x/>\n");
+  tmp = tests_write_tmp_file (0, "<x/>\n");
   XFAIL ("importBase: Missing root",
          "<x> at line 1: Unknown element", xstrbuild ("\
 <ncl>\n\
@@ -1493,7 +1481,7 @@ main (void)
 </ncl>\n\
 ", tmp.c_str ()));
 
-  tmp = writetmp (0, "<ncl/>");
+  tmp = tests_write_tmp_file (0, "<ncl/>");
   XFAIL ("importBase: Bad imported document",
          "<importBase> at line 4: Syntax error in imported document "
          "(no <regionBase> in imported document)",
@@ -1508,7 +1496,7 @@ main (void)
 ",
                     tmp.c_str ()));
 
-  tmp = writetmp (0, "<ncl><head/></ncl>");
+  tmp = tests_write_tmp_file (0, "<ncl><head/></ncl>");
   XFAIL ("importBase: Bad imported document",
          "<importBase> at line 4: Syntax error in imported document "
          "(no <regionBase> in imported document)",
@@ -1523,7 +1511,7 @@ main (void)
 ",
                     tmp.c_str ()));
 
-  tmp = writetmp (0, "<ncl><x/></ncl>");
+  tmp = tests_write_tmp_file (0, "<ncl><x/></ncl>");
   XFAIL (
       "importBase: Missing head",
       "<ncl> at line 1: Unknown child <x>", xstrbuild ("\
@@ -1536,7 +1524,7 @@ main (void)
 </ncl>\n\
 ", tmp.c_str ()));
 
-  tmp = writetmp (0, "<ncl><head><connectorBase/></head></ncl>");
+  tmp = tests_write_tmp_file (0, "<ncl><head><connectorBase/></head></ncl>");
   XFAIL ("importBase: Bad imported document",
          "<importBase> at line 4: Syntax error in imported document "
          "(no <regionBase> in imported document)",
@@ -1551,8 +1539,8 @@ main (void)
 ",
                     tmp.c_str ()));
 
-  tmp = writetmp (0, "");
-  tmp = writetmp (0, xstrbuild ("\
+  tmp = tests_write_tmp_file (0, "");
+  tmp = tests_write_tmp_file (0, xstrbuild ("\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -2814,7 +2802,7 @@ borderWidth='0',borderColor=''}");
 
   // Success: Single media with imported bases.
   {
-    string B0 = writetmp (0, "\
+    string B0 = tests_write_tmp_file (0, "\
 <ncl>\n\
  <head>\n\
   <regionBase>\n\
@@ -2827,7 +2815,7 @@ borderWidth='0',borderColor=''}");
 </ncl>\n\
 ");
 
-    string B1 = writetmp (1, "\
+    string B1 = tests_write_tmp_file (1, "\
 <ncl>\n\
  <head>\n\
   <transitionBase>\n\
@@ -2838,7 +2826,7 @@ borderWidth='0',borderColor=''}");
 </ncl>\n\
 ");
 
-    string B2 = writetmp (2, xstrbuild ("\
+    string B2 = tests_write_tmp_file (2, xstrbuild ("\
 <ncl>\n\
  <head>\n\
   <descriptorBase>\n\

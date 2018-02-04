@@ -28,6 +28,11 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Parser.h"
 #include "PlayerText.h"
 
+/**
+ * @file Formatter.cpp
+ * @brief The Formatter class.
+ */
+
 #if defined WITH_LUA && WITH_LUA
 #include "ParserLua.h" // for ncl-ltab support
 #endif
@@ -156,9 +161,9 @@ Formatter::start (const string &file, string *errmsg)
   // Initialize formatter variables.
   _docPath = file;
   _eos = false;
-  _last_tick_total = 0;
-  _last_tick_diff = 0;
-  _last_tick_frameno = 0;
+  _lastTickTotal = 0;
+  _lastTickDiff = 0;
+  _lastTickFrameNo = 0;
 
   // Run document.
   TRACE ("%s", file.c_str ());
@@ -178,52 +183,6 @@ Formatter::start (const string &file, string *errmsg)
   // Sets formatter state.
   _state = GINGA_STATE_PLAYING;
 
-  return true;
-}
-
-bool
-Formatter::start (const string &buf, size_t size, string *errmsg)
-{
-  Context *root;
-  MediaSettings *settings;
-
-  // This must be the first check.
-  if (_state != GINGA_STATE_STOPPED)
-    return false;
-
-  _doc = Parser::parseBuffer (buf.c_str (), size, _opts.width, _opts.height,
-                              errmsg);
-  if (unlikely (_doc == nullptr))
-    return false;
-
-  g_assert_nonnull (_doc);
-  _doc->setData ("formatter", (void *) this);
-
-  // Initialize formatter variables.
-  _docPath = "(buffer)";
-  _eos = false;
-  _last_tick_total = 0;
-  _last_tick_diff = 0;
-  _last_tick_frameno = 0;
-
-  // Start root context (body).
-  root = _doc->getRoot ();
-  g_assert_nonnull (root);
-  if (unlikely (_doc->evalAction (root->getLambda (), Event::START) == 0))
-    return false;
-
-  // start settings
-  Event *evt = _doc->getSettings ()->getLambda ();
-  g_assert_nonnull (evt);
-  g_assert (evt->transition (Event::START));
-
-  // Refresh current focus.
-  settings = _doc->getSettings ();
-  g_assert_nonnull (settings);
-  settings->updateCurrentFocus ("");
-
-  // Success.
-  _state = GINGA_STATE_PLAYING;
   return true;
 }
 
@@ -353,9 +312,9 @@ Formatter::redraw (cairo_t *cr)
       cairo_surface_t *debug;
       Rect ink;
       info = xstrbuild ("%s: #%lu %" GINGA_TIME_FORMAT " %.1ffps",
-                        _docPath.c_str (), _last_tick_frameno,
-                        GINGA_TIME_ARGS (_last_tick_total),
-                        1 * GINGA_SECOND / (double) _last_tick_diff);
+                        _docPath.c_str (), _lastTickFrameNo,
+                        GINGA_TIME_ARGS (_lastTickTotal),
+                        1 * GINGA_SECOND / (double) _lastTickDiff);
       rect.width = _opts.width;
       rect.height = _opts.height;
       debug = PlayerText::renderSurface (info, "monospace", "", "bold", "9",
@@ -432,9 +391,9 @@ Formatter::sendTick (uint64_t total, uint64_t diff, uint64_t frame)
   if (_state != GINGA_STATE_PLAYING)
     return false;
 
-  _last_tick_total = total;
-  _last_tick_diff = diff;
-  _last_tick_frameno = frame;
+  _lastTickTotal = total;
+  _lastTickDiff = diff;
+  _lastTickFrameNo = frame;
 
   // IMPORTANT: The same warning about propagation that appear in
   // Formatter::sendKeyEvent() applies here.  The difference is that ticks
@@ -489,6 +448,11 @@ OPT_GETSET_DEFN (String, string, G_TYPE_STRING)
 
 // Public: Internal API.
 
+/**
+ * @brief Creates a new Formatter.
+ * @param opts Options to initialize the formatter with.
+ * @return New #Formatter.
+ */
 Formatter::Formatter (const GingaOptions *opts) : Ginga (opts)
 {
   const char *s;
@@ -497,9 +461,9 @@ Formatter::Formatter (const GingaOptions *opts) : Ginga (opts)
   _opts = (opts) ? *opts : opts_defaults;
   _background = {0., 0., 0., 0. };
 
-  _last_tick_total = 0;
-  _last_tick_diff = 0;
-  _last_tick_frameno = 0;
+  _lastTickTotal = 0;
+  _lastTickDiff = 0;
+  _lastTickFrameNo = 0;
   _saved_G_MESSAGES_DEBUG
       = (s = g_getenv ("G_MESSAGES_DEBUG")) ? string (s) : "";
 
@@ -514,23 +478,38 @@ Formatter::Formatter (const GingaOptions *opts) : Ginga (opts)
   setOptionOpenGL (this, "opengl", _opts.opengl);
 }
 
+/**
+ * @brief Destroys formatter.
+ */
 Formatter::~Formatter ()
 {
   this->stop ();
 }
 
+/**
+ * @brief Gets current document.
+ * @return Current document or null (no current document).
+ */
 Document *
 Formatter::getDocument ()
 {
   return _doc;
 }
 
+/**
+ * @brief Gets EOS flag.
+ * @return EOS flag.
+ */
 bool
 Formatter::getEOS ()
 {
   return _eos;
 }
 
+/**
+ * @brief Sets EOS flag.
+ * @param eos Flag value.
+ */
 void
 Formatter::setEOS (bool eos)
 {
@@ -539,6 +518,12 @@ Formatter::setEOS (bool eos)
 
 // Public: Static.
 
+/**
+ * @brief Sets background option of the given Formatter.
+ * @param self Formatter.
+ * @param name Must be the string "background".
+ * @param value Color value.
+ */
 void
 Formatter::setOptionBackground (Formatter *self, const string &name,
                                 string value)
@@ -551,6 +536,12 @@ Formatter::setOptionBackground (Formatter *self, const string &name,
   TRACE ("%s:='%s'", name.c_str (), value.c_str ());
 }
 
+/**
+ * @brief Sets debug option of the given Formatter.
+ * @param self Formatter.
+ * @param name Must be the string "debug".
+ * @param value Debug flag value.
+ */
 void
 Formatter::setOptionDebug (Formatter *self, const string &name, bool value)
 {
@@ -570,6 +561,12 @@ Formatter::setOptionDebug (Formatter *self, const string &name, bool value)
   TRACE ("%s:=%s", name.c_str (), strbool (value));
 }
 
+/**
+ * @brief Sets the experimental option of the given Formatter.
+ * @param self Formatter.
+ * @param name Must be the string "experimental".
+ * @param value Experimental flag value.
+ */
 void
 Formatter::setOptionExperimental (unused (Formatter *self),
                                   const string &name, bool value)
@@ -578,6 +575,12 @@ Formatter::setOptionExperimental (unused (Formatter *self),
   TRACE ("%s:=%s", name.c_str (), strbool (value));
 }
 
+/**
+ * @brief Sets the OpenGL option of the given Formatter.
+ * @param self Formatter.
+ * @param name Must be the string "opengl".
+ * @param value OpenGL flag value.
+ */
 void
 Formatter::setOptionOpenGL (unused (Formatter *self), const string &name,
                             bool value)
@@ -590,6 +593,12 @@ Formatter::setOptionOpenGL (unused (Formatter *self), const string &name,
   TRACE ("%s:=%s", name.c_str (), strbool (value));
 }
 
+/**
+ * @brief Sets the width or height options of the given Formatter.
+ * @param self Formatter.
+ * @param name Must be either the string "width" or the string "height".
+ * @param value Width or height value in pixels.
+ */
 void
 Formatter::setOptionSize (Formatter *self, const string &name, int value)
 {
