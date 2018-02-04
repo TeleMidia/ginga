@@ -1,6 +1,7 @@
 /*! \mainpage Preface and License
 
 \author Guilherme F. Lima <gflima@telemidia.puc-rio.br>
+<!-- Include another author: \author Foo Bar <foo@bar> -->
 
 # Preface
 
@@ -32,33 +33,14 @@ libginga itself.
 
 ## Links
 
-  - Page \ref projdirs describes the directory structure of the %Ginga
-    source distribution.
-
   - Page \ref extapi describes libginga external API.
 
   - Page \ref intapi describes libginga architecture and its internal API.
 
-*/
+  - Page \ref devel describes the guidelines for contributing to %Ginga.
 
-/*! \page projdirs Project Structure
-
-The source distribution of %Ginga consists of the following directories.
-
-  - build-aux: Auxiliary build scripts and macros for Autotools.
-  - build-cmake: Configuration for CMake build.
-  - debian: Configuration for Debian distribution.
-  - doc: Documentation.
-  - examples: Complete NCL examples.
-  - extra: Extra stuff.
-  - lib: The libginga sources.
-  - src: The sources of the command-line players.
-  - src-gui: The sources of the GUI player.
-  - tests: Automated tests.
-  - tests-ncl: NCL test files.
-*/
-
-/*! \page extapi External API
+<!-- ------------------------------------------------------------------- -->
+\page extapi External API
 
 # %Ginga as an NCL %Player
 
@@ -117,14 +99,101 @@ is created.  Most of these option can also be changed later via
 Ginga::setOption* calls.  The set options are preserved even after the
 presentation is stopped.
 
-*/
-
-/*! \page intapi Architecture and Internal API
+<!-- ------------------------------------------------------------------- -->
+\page intapi Architecture and Internal API
 
 # Architecture
 
 \image html arch.png
 
 # Internal API
+
+<!-- ------------------------------------------------------------------- -->
+\page devel Development
+
+# Where's the source?
+
+The code repository is on GitHub: https://github.com/TeleMidia/ginga.
+
+# Contributing
+
+%Ginga is free-software.  Help is always welcomed.  A good starting-point
+for new contributors is the <a
+href="https://github.com/TeleMidia/ginga">issues page</a> on %Ginga's
+GitHub.  Fell free to contact us on info@telemidia.puc-rio.br.
+
+# Bug Reporting
+
+Bugs should be reported on the <a
+href="https://github.com/TeleMidia/ginga">issues page</a> on %Ginga's
+GitHub.  When reporting bugs, try to be as clear as possible and to keep one
+bug per report.  We recommend adopting the style of the <a
+href="https://bugzilla.gnome.org/page.cgi?id=bug-writing.html">GNOME
+guidelines</a> for bug reporting.
+
+# Best Practices
+
+When hacking %Ginga, to keep the code in shape, *be sure to consider the
+following practices*.
+
+## Good Habits
+
+  - Configure the project with debugging and warnings enabled.
+
+        $ ./configure --enable-debug --enable-warnings
+
+  - Except when writing tests, *don't* use libginga internal API outside the
+    library.  That is, programs should only include ginga.h.
+
+  - Before reinventing the wheel, check out aux-ginga.h for auxiliary
+    functions.
+
+  - Keep the inclusions in the global headers sorted alphabetically.
+
+  - Use GLib assertions as much as possible to check for erroneous
+    conditions.
+
+## Coding Standards and Style
+
+  - Read <a href="http://www.gnu.org/prep/standards/standards.html">the GNU
+    coding standards</a>.  We try to follow this document as much as
+    possible, including the coding-style, which we adapted to C++11.
+
+  - Be sure to write good Git commit messages.  Read <a
+    href="https://chris.beams.io/posts/git-commit">the seven rules of a
+    great Git commit message</a>.
+
+  - Avoid tabs and trailing whitespace, check your editor settings.
+
+  - Use "-" instead of "_" as word separators in file names.
+
+# Repository Structure
+
+The repository of %Ginga consists of the following directories.
+
+  - build-aux: Auxiliary build scripts and macros for Autotools.
+  - build-cmake: Configuration for CMake build.
+  - debian: Configuration for Debian distribution.
+  - doc: Documentation.
+  - examples: Complete NCL examples.
+  - extra: Extra stuff.
+  - lib: The libginga sources.
+  - src: The sources of the command-line players.
+  - src-gui: The sources of the GUI player.
+  - tests: Automated tests.
+  - tests-ncl: NCL test files.
+
+# Team
+
+The current core maintainers of %Ginga are:
+
+| Name              | Affiliation        | E-Mail                            |
+| ----------------- | ------------------ | --------------------------------- |
+| Guilherme F. Lima | PUC-Rio, TeleMídia | gflima@telemidia.puc-rio.br       |
+| Roberto Azevedo   | PUC-Rio, TeleMídia | robertogerson@telemidia.puc-rio.br|
+| Álan Lívio        | PUC-Rio, TeleMídia | alan@telemidia.puc-rio.br         |
+
+See the <a href="https://github.com/TeleMidia/ginga/graphs/contributors">
+contributors page</a> on %Ginga's GitHub for the full list of contributors.
 
 */
