@@ -1,0 +1,77 @@
+/*! \mainpage Preface and license
+
+\author Guilherme F. Lima <gflima@telemidia.puc-rio.br>
+
+# Preface
+
+%Ginga is the reference implementation of the Brazilian iTV middleware.  The
+workhorse of %Ginga is a C++ library called \e libginga.  This document
+describes the architecture of libginga and its external and internal APIs.
+
+# Documentation license
+
+Copyright (C) 2018 PUC-Rio/Laboratorio TeleMidia
+
+Permission is granted to copy, distribute and/or modify this document under
+the terms of the GNU Free Documentation License, Version 1.3 or any later
+version published by the Free Software Foundation; with no Invariant
+Sections, with no Front-Cover Texts, and with no Back-Cover Texts. A copy of
+the license is included in the "GNU Free Documentation License" file as part
+of this distribution.
+
+# The external and internal APIs
+
+What we call the *external API* is the interface exposed by libginga to
+application programmers.  The external API is contained in a single header
+file, ginga.h, which is installed together with the library.
+
+What we call the *internal API* is the set of components and interfaces used
+internally by libginga.  The internal API is not exposed to application
+programmers and should only be used by programmers that want to modify
+libginga itself.
+
+## Links
+
+  - Page \ref extapi describes libginga external API.
+  - Page \ref intapi describes libginga architecture and its internal API.
+
+*/
+/*! \page extapi External API
+
+# %Ginga as an NCL player
+
+Libginga external API is the library public interface.  It can used by
+application programmers to build iTV players that reproduce NCL files.  An
+NCL (Nested %Context Language) file is an XML file that specifies an
+interactive multimedia presentation.  For more information about %Ginga (the
+standard) and NCL (the language) see http://ginga.org.br and
+http://ncl.org.br.
+
+Along with libginga, the %Ginga distribution comes with four programs that
+use libginga external API to play NCL files:
+
+ 1. src/ginga.cpp: A GTK+ based command-line player.
+ 2. src/ginga-qt.cpp: A Qt-based command-line player.
+ 3. src/ginga-gl.cpp: An experimental command-line player
+    based on SDL and OpenGL.
+ 4. src-gui/ginga-gtk.cpp: A full-fledged GUI player based on GTK+.
+
+The distribution also comes with example NCL files which are stored in the
+"examples" directory.
+
+# External API overview
+
+Libginga external API consists of a single header file, ginga.h, containing
+the class Ginga.  An instance of Ginga represents an NCL player.  Multiple
+Ginga instances can coexist within the same program (the external API is
+fully reentrant).  To play an NCL file, after creating a Ginga object using
+Ginga::create, the program must call Ginga::start with the path to the file.
+
+*/
+/*! \page intapi Architecture and internal API
+
+# Architecture
+
+# Internal API
+
+*/
