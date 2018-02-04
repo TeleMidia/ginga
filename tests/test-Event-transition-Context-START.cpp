@@ -26,7 +26,7 @@ main (void)
   {
     Formatter *fmt;
     Document *doc;
-    PARSE_AND_START (&fmt, &doc, "\
+    tests_parse_and_start (&fmt, &doc, "\
 <ncl>\n\
 <body>\n\
   <port id='p1' component='ctx'/>\n\
@@ -103,7 +103,7 @@ main (void)
   {
     Formatter *fmt;
     Document *doc;
-    PARSE_AND_START (&fmt, &doc, "\
+    tests_parse_and_start (&fmt, &doc, "\
 <ncl>\n\
 <body>\n\
   <port id='p1' component='ctx'/>\n\
@@ -196,7 +196,7 @@ main (void)
   {
     Formatter *fmt;
     Document *doc;
-    PARSE_AND_START (&fmt, &doc, "\
+    tests_parse_and_start (&fmt, &doc, "\
 <ncl>\n\
 <body>\n\
   <port id='p1' component='ctx'/>\n\
@@ -294,7 +294,7 @@ main (void)
   {
     Formatter *fmt;
     Document *doc;
-    PARSE_AND_START (&fmt, &doc, "\
+    tests_parse_and_start (&fmt, &doc, "\
 <ncl>\n\
 <body>\n\
   <port id='p1' component='ctx'/>\n\

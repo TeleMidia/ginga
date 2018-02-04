@@ -26,7 +26,7 @@ main (void)
   {
     Formatter *fmt;
     Document *doc;
-    PARSE_AND_START (&fmt, &doc, "\
+    tests_parse_and_start (&fmt, &doc, "\
 <ncl>\n\
   <head>\n\
   </head>\n\

@@ -26,7 +26,7 @@ main (void)
   {
     Formatter *fmt;
     Document *doc;
-    PARSE_AND_START (&fmt, &doc, "\
+    tests_parse_and_start (&fmt, &doc, "\
 <ncl>\n\
 <body>\n\
   <context id='c'>\n\
@@ -96,7 +96,7 @@ main (void)
   {
     Formatter *fmt;
     Document *doc;
-    PARSE_AND_START (&fmt, &doc, "\
+    tests_parse_and_start (&fmt, &doc, "\
 <ncl>\n\
 <body>\n\
   <context id='c'>\n\
@@ -177,7 +177,7 @@ main (void)
   {
     Formatter *fmt;
     Document *doc;
-    PARSE_AND_START (&fmt, &doc, "\
+    tests_parse_and_start (&fmt, &doc, "\
 <ncl>\n\
 <body>\n\
   <context id='c'/>\n\
