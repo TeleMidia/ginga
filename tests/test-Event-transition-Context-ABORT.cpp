@@ -15,32 +15,11 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include "Event.h"
-#include "Media.h"
-#include "Context.h"
-#include "Parser.h"
-
-#define PARSE_AND_START(fmt, doc, str)                                     \
-  G_STMT_START                                                             \
-  {                                                                        \
-    string buf = str;                                                      \
-    string errmsg;                                                         \
-    *fmt = new Formatter (0, nullptr, nullptr);                            \
-    g_assert_nonnull (*fmt);                                               \
-    if (!(*fmt)->start (buf.c_str (), buf.length (), &errmsg))             \
-      {                                                                    \
-        g_printerr ("*** Unexpected error: %s", errmsg.c_str ());          \
-        g_assert_not_reached ();                                           \
-      }                                                                    \
-    *doc = (*fmt)->getDocument ();                                         \
-    g_assert_nonnull (*doc);                                               \
-  }                                                                        \
-  G_STMT_END
+#include "tests.h"
 
 int
 main (void)
 {
-
   // Presentation events ---------------------------------------------------
 
   // @lambda: ABORT from state OCCURRING.

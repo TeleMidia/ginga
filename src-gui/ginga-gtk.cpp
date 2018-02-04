@@ -45,7 +45,7 @@ main (int argc, char **argv)
 
   gtk_init (&argc, &argv);
 
-  GINGA = Ginga::create (argc, argv, &opts);
+  GINGA = Ginga::create (&opts);
   g_assert_nonnull (GINGA);
 
   setlocale (LC_ALL, "C");

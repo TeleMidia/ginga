@@ -409,7 +409,7 @@ main (int argc, char **argv)
   opts.experimental = opt_experimental;
   opts.opengl = opt_opengl;
   opts.background = string (opt_background);
-  GINGA = Ginga::create (argc, argv, &opts);
+  GINGA = Ginga::create (&opts);
   g_assert_nonnull (GINGA);
 
   // Run each NCL file, one after another.
