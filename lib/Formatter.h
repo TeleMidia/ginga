@@ -56,7 +56,7 @@ public:
   void setOptionString (const string &, string);
 
   // Formatter:
-  Formatter (GingaOptions *);
+  Formatter (const GingaOptions *);
   ~Formatter ();
 
   Document *getDocument ();

@@ -129,6 +129,7 @@ Formatter::start (const string &file, string *errmsg)
   w = _opts.width;
   h = _opts.height;
   _doc = nullptr;
+
 #if defined WITH_LUA && WITH_LUA
   if (xstrhassuffix (file, ".lua"))
     {
@@ -137,6 +138,7 @@ Formatter::start (const string &file, string *errmsg)
         return false;
     }
 #endif
+
   if (_doc == nullptr)
     _doc = Parser::parseFile (file, w, h, errmsg);
   if (unlikely (_doc == nullptr))
@@ -389,9 +391,10 @@ Formatter::sendKey (const string &key, bool press)
 {
   list<Object *> buf;
 
-  _GINGA_CHECK_EOS (this);
   if (_state != GINGA_STATE_PLAYING)
     return false; // nothing to do
+
+  _GINGA_CHECK_EOS (this);
 
   // IMPORTANT: When propagating a key to the objects, we cannot traverse
   // the object set directly, as the reception of a key may cause this set
@@ -412,14 +415,10 @@ Formatter::sendTick (uint64_t total, uint64_t diff, uint64_t frame)
 {
   list<Object *> buf;
 
-  // natural end of the document
-  if (_doc->getRoot ()->isOccurring () == false)
-    this->setEOS (true);
-
-  _GINGA_CHECK_EOS (this);
-
   if (_state != GINGA_STATE_PLAYING)
     return false; // nothing to do
+
+  _GINGA_CHECK_EOS (this);
 
   _last_tick_total = total;
   _last_tick_diff = diff;
@@ -478,7 +477,7 @@ OPT_GETSET_DEFN (String, string, G_TYPE_STRING)
 
 // Public: Internal API.
 
-Formatter::Formatter (GingaOptions *opts) : Ginga (opts)
+Formatter::Formatter (const GingaOptions *opts) : Ginga (opts)
 {
   const char *s;
 

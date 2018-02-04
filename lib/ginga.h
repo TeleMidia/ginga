@@ -34,16 +34,28 @@ GINGA_END_DECLS
 #include <string>
 
 /**
- * @brief Ginga options.
+ * @brief Ginga control options.
  */
 struct GingaOptions
 {
-  int width;                    ///< Screen width (in pixels).
-  int height;                   ///< Screen height (in pixels).
-  bool debug;                   ///< Whether to enable debug output.
-  bool experimental;            ///< Whether to enable experimental stuff.
-  bool opengl;                  ///< Whether to use OpenGL backend.
-  std::string background;       ///< Background color.
+  /// @brief Screen width (in pixels).
+  int width;
+
+  /// @brief Screen height (in pixels).
+  int height;
+
+  /// @brief Whether to enable debug mode.
+  bool debug;
+
+  /// @brief Whether to enable experimental features.
+  bool experimental;
+
+  /// @brief Whether to use OpenGL back-end.
+  /// @remark Can only when Ginga object is created.
+  bool opengl;
+
+  /// @brief Background color.
+  std::string background;
 };
 
 /**
@@ -51,39 +63,41 @@ struct GingaOptions
  */
 typedef enum
 {
- GINGA_STATE_PLAYING,
- GINGA_STATE_STOPPED,
+ GINGA_STATE_PLAYING,           ///< Ginga is playing.
+ GINGA_STATE_STOPPED,           ///< Ginga is stopped.
 } GingaState;
 
 /**
  * @brief Ginga object.
+ *
+ * Opaque handle that represents an NCL formatter.
  */
 class Ginga
 {
 public:
-  Ginga (GingaOptions *);
+  Ginga (const GingaOptions *opts);
   virtual ~Ginga () = 0;
 
   virtual GingaState getState () = 0;
-  virtual bool start (const std::string &, std::string *) = 0;
+  virtual bool start (const std::string &path, std::string *errmsg) = 0;
   virtual bool stop () = 0;
 
-  virtual void resize (int, int) = 0;
-  virtual void redraw (cairo_t *) = 0;
+  virtual void resize (int width, int height) = 0;
+  virtual void redraw (cairo_t *cr) = 0;
 
-  virtual bool sendKey (const std::string &, bool) = 0;
-  virtual bool sendTick (uint64_t, uint64_t, uint64_t) = 0;
+  virtual bool sendKey (const std::string &key, bool press) = 0;
+  virtual bool sendTick (uint64_t total, uint64_t diff, uint64_t frame) = 0;
 
   virtual const GingaOptions *getOptions () = 0;
-  virtual bool getOptionBool (const std::string &) = 0;
-  virtual void setOptionBool (const std::string &, bool) = 0;
-  virtual int getOptionInt (const std::string &) = 0;
-  virtual void setOptionInt (const std::string &, int) = 0;
-  virtual std::string getOptionString (const std::string &) = 0;
-  virtual void setOptionString (const std::string &, std::string) = 0;
+  virtual bool getOptionBool (const std::string &name) = 0;
+  virtual void setOptionBool (const std::string &name, bool value) = 0;
+  virtual int getOptionInt (const std::string &name) = 0;
+  virtual void setOptionInt (const std::string &name, int value) = 0;
+  virtual std::string getOptionString (const std::string &name) = 0;
+  virtual void setOptionString (const std::string &name,
+                                std::string value) = 0;
 
-public:
-  static Ginga *create (GingaOptions *);
+  static Ginga *create (const GingaOptions *opts);
   static std::string version ();
 };
 

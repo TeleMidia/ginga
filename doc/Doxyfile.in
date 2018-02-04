@@ -5,6 +5,7 @@ PROJECT_BRIEF      = "The iTV middleware."
 GENERATE_LATEX     = NO
 GENERATE_MAN       = NO
 GENERATE_RTF       = NO
+GENERATE_TREEVIEW  = YES
 
 OUTPUT_DIRECTORY   = @top_builddir@/doc
 INPUT              = @top_srcdir@/doc/index.doxygen \

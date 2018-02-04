@@ -1,4 +1,4 @@
-/*! \mainpage Preface and license
+/*! \mainpage Preface and License
 
 \author Guilherme F. Lima <gflima@telemidia.puc-rio.br>
 
@@ -8,7 +8,7 @@
 workhorse of %Ginga is a C++ library called \e libginga.  This document
 describes the architecture of libginga and its external and internal APIs.
 
-# Documentation license
+# Documentation License
 
 Copyright (C) 2018 PUC-Rio/Laboratorio TeleMidia
 
@@ -19,7 +19,7 @@ Sections, with no Front-Cover Texts, and with no Back-Cover Texts. A copy of
 the license is included in the "GNU Free Documentation License" file as part
 of this distribution.
 
-# The external and internal APIs
+# Libginga APIs
 
 What we call the *external API* is the interface exposed by libginga to
 application programmers.  The external API is contained in a single header
@@ -38,7 +38,7 @@ libginga itself.
 */
 /*! \page extapi External API
 
-# %Ginga as an NCL player
+# %Ginga as an NCL Player
 
 Libginga external API is the library public interface.  It can used by
 application programmers to build iTV players that reproduce NCL files.  An
@@ -50,25 +50,57 @@ http://ncl.org.br.
 Along with libginga, the %Ginga distribution comes with four programs that
 use libginga external API to play NCL files:
 
- 1. src/ginga.cpp: A GTK+ based command-line player.
- 2. src/ginga-qt.cpp: A Qt-based command-line player.
+ 1. src/ginga.cpp: A <a href="https://www.gtk.org/">GTK+</a>-based
+    command-line player.
+
+ 2. src/ginga-qt.cpp: A <a href="https://www.qt.io/">Qt</a>-based
+    command-line player.
+
  3. src/ginga-gl.cpp: An experimental command-line player
-    based on SDL and OpenGL.
- 4. src-gui/ginga-gtk.cpp: A full-fledged GUI player based on GTK+.
+    based on <a href="https://www.libsdl.org/">SDL</a> and
+    <a href="https://www.opengl.org/">OpenGL</a>.
 
-The distribution also comes with example NCL files which are stored in the
-"examples" directory.
+ 4. src-gui/ginga-gtk.cpp: A full-fledged GUI player based on <a
+    href="https://www.gtk.org/">GTK+</a>
 
-# External API overview
+The %Ginga distribution also comes with example NCL files which are stored
+in the "examples" directory.
+
+# External API Overview
 
 Libginga external API consists of a single header file, ginga.h, containing
-the class Ginga.  An instance of Ginga represents an NCL player.  Multiple
-Ginga instances can coexist within the same program (the external API is
-fully reentrant).  To play an NCL file, after creating a Ginga object using
-Ginga::create, the program must call Ginga::start with the path to the file.
+the class Ginga.  A Ginga object represents an NCL player (also called \e
+formatter).  Multiple Ginga instances can coexist within the same program.
+The external API is fully reentrant but not thread-safe.
+
+To play an NCL file, after creating a Ginga object using Ginga::create, the
+program must call Ginga::start with the path of the file.  The Ginga::start
+call parses the given file and bootstraps the presentation.  When the call
+returns, the presentation is assumed to be at time 0.  From this point on,
+the program that is using libginga should:
+
+  1. Capture the keys pressed by the user and send them to the presentation
+     via Ginga::sendKey.
+
+  2. From time to time, advance the presentation time by sending ticks via
+     Ginga::sendTick.
+
+  3. Whenever necessary, draw the latest frame of the presentation via
+     Ginga::redraw.
+
+The program can use Ginga::stop to stop the presentation or use
+Ginga::getState to detect its natural end (some NCL presentations eventually
+terminate).  After the Ginga object is stopped, the previous presentation
+state is lost and the same object can be used to play another file.
+
+Some control options (GingaOptions) can be set on the Ginga object when it
+is created.  Most of these option can also be changed later via
+Ginga::setOption* calls.  The set options are preserved even after the
+presentation is stopped.
 
 */
-/*! \page intapi Architecture and internal API
+
+/*! \page intapi Architecture and Internal API
 
 # Architecture
 
