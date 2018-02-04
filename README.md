@@ -6,6 +6,7 @@
     alt="Build Status (Ubuntu 14.04)"
     title="Build Status (Ubuntu 14.04)">
 </a>
+&nbsp;&nbsp;&nbsp;
 <a href="https://travis-ci.org/TeleMidia/ginga/builds">
   Ubuntu 16.04:
    <img
@@ -13,6 +14,7 @@
     alt="Build Status (Ubuntu 16.04)"
     title="Build Status (Ubuntu 16.04)">
 </a>
+&nbsp;&nbsp;&nbsp;
 <a href="https://ci.appveyor.com/project/robertogerson/ginga">
   Windows:
    <img
