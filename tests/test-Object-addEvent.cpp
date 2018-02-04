@@ -65,11 +65,17 @@ main (void)
       g_assert (begin == GINGA_TIME_NONE);
       g_assert (end == GINGA_TIME_NONE);
 
-      g_assert (obj->getEvents ()->size () == n + 3);
+      g_assert_null (obj->getPresentationEvent ("p4"));
+      obj->addPresentationEvent ("p4","label1");
+      evt = obj->getPresentationEvent ("p4");
+      g_assert_nonnull (evt);
+
+      g_assert (obj->getEvents ()->size () == n + 4);
       obj->addPresentationEvent ("p1", 0, 0);
       obj->addPresentationEvent ("p2", 0, 0);
       obj->addPresentationEvent ("p3", 0, 0);
-      g_assert (obj->getEvents ()->size () == n + 3);
+      obj->addPresentationEvent ("p4", "label1");
+      g_assert (obj->getEvents ()->size () == n + 4);
 
       // Attribution events.
       g_assert_null (obj->getAttributionEvent ("a1"));
@@ -84,30 +90,30 @@ main (void)
       obj->addAttributionEvent ("a3");
       g_assert_nonnull (obj->getAttributionEvent ("a3"));
 
-      g_assert (obj->getEvents ()->size () == n + 6);
+      g_assert (obj->getEvents ()->size () == n + 7);
       obj->addAttributionEvent ("a1");
       obj->addAttributionEvent ("a2");
       obj->addAttributionEvent ("a3");
-      g_assert (obj->getEvents ()->size () == n + 6);
+      g_assert (obj->getEvents ()->size () == n + 7);
 
       // Selection events.
-      g_assert_null (obj->getAttributionEvent ("s1"));
-      obj->addAttributionEvent ("s1");
-      g_assert_nonnull (obj->getAttributionEvent ("s1"));
+      g_assert_null (obj->getSelectionEvent ("s1"));
+      obj->addSelectionEvent ("s1");
+      g_assert_nonnull (obj->getSelectionEvent ("s1"));
 
-      g_assert_null (obj->getAttributionEvent ("s2"));
-      obj->addAttributionEvent ("s2");
-      g_assert_nonnull (obj->getAttributionEvent ("s2"));
+      g_assert_null (obj->getSelectionEvent ("s2"));
+      obj->addSelectionEvent ("s2");
+      g_assert_nonnull (obj->getSelectionEvent ("s2"));
 
-      g_assert_null (obj->getAttributionEvent ("s3"));
-      obj->addAttributionEvent ("s3");
-      g_assert_nonnull (obj->getAttributionEvent ("s3"));
+      g_assert_null (obj->getSelectionEvent ("s3"));
+      obj->addSelectionEvent ("s3");
+      g_assert_nonnull (obj->getSelectionEvent ("s3"));
 
-      g_assert (obj->getEvents ()->size () == n + 9);
-      obj->addAttributionEvent ("s1");
-      obj->addAttributionEvent ("s2");
-      obj->addAttributionEvent ("s3");
-      g_assert (obj->getEvents ()->size () == n + 9);
+      g_assert (obj->getEvents ()->size () == n + 10);
+      obj->addSelectionEvent ("s1");
+      obj->addSelectionEvent ("s2");
+      obj->addSelectionEvent ("s3");
+      g_assert (obj->getEvents ()->size () == n + 10);
 
       delete obj;
     }
