@@ -62,7 +62,7 @@ main (void)
       g_assert (end == GINGA_TIME_NONE);
 
       g_assert_null (obj->getPresentationEvent ("p4"));
-      obj->addPresentationEvent ("p4","label1");
+      obj->addPresentationEvent ("p4", "label1");
       evt = obj->getPresentationEvent ("p4");
       g_assert_nonnull (evt);
 
