@@ -40,6 +40,8 @@ SC_COPYRIGHT_EXCLUDE=\
   $(NULL)
 
 SC_RULES+= sc-copyright
+SC_COPYRIGHT_EXCLUDE+= lib/aux-glib.h
+SC_COPYRIGHT_EXCLUDE+= lib/aux-lua.h
 sc-copyright:
 	$(V_at)$(build_aux)/syntax-check-copyright\
 	  -b='/*' -e='*/' -t=cfg.mk\
