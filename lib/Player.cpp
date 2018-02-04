@@ -550,7 +550,7 @@ Player::createPlayer (Formatter *formatter, Media *media, const string &uri,
     }
 
   if (mime == "")
-      mime = "application/x-ginga-timer";
+    mime = "application/x-ginga-timer";
 
   if (mime == "application/x-ginga-ncl")
     {

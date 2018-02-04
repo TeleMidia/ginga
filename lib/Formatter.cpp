@@ -121,8 +121,9 @@ Formatter::start (const string &file, string *errmsg)
   string id;
   Event *evt;
 
+  // This must be the first check.
   if (_state != GINGA_STATE_STOPPED)
-    return false; // nothing to do
+    return false;
 
   // Parse document.
   g_assert_null (_doc);
@@ -174,7 +175,9 @@ Formatter::start (const string &file, string *errmsg)
   // Refresh current focus.
   settings->updateCurrentFocus ("");
 
+  // Sets formatter state.
   _state = GINGA_STATE_PLAYING;
+
   return true;
 }
 
@@ -184,8 +187,9 @@ Formatter::start (const string &buf, size_t size, string *errmsg)
   Context *root;
   MediaSettings *settings;
 
+  // This must be the first check.
   if (_state != GINGA_STATE_STOPPED)
-    return false; // nothing to do
+    return false;
 
   _doc = Parser::parseBuffer (buf.c_str (), size, _opts.width, _opts.height,
                               errmsg);
@@ -226,8 +230,9 @@ Formatter::start (const string &buf, size_t size, string *errmsg)
 bool
 Formatter::stop ()
 {
+  // This must be the first check.
   if (_state == GINGA_STATE_STOPPED)
-    return false; // nothing to do
+    return false;
 
   delete _doc;
   _doc = nullptr;
@@ -243,9 +248,11 @@ Formatter::resize (int width, int height)
   _opts.width = width;
   _opts.height = height;
 
+  // This must be the first check.
   if (_state != GINGA_STATE_PLAYING)
-    return; // nothing to do
+    return;
 
+  // Resize each media object in document.
   for (auto media : *_doc->getMedias ())
     {
       string top;
@@ -285,15 +292,16 @@ Formatter::redraw (cairo_t *cr)
   GList *zlist;
   GList *l;
 
+  // This must be the first check.
   if (_state != GINGA_STATE_PLAYING)
-    return; // nothing to do
+    return;
 
-  if (_opts.opengl) // clear screen opengl
+  if (_opts.opengl)
     {
       GL::beginDraw ();
       GL::clear_scene (_opts.width, _opts.height);
     }
-  else // clear screen cairo
+  else
     {
       cairo_save (cr);
       cairo_set_source_rgba (cr, 0, 0, 0, 1.0);
@@ -391,10 +399,12 @@ Formatter::sendKey (const string &key, bool press)
 {
   list<Object *> buf;
 
+  // This must be the first check.
   if (_state != GINGA_STATE_PLAYING)
-    return false; // nothing to do
-
+    return false;
   _GINGA_CHECK_EOS (this);
+  if (_state != GINGA_STATE_PLAYING)
+    return false;
 
   // IMPORTANT: When propagating a key to the objects, we cannot traverse
   // the object set directly, as the reception of a key may cause this set
@@ -415,10 +425,12 @@ Formatter::sendTick (uint64_t total, uint64_t diff, uint64_t frame)
 {
   list<Object *> buf;
 
+  // This must be the first check.
   if (_state != GINGA_STATE_PLAYING)
-    return false; // nothing to do
-
+    return false;
   _GINGA_CHECK_EOS (this);
+  if (_state != GINGA_STATE_PLAYING)
+    return false;
 
   _last_tick_total = total;
   _last_tick_diff = diff;
