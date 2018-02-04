@@ -12,8 +12,7 @@ INPUT              = @top_srcdir@/doc/index.doxygen \
                      @top_srcdir@/lib
 RECURSIVE          = YES
 FILE_PATTERNS      = *.cpp *.h
-EXCLUDE_PATTERNS   = @top_srcdir@/tests/* \
-                     @top_srcdir@/extra/*
+EXCLUDE_PATTERNS   = */aux-gl.h */aux-glib.h */aux-lua.h */config.h
 IMAGE_PATH         =
 HAVE_DOT           = YES
 MACRO_EXPANSION    = YES
