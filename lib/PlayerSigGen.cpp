@@ -18,7 +18,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "aux-gl.h"
 #include "PlayerSigGen.h"
-#include <string.h>
 
 GINGA_NAMESPACE_BEGIN
 
