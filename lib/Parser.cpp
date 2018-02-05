@@ -3053,7 +3053,6 @@ ParserState::pushSimpleCondition (ParserState *st, ParserElt *elt)
 
   if (elt->getAttribute ("delay", &delay))
     {
-      printf ("Found delay %s.", delay.c_str ());
       if (unlikely (!ginga::try_parse_time (delay, &role.delay)))
         {
           return st->errEltBadAttribute (elt->getNode (), "delay", delay);
