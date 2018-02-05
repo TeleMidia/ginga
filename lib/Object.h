@@ -73,6 +73,8 @@ public:
   virtual void sendKey (const string &, bool);
   virtual void sendTick (Time, Time, Time);
 
+  Time getTime ();
+
   /**
    * @brief Initiates event transition.
    *

@@ -264,10 +264,8 @@ Document::evalAction (Action init)
                     {
                       Predicate *pred;
 
-                      if (cond.event != evt)
-                        continue;
-
-                      if (cond.transition != act.transition)
+                      if (cond.event != evt ||
+                          cond.transition != act.transition)
                         continue;
 
                       pred = cond.predicate;
@@ -276,10 +274,27 @@ Document::evalAction (Action init)
 
                       // Success.
                       auto acts = link.second;
-                      std::list<Action>::reverse_iterator rit
-                          = acts.rbegin ();
-                      for (; rit != acts.rend (); ++rit)
-                        stack.push_back (*rit);
+                      for (auto ri = acts.rbegin (); ri != acts.rend (); ++ri)
+                        {
+                          Action next_act = *(ri);
+                          if (next_act.delay == GINGA_TIME_NONE)
+                            {
+                              stack.push_back (*ri);
+                            }
+                          else
+                            {
+                              Event *next_evt = next_act.event;
+                              g_assert_nonnull (next_evt);
+                              Object *next_obj = next_evt->getObject ();
+                              g_assert_nonnull (next_obj);
+
+                              comp->addDelayedAction (next_evt,
+                                                      next_act.transition,
+                                                      next_act.value,
+                                                      comp->getTime () +
+                                                      next_act.delay);
+                            }
+                        }
                     }
                 }
             }

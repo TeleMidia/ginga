@@ -373,6 +373,12 @@ Object::sendTick (unused (Time total), Time diff, unused (Time frame))
     }
 }
 
+Time
+Object::getTime ()
+{
+  return _time;
+}
+
 // Private.
 
 void
