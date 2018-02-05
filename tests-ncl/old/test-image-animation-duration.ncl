@@ -45,7 +45,6 @@
       <property name="top"/>
     </media>
 
-
     <link xconnector="onKeySelectionSet">
       <bind role="onSelection" component="text1">
          <bindParam name="var" value="RED" />

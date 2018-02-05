@@ -29,10 +29,9 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-
 // XML helper macros and functions.
-#define toCString(s)   deconst (char *, (s))
-#define toXmlChar(s)   (xmlChar *)(deconst (char *, (s).c_str ()))
+#define toCString(s) deconst (char *, (s))
+#define toXmlChar(s) (xmlChar *) (deconst (char *, (s).c_str ()))
 #define toCPPString(s) string (deconst (char *, (s)))
 
 /// Flags to LibXML parser.
@@ -95,8 +94,8 @@ xmlIsValidName (const string &value, char *offending)
   str = value.c_str ();
   while ((c = *str++) != '\0')
     {
-      if (!(g_ascii_isalnum (c) || c == '-' || c == '_'
-            || c == ':' || c == '.' || c == '#'))
+      if (!(g_ascii_isalnum (c) || c == '-' || c == '_' || c == ':'
+            || c == '.' || c == '#'))
         {
           tryset (offending, c);
           return false;
@@ -105,7 +104,6 @@ xmlIsValidName (const string &value, char *offending)
   return true;
 }
 
-
 // Parser internal types.
 
 // Forward declarations.
@@ -132,13 +130,13 @@ public:
   bool setAttribute (const string &, const string &);
 
   bool getData (const string &, void **);
-  bool setData (const string &, void *, UserDataCleanFunc fn=nullptr);
+  bool setData (const string &, void *, UserDataCleanFunc fn = nullptr);
 
 private:
-  string _tag;                  ///< Element tag.
-  xmlNode *_node;               ///< Corresponding node in document tree.
-  map<string, string> _attrs;   ///< Element attributes.
-  UserData _udata;              ///< Attached user data.
+  string _tag;                ///< Element tag.
+  xmlNode *_node;             ///< Corresponding node in document tree.
+  map<string, string> _attrs; ///< Element attributes.
+  UserData _udata;            ///< Attached user data.
 };
 
 /**
@@ -167,11 +165,11 @@ typedef struct ParserConnRole
  */
 typedef struct ParserLinkBind
 {
-  xmlNode *node;                ///< Source node.
-  string role;                  ///< Bind role label.
-  string component;             ///< Bind component.
-  string iface;                 ///< Bind interface.
-  map<string, string> params;   ///< Bind parameters.
+  xmlNode *node;              ///< Source node.
+  string role;                ///< Bind role label.
+  string component;           ///< Bind component.
+  string iface;               ///< Bind interface.
+  map<string, string> params; ///< Bind parameters.
 } ParserLinkBind;
 
 /**
@@ -184,20 +182,20 @@ class ParserState
 public:
   /// Parser error codes.
   enum Error
-    {
-     ERROR_NONE = 0,                     ///< No error.
-     ERROR_ELT_UNKNOWN,                  ///< Unknown element.
-     ERROR_ELT_MISSING_PARENT,           ///< Missing parent element.
-     ERROR_ELT_BAD_PARENT,               ///< Bad parent element.
-     ERROR_ELT_UNKNOWN_ATTRIBUTE,        ///< Unknown attribute.
-     ERROR_ELT_MISSING_ATTRIBUTE,        ///< Missing attribute.
-     ERROR_ELT_BAD_ATTRIBUTE,            ///< Bad attribute.
-     ERROR_ELT_MUTUALLY_EXCL_ATTRIBUTES, ///< Mutually exclusive attributes.
-     ERROR_ELT_UNKNOWN_CHILD,            ///< Unknown child element.
-     ERROR_ELT_MISSING_CHILD,            ///< Missing child element.
-     ERROR_ELT_BAD_CHILD,                ///< Bad child element.
-     ERROR_ELT_IMPORT,                   ///< Error in imported document.
-    };
+  {
+    ERROR_NONE = 0,                     ///< No error.
+    ERROR_ELT_UNKNOWN,                  ///< Unknown element.
+    ERROR_ELT_MISSING_PARENT,           ///< Missing parent element.
+    ERROR_ELT_BAD_PARENT,               ///< Bad parent element.
+    ERROR_ELT_UNKNOWN_ATTRIBUTE,        ///< Unknown attribute.
+    ERROR_ELT_MISSING_ATTRIBUTE,        ///< Missing attribute.
+    ERROR_ELT_BAD_ATTRIBUTE,            ///< Bad attribute.
+    ERROR_ELT_MUTUALLY_EXCL_ATTRIBUTES, ///< Mutually exclusive attributes.
+    ERROR_ELT_UNKNOWN_CHILD,            ///< Unknown child element.
+    ERROR_ELT_MISSING_CHILD,            ///< Missing child element.
+    ERROR_ELT_BAD_CHILD,                ///< Bad child element.
+    ERROR_ELT_IMPORT,                   ///< Error in imported document.
+  };
 
   ParserState (int, int);
   ~ParserState ();
@@ -235,28 +233,36 @@ public:
   static bool pushBind (ParserState *, ParserElt *);
 
 private:
-  Document *_doc;               ///< The resulting #Document.
-  xmlDoc *_xml;                 ///< The DOM tree being processed.
-  Rect _rect;                   ///< Initial screen dimensions.
-  int _genid;                   ///< Last generated id.
-  UserData _udata;              ///< Attached user data.
-  set<string> _unique;          ///< Unique attributes seen so far.
+  Document *_doc;      ///< The resulting #Document.
+  xmlDoc *_xml;        ///< The DOM tree being processed.
+  int _genid;          ///< Last generated id.
+  UserData _udata;     ///< Attached user data.
+  set<string> _unique; ///< Unique attributes seen so far.
 
-  ParserState::Error _error;    ///< Last error code.
-  string _errorMsg;             ///< Last error message.
+  ParserState::Error _error; ///< Last error code.
+  string _errorMsg;          ///< Last error message.
 
-  map<xmlNode *, ParserElt *> _eltCache;         ///< Element cache.
-  map<string, list<ParserElt *>> _eltCacheByTag; ///< Element cache by tag.
+  map<xmlNode *, ParserElt *> _eltCache;          ///< Element cache.
+  map<string, list<ParserElt *> > _eltCacheByTag; ///< Element cache by tag.
 
-  list<pair<string, string>> _aliasStack; ///< Alias stack.
-  list<Object *> _objStack;               ///< #Object stack.
+  /// Alias stack for solving imports.
+  list<pair<string, string> > _aliasStack;
+
+  ///< #Object stack for solving object hierarchy.
+  list<Object *> _objStack;
+
+  ///< Rectangle stack for solving region hierarchy.
+  list<Rect> _rectStack;
+
+  ///< Reference map for solving the refer attribute in \<media\>.
+  map<string, Media *> _referMap;
 
   string genId ();
   string getDirname ();
   bool isInUniqueSet (const string &);
   void addToUniqueSet (const string &);
   bool getData (const string &, void **);
-  bool setData (const string &, void *, UserDataCleanFunc fn=nullptr);
+  bool setData (const string &, void *, UserDataCleanFunc fn = nullptr);
 
   // Errors.
   bool errElt (xmlNode *, ParserState::Error, const string &);
@@ -266,13 +272,14 @@ private:
   bool errEltUnknownAttribute (xmlNode *, const string &);
   bool errEltMissingAttribute (xmlNode *, const string &);
   bool errEltBadAttribute (xmlNode *, const string &, const string &,
-                           const string &explain="");
+                           const string &explain = "");
   bool errEltMutuallyExclAttributes (xmlNode *, const string &,
                                      const string &);
   bool errEltUnknownChild (xmlNode *, const string &);
   bool errEltMissingChild (xmlNode *, const list<string> &);
-  bool errEltBadChild (xmlNode *, const string &, const string &explain="");
-  bool errEltImport (xmlNode *, const string &explain="");
+  bool errEltBadChild (xmlNode *, const string &,
+                       const string &explain = "");
+  bool errEltImport (xmlNode *, const string &explain = "");
 
   // Element cache.
   bool eltCacheIndex (xmlNode *, ParserElt **);
@@ -293,13 +300,21 @@ private:
   Object *objStackPop ();
   void objStackPush (Object *);
 
+  // Rectangle stack.
+  Rect rectStackPeek ();
+  Rect rectStackPop ();
+  void rectStackPush (Rect);
+
+  // Reference map.
+  bool referMapIndex (const string &, Media **);
+  bool referMapAdd (const string &, Media *);
+
   // Reference solving.
   bool resolveComponent (Composition *, ParserElt *, Object **);
   bool resolveInterface (Context *, ParserElt *, Event **);
   string resolveParameter (const string &, const map<string, string> *,
                            const map<string, string> *,
                            const map<string, string> *);
-
   // Predicate solving.
   Predicate *obtainPredicate (xmlNode *);
   Predicate *solvePredicate (Predicate *, const map<string, string> *);
@@ -311,39 +326,38 @@ private:
 };
 
 /// Asserted version of UserData::getData().
-#define UDATA_GET(obj, key, ptr)                        \
-  G_STMT_START                                          \
-  {                                                     \
-    *(ptr) = nullptr;                                   \
-    g_assert ((obj)->getData ((key), (void **)(ptr)));  \
-    g_assert_nonnull (*(ptr));                          \
-  }                                                     \
+#define UDATA_GET(obj, key, ptr)                                           \
+  G_STMT_START                                                             \
+  {                                                                        \
+    *(ptr) = nullptr;                                                      \
+    g_assert ((obj)->getData ((key), (void **) (ptr)));                    \
+    g_assert_nonnull (*(ptr));                                             \
+  }                                                                        \
   G_STMT_END
 
 /// Asserted version of UserData::setData().
-#define UDATA_SET(obj, key, ptr, fn)                    \
-  G_STMT_START                                          \
-  {                                                     \
-    (obj)->setData ((key), (void *)(ptr), (fn));        \
-  }                                                     \
+#define UDATA_SET(obj, key, ptr, fn)                                       \
+  G_STMT_START                                                             \
+  {                                                                        \
+    (obj)->setData ((key), (void *) (ptr), (fn));                          \
+  }                                                                        \
   G_STMT_END
 
-
 // NCL syntax.
 
 /// Type for element push function.
-typedef bool (ParserSyntaxEltPush) (ParserState *, ParserElt *);
+typedef bool(ParserSyntaxEltPush) (ParserState *, ParserElt *);
 
 /// Type for element pop function.
-typedef bool (ParserSyntaxEltPop) (ParserState *, ParserElt *);
+typedef bool(ParserSyntaxEltPop) (ParserState *, ParserElt *);
 
 /**
  * @brief NCL attribute syntax.
  */
 typedef struct ParserSyntaxAttr
 {
-  string name;                  ///< Attribute name.
-  int flags;                    ///< Processing flags.
+  string name; ///< Attribute name.
+  int flags;   ///< Processing flags.
 } ParserSyntaxAttr;
 
 /**
@@ -361,420 +375,442 @@ typedef struct ParserSyntaxElt
 /**
  * @brief NCL attribute processing flags.
  */
-typedef enum
-{
-  PARSER_SYNTAX_ATTR_NONEMPTY   = 1<<1, ///< Cannot be not empty.
-  PARSER_SYNTAX_ATTR_REQUIRED   = 1<<2, ///< Is required.
-  PARSER_SYNTAX_ATTR_TYPE_ID    = 1<<3, ///< Is an id.
-  PARSER_SYNTAX_ATTR_TYPE_IDREF = 1<<4, ///< Is an id-ref.
-  PARSER_SYNTAX_ATTR_TYPE_NAME  = 1<<5, ///< Is a name.
-  PARSER_SYNTAX_ATTR_UNIQUE     = 1<<6, ///< Must be unique in document.
+typedef enum {
+  PARSER_SYNTAX_ATTR_NONEMPTY = 1 << 1,   ///< Cannot be not empty.
+  PARSER_SYNTAX_ATTR_REQUIRED = 1 << 2,   ///< Is required.
+  PARSER_SYNTAX_ATTR_TYPE_ID = 1 << 3,    ///< Is an id.
+  PARSER_SYNTAX_ATTR_TYPE_IDREF = 1 << 4, ///< Is an id-ref.
+  PARSER_SYNTAX_ATTR_TYPE_NAME = 1 << 5,  ///< Is a name.
+  PARSER_SYNTAX_ATTR_UNIQUE = 1 << 6,     ///< Must be unique in document.
 } ParserSyntaxAttrFlag;
 
-#define ATTR_NONEMPTY    (PARSER_SYNTAX_ATTR_NONEMPTY)
-#define ATTR_REQUIRED    (PARSER_SYNTAX_ATTR_REQUIRED)
-#define ATTR_TYPE_ID     (PARSER_SYNTAX_ATTR_TYPE_ID)
-#define ATTR_TYPE_IDREF  (PARSER_SYNTAX_ATTR_TYPE_IDREF)
-#define ATTR_TYPE_NAME   (PARSER_SYNTAX_ATTR_TYPE_NAME)
-#define ATTR_UNIQUE      (PARSER_SYNTAX_ATTR_UNIQUE)
+#define ATTR_NONEMPTY (PARSER_SYNTAX_ATTR_NONEMPTY)
+#define ATTR_REQUIRED (PARSER_SYNTAX_ATTR_REQUIRED)
+#define ATTR_TYPE_ID (PARSER_SYNTAX_ATTR_TYPE_ID)
+#define ATTR_TYPE_IDREF (PARSER_SYNTAX_ATTR_TYPE_IDREF)
+#define ATTR_TYPE_NAME (PARSER_SYNTAX_ATTR_TYPE_NAME)
+#define ATTR_UNIQUE (PARSER_SYNTAX_ATTR_UNIQUE)
 
-#define ATTR_NONEMPTY_NAME           (ATTR_NONEMPTY | ATTR_TYPE_NAME)
-#define ATTR_REQUIRED_NONEMPTY_NAME  (ATTR_REQUIRED | ATTR_NONEMPTY_NAME)
+#define ATTR_NONEMPTY_NAME (ATTR_NONEMPTY | ATTR_TYPE_NAME)
+#define ATTR_REQUIRED_NONEMPTY_NAME (ATTR_REQUIRED | ATTR_NONEMPTY_NAME)
 
-#define ATTR_ID  (ATTR_UNIQUE | ATTR_REQUIRED_NONEMPTY_NAME | ATTR_TYPE_ID)
-#define ATTR_OPT_ID  (ATTR_UNIQUE | ATTR_NONEMPTY_NAME | ATTR_TYPE_ID)
+#define ATTR_ID (ATTR_UNIQUE | ATTR_REQUIRED_NONEMPTY_NAME | ATTR_TYPE_ID)
+#define ATTR_OPT_ID (ATTR_UNIQUE | ATTR_NONEMPTY_NAME | ATTR_TYPE_ID)
 
-#define ATTR_IDREF      (ATTR_REQUIRED_NONEMPTY_NAME | ATTR_TYPE_IDREF)
-#define ATTR_OPT_IDREF  (ATTR_NONEMPTY_NAME | ATTR_TYPE_IDREF)
+#define ATTR_IDREF (ATTR_REQUIRED_NONEMPTY_NAME | ATTR_TYPE_IDREF)
+#define ATTR_OPT_IDREF (ATTR_NONEMPTY_NAME | ATTR_TYPE_IDREF)
 
 /**
  * @brief NCL element processing flags.
  */
-typedef enum
-{
-  PARSER_SYNTAX_ELT_CACHE  = 1<<1, ///< Save element in #Parser cache.
-  PARSER_SYNTAX_ELT_GEN_ID = 1<<2, ///< Generate id if not present.
+typedef enum {
+  PARSER_SYNTAX_ELT_CACHE = 1 << 1,  ///< Save element in #Parser cache.
+  PARSER_SYNTAX_ELT_GEN_ID = 1 << 2, ///< Generate id if not present.
 } ParserSyntaxEltFlag;
 
-#define ELT_CACHE  (PARSER_SYNTAX_ELT_CACHE)
+#define ELT_CACHE (PARSER_SYNTAX_ELT_CACHE)
 #define ELT_GEN_ID (PARSER_SYNTAX_ELT_GEN_ID)
 
 // Defines table index function.
-#define PARSER_SYNTAX_TABLE_INDEX_DEFN(tabname, Type)           \
-  static bool                                                   \
-  parser_syntax_##tabname##_table_index (const string &str,     \
-                                         Type *result)          \
-  {                                                             \
-    auto it = parser_syntax_##tabname##_table.find (str);       \
-    if (it == parser_syntax_##tabname##_table.end ())           \
-      return false;                                             \
-    tryset (result, it->second);                                \
-    return true;                                                \
+#define PARSER_SYNTAX_TABLE_INDEX_DEFN(tabname, Type)                      \
+  static bool parser_syntax_##tabname##_table_index (const string &str,    \
+                                                     Type *result)         \
+  {                                                                        \
+    auto it = parser_syntax_##tabname##_table.find (str);                  \
+    if (it == parser_syntax_##tabname##_table.end ())                      \
+      return false;                                                        \
+    tryset (result, it->second);                                           \
+    return true;                                                           \
   }
 
 /// NCL syntax table (grammar).
-static map<string, ParserSyntaxElt> parser_syntax_table =
-{
- {"ncl",                        // element name
-  {ParserState::pushNcl,        // push function
-   ParserState::popNcl,         // pop function
-   0,                           // flags
-   {},                          // possible parents
-   {{"id", ATTR_OPT_ID},        // attributes
-    {"title", 0},
-    {"schemaLocation", 0},
-    {"xmlns", 0}}},
- },
- {"head",
-  {nullptr,
-   nullptr,
-   0,
-   {"ncl"},
-   {}},
- },
- {"regionBase",
-  {nullptr,
-   nullptr,
-   ELT_CACHE,
-   {"head"},
-   {{"id", ATTR_OPT_ID},        // unused
-    {"device", 0},              // unused
-    {"region", 0}}},            // unused
- },
- {"region",
-  {ParserState::pushRegion,
-   ParserState::popRegion,
-   ELT_CACHE,
-   {"region", "regionBase"},
-   {{"id", ATTR_ID},
-    {"left", 0},
-    {"right", 0},
-    {"top", 0},
-    {"bottom", 0},
-    {"height", 0},
-    {"width", 0},
-    {"zIndex", 0},
-    {"title", 0}}},             // unused
- },
- {"descriptorBase",
-  {nullptr,
-   nullptr,
-   ELT_CACHE,
-   {"head"},
-   {{"id", ATTR_OPT_ID}}},      // unused
- },
- {"descriptor",
-  {nullptr,
-   nullptr,
-   ELT_CACHE,
-   {"descriptorBase"},
-   {{"id", ATTR_ID},
-    {"left", 0},
-    {"right", 0},
-    {"top", 0},
-    {"bottom", 0},
-    {"height", 0},
-    {"width", 0},
-    {"zIndex", 0},
-    {"region", ATTR_OPT_IDREF},
-    {"explicitDur", 0},
-    {"freeze", 0},
-    {"moveLeft", 0},
-    {"moveRight", 0},
-    {"moveUp", 0},
-    {"moveDown", 0},
-    {"focusIndex", 0},
-    {"focusBorderColor", 0},
-    {"focusBorderWidth", 0},
-    {"focusBorderTransparency", 0},
-    {"focusSrc", 0},
-    {"focusSelSrc", 0},
-    {"selBorderColor", 0},
-    {"player", 0},              // unused
-    {"transIn", 0},
-    {"transOut", 0}}},
- },
- {"descriptorParam",
-  {ParserState::pushDescriptorParam,
-   nullptr,
-   0,
-   {"descriptor"},
-   {{"name", ATTR_REQUIRED_NONEMPTY_NAME},
-    {"value", ATTR_REQUIRED}}},
- },
- {"connectorBase",
-  {nullptr,
-   nullptr,
-   ELT_CACHE,
-   {"head"},
-   {{"id", ATTR_OPT_ID}}},       // unused
- },
- {"causalConnector",
-  {ParserState::pushCausalConnector,
-   ParserState::popCausalConnector,
-   ELT_CACHE,
-   {"connectorBase"},
-   {{"id", ATTR_ID}}},
- },
- {"connectorParam",
-  {nullptr,
-   nullptr,
-   0,
-   {"causalConnector"},
-   {{"name", ATTR_NONEMPTY_NAME}}}, // unused
- },
- {"compoundCondition",
-  {ParserState::pushCompoundCondition,
-   nullptr,
-   ELT_CACHE,
-   {"causalConnector", "compoundCondition"},
-   {{"operator", 0},            // unused
-    {"delay", 0}}},             // unused
- },
- {"simpleCondition",
-  {ParserState::pushSimpleCondition,
-   nullptr,
-   0,
-   {"causalConnector", "compoundCondition"},
-   {{"role", ATTR_REQUIRED_NONEMPTY_NAME},
-    {"eventType", 0},
-    {"key", 0},
-    {"transition", 0},
-    {"delay", 0},               // unused
-    {"min", 0},                 // unused
-    {"max", 0},                 // unused
-    {"qualifier", 0}}},         // unused
- },
- {"compoundAction",
-  {nullptr,
-   nullptr,
-   0,
-   {"causalConnector", "compoundAction"},
-   {{"operator", 0},            // unused
-    {"delay", 0}}},             // unused
- },
- {"simpleAction",
-  {ParserState::pushSimpleCondition, // reused
-   nullptr,
-   0,
-   {"causalConnector", "compoundAction"},
-   {{"role", ATTR_REQUIRED_NONEMPTY_NAME},
-    {"eventType", 0},
-    {"actionType", 0},
-    {"duration", 0},
-    {"value", 0},
-    {"delay", 0},               // unused
-    {"min", 0},                 // unused
-    {"max", 0},                 // unused
-    {"qualifier", 0},           // unused
-    {"repeat", 0},              // unused
-    {"repeatDelay", 0},         // unused
-    {"by", 0}}},                // unused
- },
- {"compoundStatement",
-  {ParserState::pushCompoundStatement,
-   ParserState::popCompoundStatement,
-   ELT_CACHE,
-   {"compoundCondition", "compoundStatement"},
-   {{"operator", ATTR_REQUIRED},
-    {"isNegated", 0}}},
- },
- {"assessmentStatement",
-  {nullptr,
-   ParserState::popAssessmentStatement,
-   ELT_CACHE,
-   {"compoundCondition", "compoundStatement"},
-   {{"comparator", ATTR_REQUIRED}}},
- },
- {"attributeAssessment",
-  {ParserState::pushAttributeAssessment,
-   nullptr,
-   0,
-   {"assessmentStatement"},
-   {{"role", ATTR_REQUIRED_NONEMPTY_NAME},
-    {"eventType", 0},           // unused
-    {"key", 0},                 // unused
-    {"attributeType", 0},       // unused
-    {"offset", 0}}},            // unused
- },
- {"valueAssessment",
-  {ParserState::pushAttributeAssessment, // reused
-   nullptr,
-   0,
-   {"assessmentStatement"},
-   {{"value", ATTR_REQUIRED}}},
- },
- {"ruleBase",
-  {nullptr,
-   nullptr,
-   ELT_CACHE,
-   {"head"},
-   {{"id", ATTR_OPT_ID}}},      // unused
- },
- {"compositeRule",
-  {ParserState::pushRule,
-   nullptr,
-   ELT_CACHE,
-   {"ruleBase", "compositeRule"},
-   {{"id", ATTR_ID},
-    {"operator", ATTR_REQUIRED}}},
- },
- {"rule",
-  {ParserState::pushRule,
-   nullptr,
-   ELT_CACHE,
-   {"ruleBase", "compositeRule"},
-   {{"id", ATTR_ID},
-    {"var", ATTR_REQUIRED_NONEMPTY_NAME},
-    {"comparator", ATTR_REQUIRED},
-    {"value", ATTR_REQUIRED}}},
- },
- {"transitionBase",
-  {nullptr,
-   nullptr,
-   ELT_CACHE,
-   {"head"},
-   {{"id", ATTR_OPT_ID}}},
- },
- {"transition",
-  {nullptr,
-   nullptr,
-   ELT_CACHE,
-   {"transitionBase"},
-   {{"id", ATTR_ID},
-    {"type", ATTR_REQUIRED_NONEMPTY_NAME},
-    {"subtype", ATTR_NONEMPTY_NAME},
-    {"dur", 0},
-    {"startProgress", 0},
-    {"endProgress", 0},
-    {"direction", 0},
-    {"fadeColor", 0},
-    {"horzRepeat", 0},
-    {"vertRepeat", 0},
-    {"borderWidth", 0},
-    {"borderColor", 0}}},
- },
- {"importBase",
-  {ParserState::pushImportBase,
-   nullptr,
-   ELT_CACHE,
-   {"connectorBase", "descriptorBase", "regionBase", "ruleBase",
-    "transitionBase"},
-   {{"alias", ATTR_REQUIRED_NONEMPTY_NAME},
-    {"documentURI", ATTR_REQUIRED},
-    {"region", 0},              // unused
-    {"baseId", 0}}},            // unused
- },
- {"body",
-  {ParserState::pushContext,    // reused
-   ParserState::popContext,     // reused
-   ELT_CACHE,
-   {"ncl"},
-   {{"id", ATTR_OPT_ID}}},
- },
- {"context",
-  {ParserState::pushContext,
-   ParserState::popContext,
-   ELT_CACHE,
-   {"body", "context", "switch"},
-   {{"id", ATTR_ID},
-    {"refer", ATTR_OPT_IDREF}}}, // unused
- },
- {"port",
-  {ParserState::pushPort,
-   nullptr,
-   ELT_CACHE,
-   {"body", "context"},
-   {{"id", ATTR_ID},
-    {"component", ATTR_IDREF},
-    {"interface", ATTR_OPT_IDREF}}},
- },
- {"switch",
-  {ParserState::pushSwitch,
-   ParserState::popSwitch,
-   ELT_CACHE,
-   {"body", "context", "switch"},
-   {{"id", ATTR_ID},
-    {"refer", ATTR_OPT_IDREF}}},
- },
- {"bindRule",
-  {ParserState::pushBindRule,
-   nullptr,
-   ELT_CACHE,
-   {"switch"},
-   {{"constituent", ATTR_IDREF},
-    {"rule", ATTR_IDREF}}},
- },
- {"defaultComponent",
-  {ParserState::pushBindRule,
-   nullptr,
-   ELT_CACHE,
-   {"switch"},
-   {{"component", ATTR_IDREF}}},
- },
- {"media",
-  {ParserState::pushMedia,
-   ParserState::popMedia,
-   ELT_CACHE,
-   {"body", "context", "switch"},
-   {{"id", ATTR_ID},
-    {"src", 0},
-    {"type", 0},
-    {"descriptor", ATTR_OPT_IDREF},
-    {"refer", ATTR_OPT_IDREF},
-    {"instance", 0}}},          // unused
- },
- {"area",
-  {ParserState::pushArea,
-   nullptr,
-   0,
-   {"media"},
-   {{"id", ATTR_ID},
-    {"begin", 0},
-    {"end", 0},
-    {"label", 0}}},             // unused
- },
- {"property",
-  {ParserState::pushProperty,
-   nullptr,
-   0,
-   {"body", "context", "media"},
-   {{"name", ATTR_REQUIRED_NONEMPTY_NAME},
-    {"value", 0}}},
- },
- {"link",
-  {ParserState::pushLink,
-   nullptr,
-   ELT_CACHE | ELT_GEN_ID,
-   {"body", "context"},
-   {{"id", ATTR_OPT_ID},
-    {"xconnector", ATTR_IDREF}}},
- },
- {"linkParam",
-  {ParserState::pushLinkParam,
-   nullptr,
-   0,
-   {"link"},
-   {{"name", ATTR_REQUIRED_NONEMPTY_NAME},
-    {"value", ATTR_REQUIRED}}},
- },
- {"bind",
-  {ParserState::pushBind,
-   nullptr,
-   ELT_CACHE,
-   {"link"},
-   {{"role", ATTR_REQUIRED_NONEMPTY_NAME},
-    {"component", ATTR_IDREF},
-    {"interface", ATTR_OPT_IDREF}}},
- },
- {"bindParam",
-  {ParserState::pushLinkParam,  // reused
-   nullptr,
-   0,
-   {"bind"},
-   {{"name", ATTR_REQUIRED_NONEMPTY_NAME},
-    {"value", ATTR_REQUIRED}}},
- },
+static map<string, ParserSyntaxElt> parser_syntax_table = {
+  {
+      "ncl",                     // element name
+      {ParserState::pushNcl,    // push function
+        ParserState::popNcl,     // pop function
+        0,                       // flags
+        {},                      // possible parents
+        { {"id", ATTR_OPT_ID}, // attributes
+          {"title", 0},
+          {"schemaLocation", 0},
+          {"xmlns", 0} } },
+  },
+  {
+      "head",
+      {nullptr, nullptr, 0, {"ncl"}, {} },
+  },
+  {
+      "regionBase",
+      {nullptr,
+        nullptr,
+        ELT_CACHE,
+        {"head"},
+        { {"id", ATTR_OPT_ID}, // unused
+          {"device", 0},       // unused
+          {"region", 0} } },   // unused
+  },
+  {
+      "region",
+      {ParserState::pushRegion,
+        ParserState::popRegion,
+        ELT_CACHE,
+        {"region", "regionBase"},
+        { {"id", ATTR_ID},
+          {"left", 0},
+          {"right", 0},
+          {"top", 0},
+          {"bottom", 0},
+          {"height", 0},
+          {"width", 0},
+          {"zIndex", 0},
+          {"title", 0} } }, // unused
+  },
+  {
+      "descriptorBase",
+      {nullptr,
+        nullptr,
+        ELT_CACHE,
+        {"head"},
+        { {"id", ATTR_OPT_ID} } }, // unused
+  },
+  {
+      "descriptor",
+      {nullptr,
+        nullptr,
+        ELT_CACHE,
+        {"descriptorBase"},
+        { {"id", ATTR_ID},
+          {"left", 0},
+          {"right", 0},
+          {"top", 0},
+          {"bottom", 0},
+          {"height", 0},
+          {"width", 0},
+          {"zIndex", 0},
+          {"region", ATTR_OPT_IDREF},
+          {"explicitDur", 0},
+          {"freeze", 0},
+          {"moveLeft", 0},
+          {"moveRight", 0},
+          {"moveUp", 0},
+          {"moveDown", 0},
+          {"focusIndex", 0},
+          {"focusBorderColor", 0},
+          {"focusBorderWidth", 0},
+          {"focusBorderTransparency", 0},
+          {"focusSrc", 0},
+          {"focusSelSrc", 0},
+          {"selBorderColor", 0},
+          {"player", 0}, // unused
+          {"transIn", 0},
+          {"transOut", 0} } },
+  },
+  {
+      "descriptorParam",
+      {ParserState::pushDescriptorParam,
+        nullptr,
+        0,
+        {"descriptor"},
+        { {"name", ATTR_REQUIRED_NONEMPTY_NAME},
+          {"value", ATTR_REQUIRED} } },
+  },
+  {
+      "connectorBase",
+      {nullptr,
+        nullptr,
+        ELT_CACHE,
+        {"head"},
+        { {"id", ATTR_OPT_ID} } }, // unused
+  },
+  {
+      "causalConnector",
+      {ParserState::pushCausalConnector,
+        ParserState::popCausalConnector,
+        ELT_CACHE,
+        {"connectorBase"},
+        { {"id", ATTR_ID} } },
+  },
+  {
+      "connectorParam",
+      {nullptr,
+        nullptr,
+        0,
+        {"causalConnector"},
+        { {"name", ATTR_NONEMPTY_NAME} } }, // unused
+  },
+  {
+      "compoundCondition",
+      {ParserState::pushCompoundCondition,
+        nullptr,
+        ELT_CACHE,
+        {"causalConnector", "compoundCondition"},
+        { {"operator", 0},  // unused
+          {"delay", 0} } }, // unused
+  },
+  {
+      "simpleCondition",
+      {ParserState::pushSimpleCondition,
+        nullptr,
+        0,
+        {"causalConnector", "compoundCondition"},
+        { {"role", ATTR_REQUIRED_NONEMPTY_NAME},
+          {"eventType", 0},
+          {"key", 0},
+          {"transition", 0},
+          {"delay", 0},         // unused
+          {"min", 0},           // unused
+          {"max", 0},           // unused
+          {"qualifier", 0} } }, // unused
+  },
+  {
+      "compoundAction",
+      {nullptr,
+        nullptr,
+        0,
+        {"causalConnector", "compoundAction"},
+        { {"operator", 0},  // unused
+          {"delay", 0} } }, // unused
+  },
+  {
+      "simpleAction",
+      {ParserState::pushSimpleCondition, // reused
+        nullptr,
+        0,
+        {"causalConnector", "compoundAction"},
+        { {"role", ATTR_REQUIRED_NONEMPTY_NAME},
+          {"eventType", 0},
+          {"actionType", 0},
+          {"duration", 0},
+          {"value", 0},
+          {"delay", 0},       // unused
+          {"min", 0},         // unused
+          {"max", 0},         // unused
+          {"qualifier", 0},   // unused
+          {"repeat", 0},      // unused
+          {"repeatDelay", 0}, // unused
+          {"by", 0} } },      // unused
+  },
+  {
+      "compoundStatement",
+      {ParserState::pushCompoundStatement,
+        ParserState::popCompoundStatement,
+        ELT_CACHE,
+        {"compoundCondition", "compoundStatement"},
+        { {"operator", ATTR_REQUIRED}, {"isNegated", 0} } },
+  },
+  {
+      "assessmentStatement",
+      {nullptr,
+        ParserState::popAssessmentStatement,
+        ELT_CACHE,
+        {"compoundCondition", "compoundStatement"},
+        { {"comparator", ATTR_REQUIRED} } },
+  },
+  {
+      "attributeAssessment",
+      {ParserState::pushAttributeAssessment,
+        nullptr,
+        0,
+        {"assessmentStatement"},
+        { {"role", ATTR_REQUIRED_NONEMPTY_NAME},
+          {"eventType", 0},     // unused
+          {"key", 0},           // unused
+          {"attributeType", 0}, // unused
+          {"offset", 0} } },    // unused
+  },
+  {
+      "valueAssessment",
+      {ParserState::pushAttributeAssessment, // reused
+        nullptr,
+        0,
+        {"assessmentStatement"},
+        { {"value", ATTR_REQUIRED} } },
+  },
+  {
+      "ruleBase",
+      {nullptr,
+        nullptr,
+        ELT_CACHE,
+        {"head"},
+        { {"id", ATTR_OPT_ID} } }, // unused
+  },
+  {
+      "compositeRule",
+      {ParserState::pushRule,
+        nullptr,
+        ELT_CACHE,
+        {"ruleBase", "compositeRule"},
+        { {"id", ATTR_ID}, {"operator", ATTR_REQUIRED} } },
+  },
+  {
+      "rule",
+      {ParserState::pushRule,
+        nullptr,
+        ELT_CACHE,
+        {"ruleBase", "compositeRule"},
+        { {"id", ATTR_ID},
+          {"var", ATTR_REQUIRED_NONEMPTY_NAME},
+          {"comparator", ATTR_REQUIRED},
+          {"value", ATTR_REQUIRED} } },
+  },
+  {
+      "transitionBase",
+      {nullptr,
+        nullptr,
+        ELT_CACHE,
+        {"head"},
+        { {"id", ATTR_OPT_ID} } },
+  },
+  {
+      "transition",
+      {nullptr,
+        nullptr,
+        ELT_CACHE,
+        {"transitionBase"},
+        { {"id", ATTR_ID},
+          {"type", ATTR_REQUIRED_NONEMPTY_NAME},
+          {"subtype", ATTR_NONEMPTY_NAME},
+          {"dur", 0},
+          {"startProgress", 0},
+          {"endProgress", 0},
+          {"direction", 0},
+          {"fadeColor", 0},
+          {"horzRepeat", 0},
+          {"vertRepeat", 0},
+          {"borderWidth", 0},
+          {"borderColor", 0} } },
+  },
+  {
+      "importBase",
+      {ParserState::pushImportBase,
+        nullptr,
+        ELT_CACHE,
+        {"connectorBase", "descriptorBase", "regionBase", "ruleBase",
+          "transitionBase"},
+        { {"alias", ATTR_REQUIRED_NONEMPTY_NAME},
+          {"documentURI", ATTR_REQUIRED},
+          {"region", 0},     // unused
+          {"baseId", 0} } }, // unused
+  },
+  {
+      "body",
+      {ParserState::pushContext, // reused
+        ParserState::popContext,  // reused
+        ELT_CACHE,
+        {"ncl"},
+        { {"id", ATTR_OPT_ID} } },
+  },
+  {
+      "context",
+      {ParserState::pushContext,
+        ParserState::popContext,
+        ELT_CACHE,
+        {"body", "context", "switch"},
+        { {"id", ATTR_ID}, {"refer", ATTR_OPT_IDREF} } }, // unused
+  },
+  {
+      "port",
+      {ParserState::pushPort,
+        nullptr,
+        ELT_CACHE,
+        {"body", "context"},
+        { {"id", ATTR_ID},
+          {"component", ATTR_IDREF},
+          {"interface", ATTR_OPT_IDREF} } },
+  },
+  {
+      "switch",
+      {ParserState::pushSwitch,
+        ParserState::popSwitch,
+        ELT_CACHE,
+        {"body", "context", "switch"},
+        { {"id", ATTR_ID}, {"refer", ATTR_OPT_IDREF} } },
+  },
+  {
+      "bindRule",
+      {ParserState::pushBindRule,
+        nullptr,
+        ELT_CACHE,
+        {"switch"},
+        { {"constituent", ATTR_IDREF}, {"rule", ATTR_IDREF} } },
+  },
+  {
+      "defaultComponent",
+      {ParserState::pushBindRule,
+        nullptr,
+        ELT_CACHE,
+        {"switch"},
+        { {"component", ATTR_IDREF} } },
+  },
+  {
+      "media",
+      {ParserState::pushMedia,
+        ParserState::popMedia,
+        ELT_CACHE,
+        {"body", "context", "switch"},
+        { {"id", ATTR_ID},
+          {"src", 0},
+          {"type", 0},
+          {"descriptor", ATTR_OPT_IDREF},
+          {"refer", ATTR_OPT_IDREF},
+          {"instance", 0} } }, // unused
+  },
+  {
+      "area",
+      {ParserState::pushArea,
+        nullptr,
+        0,
+        {"media"},
+        { {"id", ATTR_ID},
+          {"begin", 0},
+          {"end", 0},
+          {"label", 0} } }, // unused
+  },
+  {
+      "property",
+      {ParserState::pushProperty,
+        nullptr,
+        0,
+        {"body", "context", "media"},
+        { {"name", ATTR_REQUIRED_NONEMPTY_NAME}, {"value", 0} } },
+  },
+  {
+      "link",
+      {ParserState::pushLink,
+        nullptr,
+        ELT_CACHE | ELT_GEN_ID,
+        {"body", "context"},
+        { {"id", ATTR_OPT_ID}, {"xconnector", ATTR_IDREF} } },
+  },
+  {
+      "linkParam",
+      {ParserState::pushLinkParam,
+        nullptr,
+        0,
+        {"link"},
+        { {"name", ATTR_REQUIRED_NONEMPTY_NAME},
+          {"value", ATTR_REQUIRED} } },
+  },
+  {
+      "bind",
+      {ParserState::pushBind,
+        nullptr,
+        ELT_CACHE,
+        {"link"},
+        { {"role", ATTR_REQUIRED_NONEMPTY_NAME},
+          {"component", ATTR_IDREF},
+          {"interface", ATTR_OPT_IDREF} } },
+  },
+  {
+      "bindParam",
+      {ParserState::pushLinkParam, // reused
+        nullptr,
+        0,
+        {"bind"},
+        { {"name", ATTR_REQUIRED_NONEMPTY_NAME},
+          {"value", ATTR_REQUIRED} } },
+  },
 };
 
 /// Indexes syntax table.
@@ -793,40 +829,38 @@ static map<string, bool>
 parser_syntax_table_get_possible_children (const string &tag)
 {
   map<string, bool> result;
-  for (auto it: parser_syntax_table)
-    for (auto parent: it.second.parents)
+  for (auto it : parser_syntax_table)
+    for (auto parent : it.second.parents)
       if (parent == tag)
         result[it.first] = true;
   return result;
 }
 
 /// Reserved connector roles.
-static map<string, pair<Event::Type, Event::Transition>>
-parser_syntax_reserved_role_table =
-{
- {"onBegin",            {Event::PRESENTATION, Event::START}}, // conditions
- {"onEnd",              {Event::PRESENTATION, Event::STOP}},
- {"onAbort",            {Event::PRESENTATION, Event::ABORT}},
- {"onPause",            {Event::PRESENTATION, Event::PAUSE}},
- {"onResumes",          {Event::PRESENTATION, Event::RESUME}},
- {"onBeginAttribution", {Event::ATTRIBUTION,  Event::START}},
- {"onEndAttribution",   {Event::ATTRIBUTION,  Event::STOP}},
- {"onSelection",        {Event::SELECTION,    Event::START}},
- {"onBeginSelection",   {Event::SELECTION,    Event::START}},
- {"onEndSelection",     {Event::SELECTION,    Event::STOP}},
- {"start",              {Event::PRESENTATION, Event::START}}, // actions
- {"stop",               {Event::PRESENTATION, Event::STOP}},
- {"abort",              {Event::PRESENTATION, Event::ABORT}},
- {"pause",              {Event::PRESENTATION, Event::PAUSE}},
- {"resume",             {Event::PRESENTATION, Event::RESUME}},
- {"set",                {Event::ATTRIBUTION,  Event::START}},
-};
+static map<string, pair<Event::Type, Event::Transition> >
+    parser_syntax_reserved_role_table = {
+      {"onBegin", {Event::PRESENTATION, Event::START} }, // conditions
+      {"onEnd", {Event::PRESENTATION, Event::STOP} },
+      {"onAbort", {Event::PRESENTATION, Event::ABORT} },
+      {"onPause", {Event::PRESENTATION, Event::PAUSE} },
+      {"onResumes", {Event::PRESENTATION, Event::RESUME} },
+      {"onBeginAttribution", {Event::ATTRIBUTION, Event::START} },
+      {"onEndAttribution", {Event::ATTRIBUTION, Event::STOP} },
+      {"onSelection", {Event::SELECTION, Event::START} },
+      {"onBeginSelection", {Event::SELECTION, Event::START} },
+      {"onEndSelection", {Event::SELECTION, Event::STOP} },
+      {"start", {Event::PRESENTATION, Event::START} }, // actions
+      {"stop", {Event::PRESENTATION, Event::STOP} },
+      {"abort", {Event::PRESENTATION, Event::ABORT} },
+      {"pause", {Event::PRESENTATION, Event::PAUSE} },
+      {"resume", {Event::PRESENTATION, Event::RESUME} },
+      {"set", {Event::ATTRIBUTION, Event::START} },
+    };
 
 /// Index reserved role table.
 static bool
 parser_syntax_reserved_role_table_index (const string &role,
-                                         bool *condition,
-                                         Event::Type *type,
+                                         bool *condition, Event::Type *type,
                                          Event::Transition *transition)
 {
   auto it = parser_syntax_reserved_role_table.find (role);
@@ -839,45 +873,36 @@ parser_syntax_reserved_role_table_index (const string &role,
 }
 
 /// Known event types.
-static map<string, Event::Type> parser_syntax_event_type_table =
-{
- {"presentation", Event::PRESENTATION},
- {"attribution",  Event::ATTRIBUTION},
- {"selection",    Event::SELECTION},
+static map<string, Event::Type> parser_syntax_event_type_table = {
+  {"presentation", Event::PRESENTATION},
+  {"attribution", Event::ATTRIBUTION},
+  {"selection", Event::SELECTION},
 };
 
 /// Known transitions.
-static map<string, Event::Transition> parser_syntax_transition_table =
-{
- {"start",   Event::START},
- {"starts",  Event::START},
- {"pause",   Event::PAUSE},
- {"pauses",  Event::PAUSE},
- {"resume",  Event::RESUME},
- {"resumes", Event::RESUME},
- {"stop",    Event::STOP},
- {"stops",   Event::STOP},
- {"abort",   Event::ABORT},
- {"aborts",  Event::ABORT},
+static map<string, Event::Transition> parser_syntax_transition_table = {
+  {"start", Event::START},   {"starts", Event::START},
+  {"pause", Event::PAUSE},   {"pauses", Event::PAUSE},
+  {"resume", Event::RESUME}, {"resumes", Event::RESUME},
+  {"stop", Event::STOP},     {"stops", Event::STOP},
+  {"abort", Event::ABORT},   {"aborts", Event::ABORT},
 };
 
 /// Known logical connectives.
-static map<string, Predicate::Type> parser_syntax_connective_table =
-{
- {"not", Predicate::NEGATION},
- {"and", Predicate::CONJUNCTION},
- {"or",  Predicate::DISJUNCTION},
+static map<string, Predicate::Type> parser_syntax_connective_table = {
+  {"not", Predicate::NEGATION},
+  {"and", Predicate::CONJUNCTION},
+  {"or", Predicate::DISJUNCTION},
 };
 
 /// Known string comparators.
-static map<string, Predicate::Test> parser_syntax_comparator_table =
-{
- {"eq",  Predicate::EQ},        // ==
- {"ne",  Predicate::NE},        // !=
- {"lt",  Predicate::LT},        // <
- {"lte", Predicate::LE},        // <=
- {"gt",  Predicate::GT},        // >
- {"gte", Predicate::GE},        // >=
+static map<string, Predicate::Test> parser_syntax_comparator_table = {
+  {"eq", Predicate::EQ},  // ==
+  {"ne", Predicate::NE},  // !=
+  {"lt", Predicate::LT},  // <
+  {"lte", Predicate::LE}, // <=
+  {"gt", Predicate::GT},  // >
+  {"gte", Predicate::GE}, // >=
 };
 
 // Index functions.
@@ -893,7 +918,6 @@ parser_syntax_parse_bool (const string &str, bool *result)
   return ginga::try_parse_bool (str, result);
 }
 
-
 // ParserElt: public.
 
 /**
@@ -1012,7 +1036,6 @@ ParserElt::setData (const string &key, void *value, UserDataCleanFunc fn)
   return _udata.setData (key, value, fn);
 }
 
-
 // ParserState: private.
 
 /**
@@ -1036,7 +1059,8 @@ string
 ParserState::getDirname ()
 {
   return (_xml != nullptr && _xml->URL != nullptr)
-    ? xpathdirname (toCPPString (_xml->URL)) : "";
+             ? xpathdirname (toCPPString (_xml->URL))
+             : "";
 }
 
 /**
@@ -1086,7 +1110,6 @@ ParserState::setData (const string &key, void *value, UserDataCleanFunc fn)
   return _udata.setData (key, value, fn);
 }
 
-
 // ParserState: private (error handling).
 
 /**
@@ -1112,8 +1135,10 @@ ParserState::errElt (xmlNode *node, ParserState::Error error,
         path = xpathbuildabs (this->getDirname (), path);
       _errorMsg = path + ": ";
     }
-  _errorMsg += xstrbuild ("Element <%s> at line %d: ",
-                          toCString (node->name), node->line) + message;
+  _errorMsg
+      += xstrbuild ("Element <%s> at line %d: ", toCString (node->name),
+                    node->line)
+         + message;
   return false;
 }
 
@@ -1212,10 +1237,10 @@ ParserState::errEltMutuallyExclAttributes (xmlNode *node,
                                            const string &attr1,
                                            const string &attr2)
 {
-  return this->errElt
-    (node, ParserState::ERROR_ELT_MUTUALLY_EXCL_ATTRIBUTES,
-     "Attributes '" + attr1 + "' and '" + attr2
-     + "' are mutually exclusive");
+  return this->errElt (node,
+                       ParserState::ERROR_ELT_MUTUALLY_EXCL_ATTRIBUTES,
+                       "Attributes '" + attr1 + "' and '" + attr2
+                           + "' are mutually exclusive");
 }
 
 /**
@@ -1284,7 +1309,6 @@ ParserState::errEltImport (xmlNode *node, const string &explain)
   return this->errElt (node, ParserState::ERROR_ELT_IMPORT, msg);
 }
 
-
 // ParserState: private (element cache).
 
 /**
@@ -1315,8 +1339,8 @@ ParserState::eltCacheIndex (xmlNode *node, ParserElt **elt)
 bool
 ParserState::eltCacheIndexParent (xmlNode *node, ParserElt **elt)
 {
-  return (node->parent != nullptr)
-    ? this->eltCacheIndex (node->parent, elt) : false;
+  return (node->parent != nullptr) ? this->eltCacheIndex (node->parent, elt)
+                                   : false;
 }
 
 /**
@@ -1331,12 +1355,12 @@ bool
 ParserState::eltCacheIndexById (const string &id, ParserElt **elt,
                                 const list<string> &tags)
 {
-  for (auto tag: tags)
+  for (auto tag : tags)
     {
       auto it = _eltCacheByTag.find (tag);
       if (it == _eltCacheByTag.end ())
         continue;
-      for (auto other: it->second)
+      for (auto other : it->second)
         {
           string other_id;
           if (other->getAttribute ("id", &other_id) && other_id == id)
@@ -1361,12 +1385,12 @@ ParserState::eltCacheIndexByTag (const list<string> &tags,
 {
   size_t n = 0;
   g_assert_nonnull (result);
-  for (auto tag: tags)
+  for (auto tag : tags)
     {
       auto it = _eltCacheByTag.find (tag);
       if (it == _eltCacheByTag.end ())
         continue;
-      for (auto elt: it->second)
+      for (auto elt : it->second)
         {
           result->push_back (elt);
           n++;
@@ -1393,7 +1417,6 @@ ParserState::eltCacheAdd (ParserElt *elt)
   return true;
 }
 
-
 // ParserState: private (alias stack).
 
 /**
@@ -1404,7 +1427,7 @@ string
 ParserState::aliasStackCombine ()
 {
   string result = "";
-  for (auto &it: _aliasStack)
+  for (auto &it : _aliasStack)
     result += it.first + "#";
   return result;
 }
@@ -1456,19 +1479,18 @@ ParserState::aliasStackPop (string *alias, string *path)
 bool
 ParserState::aliasStackPush (const string &alias, const string &path)
 {
-  for (auto &it: _aliasStack)
+  for (auto &it : _aliasStack)
     if (it.second == path)
       return false;
   _aliasStack.push_back (std::make_pair (alias, path));
   return true;
 }
 
-
 // ParserState: private (object stack).
 
 /**
  * @brief Peeks at object stack.
- * @return The top of object stack.
+ * @return The top of object stack or null if stack is empty.
  */
 Object *
 ParserState::objStackPeek ()
@@ -1478,7 +1500,7 @@ ParserState::objStackPeek ()
 
 /**
  * @brief Pops object from stack.
- * @return The popped object.
+ * @return The popped object or null if the stack is empty.
  */
 Object *
 ParserState::objStackPop ()
@@ -1501,7 +1523,79 @@ ParserState::objStackPush (Object *obj)
   _objStack.push_back (obj);
 }
 
-
+// ParserState: private (rectangle stack).
+
+/**
+ * @brief Peeks at rectangle stack.
+ * @return The top of rectangle stack.
+ *
+ * This function aborts when called with the empty stack.
+ */
+Rect
+ParserState::rectStackPeek ()
+{
+  g_assert_false (_rectStack.empty ());
+  return _rectStack.back ();
+}
+
+/**
+ * @brief Pops rectangle from stack.
+ * @return The popped rectangle.
+ *
+ * This function aborts when called with the empty stack.
+ */
+Rect
+ParserState::rectStackPop ()
+{
+  Rect rect = this->rectStackPeek ();
+  _rectStack.pop_back ();
+  return rect;
+}
+
+/**
+ * @brief Pushes rectangle onto stack.
+ * @param rect The rectangle to push.
+ */
+void
+ParserState::rectStackPush (Rect rect)
+{
+  _rectStack.push_back (rect);
+}
+
+// ParserState: private (refer map).
+
+/**
+ * @brief Indexes refer map.
+ * @param id The id of the reference.
+ * @param[out] media Variable to store referenced media.
+ * @return \c true if successful, or \c false otherwise.
+ */
+bool
+ParserState::referMapIndex (const string &id, Media **media)
+{
+  auto it = _referMap.find (id);
+  if (it == _referMap.end ())
+    return false;
+  tryset (media, it->second);
+  return true;
+}
+
+/**
+ * @brief Adds entry to refer map.
+ * @param id The id of the reference.
+ * @param media The referenced media.
+ * @return \c true if successful, or \c false otherwise (already in map).
+ */
+bool
+ParserState::referMapAdd (const string &id, Media *media)
+{
+  auto it = _referMap.find (id);
+  if (it != _referMap.end ())
+    return false;
+  _referMap[id] = media;
+  return true;
+}
+
 // ParserState: private (reference solving).
 
 /**
@@ -1522,6 +1616,7 @@ ParserState::resolveComponent (Composition *scope, ParserElt *elt,
 {
   string label;
   string comp;
+  string refer;
 
   label = (elt->getTag () == "bindRule") ? "constituent" : "component";
   g_assert (elt->getAttribute (label, &comp));
@@ -1534,27 +1629,24 @@ ParserState::resolveComponent (Composition *scope, ParserElt *elt,
     }
 
   // Check if component refers to a child of scope.
-  Object *ref = scope->getChildByIdOrAlias (comp);
-  if (ref != nullptr)
+  Object *child = scope->getChildByIdOrAlias (comp);
+  if (child != nullptr)
     {
-      tryset (obj, ref);
+      tryset (obj, child);
       return true;
     }
 
-  // Check if component refers to the settings object.
-  Document *doc = scope->getDocument ();
-  g_assert_nonnull (doc);
-  MediaSettings *sett = doc->getSettings ();
-  g_assert_nonnull (sett);
-  if (comp == sett->getId () || sett->hasAlias (comp))
+  // Check if component refers to a reference (refer) object.
+  Media *media;
+  if (this->referMapIndex (comp, &media))
     {
-      tryset (obj, sett);
+      tryset (obj, media);
       return true;
     }
 
   // Not found.
-  return this->errEltBadAttribute
-    (elt->getNode (), label, comp, "no such object in scope");
+  return this->errEltBadAttribute (elt->getNode (), label, comp,
+                                   "no such object in scope");
 }
 
 /**
@@ -1582,7 +1674,7 @@ ParserState::resolveInterface (Context *ctx, ParserElt *elt, Event **evt)
 
   if (!elt->getAttribute ("interface", &iface))
     {
-      result = obj->getLambda();
+      result = obj->getLambda ();
       goto success;
     }
 
@@ -1610,19 +1702,19 @@ ParserState::resolveInterface (Context *ctx, ParserElt *elt, Event **evt)
           ParserElt *iface_elt;
           ParserElt *parent_elt;
 
-          if (unlikely (!this->eltCacheIndexById
-                        (iface, &iface_elt, {"port"})))
+          if (unlikely (
+                  !this->eltCacheIndexById (iface, &iface_elt, {"port"})))
             {
               result = obj->getAttributionEvent (iface);
               if (likely (result != nullptr))
-                goto success;   // interface point to context property
+                goto success; // interface point to context property
               else
                 goto fail;
             }
 
           // Interface points to context port: resolve it recursively.
-          g_assert (this->eltCacheIndexParent
-                    (iface_elt->getNode (), &parent_elt));
+          g_assert (this->eltCacheIndexParent (iface_elt->getNode (),
+                                               &parent_elt));
           if (parent_elt->getTag () == "body")
             {
               ctx = _doc->getRoot ();
@@ -1643,21 +1735,21 @@ ParserState::resolveInterface (Context *ctx, ParserElt *elt, Event **evt)
     }
   else if (instanceof (Switch *, obj))
     {
-      goto fail;                // not accessible by external elements
+      goto fail; // not accessible by external elements
     }
   else
     {
       g_assert_not_reached ();
     }
 
- success:
+success:
   g_assert_nonnull (result);
   tryset (evt, result);
   return true;
 
- fail:
-  return this->errEltBadAttribute
-    (elt->getNode (), "interface", iface, "no such interface");
+fail:
+  return this->errEltBadAttribute (elt->getNode (), "interface", iface,
+                                   "no such interface");
 }
 
 /**
@@ -1682,7 +1774,7 @@ ParserState::resolveParameter (const string &ref,
   string result;
 
   if (ref[0] != '$')
-    return ref;                 // nothing to do
+    return ref; // nothing to do
 
   name = ref.substr (1, ref.length () - 1);
   auto it_bind = bindParams->find (name);
@@ -1696,7 +1788,7 @@ ParserState::resolveParameter (const string &ref,
       if (it_link != linkParams->end ())
         result = it_link->second;
       else
-        return ref;           // unknown reference
+        return ref; // unknown reference
     }
 
   if (result[0] != '$')
@@ -1705,12 +1797,11 @@ ParserState::resolveParameter (const string &ref,
   name = result.substr (1, result.length () - 1);
   auto it_ghost = ghosts->find (name);
   if (it_ghost == ghosts->end ())
-    return result;              // unknown reference
+    return result; // unknown reference
 
   return it_ghost->second;
 }
 
-
 // ParserState: private (predicate solving).
 
 /**
@@ -1745,12 +1836,12 @@ ParserState::obtainPredicate (xmlNode *node)
 
   switch (pred_list.size ())
     {
-    case 0:                     // no predicate
+    case 0: // no predicate
       {
         return nullptr;
       }
     case 1:
-      {                         // single predicate
+      { // single predicate
         pred = pred_list.back ();
         g_assert (pred->getType () == Predicate::CONJUNCTION);
         auto children = pred->getChildren ();
@@ -1765,10 +1856,10 @@ ParserState::obtainPredicate (xmlNode *node)
           }
         break;
       }
-    default:                    // multiple predicates
+    default: // multiple predicates
       {
         pred = new Predicate (Predicate::CONJUNCTION);
-        for (auto p: pred_list)
+        for (auto p : pred_list)
           {
             g_assert (p->getType () == Predicate::CONJUNCTION);
             auto children = p->getChildren ();
@@ -1818,7 +1909,7 @@ ParserState::solvePredicate (Predicate *pred, const map<string, string> *tr)
         {
         case Predicate::FALSUM:
         case Predicate::VERUM:
-          break;                // nothing to do
+          break; // nothing to do
         case Predicate::ATOM:
           {
             Predicate::Test test;
@@ -1842,7 +1933,7 @@ ParserState::solvePredicate (Predicate *pred, const map<string, string> *tr)
         case Predicate::NEGATION:
         case Predicate::CONJUNCTION:
         case Predicate::DISJUNCTION:
-          for (auto child: *p->getChildren ())
+          for (auto child : *p->getChildren ())
             buf.push_back (child);
           break;
         default:
@@ -1852,7 +1943,6 @@ ParserState::solvePredicate (Predicate *pred, const map<string, string> *tr)
   return result;
 }
 
-
 // ParserState: private (node processing).
 
 /**
@@ -1864,7 +1954,7 @@ ParserState::solvePredicate (Predicate *pred, const map<string, string> *tr)
  * \c nullptr and sets #Parser error accordingly.
  */
 ParserSyntaxElt *
-ParserState::checkNode (xmlNode *node, map<string,string> *attrs,
+ParserState::checkNode (xmlNode *node, map<string, string> *attrs,
                         list<xmlNode *> *children)
 {
   string tag;
@@ -1890,7 +1980,7 @@ ParserState::checkNode (xmlNode *node, map<string,string> *attrs,
 
       parent = toCPPString (node->parent->name);
       found = false;
-      for (auto par: eltsyn->parents)
+      for (auto par : eltsyn->parents)
         {
           if (parent == par)
             {
@@ -1903,7 +1993,7 @@ ParserState::checkNode (xmlNode *node, map<string,string> *attrs,
     }
 
   // Collect attributes.
-  for (auto attrsyn: eltsyn->attributes)
+  for (auto attrsyn : eltsyn->attributes)
     {
       string value;
       string explain;
@@ -1929,8 +2019,8 @@ ParserState::checkNode (xmlNode *node, map<string,string> *attrs,
 
       if (unlikely ((attrsyn.flags & ATTR_NONEMPTY) && value == ""))
         {
-          return (this->errEltBadAttribute
-                  (node, attrsyn.name, value, "must not be empty"),
+          return (this->errEltBadAttribute (node, attrsyn.name, value,
+                                            "must not be empty"),
                   nullptr);
         }
 
@@ -1939,9 +2029,9 @@ ParserState::checkNode (xmlNode *node, map<string,string> *attrs,
           char offending;
           if (unlikely (!xmlIsValidName (value, &offending)))
             {
-              return (this->errEltBadAttribute
-                      (node, attrsyn.name, value,
-                       xstrbuild ("must not contain '%c'", offending)),
+              return (this->errEltBadAttribute (
+                          node, attrsyn.name, value,
+                          xstrbuild ("must not contain '%c'", offending)),
                       nullptr);
             }
         }
@@ -1956,8 +2046,8 @@ ParserState::checkNode (xmlNode *node, map<string,string> *attrs,
         {
           if (unlikely (this->isInUniqueSet (value)))
             {
-              return (this->errEltBadAttribute
-                      (node, attrsyn.name, value, "must be unique"),
+              return (this->errEltBadAttribute (node, attrsyn.name, value,
+                                                "must be unique"),
                       nullptr);
             }
           else
@@ -1973,8 +2063,8 @@ ParserState::checkNode (xmlNode *node, map<string,string> *attrs,
   // Check for unknown attributes.
   if (attrs != nullptr)
     {
-      for (xmlAttr *prop = node->properties;
-           prop != nullptr; prop = prop->next)
+      for (xmlAttr *prop = node->properties; prop != nullptr;
+           prop = prop->next)
         {
           string name = toCPPString (prop->name);
           if (unlikely (attrs->find (name) == attrs->end ()))
@@ -2031,7 +2121,7 @@ ParserState::processNode (xmlNode *node)
 
   // Allocate and initialize element wrapper.
   elt = new ParserElt (node);
-  for (auto it: attrs)
+  for (auto it : attrs)
     g_assert (elt->setAttribute (it.first, it.second));
 
   // Initialize flags.
@@ -2053,7 +2143,7 @@ ParserState::processNode (xmlNode *node)
     }
 
   // Process each child.
-  for (auto child: children)
+  for (auto child : children)
     {
       if (unlikely (!this->processNode (child)))
         {
@@ -2069,13 +2159,12 @@ ParserState::processNode (xmlNode *node)
       goto done;
     }
 
- done:
+done:
   if (!cached)
     delete elt;
   return status;
 }
 
-
 // ParserState: public.
 
 /**
@@ -2090,13 +2179,10 @@ ParserState::ParserState (int width, int height)
   _xml = nullptr;
   g_assert_cmpint (width, >, 0);
   g_assert_cmpint (height, >, 0);
-  _rect.x = 0;
-  _rect.y = 0;
-  _rect.width = width;
-  _rect.height = height;
   _genid = 0;
   _error = ParserState::ERROR_NONE;
   _errorMsg = "no error";
+  this->rectStackPush ({0, 0, width, height});
 }
 
 /**
@@ -2104,7 +2190,7 @@ ParserState::ParserState (int width, int height)
  */
 ParserState::~ParserState ()
 {
-  for (auto it: _eltCache)
+  for (auto it : _eltCache)
     delete it.second;
 }
 
@@ -2128,7 +2214,7 @@ ParserState::getError (string *message)
  * wrong, returns the resulting document.
  *
  * @param xml The XML document to process.
- * @return The resulting document if successful, or \c nullptr otherwise.
+ * @return The resulting #Document if successful, or null otherwise.
  */
 Document *
 ParserState::process (xmlDoc *xml)
@@ -2153,7 +2239,6 @@ ParserState::process (xmlDoc *xml)
   return _doc;
 }
 
-
 // ParserState: push & pop.
 
 /**
@@ -2199,7 +2284,7 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
   // (I.e., move region/transition attributes to associated descriptor.)
   if (st->eltCacheIndexByTag ({"descriptor"}, &desc_list) > 0)
     {
-      for (auto desc_elt: desc_list)
+      for (auto desc_elt : desc_list)
         {
           string region_id;
           ParserElt *region_elt;
@@ -2213,14 +2298,14 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
 
           if (desc_elt->getAttribute ("region", &region_id))
             {
-              if (unlikely (!st->eltCacheIndexById
-                            (region_id, &region_elt, {"region"})))
+              if (unlikely (!st->eltCacheIndexById (region_id, &region_elt,
+                                                    {"region"})))
                 {
-                  return st->errEltBadAttribute
-                    (desc_elt->getNode (), "region", region_id,
-                     "no such region");
+                  return st->errEltBadAttribute (desc_elt->getNode (),
+                                                 "region", region_id,
+                                                 "no such region");
                 }
-              for (auto it: *region_elt->getAttributes ())
+              for (auto it : *region_elt->getAttributes ())
                 if (it.first != "id")
                   desc_elt->setAttribute (it.first, it.second);
             }
@@ -2233,18 +2318,18 @@ ParserState::popNcl (ParserState *st, unused (ParserElt *elt))
               if (!desc_elt->getAttribute (trans_attr[i], &trans_id))
                 continue;
 
-              if (unlikely (!st->eltCacheIndexById
-                            (trans_id, &trans_elt, {"transition"})))
+              if (unlikely (!st->eltCacheIndexById (trans_id, &trans_elt,
+                                                    {"transition"})))
                 {
-                  return st->errEltBadAttribute
-                    (desc_elt->getNode (), trans_attr[i], trans_id,
-                     "no such transition");
+                  return st->errEltBadAttribute (desc_elt->getNode (),
+                                                 trans_attr[i], trans_id,
+                                                 "no such transition");
                 }
 
               g_assert (trans_elt->getAttribute ("type", &str));
               val = "{type='" + str + "',";
-              val += xstrbuild
-                ("\
+              val += xstrbuild (
+                  "\
 subtype='%s',\
 dur='%s',\
 startProgress='%s',\
@@ -2255,66 +2340,98 @@ horzRepeat='%s',\
 vertRepeat='%s',\
 borderWidth='%s',\
 borderColor='%s'}",
-                 (trans_elt->getAttribute ("subtype", &str))
-                 ? str.c_str () : "",
-                 + (trans_elt->getAttribute ("dur", &str))
-                 ? str.c_str () : "0",
-                 + (trans_elt->getAttribute ("startProgress", &str))
-                 ? str.c_str () : "0",
-                 + (trans_elt->getAttribute ("endProgress", &str))
-                 ? str.c_str () : "0",
-                 + (trans_elt->getAttribute ("direction", &str))
-                 ? str.c_str () : "forward",
-                 + (trans_elt->getAttribute ("fadeColor", &str))
-                 ? str.c_str () : "",
-                 + (trans_elt->getAttribute ("horzRepeat", &str))
-                 ? str.c_str () : "0",
-                 + (trans_elt->getAttribute ("vertRepeat", &str))
-                 ? str.c_str () : "0",
-                 + (trans_elt->getAttribute ("borderWidth", &str))
-                 ? str.c_str () : "0",
-                 + (trans_elt->getAttribute ("borderColor", &str))
-                 ? str.c_str () : "");
+                  (trans_elt->getAttribute ("subtype", &str)) ? str.c_str ()
+                                                              : "",
+                  +(trans_elt->getAttribute ("dur", &str)) ? str.c_str ()
+                                                           : "0",
+                  +(trans_elt->getAttribute ("startProgress", &str))
+                      ? str.c_str ()
+                      : "0",
+                  +(trans_elt->getAttribute ("endProgress", &str))
+                      ? str.c_str ()
+                      : "0",
+                  +(trans_elt->getAttribute ("direction", &str))
+                      ? str.c_str ()
+                      : "forward",
+                  +(trans_elt->getAttribute ("fadeColor", &str))
+                      ? str.c_str ()
+                      : "",
+                  +(trans_elt->getAttribute ("horzRepeat", &str))
+                      ? str.c_str ()
+                      : "0",
+                  +(trans_elt->getAttribute ("vertRepeat", &str))
+                      ? str.c_str ()
+                      : "0",
+                  +(trans_elt->getAttribute ("borderWidth", &str))
+                      ? str.c_str ()
+                      : "0",
+                  +(trans_elt->getAttribute ("borderColor", &str))
+                      ? str.c_str ()
+                      : "");
               desc_elt->setAttribute (trans_attr[i], val);
             }
         }
     }
 
-  // Resolve media reference to descriptor.
-  // (I.e., move descriptor attributes to associated media.)
+  // Resolve media reference to descriptor, i.e., move descriptor attributes
+  // to associated media, and check for unresolved refers.
   if (st->eltCacheIndexByTag ({"media"}, &media_list) > 0)
     {
-      for (auto media_elt: media_list)
+      for (auto media_elt : media_list)
         {
           string media_id;
           Media *media;
 
           string desc_id;
-          ParserElt *desc_elt;
+          string refer;
 
-          if (!media_elt->getAttribute ("descriptor", &desc_id))
-            continue;           // nothing to do
-
-          if (unlikely (!st->eltCacheIndexById
-                        (desc_id, &desc_elt, {"descriptor"})))
+          // Move descriptor attributes.
+          if (media_elt->getAttribute ("descriptor", &desc_id))
             {
-              return st->errEltBadAttribute (media_elt->getNode (),
-                                             "descriptor", desc_id,
-                                             "no such descriptor");
+              ParserElt *desc_elt;
+
+              if (unlikely (!st->eltCacheIndexById (desc_id, &desc_elt,
+                                                    {"descriptor"})))
+                {
+                  return st->errEltBadAttribute (media_elt->getNode (),
+                                                 "descriptor", desc_id,
+                                                 "no such descriptor");
+                }
+
+              g_assert (media_elt->getAttribute ("id", &media_id));
+              media = cast (Media *,
+                            st->_doc->getObjectByIdOrAlias (media_id));
+              g_assert_nonnull (media);
+
+              for (auto it : *desc_elt->getAttributes ())
+                {
+                  if (it.first == "id" || it.first == "region")
+                    continue; // nothing to do
+                  if (media->getAttributionEvent (it.first) != nullptr)
+                    continue; // already defined
+                  media->addAttributionEvent (it.first);
+                  media->setProperty (it.first, it.second);
+                }
             }
 
-          g_assert (media_elt->getAttribute ("id", &media_id));
-          media = cast (Media *, st->_doc->getObjectByIdOrAlias (media_id));
-          g_assert_nonnull (media);
-
-          for (auto it: *desc_elt->getAttributes ())
+          // Check refer.
+          if (media_elt->getAttribute ("refer", &refer))
             {
-              if (it.first == "id" || it.first == "region")
-                continue;       // nothing to do
-              if (media->getAttributionEvent (it.first) != nullptr)
-                continue;       // already defined
-              media->addAttributionEvent (it.first);
-              media->setProperty (it.first, it.second);
+              ParserElt *refer_elt;
+
+              if (unlikely (!st->eltCacheIndexById (refer, &refer_elt,
+                                                    {"media"})))
+                {
+                  return st->errEltBadAttribute (media_elt->getNode (),
+                                                 "refer", refer,
+                                                 "no such media object");
+                }
+              if (refer_elt->getAttribute ("refer", nullptr))
+                {
+                  return st->errEltBadAttribute (
+                      media_elt->getNode (), "refer", refer,
+                      "cannot refer to a reference");
+                }
             }
         }
     }
@@ -2323,21 +2440,21 @@ borderColor='%s'}",
   // (I.e., finish parsing <bindRule> and <defaultComponent>.)
   if (st->eltCacheIndexByTag ({"switch"}, &switch_list) > 0)
     {
-      for (auto switch_elt: switch_list)
+      for (auto switch_elt : switch_list)
         {
           string switch_id;
           Switch *swtch;
 
-          list<pair<ParserElt *, Object *>> *rules;
+          list<pair<ParserElt *, Object *> > *rules;
           list<Object *> defaults;
 
           g_assert (switch_elt->getAttribute ("id", &switch_id));
-          swtch = cast (Switch *, st->_doc->getObjectByIdOrAlias
-                        (switch_id));
+          swtch
+              = cast (Switch *, st->_doc->getObjectByIdOrAlias (switch_id));
           g_assert_nonnull (swtch);
 
           UDATA_GET (switch_elt, "rules", &rules);
-          for (auto it: *rules)
+          for (auto it : *rules)
             {
               ParserElt *bind_elt;
               Object *obj;
@@ -2362,8 +2479,9 @@ borderColor='%s'}",
               if (!st->eltCacheIndexById (rule_id, &rule_elt,
                                           {"rule", "compositeRule"}))
                 {
-                  return st->errEltBadAttribute
-                    (bind_elt->getNode (), "rule", rule_id, "no such rule");
+                  return st->errEltBadAttribute (bind_elt->getNode (),
+                                                 "rule", rule_id,
+                                                 "no such rule");
                 }
 
               UDATA_GET (rule_elt, "pred", &pred);
@@ -2379,7 +2497,7 @@ borderColor='%s'}",
             }
 
           // Add defaults to the end of rule list.
-          for (auto obj: defaults)
+          for (auto obj : defaults)
             swtch->addRule (obj, new Predicate (Predicate::VERUM));
         }
     }
@@ -2388,7 +2506,7 @@ borderColor='%s'}",
   // (I.e., finish links parsing and add them to contexts.)
   if (st->eltCacheIndexByTag ({"link"}, &link_list) > 0)
     {
-      for (auto link_elt: link_list)
+      for (auto link_elt : link_list)
         {
           string conn_id;
           ParserElt *conn_elt;
@@ -2398,7 +2516,7 @@ borderColor='%s'}",
           map<string, string> *params;
           Context *ctx;
 
-          list<pair<ParserConnRole *, ParserLinkBind *>> bound;
+          list<pair<ParserConnRole *, ParserLinkBind *> > bound;
           list<ParserLinkBind *> tests_buf;
           map<string, string> tests_map;
           list<ParserLinkBind *> ghosts_buf;
@@ -2419,9 +2537,9 @@ borderColor='%s'}",
           UDATA_GET (link_elt, "context", &ctx);
 
           // Process binds.
-          for (auto &bind: *binds)
+          for (auto &bind : *binds)
             {
-              for (auto &role: *roles)
+              for (auto &role : *roles)
                 {
                   if (bind.role != role.role)
                     continue;
@@ -2441,7 +2559,7 @@ borderColor='%s'}",
                 }
               if (bound.size () > 0 && bound.back ().second == &bind)
                 {
-                  continue;     // done
+                  continue; // done
                 }
               else if (tests->find (bind.role) != tests->end ())
                 {
@@ -2456,10 +2574,10 @@ borderColor='%s'}",
             }
 
           // Check if all event roles are bound.
-          for (auto &role: *roles)
+          for (auto &role : *roles)
             {
               bool found = false;
-              for (auto it: bound)
+              for (auto it : bound)
                 {
                   if (&role == it.first)
                     {
@@ -2469,18 +2587,19 @@ borderColor='%s'}",
                 }
               if (unlikely (!found))
                 {
-                  return st->errEltBadAttribute
-                    (link_elt->getNode (), "xconnector", conn_id,
-                     "link does not match connector, "
-                     "role '" + role.role + "' not bound");
+                  return st->errEltBadAttribute (
+                      link_elt->getNode (), "xconnector", conn_id,
+                      "link does not match connector, "
+                      "role '"
+                          + role.role + "' not bound");
                 }
             }
 
           // Check if all test roles are bound.
-          for (auto label: *tests)
+          for (auto label : *tests)
             {
               bool found = false;
-              for (auto bind: tests_buf)
+              for (auto bind : tests_buf)
                 {
                   if (label == bind->role)
                     {
@@ -2490,18 +2609,19 @@ borderColor='%s'}",
                 }
               if (unlikely (!found))
                 {
-                  return st->errEltBadAttribute
-                    (link_elt->getNode (), "xconnector", conn_id,
-                     "link does not match connector, "
-                     "role '" + label + "' not bound");
+                  return st->errEltBadAttribute (
+                      link_elt->getNode (), "xconnector", conn_id,
+                      "link does not match connector, "
+                      "role '"
+                          + label + "' not bound");
                 }
             }
 
           // Resolve test and binds.
-          for (auto &it: {std::make_pair (&tests_buf, &tests_map),
-                          std::make_pair (&ghosts_buf, &ghosts_map)})
+          for (auto &it : {std::make_pair (&tests_buf, &tests_map),
+                            std::make_pair (&ghosts_buf, &ghosts_map) })
             {
-              for (auto &bind: *it.first)
+              for (auto &bind : *it.first)
                 {
                   ParserElt *elt;
                   Event *evt;
@@ -2516,7 +2636,7 @@ borderColor='%s'}",
           // Resolve event roles.
           list<Action> conditions;
           list<Action> actions;
-          for (auto it: bound)
+          for (auto it : bound)
             {
               ParserConnRole *role;
               ParserLinkBind *bind;
@@ -2548,9 +2668,9 @@ borderColor='%s'}",
                   {
                     if (unlikely (evtType != role->eventType))
                       {
-                        return st->errEltBadAttribute
-                          (bind->node, "interface", bind->iface,
-                           "expected a presentation event");
+                        return st->errEltBadAttribute (
+                            bind->node, "interface", bind->iface,
+                            "expected a presentation event");
                       }
                     act.event = evt;
                     break;
@@ -2559,13 +2679,13 @@ borderColor='%s'}",
                   {
                     if (unlikely (evtType != role->eventType))
                       {
-                        return st->errEltBadAttribute
-                          (bind->node, "interface", bind->iface,
-                           "expected an attribution event");
+                        return st->errEltBadAttribute (
+                            bind->node, "interface", bind->iface,
+                            "expected an attribution event");
                       }
                     act.event = evt;
-                    act.value = st->resolveParameter
-                      (role->value, &bind->params, params, &ghosts_map);
+                    act.value = st->resolveParameter (
+                        role->value, &bind->params, params, &ghosts_map);
                     break;
                   }
                 case Event::SELECTION:
@@ -2574,12 +2694,12 @@ borderColor='%s'}",
                                    && evt->getId () != "@lambda")
                                   || evtType == Event::ATTRIBUTION))
                       {
-                        return st->errEltBadAttribute
-                          (bind->node, "interface", evt->getId (),
-                           "must be empty");
+                        return st->errEltBadAttribute (
+                            bind->node, "interface", evt->getId (),
+                            "must be empty");
                       }
-                    act.value = st->resolveParameter
-                      (role->key, &bind->params, params, &ghosts_map);
+                    act.value = st->resolveParameter (
+                        role->key, &bind->params, params, &ghosts_map);
                     obj->addSelectionEvent (act.value);
                     act.event = obj->getSelectionEvent (act.value);
                     g_assert_nonnull (act.event);
@@ -2592,8 +2712,8 @@ borderColor='%s'}",
               g_assert_nonnull (act.event);
               act.transition = role->transition;
 
-              act.duration = st->resolveParameter
-                (role->duration, &bind->params, params, &ghosts_map);
+              act.duration = st->resolveParameter (
+                  role->duration, &bind->params, params, &ghosts_map);
 
               act.predicate = nullptr;
               if (role->predicate != nullptr)
@@ -2604,15 +2724,15 @@ borderColor='%s'}",
                     case Predicate::FALSUM:
                     case Predicate::VERUM:
                     case Predicate::ATOM:
-                      act.predicate = st->solvePredicate
-                        (role->predicate, &tests_map);
+                      act.predicate = st->solvePredicate (role->predicate,
+                                                          &tests_map);
                       break;
                     case Predicate::NEGATION:
                     case Predicate::CONJUNCTION:
                     case Predicate::DISJUNCTION:
                       if (role->predicate->getChildren ()->size () > 0)
-                        act.predicate = st->solvePredicate
-                          (role->predicate, &tests_map);
+                        act.predicate = st->solvePredicate (role->predicate,
+                                                            &tests_map);
                       break;
                     default:
                       g_assert_not_reached ();
@@ -2644,20 +2764,11 @@ borderColor='%s'}",
  * @param elt Element wrapper.
  * @return \c true if successful, or \c false otherwise.
  */
-
-/// Cleans up the rectangle attached to region #ParserElt.
-static void
-savedRectCleanup (void *ptr)
-{
-  delete (Rect *) ptr;
-}
-
 bool
 ParserState::pushRegion (ParserState *st, ParserElt *elt)
 {
   static int last_zorder = 0;
   xmlNode *parent_node;
-  Rect *saved_rect;
   Rect screen;
   Rect parent;
   Rect rect;
@@ -2666,19 +2777,8 @@ ParserState::pushRegion (ParserState *st, ParserElt *elt)
   parent_node = elt->getParentNode ();
   g_assert_nonnull (parent_node);
 
-  if (toCPPString (parent_node->name) != "region") // this is a root region
-    {
-      saved_rect = new Rect;
-      screen = *saved_rect = st->_rect;
-      UDATA_SET (st, "saved-rect", saved_rect, savedRectCleanup);
-    }
-  else
-    {
-      UDATA_GET (st, "saved-rect", &saved_rect);
-      screen = *saved_rect;
-    }
-
-  rect = parent = st->_rect;
+  screen = st->_rectStack.front ();
+  rect = parent = st->rectStackPeek ();
   if (elt->getAttribute ("left", &str))
     {
       rect.x += ginga::parse_percent (str, parent.width, 0, G_MAXINT);
@@ -2698,25 +2798,26 @@ ParserState::pushRegion (ParserState *st, ParserElt *elt)
   if (elt->getAttribute ("right", &str))
     {
       rect.x += parent.width - rect.width
-        - ginga::parse_percent (str, parent.width, 0, G_MAXINT);
+                - ginga::parse_percent (str, parent.width, 0, G_MAXINT);
     }
   if (elt->getAttribute ("bottom", &str))
     {
       rect.y += parent.height - rect.height
-        - ginga::parse_percent (str, parent.height, 0, G_MAXINT);
+                - ginga::parse_percent (str, parent.height, 0, G_MAXINT);
     }
 
   // Update region position to absolute values.
-  st->_rect = rect;
+  st->rectStackPush (rect);
   double left = ((double) rect.x / screen.width) * 100.;
   double top = ((double) rect.y / screen.height) * 100.;
   double width = ((double) rect.width / screen.width) * 100.;
   double height = ((double) rect.height / screen.height) * 100.;
-  elt->setAttribute ("zorder", xstrbuild ("%d", last_zorder++));
-  elt->setAttribute ("left", xstrbuild ("%.2f%%", left));
-  elt->setAttribute ( "top", xstrbuild ("%.2f%%", top));
-  elt->setAttribute ("width", xstrbuild ("%.2f%%", width));
-  elt->setAttribute ("height", xstrbuild ("%.2f%%", height));
+
+  elt->setAttribute ("zOrder", xstrbuild ("%d", last_zorder++));
+  elt->setAttribute ("left", xstrbuild ("%g%%", left));
+  elt->setAttribute ("top", xstrbuild ("%g%%", top));
+  elt->setAttribute ("width", xstrbuild ("%g%%", width));
+  elt->setAttribute ("height", xstrbuild ("%g%%", height));
 
   return true;
 }
@@ -2728,18 +2829,9 @@ ParserState::pushRegion (ParserState *st, ParserElt *elt)
  * @return \c true if successful, or \c false otherwise.
  */
 bool
-ParserState::popRegion (ParserState *st, ParserElt *elt)
+ParserState::popRegion (ParserState *st, unused (ParserElt *elt))
 {
-  xmlNode *parent_node;
-
-  parent_node = elt->getParentNode ();
-  g_assert_nonnull (parent_node);
-  if (toCPPString (parent_node->name) != "region") // root region
-    {
-      Rect *rect;
-      g_assert (st->getData ("saved-rect", (void **) &rect));
-      st->_rect = *rect;
-    }
+  st->rectStackPop ();
   return true;
 }
 
@@ -2786,7 +2878,7 @@ static void
 rolesCleanup (void *ptr)
 {
   auto roles = (list<ParserConnRole> *) ptr;
-  for (auto role: *roles)
+  for (auto role : *roles)
     if (role.predicate != nullptr)
       delete role.predicate;
   delete roles;
@@ -2818,7 +2910,7 @@ ParserState::popCausalConnector (ParserState *st, ParserElt *elt)
   UDATA_GET (elt, "roles", &roles);
   nconds = nacts = 0;
 
-  for (auto role: *roles)
+  for (auto role : *roles)
     {
       if (role.condition)
         nconds++;
@@ -2896,8 +2988,8 @@ ParserState::pushSimpleCondition (ParserState *st, ParserElt *elt)
   node = elt->getNode ();
   g_assert_nonnull (node);
 
-  if (parser_syntax_reserved_role_table_index
-      (role.role, &condition, &role.eventType, &role.transition))
+  if (parser_syntax_reserved_role_table_index (
+          role.role, &condition, &role.eventType, &role.transition))
     {
       string str;
       Event::Type type;
@@ -2905,28 +2997,28 @@ ParserState::pushSimpleCondition (ParserState *st, ParserElt *elt)
 
       if (unlikely (role.condition != condition))
         {
-          return st->errEltBadAttribute
-            (node, "role", role.role,
-             "reserved role '" + role.role + "' must be "
-             + string ((condition) ? "a condition" : "an action"));
+          return st->errEltBadAttribute (
+              node, "role", role.role,
+              "reserved role '" + role.role + "' must be "
+                  + string ((condition) ? "a condition" : "an action"));
         }
 
       if (unlikely (elt->getAttribute ("eventType", &str)
                     && (!parser_syntax_event_type_table_index (str, &type)
                         || type != role.eventType)))
         {
-          return st->errEltBadAttribute
-            (node, "eventType", str,
-             "reserved role '" + role.role + "' cannot be overwritten");
+          return st->errEltBadAttribute (node, "eventType", str,
+                                         "reserved role '" + role.role
+                                             + "' cannot be overwritten");
         }
 
       if (unlikely (elt->getAttribute (transition, &str)
                     && (!parser_syntax_transition_table_index (str, &trans)
                         || trans != role.transition)))
         {
-          return st->errEltBadAttribute
-            (node, transition, str,
-             "reserved role '" + role.role + "' cannot be overwritten");
+          return st->errEltBadAttribute (node, transition, str,
+                                         "reserved role '" + role.role
+                                             + "' cannot be overwritten");
         }
     }
   else
@@ -2936,8 +3028,8 @@ ParserState::pushSimpleCondition (ParserState *st, ParserElt *elt)
         {
           return st->errEltMissingAttribute (node, "eventType");
         }
-      if (unlikely (!parser_syntax_event_type_table_index
-                    (str, &role.eventType)))
+      if (unlikely (
+              !parser_syntax_event_type_table_index (str, &role.eventType)))
         {
           return st->errEltBadAttribute (node, "eventType", str);
         }
@@ -2945,8 +3037,8 @@ ParserState::pushSimpleCondition (ParserState *st, ParserElt *elt)
         {
           return st->errEltMissingAttribute (node, transition);
         }
-      if (unlikely (!parser_syntax_transition_table_index
-                    (str, &role.transition)))
+      if (unlikely (!parser_syntax_transition_table_index (
+              str, &role.transition)))
         {
           return st->errEltBadAttribute (node, transition, str);
         }
@@ -2958,14 +3050,11 @@ ParserState::pushSimpleCondition (ParserState *st, ParserElt *elt)
   if (role.eventType == Event::SELECTION)
     elt->getAttribute ("key", &role.key);
 
-  if (unlikely
-      (!role.condition
-       && role.eventType == Event::ATTRIBUTION
-       && !elt->getAttribute ("value", &role.value)))
+  if (unlikely (!role.condition && role.eventType == Event::ATTRIBUTION
+                && !elt->getAttribute ("value", &role.value)))
     {
       return st->errEltMissingAttribute (node, "value");
     }
-
 
   UDATA_GET (st, "conn-elt", &conn_elt);
   UDATA_GET (conn_elt, "roles", &roles);
@@ -3050,15 +3139,13 @@ ParserState::popCompoundStatement (ParserState *st, ParserElt *elt)
   g_assert (type != Predicate::FALSUM);
   g_assert (type != Predicate::ATOM);
 
-  if (unlikely
-      ((type == Predicate::NEGATION
-       && pred->getChildren ()->size () == 0))
-      || ((type == Predicate::CONJUNCTION
-          || type == Predicate::DISJUNCTION)
+  if (unlikely ((type == Predicate::NEGATION
+                 && pred->getChildren ()->size () == 0))
+      || ((type == Predicate::CONJUNCTION || type == Predicate::DISJUNCTION)
           && pred->getChildren ()->size () < 2))
     {
-      return st->errEltMissingChild
-        (elt->getNode (), {"compoundStatement", "assessmentStatement"});
+      return st->errEltMissingChild (
+          elt->getNode (), {"compoundStatement", "assessmentStatement"});
     }
 
   return true;
@@ -3095,8 +3182,8 @@ ParserState::popAssessmentStatement (ParserState *st, ParserElt *elt)
   if (unlikely (!elt->getData ("left", (void **) &left)
                 || !elt->getData ("right", (void **) &right)))
     {
-      return st->errEltMissingChild
-        (elt->getNode (), {"attributeAssessment", "valueAssessment"});
+      return st->errEltMissingChild (
+          elt->getNode (), {"attributeAssessment", "valueAssessment"});
     }
 
   g_assert (st->eltCacheIndexParent (elt->getNode (), &parent_elt));
@@ -3290,8 +3377,8 @@ ParserState::pushImportBase (ParserState *st, ParserElt *elt)
   if (!xpathisabs (path))
     {
       string dir;
-      dir = (st->aliasStackPeek (nullptr, &dir))
-        ? xpathdirname (dir) : st->getDirname ();
+      dir = (st->aliasStackPeek (nullptr, &dir)) ? xpathdirname (dir)
+                                                 : st->getDirname ();
       path = xpathbuildabs (dir, path);
     }
 
@@ -3338,23 +3425,22 @@ ParserState::pushImportBase (ParserState *st, ParserElt *elt)
   if (parent_elt->getTag () == "descriptorBase")
     {
       list<string> extra = {"regionBase", "transitionBase"};
-      for (auto &it: extra)
-        for (auto child: xmlFindAllChildren (head, it))
+      for (auto &it : extra)
+        for (auto child : xmlFindAllChildren (head, it))
           children.push_back (child);
     }
 
   // Process all imported base.
-  for (auto base: children)
+  for (auto base : children)
     if (unlikely (!(status = st->processNode (base))))
       break;
 
   g_assert (st->aliasStackPop (nullptr, nullptr));
   return status;
 
- fail_no_such_base:
-  return st->errEltImport
-    (elt->getNode (),
-     "no <" + parent_elt->getTag () + "> in imported document");
+fail_no_such_base:
+  return st->errEltImport (elt->getNode (), "no <" + parent_elt->getTag ()
+                                                + "> in imported document");
 }
 
 /**
@@ -3431,7 +3517,7 @@ ParserState::popContext (ParserState *st, ParserElt *elt)
 
   // Resolve port references.
   UDATA_GET (elt, "ports", &ports);
-  for (auto port_id: *ports)
+  for (auto port_id : *ports)
     {
       ParserElt *port_elt;
       Event *evt;
@@ -3484,7 +3570,7 @@ ParserState::pushPort (ParserState *st, ParserElt *elt)
 static void
 rulesCleanup (void *ptr)
 {
-  delete (list<pair<ParserElt *, Object *>> *) ptr;
+  delete (list<pair<ParserElt *, Object *> > *) ptr;
 }
 
 bool
@@ -3502,7 +3588,7 @@ ParserState::pushSwitch (ParserState *st, ParserElt *elt)
   parent->addChild (swtch);
 
   // Create rule list.
-  UDATA_SET (elt, "rules", (new list<pair<ParserElt *, Object *>> ()),
+  UDATA_SET (elt, "rules", (new list<pair<ParserElt *, Object *> > ()),
              rulesCleanup);
 
   // Push context onto stack.
@@ -3524,14 +3610,14 @@ bool
 ParserState::popSwitch (ParserState *st, unused (ParserElt *elt))
 {
   Switch *swtch;
-  list<pair<ParserElt *, Object *>> *rules;
+  list<pair<ParserElt *, Object *> > *rules;
 
   swtch = cast (Switch *, st->objStackPeek ());
   g_assert_nonnull (swtch);
 
   // Resolve bind-rule and default-component  references.
   UDATA_GET (elt, "rules", &rules);
-  for (auto &it: *rules)
+  for (auto &it : *rules)
     {
       ParserElt *bind_elt;
       Object *obj;
@@ -3562,7 +3648,7 @@ bool
 ParserState::pushBindRule (ParserState *st, ParserElt *elt)
 {
   ParserElt *parent_elt;
-  list<pair<ParserElt *, Object *>> *rules;
+  list<pair<ParserElt *, Object *> > *rules;
 
   if (elt->getTag () == "bindRule")
     {
@@ -3597,37 +3683,76 @@ ParserState::pushBindRule (ParserState *st, ParserElt *elt)
 bool
 ParserState::pushMedia (ParserState *st, ParserElt *elt)
 {
+  Composition *parent;
   Media *media;
   string id;
   string type;
   string refer;
+  string src;
 
   g_assert (elt->getAttribute ("id", &id));
-  if (elt->getAttribute ("type", &type)
-      && type == "application/x-ginga-settings")
+  if (elt->getAttribute ("type", &type))
     {
-      media = st->_doc->getSettings ();
-      g_assert_nonnull (media);
-      media->addAlias (id);
+      if (unlikely (elt->getAttribute ("refer", &refer)))
+        {
+          return st->errEltMutuallyExclAttributes (elt->getNode (), "type",
+                                                   "refer");
+        }
+      if (type == "application/x-ginga-settings")
+        {
+          media = st->_doc->getSettings ();
+          g_assert_nonnull (media);
+          media->addAlias (id);
+          goto done;
+        }
+    }
+
+  if (elt->getAttribute ("refer", &refer))
+    {
+      if (unlikely (elt->getAttribute ("src", &src)))
+        {
+          return st->errEltMutuallyExclAttributes (elt->getNode (), "src",
+                                                   "refer");
+        }
+
+      media = cast (Media *, st->_doc->getObjectByIdOrAlias (refer));
+      if (media != nullptr)
+        goto almost_done;
     }
   else
     {
-      Composition *parent;
-      string src;
-
       elt->getAttribute ("src", &src);
-      if (!xpathisuri (src) && !xpathisabs (src))
+      if (src != "" && !xpathisuri (src) && !xpathisabs (src))
         {
-          string dir = st->getDirname();
+          string dir = st->getDirname ();
           src = xpathbuildabs (dir, src);
         }
 
-      media = new Media (id, type, src);
-      parent = cast (Composition *, st->objStackPeek ());
-      g_assert_nonnull (parent);
-      parent->addChild (media);
+      if (st->referMapIndex (id, &media))
+        {
+          media->setProperty ("uri", src);
+          goto done;
+        }
     }
 
+  media = new Media (id);
+  media->setProperty ("uri", src);
+  media->setProperty ("type", type);
+
+  parent = cast (Composition *, st->objStackPeek ());
+  g_assert_nonnull (parent);
+  parent->addChild (media);
+
+almost_done:
+  if (refer != "")
+    {
+      media->addAlias (id);
+      media->addAlias (refer);
+      st->referMapAdd (refer, media);
+      g_assert (st->referMapAdd (id, media));
+    }
+
+done:
   st->objStackPush (media);
   return true;
 }
@@ -3642,7 +3767,7 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
  * @return \c true if successful, or \c false otherwise.
  */
 bool
-ParserState::popMedia (ParserState *st, unused (ParserElt * elt))
+ParserState::popMedia (ParserState *st, unused (ParserElt *elt))
 {
   g_assert (instanceof (Media *, st->objStackPop ()));
   return true;
@@ -3672,13 +3797,13 @@ ParserState::pushArea (ParserState *st, ParserElt *elt)
     {
       if (unlikely (elt->getAttribute ("begin", &str)))
         {
-          return st->errEltMutuallyExclAttributes
-            (elt->getNode (), "label", "begin");
+          return st->errEltMutuallyExclAttributes (elt->getNode (), "label",
+                                                   "begin");
         }
       if (unlikely (elt->getAttribute ("end", &str)))
         {
-          return st->errEltMutuallyExclAttributes
-            (elt->getNode (), "label", "end");
+          return st->errEltMutuallyExclAttributes (elt->getNode (), "label",
+                                                   "end");
         }
       media->addPresentationEvent (id, label);
     }
@@ -3689,8 +3814,7 @@ ParserState::pushArea (ParserState *st, ParserElt *elt)
         {
           if (unlikely (!ginga::try_parse_time (str, &begin)))
             {
-              return st->errEltBadAttribute
-                (elt->getNode (), "begin", str);
+              return st->errEltBadAttribute (elt->getNode (), "begin", str);
             }
         }
 
@@ -3699,8 +3823,7 @@ ParserState::pushArea (ParserState *st, ParserElt *elt)
         {
           if (unlikely (!ginga::try_parse_time (str, &end)))
             {
-              return st->errEltBadAttribute
-                (elt->getNode (), "end", str);
+              return st->errEltBadAttribute (elt->getNode (), "end", str);
             }
         }
 
@@ -3825,7 +3948,6 @@ ParserState::pushBind (ParserState *st, ParserElt *elt)
   return true;
 }
 
-
 // External API.
 
 /// Helper function used by Parser::parseBuffer() and Parser::parseFile().
@@ -3853,17 +3975,17 @@ process (xmlDoc *xml, int width, int height, string *errmsg)
  * @param width Initial screen width (in pixels).
  * @param height Initial screen height (in pixels).
  * @param[out] errmsg Variable to store the error message (if any).
- * @return The resulting #Document if successful, or \c nullptr otherwise.
+ * @return The resulting #Document if successful, or null otherwise.
  */
 Document *
-Parser::parseBuffer (const void *buf, size_t size,
-                     int width, int height, string *errmsg)
+Parser::parseBuffer (const void *buf, size_t size, int width, int height,
+                     string *errmsg)
 {
   xmlDoc *xml;
   Document *doc;
 
-  xml = xmlReadMemory ((const char *) buf, (int) size,
-                       nullptr, nullptr, PARSER_LIBXML_FLAGS);
+  xml = xmlReadMemory ((const char *) buf, (int) size, nullptr, nullptr,
+                       PARSER_LIBXML_FLAGS);
   if (unlikely (xml == nullptr))
     {
       tryset (errmsg, xmlGetLastErrorAsString ());
@@ -3881,7 +4003,7 @@ Parser::parseBuffer (const void *buf, size_t size,
  * @param width Initial screen width (in pixels).
  * @param height Initial screen height (in pixels).
  * @param[out] errmsg Variable to store the error message (if any).
- * @return The resulting #Document if successful, or \c nullptr otherwise.
+ * @return The resulting #Document if successful, or null otherwise.
  */
 Document *
 Parser::parseFile (const string &path, int width, int height,

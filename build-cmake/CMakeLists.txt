@@ -22,7 +22,6 @@ add_definitions (-DGINGADATADIR="${CMAKE_INSTALL_FULL_DATADIR}/${PACKAGE}")
 find_package (GLIB 2.32 REQUIRED)
 
 find_package (LibXml2 REQUIRED)
-find_package (XercesC 2.7 REQUIRED)
 
 find_package (GDKPixBuf REQUIRED)
 find_package (GDK3 REQUIRED)
@@ -134,22 +133,6 @@ set (LIBGINGA_SOURCES
   ../lib/Predicate.cpp
   ../lib/Switch.cpp
 
-  ../lib/ncl/NclArea.cpp
-  ../lib/ncl/NclBind.cpp
-  ../lib/ncl/NclComposition.cpp
-  ../lib/ncl/NclContext.cpp
-  ../lib/ncl/NclDocument.cpp
-  ../lib/ncl/NclEntity.cpp
-  ../lib/ncl/NclLink.cpp
-  ../lib/ncl/NclMedia.cpp
-  ../lib/ncl/NclMediaRefer.cpp
-  ../lib/ncl/NclNode.cpp
-  ../lib/ncl/NclPort.cpp
-  ../lib/ncl/NclProperty.cpp
-  ../lib/ncl/NclSwitch.cpp
-  #  ../lib/ncl/ParserLibXML.cpp
-  ../lib/ncl/ParserXercesC.cpp
-
   ../lib/Player.cpp
   ../lib/PlayerAnimator.cpp
   ../lib/PlayerImage.cpp
@@ -186,7 +169,6 @@ set (LIBGINGA_INCLUDE_DIRS
 set (LIBGINGA_LIBS
   pthread
 
-  ${XercesC_LIBRARIES}
   expat
 
   ${GLIB_LIBRARIES}
@@ -393,7 +375,7 @@ set (CPACK_PACKAGE_NAME ${PACKAGE})
 set (CPACK_PACKAGE_CONTACT robertogerson@telemidia.puc-rio.br)
 
 set (CPACK_DEBIAN_PACKAGE_DEPENDS
-     "libxerces-c3.1, liblua5.3-0, libpangocairo-1.0-0, librsvg2-2,\
+     "liblua5.3-0, libpangocairo-1.0-0, librsvg2-2,\
      libgstreamer1.0-0, libgstreamer-plugins-base1.0-0, \
      libgstreamer-plugins-good1.0-0, libgtk-3-0")
 

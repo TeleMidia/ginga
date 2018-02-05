@@ -22,22 +22,19 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-
 // Public.
 
-Switch::Switch (const string &id)
-  :Composition (id)
+Switch::Switch (const string &id) : Composition (id)
 {
   _selected = nullptr;
 }
 
 Switch::~Switch ()
 {
-  for (auto item: _rules)
+  for (auto item : _rules)
     delete item.second;
 }
 
-
 // Public: Object.
 
 string
@@ -56,7 +53,7 @@ Switch::toString ()
     {
       int i = 1;
       str += "  rules:\n";
-      for (auto rule: _rules)
+      for (auto rule : _rules)
         {
           str += xstrbuild ("    #%d %s if %s\n", i++,
                             rule.first->getId ().c_str (),
@@ -78,7 +75,7 @@ Switch::beforeTransition (Event *event, Event::Transition transition)
         {
         case Event::START:
           g_assert_null (_selected);
-          for (auto item: _rules)
+          for (auto item : _rules)
             {
               Object *obj;
               Predicate *pred;
@@ -130,7 +127,7 @@ Switch::afterTransition (Event *evt, Event::Transition transition)
     {
     case Event::PRESENTATION:
       g_assert (evt->isLambda ());
-     switch (transition)
+      switch (transition)
         {
         case Event::START:
           Object::doStart ();
@@ -147,7 +144,7 @@ Switch::afterTransition (Event *evt, Event::Transition transition)
         default:
           g_assert_not_reached ();
         }
-     break;
+      break;
 
     case Event::ATTRIBUTION:
     case Event::SELECTION:
@@ -157,10 +154,9 @@ Switch::afterTransition (Event *evt, Event::Transition transition)
   return true;
 }
 
-
 // Public.
 
-const list<pair<Object *, Predicate *>> *
+const list<pair<Object *, Predicate *> > *
 Switch::getRules ()
 {
   return &_rules;

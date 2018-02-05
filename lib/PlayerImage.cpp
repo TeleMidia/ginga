@@ -28,7 +28,7 @@ GINGA_NAMESPACE_BEGIN
 static cairo_status_t
 cairox_surface_create_from_file (const char *path, cairo_surface_t **dup)
 {
-  cairo_surface_t *sfc;         // result
+  cairo_surface_t *sfc; // result
   GdkPixbuf *pixbuf;
   GError *error = NULL;
   cairo_t *cr;
@@ -39,7 +39,8 @@ cairox_surface_create_from_file (const char *path, cairo_surface_t **dup)
   if (unlikely (pixbuf == NULL))
     {
       cairo_status_t status = (error->domain == G_FILE_ERROR)
-        ? CAIRO_STATUS_FILE_NOT_FOUND : CAIRO_STATUS_READ_ERROR;
+                                  ? CAIRO_STATUS_FILE_NOT_FOUND
+                                  : CAIRO_STATUS_READ_ERROR;
       g_error_free (error);
       return status;
     }
@@ -67,9 +68,8 @@ cairox_surface_create_from_file (const char *path, cairo_surface_t **dup)
   return CAIRO_STATUS_SUCCESS;
 }
 
-PlayerImage::PlayerImage (Formatter *formatter, Media *media,
-                          const string &uri)
-  :Player (formatter, media, uri)
+PlayerImage::PlayerImage (Formatter *formatter, Media *media)
+    : Player (formatter, media)
 {
 }
 
@@ -90,11 +90,11 @@ PlayerImage::reload ()
         GL::delete_texture (&_gltexture);
     }
 
-  status = cairox_surface_create_from_file (_uri.c_str (), &_surface);
+  status = cairox_surface_create_from_file (_prop.uri.c_str (), &_surface);
   if (unlikely (status != CAIRO_STATUS_SUCCESS))
     {
-      ERROR ("cannot load image file %s: %s",
-             _uri.c_str (), cairo_status_to_string (status));
+      ERROR ("cannot load image file %s: %s", _prop.uri.c_str (),
+             cairo_status_to_string (status));
     }
   g_assert_nonnull (_surface);
 

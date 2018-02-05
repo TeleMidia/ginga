@@ -23,6 +23,7 @@ AM_CPPFLAGS= -DTOP_SRCDIR=\"$(top_srcdir)\"\
 AM_CXXFLAGS= $(GINGA_ALL_CXXFLAGS)
 AM_LDFLAGS= -static $(GINGA_ALL_LDFLAGS)
 LDADD= $(top_builddir)/lib/libginga.la
+EXTRA_DIST+= tests.h
 
 # Auxiliary programs.
 noinst_PROGRAMS=
@@ -337,6 +338,7 @@ check_PROGRAMS= $(progs)
 TESTS= $(check_SCRIPTS) $(check_PROGRAMS)
 XFAIL_TESTS=\
   xfail-test-Document-addObject\
+  xfail-test-Object-addEvent-unknown\
   xfail-test-Ginga-getOptionBool\
   xfail-test-Ginga-getOptionInt\
   xfail-test-Ginga-getOptionString\

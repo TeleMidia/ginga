@@ -15,33 +15,31 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include "Event.h"
-#include "Media.h"
+#include "tests.h"
 
-#define CHECK_PARMS(e)                                          \
-  G_STMT_START                                                  \
-  {                                                             \
-    string str;                                                 \
-    map<string,string> params =                                 \
-      {                                                         \
-       {"a", "1"},                                              \
-       {"b", "2"},                                              \
-       {"c", "3"},                                              \
-       {"d", "4"},                                              \
-      };                                                        \
-    for (auto it: params)                                       \
-      g_assert_false ((e)->getParameter (it.first, nullptr));   \
-    for (auto it: params)                                       \
-      g_assert ((e)->setParameter (it.first, it.second));       \
-    for (auto it: params)                                       \
-      {                                                         \
-        g_assert ((e)->getParameter (it.first, &str));          \
-        g_assert (str == it.second);                            \
-      }                                                         \
-    g_assert_false ((e)->setParameter ("a", "z"));              \
-    g_assert ((e)->getParameter ("a", &str));                   \
-    g_assert (str == "z");                                      \
-  }                                                             \
+#define CHECK_PARMS(e)                                                     \
+  G_STMT_START                                                             \
+  {                                                                        \
+    string str;                                                            \
+    map<string, string> params = {                                         \
+      {"a", "1"},                                                        \
+      {"b", "2"},                                                        \
+      {"c", "3"},                                                        \
+      {"d", "4"},                                                        \
+    };                                                                     \
+    for (auto it : params)                                                 \
+      g_assert_false ((e)->getParameter (it.first, nullptr));              \
+    for (auto it : params)                                                 \
+      g_assert ((e)->setParameter (it.first, it.second));                  \
+    for (auto it : params)                                                 \
+      {                                                                    \
+        g_assert ((e)->getParameter (it.first, &str));                     \
+        g_assert (str == it.second);                                       \
+      }                                                                    \
+    g_assert_false ((e)->setParameter ("a", "z"));                         \
+    g_assert ((e)->getParameter ("a", &str));                              \
+    g_assert (str == "z");                                                 \
+  }                                                                        \
   G_STMT_END
 
 int
@@ -49,7 +47,7 @@ main (void)
 {
   Media *m;
 
-  m = new Media ("m", "", "");
+  m = new Media ("m");
   g_assert_nonnull (m);
 
   // Presentation.

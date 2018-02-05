@@ -4,7 +4,6 @@
 /* Define to 1 to enable run-time debugging */
 /* #undef DEBUG */
 
-
 /* Enable compile-time and run-time bounds-checking, and some warnings,
    without upsetting glibc 2.15+.  */
 #if !defined _FORTIFY_SOURCE && defined __OPTIMIZE__ && __OPTIMIZE__
@@ -114,7 +113,6 @@
 #ifndef __EXTENSIONS__
 # define __EXTENSIONS__ 1
 #endif
-
 
 /* Ginga version. */
 #define VERSION "0.13.6"

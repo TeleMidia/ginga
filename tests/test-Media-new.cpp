@@ -15,14 +15,14 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include "Media.h"
+#include "tests.h"
 
 int
 main (void)
 {
   Media *m;
 
-  m = new Media ("m", "src", "uri");
+  m = new Media ("m");
   g_assert_nonnull (m);
   g_assert (m->getId () == "m");
   g_assert_null (m->getDocument ());

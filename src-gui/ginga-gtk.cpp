@@ -19,18 +19,17 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "aux-glib.h"
 #include <locale.h>
 
-#ifdef G_OS_WIN32  
-  #include <windows.h>
+#ifdef G_OS_WIN32
+#include <windows.h>
 #endif
 
 // Global formatter.
 Ginga *GINGA = nullptr;
 
-
 int
 main (int argc, char **argv)
 {
-  
+
   GingaOptions opts;
 
   opts.width = presentationAttributes.resolutionWidth;
@@ -39,18 +38,18 @@ main (int argc, char **argv)
   opts.opengl = false;
   opts.experimental = true;
 
-  #ifdef G_OS_WIN32
-    HWND var=GetConsoleWindow();
-    ShowWindow(var,SW_HIDE);
-  #endif
+#ifdef G_OS_WIN32
+  HWND var = GetConsoleWindow ();
+  ShowWindow (var, SW_HIDE);
+#endif
 
   gtk_init (&argc, &argv);
 
-  GINGA = Ginga::create (argc, argv, &opts);
+  GINGA = Ginga::create (&opts);
   g_assert_nonnull (GINGA);
 
   setlocale (LC_ALL, "C");
-  
+
   GError *err = NULL;
   gtk_window_set_default_icon_from_file (
       g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons", "common",

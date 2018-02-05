@@ -15,15 +15,14 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include "Event.h"
-#include "Media.h"
+#include "tests.h"
 
 int
 main (void)
 {
   Media *m;
 
-  m = new Media ("m", "", "");
+  m = new Media ("m");
   g_assert_nonnull (m);
 
   // Presentation.
@@ -36,7 +35,7 @@ main (void)
     g_assert (e->getFullId () == "m@pres");
     g_assert (e->getState () == Event::SLEEPING);
     g_assert (e->getLabel () == "");
-    g_assert (!e->hasLabel());
+    g_assert (!e->hasLabel ());
     g_assert_false (e->isLambda ());
     TRACE ("\n%s", e->toString ().c_str ());
     delete e;

@@ -31,6 +31,8 @@ edit= sed -e 's,@PACKAGE_NAME\@,$(PACKAGE_NAME),g' \
 	  -e 's,@top_srcdir\@,$(top_srcdir),g'
 
 EXTRA_DIST+= doc/Doxyfile.in
+EXTRA_DIST+= doc/arch.png
+EXTRA_DIST+= doc/arch.tex
 CLEANFILES+= doc/Doxyfile
 doc/Doxyfile: $(top_srcdir)/doc/Doxyfile.in
 	$(AM_V_GEN) $(edit) $(top_srcdir)/doc/Doxyfile.in >doc/Doxyfile

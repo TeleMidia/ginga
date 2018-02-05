@@ -1,4 +1,4 @@
-/* Copyright (Ctx) 2006-2017 PUC-Rio/Laboratorio TeleMidia
+/* Copyright (C) 2006-2018 PUC-Rio/Laboratorio TeleMidia
 
 This file is part of Ginga (Ginga-NCL).
 
@@ -15,39 +15,18 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include "Event.h"
-#include "Media.h"
-#include "Context.h"
-#include "Parser.h"
-
-#define PARSE_AND_START(fmt, doc, str)                                     \
-  G_STMT_START                                                             \
-  {                                                                        \
-    string buf = str;                                                      \
-    string errmsg;                                                         \
-    *fmt = new Formatter (0, nullptr, nullptr);                            \
-    g_assert_nonnull (*fmt);                                               \
-    if (!(*fmt)->start (buf.c_str (), buf.length (), &errmsg))             \
-      {                                                                    \
-        g_printerr ("*** Unexpected error: %s", errmsg.c_str ());          \
-        g_assert_not_reached ();                                           \
-      }                                                                    \
-    *doc = (*fmt)->getDocument ();                                         \
-    g_assert_nonnull (*doc);                                               \
-  }                                                                        \
-  G_STMT_END
+#include "tests.h"
 
 int
 main (void)
 {
-
   // Presentation events ---------------------------------------------------
 
   // @lambda: START from state OCCURRING.
   {
     Formatter *fmt;
     Document *doc;
-    PARSE_AND_START (&fmt, &doc, "\
+    tests_parse_and_start (&fmt, &doc, "\
 <ncl>\n\
 <body>\n\
   <port id='p1' component='ctx'/>\n\
@@ -124,7 +103,7 @@ main (void)
   {
     Formatter *fmt;
     Document *doc;
-    PARSE_AND_START (&fmt, &doc, "\
+    tests_parse_and_start (&fmt, &doc, "\
 <ncl>\n\
 <body>\n\
   <port id='p1' component='ctx'/>\n\
@@ -217,7 +196,7 @@ main (void)
   {
     Formatter *fmt;
     Document *doc;
-    PARSE_AND_START (&fmt, &doc, "\
+    tests_parse_and_start (&fmt, &doc, "\
 <ncl>\n\
 <body>\n\
   <port id='p1' component='ctx'/>\n\
@@ -315,7 +294,7 @@ main (void)
   {
     Formatter *fmt;
     Document *doc;
-    PARSE_AND_START (&fmt, &doc, "\
+    tests_parse_and_start (&fmt, &doc, "\
 <ncl>\n\
 <body>\n\
   <port id='p1' component='ctx'/>\n\

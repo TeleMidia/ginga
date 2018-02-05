@@ -1,12 +1,27 @@
+<div style="width:100%">
 <a href="https://semaphoreci.com/telemidia/ginga">
-  Ubuntu 14.04: <img src="https://semaphoreci.com/api/v1/projects/067d8fed-5ecc-4408-b10a-20e615756bf2/1327970/shields_badge.svg" alt="Build Status (Ubuntu 14.04)" title="Build Status (Ubuntu 14.04)">
-</a> |
-<a href="https://travis-ci.org/TeleMidia/ginga/builds">
-  Ubuntu 16.04: <img src="https://travis-ci.org/TeleMidia/ginga.svg?branch=master" alt="Build Status (Ubuntu 16.04)" title="Build Status (Ubuntu 16.04)">
-</a> |
-<a href="https://ci.appveyor.com/project/robertogerson/ginga">
-  Windows: <img src="https://ci.appveyor.com/api/projects/status/1j9m853yd87o4691?svg=true" alt="Build Status (Win32)" title="Build Status (Win32)">
+  Ubuntu 14.04:
+   <img
+    src="https://semaphoreci.com/api/v1/projects/067d8fed-5ecc-4408-b10a-20e615756bf2/1327970/shields_badge.svg"
+    alt="Build Status (Ubuntu 14.04)"
+    title="Build Status (Ubuntu 14.04)">
 </a>
+&nbsp;&nbsp;&nbsp;
+<a href="https://travis-ci.org/TeleMidia/ginga/builds">
+  Ubuntu 16.04:
+   <img
+    src="https://travis-ci.org/TeleMidia/ginga.svg?branch=master"
+    alt="Build Status (Ubuntu 16.04)"
+    title="Build Status (Ubuntu 16.04)">
+</a>
+&nbsp;&nbsp;&nbsp;
+<a href="https://ci.appveyor.com/project/robertogerson/ginga">
+  Windows:
+   <img
+    src="https://ci.appveyor.com/api/projects/status/1j9m853yd87o4691?svg=true"
+    alt="Build Status (Windows)" title="Build Status (Windows)">
+</a>
+</div>
 
 # Ginga
 
@@ -16,19 +31,21 @@ The iTV middleware.
   * http://www.ncl.org.br
   * http://www.telemidia.puc-rio.br
 
-## Installation
+## Releases
 
-### Development version (nightly builds)
+There are no stable releses yet.
 
-**Linux Debian/Ubuntu/Linux Mint**:
+## Nightly builds
 
-In a Debian-based system you can easily install a (nightly built) development
-version of ginga using:
+**Linux Debian/Ubuntu/Mint**:
+
+To install a nightly build of the repository run:
 
     $ sudo add-apt-repository ppa:telemidia/daily-builds
     $ sudo apt-get update
     $ sudo apt-get install ginga-itv
 
+<!--
 **Windows**
 
 TODO.
@@ -36,59 +53,65 @@ TODO.
 **macOS**
 
 TODO.
+-->
 
 ## Usage
 
-The basic way of running ginga is passing a `.ncl` document to be played as a
-parameter, e.g.:
+To play an NCL file run:
 
     $ ginga examples/primeiro-joao/01sync.ncl
 
-You can check the available options for the `ginga` executable with:
+To check the available options run:
 
     $ ginga --help
 
-## Building
+## Building the repository
 
 ### Dependencies
 
 Required:
 
-  * cairo >= 1.10
-  * glib >= 2.32
-  * gstreamer >= 1.8
+  * Cairo >= 1.10
+  * GLib >= 2.32
+  * GStreamer >= 1.8
   * GTK+ >= 3.4
-  * pango >= 1.30
-  * xercesc >= 2.7
+  * Pango >= 1.30
+  * Libxml >= 2.9
 
 Optional:
 
-  * cef >= 3.0, https://bitbucket.org/chromiumembedded/cef
+  * <a href="https://bitbucket.org/chromiumembedded/cef">CEF</a> >= 3.0
   * librsvg >= 2.40
-  * nclua >= 1.0, http://github.com/telemidia/nclua
+  * <a href="https://www.lua.org">Lua</a> >= 5.2
+  * <a href="https://github.com/TeleMidia/nclua">NCLua</a> >= 1.0
 
 ### Linux
 
-On Ubuntu-based distros, we suggest install the dependencies through apt-get.
+On Ubuntu-based distros, to install the dependencies run:
 
-    $ sudo apt-get install -y git gcc g++ autotools-dev dh-autoreconf cmake cmake-data \
-        liblua5.2-dev libglib2.0-dev libxerces-c-dev libpango1.0-dev librsvg2-dev \
-        libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
+    $ sudo apt-get install -y git gcc g++ autotools-dev dh-autoreconf
+        cmake cmake-data liblua5.2-dev libglib2.0-dev libpango1.0-dev \
+        librsvg2-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
         libgstreamer-plugins-good1.0-dev libgtk-3-dev -qq
 
-Build with autotools.
+To build with autotools run:
 
     $ ./bootstrap
     $ ./configure
     $ make
 
-Or build with cmake. When using cmake, nclua will be automatically
-downloaded and built.
-
+To build with `cmake` run:
 
     $ mkdir _build && cd _build
     $ cmake ../build-cmake
     $ make
+
+(`cmake` downloads and builds the <a
+href="https://github.com/TeleMidia/nclua">NCLua</a> library automatically.)
+
+<!--
+
+This should not be here!
 
 ### Windows
 
@@ -100,7 +123,7 @@ Download MSYS2 and install the dependencies through MinGW.
         mingw64/mingw-w64-x86_64-cairo mingw64/mingw-w64-x86_64-gst-plugins-base \
         mingw64/mingw-w64-x86_64-gst-plugins-good mingw64/mingw-w64-x86_64-gst-plugins-bad \
         mingw64/mingw-w64-x86_64-gtk3 mingw64/mingw-w64-x86_64-pango \
-        mingw64/mingw-w64-x86_64-xerces-c mingw-w64-x86_64-lua mingw64/mingw-w64-x86_64-gst-plugins-ugly \
+        mingw-w64-x86_64-lua mingw64/mingw-w64-x86_64-gst-plugins-ugly \
         mingw-w64-x86_64-gst-libav-1.12.4-1 mingw-w64-x86_64-gcc mingw-w64-x86_64-make
 
 Build with autotools.
@@ -112,7 +135,21 @@ Build with autotools.
 ### macOS
 
 TODO
+-->
 
+## Support
+
+There is not dedicated mailing list for Ginga yet.  If you have a question
+or want to discuss the develoment of Ginga itself send a message to
+info@telemidia.puc-rio.br.
+
+## Development
+
+  * <a href="http://www.telemidia.puc-rio.br/~gflima/misc/ginga">
+    Read the API documentation</a>.
+
+  * <a href="https://github.com/TeleMidia/ginga/issues">
+    Find and file bug reports</a>.
 
 ---
 Copyright (C) 2006-2018 PUC-Rio/Laboratorio TeleMidia

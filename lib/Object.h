@@ -64,32 +64,55 @@ public:
   bool isSleeping ();
 
   virtual string getProperty (const string &);
-  virtual void setProperty (const string &, const string &, Time dur=0);
+  virtual void setProperty (const string &, const string &, Time dur = 0);
 
-  const list<pair<Action, Time>> *getDelayedActions ();
+  const list<pair<Action, Time> > *getDelayedActions ();
   void addDelayedAction (Event *, Event::Transition,
-                         const string &value="", Time delay=0);
+                         const string &value = "", Time delay = 0);
 
   virtual void sendKey (const string &, bool);
   virtual void sendTick (Time, Time, Time);
 
+  /**
+   * @brief Initiates event transition.
+   *
+   * This function is called by Event::transition() immediately before
+   * transitioning \p evt.  If the transition can go on, the function
+   * returns \c true.  Otherwise, if the transition must be cancelled, e.g.,
+   * due to some error, the function returns false.
+   *
+   * @param evt Event to be transitioned.
+   * @param transition The desired transition.
+   * @return \c true if successful, or \c false otherwise (cancel
+   * transition).
+   */
   virtual bool beforeTransition (Event *, Event::Transition) = 0;
+
+  /**
+   * @brief Finishes event transition.
+   *
+   * This function is called by Event::transition() immediately after
+   * transitioning \p evt.  If the transition can finish successfully, the
+   * function returns \c true.  Otherwise, if the transition must be
+   * reverted, e.g., due to some error, the function returns false.
+   *
+   * @param evt Event that was transitioned.
+   * @param transition The transition.
+   * @return \c true if successful, or \c false otherwise (cancel
+   * transition).
+   */
   virtual bool afterTransition (Event *, Event::Transition) = 0;
 
-  bool getData (const string &, void **);
-  bool setData (const string &, void *, UserDataCleanFunc fn=nullptr);
-
 protected:
-  string _id;                                           // id
-  Document *_doc;                                       // parent document
-  Composition *_parent;                                 // parent object
-  list<string> _aliases;                                // aliases
-  Time _time;                                           // playback time
-  map<string, string> _properties;                      // property map
-  Event *_lambda;                                       // lambda event
-  set<Event *> _events;                                 // all events
-  list<pair<Action, Time>> _delayed;                    // delayed actions
-  UserData _udata;                                      // user data
+  string _id;                         // id
+  Document *_doc;                     // parent document
+  Composition *_parent;               // parent object
+  list<string> _aliases;              // aliases
+  Time _time;                         // playback time
+  map<string, string> _properties;    // property map
+  Event *_lambda;                     // lambda event
+  set<Event *> _events;               // all events
+  list<pair<Action, Time> > _delayed; // delayed actions
 
   virtual void doStart ();
   virtual void doStop ();

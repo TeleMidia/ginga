@@ -15,13 +15,12 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include "aux-ginga.h"
-#include "ginga.h"
+#include "tests.h"
 
 int
 main (void)
 {
-  Ginga *ginga = Ginga::create (0, nullptr, nullptr);
+  Ginga *ginga = Ginga::create (nullptr);
   g_assert_nonnull (ginga);
   g_assert (ginga->getOptionInt ("width") == 800);
   g_assert (ginga->getOptionInt ("height") == 600);

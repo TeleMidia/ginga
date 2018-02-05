@@ -24,26 +24,26 @@ GINGA_NAMESPACE_BEGIN
 
 class Predicate
 {
- public:
+public:
   enum Type
-    {
-     FALSUM = 0,                // false
-     VERUM,                     // true
-     ATOM,
-     NEGATION,
-     CONJUNCTION,
-     DISJUNCTION,
-    };
+  {
+    FALSUM = 0, // false
+    VERUM,      // true
+    ATOM,
+    NEGATION,
+    CONJUNCTION,
+    DISJUNCTION,
+  };
 
   enum Test
-    {
-     EQ = 0,                    // ==
-     NE,                        // !=
-     LT,                        // <
-     LE,                        // <=
-     GT,                        // >
-     GE                         // >=
-    };
+  {
+    EQ = 0, // ==
+    NE,     // !=
+    LT,     // <
+    LE,     // <=
+    GT,     // >
+    GE      // >=
+  };
 
   Predicate (Predicate::Type);
   ~Predicate ();

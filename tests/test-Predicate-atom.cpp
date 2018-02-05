@@ -15,19 +15,19 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include "Predicate.h"
+#include "tests.h"
 
-#define CHECK_TEST(pred, exp_left, exp_test, exp_right) \
-  G_STMT_START                                          \
-  {                                                     \
-    Predicate::Test test;                               \
-    string left;                                        \
-    string right;                                       \
-    (pred)->getTest (&left, &test, &right);             \
-    g_assert (left == (exp_left));                      \
-    g_assert (test == (exp_test));                      \
-    g_assert (right == (exp_right));                    \
-  }                                                     \
+#define CHECK_TEST(pred, exp_left, exp_test, exp_right)                    \
+  G_STMT_START                                                             \
+  {                                                                        \
+    Predicate::Test test;                                                  \
+    string left;                                                           \
+    string right;                                                          \
+    (pred)->getTest (&left, &test, &right);                                \
+    g_assert (left == (exp_left));                                         \
+    g_assert (test == (exp_test));                                         \
+    g_assert (right == (exp_right));                                       \
+  }                                                                        \
   G_STMT_END
 
 int

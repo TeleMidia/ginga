@@ -22,10 +22,10 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-class PlayerImage: public Player
+class PlayerImage : public Player
 {
 public:
-  PlayerImage (Formatter *, Media *, const string &);
+  PlayerImage (Formatter *, Media *);
   ~PlayerImage ();
   void reload () override;
 };

@@ -27,6 +27,8 @@
 .libs
 .patch_number
 /INSTALL
+/TODO
+/ChangeLog
 /README
 /Makefile
 /Makefile.in

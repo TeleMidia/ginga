@@ -15,13 +15,12 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include "aux-ginga.h"
+#include "tests.h"
 
 int
 main (void)
 {
-  g_assert (xpathdirname ("this/is/a/directory/")
-            == "this/is/a/directory");
+  g_assert (xpathdirname ("this/is/a/directory/") == "this/is/a/directory");
   g_assert (xpathdirname ("this/is/ not a/directory/")
             == "this/is/ not a/directory");
   g_assert (xpathdirname ("./") == ".");

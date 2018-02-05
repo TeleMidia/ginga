@@ -15,23 +15,21 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include "aux-ginga.h"
-#include "ginga.h"
+#include "tests.h"
 
 int
 main (void)
 {
   const GingaOptions *out;
-  GingaOptions opts =
-    {
-     10,                        // width
-     20,                        // height
-     false,                     // debug
-     false,                     // experimental
-     false,                     // opengl
-     "green",                   // background
-    };
-  Ginga *ginga = Ginga::create (0, nullptr, &opts);
+  GingaOptions opts = {
+    10,      // width
+    20,      // height
+    false,   // debug
+    false,   // experimental
+    false,   // opengl
+    "green", // background
+  };
+  Ginga *ginga = Ginga::create (&opts);
   g_assert_nonnull (ginga);
 
   out = ginga->getOptions ();

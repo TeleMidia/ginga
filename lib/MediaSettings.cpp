@@ -23,14 +23,13 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-
 // Public.
 
-MediaSettings::MediaSettings (const string &id)
-  :Media (id, "application/x-ginga-settings", "")
+MediaSettings::MediaSettings (const string &id) : Media (id)
 {
   _nextFocus = "";
   _hasNextFocus = false;
+  _properties["type"] = "application/x-ginga-settings";
   this->addAttributionEvent ("service.currentFocus");
 }
 
@@ -38,7 +37,6 @@ MediaSettings::~MediaSettings ()
 {
 }
 
-
 // Public: Object.
 
 string
@@ -59,7 +57,7 @@ MediaSettings::setProperty (const string &name, const string &value,
 void
 MediaSettings::sendTick (Time total, Time diff, Time frame)
 {
-  if (_hasNextFocus)            // effectuate pending focus index update
+  if (_hasNextFocus) // effectuate pending focus index update
     {
       this->updateCurrentFocus (_nextFocus);
       _hasNextFocus = false;
@@ -67,7 +65,6 @@ MediaSettings::sendTick (Time total, Time diff, Time frame)
   Media::sendTick (total, diff, frame);
 }
 
-
 // Public: Media.
 
 bool
@@ -76,18 +73,15 @@ MediaSettings::isFocused ()
   return false;
 }
 
-bool
-MediaSettings::getZ (unused (int *z), unused (int *zorder))
+bool MediaSettings::getZ (unused (int *z), unused (int *zorder))
 {
   return false;
 }
 
-void
-MediaSettings::redraw (unused (cairo_t *cr))
+void MediaSettings::redraw (unused (cairo_t *cr))
 {
 }
 
-
 // Public.
 
 void
@@ -102,7 +96,7 @@ MediaSettings::updateCurrentFocus (const string &index)
     }
   else
     {
-      for (auto media: *_doc->getMedias ())
+      for (auto media : *_doc->getMedias ())
         {
           if (media->isOccurring ()
               && (i = media->getProperty ("focusIndex")) != ""

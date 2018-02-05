@@ -15,27 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include "Event.h"
-#include "Context.h"
-#include "Media.h"
-#include "Parser.h"
-
-#define PARSE_AND_START(fmt, doc, str)                                     \
-  G_STMT_START                                                             \
-  {                                                                        \
-    string buf = str;                                                      \
-    string errmsg;                                                         \
-    *fmt = new Formatter (0, nullptr, nullptr);                            \
-    g_assert_nonnull (*fmt);                                               \
-    if (!(*fmt)->start (buf.c_str (), buf.length (), &errmsg))             \
-      {                                                                    \
-        g_printerr ("*** Unexpected error: %s", errmsg.c_str ());          \
-        g_assert_not_reached ();                                           \
-      }                                                                    \
-    *doc = (*fmt)->getDocument ();                                         \
-    g_assert_nonnull (*doc);                                               \
-  }                                                                        \
-  G_STMT_END
+#include "tests.h"
 
 int
 main (void)
@@ -46,7 +26,7 @@ main (void)
   {
     Formatter *fmt;
     Document *doc;
-    PARSE_AND_START (&fmt, &doc, "\
+    tests_parse_and_start (&fmt, &doc, "\
 <ncl>\n\
  <body>\n\
   <media id='m'>\n\
@@ -58,7 +38,7 @@ main (void)
 </ncl>");
 
     // Check lambda
-    Context *c = cast (Context *, doc->getRoot());
+    Context *c = cast (Context *, doc->getRoot ());
     g_assert_nonnull (c);
 
     Event *lambda = c->getLambda ();
@@ -124,7 +104,7 @@ main (void)
   {
     Formatter *fmt;
     Document *doc;
-    PARSE_AND_START (&fmt, &doc, "\
+    tests_parse_and_start (&fmt, &doc, "\
 <ncl>\n\
  <body>\n\
   <media id='m'>\n\
@@ -136,7 +116,7 @@ main (void)
 </ncl>");
 
     // Check lambda
-    Context *c = cast (Context *, doc->getRoot());
+    Context *c = cast (Context *, doc->getRoot ());
     g_assert_nonnull (c);
 
     Event *lambda = c->getLambda ();
@@ -213,7 +193,7 @@ main (void)
   {
     Formatter *fmt;
     Document *doc;
-    PARSE_AND_START (&fmt, &doc, "\
+    tests_parse_and_start (&fmt, &doc, "\
 <ncl>\n\
  <body>\n\
   <media id='m'>\n\
@@ -225,7 +205,7 @@ main (void)
 </ncl>");
 
     // Check lambda
-    Context *c = cast (Context *, doc->getRoot());
+    Context *c = cast (Context *, doc->getRoot ());
     g_assert_nonnull (c);
 
     Event *lambda = c->getLambda ();

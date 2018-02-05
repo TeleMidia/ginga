@@ -24,93 +24,12 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Event.h"
 #include "Player.h"
 
-#include "ncl/Ncl.h"
-
 GINGA_NAMESPACE_BEGIN
 
-static map<string, string> mime_table =
-{
-  {"ac3", "audio/ac3"},
-  {"avi", "video/x-msvideo"},
-  {"bmp", "image/bmp"},
-  {"bpg", "image/x-bpg"},
-  {"class", "application/x-ginga-NCLet"},
-  {"css", "text/css"},
-  {"gif", "image/gif"},
-  {"htm", "text/html"},
-  {"html", "text/html"},
-  {"jpeg", "image/jpeg"},
-  {"jpg", "image/jpeg"},
-  {"lua", "application/x-ginga-NCLua"},
-  {"mov", "video/quicktime"},
-  {"mp2", "audio/mp2"},
-  {"mp3", "audio/mp3"},
-  {"mp4", "video/mp4"},
-  {"mpa", "audio/mpa"},
-  {"mpeg", "video/mpeg"},
-  {"mpg", "video/mpeg"},
-  {"mpv", "video/mpv"},
-  {"ncl", "application/x-ginga-ncl"},
-  {"oga", "audio/ogg"},
-  {"ogg", "audio/ogg"},
-  {"ogv", "video/ogg"},
-  {"opus", "audio/ogg"},
-  {"png", "image/png"},
-  {"smil", "application/smil"},
-  {"spx", "audio/ogg"},
-  {"srt", "text/srt"},
-  {"ssml", "application/ssml+xml"},
-  {"svg", "image/svg+xml"},
-  {"svgz", "image/svg+xml"},
-  {"ts", "video/mpeg"},
-  {"txt", "text/plain"},
-  {"wav", "audio/basic"},
-  {"webp", "image/x-webp"},
-  {"wmv", "video/x-ms-wmv"},
-  {"xlet", "application/x-ginga-NCLet"},
-  {"xlt", "application/x-ginga-NCLet"},
-  {"xml", "text/xml"},
-};
-
-static bool
-mime_table_index (const string &key, string *result)
-{
-  map<string, string>::iterator it;
-  if ((it = mime_table.find (key)) == mime_table.end ())
-    return false;
-  tryset (result, it->second);
-  return true;
-}
-
-
 // Public.
 
-Media::Media (const string &id, const string &mime, const string &uri)
-  :Object (id)
+Media::Media (const string &id) : Object (id)
 {
-  _mime = mime;
-  _uri = uri;
-
-  if (_mime == "" && _uri != "")
-    {
-      string::size_type index, len;
-      index = _uri.find_last_of (".");
-      if (index != std::string::npos)
-        {
-          index++;
-          len = _uri.length ();
-          if (index < len)
-            {
-              string extension = _uri.substr (index, (len - index));
-              if (extension != "")
-                mime_table_index (extension, &_mime);
-            }
-        }
-    }
-
-  if (_mime == "")
-    _mime = "application/x-ginga-timer";
-
   _player = nullptr;
 }
 
@@ -119,7 +38,6 @@ Media::~Media ()
   this->doStop ();
 }
 
-
 // Public: Object.
 
 string
@@ -132,12 +50,16 @@ string
 Media::toString ()
 {
   string str;
+  string type;
+  string uri;
 
   str = Object::toString ();
-  if (_mime != "")
-    str += "  mime: " + _mime + "\n";
-  if (_uri != "")
-    str += "  uri: " + _uri + "\n";
+  type = _properties["type"];
+  if (type != "")
+    str += "  type: " + type + "\n";
+  uri = _properties["uri"];
+  if (uri != "")
+    str += "  uri: " + uri + "\n";
   str += xstrbuild ("  player: %p\n", _player);
 
   return str;
@@ -164,10 +86,10 @@ Media::sendKey (const string &key, bool press)
   list<Event *> buf;
 
   if (unlikely (this->isSleeping ()))
-    return;                     // nothing to do
+    return; // nothing to do
 
   if (_player == nullptr)
-    return;                     // nothing to do
+    return; // nothing to do
 
   if (press && xstrhasprefix (key, "CURSOR_") && _player->isFocused ())
     {
@@ -193,7 +115,7 @@ Media::sendKey (const string &key, bool press)
     _player->sendKeyEvent (key, press);
 
   // Collect the events to be triggered.
-  for (auto evt: _events)
+  for (auto evt : _events)
     {
       string expected;
 
@@ -211,7 +133,7 @@ Media::sendKey (const string &key, bool press)
     }
 
   // Run collected events.
-  for (Event *evt: buf)
+  for (Event *evt : buf)
     _doc->evalAction (evt, press ? Event::START : Event::STOP);
 }
 
@@ -224,7 +146,7 @@ Media::sendTick (Time total, Time diff, Time frame)
   Object::sendTick (total, diff, frame);
 
   if (_player == nullptr)
-    return;                     // nothing to do.
+    return; // nothing to do.
 
   // Update player time.
   g_assert_nonnull (_player);
@@ -244,18 +166,6 @@ Media::sendTick (Time total, Time diff, Time frame)
     }
 }
 
-/**
- * @brief Initiates event transition.
- *
- * This function is called by Event::transition() immediately before
- * transitioning \p evt.  If the transition can go on, the function returns
- * \c true.  Otherwise, if the transition must be cancelled, e.g., due to
- * some error, the function returns false.
- *
- * @param evt Event to be transitioned.
- * @param transition The desired transition.
- * @return \c true if successful, or \c false otherwise (cancel transition).
- */
 bool
 Media::beforeTransition (Event *evt, Event::Transition transition)
 {
@@ -268,86 +178,89 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
           {
             // Create underlying player.
             if (evt->getState () == Event::SLEEPING)
-            {
-              if (evt->isLambda ())
-              {//Lambda
-                Formatter *fmt;
+              {
+                if (evt->isLambda ())
+                  { // Lambda
+                    Formatter *fmt;
 
-                g_assert (_doc->getData ("formatter", (void **) &fmt));
-                g_assert_null (_player);
-                _player = Player::createPlayer (fmt, this, _uri, _mime);
-                if (unlikely (_player == nullptr))
-                  return false; // fail
+                    g_assert (_doc->getData ("formatter", (void **) &fmt));
+                    g_assert_null (_player);
+                    _player = Player::createPlayer (
+                        fmt, this, _properties["uri"], _properties["type"]);
+                    if (unlikely (_player == nullptr))
+                      return false; // fail
 
-                for (auto it: _properties)
-                  _player->setProperty (it.first, it.second);
+                    for (auto it : _properties)
+                      _player->setProperty (it.first, it.second);
 
-                g_assert_nonnull (_player);
-                // Start underlying player.
-                // TODO: Check player failure.
-                _player->start (); //Just lambda events reaches this!
-              }
-              else
-              {//Anchor
-                Event *lambda = getPresentationEvent ("@lambda");
-                if (lambda->getState () != Event::SLEEPING)
-                  break;
-
-                lambda->transition (Event::START);
-
-                Time begin, end, dur;
-                evt->getInterval (&begin, &end);
-
-                //Begin
-                if (begin == GINGA_TIME_NONE)
-                  begin = 0;
-
-                string time_seek = xstrbuild ("%" G_GUINT64_FORMAT,
-                                              begin/GINGA_SECOND);
-                TRACE ("time_seek %ss", time_seek.c_str());
-                _player->setProperty ("time", time_seek);
-
-                //End
-                if (end != GINGA_TIME_NONE)
-                {
-                  dur = end - begin;
-                  string time_end = xstrbuild ("%" G_GUINT64_FORMAT,
-                                               dur/GINGA_SECOND);
-                  TRACE ("time_end in %ss", time_end.c_str());
-                  _player->setProperty ("duration", time_end);
-                  this->addDelayedAction (evt, Event::STOP, "", end);
-                }
-
-                TRACE ("start %s (begin=%" GINGA_TIME_FORMAT
-                       " and end=%" GINGA_TIME_FORMAT
-                       ") at %" GINGA_TIME_FORMAT,
-                       evt->getFullId ().c_str (),
-                       GINGA_TIME_ARGS (begin), GINGA_TIME_ARGS (end),
-                       GINGA_TIME_ARGS (_time));
-
-                //remove events of anchors that happens before or after anchor started.
-                for (auto it = _delayed.begin (); it != _delayed.end ();)
-                {
-                  if (it->second == GINGA_TIME_NONE ||
-                      it->second < begin ||
-                      (end != GINGA_TIME_NONE && it->second > end))
-                  {
-                    Action act = it->first;
-                    Event *evt = act.event;
-                    if (act.transition == Event::START)
-                      evt->transition (act.transition);
-                    it = _delayed.erase (it);
+                    g_assert_nonnull (_player);
+                    // Start underlying player.
+                    // TODO: Check player failure.
+                    _player->start (); // Just lambda events reaches this!
                   }
-                  else if (it->second >= begin)
-                  {
-                    it->second = it->second - begin;
-                    ++it;
+                else
+                  { // Anchor
+                    Event *lambda = getPresentationEvent ("@lambda");
+                    if (lambda->getState () != Event::SLEEPING)
+                      break;
+
+                    lambda->transition (Event::START);
+
+                    Time begin, end, dur;
+                    evt->getInterval (&begin, &end);
+
+                    // Begin
+                    if (begin == GINGA_TIME_NONE)
+                      begin = 0;
+
+                    string time_seek = xstrbuild ("%" G_GUINT64_FORMAT,
+                                                  begin / GINGA_SECOND);
+                    TRACE ("time_seek %ss", time_seek.c_str ());
+                    _player->setProperty ("time", time_seek);
+
+                    // End
+                    if (end != GINGA_TIME_NONE)
+                      {
+                        dur = end - begin;
+                        string time_end = xstrbuild ("%" G_GUINT64_FORMAT,
+                                                     dur / GINGA_SECOND);
+                        TRACE ("time_end in %ss", time_end.c_str ());
+                        _player->setProperty ("duration", time_end);
+                        this->addDelayedAction (evt, Event::STOP, "", end);
+                      }
+
+                    TRACE ("start %s (begin=%" GINGA_TIME_FORMAT
+                           " and end=%" GINGA_TIME_FORMAT
+                           ") at %" GINGA_TIME_FORMAT,
+                           evt->getFullId ().c_str (),
+                           GINGA_TIME_ARGS (begin), GINGA_TIME_ARGS (end),
+                           GINGA_TIME_ARGS (_time));
+
+                    // remove events of anchors that happens before or after
+                    // anchor started.
+                    for (auto it = _delayed.begin ();
+                         it != _delayed.end ();)
+                      {
+                        if (it->second == GINGA_TIME_NONE
+                            || it->second < begin
+                            || (end != GINGA_TIME_NONE && it->second > end))
+                          {
+                            Action act = it->first;
+                            Event *evt = act.event;
+                            if (act.transition == Event::START)
+                              evt->transition (act.transition);
+                            it = _delayed.erase (it);
+                          }
+                        else if (it->second >= begin)
+                          {
+                            it->second = it->second - begin;
+                            ++it;
+                          }
+                        else
+                          ++it;
+                      }
                   }
-                  else
-                    ++it;
-                }
               }
-            }
             break;
           }
 
@@ -355,10 +268,10 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
         case Event::RESUME:
           {
             if (!evt->isLambda ())
-              break;            // nothing to do
+              break; // nothing to do
 
             // Pause/resume all the media anchors.
-            for (auto e: _events)
+            for (auto e : _events)
               if (!e->isLambda () && e->getType () == Event::PRESENTATION)
                 _doc->evalAction (e, transition);
 
@@ -372,10 +285,10 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
           }
 
         case Event::STOP:
-          break;                // nothing to do
+          break; // nothing to do
 
         case Event::ABORT:
-          break;                // nothing to do
+          break; // nothing to do
 
         default:
           g_assert_not_reached ();
@@ -383,10 +296,10 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
       break;
 
     case Event::ATTRIBUTION:
-      break;                    // nothing to do
+      break; // nothing to do
 
     case Event::SELECTION:
-      break;                    // nothing to do
+      break; // nothing to do
 
     default:
       g_assert_not_reached ();
@@ -394,18 +307,6 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
   return true;
 }
 
-/**
- * @brief Finishes event transition.
- *
- * This function is called by Event::transition() immediately after
- * transitioning \p evt.  If the transition can finish successfully, the
- * function returns \c true.  Otherwise, if the transition must be reverted,
- * e.g., due to some error, the function returns false.
- *
- * @param evt Event that was transitioned.
- * @param transition The transition.
- * @return \c true if successful, or \c false otherwise (cancel transition).
- */
 bool
 Media::afterTransition (Event *evt, Event::Transition transition)
 {
@@ -422,35 +323,33 @@ Media::afterTransition (Event *evt, Event::Transition transition)
               Object::doStart ();
 
               // Schedule anchors.
-              for (Event *e: _events)
+              for (Event *e : _events)
                 {
                   if (!e->isLambda ()
                       && (e->getType () == Event::PRESENTATION)
-                      && !(e->hasLabel()))
+                      && !(e->hasLabel ()))
                     {
                       Time begin, end;
                       e->getInterval (&begin, &end);
-                      this->addDelayedAction
-                        (e, Event::START, "", begin);
-                      this->addDelayedAction
-                        (e, Event::STOP, "", end);
+                      this->addDelayedAction (e, Event::START, "", begin);
+                      this->addDelayedAction (e, Event::STOP, "", end);
                     }
                 }
               TRACE ("start %s", evt->getFullId ().c_str ());
             }
           else if (evt->hasLabel ())
             {
-              _player->sendPresentationEvent ("start", evt->getLabel());
+              _player->sendPresentationEvent ("start", evt->getLabel ());
             }
           break;
 
         case Event::PAUSE:
           TRACE ("pause %s", evt->getFullId ().c_str ());
-          break;              // nothing to do
+          break; // nothing to do
 
         case Event::RESUME:
           TRACE ("resume %s", evt->getFullId ().c_str ());
-          break;              // nothing to do
+          break; // nothing to do
 
         case Event::STOP:
         case Event::ABORT:
@@ -466,9 +365,9 @@ Media::afterTransition (Event *evt, Event::Transition transition)
             }
           else if (evt->getLabel () != "")
             {
-              _player->sendPresentationEvent ("stop", evt->getLabel());
+              _player->sendPresentationEvent ("stop", evt->getLabel ());
             }
-          else                  // non-lambda area
+          else // non-lambda area
             {
               Time end;
               g_assert (this->isOccurring ());
@@ -476,13 +375,13 @@ Media::afterTransition (Event *evt, Event::Transition transition)
               if (transition == Event::ABORT)
                 TRACE ("abort %s (end=%" GINGA_TIME_FORMAT
                        ") at %" GINGA_TIME_FORMAT,
-                       evt->getFullId ().c_str (),
-                       GINGA_TIME_ARGS (end), GINGA_TIME_ARGS (_time));
+                       evt->getFullId ().c_str (), GINGA_TIME_ARGS (end),
+                       GINGA_TIME_ARGS (_time));
               else
                 TRACE ("stop %s (end=%" GINGA_TIME_FORMAT
                        ") at %" GINGA_TIME_FORMAT,
-                       evt->getFullId ().c_str (),
-                       GINGA_TIME_ARGS (end), GINGA_TIME_ARGS (_time));
+                       evt->getFullId ().c_str (), GINGA_TIME_ARGS (end),
+                       GINGA_TIME_ARGS (_time));
             }
           break;
 
@@ -552,7 +451,6 @@ Media::afterTransition (Event *evt, Event::Transition transition)
   return true;
 }
 
-
 // Public.
 
 bool
@@ -568,9 +466,8 @@ bool
 Media::getZ (int *z, int *zorder)
 {
   if (this->isSleeping () || _player == nullptr)
-    return false;               // nothing to do
+    return false; // nothing to do
   g_assert_nonnull (_player);
-  z = zorder = 0;
   _player->getZ (z, zorder);
   return true;
 }
@@ -579,11 +476,10 @@ void
 Media::redraw (cairo_t *cr)
 {
   if (this->isSleeping () || _player == nullptr)
-    return;                     // nothing to do
+    return; // nothing to do
   _player->redraw (cr);
 }
 
-
 // Protected.
 
 void
@@ -592,7 +488,7 @@ Media::doStop ()
   if (_player == nullptr)
     {
       g_assert (this->isSleeping ());
-      return;                   // nothing to do
+      return; // nothing to do
     }
 
   if (_player->getState () != Player::SLEEPING)
