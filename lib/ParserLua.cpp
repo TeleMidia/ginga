@@ -214,11 +214,7 @@ l_parse_context (lua_State *L)
   lua_rawgeti (L, 3, 2);
   id = luaL_checkstring (L, -1);
 
-<<<<<<< HEAD
   if (parent == NULL)        // root
-=======
-  if (parent == nullptr) // root
->>>>>>> 2bf9f7ff396505956cc60df2c01e971b3fa716f7
     {
       Context *root = doc->getRoot ();
       root->addAlias (string (id));
