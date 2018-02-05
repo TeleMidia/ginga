@@ -145,7 +145,7 @@ info@telemidia.puc-rio.br.
 
 ## Development
 
-  * <a href="https://www.telemidia.puc-rio.br/~gflima/misc/ginga">
+  * <a href="http://www.telemidia.puc-rio.br/~gflima/misc/ginga">
     Read the API documentation</a>.
 
   * <a href="https://github.com/TeleMidia/ginga/issues">
