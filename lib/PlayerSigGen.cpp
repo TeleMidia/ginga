@@ -20,42 +20,33 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "PlayerSigGen.h"
 #include <string.h>
 
-GINGA_PRAGMA_DIAG_IGNORE (-Wunused-variable)
-
 GINGA_NAMESPACE_BEGIN
 
-#define gstx_element_get_state(elt, st, pend, tout)             \
-  g_assert (gst_element_get_state ((elt), (st), (pend), (tout)) \
+#define gstx_element_get_state(elt, st, pend, tout)                        \
+  g_assert (gst_element_get_state ((elt), (st), (pend), (tout))            \
             != GST_STATE_CHANGE_FAILURE)
 
-#define gstx_element_get_state_sync(elt, st, pend)\
+#define gstx_element_get_state_sync(elt, st, pend)                         \
   gstx_element_get_state ((elt), (st), (pend), GST_CLOCK_TIME_NONE)
 
-#define gstx_element_set_state(elt, st)         \
-  g_assert (gst_element_set_state ((elt), (st)) \
-            != GST_STATE_CHANGE_FAILURE)
+#define gstx_element_set_state(elt, st)                                    \
+  g_assert (gst_element_set_state ((elt), (st)) != GST_STATE_CHANGE_FAILURE)
 
-#define gstx_element_set_state_sync(elt, st)                    \
-  G_STMT_START                                                  \
-  {                                                             \
-    gstx_element_set_state ((elt), (st));                       \
-    gstx_element_get_state_sync ((elt), nullptr, nullptr);      \
-  }                                                             \
+#define gstx_element_set_state_sync(elt, st)                               \
+  G_STMT_START                                                             \
+  {                                                                        \
+    gstx_element_set_state ((elt), (st));                                  \
+    gstx_element_get_state_sync ((elt), nullptr, nullptr);                 \
+  }                                                                        \
   G_STMT_END
 
-
 // Public.
 
-PlayerSigGen::PlayerSigGen (Formatter *formatter, Media *media,
-                            const string &uri)
-  :Player (formatter, media, uri)
+PlayerSigGen::PlayerSigGen (Formatter *formatter, Media *media)
+    : Player (formatter, media)
 {
   GstBus *bus;
   gulong ret;
-  char *buf;
-
-  GstPad *pad;
-  GstPad *ghost;
 
   _pipeline = nullptr;
   _audio.src = nullptr;
@@ -91,8 +82,8 @@ PlayerSigGen::PlayerSigGen (Formatter *formatter, Media *media,
   // Setup audio pipeline.
   _audio.src = gst_element_factory_make ("audiotestsrc", "audio.src");
   g_assert_nonnull (_audio.src);
-  _audio.convert = gst_element_factory_make ("audioconvert",
-                                             "audioconvert");
+  _audio.convert
+      = gst_element_factory_make ("audioconvert", "audioconvert");
   g_assert_nonnull (_audio.convert);
   _audio.tee = gst_element_factory_make ("tee", "teesplit");
   g_assert_nonnull (_audio.tee);
@@ -103,23 +94,22 @@ PlayerSigGen::PlayerSigGen (Formatter *formatter, Media *media,
   // Try to use ALSA if available.
   _audio.audioSink = gst_element_factory_make ("alsasink", "audio.sink");
   if (_audio.audioSink == nullptr)
-    _audio.audioSink = gst_element_factory_make ("autoaudiosink",
-                                                 "audio.sink");
+    _audio.audioSink
+        = gst_element_factory_make ("autoaudiosink", "audio.sink");
   g_assert_nonnull (_audio.audioSink);
 
   // Video thread
   _audio.videoQueue = gst_element_factory_make ("queue", "videoqueue");
   g_assert_nonnull (_audio.videoQueue);
-  _audio.videoScope = gst_element_factory_make ("spectrascope",
-                                                "scope");
+  _audio.videoScope = gst_element_factory_make ("spectrascope", "scope");
   g_assert_nonnull (_audio.videoScope);
-  _audio.videoConvert = gst_element_factory_make ("videoconvert",
-                                                  "videoconvert");
+  _audio.videoConvert
+      = gst_element_factory_make ("videoconvert", "videoconvert");
   g_assert_nonnull (_audio.videoConvert);
-  _audio.videoSink = gst_element_factory_make ("appsink","videosink");
+  _audio.videoSink = gst_element_factory_make ("appsink", "videosink");
   g_assert_nonnull (_audio.videoSink);
-  g_object_set (_audio.videoSink,"max-buffers", 100, "drop", true, nullptr);
-
+  g_object_set (_audio.videoSink, "max-buffers", 100, "drop", true,
+                nullptr);
 
   // Pipeline add
   g_assert (gst_bin_add (GST_BIN (_pipeline), _audio.src));
@@ -145,48 +135,48 @@ PlayerSigGen::PlayerSigGen (Formatter *formatter, Media *media,
   g_assert (gst_element_link (_audio.videoConvert, _audio.videoSink));
 
   // Audio pad linking
-  _audio.teeAudioPad = gst_element_get_request_pad(_audio.tee, "src_%u");
+  _audio.teeAudioPad = gst_element_get_request_pad (_audio.tee, "src_%u");
   g_assert_nonnull (_audio.teeAudioPad);
-  _audio.queueAudioPad = gst_element_get_static_pad(_audio.audioQueue,
-                                                    "sink");
+  _audio.queueAudioPad
+      = gst_element_get_static_pad (_audio.audioQueue, "sink");
   g_assert_nonnull (_audio.queueAudioPad);
 
-  if(gst_pad_link(_audio.teeAudioPad, _audio.queueAudioPad)
-                                                      != GST_PAD_LINK_OK){
-    ERROR("Tee and audio queue not linked");
-  }
+  if (gst_pad_link (_audio.teeAudioPad, _audio.queueAudioPad)
+      != GST_PAD_LINK_OK)
+    {
+      ERROR ("Tee and audio queue not linked");
+    }
 
   // Video pad linking
-  _audio.teeVideoPad = gst_element_get_request_pad(_audio.tee, "src_%u");
+  _audio.teeVideoPad = gst_element_get_request_pad (_audio.tee, "src_%u");
   g_assert_nonnull (_audio.teeVideoPad);
-  _audio.queueVideoPad = gst_element_get_static_pad(_audio.videoQueue,
-                                                    "sink");
+  _audio.queueVideoPad
+      = gst_element_get_static_pad (_audio.videoQueue, "sink");
   g_assert_nonnull (_audio.queueVideoPad);
 
-  if(gst_pad_link(_audio.teeVideoPad, _audio.queueVideoPad)
-                                                      != GST_PAD_LINK_OK){
-    ERROR("Tee and video queue not linked");
-  }
+  if (gst_pad_link (_audio.teeVideoPad, _audio.queueVideoPad)
+      != GST_PAD_LINK_OK)
+    {
+      ERROR ("Tee and video queue not linked");
+    }
 
-  gst_object_unref(_audio.queueAudioPad);
-  gst_object_unref(_audio.queueVideoPad);
+  gst_object_unref (_audio.queueAudioPad);
+  gst_object_unref (_audio.queueVideoPad);
 
   // Callbacks.
   _callbacks.eos = nullptr;
   _callbacks.new_preroll = nullptr;
   _callbacks.new_sample = cb_NewSample;
-  gst_app_sink_set_callbacks (GST_APP_SINK (_audio.videoSink),
-                              &_callbacks, this, nullptr);
+  gst_app_sink_set_callbacks (GST_APP_SINK (_audio.videoSink), &_callbacks,
+                              this, nullptr);
 
   // Initialize handled properties.
-  static set<string> handled =
-    {
-     "freq",
-     "wave",
-     "volume",
-    };
+  static set<string> handled = {
+    "freq",
+    "wave",
+    "volume",
+  };
   this->resetProperties (&handled);
-
 }
 
 PlayerSigGen::~PlayerSigGen ()
@@ -213,11 +203,8 @@ PlayerSigGen::start ()
   g_atomic_int_set (&_sample_flag, 0);
 
   // Initialize properties.
-  g_object_set (_audio.src,
-                "freq", _prop.freq,
-                "wave", _prop.wave,
-                "volume", _prop.volume,
-                nullptr);
+  g_object_set (_audio.src, "freq", _prop.freq, "wave", _prop.wave,
+                "volume", _prop.volume, nullptr);
 
   ret = gst_element_set_state (_pipeline, GST_STATE_PLAYING);
   if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
@@ -314,90 +301,82 @@ PlayerSigGen::redraw (cairo_t *cr)
       if (_surface != nullptr)
         cairo_surface_destroy (_surface);
 
-      _surface = cairo_image_surface_create_for_data
-        (pixels, CAIRO_FORMAT_ARGB32, width, height, stride);
+      _surface = cairo_image_surface_create_for_data (
+          pixels, CAIRO_FORMAT_ARGB32, width, height, stride);
       g_assert_nonnull (_surface);
       gst_video_frame_unmap (&v_frame);
-      status = cairo_surface_set_user_data
-          (_surface, &key, (void *) sample,
-           (cairo_destroy_func_t) gst_sample_unref);
+      status = cairo_surface_set_user_data (
+          _surface, &key, (void *) sample,
+          (cairo_destroy_func_t) gst_sample_unref);
       g_assert (status == CAIRO_STATUS_SUCCESS);
     }
 
- done:
+done:
   Player::redraw (cr);
 }
 
-
 // Protected.
 
 bool
-PlayerSigGen::doSetProperty (PlayerProperty code,
-                            unused (const string &name),
-                            const string &value)
+PlayerSigGen::doSetProperty (Property code, unused (const string &name),
+                             const string &value)
 {
- 
+
   switch (code)
     {
-      case PROP_FREQ:
-        _prop.freq = xstrtodorpercent (value, nullptr);
-        if (_state != SLEEPING)
-          g_object_set (_audio.src,
-                        "freq", _prop.freq,
-                        nullptr);
-        break;
-      case PROP_WAVE:
-        TRACE("Changed wave");
-        TRACE("Evaluation: %s", value.c_str());
-      
-        if (value == "sine")
-          _prop.wave = 0;
-        else if (value == "square")
-          _prop.wave = 1;
-        else if (value == "saw")
-          _prop.wave = 2;
-        else if (value == "triangle")
-          _prop.wave = 3;
-        else if (value == "silence")
-          _prop.wave = 4;
-        else if (value == "white-noise")
-          _prop.wave = 5;
-        else if (value == "pink-noise")
-          _prop.wave = 6;
-        else if (value == "sine-table")
-          _prop.wave = 7;
-        else if (value == "ticks")
-          _prop.wave = 8;
-        else if (value == "gaussian-noise")
-          _prop.wave = 9;
-        else if (value == "red-noise")
-          _prop.wave = 10;
-        else if (value == "blue-noise")
-          _prop.wave = 11;
-        else if (value == "violet-noise")
-          _prop.wave = 12;
-        
-        if (_state != SLEEPING){
-          g_object_set (_audio.src,
-                        "wave", _prop.wave,
-                        nullptr);
+    case PROP_FREQ:
+      _prop.freq = xstrtodorpercent (value, nullptr);
+      if (_state != SLEEPING)
+        g_object_set (_audio.src, "freq", _prop.freq, nullptr);
+      break;
+    case PROP_WAVE:
+      TRACE ("Changed wave");
+      TRACE ("Evaluation: %s", value.c_str ());
+
+      if (value == "sine")
+        _prop.wave = 0;
+      else if (value == "square")
+        _prop.wave = 1;
+      else if (value == "saw")
+        _prop.wave = 2;
+      else if (value == "triangle")
+        _prop.wave = 3;
+      else if (value == "silence")
+        _prop.wave = 4;
+      else if (value == "white-noise")
+        _prop.wave = 5;
+      else if (value == "pink-noise")
+        _prop.wave = 6;
+      else if (value == "sine-table")
+        _prop.wave = 7;
+      else if (value == "ticks")
+        _prop.wave = 8;
+      else if (value == "gaussian-noise")
+        _prop.wave = 9;
+      else if (value == "red-noise")
+        _prop.wave = 10;
+      else if (value == "blue-noise")
+        _prop.wave = 11;
+      else if (value == "violet-noise")
+        _prop.wave = 12;
+
+      if (_state != SLEEPING)
+        {
+          g_object_set (_audio.src, "wave", _prop.wave, nullptr);
         }
-        break;
-      case PROP_VOLUME:
-        _prop.volume = xstrtodorpercent (value, nullptr);
-        TRACE("Vol: %f", _prop.volume);
-        if (_state != SLEEPING)
-          g_object_set (_audio.src,
-                        "volume", _prop.volume,
-                        nullptr);
-        break;
-      default:
-        return Player::doSetProperty (code, name, value);
+      break;
+    case PROP_VOLUME:
+      _prop.volume = xstrtodorpercent (value, nullptr);
+      TRACE ("Vol: %f", _prop.volume);
+      if (_state != SLEEPING)
+        g_object_set (_audio.src, "volume", _prop.volume, nullptr);
+      break;
+    default:
+      return Player::doSetProperty (code, name, value);
     }
   return true;
 }
 
-
 // Private: Static (GStreamer callbacks).
 
 gboolean

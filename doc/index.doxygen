@@ -1,0 +1,395 @@
+/*! \mainpage Preface and License
+
+\author Guilherme F. Lima \<gflima@telemidia.puc-rio.br\>
+<!-- Include another author: \author Foo Bar \<foo@bar\> -->
+
+# Preface
+
+%Ginga is the reference implementation of the Brazilian iTV middleware.  The
+workhorse of %Ginga is a C++ library called \e libginga.  This document
+describes the architecture of libginga and its external and internal APIs.
+
+# Documentation License
+
+Copyright (C) 2018 PUC-Rio/Laboratorio TeleMidia
+
+Permission is granted to copy, distribute and/or modify this document under
+the terms of the GNU Free Documentation License, Version 1.3 or any later
+version published by the Free Software Foundation; with no Invariant
+Sections, with no Front-Cover Texts, and with no Back-Cover Texts. A copy of
+the license is included in the "GNU Free Documentation License" file as part
+of this distribution.
+
+# Libginga APIs
+
+What we call the *external API* is the interface exposed by libginga to
+application programmers.  The external API is contained in a single header
+file, ginga.h, which is installed together with the library.
+
+What we call the *internal API* is the set of components and interfaces used
+internally by libginga.  The internal API is not exposed to application
+programmers and should only be used by programmers that want to modify
+libginga itself.
+
+## Links
+
+  - Page \ref extapi describes libginga external API.
+
+  - Page \ref intapi describes libginga architecture and its internal API.
+
+  - Page \ref devel describes the guidelines for contributing to %Ginga.
+
+<!-- ------------------------------------------------------------------- -->
+\page extapi External API
+
+# %Ginga as an NCL %Player
+
+Libginga external API is the library public interface.  It can used by
+application programmers to build iTV players that reproduce NCL files.  An
+NCL (Nested %Context Language) file is an XML file that specifies an
+interactive multimedia presentation.  For more information about %Ginga (the
+standard) and NCL (the language) see http://ginga.org.br and
+http://ncl.org.br.
+
+Along with libginga, the %Ginga distribution comes with four programs that
+use libginga external API to play NCL files:
+
+ 1. src/ginga.cpp: A <a href="https://www.gtk.org/">GTK+</a>-based
+    command-line player.
+
+ 2. src/ginga-qt.cpp: A <a href="https://www.qt.io/">Qt</a>-based
+    command-line player.
+
+ 3. src/ginga-gl.cpp: An experimental command-line player
+    based on <a href="https://www.libsdl.org/">SDL</a> and
+    <a href="https://www.opengl.org/">OpenGL</a>.
+
+ 4. src-gui/ginga-gtk.cpp: A full-fledged GUI player based on <a
+    href="https://www.gtk.org/">GTK+</a>
+
+# External API Overview
+
+Libginga external API consists of a single header file, ginga.h, containing
+the class Ginga.  A Ginga object represents an NCL player (also called \e
+formatter).  Multiple Ginga instances can coexist within the same program.
+The external API is fully reentrant.  All its methods are non-blocking and
+should be called in the same thread.  (If multiple threads are used, the
+caller must ensure that only one thread at a time executes in the same Ginga
+object.)
+
+To play an NCL file, after creating a Ginga object using Ginga::create, the
+program must call Ginga::start with the path of the file.  The Ginga::start
+call parses the given file and bootstraps the presentation.  When the call
+returns, the presentation is assumed to be at time 0.  From this point on,
+the program that is using libginga should:
+
+  1. Capture the keys pressed by the user and send them to the presentation
+     via Ginga::sendKey.
+
+  2. From time to time, advance the presentation time by sending ticks via
+     Ginga::sendTick.
+
+  3. Whenever necessary, draw the latest frame of the presentation via
+     Ginga::redraw.
+
+The program can use Ginga::stop to stop the presentation or use
+Ginga::getState to detect its natural end (some NCL presentations eventually
+terminate).  After the Ginga object is stopped, the previous presentation
+state is lost and the same object can be used to play another file.
+
+Some control options (GingaOptions) can be set on the Ginga object when it
+is created.  Most of these options can also be changed later via
+Ginga::setOption* calls.  The set options are preserved even after the
+presentation is stopped.
+
+<!-- ------------------------------------------------------------------- -->
+\page intapi Architecture and Internal API
+
+# Architecture
+
+The external API of libginga consists of the abstract class Ginga.
+Internally, the functionality exposed by the Ginga class is implemented by
+the class Formatter.  Along with Formatter, the other main components of
+libginga's internal API are the classes Parser and Document.  The diagram
+below depicts the flow of information between the external world and the
+three main classes of libginga's internal API.
+
+\image html dia-architecture.png
+
+The Formatter controls the life-cycle of the presentation.  When it receives
+a *start* (Ginga::start), it creates and uses a Parser to obtain a Document
+from the given NCL file.  After the Document is obtained, the Parser is no
+longer needed and it is destroyed by the Formatter.  (The Parser exists only
+during this brief moment; that is why it is drawn with dashed lines in the
+above diagram).
+
+The Document contains the NCL object tree derived from the NCL file.  This
+tree holds the state of the current NCL presentation.  Before returning from
+the *start* call, the Formatter bootstraps the presentation by starting the
+root (Context) of the object tree.  This action propagates through the
+object tree possibly triggering further actions and changing the state of
+the Document as a whole.  We call the process of evaluating an action over
+the Document a *reaction*.  In libginga, reactions are non-blocking and
+always terminate.
+
+After the *start* call returns, the Formatter is driven by the caller, that
+is, the program using the external API.
+
+  - When the Formatter receives a *key* (Ginga::sendKey) it delivers it to
+    all objects in the Document.
+
+  - When the Formatter receives a *tick* (Ginga::sendTick) it advances the
+    time of all objects in the Document.  This is the only place in which
+    time advances, and it does so in lockstep: two objects that have been
+    started in the same tick will always be synchronized.
+
+  - When the Formatter receives a *redraw* request (Ginga::redraw) it
+    renders and draws the frame corresponding to the current Document state
+    in the given Cairo context.
+
+  - When the Formatter receives a *state* request (Ginga::getState) it
+    checks if the Document is still running and send this information back
+    to the caller.
+
+  - Finally, when the formatter receives a *stop* request (Ginga::stop) it
+    stops the presentation and destroys the Document.
+
+@todo Errors in the input NCL file may lead to feedback loops in action
+propagation and, consequently, to endless reactions.  If this happens and if
+the program has only one thread, which is usually the case, the program will
+enter an infinite loop.
+
+@todo Libginga handles audio output internally by itself.  One cannot use
+the external API to get the audio samples corresponding to the current
+Document state.
+
+# Internal API
+
+## %Document and Objects
+
+The Document contains the object tree of the NCL presentation and act as a
+high-level interface to this tree.  It has methods to query the tree
+contents and to evaluate NCL actions over it, but not to change the tree
+contents or its structure.
+
+The next diagram depicts the class hierarchy of the objects that can occur
+in the Document's object tree.
+
+\image html dia-objects.png
+
+The classes Object and Composition are abstract.  The concrete classes
+Media, MediaSettings, Context, and Switch stand for the corresponding
+elements in the NCL language:
+
+  - A Media represents a \<media\> element in the NCL document.
+
+  - A MediaSettings represents the settings \<media\> element.  There is
+    exactly one settings object per Document.  (Although the document may
+    contain multiple settings \<media\> elements, all of them represent the
+    same object.)
+
+  - Context represents a \<context\> element.
+
+  - Switch represents a \<switch> element.
+
+Every Object has an *id* which must be unique within the Document.  Objects
+can also have aliases which are collected and installed by the Parser.  The
+id of the root object is always "__root__" and the id of the settings object
+is always "__settings__".
+
+## Events
+
+Every Object has a set of events, class Event, each representing an event
+state machine of NCL.  Events are *not* first-class citizens.  They exist
+within exactly one Object and are owned by it.
+
+There are three types of events (Event::Type):
+
+  1. Event::PRESENTATION: Represents the presentation of a particular time
+     interval of its object.  Every object has at least one presentation
+     event, called *lambda*, which represents the presentation of the object
+     itself.  Besides the lambda presentation event, which is created by
+     default for every object, the Parser creates a presentation event every
+     time it encounters an \<area\> element.  The container Object in this
+     case is the object corresponding to the parent \<media\> element.
+
+  2. Event::ATTRIBUTION: Represents the attribution of some value to a
+     particular property of its object.  The Parser creates an attribution
+     event every time it encounters a \<property\> element.  The container
+     Object in this case is the object corresponding to the parent \<media\>
+     or \<property\> elements.
+
+  3. Event::SELECTION: Represents the selection of the container object via
+     a particular key.  The Parser creates a selection event every time it
+     encounters a link \<bind\> with role "onSelection" or "onKeySelection".
+     The container Object in this case is the object referenced by the
+     \<bind\> element.
+
+Independently of its type, every Event maintains a state machine with three
+states, namely, Event::OCCURRING, Event::PAUSED, and Event::SLEEPING (the
+initial state), and labeled transitions between these states.  The possible
+state transitions and their labels (Event::Transition) are listed in the
+table below.
+
+From             | To               | Transition (label)
+-----------------|------------------|-------------------
+Event::SLEEPING  | Event::OCCURRING | Event::START
+Event::OCCURRING | Event::SLEEPING  | Event::STOP or Event::ABORT
+Event::PAUSED    | Event::OCCURRING | Event::START or Event::RESUME
+Event::OCCURRING | Event::PAUSED    | Event::PAUSE
+Event::PAUSED    | Event::SLEEPING  | Event::STOP or Event::ABORT
+
+The method Event::transition transitions an Event.  When transitioning, the
+Event notify its container Object, via Object::beforeTransition and
+Object::afterTransition, which can act accordingly.  For instance, the start
+transition of the lambda event of a Context should cause the Context to
+schedule the start of events referenced by its ports in the next tick.
+
+Although a call to Event::transition may lead to further implicit
+transitions, Event::transition calls by themselves do not do not trigger
+links.  What trigger links in libginga are actions.  Actions and links are
+discussed in the next section.  But before that there is one last thing we
+have to say about events: how libginga references them in logs.
+
+Every Event has an id which must be unique within its Object.  Libginga
+adopts a specific format when creating an pretty-printing event ids.  This
+format is detailed in the table below.
+
+<table>
+<tr>
+<th>ID Pretty-Printing Format</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+<tr>
+<td>`obj@area`</td>
+<td>Event::PRESENTATION</td>
+<td> *obj* is the id of the container Object and *area* is the id of the
+corresponding \<area\> element.  If this event has no corresponding
+\<area\> element, then `evt` is the lambda event and its id is the string
+"lambda".</td>
+</tr>
+<tr>
+<td>`obj.name`</td>
+<td>Event::ATTRIBUTION</td>
+<td> *obj* is the id of the container object and *name* is the name of
+the corresponding \<property\> element.</td> </tr>
+<tr>
+<td>`obj<key>`</td>
+<td>Event::SELECTION</td>
+<td> *obj* is the id of the container object and *key* is the name of
+the key expected by the corresponding \<bind\> element.</td>
+</tr>
+</table>
+
+## Actions and Links
+
+An Action is a structure that associates an Event to a desired
+Event::Transition.  One evaluates an Action over a Document using
+Document::evalAction.  This method applies the desired transition over the
+event and, if the transition is successfully executed, triggers any links
+that are waiting for it, initiating a chain reaction.
+
+In libginga, links is are stored in a list in the Context object (member
+Context::_links).  Each link is a pair.  The first member of the pair,
+called the link *head*, is the list of actions whose execution should cause
+the link to trigger.  The second member of the pair, called the link *tail*,
+is the sequence of actions that should be evaluated over the document when
+the link is triggered.
+
+## Players
+
+Each Media maintains a single Player.  This Player is created when the
+Media's lambda event is started, and it is destroyed as soon as the Media's
+lambda event is stopped.
+
+\image html dia-players.png
+
+<!-- ------------------------------------------------------------------- -->
+\page devel Development
+
+# Where's the source?
+
+The code repository is on GitHub: https://github.com/TeleMidia/ginga.
+
+# Contributing
+
+%Ginga is free-software.  Help is always welcomed.  A good starting-point
+for new contributors is the <a
+href="https://github.com/TeleMidia/ginga">issues page</a> on %Ginga's
+GitHub.  Fell free to contact us on info@telemidia.puc-rio.br.
+
+# Bug Reporting
+
+Bugs should be reported on the <a
+href="https://github.com/TeleMidia/ginga">issues page</a> on %Ginga's
+GitHub.  When reporting bugs, try to be as clear as possible and to keep one
+bug per report.  We recommend following the <a
+href="https://bugzilla.gnome.org/page.cgi?id=bug-writing.html">GNOME
+guidelines for bug reporting</a>.
+
+# Best Practices
+
+When hacking %Ginga, to keep the code in shape, *be sure to consider the
+following practices*.
+
+## Good Habits
+
+  - Configure the project with debugging and warnings enabled.
+
+        $ ./configure --enable-debug --enable-warnings
+
+  - Except when writing tests, *don't* use libginga internal API outside the
+    library.  That is, programs should only include ginga.h.
+
+  - Before reinventing the wheel, check out aux-ginga.h for auxiliary
+    functions.
+
+  - Keep the inclusions in the global headers sorted alphabetically.
+
+  - Use GLib assertions to check for unrecoverable or impossible conditions.
+
+## Coding Standards and Style
+
+  - Read the <a href="http://www.gnu.org/prep/standards/standards.html">GNU
+    coding standards</a>.  We try to follow this document as much as
+    possible, including the coding-style, which we adapted to C++11.
+
+  - Be sure to write good Git commit messages.  Read <a
+    href="https://chris.beams.io/posts/git-commit">the seven rules of a
+    great Git commit message</a>.
+
+  - Avoid tabs and trailing whitespace, check your editor settings.
+
+  - Use "-" instead of "_" as word separators in file names.
+
+# Repository Structure
+
+The repository of %Ginga consists of the following directories.
+
+  - build-aux: Auxiliary build scripts and macros for Autotools.
+  - build-cmake: Configuration for CMake build.
+  - debian: Configuration for Debian distribution.
+  - doc: Documentation.
+  - examples: Complete NCL examples.
+  - extra: Extra stuff.
+  - lib: The libginga sources.
+  - src: The sources of the command-line players.
+  - src-gui: The sources of the GUI player.
+  - tests: Automated tests.
+  - tests-ncl: NCL test files.
+
+# Team
+
+The current core maintainers of %Ginga are:
+
+| Name              | Affiliation        | E-Mail                            |
+| ----------------- | ------------------ | --------------------------------- |
+| Álan Lívio        | PUC-Rio, TeleMídia | alan@telemidia.puc-rio.br         |
+| Guilherme F. Lima | PUC-Rio, TeleMídia | gflima@telemidia.puc-rio.br       |
+| Roberto Azevedo   | PUC-Rio, TeleMídia | robertogerson@telemidia.puc-rio.br|
+
+See the <a href="https://github.com/TeleMidia/ginga/graphs/contributors">
+contributors page</a> on %Ginga's GitHub for the full list of contributors.
+
+*/

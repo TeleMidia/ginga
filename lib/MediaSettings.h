@@ -22,7 +22,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-class MediaSettings: public Media
+class MediaSettings : public Media
 {
 public:
   MediaSettings (const string &);
@@ -42,9 +42,9 @@ public:
   void updateCurrentFocus (const string &);
   void scheduleFocusUpdate (const string &);
 
- private:
-  string _nextFocus;            // next focus index
-  bool _hasNextFocus;           // true if a focus update is scheduled
+private:
+  string _nextFocus;  // next focus index
+  bool _hasNextFocus; // true if a focus update is scheduled
 };
 
 GINGA_NAMESPACE_END

@@ -22,10 +22,10 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 class Media;
-class PlayerVideo: public Player
+class PlayerVideo : public Player
 {
 public:
-  PlayerVideo (Formatter *, Media *, const string &);
+  PlayerVideo (Formatter *, Media *);
   ~PlayerVideo ();
   void start () override;
   void stop () override;
@@ -34,54 +34,56 @@ public:
   void redraw (cairo_t *) override;
 
 protected:
-  bool doSetProperty (PlayerProperty, const string &,
-                      const string &) override;
-  void seek (gint64 value);
-  void speed (double value);
+  bool doSetProperty (Property, const string &, const string &) override;
+  void seek (gint64);
+  void speed (double);
   gint64 getPipelineTime ();
   gint64 getStreamMediaTime ();
   gint64 getStreamMediaDuration ();
 
 private:
-  GstElement *_playbin;         // pipeline
-  struct {                      // audio pipeline
-    GstElement *bin;            // audio bin
-    GstElement *volume;         // volume filter
-    GstElement *pan;            // balance filter
-    GstElement *equalizer;      // equalizer filter
-    GstElement *convert;        // convert audio format
-    GstElement *sink;           // audio sink
+  GstElement *_playbin; // pipeline
+  struct
+  {                        // audio pipeline
+    GstElement *bin;       // audio bin
+    GstElement *volume;    // volume filter
+    GstElement *pan;       // balance filter
+    GstElement *equalizer; // equalizer filter
+    GstElement *convert;   // convert audio format
+    GstElement *sink;      // audio sink
   } _audio;
-  struct {                      // video pipeline
-    GstElement *bin;            // video bin
-    GstElement *caps;           // caps filter
-    GstElement *sink;           // app sink
+  struct
+  {                   // video pipeline
+    GstElement *bin;  // video bin
+    GstElement *caps; // caps filter
+    GstElement *sink; // app sink
   } _video;
   int _sample_flag;               // true if new sample is available
   GstAppSinkCallbacks _callbacks; // video app-sink callback data
-  struct  {
-    bool mute;              // true if mute is on
-    double balance;         // balance sound level
-    double volume;          // sound level
-    double treble;          // treble level (Default: 0; Range: -24 and +12)
-    double bass;            // bass level (Default: 0; Range: -24 and +12)
-    bool freeze;            // true if player should freeze
-    double speed;           // playback speed (Default: 1) 
+  struct
+  {
+    bool mute;      // true if mute is on
+    double balance; // balance sound level
+    double volume;  // sound level
+    double treble;  // treble level (Default: 0; Range: -24 and +12)
+    double bass;    // bass level (Default: 0; Range: -24 and +12)
+    bool freeze;    // true if player should freeze
+    double speed;   // playback speed (Default: 1)
   } _prop;
-  typedef struct {
-    PlayerProperty code;
+  typedef struct
+  {
+    Property code;
     string name;
     string value;
-  }PlayerVideoAction;
+  } PlayerVideoAction;
   list<PlayerVideoAction> _stack_actions;
-  void initProperties (set<string> *);   //Init default values to properties          
-                                         //without go to doSetProperty function
-  void stackAction (PlayerProperty,       
-                     const string &,      
-                     const string &);
+  void
+  initProperties (set<string> *); // Init default values to properties
+                                  // without go to doSetProperty function
+  void stackAction (Property, const string &, const string &);
   void doStackedActions ();
   bool getFreeze ();
-  string getPipelineState();
+  string getPipelineState ();
 
   // GStreamer callbacks.
   static gboolean cb_Bus (GstBus *, GstMessage *, PlayerVideo *);

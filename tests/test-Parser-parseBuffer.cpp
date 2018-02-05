@@ -15,13 +15,10 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <string.h>
-#include "Parser.h"
+#include "tests.h"
 
-#include "Context.h"
-#include "Media.h"
-#include "MediaSettings.h"
-#include "Switch.h"
+#define DOUBLE_PROP_EQ(m, prop, value)                                     \
+  doubleeq (xstrtodorpercent ((m)->getProperty (prop), nullptr), (value))
 
 static bool
 check_failure (const string &log, const string &expected, const string &buf)
@@ -66,27 +63,14 @@ check_success (const string &log, const string &buf)
   return doc;
 }
 
-static string
-writetmp (unsigned int serial, const string &buf)
-{
-  string path;
+#define XFAIL(log, exp, str) g_assert (check_failure ((log), (exp), (str)))
 
-  path = xpathbuildabs
-    (string (g_get_tmp_dir ()), xstrbuild ("%s-%u.ncl", __FILE__, serial));
-  g_assert (g_file_set_contents (path.c_str (), buf.c_str (), -1, nullptr));
-
-  return path;
-}
-
-#define XFAIL(log, exp, str)\
-  g_assert (check_failure ((log), (exp), (str)))
-
-#define PASS(obj, log, str)                     \
-  G_STMT_START                                  \
-  {                                             \
-    tryset (obj, check_success ((log), (str))); \
-    g_assert_nonnull (*(obj));                  \
-  }                                             \
+#define PASS(obj, log, str)                                                \
+  G_STMT_START                                                             \
+  {                                                                        \
+    tryset (obj, check_success ((log), (str)));                            \
+    g_assert_nonnull (*(obj));                                             \
+  }                                                                        \
   G_STMT_END
 
 int
@@ -94,29 +78,22 @@ main (void)
 {
   string tmp;
 
-
-// -------------------------------------------------------------------------
-// General errors.
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // General errors.
+  // -------------------------------------------------------------------------
 
   XFAIL ("XML error",
-         "",                    // ignored
+         "", // ignored
          "<a>");
 
-  XFAIL ("Unknown element",
-         "Unknown element",
-         "<unknown/>");
+  XFAIL ("Unknown element", "Unknown element", "<unknown/>");
 
-  XFAIL ("Missing parent",
-         "<head> at line 1: Missing parent",
-         "<head/>");
+  XFAIL ("Missing parent", "<head> at line 1: Missing parent", "<head/>");
 
-  XFAIL ("Unknown child",
-         "<ncl> at line 1: Unknown child <media>",
+  XFAIL ("Unknown child", "<ncl> at line 1: Unknown child <media>",
          "<ncl><media/></ncl>");
 
-  XFAIL ("Unknown child",
-         "<ncl> at line 1: Unknown child <unknown>",
+  XFAIL ("Unknown child", "<ncl> at line 1: Unknown child <unknown>",
          "<ncl><unknown/></ncl>");
 
   XFAIL ("Unknown attribute",
@@ -133,13 +110,12 @@ main (void)
          "(must not contain '@')",
          "<ncl id='@'/>");
 
-
-// -------------------------------------------------------------------------
-// <region>
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // <region>
+  // -------------------------------------------------------------------------
 
-  XFAIL ("region: Missing id",
-         "<region> at line 4: Missing attribute 'id'", "\
+  XFAIL ("region: Missing id", "<region> at line 4: Missing attribute 'id'",
+         "\
 <ncl>\n\
  <head>\n\
   <regionBase>\n\
@@ -151,10 +127,9 @@ main (void)
 </ncl>\n\
 ");
 
-
-// -------------------------------------------------------------------------
-// <descriptor>
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // <descriptor>
+  // -------------------------------------------------------------------------
 
   XFAIL ("descriptor: Missing id",
          "<descriptor> at line 4: Missing attribute 'id'", "\
@@ -172,7 +147,8 @@ main (void)
   XFAIL ("descriptor: Bad region",
          "<descriptor> at line 4: Bad value 'nonexistent' "
          "for attribute 'region' "
-         "(no such region)", "\
+         "(no such region)",
+         "\
 <ncl>\n\
  <head>\n\
   <descriptorBase>\n\
@@ -185,7 +161,8 @@ main (void)
 
   XFAIL ("descriptor: Bad region",
          "<descriptor> at line 5: Bad value 'r' for attribute 'region' "
-         "(no such region)", "\
+         "(no such region)",
+         "\
 <ncl>\n\
  <head>\n\
   <descriptorBase>\n\
@@ -200,7 +177,8 @@ main (void)
   XFAIL ("descriptor: Bad transIn",
          "<descriptor> at line 4: Bad value 'nonexistent' "
          "for attribute 'transIn' "
-         "(no such transition)", "\
+         "(no such transition)",
+         "\
 <ncl>\n\
  <head>\n\
   <descriptorBase>\n\
@@ -213,7 +191,8 @@ main (void)
 
   XFAIL ("descriptor: Bad transIn",
          "<descriptor> at line 5: Bad value 't' for attribute 'transIn' "
-         "(no such transition)", "\
+         "(no such transition)",
+         "\
 <ncl>\n\
  <head>\n\
   <descriptorBase>\n\
@@ -228,7 +207,8 @@ main (void)
   XFAIL ("descriptor: Bad transOut",
          "<descriptor> at line 4: Bad value 'nonexistent' "
          "for attribute 'transOut' "
-         "(no such transition)", "\
+         "(no such transition)",
+         "\
 <ncl>\n\
  <head>\n\
   <descriptorBase>\n\
@@ -241,7 +221,8 @@ main (void)
 
   XFAIL ("descriptor: Bad transOut",
          "<descriptor> at line 5: Bad value 't' for attribute 'transOut' "
-         "(no such transition)", "\
+         "(no such transition)",
+         "\
 <ncl>\n\
  <head>\n\
   <descriptorBase>\n\
@@ -253,10 +234,9 @@ main (void)
 </ncl>\n\
 ");
 
-
-// -------------------------------------------------------------------------
-// <descriptorParam>
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // <descriptorParam>
+  // -------------------------------------------------------------------------
 
   XFAIL ("descriptorParam: Missing name",
          "<descriptorParam> at line 5: Missing attribute 'name'", "\
@@ -286,10 +266,9 @@ main (void)
 </ncl>\n\
 ");
 
-
-// -------------------------------------------------------------------------
-// <causalConnector>
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // <causalConnector>
+  // -------------------------------------------------------------------------
 
   XFAIL ("causalConnector: Missing id",
          "<causalConnector> at line 4: Missing attribute 'id'", "\
@@ -305,7 +284,8 @@ main (void)
 ");
 
   XFAIL ("causalConnector: Missing condition",
-         "<causalConnector> at line 4: Missing child <simpleCondition>", "\
+         "<causalConnector> at line 4: Missing child <simpleCondition>",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -318,7 +298,8 @@ main (void)
 ");
 
   XFAIL ("causalConnector: Missing condition",
-         "<causalConnector> at line 4: Missing child <simpleCondition>", "\
+         "<causalConnector> at line 4: Missing child <simpleCondition>",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -333,7 +314,8 @@ main (void)
 ");
 
   XFAIL ("causalConnector: Missing condition",
-         "<causalConnector> at line 4: Missing child <simpleCondition>", "\
+         "<causalConnector> at line 4: Missing child <simpleCondition>",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -349,7 +331,8 @@ main (void)
 ");
 
   XFAIL ("causalConnector: Missing condition",
-         "<causalConnector> at line 4: Missing child <simpleCondition>", "\
+         "<causalConnector> at line 4: Missing child <simpleCondition>",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -365,7 +348,8 @@ main (void)
 ");
 
   XFAIL ("causalConnector: Missing condition",
-         "<causalConnector> at line 4: Missing child <simpleCondition>", "\
+         "<causalConnector> at line 4: Missing child <simpleCondition>",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -412,10 +396,9 @@ main (void)
 </ncl>\n\
 ");
 
-
-// -------------------------------------------------------------------------
-// <simpleCondition>
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // <simpleCondition>
+  // -------------------------------------------------------------------------
 
   XFAIL ("simpleCondition: Missing role",
          "<simpleCondition> at line 5: Missing attribute 'role'", "\
@@ -434,7 +417,8 @@ main (void)
 
   XFAIL ("simpleCondition: Bad role",
          "<simpleCondition> at line 5: Bad value '' for attribute 'role' "
-         "(must not be empty)", "\
+         "(must not be empty)",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -450,7 +434,8 @@ main (void)
 
   XFAIL ("simpleCondition: Bad role",
          "<simpleCondition> at line 5: Bad value '$x' for attribute 'role' "
-         "(must not contain '$')", "\
+         "(must not contain '$')",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -467,7 +452,8 @@ main (void)
   XFAIL ("simpleCondition: Bad role",
          "<simpleCondition> at line 5: Bad value 'start' "
          "for attribute 'role' "
-         "(reserved role 'start' must be an action)", "\
+         "(reserved role 'start' must be an action)",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -484,7 +470,8 @@ main (void)
   XFAIL ("simpleCondition: Reserved role",
          "<simpleCondition> at line 5: Bad value 'selection' "
          "for attribute 'eventType' "
-         "(reserved role 'onBegin' cannot be overwritten)", "\
+         "(reserved role 'onBegin' cannot be overwritten)",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -501,7 +488,8 @@ main (void)
   XFAIL ("simpleCondition: Reserved role",
          "<simpleCondition> at line 5: Bad value 'stops' "
          "for attribute 'transition' "
-         "(reserved role 'onBegin' cannot be overwritten)", "\
+         "(reserved role 'onBegin' cannot be overwritten)",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -532,7 +520,8 @@ main (void)
 
   XFAIL ("simpleCondition: Bad eventType",
          "<simpleCondition> at line 5: Bad value 'unknown' "
-         "for attribute 'eventType'", "\
+         "for attribute 'eventType'",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -563,7 +552,8 @@ main (void)
 
   XFAIL ("simpleCondition: Bad transition",
          "<simpleCondition> at line 6: Bad value 'unknown' "
-         "for attribute 'transition'", "\
+         "for attribute 'transition'",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -578,10 +568,9 @@ main (void)
 </ncl>\n\
 ");
 
-
-// -------------------------------------------------------------------------
-// <simpleAction>
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // <simpleAction>
+  // -------------------------------------------------------------------------
 
   XFAIL ("simpleAction: Missing role",
          "<simpleAction> at line 6: Missing attribute 'role'", "\
@@ -601,7 +590,8 @@ main (void)
 
   XFAIL ("simpleAction: Bad role",
          "<simpleAction> at line 6: Bad value '' for attribute 'role' "
-         "(must not be empty)", "\
+         "(must not be empty)",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -618,7 +608,8 @@ main (void)
 
   XFAIL ("simpleAction: Bad role",
          "<simpleAction> at line 6: Bad value '$x' for attribute 'role' "
-         "(must not contain '$')", "\
+         "(must not contain '$')",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -636,7 +627,8 @@ main (void)
   XFAIL ("simpleAction: Bad role",
          "<simpleAction> at line 6: Bad value 'onBegin' "
          "for attribute 'role' "
-         "(reserved role 'onBegin' must be a condition)", "\
+         "(reserved role 'onBegin' must be a condition)",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -654,7 +646,8 @@ main (void)
   XFAIL ("simpleAction: Reserved role",
          "<simpleAction> at line 6: Bad value 'selection' "
          "for attribute 'eventType' "
-         "(reserved role 'start' cannot be overwritten)", "\
+         "(reserved role 'start' cannot be overwritten)",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -672,7 +665,8 @@ main (void)
   XFAIL ("simpleAction: Reserved role",
          "<simpleAction> at line 6: Bad value 'stops' "
          "for attribute 'actionType' "
-         "(reserved role 'start' cannot be overwritten)", "\
+         "(reserved role 'start' cannot be overwritten)",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -705,7 +699,8 @@ main (void)
 
   XFAIL ("simpleAction: Bad eventType",
          "<simpleAction> at line 6: Bad value 'unknown' "
-         "for attribute 'eventType'", "\
+         "for attribute 'eventType'",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -738,7 +733,8 @@ main (void)
 
   XFAIL ("simpleAction: Bad actionType",
          "<simpleAction> at line 7: Bad value 'unknown' "
-         "for attribute 'actionType'","\
+         "for attribute 'actionType'",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -770,10 +766,9 @@ main (void)
 </ncl>\n\
 ");
 
-
-// -------------------------------------------------------------------------
-// <compoundStatement>
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // <compoundStatement>
+  // -------------------------------------------------------------------------
 
   XFAIL ("compoundStatement: Missing operator",
          "<compoundStatement> at line 7: Missing attribute 'operator'", "\
@@ -801,7 +796,8 @@ main (void)
 
   XFAIL ("compoundStatement: Bad operator",
          "<compoundStatement> at line 7: Bad value 'xx' "
-         "for attribute 'operator'", "\
+         "for attribute 'operator'",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -826,7 +822,8 @@ main (void)
 
   XFAIL ("compoundStatement: Bad isNegated",
          "<compoundStatement> at line 7: Bad value 'xx' "
-         "for attribute 'isNegated'", "\
+         "for attribute 'isNegated'",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -851,7 +848,8 @@ main (void)
 
   XFAIL ("compoundStatement: Missing child",
          "<compoundStatement> at line 7: Missing child "
-         "<compoundStatement> or <assessmentStatement>", "\
+         "<compoundStatement> or <assessmentStatement>",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -872,7 +870,8 @@ main (void)
 
   XFAIL ("compoundStatement: Missing child",
          "<compoundStatement> at line 7: Missing child "
-         "<compoundStatement> or <assessmentStatement>", "\
+         "<compoundStatement> or <assessmentStatement>",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -893,7 +892,8 @@ main (void)
 
   XFAIL ("compoundStatement: Missing child",
          "<compoundStatement> at line 7: Missing child "
-         "<compoundStatement> or <assessmentStatement>", "\
+         "<compoundStatement> or <assessmentStatement>",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -914,7 +914,8 @@ main (void)
 
   XFAIL ("compoundStatement: Too many children",
          "<compoundStatement> at line 7: Bad child <assessmentStatement> "
-         "(too many children)", "\
+         "(too many children)",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -943,7 +944,8 @@ main (void)
 
   XFAIL ("compoundStatement: Too many children",
          "<compoundStatement> at line 7: Bad child <compoundStatement> "
-         "(too many children)", "\
+         "(too many children)",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -972,14 +974,14 @@ main (void)
 </ncl>\n\
 ");
 
-
-// -------------------------------------------------------------------------
-// <assessmentStatement>
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // <assessmentStatement>
+  // -------------------------------------------------------------------------
 
   XFAIL ("assessmentStatement: Missing comparator",
          "<assessmentStatement> at line 6: "
-         "Missing attribute 'comparator'", "\
+         "Missing attribute 'comparator'",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -998,7 +1000,8 @@ main (void)
 
   XFAIL ("assessmentStatement: Bad comparator",
          "<assessmentStatement> at line 6: Bad value 'xx' "
-         "for attribute 'comparator'", "\
+         "for attribute 'comparator'",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1017,7 +1020,8 @@ main (void)
 
   XFAIL ("assessmentStatement: Missing child",
          "<assessmentStatement> at line 6: Missing child "
-         "<attributeAssessment> or <valueAssessment>", "\
+         "<attributeAssessment> or <valueAssessment>",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1036,7 +1040,8 @@ main (void)
 
   XFAIL ("assessmentStatement: Missing child",
          "<assessmentStatement> at line 6: Missing child "
-         "<attributeAssessment> or <valueAssessment>", "\
+         "<attributeAssessment> or <valueAssessment>",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1057,7 +1062,8 @@ main (void)
 
   XFAIL ("assessmentStatement: Too many children",
          "<assessmentStatement> at line 6: Bad child "
-         "<valueAssessment> (too many children)", "\
+         "<valueAssessment> (too many children)",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1078,10 +1084,9 @@ main (void)
 </ncl>\n\
 ");
 
-
-// -------------------------------------------------------------------------
-// <attributeAssessment>
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // <attributeAssessment>
+  // -------------------------------------------------------------------------
 
   XFAIL ("attributeAssessment: Missing role",
          "<attributeAssessment> at line 7: Missing attribute 'role'", "\
@@ -1106,7 +1111,8 @@ main (void)
   XFAIL ("attributeAssessment: Bad role",
          "<attributeAssessment> at line 7: Bad value '' "
          "for attribute 'role' "
-         "(must not be empty)", "\
+         "(must not be empty)",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1128,7 +1134,8 @@ main (void)
   XFAIL ("attributeAssessment: Bad role",
          "<attributeAssessment> at line 7: Bad value '$x' "
          "for attribute 'role' "
-         "(must not contain '$')", "\
+         "(must not contain '$')",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1147,10 +1154,9 @@ main (void)
 </ncl>\n\
 ");
 
-
-// -------------------------------------------------------------------------
-// <valueAssessment>
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // <valueAssessment>
+  // -------------------------------------------------------------------------
 
   XFAIL ("valueAssessment: Missing value",
          "<valueAssessment> at line 7: Missing attribute 'value'", "\
@@ -1172,13 +1178,12 @@ main (void)
 </ncl>\n\
 ");
 
-
-// -------------------------------------------------------------------------
-// <rule>
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // <rule>
+  // -------------------------------------------------------------------------
 
-  XFAIL ("rule: Missing id",
-         "<rule> at line 4: Missing attribute 'id'", "\
+  XFAIL ("rule: Missing id", "<rule> at line 4: Missing attribute 'id'",
+         "\
 <ncl>\n\
  <head>\n\
   <ruleBase>\n\
@@ -1190,8 +1195,8 @@ main (void)
 </ncl>\n\
 ");
 
-  XFAIL ("rule: Missing var",
-         "<rule> at line 4: Missing attribute 'var'", "\
+  XFAIL ("rule: Missing var", "<rule> at line 4: Missing attribute 'var'",
+         "\
 <ncl>\n\
  <head>\n\
   <ruleBase>\n\
@@ -1205,7 +1210,8 @@ main (void)
 
   XFAIL ("rule: Bad var",
          "<rule> at line 4: Bad value '$' for attribute 'var' "
-         "(must not contain '$')", "\
+         "(must not contain '$')",
+         "\
 <ncl>\n\
  <head>\n\
   <ruleBase>\n\
@@ -1256,10 +1262,9 @@ main (void)
 </ncl>\n\
 ");
 
-
-// -------------------------------------------------------------------------
-// <compositeRule>
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // <compositeRule>
+  // -------------------------------------------------------------------------
 
   XFAIL ("compositeRule:",
          "<compositeRule> at line 4: Missing attribute 'id'", "\
@@ -1287,7 +1292,8 @@ main (void)
 
   XFAIL ("compositeRule: Bad operator",
          "<compositeRule> at line 4: Bad value 'x' "
-         "for attribute 'operator'", "\
+         "for attribute 'operator'",
+         "\
 <ncl>\n\
  <head>\n\
   <ruleBase>\n\
@@ -1300,7 +1306,8 @@ main (void)
 
   XFAIL ("compositeRule: Too many children",
          "<compositeRule> at line 4: Bad child <compositeRule> "
-         "(too many children)","\
+         "(too many children)",
+         "\
 <ncl>\n\
  <head>\n\
   <ruleBase>\n\
@@ -1316,7 +1323,8 @@ main (void)
 
   XFAIL ("compositeRule: Too many children",
          "<compositeRule> at line 4: Bad child <rule> "
-         "(too many children)", "\
+         "(too many children)",
+         "\
 <ncl>\n\
  <head>\n\
   <ruleBase>\n\
@@ -1330,10 +1338,9 @@ main (void)
 </ncl>\n\
 ");
 
-
-// -------------------------------------------------------------------------
-// <transition>
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // <transition>
+  // -------------------------------------------------------------------------
 
   XFAIL ("transition: Missing id",
          "<transition> at line 4: Missing attribute 'id'", "\
@@ -1363,7 +1370,8 @@ main (void)
 
   XFAIL ("transition: Bad type",
          "<transition> at line 4: Bad value '$' for attribute 'type' "
-         "(must not contain '$')", "\
+         "(must not contain '$')",
+         "\
 <ncl>\n\
  <head>\n\
   <transitionBase>\n\
@@ -1377,7 +1385,8 @@ main (void)
 
   XFAIL ("transition: Bad subtype",
          "<transition> at line 4: Bad value '$' for attribute 'subtype' "
-         "(must not contain '$')", "\
+         "(must not contain '$')",
+         "\
 <ncl>\n\
  <head>\n\
   <transitionBase>\n\
@@ -1389,13 +1398,12 @@ main (void)
 </ncl>\n\
 ");
 
-
-// -------------------------------------------------------------------------
-// <importBase>
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // <importBase>
+  // -------------------------------------------------------------------------
 
-XFAIL ("importBase: Missing alias",
-       "<importBase> at line 4: Missing attribute 'alias'", "\
+  XFAIL ("importBase: Missing alias",
+         "<importBase> at line 4: Missing attribute 'alias'", "\
 <ncl>\n\
  <head>\n\
   <regionBase>\n\
@@ -1405,9 +1413,10 @@ XFAIL ("importBase: Missing alias",
 </ncl>\n\
 ");
 
-XFAIL ("importBase: Bad alias",
-       "<importBase> at line 4: Bad value '$' "
-       "for attribute 'alias' (must not contain '$')", "\
+  XFAIL ("importBase: Bad alias",
+         "<importBase> at line 4: Bad value '$' "
+         "for attribute 'alias' (must not contain '$')",
+         "\
 <ncl>\n\
  <head>\n\
   <regionBase>\n\
@@ -1417,9 +1426,8 @@ XFAIL ("importBase: Bad alias",
 </ncl>\n\
 ");
 
-
-XFAIL ("importBase: Missing documentURI",
-       "<importBase> at line 4: Missing attribute 'documentURI'", "\
+  XFAIL ("importBase: Missing documentURI",
+         "<importBase> at line 4: Missing attribute 'documentURI'", "\
 <ncl>\n\
  <head>\n\
   <regionBase>\n\
@@ -1429,12 +1437,12 @@ XFAIL ("importBase: Missing documentURI",
 </ncl>\n\
 ");
 
-XFAIL ("importBase: Bad documentURI",
-       xstrbuild ("<importBase> at line 4: "
-                  "Syntax error in imported document "
-                  "(XML error: failed to load external entity \"%s\")",
-                  xpathbuildabs (".", "nonexistent").c_str ()),
-       "\
+  XFAIL ("importBase: Bad documentURI",
+         xstrbuild ("<importBase> at line 4: "
+                    "Syntax error in imported document "
+                    "(XML error: failed to load external entity \"%s\")",
+                    xpathbuildabs (".", "nonexistent").c_str ()),
+         "\
 <ncl>\n\
  <head>\n\
   <regionBase>\n\
@@ -1444,12 +1452,26 @@ XFAIL ("importBase: Bad documentURI",
 </ncl>\n\
 ");
 
- tmp = writetmp (0, "<x>\n");
- XFAIL ("importBase: Bad imported document",
-        "<importBase> at line 4: Syntax error in imported document "
-        + xstrbuild ("(%s: XML error at line 2: Premature end of data "
-                     "in tag x line 1)", tmp.c_str ()),
-        xstrbuild ("\
+  tmp = tests_write_tmp_file (0, "<x>\n");
+  XFAIL ("importBase: Bad imported document",
+         "<importBase> at line 4: Syntax error in imported document "
+             + xstrbuild ("(%s: XML error at line 2: Premature end of data "
+                          "in tag x line 1)",
+                          tmp.c_str ()),
+         xstrbuild ("\
+<ncl>\n\
+ <head>\n\
+  <regionBase>\n\
+   <importBase alias='r' documentURI='%s'/>\n\
+  </regionBase>\n\
+ </head>\n\
+</ncl>\n\
+",
+                    tmp.c_str ()));
+
+  tmp = tests_write_tmp_file (0, "<x/>\n");
+  XFAIL ("importBase: Missing root",
+         "<x> at line 1: Unknown element", xstrbuild ("\
 <ncl>\n\
  <head>\n\
   <regionBase>\n\
@@ -1459,10 +1481,40 @@ XFAIL ("importBase: Bad documentURI",
 </ncl>\n\
 ", tmp.c_str ()));
 
- tmp = writetmp (0, "<x/>\n");
- XFAIL ("importBase: Missing root",
-        "<x> at line 1: Unknown element",
-        xstrbuild ("\
+  tmp = tests_write_tmp_file (0, "<ncl/>");
+  XFAIL ("importBase: Bad imported document",
+         "<importBase> at line 4: Syntax error in imported document "
+         "(no <regionBase> in imported document)",
+         xstrbuild ("\
+<ncl>\n\
+ <head>\n\
+  <regionBase>\n\
+   <importBase alias='r' documentURI='%s'/>\n\
+  </regionBase>\n\
+ </head>\n\
+</ncl>\n\
+",
+                    tmp.c_str ()));
+
+  tmp = tests_write_tmp_file (0, "<ncl><head/></ncl>");
+  XFAIL ("importBase: Bad imported document",
+         "<importBase> at line 4: Syntax error in imported document "
+         "(no <regionBase> in imported document)",
+         xstrbuild ("\
+<ncl>\n\
+ <head>\n\
+  <regionBase>\n\
+   <importBase alias='r' documentURI='%s'/>\n\
+  </regionBase>\n\
+ </head>\n\
+</ncl>\n\
+",
+                    tmp.c_str ()));
+
+  tmp = tests_write_tmp_file (0, "<ncl><x/></ncl>");
+  XFAIL (
+      "importBase: Missing head",
+      "<ncl> at line 1: Unknown child <x>", xstrbuild ("\
 <ncl>\n\
  <head>\n\
   <regionBase>\n\
@@ -1472,11 +1524,11 @@ XFAIL ("importBase: Bad documentURI",
 </ncl>\n\
 ", tmp.c_str ()));
 
-tmp = writetmp (0, "<ncl/>");
- XFAIL ("importBase: Bad imported document",
-        "<importBase> at line 4: Syntax error in imported document "
-        "(no <regionBase> in imported document)",
-        xstrbuild ("\
+  tmp = tests_write_tmp_file (0, "<ncl><head><connectorBase/></head></ncl>");
+  XFAIL ("importBase: Bad imported document",
+         "<importBase> at line 4: Syntax error in imported document "
+         "(no <regionBase> in imported document)",
+         xstrbuild ("\
 <ncl>\n\
  <head>\n\
   <regionBase>\n\
@@ -1484,51 +1536,11 @@ tmp = writetmp (0, "<ncl/>");
   </regionBase>\n\
  </head>\n\
 </ncl>\n\
-", tmp.c_str ()));
+",
+                    tmp.c_str ()));
 
-tmp = writetmp (0, "<ncl><head/></ncl>");
- XFAIL ("importBase: Bad imported document",
-        "<importBase> at line 4: Syntax error in imported document "
-        "(no <regionBase> in imported document)",
-        xstrbuild ("\
-<ncl>\n\
- <head>\n\
-  <regionBase>\n\
-   <importBase alias='r' documentURI='%s'/>\n\
-  </regionBase>\n\
- </head>\n\
-</ncl>\n\
-", tmp.c_str ()));
-
-tmp = writetmp (0, "<ncl><x/></ncl>");
- XFAIL ("importBase: Missing head",
-        "<ncl> at line 1: Unknown child <x>",
-        xstrbuild ("\
-<ncl>\n\
- <head>\n\
-  <regionBase>\n\
-   <importBase alias='r' documentURI='%s'/>\n\
-  </regionBase>\n\
- </head>\n\
-</ncl>\n\
-", tmp.c_str ()));
-
-tmp = writetmp (0, "<ncl><head><connectorBase/></head></ncl>");
- XFAIL ("importBase: Bad imported document",
-        "<importBase> at line 4: Syntax error in imported document "
-        "(no <regionBase> in imported document)",
-        xstrbuild ("\
-<ncl>\n\
- <head>\n\
-  <regionBase>\n\
-   <importBase alias='r' documentURI='%s'/>\n\
-  </regionBase>\n\
- </head>\n\
-</ncl>\n\
-", tmp.c_str ()));
-
-tmp = writetmp (0, "");
-tmp = writetmp (0, xstrbuild ("\
+  tmp = tests_write_tmp_file (0, "");
+  tmp = tests_write_tmp_file (0, xstrbuild ("\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1536,12 +1548,13 @@ tmp = writetmp (0, xstrbuild ("\
   </connectorBase>\n\
  </head>\n\
 </ncl>\n\
-", tmp.c_str ()));
+",
+                                tmp.c_str ()));
 
- XFAIL ("importBase: Circular import",
-        "<importBase> at line 4: Syntax error in imported document "
-        "(circular import)",
-        xstrbuild ("\
+  XFAIL ("importBase: Circular import",
+         "<importBase> at line 4: Syntax error in imported document "
+         "(circular import)",
+         xstrbuild ("\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1549,13 +1562,12 @@ tmp = writetmp (0, xstrbuild ("\
   </connectorBase>\n\
  </head>\n\
 </ncl>\n\
-", tmp.c_str ()));
+",
+                    tmp.c_str ()));
 
-
-
-// -------------------------------------------------------------------------
-// <context>
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // <context>
+  // -------------------------------------------------------------------------
 
   XFAIL ("context: Missing id",
          "<context> at line 4: Missing attribute 'id'", "\
@@ -1568,13 +1580,12 @@ tmp = writetmp (0, xstrbuild ("\
 </ncl>\n\
 ");
 
-
-// -------------------------------------------------------------------------
-// <port>
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // <port>
+  // -------------------------------------------------------------------------
 
-  XFAIL ("port: Missing id",
-         "<port> at line 4: Missing attribute 'id'", "\
+  XFAIL ("port: Missing id", "<port> at line 4: Missing attribute 'id'",
+         "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1595,7 +1606,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("port: Bad component",
          "<port> at line 4: Bad value 'p' for attribute 'component' "
-         "(no such object in scope)", "\
+         "(no such object in scope)",
+         "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1606,7 +1618,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("port: Bad component",
          "<port> at line 6: Bad value 'r' for attribute 'component' "
-         "(no such object in scope)", "\
+         "(no such object in scope)",
+         "\
 <ncl>\n\
  <head>\n\
   <regionBase id='r'/>\n\
@@ -1619,7 +1632,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("port: Bad component",
          "<port> at line 3: Bad value 'b' for attribute 'component' "
-         "(no such object in scope)", "\
+         "(no such object in scope)",
+         "\
 <ncl>\n\
  <body>\n\
   <port id='p' component='b'/>\n\
@@ -1632,7 +1646,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("port: Bad interface",
          "<port> at line 6: Bad value 'r' for attribute 'interface' "
-         "(no such interface)", "\
+         "(no such interface)",
+         "\
 <ncl>\n\
  <head>\n\
   <regionBase id='r'/>\n\
@@ -1647,7 +1662,8 @@ tmp = writetmp (0, xstrbuild ("\
   XFAIL ("port: Bad interface",
          "<port> at line 3: Bad value 'nonexistent' "
          "for attribute 'interface' "
-         "(no such interface)", "\
+         "(no such interface)",
+         "\
 <ncl>\n\
  <body>\n\
   <port id='p' component='m' interface='nonexistent'/>\n\
@@ -1659,7 +1675,8 @@ tmp = writetmp (0, xstrbuild ("\
   XFAIL ("port: Bad interface",
          "<port> at line 3: Bad value 'nonexistent' "
          "for attribute 'interface' "
-         "(no such interface)", "\
+         "(no such interface)",
+         "\
 <ncl>\n\
  <body>\n\
   <port id='p' component='c' interface='nonexistent'/>\n\
@@ -1671,7 +1688,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("port: Bad interface",
          "<port> at line 3: Bad value 'p' for attribute 'interface' "
-         "(no such interface)", "\
+         "(no such interface)",
+         "\
 <ncl>\n\
  <body>\n\
   <port id='p' component='c' interface='p'/>\n\
@@ -1683,7 +1701,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("port: Bad interface",
          "<port> at line 3: Bad value 'm' for attribute 'interface' "
-         "(no such interface)", "\
+         "(no such interface)",
+         "\
 <ncl>\n\
  <body>\n\
   <port id='p' component='c' interface='m'/>\n\
@@ -1695,7 +1714,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("port: Bad interface",
          "<port> at line 7: Bad value 'p2' for attribute 'interface' "
-         "(no such interface)", "\
+         "(no such interface)",
+         "\
 <ncl>\n\
  <body>\n\
   <port id='p0' component='c1' interface='p1'/>\n\
@@ -1712,7 +1732,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("port: Bad interface",
          "<port> at line 3: Bad value 'p2' for attribute 'interface' "
-         "(no such interface)", "\
+         "(no such interface)",
+         "\
 <ncl>\n\
  <body>\n\
   <port id='p0' component='c1' interface='p2'/>\n\
@@ -1727,13 +1748,12 @@ tmp = writetmp (0, xstrbuild ("\
 </ncl>\n\
 ");
 
-
-// -------------------------------------------------------------------------
-// <switch>
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // <switch>
+  // -------------------------------------------------------------------------
 
-  XFAIL ("switch: Missing id",
-         "<switch> at line 4: Missing attribute 'id'", "\
+  XFAIL ("switch: Missing id", "<switch> at line 4: Missing attribute 'id'",
+         "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1743,10 +1763,9 @@ tmp = writetmp (0, xstrbuild ("\
 </ncl>\n\
 ");
 
-
-// -------------------------------------------------------------------------
-// <defaultComponent>
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // <defaultComponent>
+  // -------------------------------------------------------------------------
 
   XFAIL ("defaultComponent: Missing component",
          "<defaultComponent> at line 5: Missing attribute 'component'", "\
@@ -1763,7 +1782,8 @@ tmp = writetmp (0, xstrbuild ("\
   XFAIL ("defaultComponent: Bad constituent",
          "<defaultComponent> at line 5: Bad value 'x' "
          "for attribute 'component' "
-         "(no such object in scope)", "\
+         "(no such object in scope)",
+         "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1776,7 +1796,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("defaultComponent: Bad constituent",
          "<defaultComponent> at line 5: Bad value '__root__' "
-         "for attribute 'component' (no such object in scope)", "\
+         "for attribute 'component' (no such object in scope)",
+         "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1787,10 +1808,9 @@ tmp = writetmp (0, xstrbuild ("\
 </ncl>\n\
 ");
 
-
-// -------------------------------------------------------------------------
-// <bindRule>
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // <bindRule>
+  // -------------------------------------------------------------------------
 
   XFAIL ("bindRule: Missing constituent",
          "<bindRule> at line 5: Missing attribute 'constituent'", "\
@@ -1818,7 +1838,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("bindRule: Bad constituent",
          "<bindRule> at line 5: Bad value 'x' for attribute 'constituent' "
-         "(no such object in scope)", "\
+         "(no such object in scope)",
+         "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1832,7 +1853,8 @@ tmp = writetmp (0, xstrbuild ("\
   XFAIL ("bindRule: Bad constituent",
          "<bindRule> at line 5: Bad value '__root__' "
          "for attribute 'constituent' "
-         "(no such object in scope)", "\
+         "(no such object in scope)",
+         "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1845,7 +1867,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("bindRule: Bad constituent",
          "<bindRule> at line 6: Bad value 'x' for attribute 'rule' "
-         "(no such rule)", "\
+         "(no such rule)",
+         "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1857,13 +1880,12 @@ tmp = writetmp (0, xstrbuild ("\
 </ncl>\n\
 ");
 
-
-// -------------------------------------------------------------------------
-// <media>
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // <media>
+  // -------------------------------------------------------------------------
 
-  XFAIL ("media: Missing id",
-         "<media> at line 4: Missing attribute 'id'", "\
+  XFAIL ("media: Missing id", "<media> at line 4: Missing attribute 'id'",
+         "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1874,7 +1896,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("media: Duplicated id",
          "<media> at line 5: Bad value 'a' "
-         "for attribute 'id' (must be unique)", "\
+         "for attribute 'id' (must be unique)",
+         "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1887,7 +1910,8 @@ tmp = writetmp (0, xstrbuild ("\
   XFAIL ("media: Bad descriptor",
          "<media> at line 4: Bad value 'nonexistent' "
          "for attribute 'descriptor' "
-         "(no such descriptor)", "\
+         "(no such descriptor)",
+         "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1898,7 +1922,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("media: Bad descriptor",
          "<media> at line 8: Bad value 'r' for attribute 'descriptor' "
-         "(no such descriptor)", "\
+         "(no such descriptor)",
+         "\
 <ncl>\n\
  <head>\n\
   <regionBase>\n\
@@ -1911,10 +1936,32 @@ tmp = writetmp (0, xstrbuild ("\
 </ncl>\n\
 ");
 
-#if 0
+  XFAIL ("media: Mutually exclusive src and refer",
+         "<media> at line 3: Attributes 'src' and 'refer' "
+         "are mutually exclusive",
+         "\
+<ncl>\n\
+ <body>\n\
+  <media id='a' src='b' refer='r'/>\n\
+ </body>\n\
+</ncl>\n\
+");
+
+  XFAIL ("media: Mutually exclusive type and refer",
+         "<media> at line 3: Attributes 'type' and 'refer' "
+         "are mutually exclusive",
+         "\
+<ncl>\n\
+ <body>\n\
+  <media id='a' type='b' refer='r'/>\n\
+ </body>\n\
+</ncl>\n\
+");
+
   XFAIL ("media: Bad refer",
          "<media> at line 3: Bad value 'r' for attribute 'refer' "
-         "(no such media object)", "\
+         "(no such media object)",
+         "\
 <ncl>\n\
  <body>\n\
   <media id='a' refer='r'/>\n\
@@ -1924,7 +1971,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("media: Bad refer",
          "<media> at line 5: Bad value 'b' for attribute 'refer' "
-         "(cannot refer to a reference)", "\
+         "(cannot refer to a reference)",
+         "\
 <ncl>\n\
  <body>\n\
   <media id='a'/>\n\
@@ -1933,12 +1981,10 @@ tmp = writetmp (0, xstrbuild ("\
  </body>\n\
 </ncl>\n\
 ");
-#endif
 
-
-// -------------------------------------------------------------------------
-// <area>
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // <area>
+  // -------------------------------------------------------------------------
 
   XFAIL ("area: Missing id",
          "Element <area> at line 5: Missing attribute 'id'", "\
@@ -1954,7 +2000,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("area: Duplicated id",
          "Element <area> at line 5: Bad value 'm'"
-         " for attribute 'id' (must be unique)", "\
+         " for attribute 'id' (must be unique)",
+         "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1967,7 +2014,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("area: Bad begin",
          "Element <area> at line 5: Bad value 'a'"
-         " for attribute 'begin'", "\
+         " for attribute 'begin'",
+         "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1980,7 +2028,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("area: Bad end",
          "Element <area> at line 5: Bad value 'a' "
-         "for attribute 'end'", "\
+         "for attribute 'end'",
+         "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1993,7 +2042,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("area: Mutually exclusive",
          "Element <area> at line 5: Attributes 'label' and 'begin' "
-         "are mutually exclusive", "\
+         "are mutually exclusive",
+         "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -2006,7 +2056,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("area: Mutually exclusive",
          "Element <area> at line 5: Attributes 'label' and 'end' "
-         "are mutually exclusive", "\
+         "are mutually exclusive",
+         "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -2017,10 +2068,9 @@ tmp = writetmp (0, xstrbuild ("\
 </ncl>\n\
 ");
 
-
-// -------------------------------------------------------------------------
-// <link>
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // <link>
+  // -------------------------------------------------------------------------
 
   XFAIL ("link: Missing xconnector",
          "<link> at line 4: Missing attribute 'xconnector'", "\
@@ -2035,7 +2085,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("link: No such xconnector",
          "<link> at line 4: Bad value 'c' for attribute 'xconnector' "
-         "(no such connector)", "\
+         "(no such connector)",
+         "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -2048,7 +2099,8 @@ tmp = writetmp (0, xstrbuild ("\
   XFAIL ("link: Link does not match connector",
          "<link> at line 11: Bad value 'c' for attribute 'xconnector' "
          "(link does not match connector, "
-         "role 'onBegin' not bound)", "\
+         "role 'onBegin' not bound)",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -2068,7 +2120,8 @@ tmp = writetmp (0, xstrbuild ("\
   XFAIL ("link: Link does not match connector",
          "<link> at line 11: Bad value 'c' for attribute 'xconnector' "
          "(link does not match connector, "
-         "role 'start' not bound)", "\
+         "role 'start' not bound)",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -2089,7 +2142,8 @@ tmp = writetmp (0, xstrbuild ("\
   XFAIL ("link: Link does not match connector",
          "<link> at line 17: Bad value 'c' for attribute 'xconnector' "
          "(link does not match connector, "
-         "role 'test' not bound)", "\
+         "role 'test' not bound)",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -2114,10 +2168,9 @@ tmp = writetmp (0, xstrbuild ("\
 </ncl>\n\
 ");
 
-
-// -------------------------------------------------------------------------
-// <linkParam>
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // <linkParam>
+  // -------------------------------------------------------------------------
 
   XFAIL ("linkParam: Missing name",
          "<linkParam> at line 15: Missing attribute 'name'", "\
@@ -2168,10 +2221,9 @@ tmp = writetmp (0, xstrbuild ("\
 </ncl>\n\
 ");
 
-
-// -------------------------------------------------------------------------
-// <bind>
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // <bind>
+  // -------------------------------------------------------------------------
 
   XFAIL ("bind: Missing role",
          "<bind> at line 13: Missing attribute 'role'", "\
@@ -2217,7 +2269,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("bind: Bad component",
          "<bind> at line 12: Bad value 'x' for attribute 'component' "
-         "(no such object in scope)", "\
+         "(no such object in scope)",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -2238,7 +2291,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("bind: Bad component (ghost bind)",
          "<bind> at line 14: Bad value 'y' for attribute 'component' "
-         "(no such object in scope)", "\
+         "(no such object in scope)",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -2261,7 +2315,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("bind: Bad interface (area)",
          "<bind> at line 13: Bad value 'a' for attribute 'interface' "
-         "(no such interface)", "\
+         "(no such interface)",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -2283,7 +2338,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("bind: Bad interface (area)",
          "<bind> at line 16: Bad value 'p' for attribute 'interface' "
-         "(expected a presentation event)", "\
+         "(expected a presentation event)",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -2307,7 +2363,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("bind: Bad interface (property)",
          "<bind> at line 14: Bad value '' for attribute 'interface' "
-         "(expected an attribution event)", "\
+         "(expected an attribution event)",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -2329,7 +2386,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("bind: Bad interface (selection)",
          "<bind> at line 15: Bad value 'a' for attribute 'interface' "
-         "(must be empty)", "\
+         "(must be empty)",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -2353,7 +2411,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("bind: Bad interface (ghost bind)",
          "<bind> at line 15: Bad value '' for attribute 'interface' "
-         "(expected an attribution event)", "\
+         "(expected an attribution event)",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -2376,7 +2435,8 @@ tmp = writetmp (0, xstrbuild ("\
 
   XFAIL ("bind: Bad interface (switch child)",
          "<bind> at line 17: Bad value 'm' for attribute 'interface' "
-         "(no such interface)", "\
+         "(no such interface)",
+         "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -2399,10 +2459,9 @@ tmp = writetmp (0, xstrbuild ("\
 </ncl>\n\
 ");
 
-
-// -------------------------------------------------------------------------
-// <bindParam>
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // <bindParam>
+  // -------------------------------------------------------------------------
 
   XFAIL ("bindParam: Missing name",
          "<bindParam> at line 17: Missing attribute 'name'", "\
@@ -2454,12 +2513,10 @@ tmp = writetmp (0, xstrbuild ("\
 </ncl>\n\
 ");
 
-
-// -------------------------------------------------------------------------
-// Sanity checks.
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // Sanity checks.
+  // -------------------------------------------------------------------------
 
-
   // Success: Empty document.
   {
     Document *doc;
@@ -2476,7 +2533,6 @@ tmp = writetmp (0, xstrbuild ("\
     delete doc;
   }
 
-
   // Success: Root aliases.
   {
     Document *doc;
@@ -2504,7 +2560,6 @@ tmp = writetmp (0, xstrbuild ("\
     delete doc;
   }
 
-
   // Success: Settings media.
   {
     Document *doc;
@@ -2557,7 +2612,6 @@ tmp = writetmp (0, xstrbuild ("\
     delete doc;
   }
 
-
   // Success: Single media.
   {
     Document *doc;
@@ -2612,7 +2666,6 @@ tmp = writetmp (0, xstrbuild ("\
     delete doc;
   }
 
-
   // Success: Single media with descriptor and region overrides.
   {
     Document *doc;
@@ -2660,24 +2713,23 @@ tmp = writetmp (0, xstrbuild ("\
     g_assert (m->getProperty ("y") == "2");
 
     g_assert (m->getAttributionEvent ("top") != nullptr);
-    g_assert (m->getProperty ("top") == "50.00%");
+    g_assert (DOUBLE_PROP_EQ (m, "top", .5));
 
     g_assert (m->getAttributionEvent ("left") != nullptr);
-    g_assert (m->getProperty ("left") == "0.00%");
+    g_assert (DOUBLE_PROP_EQ (m, "left", 0.));
 
     g_assert (m->getAttributionEvent ("width") != nullptr);
-    g_assert (m->getProperty ("width") == "100.00%");
+    g_assert (DOUBLE_PROP_EQ (m, "width", 1.));
 
     g_assert (m->getAttributionEvent ("height") != nullptr);
-    g_assert (m->getProperty ("height") == "100.00%");
+    g_assert (DOUBLE_PROP_EQ (m, "height", 1.));
 
-    g_assert (m->getAttributionEvent ("zorder") != nullptr);
-    g_assert (m->getProperty ("zorder") == "1");
+    g_assert (m->getAttributionEvent ("zOrder") != nullptr);
+    g_assert (m->getProperty ("zOrder") == "1");
 
     delete doc;
   }
 
-
   // Success: Single media with descriptor and transitions.
   {
     Document *doc;
@@ -2712,7 +2764,7 @@ tmp = writetmp (0, xstrbuild ("\
 direction='forward',fadeColor='',horzRepeat='0',vertRepeat='0',\
 borderWidth='0',borderColor=''}");
 
-    map<string,string> tab = parse_table (m->getProperty ("transIn"));
+    map<string, string> tab = parse_table (m->getProperty ("transIn"));
     g_assert (tab["type"] == "barWipe");
     g_assert (tab["subtype"] == "");
     g_assert (tab["dur"] == "0");
@@ -2748,10 +2800,9 @@ borderWidth='0',borderColor=''}");
     delete doc;
   }
 
-
   // Success: Single media with imported bases.
   {
-    string B0 = writetmp (0, "\
+    string B0 = tests_write_tmp_file (0, "\
 <ncl>\n\
  <head>\n\
   <regionBase>\n\
@@ -2764,7 +2815,7 @@ borderWidth='0',borderColor=''}");
 </ncl>\n\
 ");
 
-    string B1 = writetmp (1, "\
+    string B1 = tests_write_tmp_file (1, "\
 <ncl>\n\
  <head>\n\
   <transitionBase>\n\
@@ -2775,7 +2826,7 @@ borderWidth='0',borderColor=''}");
 </ncl>\n\
 ");
 
-    string B2 = writetmp (2, xstrbuild ("\
+    string B2 = tests_write_tmp_file (2, xstrbuild ("\
 <ncl>\n\
  <head>\n\
   <descriptorBase>\n\
@@ -2783,10 +2834,12 @@ borderWidth='0',borderColor=''}");
   </descriptorBase>\n\
  </head>\n\
 </ncl>\n\
-", B0.c_str ()));
+",
+                                        B0.c_str ()));
 
     Document *doc;
-    PASS (&doc, "Single media with imported bases", xstrbuild ("\
+    PASS (&doc, "Single media with imported bases",
+          xstrbuild ("\
 <ncl>\n\
  <head>\n\
   <descriptorBase>\n\
@@ -2806,7 +2859,8 @@ borderWidth='0',borderColor=''}");
   <media id='m3' descriptor='B2#X#d'/>\n\
  </body>\n\
 </ncl>\n\
-", B0.c_str (), B1.c_str (), B2.c_str ()));
+",
+                     B0.c_str (), B1.c_str (), B2.c_str ()));
     g_assert_nonnull (doc);
     g_assert (doc->getObjects ()->size () == 5);
     g_assert (doc->getMedias ()->size () == 4);
@@ -2814,10 +2868,10 @@ borderWidth='0',borderColor=''}");
 
     Media *m1 = cast (Media *, doc->getObjectById ("m1"));
     g_assert_nonnull (m1);
-    g_assert (m1->getProperty ("top") == "50.00%");
-    g_assert (m1->getProperty ("left") == "30.00%");
-    g_assert (m1->getProperty ("width") == "100.00%");
-    g_assert (m1->getProperty ("height") == "100.00%");
+    g_assert (DOUBLE_PROP_EQ (m1, "top", .5));
+    g_assert (DOUBLE_PROP_EQ (m1, "left", .3));
+    g_assert (DOUBLE_PROP_EQ (m1, "width", 1.0));
+    g_assert (DOUBLE_PROP_EQ (m1, "height", 1.0));
     g_assert (m1->getProperty ("focusIndex") == "3");
     g_assert (m1->getProperty ("transIn") == "");
 
@@ -2833,10 +2887,10 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
 
     Media *m3 = cast (Media *, doc->getObjectById ("m3"));
     g_assert_nonnull (m3);
-    g_assert (m3->getProperty ("top") == "50.00%");
-    g_assert (m3->getProperty ("left") == "30.00%");
-    g_assert (m3->getProperty ("width") == "100.00%");
-    g_assert (m3->getProperty ("height") == "100.00%");
+    g_assert (DOUBLE_PROP_EQ (m3, "top", .5));
+    g_assert (DOUBLE_PROP_EQ (m3, "left", .3));
+    g_assert (DOUBLE_PROP_EQ (m3, "width", 1.));
+    g_assert (DOUBLE_PROP_EQ (m3, "height", 1.));
     g_assert (m3->getProperty ("focusIndex") == "3");
     g_assert (m3->getProperty ("transIn") == "");
 
@@ -2846,17 +2900,12 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
     delete doc;
   }
 
-#if 0
-
   // Success: Media with refer.
   {
     Document *doc;
     PASS (&doc, "Media with refer", "\
 <ncl>\n\
  <body>\n\
-  <media id='m'>\n\
-   <property name='x' value='1'/>\n\
-  </media>\n\
   <context id='c'>\n\
     <media id='r1' refer='m'>\n\
      <property name='x' value='2'/>\n\
@@ -2866,25 +2915,28 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
      <property name='y' value='b'/>\n\
     </media>\n\
   </context>\n\
+  <media id='m'>\n\
+   <property name='x' value='1'/>\n\
+  </media>\n\
  </body>\n\
 </ncl>\n\
 ");
     g_assert_nonnull (doc);
-    g_assert (doc->getObjects ()->size () == 6);
-    g_assert (doc->getMedias ()->size () == 4);
+    g_assert (doc->getObjects ()->size () == 4);
+    g_assert (doc->getMedias ()->size () == 2);
     g_assert (doc->getContexts ()->size () == 2);
 
-    Media *m = cast (Media *, doc->getObjectById ("m"));
+    Media *m = cast (Media *, doc->getObjectByIdOrAlias ("m"));
     g_assert_nonnull (m);
 
-    Media *r1 = cast (Media *, doc->getObjectById ("r1"));
+    Media *r1 = cast (Media *, doc->getObjectByIdOrAlias ("r1"));
     g_assert_nonnull (r1);
 
-    Media *r2 = cast (Media *, doc->getObjectById ("r2"));
+    Media *r2 = cast (Media *, doc->getObjectByIdOrAlias ("r2"));
     g_assert_nonnull (r2);
 
     g_assert (m->getAttributionEvent ("x") != nullptr);
-    g_assert (m->getProperty ("x") == "2");
+    g_assert (m->getProperty ("x") == "1");
     g_assert (m->getAttributionEvent ("y") != nullptr);
     g_assert (m->getProperty ("y") == "b");
 
@@ -2894,9 +2946,7 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
 
     delete doc;
   }
-#endif
 
-
   // Success: Nested contexts and ports.
   {
     Document *doc;
@@ -2956,7 +3006,6 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
     delete doc;
   }
 
-
   // Success: Simple link.
   {
     Document *doc;
@@ -3027,7 +3076,6 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
     delete doc;
   }
 
-
   // Success: Simple link (vacuous conditions and actions).
   {
     Document *doc;
@@ -3111,7 +3159,6 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
     delete doc;
   }
 
-
   // Success: Link and bind parameters.
   {
     Document *doc;
@@ -3257,7 +3304,6 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
     delete doc;
   }
 
-
   // Success: Binds pointing to ports and properties.
   {
     Document *doc;
@@ -3389,7 +3435,6 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
     delete doc;
   }
 
-
   // Success: Simple statement.
   {
     Document *doc;
@@ -3452,7 +3497,6 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
     delete doc;
   }
 
-
   // Success: More simple statements.
   {
     Document *doc;
@@ -3553,7 +3597,6 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
     delete doc;
   }
 
-
   // Success: Complex statements.
   {
     Document *doc;
@@ -3639,7 +3682,6 @@ and($__root__.p<='1',\
     delete doc;
   }
 
-
   // Success: Complex conditions and statements.
   {
     Document *doc;
@@ -3759,7 +3801,6 @@ and(and('0'!='0', '1'>'1'), not($__root__.q==$c.p), $m.r<'33')");
     delete doc;
   }
 
-
   // Success: Single switch with default components.
   {
     Document *doc;
@@ -3806,7 +3847,6 @@ and(and('0'!='0', '1'>'1'), not($__root__.q==$c.p), $m.r<'33')");
     delete doc;
   }
 
-
   // Success: Single switch with atomic rules and default components.
   {
     Document *doc;
@@ -3867,7 +3907,6 @@ and(and('0'!='0', '1'>'1'), not($__root__.q==$c.p), $m.r<'33')");
     delete doc;
   }
 
-
   // Success: Single switch with complex rules.
   {
     Document *doc;
@@ -3922,9 +3961,9 @@ and(and('0'!='0', '1'>'1'), not($__root__.q==$c.p), $m.r<'33')");
 
     it++;
     g_assert (it->first == m3);
-    g_assert (it->second->toString () ==
-              "and($__settings__.y<='0', or(not($__settings__.z>='2'), "
-              "$__settings__.w<'3'))");
+    g_assert (it->second->toString ()
+              == "and($__settings__.y<='0', or(not($__settings__.z>='2'), "
+                 "$__settings__.w<'3'))");
 
     it++;
     g_assert (it->first == m3);
@@ -3938,7 +3977,6 @@ and(and('0'!='0', '1'>'1'), not($__root__.q==$c.p), $m.r<'33')");
     delete doc;
   }
 
-
   // Success: Misc checks.
   {
     Document *doc;

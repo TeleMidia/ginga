@@ -54,20 +54,6 @@ src+= Predicate.cpp
 src+= Switch.cpp
 src+= aux-ginga.cpp
 src+= aux-gl.cpp
-src+= ncl/NclArea.cpp
-src+= ncl/NclBind.cpp
-src+= ncl/NclComposition.cpp
-src+= ncl/NclContext.cpp
-src+= ncl/NclDocument.cpp
-src+= ncl/NclEntity.cpp
-src+= ncl/NclLink.cpp
-src+= ncl/NclMedia.cpp
-src+= ncl/NclMediaRefer.cpp
-src+= ncl/NclNode.cpp
-src+= ncl/NclPort.cpp
-src+= ncl/NclProperty.cpp
-src+= ncl/NclSwitch.cpp
-src+= ncl/ParserXercesC.cpp
 
 if WITH_LIBRSVG
 src+= PlayerSvg.cpp

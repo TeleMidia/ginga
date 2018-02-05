@@ -24,23 +24,23 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include <gtk/gtk.h>
 
 #if defined WITH_OPENGL && WITH_OPENGL
+// clang-format off
 PRAGMA_DIAG_IGNORE (-Wunused-macros)
 PRAGMA_DIAG_IGNORE (-Wvariadic-macros)
+// clang-format on
 #endif
 
 #include "ginga.h"
 using namespace ::std;
 
-
 // Global formatter.
 static Ginga *GINGA = nullptr;
 
-
 // Options.
 
 #define OPTION_LINE "FILE..."
-#define OPTION_DESC                             \
-  "Report bugs to: " PACKAGE_BUGREPORT "\n"     \
+#define OPTION_DESC                                                        \
+  "Report bugs to: " PACKAGE_BUGREPORT "\n"                                \
   "Ginga home page: " PACKAGE_URL
 
 static gboolean opt_debug = FALSE;        // toggle debug
@@ -83,7 +83,7 @@ opt_size_cb (unused (const gchar *opt), const gchar *arg,
 
   return TRUE;
 
- syntax_error:
+syntax_error:
   g_set_error (err, G_OPTION_ERROR, G_OPTION_ERROR_BAD_VALUE,
                "Invalid size string '%s'", arg);
   return FALSE;
@@ -96,41 +96,36 @@ opt_version_cb (void)
   _exit (0);
 }
 
-static GOptionEntry options[] = {
-  {"background", 'b', 0, G_OPTION_ARG_CALLBACK,
-   pointerof (opt_background_cb), "Set background color", "COLOR"},
-  {"debug", 'd', 0, G_OPTION_ARG_NONE,
-   &opt_debug, "Enable debugging", NULL},
-  {"fullscreen", 'f', 0, G_OPTION_ARG_NONE,
-   &opt_fullscreen, "Enable full-screen mode", NULL},
-  {"opengl", 'g', 0, G_OPTION_ARG_NONE,
-   &opt_opengl, "Use OpenGL backend", NULL},
-  {"size", 's', 0, G_OPTION_ARG_CALLBACK,
-   pointerof (opt_size_cb), "Set initial window size", "WIDTHxHEIGHT"},
-  {"experimental", 'x', 0, G_OPTION_ARG_NONE,
-   &opt_experimental, "Enable experimental stuff", NULL},
-  {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
-   pointerof (opt_version_cb), "Print version information and exit", NULL},
-  {NULL, 0, 0, G_OPTION_ARG_NONE, NULL, NULL, NULL}
-};
+static GOptionEntry options[]
+    = { {"background", 'b', 0, G_OPTION_ARG_CALLBACK,
+          pointerof (opt_background_cb), "Set background color", "COLOR"},
+        {"debug", 'd', 0, G_OPTION_ARG_NONE, &opt_debug,
+          "Enable debugging", NULL},
+        {"fullscreen", 'f', 0, G_OPTION_ARG_NONE, &opt_fullscreen,
+          "Enable full-screen mode", NULL},
+        {"opengl", 'g', 0, G_OPTION_ARG_NONE, &opt_opengl,
+          "Use OpenGL backend", NULL},
+        {"size", 's', 0, G_OPTION_ARG_CALLBACK, pointerof (opt_size_cb),
+          "Set initial window size", "WIDTHxHEIGHT"},
+        {"experimental", 'x', 0, G_OPTION_ARG_NONE, &opt_experimental,
+          "Enable experimental stuff", NULL},
+        {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
+          pointerof (opt_version_cb), "Print version information and exit",
+          NULL},
+        {NULL, 0, 0, G_OPTION_ARG_NONE, NULL, NULL, NULL} };
 
-
 // Error handling.
 
-#define usage_error(fmt, ...)\
-  _error (TRUE, 0, fmt, ## __VA_ARGS__)
+#define usage_error(fmt, ...) _error (TRUE, 0, fmt, ##__VA_ARGS__)
 
-#define usage_die(fmt, ...)\
-  _error (TRUE, EXIT_FAILURE, fmt, ## __VA_ARGS__)
+#define usage_die(fmt, ...) _error (TRUE, EXIT_FAILURE, fmt, ##__VA_ARGS__)
 
-#define error(fmt, ...)\
-  _error (FALSE, 0, fmt, ## __VA_ARGS__)
+#define error(fmt, ...) _error (FALSE, 0, fmt, ##__VA_ARGS__)
 
-#define die(fmt, ...)\
-  _error (FALSE, 1, fmt, ## __VA_ARGS__)
+#define die(fmt, ...) _error (FALSE, 1, fmt, ##__VA_ARGS__)
 
-static G_GNUC_PRINTF (3,4) void
-_error (gboolean try_help, int die, const gchar *format, ...)
+static G_GNUC_PRINTF (3, 4) void _error (gboolean try_help, int die,
+                                         const gchar *format, ...)
 {
   const gchar *me = g_get_application_name ();
   va_list args;
@@ -147,12 +142,11 @@ _error (gboolean try_help, int die, const gchar *format, ...)
     _exit (die);
 }
 
-
-// Callbacks.
+  // Callbacks.
 
-#if GTK_CHECK_VERSION(3,16,0)
-static gboolean
-render_gl_callback (unused (GtkGLArea *area), unused (GdkGLContext *ctx))
+#if GTK_CHECK_VERSION(3, 16, 0)
+static gboolean render_gl_callback (unused (GtkGLArea *area),
+                                    unused (GdkGLContext *ctx))
 {
   GINGA->redraw (nullptr);
   return TRUE;
@@ -194,18 +188,18 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
 
   switch (e->keyval)
     {
-    case GDK_KEY_Escape:        // quit
+    case GDK_KEY_Escape: // quit
       if (g_str_equal ((const char *) type, "release"))
         return TRUE;
       gtk_main_quit ();
       return TRUE;
-    case GDK_KEY_F10:           // toggle debugging
+    case GDK_KEY_F10: // toggle debugging
       if (g_str_equal ((const char *) type, "release"))
         return TRUE;
       opt_debug = !opt_debug;
       GINGA->setOptionBool ("debug", opt_debug);
       return TRUE;
-    case GDK_KEY_F11:           // toggle full-screen
+    case GDK_KEY_F11: // toggle full-screen
       if (g_str_equal ((const char *) type, "release"))
         return TRUE;
       opt_fullscreen = !opt_fullscreen;
@@ -260,8 +254,8 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
       break;
     }
 
-  bool status = GINGA->sendKey
-    (string (key), g_str_equal ((const char *) type, "press") == 0);
+  bool status = GINGA->sendKey (
+      string (key), g_str_equal ((const char *) type, "press") == 0);
 
   if (free_key)
     g_free (deconst (char *, key));
@@ -269,13 +263,13 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
   if (!status)
     {
       g_assert (GINGA->getState () == GINGA_STATE_STOPPED);
-      gtk_main_quit ();         // all done
+      gtk_main_quit (); // all done
     }
 
   return status;
 }
 
-#if GTK_CHECK_VERSION (3,8,0)
+#if GTK_CHECK_VERSION(3, 8, 0)
 static gboolean
 tick_callback (GtkWidget *widget, GdkFrameClock *frame_clock,
                unused (gpointer data))
@@ -289,8 +283,8 @@ tick_callback (GtkWidget *widget)
   static guint64 last;
   static guint64 first;
 
-#if GTK_CHECK_VERSION (3,8,0)
-  time = (guint64)(gdk_frame_clock_get_frame_time (frame_clock) * 1000);
+#if GTK_CHECK_VERSION(3, 8, 0)
+  time = (guint64) (gdk_frame_clock_get_frame_time (frame_clock) * 1000);
   frame = (guint64) gdk_frame_clock_get_frame_counter (frame_clock);
 #else
   time = (guint64) g_get_monotonic_time ();
@@ -306,7 +300,7 @@ tick_callback (GtkWidget *widget)
   if (!GINGA->sendTick (time - first, time - last, frame))
     {
       g_assert (GINGA->getState () == GINGA_STATE_STOPPED);
-      gtk_main_quit ();         // all done
+      gtk_main_quit (); // all done
       return G_SOURCE_REMOVE;
     }
 
@@ -315,7 +309,6 @@ tick_callback (GtkWidget *widget)
   return G_SOURCE_CONTINUE;
 }
 
-
 // Main.
 
 int
@@ -361,7 +354,7 @@ main (int argc, char **argv)
 #if !(defined WITH_OPENGL && WITH_OPENGL)
       die ("Option -g requires OpenGL support");
 #endif
-#if !(GTK_CHECK_VERSION (3,16,0))
+#if !(GTK_CHECK_VERSION(3, 16, 0))
       die ("Option -g requires gtk+ >= 3.16");
 #endif
     }
@@ -377,7 +370,7 @@ main (int argc, char **argv)
   // Setup draw area.
   if (opt_opengl)
     {
-#if GTK_CHECK_VERSION (3,16,0)
+#if GTK_CHECK_VERSION(3, 16, 0)
       GtkWidget *area = gtk_gl_area_new ();
       g_assert_nonnull (area);
       gtk_container_add (GTK_CONTAINER (app), area);
@@ -395,17 +388,16 @@ main (int argc, char **argv)
 
   // Setup GTK+ callbacks.
   g_signal_connect (app, "destroy", G_CALLBACK (exit_callback), NULL);
-  g_signal_connect (app, "configure-event",
-                    G_CALLBACK (resize_callback), NULL);
-  g_signal_connect (app, "key-press-event",
-                    G_CALLBACK (keyboard_callback),
+  g_signal_connect (app, "configure-event", G_CALLBACK (resize_callback),
+                    NULL);
+  g_signal_connect (app, "key-press-event", G_CALLBACK (keyboard_callback),
                     deconst (void *, "press"));
   g_signal_connect (app, "key-release-event",
                     G_CALLBACK (keyboard_callback),
                     deconst (void *, "release"));
-#if GTK_CHECK_VERSION (3,8,0)
-  gtk_widget_add_tick_callback (app, (GtkTickCallback) tick_callback,
-                                NULL, NULL);
+#if GTK_CHECK_VERSION(3, 8, 0)
+  gtk_widget_add_tick_callback (app, (GtkTickCallback) tick_callback, NULL,
+                                NULL);
 #else
   g_timeout_add (1000 / 60, (GSourceFunc) tick_callback, app);
 #endif
@@ -417,7 +409,7 @@ main (int argc, char **argv)
   opts.experimental = opt_experimental;
   opts.opengl = opt_opengl;
   opts.background = string (opt_background);
-  GINGA = Ginga::create (argc, argv, &opts);
+  GINGA = Ginga::create (&opts);
   g_assert_nonnull (GINGA);
 
   // Run each NCL file, one after another.

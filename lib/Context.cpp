@@ -23,10 +23,9 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-
 // Public.
 
-Context::Context (const string &id): Composition (id)
+Context::Context (const string &id) : Composition (id)
 {
   _awakeChildren = 0;
   _status = true;
@@ -36,22 +35,21 @@ Context::~Context ()
 {
   // Stop and delete children.
   _lambda->transition (Event::STOP);
-  for (auto child: _children)
+  for (auto child : _children)
     delete child;
 
   // Delete predicates in links.
-  for (auto link: _links)
+  for (auto link : _links)
     {
-      for (auto &cond: link.first)
+      for (auto &cond : link.first)
         if (cond.predicate != nullptr)
           delete cond.predicate;
-      for (auto &act: link.second)
+      for (auto &act : link.second)
         if (act.predicate != nullptr)
           delete act.predicate;
     }
 }
 
-
 // Public: Object.
 
 string
@@ -79,33 +77,31 @@ Context::toString ()
   if (_links.size () > 0)
     {
 
-#define COND_TOSTRING(str, act)                                 \
-      G_STMT_START                                              \
-        {                                                       \
-          (str) += Event::getEventTransitionAsString            \
-            ((act).transition);                                 \
-          (str) += "(" + (act).event->getFullId ();             \
-          if ((act).predicate != nullptr)                       \
-            (str) += " ? " + (act).predicate->toString ();      \
-          (str) += ")";                                         \
-        }                                                       \
-      G_STMT_END
+#define COND_TOSTRING(str, act)                                            \
+  G_STMT_START                                                             \
+  {                                                                        \
+    (str) += Event::getEventTransitionAsString ((act).transition);         \
+    (str) += "(" + (act).event->getFullId ();                              \
+    if ((act).predicate != nullptr)                                        \
+      (str) += " ? " + (act).predicate->toString ();                       \
+    (str) += ")";                                                          \
+  }                                                                        \
+  G_STMT_END
 
-#define ACT_TOSTRING(str, act)                                  \
-      G_STMT_START                                              \
-        {                                                       \
-          (str) += Event::getEventTransitionAsString            \
-            ((act).transition);                                 \
-          (str) += "(" + (act).event->getFullId ();             \
-          if ((act).event->getType () == Event::ATTRIBUTION)    \
-            (str) += ":='" + (act).value + "'";                 \
-          (str) += ")";                                         \
-        }                                                       \
-      G_STMT_END
+#define ACT_TOSTRING(str, act)                                             \
+  G_STMT_START                                                             \
+  {                                                                        \
+    (str) += Event::getEventTransitionAsString ((act).transition);         \
+    (str) += "(" + (act).event->getFullId ();                              \
+    if ((act).event->getType () == Event::ATTRIBUTION)                     \
+      (str) += ":='" + (act).value + "'";                                  \
+    (str) += ")";                                                          \
+  }                                                                        \
+  G_STMT_END
 
       int i = 1;
       str += "  links:\n";
-      for (auto link: _links)
+      for (auto link : _links)
         {
           str += xstrbuild ("    #%d ", i++);
           auto it = link.first.begin ();
@@ -130,8 +126,7 @@ Context::toString ()
   return str;
 }
 
-string
-Context::getProperty (unused (const string &name))
+string Context::getProperty (unused (const string &name))
 {
   return Object::getProperty (name);
 }
@@ -142,9 +137,7 @@ Context::setProperty (const string &name, const string &value, Time dur)
   Object::setProperty (name, value, dur);
 }
 
-void
-Context::sendKey (unused (const string &key),
-                  unused (bool press))
+void Context::sendKey (unused (const string &key), unused (bool press))
 {
 }
 
@@ -155,7 +148,18 @@ Context::sendTick (Time total, Time diff, Time frame)
   Object::sendTick (total, diff, frame);
 
   // Check for EOS.
-  if (_awakeChildren == 0)
+  if (_parent == nullptr && _awakeChildren == 1)
+    {
+      if (_doc->getSettings ()->isOccurring ())
+        {
+          _doc->evalAction (_lambda, Event::STOP);
+        }
+      else
+        {
+          g_assert_not_reached ();
+        }
+    }
+  else if (_awakeChildren == 0)
     {
       _doc->evalAction (_lambda, Event::STOP);
     }
@@ -174,7 +178,7 @@ Context::beforeTransition (Event *evt, Event::Transition transition)
           break;
 
         case Event::STOP:
-          for (auto child: _children)
+          for (auto child : _children)
             {
               Event *lambda = child->getLambda ();
               g_assert_nonnull (lambda);
@@ -183,7 +187,7 @@ Context::beforeTransition (Event *evt, Event::Transition transition)
           break;
 
         case Event::PAUSE:
-          for (auto child: _children)
+          for (auto child : _children)
             {
               Event *lambda = child->getLambda ();
               g_assert_nonnull (lambda);
@@ -192,7 +196,7 @@ Context::beforeTransition (Event *evt, Event::Transition transition)
           break;
 
         case Event::RESUME:
-          for (auto child: _children)
+          for (auto child : _children)
             {
               Event *lambda = child->getLambda ();
               g_assert_nonnull (lambda);
@@ -201,7 +205,7 @@ Context::beforeTransition (Event *evt, Event::Transition transition)
           break;
 
         case Event::ABORT:
-          for (auto child: _children)
+          for (auto child : _children)
             {
               Event *lambda = child->getLambda ();
               g_assert_nonnull (lambda);
@@ -215,10 +219,10 @@ Context::beforeTransition (Event *evt, Event::Transition transition)
       break;
 
     case Event::ATTRIBUTION:
-      break;                    // nothing to do
+      break; // nothing to do
 
     case Event::SELECTION:
-      return false;             // fail
+      return false; // fail
 
     default:
       g_assert_not_reached ();
@@ -240,9 +244,9 @@ Context::afterTransition (Event *evt, Event::Transition transition)
           Object::doStart ();
 
           // Start all ports in the next tick.
-          for (auto port: _ports)
+          for (auto port : _ports)
             {
-              if (port->getType() == Event::PRESENTATION)
+              if (port->getType () == Event::PRESENTATION)
                 this->addDelayedAction (port, Event::START, "", 0);
             }
           TRACE ("start %s", evt->getFullId ().c_str ());
@@ -292,18 +296,20 @@ Context::afterTransition (Event *evt, Event::Transition transition)
                    value.c_str (), (s != "") ? s.c_str () : "0s");
             break;
           }
-
         case Event::STOP:
-          TRACE ("stop %s:=...", evt->getFullId ().c_str ());
-          break;
-
+          {
+            TRACE ("stop %s:=...", evt->getFullId ().c_str ());
+            break;
+          }
         default:
-          g_assert_not_reached ();
+          {
+            g_assert_not_reached ();
+          }
         }
       break;
 
     case Event::SELECTION:
-      g_assert_not_reached ();  // should not get here
+      g_assert_not_reached ();
       break;
 
     default:
@@ -312,7 +318,6 @@ Context::afterTransition (Event *evt, Event::Transition transition)
   return true;
 }
 
-
 // Public.
 
 const list<Event *> *
@@ -328,7 +333,7 @@ Context::addPort (Event *event)
   tryinsert (event, _ports, push_back);
 }
 
-const list<pair<list<Action>,list<Action>>> *
+const list<pair<list<Action>, list<Action> > > *
 Context::getLinks ()
 {
   return &_links;

@@ -50,6 +50,7 @@ README: README.md
 
 MAINTAINERCLEANFILES+=\
   INSTALL\
+  ChangeLog\
   Makefile.in\
   aclocal.m4\
   build-aux/ar-lib\

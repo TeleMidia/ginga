@@ -1,0 +1,7 @@
+Ginga NEWS
+
+* Version 0.13.6, ???
+
+  - Support run ncl documents from file.
+
+  - Support run transport stream files and execute an ncl from it. 

@@ -15,15 +15,14 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include "Event.h"
-#include "Media.h"
+#include "tests.h"
 
 int
 main (void)
 {
   Media *m;
 
-  m = new Media ("m", "", "");
+  m = new Media ("m");
   g_assert_nonnull (m);
 
   Event *e = m->getPresentationEvent ("@lambda");

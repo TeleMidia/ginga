@@ -15,10 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include "Document.h"
-#include "Context.h"
-#include "Media.h"
-#include "MediaSettings.h"
+#include "tests.h"
 
 #define N 1024
 
@@ -42,7 +39,7 @@ main (void)
 
   for (size_t i = 0; i < N; i++)
     {
-      m[i] = new Media (xstrbuild ("m%d", (int) i), "", "");
+      m[i] = new Media (xstrbuild ("m%d", (int) i));
       doc->addObject (m[i]);
     }
   g_assert (doc->getObjects ()->size () == N + 2);

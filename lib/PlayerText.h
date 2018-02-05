@@ -22,23 +22,22 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-class PlayerText: public Player
+class PlayerText : public Player
 {
 public:
-  static cairo_surface_t *renderSurface (const string &,
+  static cairo_surface_t *renderSurface (const string &, const string &,
                                          const string &, const string &,
-                                         const string &, const string &,
-                                         Color, Color, Rect,
+                                         const string &, Color, Color, Rect,
                                          const string &, const string &,
                                          bool, Rect *);
 
-  PlayerText (Formatter *, Media *, const string &);
+  PlayerText (Formatter *, Media *);
   ~PlayerText ();
   void reload () override;
 
 protected:
-  bool doSetProperty (PlayerProperty, const string &,
-                      const string &) override;
+  bool doSetProperty (Property, const string &, const string &) override;
+
 private:
   struct
   {

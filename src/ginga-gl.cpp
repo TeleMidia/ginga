@@ -38,8 +38,8 @@ static Ginga *GINGA = nullptr;
 // Options.
 
 #define OPTION_LINE "FILE..."
-#define OPTION_DESC                             \
-  "Report bugs to: " PACKAGE_BUGREPORT "\n"     \
+#define OPTION_DESC                                                        \
+  "Report bugs to: " PACKAGE_BUGREPORT "\n"                                \
   "Ginga home page: " PACKAGE_URL
 
 static gboolean opt_debug = FALSE;        // toggle debug
@@ -50,8 +50,8 @@ static gint opt_width = 800;              // initial window width
 static gint opt_height = 600;             // initial window height
 
 static gboolean
-opt_background_cb (const gchar *opt, const gchar *arg,
-                   gpointer data, GError **err)
+opt_background_cb (const gchar *opt, const gchar *arg, gpointer data,
+                   GError **err)
 {
   (void) opt;
   (void) data;
@@ -63,8 +63,8 @@ opt_background_cb (const gchar *opt, const gchar *arg,
 }
 
 static gboolean
-opt_size_cb (const gchar *opt, const gchar *arg,
-             gpointer data, GError **err)
+opt_size_cb (const gchar *opt, const gchar *arg, gpointer data,
+             GError **err)
 {
   gint64 width;
   gint64 height;
@@ -89,7 +89,7 @@ opt_size_cb (const gchar *opt, const gchar *arg,
 
   return TRUE;
 
- syntax_error:
+syntax_error:
   g_set_error (err, G_OPTION_ERROR, G_OPTION_ERROR_BAD_VALUE,
                "Invalid size string '%s'", arg);
   return FALSE;
@@ -102,29 +102,28 @@ opt_version_cb (void)
   exit (EXIT_SUCCESS);
 }
 
-static GOptionEntry options[] = {
-  {"background", 'b', 0, G_OPTION_ARG_CALLBACK,
-   pointerof (opt_background_cb), "Set background color", "COLOR"},
-  {"debug", 'd', 0, G_OPTION_ARG_NONE,
-   &opt_debug, "Enable debugging", NULL},
-  {"experimental", 'x', 0, G_OPTION_ARG_NONE,
-   &opt_experimental, "Enable experimental stuff", NULL},
-  {"fullscreen", 'f', 0, G_OPTION_ARG_NONE,
-   &opt_fullscreen, "Enable full-screen mode", NULL},
-  {"size", 's', 0, G_OPTION_ARG_CALLBACK,
-   pointerof (opt_size_cb), "Set initial window size", "WIDTHxHEIGHT"},
-  {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
-   pointerof (opt_version_cb), "Print version information and exit", NULL},
-  {NULL, 0, 0, G_OPTION_ARG_NONE, NULL, NULL, NULL}
-};
-
+static GOptionEntry options[]
+    = { {"background", 'b', 0, G_OPTION_ARG_CALLBACK,
+          pointerof (opt_background_cb), "Set background color", "COLOR"},
+        {"debug", 'd', 0, G_OPTION_ARG_NONE, &opt_debug,
+          "Enable debugging", NULL},
+        {"experimental", 'x', 0, G_OPTION_ARG_NONE, &opt_experimental,
+          "Enable experimental stuff", NULL},
+        {"fullscreen", 'f', 0, G_OPTION_ARG_NONE, &opt_fullscreen,
+          "Enable full-screen mode", NULL},
+        {"size", 's', 0, G_OPTION_ARG_CALLBACK, pointerof (opt_size_cb),
+          "Set initial window size", "WIDTHxHEIGHT"},
+        {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
+          pointerof (opt_version_cb), "Print version information and exit",
+          NULL},
+        {NULL, 0, 0, G_OPTION_ARG_NONE, NULL, NULL, NULL} };
 
 // Error handling.
 
-#define usage_error(format, ...) _error (TRUE, format, ## __VA_ARGS__)
+#define usage_error(format, ...) _error (TRUE, format, ##__VA_ARGS__)
 
-static G_GNUC_PRINTF (2,3) void
-_error (gboolean try_help, const gchar *format, ...)
+static G_GNUC_PRINTF (2, 3) void _error (gboolean try_help,
+                                         const gchar *format, ...)
 {
   const gchar *me = g_get_application_name ();
   va_list args;
@@ -159,7 +158,7 @@ sendTickEvent ()
   if (!GINGA->sendTick (time - first, time - last, frame))
     {
       g_assert (GINGA->getState () == GINGA_STATE_STOPPED);
-      return;                   // all done
+      return; // all done
     }
 
   last = time;
@@ -205,7 +204,7 @@ main (int argc, char **argv)
       exit (EXIT_FAILURE);
     }
 
-  SDL_Init (SDL_INIT_VIDEO);              // Initialize SDL2
+  SDL_Init (SDL_INIT_VIDEO); // Initialize SDL2
 
   SDL_GL_SetAttribute (SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute (SDL_GL_CONTEXT_MINOR_VERSION, 2);
@@ -214,18 +213,18 @@ main (int argc, char **argv)
 
   // Create an application window with the following settings:
   window = SDL_CreateWindow (
-        PACKAGE_STRING " (OpenGL)",        // window title
-        SDL_WINDOWPOS_UNDEFINED,           // initial x position
-        SDL_WINDOWPOS_UNDEFINED,           // initial y position
-        opt_width,                         // width, in pixels
-        opt_height,                        // height, in pixels
-        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE     // flags - see below
+      PACKAGE_STRING " (OpenGL)",              // window title
+      SDL_WINDOWPOS_UNDEFINED,                 // initial x position
+      SDL_WINDOWPOS_UNDEFINED,                 // initial y position
+      opt_width,                               // width, in pixels
+      opt_height,                              // height, in pixels
+      SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE // flags - see below
   );
 
   if (window == NULL)
     {
       // In the case that the window could not be made...
-      printf("Could not create window: %s\n", SDL_GetError());
+      printf ("Could not create window: %s\n", SDL_GetError ());
       return 1;
     }
 
@@ -240,7 +239,7 @@ main (int argc, char **argv)
   opts.opengl = true;
   opts.background = string (opt_background);
   opts.opengl = true;
-  GINGA = Ginga::create (argc, argv, &opts);
+  GINGA = Ginga::create (&opts);
   g_assert_nonnull (GINGA);
 
   string errmsg;
@@ -257,10 +256,10 @@ main (int argc, char **argv)
   bool quit = false;
   while (!quit)
     {
-      while( SDL_PollEvent( &event ) != 0 )
+      while (SDL_PollEvent (&event) != 0)
         {
           // User requests quit
-          if( event.type == SDL_QUIT )
+          if (event.type == SDL_QUIT)
             {
               quit = true;
             }
@@ -290,7 +289,7 @@ main (int argc, char **argv)
   delete GINGA;
   g_strfreev (saved_argv);
   SDL_DestroyWindow (window);
-  SDL_Quit();
+  SDL_Quit ();
 
   exit (0);
 }

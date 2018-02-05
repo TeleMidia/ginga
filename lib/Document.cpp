@@ -71,7 +71,7 @@ Document::getObjects ()
 /**
  * @brief Gets document object by id.
  * @param id Object id.
- * @return The object if successful, or \c nullptr otherwise.
+ * @return The object if successful, or null otherwise.
  */
 Object *
 Document::getObjectById (const string &id)
@@ -85,7 +85,7 @@ Document::getObjectById (const string &id)
 /**
  * @brief Gets document object by id or alias.
  * @param id Object id or alias.
- * @return The object if successful, or \c nullptr otherwise.
+ * @return The object if successful, or null otherwise.
  */
 Object *
 Document::getObjectByIdOrAlias (const string &id)
@@ -93,7 +93,7 @@ Document::getObjectByIdOrAlias (const string &id)
   Object *obj;
   if ((obj = this->getObjectById (id)) != nullptr)
     return obj;
-  for (auto obj: _objects)
+  for (auto obj : _objects)
     if (obj->hasAlias (id))
       return obj;
   return nullptr;
@@ -116,12 +116,12 @@ Document::addObject (Object *obj)
   if (_objects.find (obj) != _objects.end ()
       || getObjectByIdOrAlias (obj->getId ()) != nullptr)
     {
-      return false;             // already in document
+      return false; // already in document
     }
 
   // Settings can only be added once.
   if (unlikely (_settings != nullptr && instanceof (MediaSettings *, obj)))
-    g_assert (!instanceof (MediaSettings *, obj));
+    g_assert_false (instanceof (MediaSettings *, obj));
 
   obj->initDocument (this);
   _objects.insert (obj);
@@ -192,9 +192,11 @@ Document::getSwitches ()
   return &_switches;
 }
 
+/**
+ * @brief Evaluates action over document.
+ */
 int
-Document::evalAction (Event *event,
-                      Event::Transition transition,
+Document::evalAction (Event *event, Event::Transition transition,
                       const string &value)
 {
   Action act;
@@ -206,6 +208,9 @@ Document::evalAction (Event *event,
   return this->evalAction (act);
 }
 
+/**
+ * @brief Evaluates action over document.
+ */
 int
 Document::evalAction (Action init)
 {
@@ -244,9 +249,8 @@ Document::evalAction (Action init)
 
       // Trigger links in parent context.
       comp = obj->getParent ();
-      if (comp != nullptr
-          && instanceof (Context *, comp)
-          && comp->isOccurring ())
+      if (comp != nullptr &&
+          instanceof (Context *, comp) && comp->isOccurring ())
         {
           ctx = cast (Context *, comp);
           g_assert_nonnull (ctx);
@@ -254,9 +258,9 @@ Document::evalAction (Action init)
         trigger:
           if (ctx->getLinksStatus ())
             {
-              for (auto link: *ctx->getLinks ())
+              for (auto link : *ctx->getLinks ())
                 {
-                  for (auto cond: link.first)
+                  for (auto cond : link.first)
                     {
                       Predicate *pred;
 
@@ -273,7 +277,7 @@ Document::evalAction (Action init)
                       // Success.
                       auto acts = link.second;
                       std::list<Action>::reverse_iterator rit
-                        = acts.rbegin ();
+                          = acts.rbegin ();
                       for (; rit != acts.rend (); ++rit)
                         stack.push_back (*rit);
                     }
@@ -364,8 +368,8 @@ Document::evalPredicate (Predicate *pred)
           default:
             g_assert_not_reached ();
           }
-        TRACE ("%s %s %s -> %s", msg_left.c_str (),
-               msg_test.c_str (), msg_right.c_str (), strbool (result));
+        TRACE ("%s %s %s -> %s", msg_left.c_str (), msg_test.c_str (),
+               msg_right.c_str (), strbool (result));
         return result;
       }
     case Predicate::NEGATION:
@@ -373,7 +377,7 @@ Document::evalPredicate (Predicate *pred)
       break;
     case Predicate::CONJUNCTION:
       {
-        for (auto child: *pred->getChildren ())
+        for (auto child : *pred->getChildren ())
           {
             if (!this->evalPredicate (child))
               {

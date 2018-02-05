@@ -15,11 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include "Document.h"
-#include "Context.h"
-#include "Media.h"
-#include "MediaSettings.h"
-#include "Switch.h"
+#include "tests.h"
 
 int
 main (void)
@@ -42,7 +38,7 @@ main (void)
 
   // Add media.
   {
-    Media *m = new Media ("m", "", "");
+    Media *m = new Media ("m");
     g_assert (doc->addObject (m));
     g_assert (doc->getObjects ()->size () == 3);
     g_assert (doc->getMedias ()->size () == 2);

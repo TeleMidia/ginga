@@ -15,23 +15,19 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include "Object.h"
-#include "Context.h"
-#include "Media.h"
-#include "MediaSettings.h"
-#include "Switch.h"
+#include "tests.h"
 
 int
 main (void)
 {
   list<Object *> objs;
 
-  objs.push_back (new Media ("m", "", ""));
+  objs.push_back (new Media ("m"));
   objs.push_back (new MediaSettings ("m"));
   objs.push_back (new Context ("c"));
   objs.push_back (new Switch ("s"));
 
-  for (auto obj: objs)
+  for (auto obj : objs)
     {
       g_assert (obj->getAliases ()->size () == 0);
 

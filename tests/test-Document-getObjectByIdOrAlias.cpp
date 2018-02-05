@@ -15,13 +15,10 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include "Document.h"
-#include "Context.h"
-#include "Media.h"
-#include "MediaSettings.h"
+#include "tests.h"
 
 #define N 128
-#define M N/8
+#define M N / 8
 
 int
 main (void)
@@ -51,7 +48,7 @@ main (void)
 
   for (size_t i = 0; i < N; i++)
     {
-      m[i] = new Media (xstrbuild ("m%d", (int) i), "", "");
+      m[i] = new Media (xstrbuild ("m%d", (int) i));
       doc->addObject (m[i]);
       for (size_t j = 0; j < M; j++)
         {
@@ -70,7 +67,6 @@ main (void)
           string alias = xstrbuild ("m%d:%d", (int) i, (int) j);
           g_assert (doc->getObjectByIdOrAlias (alias) == m[i]);
         }
-
     }
 
   g_assert_null (doc->getObjectByIdOrAlias ("a"));

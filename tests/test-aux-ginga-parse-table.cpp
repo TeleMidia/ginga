@@ -15,18 +15,18 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include "aux-ginga.h"
+#include "tests.h"
 
 int
 main (void)
 {
-  map<string,string> tab;
+  map<string, string> tab;
 
   g_assert (ginga::try_parse_table ("{a='x',b='y'}", NULL));
   g_assert (!ginga::try_parse_table ("a,b,c", NULL));
   g_assert (!ginga::try_parse_table ("{a=x}", NULL));
 
-  tab = ginga::parse_table ("{  a='1',  b='2' , c='3'  }");
+  tab = ginga::parse_table ("{a='1',  b='2' , c='3'  }");
   g_assert (tab.size () == 3);
   g_assert (tab["a"] == "1");
   g_assert (tab["b"] == "2");

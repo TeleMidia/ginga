@@ -22,11 +22,11 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-class PlayerSigGen: public Player
+class PlayerSigGen : public Player
 {
 public:
-  PlayerSigGen (Formatter *, Media *, const string &);
-  ~PlayerSigGen();
+  PlayerSigGen (Formatter *, Media *);
+  ~PlayerSigGen ();
   void start () override;
   void stop () override;
   void pause () override;
@@ -34,36 +34,36 @@ public:
   void redraw (cairo_t *) override;
 
 protected:
-  bool doSetProperty (PlayerProperty, const string &,
-                      const string &) override;
+  bool doSetProperty (Property, const string &, const string &) override;
 
 private:
-  GstElement *_pipeline;          // pipeline
-  struct {                        // audio pipeline
-    GstElement *src;              // Audio Test Src format
-    GstElement *convert;          // convert audio format
-    GstElement *tee;              // splits pipeline
-    GstElement *audioQueue;       // links audio pipeline side 
-    GstElement *audioSink;        // audio sink
-    GstElement *videoQueue;       // links video pipeline side 
-    GstElement *videoScope;       // video draw style
-    GstElement *videoConvert;     // convert video format
-    GstElement *videoSink;        // video sink
+  GstElement *_pipeline; // pipeline
+  struct
+  {                           // audio pipeline
+    GstElement *src;          // Audio Test Src format
+    GstElement *convert;      // convert audio format
+    GstElement *tee;          // splits pipeline
+    GstElement *audioQueue;   // links audio pipeline side
+    GstElement *audioSink;    // audio sink
+    GstElement *videoQueue;   // links video pipeline side
+    GstElement *videoScope;   // video draw style
+    GstElement *videoConvert; // convert video format
+    GstElement *videoSink;    // video sink
 
-    GstPad *teeAudioPad;          // tee audio pad (output)
-    GstPad *queueAudioPad;        // queue audio pad (input)
-    GstPad *teeVideoPad;          // tee video pad (output)
-    GstPad *queueVideoPad;        // queue video pad (input)
+    GstPad *teeAudioPad;   // tee audio pad (output)
+    GstPad *queueAudioPad; // queue audio pad (input)
+    GstPad *teeVideoPad;   // tee video pad (output)
+    GstPad *queueVideoPad; // queue video pad (input)
   } _audio;
-  
+
   int _sample_flag;               // true if new sample is available
   GstAppSinkCallbacks _callbacks; // video app-sink callback data
 
   struct
   {
-    double freq;                  // frequency
-    int wave;                     // wave
-    double volume;                // sound level
+    double freq;   // frequency
+    int wave;      // wave
+    double volume; // sound level
   } _prop;
 
   // GStreamer callbacks.

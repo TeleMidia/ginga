@@ -16,11 +16,10 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
-#include <sstream>              // for stringstream
+#include <sstream> // for stringstream
 
 GINGA_NAMESPACE_BEGIN
 
-
 // Logging -----------------------------------------------------------------
 
 /**
@@ -45,7 +44,6 @@ __ginga_strfunc (const string &strfunc)
   return result + "()";
 }
 
-
 // Numeric functions.
 
 /**
@@ -62,7 +60,6 @@ floateq (double x, double y, double epsilon)
   return ABS (x - y) <= ABS (epsilon);
 }
 
-
 // Parsing and evaluation --------------------------------------------------
 
 /**
@@ -101,7 +98,7 @@ try_parse_color (const string &s, Color *result)
 {
   if (s == "")
     {
-      Color none = {0,0,0,0};
+      Color none = {0, 0, 0, 0};
       tryset (result, none);
       return true;
     }
@@ -135,7 +132,7 @@ try_parse_list (const string &s, char sep, size_t min, size_t max,
   if (result == nullptr)
     return true;
 
-  for (auto it: items)
+  for (auto it : items)
     result->push_back (xstrstrip (it));
 
   return true;
@@ -152,17 +149,17 @@ try_parse_list (const string &s, char sep, size_t min, size_t max,
  * code.
  */
 bool
-try_parse_table (const string &s, map<string,string> *result)
+try_parse_table (const string &s, map<string, string> *result)
 {
   string str;
-  map<string,string> tab;
+  map<string, string> tab;
 
   str = xstrstrip (s);
   if (str.front () != '{' || str.back () != '}')
     return false;
 
   str.assign (str.substr (1, str.length () - 2));
-  for (auto &it: xstrsplit (str, ','))
+  for (auto &it : xstrsplit (str, ','))
     {
       list<string> pr;
       string key;
@@ -221,25 +218,24 @@ try_parse_time (const string &s, Time *result)
   if (*end != '\0')
     goto failure;
 
- success:
+success:
   g_free (dup);
-  tryset (result, (Time)(secs * GINGA_SECOND));
+  tryset (result, (Time) (secs * GINGA_SECOND));
   return true;
 
- failure:
+failure:
   g_free (dup);
   return false;
 }
 
 // Asserted wrappers for parse_*.
-#define _GINGA_PARSE_DEFN(Type, Name, Str)                      \
-  Type                                                          \
-  parse_##Name (const string &s)                                \
-  {                                                             \
-    Type result;                                                \
-    if (unlikely (!ginga::try_parse_##Name (s, &result)))       \
-      ERROR ("invalid %s string '%s'", Str, s.c_str ());        \
-    return result;                                              \
+#define _GINGA_PARSE_DEFN(Type, Name, Str)                                 \
+  Type parse_##Name (const string &s)                                      \
+  {                                                                        \
+    Type result;                                                           \
+    if (unlikely (!ginga::try_parse_##Name (s, &result)))                  \
+      ERROR ("invalid %s string '%s'", Str, s.c_str ());                   \
+    return result;                                                         \
   }
 
 _GINGA_PARSE_DEFN (bool, bool, "boolean")
@@ -255,10 +251,10 @@ parse_list (const string &s, char sep, size_t min, size_t max)
   return result;
 }
 
-map<string,string>
+map<string, string>
 parse_table (const string &s)
 {
-  map<string,string> result;
+  map<string, string> result;
   if (unlikely (!ginga::try_parse_table (s, &result)))
     ERROR ("invalid Lua-like table string '%s'", s.c_str ());
   return result;
@@ -302,7 +298,6 @@ parse_pixel (const string &s)
   return (guint8) parse_percent (s, 255, 0, 255);
 }
 
-
 // Strings -----------------------------------------------------------------
 
 /**
@@ -382,30 +377,28 @@ xstrtod (const string &s)
   return d;
 }
 
-#define _GINGA_XSTRTO_DEFN(Type, Typemin, Typemax)      \
-  g##Type                                               \
-  xstrto##Type (const string &s, guint8 base)           \
-  {                                                     \
-    gint64 x=0;                                         \
-    g_assert (_xstrtoll (s, &x, base));                 \
-    return (g##Type)(CLAMP (x, Typemin, Typemax));      \
+#define _GINGA_XSTRTO_DEFN(Type, Typemin, Typemax)                         \
+  g##Type xstrto##Type (const string &s, guint8 base)                      \
+  {                                                                        \
+    gint64 x = 0;                                                          \
+    g_assert (_xstrtoll (s, &x, base));                                    \
+    return (g##Type) (CLAMP (x, Typemin, Typemax));                        \
   }
 
-_GINGA_XSTRTO_DEFN (int,    G_MININT,    G_MAXINT)
-_GINGA_XSTRTO_DEFN (int8,   G_MININT8,   G_MAXINT8)
-_GINGA_XSTRTO_DEFN (int64,  G_MININT64,  G_MAXINT64)
+_GINGA_XSTRTO_DEFN (int, G_MININT, G_MAXINT)
+_GINGA_XSTRTO_DEFN (int8, G_MININT8, G_MAXINT8)
+_GINGA_XSTRTO_DEFN (int64, G_MININT64, G_MAXINT64)
 
-#define _GINGA_XSTRTOU_DEFN(Type, Typemax)              \
-  g##Type                                               \
-  xstrto##Type (const string &s, guint8 base)           \
-  {                                                     \
-    guint64 x=0;                                        \
-    g_assert (_xstrtoull (s, &x, base));                \
-    return (g##Type)(MIN (x, Typemax));                 \
+#define _GINGA_XSTRTOU_DEFN(Type, Typemax)                                 \
+  g##Type xstrto##Type (const string &s, guint8 base)                      \
+  {                                                                        \
+    guint64 x = 0;                                                         \
+    g_assert (_xstrtoull (s, &x, base));                                   \
+    return (g##Type) (MIN (x, Typemax));                                   \
   }
 
-_GINGA_XSTRTOU_DEFN (uint,   G_MAXUINT)
-_GINGA_XSTRTOU_DEFN (uint8,  G_MAXUINT8)
+_GINGA_XSTRTOU_DEFN (uint, G_MAXUINT)
+_GINGA_XSTRTOU_DEFN (uint8, G_MAXUINT8)
 _GINGA_XSTRTOU_DEFN (uint64, G_MAXUINT64)
 
 /**
@@ -568,7 +561,6 @@ xstrsplit (const string &s, char sep)
   return result;
 }
 
-
 // Paths -------------------------------------------------------------------
 
 /**
@@ -610,7 +602,7 @@ xpathisabs (const string &path)
 bool
 xpathisuri (const string &path)
 {
-  gchar * dup  = g_uri_parse_scheme (path.c_str ());
+  gchar *dup = g_uri_parse_scheme (path.c_str ());
   return (dup == NULL) ? false : (g_free (dup), true);
 }
 
@@ -650,10 +642,9 @@ xpathbuild (const string &a, const string &b)
 string
 xpathbuildabs (const string &a, const string &b)
 {
-  return  xpathmakeabs ((a == ".") ? b : xpathbuild (a, b));
+  return xpathmakeabs ((a == ".") ? b : xpathbuild (a, b));
 }
 
-
 // User data ---------------------------------------------------------------
 
 UserData::UserData ()
@@ -662,7 +653,7 @@ UserData::UserData ()
 
 UserData::~UserData ()
 {
-  for (auto it: _udata)
+  for (auto it : _udata)
     if (it.second.second != nullptr)
       it.second.second (it.second.first);
 }

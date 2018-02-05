@@ -15,17 +15,16 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include "Event.h"
-#include "Media.h"
+#include "tests.h"
 
-#define CHECK_INTERVAL(e, exp_begin, exp_end)   \
-  G_STMT_START                                  \
-  {                                             \
-    Time begin, end;                            \
-    (e)->getInterval (&begin, &end);            \
-    g_assert (begin == (exp_begin));            \
-    g_assert (end == (exp_end));                \
-  }                                             \
+#define CHECK_INTERVAL(e, exp_begin, exp_end)                              \
+  G_STMT_START                                                             \
+  {                                                                        \
+    Time begin, end;                                                       \
+    (e)->getInterval (&begin, &end);                                       \
+    g_assert (begin == (exp_begin));                                       \
+    g_assert (end == (exp_end));                                           \
+  }                                                                        \
   G_STMT_END
 
 int
@@ -33,7 +32,7 @@ main (void)
 {
   Media *m;
 
-  m = new Media ("m", "", "");
+  m = new Media ("m");
   g_assert_nonnull (m);
 
   m->addPresentationEvent ("pres", 0, 0);

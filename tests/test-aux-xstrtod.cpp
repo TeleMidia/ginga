@@ -15,9 +15,11 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include "aux-ginga.h"
+#include "tests.h"
 
+// clang-format off
 GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-equal)
+// clang-format on
 
 int
 main (void)
