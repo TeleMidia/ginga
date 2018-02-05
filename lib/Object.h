@@ -73,7 +73,34 @@ public:
   virtual void sendKey (const string &, bool);
   virtual void sendTick (Time, Time, Time);
 
+  /**
+   * @brief Initiates event transition.
+   *
+   * This function is called by Event::transition() immediately before
+   * transitioning \p evt.  If the transition can go on, the function
+   * returns \c true.  Otherwise, if the transition must be cancelled, e.g.,
+   * due to some error, the function returns false.
+   *
+   * @param evt Event to be transitioned.
+   * @param transition The desired transition.
+   * @return \c true if successful, or \c false otherwise (cancel
+   * transition).
+   */
   virtual bool beforeTransition (Event *, Event::Transition) = 0;
+
+  /**
+   * @brief Finishes event transition.
+   *
+   * This function is called by Event::transition() immediately after
+   * transitioning \p evt.  If the transition can finish successfully, the
+   * function returns \c true.  Otherwise, if the transition must be
+   * reverted, e.g., due to some error, the function returns false.
+   *
+   * @param evt Event that was transitioned.
+   * @param transition The transition.
+   * @return \c true if successful, or \c false otherwise (cancel
+   * transition).
+   */
   virtual bool afterTransition (Event *, Event::Transition) = 0;
 
 protected:

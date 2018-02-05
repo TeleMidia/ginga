@@ -192,6 +192,9 @@ Document::getSwitches ()
   return &_switches;
 }
 
+/**
+ * @brief Evaluates action over document.
+ */
 int
 Document::evalAction (Event *event, Event::Transition transition,
                       const string &value)
@@ -205,6 +208,9 @@ Document::evalAction (Event *event, Event::Transition transition,
   return this->evalAction (act);
 }
 
+/**
+ * @brief Evaluates action over document.
+ */
 int
 Document::evalAction (Action init)
 {

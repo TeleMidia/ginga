@@ -174,6 +174,11 @@ Event::setParameter (const string &name, const string &value)
   MAP_SET_IMPL (_parameters, name, value);
 }
 
+/**
+ * @brief Transitions event.
+ * @param trans The desired transition.
+ * @return \c true if successful, or \c false otherwise.
+ */
 bool
 Event::transition (Event::Transition trans)
 {
