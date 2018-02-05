@@ -32,7 +32,6 @@ GINGA_NAMESPACE_BEGIN
 
 // Parsing functions.
 
-// having a pointer problem (line 61)
 // parse_port (doc, parent, port)
 static int
 l_parse_port (lua_State* L)
@@ -56,10 +55,13 @@ l_parse_port (lua_State* L)
   if (at != str.npos) // presentation
     {
       id = str.substr(0, at);
-      evt = str.substr(at, str.npos);
+      evt = str.substr(at + 1, str.npos);
       obj = parent->getChildById (id);
-printf (">> %s - %s\n", id.c_str(), evt.c_str());
-TRACE("%s", obj->toString().c_str()); // only lambda should have '@' as prefix?
+
+      // only lambda should have '@' as prefix? this seems strange
+      if (xstrcasecmp ("lambda", evt) == 0)
+        evt = "@lambda";
+
       event = obj->getEvent (Event::PRESENTATION, evt);
     }
   else                          // attribution
@@ -108,43 +110,29 @@ l_parse_media (lua_State* L)
 
   lua_rawgeti (L, 3, 2);
   id = luaL_checkstring (L, -1);
+  media = new Media (id);
 
   lua_rawgeti (L, 3, 3);
   if (lua_isnil (L, -1) == 0)   // have property list
     {
-      lua_getfield (L, 6, "mime");
-      mime = luaL_optstring (L, -1, "");
-
-      lua_getfield (L, 6, "src");
-      uri = luaL_optstring (L, -1, "");
-
-      media = new Media (id, mime, uri);
-
       lua_pushnil (L);
       while (lua_next(L, 6) != 0)
         {
           name = lua_tolstring (L, -2, 0);
           value = lua_tolstring (L, -1, 0);
-          if ((name != "mime") && (name != "src")) {
-            media->addAttributionEvent (name);
-            media->setProperty (name, value);
-          }
-
+          media->addAttributionEvent (name);
+          media->setProperty (name, value);
           lua_pop(L, 1);
         }
-      lua_pop(L, 2);
-    }
-  else
-    {
-      media = new Media (id, "", "");
     }
 
-  lua_pop(L, 1);
+  lua_pop(L, 3);
+
   lua_rawgeti (L, 3, 4);
   if (lua_isnil (L, -1) == 0)   // have area list
     {
       lua_pushnil (L);
-      while (lua_next(L, 6) != 0)
+      while (lua_next(L, 4) != 0)
         {
           name = lua_tolstring (L, -2, 0);
 
@@ -170,6 +158,7 @@ l_parse_media (lua_State* L)
               lua_pushfstring (L, "bad attr: %s", value);
               lua_error (L);
             }
+
           media->addPresentationEvent (name, begin, end);
           lua_pop(L, 2);
         }
