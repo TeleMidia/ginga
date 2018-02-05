@@ -247,19 +247,19 @@ Object::afterTransition, which can act accordingly.  For instance, the start
 transition of the lambda event of a Context should cause the Context to
 schedule the start of events referenced by its ports in the next tick.
 
-By themselves, Event::transition calls do not trigger links.  What trigger
-links in libginga are actions.  Actions and links are discussed in the next
-section.
+Although a call to Event::transition may lead to further implicit
+transitions, Event::transition calls by themselves do not do not trigger
+links.  What trigger links in libginga are actions.  Actions and links are
+discussed in the next section.  But before that there is one last thing we
+have to say about events: how libginga references them in logs.
 
-\note
-\parblock
 Every Event has an id which must be unique within its Object.  Libginga
 adopts a specific format when creating an pretty-printing event ids.  This
 format is detailed in the table below.
 
 <table>
 <tr>
-<th>ID Pretty-Print Format</th>
+<th>ID Pretty-Printing Format</th>
 <th>Type</th>
 <th>Description</th>
 </tr>
@@ -283,10 +283,6 @@ the corresponding \<property\> element.</td> </tr>
 the key expected by the corresponding \<bind\> element.</td>
 </tr>
 </table>
-
-These "pretty" ids are used in debug messages to indicate the type of event
-that is being manipulated.
-\endparblock
 
 ## Actions and Links
 
