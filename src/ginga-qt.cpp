@@ -5,6 +5,7 @@
 #include <QPainter>
 #include <QTimer>
 #include <QWidget>
+#include <QDebug>
 
 #include "ginga.h"
 
@@ -29,8 +30,7 @@ public:
     _ginga_opts.background = "black";
     _ginga_opts.opengl = false;
 
-    char **argv = {};
-    _ginga = Ginga::create (0, argv, &_ginga_opts);
+    _ginga = Ginga::create (&_ginga_opts);
 
     g_assert_nonnull (_ginga);
 
@@ -138,10 +138,12 @@ main (int argc, char **argv)
 {
   QApplication a (argc, argv);
   GingaQt w;
-  w.show ();
 
-  if (argc)
+  w.show ();
+  if (argc > 1)
     w.start (argv[1]);
+  else
+    qFatal ("ginga-qt: Missing file operand.\nUsage: ./ginga-qt <FILE_URI>");
 
   return a.exec ();
 }
