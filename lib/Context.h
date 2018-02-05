@@ -53,10 +53,10 @@ public:
   void setLinksStatus (bool);
 
 private:
-  list<Event *> _ports;                            // list of ports
-  list<pair<list<Action>, list<Action> > > _links; // list of links
-  int _awakeChildren;                              // count awake children
-  bool _status; // whether links are active
+  list<Event *> _ports;                            ///< List of ports.
+  list<pair<list<Action>, list<Action> > > _links; ///< List of links.
+  int _awakeChildren;           ///< Counts awake children.
+  bool _status;                 ///< Whether links are active.
 };
 
 GINGA_NAMESPACE_END
