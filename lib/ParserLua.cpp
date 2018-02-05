@@ -99,7 +99,7 @@ process (lua_State *L, string *errmsg)
  * @param buf Buffer.
  * @param size Buffer size in bytes.
  * @param[out] errmsg Variable to store the error message (if any).
- * @return The resulting #Document if successful, or \c nullptr otherwise.
+ * @return The resulting #Document if successful, or null otherwise.
  */
 Document *
 ParserLua::parseBuffer (const void *buf, size_t size, string *errmsg)
@@ -136,7 +136,7 @@ done:
  * @brief Parses NCL-ltab from Lua script.
  * @param path File path.
  * @param[out] errmsg Variable to store the error message (if any).
- * @return The resulting #Document if successful, or \c nullptr otherwise.
+ * @return The resulting #Document if successful, or null otherwise.
  */
 Document *
 ParserLua::parseFile (const string &path, string *errmsg)

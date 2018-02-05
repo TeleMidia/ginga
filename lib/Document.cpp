@@ -71,7 +71,7 @@ Document::getObjects ()
 /**
  * @brief Gets document object by id.
  * @param id Object id.
- * @return The object if successful, or \c nullptr otherwise.
+ * @return The object if successful, or null otherwise.
  */
 Object *
 Document::getObjectById (const string &id)
@@ -85,7 +85,7 @@ Document::getObjectById (const string &id)
 /**
  * @brief Gets document object by id or alias.
  * @param id Object id or alias.
- * @return The object if successful, or \c nullptr otherwise.
+ * @return The object if successful, or null otherwise.
  */
 Object *
 Document::getObjectByIdOrAlias (const string &id)

@@ -71,8 +71,11 @@ use libginga external API to play NCL files:
 
 Libginga external API consists of a single header file, ginga.h, containing
 the class Ginga.  A Ginga object represents an NCL player (also called \e
-formatter).  Multiple Ginga instances can coexist within the same
-program---the external API is fully reentrant (but not thread-safe).
+formatter).  Multiple Ginga instances can coexist within the same program.
+The external API is fully reentrant.  All its methods are non-blocking and
+should be called in the same thread.  (If multiple threads are used, the
+caller must ensure that only one thread at a time executes in the same Ginga
+object.)
 
 To play an NCL file, after creating a Ginga object using Ginga::create, the
 program must call Ginga::start with the path of the file.  The Ginga::start
@@ -98,11 +101,6 @@ Some control options (GingaOptions) can be set on the Ginga object when it
 is created.  Most of these options can also be changed later via
 Ginga::setOption* calls.  The set options are preserved even after the
 presentation is stopped.
-
-All methods of Ginga class are non-blocking and should be called in the same
-thread.  If multiple threads are used, the caller must use a mutex to ensure
-that only one thread is executing in the same Ginga object at any time.
-
 
 <!-- ------------------------------------------------------------------- -->
 \page intapi Architecture and Internal API

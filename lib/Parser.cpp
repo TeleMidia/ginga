@@ -2214,7 +2214,7 @@ ParserState::getError (string *message)
  * wrong, returns the resulting document.
  *
  * @param xml The XML document to process.
- * @return The resulting document if successful, or \c nullptr otherwise.
+ * @return The resulting #Document if successful, or null otherwise.
  */
 Document *
 ParserState::process (xmlDoc *xml)
@@ -3975,7 +3975,7 @@ process (xmlDoc *xml, int width, int height, string *errmsg)
  * @param width Initial screen width (in pixels).
  * @param height Initial screen height (in pixels).
  * @param[out] errmsg Variable to store the error message (if any).
- * @return The resulting #Document if successful, or \c nullptr otherwise.
+ * @return The resulting #Document if successful, or null otherwise.
  */
 Document *
 Parser::parseBuffer (const void *buf, size_t size, int width, int height,
@@ -4003,7 +4003,7 @@ Parser::parseBuffer (const void *buf, size_t size, int width, int height,
  * @param width Initial screen width (in pixels).
  * @param height Initial screen height (in pixels).
  * @param[out] errmsg Variable to store the error message (if any).
- * @return The resulting #Document if successful, or \c nullptr otherwise.
+ * @return The resulting #Document if successful, or null otherwise.
  */
 Document *
 Parser::parseFile (const string &path, int width, int height,
