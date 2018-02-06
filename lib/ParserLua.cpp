@@ -66,11 +66,11 @@ l_parse_port (lua_State* L)
     }
   else                          // attribution
     {
-      // items = xstrsplit (str, '.');
-      // id = items.front();
-      // evt = items.back();
-      // obj = parent->getChildById (id);
-      // event = obj->getEvent (Event::ATTRIBUTION, evt);
+      at = str.find('.');
+      id = str.substr(0, at);
+      evt = str.substr(at + 1, str.npos);
+      obj = parent->getChildById (id);
+      event = obj->getEvent (Event::ATTRIBUTION, evt);
     }
 
   g_assert_nonnull(event);
@@ -80,7 +80,7 @@ l_parse_port (lua_State* L)
 }
 
 // label not implemented for area list
-// parse_media (doc, parent, t)
+// parse_media (doc, parent, tab, path)
 static int
 l_parse_media (lua_State* L)
 {
@@ -93,6 +93,7 @@ l_parse_media (lua_State* L)
   const char *uri;
   const char *name;
   const char *value;
+  const char *path;
   Time begin, end;
 
   doc = (Document *) lua_touserdata (L, 1);
@@ -116,10 +117,26 @@ l_parse_media (lua_State* L)
   if (lua_isnil (L, -1) == 0)   // have property list
     {
       lua_pushnil (L);
-      while (lua_next(L, 6) != 0)
+      while (lua_next(L, 7) != 0)
         {
           name = lua_tolstring (L, -2, 0);
           value = lua_tolstring (L, -1, 0);
+
+          if (xstrcasecmp ("src", name) == 0)
+            {
+              name = "uri";
+              string src = string(value);
+
+              // resolve relative dir
+              if (src != "" && !xpathisuri (src) && !xpathisabs (src))
+                {
+                  path = luaL_checkstring (L, 4);
+                  string dir = xpathdirname (path);
+                  src = xpathbuildabs (dir, src);
+                  value = src.c_str();
+                }
+            }
+
           media->addAttributionEvent (name);
           media->setProperty (name, value);
           lua_pop(L, 1);
@@ -132,7 +149,7 @@ l_parse_media (lua_State* L)
   if (lua_isnil (L, -1) == 0)   // have area list
     {
       lua_pushnil (L);
-      while (lua_next(L, 4) != 0)
+      while (lua_next(L, 5) != 0)
         {
           name = lua_tolstring (L, -2, 0);
 
@@ -177,7 +194,7 @@ l_parse_media (lua_State* L)
   return 0;
 }
 
-// parse_context (doc, [parent], t)
+// parse_context (doc, [parent], tab, path)
 static int
 l_parse_context (lua_State *L)
 {
@@ -192,6 +209,7 @@ l_parse_context (lua_State *L)
 
   luaL_checktype (L, 3, LUA_TTABLE);
   lua_rawgeti (L, 3, 1);
+
   tag = luaL_checkstring (L, -1);
 
   if (!g_str_equal (tag, "context"))
@@ -224,7 +242,8 @@ l_parse_context (lua_State *L)
           lua_pushlightuserdata (L, doc);
           lua_pushlightuserdata (L, parent);
           lua_pushvalue (L, -4);
-          lua_call (L, 3, 0);
+          lua_pushvalue (L, 4);
+          lua_call (L, 4, 0);
           lua_pop (L, 1);
         }
     }
@@ -251,7 +270,7 @@ l_parse_context (lua_State *L)
 
 /// Helper function used by Parser::parseBuffer() and Parser::parseFile().
 static Document *
-process (lua_State *L, string *errmsg)
+process (lua_State *L, const string &path, string *errmsg)
 {
   Document *doc;
 
@@ -260,7 +279,8 @@ process (lua_State *L, string *errmsg)
   lua_pushlightuserdata (L, doc);
   lua_pushlightuserdata (L, NULL);
   lua_pushvalue (L, 1);
-  if (unlikely (lua_pcall (L, 3, 0, 0) != LUA_OK))
+  lua_pushstring(L, path.c_str());
+  if (unlikely (lua_pcall (L, 4, 0, 0) != LUA_OK))
     {
       delete doc;
       tryset (errmsg, g_strdup (luaL_checkstring (L, -1)));
@@ -285,6 +305,7 @@ ParserLua::parseBuffer (const void *buf, size_t size, string *errmsg)
   char *str;
   int err;
   Document *doc;
+  string path = "";
 
   L = luaL_newstate ();
   g_assert_nonnull (L);
@@ -301,7 +322,7 @@ ParserLua::parseBuffer (const void *buf, size_t size, string *errmsg)
       goto done;
     }
 
-  doc = process (L, errmsg);
+  doc = process (L, path, errmsg);
 
 done:
   g_free (str);
@@ -334,7 +355,7 @@ ParserLua::parseFile (const string &path, string *errmsg)
       goto done;
     }
 
-  doc = process (L, errmsg);
+  doc = process (L, path, errmsg);
 
 done:
   lua_close (L);
