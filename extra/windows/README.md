@@ -1,6 +1,8 @@
 ## Building the repository on Windows
 
-Download MSYS2 and install the dependencies through MinGW.
+Download [MSYS2](www.msys2.org).
+
+To install the dependencies run:
 
     $ pacman -Syu --noconfirm
 

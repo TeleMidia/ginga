@@ -1,6 +1,8 @@
 ## Building the repository on macOS
 
-Download MSYS2 and install the dependencies through MinGW.
+Download [brew](<https://brew.sh>).
+
+To install the dependencies run on MSYS terminal:
 
     $ brew install  git autoconf automake libtool pkg-config gettext cmake \
         glib pango gsettings-desktop-schemas libogg cairo libpng gst-libav \
@@ -8,7 +10,7 @@ Download MSYS2 and install the dependencies through MinGW.
         gst-plugins-good ffmpeg gst-plugins-ugly freetype gstreamer webp gtk+3 \
         libvorbis  libvpx x264 lua lame
 
-Build with autotools.
+To build with autotools run:
 
     $ ./bootstrap
     $ ./configure
@@ -16,7 +18,7 @@ Build with autotools.
 
 ## Deploy on macOS
 
-Execute `osx_bundle_gen.py` with sudo to generate Ginga.app bundle
+Execute `osx_bundle_gen.py` with sudo to generate Ginga.app bundle:
 
     $ sudo python3 osx_bundle_gen.py
 
