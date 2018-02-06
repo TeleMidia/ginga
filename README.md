@@ -33,17 +33,22 @@ The iTV middleware.
 
 ## Releases
 
-There are no stable releses yet.
+There are no stable releases yet.
 
 ## Nightly builds
 
 **Linux Debian/Ubuntu/Mint**:
 
-To install a nightly build of the repository run:
+To install a nightly build of this repository you can run:
 
     $ sudo add-apt-repository ppa:telemidia/daily-builds
     $ sudo apt-get update
     $ sudo apt-get install ginga-itv
+
+WARNING:  Nightly builds are automatically generated builds from the latest
+development code.  By their nature these builds are likely to contain bugs.
+**We value your help**.  Please, [report problems or give us feedback if you
+find any problem](https://github.com/telemidia/ginga/issues).
 
 <!--
 **Windows**
@@ -89,7 +94,7 @@ Optional:
 
 On Ubuntu-based distros, to install the dependencies run:
 
-    $ sudo apt-get install -y git gcc g++ autotools-dev dh-autoreconf
+    $ sudo apt-get install -y git gcc g++ autotools-dev dh-autoreconf \
         cmake cmake-data liblua5.2-dev libglib2.0-dev libpango1.0-dev \
         librsvg2-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
         libgstreamer-plugins-good1.0-dev libgtk-3-dev -qq
@@ -139,8 +144,9 @@ TODO
 
 ## Support
 
-There is not dedicated mailing list for Ginga yet.  If you have a question
-or want to discuss the develoment of Ginga itself send a message to
+There is not a dedicated mailing list for Ginga yet.  If you have a question
+or want to discuss the develoment of Ginga itself post an
+[issue](https://github.com/telemidia/ginga/issues) or send a message to
 info@telemidia.puc-rio.br.
 
 ## Development
