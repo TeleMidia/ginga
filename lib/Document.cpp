@@ -277,7 +277,9 @@ Document::evalAction (Action init)
                       for (auto ri = acts.rbegin (); ri != acts.rend (); ++ri)
                         {
                           Action next_act = *(ri);
-                          if (next_act.delay == GINGA_TIME_NONE)
+                          Time delay = ginga::parse_time (next_act.delay);
+
+                          if (delay == 0 || delay == GINGA_TIME_NONE )
                             {
                               stack.push_back (*ri);
                             }
@@ -291,8 +293,7 @@ Document::evalAction (Action init)
                               comp->addDelayedAction (next_evt,
                                                       next_act.transition,
                                                       next_act.value,
-                                                      comp->getTime () +
-                                                      next_act.delay);
+                                                      delay);
                             }
                         }
                     }

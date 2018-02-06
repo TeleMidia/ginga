@@ -128,7 +128,7 @@ typedef struct
   Predicate *predicate;         ///< Predicate conditioning the execution.
   string value;                 ///< Value to set (if attribution).
   string duration;              ///< Duration.
-  Time delay;                   ///< Delay.
+  string delay;                 ///< Delay.
 } Action;
 
 GINGA_NAMESPACE_END
