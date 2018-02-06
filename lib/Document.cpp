@@ -277,9 +277,17 @@ Document::evalAction (Action init)
                       for (auto ri = acts.rbegin (); ri != acts.rend (); ++ri)
                         {
                           Action next_act = *(ri);
-                          Time delay = ginga::parse_time (next_act.delay);
+                          string s;
+                          Time delay;
 
-                          if (delay == 0 || delay == GINGA_TIME_NONE )
+                          if (!this->evalPropertyRef (next_act.delay, &s))
+                            {
+                              s = next_act.delay;
+                            }
+
+                          delay = ginga::parse_time (s);
+
+                          if (delay == 0 || delay == GINGA_TIME_NONE)
                             {
                               stack.push_back (*ri);
                             }
