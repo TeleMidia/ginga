@@ -151,10 +151,10 @@ typedef struct ParserConnRole
   string role;                  ///< Role label.
   Event::Type eventType;        ///< Role event type.
   Event::Transition transition; ///< Role transition.
-  Time delay;                   ///< Role delay.
   bool condition;               ///< Whether role is a condition.
   Predicate *predicate;         ///< Role predicate (if condition).
   string duration;              ///< Role duration (if action).
+  string delay;                 ///< Role delay.
   string key;                   ///< Role key (if selection).
   string value;                 ///< Role value (if attribution).
 } ParserConnRole;
@@ -2716,7 +2716,8 @@ borderColor='%s'}",
               act.duration = st->resolveParameter (
                   role->duration, &bind->params, params, &ghosts_map);
 
-              act.delay = role->delay;
+              act.delay = st->resolveParameter (role->delay, &bind->params,
+                                                params, &ghosts_map);
 
               act.predicate = nullptr;
               if (role->predicate != nullptr)
@@ -3051,13 +3052,8 @@ ParserState::pushSimpleCondition (ParserState *st, ParserElt *elt)
   if (!role.condition)
     elt->getAttribute ("duration", &role.duration);
 
-  if (elt->getAttribute ("delay", &delay))
-    {
-      if (unlikely (!ginga::try_parse_time (delay, &role.delay)))
-        {
-          return st->errEltBadAttribute (elt->getNode (), "delay", delay);
-        }
-    }
+  if (!role.condition)
+    elt->getAttribute ("delay", &role.delay);
 
   if (role.eventType == Event::SELECTION)
     elt->getAttribute ("key", &role.key);
