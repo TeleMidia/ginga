@@ -26,6 +26,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include <libxml/tree.h>
 #include <libxml/parser.h>
+#include <fontconfig/fontconfig.h>
 
 GINGA_NAMESPACE_BEGIN
 
@@ -232,6 +233,8 @@ public:
   static bool pushLink (ParserState *, ParserElt *);
   static bool pushLinkParam (ParserState *, ParserElt *);
   static bool pushBind (ParserState *, ParserElt *);
+
+  static bool pushFont (ParserState *, ParserElt *);
 
 private:
   Document *_doc;      ///< The resulting #Document.
@@ -693,6 +696,25 @@ static map<string, ParserSyntaxElt> parser_syntax_table = {
           {"documentURI", ATTR_REQUIRED},
           {"region", 0},     // unused
           {"baseId", 0} } }, // unused
+  },
+  {
+    "fontBase",
+    {
+      nullptr,
+      nullptr,
+      ELT_CACHE,
+      {"head"},
+      {} // no attributes
+    }
+  },
+  {
+    "font",
+    {ParserState::pushFont,
+      nullptr,
+      ELT_CACHE,
+      {"fontBase"},
+      { {"family", ATTR_REQUIRED},
+        {"src", ATTR_REQUIRED} } },
   },
   {
       "body",
@@ -3954,6 +3976,17 @@ ParserState::pushBind (ParserState *st, ParserElt *elt)
   UDATA_SET (elt, "params", &binds->back ().params, nullptr);
 
   return true;
+}
+
+bool
+ParserState::pushFont (ParserState *, ParserElt *elt)
+{
+  std::string src;
+  g_assert (elt->getAttribute ("src", &src));
+  const FcChar8 * file = (const FcChar8 *) src.c_str();
+  FcBool fontAddStatus = FcConfigAppFontAddFile (NULL, file);
+
+  TRACE ("Adding font src='%s' status: %d.", src.c_str(), fontAddStatus);
 }
 
 // External API.
