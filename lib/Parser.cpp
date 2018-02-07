@@ -3979,11 +3979,12 @@ ParserState::pushBind (ParserState *st, ParserElt *elt)
 }
 
 bool
-ParserState::pushFont (ParserState *, ParserElt *elt)
+ParserState::pushFont (ParserState *st, ParserElt *elt)
 {
   std::string src;
   g_assert (elt->getAttribute ("src", &src));
-  const FcChar8 * file = (const FcChar8 *) src.c_str();
+  std::string abs_src = xpathbuildabs (st->getDirname(), src);
+  const FcChar8 * file = (const FcChar8 *) abs_src.c_str();
   FcBool fontAddStatus = FcConfigAppFontAddFile (NULL, file);
 
   TRACE ("Adding font src='%s' status: %d.", src.c_str(), fontAddStatus);
