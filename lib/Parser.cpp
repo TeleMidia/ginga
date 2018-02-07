@@ -3981,13 +3981,28 @@ ParserState::pushBind (ParserState *st, ParserElt *elt)
 bool
 ParserState::pushFont (ParserState *st, ParserElt *elt)
 {
-  std::string src;
+  std::string family, src;
+  g_assert (elt->getAttribute ("family", &family));
   g_assert (elt->getAttribute ("src", &src));
-  std::string abs_src = xpathbuildabs (st->getDirname(), src);
-  const FcChar8 * file = (const FcChar8 *) abs_src.c_str();
-  FcBool fontAddStatus = FcConfigAppFontAddFile (NULL, file);
 
-  TRACE ("Adding font src='%s' status: %d.", src.c_str(), fontAddStatus);
+  const FcChar8 *fcfamily = (const FcChar8 *) family.c_str();
+  std::string abs_src = xpathbuildabs (st->getDirname(), src);
+  const FcChar8 *fcfilename = (const FcChar8 *) abs_src.c_str();
+
+  FcBool fontAddStatus = FcConfigAppFontAddFile (NULL, fcfilename);
+
+  TRACE ("Adding font family='%s' src='%s' success: %d.",
+         family.c_str(), src.c_str(), fontAddStatus);
+
+  if (fontAddStatus)
+    {
+      FcFontSet *set = FcConfigGetFonts (FcConfigGetCurrent(),
+                                         FcSetApplication);
+      FcPattern *new_font = set->fonts[set->nfont-1];
+
+      // Add the family name specified in the <font> elt.
+      FcPatternAddString (new_font, FC_FAMILY, fcfamily);
+    }
 
   return fontAddStatus;
 }
