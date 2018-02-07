@@ -3988,6 +3988,8 @@ ParserState::pushFont (ParserState *st, ParserElt *elt)
   FcBool fontAddStatus = FcConfigAppFontAddFile (NULL, file);
 
   TRACE ("Adding font src='%s' status: %d.", src.c_str(), fontAddStatus);
+
+  return fontAddStatus;
 }
 
 // External API.
