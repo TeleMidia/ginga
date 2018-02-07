@@ -19,7 +19,7 @@
   </descriptorBase>
   <fontBase>
     <font family="NunitoSans" src="samples/MedievalSharp.ttf"/>
-    <font family="NunitoSans" src="samples/MedievalSharp-Bold.ttf"/>
+    <font family="MyCustomFontName" src="samples/MedievalSharp-Bold.ttf"/>
     <font family="Pacifico" src="samples/Pacifico.ttf"/>
     <font family="SudegnakNo2" src="samples/SudegnakNo2.otf"/>
   </fontBase>
@@ -47,7 +47,7 @@
     <media id="m4" src="samples/text.txt" descriptor="desc4">
       <property name="background" value="blue"/>
       <property name="fontColor" value="white"/>
-      <property name="fontFamily" value="Medieval Sharp"/>
+      <property name="fontFamily" value="MyCustomFontName"/>
       <property name="fontWeight" value="bold"/>
       <property name="fontSize" value="20"/>
     </media>
