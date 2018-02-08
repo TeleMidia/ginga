@@ -18,7 +18,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "ginga_gtk.h"
 #include <glib/gstdio.h>
 
-#define SETTINGS_FILENAME "ginga6.settings"
+#define SETTINGS_FILENAME "ginga_3_16.settings"
 
 void
 save_settings (void)
