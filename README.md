@@ -111,36 +111,12 @@ To build with `cmake` run:
     $ cmake ../build-cmake
     $ make
 
-(`cmake` downloads and builds the <a
-href="https://github.com/TeleMidia/nclua">NCLua</a> library automatically.)
+Build with `cmake` will downloads and builds the <a
+href="https://github.com/TeleMidia/nclua">NCLua</a> library automatically.
 
-<!--
+To build on windows see [README.md](extra/windows/README.md).
 
-This should not be here!
-
-### Windows
-
-Download MSYS2 and install the dependencies through MinGW.
-
-    $ pacman -Syu --noconfirm
-
-    $ pacman -Sy --noconfirm base-devel mpfr cmake mingw64/mingw-w64-x86_64-glib2 glib2-devel \
-        mingw64/mingw-w64-x86_64-cairo mingw64/mingw-w64-x86_64-gst-plugins-base \
-        mingw64/mingw-w64-x86_64-gst-plugins-good mingw64/mingw-w64-x86_64-gst-plugins-bad \
-        mingw64/mingw-w64-x86_64-gtk3 mingw64/mingw-w64-x86_64-pango \
-        mingw-w64-x86_64-lua mingw64/mingw-w64-x86_64-gst-plugins-ugly \
-        mingw-w64-x86_64-gst-libav-1.12.4-1 mingw-w64-x86_64-gcc mingw-w64-x86_64-make
-
-Build with autotools.
-
-    $ ./bootstrap
-    $ ./configure
-    $ make
-
-### macOS
-
-TODO
--->
+To build on macOS see [README.md](extra/macos/README.md).
 
 ## Support
 

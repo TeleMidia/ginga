@@ -578,7 +578,7 @@ Player::createPlayer (Formatter *formatter, Media *media, const string &uri,
       player = new PlayerHTML (formatter, media);
     }
 #endif // WITH_CEF
-#if WITH_LIBRSVG && WITH_LIBRSVG
+#if defined WITH_LIBRSVG && WITH_LIBRSVG
   else if (xstrhasprefix (mime, "image/svg"))
     {
       player = new PlayerSvg (formatter, media);

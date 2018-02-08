@@ -387,6 +387,10 @@ Object::doStart ()
   _time = 0;
   if (_parent != nullptr && instanceof (Context *, _parent))
     cast (Context *, _parent)->incAwakeChildren ();
+
+  // schedule set currentFocus if the object have focusIndex
+  if (!this->getProperty ("focusIndex").empty ())
+    _doc->getSettings ()->scheduleFocusUpdate ("");
 }
 
 void
