@@ -11,7 +11,8 @@ To install the dependencies run:
         mingw64/mingw-w64-x86_64-gst-plugins-good mingw64/mingw-w64-x86_64-gst-plugins-bad \
         mingw64/mingw-w64-x86_64-gtk3 mingw64/mingw-w64-x86_64-pango \
         mingw-w64-x86_64-lua mingw64/mingw-w64-x86_64-gst-plugins-ugly \
-        mingw-w64-x86_64-gst-libav-1.12.4-1 mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-libsoup
+        mingw-w64-x86_64-gst-libav-1.12.4-1 mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw64/mingw-w64-x86_64-libsoup
+
 
 Build with autotools.
 
