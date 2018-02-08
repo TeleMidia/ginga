@@ -17,7 +17,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "ginga_gtk.h"
 #ifdef G_OS_WIN32
-
+#include <windows.h>
 #else
 #include <sys/utsname.h>
 #endif
@@ -37,7 +37,7 @@ http_message_callback (SoupSession *session, SoupMessage *msg,
       if (strlen (buffer->data) == 0) //if msg is empty, finalize
         return;
       if (strcmp ((buffer->data), GINGA->version ().c_str ()))
-        show_ginga_update_alertbox ();
+        //show_ginga_update_alertbox ();
     }
 }
 
@@ -51,7 +51,15 @@ send_http_log_message (gint log_type, const gchar *log_message)
       SOUP_SESSION_ADD_FEATURE_BY_TYPE, SOUP_TYPE_CONTENT_SNIFFER, NULL);
 
 #ifdef G_OS_WIN32
-  gchar *url = "";
+  SYSTEM_INFO siSysInfo;
+  GetSystemInfo(&siSysInfo);  
+
+  gchar *url = g_markup_printf_escaped (
+      "%s?id=%s&os=%s&os_v=%s&ginga_v=%s&arch=%u&type=%d&msg=%s", baseURI,
+      gingaID, "Windows","-",
+      GINGA->version ().c_str (), siSysInfo.dwProcessorType, log_type,
+      log_message);
+  printf("%s", url);
 #else
   struct utsname uname_pointer;
   uname (&uname_pointer);
