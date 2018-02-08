@@ -39,17 +39,17 @@ int
 main (int argc, char **argv)
 {
 
+#ifdef G_OS_WIN32
+  HWND var = GetConsoleWindow ();
+  ShowWindow (var, SW_HIDE);
+#endif
+
   GingaOptions opts;
   opts.width = presentationAttributes.resolutionWidth;
   opts.height = presentationAttributes.resolutionHeight;
   opts.debug = false;
   opts.opengl = false;
   opts.experimental = true;
-
-#ifdef G_OS_WIN32
-  HWND var = GetConsoleWindow ();
-  ShowWindow (var, SW_HIDE);
-#endif
 
   gtk_init (&argc, &argv);
   init_ginga_data ();

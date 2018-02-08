@@ -116,10 +116,10 @@ void
 g_log_default_handler (const gchar *log_domain, GLogLevelFlags log_level,
                        const gchar *message, gpointer unused_data)
 {
+  //printf ("%s \n", message);
   if (!g_str_has_prefix (message, "ginga::"))
     return; // is not a ginga message
 
-  // printf ("%s \n", message);
   // insert message in console text view
   const char *time_label = "[00:00] ";
   gtk_text_buffer_insert_at_cursor (GTK_TEXT_BUFFER (consoleTxtBuffer),
