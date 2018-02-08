@@ -61,7 +61,18 @@ gboolean isCrtlModifierActive = FALSE;
 PresentationAttributes presentationAttributes;
 
 void
-update_window ()
+show_ginga_update_alertbox ()
+{
+  GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;
+  GtkWidget *dialog = gtk_message_dialog_new (
+     GTK_WINDOW(mainWindow), flags, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE,
+      "A new version of Ginga Software is\navaible at http://www.ginga.org.br");
+  gtk_dialog_run (GTK_DIALOG (dialog));
+  gtk_widget_destroy (dialog);
+}
+
+void
+update_main_window ()
 {
   gtk_widget_show_all (mainWindow);
   if (!isDebugMode)
@@ -98,7 +109,7 @@ show_infobar (gchar *messageError)
   gtk_box_pack_start (GTK_BOX (mainBox), infoBar, false, false, 0);
   gtk_box_reorder_child (GTK_BOX (mainBox), infoBar, 0);
 
-  update_window ();
+  update_main_window ();
 }
 
 void
@@ -121,6 +132,8 @@ g_log_default_handler (const gchar *log_domain, GLogLevelFlags log_level,
 
   if ((log_level == G_LOG_LEVEL_ERROR) || (log_level == G_LOG_FLAG_FATAL))
     {
+       //send error log to server
+      send_http_log_message(1, message);
       if (!strcmp (message,
                    "ginga::PlayerVideo::cb_Bus(): No decoder available "
                    "for type 'video/ogg'."))
@@ -295,7 +308,7 @@ apply_theme ()
   tvRemoteView = create_tvremote_buttons (10, 10);
   gtk_box_pack_start (GTK_BOX (tvcontrolBox), tvRemoteView, false, true, 0);
 
-  update_window ();
+  update_main_window ();
 }
 void
 aspect_combobox_changed (GtkComboBox *widget, unused (gpointer user_data))
@@ -945,6 +958,8 @@ create_window_components ()
   gtk_container_add (GTK_CONTAINER (mainWindow), vpaned);
 
   apply_theme ();
+
+  show_tracker_dialog (GTK_WINDOW (mainWindow));
 }
 
 void

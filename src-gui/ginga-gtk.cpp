@@ -18,6 +18,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "ginga_gtk.h"
 #include "aux-glib.h"
 #include <locale.h>
+#include <glib/gi18n.h>
 
 #ifdef G_OS_WIN32
 #include <windows.h>
@@ -25,13 +26,20 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 // Global formatter.
 Ginga *GINGA = nullptr;
+gchar *gingaID = nullptr;
+
+void
+init_ginga_data ()
+{
+  if (gingaID == nullptr)
+    gingaID = g_uuid_string_random ();
+}
 
 int
 main (int argc, char **argv)
 {
 
   GingaOptions opts;
-
   opts.width = presentationAttributes.resolutionWidth;
   opts.height = presentationAttributes.resolutionHeight;
   opts.debug = false;
@@ -44,6 +52,8 @@ main (int argc, char **argv)
 #endif
 
   gtk_init (&argc, &argv);
+  init_ginga_data ();
+  load_settings ();
 
   GINGA = Ginga::create (&opts);
   g_assert_nonnull (GINGA);
@@ -56,7 +66,10 @@ main (int argc, char **argv)
                     "ginga_icon.png", NULL),
       &err);
 
-  load_settings ();
+  //send log message to server
+  send_http_log_message(0,(gchar*)"Open Ginga");
+  //check for ginga updates
+  send_http_log_message(-1,(gchar*)"Check for Ginga updates");
   g_assert (g_setenv ("G_MESSAGES_DEBUG", "all", true));
   create_main_window ();
   gtk_main ();
