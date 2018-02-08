@@ -213,6 +213,8 @@ endif()
 set (GINGAGUI_GTK_SOURCES
   ../src-gui/ginga-gtk.cpp
   ../src-gui/model/SaveLoadSettings.cpp
+  ../src-gui/model/HttpMessage.cpp
+  ../src-gui/view/TrackerWindow.cpp
   ../src-gui/view/AboutWindow.cpp
   ../src-gui/view/BigPictureWindow.cpp
   ../src-gui/view/Draw.cpp
