@@ -32,7 +32,7 @@ void
 init_ginga_data ()
 {
   if (gingaID == nullptr)
-    gingaID = g_uuid_string_random ();
+    gingaID = g_strdup_printf ("%li", g_get_real_time ());
 }
 
 int
@@ -66,10 +66,10 @@ main (int argc, char **argv)
                     "ginga_icon.png", NULL),
       &err);
 
-  //send log message to server
-  send_http_log_message(0,(gchar*)"Open Ginga");
-  //check for ginga updates
-  send_http_log_message(-1,(gchar*)"Check for Ginga updates");
+  // send log message to server
+  send_http_log_message (0, (gchar *) "Open Ginga");
+  // check for ginga updates
+  send_http_log_message (-1, (gchar *) "Check for Ginga updates");
   g_assert (g_setenv ("G_MESSAGES_DEBUG", "all", true));
   create_main_window ();
   gtk_main ();
