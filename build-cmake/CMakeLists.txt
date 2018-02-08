@@ -32,6 +32,8 @@ find_package (RSVG REQUIRED)
 find_package (GStreamer 1.0 REQUIRED)
 add_definitions (-DWITH_PANGO=1 -DWITH_GSTREAMER=1)
 
+find_package(LibSoup 2.42.0 REQUIRED)
+
 find_package (Lua REQUIRED 5.2)
 
 option (WITH_CEF "Build with chromium embedded support." OFF)
