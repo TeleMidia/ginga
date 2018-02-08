@@ -58,13 +58,14 @@ m4_define([gstreamer_required_version],  [1.2.0])
 m4_define([gtk_required_version],        [3.4.2])
 m4_define([libxml_required_version],     [2.9])
 m4_define([pango_required_version],      [1.30.0])
+m4_define([soup_required_version],       [2.42])
 AC_SUBST([CAIRO_REQUIRED_VERSION],       cairo_required_version)
 AC_SUBST([GLIB_REQUIRED_VERSION],        glib_required_version)
 AC_SUBST([GSTREAMER_REQUIRED_VERSION],   gstreamer_required_version)
 AC_SUBST([GTK_REQUIRED_VERSION],         gtk_required_version)
 AC_SUBST([LIBXML_REQUIRED_VERSION],      libxml_required_version)
 AC_SUBST([PANGO_REQUIRED_VERSION],       pango_required_version)
-
+AC_SUBST([SOUP_REQUIRED_VERSION],        soup_required_version)
 
 # Optional dependencies version.
 m4_define([cef_required_version],        [3.0])
@@ -78,7 +79,6 @@ AC_SUBST([LIBRSVG_REQUIRED_VERSION],     librsvg_required_version)
 AC_SUBST([LUA_REQUIRED_VERSION],         cef_required_version)
 AC_SUBST([NCLUA_REQUIRED_VERSION],       nclua_required_version)
 AC_SUBST([OPENGL_REQUIRED_VERSION],      opengl_required_version)
-AC_SUBST([SOUP_REQUIRED_VERSION],        soup_required_version)
 
 # Compiler checks.
 AC_PROG_CXX
@@ -188,6 +188,18 @@ AU_CHECK_PKG([PANGO],
  [pango >= pango_required_version
   pangocairo >= pango_required_version])
 
+AU_CHECK_PKG([SOUP], [libsoup-2.4 >= soup_required_version],
+ [AC_LANG_PROGRAM([[
+#include <libsoup/soup.h>
+#if !SOUP_CHECK_VERSION  \
+    (SOUP_REQUIRED_MAJOR,\
+     SOUP_REQUIRED_MINOR,\
+     SOUP_REQUIRED_MICRO)
+# error "soup is too old"
+#endif
+ ]])],
+ [AC_LANG_PROGRAM([[]], [[glib_check_version (0, 0, 0);]])])
+
 # Optional dependencies.
 AC_ARG_WITH([cef],
  [AS_HELP_STRING([--with-cef=DIR],
@@ -218,21 +230,6 @@ AS_IF([test -n "$with_cef"],
   AC_DEFINE([WITH_CEF], [0], [Define to 1 if you have libcef.])])
 AC_SUBST([cef_dir])
 AM_CONDITIONAL([WITH_CEF], [test "$with_cef" = yes])
-
-# Check for SOUP (optional).
-AU_VERSION_BREAK([soup], soup_required_version)
-AU_CHECK_OPTIONAL_PKG([event-http], [build the http event class], [],
- [SOUP], libsoup-2.4 >= soup_required_version,
- [AC_LANG_PROGRAM([[
-#include <libsoup/soup.h>
-#if !SOUP_CHECK_VERSION  \
-    (SOUP_REQUIRED_MAJOR,\
-     SOUP_REQUIRED_MINOR,\
-     SOUP_REQUIRED_MICRO)
-# error "soup is too old"
-#endif
- ]])],
- [AC_LANG_PROGRAM([[]], [[soup_session_new_with_options (0, 0, 0);]])])
 
 AU_CHECK_OPTIONAL_PKG([librsvg], [build with LibRsvg support], [],
  [LIBRSVG],
