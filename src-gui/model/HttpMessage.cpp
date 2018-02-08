@@ -37,7 +37,7 @@ http_message_callback (SoupSession *session, SoupMessage *msg,
       if (strlen (buffer->data) == 0) //if msg is empty, finalize
         return;
       if (strcmp ((buffer->data), GINGA->version ().c_str ()))
-        //show_ginga_update_alertbox ();
+        show_ginga_update_alertbox ();
     }
 }
 
@@ -59,7 +59,7 @@ send_http_log_message (gint log_type, const gchar *log_message)
       gingaID, "Windows","-",
       GINGA->version ().c_str (), siSysInfo.dwProcessorType, log_type,
       log_message);
-  printf("%s", url);
+  //printf("%s", url);
 #else
   struct utsname uname_pointer;
   uname (&uname_pointer);
