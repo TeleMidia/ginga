@@ -3389,6 +3389,11 @@ ParserState::pushImportBase (ParserState *st, ParserElt *elt)
                                                  : st->getDirname ();
       path = xpathbuildabs (dir, path);
     }
+ 
+#ifdef G_OS_WIN32 //temp. need rework!
+  if(path.find("file:/")!=std::string::npos)
+    path = path.substr(path.find("file:/")+6,path.length()); 
+#endif
 
   // Push import alias and path onto alias stack.
   if (unlikely (!st->aliasStackPush (alias, path)))
@@ -3736,6 +3741,11 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
           src = xpathbuildabs (dir, src);
         }
 
+#ifdef G_OS_WIN32 //temp. need rework!
+  if(src.find("file:/")!=std::string::npos)
+    src = src.substr(src.find("file:/")+6,src.length()); 
+#endif
+
       if (st->referMapIndex (id, &media))
         {
           media->setProperty ("uri", src);
@@ -4019,16 +4029,18 @@ Parser::parseFile (const string &path, int width, int height,
 {
   xmlDoc *xml;
   Document *doc;
-
+  
   xml = xmlReadFile (path.c_str (), nullptr, PARSER_LIBXML_FLAGS);
   if (unlikely (xml == nullptr))
     {
       tryset (errmsg, xmlGetLastErrorAsString ());
+       
       return nullptr;
     }
 
   doc = process (xml, width, height, errmsg);
   xmlFreeDoc (xml);
+ 
   return doc;
 }
 

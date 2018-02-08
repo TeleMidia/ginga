@@ -24,7 +24,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include <libsoup/soup.h>
 
 TrackerFlags trackerFlags;
-
 gchar *baseURI = (gchar *) "http://telemidia.puc-rio.br/~busson/notify.php";
 
 void
