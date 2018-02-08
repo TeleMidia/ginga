@@ -82,6 +82,7 @@ Required:
   * GTK+ >= 3.4
   * Pango >= 1.30
   * Libxml >= 2.9
+  * Libsoup >= 2.42
 
 Optional:
 
@@ -97,7 +98,7 @@ On Ubuntu-based distros, to install the dependencies run:
     $ sudo apt-get install -y git gcc g++ autotools-dev dh-autoreconf \
         cmake cmake-data liblua5.2-dev libglib2.0-dev libpango1.0-dev \
         librsvg2-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
-        libgstreamer-plugins-good1.0-dev libgtk-3-dev -qq
+        libgstreamer-plugins-good1.0-dev libgtk-3-dev libsoup2.4-dev -qq
 
 To build with autotools run:
 
