@@ -691,7 +691,7 @@ static map<string, ParserSyntaxElt> parser_syntax_table = {
         nullptr,
         ELT_CACHE,
         {"connectorBase", "descriptorBase", "regionBase", "ruleBase",
-          "transitionBase"},
+          "transitionBase", "fontBase"},
         { {"alias", ATTR_REQUIRED_NONEMPTY_NAME},
           {"documentURI", ATTR_REQUIRED},
           {"region", 0},     // unused
