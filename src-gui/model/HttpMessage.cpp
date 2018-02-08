@@ -16,7 +16,11 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "ginga_gtk.h"
+#ifdef G_OS_WIN32
+
+#else
 #include <sys/utsname.h>
+#endif
 #include <libsoup/soup.h>
 
 TrackerFlags trackerFlags;
@@ -47,14 +51,17 @@ send_http_log_message (gint log_type, const gchar *log_message)
   SoupSession *session = soup_session_new_with_options (
       SOUP_SESSION_ADD_FEATURE_BY_TYPE, SOUP_TYPE_CONTENT_SNIFFER, NULL);
 
+#ifdef G_OS_WIN32
+  gchar *url = "";
+#else
   struct utsname uname_pointer;
   uname (&uname_pointer);
-
   gchar *url = g_markup_printf_escaped (
       "%s?id=%s&os=%s&os_v=%s&ginga_v=%s&arch=%s&type=%d&msg=%s", baseURI,
       gingaID, uname_pointer.sysname, uname_pointer.release,
       GINGA->version ().c_str (), uname_pointer.machine, log_type,
       log_message);
+#endif
   // printf ("url: %s \n", url);
   SoupMessage *msg = soup_message_new ("GET", url);
   soup_session_queue_message (session, msg, http_message_callback,
