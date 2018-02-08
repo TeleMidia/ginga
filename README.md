@@ -87,7 +87,8 @@ Required:
 Optional:
 
   * <a href="https://bitbucket.org/chromiumembedded/cef">CEF</a> >= 3.0
-  * librsvg >= 2.40
+  * <a href="<https://wiki.gnome.org/action/show/Projects/LibRsvg>
+"> librsvg </a> >= 2.40
   * <a href="https://www.lua.org">Lua</a> >= 5.2
   * <a href="https://github.com/TeleMidia/nclua">NCLua</a> >= 1.0
 
@@ -115,9 +116,9 @@ To build with `cmake` run:
 Build with `cmake` will downloads and builds the <a
 href="https://github.com/TeleMidia/nclua">NCLua</a> library automatically.
 
-To build on windows see [README.md](extra/windows/README.md).
+To build on windows see [extra/windows/README.md](extra/windows/README.md).
 
-To build on macOS see [README.md](extra/macos/README.md).
+To build on macOS see [extra/macos/README.md](extra/macos/README.md).
 
 ## Support
 
