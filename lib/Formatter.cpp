@@ -149,6 +149,7 @@ Formatter::start (const string &file, string *errmsg)
     _doc = Parser::parseFile (file, w, h, errmsg);
   if (unlikely (_doc == nullptr))
     return false;
+  
 
   g_assert_nonnull (_doc);
   _doc->setData ("formatter", (void *) this);

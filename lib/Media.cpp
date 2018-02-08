@@ -69,16 +69,8 @@ void
 Media::setProperty (const string &name, const string &value, Time dur)
 {
   string from = this->getProperty (name);
-#ifdef G_OS_WIN32 //temp. need rework!
-  if(name == "uri" && value.find("file:/")!=std::string::npos){
-    std::string uri = value.substr(value.find("file:/")+6,value.length());
-    Object::setProperty (name, uri, dur);
-  }
-  else
-    Object::setProperty (name, value, dur);
-#else
   Object::setProperty (name, value, dur);
-#endif  
+
   if (_player == nullptr)
     return;
 
