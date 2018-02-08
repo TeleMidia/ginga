@@ -177,8 +177,6 @@ Formatter::start (const string &file, string *errmsg)
   g_assert_nonnull (evt);
   g_assert (evt->transition (Event::START));
 
-  // Refresh current focus.
-  settings->updateCurrentFocus ("");
 
   // Sets formatter state.
   _state = GINGA_STATE_PLAYING;

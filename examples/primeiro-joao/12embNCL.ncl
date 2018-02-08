@@ -22,7 +22,7 @@
     </connectorBase>
   </head>
   <body>
-    <port id="entry" component="advert"/>
+    <port id="entry" component="animation"/>
     <media id="animation" src="media/animGar.mp4" descriptor="screenDesc">
       <area id="segDrible" begin="12s"/>
       <area id="segPhoto" begin="41s"/>
