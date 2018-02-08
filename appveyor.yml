@@ -15,7 +15,7 @@ build_script:
 
     bash -lc "pacman -Syu --noconfirm"
 
-    bash -lc "pacman -Sy --noconfirm base-devel mpfr cmake mingw64/mingw-w64-x86_64-glib2 glib2-devel mingw64/mingw-w64-x86_64-cairo mingw64/mingw-w64-x86_64-gst-plugins-base mingw64/mingw-w64-x86_64-gst-plugins-good mingw64/mingw-w64-x86_64-gst-plugins-bad mingw64/mingw-w64-x86_64-gtk3 mingw64/mingw-w64-x86_64-pango mingw-w64-x86_64-lua"
+    bash -lc "pacman -Sy --noconfirm base-devel mpfr cmake mingw64/mingw-w64-x86_64-glib2 glib2-devel mingw64/mingw-w64-x86_64-cairo mingw64/mingw-w64-x86_64-gst-plugins-base mingw64/mingw-w64-x86_64-gst-plugins-good mingw64/mingw-w64-x86_64-gst-plugins-bad mingw64/mingw-w64-x86_64-gtk3 mingw64/mingw-w64-x86_64-pango mingw-w64-x86_64-lua mingw-w64-libsoup"
 
     bash -lc "cd /c/projects/ginga && ./bootstrap && ./configure && make -j4"
 
