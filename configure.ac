@@ -58,12 +58,14 @@ m4_define([gstreamer_required_version],  [1.2.0])
 m4_define([gtk_required_version],        [3.4.2])
 m4_define([libxml_required_version],     [2.9])
 m4_define([pango_required_version],      [1.30.0])
+m4_define([soup_required_version],       [2.42])
 AC_SUBST([CAIRO_REQUIRED_VERSION],       cairo_required_version)
 AC_SUBST([GLIB_REQUIRED_VERSION],        glib_required_version)
 AC_SUBST([GSTREAMER_REQUIRED_VERSION],   gstreamer_required_version)
 AC_SUBST([GTK_REQUIRED_VERSION],         gtk_required_version)
 AC_SUBST([LIBXML_REQUIRED_VERSION],      libxml_required_version)
 AC_SUBST([PANGO_REQUIRED_VERSION],       pango_required_version)
+AC_SUBST([SOUP_REQUIRED_VERSION],        soup_required_version)
 
 # Optional dependencies version.
 m4_define([cef_required_version],        [3.0])
@@ -71,6 +73,7 @@ m4_define([librsvg_required_version],    [2.40.0])
 m4_define([lua_required_version],        [5.2])
 m4_define([nclua_required_version],      [1.0])
 m4_define([opengl_required_version],     [17.0])
+m4_define([soup_required_version],       [2.42])
 AC_SUBST([CEF_REQUIRED_VERSION],         cef_required_version)
 AC_SUBST([LIBRSVG_REQUIRED_VERSION],     librsvg_required_version)
 AC_SUBST([LUA_REQUIRED_VERSION],         cef_required_version)
@@ -185,6 +188,18 @@ AU_CHECK_PKG([PANGO],
  [pango >= pango_required_version
   pangocairo >= pango_required_version])
 
+AU_CHECK_PKG([SOUP], [libsoup-2.4 >= soup_required_version],
+ [AC_LANG_PROGRAM([[
+#include <libsoup/soup.h>
+#if !SOUP_CHECK_VERSION  \
+    (SOUP_REQUIRED_MAJOR,\
+     SOUP_REQUIRED_MINOR,\
+     SOUP_REQUIRED_MICRO)
+# error "soup is too old"
+#endif
+ ]])],
+ [AC_LANG_PROGRAM([[]], [[glib_check_version (0, 0, 0);]])])
+
 # Optional dependencies.
 AC_ARG_WITH([cef],
  [AS_HELP_STRING([--with-cef=DIR],
@@ -257,6 +272,7 @@ AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $LUA_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $NCLUA_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $OPENGL_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $PANGO_CFLAGS"])
+AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $SOUP_CFLAGS"])
 AC_SUBST([GINGA_ALL_CXXFLAGS])
 
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $CAIRO_LIBS"])
@@ -270,6 +286,7 @@ AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $LUA_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $NCLUA_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $OPENGL_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $PANGO_LIBS"])
+AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $SOUP_LIBS"])
 AC_SUBST([GINGA_ALL_LDFLAGS])
 
 # Directories.

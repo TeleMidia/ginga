@@ -22,8 +22,8 @@ SUBDIRS= icons style
 
 AM_CPPFLAGS= -I$(top_srcdir)/lib -I$(top_builddir)/lib\
   -DGINGADATADIR=\"$(gingadatadir)\"
-AM_CXXFLAGS= $(CAIRO_CFLAGS) $(GLIB_CFLAGS) $(GTK_CFLAGS) $(LIBXML_CFLAGS)
-AM_LDFLAGS= $(CAIRO_LIBS) $(GLIB_LIBS) $(GTK_LIBS) $(LIBXML_LIBS)
+AM_CXXFLAGS= $(CAIRO_CFLAGS) $(GLIB_CFLAGS) $(GTK_CFLAGS) $(LIBXML_CFLAGS) $(SOUP_CFLAGS)
+AM_LDFLAGS= $(CAIRO_LIBS) $(GLIB_LIBS) $(GTK_LIBS) $(LIBXML_LIBS) $(SOUP_LIBS)
 
 bin_PROGRAMS= gingagui
 gingagui_CXXFLAGS= $(AM_CXXFLAGS)
@@ -32,6 +32,8 @@ gingagui_LDFLAGS= $(AM_LDFLAGS)
 gingagui_SOURCES=\
   ginga-gtk.cpp\
   model/SaveLoadSettings.cpp\
+  model/HttpMessage.cpp\
+  view/TrackerWindow.cpp\
   view/AboutWindow.cpp\
   view/HelpWindow.cpp\
   view/Draw.cpp\
