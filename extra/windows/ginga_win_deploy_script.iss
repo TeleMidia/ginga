@@ -229,7 +229,7 @@ Source: "C:\msys64\mingw64\bin\libvpx-1.dll"; DestDir: "{app}"; Flags: ignorever
 Source: "C:\msys64\mingw64\bin\libwavpack-1.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\msys64\mingw64\bin\libwebp-7.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\msys64\mingw64\bin\libwebpmux-3.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\msys64\mingw64\bin\libx264-148.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\msys64\mingw64\bin\libx264-155.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\msys64\mingw64\bin\libx265.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\msys64\mingw64\bin\postproc-54.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\msys64\mingw64\bin\swresample-2.dll"; DestDir: "{app}"; Flags: ignoreversion
