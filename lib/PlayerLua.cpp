@@ -64,12 +64,19 @@ PlayerLua::start ()
 
   g_assert (_state != OCCURRING);
   g_assert_null (_nw);
-  TRACE ("starting");
+  GError *err;
+  char *filename = g_filename_from_uri (_prop.uri.c_str (), NULL, &err);
+  if (filename == NULL)
+    {
+      ERROR ("%s.", err->message);
+      g_error_free (err);
+    }
 
-  this->pwdSave (_prop.uri);
+  this->pwdSave (filename);
   _init_rect = _prop.rect;
-  _nw = ncluaw_open (_prop.uri.c_str (), _init_rect.width,
-                     _init_rect.height, &errmsg);
+  _nw = ncluaw_open (filename, _init_rect.width, _init_rect.height, &errmsg);
+  g_free (filename);
+
   if (unlikely (_nw == nullptr))
     ERROR ("%s", errmsg);
   this->pwdRestore ();
