@@ -1,8 +1,8 @@
 ## Building the repository on macOS
 
-Download [brew](<https://brew.sh>).
+Download [brew](<brew.sh>).
 
-To install the dependencies run on MSYS terminal:
+To install the dependencies run on macOS terminal:
 
     $ brew install  git autoconf automake libtool pkg-config gettext cmake \
         glib pango gsettings-desktop-schemas libogg cairo libpng gst-libav \

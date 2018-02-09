@@ -2,7 +2,7 @@
 
 Download [MSYS2](www.msys2.org).
 
-To install the dependencies run:
+To install the dependencies run on MSYS terminal:
 
     $ pacman -Syu --noconfirm
 
@@ -22,8 +22,8 @@ Build with autotools.
 
 ## Create installer on Windows
 
-Download rcedit (<https://github.com/electron/rcedit/releases>).
-Download Inno Setup (<http://www.jrsoftware.org/isinfo.php>).
+Download rcedit (<github.com/electron/rcedit/releases>).
+Download Inno Setup (<www.jrsoftware.org/isinfo.php>).
 
 First, change ginga and gingagui icons using (run terminal with admin privileges):
 
