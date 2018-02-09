@@ -167,22 +167,15 @@ PlayerText::~PlayerText ()
 void
 PlayerText::reload ()
 {
-  const char *path;
-  gchar *contents = NULL;
-  GError *err = NULL;
   string text;
+  GError *err = NULL;
 
-  path = Player::_prop.uri.c_str ();
-  if (unlikely (!g_file_get_contents (path, &contents, NULL, &err)))
+  if (unlikely (!xurigetcontents (Player::_prop.uri, text, &err)))
     {
       g_assert_nonnull (err);
-      ERROR ("cannot load text file %s: %s", path, err->message);
+      ERROR ("cannot load text file %s: %s", Player::_prop.uri, err->message);
       g_error_free (err);
     }
-  g_assert_nonnull (contents);
-
-  text = string (contents);
-  g_free (contents);
 
   if (_surface != nullptr)
     {

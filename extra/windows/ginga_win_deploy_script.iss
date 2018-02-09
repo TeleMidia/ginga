@@ -31,9 +31,10 @@ AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
-DisableDirPage=yes
+DisableDirPage=no
 DisableProgramGroupPage=yes
 OutputBaseFilename=gingasetup
+SetupIconFile={#SourcePath}\icon.ico
 Compression=lzma
 SolidCompression=yes
 ; Tell Windows Explorer to reload the environment

@@ -146,6 +146,9 @@ test_aux_xstrassign_SOURCES= test-aux-xstrassign.cpp
 progs+= test-aux-xstrbuild
 test_aux_xstrbuild_SOURCES= test-aux-xstrbuild.cpp
 
+progs+= test-aux-xurifromsrc
+test_aux_xurifromsrc_SOURCES= test-aux-xurifromsrc.cpp
+
 # lib/Document.h -----------------------------------------------------------
 progs+= test-Document-new
 test_Document_new_SOURCES= test-Document-new.cpp
