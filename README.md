@@ -82,13 +82,13 @@ Required:
   * GTK+ >= 3.4
   * Pango >= 1.30
   * Libxml >= 2.9
-  * Libsoup >= 2.42
 
 Optional:
 
   * <a href="https://bitbucket.org/chromiumembedded/cef">CEF</a> >= 3.0
   * <a href="<https://wiki.gnome.org/action/show/Projects/LibRsvg>
 "> librsvg </a> >= 2.40
+  * Libsoup >= 2.42
   * <a href="https://www.lua.org">Lua</a> >= 5.2
   * <a href="https://github.com/TeleMidia/nclua">NCLua</a> >= 1.0
 
