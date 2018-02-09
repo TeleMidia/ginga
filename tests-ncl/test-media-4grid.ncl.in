@@ -17,7 +17,7 @@
   <port id="start1" component="m1"/>
   <port id="start2" component="m2"/>
   <media id="m1" src="@SRC@" descriptor="desc1"/>
-  <media id="m2" src="@SRC@" descriptor="desc2"/>
+  <media id="m2" src="@SRC_REMOTE@" descriptor="desc2"/>
   <port id="startctx" component="ctx"/>
   <context id="ctx">
     <port id="start3" component="m3"/>
