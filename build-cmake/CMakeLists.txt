@@ -21,8 +21,8 @@ add_definitions (-DGINGADATADIR="${CMAKE_INSTALL_FULL_DATADIR}/${PACKAGE}")
 # Find dependencies
 find_package (GLIB 2.32 REQUIRED)
 
+find_package (LibSoup 2.42.0)
 find_package (LibXml2 REQUIRED)
-
 find_package (GDKPixBuf REQUIRED)
 find_package (GDK3 REQUIRED)
 
@@ -31,8 +31,6 @@ find_package (Pango REQUIRED)
 find_package (RSVG REQUIRED)
 find_package (GStreamer 1.0 REQUIRED)
 add_definitions (-DWITH_PANGO=1 -DWITH_GSTREAMER=1)
-
-find_package(LibSoup 2.42.0 REQUIRED)
 
 find_package (Lua REQUIRED 5.2)
 
@@ -49,8 +47,10 @@ else ()
 endif()
 
 find_package(GTK3)
-if (GTK3_FOUND)
+if (GTK3_FOUND AND LIBSOUP_FOUND)
   set (WITH_GINGAGUI_GTK ON)
+else()
+  set (WITH_GINGAGUI_GTK OFF)
 endif()
 
 if (WITH_OPENGL)
@@ -153,10 +153,7 @@ set (LIBGINGA_INCLUDE_DIRS
 
   ${CMAKE_CURRENT_SOURCE_DIR}/../lib
 
-
   ${GLIB_INCLUDE_DIRS}
-
-  ${LIBSOUP_INCLUDE_DIRS}
 
   ${LIBXML2_INCLUDE_DIR}
   ${GDKPIXBUF_INCLUDE_DIRS}
@@ -178,8 +175,6 @@ set (LIBGINGA_LIBS
   expat
 
   ${GLIB_LIBRARIES}
-
-  ${LIBSOUP_LIBRARIES}
 
   ${LIBXML2_LIBRARIES}
   ${GDK3_LIBRARIES}
@@ -214,7 +209,7 @@ if (WITH_CEF)
     libcef_dll_wrapper
     ${CEF_STANDARD_LIBS}
   )
-endif()
+endif ()
 
 set (GINGAGUI_GTK_SOURCES
   ../src-gui/ginga-gtk.cpp
@@ -234,9 +229,6 @@ set (GINGAGUI_GTK_INCLUDE_DIRS
   ../src-gui/
   ../src-gui/model/
   ../src-gui/view/
-
-  ${LIBGINGA_INCLUDE_DIRS}
-  ${GTK3_INCLUDE_DIRS}
 )
 
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${GINGA_BINARY_DIR})
@@ -270,9 +262,20 @@ endif ()
 
 # gingagui target
 if (WITH_GINGAGUI_GTK)
+  list (APPEND GINGAGUI_GTK_INCLUDE_DIRS
+    ${LIBGINGA_INCLUDE_DIRS}
+    ${LIBSOUP_INCLUDE_DIRS}
+    ${GTK3_INCLUDE_DIRS}
+  )
+
+  set (GINGAGUI_GTK_LIBRARIES
+    ${LIBSOUP_LIBRARIES}
+    ${GTK3_LIBRARIES}
+  )
+
   add_executable (gingagui ${GINGAGUI_GTK_SOURCES})
   target_include_directories (gingagui PRIVATE ${GINGAGUI_GTK_INCLUDE_DIRS})
-  target_link_libraries (gingagui PRIVATE libginga ${GTK3_LIBRARIES})
+  target_link_libraries (gingagui PRIVATE libginga ${GINGAGUI_GTK_LIBRARIES})
 endif()
 
 # ginga-qt executable.
@@ -391,7 +394,9 @@ set (CPACK_DEBIAN_PACKAGE_DEPENDS
 
 install (DIRECTORY ${CMAKE_BINARY_OUTPUT_DIR} DESTINATION bin)
 install (TARGETS ginga DESTINATION bin)
-install (TARGETS gingagui DESTINATION bin)
+if (WITH_GINGAGUI_GTK)
+  install (TARGETS gingagui DESTINATION bin)
+endif ()
 install (DIRECTORY ../examples DESTINATION share/ginga/)
 
 include (CPack)
