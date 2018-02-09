@@ -3735,16 +3735,8 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
   else
     {
       elt->getAttribute ("src", &src);
-      if (src != "" && !xpathisuri (src) && !xpathisabs (src))
-        {
-          string dir = st->getDirname ();
-          src = xpathbuildabs (dir, src);
-        }
-
-#ifdef G_OS_WIN32 //temp. need rework!
-  if(src.find("file:/")!=std::string::npos)
-    src = src.substr(src.find("file:/")+6,src.length()); 
-#endif
+      if (src != "")
+        src = xurifromsrc (st->getDirname (), src);
 
       if (st->referMapIndex (id, &media))
         {
