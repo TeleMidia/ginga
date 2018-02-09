@@ -197,4 +197,6 @@ $(TEST_MEDIA): test-media-*.ncl.in
 	  vid) src="samples/clock.ogv";;\
 	    *) exit 1;;\
 	esac;\
-	sed -e "s,@SRC@,$$src,g" "test-media-$$suffix.ncl.in" >$@
+	src_remote="http://raw.github.com/telemidia/ginga/master//tests-ncl/$$src";\
+	sed -e "s,@SRC@,$$src,gi;s,@SRC_REMOTE@,"$$src_remote",gi"\
+         "test-media-$$suffix.ncl.in" >$@
