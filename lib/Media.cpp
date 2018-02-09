@@ -70,6 +70,7 @@ Media::setProperty (const string &name, const string &value, Time dur)
 {
   string from = this->getProperty (name);
   Object::setProperty (name, value, dur);
+
   if (_player == nullptr)
     return;
 

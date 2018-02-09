@@ -1,33 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <ncl-apps>
-    <app src="/home/busson/ginga/examples/pacman/main.ncl" 
-         thumbnail="/home/busson/ginga/src-gui/icons/common/app_thumbnail.png"
-         cover="/home/busson/ginga/src-gui/icons/common/app_cover.png" 
-         title="Primeiro Joao"
-         description="desc desc desc desc desc desc desc desc desc desc desc desc desc" />
-    <app src="/home/busson/ginga/examples/pacman/main.ncl" 
-         thumbnail="/home/busson/ginga/src-gui/icons/common/app_thumbnail.png"
-         cover="/home/busson/ginga/src-gui/icons/common/app_cover.png" 
-         title="Primeiro Joao"
-         description="desc desc desc desc desc desc desc desc desc desc desc desc desc" />
-    <app src="/home/busson/ginga/examples/pacman/main.ncl" 
-         thumbnail="/home/busson/ginga/src-gui/icons/common/app_thumbnail.png"
-         cover="/home/busson/ginga/src-gui/icons/common/app_cover.png" 
-         title="Primeiro Joao"
-         description="desc desc desc desc desc desc desc desc desc desc desc desc desc" />
-    <app src="/home/busson/ginga/examples/pacman/main.ncl" 
-         thumbnail="/home/busson/ginga/src-gui/icons/common/app_thumbnail.png"
-         cover="/home/busson/ginga/src-gui/icons/common/app_cover.png" 
-         title="Primeiro Joao"
-         description="desc desc desc desc desc desc desc desc desc desc desc desc desc" />
-    <app src="/home/busson/ginga/examples/pacman/main.ncl" 
-         thumbnail="/home/busson/ginga/src-gui/icons/common/app_thumbnail.png"
-         cover="/home/busson/ginga/src-gui/icons/common/app_cover.png" 
-         title="Primeiro Joao"
-         description="desc desc desc desc desc desc desc desc desc desc desc desc desc" />
-    <app src="/home/busson/ginga/examples/pacman/main.ncl" 
-         thumbnail="/home/busson/ginga/src-gui/icons/common/app_thumbnail.png"
-         cover="/home/busson/ginga/src-gui/icons/common/app_cover.png" 
-         title="Primeiro Joao"
-         description="desc desc desc desc desc desc desc desc desc desc desc desc desc" />                         
+    <app src="" 
+         thumbnail=""
+         cover="" 
+         title=""
+         description="" />                        
 </ncl-apps>

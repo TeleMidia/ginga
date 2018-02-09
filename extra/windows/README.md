@@ -2,7 +2,7 @@
 
 Download [MSYS2](www.msys2.org).
 
-To install the dependencies run:
+To install the dependencies run on MSYS terminal:
 
     $ pacman -Syu --noconfirm
 
@@ -11,7 +11,8 @@ To install the dependencies run:
         mingw64/mingw-w64-x86_64-gst-plugins-good mingw64/mingw-w64-x86_64-gst-plugins-bad \
         mingw64/mingw-w64-x86_64-gtk3 mingw64/mingw-w64-x86_64-pango \
         mingw-w64-x86_64-lua mingw64/mingw-w64-x86_64-gst-plugins-ugly \
-        mingw-w64-x86_64-gst-libav-1.12.4-1 mingw-w64-x86_64-gcc mingw-w64-x86_64-make
+        mingw64/mingw-w64-x86_64-gst-libav mingw-w64-x86_64-gcc mingw-w64-x86_64-make \
+        mingw64/mingw-w64-x86_64-libsoup mingw64/mingw-w64-x86_64-x264-git
 
 Build with autotools.
 
@@ -21,13 +22,15 @@ Build with autotools.
 
 ## Create installer on Windows
 
+Download rcedit (<github.com/electron/rcedit/releases>).
+Download Inno Setup (<www.jrsoftware.org/isinfo.php>).
+
 First, change ginga and gingagui icons using (run terminal with admin privileges):
 
-    $ extra/windows/rcedit-x64.exe /mingw64/bin/ginga.exe --set-icon extra/windows/icon.ico
-    $ extra/windows/rcedit-x64.exe /mingw64/bin/gingagui.exe --set-icon extra/windows/icon.ico
+    $ rcedit-x64.exe /mingw64/bin/ginga.exe --set-icon extra/windows/icon.ico
+    $ rcedit-x64.exe /mingw64/bin/gingagui.exe --set-icon extra/windows/icon.ico
 
-Run `ginga_win_deploy_script.iss` with Inno Setup (<http://www.jrsoftware.org/isinfo.php>
-).
+Run `ginga_win_deploy_script.iss` with Inno Setup.
 - If your Windows drive is not C:\\ the script must be modified
   accordingly.
 

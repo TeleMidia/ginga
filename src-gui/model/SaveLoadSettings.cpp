@@ -18,7 +18,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "ginga_gtk.h"
 #include <glib/gstdio.h>
 
-#define SETTINGS_FILENAME "ginga-gtk.settings"
+#define SETTINGS_FILENAME "ginga_3_16.settings"
 
 void
 save_settings (void)
@@ -27,6 +27,9 @@ save_settings (void)
   gchar *file_path = g_build_path (
       G_DIR_SEPARATOR_S, g_get_user_config_dir (), SETTINGS_FILENAME, NULL);
   GKeyFile *key_file = g_key_file_new ();
+  g_key_file_set_value (key_file, "ginga-gui", "ginga-ID",
+                        g_markup_printf_escaped ("%s", gingaID));
+
   g_key_file_set_value (
       key_file, "ginga-gui", "aspect-ratio",
       g_markup_printf_escaped ("%d", presentationAttributes.aspectRatio));
@@ -50,6 +53,16 @@ save_settings (void)
     }
 
   g_key_file_set_value (key_file, "ginga-gui", "historic", hist_str);
+
+  g_key_file_set_value (
+      key_file, "ginga-gui", "show-tracker-window",
+      g_markup_printf_escaped ("%d",
+                               presentationAttributes.showTrackerWindow));
+
+  g_key_file_set_value (
+      key_file, "ginga-gui", "tracker-accept",
+      g_markup_printf_escaped ("%d", trackerFlags.trackerAccept));
+
   g_key_file_save_to_file (key_file, file_path, &error);
 
   g_free (hist_str);
@@ -68,6 +81,8 @@ load_settings (void)
   if (!g_key_file_load_from_file (key_file, file_path, G_KEY_FILE_NONE,
                                   &error))
     goto endload;
+
+  gingaID = g_key_file_get_value (key_file, "ginga-gui", "ginga-ID", &error);
 
   presentationAttributes.aspectRatio = atoi (
       g_key_file_get_value (key_file, "ginga-gui", "aspect-ratio", &error));
@@ -97,6 +112,12 @@ load_settings (void)
         }
       g_strfreev (str_split);
     }
+
+  presentationAttributes.showTrackerWindow = atoi (g_key_file_get_value (
+      key_file, "ginga-gui", "show-tracker-window", &error));
+
+  trackerFlags.trackerAccept = atoi (g_key_file_get_value (
+      key_file, "ginga-gui", "tracker-accept", &error));
 
 endload:
   g_free (hist_str);
