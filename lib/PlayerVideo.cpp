@@ -487,12 +487,9 @@ PlayerVideo::doSetProperty (Property code, unused (const string &name),
       }
     case PROP_URI:
       {
-        gchar *str;
         Player::_prop.uri = value;
-        str = gst_filename_to_uri (value.c_str (), nullptr);
-        g_assert_nonnull (str);
-        g_object_set (G_OBJECT (_playbin), "uri", str, nullptr);
-        g_free (str);
+        TRACE ("uri = %s\n", value.c_str ());
+        g_object_set (G_OBJECT (_playbin), "uri", value.c_str (), nullptr);
         break;
       }
     case PROP_VOLUME:

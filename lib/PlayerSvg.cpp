@@ -49,9 +49,11 @@ PlayerSvg::reload ()
 
   g_assert (_state != SLEEPING);
 
-  svg = rsvg_handle_new_from_file (_prop.uri.c_str (), &err);
+  GFile *file = g_file_new_for_uri (_prop.uri.c_str ());
+  svg = rsvg_handle_new_from_gfile_sync (file, RSVG_HANDLE_FLAGS_NONE, NULL, &err);
   if (unlikely (svg == NULL))
     ERROR ("cannot load SVG file %s: %s", _prop.uri.c_str (), err->message);
+  g_free (file);
 
   g_assert_cmpint (_prop.rect.width, >, 0);
   g_assert_cmpint (_prop.rect.height, >, 0);

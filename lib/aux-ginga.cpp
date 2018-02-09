@@ -645,6 +645,78 @@ xpathbuildabs (const string &a, const string &b)
   return xpathmakeabs ((a == ".") ? b : xpathbuild (a, b));
 }
 
+/**
+ * @brief Transforms the src attribute content on a uri with full path.
+ * @param src
+ * @param basedir
+ * @return the string with the uri
+ */
+string
+xurifromsrc (const string &src, const string &basedir = "")
+{
+  string uri, abs;
+
+  if (xpathisuri (src))
+    {
+      uri = src;
+    }
+  else
+    {
+      if (!xpathisabs (src))
+        {
+          abs = xpathbuildabs (basedir, src);
+        }
+
+       GError *err;
+       gchar *g_uri = g_filename_to_uri (abs.c_str(), NULL, &err);
+       if (g_uri == nullptr)
+         {
+           ERROR ("%s.", err->message);
+           g_error_free (err);
+         }
+
+       uri = string (g_uri);
+       g_free (g_uri);
+     }
+
+  return uri;
+}
+
+/**
+ * @brief Gets the content of a uri (which can be both local or remote).
+ * @param uri
+ * @param content
+ * @param err
+ * @return
+ */
+bool
+xurigetcontents (const string &uri, string &content, GError **error)
+{
+  GFile *file = g_file_new_for_uri (uri.c_str ());
+  char *data;
+  gsize len;
+  gboolean ret;
+  GError *err;
+
+  err = NULL;
+  data = NULL;
+
+  ret = g_file_load_contents (file, NULL, &data, &len, NULL, &err);
+
+  if (ret)
+  {
+    content = string (data);
+    g_free (data);
+  }
+
+  if (err)
+    g_propagate_error (error, err);
+
+  g_object_unref (file);
+
+  return ret;
+}
+
 // User data ---------------------------------------------------------------
 
 UserData::UserData ()

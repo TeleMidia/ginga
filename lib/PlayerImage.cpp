@@ -80,7 +80,6 @@ PlayerImage::~PlayerImage ()
 void
 PlayerImage::reload ()
 {
-
   cairo_status_t status;
 
   if (_surface != nullptr)
@@ -90,7 +89,11 @@ PlayerImage::reload ()
         GL::delete_texture (&_gltexture);
     }
 
-  status = cairox_surface_create_from_file (_prop.uri.c_str (), &_surface);
+  GError *err;
+  // fixme: We should load the image content from the uri, not from filename.
+  gchar *filename = g_filename_from_uri (_prop.uri.c_str (), NULL, &err);
+  status = cairox_surface_create_from_file (filename, &_surface);
+  g_free (filename);
   if (unlikely (status != CAIRO_STATUS_SUCCESS))
     {
       ERROR ("cannot load image file %s: %s", _prop.uri.c_str (),
