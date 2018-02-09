@@ -188,7 +188,22 @@ AU_CHECK_PKG([PANGO],
  [pango >= pango_required_version
   pangocairo >= pango_required_version])
 
-AU_CHECK_PKG([SOUP], [libsoup-2.4 >= soup_required_version],
+# Optional dependencies.
+
+# AU_CHECK_OPTIONAL_PKG([SOUP], [libsoup-2.4 >= soup_required_version],
+#  [AC_LANG_PROGRAM([[
+# #include <libsoup/soup.h>
+# #if !SOUP_CHECK_VERSION  \
+#     (SOUP_REQUIRED_MAJOR,\
+#      SOUP_REQUIRED_MINOR,\
+#      SOUP_REQUIRED_MICRO)
+# # error "soup is too old"
+# #endif
+#  ]])],
+#  [AC_LANG_PROGRAM([[]], [[glib_check_version (0, 0, 0);]])])
+
+AU_CHECK_OPTIONAL_PKG([soup], [build with gingagui GTK support], [],
+ [SOUP], libsoup-2.4 >= soup_required_version,
  [AC_LANG_PROGRAM([[
 #include <libsoup/soup.h>
 #if !SOUP_CHECK_VERSION  \
@@ -198,9 +213,8 @@ AU_CHECK_PKG([SOUP], [libsoup-2.4 >= soup_required_version],
 # error "soup is too old"
 #endif
  ]])],
- [AC_LANG_PROGRAM([[]], [[glib_check_version (0, 0, 0);]])])
+ [AC_LANG_PROGRAM([[]], [[soup_session_new_with_options (0, 0, 0);]])])
 
-# Optional dependencies.
 AC_ARG_WITH([cef],
  [AS_HELP_STRING([--with-cef=DIR],
    [build with Chromium embedded at DIR])])
@@ -322,7 +336,9 @@ AC_MSG_NOTICE([summary of main build options:
   build html player:     ${with_cef_result}
   build nclua player:    ${with_nclua_result}
   build svg player:      ${with_librsvg_result}
-
-  build opengl backend:  ${with_opengl_result}
   build ncl-ltab parser: ${with_lua_result}
+
+  Optional executables:
+  ginga-gui (gtk):    ${with_soup_result}
+  ginga-gl:           ${with_opengl_result}
 ])
