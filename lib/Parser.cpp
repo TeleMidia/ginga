@@ -3736,7 +3736,7 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
     {
       elt->getAttribute ("src", &src);
       if (src != "")
-        src = xurifromsrc (st->getDirname (), src);
+        src = xurifromsrc (src, st->getDirname ());
 
       if (st->referMapIndex (id, &media))
         {
