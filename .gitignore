@@ -26,6 +26,7 @@
 .dirstamp
 .libs
 .patch_number
+/_build
 /INSTALL
 /TODO
 /ChangeLog
