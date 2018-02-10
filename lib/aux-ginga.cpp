@@ -662,10 +662,10 @@ xurifromsrc (const string &src, const string &basedir = "")
     }
   else
     {
-      if (!xpathisabs (src))
-        {
-          abs = xpathbuildabs (basedir, src);
-        }
+      if (xpathisabs (src))
+        abs = src;
+      else
+        abs = xpathbuildabs (basedir, src);
 
        GError *err;
        gchar *g_uri = g_filename_to_uri (abs.c_str(), NULL, &err);

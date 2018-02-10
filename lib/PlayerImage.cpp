@@ -26,7 +26,7 @@ GINGA_NAMESPACE_BEGIN
 // successful, or an error status otherwise.
 
 static cairo_status_t
-cairox_surface_create_from_file (const char *path, cairo_surface_t **dup)
+cairox_surface_create_from_uri (const char *path, cairo_surface_t **dup)
 {
   cairo_surface_t *sfc; // result
   GdkPixbuf *pixbuf;
@@ -35,7 +35,23 @@ cairox_surface_create_from_file (const char *path, cairo_surface_t **dup)
   int w, h;
 
   g_assert_nonnull (dup);
-  pixbuf = gdk_pixbuf_new_from_file (path, &error);
+  GFile *file = g_file_new_for_uri (path);
+  g_assert_nonnull (file);
+
+  GFileInputStream *input = g_file_read (file, NULL, &error);
+  g_assert_nonnull (input);
+  if (input)
+    {
+      pixbuf = gdk_pixbuf_new_from_stream (
+            G_INPUT_STREAM (input), NULL, &error);
+      g_object_unref (input);
+    }
+  else
+    {
+      ERROR ("%s.", error->message);
+      g_error_free (error);
+    }
+
   if (unlikely (pixbuf == NULL))
     {
       cairo_status_t status = (error->domain == G_FILE_ERROR)
@@ -89,11 +105,7 @@ PlayerImage::reload ()
         GL::delete_texture (&_gltexture);
     }
 
-  GError *err;
-  // fixme: We should load the image content from the uri, not from filename.
-  gchar *filename = g_filename_from_uri (_prop.uri.c_str (), NULL, &err);
-  status = cairox_surface_create_from_file (filename, &_surface);
-  g_free (filename);
+  status = cairox_surface_create_from_uri (_prop.uri.c_str(), &_surface);
   if (unlikely (status != CAIRO_STATUS_SUCCESS))
     {
       ERROR ("cannot load image file %s: %s", _prop.uri.c_str (),
