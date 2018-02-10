@@ -714,7 +714,9 @@ static map<string, ParserSyntaxElt> parser_syntax_table = {
       ELT_CACHE,
       {"fontBase"},
       { {"family", ATTR_REQUIRED},
-        {"src", ATTR_REQUIRED} } },
+        {"src", ATTR_REQUIRED},
+        {"style", 0},
+        {"weight", 0} } },
   },
   {
       "body",
@@ -3980,33 +3982,67 @@ ParserState::pushBind (ParserState *st, ParserElt *elt)
   return true;
 }
 
+/**
+ * @brief Starts the processing of \<font\> element.
+ *
+ * This function parses \p elt and loads the font using fontconfig.
+ *
+ * @param st #ParserState
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
 bool
 ParserState::pushFont (ParserState *st, ParserElt *elt)
 {
-  std::string family, src;
+  string family, src, style = "normal", weight = "normal";
+
   g_assert (elt->getAttribute ("family", &family));
   g_assert (elt->getAttribute ("src", &src));
 
-  const FcChar8 *fcfamily = (const FcChar8 *) family.c_str();
-  std::string abs_src = xpathbuildabs (st->getDirname(), src);
-  const FcChar8 *fcfilename = (const FcChar8 *) abs_src.c_str();
+  elt->getAttribute ("style", &style);
+  elt->getAttribute ("weight", &weight);
 
+  // fixme:  We should also handle remote URIs; g_file_move could help us.
+  std::string abs_src = xpathbuildabs (st->getDirname(), src);
+
+  const FcChar8 *fcfilename = (const FcChar8 *) abs_src.c_str();
   FcBool fontAddStatus = FcConfigAppFontAddFile (NULL, fcfilename);
 
   TRACE ("Adding font family='%s' src='%s' success: %d.",
          family.c_str(), src.c_str(), fontAddStatus);
 
-  if (fontAddStatus)
+  if (fontAddStatus == FcTrue)
     {
-      FcFontSet *set = FcConfigGetFonts (FcConfigGetCurrent(),
-                                         FcSetApplication);
-      FcPattern *new_font = set->fonts[set->nfont-1];
+      //  Replaces font metadata with the specifications in the <font> elt.
+      FcFontSet *fontSet = FcConfigGetFonts (FcConfigGetCurrent(),
+                                             FcSetApplication);
+      FcPattern *font = fontSet->fonts[fontSet->nfont-1];
 
-      // Add the family name specified in the <font> elt.
-      FcPatternAddString (new_font, FC_FAMILY, fcfamily);
+      // family
+      const FcChar8 *fcfamily = (const FcChar8 *) family.c_str();
+      FcPatternRemove (font, FC_FAMILY, 0);
+      FcPatternAddString (font, FC_FAMILY, fcfamily);
+
+      FcPatternRemove (font, FC_FULLNAME, 0);
+      FcPatternAddString (font, FC_FULLNAME, fcfamily);
+
+      // style
+      FcPatternRemove (font, FC_STYLE, 0);
+      FcPatternAddString (font, FC_STYLE, (const FcChar8 *) style.c_str ());
+
+      // weight
+      FcPatternRemove (font, FC_WEIGHT, 0);
+      if (weight == "bold")
+        FcPatternAddInteger (font, FC_WEIGHT, FC_WEIGHT_BOLD);
+      else
+        FcPatternAddInteger (font, FC_WEIGHT, FC_WEIGHT_NORMAL);
+
+      FcPatternRemove (font, FC_POSTSCRIPT_NAME, 0);
+
+//      FcPatternPrint (new_font);
     }
 
-  return fontAddStatus;
+  return (fontAddStatus == FcTrue);
 }
 
 // External API.
