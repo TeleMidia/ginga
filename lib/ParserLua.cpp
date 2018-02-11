@@ -89,8 +89,6 @@ l_parse_media (lua_State* L)
   Composition *parent;
   const char *tag;
   const char *id;
-  const char *mime;
-  const char *uri;
   const char *name;
   const char *value;
   const char *path;
