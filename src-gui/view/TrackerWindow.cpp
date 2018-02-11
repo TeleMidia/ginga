@@ -15,6 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
+#include "aux-glib.h"
 #include "ginga_gtk.h"
 
 GtkWidget *dialogWindow = NULL;
@@ -50,7 +51,7 @@ toggle_show_again ()
 }
 
 void
-show_tracker_dialog (GtkWindow *parent)
+show_tracker_dialog (unused (GtkWindow *parent))
 {
   if (dialogWindow != NULL || presentationAttributes.showTrackerWindow == 0)
     return;
