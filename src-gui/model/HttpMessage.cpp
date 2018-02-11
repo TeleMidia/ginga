@@ -15,6 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
+#include "aux-glib.h"
 #include "ginga_gtk.h"
 #ifdef G_OS_WIN32
 #include <windows.h>
@@ -27,7 +28,7 @@ TrackerFlags trackerFlags;
 gchar *baseURI = (gchar *) "http://telemidia.puc-rio.br/~busson/notify.php";
 
 void
-http_message_callback (SoupSession *session, SoupMessage *msg,
+http_message_callback (unused (SoupSession *session), SoupMessage *msg,
                        gpointer user_data)
 {
   int log_type = GPOINTER_TO_INT (user_data);

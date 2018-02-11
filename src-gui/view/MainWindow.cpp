@@ -113,8 +113,10 @@ show_infobar (gchar *messageError)
 }
 
 void
-g_log_default_handler (const gchar *log_domain, GLogLevelFlags log_level,
-                       const gchar *message, gpointer unused_data)
+g_log_default_handler (unused (const gchar *log_domain),
+                       GLogLevelFlags log_level,
+                       const gchar *message,
+                       unused (gpointer unused_data))
 {
   //printf ("%s \n", message);
   if (!g_str_has_prefix (message, "ginga::"))
