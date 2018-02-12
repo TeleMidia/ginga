@@ -189,7 +189,7 @@ string xpathbuildabs (const string &, const string &);
 
 // Uri functions.
 string xurifromsrc (const string &, const string &);
-bool xurigetcontents (const string &, string &, GError **);
+bool xurigetcontents (const string &, string &);
 
 // User data.
 typedef void (*UserDataCleanFunc)(void *);

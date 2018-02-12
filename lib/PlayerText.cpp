@@ -170,7 +170,7 @@ PlayerText::reload ()
   string text;
   GError *err = NULL;
 
-  if (unlikely (!xurigetcontents (Player::_prop.uri, text, &err)))
+  if (unlikely (!xurigetcontents (Player::_prop.uri, text)))
     {
       g_assert_nonnull (err);
       ERROR ("cannot load text file %s: %s",
