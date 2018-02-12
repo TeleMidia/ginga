@@ -168,14 +168,10 @@ void
 PlayerText::reload ()
 {
   string text;
-  GError *err = NULL;
 
   if (unlikely (!xurigetcontents (Player::_prop.uri, text)))
     {
-      g_assert_nonnull (err);
-      ERROR ("cannot load text file %s: %s",
-             Player::_prop.uri.c_str (), err->message);
-      g_error_free (err);
+      ERROR ("cannot load text file %s", Player::_prop.uri.c_str ());
     }
 
   if (_surface != nullptr)
