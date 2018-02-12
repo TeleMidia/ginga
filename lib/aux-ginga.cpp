@@ -692,17 +692,12 @@ xurifromsrc (const string &src, const string &basedir = "")
 bool
 xurigetcontents (const string &uri, string &content, GError **error)
 {
-  GFile *file = g_file_new_for_uri (uri.c_str ());
-  char *data;
+  GError *err = NULL;
+  char *data = NULL;
   gsize len;
-  gboolean ret;
-  GError *err;
 
-  err = NULL;
-  data = NULL;
-
-  ret = g_file_load_contents (file, NULL, &data, &len, NULL, &err);
-
+  GFile *file = g_file_new_for_uri (uri.c_str ());
+  gboolean ret = g_file_load_contents (file, NULL, &data, &len, NULL, &err);
   if (ret)
   {
     content = string (data);
@@ -710,7 +705,9 @@ xurigetcontents (const string &uri, string &content, GError **error)
   }
 
   if (err)
-    g_propagate_error (error, err);
+    {
+      g_propagate_error (error, err);
+    }
 
   g_object_unref (file);
 
