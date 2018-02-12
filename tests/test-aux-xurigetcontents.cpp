@@ -32,40 +32,27 @@ main (void)
   // invalid uri.
   {
     // It must return false and not change the contents string.
-    GError *err = nullptr;
     string empty  = "empty";
-    g_assert (xurigetcontents ("unknown", empty, &err) == false);
+    g_assert (xurigetcontents ("unknown", empty) == false);
     g_assert (empty == "empty");  // doesn't change the string passed as param.
-    // g_assert_nonnull (err);
-    WARNING ("%s.", err->message);
-    g_error_free (err);
   }
 
-  // relative path.
+  // relative path. (also invalid uri.)
   {
-    // It must return false (a relative path is not a valid uri) and not change
-    // the contents string.
-    GError *err = nullptr;
+    // It must return false and not change the contents string.
     string empty = "empty";
     g_assert (xurigetcontents (
-                AUTHORS_FILE_LOCAL_RELATIVE_PATH, empty, &err) == false);
+                AUTHORS_FILE_LOCAL_RELATIVE_PATH, empty) == false);
     g_assert (empty == "empty");  // doesn't change the string passed as param.
-    g_assert_nonnull (err);
-    WARNING ("%s.", err->message);
-    g_error_free (err);
   }
 
-  // valid fullpath.
+  // valid fullpath. (also invalid uri.)
   {
-    // It must return false (a fullpath is not a valid uri) and not change the
-    // contents string.
-    GError *err = nullptr;
+    // It must return false and not change the contents string.
     string empty = "empty";
     string abs = xpathmakeabs (AUTHORS_FILE_LOCAL_RELATIVE_PATH);
-    g_assert (xurigetcontents (abs, empty, &err) == false);
+    g_assert (xurigetcontents (abs, empty) == false);
     g_assert (empty == "empty");
-    g_assert_nonnull (err);
-    g_error_free (err);
   }
 
   // Successful tests ----------------------------------------------------------
@@ -78,8 +65,8 @@ main (void)
     string abs = xpathmakeabs (AUTHORS_FILE_LOCAL_RELATIVE_PATH);
     gchar *uri_local = g_filename_to_uri (abs.c_str (), NULL, &err);
     g_assert_null (err);
-    g_assert (xurigetcontents (uri_local, content, &err));
-    g_assert_null (err);
+
+    g_assert (xurigetcontents (uri_local, content));
     g_assert (content == AUTHORS_FILE_CONTENT);
 
     g_free (uri_local);
@@ -88,10 +75,8 @@ main (void)
   // remote http:// uri.
   {
     // It must return true and work just fine.
-    GError *err = nullptr;
     string content = "";
-    g_assert (xurigetcontents (AUTHORS_FILE_REMOTE_URI, content, &err));
-    g_assert_null (err);
+    g_assert (xurigetcontents (AUTHORS_FILE_REMOTE_URI, content));
     g_assert (content == AUTHORS_FILE_CONTENT);
   }
 
