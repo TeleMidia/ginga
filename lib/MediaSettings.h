@@ -25,7 +25,7 @@ GINGA_NAMESPACE_BEGIN
 class MediaSettings : public Media
 {
 public:
-  MediaSettings (const string &);
+  explicit MediaSettings (const string &);
   ~MediaSettings ();
 
   // Object:

@@ -123,7 +123,6 @@ bool
 Formatter::start (const string &file, string *errmsg)
 {
   int w, h;
-  string id;
   Event *evt;
 
   // This must be the first check.

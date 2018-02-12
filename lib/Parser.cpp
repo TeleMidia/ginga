@@ -118,7 +118,7 @@ typedef struct ParserSyntaxElt ParserSyntaxElt;
 class ParserElt
 {
 public:
-  ParserElt (xmlNode *);
+  explicit ParserElt (xmlNode *);
   ~ParserElt ();
 
   string getTag ();

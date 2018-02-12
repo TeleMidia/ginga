@@ -26,7 +26,7 @@ GINGA_NAMESPACE_BEGIN
 class Context : public Composition
 {
 public:
-  Context (const string &);
+  explicit Context (const string &);
   virtual ~Context ();
 
   // Object:
