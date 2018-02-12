@@ -401,10 +401,9 @@ show_historicbox ()
   gtk_widget_show (historicBoxPopOver);
 #endif
 
+#if GTK_CHECK_VERSION(3, 14, 0)
   GtkListBoxRow *row
       = gtk_list_box_get_selected_row (GTK_LIST_BOX (historicBox));
-
-#if GTK_CHECK_VERSION(3, 14, 0)
   gtk_list_box_unselect_row (GTK_LIST_BOX (historicBox), row);
 #endif
 }
