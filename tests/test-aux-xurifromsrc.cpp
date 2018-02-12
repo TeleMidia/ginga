@@ -20,16 +20,12 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  g_assert (xurifromsrc ("http://a", "/a")
-      == "http://a");
-  g_assert (xurifromsrc ("http://a", "anything")
-      == "http://a");
-  g_assert (xurifromsrc ("file:///full/path/", "")
-      == "file:///full/path/");
-  g_assert (xurifromsrc ("/full/path/", "")
-      == "file:///full/path/");
+  g_assert (xurifromsrc ("http://a", "/a") == "http://a");
+  g_assert (xurifromsrc ("http://a", "anything") == "http://a");
+  g_assert (xurifromsrc ("file:///full/path/", "") == "file:///full/path/");
+  g_assert (xurifromsrc ("/full/path/", "") == "file:///full/path/");
   g_assert (xurifromsrc ("relative/path/", "/base/")
-      == "file:///base/relative/path/");
+            == "file:///base/relative/path/");
 
   exit (EXIT_SUCCESS);
 }

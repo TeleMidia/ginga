@@ -1524,7 +1524,8 @@ main (void)
 </ncl>\n\
 ", tmp.c_str ()));
 
-  tmp = tests_write_tmp_file (0, "<ncl><head><connectorBase/></head></ncl>");
+  tmp = tests_write_tmp_file (0,
+                              "<ncl><head><connectorBase/></head></ncl>");
   XFAIL ("importBase: Bad imported document",
          "<importBase> at line 4: Syntax error in imported document "
          "(no <regionBase> in imported document)",
@@ -1549,7 +1550,7 @@ main (void)
  </head>\n\
 </ncl>\n\
 ",
-                                tmp.c_str ()));
+                                            tmp.c_str ()));
 
   XFAIL ("importBase: Circular import",
          "<importBase> at line 4: Syntax error in imported document "
@@ -2835,7 +2836,7 @@ borderWidth='0',borderColor=''}");
  </head>\n\
 </ncl>\n\
 ",
-                                        B0.c_str ()));
+                                                    B0.c_str ()));
 
     Document *doc;
     PASS (&doc, "Single media with imported bases",

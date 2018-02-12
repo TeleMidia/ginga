@@ -34,7 +34,7 @@ GINGA_NAMESPACE_BEGIN
 
 // parse_port (doc, parent, port)
 static int
-l_parse_port (lua_State* L)
+l_parse_port (lua_State *L)
 {
   Object *obj;
   Event *event;
@@ -47,15 +47,15 @@ l_parse_port (lua_State* L)
 
   doc = (Document *) lua_touserdata (L, 1);
   parent = (Context *) lua_touserdata (L, 2);
-  g_assert_nonnull(parent);
-  str = string(luaL_checkstring (L, -1));
+  g_assert_nonnull (parent);
+  str = string (luaL_checkstring (L, -1));
 
-  at = str.find('@');
+  at = str.find ('@');
 
   if (at != str.npos) // presentation
     {
-      id = str.substr(0, at);
-      evt = str.substr(at + 1, str.npos);
+      id = str.substr (0, at);
+      evt = str.substr (at + 1, str.npos);
       obj = parent->getChildById (id);
 
       // only lambda should have '@' as prefix? this seems strange
@@ -64,16 +64,16 @@ l_parse_port (lua_State* L)
 
       event = obj->getEvent (Event::PRESENTATION, evt);
     }
-  else                          // attribution
+  else // attribution
     {
-      at = str.find('.');
-      id = str.substr(0, at);
-      evt = str.substr(at + 1, str.npos);
+      at = str.find ('.');
+      id = str.substr (0, at);
+      evt = str.substr (at + 1, str.npos);
       obj = parent->getChildById (id);
       event = obj->getEvent (Event::ATTRIBUTION, evt);
     }
 
-  g_assert_nonnull(event);
+  g_assert_nonnull (event);
   parent->addPort (event);
 
   return 0;
@@ -82,7 +82,7 @@ l_parse_port (lua_State* L)
 // label not implemented for area list
 // parse_media (doc, parent, tab, path)
 static int
-l_parse_media (lua_State* L)
+l_parse_media (lua_State *L)
 {
   Media *media;
   Document *doc;
@@ -112,10 +112,10 @@ l_parse_media (lua_State* L)
   media = new Media (id);
 
   lua_rawgeti (L, 3, 3);
-  if (lua_isnil (L, -1) == 0)   // have property list
+  if (lua_isnil (L, -1) == 0) // have property list
     {
       lua_pushnil (L);
-      while (lua_next(L, 7) != 0)
+      while (lua_next (L, 7) != 0)
         {
           name = lua_tolstring (L, -2, 0);
           value = lua_tolstring (L, -1, 0);
@@ -123,7 +123,7 @@ l_parse_media (lua_State* L)
           if (xstrcasecmp ("src", name) == 0)
             {
               name = "uri";
-              string src = string(value);
+              string src = string (value);
 
               // resolve relative dir
               if (src != "" && !xpathisuri (src) && !xpathisabs (src))
@@ -131,23 +131,23 @@ l_parse_media (lua_State* L)
                   path = luaL_checkstring (L, 4);
                   string dir = xpathdirname (path);
                   src = xpathbuildabs (dir, src);
-                  value = src.c_str();
+                  value = src.c_str ();
                 }
             }
 
           media->addAttributionEvent (name);
           media->setProperty (name, value);
-          lua_pop(L, 1);
+          lua_pop (L, 1);
         }
     }
 
-  lua_pop(L, 3);
+  lua_pop (L, 3);
 
   lua_rawgeti (L, 3, 4);
-  if (lua_isnil (L, -1) == 0)   // have area list
+  if (lua_isnil (L, -1) == 0) // have area list
     {
       lua_pushnil (L);
-      while (lua_next(L, 5) != 0)
+      while (lua_next (L, 5) != 0)
         {
           name = lua_tolstring (L, -2, 0);
 
@@ -155,38 +155,38 @@ l_parse_media (lua_State* L)
           value = lua_tolstring (L, -1, 0);
 
           begin = 0;
-          if ((value != NULL) &&
-              (unlikely (!ginga::try_parse_time (value, &begin))))
+          if ((value != NULL)
+              && (unlikely (!ginga::try_parse_time (value, &begin))))
             {
               lua_pushfstring (L, "bad attr: %s", value);
               lua_error (L);
             }
 
-          lua_pop(L, 1);
+          lua_pop (L, 1);
           lua_rawgeti (L, -1, 2);
           value = lua_tolstring (L, -1, 0);
 
           end = GINGA_TIME_NONE;
-          if ((value != NULL) &&
-              (unlikely (!ginga::try_parse_time (value, &end))))
+          if ((value != NULL)
+              && (unlikely (!ginga::try_parse_time (value, &end))))
             {
               lua_pushfstring (L, "bad attr: %s", value);
               lua_error (L);
             }
 
           media->addPresentationEvent (name, begin, end);
-          lua_pop(L, 2);
+          lua_pop (L, 2);
         }
     }
 
-  if (parent == NULL)        // error
+  if (parent == NULL) // error
     {
       lua_pushfstring (L, "parent missing: %s", id);
       lua_error (L);
     }
-  else                          // add parent
+  else // add parent
     {
-      parent->addChild(media);
+      parent->addChild (media);
     }
 
   return 0;
@@ -202,7 +202,7 @@ l_parse_context (lua_State *L)
   const char *id;
 
   doc = (Document *) lua_touserdata (L, 1);
-  g_assert_nonnull(doc);
+  g_assert_nonnull (doc);
   parent = (Composition *) lua_touserdata (L, 2);
 
   luaL_checktype (L, 3, LUA_TTABLE);
@@ -219,7 +219,7 @@ l_parse_context (lua_State *L)
   lua_rawgeti (L, 3, 2);
   id = luaL_checkstring (L, -1);
 
-  if (parent == NULL)        // root
+  if (parent == NULL) // root
     {
       Context *root = doc->getRoot ();
       root->addAlias (string (id));
@@ -231,10 +231,10 @@ l_parse_context (lua_State *L)
     }
 
   lua_rawgeti (L, 3, 4);
-  if (lua_isnil (L, -1) == 0)   // media table
+  if (lua_isnil (L, -1) == 0) // media table
     {
       lua_pushnil (L);
-      while (lua_next(L, -2) != 0)
+      while (lua_next (L, -2) != 0)
         {
           lua_pushcfunction (L, l_parse_media);
           lua_pushlightuserdata (L, doc);
@@ -247,10 +247,10 @@ l_parse_context (lua_State *L)
     }
 
   lua_rawgeti (L, 3, 3);
-  if (lua_isnil (L, -1) == 0)   // port table
+  if (lua_isnil (L, -1) == 0) // port table
     {
       lua_pushnil (L);
-      while (lua_next(L, -2) != 0)
+      while (lua_next (L, -2) != 0)
         {
           lua_pushcfunction (L, l_parse_port);
           lua_pushlightuserdata (L, doc);
@@ -277,7 +277,7 @@ process (lua_State *L, const string &path, string *errmsg)
   lua_pushlightuserdata (L, doc);
   lua_pushlightuserdata (L, NULL);
   lua_pushvalue (L, 1);
-  lua_pushstring(L, path.c_str());
+  lua_pushstring (L, path.c_str ());
   if (unlikely (lua_pcall (L, 4, 0, 0) != LUA_OK))
     {
       delete doc;

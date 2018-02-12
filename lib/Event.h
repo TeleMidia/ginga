@@ -31,7 +31,6 @@ class Object;
 class Event
 {
 public:
-
   /// @brief Event type.
   enum Type
   {
@@ -63,19 +62,19 @@ public:
   /// @brief Event state.
   enum State
   {
-    OCCURRING = 0,              ///< Occurring.
-    PAUSED,                     ///< Paused.
-    SLEEPING,                   ///< Sleeping.
+    OCCURRING = 0, ///< Occurring.
+    PAUSED,        ///< Paused.
+    SLEEPING,      ///< Sleeping.
   };
 
   /// @brief Event state transitions.
   enum Transition
   {
-    ABORT = 0,                  ///< Abort.
-    PAUSE,                      ///< Pause.
-    RESUME,                     ///< Resume.
-    START,                      ///< Start.
-    STOP,                       ///< Stop.
+    ABORT = 0, ///< Abort.
+    PAUSE,     ///< Pause.
+    RESUME,    ///< Resume.
+    START,     ///< Start.
+    STOP,      ///< Stop.
   };
 
   Event (Event::Type, Object *, const string &id);

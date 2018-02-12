@@ -587,18 +587,12 @@ TransitionInfo::TransitionInfo (const string &type, const string &subtype,
                                 gdouble endProgres, const string &direction,
                                 Color fadeColor, guint32 horzRepeat,
                                 guint32 vertRepeat, guint32 borderWidth,
-                                Color borderColor) :
-  type (type),
-  subtype (subtype),
-  dur (dur),
-  startProgress (startProgress),
-  endProgress (endProgres),
-  direction (direction),
-  fadeColor (fadeColor),
-  horzRepeat (horzRepeat),
-  vertRepeat (vertRepeat),
-  borderWidth (borderWidth),
-  borderColor (borderColor)
+                                Color borderColor)
+    : type (type), subtype (subtype), dur (dur),
+      startProgress (startProgress), endProgress (endProgres),
+      direction (direction), fadeColor (fadeColor), horzRepeat (horzRepeat),
+      vertRepeat (vertRepeat), borderWidth (borderWidth),
+      borderColor (borderColor)
 {
 }
 
