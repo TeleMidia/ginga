@@ -45,7 +45,7 @@ public:
     GE      // >=
   };
 
-  Predicate (Predicate::Type);
+  explicit Predicate (Predicate::Type);
   ~Predicate ();
   Predicate::Type getType ();
   string toString ();

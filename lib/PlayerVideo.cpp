@@ -250,7 +250,7 @@ PlayerVideo::seek (gint64 value)
   if (unlikely (!gst_element_seek (_playbin, _prop.speed, GST_FORMAT_TIME,
                                    GST_SEEK_FLAG_FLUSH, GST_SEEK_TYPE_SET,
                                    value, GST_SEEK_TYPE_NONE,
-                                   GST_CLOCK_TIME_NONE)))
+                                   (gint64) GST_CLOCK_TIME_NONE)))
     TRACE ("seek failed");
 
   ret = gst_element_get_state (_playbin, &curr, &pending,
@@ -363,7 +363,7 @@ done:
 gint64
 PlayerVideo::getPipelineTime ()
 {
-  return GST_TIME_AS_NSECONDS (
+  return (gint64) GST_TIME_AS_NSECONDS (
       gst_clock_get_time (gst_element_get_clock (_playbin)));
 }
 

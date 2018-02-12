@@ -30,9 +30,8 @@ GINGA_NAMESPACE_BEGIN
 
 // Public.
 
-Object::Object (const string &id)
+Object::Object (const string &id) : _id (id)
 {
-  _id = id;
   _doc = nullptr;
   _parent = nullptr;
   _time = GINGA_TIME_NONE;

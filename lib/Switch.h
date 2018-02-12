@@ -26,7 +26,7 @@ GINGA_NAMESPACE_BEGIN
 class Switch : public Composition
 {
 public:
-  Switch (const string &);
+  explicit Switch (const string &);
   ~Switch ();
 
   // Object:

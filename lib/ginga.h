@@ -80,7 +80,7 @@ typedef enum
 class Ginga
 {
 public:
-  Ginga (const GingaOptions *opts);
+  explicit Ginga (const GingaOptions *opts);
   virtual ~Ginga () = 0;
 
   virtual GingaState getState () = 0;
