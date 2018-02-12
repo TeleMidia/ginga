@@ -690,7 +690,7 @@ xurifromsrc (const string &src, const string &basedir = "")
  * @return
  */
 bool
-xurigetcontents (const string &uri, string &content, GError **error)
+xurigetcontents (const string &uri, string &content)
 {
   GError *err = NULL;
   char *data = NULL;
@@ -699,14 +699,19 @@ xurigetcontents (const string &uri, string &content, GError **error)
   GFile *file = g_file_new_for_uri (uri.c_str ());
   gboolean ret = g_file_load_contents (file, NULL, &data, &len, NULL, &err);
   if (ret)
-  {
-    content = string (data);
-    g_free (data);
-  }
-
-  if (err)
     {
-      g_propagate_error (error, err);
+      g_assert_null (err);
+      content = string (data);
+      g_free (data);
+    }
+  else
+    {
+      g_assert_nonnull (err);
+      string msg = (!g_file_query_exists (file, NULL)) ?
+            "uri content does not exist." : err->message;
+
+      WARNING ("cannot load content from uri '%s': %s",
+               uri.c_str(), msg.c_str ());
     }
 
   g_object_unref (file);
