@@ -683,11 +683,15 @@ xurifromsrc (const string &src, const string &basedir = "")
 }
 
 /**
- * @brief Gets the content of a uri (which can be both local or remote).
+ * @brief Gets the content of an uri (which can be both local or remote).
+ *
+ * The \p uri must be a valid URI. (Fullpaths without file:// are not
+ * considered valid by this function.)
+ *
  * @param uri
  * @param content
  * @param err
- * @return
+ * @return If the operation was successful or not.
  */
 bool
 xurigetcontents (const string &uri, string &content)
