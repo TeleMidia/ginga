@@ -667,17 +667,17 @@ xurifromsrc (const string &src, const string &basedir = "")
       else
         abs = xpathbuildabs (basedir, src);
 
-       GError *err;
-       gchar *g_uri = g_filename_to_uri (abs.c_str(), NULL, &err);
-       if (g_uri == nullptr)
-         {
-           ERROR ("%s.", err->message);
-           g_error_free (err);
-         }
+      GError *err;
+      gchar *g_uri = g_filename_to_uri (abs.c_str (), NULL, &err);
+      if (g_uri == nullptr)
+        {
+          ERROR ("%s.", err->message);
+          g_error_free (err);
+        }
 
-       uri = string (g_uri);
-       g_free (g_uri);
-     }
+      uri = string (g_uri);
+      g_free (g_uri);
+    }
 
   return uri;
 }
@@ -701,7 +701,8 @@ xurigetcontents (const string &uri, string &data)
   gsize len;
 
   GFile *file = g_file_new_for_uri (uri.c_str ());
-  gboolean ret = g_file_load_contents (file, NULL, &gdata, &len, NULL, &err);
+  gboolean ret
+      = g_file_load_contents (file, NULL, &gdata, &len, NULL, &err);
   if (ret)
     {
       g_assert_null (err);
@@ -711,11 +712,12 @@ xurigetcontents (const string &uri, string &data)
   else
     {
       g_assert_nonnull (err);
-      string msg = (!g_file_query_exists (file, NULL)) ?
-            "uri content does not exist." : err->message;
+      string msg = (!g_file_query_exists (file, NULL))
+                       ? "uri content does not exist."
+                       : err->message;
 
-      WARNING ("cannot load content from uri '%s': %s",
-               uri.c_str(), msg.c_str ());
+      WARNING ("cannot load content from uri '%s': %s", uri.c_str (),
+               msg.c_str ());
     }
 
   g_object_unref (file);

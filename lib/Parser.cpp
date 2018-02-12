@@ -3389,10 +3389,10 @@ ParserState::pushImportBase (ParserState *st, ParserElt *elt)
                                                  : st->getDirname ();
       path = xpathbuildabs (dir, path);
     }
- 
-#ifdef G_OS_WIN32 //temp. need rework!
-  if(path.find("file:/")!=std::string::npos)
-    path = path.substr(path.find("file:/")+6,path.length()); 
+
+#ifdef G_OS_WIN32 // temp. need rework!
+  if (path.find ("file:/") != std::string::npos)
+    path = path.substr (path.find ("file:/") + 6, path.length ());
 #endif
 
   // Push import alias and path onto alias stack.
@@ -4021,18 +4021,18 @@ Parser::parseFile (const string &path, int width, int height,
 {
   xmlDoc *xml;
   Document *doc;
-  
+
   xml = xmlReadFile (path.c_str (), nullptr, PARSER_LIBXML_FLAGS);
   if (unlikely (xml == nullptr))
     {
       tryset (errmsg, xmlGetLastErrorAsString ());
-       
+
       return nullptr;
     }
 
   doc = process (xml, width, height, errmsg);
   xmlFreeDoc (xml);
- 
+
   return doc;
 }
 
