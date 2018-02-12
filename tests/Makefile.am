@@ -146,6 +146,9 @@ test_aux_xstrassign_SOURCES= test-aux-xstrassign.cpp
 progs+= test-aux-xstrbuild
 test_aux_xstrbuild_SOURCES= test-aux-xstrbuild.cpp
 
+progs+= test-aux-xurigetcontents
+test_aux_xurigetcontents_SOURCES= test-aux-xurigetcontents.cpp
+
 progs+= test-aux-xurifromsrc
 test_aux_xurifromsrc_SOURCES= test-aux-xurifromsrc.cpp
 
