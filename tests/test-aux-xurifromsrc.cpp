@@ -26,7 +26,7 @@ main (void)
       == "http://a");
   g_assert (xurifromsrc ("file:///full/path/", "")
       == "file:///full/path/");
-  g_assert (xurifromsrc ("", "/full/path/")
+  g_assert (xurifromsrc ("/full/path/", "")
       == "file:///full/path/");
   g_assert (xurifromsrc ("relative/path/", "/base/")
       == "file:///base/relative/path/");
