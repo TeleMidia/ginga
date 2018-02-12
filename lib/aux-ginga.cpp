@@ -694,19 +694,19 @@ xurifromsrc (const string &src, const string &basedir = "")
  * @return If the operation was successful or not.
  */
 bool
-xurigetcontents (const string &uri, string &content)
+xurigetcontents (const string &uri, string &data)
 {
   GError *err = NULL;
-  char *data = NULL;
+  char *gdata = NULL;
   gsize len;
 
   GFile *file = g_file_new_for_uri (uri.c_str ());
-  gboolean ret = g_file_load_contents (file, NULL, &data, &len, NULL, &err);
+  gboolean ret = g_file_load_contents (file, NULL, &gdata, &len, NULL, &err);
   if (ret)
     {
       g_assert_null (err);
-      content = string (data);
-      g_free (data);
+      data = string (gdata);
+      g_free (gdata);
     }
   else
     {
