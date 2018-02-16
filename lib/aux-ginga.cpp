@@ -646,6 +646,31 @@ xpathbuildabs (const string &a, const string &b)
 }
 
 /**
+ * @brief Transforms the uri in a path.
+ * @param path
+ * @return the string with path
+ */
+string
+xpathfromuri (const string &uri)
+{
+  string path;
+
+  GError *err;
+
+  gchar *g_path
+      = g_filename_from_uri (uri.c_str (), nullptr, &err);
+  if (g_path == nullptr)
+    {
+      ERROR ("%s.", err->message);
+      g_error_free (err);
+    }
+
+  path = string (g_path);
+  g_free (g_path);
+  return path;
+}
+
+/**
  * @brief Transforms the src attribute content on a uri with full path.
  * @param src
  * @param basedir
@@ -666,7 +691,6 @@ xurifromsrc (const string &src, const string &basedir = "")
         abs = src;
       else
         abs = xpathbuildabs (basedir, src);
-
       GError *err;
       gchar *g_uri = g_filename_to_uri (abs.c_str (), NULL, &err);
       if (g_uri == nullptr)
