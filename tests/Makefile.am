@@ -152,6 +152,9 @@ test_aux_xurigetcontents_SOURCES= test-aux-xurigetcontents.cpp
 progs+= test-aux-xurifromsrc
 test_aux_xurifromsrc_SOURCES= test-aux-xurifromsrc.cpp
 
+progs+= test-aux-xpathfromuri
+test_aux_xpathfromuri_SOURCES= test-aux-xpathfromuri.cpp
+
 # lib/Document.h -----------------------------------------------------------
 progs+= test-Document-new
 test_Document_new_SOURCES= test-Document-new.cpp

@@ -164,6 +164,7 @@
 /tests/test-aux-xpathisabs
 /tests/test-aux-xpathisuri
 /tests/test-aux-xpathmakeabs
+/tests/test-aux-xpathfromuri
 /tests/test-aux-xstrassign
 /tests/test-aux-xstrbuild
 /tests/test-aux-xstrcasecmp
