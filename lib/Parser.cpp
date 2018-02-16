@@ -1059,10 +1059,12 @@ ParserState::genId ()
 string
 ParserState::getDirname ()
 {
-  string path = toCPPString (_xml->URL);
+  string path;
 
-  if(_xml == nullptr || _xml->URL == nullptr)
+  if (_xml == nullptr || _xml->URL == nullptr)
     return "";
+
+  path = toCPPString (_xml->URL);
 
   // if uri remove file spec (file://)
   if (xpathisuri (path))
@@ -3397,11 +3399,6 @@ ParserState::pushImportBase (ParserState *st, ParserElt *elt)
                                                  : st->getDirname ();
       path = xpathbuildabs (dir, path);
     }
-
-#ifdef G_OS_WIN32 // temp. need rework!
-  if (path.find ("file:/") != std::string::npos)
-    path = path.substr (path.find ("file:/") + 6, path.length ());
-#endif
 
   // Push import alias and path onto alias stack.
   if (unlikely (!st->aliasStackPush (alias, path)))
