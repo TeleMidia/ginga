@@ -23,7 +23,12 @@ main (void)
   g_assert (xpathbasename ("this/is/a/directory/") == "directory");
   g_assert (xpathbasename ("this/is/ not a/directory/") == "directory");
   g_assert (xpathbasename ("./") == ".");
+#ifdef G_OS_WIN32
+  g_assert (xpathbasename ("/") == "\\");
+#else
   g_assert (xpathbasename ("/") == "/");
+#endif
   g_assert (xpathbasename ("") == ".");
+
   exit (EXIT_SUCCESS);
 }
