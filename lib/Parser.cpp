@@ -1059,9 +1059,17 @@ ParserState::genId ()
 string
 ParserState::getDirname ()
 {
-  return (_xml != nullptr && _xml->URL != nullptr)
-             ? xpathdirname (toCPPString (_xml->URL))
-             : "";
+  string path = toCPPString (_xml->URL);
+
+  if(_xml == nullptr || _xml->URL == nullptr)
+    return "";
+
+  // if uri remove file spec (file://)
+  if (xpathisuri (path))
+    path = xpathfromuri (path);
+
+  //return directory
+  return xpathdirname (path);
 }
 
 /**
