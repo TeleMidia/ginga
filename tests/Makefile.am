@@ -18,7 +18,8 @@
 
 include $(top_srcdir)/build-aux/Makefile.am.common
 
-AM_CPPFLAGS= -DTOP_SRCDIR=\"$(top_srcdir)\"\
+AM_CPPFLAGS= -DABS_TOP_SRCDIR=\"$(abs_top_srcdir)\"\
+  -DTOP_SRCDIR=\"$(top_srcdir)\"\
   -DTOP_BUILDDIR=\"$(top_builddir)\"
 AM_CXXFLAGS= $(GINGA_ALL_CXXFLAGS)
 AM_LDFLAGS= -static $(GINGA_ALL_LDFLAGS)

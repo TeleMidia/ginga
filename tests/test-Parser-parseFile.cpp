@@ -30,7 +30,7 @@ main (void)
   g_assert_null (Parser::parseFile ("nonexistent", 100, 100, nullptr));
 
   // Sanity checks.
-  path = xpathbuildabs (TOP_SRCDIR, "tests-ncl");
+  path = xpathbuildabs (ABS_TOP_SRCDIR, "tests-ncl");
   dir = g_dir_open (path.c_str (), 0, nullptr);
   g_assert_nonnull (dir);
 
