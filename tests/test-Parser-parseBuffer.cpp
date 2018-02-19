@@ -77,6 +77,7 @@ int
 main (void)
 {
   string tmp;
+  string buf;
 
   // -------------------------------------------------------------------------
   // General errors.
@@ -1452,7 +1453,7 @@ main (void)
 </ncl>\n\
 ");
 
-  tmp = tests_write_tmp_file (0, "<x>\n");
+  tmp = tests_write_tmp_file ("<x>\n");
   XFAIL ("importBase: Bad imported document",
          "<importBase> at line 4: Syntax error in imported document "
              + xstrbuild ("(%s: XML error at line 2: Premature end of data "
@@ -1468,8 +1469,9 @@ main (void)
 </ncl>\n\
 ",
                     tmp.c_str ()));
+  g_remove (tmp.c_str ());
 
-  tmp = tests_write_tmp_file (0, "<x/>\n");
+  tmp = tests_write_tmp_file ("<x/>\n");
   XFAIL ("importBase: Missing root",
          "<x> at line 1: Unknown element", xstrbuild ("\
 <ncl>\n\
@@ -1480,8 +1482,9 @@ main (void)
  </head>\n\
 </ncl>\n\
 ", tmp.c_str ()));
+  g_remove (tmp.c_str ());
 
-  tmp = tests_write_tmp_file (0, "<ncl/>");
+  tmp = tests_write_tmp_file ("<ncl/>");
   XFAIL ("importBase: Bad imported document",
          "<importBase> at line 4: Syntax error in imported document "
          "(no <regionBase> in imported document)",
@@ -1495,8 +1498,9 @@ main (void)
 </ncl>\n\
 ",
                     tmp.c_str ()));
+  g_remove (tmp.c_str ());
 
-  tmp = tests_write_tmp_file (0, "<ncl><head/></ncl>");
+  tmp = tests_write_tmp_file ("<ncl><head/></ncl>");
   XFAIL ("importBase: Bad imported document",
          "<importBase> at line 4: Syntax error in imported document "
          "(no <regionBase> in imported document)",
@@ -1510,8 +1514,9 @@ main (void)
 </ncl>\n\
 ",
                     tmp.c_str ()));
+  g_remove (tmp.c_str ());
 
-  tmp = tests_write_tmp_file (0, "<ncl><x/></ncl>");
+  tmp = tests_write_tmp_file ("<ncl><x/></ncl>");
   XFAIL (
       "importBase: Missing head",
       "<ncl> at line 1: Unknown child <x>", xstrbuild ("\
@@ -1523,9 +1528,9 @@ main (void)
  </head>\n\
 </ncl>\n\
 ", tmp.c_str ()));
+  g_remove (tmp.c_str ());
 
-  tmp = tests_write_tmp_file (0,
-                              "<ncl><head><connectorBase/></head></ncl>");
+  tmp = tests_write_tmp_file ("<ncl><head><connectorBase/></head></ncl>");
   XFAIL ("importBase: Bad imported document",
          "<importBase> at line 4: Syntax error in imported document "
          "(no <regionBase> in imported document)",
@@ -1539,9 +1544,10 @@ main (void)
 </ncl>\n\
 ",
                     tmp.c_str ()));
+  g_remove (tmp.c_str ());
 
-  tmp = tests_write_tmp_file (0, "");
-  tmp = tests_write_tmp_file (0, xstrbuild ("\
+  tmp = tests_write_tmp_file ("");
+  buf = xstrbuild ("\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1549,8 +1555,8 @@ main (void)
   </connectorBase>\n\
  </head>\n\
 </ncl>\n\
-",
-                                            tmp.c_str ()));
+",tmp.c_str ());
+  g_assert (g_file_set_contents (tmp.c_str (), buf.c_str (), -1, nullptr));
 
   XFAIL ("importBase: Circular import",
          "<importBase> at line 4: Syntax error in imported document "
@@ -1565,6 +1571,7 @@ main (void)
 </ncl>\n\
 ",
                     tmp.c_str ()));
+  g_remove (tmp.c_str ());
 
   // -------------------------------------------------------------------------
   // <context>
@@ -2803,7 +2810,7 @@ borderWidth='0',borderColor=''}");
 
   // Success: Single media with imported bases.
   {
-    string B0 = tests_write_tmp_file (0, "\
+    string B0 = tests_write_tmp_file ("\
 <ncl>\n\
  <head>\n\
   <regionBase>\n\
@@ -2815,8 +2822,9 @@ borderWidth='0',borderColor=''}");
  </head>\n\
 </ncl>\n\
 ");
+    g_remove (tmp.c_str ());
 
-    string B1 = tests_write_tmp_file (1, "\
+    string B1 = tests_write_tmp_file ("\
 <ncl>\n\
  <head>\n\
   <transitionBase>\n\
@@ -2826,8 +2834,9 @@ borderWidth='0',borderColor=''}");
  <body/>\n\
 </ncl>\n\
 ");
+    g_remove (tmp.c_str ());
 
-    string B2 = tests_write_tmp_file (2, xstrbuild ("\
+    string B2 = tests_write_tmp_file (xstrbuild ("\
 <ncl>\n\
  <head>\n\
   <descriptorBase>\n\
@@ -2835,8 +2844,8 @@ borderWidth='0',borderColor=''}");
   </descriptorBase>\n\
  </head>\n\
 </ncl>\n\
-",
-                                                    B0.c_str ()));
+", B0.c_str ()));
+    g_remove (tmp.c_str ());
 
     Document *doc;
     PASS (&doc, "Single media with imported bases",
