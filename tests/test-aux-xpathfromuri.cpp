@@ -17,23 +17,15 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "tests.h"
 
-static string
-xbuild_filename (const string &s)
-{
-  gchar *gfilename = g_build_filename (s.c_str (), NULL);
-  string filename = gfilename;
-  g_free (gfilename);
-  return filename;
-}
+#define S G_DIR_SEPARATOR_S
 
 int
 main (void)
 {
-  g_assert (xpathfromuri ("file:/a") ==  xbuild_filename ("/a"));
-  g_assert (xpathfromuri ("file:/full/path") ==
-            xbuild_filename ("/full/path") );
+  g_assert (xpathfromuri ("file:/a") ==  S "a");
+  g_assert (xpathfromuri ("file:/full/path") == S "full" S "path" );
   g_assert (xpathfromuri ("file:/base/relative/path") ==
-            xbuild_filename ("/base/relative/path") );
+            S "base" S "relative" S "path");
 
   exit (EXIT_SUCCESS);
 }
