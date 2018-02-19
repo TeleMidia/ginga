@@ -21,6 +21,9 @@ build_script:
 
     bash -lc "cd /c/projects/ginga && ./bootstrap && ./configure --disable-shared && make -j4"
 
+test_script:
+- cmd: bash -lc "cd /c/projects/ginga && make check"
+
 notifications:
 - provider: Email
   to:
