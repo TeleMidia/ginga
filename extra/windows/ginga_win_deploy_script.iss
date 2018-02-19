@@ -35,6 +35,7 @@ DisableDirPage=no
 DisableProgramGroupPage=yes
 OutputBaseFilename=gingasetup
 SetupIconFile={#SourcePath}\icon.ico
+UninstallDisplayIcon={#SourcePath}\icon.ico
 Compression=lzma
 SolidCompression=yes
 ; Tell Windows Explorer to reload the environment

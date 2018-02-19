@@ -74,7 +74,8 @@ PlayerLua::start ()
 
   this->pwdSave (filename);
   _init_rect = _prop.rect;
-  _nw = ncluaw_open (filename, _init_rect.width, _init_rect.height, &errmsg);
+  _nw = ncluaw_open (filename, _init_rect.width, _init_rect.height,
+                     &errmsg);
   g_free (filename);
 
   if (unlikely (_nw == nullptr))

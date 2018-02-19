@@ -26,7 +26,7 @@ GINGA_NAMESPACE_BEGIN
 class Media : public Object
 {
 public:
-  Media (const string &);
+  explicit Media (const string &);
   virtual ~Media ();
 
   // Object:

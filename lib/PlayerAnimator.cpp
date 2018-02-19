@@ -258,8 +258,7 @@ PlayerAnimator::setTransitionProperties (const string &name,
                                          const string &value)
 {
   // WARNING ("property '%s': value '%s'", name.c_str (), value.c_str ());
-  map<string, string> tab;
-  tab = ginga::parse_table (value);
+  map<string, string> tab = ginga::parse_table (value);
 
   string type = tab["type"];
   string subtype = tab["subtype"];
@@ -334,38 +333,38 @@ PlayerAnimator::scheduleTransition (const string &notificationType,
       if (_transIn == NULL)
         return;
 
-      if (_transIn->getType () == "barWipe")
+      if (_transIn->type == "barWipe")
         {
-          createPolygon (_transIn->getType (), rect, cropPoly);
+          createPolygon (_transIn->type, rect, cropPoly);
 
-          if (_transIn->getSubType () == "topToBottom")
+          if (_transIn->subtype == "topToBottom")
             {
               this->schedule ("barwipe:topToBottom", to_string (rect->y),
                               to_string (rect->y + rect->height),
-                              _transIn->getDur ());
+                              _transIn->dur);
             }
           else
             {
               this->schedule ("barwipe:leftToRight", to_string (rect->x),
                               to_string (rect->x + rect->width),
-                              _transIn->getDur ());
+                              _transIn->dur);
             }
         }
-      else if (_transIn->getType () == "diagonalWipe")
+      else if (_transIn->type == "diagonalWipe")
         {
-          createPolygon (_transIn->getType (), rect, cropPoly);
+          createPolygon (_transIn->type, rect, cropPoly);
 
           this->schedule ("diagonalwipe:topLeft:x", to_string (rect->x),
                           to_string (rect->x + rect->width),
-                          _transIn->getDur () / 2);
+                          _transIn->dur / 2);
           this->schedule ("diagonalwipe:topLeft:y", to_string (rect->y),
                           to_string (rect->y + rect->height),
-                          _transIn->getDur () / 2);
+                          _transIn->dur / 2);
         }
       else
         {
           this->schedule ("transparency", "0", to_string (*alpha),
-                          _transIn->getDur ());
+                          _transIn->dur);
         }
     }
   else
@@ -480,6 +479,7 @@ AnimInfo::AnimInfo (const string &name, double from, double to, Time dur)
   _done = false;
   _init = false;
   _stateNode = 0;
+  _speed = 1.0;
 }
 
 void
@@ -588,87 +588,12 @@ TransitionInfo::TransitionInfo (const string &type, const string &subtype,
                                 Color fadeColor, guint32 horzRepeat,
                                 guint32 vertRepeat, guint32 borderWidth,
                                 Color borderColor)
+    : type (type), subtype (subtype), dur (dur),
+      startProgress (startProgress), endProgress (endProgres),
+      direction (direction), fadeColor (fadeColor), horzRepeat (horzRepeat),
+      vertRepeat (vertRepeat), borderWidth (borderWidth),
+      borderColor (borderColor)
 {
-  _type = type;
-  _subtype = subtype;
-  _dur = dur;
-  _startProgress = startProgress;
-  _endProgress = endProgres;
-  _direction = direction;
-  _fadeColor = fadeColor;
-  _horzRepeat = horzRepeat;
-  _vertRepeat = vertRepeat;
-  _borderWidth = borderWidth;
-  _borderColor = borderColor;
-}
-TransitionInfo::~TransitionInfo ()
-{
-}
-
-string
-TransitionInfo::getType ()
-{
-  return _type;
-}
-
-string
-TransitionInfo::getSubType ()
-{
-  return _subtype;
-}
-
-Time
-TransitionInfo::getDur ()
-{
-  return _dur;
-}
-
-gdouble
-TransitionInfo::getStartProgress ()
-{
-  return _startProgress;
-}
-
-gdouble
-TransitionInfo::getEndProgress ()
-{
-  return _endProgress;
-}
-
-string
-TransitionInfo::getDirection ()
-{
-  return _direction;
-}
-
-Color
-TransitionInfo::getFadeColor ()
-{
-  return _fadeColor;
-}
-
-guint32
-TransitionInfo::getHorzRepeat ()
-{
-  return _horzRepeat;
-}
-
-guint32
-TransitionInfo::getVertRepeat ()
-{
-  return _vertRepeat;
-}
-
-guint32
-TransitionInfo::getBorderWidth ()
-{
-  return _borderWidth;
-}
-
-Color
-TransitionInfo::getBorderColor ()
-{
-  return _borderColor;
 }
 
 GINGA_NAMESPACE_END

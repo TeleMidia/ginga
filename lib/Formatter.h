@@ -58,7 +58,7 @@ public:
   void setOptionString (const std::string &, std::string);
 
   // Formatter:
-  Formatter (const GingaOptions *);
+  explicit Formatter (const GingaOptions *);
   ~Formatter ();
 
   Document *getDocument ();

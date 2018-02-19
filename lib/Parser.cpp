@@ -27,6 +27,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include <libxml/tree.h>
 #include <libxml/parser.h>
 #include <fontconfig/fontconfig.h>
+#include <libxml/uri.h>
 
 GINGA_NAMESPACE_BEGIN
 
@@ -119,7 +120,7 @@ typedef struct ParserSyntaxElt ParserSyntaxElt;
 class ParserElt
 {
 public:
-  ParserElt (xmlNode *);
+  explicit ParserElt (xmlNode *);
   ~ParserElt ();
 
   string getTag ();
@@ -262,7 +263,7 @@ private:
   map<string, Media *> _referMap;
 
   string genId ();
-  string getDirname ();
+  string getURI ();
   bool isInUniqueSet (const string &);
   void addToUniqueSet (const string &);
   bool getData (const string &, void **);
@@ -1076,16 +1077,17 @@ ParserState::genId ()
 }
 
 /**
- * @brief Gets the directory part of current loaded XML file.
+ * @brief Gets the URI of current loaded XML file.
  * @return Directory part if there is a loaded XML file, or the empty string
  * otherwise.
  */
 string
-ParserState::getDirname ()
+ParserState::getURI ()
 {
-  return (_xml != nullptr && _xml->URL != nullptr)
-             ? xpathdirname (toCPPString (_xml->URL))
-             : "";
+  if (_xml == nullptr || _xml->URL == nullptr)
+    return "";
+
+  return toCPPString (_xml->URL);
 }
 
 /**
@@ -1156,9 +1158,10 @@ ParserState::errElt (xmlNode *node, ParserState::Error error,
   if (node->doc->URL != nullptr)
     {
       string path = toCPPString (node->doc->URL);
-      if (!xpathisabs (path))
-        path = xpathbuildabs (this->getDirname (), path);
-      _errorMsg = path + ": ";
+      xmlChar *s = xmlBuildURI (toXmlChar (path), node->doc->URL);
+      string uri = toCPPString (s);
+      xmlFree (s);
+      _errorMsg = uri + ": ";
     }
   _errorMsg
       += xstrbuild ("Element <%s> at line %d: ", toCString (node->name),
@@ -3392,7 +3395,7 @@ ParserState::pushImportBase (ParserState *st, ParserElt *elt)
 {
   ParserElt *parent_elt;
   string alias;
-  string path;
+  string uri;
 
   xmlDoc *xml;
   xmlNode *root;
@@ -3403,30 +3406,29 @@ ParserState::pushImportBase (ParserState *st, ParserElt *elt)
 
   g_assert (st->eltCacheIndexParent (elt->getNode (), &parent_elt));
   g_assert (elt->getAttribute ("alias", &alias));
-  g_assert (elt->getAttribute ("documentURI", &path));
+  g_assert (elt->getAttribute ("documentURI", &uri));
 
   // Make import path absolute.
-  if (!xpathisabs (path))
+  string base;
+  if (!st->aliasStackPeek (nullptr, &base))
+    base = st->getURI ();
+
+  if (base != "")
     {
-      string dir;
-      dir = (st->aliasStackPeek (nullptr, &dir)) ? xpathdirname (dir)
-                                                 : st->getDirname ();
-      path = xpathbuildabs (dir, path);
+      xmlChar *s = xmlBuildURI (toXmlChar (uri), toXmlChar (base));
+      uri = toCPPString (s);
+      xmlFree (s);
     }
- 
-#ifdef G_OS_WIN32 //temp. need rework!
-  if(path.find("file:/")!=std::string::npos)
-    path = path.substr(path.find("file:/")+6,path.length()); 
-#endif
+  uri = xurifromsrc (uri, "");
 
   // Push import alias and path onto alias stack.
-  if (unlikely (!st->aliasStackPush (alias, path)))
+  if (unlikely (!st->aliasStackPush (alias, uri)))
     {
       return st->errEltImport (elt->getNode (), "circular import");
     }
 
   // Read the imported document.
-  xml = xmlReadFile (path.c_str (), nullptr, PARSER_LIBXML_FLAGS);
+  xml = xmlReadFile (uri.c_str (), nullptr, PARSER_LIBXML_FLAGS);
   if (unlikely (xml == nullptr))
     {
       string errmsg = xmlGetLastErrorAsString ();
@@ -3760,7 +3762,15 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
     {
       elt->getAttribute ("src", &src);
       if (src != "")
-        src = xurifromsrc (src, st->getDirname ());
+        {
+          xmlChar *s = xmlBuildURI (toXmlChar (src), toXmlChar (st->getURI ()));
+          src = toCPPString (s);
+          if (!xpathisuri (src) && !xpathisabs (src))
+            {
+              src = xpathmakeabs (src);
+            }
+          xmlFree (s);
+        }
 
       if (st->referMapIndex (id, &media))
         {
@@ -4003,9 +4013,17 @@ ParserState::pushFont (ParserState *st, ParserElt *elt)
   elt->getAttribute ("weight", &weight);
 
   // fixme:  We should also handle remote URIs; g_file_move could help us.
-  std::string abs_src = xpathbuildabs (st->getDirname(), src);
+  if (st->getURI () != "")
+    {
+      xmlChar *s = xmlBuildURI (toXmlChar (src), toXmlChar (st->getURI()));
+      src = toCPPString (s);
+      xmlFree (s);
+      src = xpathfromuri (src.c_str ());
+    }
+  else
+    src = xpathmakeabs (src);
 
-  const FcChar8 *fcfilename = (const FcChar8 *) abs_src.c_str();
+  const FcChar8 *fcfilename = (const FcChar8 *) src.c_str();
   FcBool fontAddStatus = FcConfigAppFontAddFile (NULL, fcfilename);
 
   TRACE ("Adding font family='%s' src='%s' success: %d.",
@@ -4108,18 +4126,25 @@ Parser::parseFile (const string &path, int width, int height,
 {
   xmlDoc *xml;
   Document *doc;
-  
-  xml = xmlReadFile (path.c_str (), nullptr, PARSER_LIBXML_FLAGS);
+  string uri = path;
+
+  // Makes the path absolute.
+  if (!xpathisabs (path))
+    uri = xpathmakeabs (path);
+
+  uri = xurifromsrc (uri, "");
+
+  xml = xmlReadFile (uri.c_str (), nullptr, PARSER_LIBXML_FLAGS);
   if (unlikely (xml == nullptr))
     {
       tryset (errmsg, xmlGetLastErrorAsString ());
-       
+
       return nullptr;
     }
 
   doc = process (xml, width, height, errmsg);
   xmlFreeDoc (xml);
- 
+
   return doc;
 }
 

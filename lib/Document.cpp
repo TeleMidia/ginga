@@ -264,8 +264,8 @@ Document::evalAction (Action init)
                     {
                       Predicate *pred;
 
-                      if (cond.event != evt ||
-                          cond.transition != act.transition)
+                      if (cond.event != evt
+                          || cond.transition != act.transition)
                         continue;
 
                       pred = cond.predicate;
@@ -274,7 +274,8 @@ Document::evalAction (Action init)
 
                       // Success.
                       auto acts = link.second;
-                      for (auto ri = acts.rbegin (); ri != acts.rend (); ++ri)
+                      for (auto ri = acts.rbegin (); ri != acts.rend ();
+                           ++ri)
                         {
                           Action next_act = *(ri);
                           string s;
@@ -298,10 +299,9 @@ Document::evalAction (Action init)
                               Object *next_obj = next_evt->getObject ();
                               g_assert_nonnull (next_obj);
 
-                              comp->addDelayedAction (next_evt,
-                                                      next_act.transition,
-                                                      next_act.value,
-                                                      delay);
+                              comp->addDelayedAction (
+                                  next_evt, next_act.transition,
+                                  next_act.value, delay);
                             }
                         }
                     }

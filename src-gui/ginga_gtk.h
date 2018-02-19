@@ -61,7 +61,7 @@ extern gboolean needShowErrorBar;
 extern gboolean inBigPictureMode;
 extern gboolean tvcontrolAsSidebar;
 extern gboolean isCrtlModifierActive;
-extern gchar* gingaID;
+extern gchar *gingaID;
 extern PresentationAttributes presentationAttributes;
 extern TrackerFlags trackerFlags;
 
@@ -74,7 +74,7 @@ void play_pause_button_callback (void);
 void stop_button_callback (void);
 void keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type);
 void create_window_components (void);
-void show_ginga_update_alertbox(void);
+void show_ginga_update_alertbox (void);
 gchar *get_icon_folder (void);
 
 /* View/TvControlWindow */
@@ -120,6 +120,6 @@ void save_settings (void);
 void load_settings (void);
 
 /* Model/HttpMessages */
-void send_http_log_message(gint, const gchar*);
+void send_http_log_message (gint, const gchar *);
 
 #endif /* GINGA_GTK_H */

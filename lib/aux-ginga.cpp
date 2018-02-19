@@ -646,13 +646,36 @@ xpathbuildabs (const string &a, const string &b)
 }
 
 /**
+ * @brief Transforms the uri in a path.
+ * @param path
+ * @return the string with path
+ */
+string
+xpathfromuri (const string &uri)
+{
+  string path;
+  GError *err;
+
+  gchar *g_path = g_filename_from_uri (uri.c_str (), nullptr, &err);
+  if (g_path == nullptr)
+    {
+      ERROR ("%s.", err->message);
+      g_error_free (err);
+    }
+
+  path = string (g_path);
+  g_free (g_path);
+  return path;
+}
+
+/**
  * @brief Transforms the src attribute content on a uri with full path.
  * @param src
- * @param basedir
+ * @param baseuri
  * @return the string with the uri
  */
 string
-xurifromsrc (const string &src, const string &basedir = "")
+xurifromsrc (const string &src, const string &baseuri = "")
 {
   string uri, abs;
 
@@ -665,56 +688,89 @@ xurifromsrc (const string &src, const string &basedir = "")
       if (xpathisabs (src))
         abs = src;
       else
-        abs = xpathbuildabs (basedir, src);
+        abs = xpathbuildabs (baseuri, src);
 
-       GError *err;
-       gchar *g_uri = g_filename_to_uri (abs.c_str(), NULL, &err);
-       if (g_uri == nullptr)
-         {
-           ERROR ("%s.", err->message);
-           g_error_free (err);
-         }
+      GError *err;
+      gchar *g_uri = g_filename_to_uri (abs.c_str (), NULL, &err);
+      if (g_uri == nullptr)
+        {
+          ERROR ("%s.", err->message);
+          g_error_free (err);
+        }
 
-       uri = string (g_uri);
-       g_free (g_uri);
-     }
+      uri = string (g_uri);
+      g_free (g_uri);
+    }
 
   return uri;
 }
 
 /**
- * @brief Gets the content of a uri (which can be both local or remote).
+ * @brief Gets the content of an uri (which can be both local or remote).
+ *
+ * The \p uri must be a valid URI. (Fullpaths without file:// are not
+ * considered valid by this function.)
+ *
  * @param uri
  * @param content
  * @param err
- * @return
+ * @return If the operation was successful or not.
  */
 bool
-xurigetcontents (const string &uri, string &content, GError **error)
+xurigetcontents (const string &uri, string &data)
 {
-  GFile *file = g_file_new_for_uri (uri.c_str ());
-  char *data;
+  GError *err = NULL;
+  char *gdata = NULL;
   gsize len;
-  gboolean ret;
-  GError *err;
 
-  err = NULL;
-  data = NULL;
-
-  ret = g_file_load_contents (file, NULL, &data, &len, NULL, &err);
-
+  GFile *file = g_file_new_for_uri (uri.c_str ());
+  gboolean ret
+      = g_file_load_contents (file, NULL, &gdata, &len, NULL, &err);
   if (ret)
-  {
-    content = string (data);
-    g_free (data);
-  }
+    {
+      g_assert_null (err);
+      data = string (gdata);
+      g_free (gdata);
+    }
+  else
+    {
+      g_assert_nonnull (err);
+      string msg = (!g_file_query_exists (file, NULL))
+                       ? "uri content does not exist."
+                       : err->message;
 
-  if (err)
-    g_propagate_error (error, err);
+      WARNING ("cannot load content from uri '%s': %s", uri.c_str (),
+               msg.c_str ());
+    }
 
   g_object_unref (file);
 
   return ret;
+}
+
+/**
+ * @brief Returns the parent URI of uri.
+ * @param uri
+ * @return the parent URI or empty string if fails.
+ */
+string
+xurigetparent (const string &uri)
+{
+  string parent_uri = "";
+  GFile *file = g_file_new_for_uri (uri.c_str ());
+  GFile *parent = g_file_get_parent (file);
+
+  if (parent)
+    {
+      gchar *gparent_uri = g_file_get_uri (parent);
+      parent_uri = string (gparent_uri);
+      g_free (gparent_uri);
+    }
+
+  g_object_unref (parent);
+  g_object_unref (file);
+
+  return parent_uri;
 }
 
 // User data ---------------------------------------------------------------

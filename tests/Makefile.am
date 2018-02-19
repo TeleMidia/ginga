@@ -18,7 +18,8 @@
 
 include $(top_srcdir)/build-aux/Makefile.am.common
 
-AM_CPPFLAGS= -DTOP_SRCDIR=\"$(top_srcdir)\"\
+AM_CPPFLAGS= -DABS_TOP_SRCDIR=\"$(abs_top_srcdir)\"\
+  -DTOP_SRCDIR=\"$(top_srcdir)\"\
   -DTOP_BUILDDIR=\"$(top_builddir)\"
 AM_CXXFLAGS= $(GINGA_ALL_CXXFLAGS)
 AM_LDFLAGS= -static $(GINGA_ALL_LDFLAGS)
@@ -134,6 +135,9 @@ test_aux_xpathbuild_SOURCES= test-aux-xpathbuild.cpp
 progs+= test-aux-xpathbuildabs
 test_aux_xpathbuildabs_SOURCES= test-aux-xpathbuildabs.cpp
 
+progs+= test-aux-xpathfromuri
+test_aux_xpathfromuri_SOURCES= test-aux-xpathfromuri.cpp
+
 progs+= test-aux-xstrtod
 test_aux_xstrtod_SOURCES= test-aux-xstrtod.cpp
 
@@ -145,6 +149,12 @@ test_aux_xstrassign_SOURCES= test-aux-xstrassign.cpp
 
 progs+= test-aux-xstrbuild
 test_aux_xstrbuild_SOURCES= test-aux-xstrbuild.cpp
+
+#progs+= test-aux-xurigetcontents
+#test_aux_xurigetcontents_SOURCES= test-aux-xurigetcontents.cpp
+
+progs+= test-aux-xurigetparent
+test_aux_xurigetparent_SOURCES= test-aux-xurigetparent.cpp
 
 progs+= test-aux-xurifromsrc
 test_aux_xurifromsrc_SOURCES= test-aux-xurifromsrc.cpp

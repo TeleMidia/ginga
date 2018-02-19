@@ -143,7 +143,8 @@ main (int argc, char **argv)
   if (argc > 1)
     w.start (argv[1]);
   else
-    qFatal ("ginga-qt: Missing file operand.\nUsage: ./ginga-qt <FILE_URI>");
+    qFatal (
+        "ginga-qt: Missing file operand.\nUsage: ./ginga-qt <FILE_URI>");
 
   return a.exec ();
 }

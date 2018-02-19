@@ -17,15 +17,20 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "tests.h"
 
+#include <iostream>
+
 int
 main (void)
 {
-  g_assert (xurifromsrc ("http://a", "/a") == "http://a");
-  g_assert (xurifromsrc ("http://a", "anything") == "http://a");
-  g_assert (xurifromsrc ("file:///full/path/", "") == "file:///full/path/");
-  g_assert (xurifromsrc ("/full/path/", "") == "file:///full/path/");
-  g_assert (xurifromsrc ("relative/path/", "/base/")
-            == "file:///base/relative/path/");
+  // Unsuccessful tests --------------------------------------------------
+
+  // Successful tests ----------------------------------------------------
+  {
+    g_assert (xurigetparent ("file:///ginga/a.ext") == "file:///ginga");
+    g_assert (xurigetparent ("file:///a.ext") == "file:///");
+    g_assert (xurigetparent ("http:///ginga/a.ext") == "http:///ginga");
+    g_assert (xurigetparent ("ftp:///ginga/a.ext") == "ftp:///ginga");
+  }
 
   exit (EXIT_SUCCESS);
 }

@@ -17,15 +17,23 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "tests.h"
 
+static string
+xbuild_filename (const string &s)
+{
+  gchar *gfilename = g_build_filename (s.c_str (), NULL);
+  string filename = gfilename;
+  g_free (gfilename);
+  return filename;
+}
+
 int
 main (void)
 {
-  g_assert (xurifromsrc ("http://a", "/a") == "http://a");
-  g_assert (xurifromsrc ("http://a", "anything") == "http://a");
-  g_assert (xurifromsrc ("file:///full/path/", "") == "file:///full/path/");
-  g_assert (xurifromsrc ("/full/path/", "") == "file:///full/path/");
-  g_assert (xurifromsrc ("relative/path/", "/base/")
-            == "file:///base/relative/path/");
+  g_assert (xpathfromuri ("file:/a") ==  xbuild_filename ("/a"));
+  g_assert (xpathfromuri ("file:/full/path") ==
+            xbuild_filename ("/full/path") );
+  g_assert (xpathfromuri ("file:/base/relative/path") ==
+            xbuild_filename ("/base/relative/path") );
 
   exit (EXIT_SUCCESS);
 }
