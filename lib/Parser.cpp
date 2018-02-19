@@ -26,6 +26,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include <libxml/tree.h>
 #include <libxml/parser.h>
+#include <libxml/uri.h>
 
 GINGA_NAMESPACE_BEGIN
 
@@ -259,7 +260,7 @@ private:
   map<string, Media *> _referMap;
 
   string genId ();
-  string getDirname ();
+  string getURI ();
   bool isInUniqueSet (const string &);
   void addToUniqueSet (const string &);
   bool getData (const string &, void **);
@@ -1052,26 +1053,17 @@ ParserState::genId ()
 }
 
 /**
- * @brief Gets the directory part of current loaded XML file.
+ * @brief Gets the URI of current loaded XML file.
  * @return Directory part if there is a loaded XML file, or the empty string
  * otherwise.
  */
 string
-ParserState::getDirname ()
+ParserState::getURI ()
 {
-  string path;
-
   if (_xml == nullptr || _xml->URL == nullptr)
     return "";
 
-  path = toCPPString (_xml->URL);
-
-  // if uri remove file spec (file://)
-  if (xpathisuri (path))
-    path = xpathfromuri (path);
-
-  //return directory
-  return xpathdirname (path);
+  return toCPPString (_xml->URL);
 }
 
 /**
@@ -1142,9 +1134,10 @@ ParserState::errElt (xmlNode *node, ParserState::Error error,
   if (node->doc->URL != nullptr)
     {
       string path = toCPPString (node->doc->URL);
-      if (!xpathisabs (path))
-        path = xpathbuildabs (this->getDirname (), path);
-      _errorMsg = path + ": ";
+      xmlChar *s = xmlBuildURI (toXmlChar (path), node->doc->URL);
+      string uri = toCPPString (s);
+//      xmlFree (s);
+      _errorMsg = uri + ": ";
     }
   _errorMsg
       += xstrbuild ("Element <%s> at line %d: ", toCString (node->name),
@@ -3378,7 +3371,7 @@ ParserState::pushImportBase (ParserState *st, ParserElt *elt)
 {
   ParserElt *parent_elt;
   string alias;
-  string path;
+  string uri;
 
   xmlDoc *xml;
   xmlNode *root;
@@ -3389,25 +3382,28 @@ ParserState::pushImportBase (ParserState *st, ParserElt *elt)
 
   g_assert (st->eltCacheIndexParent (elt->getNode (), &parent_elt));
   g_assert (elt->getAttribute ("alias", &alias));
-  g_assert (elt->getAttribute ("documentURI", &path));
+  g_assert (elt->getAttribute ("documentURI", &uri));
 
   // Make import path absolute.
-  if (!xpathisabs (path))
+  string base = st->getURI ();
+  printf ("%s %s.\n", uri.c_str (), base.c_str ());
+  if (base != "")
     {
-      string dir;
-      dir = (st->aliasStackPeek (nullptr, &dir)) ? xpathdirname (dir)
-                                                 : st->getDirname ();
-      path = xpathbuildabs (dir, path);
+      xmlChar *s = xmlBuildURI (toXmlChar (uri), toXmlChar (base));
+      uri = toCPPString (s);
+      xmlFree (s);
     }
+  uri = xurifromsrc (uri, "");
+  printf ("-> %s.\n", uri.c_str ());
 
   // Push import alias and path onto alias stack.
-  if (unlikely (!st->aliasStackPush (alias, path)))
+  if (unlikely (!st->aliasStackPush (alias, uri)))
     {
       return st->errEltImport (elt->getNode (), "circular import");
     }
 
   // Read the imported document.
-  xml = xmlReadFile (path.c_str (), nullptr, PARSER_LIBXML_FLAGS);
+  xml = xmlReadFile (uri.c_str (), nullptr, PARSER_LIBXML_FLAGS);
   if (unlikely (xml == nullptr))
     {
       string errmsg = xmlGetLastErrorAsString ();
@@ -3741,7 +3737,15 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
     {
       elt->getAttribute ("src", &src);
       if (src != "")
-        src = xurifromsrc (src, st->getDirname ());
+        {
+          xmlChar *s = xmlBuildURI (toXmlChar (src), toXmlChar (st->getURI ()));
+          src = toCPPString (s);
+          if (!xpathisuri (src) && !xpathisabs (src))
+            {
+              src = xpathmakeabs (src);
+            }
+//          xmlFree (s);
+        }
 
       if (st->referMapIndex (id, &media))
         {
@@ -4026,8 +4030,15 @@ Parser::parseFile (const string &path, int width, int height,
 {
   xmlDoc *xml;
   Document *doc;
+  string uri = path;
 
-  xml = xmlReadFile (path.c_str (), nullptr, PARSER_LIBXML_FLAGS);
+  // Makes the path absolute.
+  if (!xpathisabs (path))
+    uri = xpathmakeabs (path);
+
+  uri = xurifromsrc (uri, "");
+
+  xml = xmlReadFile (uri.c_str (), nullptr, PARSER_LIBXML_FLAGS);
   if (unlikely (xml == nullptr))
     {
       tryset (errmsg, xmlGetLastErrorAsString ());
