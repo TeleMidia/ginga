@@ -31,14 +31,26 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Switch.h"
 
 static G_GNUC_UNUSED string
-tests_write_tmp_file (unsigned int serial, const string &buf)
+tests_write_tmp_file (const string &buf)
 {
   string path;
+  gchar * filename;
+  gint fd;
+  GError *error = nullptr;
 
-  path = xpathbuildabs (string (g_get_tmp_dir ()),
-                        xstrbuild ("%s-%u.ncl", __FILE__, serial));
+  // g_file_open_tmp should follow the rules for mkdtemp() templates
+  fd = g_file_open_tmp("ginga-tests-XXXXXX", &filename, &error);
+  if (unlikely (error != nullptr))
+    {
+      ERROR ("*** Unexpected error: %s", error->message);
+      g_error_free (error);
+    }
+  g_close(fd, nullptr);
+
+  path = filename;
   g_assert (g_file_set_contents (path.c_str (), buf.c_str (), -1, nullptr));
 
+  g_free (filename);
   return path;
 }
 
@@ -51,7 +63,7 @@ tests_parse_and_start (Formatter **fmt, Document **doc, const string &buf)
   tryset (fmt, new Formatter (nullptr));
   g_assert_nonnull (*fmt);
 
-  file = tests_write_tmp_file (0, buf);
+  file = tests_write_tmp_file (buf);
   if (!(*fmt)->start (file, &errmsg))
     {
       g_printerr ("*** Unexpected error: %s", errmsg.c_str ());
@@ -60,6 +72,7 @@ tests_parse_and_start (Formatter **fmt, Document **doc, const string &buf)
 
   tryset (doc, (*fmt)->getDocument ());
   g_assert_nonnull (*doc);
+  g_assert ( g_remove (file.c_str ()) == 0 );
 }
 
 #endif // TESTS_H
