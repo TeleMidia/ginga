@@ -16,26 +16,24 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "tests.h"
-#include <iostream>
-using namespace std;
+
+static string
+xbuild_filename (const string &s)
+{
+  gchar *gfilename = g_build_filename (s.c_str (), NULL);
+  string filename = gfilename;
+  g_free (gfilename);
+  return filename;
+}
 
 int
 main (void)
 {
-  cout << "\\" << endl;
-  cout << xpathfromuri ("file:/a") << endl;
-  cout << xpathfromuri ("file:/full/path") << endl;
-  cout << xpathfromuri ("file:/base/relative/path") << endl;
-#ifdef G_OS_WIN32
-  cout << "G_OS_WIN32" << endl;
-  g_assert (xpathfromuri ("file:/a") == "\\a");
-  g_assert (xpathfromuri ("file:/full/path") == "\\full\\path");
-  g_assert (xpathfromuri ("file:/base/relative/path") == "\\base\\relative\\path");
-#else
-  g_assert (xpathfromuri ("file:/a") == "/a");
-  g_assert (xpathfromuri ("file:/full/path") == "/full/path");
-  g_assert (xpathfromuri ("file:/base/relative/path") == "/base/relative/path");
-#endif
+  g_assert (xpathfromuri ("file:/a") ==  xbuild_filename ("/a"));
+  g_assert (xpathfromuri ("file:/full/path") ==
+            xbuild_filename ("/full/path") );
+  g_assert (xpathfromuri ("file:/base/relative/path") ==
+            xbuild_filename ("/base/relative/path") );
 
   exit (EXIT_SUCCESS);
 }
