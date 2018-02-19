@@ -1136,7 +1136,7 @@ ParserState::errElt (xmlNode *node, ParserState::Error error,
       string path = toCPPString (node->doc->URL);
       xmlChar *s = xmlBuildURI (toXmlChar (path), node->doc->URL);
       string uri = toCPPString (s);
-//      xmlFree (s);
+      xmlFree (s);
       _errorMsg = uri + ": ";
     }
   _errorMsg
@@ -3385,8 +3385,10 @@ ParserState::pushImportBase (ParserState *st, ParserElt *elt)
   g_assert (elt->getAttribute ("documentURI", &uri));
 
   // Make import path absolute.
-  string base = st->getURI ();
-  printf ("%s %s.\n", uri.c_str (), base.c_str ());
+  string base;
+  if (!st->aliasStackPeek (nullptr, &base))
+    base = st->getURI ();
+
   if (base != "")
     {
       xmlChar *s = xmlBuildURI (toXmlChar (uri), toXmlChar (base));
@@ -3394,7 +3396,6 @@ ParserState::pushImportBase (ParserState *st, ParserElt *elt)
       xmlFree (s);
     }
   uri = xurifromsrc (uri, "");
-  printf ("-> %s.\n", uri.c_str ());
 
   // Push import alias and path onto alias stack.
   if (unlikely (!st->aliasStackPush (alias, uri)))
@@ -3744,7 +3745,7 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
             {
               src = xpathmakeabs (src);
             }
-//          xmlFree (s);
+          xmlFree (s);
         }
 
       if (st->referMapIndex (id, &media))
