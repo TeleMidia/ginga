@@ -25,7 +25,7 @@ GINGA_NAMESPACE_BEGIN
 class Composition : public Object
 {
 public:
-  Composition (const string &);
+  explicit Composition (const string &);
   virtual ~Composition () = 0;
 
   const set<Object *> *getChildren ();

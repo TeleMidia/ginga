@@ -35,9 +35,9 @@ http_message_callback (unused (SoupSession *session), SoupMessage *msg,
   if (log_type < 0) // log_type < 0  = check for update
     {
       SoupBuffer *buffer = soup_message_body_flatten (msg->response_body);
-      if (strlen (buffer->data) == 0) //if msg is empty, finalize
+      if (strlen (buffer->data) == 0) // if msg is empty, finalize
         return;
-      if (strcmp ((buffer->data), GINGA->version ().substr(0,6).c_str ()))
+      if (strcmp ((buffer->data), GINGA->version ().substr (0, 6).c_str ()))
         show_ginga_update_alertbox ();
     }
 }
@@ -53,7 +53,7 @@ send_http_log_message (gint log_type, const gchar *log_message)
 
 #ifdef G_OS_WIN32
   SYSTEM_INFO siSysInfo;
-  GetSystemInfo(&siSysInfo);  
+  GetSystemInfo (&siSysInfo);
   OSVERSIONINFO vi;
   memset (&vi, 0, sizeof vi);
   vi.dwOSVersionInfoSize = sizeof vi;
@@ -61,9 +61,8 @@ send_http_log_message (gint log_type, const gchar *log_message)
 
   gchar *url = g_markup_printf_escaped (
       "%s?id=%s&os=%s&os_v=%d&ginga_v=%s&arch=%u&type=%d&msg=%s", baseURI,
-      gingaID, "Windows", vi.dwMajorVersion,
-      GINGA->version ().c_str (), siSysInfo.dwProcessorType, log_type,
-      log_message);
+      gingaID, "Windows", vi.dwMajorVersion, GINGA->version ().c_str (),
+      siSysInfo.dwProcessorType, log_type, log_message);
 #else
   struct utsname uname_pointer;
   uname (&uname_pointer);

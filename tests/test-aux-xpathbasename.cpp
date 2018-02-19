@@ -23,7 +23,8 @@ main (void)
   g_assert (xpathbasename ("this/is/a/directory/") == "directory");
   g_assert (xpathbasename ("this/is/ not a/directory/") == "directory");
   g_assert (xpathbasename ("./") == ".");
-  g_assert (xpathbasename ("/") == "/");
+  g_assert (xpathbasename ("/") == G_DIR_SEPARATOR_S);
   g_assert (xpathbasename ("") == ".");
+
   exit (EXIT_SUCCESS);
 }

@@ -62,8 +62,8 @@ queue_draw:
 void
 draw_callback (GtkWidget *widget, cairo_t *cr, unused (gpointer data))
 {
-
   int w, h;
+
   w = gtk_widget_get_allocated_width (widget);
   h = gtk_widget_get_allocated_height (widget);
 

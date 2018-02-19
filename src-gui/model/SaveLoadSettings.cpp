@@ -82,7 +82,8 @@ load_settings (void)
                                   &error))
     goto endload;
 
-  gingaID = g_key_file_get_value (key_file, "ginga-gui", "ginga-ID", &error);
+  gingaID
+      = g_key_file_get_value (key_file, "ginga-gui", "ginga-ID", &error);
 
   presentationAttributes.aspectRatio = atoi (
       g_key_file_get_value (key_file, "ginga-gui", "aspect-ratio", &error));

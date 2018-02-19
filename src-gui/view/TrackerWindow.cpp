@@ -36,7 +36,7 @@ accept_tracker_callback ()
   trackerFlags.trackerAccept = 1;
   save_settings ();
   destroy_dialog_window ();
-  send_http_log_message(0,(gchar*)"Open Ginga");
+  send_http_log_message (0, (gchar *) "Open Ginga");
 }
 
 void
@@ -50,8 +50,7 @@ toggle_show_again ()
   printf ("Show %d", presentationAttributes.showTrackerWindow);
 }
 
-void
-show_tracker_dialog (unused (GtkWindow *parent))
+void show_tracker_dialog (unused (GtkWindow *parent))
 {
   if (dialogWindow != NULL || presentationAttributes.showTrackerWindow == 0)
     return;

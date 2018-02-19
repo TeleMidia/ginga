@@ -123,7 +123,6 @@ bool
 Formatter::start (const string &file, string *errmsg)
 {
   int w, h;
-  string id;
   Event *evt;
 
   // This must be the first check.
@@ -149,7 +148,6 @@ Formatter::start (const string &file, string *errmsg)
     _doc = Parser::parseFile (file, w, h, errmsg);
   if (unlikely (_doc == nullptr))
     return false;
-  
 
   g_assert_nonnull (_doc);
   _doc->setData ("formatter", (void *) this);
@@ -177,7 +175,6 @@ Formatter::start (const string &file, string *errmsg)
   evt = _doc->getSettings ()->getLambda ();
   g_assert_nonnull (evt);
   g_assert (evt->transition (Event::START));
-
 
   // Sets formatter state.
   _state = GINGA_STATE_PLAYING;

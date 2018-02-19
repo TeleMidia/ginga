@@ -22,7 +22,9 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-// Entry in scheduled animations list.
+/**
+ * @brief The AnimInfo class.
+ */
 class AnimInfo
 {
 public:
@@ -55,39 +57,30 @@ private:
   int _stateNode;    // for complex animations
 };
 
-class TransitionInfo
+/**
+ * @brief The TransitionInfo struct.
+ */
+struct TransitionInfo
 {
-public:
+  const string type;
+  const string subtype;
+  const Time dur;
+  const gdouble startProgress;
+  const gdouble endProgress;
+  const string direction;
+  const Color fadeColor;
+  const guint32 horzRepeat;
+  const guint32 vertRepeat;
+  const guint32 borderWidth;
+  const Color borderColor;
+
   TransitionInfo (const string &, const string &, Time, gdouble, gdouble,
                   const string &, Color, guint32, guint32, guint32, Color);
-  ~TransitionInfo ();
-
-  string getType ();
-  string getSubType ();
-  Time getDur ();
-  gdouble getStartProgress ();
-  gdouble getEndProgress ();
-  string getDirection ();
-  Color getFadeColor ();
-  guint32 getHorzRepeat ();
-  guint32 getVertRepeat ();
-  guint32 getBorderWidth ();
-  Color getBorderColor ();
-
-private:
-  string _type;
-  string _subtype;
-  Time _dur;
-  gdouble _startProgress;
-  gdouble _endProgress;
-  string _direction;
-  Color _fadeColor;
-  guint32 _horzRepeat;
-  guint32 _vertRepeat;
-  guint32 _borderWidth;
-  Color _borderColor;
 };
 
+/**
+ * @brief The PlayerAnimator class.
+ */
 class PlayerAnimator
 {
 public:

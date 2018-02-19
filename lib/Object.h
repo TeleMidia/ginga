@@ -29,7 +29,7 @@ class MediaSettings;
 class Object
 {
 public:
-  Object (const string &);
+  explicit Object (const string &);
   virtual ~Object ();
 
   string getId ();

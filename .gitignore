@@ -164,6 +164,7 @@
 /tests/test-aux-xpathisabs
 /tests/test-aux-xpathisuri
 /tests/test-aux-xpathmakeabs
+/tests/test-aux-xpathfromuri
 /tests/test-aux-xstrassign
 /tests/test-aux-xstrbuild
 /tests/test-aux-xstrcasecmp
@@ -179,6 +180,8 @@
 /tests/test-aux-xstrtoll
 /tests/test-aux-xstrup
 /tests/test-aux-xurifromsrc
+/tests/test-aux-xurigetcontents
+/tests/test-aux-xurigetparent
 /tests/xfail-test-Document-addObject
 /tests/xfail-test-Ginga-getOptionBool
 /tests/xfail-test-Ginga-getOptionInt

@@ -42,8 +42,8 @@ cairox_surface_create_from_uri (const char *path, cairo_surface_t **dup)
   g_assert_nonnull (input);
   if (input)
     {
-      pixbuf = gdk_pixbuf_new_from_stream (
-            G_INPUT_STREAM (input), NULL, &error);
+      pixbuf = gdk_pixbuf_new_from_stream (G_INPUT_STREAM (input), NULL,
+                                           &error);
       g_object_unref (input);
     }
   else
@@ -105,7 +105,7 @@ PlayerImage::reload ()
         GL::delete_texture (&_gltexture);
     }
 
-  status = cairox_surface_create_from_uri (_prop.uri.c_str(), &_surface);
+  status = cairox_surface_create_from_uri (_prop.uri.c_str (), &_surface);
   if (unlikely (status != CAIRO_STATUS_SUCCESS))
     {
       ERROR ("cannot load image file %s: %s", _prop.uri.c_str (),

@@ -65,8 +65,9 @@ show_ginga_update_alertbox ()
 {
   GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;
   GtkWidget *dialog = gtk_message_dialog_new (
-     GTK_WINDOW(mainWindow), flags, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE,
-      "A new version of Ginga Software is\navaible at http://www.ginga.org.br");
+      GTK_WINDOW (mainWindow), flags, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE,
+      "A new version of Ginga Software is\navaible at "
+      "http://www.ginga.org.br");
   gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_destroy (dialog);
 }
@@ -114,11 +115,10 @@ show_infobar (gchar *messageError)
 
 void
 g_log_default_handler (unused (const gchar *log_domain),
-                       GLogLevelFlags log_level,
-                       const gchar *message,
+                       GLogLevelFlags log_level, const gchar *message,
                        unused (gpointer unused_data))
 {
-  //printf ("%s \n", message);
+  // printf ("%s \n", message);
   if (!g_str_has_prefix (message, "ginga::"))
     return; // is not a ginga message
 
@@ -134,8 +134,8 @@ g_log_default_handler (unused (const gchar *log_domain),
 
   if ((log_level == G_LOG_LEVEL_ERROR) || (log_level == G_LOG_FLAG_FATAL))
     {
-       //send error log to server
-      send_http_log_message(1, message);
+      // send error log to server
+      send_http_log_message (1, message);
       if (!strcmp (message,
                    "ginga::PlayerVideo::cb_Bus(): No decoder available "
                    "for type 'video/ogg'."))
@@ -401,10 +401,9 @@ show_historicbox ()
   gtk_widget_show (historicBoxPopOver);
 #endif
 
+#if GTK_CHECK_VERSION(3, 14, 0)
   GtkListBoxRow *row
       = gtk_list_box_get_selected_row (GTK_LIST_BOX (historicBox));
-
-#if GTK_CHECK_VERSION(3, 14, 0)
   gtk_list_box_unselect_row (GTK_LIST_BOX (historicBox), row);
 #endif
 }
