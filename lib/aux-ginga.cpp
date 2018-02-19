@@ -654,11 +654,9 @@ string
 xpathfromuri (const string &uri)
 {
   string path;
-
   GError *err;
 
-  gchar *g_path
-      = g_filename_from_uri (uri.c_str (), nullptr, &err);
+  gchar *g_path = g_filename_from_uri (uri.c_str (), nullptr, &err);
   if (g_path == nullptr)
     {
       ERROR ("%s.", err->message);
@@ -673,11 +671,11 @@ xpathfromuri (const string &uri)
 /**
  * @brief Transforms the src attribute content on a uri with full path.
  * @param src
- * @param basedir
+ * @param baseuri
  * @return the string with the uri
  */
 string
-xurifromsrc (const string &src, const string &basedir = "")
+xurifromsrc (const string &src, const string &baseuri = "")
 {
   string uri, abs;
 
@@ -690,7 +688,8 @@ xurifromsrc (const string &src, const string &basedir = "")
       if (xpathisabs (src))
         abs = src;
       else
-        abs = xpathbuildabs (basedir, src);
+        abs = xpathbuildabs (baseuri, src);
+
       GError *err;
       gchar *g_uri = g_filename_to_uri (abs.c_str (), NULL, &err);
       if (g_uri == nullptr)
@@ -747,6 +746,31 @@ xurigetcontents (const string &uri, string &data)
   g_object_unref (file);
 
   return ret;
+}
+
+/**
+ * @brief Returns the parent URI of uri.
+ * @param uri
+ * @return the parent URI or empty string if fails.
+ */
+string
+xurigetparent (const string &uri)
+{
+  string parent_uri = "";
+  GFile *file = g_file_new_for_uri (uri.c_str ());
+  GFile *parent = g_file_get_parent (file);
+
+  if (parent)
+    {
+      gchar *gparent_uri = g_file_get_uri (parent);
+      parent_uri = string (gparent_uri);
+      g_free (gparent_uri);
+    }
+
+  g_object_unref (parent);
+  g_object_unref (file);
+
+  return parent_uri;
 }
 
 // User data ---------------------------------------------------------------
