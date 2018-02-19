@@ -17,14 +17,20 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "tests.h"
 
+#include <iostream>
+
 int
 main (void)
 {
-  g_assert (xpathbasename ("this/is/a/directory/") == "directory");
-  g_assert (xpathbasename ("this/is/ not a/directory/") == "directory");
-  g_assert (xpathbasename ("./") == ".");
-  g_assert (xpathbasename ("/") == G_DIR_SEPARATOR_S);
-  g_assert (xpathbasename ("") == ".");
+  // Unsuccessful tests --------------------------------------------------
+
+  // Successful tests ----------------------------------------------------
+  {
+    g_assert (xurigetparent ("file:///ginga/a.ext") == "file:///ginga");
+    g_assert (xurigetparent ("file:///a.ext") == "file:///");
+    g_assert (xurigetparent ("http:///ginga/a.ext") == "http:///ginga");
+    g_assert (xurigetparent ("ftp:///ginga/a.ext") == "ftp:///ginga");
+  }
 
   exit (EXIT_SUCCESS);
 }

@@ -1441,7 +1441,7 @@ main (void)
          xstrbuild ("<importBase> at line 4: "
                     "Syntax error in imported document "
                     "(XML error: failed to load external entity \"%s\")",
-                    xpathbuildabs (".", "nonexistent").c_str ()),
+                    xurifromsrc (xpathbuildabs (".", "nonexistent"), "").c_str ()),
          "\
 <ncl>\n\
  <head>\n\
@@ -1457,7 +1457,7 @@ main (void)
          "<importBase> at line 4: Syntax error in imported document "
              + xstrbuild ("(%s: XML error at line 2: Premature end of data "
                           "in tag x line 1)",
-                          tmp.c_str ()),
+                          xurifromsrc (tmp, "").c_str ()),
          xstrbuild ("\
 <ncl>\n\
  <head>\n\

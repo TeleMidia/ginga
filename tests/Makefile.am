@@ -135,6 +135,9 @@ test_aux_xpathbuild_SOURCES= test-aux-xpathbuild.cpp
 progs+= test-aux-xpathbuildabs
 test_aux_xpathbuildabs_SOURCES= test-aux-xpathbuildabs.cpp
 
+progs+= test-aux-xpathfromuri
+test_aux_xpathfromuri_SOURCES= test-aux-xpathfromuri.cpp
+
 progs+= test-aux-xstrtod
 test_aux_xstrtod_SOURCES= test-aux-xstrtod.cpp
 
@@ -147,14 +150,14 @@ test_aux_xstrassign_SOURCES= test-aux-xstrassign.cpp
 progs+= test-aux-xstrbuild
 test_aux_xstrbuild_SOURCES= test-aux-xstrbuild.cpp
 
-progs+= test-aux-xurigetcontents
-test_aux_xurigetcontents_SOURCES= test-aux-xurigetcontents.cpp
+#progs+= test-aux-xurigetcontents
+#test_aux_xurigetcontents_SOURCES= test-aux-xurigetcontents.cpp
+
+progs+= test-aux-xurigetparent
+test_aux_xurigetparent_SOURCES= test-aux-xurigetparent.cpp
 
 progs+= test-aux-xurifromsrc
 test_aux_xurifromsrc_SOURCES= test-aux-xurifromsrc.cpp
-
-progs+= test-aux-xpathfromuri
-test_aux_xpathfromuri_SOURCES= test-aux-xpathfromuri.cpp
 
 # lib/Document.h -----------------------------------------------------------
 progs+= test-Document-new
