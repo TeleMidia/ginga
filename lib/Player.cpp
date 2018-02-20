@@ -283,7 +283,6 @@ Player::getProperty (string const &name)
 void
 Player::setProperty (const string &name, const string &value)
 {
-
   Player::Property code;
   bool use_defval;
   string defval;
@@ -339,10 +338,6 @@ void
 Player::schedulePropertyAnimation (const string &name, const string &from,
                                    const string &to, Time dur)
 {
-  // TRACE ("%s.%s from '%s' to '%s' in %" GINGA_TIME_FORMAT,
-  //        _id.c_str (), name.c_str (), from.c_str (), to.c_str (),
-  //        GINGA_TIME_ARGS (dur));
-
   _animator->schedule (name, from, to, dur);
 }
 
