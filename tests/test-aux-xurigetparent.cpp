@@ -26,10 +26,10 @@ main (void)
 
   // Successful tests ----------------------------------------------------
   {
-    g_assert (xurigetparent ("file:///ginga/a.ext") == "file:///ginga");
-    g_assert (xurigetparent ("file:///a.ext") == "file:///");
-    g_assert (xurigetparent ("http:///ginga/a.ext") == "http:///ginga");
-    g_assert (xurigetparent ("ftp:///ginga/a.ext") == "ftp:///ginga");
+    g_assert_cmpstr (xurigetparent ("file:///ginga/a.ext").c_str (), ==, "file:///ginga");
+    g_assert_cmpstr (xurigetparent ("file:///a.ext").c_str (), ==, "file:///");
+    g_assert_cmpstr (xurigetparent ("http://ginga/a.ext").c_str (), ==, "http://ginga/");
+    g_assert_cmpstr (xurigetparent ("ftp://ginga/a.ext").c_str (), ==, "ftp://ginga/");
   }
 
   exit (EXIT_SUCCESS);
