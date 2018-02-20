@@ -714,10 +714,10 @@ static map<string, ParserSyntaxElt> parser_syntax_table = {
       nullptr,
       ELT_CACHE,
       {"fontBase"},
-      { {"family", ATTR_REQUIRED},
+      { {"fontFamily", ATTR_REQUIRED},
         {"src", ATTR_REQUIRED},
-        {"style", 0},
-        {"weight", 0} } },
+        {"fontStyle", 0},
+        {"fontWeight", 0} } },
   },
   {
       "body",
@@ -4006,11 +4006,11 @@ ParserState::pushFont (ParserState *st, ParserElt *elt)
 {
   string family, src, style = "normal", weight = "normal";
 
-  g_assert (elt->getAttribute ("family", &family));
+  g_assert (elt->getAttribute ("fontFamily", &family));
   g_assert (elt->getAttribute ("src", &src));
 
-  elt->getAttribute ("style", &style);
-  elt->getAttribute ("weight", &weight);
+  elt->getAttribute ("fontStyle", &style);
+  elt->getAttribute ("fontWeight", &weight);
 
   // fixme:  We should also handle remote URIs; g_file_move could help us.
   if (st->getURI () != "")
