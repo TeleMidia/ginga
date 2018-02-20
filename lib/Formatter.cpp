@@ -210,34 +210,19 @@ Formatter::resize (int width, int height)
   // Resize each media object in document.
   for (auto media : *_doc->getMedias ())
     {
-      string top;
-      string bottom;
-      string left;
-      string right;
-      string width;
-      string height;
+#define UPDATE_IF_HAVE(PROP) \
+      { \
+        string s = media->getProperty (PROP); \
+        if (s != "") \
+          media->setProperty (PROP, s); \
+      }
 
-      top = media->getProperty ("top");
-      if (top != "")
-        media->setProperty ("top", top);
-
-      bottom = media->getProperty ("bottom");
-      if (bottom != "")
-        media->setProperty ("bottom", bottom);
-
-      left = media->getProperty ("left");
-      if (left != "")
-        media->setProperty ("left", left);
-
-      right = media->getProperty ("right");
-      if (right != "")
-        media->setProperty ("right", right);
-
-      width = media->getProperty ("width");
-      media->setProperty ("width", width);
-
-      height = media->getProperty ("height");
-      media->setProperty ("height", height);
+      UPDATE_IF_HAVE ("top");
+      UPDATE_IF_HAVE ("left");
+      UPDATE_IF_HAVE ("width");
+      UPDATE_IF_HAVE ("height");
+      UPDATE_IF_HAVE ("bottom");
+      UPDATE_IF_HAVE ("right");
     }
 }
 
