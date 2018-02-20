@@ -29,7 +29,8 @@ main (void)
     tests_parse_and_start (&fmt, &doc, "\
 <ncl>\n\
  <body>\n\
-  <media id='m'>\n\
+  <port id='start' component='m1'/>\n\
+  <media id='m1'>\n\
    <property name='p1' value='0'/>\n\
    <area id='a1'/>\n\
    <area id='a2'/>\n\
@@ -37,66 +38,67 @@ main (void)
  </body>\n\
 </ncl>");
 
-    // Check lambda
-    Context *c = cast (Context *, doc->getRoot ());
-    g_assert_nonnull (c);
+    Context *body = cast (Context *, doc->getRoot ());
+    g_assert_nonnull (body);
+    Event *body_lambda = body->getLambda ();
+    g_assert_nonnull (body_lambda);
 
-    Event *lambda = c->getLambda ();
-    g_assert_nonnull (lambda);
+    Media *m1 = cast (Media *, body->getChildById ("m1"));
+    g_assert_nonnull (m1);
+    Event *m1_lambda = m1->getLambda ();
+    g_assert_nonnull (m1_lambda);
+    Event *m1_a1 = m1->getPresentationEvent ("a1");
+    g_assert_nonnull (m1_a1);
+    Event *m1_a2 = m1->getPresentationEvent ("a2");
+    g_assert_nonnull (m1_a2);
+    Event *m1_p1 = m1->getAttributionEvent ("p1");
+    g_assert_nonnull (m1_p1);
 
-    Media *m = cast (Media *, c->getChildById ("m"));
-    g_assert_nonnull (m);
+    // --------------------------------
+    // check start document
 
-    Event *lambdaMedia = m->getLambda ();
-    g_assert_nonnull (lambdaMedia);
-
-    Event *a1 = m->getPresentationEvent ("a1");
-    g_assert_nonnull (a1);
-    Event *a2 = m->getPresentationEvent ("a1");
-    g_assert_nonnull (a2);
-    Event *p1 = m->getAttributionEvent ("p1");
-    g_assert_nonnull (p1);
-
-    // before START lambda, anchors events an properties
-    // events are in SLEEPING
-    g_assert (lambda->getState () == Event::OCCURRING);
-    g_assert (lambdaMedia->getState () == Event::SLEEPING);
-    g_assert (a1->getState () == Event::SLEEPING);
-    g_assert (a2->getState () == Event::SLEEPING);
-    g_assert (p1->getState () == Event::SLEEPING);
+    // when document is started, only the body@lambda is OCCURING
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::SLEEPING);
+    g_assert (m1_a1->getState () == Event::SLEEPING);
+    g_assert (m1_a2->getState () == Event::SLEEPING);
+    g_assert (m1_p1->getState () == Event::SLEEPING);
 
     // START is done and return true
-    g_assert_true (lambdaMedia->transition (Event::START));
+    g_assert (m1_lambda->transition (Event::START));
 
     // after START lambda is in OCCURRING and
     // anchors are in SLEEPING
-    g_assert (lambda->getState () == Event::OCCURRING);
-    g_assert (lambdaMedia->getState () == Event::OCCURRING);
-    g_assert (a1->getState () == Event::SLEEPING);
-    g_assert (a2->getState () == Event::SLEEPING);
-    g_assert (p1->getState () == Event::SLEEPING);
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_a1->getState () == Event::SLEEPING);
+    g_assert (m1_a2->getState () == Event::SLEEPING);
+    g_assert (m1_p1->getState () == Event::SLEEPING);
 
     // advance time
-    fmt->sendTick (1, 1, 1);
+    fmt->sendTick (0, 0, 0);
 
     // when advance time, anchors events go to OCCURRING
     // and properties events are SLEEPING
-    g_assert (lambda->getState () == Event::OCCURRING);
-    g_assert (lambdaMedia->getState () == Event::OCCURRING);
-    g_assert (a1->getState () == Event::OCCURRING);
-    g_assert (a2->getState () == Event::OCCURRING);
-    g_assert (p1->getState () == Event::SLEEPING);
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_a1->getState () == Event::OCCURRING);
+    g_assert (m1_a2->getState () == Event::OCCURRING);
+    g_assert (m1_p1->getState () == Event::SLEEPING);
+
+    // --------------------------------
+    // main check
 
     // PAUSE is done and return true
-    g_assert_true (lambdaMedia->transition (Event::PAUSE));
+    g_assert_true (m1_lambda->transition (Event::PAUSE));
 
     // after PAUSE all events are PAUSED
     // anchors are in PAUSED and properties events are SLEEPING
-    g_assert (lambda->getState () == Event::OCCURRING);
-    g_assert (lambdaMedia->getState () == Event::PAUSED);
-    g_assert (a1->getState () == Event::PAUSED);
-    g_assert (a2->getState () == Event::PAUSED);
-    g_assert (p1->getState () == Event::SLEEPING);
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::PAUSED);
+    g_assert (m1_a1->getState () == Event::PAUSED);
+    g_assert (m1_a2->getState () == Event::PAUSED);
+    g_assert (m1_p1->getState () == Event::SLEEPING);
 
     delete fmt;
   }
@@ -108,7 +110,8 @@ main (void)
     tests_parse_and_start (&fmt, &doc, "\
 <ncl>\n\
  <body>\n\
-  <media id='m'>\n\
+  <port id='start' component='m1'/>\n\
+  <media id='m1'>\n\
    <property name='p1' value='0'/>\n\
    <area id='a1'/>\n\
    <area id='a2'/>\n\
@@ -116,77 +119,78 @@ main (void)
  </body>\n\
 </ncl>");
 
-    // Check lambda
-    Context *c = cast (Context *, doc->getRoot ());
-    g_assert_nonnull (c);
+    Context *body = cast (Context *, doc->getRoot ());
+    g_assert_nonnull (body);
+    Event *body_lambda = body->getLambda ();
+    g_assert_nonnull (body_lambda);
 
-    Event *lambda = c->getLambda ();
-    g_assert_nonnull (lambda);
+    Media *m1 = cast (Media *, body->getChildById ("m1"));
+    g_assert_nonnull (m1);
+    Event *m1_lambda = m1->getLambda ();
+    g_assert_nonnull (m1_lambda);
+    Event *m1_a1 = m1->getPresentationEvent ("a1");
+    g_assert_nonnull (m1_a1);
+    Event *m1_a2 = m1->getPresentationEvent ("a2");
+    g_assert_nonnull (m1_a2);
+    Event *m1_p1 = m1->getAttributionEvent ("p1");
+    g_assert_nonnull (m1_p1);
 
-    Media *m = cast (Media *, c->getChildById ("m"));
-    g_assert_nonnull (m);
+    // --------------------------------
+    // check start document
 
-    Event *lambdaMedia = m->getLambda ();
-    g_assert_nonnull (lambdaMedia);
-
-    Event *a1 = m->getPresentationEvent ("a1");
-    g_assert_nonnull (a1);
-    Event *a2 = m->getPresentationEvent ("a1");
-    g_assert_nonnull (a2);
-    Event *p1 = m->getAttributionEvent ("p1");
-    g_assert_nonnull (p1);
-
-    // before START lambda, anchors events an properties
-    // events are in SLEEPING
-    g_assert (lambda->getState () == Event::OCCURRING);
-    g_assert (lambdaMedia->getState () == Event::SLEEPING);
-    g_assert (a1->getState () == Event::SLEEPING);
-    g_assert (a2->getState () == Event::SLEEPING);
-    g_assert (p1->getState () == Event::SLEEPING);
+    // when document is started, only the body@lambda is OCCURING
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::SLEEPING);
+    g_assert (m1_a1->getState () == Event::SLEEPING);
+    g_assert (m1_a2->getState () == Event::SLEEPING);
+    g_assert (m1_p1->getState () == Event::SLEEPING);
 
     // START is done and return true
-    g_assert_true (lambdaMedia->transition (Event::START));
+    g_assert (m1_lambda->transition (Event::START));
 
     // after START lambda is in OCCURRING and
     // anchors are in SLEEPING
-    g_assert (lambda->getState () == Event::OCCURRING);
-    g_assert (lambdaMedia->getState () == Event::OCCURRING);
-    g_assert (a1->getState () == Event::SLEEPING);
-    g_assert (a2->getState () == Event::SLEEPING);
-    g_assert (p1->getState () == Event::SLEEPING);
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_a1->getState () == Event::SLEEPING);
+    g_assert (m1_a2->getState () == Event::SLEEPING);
+    g_assert (m1_p1->getState () == Event::SLEEPING);
 
     // advance time
-    fmt->sendTick (1, 1, 1);
+    fmt->sendTick (0, 0, 0);
 
     // when advance time, anchors events go to OCCURRING
     // and properties events are SLEEPING
-    g_assert (lambda->getState () == Event::OCCURRING);
-    g_assert (lambdaMedia->getState () == Event::OCCURRING);
-    g_assert (a1->getState () == Event::OCCURRING);
-    g_assert (a2->getState () == Event::OCCURRING);
-    g_assert (p1->getState () == Event::SLEEPING);
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_a1->getState () == Event::OCCURRING);
+    g_assert (m1_a2->getState () == Event::OCCURRING);
+    g_assert (m1_p1->getState () == Event::SLEEPING);
+
+    // --------------------------------
+    // main check
 
     // PAUSE is done and return true
-    g_assert_true (lambdaMedia->transition (Event::PAUSE));
+    g_assert_true (m1_lambda->transition (Event::PAUSE));
 
     // after PAUSE all events are PAUSED
     // anchors are in PAUSED and properties events are SLEEPING
-    g_assert (lambda->getState () == Event::OCCURRING);
-    g_assert (lambdaMedia->getState () == Event::PAUSED);
-    g_assert (a1->getState () == Event::PAUSED);
-    g_assert (a2->getState () == Event::PAUSED);
-    g_assert (p1->getState () == Event::SLEEPING);
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::PAUSED);
+    g_assert (m1_a1->getState () == Event::PAUSED);
+    g_assert (m1_a2->getState () == Event::PAUSED);
+    g_assert (m1_p1->getState () == Event::SLEEPING);
 
     // PAUSE is done and return false
-    g_assert_false (lambdaMedia->transition (Event::PAUSE));
+    g_assert_false (m1_lambda->transition (Event::PAUSE));
 
     // after PAUSE all events are PAUSED
     // anchors are in PAUSED and properties events are SLEEPING
-    g_assert (lambda->getState () == Event::OCCURRING);
-    g_assert (lambdaMedia->getState () == Event::PAUSED);
-    g_assert (a1->getState () == Event::PAUSED);
-    g_assert (a2->getState () == Event::PAUSED);
-    g_assert (p1->getState () == Event::SLEEPING);
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::PAUSED);
+    g_assert (m1_a1->getState () == Event::PAUSED);
+    g_assert (m1_a2->getState () == Event::PAUSED);
+    g_assert (m1_p1->getState () == Event::SLEEPING);
 
     delete fmt;
   }
@@ -198,7 +202,8 @@ main (void)
     tests_parse_and_start (&fmt, &doc, "\
 <ncl>\n\
  <body>\n\
-  <media id='m'>\n\
+  <port id='start' component='m1'/>\n\
+  <media id='m1'>\n\
    <property name='p1' value='0'/>\n\
    <area id='a1'/>\n\
    <area id='a2'/>\n\
@@ -206,41 +211,75 @@ main (void)
  </body>\n\
 </ncl>");
 
-    Context *c = cast (Context *, doc->getRoot ());
-    g_assert_nonnull (c);
+    Context *body = cast (Context *, doc->getRoot ());
+    g_assert_nonnull (body);
+    Event *body_lambda = body->getLambda ();
+    g_assert_nonnull (body_lambda);
 
-    Event *lambda = c->getLambda ();
-    g_assert_nonnull (lambda);
+    Media *m1 = cast (Media *, body->getChildById ("m1"));
+    g_assert_nonnull (m1);
+    Event *m1_lambda = m1->getLambda ();
+    g_assert_nonnull (m1_lambda);
+    Event *m1_a1 = m1->getPresentationEvent ("a1");
+    g_assert_nonnull (m1_a1);
+    Event *m1_a2 = m1->getPresentationEvent ("a2");
+    g_assert_nonnull (m1_a2);
+    Event *m1_p1 = m1->getAttributionEvent ("p1");
+    g_assert_nonnull (m1_p1);
 
-    Media *m = cast (Media *, c->getChildById ("m"));
-    g_assert_nonnull (m);
+    // --------------------------------
+    // check start document
 
-    Event *lambdaMedia = m->getLambda ();
-    g_assert_nonnull (lambdaMedia);
+    // when document is started, only the body@lambda is OCCURING
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::SLEEPING);
+    g_assert (m1_a1->getState () == Event::SLEEPING);
+    g_assert (m1_a2->getState () == Event::SLEEPING);
+    g_assert (m1_p1->getState () == Event::SLEEPING);
 
-    Event *a1 = m->getPresentationEvent ("a1");
-    g_assert_nonnull (a1);
-    Event *a2 = m->getPresentationEvent ("a1");
-    g_assert_nonnull (a2);
-    Event *p1 = m->getAttributionEvent ("p1");
-    g_assert_nonnull (p1);
+    // START is done and return true
+    g_assert (m1_lambda->transition (Event::START));
 
-    // before START lambda, anchors events an properties
-    // events are in SLEEPING
-    g_assert (lambda->getState () == Event::OCCURRING);
-    g_assert (lambdaMedia->getState () == Event::SLEEPING);
-    g_assert (a1->getState () == Event::SLEEPING);
-    g_assert (a2->getState () == Event::SLEEPING);
-    g_assert (p1->getState () == Event::SLEEPING);
+    // after START lambda is in OCCURRING and
+    // anchors are in SLEEPING
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_a1->getState () == Event::SLEEPING);
+    g_assert (m1_a2->getState () == Event::SLEEPING);
+    g_assert (m1_p1->getState () == Event::SLEEPING);
+
+    // advance time
+    fmt->sendTick (0, 0, 0);
+
+    // when advance time, anchors events go to OCCURRING
+    // and properties events are SLEEPING
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_a1->getState () == Event::OCCURRING);
+    g_assert (m1_a2->getState () == Event::OCCURRING);
+    g_assert (m1_p1->getState () == Event::SLEEPING);
+
+    // --------------------------------
+    // main check
+
+    // STOP is done and return true
+    g_assert_true (m1_lambda->transition (Event::STOP));
+
+    // after STOP all events are SLEEPING
+    g_assert (m1_lambda->getState () == Event::SLEEPING);
+    g_assert (m1_a1->getState () == Event::SLEEPING);
+    g_assert (m1_a2->getState () == Event::SLEEPING);
+    g_assert (m1_p1->getState () == Event::SLEEPING);
 
     // PAUSE is not done and return false
-    g_assert_false (lambdaMedia->transition (Event::PAUSE));
+    g_assert_false (m1_lambda->transition (Event::PAUSE));
 
-    g_assert (lambda->getState () == Event::OCCURRING);
-    g_assert (lambdaMedia->getState () == Event::SLEEPING);
-    g_assert (a1->getState () == Event::SLEEPING);
-    g_assert (a2->getState () == Event::SLEEPING);
-    g_assert (p1->getState () == Event::SLEEPING);
+    // after PAUSE all events are still SLEEPING
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::SLEEPING);
+    g_assert (m1_a1->getState () == Event::SLEEPING);
+    g_assert (m1_a2->getState () == Event::SLEEPING);
+    g_assert (m1_p1->getState () == Event::SLEEPING);
 
     delete fmt;
   }
