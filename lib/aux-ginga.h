@@ -190,7 +190,6 @@ string xpathbuildabs (const string &, const string &);
 // Uri functions.
 string xpathfromuri (const string &);
 string xurifromsrc (const string &, const string &);
-string xurigetparent (const string &);
 bool xurigetcontents (const string &, string &);
 
 
