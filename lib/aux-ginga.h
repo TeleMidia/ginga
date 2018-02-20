@@ -32,6 +32,7 @@ GINGA_BEGIN_DECLS
 #define GINGA_PRAGMA_DIAG_WARNING PRAGMA_DIAG_WARNING
 
 // C library.
+#include <string.h>
 #include <math.h>
 #include <stdlib.h>
 
