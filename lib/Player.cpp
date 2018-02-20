@@ -669,7 +669,7 @@ Player::doSetProperty (Property code, unused (const string &name),
         int width = _formatter->getOptionInt ("width");
         _prop.rect.x
             = width - _prop.rect.width
-              - ginga::parse_percent (value, _prop.rect.width, 0, G_MAXINT);
+              - ginga::parse_percent (value, width, 0, G_MAXINT);
         _dirty = true;
         break;
       }
@@ -694,6 +694,10 @@ Player::doSetProperty (Property code, unused (const string &name),
         int width = _formatter->getOptionInt ("width");
         _prop.rect.width = ginga::parse_percent (value, width, 0, G_MAXINT);
         _dirty = true;
+
+        string right = _media->getProperty ("right");
+        if (right != "")
+          _media->setProperty ("right", right);
         break;
       }
     case PROP_HEIGHT:
@@ -702,6 +706,11 @@ Player::doSetProperty (Property code, unused (const string &name),
         _prop.rect.height
             = ginga::parse_percent (value, height, 0, G_MAXINT);
         _dirty = true;
+
+        string bottom = _media->getProperty ("bottom");
+        if (bottom != "")
+          _media->setProperty ("bottom", bottom);
+
         break;
       }
     case PROP_Z_INDEX:
