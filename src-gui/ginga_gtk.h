@@ -76,6 +76,7 @@ void keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type);
 void create_window_components (void);
 void show_ginga_update_alertbox (void);
 gchar *get_icon_folder (void);
+void insert_historicbox (gchar *filename);
 
 /* View/TvControlWindow */
 void create_tvcontrol_window (void);
