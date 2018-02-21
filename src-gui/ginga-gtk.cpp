@@ -20,6 +20,9 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include <locale.h>
 #include <glib/gi18n.h>
 
+#include "ginga.h"
+using namespace ::std;
+
 #ifdef G_OS_WIN32
 #include <windows.h>
 #endif
@@ -27,6 +30,11 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 // Global formatter.
 Ginga *GINGA = nullptr;
 gchar *gingaID = nullptr;
+
+#define OPTION_LINE "FILE..."
+#define OPTION_DESC                                                        \
+  "Report bugs to: " PACKAGE_BUGREPORT "\n"                                \
+  "Ginga home page: " PACKAGE_URL
 
 void
 init_ginga_data ()
@@ -38,20 +46,45 @@ init_ginga_data ()
 int
 main (int argc, char **argv)
 {
+  int saved_argc;
+  char **saved_argv;
+
+  GingaOptions opts;
+  GtkWidget *app;
+  GOptionContext *ctx;
+  gboolean status;
+  GError *error = NULL;
+
+  saved_argc = argc;
+  saved_argv = g_strdupv (argv);
 
 #ifdef G_OS_WIN32
   HWND var = GetConsoleWindow ();
   ShowWindow (var, SW_HIDE);
 #endif
 
-  GingaOptions opts;
   opts.width = presentationAttributes.resolutionWidth;
   opts.height = presentationAttributes.resolutionHeight;
   opts.debug = false;
   opts.opengl = false;
   opts.experimental = true;
 
-  gtk_init (&argc, &argv);
+  gtk_init (&saved_argc, &saved_argv);
+
+  // Parse command-line options.
+  ctx = g_option_context_new (OPTION_LINE);
+  g_assert_nonnull (ctx);
+  status = g_option_context_parse (ctx, &saved_argc, &saved_argv, &error);
+  g_option_context_free (ctx);
+
+  if (!status)
+    {
+      g_assert_nonnull (error);
+      // usage_error ("%s", error->message);
+      g_error_free (error);
+      _exit (0);
+    }
+
   init_ginga_data ();
   load_settings ();
 
@@ -60,11 +93,10 @@ main (int argc, char **argv)
 
   setlocale (LC_ALL, "C");
 
-  GError *err = NULL;
   gtk_window_set_default_icon_from_file (
       g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons", "common",
                     "ginga_icon.png", NULL),
-      &err);
+      &error);
 
   // send log message to server
   send_http_log_message (0, (gchar *) "Open Ginga");
@@ -72,6 +104,17 @@ main (int argc, char **argv)
   send_http_log_message (-1, (gchar *) "Check for Ginga updates");
   g_assert (g_setenv ("G_MESSAGES_DEBUG", "all", true));
   create_main_window ();
+
+  if (saved_argc > 1)
+    {
+      gchar *filename = saved_argv[1];
+      gchar *ext = strrchr (filename, '.');
+      if (!g_strcmp0 (ext, ".ncl"))
+        {
+          insert_historicbox (filename);
+        }
+    }
+
   gtk_main ();
 
   exit (EXIT_SUCCESS);
