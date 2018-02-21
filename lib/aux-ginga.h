@@ -32,6 +32,7 @@ GINGA_BEGIN_DECLS
 #define GINGA_PRAGMA_DIAG_WARNING PRAGMA_DIAG_WARNING
 
 // C library.
+#include <string.h>
 #include <math.h>
 #include <stdlib.h>
 
@@ -190,7 +191,6 @@ string xpathbuildabs (const string &, const string &);
 // Uri functions.
 string xpathfromuri (const string &);
 string xurifromsrc (const string &, const string &);
-string xurigetparent (const string &);
 bool xurigetcontents (const string &, string &);
 
 

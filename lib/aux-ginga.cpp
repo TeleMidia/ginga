@@ -603,7 +603,8 @@ bool
 xpathisuri (const string &path)
 {
   gchar *dup = g_uri_parse_scheme (path.c_str ());
-  return (dup == NULL) ? false : (g_free (dup), true);
+  // strlen (dup) = 1 means schemes for windows paths, e.g. C: and D:
+  return (dup == NULL || strlen (dup) == 1) ? false : (g_free (dup), true);
 }
 
 /**
@@ -746,31 +747,6 @@ xurigetcontents (const string &uri, string &data)
   g_object_unref (file);
 
   return ret;
-}
-
-/**
- * @brief Returns the parent URI of uri.
- * @param uri
- * @return the parent URI or empty string if fails.
- */
-string
-xurigetparent (const string &uri)
-{
-  string parent_uri = "";
-  GFile *file = g_file_new_for_uri (uri.c_str ());
-  GFile *parent = g_file_get_parent (file);
-
-  if (parent)
-    {
-      gchar *gparent_uri = g_file_get_uri (parent);
-      parent_uri = string (gparent_uri);
-      g_free (gparent_uri);
-    }
-
-  g_object_unref (parent);
-  g_object_unref (file);
-
-  return parent_uri;
 }
 
 // User data ---------------------------------------------------------------

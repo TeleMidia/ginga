@@ -283,7 +283,6 @@ Player::getProperty (string const &name)
 void
 Player::setProperty (const string &name, const string &value)
 {
-
   Player::Property code;
   bool use_defval;
   string defval;
@@ -339,10 +338,6 @@ void
 Player::schedulePropertyAnimation (const string &name, const string &from,
                                    const string &to, Time dur)
 {
-  // TRACE ("%s.%s from '%s' to '%s' in %" GINGA_TIME_FORMAT,
-  //        _id.c_str (), name.c_str (), from.c_str (), to.c_str (),
-  //        GINGA_TIME_ARGS (dur));
-
   _animator->schedule (name, from, to, dur);
 }
 
@@ -669,7 +664,7 @@ Player::doSetProperty (Property code, unused (const string &name),
         int width = _formatter->getOptionInt ("width");
         _prop.rect.x
             = width - _prop.rect.width
-              - ginga::parse_percent (value, _prop.rect.width, 0, G_MAXINT);
+              - ginga::parse_percent (value, width, 0, G_MAXINT);
         _dirty = true;
         break;
       }
@@ -694,6 +689,10 @@ Player::doSetProperty (Property code, unused (const string &name),
         int width = _formatter->getOptionInt ("width");
         _prop.rect.width = ginga::parse_percent (value, width, 0, G_MAXINT);
         _dirty = true;
+
+        string right = _media->getProperty ("right");
+        if (right != "")
+          _media->setProperty ("right", right);
         break;
       }
     case PROP_HEIGHT:
@@ -702,6 +701,11 @@ Player::doSetProperty (Property code, unused (const string &name),
         _prop.rect.height
             = ginga::parse_percent (value, height, 0, G_MAXINT);
         _dirty = true;
+
+        string bottom = _media->getProperty ("bottom");
+        if (bottom != "")
+          _media->setProperty ("bottom", bottom);
+
         break;
       }
     case PROP_Z_INDEX:

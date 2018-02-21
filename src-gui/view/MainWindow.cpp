@@ -430,8 +430,8 @@ change_tvcontrol_to_window_mode ()
 void
 insert_historicbox (gchar *filename)
 {
+  gtk_entry_set_text (GTK_ENTRY (fileEntry), filename);
   GList *childs = gtk_container_get_children (GTK_CONTAINER (historicBox));
-
   for (GList *l = childs; l != NULL; l = l->next)
     {
       GtkWidget *row = (GtkWidget *) l->data;
@@ -1046,7 +1046,6 @@ void select_ncl_file_callback (unused (GtkWidget *widget),
         }
       else
         {
-          gtk_entry_set_text (GTK_ENTRY (fileEntry), filename);
           insert_historicbox (filename);
           save_settings ();
         }

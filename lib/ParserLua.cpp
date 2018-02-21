@@ -92,6 +92,7 @@ l_parse_media (lua_State *L)
   const char *name;
   const char *value;
   const char *path;
+  string src;
   Time begin, end;
 
   doc = (Document *) lua_touserdata (L, 1);
@@ -123,14 +124,14 @@ l_parse_media (lua_State *L)
           if (xstrcasecmp ("src", name) == 0)
             {
               name = "uri";
-              string src = string (value);
+              src = string (value);
 
               // resolve relative dir
               if (src != "" && !xpathisuri (src) && !xpathisabs (src))
                 {
                   path = luaL_checkstring (L, 4);
                   string dir = xpathdirname (path);
-                  src = xpathbuildabs (dir, src);
+                  src = xurifromsrc (src, dir);
                   value = src.c_str ();
                 }
             }
