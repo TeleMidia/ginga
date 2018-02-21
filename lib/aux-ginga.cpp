@@ -603,7 +603,8 @@ bool
 xpathisuri (const string &path)
 {
   gchar *dup = g_uri_parse_scheme (path.c_str ());
-  return (dup == NULL) ? false : (g_free (dup), true);
+  // strlen (dup) = 1 means schemes for windows paths, e.g. C: and D:
+  return (dup == NULL || strlen (dup) == 1) ? false : (g_free (dup), true);
 }
 
 /**
