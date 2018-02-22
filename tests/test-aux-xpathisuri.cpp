@@ -20,10 +20,14 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  g_assert (xpathisuri ("this/is/a/directory/") == false);
-  g_assert (xpathisuri ("http://handbook.ncl.org.br/doku.php") == true);
-  g_assert (xpathisuri ("http://") == true);
-  g_assert (xpathisuri ("http") == false);
-  g_assert (xpathisuri ("") == false);
+  g_assert_true (xpathisuri ("http://handbook.ncl.org.br/doku.php"));
+  g_assert_true (xpathisuri ("http://"));
+  g_assert_false (xpathisuri ("http"));
+  g_assert_false (xpathisuri ("this/is/a/directory/"));
+  g_assert_false (xpathisuri (""));
+  g_assert_false (xpathisuri ("/this/is/a/directory/"));
+  g_assert_false (xpathisuri ("/"));
+  g_assert_false (xpathisuri ("C:\\this\\is\\a\\directory/"));
+  g_assert_false (xpathisuri ("C:\\"));
   exit (EXIT_SUCCESS);
 }
