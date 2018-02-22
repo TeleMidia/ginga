@@ -98,7 +98,7 @@ try_parse_color (const string &s, Color *result)
 {
   if (s == "")
     {
-      Color none = {0, 0, 0, 0};
+      Color none = { 0, 0, 0, 0 };
       tryset (result, none);
       return true;
     }
@@ -724,6 +724,8 @@ xurigetcontents (const string &uri, string &data)
   char *gdata = NULL;
   gsize len;
 
+  if (!xpathisuri(uri))
+    return false;
   GFile *file = g_file_new_for_uri (uri.c_str ());
   gboolean ret
       = g_file_load_contents (file, NULL, &gdata, &len, NULL, &err);
