@@ -3384,7 +3384,7 @@ ParserState::pushImportBase (ParserState *st, ParserElt *elt)
   g_assert (elt->getAttribute ("alias", &alias));
   g_assert (elt->getAttribute ("documentURI", &uri));
 
-  // Make import path absolute.
+  // Resolve alias
   string base;
   if (!st->aliasStackPeek (nullptr, &base))
     base = st->getURI ();
@@ -3739,8 +3739,10 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
       elt->getAttribute ("src", &src);
       if (src != "")
         {
+          // Makes uri based in the main document uri
           xmlChar *s = xmlBuildURI (toXmlChar (src), toXmlChar (st->getURI ()));
           src = toCPPString (s);
+          // If fails makes the uri based in the current dir
           if (!xpathisuri (src) && !xpathisabs (src))
             {
               src = xpathmakeabs (src);
@@ -4033,7 +4035,7 @@ Parser::parseFile (const string &path, int width, int height,
   Document *doc;
   string uri = path;
 
-  // Makes the path absolute.
+  // Makes the path absolute based in the current dir
   if (!xpathisabs (path))
     uri = xpathmakeabs (path);
 
