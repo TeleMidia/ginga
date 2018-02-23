@@ -193,6 +193,29 @@ l_parse_media (lua_State *L)
   return 0;
 }
 
+// parse_link (doc, parent, tab)
+static int
+l_parse_link (lua_State *L)
+{
+  Document *doc;
+  Composition *parent;
+
+  doc = (Document *) lua_touserdata (L, 1);
+  g_assert_nonnull (doc);
+  parent = (Composition *) lua_touserdata (L, 2);
+
+  luaL_checktype (L, 3, LUA_TTABLE);
+
+  lua_rawgeti (L, 3, 1);        // condition list
+  luaL_checktype (L, 4, LUA_TTABLE);
+
+  lua_rawgeti (L, 3, 2);        // action list
+  luaL_checktype (L, 5, LUA_TTABLE);
+
+printf ("linkk\n");
+  return 0;
+}
+
 // parse_context (doc, [parent], tab, path)
 static int
 l_parse_context (lua_State *L)
@@ -254,6 +277,21 @@ l_parse_context (lua_State *L)
       while (lua_next (L, -2) != 0)
         {
           lua_pushcfunction (L, l_parse_port);
+          lua_pushlightuserdata (L, doc);
+          lua_pushlightuserdata (L, parent);
+          lua_pushvalue (L, -4);
+          lua_call (L, 3, 0);
+          lua_pop (L, 1);
+        }
+    }
+
+  lua_rawgeti (L, 3, 5);
+  if (lua_isnil (L, -1) == 0) // link table
+    {
+      lua_pushnil (L);
+      while (lua_next (L, -2) != 0)
+        {
+          lua_pushcfunction (L, l_parse_link);
           lua_pushlightuserdata (L, doc);
           lua_pushlightuserdata (L, parent);
           lua_pushvalue (L, -4);
