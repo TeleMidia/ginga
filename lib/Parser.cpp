@@ -3769,6 +3769,13 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
             {
               src = xpathmakeabs (src);
             }
+          gchar *scheme = g_uri_parse_scheme (src.c_str  ());
+          if (g_strcmp0 (scheme, "srcbuffer") == 0)
+            {
+              string filename = src.substr (10);
+              src = string ("file:/tmp/") + filename + ".mp4";
+            }
+          g_free (scheme);
           xmlFree (s);
         }
 
