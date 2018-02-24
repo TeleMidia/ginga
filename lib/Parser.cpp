@@ -3371,7 +3371,8 @@ ParserState::pushImportBase (ParserState *st, ParserElt *elt)
 {
   ParserElt *parent_elt;
   string alias;
-  string uri;
+  string imported_uri;
+  string main_uri;
 
   xmlDoc *xml;
   xmlNode *root;
@@ -3382,29 +3383,27 @@ ParserState::pushImportBase (ParserState *st, ParserElt *elt)
 
   g_assert (st->eltCacheIndexParent (elt->getNode (), &parent_elt));
   g_assert (elt->getAttribute ("alias", &alias));
-  g_assert (elt->getAttribute ("documentURI", &uri));
+  g_assert (elt->getAttribute ("documentURI", &imported_uri));
 
   // Resolve alias
-  string base;
-  if (!st->aliasStackPeek (nullptr, &base))
-    base = st->getURI ();
+  if (!st->aliasStackPeek (nullptr, &main_uri))
+    main_uri = st->getURI ();
 
-  if (base != "")
+  // if imported_uri is relative path build a new path based in main_uri
+  if (!xpathisabs (imported_uri) && main_uri != "")
     {
-      xmlChar *s = xmlBuildURI (toXmlChar (uri), toXmlChar (base));
-      uri = toCPPString (s);
-      xmlFree (s);
+      imported_uri = xpathbuild (xpathdirname (xpathfromuri (main_uri)), imported_uri);
     }
-  uri = xurifromsrc (uri, "");
+  imported_uri = xurifromsrc (imported_uri, "");
 
   // Push import alias and path onto alias stack.
-  if (unlikely (!st->aliasStackPush (alias, uri)))
+  if (unlikely (!st->aliasStackPush (alias, imported_uri)))
     {
       return st->errEltImport (elt->getNode (), "circular import");
     }
 
   // Read the imported document.
-  xml = xmlReadFile (uri.c_str (), nullptr, PARSER_LIBXML_FLAGS);
+  xml = xmlReadFile (imported_uri.c_str (), nullptr, PARSER_LIBXML_FLAGS);
   if (unlikely (xml == nullptr))
     {
       string errmsg = xmlGetLastErrorAsString ();
