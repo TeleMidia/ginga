@@ -288,4 +288,21 @@ Event::getEventTransitionAsString (Event::Transition tr)
     }
 }
 
+Event::Transition
+Event::getStringAsTransition (string str)
+{
+  if (xstrcasecmp (str, "start") == 0)
+    return Event::START;
+  else if (xstrcasecmp (str, "pause") == 0)
+    return Event::PAUSE;
+  else if (xstrcasecmp (str, "resume") == 0)
+    return Event::RESUME;
+  else if (xstrcasecmp (str, "stop") == 0)
+    return Event::STOP;
+  else if (xstrcasecmp (str, "abort") == 0)
+    return Event::ABORT;
+  else
+    g_assert_not_reached ();
+}
+
 GINGA_NAMESPACE_END

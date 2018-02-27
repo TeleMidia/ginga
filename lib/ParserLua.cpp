@@ -1,19 +1,19 @@
 /* Copyright (C) 2006-2018 PUC-Rio/Laboratorio TeleMidia
 
-This file is part of Ginga (Ginga-NCL).
+   This file is part of Ginga (Ginga-NCL).
 
-Ginga is free software: you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 2 of the License, or
-(at your option) any later version.
+   Ginga is free software: you can redistribute it and/or modify it
+   under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 2 of the License, or
+   (at your option) any later version.
 
-Ginga is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
-License for more details.
+   Ginga is distributed in the hope that it will be useful, but WITHOUT
+   ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+   or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+   License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
+   You should have received a copy of the GNU General Public License
+   along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 #include "ParserLua.h"
@@ -30,6 +30,42 @@ GINGA_END_DECLS
 
 GINGA_NAMESPACE_BEGIN
 
+// Helper function
+Event *
+getEventStringAsEvent (string str, Context *parent)
+{
+  Object *obj;
+  string id, evt;
+
+  size_t at = str.find ('@');
+
+  if (at != str.npos)           // presentation
+    {
+      id = str.substr (0, at);
+      evt = str.substr (at + 1, str.npos);
+      obj = parent->getChildById (id);
+
+      // only lambda should have '@' as prefix? this seems strange
+      if (xstrcasecmp ("lambda", evt) == 0)
+        evt = "@lambda";
+
+      return obj->getEvent (Event::PRESENTATION, evt);
+    }
+  else if (str.find ('.') != str.npos) // attribution
+    {
+      at = str.find ('.');
+      id = str.substr (0, at);
+      evt = str.substr (at + 1, str.npos);
+      obj = parent->getChildById (id);
+      return obj->getEvent (Event::ATTRIBUTION, evt);
+    }
+  else                          // selection
+    {
+      printf("Selection Event\n");           // to be done
+    }
+}
+
+
 // Parsing functions.
 
 // parse_port (doc, parent, port)
@@ -41,38 +77,13 @@ l_parse_port (lua_State *L)
   Document *doc;
   Context *parent;
   string str;
-  string id;
-  string evt;
-  size_t at;
 
   doc = (Document *) lua_touserdata (L, 1);
   parent = (Context *) lua_touserdata (L, 2);
   g_assert_nonnull (parent);
   str = string (luaL_checkstring (L, -1));
 
-  at = str.find ('@');
-
-  if (at != str.npos) // presentation
-    {
-      id = str.substr (0, at);
-      evt = str.substr (at + 1, str.npos);
-      obj = parent->getChildById (id);
-
-      // only lambda should have '@' as prefix? this seems strange
-      if (xstrcasecmp ("lambda", evt) == 0)
-        evt = "@lambda";
-
-      event = obj->getEvent (Event::PRESENTATION, evt);
-    }
-  else // attribution
-    {
-      at = str.find ('.');
-      id = str.substr (0, at);
-      evt = str.substr (at + 1, str.npos);
-      obj = parent->getChildById (id);
-      event = obj->getEvent (Event::ATTRIBUTION, evt);
-    }
-
+  event = getEventStringAsEvent (str, parent);
   g_assert_nonnull (event);
   parent->addPort (event);
 
@@ -198,21 +209,75 @@ static int
 l_parse_link (lua_State *L)
 {
   Document *doc;
-  Composition *parent;
+  Context *parent;
+  list<Action> conditions;
+  list<Action> actions;
 
   doc = (Document *) lua_touserdata (L, 1);
   g_assert_nonnull (doc);
-  parent = (Composition *) lua_touserdata (L, 2);
+  parent = (Context *) lua_touserdata (L, 2);
 
   luaL_checktype (L, 3, LUA_TTABLE);
 
   lua_rawgeti (L, 3, 1);        // condition list
   luaL_checktype (L, 4, LUA_TTABLE);
+  lua_pushnil (L);
+  while (lua_next (L, 4) != 0)
+    {
+      lua_rawgeti (L, 6, 1);
+      string transition = luaL_checkstring (L, -1);
+
+      lua_rawgeti (L, 6, 2);
+      string event = luaL_checkstring (L, -1);
+
+      lua_rawgeti (L, 6, 3);
+      string predicate;
+      if (!lua_isnil (L, -1))
+        predicate = luaL_checkstring (L, -1);
+
+      Action act;
+      act.event = getEventStringAsEvent (event, parent);
+
+      if (xstrcasecmp (transition, "set") == 0)
+        transition = "start";
+
+      act.transition =  Event::getStringAsTransition (transition);
+      act.predicate = NULL;
+
+      conditions.push_back (act);
+      lua_pop (L, 4);
+    }
 
   lua_rawgeti (L, 3, 2);        // action list
   luaL_checktype (L, 5, LUA_TTABLE);
+  lua_pushnil (L);
+  while (lua_next (L, 5) != 0)
+    {
+      lua_rawgeti (L, 7, 1);
+      string transition = luaL_checkstring (L, -1);
 
-printf ("linkk\n");
+      lua_rawgeti (L, 7, 2);
+      string event = luaL_checkstring (L, -1);
+
+      lua_rawgeti (L, 7, 3);
+      string value;
+      if (!lua_isnil (L, -1))
+        value = luaL_checkstring (L, -1);
+
+      Action act;
+      act.event = getEventStringAsEvent (event, parent);
+
+      if (xstrcasecmp (transition, "set") == 0)
+        transition = "start";
+
+      act.transition =  Event::getStringAsTransition (transition);
+
+      actions.push_back (act);
+      lua_pop (L, 4);
+    }
+
+  parent->addLink (conditions, actions);
+
   return 0;
 }
 
@@ -361,7 +426,7 @@ ParserLua::parseBuffer (const void *buf, size_t size, string *errmsg)
 
   doc = process (L, path, errmsg);
 
-done:
+ done:
   g_free (str);
   lua_close (L);
   return doc;
@@ -394,7 +459,7 @@ ParserLua::parseFile (const string &path, string *errmsg)
 
   doc = process (L, path, errmsg);
 
-done:
+ done:
   lua_close (L);
   return doc;
 }
