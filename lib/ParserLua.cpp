@@ -253,6 +253,8 @@ l_parse_link (lua_State *L)
   lua_pushnil (L);
   while (lua_next (L, 5) != 0)
     {
+      Action act;
+
       lua_rawgeti (L, 7, 1);
       string transition = luaL_checkstring (L, -1);
 
@@ -260,11 +262,9 @@ l_parse_link (lua_State *L)
       string event = luaL_checkstring (L, -1);
 
       lua_rawgeti (L, 7, 3);
-      string value;
       if (!lua_isnil (L, -1))
-        value = luaL_checkstring (L, -1);
+        act.value = luaL_checkstring (L, -1);
 
-      Action act;
       act.event = getEventStringAsEvent (event, parent);
 
       if (xstrcasecmp (transition, "set") == 0)
