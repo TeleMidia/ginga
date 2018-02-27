@@ -242,7 +242,7 @@ l_parse_link (lua_State *L)
         transition = "start";
 
       act.transition =  Event::getStringAsTransition (transition);
-      act.predicate = NULL;
+      act.predicate = NULL;     // predicate still missing
 
       conditions.push_back (act);
       lua_pop (L, 4);
