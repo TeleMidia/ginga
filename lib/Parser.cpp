@@ -3875,7 +3875,9 @@ ParserState::pushProperty (ParserState *st, ParserElt *elt)
     value = "";
 
   obj->addAttributionEvent (name);
-  obj->setProperty (name, value);
+  if (value != "")
+    obj->setProperty (name, value);
+
   return true;
 }
 
