@@ -205,6 +205,86 @@ l_parse_media (lua_State *L)
   return 0;
 }
 
+// parse_predicate (it, tab)
+static int
+l_parse_predicate (lua_State *L)
+{
+  Predicate::Type type;
+  Predicate::Test test;
+
+  Predicate *it = (Predicate *) lua_touserdata (L, 1);
+
+  luaL_checktype (L, 2, LUA_TTABLE);
+  lua_rawgeti (L, 2, 1);
+  string str = luaL_checkstring (L, -1);
+
+  if (xstrcasecmp (str, "not") == 0)
+    type = Predicate::NEGATION;
+  else if (xstrcasecmp (str, "and") == 0)
+    type = Predicate::CONJUNCTION;
+  else if (xstrcasecmp (str, "or") == 0)
+    type = Predicate::DISJUNCTION;
+  else if (xstrcasecmp (str, "false") == 0)
+    type = Predicate::FALSUM;
+  else if (xstrcasecmp (str, "true") == 0)
+    type = Predicate::VERUM;
+  else
+    type = Predicate::ATOM;
+
+  it = new Predicate (type);
+
+  switch (type)
+    {
+    case Predicate::ATOM: {
+      string left = str;
+
+      lua_rawgeti (L, 2, 2);
+      str = luaL_checkstring (L, -1);
+
+      lua_rawgeti (L, 2, 3);
+      string right = luaL_checkstring (L, -1);
+
+      if (xstrcasecmp (str, "==") == 0)
+        test = Predicate::EQ;
+      else if (xstrcasecmp (str, "!=") == 0)
+        test = Predicate::NE;
+      else if (xstrcasecmp (str, "<") == 0)
+        test = Predicate::LT;
+      else if (xstrcasecmp (str, "<=") == 0)
+        test = Predicate::LE;
+      else if (xstrcasecmp (str, ">") == 0)
+        test = Predicate::GT;
+      else if (xstrcasecmp (str, ">=") == 0)
+        test = Predicate::GE;
+      else
+        g_assert_not_reached ();
+
+      it->setTest (left, test, right);
+      break;
+    }
+    case Predicate::FALSUM:
+    case Predicate::VERUM:
+      break;
+    case Predicate::NEGATION:
+    case Predicate::CONJUNCTION:
+    case Predicate::DISJUNCTION: {
+      Predicate *child = nullptr;
+      it->addChild (child);
+      child->initParent (it);
+
+      lua_pushcfunction (L, l_parse_predicate);
+      lua_pushlightuserdata (L, child);
+      lua_pushvalue (L, -1);
+      lua_call (L, 2, 0);
+      break;
+    }
+    default:
+      g_assert_not_reached ();
+    }
+
+  return 0;
+}
+
 // parse_link (doc, parent, tab)
 static int
 l_parse_link (lua_State *L)
@@ -244,35 +324,14 @@ l_parse_link (lua_State *L)
       if (!lua_isnil (L, -1))
         {
           luaL_checktype (L, -1, LUA_TTABLE);
-          Predicate *predicate = new Predicate (Predicate::ATOM);
+          Predicate *predicate = nullptr;
 
-          lua_rawgeti (L, 9, 1);
-          string left = luaL_checkstring (L, -1);
+          lua_pushcfunction (L, l_parse_predicate);
+          lua_pushlightuserdata (L, predicate);
+          lua_pushvalue (L, -3);
+          lua_call (L, 2, 0);
 
-          lua_rawgeti (L, 9, 2);
-          Predicate::Test test;
-          string str = luaL_checkstring (L, -1);
-          if (xstrcasecmp (str, "==") == 0)
-            test = Predicate::EQ;
-          else if (xstrcasecmp (str, "!=") == 0)
-            test = Predicate::NE;
-          else if (xstrcasecmp (str, "<") == 0)
-            test = Predicate::LT;
-          else if (xstrcasecmp (str, "<=") == 0)
-            test = Predicate::LE;
-          else if (xstrcasecmp (str, ">") == 0)
-            test = Predicate::GT;
-          else if (xstrcasecmp (str, ">=") == 0)
-            test = Predicate::GE;
-          else
-            g_assert_not_reached ();
-
-          lua_rawgeti (L, 9, 3);
-          string right = luaL_checkstring (L, -1);
-
-          predicate->setTest (left, test, right);
           act.predicate = predicate;
-          lua_pop (L, 3);
         }
 
       conditions.push_back (act);
