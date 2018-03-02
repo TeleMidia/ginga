@@ -10,10 +10,10 @@
   <body>
     <port id="plua" component="lua"/>
     <media id="lua" src="../../nclua/examples/streambuf.lua">
-      <property name="width" value="50%"/>
+      <property name="width" value="90%"/>
       <property name="height" value="10%"/>
       <property name="bottom" value="0%"/>
-      <property name="right" value="0%"/>
+      <property name="left" value="3%"/>
       <property name="zIndex" value="2"/>
     </media>
     <media id="m" src="streambuf://b0">
