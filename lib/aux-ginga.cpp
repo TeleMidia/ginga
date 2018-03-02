@@ -672,11 +672,11 @@ xpathfromuri (const string &uri)
 /**
  * @brief Transforms the src attribute content on a uri with full path.
  * @param src
- * @param baseuri
+ * @param basesrc
  * @return the string with the uri
  */
 string
-xurifromsrc (const string &src, const string &baseuri = "")
+xurifromsrc (const string &src, const string &basesrc = "")
 {
   string uri, abs;
 
@@ -689,7 +689,7 @@ xurifromsrc (const string &src, const string &baseuri = "")
       if (xpathisabs (src))
         abs = src;
       else
-        abs = xpathbuildabs (baseuri, src);
+        abs = xpathbuildabs (basesrc, src);
 
       GError *err;
       gchar *g_uri = g_filename_to_uri (abs.c_str (), NULL, &err);
