@@ -62,7 +62,12 @@ getEventStringAsEvent (string str, Context *parent)
     }
   else                          // selection
     {
-      printf("Selection Event\n");           // to be done
+      at = str.find ('<');
+      id = str.substr (0, at);
+      evt = str.substr (at + 1, str.npos);
+      evt.pop_back();
+      obj = parent->getChildById (id);
+      return obj->getEvent (Event::SELECTION, evt);
     }
 }
 
@@ -205,7 +210,7 @@ l_parse_media (lua_State *L)
   return 0;
 }
 
-// parse_predicate (tab, parent)
+// parse_predicate (parent, tab)
 static int
 l_parse_predicate (lua_State *L)
 {
@@ -214,10 +219,10 @@ l_parse_predicate (lua_State *L)
   string str;
   Predicate *it;
 
-  Predicate *parent = (Predicate *) lua_touserdata (L, 2);
+  Predicate *parent = (Predicate *) lua_touserdata (L, 1);
 
-  luaL_checktype (L, 1, LUA_TTABLE);
-  lua_rawgeti (L, 1, 1);
+  luaL_checktype (L, 2, LUA_TTABLE);
+  lua_rawgeti (L, 2, 1);
 
   if (lua_isboolean (L, -1) == 1)
     {
@@ -247,10 +252,10 @@ l_parse_predicate (lua_State *L)
     case Predicate::ATOM: {
       string left = str;
 
-      lua_rawgeti (L, 1, 2);
+      lua_rawgeti (L, 2, 2);
       str = luaL_checkstring (L, -1);
 
-      lua_rawgeti (L, 1, 3);
+      lua_rawgeti (L, 2, 3);
       string right = luaL_checkstring (L, -1);
 
       if (xstrcasecmp (str, "==") == 0)
@@ -276,14 +281,14 @@ l_parse_predicate (lua_State *L)
       break;
     case Predicate::CONJUNCTION:
     case Predicate::DISJUNCTION:
-      lua_pushcfunction (L, l_parse_predicate);
-      lua_rawgeti (L, 1, 3);
+      lua_pushcfunction (L, l_parse_predicate); // children
       lua_pushlightuserdata (L, it);
+      lua_rawgeti (L, 2, 3);
       lua_call (L, 2, 0);
     case Predicate::NEGATION:   // fall through
       lua_pushcfunction (L, l_parse_predicate);
-      lua_rawgeti (L, 1, 2);
       lua_pushlightuserdata (L, it);
+      lua_rawgeti (L, 2, 2);
       lua_call (L, 2, 0);
       break;
     default:
@@ -337,8 +342,8 @@ l_parse_link (lua_State *L)
 
           Predicate *predicate = new Predicate (Predicate::CONJUNCTION);
           lua_pushcfunction (L, l_parse_predicate);
-          lua_pushvalue (L, -2);
           lua_pushlightuserdata (L, predicate);
+          lua_pushvalue (L, -3);
           lua_call (L, 2, 0);
 
           Predicate *pred = predicate->getChildren()->front();
