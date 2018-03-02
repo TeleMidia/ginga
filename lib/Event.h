@@ -105,6 +105,7 @@ public:
   static string getEventTypeAsString (Event::Type);
   static string getEventStateAsString (Event::State);
   static string getEventTransitionAsString (Event::Transition);
+  static Event::Transition getStringAsTransition (string str);
 
 private:
   Event::Type _type;               ///< Event type.
