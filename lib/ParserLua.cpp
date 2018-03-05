@@ -62,7 +62,12 @@ getEventStringAsEvent (string str, Context *parent)
     }
   else                          // selection
     {
-      printf("Selection Event\n");           // to be done
+      at = str.find ('<');
+      id = str.substr (0, at);
+      evt = str.substr (at + 1, str.npos);
+      evt.pop_back();
+      obj = parent->getChildById (id);
+      return obj->getEvent (Event::SELECTION, evt);
     }
 }
 
@@ -205,31 +210,40 @@ l_parse_media (lua_State *L)
   return 0;
 }
 
-// parse_predicate (it, tab)
+// parse_predicate (parent, tab)
 static int
 l_parse_predicate (lua_State *L)
 {
   Predicate::Type type;
   Predicate::Test test;
+  string str;
+  Predicate *it;
 
-  Predicate *it = (Predicate *) lua_touserdata (L, 1);
+  Predicate *parent = (Predicate *) lua_touserdata (L, 1);
 
   luaL_checktype (L, 2, LUA_TTABLE);
   lua_rawgeti (L, 2, 1);
-  string str = luaL_checkstring (L, -1);
 
-  if (xstrcasecmp (str, "not") == 0)
-    type = Predicate::NEGATION;
-  else if (xstrcasecmp (str, "and") == 0)
-    type = Predicate::CONJUNCTION;
-  else if (xstrcasecmp (str, "or") == 0)
-    type = Predicate::DISJUNCTION;
-  else if (xstrcasecmp (str, "false") == 0)
-    type = Predicate::FALSUM;
-  else if (xstrcasecmp (str, "true") == 0)
-    type = Predicate::VERUM;
+  if (lua_isboolean (L, -1) == 1)
+    {
+      if (lua_toboolean (L, -1) == 1)
+        type = Predicate::VERUM;
+      else
+        type = Predicate::FALSUM;
+    }
   else
-    type = Predicate::ATOM;
+    {
+      str = luaL_checkstring (L, -1);
+
+      if (xstrcasecmp (str, "not") == 0)
+        type = Predicate::NEGATION;
+      else if (xstrcasecmp (str, "and") == 0)
+        type = Predicate::CONJUNCTION;
+      else if (xstrcasecmp (str, "or") == 0)
+        type = Predicate::DISJUNCTION;
+      else
+        type = Predicate::ATOM;
+    }
 
   it = new Predicate (type);
 
@@ -265,22 +279,23 @@ l_parse_predicate (lua_State *L)
     case Predicate::FALSUM:
     case Predicate::VERUM:
       break;
-    case Predicate::NEGATION:
     case Predicate::CONJUNCTION:
-    case Predicate::DISJUNCTION: {
-      Predicate *child = nullptr;
-      it->addChild (child);
-      child->initParent (it);
-
+    case Predicate::DISJUNCTION:
+      lua_pushcfunction (L, l_parse_predicate); // children
+      lua_pushlightuserdata (L, it);
+      lua_rawgeti (L, 2, 3);
+      lua_call (L, 2, 0);
+    case Predicate::NEGATION:   // fall through
       lua_pushcfunction (L, l_parse_predicate);
-      lua_pushlightuserdata (L, child);
-      lua_pushvalue (L, -1);
+      lua_pushlightuserdata (L, it);
+      lua_rawgeti (L, 2, 2);
       lua_call (L, 2, 0);
       break;
-    }
     default:
       g_assert_not_reached ();
     }
+
+  parent->addChild (it);
 
   return 0;
 }
@@ -324,14 +339,15 @@ l_parse_link (lua_State *L)
       if (!lua_isnil (L, -1))
         {
           luaL_checktype (L, -1, LUA_TTABLE);
-          Predicate *predicate = nullptr;
 
+          Predicate *predicate = new Predicate (Predicate::CONJUNCTION);
           lua_pushcfunction (L, l_parse_predicate);
           lua_pushlightuserdata (L, predicate);
           lua_pushvalue (L, -3);
           lua_call (L, 2, 0);
 
-          act.predicate = predicate;
+          Predicate *pred = predicate->getChildren()->front();
+          act.predicate = pred;
         }
 
       conditions.push_back (act);
