@@ -31,6 +31,11 @@ GINGA_END_DECLS
 
 GINGA_NAMESPACE_BEGIN
 
+// TODO:
+// switch
+// label
+// transition
+
 // Helper function
 Event *
 getEventStringAsEvent (string str, Context *parent)
@@ -167,33 +172,46 @@ l_parse_media (lua_State *L)
       lua_pushnil (L);
       while (lua_next (L, 5) != 0)
         {
-          name = lua_tolstring (L, -2, 0);
+          name = lua_tolstring (L, -2, nullptr);
 
-          lua_rawgeti (L, -1, 1);
-          value = lua_tolstring (L, -1, 0);
-
-          begin = 0;
-          if ((value != NULL)
-              && (unlikely (!ginga::try_parse_time (value, &begin))))
+          lua_getfield (L, -1, "label");
+          if (lua_isnil (L, -1) == 0)
             {
-              lua_pushfstring (L, "bad attr: %s", value);
-              lua_error (L);
+              string label = lua_tolstring (L, -1, nullptr);
+              media->addPresentationEvent (name, label);
+
+              lua_pop (L, 1);
+              break;
             }
-
-          lua_pop (L, 1);
-          lua_rawgeti (L, -1, 2);
-          value = lua_tolstring (L, -1, 0);
-
-          end = GINGA_TIME_NONE;
-          if ((value != NULL)
-              && (unlikely (!ginga::try_parse_time (value, &end))))
+          else
             {
-              lua_pushfstring (L, "bad attr: %s", value);
-              lua_error (L);
-            }
+              lua_pop (L, 1);
+              lua_rawgeti (L, -1, 1);
+              value = lua_tolstring (L, -1, nullptr);
 
-          media->addPresentationEvent (name, begin, end);
-          lua_pop (L, 2);
+              begin = 0;
+              if ((value != NULL)
+                  && (unlikely (!ginga::try_parse_time (value, &begin))))
+                {
+                  lua_pushfstring (L, "bad attr: %s", value);
+                  lua_error (L);
+                }
+
+              lua_pop (L, 1);
+              lua_rawgeti (L, -1, 2);
+              value = lua_tolstring (L, -1, 0);
+
+              end = GINGA_TIME_NONE;
+              if ((value != NULL)
+                  && (unlikely (!ginga::try_parse_time (value, &end))))
+                {
+                  lua_pushfstring (L, "bad attr: %s", value);
+                  lua_error (L);
+                }
+
+              media->addPresentationEvent (name, begin, end);
+              lua_pop (L, 2);
+            }
         }
     }
 
