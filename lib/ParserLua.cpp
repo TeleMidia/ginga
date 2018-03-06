@@ -442,27 +442,51 @@ l_parse_context (lua_State *L)
     }
   else // non-root
     {
-      g_assert_not_reached ();
+      Context *context = new Context (id);
+      context->initParent (parent);
     }
 
   lua_rawgeti (L, 3, 4);
-  if (lua_isnil (L, -1) == 0) // media table
+  if (lua_isnil (L, -1) == 0) // children
     {
       lua_pushnil (L);
       while (lua_next (L, -2) != 0)
         {
-          lua_pushcfunction (L, l_parse_media);
-          lua_pushlightuserdata (L, doc);
-          lua_pushlightuserdata (L, parent);
-          lua_pushvalue (L, -4);
-          lua_pushvalue (L, 4);
-          lua_call (L, 4, 0);
-          lua_pop (L, 1);
+          lua_rawgeti (L, -1, 1);
+          string child = luaL_checkstring (L, -1);
+
+          if (xstrcasecmp (child, "context") == 0)
+            {
+              lua_pushcfunction (L, l_parse_context);
+              lua_pushlightuserdata (L, doc);
+              lua_pushlightuserdata (L, parent);
+              lua_pushvalue (L, -5);
+              lua_pushvalue (L, 4);
+              lua_call (L, 4, 0);
+              lua_pop (L, 2);
+            }
+          else if (xstrcasecmp (child, "switch") == 0)
+            {
+            }
+          else if (xstrcasecmp (child, "media") == 0)
+            {
+              lua_pushcfunction (L, l_parse_media);
+              lua_pushlightuserdata (L, doc);
+              lua_pushlightuserdata (L, parent);
+              lua_pushvalue (L, -5);
+              lua_pushvalue (L, 4);
+              lua_call (L, 4, 0);
+              lua_pop (L, 2);
+            }
+          else
+            {
+              g_assert_not_reached (); // print error message first
+            }
         }
     }
 
   lua_rawgeti (L, 3, 3);
-  if (lua_isnil (L, -1) == 0) // port table
+  if (lua_isnil (L, -1) == 0) // ports
     {
       lua_pushnil (L);
       while (lua_next (L, -2) != 0)
@@ -477,7 +501,7 @@ l_parse_context (lua_State *L)
     }
 
   lua_rawgeti (L, 3, 5);
-  if (lua_isnil (L, -1) == 0) // link table
+  if (lua_isnil (L, -1) == 0) // links
     {
       lua_pushnil (L);
       while (lua_next (L, -2) != 0)
