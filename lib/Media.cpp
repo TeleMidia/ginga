@@ -118,18 +118,22 @@ Media::sendKey (const string &key, bool press)
   // Collect the events to be triggered.
   for (auto evt : _events)
     {
-      string expected;
-
       if (evt->getType () != Event::SELECTION)
         continue;
 
-      expected = "";
+      string expected = "";
       evt->getParameter ("key", &expected);
+
+      if (expected[0] == '$')
+        expected = ""; // A param could not be resolved.  Should we generate
+                       // an error?
+
       if (!((expected == "" && key == "ENTER" && _player->isFocused ())
             || (expected != "" && key == expected)))
         {
           continue;
         }
+
       buf.push_back (evt);
     }
 
