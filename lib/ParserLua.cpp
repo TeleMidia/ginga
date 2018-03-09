@@ -32,9 +32,8 @@ GINGA_END_DECLS
 GINGA_NAMESPACE_BEGIN
 
 // TODO:
+// remember to test if property exist before adding to document
 // switch
-// label
-// transition
 
 // Helper function
 Event *
@@ -101,7 +100,6 @@ l_parse_port (lua_State *L)
   return 0;
 }
 
-// label not implemented for area list
 // parse_media (doc, parent, tab, path)
 static int
 l_parse_media (lua_State *L)
@@ -114,7 +112,7 @@ l_parse_media (lua_State *L)
   const char *name;
   const char *value;
   const char *path;
-  string src;
+  string src, str;
   Time begin, end;
 
   doc = (Document *) lua_touserdata (L, 1);
@@ -156,6 +154,96 @@ l_parse_media (lua_State *L)
                   src = xurifromsrc (src, dir);
                   value = src.c_str ();
                 }
+            }
+          else if ((xstrcasecmp ("transIn", name) == 0)
+                   || (xstrcasecmp ("transOut", name) == 0))
+            {
+              string aux;
+
+              lua_getfield (L, 9, "type");
+              if (lua_isnil (L, -1) == 0)
+                {
+                  aux = lua_tolstring (L, -1, 0);
+                  str = "{type='" + aux + "',";
+                }
+              else
+                {
+                  g_assert_not_reached ();
+                }
+
+              lua_getfield (L, 9, "subtype");
+              if (lua_isnil (L, -1) == 0)
+                aux = lua_tolstring (L, -1, 0);
+              else
+                aux = "";
+              str += "subtype='" + aux + "',";
+
+              lua_getfield (L, 9, "dur");
+              if (lua_isnil (L, -1) == 0)
+                aux = lua_tolstring (L, -1, 0);
+              else
+                aux = "0";
+              str += "dur='" + aux + "',";
+
+              lua_getfield (L, 9, "startProgress");
+              if (lua_isnil (L, -1) == 0)
+                aux = lua_tolstring (L, -1, 0);
+              else
+                aux = "0";
+              str += "startProgress='" + aux + "',";
+
+              lua_getfield (L, 9, "endProgress");
+              if (lua_isnil (L, -1) == 0)
+                aux = lua_tolstring (L, -1, 0);
+              else
+                aux = "0";
+              str += "endProgress='" + aux + "',";
+
+              lua_getfield (L, 9, "direction");
+              if (lua_isnil (L, -1) == 0)
+                aux = lua_tolstring (L, -1, 0);
+              else
+                aux = "forward";
+              str += "direction='" + aux + "',";
+
+              lua_getfield (L, 9, "fadeColor");
+              if (lua_isnil (L, -1) == 0)
+                aux = lua_tolstring (L, -1, 0);
+              else
+                aux = "";
+              str += "fadeColor='" + aux + "',";
+
+              lua_getfield (L, 9, "horzRepeat");
+              if (lua_isnil (L, -1) == 0)
+                aux = lua_tolstring (L, -1, 0);
+              else
+                aux = "0";
+              str += "horzRepeat='" + aux + "',";
+
+              lua_getfield (L, 9, "vertRepeat");
+              if (lua_isnil (L, -1) == 0)
+                aux = lua_tolstring (L, -1, 0);
+              else
+                aux = "0";
+              str += "vertRepeat='" + aux + "',";
+
+              lua_getfield (L, 9, "borderWidth");
+              if (lua_isnil (L, -1) == 0)
+                aux = lua_tolstring (L, -1, 0);
+              else
+                aux = "0";
+              str += "borderWidth='" + aux + "',";
+
+              lua_getfield (L, 9, "borderColor");
+              if (lua_isnil (L, -1) == 0)
+                aux = lua_tolstring (L, -1, 0);
+              else
+                aux = "";
+              str += "borderColor='" + aux + "',";
+
+              str += "}";
+              value = str.c_str();
+              lua_pop (L, 11);
             }
 
           media->addAttributionEvent (name);
@@ -485,6 +573,7 @@ l_parse_context (lua_State *L)
             }
           else if (xstrcasecmp (child, "switch") == 0)
             {
+              g_assert_not_reached ();
             }
           else if (xstrcasecmp (child, "media") == 0)
             {
