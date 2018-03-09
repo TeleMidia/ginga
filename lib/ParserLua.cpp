@@ -34,6 +34,7 @@ GINGA_NAMESPACE_BEGIN
 // TODO:
 // remember to test if property exist before adding to document
 // switch
+// make maps<> to help parsing and avoid big if/case
 
 // Helper function
 Event *
