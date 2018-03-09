@@ -12,7 +12,7 @@ RUN add-apt-repository -y ppa:gnome3-team/gnome3
 RUN add-apt-repository -y ppa:gnome3-team/gnome3-staging
 RUN apt-get update -y -qq
 
-RUN sudo apt-get install -y git gcc g++ autotools-dev dh-autoreconf \
+RUN apt-get install -y git gcc g++ autotools-dev dh-autoreconf \
         cmake cmake-data liblua5.2-dev libglib2.0-dev libpango1.0-dev \
         librsvg2-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
         gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-libav \
