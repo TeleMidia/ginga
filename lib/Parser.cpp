@@ -2731,6 +2731,12 @@ borderColor='%s'}",
                     case Predicate::FALSUM:
                     case Predicate::VERUM:
                     case Predicate::ATOM:
+                      for (auto bind : tests_buf)
+                      {
+                        for (auto& param : bind->params)
+                          tests_map.insert (std::pair<string,string>(param.first, param.second));
+                      }
+
                       act.predicate = st->solvePredicate (role->predicate,
                                                           &tests_map);
                       break;
