@@ -414,7 +414,18 @@ Document::evalPredicate (Predicate *pred)
       }
       break;
     case Predicate::DISJUNCTION:
-      g_assert_not_reached ();
+      {
+        for (auto child : *pred->getChildren ())
+          {
+            if (this->evalPredicate (child))
+              {
+                TRACE ("or -> true");
+                return true;
+              }
+          }
+        TRACE ("or -> false");
+        return false;
+      }
       break;
     default:
       g_assert_not_reached ();
