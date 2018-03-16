@@ -2526,7 +2526,7 @@ borderColor='%s'}",
           list<ParserLinkBind *> ghosts_buf;
           map<string, string> ghosts_map;
 
-          g_assert (link_elt->getAttribute ("xconnector", &conn_id));
+          g_assert (link_elt->getAttribute ("xconnector", &conn_id)); //id from connector
           if (unlikely (!st->eltCacheIndexById (conn_id, &conn_elt,
                                                 {"causalConnector"})))
             {
@@ -2534,11 +2534,11 @@ borderColor='%s'}",
                                              "xconnector", conn_id,
                                              "no such connector");
             }
-          UDATA_GET (conn_elt, "tests", &tests);
-          UDATA_GET (conn_elt, "roles", &roles);
-          UDATA_GET (link_elt, "binds", &binds);
-          UDATA_GET (link_elt, "params", &params);
-          UDATA_GET (link_elt, "context", &ctx);
+          UDATA_GET (conn_elt, "tests", &tests);  //from connector
+          UDATA_GET (conn_elt, "roles", &roles);  //from connector
+          UDATA_GET (link_elt, "binds", &binds);  //from link
+          UDATA_GET (link_elt, "params", &params);//from link (linkParam)
+          UDATA_GET (link_elt, "context", &ctx);  //from link
 
           // Process binds.
           for (auto &bind : *binds)
@@ -2550,7 +2550,7 @@ borderColor='%s'}",
 
                   // Attach predicate to condition.
                   if (toCPPString (role.node->name) == "simpleCondition")
-                    {
+                    { //Obtain predicate from connector.
                       Predicate *pred = st->obtainPredicate (role.node);
                       if (role.predicate != nullptr)
                         delete role.predicate;
@@ -2558,6 +2558,7 @@ borderColor='%s'}",
                     }
 
                   // Mark role-bind pair as bound.
+                  // Match valueAssessment from connector and bindParam from link.
                   bound.push_back (std::make_pair (&role, &bind));
                   break;
                 }
@@ -2716,8 +2717,8 @@ borderColor='%s'}",
               g_assert_nonnull (act.event);
               act.transition = role->transition;
 
-              act.duration = st->resolveParameter (
-                  role->duration, &bind->params, params, &ghosts_map);
+              act.duration = st->resolveParameter (role->duration, &bind->params,
+                                                   params, &ghosts_map);
 
               act.delay = st->resolveParameter (role->delay, &bind->params,
                                                 params, &ghosts_map);
@@ -2726,17 +2727,25 @@ borderColor='%s'}",
               if (role->predicate != nullptr)
                 {
                   Predicate::Type type = role->predicate->getType ();
+                  // Find variables from bindParam of another binds.
+                  // Necessary to take values (name and value) of bindParam 
+                  // from binds used as test. 
+                  // Ex: When onSelection is processed, values from bindParam are taked.
+                  // <bind component="m1" role="onSelection"/>
+                  // <bind component="mediaSettings" interface="if" role="propertyTest">
+                  //   <bindParam name="val" value="x"/>
+                  // </bind>
+                  for (auto bind : tests_buf)
+                  {
+                    for (auto& param : bind->params)
+                      tests_map.insert (std::pair<string,string>(param.first, 
+                                                                 param.second));
+                  }
                   switch (type)
                     {
                     case Predicate::FALSUM:
                     case Predicate::VERUM:
                     case Predicate::ATOM:
-                      for (auto bind : tests_buf)
-                      {
-                        for (auto& param : bind->params)
-                          tests_map.insert (std::pair<string,string>(param.first, param.second));
-                      }
-
                       act.predicate = st->solvePredicate (role->predicate,
                                                           &tests_map);
                       break;
