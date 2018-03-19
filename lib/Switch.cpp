@@ -90,11 +90,18 @@ Switch::beforeTransition (Event *event, Event::Transition transition)
                 {
                   lambda = obj->getLambda ();
                   g_assert_nonnull (lambda);
+                  //Found one valid predicate
                   if (lambda->transition (transition))
+                  {
                     _selected = obj;
-                  break;
+                    return true;
+                  }//Found one valid predicate, but its transition doesn't work
+                  else
+                    return false
                 }
             }
+          //Not found valid predicate, then transition failed.
+          return false;
           break;
 
         case Event::STOP:
