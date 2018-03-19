@@ -328,9 +328,11 @@ Document::evalPredicate (Predicate *pred)
     {
     case Predicate::FALSUM:
       TRACE ("false");
+      return false;
       break;
     case Predicate::VERUM:
       TRACE ("true");
+      return true;
       break;
     case Predicate::ATOM:
       {
