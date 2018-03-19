@@ -75,4 +75,19 @@ tests_parse_and_start (Formatter **fmt, Document **doc, const string &buf)
   g_assert ( g_remove (file.c_str ()) == 0 );
 }
 
+static G_GNUC_UNUSED void
+tests_create_document (Document **doc, Context ** root, MediaSettings ** settings)
+{
+    tryset (doc, new Document ());
+    g_assert_nonnull (doc);
+
+    tryset (root, (*doc)->getRoot ());
+    g_assert_nonnull (root);
+    g_assert ((*doc)->getObjectById ("__root__") == *root);
+
+    tryset (settings, (*doc)->getSettings ());
+    g_assert_nonnull (settings);
+    g_assert ((*doc)->getObjectById ("__settings__") == *settings);
+}
+
 #endif // TESTS_H

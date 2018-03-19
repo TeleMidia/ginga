@@ -21,21 +21,15 @@ int
 main (void)
 {
   Document *doc;
+  Context *root;
+  MediaSettings *settings;
 
-  doc = new Document ();
-  g_assert_nonnull (doc);
-  g_assert (doc->getObjects ()->size () == 2);
-  g_assert (doc->getMedias ()->size () == 1);
-  g_assert (doc->getContexts ()->size () == 1);
-  g_assert (doc->getSwitches ()->size () == 0);
+  tests_create_document (&doc, &root, &settings);
 
-  Context *root = doc->getRoot ();
-  g_assert_nonnull (root);
-  g_assert (root->getId () == "__root__");
-
-  MediaSettings *settings = doc->getSettings ();
-  g_assert_nonnull (settings);
-  g_assert (settings->getId () == "__settings__");
+  g_assert (doc->getObjects ()->size () == 2); // root and settings
+  g_assert (doc->getMedias ()->size () == 1); // settings
+  g_assert (doc->getContexts ()->size () == 1); // root
+  g_assert (doc->getSwitches ()->size () == 0); // none
 
   delete doc;
 
