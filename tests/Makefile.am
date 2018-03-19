@@ -174,6 +174,9 @@ progs+= test-Document-getObjectByIdOrAlias
 test_Document_getObjectByIdOrAlias_SOURCES=\
   test-Document-getObjectByIdOrAlias.cpp
 
+progs+= test-Document-evalPredicate
+test_Document_evalPredicate_SOURCES= test-Document-evalPredicate.cpp
+
 # lib/Predicate.h ----------------------------------------------------------
 progs+= test-Predicate-new
 test_Predicate_new_SOURCES= test-Predicate-new.cpp
