@@ -177,6 +177,12 @@ test_Document_getObjectByIdOrAlias_SOURCES=\
 progs+= test-Document-evalPredicate
 test_Document_evalPredicate_SOURCES= test-Document-evalPredicate.cpp
 
+progs+= test-Document-evalPredicate-from-link
+test_Document_evalPredicate_from_link_SOURCES= test-Document-evalPredicate-from-link.cpp
+
+progs+= test-Document-evalPredicate-from-rule
+test_Document_evalPredicate_from_rule_SOURCES= test-Document-evalPredicate-from-rule.cpp
+
 # lib/Predicate.h ----------------------------------------------------------
 progs+= test-Predicate-new
 test_Predicate_new_SOURCES= test-Predicate-new.cpp
