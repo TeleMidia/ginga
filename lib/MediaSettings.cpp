@@ -72,12 +72,14 @@ MediaSettings::isFocused ()
   return false;
 }
 
-bool MediaSettings::getZ (unused (int *z), unused (int *zorder))
+bool
+MediaSettings::getZ (unused (int *z), unused (int *zorder))
 {
   return false;
 }
 
-void MediaSettings::redraw (unused (cairo_t *cr))
+void
+MediaSettings::redraw (unused (cairo_t *cr))
 {
 }
 

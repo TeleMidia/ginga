@@ -42,46 +42,46 @@ GINGA_NAMESPACE_BEGIN
 
 // Mime-type table.
 static map<string, string> mime_table = {
-  {"ac3", "audio/ac3"},
-  {"avi", "video/x-msvideo"},
-  {"bmp", "image/bmp"},
-  {"bpg", "image/x-bpg"},
-  {"class", "application/x-ginga-NCLet"},
-  {"css", "text/css"},
-  {"gif", "image/gif"},
-  {"htm", "text/html"},
-  {"html", "text/html"},
-  {"jpeg", "image/jpeg"},
-  {"jpg", "image/jpeg"},
-  {"lua", "application/x-ginga-NCLua"},
-  {"mov", "video/quicktime"},
-  {"mp2", "audio/mp2"},
-  {"mp3", "audio/mp3"},
-  {"mp4", "video/mp4"},
-  {"mpa", "audio/mpa"},
-  {"mpeg", "video/mpeg"},
-  {"mpg", "video/mpeg"},
-  {"mpv", "video/mpv"},
-  {"ncl", "application/x-ginga-ncl"},
-  {"oga", "audio/ogg"},
-  {"ogg", "audio/ogg"},
-  {"ogv", "video/ogg"},
-  {"opus", "audio/ogg"},
-  {"png", "image/png"},
-  {"smil", "application/smil"},
-  {"spx", "audio/ogg"},
-  {"srt", "text/srt"},
-  {"ssml", "application/ssml+xml"},
-  {"svg", "image/svg+xml"},
-  {"svgz", "image/svg+xml"},
-  {"ts", "video/mpeg"},
-  {"txt", "text/plain"},
-  {"wav", "audio/basic"},
-  {"webp", "image/x-webp"},
-  {"wmv", "video/x-ms-wmv"},
-  {"xlet", "application/x-ginga-NCLet"},
-  {"xlt", "application/x-ginga-NCLet"},
-  {"xml", "text/xml"},
+  { "ac3", "audio/ac3" },
+  { "avi", "video/x-msvideo" },
+  { "bmp", "image/bmp" },
+  { "bpg", "image/x-bpg" },
+  { "class", "application/x-ginga-NCLet" },
+  { "css", "text/css" },
+  { "gif", "image/gif" },
+  { "htm", "text/html" },
+  { "html", "text/html" },
+  { "jpeg", "image/jpeg" },
+  { "jpg", "image/jpeg" },
+  { "lua", "application/x-ginga-NCLua" },
+  { "mov", "video/quicktime" },
+  { "mp2", "audio/mp2" },
+  { "mp3", "audio/mp3" },
+  { "mp4", "video/mp4" },
+  { "mpa", "audio/mpa" },
+  { "mpeg", "video/mpeg" },
+  { "mpg", "video/mpeg" },
+  { "mpv", "video/mpv" },
+  { "ncl", "application/x-ginga-ncl" },
+  { "oga", "audio/ogg" },
+  { "ogg", "audio/ogg" },
+  { "ogv", "video/ogg" },
+  { "opus", "audio/ogg" },
+  { "png", "image/png" },
+  { "smil", "application/smil" },
+  { "spx", "audio/ogg" },
+  { "srt", "text/srt" },
+  { "ssml", "application/ssml+xml" },
+  { "svg", "image/svg+xml" },
+  { "svgz", "image/svg+xml" },
+  { "ts", "video/mpeg" },
+  { "txt", "text/plain" },
+  { "wav", "audio/basic" },
+  { "webp", "image/x-webp" },
+  { "wmv", "video/x-ms-wmv" },
+  { "xlet", "application/x-ginga-NCLet" },
+  { "xlt", "application/x-ginga-NCLet" },
+  { "xml", "text/xml" },
 };
 
 static bool
@@ -103,54 +103,54 @@ typedef struct PlayerPropertyInfo
 } PlayerPropertyInfo;
 
 static map<string, PlayerPropertyInfo> player_property_map = {
-  {"background", {Player::PROP_BACKGROUND, true, ""} },
-  {"balance", {Player::PROP_BALANCE, false, "0.0"} },
-  {"bass", {Player::PROP_BASS, false, "0"} },
-  {"bottom", {Player::PROP_BOTTOM, false, "0%"} },
-  {"bounds", {Player::PROP_BOUNDS, false, "0%,0%,100%,100%"} },
-  {"debug", {Player::PROP_DEBUG, true, "false"} },
-  {"duration", {Player::PROP_DURATION, true, "indefinite"} },
-  {"focusIndex", {Player::PROP_FOCUS_INDEX, true, ""} },
-  {"fontBgColor", {Player::PROP_FONT_BG_COLOR, true, ""} },
-  {"fontColor", {Player::PROP_FONT_COLOR, true, "black"} },
-  {"fontFamily", {Player::PROP_FONT_FAMILY, true, "sans"} },
-  {"fontSize", {Player::PROP_FONT_SIZE, true, "12"} },
-  {"fontStyle", {Player::PROP_FONT_STYLE, true, ""} },
-  {"fontVariant", {Player::PROP_FONT_VARIANT, true, ""} },
-  {"fontWeight", {Player::PROP_FONT_WEIGHT, true, ""} },
-  {"freeze", {Player::PROP_FREEZE, true, "false"} },
-  {"freq", {Player::PROP_FREQ, true, "440"} },
-  {"height", {Player::PROP_HEIGHT, true, "100%"} },
-  {"horzAlign", {Player::PROP_HORZ_ALIGN, true, "left"} },
-  {"left", {Player::PROP_LEFT, true, "0"} },
-  {"location", {Player::PROP_LOCATION, false, "0,0"} },
-  {"mute", {Player::PROP_MUTE, false, "false"} },
-  {"right", {Player::PROP_RIGHT, false, "0%"} },
-  {"size", {Player::PROP_SIZE, false, "100%,100%"} },
-  {"speed", {Player::PROP_SPEED, false, "1"} },
-  {"time", {Player::PROP_TIME, false, "indefinite"} },
-  {"top", {Player::PROP_TOP, true, "0"} },
-  {"transparency", {Player::PROP_TRANSPARENCY, true, "0%"} },
-  {"treble", {Player::PROP_TREBLE, false, "0"} },
-  {"vertAlign", {Player::PROP_VERT_ALIGN, true, "top"} },
-  {"visible", {Player::PROP_VISIBLE, true, "true"} },
-  {"volume", {Player::PROP_VOLUME, false, "100%"} },
-  {"wave", {Player::PROP_WAVE, true, "sine"} },
-  {"width", {Player::PROP_WIDTH, true, "100%"} },
-  {"zIndex", {Player::PROP_Z_INDEX, true, "0"} },
-  {"zOrder", {Player::PROP_Z_ORDER, true, "0"} },
-  {"uri", {Player::PROP_URI, true, ""} },
-  {"type", {Player::PROP_TYPE, true, "application/x-ginga-timer"} },
+  { "background", { Player::PROP_BACKGROUND, true, "" } },
+  { "balance", { Player::PROP_BALANCE, false, "0.0" } },
+  { "bass", { Player::PROP_BASS, false, "0" } },
+  { "bottom", { Player::PROP_BOTTOM, false, "0%" } },
+  { "bounds", { Player::PROP_BOUNDS, false, "0%,0%,100%,100%" } },
+  { "debug", { Player::PROP_DEBUG, true, "false" } },
+  { "duration", { Player::PROP_DURATION, true, "indefinite" } },
+  { "focusIndex", { Player::PROP_FOCUS_INDEX, true, "" } },
+  { "fontBgColor", { Player::PROP_FONT_BG_COLOR, true, "" } },
+  { "fontColor", { Player::PROP_FONT_COLOR, true, "black" } },
+  { "fontFamily", { Player::PROP_FONT_FAMILY, true, "sans" } },
+  { "fontSize", { Player::PROP_FONT_SIZE, true, "12" } },
+  { "fontStyle", { Player::PROP_FONT_STYLE, true, "" } },
+  { "fontVariant", { Player::PROP_FONT_VARIANT, true, "" } },
+  { "fontWeight", { Player::PROP_FONT_WEIGHT, true, "" } },
+  { "freeze", { Player::PROP_FREEZE, true, "false" } },
+  { "freq", { Player::PROP_FREQ, true, "440" } },
+  { "height", { Player::PROP_HEIGHT, true, "100%" } },
+  { "horzAlign", { Player::PROP_HORZ_ALIGN, true, "left" } },
+  { "left", { Player::PROP_LEFT, true, "0" } },
+  { "location", { Player::PROP_LOCATION, false, "0,0" } },
+  { "mute", { Player::PROP_MUTE, false, "false" } },
+  { "right", { Player::PROP_RIGHT, false, "0%" } },
+  { "size", { Player::PROP_SIZE, false, "100%,100%" } },
+  { "speed", { Player::PROP_SPEED, false, "1" } },
+  { "time", { Player::PROP_TIME, false, "indefinite" } },
+  { "top", { Player::PROP_TOP, true, "0" } },
+  { "transparency", { Player::PROP_TRANSPARENCY, true, "0%" } },
+  { "treble", { Player::PROP_TREBLE, false, "0" } },
+  { "vertAlign", { Player::PROP_VERT_ALIGN, true, "top" } },
+  { "visible", { Player::PROP_VISIBLE, true, "true" } },
+  { "volume", { Player::PROP_VOLUME, false, "100%" } },
+  { "wave", { Player::PROP_WAVE, true, "sine" } },
+  { "width", { Player::PROP_WIDTH, true, "100%" } },
+  { "zIndex", { Player::PROP_Z_INDEX, true, "0" } },
+  { "zOrder", { Player::PROP_Z_ORDER, true, "0" } },
+  { "uri", { Player::PROP_URI, true, "" } },
+  { "type", { Player::PROP_TYPE, true, "application/x-ginga-timer" } },
 };
 
 static map<string, string> player_property_aliases = {
-  {"backgroundColor", "background"},
-  {"balanceLevel", "balance"},
-  {"bassLevel", "bass"},
-  {"explicitDur", "duration"},
-  {"soundLevel", "volume"},
-  {"rate", "speed"},
-  {"trebleLevel", "treble"},
+  { "backgroundColor", "background" },
+  { "balanceLevel", "balance" },
+  { "bassLevel", "bass" },
+  { "explicitDur", "duration" },
+  { "soundLevel", "volume" },
+  { "rate", "speed" },
+  { "trebleLevel", "treble" },
 };
 
 // Public.
@@ -470,7 +470,8 @@ Player::redraw (cairo_t *cr)
     }
 }
 
-void Player::sendKeyEvent (unused (const string &key), unused (bool press))
+void
+Player::sendKeyEvent (unused (const string &key), unused (bool press))
 {
 }
 
@@ -662,9 +663,8 @@ Player::doSetProperty (Property code, unused (const string &name),
     case PROP_RIGHT:
       {
         int width = _formatter->getOptionInt ("width");
-        _prop.rect.x
-            = width - _prop.rect.width
-              - ginga::parse_percent (value, width, 0, G_MAXINT);
+        _prop.rect.x = width - _prop.rect.width
+                       - ginga::parse_percent (value, width, 0, G_MAXINT);
         _dirty = true;
         break;
       }
@@ -727,7 +727,7 @@ Player::doSetProperty (Property code, unused (const string &name),
     case PROP_BACKGROUND:
       {
         if (value == "")
-          _prop.bgColor = {0, 0, 0, 0};
+          _prop.bgColor = { 0, 0, 0, 0 };
         else
           _prop.bgColor = ginga::parse_color (value);
         break;
@@ -788,7 +788,7 @@ Player::redrawDebuggingInfo (cairo_t *cr)
                    _prop.rect.y, _prop.z);
 
   debug = PlayerText::renderSurface (
-      str, "monospace", "", "", "7", {1., 0, 0, 1. }, {0, 0, 0, .75},
+      str, "monospace", "", "", "7", { 1., 0, 0, 1. }, { 0, 0, 0, .75 },
       _prop.rect, "center", "middle", true, nullptr);
   g_assert_nonnull (debug);
 

@@ -97,22 +97,22 @@ opt_version_cb (void)
 }
 
 static GOptionEntry options[]
-    = { {"background", 'b', 0, G_OPTION_ARG_CALLBACK,
-          pointerof (opt_background_cb), "Set background color", "COLOR"},
-        {"debug", 'd', 0, G_OPTION_ARG_NONE, &opt_debug,
-          "Enable debugging", NULL},
-        {"fullscreen", 'f', 0, G_OPTION_ARG_NONE, &opt_fullscreen,
-          "Enable full-screen mode", NULL},
-        {"opengl", 'g', 0, G_OPTION_ARG_NONE, &opt_opengl,
-          "Use OpenGL backend", NULL},
-        {"size", 's', 0, G_OPTION_ARG_CALLBACK, pointerof (opt_size_cb),
-          "Set initial window size", "WIDTHxHEIGHT"},
-        {"experimental", 'x', 0, G_OPTION_ARG_NONE, &opt_experimental,
-          "Enable experimental stuff", NULL},
-        {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
+    = { { "background", 'b', 0, G_OPTION_ARG_CALLBACK,
+          pointerof (opt_background_cb), "Set background color", "COLOR" },
+        { "debug", 'd', 0, G_OPTION_ARG_NONE, &opt_debug,
+          "Enable debugging", NULL },
+        { "fullscreen", 'f', 0, G_OPTION_ARG_NONE, &opt_fullscreen,
+          "Enable full-screen mode", NULL },
+        { "opengl", 'g', 0, G_OPTION_ARG_NONE, &opt_opengl,
+          "Use OpenGL backend", NULL },
+        { "size", 's', 0, G_OPTION_ARG_CALLBACK, pointerof (opt_size_cb),
+          "Set initial window size", "WIDTHxHEIGHT" },
+        { "experimental", 'x', 0, G_OPTION_ARG_NONE, &opt_experimental,
+          "Enable experimental stuff", NULL },
+        { "version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
           pointerof (opt_version_cb), "Print version information and exit",
-          NULL},
-        {NULL, 0, 0, G_OPTION_ARG_NONE, NULL, NULL, NULL} };
+          NULL },
+        { NULL, 0, 0, G_OPTION_ARG_NONE, NULL, NULL, NULL } };
 
 // Error handling.
 
@@ -142,11 +142,11 @@ static G_GNUC_PRINTF (3, 4) void _error (gboolean try_help, int die,
     _exit (die);
 }
 
-  // Callbacks.
+// Callbacks.
 
 #if GTK_CHECK_VERSION(3, 16, 0)
-static gboolean render_gl_callback (unused (GtkGLArea *area),
-                                    unused (GdkGLContext *ctx))
+static gboolean
+render_gl_callback (unused (GtkGLArea *area), unused (GdkGLContext *ctx))
 {
   GINGA->redraw (nullptr);
   return TRUE;

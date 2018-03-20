@@ -52,7 +52,7 @@ PlayerAnimator::schedule (const string &name, const string &from,
   TRACE ("%s from '%s' to '%s' in %" GINGA_TIME_FORMAT, name.c_str (),
          from.c_str (), to.c_str (), GINGA_TIME_ARGS (dur));
 
-  list<string> list_pre = {"", "", "", ""};
+  list<string> list_pre = { "", "", "", "" };
   list<string> list_pos;
 
   if (name == "bounds")
@@ -89,7 +89,7 @@ PlayerAnimator::schedule (const string &name, const string &from,
     }
   else if (name == "background")
     {
-      Color pre = {0, 0, 0, 255};
+      Color pre = { 0, 0, 0, 255 };
       Color pos;
 
       string pre_r, pre_g, pre_b;

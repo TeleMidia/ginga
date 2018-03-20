@@ -77,9 +77,8 @@ private:
     string value;
   } PlayerVideoAction;
   list<PlayerVideoAction> _stack_actions;
-  void
-  initProperties (set<string> *); // Init default values to properties
-                                  // without go to doSetProperty function
+  void initProperties (set<string> *); // Init default values to properties
+  // without go to doSetProperty function
   void stackAction (Property, const string &, const string &);
   void doStackedActions ();
   bool getFreeze ();

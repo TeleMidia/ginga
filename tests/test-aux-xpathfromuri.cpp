@@ -22,10 +22,10 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  g_assert (xpathfromuri ("file:/a") ==  S "a");
-  g_assert (xpathfromuri ("file:/full/path") == S "full" S "path" );
-  g_assert (xpathfromuri ("file:/base/relative/path") ==
-            S "base" S "relative" S "path");
+  g_assert (xpathfromuri ("file:/a") == S "a");
+  g_assert (xpathfromuri ("file:/full/path") == S "full" S "path");
+  g_assert (xpathfromuri ("file:/base/relative/path") == S
+            "base" S "relative" S "path");
 
   exit (EXIT_SUCCESS);
 }

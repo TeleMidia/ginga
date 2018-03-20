@@ -181,7 +181,8 @@ main (void)
   {}
 
   // Predicate::CONJUNCTION from assessmentStatement is false
-  {}
+  {
+  }
 
   exit (EXIT_SUCCESS);
 }
