@@ -351,7 +351,7 @@ indent:
 	$(V_at)for file in $(indent_vc_list_c); do\
 	  $(INDENT) $(INDENT_OPTIONS) $$file || exit 1;\
 	done
-	$(V_at)$(PERL) -i'~' -wple '$(perl_after_indent)'\
+	# $(V_at)$(PERL) -i'~' -wple '$(perl_after_indent)'\
 	  $(indent_vc_list_c)
 	$(V_at)$(PERL) -we '$(perl_indent_join_empty_lines)'\
 	  $(call vc_list_exclude, $(VC_LIST_ALL),\

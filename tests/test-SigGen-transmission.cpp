@@ -17,15 +17,34 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "tests.h"
 
-#define S G_DIR_SEPARATOR_S
-
 int
 main (void)
 {
-  g_assert (xpathfromuri ("file:/a") == S "a");
-  g_assert (xpathfromuri ("file:/full/path") == S "full" S "path");
-  g_assert (xpathfromuri ("file:/base/relative/path") == S
-            "base" S "relative" S "path");
+  string path;
+  Document *doc;
+  Formatter *fmt;
+  string errmsg = "";
 
-  exit (EXIT_SUCCESS);
+  path = xpathbuildabs (
+      ABS_TOP_SRCDIR, "tests-ncl/test-player-siggen-bit-13freq-100hz.ncl");
+
+  fmt = new Formatter (nullptr);
+  g_assert_nonnull (fmt);
+  fmt->start (path, &errmsg);
+  doc = fmt->getDocument ();
+  g_assert_nonnull (doc);
+
+  char dataToSend [] = { 1, 2, 3, 4, 5, 6};
+  fmt->sendTick (4 * GINGA_SECOND, 4 * GINGA_SECOND, 0);
+
+  Context *body = cast (Context *, doc->getRoot ());
+  g_assert_nonnull (body);
+
+  Media *m1 = cast (Media *, body->getChildById ("m"));
+  g_assert_nonnull (m1);
+
+  m1->setProperty ("volume", "0");
+
+  while (true)
+    ;
 }

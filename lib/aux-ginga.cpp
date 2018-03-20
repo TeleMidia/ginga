@@ -724,7 +724,7 @@ xurigetcontents (const string &uri, string &data)
   char *gdata = NULL;
   gsize len;
 
-  if (!xpathisuri(uri))
+  if (!xpathisuri (uri))
     return false;
   GFile *file = g_file_new_for_uri (uri.c_str ());
   gboolean ret

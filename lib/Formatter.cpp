@@ -210,12 +210,12 @@ Formatter::resize (int width, int height)
   // Resize each media object in document.
   for (auto media : *_doc->getMedias ())
     {
-#define UPDATE_IF_HAVE(PROP) \
-      { \
-        string s = media->getProperty (PROP); \
-        if (s != "") \
-          media->setProperty (PROP, s); \
-      }
+#define UPDATE_IF_HAVE(PROP)                                               \
+  {                                                                        \
+    string s = media->getProperty (PROP);                                  \
+    if (s != "")                                                           \
+      media->setProperty (PROP, s);                                        \
+  }
 
       UPDATE_IF_HAVE ("top");
       UPDATE_IF_HAVE ("left");
@@ -286,9 +286,9 @@ Formatter::redraw (cairo_t *cr)
 
   if (_opts.debug)
     {
-      static Color fg = {1., 1., 1., 1. };
-      static Color bg = {0, 0, 0, 0};
-      static Rect rect = {0, 0, 0, 0};
+      static Color fg = { 1., 1., 1., 1. };
+      static Color bg = { 0, 0, 0, 0 };
+      static Rect rect = { 0, 0, 0, 0 };
       string info;
       cairo_surface_t *debug;
       Rect ink;
@@ -301,7 +301,7 @@ Formatter::redraw (cairo_t *cr)
       debug = PlayerText::renderSurface (info, "monospace", "", "bold", "9",
                                          fg, bg, rect, "center", "", true,
                                          &ink);
-      ink = {0, 0, rect.width, ink.height - ink.y + 4};
+      ink = { 0, 0, rect.width, ink.height - ink.y + 4 };
       cairo_save (cr);
       cairo_set_source_rgba (cr, 1., 0., 0., .5);
       cairo_rectangle (cr, 0, 0, ink.width, ink.height);
@@ -440,7 +440,7 @@ Formatter::Formatter (const GingaOptions *opts) : Ginga (opts)
 
   _state = GINGA_STATE_STOPPED;
   _opts = (opts) ? *opts : opts_defaults;
-  _background = {0., 0., 0., 0. };
+  _background = { 0., 0., 0., 0. };
 
   _lastTickTotal = 0;
   _lastTickDiff = 0;
@@ -511,7 +511,7 @@ Formatter::setOptionBackground (Formatter *self, const string &name,
 {
   g_assert (name == "background");
   if (value == "")
-    self->_background = {0., 0., 0., 0. };
+    self->_background = { 0., 0., 0., 0. };
   else
     self->_background = ginga::parse_color (value);
   TRACE ("%s:='%s'", name.c_str (), value.c_str ());
