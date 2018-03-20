@@ -17,15 +17,27 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "tests.h"
 
-#define S G_DIR_SEPARATOR_S
-
 int
 main (void)
 {
-  g_assert (xpathfromuri ("file:/a") == S "a");
-  g_assert (xpathfromuri ("file:/full/path") == S "full" S "path");
-  g_assert (xpathfromuri ("file:/base/relative/path") == S
-            "base" S "relative" S "path");
+  // Predicate::ATOM from <rule> is true
+  {}
+
+  // Predicate::ATOM from <rule> is false
+  {}
+
+  // Predicate::DISJUNCTION from <compositeRule> is true
+  {}
+
+  // Predicate::DISJUNCTION from <compositeRule> is false
+  {}
+
+  // Predicate::CONJUNCTION from <compositeRule> is true
+  {}
+
+  // Predicate::CONJUNCTION from <compositeRule> is false
+  {
+  }
 
   exit (EXIT_SUCCESS);
 }

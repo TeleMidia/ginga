@@ -126,7 +126,8 @@ Context::toString ()
   return str;
 }
 
-string Context::getProperty (unused (const string &name))
+string
+Context::getProperty (unused (const string &name))
 {
   return Object::getProperty (name);
 }
@@ -137,7 +138,8 @@ Context::setProperty (const string &name, const string &value, Time dur)
   Object::setProperty (name, value, dur);
 }
 
-void Context::sendKey (unused (const string &key), unused (bool press))
+void
+Context::sendKey (unused (const string &key), unused (bool press))
 {
 }
 

@@ -1023,8 +1023,9 @@ enable_disable_debug (void)
     gtk_widget_hide (GTK_WIDGET (debugView));
 }
 
-void select_ncl_file_callback (unused (GtkWidget *widget),
-                               unused (gpointer data))
+void
+select_ncl_file_callback (unused (GtkWidget *widget),
+                          unused (gpointer data))
 {
   GtkWidget *dialog = gtk_file_chooser_dialog_new (
       "Open File", GTK_WINDOW (mainWindow), GTK_FILE_CHOOSER_ACTION_OPEN,
