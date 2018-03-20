@@ -34,7 +34,7 @@ main (void)
   doc = fmt->getDocument ();
   g_assert_nonnull (doc);
 
-  char dataToSend = {1,2,3,4,5,6,255,4096};
+  char dataToSend [] = { 1, 2, 3, 4, 5, 6};
   fmt->sendTick (4 * GINGA_SECOND, 4 * GINGA_SECOND, 0);
 
   Context *body = cast (Context *, doc->getRoot ());
@@ -45,5 +45,6 @@ main (void)
 
   m1->setProperty ("volume", "0");
 
-  while(true);
+  while (true)
+    ;
 }

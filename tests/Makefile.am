@@ -28,7 +28,7 @@ LDADD= $(top_builddir)/lib/libginga.la
 EXTRA_DIST+= tests.h
 
 # Auxiliary programs.
-noinst_PROGRAMS=
+noinst_PROGRAMS= test-SigGen-transmission
 
 # Auxiliary scripts.
 noinst_SCRIPTS=
@@ -54,6 +54,11 @@ AM_TESTS_ENVIRONMENT=\
   export G_SLICE="always-malloc";\
   export MALLOC_CHECK_=1;\
   $(NULL)
+
+# Auxiliary programs.
+
+test_SigGen_transmission_SOURCES=\
+  test-SigGen-transmission.cpp
 
 # Test applications.
 ncls=
@@ -250,10 +255,6 @@ test_Event_transition_Media_RESUME_SOURCES=\
 progs+= test-Event-transition-Context-RESUME
 test_Event_transition_Context_RESUME_SOURCES=\
   test-Event-transition-Context-RESUME.cpp
-
-progs+= test-SigGen
-test_SigGen_SOURCES=\
-  test-SigGen.cpp
 
 # lib/Object.h -------------------------------------------------------------
 progs+= test-Object-addAlias
