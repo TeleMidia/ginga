@@ -34,18 +34,18 @@ static G_GNUC_UNUSED string
 tests_write_tmp_file (const string &buf)
 {
   string path;
-  gchar * filename;
+  gchar *filename;
   gint fd;
   GError *error = nullptr;
 
   // g_file_open_tmp should follow the rules for mkdtemp() templates
-  fd = g_file_open_tmp("ginga-tests-XXXXXX", &filename, &error);
+  fd = g_file_open_tmp ("ginga-tests-XXXXXX", &filename, &error);
   if (unlikely (error != nullptr))
     {
       ERROR ("*** Unexpected error: %s", error->message);
       g_error_free (error);
     }
-  g_close(fd, nullptr);
+  g_close (fd, nullptr);
 
   path = filename;
   g_assert (g_file_set_contents (path.c_str (), buf.c_str (), -1, nullptr));
@@ -72,22 +72,23 @@ tests_parse_and_start (Formatter **fmt, Document **doc, const string &buf)
 
   tryset (doc, (*fmt)->getDocument ());
   g_assert_nonnull (*doc);
-  g_assert ( g_remove (file.c_str ()) == 0 );
+  g_assert (g_remove (file.c_str ()) == 0);
 }
 
 static G_GNUC_UNUSED void
-tests_create_document (Document **doc, Context ** root, MediaSettings ** settings)
+tests_create_document (Document **doc, Context **root,
+                       MediaSettings **settings)
 {
-    tryset (doc, new Document ());
-    g_assert_nonnull (doc);
+  tryset (doc, new Document ());
+  g_assert_nonnull (doc);
 
-    tryset (root, (*doc)->getRoot ());
-    g_assert_nonnull (root);
-    g_assert ((*doc)->getObjectById ("__root__") == *root);
+  tryset (root, (*doc)->getRoot ());
+  g_assert_nonnull (root);
+  g_assert ((*doc)->getObjectById ("__root__") == *root);
 
-    tryset (settings, (*doc)->getSettings ());
-    g_assert_nonnull (settings);
-    g_assert ((*doc)->getObjectById ("__settings__") == *settings);
+  tryset (settings, (*doc)->getSettings ());
+  g_assert_nonnull (settings);
+  g_assert ((*doc)->getObjectById ("__settings__") == *settings);
 }
 
 #endif // TESTS_H

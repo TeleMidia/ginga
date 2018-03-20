@@ -133,9 +133,7 @@ Object::toString ()
       }
 
   list<pair<string, list<string> *> > evts = {
-    {"evts pres.", &pres},
-    {"evts attr.", &attr},
-    {"evts sel.", &sel},
+    { "evts pres.", &pres }, { "evts attr.", &attr }, { "evts sel.", &sel },
   };
 
   for (auto it_evts : evts)
@@ -333,7 +331,8 @@ Object::addDelayedAction (Event *event, Event::Transition transition,
   _delayed.push_back (std::make_pair (act, _time + delay));
 }
 
-void Object::sendKey (unused (const string &key), unused (bool press))
+void
+Object::sendKey (unused (const string &key), unused (bool press))
 {
 }
 

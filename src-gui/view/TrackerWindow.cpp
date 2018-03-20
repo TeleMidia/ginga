@@ -50,7 +50,8 @@ toggle_show_again ()
   printf ("Show %d", presentationAttributes.showTrackerWindow);
 }
 
-void show_tracker_dialog (unused (GtkWindow *parent))
+void
+show_tracker_dialog (unused (GtkWindow *parent))
 {
   if (dialogWindow != NULL || presentationAttributes.showTrackerWindow == 0)
     return;

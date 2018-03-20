@@ -21,7 +21,8 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
   "PUC-Rio/TeleMidia Lab.    www.telemidia.puc-rio.br\n"
 #define AUTHORS_FILE_REMOTE_URI                                            \
   "http://raw.githubusercontent.com/TeleMidia/ginga/master/AUTHORS"
-#define AUTHORS_FILE_LOCAL_RELATIVE_PATH TOP_SRCDIR G_DIR_SEPARATOR_S "AUTHORS"
+#define AUTHORS_FILE_LOCAL_RELATIVE_PATH                                   \
+  TOP_SRCDIR G_DIR_SEPARATOR_S "AUTHORS"
 #define AUTHORS_FILE_LOCAL_ABS_PATH                                        \
   ABS_TOP_SRCDIR G_DIR_SEPARATOR_S "AUTHORS"
 

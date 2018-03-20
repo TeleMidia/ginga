@@ -22,10 +22,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
   {                                                                        \
     string str;                                                            \
     map<string, string> params = {                                         \
-      {"a", "1"},                                                        \
-      {"b", "2"},                                                        \
-      {"c", "3"},                                                        \
-      {"d", "4"},                                                        \
+      { "a", "1" }, { "b", "2" }, { "c", "3" }, { "d", "4" },              \
     };                                                                     \
     for (auto it : params)                                                 \
       g_assert_false ((e)->getParameter (it.first, nullptr));              \

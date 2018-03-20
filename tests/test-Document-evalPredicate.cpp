@@ -100,12 +100,10 @@ main (void)
   }
 
   // Document:evalPredicate NEGATION
-  {
-  }
+  {}
 
   // Document:evalPredicate CONJUNCTION
-  {
-  }
+  {}
 
   // Document:evalPredicate DISJUNCTION
   {

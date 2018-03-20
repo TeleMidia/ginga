@@ -36,7 +36,8 @@ main (void)
   {}
 
   // Predicate::CONJUNCTION from <compositeRule> is false
-  {}
+  {
+  }
 
   exit (EXIT_SUCCESS);
 }

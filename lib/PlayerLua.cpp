@@ -39,9 +39,9 @@ GINGA_NAMESPACE_BEGIN
 
 /// Conversion from NCLua actions to NCL transitions
 static map<string, Event::Transition> nclua_act_to_ncl = {
-  {"start", Event::START},   {"pause", Event::PAUSE},
-  {"resume", Event::RESUME}, {"stop", Event::STOP},
-  {"abort", Event::ABORT},
+  { "start", Event::START },   { "pause", Event::PAUSE },
+  { "resume", Event::RESUME }, { "stop", Event::STOP },
+  { "abort", Event::ABORT },
 };
 
 // Public.
@@ -50,7 +50,7 @@ PlayerLua::PlayerLua (Formatter *formatter, Media *media)
     : Player (formatter, media)
 {
   _nw = NULL;
-  _init_rect = {0, 0, 0, 0};
+  _init_rect = { 0, 0, 0, 0 };
 }
 
 PlayerLua::~PlayerLua ()
