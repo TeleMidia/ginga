@@ -98,7 +98,7 @@ Switch::beforeTransition (Event *event, Event::Transition transition)
                     } // Found one valid predicate, but its transition
                       // doesn't work
                   else
-                    return false
+                    return false;
                 }
             }
           // Not found valid predicate, then transition failed.
