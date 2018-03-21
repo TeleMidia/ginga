@@ -3734,10 +3734,10 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
         }
       if (type == "application/x-ginga-settings")
         {
-          media = st->_doc->getSettings ();
-          g_assert_nonnull (media);
-          media->addAlias (id);
-          goto done;
+          refer = st->_doc->getSettings ()->getId();
+          media = cast (Media *, st->_doc->getObjectByIdOrAlias (refer));
+          if (media != nullptr)
+            goto almost_done;
         }
     }
 
