@@ -331,6 +331,7 @@ l_parse_port (lua_State *L)
   string str;
 
   doc = (Document *) lua_touserdata (L, 1);
+  g_assert_nonnull (doc);
   parent = (Context *) lua_touserdata (L, 2);
   g_assert_nonnull (parent);
   str = string (luaL_checkstring (L, -1));
@@ -358,6 +359,7 @@ l_parse_media (lua_State *L)
   Time begin, end;
 
   doc = (Document *) lua_touserdata (L, 1);
+  g_assert_nonnull (doc);
   parent = (Composition *) lua_touserdata (L, 2);
 
   luaL_checktype (L, 3, LUA_TTABLE);
