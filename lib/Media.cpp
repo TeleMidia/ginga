@@ -181,6 +181,11 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
         {
         case Event::START:
           {
+            if (getParent ()->isSleeping ())
+            {
+              getParent ()->getLambda ()->transition (Event::START);
+            }
+
             // Create underlying player.
             if (evt->getState () == Event::SLEEPING)
               {
@@ -426,7 +431,7 @@ Media::afterTransition (Event *evt, Event::Transition transition)
           case Event::STOP:
             TRACE ("stop %s:='%s'", evt->getFullId ().c_str (),value.c_str ());
             break;
-  
+
           default:
             g_assert_not_reached ();
           }
