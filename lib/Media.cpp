@@ -183,6 +183,7 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
           {
             if (getParent ()->isSleeping ())
             {
+              getParent ()->getLambda ()->setParameter ("STARTED_FROM_PORT", "true");
               getParent ()->getLambda ()->transition (Event::START);
             }
 
