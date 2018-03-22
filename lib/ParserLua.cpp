@@ -126,7 +126,7 @@ l_parse_context (lua_State *L)
   else // non-root
     {
       ctx = new Context (id);
-      ctx->initParent (parent);
+      parent->addChild (ctx);
     }
 
   lua_rawgeti (L, 3, 4);
@@ -154,7 +154,8 @@ l_parse_context (lua_State *L)
               lua_pushlightuserdata (L, doc);
               lua_pushlightuserdata (L, ctx);
               lua_pushvalue (L, -5);
-              lua_call (L, 3, 0);
+              lua_pushvalue (L, 4);
+              lua_call (L, 4, 0);
               lua_pop (L, 2);
             }
           else if (xstrcasecmp (child, "media") == 0)
@@ -207,7 +208,7 @@ l_parse_context (lua_State *L)
   return 0;
 }
 
-// parse_switch (doc, parent, tab)
+// parse_switch (doc, parent, tab, path)
 static int
 l_parse_switch (lua_State *L)
 {
@@ -243,7 +244,7 @@ l_parse_switch (lua_State *L)
     }
 
   swtch = new Switch (id);
-  swtch->initParent (parent);
+  parent->addChild (swtch);
 
   lua_rawgeti (L, 3, 3);
   if (lua_isnil (L, -1) == 0) // children
@@ -270,7 +271,8 @@ l_parse_switch (lua_State *L)
               lua_pushlightuserdata (L, doc);
               lua_pushlightuserdata (L, swtch);
               lua_pushvalue (L, -5);
-              lua_call (L, 3, 0);
+              lua_pushvalue (L, 4);
+              lua_call (L, 4, 0);
               lua_pop (L, 2);
             }
           else if (xstrcasecmp (child, "media") == 0)
@@ -296,11 +298,11 @@ l_parse_switch (lua_State *L)
       lua_pushnil (L);
       while (lua_next (L, -2) != 0)
         {
-          lua_rawgeti (L, 9, 1);
+          lua_rawgeti (L, 10, 1);
           const string id_media = string (luaL_checkstring (L, -1));
           Object* obj = swtch->getChildById (id_media);
 
-          lua_rawgeti (L, 9, 2);
+          lua_rawgeti (L, 10, 2);
           luaL_checktype (L, -1, LUA_TTABLE);
 
           Predicate *predicate = new Predicate (Predicate::CONJUNCTION);
@@ -550,8 +552,6 @@ l_parse_media (lua_State *L)
         }
     }
 
-  // ta dando erro aqui ao adicionar a media ao switch
-  // seg fault
   parent->addChild (media);
   return 0;
 }
