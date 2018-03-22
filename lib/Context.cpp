@@ -235,6 +235,7 @@ Context::beforeTransition (Event *evt, Event::Transition transition)
 bool
 Context::afterTransition (Event *evt, Event::Transition transition)
 {
+  string param_test;
   switch (evt->getType ())
     {
     case Event::PRESENTATION:
@@ -245,12 +246,16 @@ Context::afterTransition (Event *evt, Event::Transition transition)
           // Start context as a whole.
           Object::doStart ();
 
-          // Start all ports in the next tick.
+          // Start all ports in the next tick if not started from port
+          evt->getParameter ("fromport", &param_test);
+          if ( param_test != "")
+            break;
           for (auto port : _ports)
             {
               if (port->getType () == Event::PRESENTATION)
                 this->addDelayedAction (port, Event::START, "", 0);
             }
+          evt->setParameter ("fromport", "");
           TRACE ("start %s", evt->getFullId ().c_str ());
           break;
         case Event::PAUSE:
