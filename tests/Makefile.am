@@ -224,6 +224,10 @@ progs+= test-Event-transition-Context-START
 test_Event_transition_Context_START_SOURCES=\
   test-Event-transition-Context-START.cpp
 
+progs+= test-Context-ports
+test_Context_ports_SOURCES=\
+  test-Context-ports.cpp
+
 progs+= test-Event-transition-Media-STOP
 test_Event_transition_Media_STOP_SOURCES=\
   test-Event-transition-Media-STOP.cpp
