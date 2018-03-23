@@ -21,18 +21,14 @@ int
 main (void)
 {
   Document *doc;
+  Context *root;
+  MediaSettings *settings;
 
-  doc = new Document ();
-  g_assert_nonnull (doc);
-  g_assert (doc->getObjects ()->size () == 2);
+  tests_create_document (&doc, &root, &settings);
 
-  Context *root = doc->getRoot ();
-  g_assert_nonnull (root);
   g_assert_false (doc->addObject (root));
   g_assert (doc->getObjects ()->size () == 2);
 
-  MediaSettings *settings = doc->getSettings ();
-  g_assert_nonnull (settings);
   g_assert_false (doc->addObject (settings));
   g_assert (doc->getObjects ()->size () == 2);
 

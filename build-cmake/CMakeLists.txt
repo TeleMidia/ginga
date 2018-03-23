@@ -19,7 +19,7 @@ set (GINGA_BINARY_TESTS_DIR ${CMAKE_BINARY_DIR}/tests)
 add_definitions (-DGINGADATADIR="${CMAKE_INSTALL_FULL_DATADIR}/${PACKAGE}")
 
 # Find dependencies
-find_package (GLIB 2.32 REQUIRED)
+find_package (GLIB 2.32 REQUIRED COMPONENTS gobject gio gthread gmodule)
 
 find_package (LibSoup 2.42.0)
 find_package (LibXml2 REQUIRED)
@@ -177,6 +177,7 @@ set (LIBGINGA_LIBS
   expat
 
   ${GLIB_LIBRARIES}
+  ${GLIB_GIO_LIBRARIES}
 
   ${LIBXML2_LIBRARIES}
   ${GDK3_LIBRARIES}
@@ -362,6 +363,7 @@ file(GLOB GINGA_TESTS_SRC
   "../tests/*.cpp")
 
 add_definitions (-DTOP_SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}/../")
+add_definitions (-DABS_TOP_SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}/../")
 foreach (SRC ${GINGA_TESTS_SRC})
   get_filename_component (TEST_NAME ${SRC} NAME_WE)
   add_ginga_test (${TEST_NAME} ${SRC})

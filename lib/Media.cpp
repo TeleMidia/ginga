@@ -118,18 +118,22 @@ Media::sendKey (const string &key, bool press)
   // Collect the events to be triggered.
   for (auto evt : _events)
     {
-      string expected;
-
       if (evt->getType () != Event::SELECTION)
         continue;
 
-      expected = "";
+      string expected = "";
       evt->getParameter ("key", &expected);
+
+      if (expected[0] == '$')
+        expected = ""; // A param could not be resolved.  Should we generate
+                       // an error?
+
       if (!((expected == "" && key == "ENTER" && _player->isFocused ())
             || (expected != "" && key == expected)))
         {
           continue;
         }
+
       buf.push_back (evt);
     }
 
@@ -177,6 +181,12 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
         {
         case Event::START:
           {
+            if (getParent ()->isSleeping ())
+            {
+              getParent ()->getLambda ()->setParameter ("fromport", "true");
+              getParent ()->getLambda ()->transition (Event::START);
+            }
+
             // Create underlying player.
             if (evt->getState () == Event::SLEEPING)
               {
@@ -392,41 +402,42 @@ Media::afterTransition (Event *evt, Event::Transition transition)
       break;
 
     case Event::ATTRIBUTION:
-      switch (transition)
-        {
-        case Event::START:
+      {
+        string value;
+        evt->getParameter ("value", &value);
+        switch (transition)
           {
-            string name;
-            string value;
-            string s;
-            Time dur;
+          case Event::START:
+            {
+              string name;
+              string s;
+              Time dur;
 
-            name = evt->getId ();
-            evt->getParameter ("value", &value);
-            _doc->evalPropertyRef (value, &value);
+              name = evt->getId ();
+              _doc->evalPropertyRef (value, &value);
 
-            dur = 0;
-            if (evt->getParameter ("duration", &s))
-              {
-                _doc->evalPropertyRef (s, &s);
-                dur = ginga::parse_time (s);
-              }
-            this->setProperty (name, value, dur);
-            this->addDelayedAction (evt, Event::STOP, value, dur);
-            TRACE ("start %s:='%s' (dur=%s)", evt->getFullId ().c_str (),
-                   value.c_str (), (s != "") ? s.c_str () : "0s");
+              dur = 0;
+              if (evt->getParameter ("duration", &s))
+                {
+                  _doc->evalPropertyRef (s, &s);
+                  dur = ginga::parse_time (s);
+                }
+              this->setProperty (name, value, dur);
+              this->addDelayedAction (evt, Event::STOP, value, dur);
+              TRACE ("start %s:='%s' (dur=%s)", evt->getFullId ().c_str (),
+                     value.c_str (), (s != "") ? s.c_str () : "0s");
+              break;
+            }
+
+          case Event::STOP:
+            TRACE ("stop %s:='%s'", evt->getFullId ().c_str (),value.c_str ());
             break;
+
+          default:
+            g_assert_not_reached ();
           }
-
-        case Event::STOP:
-          TRACE ("stop %s:=...", evt->getFullId ().c_str ());
-          break;
-
-        default:
-          g_assert_not_reached ();
-        }
-      break;
-
+        break;
+      }
     case Event::SELECTION:
       {
         string key;

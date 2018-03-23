@@ -1,8 +1,33 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <ncl-apps>
-    <app src="" 
-         thumbnail=""
-         cover="" 
-         title=""
-         description="" />                        
+    <app src=".../ginga/examples/primeiro-joao/01sync.ncl" 
+         thumbnail=".../ginga/src-gui/icons/common/app_thumbnail.png"
+         cover=".../ginga/src-gui/icons/common/app_cover.png" 
+         title="Primeiro Joao"
+         description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?" />
+    <app src=".../ginga/examples/primeiro-joao/01sync.ncl" 
+         thumbnail=".../ginga/src-gui/icons/common/app_thumbnail.png"
+         cover=".../ginga/src-gui/icons/common/app_cover.png" 
+         title="Segundo Joao"
+         description="Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?" />
+    <app src=".../ginga/examples/primeiro-joao/01sync.ncl" 
+         thumbnail=".../ginga/src-gui/icons/common/app_thumbnail.png"
+         cover=".../ginga/src-gui/icons/common/app_cover.png" 
+         title="Terceiro Joao"
+         description="At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?" />
+    <app src=".../ginga/examples/primeiro-joao/01sync.ncl" 
+         thumbnail=".../ginga/src-gui/icons/common/app_thumbnail.png"
+         cover=".../ginga/src-gui/icons/common/app_cover.png" 
+         title="Quarto Joao"
+         description="Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?" />
+    <app src=".../ginga/examples/primeiro-joao/01sync.ncl" 
+         thumbnail=".../ginga/src-gui/icons/common/app_thumbnail.png"
+         cover=".../ginga/src-gui/icons/common/app_cover.png" 
+         title="Quinto Joao"
+         description="Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?" />
+    <app src=".../ginga/examples/primeiro-joao/01sync.ncl" 
+         thumbnail=".../ginga/src-gui/icons/common/app_thumbnail.png"
+         cover=".../ginga/src-gui/icons/common/app_cover.png" 
+         title="Sexto Joao"
+         description="Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?" />                         
 </ncl-apps>

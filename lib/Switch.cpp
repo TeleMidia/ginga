@@ -90,11 +90,19 @@ Switch::beforeTransition (Event *event, Event::Transition transition)
                 {
                   lambda = obj->getLambda ();
                   g_assert_nonnull (lambda);
+                  // Found one valid predicate
                   if (lambda->transition (transition))
-                    _selected = obj;
-                  break;
+                    {
+                      _selected = obj;
+                      return true;
+                    } // Found one valid predicate, but its transition
+                      // doesn't work
+                  else
+                    return false;
                 }
             }
+          // Not found valid predicate, then transition failed.
+          return false;
           break;
 
         case Event::STOP:
@@ -168,6 +176,17 @@ Switch::addRule (Object *obj, Predicate *pred)
   g_assert_nonnull (obj);
   g_assert_nonnull (pred);
   _rules.push_back (std::make_pair (obj, pred));
+}
+
+void
+Switch::addSwitchPort (const string &id, const list <Event *> &evts)
+{
+  TRACE ("Adding switchPort %s to %s mapping %u evts.",
+         id.c_str (),
+         getId ().c_str (),
+         (uint) evts.size ());
+
+  _switchPorts[id] = evts;
 }
 
 GINGA_NAMESPACE_END

@@ -28,7 +28,7 @@ LDADD= $(top_builddir)/lib/libginga.la
 EXTRA_DIST+= tests.h
 
 # Auxiliary programs.
-noinst_PROGRAMS=
+noinst_PROGRAMS= test-SigGen-transmission
 
 # Auxiliary scripts.
 noinst_SCRIPTS=
@@ -54,6 +54,11 @@ AM_TESTS_ENVIRONMENT=\
   export G_SLICE="always-malloc";\
   export MALLOC_CHECK_=1;\
   $(NULL)
+
+# Auxiliary programs.
+
+test_SigGen_transmission_SOURCES=\
+  test-SigGen-transmission.cpp
 
 # Test applications.
 ncls=
@@ -174,12 +179,18 @@ progs+= test-Document-getObjectByIdOrAlias
 test_Document_getObjectByIdOrAlias_SOURCES=\
   test-Document-getObjectByIdOrAlias.cpp
 
+progs+= test-Document-evalPredicate
+test_Document_evalPredicate_SOURCES= test-Document-evalPredicate.cpp
+
+progs+= test-Document-evalPredicate-from-link
+test_Document_evalPredicate_from_link_SOURCES= test-Document-evalPredicate-from-link.cpp
+
+progs+= test-Document-evalPredicate-from-rule
+test_Document_evalPredicate_from_rule_SOURCES= test-Document-evalPredicate-from-rule.cpp
+
 # lib/Predicate.h ----------------------------------------------------------
 progs+= test-Predicate-new
 test_Predicate_new_SOURCES= test-Predicate-new.cpp
-
-progs+= test-Predicate-atom
-test_Predicate_atom_SOURCES= test-Predicate-atom.cpp
 
 # lib/Event.h --------------------------------------------------------------
 progs+= test-Event-new

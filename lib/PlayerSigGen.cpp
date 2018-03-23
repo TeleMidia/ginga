@@ -171,9 +171,7 @@ PlayerSigGen::PlayerSigGen (Formatter *formatter, Media *media)
 
   // Initialize handled properties.
   static set<string> handled = {
-    "freq",
-    "wave",
-    "volume",
+    "freq", "wave", "volume",
   };
   this->resetProperties (&handled);
 }

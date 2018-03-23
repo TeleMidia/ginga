@@ -475,7 +475,6 @@ keyboard_callback (unused (GtkWidget *widget), GdkEventKey *e,
                    gpointer type)
 {
   const char *key = "\0";
-  gboolean free_key = FALSE;
 
   switch (e->keyval)
     {
@@ -564,7 +563,6 @@ keyboard_callback (unused (GtkWidget *widget), GdkEventKey *e,
       if (strlen (key) > 1)
         {
           key = g_utf8_strup (key, -1);
-          free_key = TRUE;
         }
       break;
     }
@@ -572,8 +570,6 @@ keyboard_callback (unused (GtkWidget *widget), GdkEventKey *e,
   if (GINGA->getState () == GINGA_STATE_PLAYING)
     GINGA->sendKey (std::string (key),
                     g_strcmp0 ((const char *) type, "press") == 0);
-  /*  if (free_key)
-      g_free (key); */
 }
 
 void
@@ -1023,8 +1019,9 @@ enable_disable_debug (void)
     gtk_widget_hide (GTK_WIDGET (debugView));
 }
 
-void select_ncl_file_callback (unused (GtkWidget *widget),
-                               unused (gpointer data))
+void
+select_ncl_file_callback (unused (GtkWidget *widget),
+                          unused (gpointer data))
 {
   GtkWidget *dialog = gtk_file_chooser_dialog_new (
       "Open File", GTK_WINDOW (mainWindow), GTK_FILE_CHOOSER_ACTION_OPEN,
