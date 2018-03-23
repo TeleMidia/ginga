@@ -68,6 +68,8 @@ GINGA_NAMESPACE_BEGIN
 #undef unused
 #define unused(...) G_GNUC_UNUSED __VA_ARGS__
 
+template <typename...T> void ignore_unused (const T&...) {}
+
 #undef cast
 #define cast(a, b)       (dynamic_cast<a>((b)))
 #define instanceof(a, b) (cast (a,(b)) != nullptr)

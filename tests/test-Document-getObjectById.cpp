@@ -23,19 +23,11 @@ int
 main (void)
 {
   Document *doc;
+  Context *root;
+  MediaSettings *settings;
   Media *m[N];
 
-  doc = new Document ();
-  g_assert_nonnull (doc);
-  g_assert (doc->getObjects ()->size () == 2);
-
-  Context *root = doc->getRoot ();
-  g_assert_nonnull (root);
-  g_assert (doc->getObjectById ("__root__") == root);
-
-  MediaSettings *settings = doc->getSettings ();
-  g_assert_nonnull (settings);
-  g_assert (doc->getObjectById ("__settings__") == settings);
+  tests_create_document (&doc, &root, &settings);
 
   for (size_t i = 0; i < N; i++)
     {

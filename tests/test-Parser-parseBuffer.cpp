@@ -106,9 +106,8 @@ main (void)
          "(must not be empty)",
          "<ncl id=''/>");
 
-  XFAIL ("ncl: Bad id",
-         "<ncl> at line 1: Bad value '@' for attribute 'id' "
-         "(must not contain '@')",
+  XFAIL ("ncl: Bad id", "<ncl> at line 1: Bad value '@' for attribute 'id' "
+                        "(must not contain '@')",
          "<ncl id='@'/>");
 
   // -------------------------------------------------------------------------
@@ -285,8 +284,7 @@ main (void)
 ");
 
   XFAIL ("causalConnector: Missing condition",
-         "<causalConnector> at line 4: Missing child <simpleCondition>",
-         "\
+         "<causalConnector> at line 4: Missing child <simpleCondition>", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -299,8 +297,7 @@ main (void)
 ");
 
   XFAIL ("causalConnector: Missing condition",
-         "<causalConnector> at line 4: Missing child <simpleCondition>",
-         "\
+         "<causalConnector> at line 4: Missing child <simpleCondition>", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -315,8 +312,7 @@ main (void)
 ");
 
   XFAIL ("causalConnector: Missing condition",
-         "<causalConnector> at line 4: Missing child <simpleCondition>",
-         "\
+         "<causalConnector> at line 4: Missing child <simpleCondition>", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -332,8 +328,7 @@ main (void)
 ");
 
   XFAIL ("causalConnector: Missing condition",
-         "<causalConnector> at line 4: Missing child <simpleCondition>",
-         "\
+         "<causalConnector> at line 4: Missing child <simpleCondition>", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -349,8 +344,7 @@ main (void)
 ");
 
   XFAIL ("causalConnector: Missing condition",
-         "<causalConnector> at line 4: Missing child <simpleCondition>",
-         "\
+         "<causalConnector> at line 4: Missing child <simpleCondition>", "\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -1183,8 +1177,7 @@ main (void)
   // <rule>
   // -------------------------------------------------------------------------
 
-  XFAIL ("rule: Missing id", "<rule> at line 4: Missing attribute 'id'",
-         "\
+  XFAIL ("rule: Missing id", "<rule> at line 4: Missing attribute 'id'", "\
 <ncl>\n\
  <head>\n\
   <ruleBase>\n\
@@ -1439,10 +1432,11 @@ main (void)
 ");
 
   XFAIL ("importBase: Bad documentURI",
-         xstrbuild ("<importBase> at line 4: "
-                    "Syntax error in imported document "
-                    "(XML error: failed to load external entity \"%s\")",
-                    xurifromsrc (xpathbuildabs (".", "nonexistent"), "").c_str ()),
+         xstrbuild (
+             "<importBase> at line 4: "
+             "Syntax error in imported document "
+             "(XML error: failed to load external entity \"%s\")",
+             xurifromsrc (xpathbuildabs (".", "nonexistent"), "").c_str ()),
          "\
 <ncl>\n\
  <head>\n\
@@ -1472,8 +1466,8 @@ main (void)
   g_remove (tmp.c_str ());
 
   tmp = tests_write_tmp_file ("<x/>\n");
-  XFAIL ("importBase: Missing root",
-         "<x> at line 1: Unknown element", xstrbuild ("\
+  XFAIL ("importBase: Missing root", "<x> at line 1: Unknown element",
+         xstrbuild ("\
 <ncl>\n\
  <head>\n\
   <regionBase>\n\
@@ -1481,7 +1475,8 @@ main (void)
   </regionBase>\n\
  </head>\n\
 </ncl>\n\
-", tmp.c_str ()));
+",
+                    tmp.c_str ()));
   g_remove (tmp.c_str ());
 
   tmp = tests_write_tmp_file ("<ncl/>");
@@ -1517,9 +1512,8 @@ main (void)
   g_remove (tmp.c_str ());
 
   tmp = tests_write_tmp_file ("<ncl><x/></ncl>");
-  XFAIL (
-      "importBase: Missing head",
-      "<ncl> at line 1: Unknown child <x>", xstrbuild ("\
+  XFAIL ("importBase: Missing head", "<ncl> at line 1: Unknown child <x>",
+         xstrbuild ("\
 <ncl>\n\
  <head>\n\
   <regionBase>\n\
@@ -1527,7 +1521,8 @@ main (void)
   </regionBase>\n\
  </head>\n\
 </ncl>\n\
-", tmp.c_str ()));
+",
+                    tmp.c_str ()));
   g_remove (tmp.c_str ());
 
   tmp = tests_write_tmp_file ("<ncl><head><connectorBase/></head></ncl>");
@@ -1555,7 +1550,8 @@ main (void)
   </connectorBase>\n\
  </head>\n\
 </ncl>\n\
-",tmp.c_str ());
+",
+                   tmp.c_str ());
   g_assert (g_file_set_contents (tmp.c_str (), buf.c_str (), -1, nullptr));
 
   XFAIL ("importBase: Circular import",
@@ -1592,8 +1588,7 @@ main (void)
   // <port>
   // -------------------------------------------------------------------------
 
-  XFAIL ("port: Missing id", "<port> at line 4: Missing attribute 'id'",
-         "\
+  XFAIL ("port: Missing id", "<port> at line 4: Missing attribute 'id'", "\
 <ncl>\n\
  <head/>\n\
  <body>\n\
@@ -1667,10 +1662,9 @@ main (void)
 </ncl>\n\
 ");
 
-  XFAIL ("port: Bad interface",
-         "<port> at line 3: Bad value 'nonexistent' "
-         "for attribute 'interface' "
-         "(no such interface)",
+  XFAIL ("port: Bad interface", "<port> at line 3: Bad value 'nonexistent' "
+                                "for attribute 'interface' "
+                                "(no such interface)",
          "\
 <ncl>\n\
  <body>\n\
@@ -1680,10 +1674,9 @@ main (void)
 </ncl>\n\
 ");
 
-  XFAIL ("port: Bad interface",
-         "<port> at line 3: Bad value 'nonexistent' "
-         "for attribute 'interface' "
-         "(no such interface)",
+  XFAIL ("port: Bad interface", "<port> at line 3: Bad value 'nonexistent' "
+                                "for attribute 'interface' "
+                                "(no such interface)",
          "\
 <ncl>\n\
  <body>\n\
@@ -1770,6 +1763,53 @@ main (void)
  </body>\n\
 </ncl>\n\
 ");
+
+  // -------------------------------------------------------------------------
+  // <switchPort> / <mapping>
+  // -------------------------------------------------------------------------
+
+  XFAIL ("switchPort: Missing id",
+         "<switchPort> at line 5: Missing attribute 'id'",
+         "\
+<ncl>\n\
+  <head/>\n\
+  <body>\n\
+    <switch id='sw'>\n\
+      <switchPort/>\n\
+    </switch>\n\
+  </body>\n\
+</ncl>\n\
+  ");
+
+  XFAIL ("mapping: Missing component",
+         "<mapping> at line 6: Missing attribute 'component'",
+         "\
+<ncl>\n\
+  <head/>\n\
+  <body>\n\
+    <switch id='sw'>\n\
+      <switchPort id='swp'>\n\
+        <mapping/>\n\
+      </switchPort>\n\
+    </switch>\n\
+  </body>\n\
+</ncl>\n\
+  ");
+
+//  XFAIL ("mapping: Bad component",
+//         "<mapping> at line 6: bad value 'x'",
+//         "\
+//<ncl>\n\
+//  <head/>\n\
+//  <body>\n\
+//    <switch id='sw'>\n\
+//      <switchPort id='swp'>\n\
+//        <mapping component='x'/>\n\
+//      </switchPort>\n\
+//    </switch>\n\
+//  </body>\n\
+//</ncl>\n\
+//  ");
 
   // -------------------------------------------------------------------------
   // <defaultComponent>
@@ -1902,9 +1942,8 @@ main (void)
 </ncl>\n\
 ");
 
-  XFAIL ("media: Duplicated id",
-         "<media> at line 5: Bad value 'a' "
-         "for attribute 'id' (must be unique)",
+  XFAIL ("media: Duplicated id", "<media> at line 5: Bad value 'a' "
+                                 "for attribute 'id' (must be unique)",
          "\
 <ncl>\n\
  <head/>\n\
@@ -2006,9 +2045,8 @@ main (void)
 </ncl>\n\
 ");
 
-  XFAIL ("area: Duplicated id",
-         "Element <area> at line 5: Bad value 'm'"
-         " for attribute 'id' (must be unique)",
+  XFAIL ("area: Duplicated id", "Element <area> at line 5: Bad value 'm'"
+                                " for attribute 'id' (must be unique)",
          "\
 <ncl>\n\
  <head/>\n\
@@ -2020,9 +2058,8 @@ main (void)
 </ncl>\n\
 ");
 
-  XFAIL ("area: Bad begin",
-         "Element <area> at line 5: Bad value 'a'"
-         " for attribute 'begin'",
+  XFAIL ("area: Bad begin", "Element <area> at line 5: Bad value 'a'"
+                            " for attribute 'begin'",
          "\
 <ncl>\n\
  <head/>\n\
@@ -2034,9 +2071,8 @@ main (void)
 </ncl>\n\
 ");
 
-  XFAIL ("area: Bad end",
-         "Element <area> at line 5: Bad value 'a' "
-         "for attribute 'end'",
+  XFAIL ("area: Bad end", "Element <area> at line 5: Bad value 'a' "
+                          "for attribute 'end'",
          "\
 <ncl>\n\
  <head/>\n\
@@ -2844,7 +2880,8 @@ borderWidth='0',borderColor=''}");
   </descriptorBase>\n\
  </head>\n\
 </ncl>\n\
-", B0.c_str ()));
+",
+                                                 B0.c_str ()));
     g_remove (tmp.c_str ());
 
     Document *doc;

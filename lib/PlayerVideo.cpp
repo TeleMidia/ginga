@@ -158,8 +158,8 @@ PlayerVideo::PlayerVideo (Formatter *formatter, Media *media)
                               nullptr);
 
   // Initialize some handled properties.
-  static set<string> handled = {"balance", "bass",   "freeze", "mute",
-                                 "speed",   "treble", "volume"};
+  static set<string> handled = { "balance", "bass",   "freeze", "mute",
+                                 "speed",   "treble", "volume" };
   this->initProperties (&handled);
 
   // stackAction (Player::PROP_TIME, "time", "76s");

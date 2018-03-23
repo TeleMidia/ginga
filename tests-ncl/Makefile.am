@@ -32,6 +32,7 @@ TEST_MIME+= test-mime-ogv.ncl
 TEST_MIME+= test-mime-png.ncl
 TEST_MIME+= test-mime-svg.ncl
 TEST_MIME+= test-mime-txt.ncl
+TEST_MIME+= test-mime-html.ncl
 
 TEST_MEDIA=
 # empty
@@ -42,6 +43,7 @@ TEST_MEDIA+= test-media-nil-empty.ncl
 TEST_MEDIA+= test-media-svg-empty.ncl
 TEST_MEDIA+= test-media-txt-empty.ncl
 TEST_MEDIA+= test-media-vid-empty.ncl
+TEST_MEDIA+= test-media-html-empty.ncl
 # no region
 TEST_MEDIA+= test-media-aud-no-region.ncl
 TEST_MEDIA+= test-media-img-no-region.ncl
@@ -50,6 +52,7 @@ TEST_MEDIA+= test-media-nil-no-region.ncl
 TEST_MEDIA+= test-media-svg-no-region.ncl
 TEST_MEDIA+= test-media-txt-no-region.ncl
 TEST_MEDIA+= test-media-vid-no-region.ncl
+TEST_MEDIA+= test-media-html-no-region.ncl
 # nested region
 TEST_MEDIA+= test-media-aud-nested-region.ncl
 TEST_MEDIA+= test-media-img-nested-region.ncl
@@ -58,6 +61,7 @@ TEST_MEDIA+= test-media-nil-nested-region.ncl
 TEST_MEDIA+= test-media-svg-nested-region.ncl
 TEST_MEDIA+= test-media-txt-nested-region.ncl
 TEST_MEDIA+= test-media-vid-nested-region.ncl
+TEST_MEDIA+= test-media-html-nested-region.ncl
 # no descriptor
 TEST_MEDIA+= test-media-aud-no-desc.ncl
 TEST_MEDIA+= test-media-img-no-desc.ncl
@@ -66,6 +70,7 @@ TEST_MEDIA+= test-media-nil-no-desc.ncl
 TEST_MEDIA+= test-media-svg-no-desc.ncl
 TEST_MEDIA+= test-media-txt-no-desc.ncl
 TEST_MEDIA+= test-media-vid-no-desc.ncl
+TEST_MEDIA+= test-media-html-no-desc.ncl
 # property: left, right, top, width, height, location, size, and bounds.
 TEST_MEDIA+= test-media-aud-dimensions.ncl
 TEST_MEDIA+= test-media-img-dimensions.ncl
@@ -74,6 +79,8 @@ TEST_MEDIA+= test-media-nil-dimensions.ncl
 TEST_MEDIA+= test-media-svg-dimensions.ncl
 TEST_MEDIA+= test-media-txt-dimensions.ncl
 TEST_MEDIA+= test-media-vid-dimensions.ncl
+TEST_MEDIA+= test-media-html-dimensions.ncl
+# remote media and media nested in contexts
 TEST_MEDIA+= test-media-aud-4grid.ncl
 TEST_MEDIA+= test-media-img-4grid.ncl
 TEST_MEDIA+= test-media-lua-4grid.ncl
@@ -81,6 +88,7 @@ TEST_MEDIA+= test-media-nil-4grid.ncl
 TEST_MEDIA+= test-media-svg-4grid.ncl
 TEST_MEDIA+= test-media-txt-4grid.ncl
 TEST_MEDIA+= test-media-vid-4grid.ncl
+TEST_MEDIA+= test-media-html-4grid.ncl
 # property: explicitDur
 TEST_MEDIA+= test-media-aud-explicitDur.ncl
 TEST_MEDIA+= test-media-img-explicitDur.ncl
@@ -89,6 +97,7 @@ TEST_MEDIA+= test-media-nil-explicitDur.ncl
 TEST_MEDIA+= test-media-svg-explicitDur.ncl
 TEST_MEDIA+= test-media-txt-explicitDur.ncl
 TEST_MEDIA+= test-media-vid-explicitDur.ncl
+TEST_MEDIA+= test-media-html-explicitDur.ncl
 # property: focusIndex
 TEST_MEDIA+= test-media-aud-focusIndex.ncl
 TEST_MEDIA+= test-media-img-focusIndex.ncl
@@ -97,6 +106,7 @@ TEST_MEDIA+= test-media-nil-focusIndex.ncl
 TEST_MEDIA+= test-media-svg-focusIndex.ncl
 TEST_MEDIA+= test-media-txt-focusIndex.ncl
 TEST_MEDIA+= test-media-vid-focusIndex.ncl
+TEST_MEDIA+= test-media-html-focusIndex.ncl
 # property: transparency
 TEST_MEDIA+= test-media-aud-transparency.ncl
 TEST_MEDIA+= test-media-img-transparency.ncl
@@ -105,6 +115,7 @@ TEST_MEDIA+= test-media-nil-transparency.ncl
 TEST_MEDIA+= test-media-svg-transparency.ncl
 TEST_MEDIA+= test-media-txt-transparency.ncl
 TEST_MEDIA+= test-media-vid-transparency.ncl
+TEST_MEDIA+= test-media-html-transparency.ncl
 # property: visible
 TEST_MEDIA+= test-media-aud-visible.ncl
 TEST_MEDIA+= test-media-img-visible.ncl
@@ -113,6 +124,7 @@ TEST_MEDIA+= test-media-nil-visible.ncl
 TEST_MEDIA+= test-media-svg-visible.ncl
 TEST_MEDIA+= test-media-txt-visible.ncl
 TEST_MEDIA+= test-media-vid-visible.ncl
+TEST_MEDIA+= test-media-html-visible.ncl
 # property: visible
 TEST_MEDIA+= test-media-aud-zIndex.ncl
 TEST_MEDIA+= test-media-img-zIndex.ncl
@@ -121,6 +133,7 @@ TEST_MEDIA+= test-media-nil-zIndex.ncl
 TEST_MEDIA+= test-media-svg-zIndex.ncl
 TEST_MEDIA+= test-media-txt-zIndex.ncl
 TEST_MEDIA+= test-media-vid-zIndex.ncl
+TEST_MEDIA+= test-media-html-zIndex.ncl
 # link: loop
 TEST_MEDIA+= test-media-aud-loop.ncl
 TEST_MEDIA+= test-media-img-loop.ncl
@@ -129,6 +142,7 @@ TEST_MEDIA+= test-media-nil-loop.ncl
 TEST_MEDIA+= test-media-svg-loop.ncl
 TEST_MEDIA+= test-media-txt-loop.ncl
 TEST_MEDIA+= test-media-vid-loop.ncl
+TEST_MEDIA+= test-media-html-loop.ncl
 # link: stop self
 TEST_MEDIA+= test-media-aud-stop-self.ncl
 TEST_MEDIA+= test-media-img-stop-self.ncl
@@ -137,6 +151,7 @@ TEST_MEDIA+= test-media-nil-stop-self.ncl
 TEST_MEDIA+= test-media-svg-stop-self.ncl
 TEST_MEDIA+= test-media-txt-stop-self.ncl
 TEST_MEDIA+= test-media-vid-stop-self.ncl
+TEST_MEDIA+= test-media-html-stop-self.ncl
 # link: animation on background color
 TEST_MEDIA+= test-media-aud-anim-background.ncl
 TEST_MEDIA+= test-media-img-anim-background.ncl
@@ -145,6 +160,7 @@ TEST_MEDIA+= test-media-nil-anim-background.ncl
 TEST_MEDIA+= test-media-svg-anim-background.ncl
 TEST_MEDIA+= test-media-txt-anim-background.ncl
 TEST_MEDIA+= test-media-vid-anim-background.ncl
+TEST_MEDIA+= test-media-html-anim-background.ncl
 # link: animation on width and height
 TEST_MEDIA+= test-media-aud-anim-dimensions.ncl
 TEST_MEDIA+= test-media-img-anim-dimensions.ncl
@@ -153,6 +169,7 @@ TEST_MEDIA+= test-media-nil-anim-dimensions.ncl
 TEST_MEDIA+= test-media-svg-anim-dimensions.ncl
 TEST_MEDIA+= test-media-txt-anim-dimensions.ncl
 TEST_MEDIA+= test-media-vid-anim-dimensions.ncl
+TEST_MEDIA+= test-media-html-anim-dimensions.ncl
 # link: animation on transparency
 TEST_MEDIA+= test-media-aud-anim-transparency.ncl
 TEST_MEDIA+= test-media-img-anim-transparency.ncl
@@ -161,6 +178,7 @@ TEST_MEDIA+= test-media-nil-anim-transparency.ncl
 TEST_MEDIA+= test-media-svg-anim-transparency.ncl
 TEST_MEDIA+= test-media-txt-anim-transparency.ncl
 TEST_MEDIA+= test-media-vid-anim-transparency.ncl
+TEST_MEDIA+= test-media-html-anim-transparency.ncl
 
 CLEANFILES+= $(TEST_MIME)
 $(TEST_MIME): test-mime*.ncl.in
@@ -178,6 +196,7 @@ $(TEST_MIME): test-mime*.ncl.in
 	  png) src="samples/gnu.png";;\
 	  svg) src="samples/vector.svg";;\
 	  txt) src="samples/text.txt";;\
+	  html) src="samples/page.html";;\
 	    *) exit 1;;\
 	esac;\
 	sed -e "s,@SRC@,$$src,g" "test-mime.ncl.in" >$@
@@ -195,6 +214,7 @@ $(TEST_MEDIA): test-media-*.ncl.in
 	  svg) src="samples/vector.svg";;\
 	  txt) src="samples/text.txt";;\
 	  vid) src="samples/clock.ogv";;\
+	  html) src="samples/page.html";;\
 	    *) exit 1;;\
 	esac;\
 	src_remote="http://raw.github.com/telemidia/ginga/master//tests-ncl/$$src";\

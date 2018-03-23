@@ -24,22 +24,18 @@ int
 main (void)
 {
   Document *doc;
+  Context *root;
+  MediaSettings *settings;
   Media *m[N];
 
-  doc = new Document ();
-  g_assert_nonnull (doc);
-  g_assert (doc->getObjects ()->size () == 2);
+  tests_create_document (&doc, &root, &settings);
 
-  Context *root = doc->getRoot ();
-  g_assert_nonnull (root);
   g_assert (doc->getObjectByIdOrAlias ("__root__") == root);
   g_assert_null (doc->getObjectByIdOrAlias ("ncl"));
   root->addAlias ("ncl");
   g_assert (doc->getObjectByIdOrAlias ("__root__") == root);
   g_assert (doc->getObjectByIdOrAlias ("ncl") == root);
 
-  MediaSettings *settings = doc->getSettings ();
-  g_assert_nonnull (settings);
   g_assert (doc->getObjectByIdOrAlias ("__settings__") == settings);
   g_assert_null (doc->getObjectByIdOrAlias ("settings"));
   settings->addAlias ("settings");

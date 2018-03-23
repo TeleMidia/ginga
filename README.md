@@ -86,9 +86,8 @@ Required:
 Optional:
 
   * <a href="https://bitbucket.org/chromiumembedded/cef">CEF</a> >= 3.0
-  * <a href="<https://wiki.gnome.org/action/show/Projects/LibRsvg>
-"> librsvg </a> >= 2.40
-  * Libsoup >= 2.42
+  * <a href="https://wiki.gnome.org/LibRsvg"> librsvg </a> >= 2.40
+  * <a href="https://wiki.gnome.org/LibSoup"> libsoup </a> >= 2.42
   * <a href="https://www.lua.org">Lua</a> >= 5.2
   * <a href="https://github.com/TeleMidia/nclua">NCLua</a> >= 1.0
 
@@ -99,7 +98,8 @@ On Ubuntu-based distros, to install the dependencies run:
     $ sudo apt-get install -y git gcc g++ autotools-dev dh-autoreconf \
         cmake cmake-data liblua5.2-dev libglib2.0-dev libpango1.0-dev \
         librsvg2-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
-        libgstreamer-plugins-good1.0-dev libgtk-3-dev libsoup2.4-dev -qq
+        gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-libav \
+        libgtk-3-dev libsoup2.4-dev -qq
 
 To build with autotools run:
 

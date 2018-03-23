@@ -260,7 +260,7 @@ main (void)
     // --------------------------------
     // main check
 
-   // STOP is done and return true
+    // STOP is done and return true
     g_assert_true (m1_lambda->transition (Event::STOP));
 
     // after STOP all events are SLEEPING

@@ -1,3 +1,4 @@
+.vscode
 *.DS_Store
 *.a
 *.bak
@@ -106,6 +107,9 @@
 /tests/test-Context-new
 /tests/test-Context-naturalend
 /tests/test-Context-nested-naturalend
+/tests/test-Document-evalPredicate
+/tests/test-Document-evalPredicate-from-link
+/tests/test-Document-evalPredicate-from-rule
 /tests/test-Document-addObject
 /tests/test-Document-getObjectById
 /tests/test-Document-getObjectByIdOrAlias
@@ -151,6 +155,7 @@
 /tests/test-Predicate-atom
 /tests/test-Predicate-new
 /tests/test-Switch-new
+/tests/test-SigGen-transmission
 /tests/test-aux-ginga-parse-bool
 /tests/test-aux-ginga-parse-color
 /tests/test-aux-ginga-parse-list

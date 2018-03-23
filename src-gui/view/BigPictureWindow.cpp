@@ -33,7 +33,7 @@ gint currentCard = 0;
 gint carrouselDir = 0;
 gdouble mid = 0;
 gdouble screen_width = 0;
-gdouble speed = 3000.0; /* pixels/s */
+gdouble speed = 6000.0; /* pixels/s */
 gdouble frameRate = 1.000 / 60.0;
 gdouble gradient = 1.0;
 
@@ -41,9 +41,29 @@ guint numCards = 0;
 gdouble cardWidth = 300;
 gdouble cardHeight = 169;
 
+gint
+comp_card_list (gconstpointer a, gconstpointer b)
+{
+  BigPictureCard *card_a = (BigPictureCard *) a;
+  BigPictureCard *card_b = (BigPictureCard *) b;
+
+  if (card_a->drawOrder < card_b->drawOrder)
+    return 1;
+  else if (card_a->drawOrder > card_b->drawOrder)
+    return -1;
+  else
+    return 0;
+}
+
 void
 instantiateInAppLibrary (unused (xmlDocPtr doc), xmlNodePtr cur)
 {
+
+  if (cards_list != NULL)
+    return;
+
+  printf ("ENTREI AQUI! \n");
+
   guint i = 0;
   cur = cur->xmlChildrenNode;
   while (cur != NULL)
@@ -57,19 +77,18 @@ instantiateInAppLibrary (unused (xmlDocPtr doc), xmlNodePtr cur)
           xmlChar *title = xmlGetProp (cur, (const xmlChar *) "title");
           xmlChar *description
               = xmlGetProp (cur, (const xmlChar *) "description");
-          printf ("src: %s\n", src);
-          printf ("thumbnail: %s\n", thumbnail);
-          printf ("cover: %s\n", cover);
-          printf ("title: %s\n", title);
-          printf ("description: %s\n", description);
+          /*  printf ("src: %s\n", src);
+              printf ("thumbnail: %s\n", thumbnail);
+              printf ("cover: %s\n", cover);
+              printf ("title: %s\n", title);
+              printf ("description: %s\n", description); */
 
           BigPictureCard *bigPictureCard
               = (BigPictureCard *) malloc (sizeof (BigPictureCard));
 
           bigPictureCard->index = i;
           bigPictureCard->drawOrder = i;
-          bigPictureCard->position
-              = mid + (bigPictureCard[i].index * 200.0);
+
           bigPictureCard->animate = FALSE;
 
           if (g_file_test ((gchar *) thumbnail, G_FILE_TEST_EXISTS))
@@ -106,14 +125,26 @@ instantiateInAppLibrary (unused (xmlDocPtr doc), xmlNodePtr cur)
         }
       cur = cur->next;
     }
+
+  GList *l;
+  for (l = cards_list; l != NULL; l = l->next)
+    {
+      BigPictureCard *card = (BigPictureCard *) l->data;
+      card->position = mid + (card->index * cardWidth) + (card->index * 20);
+      card->destPosition = card->position;
+    }
+
+  gradient = 0;
+  cards_list = g_list_sort (cards_list, (GCompareFunc) comp_card_list);
+
   return;
 }
 
-void
+bool
 loadApplicationsXML ()
 {
   const char *docname
-      = g_strdup ("/home/busson/ginga/src-gui/ncl-apps.xml");
+      = g_strdup ("/Users/antoniobusson/git/ginga/src-gui/ncl-apps.xml");
 
   xmlDocPtr doc;
   xmlNodePtr cur;
@@ -123,7 +154,7 @@ loadApplicationsXML ()
   if (doc == NULL)
     {
       fprintf (stderr, "Document not parsed successfully. \n");
-      return;
+      return FALSE;
     }
 
   cur = xmlDocGetRootElement (doc);
@@ -132,32 +163,20 @@ loadApplicationsXML ()
     {
       fprintf (stderr, "empty document\n");
       xmlFreeDoc (doc);
-      return;
+      return FALSE;
     }
 
   if (xmlStrcmp (cur->name, (const xmlChar *) "ncl-apps"))
     {
       fprintf (stderr, "document of the wrong type, root node != ncl-apps");
       xmlFreeDoc (doc);
-      return;
+      return FALSE;
     }
 
   instantiateInAppLibrary (doc, cur);
   xmlFreeDoc (doc);
-}
 
-gint
-comp_card_list (gconstpointer a, gconstpointer b)
-{
-  BigPictureCard *card_a = (BigPictureCard *) a;
-  BigPictureCard *card_b = (BigPictureCard *) b;
-
-  if (card_a->drawOrder < card_b->drawOrder)
-    return 1;
-  else if (card_a->drawOrder > card_b->drawOrder)
-    return -1;
-  else
-    return 0;
+  return TRUE;
 }
 
 void
@@ -312,7 +331,6 @@ draw_bigpicture_callback (GtkWidget *widget, cairo_t *cr,
           cairo_paint_with_alpha (cr, gradient);
         }
     }
-
   // cairo_paint (cr);
 }
 void
@@ -373,20 +391,6 @@ carrousel_rotate (gint dir)
 void
 create_bigpicture_window ()
 {
-  loadApplicationsXML ();
-
-  if (bigPictureWindow != NULL)
-    return;
-
-  cairo_surface_t *image_p = cairo_image_surface_create_from_png (
-      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons", "common",
-                    "background_pattern.png", NULL));
-
-  g_assert_nonnull (image_p);
-  background_pattern = cairo_pattern_create_for_surface (image_p);
-  cairo_pattern_set_extend (background_pattern, CAIRO_EXTEND_REPEAT);
-
-  inBigPictureMode = TRUE;
 
   GdkRectangle rect;
   GdkDisplay *display = gdk_display_get_default ();
@@ -404,6 +408,25 @@ create_bigpicture_window ()
 
   screen_width = rect.width;
   mid = (rect.width / 2.0);
+
+  if (!loadApplicationsXML ())
+    {
+      destroy_bigpicture_window ();
+      return;
+    }
+
+  if (bigPictureWindow != NULL)
+    return;
+
+  cairo_surface_t *image_p = cairo_image_surface_create_from_png (
+      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons", "common",
+                    "background_pattern.png", NULL));
+
+  g_assert_nonnull (image_p);
+  background_pattern = cairo_pattern_create_for_surface (image_p);
+  cairo_pattern_set_extend (background_pattern, CAIRO_EXTEND_REPEAT);
+
+  inBigPictureMode = TRUE;
 
   bigPictureWindow = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   g_assert_nonnull (bigPictureWindow);
@@ -436,10 +459,10 @@ create_bigpicture_window ()
 
   gtk_widget_show_all (bigPictureWindow);
 
-  carrousel_rotate (-1);
-  carrousel_rotate (1);
-
   GINGA->resize (rect.width, rect.height);
+
+  // carrousel_rotate (-1);
+  // carrousel_rotate (1);
 }
 
 void
