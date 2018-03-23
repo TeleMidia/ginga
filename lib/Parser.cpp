@@ -225,6 +225,7 @@ public:
   static bool pushPort (ParserState *, ParserElt *);
   static bool pushSwitch (ParserState *, ParserElt *);
   static bool popSwitch (ParserState *, ParserElt *);
+  static bool pushSwitchPort (ParserState *, ParserElt *);
   static bool pushBindRule (ParserState *, ParserElt *);
   static bool pushMedia (ParserState *, ParserElt *);
   static bool popMedia (ParserState *, ParserElt *);
@@ -727,6 +728,22 @@ static map<string, ParserSyntaxElt> parser_syntax_table = {
         ELT_CACHE,
         { "body", "context", "switch" },
         { { "id", ATTR_ID }, { "refer", ATTR_OPT_IDREF } } },
+  },
+  {
+      "switchPort",
+      { ParserState::pushSwitchPort,
+        nullptr,
+        ELT_CACHE,
+        { "switch" },
+        { { "id", ATTR_ID } } },
+  },
+  {
+      "mapping",
+      { nullptr,
+        nullptr,
+        ELT_CACHE,
+        { "switchPort" },
+        { { "component", ATTR_IDREF }, { "interface", ATTR_OPT_IDREF } } }
   },
   {
       "bindRule",
@@ -3627,6 +3644,30 @@ ParserState::pushSwitch (ParserState *st, ParserElt *elt)
 
   // Push context onto stack.
   st->objStackPush (swtch);
+
+  return true;
+}
+
+/**
+ * @brief Starts the processing of \<switchPort\>.
+ *
+ * This function parsers \p elt and pushes it as a switchPort on the object
+ * stack.
+ *
+ * @fn ParserState::pushSwitchPort
+ * @param st
+ * @param elt
+ * @return
+ */
+bool
+ParserState::pushSwitchPort (ParserState *st, ParserElt *elt)
+{
+  string id;
+  ignore_unused (st, elt);
+  if (elt->getAttribute ("id", &id))
+    {
+      TRACE ("Adding switchPort %s.", id.c_str ());
+    }
 
   return true;
 }
