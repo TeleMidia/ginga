@@ -315,7 +315,7 @@ private:
 
   // Reference solving.
   bool resolveComponent (Composition *, ParserElt *, Object **);
-  bool resolveInterface (Context *, ParserElt *, Event **);
+  bool resolveInterface (Composition *, ParserElt *, Event **);
   string resolveParameter (const string &, const map<string, string> *,
                            const map<string, string> *,
                            const map<string, string> *);
@@ -1683,7 +1683,7 @@ ParserState::resolveComponent (Composition *scope, ParserElt *elt,
  * @return \c true if successful, or \c false otherwise.
  */
 bool
-ParserState::resolveInterface (Context *ctx, ParserElt *elt, Event **evt)
+ParserState::resolveInterface (Composition *ctx, ParserElt *elt, Event **evt)
 {
   string comp;
   string iface;
@@ -3657,7 +3657,7 @@ ParserState::pushSwitch (ParserState *st, ParserElt *elt)
 static void
 mappingsCleanup (void *ptr)
 {
-  delete (list<pair<string, string>> *) ptr;
+  delete (list<const ParserElt *> *) ptr;
 }
 
 /**
@@ -3681,8 +3681,7 @@ ParserState::pushSwitchPort (ParserState *st, ParserElt *elt)
   g_assert (elt->getAttribute ("id", &id));
   g_assert (st->eltCacheIndexParent (elt->getNode (), &parent_elt));
   UDATA_GET (parent_elt, "switchPorts", &switchPorts);
-  UDATA_SET (elt, "mappings", (new list<pair <string, string>> ()),
-             mappingsCleanup);
+  UDATA_SET (elt, "mappings", new list<const ParserElt *> (), mappingsCleanup);
   switchPorts->push_back (id);
 
   return true;
@@ -3702,7 +3701,7 @@ ParserState::pushSwitchPort (ParserState *st, ParserElt *elt)
 bool
 ParserState::pushMapping (ParserState *st, ParserElt *elt)
 {
-  list <pair <string, string> > *mappings;
+  list <ParserElt *> *mappings;
   string component, interface;
   ParserElt *parent_elt;
 
@@ -3712,7 +3711,7 @@ ParserState::pushMapping (ParserState *st, ParserElt *elt)
   g_assert (st->eltCacheIndexParent (elt->getNode (), &parent_elt));
   UDATA_GET (parent_elt, "mappings", &mappings);
 
-  mappings->push_back (std::make_pair (component, interface));
+  mappings->push_back (elt);
 
   return true;
 }
@@ -3758,19 +3757,27 @@ ParserState::popSwitch (ParserState *st, unused (ParserElt *elt))
   for (auto switchPort_id : *switchPorts)
     {
       ParserElt *switchPort_elt;
-      Event *evt;
-      list < pair <string, string>> *mappings;
+      list <ParserElt *> *mappings;
 
-      g_assert (st->eltCacheIndexById (switchPort_id, &switchPort_elt, { "switchPort" }));
+      g_assert (st->eltCacheIndexById (switchPort_id, &switchPort_elt,
+                                       { "switchPort" }));
       UDATA_GET (switchPort_elt, "mappings", &mappings);
 
-      for (auto &mapping : *mappings)
+      list <Event *> mapping_evts;
+      for (auto &mapping_elt : *mappings)
         {
-          TRACE ("SwitchPort: %s -> component %s interface %s.",
-                 switchPort_id.c_str (),
-                 mapping.first.c_str (),
-                 mapping.second.c_str ());
+          Event *evt;
+          string comp, interf;
+          mapping_elt->getAttribute ("component", &comp);
+          mapping_elt->getAttribute ("interface", &interf);
+
+          if (unlikely (!st->resolveInterface (swtch, mapping_elt, &evt)))
+            return false;
+
+          mapping_evts.push_back (evt);
         }
+
+      swtch->addSwitchPort (switchPort_id, mapping_evts);
     }
 
   st->objStackPop ();
