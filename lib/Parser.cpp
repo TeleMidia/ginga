@@ -226,6 +226,7 @@ public:
   static bool pushSwitch (ParserState *, ParserElt *);
   static bool popSwitch (ParserState *, ParserElt *);
   static bool pushSwitchPort (ParserState *, ParserElt *);
+  static bool pushMapping (ParserState *, ParserElt *);
   static bool pushBindRule (ParserState *, ParserElt *);
   static bool pushMedia (ParserState *, ParserElt *);
   static bool popMedia (ParserState *, ParserElt *);
@@ -739,7 +740,7 @@ static map<string, ParserSyntaxElt> parser_syntax_table = {
   },
   {
       "mapping",
-      { nullptr,
+      { ParserState::pushMapping,
         nullptr,
         ELT_CACHE,
         { "switchPort" },
@@ -3642,16 +3643,27 @@ ParserState::pushSwitch (ParserState *st, ParserElt *elt)
   UDATA_SET (elt, "rules", (new list<pair<ParserElt *, Object *> > ()),
              rulesCleanup);
 
+  // Create switchport list.
+  UDATA_SET (elt, "switchPorts", new list<string> (), portsCleanup);
+
   // Push context onto stack.
   st->objStackPush (swtch);
 
   return true;
 }
 
+
+/// Cleans up the mapping list cache attached to a switchPort #ParserElt.
+static void
+mappingsCleanup (void *ptr)
+{
+  delete (list<pair<string, string>> *) ptr;
+}
+
 /**
  * @brief Starts the processing of \<switchPort\>.
  *
- * This function parsers \p elt and pushes it as a switchPort on the object
+ * This function parsers \p elt and pushes it as a \<switchPort\> on the object
  * stack.
  *
  * @fn ParserState::pushSwitchPort
@@ -3663,11 +3675,44 @@ bool
 ParserState::pushSwitchPort (ParserState *st, ParserElt *elt)
 {
   string id;
-  ignore_unused (st, elt);
-  if (elt->getAttribute ("id", &id))
-    {
-      TRACE ("Adding switchPort %s.", id.c_str ());
-    }
+  ParserElt *parent_elt;
+  list<string> *switchPorts;
+
+  g_assert (elt->getAttribute ("id", &id));
+  g_assert (st->eltCacheIndexParent (elt->getNode (), &parent_elt));
+  UDATA_GET (parent_elt, "switchPorts", &switchPorts);
+  UDATA_SET (elt, "mappings", (new list<pair <string, string>> ()),
+             mappingsCleanup);
+  switchPorts->push_back (id);
+
+  return true;
+}
+
+/**
+ * @brief Starts the processing of \<mapping\>.
+ *
+ * This function parsers \p elt and pushes it component/interface attributes in
+ * the mappings list cache in the \<switchPort\>.
+ *
+ * @fn ParserState::pushSwitchPort
+ * @param st
+ * @param elt
+ * @return
+ */
+bool
+ParserState::pushMapping (ParserState *st, ParserElt *elt)
+{
+  list <pair <string, string> > *mappings;
+  string component, interface;
+  ParserElt *parent_elt;
+
+  g_assert (elt->getAttribute ("component", &component));
+  elt->getAttribute ("interface", &interface);
+
+  g_assert (st->eltCacheIndexParent (elt->getNode (), &parent_elt));
+  UDATA_GET (parent_elt, "mappings", &mappings);
+
+  mappings->push_back (std::make_pair (component, interface));
 
   return true;
 }
@@ -3686,6 +3731,7 @@ ParserState::popSwitch (ParserState *st, unused (ParserElt *elt))
 {
   Switch *swtch;
   list<pair<ParserElt *, Object *> > *rules;
+  list<string> *switchPorts;
 
   swtch = cast (Switch *, st->objStackPeek ());
   g_assert_nonnull (swtch);
@@ -3707,7 +3753,28 @@ ParserState::popSwitch (ParserState *st, unused (ParserElt *elt))
       it.second = obj;
     }
 
+  // Resolve switchPort references.
+  UDATA_GET (elt, "switchPorts", &switchPorts);
+  for (auto switchPort_id : *switchPorts)
+    {
+      ParserElt *switchPort_elt;
+      Event *evt;
+      list < pair <string, string>> *mappings;
+
+      g_assert (st->eltCacheIndexById (switchPort_id, &switchPort_elt, { "switchPort" }));
+      UDATA_GET (switchPort_elt, "mappings", &mappings);
+
+      for (auto &mapping : *mappings)
+        {
+          TRACE ("SwitchPort: %s -> component %s interface %s.",
+                 switchPort_id.c_str (),
+                 mapping.first.c_str (),
+                 mapping.second.c_str ());
+        }
+    }
+
   st->objStackPop ();
+
   return true;
 }
 
