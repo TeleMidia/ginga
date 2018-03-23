@@ -1772,13 +1772,27 @@ main (void)
          "<switchPort> at line 5: Missing attribute 'id'",
          "\
 <ncl>\n\
-<head/>\n\
-<body>\n\
-<switch id='sw'>\n\
-<switchPort/>\n\
-</switch>\n\
-<port/>\n\
-</body>\n\
+  <head/>\n\
+  <body>\n\
+    <switch id='sw'>\n\
+      <switchPort/>\n\
+    </switch>\n\
+  </body>\n\
+</ncl>\n\
+  ");
+
+  XFAIL ("mapping: Missing component",
+         "<mapping> at line 6: Missing attribute 'component'",
+         "\
+<ncl>\n\
+  <head/>\n\
+  <body>\n\
+    <switch id='sw'>\n\
+      <switchPort id='swp'>\n\
+        <mapping/>\n\
+      </switchPort>\n\
+    </switch>\n\
+  </body>\n\
 </ncl>\n\
   ");
 
