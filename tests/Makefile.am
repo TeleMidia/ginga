@@ -274,6 +274,9 @@ progs+= test-Media-nested-explicitDur
 test_Media_nested_explicitDur_SOURCES= test-Media-nested-explicitDur.cpp
 
 # lib/MediaSettings.h ------------------------------------------------------
+progs+= test-MediaSettings-instances
+test_MediaSettings_instances_SOURCES= test-MediaSettings-instances.cpp
+
 progs+= test-MediaSettings-new
 test_MediaSettings_new_SOURCES= test-MediaSettings-new.cpp
 
