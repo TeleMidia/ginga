@@ -1774,7 +1774,7 @@ main (void)
 <ncl>\n\
 <head/>\n\
 <body>\n\
-<switch>\n\
+<switch id='sw'>\n\
 <switchPort/>\n\
 </switch>\n\
 <port/>\n\
