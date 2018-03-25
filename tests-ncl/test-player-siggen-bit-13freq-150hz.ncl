@@ -19,69 +19,69 @@
   <port id="start13" component="m13"/>
   <media id="m" type="application/x-ginga-siggen">
     <property name="freq" value="20000"/>
-    <property name="volume" value="0.8"/>
+    <property name="volume" value="0"/>
     
   </media>
   <media id="m2" type="application/x-ginga-siggen">
     <property name="freq" value="20150"/>
-    <property name="volume" value="0.8"/>
+    <property name="volume" value="0"/>
 
   </media>
 
   <media id="m3" type="application/x-ginga-siggen">
     <property name="freq" value="20300"/>
-    <property name="volume" value="0.8"/>
+    <property name="volume" value="0"/>
 
   </media>
 
   <media id="m4" type="application/x-ginga-siggen">
     <property name="freq" value="20450"/>
-    <property name="volume" value="0.8"/>
+    <property name="volume" value="0"/>
 
   </media>
   <media id="m5" type="application/x-ginga-siggen">
     <property name="freq" value="20600"/>
-    <property name="volume" value="0.8"/>
+    <property name="volume" value="0"/>
     
   </media>
   <media id="m6" type="application/x-ginga-siggen">
     <property name="freq" value="20750"/>
-    <property name="volume" value="0.8"/>
+    <property name="volume" value="0"/>
     
   </media>
   <media id="m7" type="application/x-ginga-siggen">
     <property name="freq" value="20900"/>
-    <property name="volume" value="0.8"/>
+    <property name="volume" value="0"/>
     
   </media>
   <media id="m8" type="application/x-ginga-siggen">
     <property name="freq" value="21050"/>
-    <property name="volume" value="0.8"/>
+    <property name="volume" value="0"/>
     
   </media>
   <media id="m9" type="application/x-ginga-siggen">
     <property name="freq" value="21200"/>
-    <property name="volume" value="0.8"/>
+    <property name="volume" value="0"/>
     
   </media>
   <media id="m10" type="application/x-ginga-siggen">
     <property name="freq" value="21350"/>
-    <property name="volume" value="0.8"/>
+    <property name="volume" value="0"/>
     
   </media>
   <media id="m11" type="application/x-ginga-siggen">
     <property name="freq" value="21500"/>
-    <property name="volume" value="0.8"/>
+    <property name="volume" value="0"/>
     
   </media>
   <media id="m12" type="application/x-ginga-siggen">
     <property name="freq" value="21650"/>
-    <property name="volume" value="0.8"/>
+    <property name="volume" value="0"/>
     
   </media>
   <media id="m13" type="application/x-ginga-siggen">
-    <property name="freq" value="21900"/>
-    <property name="volume" value="0.8"/>
+    <property name="freq" value="19500"/>
+    <property name="volume" value="0.5"/>
     
   </media>
 </body>

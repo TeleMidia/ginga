@@ -50,7 +50,6 @@ main (int argc, char **argv)
   char **saved_argv;
 
   GingaOptions opts;
-  GtkWidget *app;
   GOptionContext *ctx;
   gboolean status;
   GError *error = NULL;

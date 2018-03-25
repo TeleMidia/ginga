@@ -23,13 +23,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include <cairo.h>
 #include <gtk/gtk.h>
 
-#if defined WITH_OPENGL && WITH_OPENGL
-// clang-format off
-PRAGMA_DIAG_IGNORE (-Wunused-macros)
-PRAGMA_DIAG_IGNORE (-Wvariadic-macros)
-// clang-format on
-#endif
-
 #include "ginga.h"
 using namespace ::std;
 

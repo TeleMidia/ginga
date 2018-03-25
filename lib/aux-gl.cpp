@@ -18,13 +18,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "aux-gl.h"
 
-#if !(defined WITH_OPENGL && WITH_OPENGL)
-GINGA_PRAGMA_DIAG_IGNORE (-Wunused - parameter)
-GINGA_PRAGMA_DIAG_IGNORE (-Wsuggest - attribute = noreturn)
-GINGA_PRAGMA_DIAG_IGNORE (-Wunused - macros)
-#endif
-GINGA_PRAGMA_DIAG_IGNORE (-Wimplicit - fallthrough)
-
 // OpenGL ------------------------------------------------------------------
 #if defined WITH_OPENGL && WITH_OPENGL
 auto vertexSource = R"glsl(
@@ -232,8 +225,8 @@ GL::beginDraw ()
 void
 GL::clear_scene (int w, int h)
 {
-
 #if !(defined WITH_OPENGL && WITH_OPENGL)
+  ignore_unused (w, h);
   ERROR_NOT_IMPLEMENTED ("not compiled with OpenGL support");
 #else
   glViewport (0.0, 0.0, w, h);
@@ -266,6 +259,7 @@ void
 GL::create_texture (GLuint *gltex)
 {
 #if !(defined WITH_OPENGL && WITH_OPENGL)
+  ignore_unused (gltex);
   ERROR_NOT_IMPLEMENTED ("not compiled with OpenGL support");
 #else
   glActiveTexture (GL_TEXTURE0);
@@ -290,8 +284,10 @@ GL::create_texture (GLuint *gltex, int tex_w, int tex_h,
                     unsigned char *data)
 {
 #if !(defined WITH_OPENGL && WITH_OPENGL)
+  ignore_unused (gltex, tex_w, tex_h, data);
   ERROR_NOT_IMPLEMENTED ("not compiled with OpenGL support");
 #else
+
   create_texture (gltex);
   glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, tex_w, tex_h, 0, GL_BGRA_EXT,
                 GL_UNSIGNED_BYTE, data);
@@ -307,6 +303,7 @@ void
 GL::delete_texture (GLuint *gltex)
 {
 #if !(defined WITH_OPENGL && WITH_OPENGL)
+  ignore_unused (gltex);
   ERROR_NOT_IMPLEMENTED ("not compiled with OpenGL support");
 #else
   if (*gltex)
@@ -325,6 +322,7 @@ void
 GL::update_texture (GLuint gltex, int tex_w, int tex_h, unsigned char *data)
 {
 #if !(defined WITH_OPENGL && WITH_OPENGL)
+  ignore_unused (gltex, tex_w, tex_h, data);
   ERROR_NOT_IMPLEMENTED ("not compiled with OpenGL support");
 #else
   g_assert (gltex > 0);
@@ -344,6 +342,7 @@ GL::update_subtexture (GLuint gltex, int xoffset, int yoffset, int width,
                        int height, unsigned char *data)
 {
 #if !(defined WITH_OPENGL && WITH_OPENGL)
+  ignore_unused (gltex, xoffset, yoffset, width, height, data);
   ERROR_NOT_IMPLEMENTED ("not compiled with OpenGL support");
 #else
   glBindTexture (GL_TEXTURE_2D, gltex);
@@ -361,6 +360,7 @@ void
 GL::draw_quad (int x, int y, int w, int h, GLuint gltex, GLfloat alpha)
 {
 #if !(defined WITH_OPENGL && WITH_OPENGL)
+  ignore_unused (x, y, w, h, gltex, alpha);
   ERROR_NOT_IMPLEMENTED ("not compiled with OpenGL support");
 #else
   g_assert (gltex > 0);
@@ -443,6 +443,7 @@ GL::draw_quad (int x, int y, int w, int h, GLfloat r, GLfloat g, GLfloat b,
                GLfloat a)
 {
 #if !(defined WITH_OPENGL && WITH_OPENGL)
+  ignore_unused (x, y, w, h, r, g, b, a);
   ERROR_NOT_IMPLEMENTED ("not compiled with OpenGL support");
 #else
   GLint loc = glGetUniformLocation (gles2ctx.shaderProgram, "use_tex");

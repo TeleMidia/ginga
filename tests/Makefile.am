@@ -224,6 +224,10 @@ progs+= test-Event-transition-Context-START
 test_Event_transition_Context_START_SOURCES=\
   test-Event-transition-Context-START.cpp
 
+progs+= test-Context-ports
+test_Context_ports_SOURCES=\
+  test-Context-ports.cpp
+
 progs+= test-Event-transition-Media-STOP
 test_Event_transition_Media_STOP_SOURCES=\
   test-Event-transition-Media-STOP.cpp
@@ -274,6 +278,9 @@ progs+= test-Media-nested-explicitDur
 test_Media_nested_explicitDur_SOURCES= test-Media-nested-explicitDur.cpp
 
 # lib/MediaSettings.h ------------------------------------------------------
+progs+= test-MediaSettings-instances
+test_MediaSettings_instances_SOURCES= test-MediaSettings-instances.cpp
+
 progs+= test-MediaSettings-new
 test_MediaSettings_new_SOURCES= test-MediaSettings-new.cpp
 

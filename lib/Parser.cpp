@@ -225,6 +225,8 @@ public:
   static bool pushPort (ParserState *, ParserElt *);
   static bool pushSwitch (ParserState *, ParserElt *);
   static bool popSwitch (ParserState *, ParserElt *);
+  static bool pushSwitchPort (ParserState *, ParserElt *);
+  static bool pushMapping (ParserState *, ParserElt *);
   static bool pushBindRule (ParserState *, ParserElt *);
   static bool pushMedia (ParserState *, ParserElt *);
   static bool popMedia (ParserState *, ParserElt *);
@@ -313,7 +315,7 @@ private:
 
   // Reference solving.
   bool resolveComponent (Composition *, ParserElt *, Object **);
-  bool resolveInterface (Context *, ParserElt *, Event **);
+  bool resolveInterface (Composition *, ParserElt *, Event **);
   string resolveParameter (const string &, const map<string, string> *,
                            const map<string, string> *,
                            const map<string, string> *);
@@ -727,6 +729,22 @@ static map<string, ParserSyntaxElt> parser_syntax_table = {
         ELT_CACHE,
         { "body", "context", "switch" },
         { { "id", ATTR_ID }, { "refer", ATTR_OPT_IDREF } } },
+  },
+  {
+      "switchPort",
+      { ParserState::pushSwitchPort,
+        nullptr,
+        ELT_CACHE,
+        { "switch" },
+        { { "id", ATTR_ID } } },
+  },
+  {
+      "mapping",
+      { ParserState::pushMapping,
+        nullptr,
+        ELT_CACHE,
+        { "switchPort" },
+        { { "component", ATTR_IDREF }, { "interface", ATTR_OPT_IDREF } } }
   },
   {
       "bindRule",
@@ -1665,7 +1683,7 @@ ParserState::resolveComponent (Composition *scope, ParserElt *elt,
  * @return \c true if successful, or \c false otherwise.
  */
 bool
-ParserState::resolveInterface (Context *ctx, ParserElt *elt, Event **evt)
+ParserState::resolveInterface (Composition *ctx, ParserElt *elt, Event **evt)
 {
   string comp;
   string iface;
@@ -3625,8 +3643,75 @@ ParserState::pushSwitch (ParserState *st, ParserElt *elt)
   UDATA_SET (elt, "rules", (new list<pair<ParserElt *, Object *> > ()),
              rulesCleanup);
 
+  // Create switchport list.
+  UDATA_SET (elt, "switchPorts", new list<string> (), portsCleanup);
+
   // Push context onto stack.
   st->objStackPush (swtch);
+
+  return true;
+}
+
+
+/// Cleans up the mapping list cache attached to a switchPort #ParserElt.
+static void
+mappingsCleanup (void *ptr)
+{
+  delete (list<const ParserElt *> *) ptr;
+}
+
+/**
+ * @brief Starts the processing of \<switchPort\>.
+ *
+ * This function parsers \p elt and pushes it as a \<switchPort\> on the object
+ * stack.
+ *
+ * @fn ParserState::pushSwitchPort
+ * @param st
+ * @param elt
+ * @return
+ */
+bool
+ParserState::pushSwitchPort (ParserState *st, ParserElt *elt)
+{
+  string id;
+  ParserElt *parent_elt;
+  list<string> *switchPorts;
+
+  g_assert (elt->getAttribute ("id", &id));
+  g_assert (st->eltCacheIndexParent (elt->getNode (), &parent_elt));
+  UDATA_GET (parent_elt, "switchPorts", &switchPorts);
+  UDATA_SET (elt, "mappings", new list<const ParserElt *> (), mappingsCleanup);
+  switchPorts->push_back (id);
+
+  return true;
+}
+
+/**
+ * @brief Starts the processing of \<mapping\>.
+ *
+ * This function parsers \p elt and pushes it component/interface attributes in
+ * the mappings list cache in the \<switchPort\>.
+ *
+ * @fn ParserState::pushSwitchPort
+ * @param st
+ * @param elt
+ * @return
+ */
+bool
+ParserState::pushMapping (ParserState *st, ParserElt *elt)
+{
+  list <ParserElt *> *mappings;
+  string component, interface;
+  ParserElt *parent_elt;
+
+  g_assert (elt->getAttribute ("component", &component));
+  elt->getAttribute ("interface", &interface);
+
+  g_assert (st->eltCacheIndexParent (elt->getNode (), &parent_elt));
+  UDATA_GET (parent_elt, "mappings", &mappings);
+
+  mappings->push_back (elt);
 
   return true;
 }
@@ -3645,6 +3730,7 @@ ParserState::popSwitch (ParserState *st, unused (ParserElt *elt))
 {
   Switch *swtch;
   list<pair<ParserElt *, Object *> > *rules;
+  list<string> *switchPorts;
 
   swtch = cast (Switch *, st->objStackPeek ());
   g_assert_nonnull (swtch);
@@ -3666,7 +3752,36 @@ ParserState::popSwitch (ParserState *st, unused (ParserElt *elt))
       it.second = obj;
     }
 
+  // Resolve switchPort references.
+  UDATA_GET (elt, "switchPorts", &switchPorts);
+  for (auto switchPort_id : *switchPorts)
+    {
+      ParserElt *switchPort_elt;
+      list <ParserElt *> *mappings;
+
+      g_assert (st->eltCacheIndexById (switchPort_id, &switchPort_elt,
+                                       { "switchPort" }));
+      UDATA_GET (switchPort_elt, "mappings", &mappings);
+
+      list <Event *> mapping_evts;
+      for (auto &mapping_elt : *mappings)
+        {
+          Event *evt;
+          string comp, interf;
+          mapping_elt->getAttribute ("component", &comp);
+          mapping_elt->getAttribute ("interface", &interf);
+
+          if (unlikely (!st->resolveInterface (swtch, mapping_elt, &evt)))
+            return false;
+
+          mapping_evts.push_back (evt);
+        }
+
+      swtch->addSwitchPort (switchPort_id, mapping_evts);
+    }
+
   st->objStackPop ();
+
   return true;
 }
 
@@ -3734,10 +3849,10 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
         }
       if (type == "application/x-ginga-settings")
         {
-          media = st->_doc->getSettings ();
-          g_assert_nonnull (media);
-          media->addAlias (id);
-          goto done;
+          refer = st->_doc->getSettings ()->getId();
+          media = cast (Media *, st->_doc->getObjectByIdOrAlias (refer));
+          if (media != nullptr)
+            goto almost_done;
         }
     }
 
