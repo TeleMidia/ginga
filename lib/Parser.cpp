@@ -1756,7 +1756,10 @@ ParserState::resolveInterface (Composition *ctx, ParserElt *elt, Event **evt)
     }
   else if (instanceof (Switch *, obj))
     {
-      goto fail; // not accessible by external elements
+      result = obj->getPresentationEvent (iface); // A switchPort is resolved
+                                                  // as a PresentationEvent.
+      if (unlikely (result == nullptr))
+        goto fail;
     }
   else
     {
@@ -2758,9 +2761,8 @@ borderColor='%s'}",
                   // </bind>
                   for (auto bind : tests_buf)
                     {
-                      for (auto &param : bind->params)
-                        tests_map.insert (std::pair<string, string> (
-                            param.first, param.second));
+                      for (auto &p : bind->params)
+                        tests_map.insert (std::make_pair(p.first, p.second));
                     }
                   switch (type)
                     {
@@ -3752,7 +3754,8 @@ ParserState::popSwitch (ParserState *st, unused (ParserElt *elt))
       it.second = obj;
     }
 
-  // Resolve switchPort references.
+  // Resolve switchPort references (each switchPort is added as a new
+  // PresentationEvent, which will be handled internally by the switch).
   UDATA_GET (elt, "switchPorts", &switchPorts);
   for (auto switchPort_id : *switchPorts)
     {
