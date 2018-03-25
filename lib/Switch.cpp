@@ -178,4 +178,15 @@ Switch::addRule (Object *obj, Predicate *pred)
   _rules.push_back (std::make_pair (obj, pred));
 }
 
+void
+Switch::addSwitchPort (const string &id, const list <Event *> &evts)
+{
+  TRACE ("Adding switchPort %s to %s mapping %u evts.",
+         id.c_str (),
+         getId ().c_str (),
+         (guint) evts.size ());
+
+  _switchPorts[id] = evts;
+}
+
 GINGA_NAMESPACE_END

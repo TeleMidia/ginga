@@ -475,7 +475,6 @@ keyboard_callback (unused (GtkWidget *widget), GdkEventKey *e,
                    gpointer type)
 {
   const char *key = "\0";
-  gboolean free_key = FALSE;
 
   switch (e->keyval)
     {
@@ -564,7 +563,6 @@ keyboard_callback (unused (GtkWidget *widget), GdkEventKey *e,
       if (strlen (key) > 1)
         {
           key = g_utf8_strup (key, -1);
-          free_key = TRUE;
         }
       break;
     }
@@ -572,8 +570,6 @@ keyboard_callback (unused (GtkWidget *widget), GdkEventKey *e,
   if (GINGA->getState () == GINGA_STATE_PLAYING)
     GINGA->sendKey (std::string (key),
                     g_strcmp0 ((const char *) type, "press") == 0);
-  /*  if (free_key)
-      g_free (key); */
 }
 
 void

@@ -247,7 +247,7 @@ Document::evalAction (Action init)
       obj = evt->getObject ();
       g_assert_nonnull (obj);
 
-      // Trigger links in parent context.
+      // Trigger links in parent context and ancestors
       comp = obj->getParent ();
       if (comp != nullptr &&
           instanceof (Context *, comp) && comp->isOccurring ())
@@ -256,6 +256,7 @@ Document::evalAction (Action init)
           g_assert_nonnull (ctx);
 
         trigger:
+          // Trigger links in actual context
           if (ctx->getLinksStatus ())
             {
               for (auto link : *ctx->getLinks ())
@@ -307,9 +308,21 @@ Document::evalAction (Action init)
                     }
                 }
             }
+
+          // Trigger links in the parent context, if the event object is
+          // pointed by a port in the parent context
+          for (auto port : *ctx->getPorts ())
+            {
+              if (port->getObject () == evt->getObject ()
+                  && ctx->getParent () != nullptr)
+                {
+                  ctx = cast (Context *, ctx->getParent ());
+                  goto trigger;
+                }
+            }
         }
 
-      // Trigger links in context itself.
+      // If event object is an context, trigger context itself
       if (!done && instanceof (Context *, obj))
         {
           ctx = cast (Context *, obj);

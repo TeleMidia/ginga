@@ -31,15 +31,17 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Switch.h"
 
 static G_GNUC_UNUSED string
-tests_write_tmp_file (const string &buf)
+tests_write_tmp_file (const string &buf, const string &file_ext = "ncl")
 {
   string path;
   gchar *filename;
   gint fd;
   GError *error = nullptr;
 
+  string file_name = string ("ginga-tests-XXXXXX.") + file_ext;
+
   // g_file_open_tmp should follow the rules for mkdtemp() templates
-  fd = g_file_open_tmp ("ginga-tests-XXXXXX", &filename, &error);
+  fd = g_file_open_tmp (file_name.c_str(), &filename, &error);
   if (unlikely (error != nullptr))
     {
       ERROR ("*** Unexpected error: %s", error->message);
@@ -55,7 +57,8 @@ tests_write_tmp_file (const string &buf)
 }
 
 static G_GNUC_UNUSED void
-tests_parse_and_start (Formatter **fmt, Document **doc, const string &buf)
+tests_parse_and_start (Formatter **fmt, Document **doc, const string &buf,
+                       const string &file_ext = "ncl")
 {
   string errmsg;
   string file;
@@ -63,7 +66,7 @@ tests_parse_and_start (Formatter **fmt, Document **doc, const string &buf)
   tryset (fmt, new Formatter (nullptr));
   g_assert_nonnull (*fmt);
 
-  file = tests_write_tmp_file (buf);
+  file = tests_write_tmp_file (buf, file_ext);
   if (!(*fmt)->start (file, &errmsg))
     {
       g_printerr ("*** Unexpected error: %s", errmsg.c_str ());

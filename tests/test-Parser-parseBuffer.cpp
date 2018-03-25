@@ -1765,6 +1765,53 @@ main (void)
 ");
 
   // -------------------------------------------------------------------------
+  // <switchPort> / <mapping>
+  // -------------------------------------------------------------------------
+
+  XFAIL ("switchPort: Missing id",
+         "<switchPort> at line 5: Missing attribute 'id'",
+         "\
+<ncl>\n\
+  <head/>\n\
+  <body>\n\
+    <switch id='sw'>\n\
+      <switchPort/>\n\
+    </switch>\n\
+  </body>\n\
+</ncl>\n\
+  ");
+
+  XFAIL ("mapping: Missing component",
+         "<mapping> at line 6: Missing attribute 'component'",
+         "\
+<ncl>\n\
+  <head/>\n\
+  <body>\n\
+    <switch id='sw'>\n\
+      <switchPort id='swp'>\n\
+        <mapping/>\n\
+      </switchPort>\n\
+    </switch>\n\
+  </body>\n\
+</ncl>\n\
+  ");
+
+//  XFAIL ("mapping: Bad component",
+//         "<mapping> at line 6: bad value 'x'",
+//         "\
+//<ncl>\n\
+//  <head/>\n\
+//  <body>\n\
+//    <switch id='sw'>\n\
+//      <switchPort id='swp'>\n\
+//        <mapping component='x'/>\n\
+//      </switchPort>\n\
+//    </switch>\n\
+//  </body>\n\
+//</ncl>\n\
+//  ");
+
+  // -------------------------------------------------------------------------
   // <defaultComponent>
   // -------------------------------------------------------------------------
 

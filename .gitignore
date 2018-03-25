@@ -107,6 +107,7 @@
 /tests/test-Context-new
 /tests/test-Context-naturalend
 /tests/test-Context-nested-naturalend
+/tests/test-Context-ports
 /tests/test-Document-evalPredicate
 /tests/test-Document-evalPredicate-from-link
 /tests/test-Document-evalPredicate-from-rule
@@ -146,6 +147,7 @@
 /tests/test-Media-new
 /tests/test-Media-explicitDur
 /tests/test-Media-nested-explicitDur
+/tests/test-MediaSettings-instances
 /tests/test-MediaSettings-new
 /tests/test-Object-addAlias
 /tests/test-Object-addEvent
