@@ -322,7 +322,7 @@ Document::evalAction (Action init)
             }
         }
 
-      // If event object is an context, trigger context itself
+      // If event object is a context, trigger the context itself
       if (!done && instanceof (Context *, obj))
         {
           ctx = cast (Context *, obj);

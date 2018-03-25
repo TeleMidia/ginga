@@ -181,6 +181,8 @@ Switch::addRule (Object *obj, Predicate *pred)
 void
 Switch::addSwitchPort (const string &id, const list <Event *> &evts)
 {
+  addPresentationEvent (id, id);
+
   TRACE ("Adding switchPort %s to %s mapping %u evts.",
          id.c_str (),
          getId ().c_str (),
