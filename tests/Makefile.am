@@ -216,49 +216,49 @@ progs+= test-Event-getEventTransitionAsString
 test_Event_getEventTransitionAsString_SOURCES=\
   test-Event-getEventTransitionAsString.cpp
 
-progs+= test-Event-transition-Media-START
-test_Event_transition_Media_START_SOURCES=\
-  test-Event-transition-Media-START.cpp
+progs+= test-Event-transition-Media-start
+test_Event_transition_Media_start_SOURCES=\
+  test-Event-transition-Media-start.cpp
 
-progs+= test-Event-transition-Context-START
-test_Event_transition_Context_START_SOURCES=\
-  test-Event-transition-Context-START.cpp
+progs+= test-Event-transition-Context-start
+test_Event_transition_Context_start_SOURCES=\
+  test-Event-transition-Context-start.cpp
 
 progs+= test-Context-ports
 test_Context_ports_SOURCES=\
   test-Context-ports.cpp
 
-progs+= test-Event-transition-Media-STOP
-test_Event_transition_Media_STOP_SOURCES=\
-  test-Event-transition-Media-STOP.cpp
+progs+= test-Event-transition-Media-stop
+test_Event_transition_Media_stop_SOURCES=\
+  test-Event-transition-Media-stop.cpp
 
-progs+= test-Event-transition-Context-STOP
-test_Event_transition_Context_STOP_SOURCES=\
-  test-Event-transition-Context-STOP.cpp
+progs+= test-Event-transition-Context-stop
+test_Event_transition_Context_stop_SOURCES=\
+  test-Event-transition-Context-stop.cpp
 
-progs+= test-Event-transition-Media-ABORT
-test_Event_transition_Media_ABORT_SOURCES=\
-  test-Event-transition-Media-ABORT.cpp
+progs+= test-Event-transition-Media-abort
+test_Event_transition_Media_abort_SOURCES=\
+  test-Event-transition-Media-abort.cpp
 
-progs+= test-Event-transition-Context-ABORT
-test_Event_transition_Context_ABORT_SOURCES=\
-  test-Event-transition-Context-ABORT.cpp
+progs+= test-Event-transition-Context-abort
+test_Event_transition_Context_abort_SOURCES=\
+  test-Event-transition-Context-abort.cpp
 
-progs+= test-Event-transition-Media-PAUSE
-test_Event_transition_Media_PAUSE_SOURCES=\
-  test-Event-transition-Media-PAUSE.cpp
+progs+= test-Event-transition-Media-pause
+test_Event_transition_Media_pause_SOURCES=\
+  test-Event-transition-Media-pause.cpp
 
-progs+= test-Event-transition-Context-PAUSE
-test_Event_transition_Context_PAUSE_SOURCES=\
-  test-Event-transition-Context-PAUSE.cpp
+progs+= test-Event-transition-Context-pause
+test_Event_transition_Context_pause_SOURCES=\
+  test-Event-transition-Context-pause.cpp
 
-progs+= test-Event-transition-Media-RESUME
-test_Event_transition_Media_RESUME_SOURCES=\
-  test-Event-transition-Media-RESUME.cpp
+progs+= test-Event-transition-Media-resume
+test_Event_transition_Media_resume_SOURCES=\
+  test-Event-transition-Media-resume.cpp
 
-progs+= test-Event-transition-Context-RESUME
-test_Event_transition_Context_RESUME_SOURCES=\
-  test-Event-transition-Context-RESUME.cpp
+progs+= test-Event-transition-Context-resume
+test_Event_transition_Context_resume_SOURCES=\
+  test-Event-transition-Context-resume.cpp
 
 # lib/Object.h -------------------------------------------------------------
 progs+= test-Object-addAlias
