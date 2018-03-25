@@ -20,7 +20,45 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  // ports over a nested context
+  // port over a midia
+  {
+    Formatter *fmt;
+    Document *doc;
+    tests_parse_and_start (&fmt, &doc, "\
+<ncl>\n\
+<body>\n\
+  <port id='port0a' component='m1'/>\n\
+  <media id='m1'/>\n\
+</body>\n\
+</ncl>");
+
+    Context *body = cast (Context *, doc->getRoot ());
+    g_assert_nonnull (body);
+    Event *body_lambda = body->getLambda ();
+    g_assert_nonnull (body_lambda);
+
+    Media *m1 = cast (Media *, doc->getObjectById ("m1"));
+    g_assert_nonnull (m1);
+    Event *m1_lambda = m1->getLambda ();
+    g_assert_nonnull (m1_lambda);
+
+    // --------------------------------
+    // check start document
+
+    // when document is started, only the body@lambda is OCCURING
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::SLEEPING);
+
+    // after advance time
+    fmt->sendTick (0, 0, 0);
+
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::OCCURRING);
+
+    delete fmt;
+  }
+
+  // port over a nested media
   {
     Formatter *fmt;
     Document *doc;
@@ -47,10 +85,15 @@ main (void)
     Event *c1_lambda = c1->getLambda ();
     g_assert_nonnull (c1_lambda);
 
-    Media *m1 = cast (Media *, doc->getObjectById ("m2"));
+    Media *m1 = cast (Media *, doc->getObjectById ("m1"));
     g_assert_nonnull (m1);
-    Event *m1_lambda = c1->getLambda ();
+    Event *m1_lambda = m1->getLambda ();
     g_assert_nonnull (m1_lambda);
+
+    Media *m2 = cast (Media *, doc->getObjectById ("m2"));
+    g_assert_nonnull (m2);
+    Event *m2_lambda = m2->getLambda ();
+    g_assert_nonnull (m2_lambda);
 
     // --------------------------------
     // check start document
@@ -59,17 +102,87 @@ main (void)
     g_assert (body_lambda->getState () == Event::OCCURRING);
     g_assert (c1_lambda->getState () == Event::SLEEPING);
     g_assert (m1_lambda->getState () == Event::SLEEPING);
+    g_assert (m2_lambda->getState () == Event::SLEEPING);
+
+    // after advance time, m2 begin because
+    // it is pointed by the started port
+    fmt->sendTick (0, 0, 0);
+
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::OCCURRING);
+    g_assert (c1_lambda->getState () == Event::OCCURRING);
+    g_assert (m2_lambda->getState () == Event::OCCURRING);
+
+    delete fmt;
+  }
+
+  // port over a context
+  {
+    Formatter *fmt;
+    Document *doc;
+    tests_parse_and_start (&fmt, &doc, "\
+<ncl>\n\
+<body>\n\
+  <port id='port0a' component='m1'/>\n\
+  <port id='port0b' component='c1'/>\n\
+  <media id='m1'/>\n\
+  <context id='c1'>\n\
+    <port id='port1' component='m2'/>\n\
+    <media id='m2'/>\n\
+  </context>\n\
+</body>\n\
+</ncl>");
+
+    Context *body = cast (Context *, doc->getRoot ());
+    g_assert_nonnull (body);
+    Event *body_lambda = body->getLambda ();
+    g_assert_nonnull (body_lambda);
+
+    Context *c1 = cast (Context *, doc->getObjectById ("c1"));
+    g_assert_nonnull (c1);
+    Event *c1_lambda = c1->getLambda ();
+    g_assert_nonnull (c1_lambda);
+
+    Media *m1 = cast (Media *, doc->getObjectById ("m1"));
+    g_assert_nonnull (m1);
+    Event *m1_lambda = m1->getLambda ();
+    g_assert_nonnull (m1_lambda);
+
+    Media *m2 = cast (Media *, doc->getObjectById ("m2"));
+    g_assert_nonnull (m2);
+    Event *m2_lambda = m2->getLambda ();
+    g_assert_nonnull (m2_lambda);
+
+    // --------------------------------
+    // check start document
+
+    // when document is started, only the body@lambda is OCCURING
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::SLEEPING);
+    g_assert (c1_lambda->getState () == Event::SLEEPING);
+    g_assert (m2_lambda->getState () == Event::SLEEPING);
+
+    // after advance time, m2 not begin because
+    // it is not pointed by the started port
+    fmt->sendTick (0, 0, 0);
+
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::OCCURRING);
+    g_assert (c1_lambda->getState () == Event::OCCURRING);
+    g_assert (m2_lambda->getState () == Event::SLEEPING);
 
     // after advance time
     fmt->sendTick (0, 0, 0);
 
     g_assert (body_lambda->getState () == Event::OCCURRING);
-    g_assert (c1_lambda->getState () == Event::OCCURRING);
     g_assert (m1_lambda->getState () == Event::OCCURRING);
+    g_assert (c1_lambda->getState () == Event::OCCURRING);
+    g_assert (m2_lambda->getState () == Event::OCCURRING);
 
     delete fmt;
   }
-  // ports over a context double nested
+
+  // port over a nested context
   {
     Formatter *fmt;
     Document *doc;
