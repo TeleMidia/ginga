@@ -27,7 +27,7 @@ main (void)
     tests_parse_and_start (&fmt, &doc, "\
 <ncl>\n\
 <body>\n\
-  <port id='port0a' component='m1'/>\n\
+  <port id='port0' component='m1'/>\n\
   <media id='m1'/>\n\
 </body>\n\
 </ncl>");
@@ -45,13 +45,10 @@ main (void)
     // --------------------------------
     // check start document
 
-    // When document is started, only the body@lambda is OCCURING.
     g_assert (body_lambda->getState () == Event::OCCURRING);
     g_assert (m1_lambda->getState () == Event::SLEEPING);
 
-    // after advance time
     fmt->sendTick (0, 0, 0);
-
     g_assert (body_lambda->getState () == Event::OCCURRING);
     g_assert (m1_lambda->getState () == Event::OCCURRING);
 
@@ -71,6 +68,7 @@ main (void)
   <context id='c1'>\n\
     <port id='port1' component='m2'/>\n\
     <media id='m2'/>\n\
+    <media id='m3'/>\n\
   </context>\n\
 </body>\n\
 </ncl>");
@@ -95,23 +93,27 @@ main (void)
     Event *m2_lambda = m2->getLambda ();
     g_assert_nonnull (m2_lambda);
 
+    Media *m3 = cast (Media *, doc->getObjectById ("m3"));
+    g_assert_nonnull (m3);
+    Event *m3_lambda = m3->getLambda ();
+    g_assert_nonnull (m3_lambda);
+
     // --------------------------------
     // check start document
 
-    // When document is started, only the body@lambda is OCCURRING.
     g_assert (body_lambda->getState () == Event::OCCURRING);
     g_assert (c1_lambda->getState () == Event::SLEEPING);
     g_assert (m1_lambda->getState () == Event::SLEEPING);
     g_assert (m2_lambda->getState () == Event::SLEEPING);
+    g_assert (m3_lambda->getState () == Event::SLEEPING);
 
-    // After advancing time, m2 begins, because it is pointed by the started
-    // port.
     fmt->sendTick (0, 0, 0);
 
     g_assert (body_lambda->getState () == Event::OCCURRING);
     g_assert (m1_lambda->getState () == Event::OCCURRING);
     g_assert (c1_lambda->getState () == Event::OCCURRING);
     g_assert (m2_lambda->getState () == Event::OCCURRING);
+    g_assert (m3_lambda->getState () == Event::SLEEPING);
 
     delete fmt;
   }
@@ -129,6 +131,7 @@ main (void)
   <context id='c1'>\n\
     <port id='port1' component='m2'/>\n\
     <media id='m2'/>\n\
+    <media id='m3'/>\n\
   </context>\n\
 </body>\n\
 </ncl>");
@@ -153,23 +156,26 @@ main (void)
     Event *m2_lambda = m2->getLambda ();
     g_assert_nonnull (m2_lambda);
 
+    Media *m3 = cast (Media *, doc->getObjectById ("m3"));
+    g_assert_nonnull (m3);
+    Event *m3_lambda = m3->getLambda ();
+    g_assert_nonnull (m3_lambda);
+
     // --------------------------------
     // check start document
 
-    // When the document is started, only the body@lambda is OCCURRING.
     g_assert (body_lambda->getState () == Event::OCCURRING);
     g_assert (m1_lambda->getState () == Event::SLEEPING);
     g_assert (c1_lambda->getState () == Event::SLEEPING);
     g_assert (m2_lambda->getState () == Event::SLEEPING);
 
-    // After advancing time, m2 does not begin, because it is not pointed by
-    // the started port.
     fmt->sendTick (0, 0, 0);
 
     g_assert (body_lambda->getState () == Event::OCCURRING);
     g_assert (m1_lambda->getState () == Event::OCCURRING);
     g_assert (c1_lambda->getState () == Event::OCCURRING);
     g_assert (m2_lambda->getState () == Event::SLEEPING);
+    g_assert (m3_lambda->getState () == Event::SLEEPING);
 
     fmt->sendTick (0, 0, 0);
 
@@ -177,6 +183,7 @@ main (void)
     g_assert (m1_lambda->getState () == Event::OCCURRING);
     g_assert (c1_lambda->getState () == Event::OCCURRING);
     g_assert (m2_lambda->getState () == Event::OCCURRING);
+    g_assert (m3_lambda->getState () == Event::SLEEPING);
 
     delete fmt;
   }
@@ -198,6 +205,7 @@ main (void)
       <port id='port3' component='m2'/>\n\
       <property name='prop' value='0'/>\n\
       <media id='m2'/>\n\
+      <media id='m3'/>\n\
     </context>\n\
   </context>\n\
 </body>\n\
@@ -212,51 +220,53 @@ main (void)
     g_assert_nonnull (c1);
     Event *c1_lambda = c1->getLambda ();
     g_assert_nonnull (c1_lambda);
-    Event *c1_port2 = *c1->getPorts ()->begin ();
-    g_assert_nonnull (c1_port2);
-    Event *c1_prop = c1->getAttributionEvent ("prop");
-    g_assert_nonnull (c1_prop);
 
     Context *c2 = cast (Context *, doc->getObjectById ("c2"));
     g_assert_nonnull (c2);
     Event *c2_lambda = c2->getLambda ();
     g_assert_nonnull (c2_lambda);
-    Event *c2_port3 = *c2->getPorts ()->begin ();
-    g_assert_nonnull (c2_port3);
-    Event *c2_prop = c2->getAttributionEvent ("prop");
-    g_assert_nonnull (c2_prop);
+
+    Media *m1 = cast (Media *, doc->getObjectById ("m1"));
+    g_assert_nonnull (m1);
+    Event *m1_lambda = m1->getLambda ();
+    g_assert_nonnull (m1_lambda);
+
+    Media *m2 = cast (Media *, doc->getObjectById ("m2"));
+    g_assert_nonnull (m2);
+    Event *m2_lambda = m2->getLambda ();
+    g_assert_nonnull (m2_lambda);
+
+    Media *m3 = cast (Media *, doc->getObjectById ("m3"));
+    g_assert_nonnull (m3);
+    Event *m3_lambda = m3->getLambda ();
+    g_assert_nonnull (m3_lambda);
 
     // --------------------------------
     // check start document
 
-    // When document is started, only the body@lambda is OCCURRING.
     g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (c1_lambda->getState () == Event::SLEEPING);
     g_assert (c2_lambda->getState () == Event::SLEEPING);
-    g_assert (c1_port2->getState () == Event::SLEEPING);
-    g_assert (c1_prop->getState () == Event::SLEEPING);
-    g_assert (c2_port3->getState () == Event::SLEEPING);
-    g_assert (c2_prop->getState () == Event::SLEEPING);
+    g_assert (m1_lambda->getState () == Event::SLEEPING);
+    g_assert (m2_lambda->getState () == Event::SLEEPING);
+    g_assert (m3_lambda->getState () == Event::SLEEPING);
 
-    // After advancing time, c2@lambda is OCCURRING, and its anchors
-    // and properties are SLEEPING.
     fmt->sendTick (0, 0, 0);
 
     g_assert (body_lambda->getState () == Event::OCCURRING);
-    g_assert (c1_port2->getState () == Event::OCCURRING);
-    g_assert (c1_prop->getState () == Event::SLEEPING);
+    g_assert (c1_lambda->getState () == Event::OCCURRING);
     g_assert (c2_lambda->getState () == Event::OCCURRING);
-    g_assert (c2_port3->getState () == Event::SLEEPING);
-    g_assert (c2_prop->getState () == Event::SLEEPING);
+    g_assert (m1_lambda->getState () == Event::OCCURRING);
+    g_assert (m2_lambda->getState () == Event::SLEEPING);
+    g_assert (m3_lambda->getState () == Event::SLEEPING);
 
-    // After advancing time, c2@lambda and its anchors are OCCURRING, and
-    // its properties are SLEEPING.
     fmt->sendTick (0, 0, 0);
     g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (c1_lambda->getState () == Event::OCCURRING);
     g_assert (c2_lambda->getState () == Event::OCCURRING);
-    g_assert (c1_port2->getState () == Event::OCCURRING);
-    g_assert (c1_prop->getState () == Event::SLEEPING);
-    g_assert (c2_port3->getState () == Event::OCCURRING);
-    g_assert (c2_prop->getState () == Event::SLEEPING);
+    g_assert (m1_lambda->getState () == Event::OCCURRING);
+    g_assert (m2_lambda->getState () == Event::OCCURRING);
+    g_assert (m3_lambda->getState () == Event::SLEEPING);
 
     delete fmt;
   }
