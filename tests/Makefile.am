@@ -290,6 +290,9 @@ test_Media_focusIndex_SOURCES= test-Media-focusIndex.cpp
 progs+= test-Media-mime
 test_Media_mime_SOURCES= test-Media-mime.cpp
 
+progs+= test-Media-start-over-anchors
+test_Media_start_over_anchors_SOURCES= test-Media-start-over-anchors.cpp
+
 # lib/MediaSettings.h ------------------------------------------------------
 progs+= test-MediaSettings-instances
 test_MediaSettings_instances_SOURCES= test-MediaSettings-instances.cpp
