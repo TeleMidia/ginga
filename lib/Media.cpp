@@ -181,12 +181,11 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
         {
         case Event::START:
           {
-            if (getParent ()->isSleeping ())
-            {
-              getParent ()->getLambda ()->setParameter ("fromport", "true");
-              getParent ()->getLambda ()->transition (Event::START);
-            }
-
+            if (instanceof (Context *, _parent) && _parent->isSleeping ())
+              {
+                _parent->getLambda ()->setParameter ("fromport", "true");
+                _parent->getLambda ()->transition (Event::START);
+              }
             // Create underlying player.
             if (evt->getState () == Event::SLEEPING)
               {
@@ -430,7 +429,8 @@ Media::afterTransition (Event *evt, Event::Transition transition)
             }
 
           case Event::STOP:
-            TRACE ("stop %s:='%s'", evt->getFullId ().c_str (),value.c_str ());
+            TRACE ("stop %s:='%s'", evt->getFullId ().c_str (),
+                   value.c_str ());
             break;
 
           default:

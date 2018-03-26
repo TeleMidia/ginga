@@ -53,7 +53,7 @@ main (void)
     // --------------------------------
     // check start document
 
-    // when start the document, only the lambda@root is OCCURING
+    // When document is started, only the lambda@root is OCCURRING.
     g_assert (root_lambda->getState () == Event::OCCURRING);
     g_assert (ctx1_lambda->getState () == Event::SLEEPING);
     g_assert (m1_lambda->getState () == Event::SLEEPING);
@@ -63,8 +63,8 @@ main (void)
     g_assert (ctx1_lambda->getState () == Event::OCCURRING);
     g_assert (m1_lambda->getState () == Event::SLEEPING);
 
-    // in next reaction, lambda@ctx1 and its anchors
-    // are OCCURRING, and its properties are SLEEPING
+    // In the next reaction, lambda@ctx1 and its anchors are OCCURRING, and
+    // its properties are SLEEPING.
     fmt->sendTick (0, 0, 0);
     g_assert (root_lambda->getState () == Event::OCCURRING);
     g_assert (ctx1_lambda->getState () == Event::OCCURRING);
@@ -73,25 +73,25 @@ main (void)
     // --------------------------------
     // main check
 
-    // after stop m1, m1 is SLEEPING
+    // After stopping m1, m1 is SLEEPING.
     g_assert_true (m1_lambda->transition (Event::STOP));
     g_assert (root_lambda->getState () == Event::OCCURRING);
     g_assert (ctx1_lambda->getState () == Event::OCCURRING);
     g_assert (m1_lambda->getState () == Event::SLEEPING);
 
-    // in next reaction, ctx1 is SLEEPING
+    // In the next reaction, ctx1 is SLEEPING.
     fmt->sendTick (0, 0, 0);
     g_assert (root_lambda->getState () == Event::OCCURRING);
     g_assert (ctx1_lambda->getState () == Event::SLEEPING);
     g_assert (m1_lambda->getState () == Event::SLEEPING);
 
-    // in next reaction, root is SLEEPING
+    // In the next reaction, root is SLEEPING.
     fmt->sendTick (0, 0, 0);
     g_assert (root_lambda->getState () == Event::SLEEPING);
     g_assert (ctx1_lambda->getState () == Event::SLEEPING);
     g_assert (m1_lambda->getState () == Event::SLEEPING);
 
-    // in next reaction, fmt is stoped
+    // In the next reaction, fmt is stopped.
     fmt->sendTick (0, 0, 0);
     g_assert (fmt->getState () == GINGA_STATE_STOPPED);
 

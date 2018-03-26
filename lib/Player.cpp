@@ -597,6 +597,7 @@ Player::createPlayer (Formatter *formatter, Media *media, const string &uri,
     }
 
   g_assert_nonnull (player);
+  media->setProperty ("type", mime);
   return player;
 }
 

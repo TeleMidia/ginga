@@ -62,8 +62,6 @@ instantiateInAppLibrary (unused (xmlDocPtr doc), xmlNodePtr cur)
   if (cards_list != NULL)
     return;
 
-  printf ("ENTREI AQUI! \n");
-
   guint i = 0;
   cur = cur->xmlChildrenNode;
   while (cur != NULL)

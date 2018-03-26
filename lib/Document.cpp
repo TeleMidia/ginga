@@ -256,7 +256,7 @@ Document::evalAction (Action init)
           g_assert_nonnull (ctx);
 
         trigger:
-          // Trigger links in actual context
+          // Trigger links in current context.
           if (ctx->getLinksStatus ())
             {
               for (auto link : *ctx->getLinks ())
@@ -310,7 +310,7 @@ Document::evalAction (Action init)
             }
 
           // Trigger links in the parent context, if the event object is
-          // pointed by a port in the parent context
+          // pointed by a port in the parent context.
           for (auto port : *ctx->getPorts ())
             {
               if (port->getObject () == evt->getObject ()
@@ -321,8 +321,32 @@ Document::evalAction (Action init)
                 }
             }
         }
+      else if (comp != nullptr && instanceof (Switch *, comp))
+        {
+          // Trigger the switchPort labelled action mapped to the switch's
+          // media object.
+          Switch *swtch = cast (Switch *, comp);
+          for (const auto &swtchPort : *swtch->getSwitchPorts ())
+            {
+              for (const auto &mapped_evt : swtchPort.second)
+                {
+                  if (mapped_evt->getObject () == evt->getObject ()
+                      && swtch->getParent () != nullptr)
+                    {
+                      Event *label_evt = swtch->getEvent (Event::PRESENTATION,
+                                                          swtchPort.first);
+                      g_assert_nonnull (label_evt);
 
-      // If event object is an context, trigger context itself
+                      // Do the same action in the "equivalent" switchPort
+                      Action label_act = act;
+                      label_act.event = label_evt;
+                      evalAction (label_act);
+                    }
+                }
+            }
+        }
+
+      // If event object is a context, trigger the context itself
       if (!done && instanceof (Context *, obj))
         {
           ctx = cast (Context *, obj);

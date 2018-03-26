@@ -56,6 +56,7 @@ main (void)
       g_assert_null (obj->getPresentationEvent ("p3"));
       obj->addPresentationEvent ("p3", GINGA_TIME_NONE, GINGA_TIME_NONE);
       evt = obj->getPresentationEvent ("p3");
+      g_assert_null (obj->getPresentationEventByLabel ("label1"));
       g_assert_nonnull (evt);
       evt->getInterval (&begin, &end);
       g_assert (begin == GINGA_TIME_NONE);
@@ -71,6 +72,7 @@ main (void)
       obj->addPresentationEvent ("p2", 0, 0);
       obj->addPresentationEvent ("p3", 0, 0);
       obj->addPresentationEvent ("p4", "label1");
+      g_assert_nonnull (obj->getPresentationEventByLabel ("label1"));
       g_assert (obj->getEvents ()->size () == n + 4);
 
       // Attribution events.
