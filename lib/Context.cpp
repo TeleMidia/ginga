@@ -246,9 +246,15 @@ Context::afterTransition (Event *evt, Event::Transition transition)
           // Start context as a whole.
           Object::doStart ();
 
+          if (instanceof (Context *, _parent) && _parent->isSleeping ())
+            {
+              _parent->getLambda ()->setParameter ("fromport", "true");
+              _parent->getLambda ()->transition (Event::START);
+            }
+
           // Start all ports in the next tick if not started from port
           evt->getParameter ("fromport", &param_test);
-          if ( param_test != "")
+          if (param_test != "")
             break;
           for (auto port : _ports)
             {
