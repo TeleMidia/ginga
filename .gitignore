@@ -132,6 +132,7 @@
 /tests/test-Event-transition-Media-resume
 /tests/test-Event-transition-Media-start
 /tests/test-Event-transition-Media-stop
+/tests/test-Event-transition-Switch-start
 /tests/test-Ginga-create
 /tests/test-Ginga-getOptionBool
 /tests/test-Ginga-getOptionInt
