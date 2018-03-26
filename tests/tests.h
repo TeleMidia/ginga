@@ -30,6 +30,15 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "ParserLua.h"
 #include "Switch.h"
 
+const char *media_samples[] = { "",
+                                ABS_TOP_SRCDIR "/tests-ncl/samples/arcade.mp3",
+                                ABS_TOP_SRCDIR "/tests-ncl/samples/gnu.png",
+                                ABS_TOP_SRCDIR "/tests-ncl/samples/fps.lua",
+                                ABS_TOP_SRCDIR "/tests-ncl/samples/vector.svg",
+                                ABS_TOP_SRCDIR "/tests-ncl/samples/text.txt",
+                                ABS_TOP_SRCDIR "/tests-ncl/samples/clock.ogv",
+                                ABS_TOP_SRCDIR "/tests-ncl/samples/page.html" };
+
 static G_GNUC_UNUSED string
 tests_write_tmp_file (const string &buf, const string &file_ext = "ncl")
 {
@@ -41,7 +50,7 @@ tests_write_tmp_file (const string &buf, const string &file_ext = "ncl")
   string file_name = string ("ginga-tests-XXXXXX.") + file_ext;
 
   // g_file_open_tmp should follow the rules for mkdtemp() templates
-  fd = g_file_open_tmp (file_name.c_str(), &filename, &error);
+  fd = g_file_open_tmp (file_name.c_str (), &filename, &error);
   if (unlikely (error != nullptr))
     {
       ERROR ("*** Unexpected error: %s", error->message);
