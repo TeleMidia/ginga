@@ -38,11 +38,11 @@ public:
   // Switch:
   const list<pair<Object *, Predicate *> > *getRules ();
   void addRule (Object *, Predicate *);
-  void addSwitchPort (const string &id, const list <Event *> &evts);
+  void addSwitchPort (const string &, const list <Event *> &);
 
 private:
-  map<string, list <Event *> > _switchPorts;        ///< List of switchPorts.
-  list<pair<Object *, Predicate *> > _rules;
+  map<string, list<Event *>> _switchPorts;        ///< List of switchPorts.
+  list<pair<Object *, Predicate *>> _rules;
   Object *_selected;
 };
 
