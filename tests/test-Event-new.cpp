@@ -69,6 +69,15 @@ main (void)
     delete e;
   }
 
+  // getStringAsTransition
+  {
+    g_assert (Event::getStringAsTransition ("start") == Event::START);
+    g_assert (Event::getStringAsTransition ("pause") == Event::PAUSE);
+    g_assert (Event::getStringAsTransition ("resume") == Event::RESUME);
+    g_assert (Event::getStringAsTransition ("stop") == Event::STOP);
+    g_assert (Event::getStringAsTransition ("abort") == Event::ABORT);
+  }
+
   delete m;
 
   exit (EXIT_SUCCESS);
