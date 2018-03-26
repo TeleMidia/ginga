@@ -3341,7 +3341,7 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
     g_assert (act->event == root->getAttributionEvent ("p"));
     g_assert (act->transition == Event::START);
     g_assert (act->predicate == nullptr);
-    g_assert (act->value == "$key");
+    g_assert (act->value == "");
 
     act++;
     g_assert (act == link->second.end ());

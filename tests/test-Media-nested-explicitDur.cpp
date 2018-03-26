@@ -20,9 +20,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  // Presentation events ---------------------------------------------------
-
-  // @lambda: START from state OCCURRING.
+  // explicitDur in nested media
   {
     Formatter *fmt;
     Document *doc;
@@ -43,10 +41,12 @@ main (void)
 
     Event *root_lambda = doc->getRoot ()->getLambda ();
     g_assert_nonnull (root_lambda);
+
     Context *ctx1 = cast (Context *, doc->getObjectById ("ctx1"));
     g_assert_nonnull (ctx1);
     Event *ctx1_lambda = ctx1->getLambda ();
     g_assert_nonnull (ctx1_lambda);
+
     Event *m1_lambda = *ctx1->getPorts ()->begin ();
     g_assert_nonnull (m1_lambda);
 
@@ -98,5 +98,89 @@ main (void)
     delete fmt;
   }
 
+  // explicitDur in nested media from diferent types
+  {
+    for (auto sample : samples)
+      {
+        printf ("uri=%s\n", sample.uri);
+        Formatter *fmt;
+        Document *doc;
+        tests_parse_and_start (
+            &fmt, &doc, xstrbuild ("\
+  <ncl>\n\
+    <head>\n\
+    </head>\n\
+    <body>\n\
+      <port id='start0' component='ctx1'/>\n\
+      <context id='ctx1'>\n\
+        <port id='start1' component='m1'/>\n\
+        <port id='start2' component='m2'/>\n\
+        <media id='m1' src='%s'>\n\
+          <property name='explicitDur' value='1s'/>\n\
+          <property name='bounds' value='0%%,0%%,50%%,50%%'/>\n\
+        </media>\n\
+        <media id='m2' src='%s'>\n\
+          <property name='explicitDur' value='2s'/>\n\
+          <property name='bounds' value='50%%,50%%,50%%,50%%'/>\n\
+        </media>\n\
+      </context>\n\
+    </body>\n\
+  </ncl>\n", sample.uri, sample.uri));
+
+        Context *body = cast (Context *, doc->getRoot ());
+        g_assert_nonnull (body);
+        Event *body_lambda = body->getLambda ();
+        g_assert_nonnull (body_lambda);
+
+        Context *ctx1 = cast (Context *, doc->getObjectById ("ctx1"));
+        g_assert_nonnull (ctx1);
+        Event *ctx1_lambda = ctx1->getLambda ();
+        g_assert_nonnull (ctx1_lambda);
+
+        Media *m1 = cast (Media *, doc->getObjectById ("m1"));
+        g_assert_nonnull (m1);
+        Event *m1_lambda = m1->getLambda ();
+        g_assert_nonnull (m1_lambda);
+
+        Media *m2 = cast (Media *, doc->getObjectById ("m2"));
+        g_assert_nonnull (m2);
+        Event *m2_lambda = m2->getLambda ();
+        g_assert_nonnull (m2_lambda);
+
+        // --------------------------------
+        // check start document
+
+        g_assert (body_lambda->getState () == Event::OCCURRING);
+        g_assert (ctx1_lambda->getState () == Event::SLEEPING);
+        g_assert (m1_lambda->getState () == Event::SLEEPING);
+        g_assert (m2_lambda->getState () == Event::SLEEPING);
+
+        fmt->sendTick (0, 0, 0);
+        g_assert (body_lambda->getState () == Event::OCCURRING);
+        g_assert (ctx1_lambda->getState () == Event::OCCURRING);
+        g_assert (m1_lambda->getState () == Event::SLEEPING);
+        g_assert (m2_lambda->getState () == Event::SLEEPING);
+
+        fmt->sendTick (0, 0, 0);
+        g_assert (body_lambda->getState () == Event::OCCURRING);
+        g_assert (ctx1_lambda->getState () == Event::OCCURRING);
+        g_assert (m1_lambda->getState () == Event::OCCURRING);
+        g_assert (m2_lambda->getState () == Event::OCCURRING);
+
+        // --------------------------------
+        // main check
+
+        fmt->sendTick (1.01 * GINGA_SECOND, 1.01 * GINGA_SECOND, 0);
+        g_assert (ctx1_lambda->getState () == Event::OCCURRING);
+        g_assert (m1_lambda->getState () == Event::SLEEPING);
+        g_assert (m2_lambda->getState () == Event::OCCURRING);
+
+        fmt->sendTick (2 * GINGA_SECOND, 2 * GINGA_SECOND, 0);
+        g_assert (m1_lambda->getState () == Event::SLEEPING);
+        g_assert (m2_lambda->getState () == Event::SLEEPING);
+
+        delete fmt;
+      }
+  }
   exit (EXIT_SUCCESS);
 }

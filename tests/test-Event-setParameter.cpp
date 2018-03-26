@@ -52,6 +52,7 @@ main (void)
     m->addPresentationEvent ("pres", 0, 0);
     Event *e = m->getPresentationEvent ("pres");
     g_assert_nonnull (e);
+    g_assert (!e->toString ().empty ());
     CHECK_PARMS (e);
   }
 
@@ -60,6 +61,7 @@ main (void)
     m->addAttributionEvent ("attr");
     Event *e = m->getAttributionEvent ("attr");
     g_assert_nonnull (e);
+    g_assert (!e->toString ().empty ());
     CHECK_PARMS (e);
   }
 
@@ -68,6 +70,7 @@ main (void)
     m->addSelectionEvent ("sel");
     Event *e = m->getSelectionEvent ("sel");
     g_assert_nonnull (e);
+    g_assert (!e->toString ().empty ());
     CHECK_PARMS (e);
   }
 

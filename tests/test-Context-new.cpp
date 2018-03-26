@@ -36,6 +36,7 @@ main (void)
   g_assert_false (c->isPaused ());
   g_assert_true (c->isSleeping ());
   g_assert (c->getDelayedActions ()->size () == 0);
+  g_assert (!c->toString ().empty ());
 
   // Composition-only.
   g_assert (c->getChildren ()->size () == 0);
@@ -44,6 +45,8 @@ main (void)
   g_assert (c->getPorts ()->size () == 0);
   g_assert (c->getLinks ()->size () == 0);
   g_assert (c->getLinksStatus () == true);
+  c->setLinksStatus (false);
+  g_assert (c->getLinksStatus () == false);
 
   delete c;
 
