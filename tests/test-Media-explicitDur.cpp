@@ -20,7 +20,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  // explicitDur in nested media
+  // explicitDur in media
   {
     Formatter *fmt;
     Document *doc;
@@ -75,7 +75,7 @@ main (void)
     delete fmt;
   }
 
-  // explicitDur in from diferent types
+  // explicitDur in media from diferent types
   {
     for (auto sample : samples_uris)
       {
