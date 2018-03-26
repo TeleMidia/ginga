@@ -37,6 +37,7 @@ main (void)
   g_assert_true (m->isSleeping ());
   g_assert (m->getProperty ("zIndex") == "");
   g_assert (m->getDelayedActions ()->size () == 0);
+  g_assert (!m->toString ().empty ());
 
   // Media-only.
   g_assert_false (m->isFocused ());

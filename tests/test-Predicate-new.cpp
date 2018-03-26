@@ -40,6 +40,7 @@ main (void)
     pred = new Predicate (Predicate::ATOM);
     g_assert (pred->getType () == Predicate::ATOM);
     g_assert (pred->getChildren ()->size () == 0);
+    g_assert (!pred->toString ().empty ());
 
     CHECK_TEST (pred, "", Predicate::EQ, "");
 
@@ -70,6 +71,7 @@ main (void)
 
     pred = new Predicate (Predicate::FALSUM);
     g_assert (pred->getType () == Predicate::FALSUM);
+    g_assert (!pred->toString ().empty ());
 
     delete pred;
   }
@@ -81,6 +83,7 @@ main (void)
     pred = new Predicate (Predicate::VERUM);
     g_assert (pred->getType () == Predicate::VERUM);
     g_assert (pred->getChildren ()->size () == 0);
+    g_assert (!pred->toString ().empty ());
 
     delete pred;
   }
@@ -92,6 +95,7 @@ main (void)
     pred = new Predicate (Predicate::NEGATION);
     g_assert (pred->getType () == Predicate::NEGATION);
     g_assert (pred->getChildren ()->size () == 0);
+    g_assert (!pred->toString ().empty ());
 
     delete pred;
   }
@@ -103,6 +107,7 @@ main (void)
     pred = new Predicate (Predicate::CONJUNCTION);
     g_assert (pred->getType () == Predicate::CONJUNCTION);
     g_assert (pred->getChildren ()->size () == 0);
+    g_assert (!pred->toString ().empty ());
 
     child1 = new Predicate (Predicate::ATOM);
     child1->setTest ("a", Predicate::EQ, "a");
@@ -124,6 +129,7 @@ main (void)
     pred = new Predicate (Predicate::DISJUNCTION);
     g_assert (pred->getType () == Predicate::DISJUNCTION);
     g_assert (pred->getChildren ()->size () == 0);
+    g_assert (!pred->toString ().empty ());
 
     child1 = new Predicate (Predicate::ATOM);
     child1->setTest ("a", Predicate::EQ, "a");

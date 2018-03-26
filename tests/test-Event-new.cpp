@@ -37,7 +37,7 @@ main (void)
     g_assert (e->getLabel () == "");
     g_assert (!e->hasLabel ());
     g_assert_false (e->isLambda ());
-    TRACE ("\n%s", e->toString ().c_str ());
+    g_assert (!e->toString ().empty ());
     delete e;
   }
 
@@ -51,7 +51,7 @@ main (void)
     g_assert (e->getFullId () == "m.attr");
     g_assert (e->getState () == Event::SLEEPING);
     g_assert_false (e->isLambda ());
-    TRACE ("\n%s", e->toString ().c_str ());
+    g_assert (!e->toString ().empty ());
     delete e;
   }
 
@@ -65,7 +65,7 @@ main (void)
     g_assert (e->getFullId () == "m<sel>");
     g_assert (e->getState () == Event::SLEEPING);
     g_assert_false (e->isLambda ());
-    TRACE ("\n%s", e->toString ().c_str ());
+    g_assert (!e->toString ().empty ());
     delete e;
   }
 
