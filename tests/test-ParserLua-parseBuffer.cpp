@@ -17,6 +17,8 @@
 
 #include "tests.h"
 
+// Remember to do more thorough testing on every component
+
 int
 main (void)
 {
@@ -116,7 +118,6 @@ return ncl",
   }
 
   // Success: Media
-  // missing media property test
   {
     Document *doc;
 
@@ -160,13 +161,136 @@ return ncl",
   }
 
   // Success: Link
-  {}
+  {
+    Document *doc;
+
+    tests_parse_and_start (&fmt, &doc, "ncl = \
+{'context', 'ncl', nil,\n                     \
+   {\n                                        \
+      {'media', 'm1'},\n                      \
+   },\n                                       \
+   {\n                                        \
+      {{{'start', 'm1@lambda', {true}}},\n    \
+      {{'stop', 'm1@lambda'}}}\n              \
+   }\n                                        \
+}\n                                           \
+return ncl",
+"lua");
+
+    g_assert_nonnull (doc);
+    g_assert (doc->getObjects ()->size () == 3);
+    g_assert (doc->getMedias ()->size () == 2);
+    g_assert (doc->getContexts ()->size () == 1);
+
+    Context *body = cast (Context *, doc->getRoot ());
+    g_assert_nonnull (body);
+    Event *body_lambda = body->getLambda ();
+    g_assert_nonnull (body_lambda);
+
+    g_assert (body->getLinks ()->size () == 1);
+
+    Media *m1 = cast (Media *, body->getChildById ("m1"));
+    g_assert_nonnull (m1);
+    Event *m1_lambda = m1->getLambda ();
+    g_assert_nonnull (m1_lambda);
+
+    delete doc;
+  }
 
   // Success: Predicate
-  {}
+  {
+    Document *doc;
+
+    tests_parse_and_start (&fmt, &doc, "ncl = \
+{'context', 'ncl', nil,\n                     \
+   {\n                                        \
+      {'media', 'm1'},\n                      \
+   },\n                                       \
+   {\n                                        \
+      {{{'start', 'm1@lambda', {true}}},\n    \
+      {{'stop', 'm1@lambda'}}}\n              \
+   }\n                                        \
+}\n                                           \
+return ncl",
+"lua");
+
+    g_assert_nonnull (doc);
+    g_assert (doc->getObjects ()->size () == 3);
+    g_assert (doc->getMedias ()->size () == 2);
+    g_assert (doc->getContexts ()->size () == 1);
+
+    Context *body = cast (Context *, doc->getRoot ());
+    g_assert_nonnull (body);
+    Event *body_lambda = body->getLambda ();
+    g_assert_nonnull (body_lambda);
+
+    g_assert (body->getLinks ()->size () == 1);
+
+    Media *m1 = cast (Media *, body->getChildById ("m1"));
+    g_assert_nonnull (m1);
+    Event *m1_lambda = m1->getLambda ();
+    g_assert_nonnull (m1_lambda);
+
+    list<Action> cond = body->getLinks ()->front ().first;
+    Predicate *pred = cond.front ().predicate;
+
+    g_assert (pred->getType () == Predicate::VERUM);
+
+    delete doc;
+  }
 
   // Success: Switch rule
-  {}
+  {
+    Formatter *fmt;
+    Document *doc;
+
+    tests_parse_and_start (&fmt, &doc, "ncl =\
+{'context', 'ncl', nil,\n                    \
+   {\n                                       \
+      {'switch', 's1',\n                     \
+       {{'media', 'm1'}},\n                  \
+       {{'m1', {false}}}\n                   \
+      },\n                                   \
+      {'media', 'm2'}\n                      \
+   }\n                                       \
+}\n                                          \
+return ncl",
+"lua");
+
+    g_assert_nonnull (doc);
+    g_assert (doc->getObjects ()->size () == 5);
+    g_assert (doc->getMedias ()->size () == 3);
+    g_assert (doc->getContexts ()->size () == 1);
+    g_assert (doc->getSwitches ()->size () == 1);
+
+    Context *body = cast (Context *, doc->getRoot ());
+    g_assert_nonnull (body);
+    Event *body_lambda = body->getLambda ();
+    g_assert_nonnull (body_lambda);
+
+    Switch *s1 = cast (Switch *, body->getChildById ("s1"));
+    g_assert_nonnull (s1);
+    Event *s1_lambda = s1->getLambda ();
+    g_assert_nonnull (s1_lambda);
+
+    g_assert (s1->getRules ()->size () == 1);
+
+    Media *m1 = cast (Media *, s1->getChildById ("m1"));
+    g_assert_nonnull (m1);
+    Event *m1_lambda = m1->getLambda ();
+    g_assert_nonnull (m1_lambda);
+
+    Media *m2 = cast (Media *, body->getChildById ("m2"));
+    g_assert_nonnull (m2);
+    Event *m2_lambda = m2->getLambda ();
+    g_assert_nonnull (m2_lambda);
+
+    Predicate *rule = s1->getRules ()->front ().second;
+
+    g_assert (rule->getType () == Predicate::FALSUM);
+
+    delete doc;
+  }
 
   exit (EXIT_SUCCESS);
 }
