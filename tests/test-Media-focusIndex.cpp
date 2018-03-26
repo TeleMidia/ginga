@@ -20,11 +20,12 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  for (auto sample : samples_uris)
+  for (auto sample : samples)
     {
       Formatter *fmt;
       Document *doc;
-      tests_parse_and_start (&fmt, &doc, xstrbuild ("\
+      tests_parse_and_start (&fmt,
+                             &doc, xstrbuild ("\
 <ncl>\n\
   <head>\n\
     <connectorBase>\n\
@@ -96,8 +97,7 @@ main (void)
       </bind>\n\
     </link>\n\
   </body>\n\
-</ncl>\n",
-                                                    sample, sample));
+</ncl>\n", sample.uri, sample.uri));
 
       Context *body = cast (Context *, doc->getRoot ());
       g_assert_nonnull (body);

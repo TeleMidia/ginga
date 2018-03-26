@@ -30,30 +30,23 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "ParserLua.h"
 #include "Switch.h"
 
-const char *sample_nil = "";
-const char *sample_nil_mime = "application/x-ginga-timer";
-const char *sample_aud = ABS_TOP_SRCDIR "/tests-ncl/samples/arcade.mp3";
-const char *sample_aud_mime = "audio/mp3";
-const char *sample_img = ABS_TOP_SRCDIR "/tests-ncl/samples/gnu.png";
-const char *sample_img_mime = "image/png";
-const char *sample_lua = ABS_TOP_SRCDIR "/tests-ncl/samples/fps.lua";
-const char *sample_lua_mime = "application/x-ginga-NCLua";
-const char *sample_svg = ABS_TOP_SRCDIR "/tests-ncl/samples/vector.svg";
-const char *sample_svg_mime = "image/svg+xml";
-const char *sample_txt = ABS_TOP_SRCDIR "/tests-ncl/samples/text.txt";
-const char *sample_txt_mime = "text/plain";
-const char *sample_vid = ABS_TOP_SRCDIR "/tests-ncl/samples/clock.ogv";
-const char *sample_vid_mime = "video/ogg";
-const char *sample_html = ABS_TOP_SRCDIR "/tests-ncl/samples/page.html";
-const char *sample_html_mime = "text/html";
+typedef struct
+{
+  const char *mime;
+  const char *uri;
+} sample;
 
-vector<const char *> samples_uris
-    = { sample_nil, sample_aud, sample_img, sample_lua,
-        sample_svg, sample_txt, sample_vid, sample_html };
-vector<const char *> samples_mimes = { sample_nil_mime, sample_aud_mime,
-                                       sample_img_mime, sample_lua_mime,
-                                       sample_svg_mime, sample_txt_mime,
-                                       sample_vid_mime, sample_html_mime };
+vector<sample> samples = {
+  { "application/x-ginga-timer", "" },
+  { "audio/mp3", ABS_TOP_SRCDIR "/tests-ncl/samples/arcade.mp3" },
+  { "image/png", ABS_TOP_SRCDIR "/tests-ncl/samples/gnu.png" },
+  { "application/x-ginga-NCLua",
+    ABS_TOP_SRCDIR "/tests-ncl/samples/fps.lua" },
+  { "image/svg+xml", ABS_TOP_SRCDIR "/tests-ncl/samples/vector.svg" },
+  { "text/plain", ABS_TOP_SRCDIR "/tests-ncl/samples/text.txt" },
+  { "video/ogg", ABS_TOP_SRCDIR "/tests-ncl/samples/clock.ogv" },
+  { "text/html", ABS_TOP_SRCDIR "/tests-ncl/samples/page.html" },
+};
 
 static G_GNUC_UNUSED string
 tests_write_tmp_file (const string &buf, const string &file_ext = "ncl")

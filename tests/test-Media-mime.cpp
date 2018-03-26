@@ -22,9 +22,9 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  for (int i = 2; i < samples_uris.size (); i++)
+  for (int i = 2; i < samples.size (); i++)
     {
-      printf ("### %s\n", samples_uris[i]);
+      printf ("### %s\n", samples[i].uri);
       Formatter *fmt;
       Document *doc;
       Player *p;
@@ -34,8 +34,7 @@ main (void)
     <port id='start' component='m'/>\n\
     <media id='m' src='%s'/>\n\
   </body>\n\
-</ncl>\n",
-                                                    samples_uris[i]));
+</ncl>\n", samples[i].uri));
 
       Context *body = cast (Context *, doc->getRoot ());
       g_assert_nonnull (body);
@@ -59,8 +58,8 @@ main (void)
       // --------------------------------
       // main check
       g_assert (m->getProperty ("uri")
-                == xstrbuild ("file:%s", samples_uris[i]));
-      g_assert (m->getProperty ("type") == samples_mimes[i]);
+                == xstrbuild ("file:%s", samples[i].uri));
+      g_assert (m->getProperty ("type") == samples[i].mime);
 
       delete m;
     }
