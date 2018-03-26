@@ -20,7 +20,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  for (auto sample : media_samples)
+  for (auto sample : samples_uris)
     {
       Formatter *fmt;
       Document *doc;
