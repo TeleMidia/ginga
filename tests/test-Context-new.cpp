@@ -45,6 +45,8 @@ main (void)
   g_assert (c->getPorts ()->size () == 0);
   g_assert (c->getLinks ()->size () == 0);
   g_assert (c->getLinksStatus () == true);
+  c->setLinksStatus (false);
+  g_assert (c->getLinksStatus () == false);
 
   delete c;
 
