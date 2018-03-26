@@ -283,6 +283,9 @@ test_Media_4grid_SOURCES= test-Media-4grid.cpp
 progs+= test-Media-focusIndex
 test_Media_focusIndex_SOURCES= test-Media-focusIndex.cpp
 
+progs+= test-Media-mime
+test_Media_mime_SOURCES= test-Media-mime.cpp
+
 # lib/MediaSettings.h ------------------------------------------------------
 progs+= test-MediaSettings-instances
 test_MediaSettings_instances_SOURCES= test-MediaSettings-instances.cpp

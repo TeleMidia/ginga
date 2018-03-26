@@ -146,6 +146,7 @@
 /tests/test-GingaInternal-setData
 /tests/test-Media-new
 /tests/test-Media-4grid
+/tests/test-Media-mime
 /tests/test-Media-focusIndex
 /tests/test-Media-explicitDur
 /tests/test-Media-nested-explicitDur
