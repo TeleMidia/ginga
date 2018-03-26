@@ -100,12 +100,13 @@ main (void)
 
   // explicitDur in nested media from diferent types
   {
-    for (auto sample : samples_uris)
+    for (auto sample : samples)
       {
-        printf ("uri=%s\n", sample);
+        printf ("uri=%s\n", sample.uri);
         Formatter *fmt;
         Document *doc;
-        tests_parse_and_start (&fmt, &doc, xstrbuild ("\
+        tests_parse_and_start (
+            &fmt, &doc, xstrbuild ("\
   <ncl>\n\
     <head>\n\
     </head>\n\
@@ -124,8 +125,7 @@ main (void)
         </media>\n\
       </context>\n\
     </body>\n\
-  </ncl>\n",
-                                                      sample, sample));
+  </ncl>\n", sample.uri, sample.uri));
 
         Context *body = cast (Context *, doc->getRoot ());
         g_assert_nonnull (body);
@@ -175,7 +175,7 @@ main (void)
         g_assert (m1_lambda->getState () == Event::SLEEPING);
         g_assert (m2_lambda->getState () == Event::OCCURRING);
 
-        fmt->sendTick (2  * GINGA_SECOND, 2  * GINGA_SECOND, 0);
+        fmt->sendTick (2 * GINGA_SECOND, 2 * GINGA_SECOND, 0);
         g_assert (m1_lambda->getState () == Event::SLEEPING);
         g_assert (m2_lambda->getState () == Event::SLEEPING);
 
