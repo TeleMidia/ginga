@@ -48,6 +48,8 @@ main (void)
       obj->addAlias ("a2");
       obj->addAlias ("a3");
       g_assert (obj->getAliases ()->size () == 3);
+      g_assert (!obj->toString ().empty ());
+
       delete obj;
     }
 
