@@ -25,7 +25,7 @@ main (void)
   m = new Media ("m");
   g_assert_nonnull (m);
 
-  // Presentation.
+  // Presentation
   {
     Event *e = new Event (Event::PRESENTATION, m, "pres");
     g_assert_nonnull (e);
@@ -41,6 +41,22 @@ main (void)
     delete e;
   }
 
+  // Presentation with delay
+  {
+    string delay;
+    Event *e = new Event (Event::PRESENTATION, m, "pres");
+    g_assert_nonnull (e);
+    g_assert (e->getType () == Event::PRESENTATION);
+    g_assert (e->getObject () == m);
+
+    g_assert (e->setParameter ("delay", "1s"));
+    e->getParameter ("delay", &delay);
+    g_assert (delay == "1s");
+    e->getParameter ("delay", &delay);
+
+    delete e;
+  }
+
   // Presentation with label
   {
     Event *e = new Event (Event::PRESENTATION, m, "pres");
@@ -52,7 +68,7 @@ main (void)
     delete e;
   }
 
-  // Attribution.
+  // Attribution
   {
     Event *e = new Event (Event::ATTRIBUTION, m, "attr");
     g_assert_nonnull (e);
@@ -66,7 +82,23 @@ main (void)
     delete e;
   }
 
-  // Selection.
+  // Attribution with duration
+  {
+    string duration;
+    Event *e = new Event (Event::ATTRIBUTION, m, "attr");
+    g_assert_nonnull (e);
+    g_assert (e->getType () == Event::ATTRIBUTION);
+    g_assert (e->getObject () == m);
+
+    g_assert (e->setParameter ("duration", "1s"));
+    e->getParameter ("duration", &duration);
+    g_assert (duration == "1s");
+    e->getParameter ("duration", &duration);
+
+    delete e;
+  }
+
+  // Selection
   {
     Event *e = new Event (Event::SELECTION, m, "sel");
     g_assert_nonnull (e);
@@ -76,6 +108,23 @@ main (void)
     g_assert (e->getFullId () == "m<sel>");
     g_assert (e->getState () == Event::SLEEPING);
     g_assert_false (e->isLambda ());
+    g_assert (!e->toString ().empty ());
+    delete e;
+  }
+
+  // Selection with key
+  {
+    string key;
+    Event *e = new Event (Event::SELECTION, m, "sel");
+    g_assert_nonnull (e);
+    g_assert (e->getType () == Event::SELECTION);
+    g_assert (e->getObject () == m);
+
+    g_assert (e->setParameter ("key", "RED"));
+    e->getParameter ("key", &key);
+    g_assert (key == "RED");
+    e->getParameter ("key", &key);
+
     g_assert (!e->toString ().empty ());
     delete e;
   }
