@@ -68,28 +68,27 @@ bool
 Switch::beforeTransition (Event *evt, Event::Transition transition)
 {
   set <Event *> switchPort_evts; // The possible selected events.
+  if (evt->isLambda ())
+    {
+      // If we are acting on the switch's @lambda all the @lambda children
+      // events can be selected.
+      for (Object *obj : *(getChildren()))
+        switchPort_evts.insert (obj->getLambda ());
+    }
+  else
+    {
+      // If we are action on a switchPort we should select only the events
+      // being mapped by the switchPort (and the defaultComponent?).
+      auto it = _switchPorts.find (evt->getId ());
+      g_assert ( it != _switchPorts.end ());
+      for (Event *e : it->second)
+          switchPort_evts.insert (e);
+    }
 
   switch (evt->getType ())
     {
     case Event::PRESENTATION:
       TRACE ("Presentation event on switchPort: %s.", evt->getId ().c_str ());
-
-      if (evt->isLambda ())
-        {
-          // If we are starting from @lambda all the @lambda children events
-          // can be selected.
-          for (Object *obj : *(getChildren()))
-            switchPort_evts.insert (obj->getLambda ());
-        }
-      else
-        {
-          // If we are starting from a switchPort we should select only the
-          // events being mapped by the switchPort (and the defaultComponent?).
-          auto it = _switchPorts.find (evt->getId ());
-          g_assert ( it != _switchPorts.end ());
-          for (Event *e : it->second)
-              switchPort_evts.insert (e);
-        }
 
       switch (transition)
         {
@@ -99,22 +98,26 @@ Switch::beforeTransition (Event *evt, Event::Transition transition)
             {
               Object *obj;
               Predicate *pred;
-              Event *selected_evt = nullptr;
+              Event *selected_evt;
 
               obj = item.first;
               g_assert_nonnull (obj);
               pred = item.second;
               g_assert_nonnull (pred);
 
+              // Check if the (possible) selected object is in the switchPort's
+              // list of possible events.
+              selected_evt = nullptr;
+              for (Event *e : switchPort_evts)
+                {
+                  if (obj == e->getObject ())
+                    selected_evt = e;
+                }
+              if (selected_evt == nullptr)
+                continue;
+
               if (_doc->evalPredicate (pred))
                 {
-                  // Check if the selected object is in the switchPort list of
-                  // possible events.
-                  for (Event *e : switchPort_evts)
-                    {
-                      if (obj == e->getObject ())
-                        selected_evt = e;
-                    }
                   g_assert_nonnull (selected_evt);
                   // Found one valid predicate.
                   if (selected_evt->transition (transition))
@@ -202,6 +205,12 @@ Switch::addRule (Object *obj, Predicate *pred)
   g_assert_nonnull (obj);
   g_assert_nonnull (pred);
   _rules.push_back (std::make_pair (obj, pred));
+}
+
+const map<string, list<Event *>> *
+Switch::getSwitchPorts ()
+{
+  return &_switchPorts;
 }
 
 void
