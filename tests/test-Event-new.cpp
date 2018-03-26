@@ -41,6 +41,17 @@ main (void)
     delete e;
   }
 
+  // Presentation with label
+  {
+    Event *e = new Event (Event::PRESENTATION, m, "pres");
+    g_assert_nonnull (e);
+    g_assert (e->getType () == Event::PRESENTATION);
+    e->setLabel ("label");
+    g_assert (e->hasLabel ());
+    g_assert (e->getLabel () == "label");
+    delete e;
+  }
+
   // Attribution.
   {
     Event *e = new Event (Event::ATTRIBUTION, m, "attr");
