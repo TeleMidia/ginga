@@ -20,7 +20,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  // port over a midia
+  // Port to media object.
   {
     Formatter *fmt;
     Document *doc;
@@ -45,7 +45,7 @@ main (void)
     // --------------------------------
     // check start document
 
-    // when document is started, only the body@lambda is OCCURING
+    // When document is started, only the body@lambda is OCCURING.
     g_assert (body_lambda->getState () == Event::OCCURRING);
     g_assert (m1_lambda->getState () == Event::SLEEPING);
 
@@ -58,7 +58,7 @@ main (void)
     delete fmt;
   }
 
-  // port over a nested media
+  // Port to a nested media object.
   {
     Formatter *fmt;
     Document *doc;
@@ -98,14 +98,14 @@ main (void)
     // --------------------------------
     // check start document
 
-    // when document is started, only the body@lambda is OCCURING
+    // When document is started, only the body@lambda is OCCURRING.
     g_assert (body_lambda->getState () == Event::OCCURRING);
     g_assert (c1_lambda->getState () == Event::SLEEPING);
     g_assert (m1_lambda->getState () == Event::SLEEPING);
     g_assert (m2_lambda->getState () == Event::SLEEPING);
 
-    // after advance time, m2 begin because
-    // it is pointed by the started port
+    // After advancing time, m2 begins, because it is pointed by the started
+    // port.
     fmt->sendTick (0, 0, 0);
 
     g_assert (body_lambda->getState () == Event::OCCURRING);
@@ -116,7 +116,7 @@ main (void)
     delete fmt;
   }
 
-  // port over a context
+  // Port to a context.
   {
     Formatter *fmt;
     Document *doc;
@@ -156,14 +156,14 @@ main (void)
     // --------------------------------
     // check start document
 
-    // when document is started, only the body@lambda is OCCURING
+    // When the document is started, only the body@lambda is OCCURRING.
     g_assert (body_lambda->getState () == Event::OCCURRING);
     g_assert (m1_lambda->getState () == Event::SLEEPING);
     g_assert (c1_lambda->getState () == Event::SLEEPING);
     g_assert (m2_lambda->getState () == Event::SLEEPING);
 
-    // after advance time, m2 not begin because
-    // it is not pointed by the started port
+    // After advancing time, m2 does not begin, because it is not pointed by
+    // the started port.
     fmt->sendTick (0, 0, 0);
 
     g_assert (body_lambda->getState () == Event::OCCURRING);
@@ -171,7 +171,6 @@ main (void)
     g_assert (c1_lambda->getState () == Event::OCCURRING);
     g_assert (m2_lambda->getState () == Event::SLEEPING);
 
-    // after advance time
     fmt->sendTick (0, 0, 0);
 
     g_assert (body_lambda->getState () == Event::OCCURRING);
@@ -182,7 +181,7 @@ main (void)
     delete fmt;
   }
 
-  // port over a nested context
+  // Port over a nested context.
   {
     Formatter *fmt;
     Document *doc;
@@ -230,7 +229,7 @@ main (void)
     // --------------------------------
     // check start document
 
-    // when document is started, only the body@lambda is OCCURING
+    // When document is started, only the body@lambda is OCCURRING.
     g_assert (body_lambda->getState () == Event::OCCURRING);
     g_assert (c2_lambda->getState () == Event::SLEEPING);
     g_assert (c1_port2->getState () == Event::SLEEPING);
@@ -238,8 +237,8 @@ main (void)
     g_assert (c2_port3->getState () == Event::SLEEPING);
     g_assert (c2_prop->getState () == Event::SLEEPING);
 
-    // after advance time, c2@lambda is OCCURRING, and its
-    // anchors and properties are SLEEPING
+    // After advancing time, c2@lambda is OCCURRING, and its anchors
+    // and properties are SLEEPING.
     fmt->sendTick (0, 0, 0);
 
     g_assert (body_lambda->getState () == Event::OCCURRING);
@@ -249,8 +248,8 @@ main (void)
     g_assert (c2_port3->getState () == Event::SLEEPING);
     g_assert (c2_prop->getState () == Event::SLEEPING);
 
-    // after advance time, c2@lambda and its anchors
-    // are OCCURRING, and its properties are SLEEPING
+    // After advancing time, c2@lambda and its anchors are OCCURRING, and
+    // its properties are SLEEPING.
     fmt->sendTick (0, 0, 0);
     g_assert (body_lambda->getState () == Event::OCCURRING);
     g_assert (c2_lambda->getState () == Event::OCCURRING);
