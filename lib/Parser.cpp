@@ -1812,7 +1812,7 @@ ParserState::resolveParameter (const string &ref,
       if (it_link != linkParams->end ())
         result = it_link->second;
       else
-        return ref; // unknown reference
+        return ""; // unknown reference
     }
 
   if (result[0] != '$')
