@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<ncl id="menuEx" xmlns="http://www.ncl.org.br/NCL3.0/EDTVProfile">
+
+<ncl>
   <head>
     <regionBase>
       <region id='reg' width='50%' height='50%'/>
@@ -22,13 +22,13 @@
   <body>
     <port id='start' component='video1'/>
     <port id='start2' component='video2'/>
-    
+
     <!--RED stop video1 -->
-    <media id='video1' src='../samples/small.mp4' descriptor='desc' >
+    <media id='video1' src='samples/small.mp4' descriptor='desc' >
       <property name='freeze' value="true"/>
     </media>
-    <media id='video2' src='../samples/animGar.mp4' descriptor='desc2'/>
-    
+    <media id='video2' src='samples/animGar.mp4' descriptor='desc2'/>
+
     <link xconnector="onKeySelectionStop">
       <bind role='onSelection' component='video2'>
         <bindParam name='keyCode' value='RED'/>

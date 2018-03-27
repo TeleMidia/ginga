@@ -318,7 +318,7 @@ src/Makefile
 src-gui/Makefile
 src-gui/icons/Makefile
 src-gui/style/Makefile
-tests-ncl/Makefile
+tests-ncl/generated/Makefile
 tests/Makefile
 ])
 

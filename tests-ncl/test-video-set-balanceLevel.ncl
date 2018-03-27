@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<ncl id="menuEx" xmlns="http://www.ncl.org.br/NCL3.0/EDTVProfile">
+<ncl>
   <head>
     <regionBase>
       <region id='reg' width='320' height='240'/>
-      <region id='reg2' width='320' height='240' top='240'/> 
+      <region id='reg2' width='320' height='240' top='240'/>
       <region id='reg3' width='320' height='240' left='320' top='240'/>
       <region id='reg4' width='320' height='240' left='320'/>
       <region id='reg5' width='320' height='240' top='480'/>
@@ -45,7 +44,6 @@
           <simpleAction role="set" value="$var"/>
         </compoundAction>
       </causalConnector>
-
       <causalConnector id="onEndStart">
         <simpleCondition role="onEnd"/>
         <simpleAction role="start" max="unbounded" qualifier="par"/>
@@ -66,7 +64,6 @@
         <simpleCondition role="onEnd"/>
         <simpleAction role="abort" max="unbounded" qualifier="par"/>
       </causalConnector>
-
       <causalConnector id="onPauseStart">
         <simpleCondition role="onPause"/>
         <simpleAction role="start" max="unbounded" qualifier="par"/>
@@ -87,28 +84,7 @@
         <simpleCondition role="onPause"/>
         <simpleAction role="abort" max="unbounded" qualifier="par"/>
       </causalConnector>
-
-      <!-- <causalConnector id="onResumeStart">
-        <simpleCondition role="onResume"/>
-        <simpleAction role="start" max="unbounded" qualifier="par"/>
-      </causalConnector>
-      <causalConnector id="onResumeStop">
-        <simpleCondition role="onResume"/>
-        <simpleAction role="stop" max="unbounded" qualifier="par"/>
-      </causalConnector>
-      <causalConnector id="onResumePause">
-        <simpleCondition role="onResume"/>
-        <simpleAction role="pause" max="unbounded" qualifier="par"/>
-      </causalConnector>
-      <causalConnector id="onResumeResume">
-        <simpleCondition role="onResume"/>
-        <simpleAction role="resume" max="unbounded" qualifier="par"/>
-      </causalConnector>
-      <causalConnector id="onResumeAbort">
-        <simpleCondition role="onResume"/>
-        <simpleAction role="abort" max="unbounded" qualifier="par"/>
-      </causalConnector> -->
-      
+      <!-- <causalConnector id="onResumeStart"><simpleCondition role="onResume"/><simpleAction role="start" max="unbounded" qualifier="par"/></causalConnector><causalConnector id="onResumeStop"><simpleCondition role="onResume"/><simpleAction role="stop" max="unbounded" qualifier="par"/></causalConnector><causalConnector id="onResumePause"><simpleCondition role="onResume"/><simpleAction role="pause" max="unbounded" qualifier="par"/></causalConnector><causalConnector id="onResumeResume"><simpleCondition role="onResume"/><simpleAction role="resume" max="unbounded" qualifier="par"/></causalConnector><causalConnector id="onResumeAbort"><simpleCondition role="onResume"/><simpleAction role="abort" max="unbounded" qualifier="par"/></causalConnector> -->
       <causalConnector id="onKeySelectionStart">
         <connectorParam name="keyCode"/>
         <simpleCondition role="onSelection" key="$keyCode"/>
@@ -144,7 +120,6 @@
           <simpleAction role="abort" max="unbounded" qualifier="par"/>
         </compoundAction>
       </causalConnector>
-      
       <causalConnector id="onKeySelectionSet">
         <connectorParam name="var"/>
         <connectorParam name="keyCode"/>
@@ -153,78 +128,93 @@
           <simpleAction role="set" value="$var"/>
         </compoundAction>
       </causalConnector>
-
     </connectorBase>
   </head>
-  <body>    
+  <body>
     <port id='start1' component='audio'/>
     <!-- <port id='start2' component='img'/> -->
     <!-- <port id='start4' component='video'/> -->
     <!-- <port id='start7' component='audio2'/> -->
-
-    <media id='audio' src='../samples/arcade.mp3' descriptor='desc'>
+    <media id='audio' src='samples/arcade.mp3' descriptor='desc'>
+      <property name='balanceLevel' value='-1'/>
+    </media>
+    <media id='audio2' src='samples/bunny.mp3'>
       <property name='soundLevel' value='0'/>
     </media>
-
-    <media id='img' src='../samples/gnu.png' descriptor='desc4'>
+    <media id='img' src='samples/gnu.png' descriptor='desc4'>
       <property name='top'/>
     </media>
-    
-    <media id='video' src='../samples/bunny.ogg' descriptor='desc' > <!-- Video com audio -->
-      <property name='rate' value='2'/>
-      <property name="soundLevel" value="1"/>
+    <media id='video' src='samples/bunny.ogg' descriptor='desc' >
+      <!-- Video com audio -->
+      <property name='soundLevel' value="0"/>
       <area id='videoArea1' begin='5s'/>
       <area id='videoArea2' begin='10s'/>
     </media>
-
-    <media id='video2' src='../samples/animGar.mp4' descriptor='desc3' > <!-- Video sem audio -->
+    <media id='video2' src='samples/animGar.mp4' descriptor='desc3' >
+      <!-- Video sem audio -->
       <property name='soundLevel' value="0"/>
       <area id='video2Area1' begin='5s'/>
       <area id='video2Area2' begin='10s'/>
     </media>
-       
     <link xconnector="onBeginStart">
       <bind role="onBegin" component="audio" />
-      <bind role="start" component="video" /> <!-- Video com audio -->
-      <bind role="start" component="video2" /> <!-- Video sem audio -->
+      <bind role="start" component="video" />
+      <!-- Video com audio -->
+      <bind role="start" component="video2" />
+      <!-- Video sem audio -->
       <bind role="start" component="img" />
+      <!-- <bind role="start" component="audio" /> -->
     </link>
-
-    <!-- Set seek video. 
-         RED: 15s. -->
+    <!-- Set soundLevel audio.
+         RED: -1; GREEN: 100%; YELLOW: 0. -->
     <link xconnector="onKeySelectionSet">
       <bind role='onSelection' component='img'>
-        <bindParam name='keyCode' value='RED'/>        
+        <bindParam name='keyCode' value='RED'/>
       </bind>
-      <bind role="set" component="video" interface="rate">
-        <bindParam name="var" value="-1"/>
-      </bind>
-    </link>
-
-    <link xconnector="onKeySelectionSet">
-      <bind role='onSelection' component='img'>
-        <bindParam name='keyCode' value='GREEN'/>        
-      </bind>
-      <bind role="set" component="video" interface="rate">
-        <bindParam name="var" value="0"/>
+      <bind role="set" component="audio" interface="balanceLevel">
+        <bindParam name="var" value="-100%"/>
       </bind>
     </link>
-    
     <link xconnector="onKeySelectionSet">
       <bind role='onSelection' component='img'>
-        <bindParam name='keyCode' value='YELLOW'/>        
+        <bindParam name='keyCode' value='GREEN'/>
       </bind>
-      <bind role="set" component="video" interface="rate">
+      <bind role="set" component="audio" interface="balanceLevel">
         <bindParam name="var" value="1"/>
       </bind>
     </link>
-
     <link xconnector="onKeySelectionSet">
       <bind role='onSelection' component='img'>
-        <bindParam name='keyCode' value='BLUE'/>        
+        <bindParam name='keyCode' value='YELLOW'/>
       </bind>
-      <bind role="set" component="video" interface="rate">
-        <bindParam name="var" value="2"/>
+      <bind role="set" component="audio" interface="balanceLevel">
+        <bindParam name="var" value="0"/>
+      </bind>
+    </link>
+    <!-- Set pause and resume video.
+         BLUE: pause; ENTER: resume. -->
+    <link xconnector="onKeySelectionPause">
+      <bind role='onSelection' component='video'>
+        <!-- Video com audio -->
+        <!-- <bind role='onSelection' component='img'> -->
+        <bindParam name='keyCode' value='BLUE'/>
+      </bind>
+      <bind role="pause" component="video" />
+    </link>
+    <link xconnector="onKeySelectionResume">
+      <!-- <bind role='onSelection' component='video'> -->
+      <!-- Video com audio -->
+      <bind role='onSelection' component='img'>
+        <bindParam name='keyCode' value='ENTER'/>
+      </bind>
+      <bind role="resume" component="video" />
+    </link>
+    <!-- Set soundLevel audio to 0.5 when video is 5s. -->
+    <link xconnector="onBeginSet">
+      <bind role='onBegin' component='video' interface='videoArea1'/>
+      <!-- Video sem audio -->
+      <bind role="set" component="audio" interface="balanceLevel">
+        <bindParam name="var" value="0.5"/>
       </bind>
     </link>
   </body>

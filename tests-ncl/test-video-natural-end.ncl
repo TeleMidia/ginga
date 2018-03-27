@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<ncl id="menuEx" xmlns="http://www.ncl.org.br/NCL3.0/EDTVProfile">
+<ncl>
   <head>
     <regionBase>
       <region id='reg' width='50%' height='50%'/>
@@ -13,12 +12,12 @@
         <simpleCondition role="onSelection" key="$var" />
         <simpleAction role="start" />
       </causalConnector>
-       <causalConnector id="onKeySelectionStop">
+      <causalConnector id="onKeySelectionStop">
         <connectorParam name="var"/>
         <simpleCondition role="onSelection" key="$var" />
         <simpleAction role="stop" />
       </causalConnector>
-       <causalConnector id="onKeySelectionSet">
+      <causalConnector id="onKeySelectionSet">
         <connectorParam name="var"/>
         <connectorParam name="var2"/>
         <simpleCondition role="onSelection" key="$var" />
@@ -28,7 +27,7 @@
   </head>
   <body>
     <port id='start' component='vid1'/>
-    <media id='vid1' src='../samples/small.mp4' descriptor='desc' >
+    <media id='vid1' src='samples/small.mp4' descriptor='desc' >
       <property name='freeze' value="false"/>
     </media>
   </body>
