@@ -1,1 +1,3 @@
-<ncl><body/></ncl>
+<ncl>
+  <body/>
+</ncl>

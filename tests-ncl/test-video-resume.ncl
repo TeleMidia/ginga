@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<ncl id="menuEx" xmlns="http://www.ncl.org.br/NCL3.0/EDTVProfile">
+<ncl>
   <head>
     <regionBase>
       <region id='reg' width='640' height='480'/>
@@ -36,28 +35,17 @@
     <media id='video' src='../samples/bunny.ogg' descriptor='desc' >
       <property name="soundLevel" value="0"/>
     </media>
-    <media id='video2' src='../samples/animGar.mp4' descriptor='desc2'>      
+    <media id='video2' src='../samples/animGar.mp4' descriptor='desc2'>
       <area id='area1' begin='5s' />
     </media>
     <link xconnector="onKeySelectionPause">
       <bind role='onSelection' component='video'>
-        <bindParam name='keyCode' value='RED'/>        
+        <bindParam name='keyCode' value='RED'/>
       </bind>
       <bind role="pause" component="video" />
     </link>
-
-    <!-- <link xconnector="onKeySelectionResume">
-      <bind role='onSelection' component='video'>
-        <bindParam name='keyCode' value='GREEN'/>
-      </bind>
-      <bind role="resume" component="video" />
-    </link> -->
-
-   <!--  <link xconnector="onBeginResume">
-      <bind role="onBegin" component="video2" interface="area1" />
-      <bind role="resume" component="video" />
-    </link> -->
-
+    <!-- <link xconnector="onKeySelectionResume"><bind role='onSelection' component='video'><bindParam name='keyCode' value='GREEN'/></bind><bind role="resume" component="video" /></link> -->
+    <!--  <link xconnector="onBeginResume"><bind role="onBegin" component="video2" interface="area1" /><bind role="resume" component="video" /></link> -->
     <link xconnector="onKeySelectionResume">
       <bind role='onSelection' component='video'>
         <bindParam name='keyCode' value='BLUE'/>
