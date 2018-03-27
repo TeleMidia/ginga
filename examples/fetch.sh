@@ -30,7 +30,6 @@ APPS="$APPS vivamais-peso"
 
 URI=http://www.telemidia.puc-rio.br/~gflima/misc/nclapps
 URI_PATCHS=https://raw.githubusercontent.com/andrelbd1/ginga_aplications/master/
-# declare -A PATCHS
 PATCHS="comerciais-proview/main.ncl comerciais-proview/connbase.ncl formula1/formula1.ncl hackerteen/hackerteen.lua hackerteen/hackerteen.ncl matrix/matrix.ncl matrixEstresse30.conn orchestra/orchestra.ncl pixelation/pixelation.ncl proderj/proderj.ncl roteiro-do-dia/connectorBase.ncl roteiro-do-dia/descriptorBase.ncl roteiro-do-dia/main.ncl roteiro-dlso-dia/regionBase.ncl velha/connbase.ncl velha/main.ncl vivamais-alim/vivamais.ncl vivamais-alim/vivamais30.conn vivamais-peso/peso.deps vivamais-peso/peso.lua"
 
 for app in $APPS; do
