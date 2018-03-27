@@ -64,6 +64,5 @@
       <bind role="onEnd" component="switch" interface="pBlue"/>
       <bind role="start" component="switch" interface="pYellow"/>
     </link>
-
   </body>
 </ncl>

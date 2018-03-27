@@ -30,34 +30,49 @@ main (void)
   g_assert_null (Parser::parseFile ("nonexistent", 100, 100, nullptr));
 
   // Sanity checks.
-  path = xpathbuildabs (ABS_TOP_SRCDIR, "tests-ncl");
-  dir = g_dir_open (path.c_str (), 0, nullptr);
-  g_assert_nonnull (dir);
+  vector<string> nclFolders;
+  nclFolders.push_back (xpathbuildabs (ABS_TOP_SRCDIR, "tests-ncl"));
+  nclFolders.push_back (
+      xpathbuildabs (ABS_TOP_SRCDIR, "tests-ncl/generated"));
+  nclFolders.push_back (
+      xpathbuildabs (ABS_TOP_SRCDIR, "examples/hrace/"));
+  nclFolders.push_back (
+      xpathbuildabs (ABS_TOP_SRCDIR, "examples/luarocks/"));
+  nclFolders.push_back (
+      xpathbuildabs (ABS_TOP_SRCDIR, "examples/pacman/"));
+  nclFolders.push_back (
+      xpathbuildabs (ABS_TOP_SRCDIR, "examples/primeiro-joao/"));
 
-  while ((entry = g_dir_read_name (dir)) != nullptr)
+  for (int i = 0; i < nclFolders.size (); i++)
     {
-      string entry_path;
-      Document *doc;
-      string errmsg;
+      dir = g_dir_open (nclFolders[i].c_str (), 0, nullptr);
+      g_assert_nonnull (dir);
 
-      entry_path = xpathbuildabs (path, string (entry));
-      if (!xstrhassuffix (entry_path, ".ncl"))
-        continue;
+      while ((entry = g_dir_read_name (dir)) != nullptr)
+        {
+          string entry_path;
+          Document *doc;
+          string errmsg;
 
-      errmsg = "";
-      doc = Parser::parseFile (entry_path, 100, 100, &errmsg);
-      if (doc == nullptr)
-        {
-          g_printerr ("%s: %s\n", entry, errmsg.c_str ());
-          g_assert_not_reached ();
+          entry_path = xpathbuildabs (nclFolders[i], string (entry));
+          if (!xstrhassuffix (entry_path, ".ncl"))
+            continue;
+
+          errmsg = "";
+          doc = Parser::parseFile (entry_path, 100, 100, &errmsg);
+          if (doc == nullptr)
+            {
+              g_printerr ("%s: %s\n", entry, errmsg.c_str ());
+              g_assert_not_reached ();
+            }
+          else
+            {
+              g_assert (errmsg == "");
+            }
+          delete doc;
         }
-      else
-        {
-          g_assert (errmsg == "");
-        }
-      delete doc;
+
+      g_dir_close (dir);
     }
-
-  g_dir_close (dir);
   exit (EXIT_SUCCESS);
 }

@@ -1,6 +1,5 @@
 <ncl>
-  <head>
-  </head>
+  <head></head>
   <body>
     <port id="start1" component="m1"/>
     <port id="start2" component="m2"/>
