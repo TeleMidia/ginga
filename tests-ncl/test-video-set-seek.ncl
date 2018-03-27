@@ -135,19 +135,19 @@
     <!-- <port id='start2' component='img'/> -->
     <!-- <port id='start4' component='video'/> -->
     <!-- <port id='start7' component='audio2'/> -->
-    <media id='audio' src='../samples/arcade.mp3' descriptor='desc'>
+    <media id='audio' src='samples/arcade.mp3' descriptor='desc'>
       <property name='soundLevel' value='0'/>
     </media>
-    <media id='img' src='../samples/gnu.png' descriptor='desc4'>
+    <media id='img' src='samples/gnu.png' descriptor='desc4'>
       <property name='top'/>
     </media>
-    <media id='video' src='../samples/bunny.ogg' descriptor='desc' >
+    <media id='video' src='samples/bunny.ogg' descriptor='desc' >
       <!-- Video com audio -->
       <property name='time' />
       <property name="soundLevel" value="1"/>
       <!-- <area id='videoArea1' begin='9s'/><area id='videoArea2' begin='18s'/> -->
     </media>
-    <media id='video2' src='../samples/animGar.mp4' descriptor='desc3' >
+    <media id='video2' src='samples/animGar.mp4' descriptor='desc3' >
       <!-- Video sem audio -->
       <property name='soundLevel' value="0"/>
       <area id='video2Area1' begin='5s'/>

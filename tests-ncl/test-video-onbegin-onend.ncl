@@ -25,9 +25,9 @@
   </head>
   <body>
     <port id='start' component='vid1'/>
-    <media id='vid1' src='../samples/small.mp4' descriptor='desc' />
-    <media id='vid2' src='../samples/bunny.ogg' descriptor='desc' />
-    <media id='img1' src='../samples/gnu.png' descriptor='desc2' />
+    <media id='vid1' src='samples/small.mp4' descriptor='desc' />
+    <media id='vid2' src='samples/bunny.ogg' descriptor='desc' />
+    <media id='img1' src='samples/gnu.png' descriptor='desc2' />
     <link xconnector="onBeginStart">
       <bind role="onBegin" component="vid1" />
       <bind role="start" component="img1" />

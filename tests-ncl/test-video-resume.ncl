@@ -32,10 +32,10 @@
   <body>
     <port id='start' component='video'/>
     <port id='start2' component='video2'/>
-    <media id='video' src='../samples/bunny.ogg' descriptor='desc' >
+    <media id='video' src='samples/bunny.ogg' descriptor='desc' >
       <property name="soundLevel" value="0"/>
     </media>
-    <media id='video2' src='../samples/animGar.mp4' descriptor='desc2'>
+    <media id='video2' src='samples/animGar.mp4' descriptor='desc2'>
       <area id='area1' begin='5s' />
     </media>
     <link xconnector="onKeySelectionPause">
