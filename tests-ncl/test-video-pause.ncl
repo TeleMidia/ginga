@@ -19,7 +19,7 @@
   </head>
   <body>
     <port id='start' component='video'/>
-    <media id='video' src='../samples/bunny.ogg' descriptor='desc' >
+    <media id='video' src='samples/bunny.ogg' descriptor='desc' >
       <area id='area1' begin='5s' />
     </media>
     <link xconnector="onBeginPause">

@@ -27,7 +27,7 @@
   </head>
   <body>
     <port id='start' component='vid1'/>
-    <media id='vid1' src='../samples/small.mp4' descriptor='desc' >
+    <media id='vid1' src='samples/small.mp4' descriptor='desc' >
       <property name='freeze' value="false"/>
     </media>
   </body>

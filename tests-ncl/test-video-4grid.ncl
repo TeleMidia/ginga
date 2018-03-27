@@ -16,14 +16,14 @@
   <body>
     <port id="start1" component="m1"/>
     <port id="start2" component="m2"/>
-    <media id="m1" src='../samples/bunny.ogg' descriptor="desc1"/>
-    <media id="m2" src='../samples/bunny.ogg' descriptor="desc2"/>
+    <media id="m1" src='samples/bunny.ogg' descriptor="desc1"/>
+    <media id="m2" src='samples/bunny.ogg' descriptor="desc2"/>
     <port id="startctx" component="ctx"/>
     <context id="ctx">
       <port id="start3" component="m3"/>
       <!-- <port id="start4" component="m4"/> -->
-      <media id="m3" src='../samples/bunny.ogg' descriptor="desc3"/>
-      <media id="m4" src='../samples/bunny.ogg' descriptor="desc4"/>
+      <media id="m3" src='samples/bunny.ogg' descriptor="desc3"/>
+      <media id="m4" src='samples/bunny.ogg' descriptor="desc4"/>
     </context>
   </body>
 </ncl>

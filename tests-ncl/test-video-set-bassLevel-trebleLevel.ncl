@@ -134,12 +134,12 @@
     <port id='start1' component='audio'/>
     <port id='start2' component='img' />
     <port id='start3' component='video'/>
-    <media id='audio' src='../samples/arcade.mp3' descriptor='desc'>
+    <media id='audio' src='samples/arcade.mp3' descriptor='desc'>
       <property name='trebleLevel' value='0'/>
       <property name='bassLevel' value='0'/>
     </media>
-    <media id='img' src='../samples/gnu.png' descriptor='desc4'/>
-    <media id='video' src='../samples/bunny.ogg' descriptor='desc' >
+    <media id='img' src='samples/gnu.png' descriptor='desc4'/>
+    <media id='video' src='samples/bunny.ogg' descriptor='desc' >
       <!-- Video com audio -->
       <property name='soundLevel' value="0"/>
       <area id='videoArea1' begin='5s'/>
