@@ -209,6 +209,67 @@ Document::evalAction (Event *event, Event::Transition transition,
 }
 
 /**
+ * @brief Evaluates action over Context.
+ */
+list<Action>
+Document::evalActionInContext (Action act, Context *ctx)
+{
+  list<Action> stack;
+  Event *evt;
+
+  evt = act.event;
+  g_assert_nonnull (evt);
+
+  if (!ctx->getLinksStatus ())
+    return stack;
+  for (auto link : *ctx->getLinks ())
+    {
+      for (auto cond : link.first)
+        {
+          Predicate *pred;
+
+          if (cond.event != evt || cond.transition != act.transition)
+            continue;
+
+          pred = cond.predicate;
+          if (pred != nullptr && !this->evalPredicate (pred))
+            continue;
+
+          // Success.
+          auto acts = link.second;
+          for (auto ri = acts.rbegin (); ri != acts.rend (); ++ri)
+            {
+              Action next_act = *(ri);
+              string s;
+              Time delay;
+
+              if (!this->evalPropertyRef (next_act.delay, &s))
+                {
+                  s = next_act.delay;
+                }
+
+              delay = ginga::parse_time (s);
+
+              if (delay == 0 || delay == GINGA_TIME_NONE)
+                {
+                  stack.push_back (*ri);
+                }
+              else
+                {
+                  Event *next_evt = next_act.event;
+                  g_assert_nonnull (next_evt);
+                  Object *next_obj = next_evt->getObject ();
+                  g_assert_nonnull (next_obj);
+
+                  ctx->addDelayedAction (next_evt, next_act.transition,
+                                         next_act.value, delay);
+                }
+            }
+        }
+    }
+}
+
+/**
  * @brief Evaluates action over document.
  */
 int
@@ -227,7 +288,6 @@ Document::evalAction (Action init)
       Object *obj;
       Composition *comp;
       Context *ctx;
-      bool done;
 
       act = stack.back ();
       stack.pop_back ();
@@ -243,84 +303,35 @@ Document::evalAction (Action init)
         continue;
 
       n++;
-      done = false;
       obj = evt->getObject ();
       g_assert_nonnull (obj);
-
-      // Trigger links in parent context and ancestors
       comp = obj->getParent ();
+
+      // If parent composition is a context
       if (comp != nullptr &&
           instanceof (Context *, comp) && comp->isOccurring ())
         {
           ctx = cast (Context *, comp);
           g_assert_nonnull (ctx);
 
-        trigger:
-          // Trigger links in current context.
-          if (ctx->getLinksStatus ())
-            {
-              for (auto link : *ctx->getLinks ())
-                {
-                  for (auto cond : link.first)
-                    {
-                      Predicate *pred;
+          // Trigger links in the parent context
+          list<Action> ret = evalActionInContext (act, ctx);
+          stack.insert (stack.end (), ret.begin (), ret.end ());
 
-                      if (cond.event != evt
-                          || cond.transition != act.transition)
-                        continue;
-
-                      pred = cond.predicate;
-                      if (pred != nullptr && !this->evalPredicate (pred))
-                        continue;
-
-                      // Success.
-                      auto acts = link.second;
-                      for (auto ri = acts.rbegin (); ri != acts.rend ();
-                           ++ri)
-                        {
-                          Action next_act = *(ri);
-                          string s;
-                          Time delay;
-
-                          if (!this->evalPropertyRef (next_act.delay, &s))
-                            {
-                              s = next_act.delay;
-                            }
-
-                          delay = ginga::parse_time (s);
-
-                          if (delay == 0 || delay == GINGA_TIME_NONE)
-                            {
-                              stack.push_back (*ri);
-                            }
-                          else
-                            {
-                              Event *next_evt = next_act.event;
-                              g_assert_nonnull (next_evt);
-                              Object *next_obj = next_evt->getObject ();
-                              g_assert_nonnull (next_obj);
-
-                              comp->addDelayedAction (
-                                  next_evt, next_act.transition,
-                                  next_act.value, delay);
-                            }
-                        }
-                    }
-                }
-            }
-
-          // Trigger links in the parent context, if the event object is
-          // pointed by a port in the parent context.
+          // If the event object is pointed by a port in the parent context,
+          // trigger links in the parent context ( and ancestors)
           for (auto port : *ctx->getPorts ())
             {
               if (port->getObject () == evt->getObject ()
                   && ctx->getParent () != nullptr)
                 {
                   ctx = cast (Context *, ctx->getParent ());
-                  goto trigger;
+                  list<Action> ret = evalActionInContext (act, ctx);
+                  stack.insert (stack.end (), ret.begin (), ret.end ());
                 }
             }
         }
+      // If parent composition is a switch
       else if (comp != nullptr && instanceof (Switch *, comp))
         {
           // Trigger the switchPort labelled action mapped to the switch's
@@ -333,8 +344,8 @@ Document::evalAction (Action init)
                   if (mapped_evt->getObject () == evt->getObject ()
                       && swtch->getParent () != nullptr)
                     {
-                      Event *label_evt = swtch->getEvent (Event::PRESENTATION,
-                                                          swtchPort.first);
+                      Event *label_evt = swtch->getEvent (
+                          Event::PRESENTATION, swtchPort.first);
                       g_assert_nonnull (label_evt);
 
                       // Do the same action in the "equivalent" switchPort
@@ -347,12 +358,12 @@ Document::evalAction (Action init)
         }
 
       // If event object is a context, trigger the context itself
-      if (!done && instanceof (Context *, obj))
+      if (instanceof (Context *, obj))
         {
           ctx = cast (Context *, obj);
           g_assert_nonnull (ctx);
-          done = true;
-          goto trigger;
+          list<Action> ret = evalActionInContext (act, ctx);
+          stack.insert (stack.end (), ret.begin (), ret.end ());
         }
     }
   return n;
