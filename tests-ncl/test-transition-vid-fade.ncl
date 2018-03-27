@@ -24,7 +24,6 @@
     <port id='port2' component='vid2'/>
     <port id='port3' component='vid3'/>
     <port id='port4' component='vid4'/>
-
     <media id='vid1' src='samples/animGar.mp4' descriptor='desc1' />
     <media id='vid2' src='samples/animGar.mp4' descriptor='desc2' />
     <media id='vid3' src='samples/animGar.mp4' descriptor='desc3' />

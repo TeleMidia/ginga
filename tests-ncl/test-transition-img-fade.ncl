@@ -24,7 +24,6 @@
     <port id='port2' component='img2'/>
     <port id='port3' component='img3'/>
     <port id='port4' component='img4'/>
-
     <media id='img1' src='samples/felis.jpg' descriptor='desc1' />
     <media id='img2' src='samples/felis.jpg' descriptor='desc2' />
     <media id='img3' src='samples/felis.jpg' descriptor='desc3' />
