@@ -151,7 +151,7 @@
 /tests/test-Media-focusIndex
 /tests/test-Media-explicitDur
 /tests/test-Media-nested-explicitDur
-/tests/test-Media-start-over-anchors
+/tests/test-Media-anchors-started-from-ports
 /tests/test-MediaSettings-instances
 /tests/test-MediaSettings-new
 /tests/test-Object-addAlias
