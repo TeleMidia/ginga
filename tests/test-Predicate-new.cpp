@@ -135,11 +135,13 @@ main (void)
     child1->setTest ("a", Predicate::EQ, "a");
     pred->addChild (child1);
     g_assert (pred->getChildren ()->size () == 1);
+    g_assert (child1->getParent () == pred);
 
     child2 = new Predicate (Predicate::ATOM);
     child2->setTest ("b", Predicate::EQ, "b");
     pred->addChild (child2);
     g_assert (pred->getChildren ()->size () == 2);
+    g_assert (child2->getParent () == pred);
 
     delete pred;
   }
