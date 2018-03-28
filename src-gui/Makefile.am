@@ -21,6 +21,7 @@ include $(top_srcdir)/build-aux/Makefile.am.common
 SUBDIRS= icons style
 
 AM_CPPFLAGS= -I$(top_srcdir)/lib -I$(top_builddir)/lib\
+  -DABS_TOP_SRCDIR=\"$(abs_top_srcdir)\"\
   -DGINGADATADIR=\"$(gingadatadir)\"
 AM_CXXFLAGS= $(CAIRO_CFLAGS) $(GLIB_CFLAGS) $(GTK_CFLAGS) $(LIBXML_CFLAGS) $(SOUP_CFLAGS)
 AM_LDFLAGS= $(CAIRO_LIBS) $(GLIB_LIBS) $(GTK_LIBS) $(LIBXML_LIBS) $(SOUP_LIBS)

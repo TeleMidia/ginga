@@ -142,7 +142,7 @@ bool
 loadApplicationsXML ()
 {
   const char *docname
-      = g_strdup ("/Users/antoniobusson/git/ginga/src-gui/ncl-apps.xml");
+      = g_strdup (ABS_TOP_SRCDIR"/src-gui/ncl-apps.xml");
 
   xmlDocPtr doc;
   xmlNodePtr cur;
