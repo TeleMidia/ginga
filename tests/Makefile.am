@@ -236,6 +236,10 @@ progs+= test-Context-ports-started-from-ports
 test_Context_ports_started_from_ports_SOURCES=\
   test-Context-ports-started-from-ports.cpp
 
+progs+= test-Context-ports-started-from-links
+test_Context_ports_started_from_links_SOURCES=\
+  test-Context-ports-started-from-links.cpp
+
 progs+= test-Event-transition-Media-stop
 test_Event_transition_Media_stop_SOURCES=\
   test-Event-transition-Media-stop.cpp
