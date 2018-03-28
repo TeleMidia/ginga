@@ -26,6 +26,7 @@ APPS="$APPS proderj"
 APPS="$APPS velha"
 APPS="$APPS velha"
 APPS="$APPS vivamais-peso"
+APPS="$APPS vivamais-alim"
 
 URI=http://www.telemidia.puc-rio.br/~gflima/misc/nclapps
 URI_PATCHS=https://raw.githubusercontent.com/andrelbd1/ginga_aplications/master/
