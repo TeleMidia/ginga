@@ -163,14 +163,14 @@ main (void)
       delete fmt;
     }
 
-
-    // start in anchor with begin nonzero and link waiting another anchor begin
-    // with time before the begin of the first anchor
-    for (int i = 0; i < samples.size (); i++)
+  // start in anchor with begin nonzero and link waiting another anchor
+  // begin with time before the begin of the first anchor
+  for (int i = 0; i < samples.size (); i++)
     {
       Formatter *fmt;
       Document *doc;
-  tests_parse_and_start (&fmt, &doc, xstrbuild ("\
+      tests_parse_and_start (&fmt, &doc,
+                             xstrbuild ("\
 <ncl>\n\
   <head>\n\
     <connectorBase>\n\
@@ -198,7 +198,7 @@ main (void)
     </link>\n\
   </body>\n\
 </ncl>\n",
-                                    samples[i].uri, samples[i].uri));
+                                        samples[i].uri, samples[i].uri));
 
       Context *body = cast (Context *, doc->getRoot ());
       g_assert_nonnull (body);
@@ -235,13 +235,14 @@ main (void)
       delete fmt;
     }
 
-    // start in anchor with non-zero end and link waiting
-    // an anchor end with time after the end of the first anchor
-    for (int i = 0; i < samples.size (); i++)
+  // start in anchor with non-zero end and link waiting
+  // an anchor end with time after the end of the first anchor
+  for (int i = 0; i < samples.size (); i++)
     {
       Formatter *fmt;
       Document *doc;
-      tests_parse_and_start (&fmt, &doc, xstrbuild ("\
+      tests_parse_and_start (&fmt, &doc,
+                             xstrbuild ("\
 <ncl>\n\
   <head>\n\
     <connectorBase>\n\
@@ -268,7 +269,7 @@ main (void)
     </link>\n\
   </body>\n\
 </ncl>\n",
-                                    samples[i].uri, samples[i].uri));
+                                        samples[i].uri, samples[i].uri));
 
       Context *body = cast (Context *, doc->getRoot ());
       g_assert_nonnull (body);
@@ -304,13 +305,14 @@ main (void)
       delete fmt;
     }
 
-    // start in anchor with non-zero end and link waiting an anchor with end
-    // time the end before to the first anchor
-    for (int i = 0; i < samples.size (); i++)
+  // start in anchor with non-zero end and link waiting an anchor with end
+  // time the end before to the first anchor
+  for (int i = 0; i < samples.size (); i++)
     {
       Formatter *fmt;
       Document *doc;
-  tests_parse_and_start (&fmt, &doc, xstrbuild ("\
+      tests_parse_and_start (&fmt, &doc,
+                             xstrbuild ("\
 <ncl>\n\
   <head>\n\
     <connectorBase>\n\
@@ -337,7 +339,7 @@ main (void)
     </link>\n\
   </body>\n\
 </ncl>\n",
-                                    samples[i].uri, samples[i].uri));
+                                        samples[i].uri, samples[i].uri));
 
       Context *body = cast (Context *, doc->getRoot ());
       g_assert_nonnull (body);
@@ -374,12 +376,13 @@ main (void)
       delete fmt;
     }
 
-    // start an anchor and start another anchor
-    for (int i = 0; i < samples.size (); i++)
+  // start an anchor and start another anchor
+  for (int i = 0; i < samples.size (); i++)
     {
       Formatter *fmt;
       Document *doc;
-      tests_parse_and_start (&fmt, &doc,xstrbuild ("\
+      tests_parse_and_start (&fmt, &doc,
+                             xstrbuild ("\
 <ncl>\n\
   <head>\n\
     <connectorBase>\n\
@@ -406,7 +409,7 @@ main (void)
     </link>\n\
   </body>\n\
 </ncl>\n",
-                                    samples[i].uri, samples[i].uri));
+                                        samples[i].uri, samples[i].uri));
 
       Context *body = cast (Context *, doc->getRoot ());
       g_assert_nonnull (body);

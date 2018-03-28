@@ -34,7 +34,8 @@ main (void)
     <port id='start' component='m'/>\n\
     <media id='m' src='%s'/>\n\
   </body>\n\
-</ncl>\n", samples[i].uri));
+</ncl>\n",
+                                                    samples[i].uri));
 
       Context *body = cast (Context *, doc->getRoot ());
       g_assert_nonnull (body);

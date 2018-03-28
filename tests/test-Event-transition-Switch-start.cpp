@@ -53,8 +53,8 @@ main (void)
     Event *body_lambda = body->getLambda ();
     g_assert_nonnull (body_lambda);
 
-    MediaSettings *stgs = cast (MediaSettings *,
-                                doc->getObjectByIdOrAlias ("stgs"));
+    MediaSettings *stgs
+        = cast (MediaSettings *, doc->getObjectByIdOrAlias ("stgs"));
     g_assert_nonnull (stgs);
     Event *stgs_lambda = stgs->getLambda ();
     g_assert_nonnull (stgs_lambda);
@@ -83,7 +83,8 @@ main (void)
     g_assert (m1_lambda->getState () == Event::SLEEPING);
     g_assert (m2_lambda->getState () == Event::SLEEPING);
 
-    // After advancing time, s1@lambda and m1@lambda are OCCURRING. m2@lambda
+    // After advancing time, s1@lambda and m1@lambda are OCCURRING.
+    // m2@lambda
     // is not selected, and is not occurring.
     fmt->sendTick (0, 0, 0);
     g_assert (body_lambda->getState () == Event::OCCURRING);

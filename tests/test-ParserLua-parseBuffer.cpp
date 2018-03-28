@@ -42,7 +42,7 @@ main (void)
    }\n                                       \
 }\n                                          \
 return ncl",
-"lua");
+                           "lua");
 
     g_assert_nonnull (doc);
     g_assert (doc->getObjects ()->size () == 5);
@@ -86,7 +86,7 @@ return ncl",
    }\n                                       \
 }\n                                          \
 return ncl",
-"lua");
+                           "lua");
 
     g_assert_nonnull (doc);
     g_assert (doc->getObjects ()->size () == 5);
@@ -131,7 +131,7 @@ return ncl",
    }\n                                       \
 }\n                                          \
 return ncl",
-"lua");
+                           "lua");
 
     g_assert_nonnull (doc);
     g_assert (doc->getObjects ()->size () == 4);
@@ -175,7 +175,7 @@ return ncl",
    }\n                                        \
 }\n                                           \
 return ncl",
-"lua");
+                           "lua");
 
     g_assert_nonnull (doc);
     g_assert (doc->getObjects ()->size () == 3);
@@ -212,7 +212,7 @@ return ncl",
    }\n                                        \
 }\n                                           \
 return ncl",
-"lua");
+                           "lua");
 
     g_assert_nonnull (doc);
     g_assert (doc->getObjects ()->size () == 3);
@@ -255,7 +255,7 @@ return ncl",
    }\n                                       \
 }\n                                          \
 return ncl",
-"lua");
+                           "lua");
 
     g_assert_nonnull (doc);
     g_assert (doc->getObjects ()->size () == 5);

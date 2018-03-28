@@ -175,7 +175,7 @@ main (void)
     delete fmt;
   }
 
-    // trigger a port, which is a switch
+  // trigger a port, which is a switch
   {
     Formatter *fmt;
     Document *doc;
@@ -244,7 +244,8 @@ main (void)
     // --------------------------------
     // check start document
 
-    // TODO: In an midia inside an Switch, fix start the switch and its parent
+    // TODO: In an midia inside an Switch, fix start the switch and its
+    // parent
     g_assert (body_lambda->getState () == Event::OCCURRING);
     g_assert (m1_lambda->getState () == Event::SLEEPING);
     // g_assert (c1_lambda->getState () == Event::OCCURRING);
