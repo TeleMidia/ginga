@@ -46,7 +46,7 @@ main (void)
   auto start = std::chrono::system_clock::now ();
 
   path = xpathbuildabs (
-      ABS_TOP_SRCDIR, "tests-ncl/test-player-siggen-bit-13freq-150hz.ncl");
+      ABS_TOP_SRCDIR, "tests-ncl/test-siggen-bit-13freq-150hz.ncl");
 
   fmt = new Formatter (nullptr);
   g_assert_nonnull (fmt);
