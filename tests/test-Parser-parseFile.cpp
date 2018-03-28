@@ -34,12 +34,10 @@ main (void)
   nclFolders.push_back (xpathbuildabs (ABS_TOP_SRCDIR, "tests-ncl"));
   nclFolders.push_back (
       xpathbuildabs (ABS_TOP_SRCDIR, "tests-ncl/generated"));
-  nclFolders.push_back (
-      xpathbuildabs (ABS_TOP_SRCDIR, "examples/hrace/"));
+  nclFolders.push_back (xpathbuildabs (ABS_TOP_SRCDIR, "examples/hrace/"));
   nclFolders.push_back (
       xpathbuildabs (ABS_TOP_SRCDIR, "examples/luarocks/"));
-  nclFolders.push_back (
-      xpathbuildabs (ABS_TOP_SRCDIR, "examples/pacman/"));
+  nclFolders.push_back (xpathbuildabs (ABS_TOP_SRCDIR, "examples/pacman/"));
   nclFolders.push_back (
       xpathbuildabs (ABS_TOP_SRCDIR, "examples/primeiro-joao/"));
 

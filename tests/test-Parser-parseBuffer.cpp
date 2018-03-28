@@ -1769,8 +1769,7 @@ main (void)
   // -------------------------------------------------------------------------
 
   XFAIL ("switchPort: Missing id",
-         "<switchPort> at line 5: Missing attribute 'id'",
-         "\
+         "<switchPort> at line 5: Missing attribute 'id'", "\
 <ncl>\n\
   <head/>\n\
   <body>\n\
@@ -1782,8 +1781,7 @@ main (void)
   ");
 
   XFAIL ("mapping: Missing component",
-         "<mapping> at line 6: Missing attribute 'component'",
-         "\
+         "<mapping> at line 6: Missing attribute 'component'", "\
 <ncl>\n\
   <head/>\n\
   <body>\n\
@@ -1796,9 +1794,9 @@ main (void)
 </ncl>\n\
   ");
 
-//  XFAIL ("mapping: Bad component",
-//         "<mapping> at line 6: bad value 'x'",
-//         "\
+  //  XFAIL ("mapping: Bad component",
+  //         "<mapping> at line 6: bad value 'x'",
+  //         "\
 //<ncl>\n\
 //  <head/>\n\
 //  <body>\n\

@@ -164,7 +164,7 @@ main (void)
     delete fmt;
   }
 
-    // Port to a port, which is a switch
+  // Port to a port, which is a switch
   {
     Formatter *fmt;
     Document *doc;

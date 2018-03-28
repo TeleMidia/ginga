@@ -67,12 +67,12 @@ Switch::toString ()
 bool
 Switch::beforeTransition (Event *evt, Event::Transition transition)
 {
-  set <Event *> switchPort_evts; // The possible selected events.
+  set<Event *> switchPort_evts; // The possible selected events.
   if (evt->isLambda ())
     {
       // If we are acting on the switch's @lambda all the @lambda children
       // events can be selected.
-      for (Object *obj : *(getChildren()))
+      for (Object *obj : *(getChildren ()))
         switchPort_evts.insert (obj->getLambda ());
     }
   else
@@ -80,15 +80,16 @@ Switch::beforeTransition (Event *evt, Event::Transition transition)
       // If we are action on a switchPort we should select only the events
       // being mapped by the switchPort (and the defaultComponent?).
       auto it = _switchPorts.find (evt->getId ());
-      g_assert ( it != _switchPorts.end ());
+      g_assert (it != _switchPorts.end ());
       for (Event *e : it->second)
-          switchPort_evts.insert (e);
+        switchPort_evts.insert (e);
     }
 
   switch (evt->getType ())
     {
     case Event::PRESENTATION:
-      TRACE ("Presentation event on switchPort: %s.", evt->getId ().c_str ());
+      TRACE ("Presentation event on switchPort: %s.",
+             evt->getId ().c_str ());
 
       switch (transition)
         {
@@ -105,7 +106,8 @@ Switch::beforeTransition (Event *evt, Event::Transition transition)
               pred = item.second;
               g_assert_nonnull (pred);
 
-              // Check if the (possible) selected object is in the switchPort's
+              // Check if the (possible) selected object is in the
+              // switchPort's
               // list of possible events.
               selected_evt = nullptr;
               for (Event *e : switchPort_evts)
@@ -163,7 +165,8 @@ Switch::afterTransition (Event *evt, Event::Transition transition)
   switch (evt->getType ())
     {
     case Event::PRESENTATION:
-      TRACE ("Presentation event on switchPort: %s.", evt->getId ().c_str ());
+      TRACE ("Presentation event on switchPort: %s.",
+             evt->getId ().c_str ());
       switch (transition)
         {
         case Event::START:
@@ -207,21 +210,19 @@ Switch::addRule (Object *obj, Predicate *pred)
   _rules.push_back (std::make_pair (obj, pred));
 }
 
-const map<string, list<Event *>> *
+const map<string, list<Event *> > *
 Switch::getSwitchPorts ()
 {
   return &_switchPorts;
 }
 
 void
-Switch::addSwitchPort (const string &id, const list <Event *> &evts)
+Switch::addSwitchPort (const string &id, const list<Event *> &evts)
 {
   addPresentationEvent (id, id);
 
-  TRACE ("Adding switchPort %s to %s mapping %u evts.",
-         id.c_str (),
-         getId ().c_str (),
-         (guint) evts.size ());
+  TRACE ("Adding switchPort %s to %s mapping %u evts.", id.c_str (),
+         getId ().c_str (), (guint) evts.size ());
 
   _switchPorts[id] = evts;
 }

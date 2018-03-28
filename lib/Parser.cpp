@@ -738,14 +738,12 @@ static map<string, ParserSyntaxElt> parser_syntax_table = {
         { "switch" },
         { { "id", ATTR_ID } } },
   },
-  {
-      "mapping",
-      { ParserState::pushMapping,
-        nullptr,
-        ELT_CACHE,
-        { "switchPort" },
-        { { "component", ATTR_IDREF }, { "interface", ATTR_OPT_IDREF } } }
-  },
+  { "mapping",
+    { ParserState::pushMapping,
+      nullptr,
+      ELT_CACHE,
+      { "switchPort" },
+      { { "component", ATTR_IDREF }, { "interface", ATTR_OPT_IDREF } } } },
   {
       "bindRule",
       { ParserState::pushBindRule,
@@ -1683,7 +1681,8 @@ ParserState::resolveComponent (Composition *scope, ParserElt *elt,
  * @return \c true if successful, or \c false otherwise.
  */
 bool
-ParserState::resolveInterface (Composition *ctx, ParserElt *elt, Event **evt)
+ParserState::resolveInterface (Composition *ctx, ParserElt *elt,
+                               Event **evt)
 {
   string comp;
   string iface;
@@ -1756,8 +1755,9 @@ ParserState::resolveInterface (Composition *ctx, ParserElt *elt, Event **evt)
     }
   else if (instanceof (Switch *, obj))
     {
-      result = obj->getPresentationEvent (iface); // A switchPort is resolved
-                                                  // as a PresentationEvent.
+      result
+          = obj->getPresentationEvent (iface); // A switchPort is resolved
+                                               // as a PresentationEvent.
       if (unlikely (result == nullptr))
         goto fail;
     }
@@ -2762,7 +2762,8 @@ borderColor='%s'}",
                   for (auto bind : tests_buf)
                     {
                       for (auto &p : bind->params)
-                        tests_map.insert (std::make_pair(p.first, p.second));
+                        tests_map.insert (
+                            std::make_pair (p.first, p.second));
                     }
                   switch (type)
                     {
@@ -3654,7 +3655,6 @@ ParserState::pushSwitch (ParserState *st, ParserElt *elt)
   return true;
 }
 
-
 /// Cleans up the mapping list cache attached to a switchPort #ParserElt.
 static void
 mappingsCleanup (void *ptr)
@@ -3665,7 +3665,8 @@ mappingsCleanup (void *ptr)
 /**
  * @brief Starts the processing of \<switchPort\>.
  *
- * This function parsers \p elt and pushes it as a \<switchPort\> on the object
+ * This function parsers \p elt and pushes it as a \<switchPort\> on the
+ * object
  * stack.
  *
  * @fn ParserState::pushSwitchPort
@@ -3683,7 +3684,8 @@ ParserState::pushSwitchPort (ParserState *st, ParserElt *elt)
   g_assert (elt->getAttribute ("id", &id));
   g_assert (st->eltCacheIndexParent (elt->getNode (), &parent_elt));
   UDATA_GET (parent_elt, "switchPorts", &switchPorts);
-  UDATA_SET (elt, "mappings", new list<const ParserElt *> (), mappingsCleanup);
+  UDATA_SET (elt, "mappings", new list<const ParserElt *> (),
+             mappingsCleanup);
   switchPorts->push_back (id);
 
   return true;
@@ -3692,7 +3694,8 @@ ParserState::pushSwitchPort (ParserState *st, ParserElt *elt)
 /**
  * @brief Starts the processing of \<mapping\>.
  *
- * This function parsers \p elt and pushes it component/interface attributes in
+ * This function parsers \p elt and pushes it component/interface attributes
+ * in
  * the mappings list cache in the \<switchPort\>.
  *
  * @fn ParserState::pushSwitchPort
@@ -3703,7 +3706,7 @@ ParserState::pushSwitchPort (ParserState *st, ParserElt *elt)
 bool
 ParserState::pushMapping (ParserState *st, ParserElt *elt)
 {
-  list <ParserElt *> *mappings;
+  list<ParserElt *> *mappings;
   string component, interface;
   ParserElt *parent_elt;
 
@@ -3760,13 +3763,13 @@ ParserState::popSwitch (ParserState *st, unused (ParserElt *elt))
   for (auto switchPort_id : *switchPorts)
     {
       ParserElt *switchPort_elt;
-      list <ParserElt *> *mappings;
+      list<ParserElt *> *mappings;
 
       g_assert (st->eltCacheIndexById (switchPort_id, &switchPort_elt,
                                        { "switchPort" }));
       UDATA_GET (switchPort_elt, "mappings", &mappings);
 
-      list <Event *> mapping_evts;
+      list<Event *> mapping_evts;
       for (auto &mapping_elt : *mappings)
         {
           Event *evt;
@@ -3852,7 +3855,7 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
         }
       if (type == "application/x-ginga-settings")
         {
-          refer = st->_doc->getSettings ()->getId();
+          refer = st->_doc->getSettings ()->getId ();
           media = cast (Media *, st->_doc->getObjectByIdOrAlias (refer));
           if (media != nullptr)
             goto almost_done;
