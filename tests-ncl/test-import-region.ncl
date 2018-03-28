@@ -1,7 +1,7 @@
 <ncl>
   <head>
     <regionBase>
-      <importBase documentURI="test-misc-empty-body.ncl" alias="r"/>
+      <importBase documentURI="test-empty-body.ncl" alias="r"/>
     </regionBase>
     <descriptorBase>
       <descriptor id="d1" region="r#reg1"/>
