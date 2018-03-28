@@ -279,6 +279,10 @@ test_Object_addAlias_SOURCES= test-Object-addAlias.cpp
 progs+= test-Object-addEvent
 test_Object_addEvent_SOURCES= test-Object-addEvent.cpp
 
+# lib/PlayerSiggen.h -------------------------------------------------------
+progs+= test-Siggen-new
+test_Siggen_new_SOURCES= test-Siggen-new.cpp
+
 # lib/Media.h --------------------------------------------------------------
 progs+= test-Media-new
 test_Media_new_SOURCES= test-Media-new.cpp
