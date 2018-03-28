@@ -20,6 +20,11 @@
          cover="../ginga/examples/orchestra/app_cover.png"
          title="Orquestra"
          description="" />
+    <app src="../ginga/examples/pacman/main.ncl" 
+         thumbnail="../ginga/examples/pacman/app_thumbnail.png"
+         cover="../ginga/examples/pacman/app_cover.png"
+         title="Pacman"
+         description="" />
     <app src="../ginga/examples/pixelation/pixelation.ncl" 
          thumbnail="../ginga/examples/pixelation/app_thumbnail.png"
          cover="../ginga/examples/pixelation/app_cover.png"
