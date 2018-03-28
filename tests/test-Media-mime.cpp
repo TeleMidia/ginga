@@ -24,7 +24,6 @@ main (void)
 {
   for (int i = 2; i < samples.size (); i++)
     {
-      printf ("### %s\n", samples[i].uri);
       Formatter *fmt;
       Document *doc;
       Player *p;
