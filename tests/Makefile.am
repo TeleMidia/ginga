@@ -293,6 +293,9 @@ test_Media_mime_SOURCES= test-Media-mime.cpp
 progs+= test-Media-anchors-started-from-ports
 test_Media_anchors_started_from_ports_SOURCES= test-Media-anchors-started-from-ports.cpp
 
+progs+= test-Media-anchors-started-from-links
+test_Media_anchors_started_from_links_SOURCES= test-Media-anchors-started-from-links.cpp
+
 # lib/MediaSettings.h ------------------------------------------------------
 progs+= test-MediaSettings-instances
 test_MediaSettings_instances_SOURCES= test-MediaSettings-instances.cpp
