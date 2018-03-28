@@ -2,9 +2,9 @@
   <head></head>
   <body>
     <port id="start" component="m"/>
-    <port id ="start2" component = "m2" />
-    <port id ="start3" component = "m3" />
-    <port id ="start4" component = "m4" />
+    <port id="start2" component="m2" />
+    <port id="start3" component="m3" />
+    <port id="start4" component="m4" />
     <port id="start5" component="m5"/>
     <port id="start6" component="m6"/>
     <port id="start7" component="m7"/>
