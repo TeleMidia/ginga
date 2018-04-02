@@ -31,7 +31,6 @@ GINGA_END_DECLS
 GINGA_NAMESPACE_BEGIN
 
 // TODO:
-// switch
 // make l_parse_children to avoid duplicated code
 // remember to test if property exist before adding to document
 // make maps<> to help parsing and avoid big if/case
@@ -570,7 +569,7 @@ l_parse_link (lua_State *L)
 
   luaL_checktype (L, 3, LUA_TTABLE);
 
-  lua_rawgeti (L, 3, 1); // condition list
+  lua_rawgeti (L, 3, 1); // condition table
   luaL_checktype (L, 4, LUA_TTABLE);
   lua_pushnil (L);
   while (lua_next (L, 4) != 0)
@@ -609,7 +608,7 @@ l_parse_link (lua_State *L)
       lua_pop (L, 4);
     }
 
-  lua_rawgeti (L, 3, 2); // action list
+  lua_rawgeti (L, 3, 2); // action table
   luaL_checktype (L, 5, LUA_TTABLE);
   lua_pushnil (L);
   while (lua_next (L, 5) != 0)
@@ -652,6 +651,8 @@ l_parse_link (lua_State *L)
 
           lua_pop (L, 2);
         }
+
+      act.predicate = nullptr;
 
       actions.push_back (act);
       lua_pop (L, 5);
