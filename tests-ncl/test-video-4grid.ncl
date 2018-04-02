@@ -1,10 +1,10 @@
 <ncl>
   <head>
     <regionBase>
-      <region id="reg1" top="0%" left="0%" width="50%" height="50%"/>
-      <region id="reg2" top="0%" left="50%" width="50%" height="50%"/>
-      <region id="reg3" bottom="0%" right="0%" width="50%" height="50%"/>
-      <region id="reg4" bottom="0%" right="50%" width="50%" height="50%"/>
+      <region id='reg1' left='0' top='0' width='50%' height='50%'/>
+      <region id='reg2' left='50%' top='0' width='50%' height='50%'/>
+      <region id='reg3' left='0' top='50%' width='50%' height='50%'/>
+      <region id='reg4' left='50%' top='50%' width='50%' height='50%'/>
     </regionBase>
     <descriptorBase>
       <descriptor id="desc1" region="reg1"/>
@@ -21,7 +21,7 @@
     <port id="startctx" component="ctx"/>
     <context id="ctx">
       <port id="start3" component="m3"/>
-      <!-- <port id="start4" component="m4"/> -->
+      <port id="start4" component="m4"/>
       <media id="m3" src='samples/bunny.ogg' descriptor="desc3"/>
       <media id="m4" src='samples/bunny.ogg' descriptor="desc4"/>
     </context>
