@@ -1,11 +1,5 @@
 <ncl>
   <head>
-    <regionBase>
-      <region id="reg" width="100%" height="100%"/>
-    </regionBase>
-    <descriptorBase>
-      <descriptor id="desc" region="reg"/>
-    </descriptorBase>
     <connectorBase>
       <causalConnector id="onBeginSet">
         <connectorParam name="var"/>
@@ -16,7 +10,7 @@
   </head>
   <body>
     <port id="start" component="audio"/>
-    <media id="audio" src="samples/arcade.mp3" descriptor="desc">
+    <media id="audio" src="samples/arcade.mp3">
       <area id="a1" begin="3s"/>
       <area id="a2" begin="6s"/>
       <area id="a3" begin="9s"/>
