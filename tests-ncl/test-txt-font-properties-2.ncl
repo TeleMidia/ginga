@@ -1,11 +1,5 @@
 <ncl>
   <head>
-    <regionBase>
-      <region id="reg" width="100%" height="100%"/>
-    </regionBase>
-    <descriptorBase>
-      <descriptor id="desc" region="reg"/>
-    </descriptorBase>
     <connectorBase>
       <causalConnector id="onBeginSet">
         <connectorParam name="var"/>
@@ -16,7 +10,8 @@
   </head>
   <body>
     <port id="start" component="text"/>
-    <media id="text" src="samples/text.txt" descriptor="desc">
+    <media id="text" src="samples/text.txt">
+      <property name="bounds" value="0%,0%,100%,100%"/>
       <area id="a1" begin="1s"/>
       <area id="a2" begin="2s"/>
       <area id="a3" begin="3s"/>
