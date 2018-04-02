@@ -16,7 +16,7 @@
     <media id="m1" src="@SRC@">
       <property name="width" value="50%"/>
       <property name="height" value="50%"/>
-      <property name="background" value="red"/>
+      <property name="background" value="green"/>
       <property name="focusIndex" value="0"/>
       <property name="moveUp" value="1"/>
       <property name="moveDown" value="1"/>
@@ -28,7 +28,7 @@
       <property name="height" value="50%"/>
       <property name="bottom" value="0"/>
       <property name="right" value="0"/>
-      <property name="background" value="green"/>
+      <property name="background" value="red"/>
       <property name="focusIndex" value="1"/>
       <property name="moveUp" value="0"/>
       <property name="moveDown" value="0"/>
@@ -49,11 +49,23 @@
       <bind role="set" component="settings" interface="service.currentFocus">
         <bindParam name="var" value="0"/>
       </bind>
+      <bind role="set" component="m1" interface="background">
+        <bindParam name="var" value="green"/>
+      </bind>
+      <bind role="set" component="m2" interface="background">
+        <bindParam name="var" value="red"/>
+      </bind>
     </link>
     <link xconnector="onBeginSet">
       <bind role="onBegin" component="m3" interface="a2"/>
       <bind role="set" component="settings" interface="service.currentFocus">
         <bindParam name="var" value="1"/>
+      </bind>
+      <bind role="set" component="m1" interface="background">
+        <bindParam name="var" value="red"/>
+      </bind>
+      <bind role="set" component="m2" interface="background">
+        <bindParam name="var" value="green"/>
       </bind>
     </link>
     <link xconnector="onBeginSet">
@@ -61,11 +73,23 @@
       <bind role="set" component="settings" interface="service.currentFocus">
         <bindParam name="var" value="0"/>
       </bind>
+      <bind role="set" component="m1" interface="background">
+        <bindParam name="var" value="green"/>
+      </bind>
+      <bind role="set" component="m2" interface="background">
+        <bindParam name="var" value="red"/>
+      </bind>
     </link>
     <link xconnector="onBeginSet">
       <bind role="onBegin" component="m3" interface="a4"/>
       <bind role="set" component="settings" interface="service.currentFocus">
         <bindParam name="var" value="1"/>
+      </bind>
+      <bind role="set" component="m1" interface="background">
+        <bindParam name="var" value="red"/>
+      </bind>
+      <bind role="set" component="m2" interface="background">
+        <bindParam name="var" value="green"/>
       </bind>
     </link>
   </body>
