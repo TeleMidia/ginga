@@ -179,6 +179,15 @@ TEST_MEDIA+= test-media-svg-anim-transparency.ncl
 TEST_MEDIA+= test-media-txt-anim-transparency.ncl
 TEST_MEDIA+= test-media-vid-anim-transparency.ncl
 TEST_MEDIA+= test-media-html-anim-transparency.ncl
+# actinos (start, stop, pause, resume, abort)
+TEST_MEDIA+= test-media-aud-actions.ncl
+TEST_MEDIA+= test-media-img-actions.ncl
+TEST_MEDIA+= test-media-lua-actions.ncl
+TEST_MEDIA+= test-media-nil-actions.ncl
+TEST_MEDIA+= test-media-svg-actions.ncl
+TEST_MEDIA+= test-media-txt-actions.ncl
+TEST_MEDIA+= test-media-vid-actions.ncl
+TEST_MEDIA+= test-media-html-actions.ncl
 
 CLEANFILES+= $(TEST_MIME)
 $(TEST_MIME): test-mime*.ncl.in
