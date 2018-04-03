@@ -641,11 +641,13 @@ create_window_components ()
   g_assert_nonnull (playButton);
   g_signal_connect (playButton, "clicked",
                     G_CALLBACK (play_pause_button_callback), NULL);
+  gtk_widget_set_can_focus(playButton, FALSE);
 
   stopButton = gtk_button_new ();
   g_assert_nonnull (stopButton);
   g_signal_connect (stopButton, "clicked",
                     G_CALLBACK (stop_button_callback), NULL);
+  gtk_widget_set_can_focus(stopButton, FALSE);                  
 
   fullscreenButton = gtk_button_new ();
   g_assert_nonnull (fullscreenButton);
@@ -653,6 +655,7 @@ create_window_components ()
   gtk_widget_set_tooltip_text (fullscreenButton, "Fullscreen");
   g_signal_connect (fullscreenButton, "clicked",
                     G_CALLBACK (set_fullscreen_mode), NULL);
+  gtk_widget_set_can_focus(fullscreenButton, FALSE);                  
 
   volumeButton = gtk_volume_button_new ();
   g_assert_nonnull (volumeButton);
@@ -663,6 +666,7 @@ create_window_components ()
   gtk_widget_set_tooltip_text (settingsButton, "Preferences");
   g_signal_connect (settingsButton, "clicked", G_CALLBACK (show_optbox),
                     NULL);
+  gtk_widget_set_can_focus(settingsButton, FALSE);                  
 
   remoteButton = gtk_button_new ();
   g_assert_nonnull (remoteButton);
@@ -677,6 +681,7 @@ create_window_components ()
   gtk_widget_set_tooltip_text (toolsButton, "Tools");
   g_signal_connect (toolsButton, "clicked", G_CALLBACK (show_toolbox),
                     NULL);
+  gtk_widget_set_can_focus(toolsButton, FALSE);    
 
   debugButton = gtk_button_new ();
   g_assert_nonnull (debugButton);
