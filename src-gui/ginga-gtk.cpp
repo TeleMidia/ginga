@@ -27,7 +27,7 @@ using namespace ::std;
 #include <windows.h>
 #endif
 
-// Global formatter.
+//Global formatter
 Ginga *GINGA = nullptr;
 gchar *gingaID = nullptr;
 
@@ -76,6 +76,7 @@ main (int argc, char **argv)
   status = g_option_context_parse (ctx, &saved_argc, &saved_argv, &error);
   g_option_context_free (ctx);
 
+/*
   if (!status)
     {
       g_assert_nonnull (error);
@@ -83,6 +84,7 @@ main (int argc, char **argv)
       g_error_free (error);
       _exit (0);
     }
+*/
 
   init_ginga_data ();
   load_settings ();
@@ -102,16 +104,26 @@ main (int argc, char **argv)
   // check for ginga updates
   send_http_log_message (-1, (gchar *) "Check for Ginga updates");
   g_assert (g_setenv ("G_MESSAGES_DEBUG", "all", true));
+  
   create_main_window ();
 
   if (saved_argc > 1)
     {
-      gchar *filename = saved_argv[1];
-      gchar *ext = strrchr (filename, '.');
-      if (!g_strcmp0 (ext, ".ncl"))
-        {
-          insert_historicbox (filename);
-        }
+      printf("saved arg... \n");
+      if( strcmp(saved_argv[1], "-b") == 0)
+      {
+          printf("create bigpicture window.\n");
+          create_bigpicture_window ();
+      } 
+      else
+      {
+          gchar *filename = saved_argv[1];
+          gchar *ext = strrchr (filename, '.');
+          if (!g_strcmp0 (ext, ".ncl"))
+          {
+            insert_historicbox (filename);
+          }
+      }
     }
 
   gtk_main ();

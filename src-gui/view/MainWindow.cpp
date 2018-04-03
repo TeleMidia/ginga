@@ -483,7 +483,7 @@ keyboard_callback (unused (GtkWidget *widget), GdkEventKey *e,
         set_unfullscreen_mode ();
       else if (inBigPictureMode
                && (g_strcmp0 ((const char *) type, "press") != 0))
-        destroy_bigpicture_window ();
+         destroy_bigpicture_window ();
       break;
     case GDK_KEY_Meta_L:
     case GDK_KEY_Meta_R:
@@ -507,7 +507,7 @@ keyboard_callback (unused (GtkWidget *widget), GdkEventKey *e,
     case GDK_KEY_B:
     case GDK_KEY_b:
       if (isCrtlModifierActive)
-        create_bigpicture_window ();
+      //  create_bigpicture_window ();
       break;
     case GDK_KEY_D:
     case GDK_KEY_d:

@@ -389,7 +389,6 @@ carrousel_rotate (gint dir)
 void
 create_bigpicture_window ()
 {
-
   GdkRectangle rect;
   GdkDisplay *display = gdk_display_get_default ();
   g_assert_nonnull (display);
@@ -492,4 +491,6 @@ destroy_bigpicture_window ()
 
   GINGA->resize (presentationAttributes.resolutionWidth,
                  presentationAttributes.resolutionHeight);
+
+  exit(1);               
 }
