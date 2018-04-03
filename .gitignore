@@ -97,6 +97,7 @@
 /tests-ncl/generated/test-media-*-transparency.ncl
 /tests-ncl/generated/test-media-*-visible.ncl
 /tests-ncl/generated/test-media-*-zIndex.ncl
+/tests-ncl/generated/test-media-*-actions.ncl
 /tests-ncl/generated/test-mime-*.ncl
 /tests/Makefile
 /tests/Makefile.in
