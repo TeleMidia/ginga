@@ -99,6 +99,7 @@
 /tests-ncl/generated/test-media-*-zIndex.ncl
 /tests-ncl/generated/test-media-*-actions.ncl
 /tests-ncl/generated/test-mime-*.ncl
+/tests-ncl/generated/test-transition-*.ncl
 /tests/Makefile
 /tests/Makefile.in
 /tests/env.csh

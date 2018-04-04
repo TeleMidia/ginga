@@ -18,7 +18,7 @@
 
 include $(top_srcdir)/build-aux/Makefile.am.common
 
-BUILT_SOURCES= $(TEST_MIME) $(TEST_MEDIA)
+BUILT_SOURCES= $(TEST_MIME) $(TEST_MEDIA) $(TEST_TRANSITION)
 
 TEST_MIME=
 TEST_MIME+= test-mime-avi.ncl
@@ -189,6 +189,32 @@ TEST_MEDIA+= test-media-txt-actions.ncl
 TEST_MEDIA+= test-media-vid-actions.ncl
 TEST_MEDIA+= test-media-html-actions.ncl
 
+TEST_TRANSITION=
+# transition-barwipe
+TEST_TRANSITION+= test-transition-img-barwipe.ncl
+TEST_TRANSITION+= test-transition-lua-barwipe.ncl
+TEST_TRANSITION+= test-transition-nil-barwipe.ncl
+TEST_TRANSITION+= test-transition-svg-barwipe.ncl
+TEST_TRANSITION+= test-transition-txt-barwipe.ncl
+TEST_TRANSITION+= test-transition-vid-barwipe.ncl
+TEST_TRANSITION+= test-transition-html-barwipe.ncl
+# transition-diagonalwipe
+TEST_TRANSITION+= test-transition-img-diagonalwipe.ncl
+TEST_TRANSITION+= test-transition-lua-diagonalwipe.ncl
+TEST_TRANSITION+= test-transition-nil-diagonalwipe.ncl
+TEST_TRANSITION+= test-transition-svg-diagonalwipe.ncl
+TEST_TRANSITION+= test-transition-txt-diagonalwipe.ncl
+TEST_TRANSITION+= test-transition-vid-diagonalwipe.ncl
+TEST_TRANSITION+= test-transition-html-diagonalwipe.ncl
+# transition-fade
+TEST_TRANSITION+= test-transition-img-fade.ncl
+TEST_TRANSITION+= test-transition-lua-fade.ncl
+TEST_TRANSITION+= test-transition-nil-fade.ncl
+TEST_TRANSITION+= test-transition-svg-fade.ncl
+TEST_TRANSITION+= test-transition-txt-fade.ncl
+TEST_TRANSITION+= test-transition-vid-fade.ncl
+TEST_TRANSITION+= test-transition-html-fade.ncl
+
 CLEANFILES+= $(TEST_MIME)
 $(TEST_MIME): test-mime*.ncl.in
 	$(AM_V_GEN)\
@@ -209,6 +235,26 @@ $(TEST_MIME): test-mime*.ncl.in
 	    *) exit 1;;\
 	esac;\
 	sed -e "s,@SRC@,$$src,g" "test-mime.ncl.in" >$@
+
+CLEANFILES+= $(TEST_TRANSITION)
+$(TEST_TRANSITION): test-transition-*.ncl.in
+	$(AM_V_GEN)\
+	type=`basename $@ | sed 's,test-transition-\([a-z0-9]*\).*,\1,g'`;\
+	suffix=`basename $@ | sed 's,test-transition-[a-z0-9]*-\(.*\)\.ncl,\1,g'`;\
+	case $$type in\
+	  aud) src="samples/arcade.mp3";;\
+	  img) src="samples/gnu.png";;\
+	  lua) src="samples/fps.lua";;\
+	  nil) src="";;\
+	  svg) src="samples/vector.svg";;\
+	  txt) src="samples/text.txt";;\
+	  vid) src="samples/clock.ogv";;\
+	  html) src="samples/page.html";;\
+	    *) exit 1;;\
+	esac;\
+	src_remote="http://raw.github.com/telemidia/ginga/master//tests-ncl/$$src";\
+	sed -e "s,@SRC@,$$src,gi;s,@SRC_REMOTE@,"$$src_remote",gi"\
+         "test-transition-$$suffix.ncl.in" >$@
 
 CLEANFILES+= $(TEST_MEDIA)
 $(TEST_MEDIA): test-media-*.ncl.in
