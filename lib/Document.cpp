@@ -267,6 +267,7 @@ Document::evalActionInContext (Action act, Context *ctx)
             }
         }
     }
+  return stack;
 }
 
 /**
