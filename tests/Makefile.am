@@ -188,6 +188,9 @@ test_Document_evalPredicate_from_link_SOURCES= test-Document-evalPredicate-from-
 progs+= test-Document-evalPredicate-from-rule
 test_Document_evalPredicate_from_rule_SOURCES= test-Document-evalPredicate-from-rule.cpp
 
+progs+= test-Document-empty
+test_Document_empty_SOURCES= test-Document-empty.cpp
+
 # lib/Predicate.h ----------------------------------------------------------
 progs+= test-Predicate-new
 test_Predicate_new_SOURCES= test-Predicate-new.cpp

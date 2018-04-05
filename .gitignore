@@ -119,6 +119,7 @@
 /tests/test-Document-getObjectById
 /tests/test-Document-getObjectByIdOrAlias
 /tests/test-Document-new
+/tests/test-Document-empty
 /tests/test-Event-getEventStateAsString
 /tests/test-Event-getEventTransitionAsString
 /tests/test-Event-getEventTypeAsString
