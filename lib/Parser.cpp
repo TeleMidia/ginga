@@ -535,12 +535,13 @@ static map<string, ParserSyntaxElt> parser_syntax_table = {
         { { "id", ATTR_ID } } },
   },
   {
-      "connectorParam",
+      "connectorParam", // unused
       { nullptr,
         nullptr,
         0,
         { "causalConnector" },
-        { { "name", ATTR_NONEMPTY_NAME } } }, // unused
+        { { "name", ATTR_NONEMPTY_NAME },
+          { "type", 0 } } },
   },
   {
       "compoundCondition",
