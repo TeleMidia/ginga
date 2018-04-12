@@ -13,7 +13,7 @@
       </causalConnector>
       <causalConnector id="onResumeSet">
         <connectorParam name="var"/>
-        <simpleCondition role="onResumes"/>
+        <simpleCondition role="onResume"/>
         <simpleAction role="set" value="$var"/>
       </causalConnector>
     </connectorBase>
@@ -41,7 +41,7 @@
       <bind role="resume" component="ctx"/>
     </link>
     <link xconnector="onResumeSet">
-      <bind role="onResumes" component="ctx"/>
+      <bind role="onResume" component="ctx"/>
       <bind role="set" component="time" interface="background">
         <bindParam name="var" value="green"/>
       </bind>
