@@ -861,7 +861,7 @@ static map<string, pair<Event::Type, Event::Transition> >
       { "onEnd", { Event::PRESENTATION, Event::STOP } },
       { "onAbort", { Event::PRESENTATION, Event::ABORT } },
       { "onPause", { Event::PRESENTATION, Event::PAUSE } },
-      { "onResumes", { Event::PRESENTATION, Event::RESUME } },
+      { "onResume", { Event::PRESENTATION, Event::RESUME } },
       { "onBeginAttribution", { Event::ATTRIBUTION, Event::START } },
       { "onEndAttribution", { Event::ATTRIBUTION, Event::STOP } },
       { "onSelection", { Event::SELECTION, Event::START } },
