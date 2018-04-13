@@ -136,6 +136,8 @@ Switch::beforeTransition (Event *evt, Event::Transition transition)
           return false;
           break;
 
+        case Event::PAUSE:
+        case Event::RESUME:
         case Event::ABORT:
         case Event::STOP:
           if (_selected != nullptr)
@@ -176,7 +178,15 @@ Switch::afterTransition (Event *evt, Event::Transition transition)
           if (_selected == nullptr)
             _doc->evalAction (evt, Event::STOP);
           break;
-        
+
+        case Event::PAUSE:
+          TRACE ("pause %s", evt->getFullId ().c_str ());
+          break;
+
+        case Event::RESUME:
+          TRACE ("resume %s", evt->getFullId ().c_str ());
+          break;
+
         case Event::ABORT:
         case Event::STOP:
           Object::doStop ();
