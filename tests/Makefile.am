@@ -251,6 +251,10 @@ progs+= test-Event-transition-Context-stop
 test_Event_transition_Context_stop_SOURCES=\
   test-Event-transition-Context-stop.cpp
 
+progs+= test-Event-transition-Switch-stop
+test_Event_transition_Switch_stop_SOURCES=\
+  test-Event-transition-Switch-stop.cpp
+
 progs+= test-Event-transition-Media-abort
 test_Event_transition_Media_abort_SOURCES=\
   test-Event-transition-Media-abort.cpp
@@ -258,6 +262,10 @@ test_Event_transition_Media_abort_SOURCES=\
 progs+= test-Event-transition-Context-abort
 test_Event_transition_Context_abort_SOURCES=\
   test-Event-transition-Context-abort.cpp
+
+progs+= test-Event-transition-Switch-abort
+test_Event_transition_Switch_abort_SOURCES=\
+  test-Event-transition-Switch-abort.cpp
 
 progs+= test-Event-transition-Media-pause
 test_Event_transition_Media_pause_SOURCES=\
@@ -267,6 +275,10 @@ progs+= test-Event-transition-Context-pause
 test_Event_transition_Context_pause_SOURCES=\
   test-Event-transition-Context-pause.cpp
 
+progs+= test-Event-transition-Switch-pause
+test_Event_transition_Switch_pause_SOURCES=\
+  test-Event-transition-Switch-pause.cpp
+
 progs+= test-Event-transition-Media-resume
 test_Event_transition_Media_resume_SOURCES=\
   test-Event-transition-Media-resume.cpp
@@ -274,6 +286,10 @@ test_Event_transition_Media_resume_SOURCES=\
 progs+= test-Event-transition-Context-resume
 test_Event_transition_Context_resume_SOURCES=\
   test-Event-transition-Context-resume.cpp
+
+progs+= test-Event-transition-Switch-resume
+test_Event_transition_Switch_resume_SOURCES=\
+  test-Event-transition-Switch-resume.cpp
 
 # lib/Object.h -------------------------------------------------------------
 progs+= test-Object-addAlias

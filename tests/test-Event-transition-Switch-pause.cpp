@@ -94,13 +94,13 @@ main (void)
     // --------------------------------
     // main check
 
-    // START is not done
-    g_assert_false(swt_lambda->transition (Event::START));
+    // PAUSE is done
+    g_assert (swt_lambda->transition (Event::PAUSE));
 
-    // after start, s1@lambda is OCCURRING
+    // after start, s1@lambda is PAUSED
     g_assert (body_lambda->getState () == Event::OCCURRING);
-    g_assert (swt_lambda->getState () == Event::OCCURRING);
-    g_assert (m1_lambda->getState () == Event::OCCURRING);
+    g_assert (swt_lambda->getState () == Event::PAUSED);
+    g_assert (m1_lambda->getState () == Event::PAUSED);
     g_assert (m2_lambda->getState () == Event::SLEEPING);
 
     delete fmt;

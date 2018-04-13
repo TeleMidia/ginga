@@ -22,7 +22,7 @@ main (void)
 {
   // Presentation events ---------------------------------------------------
 
-  // @lambda: START from state OCCURRING.
+  // @lambda: RESUME from state OCCURRING.
   {
     Formatter *fmt;
     Document *doc;
@@ -83,7 +83,7 @@ main (void)
     g_assert (m1_lambda->getState () == Event::SLEEPING);
     g_assert (m2_lambda->getState () == Event::SLEEPING);
 
-    // After advancing time, s1@lambda and m1@lambda are OCCURRING.
+    // After advancing time, s1@lambda and m1@lambda is OCCURRING.
     // m2@lambda is not selected, and is not OCCURRING.
     fmt->sendTick (0, 0, 0);
     g_assert (body_lambda->getState () == Event::OCCURRING);
@@ -91,11 +91,10 @@ main (void)
     g_assert (m1_lambda->getState () == Event::OCCURRING);
     g_assert (m2_lambda->getState () == Event::SLEEPING);
 
-    // --------------------------------
     // main check
 
-    // START is not done
-    g_assert_false(swt_lambda->transition (Event::START));
+    // RESUME is not done
+    g_assert_false(swt_lambda->transition (Event::RESUME));
 
     // after start, s1@lambda is OCCURRING
     g_assert (body_lambda->getState () == Event::OCCURRING);
@@ -106,11 +105,11 @@ main (void)
     delete fmt;
   }
 
-  // @lambda: START from state SLEEPING.
+  // @lambda: RESUME from state SLEEPING.
 
   // Attribution events ----------------------------------------------------
 
-  // START from state SLEEPING.
+  // RESUME from state SLEEPING.
 
   exit (EXIT_SUCCESS);
 }
