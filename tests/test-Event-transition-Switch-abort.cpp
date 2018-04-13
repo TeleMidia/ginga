@@ -22,7 +22,7 @@ main (void)
 {
   // Presentation events ---------------------------------------------------
 
-  // @lambda: START from state OCCURRING.
+  // @lambda: ABORT from state OCCURRING.
   {
     Formatter *fmt;
     Document *doc;
@@ -83,8 +83,7 @@ main (void)
     g_assert (m1_lambda->getState () == Event::SLEEPING);
     g_assert (m2_lambda->getState () == Event::SLEEPING);
 
-    // After advancing time, s1@lambda and m1@lambda are OCCURRING.
-    // m2@lambda is not selected, and is not OCCURRING.
+    // after advance time, s1@lambda is OCCURRING
     fmt->sendTick (0, 0, 0);
     g_assert (body_lambda->getState () == Event::OCCURRING);
     g_assert (swt_lambda->getState () == Event::OCCURRING);
@@ -94,23 +93,23 @@ main (void)
     // --------------------------------
     // main check
 
-    // START is not done
-    g_assert_false(swt_lambda->transition (Event::START));
+    // ABORT is done
+    g_assert (swt_lambda->transition (Event::ABORT));
 
-    // after start, s1@lambda is OCCURRING
+    // after start, s1@lambda is SLEEPING
     g_assert (body_lambda->getState () == Event::OCCURRING);
-    g_assert (swt_lambda->getState () == Event::OCCURRING);
-    g_assert (m1_lambda->getState () == Event::OCCURRING);
+    g_assert (swt_lambda->getState () == Event::SLEEPING);
+    g_assert (m1_lambda->getState () == Event::SLEEPING);
     g_assert (m2_lambda->getState () == Event::SLEEPING);
 
     delete fmt;
   }
 
-  // @lambda: START from state SLEEPING.
+  // @lambda: ABORT from state SLEEPING.
 
   // Attribution events ----------------------------------------------------
 
-  // START from state SLEEPING.
+  // ABORT from state SLEEPING.
 
   exit (EXIT_SUCCESS);
 }
