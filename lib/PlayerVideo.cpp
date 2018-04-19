@@ -153,7 +153,7 @@ PlayerVideo::PlayerVideo (Formatter *formatter, Media *media)
   g_object_set (G_OBJECT (_playbin), "video-sink", _video.bin, nullptr);
 
   // Callbacks.
-  _callbacks.eos = nullptr; //Seldom the EOS event is not triggered by appsink.
+  _callbacks.eos = nullptr; //Seldom the EOS event is triggered by appsink.
   _callbacks.new_preroll = nullptr;
   _callbacks.new_sample = cb_NewSample;
   gst_app_sink_set_callbacks (GST_APP_SINK (_video.sink), &_callbacks, this,
