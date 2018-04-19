@@ -622,13 +622,39 @@ PlayerVideo::cb_Bus (GstBus *bus, GstMessage *msg, PlayerVideo *player)
           {
             gst_message_parse_error (msg, &error, nullptr);
             g_assert_nonnull (error);
-            ERROR ("%s", error->message);
+            
+            string advice = "";
+            switch (error->code)
+            {
+              case GST_CORE_ERROR_MISSING_PLUGIN:
+                {
+                  advice = "Check if the following plugins are installed: gstreamer1.0-plugins-good, gstreamer1.0-plugins-bad and gstreamer1.0-libav.";
+                  break;
+                }
+              default:
+                break;
+            }
+
+            ERROR ("%s %s", error->message, advice.c_str ());
           }
         else
           {
             gst_message_parse_warning (msg, &error, nullptr);
             g_assert_nonnull (error);
-            WARNING ("%s", error->message);
+
+            string advice = "";
+            switch (error->code)
+            {
+              case GST_LIBRARY_ERROR_ENCODE:
+                {
+                  advice = "You should verify if there is some decoder installed to run this file type.";
+                  break;
+                }
+              default:
+                break;
+            }
+
+            WARNING ("%s %s", error->message, advice.c_str ());
           }
         g_error_free (error);
         gst_object_unref (obj);
