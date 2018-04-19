@@ -27,9 +27,6 @@ AM_LDFLAGS= -static $(GINGA_ALL_LDFLAGS)
 LDADD= $(top_builddir)/lib/libginga.la
 EXTRA_DIST+= tests.h
 
-# Auxiliary programs.
-noinst_PROGRAMS= test-SigGen-transmission
-
 # Auxiliary scripts.
 noinst_SCRIPTS=
 
@@ -56,9 +53,6 @@ AM_TESTS_ENVIRONMENT=\
   $(NULL)
 
 # Auxiliary programs.
-
-test_SigGen_transmission_SOURCES=\
-  test-SigGen-transmission.cpp
 
 # Test applications.
 ncls=

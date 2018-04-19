@@ -173,7 +173,6 @@
 /tests/test-Predicate-atom
 /tests/test-Predicate-new
 /tests/test-Switch-new
-/tests/test-SigGen-transmission
 /tests/test-aux-ginga-parse-bool
 /tests/test-aux-ginga-parse-color
 /tests/test-aux-ginga-parse-list
