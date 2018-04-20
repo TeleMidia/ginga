@@ -213,10 +213,6 @@ progs+= test-Event-getEventTransitionAsString
 test_Event_getEventTransitionAsString_SOURCES=\
   test-Event-getEventTransitionAsString.cpp
 
-progs+= test-Event-transition-Context-start
-test_Event_transition_Context_start_SOURCES=\
-  test-Event-transition-Context-start.cpp
-
 progs+= test-Context-ports
 test_Context_ports_SOURCES=\
   test-Context-ports.cpp
@@ -228,22 +224,6 @@ test_Context_ports_started_from_ports_SOURCES=\
 progs+= test-Context-ports-started-from-links
 test_Context_ports_started_from_links_SOURCES=\
   test-Context-ports-started-from-links.cpp
-
-progs+= test-Event-transition-Context-stop
-test_Event_transition_Context_stop_SOURCES=\
-  test-Event-transition-Context-stop.cpp
-
-progs+= test-Event-transition-Context-abort
-test_Event_transition_Context_abort_SOURCES=\
-  test-Event-transition-Context-abort.cpp
-
-progs+= test-Event-transition-Context-pause
-test_Event_transition_Context_pause_SOURCES=\
-  test-Event-transition-Context-pause.cpp
-
-progs+= test-Event-transition-Context-resume
-test_Event_transition_Context_resume_SOURCES=\
-  test-Event-transition-Context-resume.cpp
 
 # lib/Object.h -------------------------------------------------------------
 progs+= test-Object-addAlias
