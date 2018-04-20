@@ -135,11 +135,9 @@
 /tests/test-Media-transition-attribution
 /tests/test-Media-transition-presentation
 /tests/test-Media-transition-selection
-/tests/test-Event-transition-Switch-abort
-/tests/test-Event-transition-Switch-pause
-/tests/test-Event-transition-Switch-resume
-/tests/test-Event-transition-Switch-start
-/tests/test-Event-transition-Switch-stop
+/tests/test-Switch-transition-attribution
+/tests/test-Switch-transition-presentation
+/tests/test-Switch-transition-selection
 /tests/test-Ginga-create
 /tests/test-Ginga-getOptionBool
 /tests/test-Ginga-getOptionInt
