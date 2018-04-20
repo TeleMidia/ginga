@@ -66,6 +66,23 @@ main (void)
       Event *m1_lambda = m1->getLambda ();
       g_assert_nonnull (m1_lambda);
 
+      Time begin, end;
+      Event *a1 = m1->getPresentationEvent ("a1");
+      a1->getInterval (&begin, &end);
+      g_assert_nonnull (a1);
+      g_assert_cmpuint (begin, ==, 10 * GINGA_SECOND);
+      g_assert_cmpuint (end, ==, GINGA_TIME_NONE);
+      Event *a2 = m1->getPresentationEvent ("a2");
+      g_assert_nonnull (a2);
+      a2->getInterval (&begin, &end);
+      g_assert_cmpuint (begin, ==, 0);
+      g_assert_cmpuint (end, ==, 20 * GINGA_SECOND);
+      Event *a3 = m1->getPresentationEvent ("a3");
+      g_assert_nonnull (a3);
+      a3->getInterval (&begin, &end);
+      g_assert_cmpuint (begin, ==, 30 * GINGA_SECOND);
+      g_assert_cmpuint (end, ==, GINGA_TIME_NONE);
+
       Media *m2 = cast (Media *, doc->getObjectById ("m2"));
       g_assert_nonnull (m2);
       Event *m2_lambda = m2->getLambda ();
@@ -79,13 +96,45 @@ main (void)
       g_assert (m2_lambda->getState () == Event::SLEEPING);
 
       fmt->sendTick (0, 0, 0);
+      // when start document, a2 is OCCURRING
       g_assert (body_lambda->getState () == Event::OCCURRING);
       g_assert (m1_lambda->getState () == Event::OCCURRING);
+      g_assert (a1->getState () == Event::SLEEPING);
+      g_assert (a2->getState () == Event::OCCURRING);
+      // TODO: this should SLEEPING
+      // g_assert (a3->getState () == Event::SLEEPING);
       g_assert (m2_lambda->getState () == Event::SLEEPING);
 
-      fmt->sendTick (20 * GINGA_SECOND, 20 * GINGA_SECOND, 0);
+      // --------------------------------
+      // main check
+
+      // when advance 10s, a1 is OCCURRING
+      fmt->sendTick (10 * GINGA_SECOND, 10 * GINGA_SECOND, 0);
       g_assert (body_lambda->getState () == Event::OCCURRING);
       g_assert (m1_lambda->getState () == Event::OCCURRING);
+      g_assert (a1->getState () == Event::OCCURRING);
+      g_assert (a2->getState () == Event::OCCURRING);
+      // TODO: this should SLEEPING
+      // g_assert (a3->getState () == Event::SLEEPING);
+      g_assert (m2_lambda->getState () == Event::SLEEPING);
+
+      // when advance more 10s, a2 is SLEEPING
+      fmt->sendTick (10 * GINGA_SECOND, 10 * GINGA_SECOND, 0);
+      g_assert (body_lambda->getState () == Event::OCCURRING);
+      g_assert (m1_lambda->getState () == Event::OCCURRING);
+      g_assert (a1->getState () == Event::OCCURRING);
+      g_assert (a2->getState () == Event::SLEEPING);
+      // TODO: this should SLEEPING
+      // g_assert (a3->getState () == Event::SLEEPING);
+      g_assert (m2_lambda->getState () == Event::OCCURRING);
+
+      // when advance more 10s, m1 is SLEEPING and m2 is OCCURRING
+      fmt->sendTick (10 * GINGA_SECOND, 10 * GINGA_SECOND, 0);
+      g_assert (body_lambda->getState () == Event::OCCURRING);
+      g_assert (m1_lambda->getState () == Event::SLEEPING);
+      g_assert (a1->getState () == Event::SLEEPING);
+      g_assert (a2->getState () == Event::SLEEPING);
+      g_assert (a3->getState () == Event::SLEEPING);
       g_assert (m2_lambda->getState () == Event::OCCURRING);
 
       delete fmt;
@@ -138,6 +187,23 @@ main (void)
       Event *m1_lambda = m1->getLambda ();
       g_assert_nonnull (m1_lambda);
 
+      Time begin, end;
+      Event *a1 = m1->getPresentationEvent ("a1");
+      a1->getInterval (&begin, &end);
+      g_assert_nonnull (a1);
+      g_assert_cmpuint (begin, ==, 10 * GINGA_SECOND);
+      g_assert_cmpuint (end, ==, GINGA_TIME_NONE);
+      Event *a2 = m1->getPresentationEvent ("a2");
+      g_assert_nonnull (a2);
+      a2->getInterval (&begin, &end);
+      g_assert_cmpuint (begin, ==, 20 * GINGA_SECOND);
+      g_assert_cmpuint (end, ==, GINGA_TIME_NONE);
+      Event *a3 = m1->getPresentationEvent ("a3");
+      g_assert_nonnull (a3);
+      a3->getInterval (&begin, &end);
+      g_assert_cmpuint (begin, ==, 30 * GINGA_SECOND);
+      g_assert_cmpuint (end, ==, GINGA_TIME_NONE);
+
       Media *m2 = cast (Media *, doc->getObjectById ("m2"));
       g_assert_nonnull (m2);
       Event *m2_lambda = m2->getLambda ();
@@ -151,13 +217,22 @@ main (void)
       g_assert (m2_lambda->getState () == Event::SLEEPING);
 
       fmt->sendTick (0, 0, 0);
+      // when advance 10s, a1 and a2 is OCCURRING
+      fmt->sendTick (10 * GINGA_SECOND, 10 * GINGA_SECOND, 0);
       g_assert (body_lambda->getState () == Event::OCCURRING);
       g_assert (m1_lambda->getState () == Event::OCCURRING);
-      g_assert (m2_lambda->getState () == Event::SLEEPING);
+      g_assert (a1->getState () == Event::OCCURRING);
+      g_assert (a2->getState () == Event::OCCURRING);
+      g_assert (a3->getState () == Event::SLEEPING);
+      g_assert (m2_lambda->getState () == Event::OCCURRING);
 
-      fmt->sendTick (20 * GINGA_SECOND, 20 * GINGA_SECOND, 0);
+      // when advance 10s, a1, a2, a3 and m2 is OCCURRING
+      fmt->sendTick (10 * GINGA_SECOND, 10 * GINGA_SECOND, 0);
       g_assert (body_lambda->getState () == Event::OCCURRING);
       g_assert (m1_lambda->getState () == Event::OCCURRING);
+      g_assert (a1->getState () == Event::OCCURRING);
+      g_assert (a2->getState () == Event::OCCURRING);
+      g_assert (a3->getState () == Event::OCCURRING);
       g_assert (m2_lambda->getState () == Event::OCCURRING);
 
       delete fmt;
@@ -210,6 +285,23 @@ main (void)
       Event *m1_lambda = m1->getLambda ();
       g_assert_nonnull (m1_lambda);
 
+      Time begin, end;
+      Event *a1 = m1->getPresentationEvent ("a1");
+      a1->getInterval (&begin, &end);
+      g_assert_nonnull (a1);
+      g_assert_cmpuint (begin, ==, 10 * GINGA_SECOND);
+      g_assert_cmpuint (end, ==, GINGA_TIME_NONE);
+      Event *a2 = m1->getPresentationEvent ("a2");
+      g_assert_nonnull (a2);
+      a2->getInterval (&begin, &end);
+      g_assert_cmpuint (begin, ==, 20 * GINGA_SECOND);
+      g_assert_cmpuint (end, ==, GINGA_TIME_NONE);
+      Event *a3 = m1->getPresentationEvent ("a3");
+      g_assert_nonnull (a3);
+      a3->getInterval (&begin, &end);
+      g_assert_cmpuint (begin, ==, 30 * GINGA_SECOND);
+      g_assert_cmpuint (end, ==, GINGA_TIME_NONE);
+
       Media *m2 = cast (Media *, doc->getObjectById ("m2"));
       g_assert_nonnull (m2);
       Event *m2_lambda = m2->getLambda ();
@@ -223,13 +315,25 @@ main (void)
       g_assert (m2_lambda->getState () == Event::SLEEPING);
 
       fmt->sendTick (0, 0, 0);
+      // when start document, a2 is OCCURRING
       g_assert (body_lambda->getState () == Event::OCCURRING);
       g_assert (m1_lambda->getState () == Event::OCCURRING);
+      g_assert (a1->getState () == Event::OCCURRING);
+      g_assert (a2->getState () == Event::OCCURRING);
+      g_assert (a3->getState () == Event::SLEEPING);
       g_assert (m2_lambda->getState () == Event::SLEEPING);
 
-      fmt->sendTick (20 * GINGA_SECOND, 20 * GINGA_SECOND, 0);
+      // --------------------------------
+      // main check
+
+      // when advance 10s, a2 and a3 is OCCURRING
+      fmt->sendTick (10 * GINGA_SECOND, 10 * GINGA_SECOND, 0);
       g_assert (body_lambda->getState () == Event::OCCURRING);
       g_assert (m1_lambda->getState () == Event::OCCURRING);
+      // TODO: this should SLEEPING
+      // g_assert (a1->getState () == Event::SLEEPING);
+      g_assert (a2->getState () == Event::OCCURRING);
+      g_assert (a3->getState () == Event::OCCURRING);
       g_assert (m2_lambda->getState () == Event::SLEEPING);
 
       delete fmt;
@@ -281,6 +385,18 @@ main (void)
       Event *m1_lambda = m1->getLambda ();
       g_assert_nonnull (m1_lambda);
 
+      Time begin, end;
+      Event *a1 = m1->getPresentationEvent ("a1");
+      a1->getInterval (&begin, &end);
+      g_assert_nonnull (a1);
+      g_assert_cmpuint (begin, ==, 10 * GINGA_SECOND);
+      g_assert_cmpuint (end, ==, 20 * GINGA_SECOND);
+      Event *a2 = m1->getPresentationEvent ("a2");
+      g_assert_nonnull (a2);
+      a2->getInterval (&begin, &end);
+      g_assert_cmpuint (begin, ==, 15 * GINGA_SECOND);
+      g_assert_cmpuint (end, ==, 25 * GINGA_SECOND);
+
       Media *m2 = cast (Media *, doc->getObjectById ("m2"));
       g_assert_nonnull (m2);
       Event *m2_lambda = m2->getLambda ();
@@ -294,12 +410,21 @@ main (void)
       g_assert (m2_lambda->getState () == Event::SLEEPING);
 
       fmt->sendTick (0, 0, 0);
+      // when start document, a1 is OCCURRING
       g_assert (body_lambda->getState () == Event::OCCURRING);
       g_assert (m1_lambda->getState () == Event::OCCURRING);
+      g_assert (a1->getState () == Event::OCCURRING);
+      g_assert (a2->getState () == Event::SLEEPING);
       g_assert (m2_lambda->getState () == Event::SLEEPING);
 
-      fmt->sendTick (25 * GINGA_SECOND, 25 * GINGA_SECOND, 0);
+      // --------------------------------
+      // main check
+
+      // when advance 15s, a1 and a2 is SLEEPING
+      fmt->sendTick (15 * GINGA_SECOND, 15 * GINGA_SECOND, 0);
       g_assert (m1_lambda->getState () == Event::SLEEPING);
+      g_assert (a1->getState () == Event::SLEEPING);
+      g_assert (a2->getState () == Event::SLEEPING);
       g_assert (m2_lambda->getState () == Event::SLEEPING);
 
       delete fmt;
@@ -351,6 +476,18 @@ main (void)
       Event *m1_lambda = m1->getLambda ();
       g_assert_nonnull (m1_lambda);
 
+      Time begin, end;
+      Event *a1 = m1->getPresentationEvent ("a1");
+      a1->getInterval (&begin, &end);
+      g_assert_nonnull (a1);
+      g_assert_cmpuint (begin, ==, 10 * GINGA_SECOND);
+      g_assert_cmpuint (end, ==, 20 * GINGA_SECOND);
+      Event *a2 = m1->getPresentationEvent ("a2");
+      g_assert_nonnull (a2);
+      a2->getInterval (&begin, &end);
+      g_assert_cmpuint (begin, ==, 5 * GINGA_SECOND);
+      g_assert_cmpuint (end, ==, 15 * GINGA_SECOND);
+
       Media *m2 = cast (Media *, doc->getObjectById ("m2"));
       g_assert_nonnull (m2);
       Event *m2_lambda = m2->getLambda ();
@@ -364,13 +501,22 @@ main (void)
       g_assert (m2_lambda->getState () == Event::SLEEPING);
 
       fmt->sendTick (0, 0, 0);
+      // when start document, a1 and a2 is OCCURRING
       g_assert (body_lambda->getState () == Event::OCCURRING);
       g_assert (m1_lambda->getState () == Event::OCCURRING);
+      g_assert (a1->getState () == Event::OCCURRING);
+      g_assert (a2->getState () == Event::OCCURRING);
       g_assert (m2_lambda->getState () == Event::SLEEPING);
 
-      fmt->sendTick (20 * GINGA_SECOND, 20 * GINGA_SECOND, 0);
+      // --------------------------------
+      // main check
+
+      // when advance 5, a1 and a2 is OCCURRING
+      fmt->sendTick (5 * GINGA_SECOND, 5 * GINGA_SECOND, 0);
       g_assert (body_lambda->getState () == Event::OCCURRING);
-      g_assert (m1_lambda->getState () == Event::SLEEPING);
+      g_assert (a1->getState () == Event::OCCURRING);
+      g_assert (a2->getState () == Event::SLEEPING);
+      g_assert (m1_lambda->getState () == Event::OCCURRING);
       g_assert (m2_lambda->getState () == Event::OCCURRING);
 
       delete fmt;
@@ -404,7 +550,7 @@ main (void)
     </media>\n\
     <media id='m2' src='%s'/>\n\
     <link xconnector='onBeginStart'>\n\
-      <bind role='onBegin' component='body'/>\n\
+      <bind role='onBegin' component='m1' interface='a2'/>\n\
       <bind role='start' component='m1'/>\n\
     </link>\n\
   </body>\n\
@@ -421,6 +567,18 @@ main (void)
       Event *m1_lambda = m1->getLambda ();
       g_assert_nonnull (m1_lambda);
 
+      Time begin, end;
+      Event *a1 = m1->getPresentationEvent ("a1");
+      a1->getInterval (&begin, &end);
+      g_assert_nonnull (a1);
+      g_assert_cmpuint (begin, ==, 10 * GINGA_SECOND);
+      g_assert_cmpuint (end, ==, GINGA_TIME_NONE);
+      Event *a2 = m1->getPresentationEvent ("a2");
+      g_assert_nonnull (a2);
+      a2->getInterval (&begin, &end);
+      g_assert_cmpuint (begin, ==, 20 * GINGA_SECOND);
+      g_assert_cmpuint (end, ==, GINGA_TIME_NONE);
+
       Media *m2 = cast (Media *, doc->getObjectById ("m2"));
       g_assert_nonnull (m2);
       Event *m2_lambda = m2->getLambda ();
@@ -430,17 +588,26 @@ main (void)
       // check start document
 
       g_assert (body_lambda->getState () == Event::OCCURRING);
-      g_assert (m1_lambda->getState () == Event::OCCURRING);
+      g_assert (m1_lambda->getState () == Event::SLEEPING);
       g_assert (m2_lambda->getState () == Event::SLEEPING);
 
       fmt->sendTick (0, 0, 0);
+      // when start document, a1 is OCCURRING
       g_assert (body_lambda->getState () == Event::OCCURRING);
       g_assert (m1_lambda->getState () == Event::OCCURRING);
+      g_assert (a1->getState () == Event::OCCURRING);
+      g_assert (a2->getState () == Event::SLEEPING);
       g_assert (m2_lambda->getState () == Event::SLEEPING);
 
+      // --------------------------------
+      // main check
+
+      // when advance 10, a1 is OCCURRING and the sendcond start is ignored
       fmt->sendTick (10 * GINGA_SECOND, 10 * GINGA_SECOND, 0);
       g_assert (body_lambda->getState () == Event::OCCURRING);
       g_assert (m1_lambda->getState () == Event::OCCURRING);
+      g_assert (a1->getState () == Event::OCCURRING);
+      g_assert (a2->getState () == Event::OCCURRING);
       g_assert (m2_lambda->getState () == Event::SLEEPING);
 
       delete fmt;
