@@ -213,10 +213,6 @@ progs+= test-Event-getEventTransitionAsString
 test_Event_getEventTransitionAsString_SOURCES=\
   test-Event-getEventTransitionAsString.cpp
 
-progs+= test-Event-transition-Media-start
-test_Event_transition_Media_start_SOURCES=\
-  test-Event-transition-Media-start.cpp
-
 progs+= test-Event-transition-Context-start
 test_Event_transition_Context_start_SOURCES=\
   test-Event-transition-Context-start.cpp
@@ -237,10 +233,6 @@ progs+= test-Context-ports-started-from-links
 test_Context_ports_started_from_links_SOURCES=\
   test-Context-ports-started-from-links.cpp
 
-progs+= test-Event-transition-Media-stop
-test_Event_transition_Media_stop_SOURCES=\
-  test-Event-transition-Media-stop.cpp
-
 progs+= test-Event-transition-Context-stop
 test_Event_transition_Context_stop_SOURCES=\
   test-Event-transition-Context-stop.cpp
@@ -248,10 +240,6 @@ test_Event_transition_Context_stop_SOURCES=\
 progs+= test-Event-transition-Switch-stop
 test_Event_transition_Switch_stop_SOURCES=\
   test-Event-transition-Switch-stop.cpp
-
-progs+= test-Event-transition-Media-abort
-test_Event_transition_Media_abort_SOURCES=\
-  test-Event-transition-Media-abort.cpp
 
 progs+= test-Event-transition-Context-abort
 test_Event_transition_Context_abort_SOURCES=\
@@ -261,10 +249,6 @@ progs+= test-Event-transition-Switch-abort
 test_Event_transition_Switch_abort_SOURCES=\
   test-Event-transition-Switch-abort.cpp
 
-progs+= test-Event-transition-Media-pause
-test_Event_transition_Media_pause_SOURCES=\
-  test-Event-transition-Media-pause.cpp
-
 progs+= test-Event-transition-Context-pause
 test_Event_transition_Context_pause_SOURCES=\
   test-Event-transition-Context-pause.cpp
@@ -272,10 +256,6 @@ test_Event_transition_Context_pause_SOURCES=\
 progs+= test-Event-transition-Switch-pause
 test_Event_transition_Switch_pause_SOURCES=\
   test-Event-transition-Switch-pause.cpp
-
-progs+= test-Event-transition-Media-resume
-test_Event_transition_Media_resume_SOURCES=\
-  test-Event-transition-Media-resume.cpp
 
 progs+= test-Event-transition-Context-resume
 test_Event_transition_Context_resume_SOURCES=\
@@ -314,6 +294,15 @@ test_Media_focusIndex_SOURCES= test-Media-focusIndex.cpp
 
 progs+= test-Media-mime
 test_Media_mime_SOURCES= test-Media-mime.cpp
+
+progs+= test-Media-transition-presentation
+test_Media_transition_presentation_SOURCES= test-Media-transition-presentation.cpp
+
+progs+= test-Media-transition-selection
+test_Media_transition_selection_SOURCES= test-Media-transition-selection.cpp
+
+progs+= test-Media-transition-attribution
+test_Media_transition_attribution_SOURCES= test-Media-transition-attribution.cpp
 
 progs+= test-Media-anchors-started-from-ports
 test_Media_anchors_started_from_ports_SOURCES= test-Media-anchors-started-from-ports.cpp
