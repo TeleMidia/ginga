@@ -307,6 +307,15 @@ test_Context_naturalend_SOURCES= test-Context-naturalend.cpp
 progs+= test-Context-nested-naturalend
 test_Context_nested_naturalend_SOURCES= test-Context-nested-naturalend.cpp
 
+progs+= test-Context-transition-presentation
+test_Context_transition_presentation_SOURCES= test-Context-transition-presentation.cpp
+
+progs+= test-Context-transition-attribution
+test_Context_transition_attribution_SOURCES= test-Context-transition-attribution.cpp
+
+progs+= test-Context-transition-selection
+test_Context_transition_selection_SOURCES= test-Context-transition-selection.cpp
+
 # lib/Switch.h ------------------------------------------------------------
 progs+= test-Switch-new
 test_Switch_new_SOURCES= test-Switch-new.cpp

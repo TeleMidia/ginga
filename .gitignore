@@ -127,11 +127,9 @@
 /tests/test-Event-new
 /tests/test-Event-setInterval
 /tests/test-Event-setParameter
-/tests/test-Event-transition-Context-abort
-/tests/test-Event-transition-Context-pause
-/tests/test-Event-transition-Context-resume
-/tests/test-Event-transition-Context-start
-/tests/test-Event-transition-Context-stop
+/tests/test-Context-transition-attribution
+/tests/test-Context-transition-presentation
+/tests/test-Context-transition-selection
 /tests/test-Media-transition-attribution
 /tests/test-Media-transition-presentation
 /tests/test-Media-transition-selection
