@@ -217,10 +217,6 @@ progs+= test-Event-transition-Context-start
 test_Event_transition_Context_start_SOURCES=\
   test-Event-transition-Context-start.cpp
 
-progs+= test-Event-transition-Switch-start
-test_Event_transition_Switch_start_SOURCES=\
-  test-Event-transition-Switch-start.cpp
-
 progs+= test-Context-ports
 test_Context_ports_SOURCES=\
   test-Context-ports.cpp
@@ -237,33 +233,17 @@ progs+= test-Event-transition-Context-stop
 test_Event_transition_Context_stop_SOURCES=\
   test-Event-transition-Context-stop.cpp
 
-progs+= test-Event-transition-Switch-stop
-test_Event_transition_Switch_stop_SOURCES=\
-  test-Event-transition-Switch-stop.cpp
-
 progs+= test-Event-transition-Context-abort
 test_Event_transition_Context_abort_SOURCES=\
   test-Event-transition-Context-abort.cpp
-
-progs+= test-Event-transition-Switch-abort
-test_Event_transition_Switch_abort_SOURCES=\
-  test-Event-transition-Switch-abort.cpp
 
 progs+= test-Event-transition-Context-pause
 test_Event_transition_Context_pause_SOURCES=\
   test-Event-transition-Context-pause.cpp
 
-progs+= test-Event-transition-Switch-pause
-test_Event_transition_Switch_pause_SOURCES=\
-  test-Event-transition-Switch-pause.cpp
-
 progs+= test-Event-transition-Context-resume
 test_Event_transition_Context_resume_SOURCES=\
   test-Event-transition-Context-resume.cpp
-
-progs+= test-Event-transition-Switch-resume
-test_Event_transition_Switch_resume_SOURCES=\
-  test-Event-transition-Switch-resume.cpp
 
 # lib/Object.h -------------------------------------------------------------
 progs+= test-Object-addAlias
@@ -330,6 +310,15 @@ test_Context_nested_naturalend_SOURCES= test-Context-nested-naturalend.cpp
 # lib/Switch.h ------------------------------------------------------------
 progs+= test-Switch-new
 test_Switch_new_SOURCES= test-Switch-new.cpp
+
+progs+= test-Switch-transition-presentation
+test_Switch_transition_presentation_SOURCES= test-Switch-transition-presentation.cpp
+
+progs+= test-Switch-transition-attribution
+test_Switch_transition_attribution_SOURCES= test-Switch-transition-attribution.cpp
+
+progs+= test-Switch-transition-selection
+test_Switch_transition_selection_SOURCES= test-Switch-transition-selection.cpp
 
 # lib/Parser.h -------------------------------------------------------------
 progs+= test-Parser-parseFile
