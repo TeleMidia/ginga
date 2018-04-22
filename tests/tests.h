@@ -112,4 +112,68 @@ tests_create_document (Document **doc, Context **root,
   g_assert ((*doc)->getObjectById ("__settings__") == *settings);
 }
 
+static G_GNUC_UNUSED void
+tests_create_document_with_media_and_start (
+    Formatter **fmt, Event **body_lambda, Event **m1_lambda,
+    Event **m1_anchor_0s, Event **m1_anchor_label, Event **m1_prop)
+{
+  Document *doc;
+  Context *body;
+  Media *m1;
+
+  tests_parse_and_start (fmt, &doc, "\
+<ncl>\n\
+ <body>\n\
+  <port id='start' component='m1'/>\n\
+  <media id='m1'>\n\
+   <property name='p1' value='0'/>\n\
+   <area id='a1' begin='0s'/>\n\
+   <area id='a2' label='l'/>\n\
+  </media>\n\
+ </body>\n\
+</ncl>");
+
+  body = cast (Context *, doc->getRoot ());
+  g_assert_nonnull (body);
+  *body_lambda = body->getLambda ();
+  g_assert_nonnull (*body_lambda);
+
+  m1 = cast (Media *, body->getChildById ("m1"));
+  g_assert_nonnull (m1);
+  *m1_lambda = m1->getLambda ();
+  g_assert_nonnull (*m1_lambda);
+  *m1_anchor_0s = m1->getPresentationEvent ("a1");
+  g_assert_nonnull (*m1_anchor_0s);
+  *m1_anchor_label = m1->getPresentationEvent ("a2");
+  g_assert_nonnull (*m1_anchor_label);
+  *m1_prop = m1->getAttributionEvent ("p1");
+  g_assert_nonnull (*m1_prop);
+
+  // --------------------------------
+  // check start document
+
+  // when document is started, only the body_lambda is OCCURING
+  g_assert_cmpint ((*body_lambda)->getState (), ==, Event::OCCURRING);
+  g_assert_cmpint ((*m1_lambda)->getState (), ==, Event::SLEEPING);
+  g_assert_cmpint ((*m1_anchor_0s)->getState (), ==, Event::SLEEPING);
+  g_assert_cmpint ((*m1_anchor_label)->getState (), ==, Event::SLEEPING);
+  g_assert_cmpint ((*m1_prop)->getState (), ==, Event::SLEEPING);
+
+  // when advance time, m1_lambda is OCCURRING
+  (*fmt)->sendTick (0, 0, 0);
+  g_assert_cmpint ((*body_lambda)->getState (), ==, Event::OCCURRING);
+  g_assert_cmpint ((*m1_lambda)->getState (), ==, Event::OCCURRING);
+  g_assert_cmpint ((*m1_anchor_0s)->getState (), ==, Event::SLEEPING);
+  g_assert_cmpint ((*m1_anchor_label)->getState (), ==, Event::SLEEPING);
+  g_assert_cmpint ((*m1_prop)->getState (), ==, Event::SLEEPING);
+
+  // when advance time, m1_anchor_0s is OCCURRING
+  (*fmt)->sendTick (0, 0, 0);
+  g_assert_cmpint ((*body_lambda)->getState (), ==, Event::OCCURRING);
+  g_assert_cmpint ((*m1_lambda)->getState (), ==, Event::OCCURRING);
+  g_assert_cmpint ((*m1_anchor_0s)->getState (), ==, Event::OCCURRING);
+  g_assert_cmpint ((*m1_anchor_label)->getState (), ==, Event::SLEEPING);
+  g_assert_cmpint ((*m1_prop)->getState (), ==, Event::SLEEPING);
+}
+
 #endif // TESTS_H
