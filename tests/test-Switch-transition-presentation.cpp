@@ -20,423 +20,123 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  // ABORT lambda from state OCCURRING.
+  // ABORT lambda from state OCCURRING
   {
     Formatter *fmt;
-    Document *doc;
-    tests_parse_and_start (&fmt, &doc, "\
-<ncl>\n\
-<head>\n\
-  <ruleBase>\n\
-    <rule id='r1' var='var1' value='m1' comparator='eq'/>\n\
-    <rule id='r2' var='var1' value='m2' comparator='eq'/>\n\
-  </ruleBase>\n\
-</head>\n\
-<body>\n\
-  <port id='p1' component='s1'/>\n\
-  <media id='stgs' type='application/x-ginga-settings'>\n\
-    <property name='var1' value='m1'/>\n\
-  </media>\n\
-  <switch id='s1'>\n\
-    <bindRule constituent='m1' rule='r1'/>\n\
-    <bindRule constituent='m2' rule='r2'/>\n\
-    <media id='m1'/>\n\
-    <media id='m2'/>\n\
-  </switch>\n\
-</body>\n\
-</ncl>");
+    Event *body_lambda, *swt1_lambda, *swt1_sel, *m1_lambda, *m2_lambda;
 
-    Context *body = cast (Context *, doc->getRoot ());
-    g_assert_nonnull (body);
-    Event *body_lambda = body->getLambda ();
-    g_assert_nonnull (body_lambda);
+    tests_create_document_with_switch_and_start (&fmt, &body_lambda,
+                                                 &swt1_lambda, &swt1_sel,
+                                                 &m1_lambda, &m2_lambda);
+    // ABORT is done and return true
+    g_assert (swt1_lambda->transition (Event::ABORT));
 
-    MediaSettings *stgs
-        = cast (MediaSettings *, doc->getObjectByIdOrAlias ("stgs"));
-    g_assert_nonnull (stgs);
-    Event *stgs_lambda = stgs->getLambda ();
-    g_assert_nonnull (stgs_lambda);
-
-    Switch *swt = cast (Switch *, body->getChildById ("s1"));
-    g_assert_nonnull (swt);
-    Event *swt_lambda = swt->getLambda ();
-    g_assert_nonnull (swt_lambda);
-
-    Media *m1 = cast (Media *, swt->getChildById ("m1"));
-    g_assert_nonnull (m1);
-    Event *m1_lambda = m1->getLambda ();
-    g_assert_nonnull (m1_lambda);
-
-    Media *m2 = cast (Media *, swt->getChildById ("m2"));
-    g_assert_nonnull (m2);
-    Event *m2_lambda = m2->getLambda ();
-    g_assert_nonnull (m2_lambda);
-
-    // --------------------------------
-    // check start document
-
-    // When the document is started, only the body@lambda is OCCURRING.
-    g_assert (body_lambda->getState () == Event::OCCURRING);
-    g_assert (swt_lambda->getState () == Event::SLEEPING);
-    g_assert (m1_lambda->getState () == Event::SLEEPING);
-    g_assert (m2_lambda->getState () == Event::SLEEPING);
-
-    // after advance time, s1@lambda is OCCURRING
-    fmt->sendTick (0, 0, 0);
-    g_assert (body_lambda->getState () == Event::OCCURRING);
-    g_assert (swt_lambda->getState () == Event::OCCURRING);
-    g_assert (m1_lambda->getState () == Event::OCCURRING);
-    g_assert (m2_lambda->getState () == Event::SLEEPING);
-
-    // --------------------------------
-    // main check
-
-    // ABORT is done
-    g_assert (swt_lambda->transition (Event::ABORT));
-
-    // after start, s1@lambda is SLEEPING
-    g_assert (body_lambda->getState () == Event::OCCURRING);
-    g_assert (swt_lambda->getState () == Event::SLEEPING);
-    g_assert (m1_lambda->getState () == Event::SLEEPING);
-    g_assert (m2_lambda->getState () == Event::SLEEPING);
+    // after start, swt1_lambda is SLEEPING
+    g_assert_cmpint (body_lambda->getState (), ==, Event::OCCURRING);
+    g_assert_cmpint (swt1_lambda->getState (), ==, Event::SLEEPING);
+    g_assert_cmpint (m1_lambda->getState (), ==, Event::SLEEPING);
+    g_assert_cmpint (m2_lambda->getState (), ==, Event::SLEEPING);
+    // g_assert_cmpint ((*swt1_sel)->getState (), ==, Event::SLEEPING);
 
     delete fmt;
   }
+  // ABORT lambda from state PAUSED
+  // ABORT lambda from state SLEEPING
 
-  // START lambda from state OCCURRING.
+  // START lambda from state OCCURRING
   {
     Formatter *fmt;
-    Document *doc;
-    tests_parse_and_start (&fmt, &doc, "\
-<ncl>\n\
-<head>\n\
-  <ruleBase>\n\
-    <rule id='r1' var='var1' value='m1' comparator='eq'/>\n\
-    <rule id='r2' var='var1' value='m2' comparator='eq'/>\n\
-  </ruleBase>\n\
-</head>\n\
-<body>\n\
-  <port id='p1' component='s1'/>\n\
-  <media id='stgs' type='application/x-ginga-settings'>\n\
-    <property name='var1' value='m1'/>\n\
-  </media>\n\
-  <switch id='s1'>\n\
-    <bindRule constituent='m1' rule='r1'/>\n\
-    <bindRule constituent='m2' rule='r2'/>\n\
-    <media id='m1'/>\n\
-    <media id='m2'/>\n\
-  </switch>\n\
-</body>\n\
-</ncl>");
+    Event *body_lambda, *swt1_lambda, *swt1_sel, *m1_lambda, *m2_lambda;
 
-    Context *body = cast (Context *, doc->getRoot ());
-    g_assert_nonnull (body);
-    Event *body_lambda = body->getLambda ();
-    g_assert_nonnull (body_lambda);
-
-    MediaSettings *stgs
-        = cast (MediaSettings *, doc->getObjectByIdOrAlias ("stgs"));
-    g_assert_nonnull (stgs);
-    Event *stgs_lambda = stgs->getLambda ();
-    g_assert_nonnull (stgs_lambda);
-
-    Switch *swt = cast (Switch *, body->getChildById ("s1"));
-    g_assert_nonnull (swt);
-    Event *swt_lambda = swt->getLambda ();
-    g_assert_nonnull (swt_lambda);
-
-    Media *m1 = cast (Media *, swt->getChildById ("m1"));
-    g_assert_nonnull (m1);
-    Event *m1_lambda = m1->getLambda ();
-    g_assert_nonnull (m1_lambda);
-
-    Media *m2 = cast (Media *, swt->getChildById ("m2"));
-    g_assert_nonnull (m2);
-    Event *m2_lambda = m2->getLambda ();
-    g_assert_nonnull (m2_lambda);
-
-    // --------------------------------
-    // check start document
-
-    // When the document is started, only the body@lambda is OCCURRING.
-    g_assert (body_lambda->getState () == Event::OCCURRING);
-    g_assert (swt_lambda->getState () == Event::SLEEPING);
-    g_assert (m1_lambda->getState () == Event::SLEEPING);
-    g_assert (m2_lambda->getState () == Event::SLEEPING);
-
-    // After advancing time, s1@lambda and m1@lambda are OCCURRING.
-    // m2@lambda is not selected, and is not OCCURRING.
-    fmt->sendTick (0, 0, 0);
-    g_assert (body_lambda->getState () == Event::OCCURRING);
-    g_assert (swt_lambda->getState () == Event::OCCURRING);
-    g_assert (m1_lambda->getState () == Event::OCCURRING);
-    g_assert (m2_lambda->getState () == Event::SLEEPING);
-
-    // --------------------------------
-    // main check
+    tests_create_document_with_switch_and_start (&fmt, &body_lambda,
+                                                 &swt1_lambda, &swt1_sel,
+                                                 &m1_lambda, &m2_lambda);
 
     // PAUSE is done
-    g_assert (swt_lambda->transition (Event::PAUSE));
+    g_assert (swt1_lambda->transition (Event::PAUSE));
 
-    // after start, s1@lambda is PAUSED
+    // after start, swt1_lambda is PAUSED
     g_assert (body_lambda->getState () == Event::OCCURRING);
-    g_assert (swt_lambda->getState () == Event::PAUSED);
+    g_assert (swt1_lambda->getState () == Event::PAUSED);
     g_assert (m1_lambda->getState () == Event::PAUSED);
     g_assert (m2_lambda->getState () == Event::SLEEPING);
+    // g_assert_cmpint ((*swt1_sel)->getState (), ==, Event::SLEEPING);
 
     delete fmt;
   }
+  // START lambda from state PAUSED
+  // START lambda from state SLEEPING
 
-  // RESUME lambda from state OCCURRING.
+  // RESUME lambda from state OCCURRING
   {
     Formatter *fmt;
-    Document *doc;
-    tests_parse_and_start (&fmt, &doc, "\
-<ncl>\n\
-<head>\n\
-  <ruleBase>\n\
-    <rule id='r1' var='var1' value='m1' comparator='eq'/>\n\
-    <rule id='r2' var='var1' value='m2' comparator='eq'/>\n\
-  </ruleBase>\n\
-</head>\n\
-<body>\n\
-  <port id='p1' component='s1'/>\n\
-  <media id='stgs' type='application/x-ginga-settings'>\n\
-    <property name='var1' value='m1'/>\n\
-  </media>\n\
-  <switch id='s1'>\n\
-    <bindRule constituent='m1' rule='r1'/>\n\
-    <bindRule constituent='m2' rule='r2'/>\n\
-    <media id='m1'/>\n\
-    <media id='m2'/>\n\
-  </switch>\n\
-</body>\n\
-</ncl>");
+    Event *body_lambda, *swt1_lambda, *swt1_sel, *m1_lambda, *m2_lambda;
 
-    Context *body = cast (Context *, doc->getRoot ());
-    g_assert_nonnull (body);
-    Event *body_lambda = body->getLambda ();
-    g_assert_nonnull (body_lambda);
-
-    MediaSettings *stgs
-        = cast (MediaSettings *, doc->getObjectByIdOrAlias ("stgs"));
-    g_assert_nonnull (stgs);
-    Event *stgs_lambda = stgs->getLambda ();
-    g_assert_nonnull (stgs_lambda);
-
-    Switch *swt = cast (Switch *, body->getChildById ("s1"));
-    g_assert_nonnull (swt);
-    Event *swt_lambda = swt->getLambda ();
-    g_assert_nonnull (swt_lambda);
-
-    Media *m1 = cast (Media *, swt->getChildById ("m1"));
-    g_assert_nonnull (m1);
-    Event *m1_lambda = m1->getLambda ();
-    g_assert_nonnull (m1_lambda);
-
-    Media *m2 = cast (Media *, swt->getChildById ("m2"));
-    g_assert_nonnull (m2);
-    Event *m2_lambda = m2->getLambda ();
-    g_assert_nonnull (m2_lambda);
-
-    // --------------------------------
-    // check start document
-
-    // When the document is started, only the body@lambda is OCCURRING.
-    g_assert (body_lambda->getState () == Event::OCCURRING);
-    g_assert (swt_lambda->getState () == Event::SLEEPING);
-    g_assert (m1_lambda->getState () == Event::SLEEPING);
-    g_assert (m2_lambda->getState () == Event::SLEEPING);
-
-    // After advancing time, s1@lambda and m1@lambda is OCCURRING.
-    // m2@lambda is not selected, and is not OCCURRING.
-    fmt->sendTick (0, 0, 0);
-    g_assert (body_lambda->getState () == Event::OCCURRING);
-    g_assert (swt_lambda->getState () == Event::OCCURRING);
-    g_assert (m1_lambda->getState () == Event::OCCURRING);
-    g_assert (m2_lambda->getState () == Event::SLEEPING);
-
-    // main check
-
+    tests_create_document_with_switch_and_start (&fmt, &body_lambda,
+                                                 &swt1_lambda, &swt1_sel,
+                                                 &m1_lambda, &m2_lambda);
     // RESUME is not done
-    g_assert_false (swt_lambda->transition (Event::RESUME));
+    g_assert_false (swt1_lambda->transition (Event::RESUME));
 
-    // after start, s1@lambda is OCCURRING
+    // after start, swt1_lambda is OCCURRING
     g_assert (body_lambda->getState () == Event::OCCURRING);
-    g_assert (swt_lambda->getState () == Event::OCCURRING);
+    g_assert (swt1_lambda->getState () == Event::OCCURRING);
     g_assert (m1_lambda->getState () == Event::OCCURRING);
     g_assert (m2_lambda->getState () == Event::SLEEPING);
+    // g_assert_cmpint ((*swt1_sel)->getState (), ==, Event::SLEEPING);
 
     delete fmt;
   }
+  // RESUME lambda from state PAUSED
+  // RESUME lambda from state SLEEPING
 
-  // START lambda from state OCCURRING.
+  // START lambda from state OCCURRING
   {
     Formatter *fmt;
-    Document *doc;
-    tests_parse_and_start (&fmt, &doc, "\
-<ncl>\n\
-<head>\n\
-  <ruleBase>\n\
-    <rule id='r1' var='var1' value='m1' comparator='eq'/>\n\
-    <rule id='r2' var='var1' value='m2' comparator='eq'/>\n\
-  </ruleBase>\n\
-</head>\n\
-<body>\n\
-  <port id='p1' component='s1'/>\n\
-  <media id='stgs' type='application/x-ginga-settings'>\n\
-    <property name='var1' value='m1'/>\n\
-  </media>\n\
-  <switch id='s1'>\n\
-    <bindRule constituent='m1' rule='r1'/>\n\
-    <bindRule constituent='m2' rule='r2'/>\n\
-    <media id='m1'/>\n\
-    <media id='m2'/>\n\
-  </switch>\n\
-</body>\n\
-</ncl>");
+    Event *body_lambda, *swt1_lambda, *swt1_sel, *m1_lambda, *m2_lambda;
 
-    Context *body = cast (Context *, doc->getRoot ());
-    g_assert_nonnull (body);
-    Event *body_lambda = body->getLambda ();
-    g_assert_nonnull (body_lambda);
-
-    MediaSettings *stgs
-        = cast (MediaSettings *, doc->getObjectByIdOrAlias ("stgs"));
-    g_assert_nonnull (stgs);
-    Event *stgs_lambda = stgs->getLambda ();
-    g_assert_nonnull (stgs_lambda);
-
-    Switch *swt = cast (Switch *, body->getChildById ("s1"));
-    g_assert_nonnull (swt);
-    Event *swt_lambda = swt->getLambda ();
-    g_assert_nonnull (swt_lambda);
-
-    Media *m1 = cast (Media *, swt->getChildById ("m1"));
-    g_assert_nonnull (m1);
-    Event *m1_lambda = m1->getLambda ();
-    g_assert_nonnull (m1_lambda);
-
-    Media *m2 = cast (Media *, swt->getChildById ("m2"));
-    g_assert_nonnull (m2);
-    Event *m2_lambda = m2->getLambda ();
-    g_assert_nonnull (m2_lambda);
-
-    // --------------------------------
-    // check start document
-
-    // When the document is started, only the body@lambda is OCCURRING.
-    g_assert (body_lambda->getState () == Event::OCCURRING);
-    g_assert (swt_lambda->getState () == Event::SLEEPING);
-    g_assert (m1_lambda->getState () == Event::SLEEPING);
-    g_assert (m2_lambda->getState () == Event::SLEEPING);
-
-    // After advancing time, s1@lambda and m1@lambda are OCCURRING.
-    // m2@lambda is not selected, and is not OCCURRING.
-    fmt->sendTick (0, 0, 0);
-    g_assert (body_lambda->getState () == Event::OCCURRING);
-    g_assert (swt_lambda->getState () == Event::OCCURRING);
-    g_assert (m1_lambda->getState () == Event::OCCURRING);
-    g_assert (m2_lambda->getState () == Event::SLEEPING);
-
-    // --------------------------------
-    // main check
+    tests_create_document_with_switch_and_start (&fmt, &body_lambda,
+                                                 &swt1_lambda, &swt1_sel,
+                                                 &m1_lambda, &m2_lambda);
 
     // START is not done
-    g_assert_false (swt_lambda->transition (Event::START));
+    g_assert_false (swt1_lambda->transition (Event::START));
 
-    // after start, s1@lambda is OCCURRING
+    // after start, swt1_lambda is OCCURRING
     g_assert (body_lambda->getState () == Event::OCCURRING);
-    g_assert (swt_lambda->getState () == Event::OCCURRING);
+    g_assert (swt1_lambda->getState () == Event::OCCURRING);
     g_assert (m1_lambda->getState () == Event::OCCURRING);
     g_assert (m2_lambda->getState () == Event::SLEEPING);
+    // g_assert_cmpint ((*swt1_sel)->getState (), ==, Event::SLEEPING);
 
     delete fmt;
   }
+  // START lambda from state PAUSED
+  // START lambda from state SLEEPING
 
-  // STOP lambda from state OCCURRING.
+  // STOP lambda from state OCCURRING
   {
     Formatter *fmt;
-    Document *doc;
-    tests_parse_and_start (&fmt, &doc, "\
-<ncl>\n\
-<head>\n\
-  <ruleBase>\n\
-    <rule id='r1' var='var1' value='m1' comparator='eq'/>\n\
-    <rule id='r2' var='var1' value='m2' comparator='eq'/>\n\
-  </ruleBase>\n\
-</head>\n\
-<body>\n\
-  <port id='p1' component='s1'/>\n\
-  <media id='stgs' type='application/x-ginga-settings'>\n\
-    <property name='var1' value='m1'/>\n\
-  </media>\n\
-  <switch id='s1'>\n\
-    <bindRule constituent='m1' rule='r1'/>\n\
-    <bindRule constituent='m2' rule='r2'/>\n\
-    <media id='m1'/>\n\
-    <media id='m2'/>\n\
-  </switch>\n\
-</body>\n\
-</ncl>");
+    Event *body_lambda, *swt1_lambda, *swt1_sel, *m1_lambda, *m2_lambda;
 
-    Context *body = cast (Context *, doc->getRoot ());
-    g_assert_nonnull (body);
-    Event *body_lambda = body->getLambda ();
-    g_assert_nonnull (body_lambda);
-
-    MediaSettings *stgs
-        = cast (MediaSettings *, doc->getObjectByIdOrAlias ("stgs"));
-    g_assert_nonnull (stgs);
-    Event *stgs_lambda = stgs->getLambda ();
-    g_assert_nonnull (stgs_lambda);
-
-    Switch *swt = cast (Switch *, body->getChildById ("s1"));
-    g_assert_nonnull (swt);
-    Event *swt_lambda = swt->getLambda ();
-    g_assert_nonnull (swt_lambda);
-
-    Media *m1 = cast (Media *, swt->getChildById ("m1"));
-    g_assert_nonnull (m1);
-    Event *m1_lambda = m1->getLambda ();
-    g_assert_nonnull (m1_lambda);
-
-    Media *m2 = cast (Media *, swt->getChildById ("m2"));
-    g_assert_nonnull (m2);
-    Event *m2_lambda = m2->getLambda ();
-    g_assert_nonnull (m2_lambda);
-
-    // --------------------------------
-    // check start document
-
-    // When the document is started, only the body@lambda is OCCURRING.
-    g_assert (body_lambda->getState () == Event::OCCURRING);
-    g_assert (swt_lambda->getState () == Event::SLEEPING);
-    g_assert (m1_lambda->getState () == Event::SLEEPING);
-    g_assert (m2_lambda->getState () == Event::SLEEPING);
-
-    // After advancing time, s1@lambda and m1@lambda is OCCURRING.
-    // m2@lambda is not selected, and is not OCCURRING.
-    fmt->sendTick (0, 0, 0);
-    g_assert (body_lambda->getState () == Event::OCCURRING);
-    g_assert (swt_lambda->getState () == Event::OCCURRING);
-    g_assert (m1_lambda->getState () == Event::OCCURRING);
-    g_assert (m2_lambda->getState () == Event::SLEEPING);
-
-    // --------------------------------
-    // main check
+    tests_create_document_with_switch_and_start (&fmt, &body_lambda,
+                                                 &swt1_lambda, &swt1_sel,
+                                                 &m1_lambda, &m2_lambda);
 
     // STOP is done
-    g_assert (swt_lambda->transition (Event::STOP));
+    g_assert (swt1_lambda->transition (Event::STOP));
 
-    // after STOP, s1@lambda is SLEEPING
+    // after STOP, swt1_lambda is SLEEPING
     g_assert (body_lambda->getState () == Event::OCCURRING);
-    g_assert (swt_lambda->getState () == Event::SLEEPING);
+    g_assert (swt1_lambda->getState () == Event::SLEEPING);
     g_assert (m1_lambda->getState () == Event::SLEEPING);
     g_assert (m2_lambda->getState () == Event::SLEEPING);
+    // g_assert_cmpint ((*swt1_sel)->getState (), ==, Event::SLEEPING);
 
     delete fmt;
   }
+  // STOP lambda from state PAUSED
+  // STOP lambda from state SLEEPING
 
   exit (EXIT_SUCCESS);
 }

@@ -34,10 +34,10 @@ main (void)
   // START prop from state SLEEPING
   {
     Formatter *fmt;
-    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop;
+    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop, *m1_sel;
 
     tests_create_document_with_media_and_start (
-        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop);
+        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop, &m1_sel);
 
     // START is done and return true
     g_assert_true (m1_prop->transition (Event::START));
