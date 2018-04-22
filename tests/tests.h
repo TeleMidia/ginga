@@ -115,7 +115,7 @@ tests_create_document (Document **doc, Context **root,
 static G_GNUC_UNUSED void
 tests_create_document_with_media_and_start (
     Formatter **fmt, Event **body_lambda, Event **m1_lambda,
-    Event **m1_anchor_0s, Event **m1_anchor_label, Event **m1_prop)
+    Event **m1_anchor_0s, Event **m1_anchor_label, Event **m1_prop, Event **m1_sel)
 {
   Document *doc;
   Context *body;
@@ -123,6 +123,14 @@ tests_create_document_with_media_and_start (
 
   tests_parse_and_start (fmt, &doc, "\
 <ncl>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='onSelectionSet'>\n\
+    <simpleCondition role='onSelection'/>\n\
+    <simpleAction role='set' value='x'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
  <body>\n\
   <port id='start' component='m1'/>\n\
   <media id='m1'>\n\
@@ -130,6 +138,10 @@ tests_create_document_with_media_and_start (
    <area id='a1' begin='0s'/>\n\
    <area id='a2' label='l'/>\n\
   </media>\n\
+  <link xconnector='onSelectionSet'>\n\
+   <bind role='onSelection' component='m1'/>\n\
+   <bind role='set' component='m1' interface='p1'/>\n\
+  </link>\n\
  </body>\n\
 </ncl>");
 
@@ -148,6 +160,8 @@ tests_create_document_with_media_and_start (
   g_assert_nonnull (*m1_anchor_label);
   *m1_prop = m1->getAttributionEvent ("p1");
   g_assert_nonnull (*m1_prop);
+  *m1_sel = m1->getSelectionEvent ("");
+  g_assert_nonnull (*m1_sel);
 
   // --------------------------------
   // check start document
@@ -158,6 +172,7 @@ tests_create_document_with_media_and_start (
   g_assert_cmpint ((*m1_anchor_0s)->getState (), ==, Event::SLEEPING);
   g_assert_cmpint ((*m1_anchor_label)->getState (), ==, Event::SLEEPING);
   g_assert_cmpint ((*m1_prop)->getState (), ==, Event::SLEEPING);
+  g_assert_cmpint ((*m1_sel)->getState (), ==, Event::SLEEPING);
 
   // when advance time, m1_lambda is OCCURRING
   (*fmt)->sendTick (0, 0, 0);
@@ -166,6 +181,7 @@ tests_create_document_with_media_and_start (
   g_assert_cmpint ((*m1_anchor_0s)->getState (), ==, Event::SLEEPING);
   g_assert_cmpint ((*m1_anchor_label)->getState (), ==, Event::SLEEPING);
   g_assert_cmpint ((*m1_prop)->getState (), ==, Event::SLEEPING);
+  g_assert_cmpint ((*m1_sel)->getState (), ==, Event::SLEEPING);
 
   // when advance time, m1_anchor_0s is OCCURRING
   (*fmt)->sendTick (0, 0, 0);
@@ -174,6 +190,8 @@ tests_create_document_with_media_and_start (
   g_assert_cmpint ((*m1_anchor_0s)->getState (), ==, Event::OCCURRING);
   g_assert_cmpint ((*m1_anchor_label)->getState (), ==, Event::SLEEPING);
   g_assert_cmpint ((*m1_prop)->getState (), ==, Event::SLEEPING);
+  g_assert_cmpint ((*m1_sel)->getState (), ==, Event::SLEEPING);
+
 }
 
 static G_GNUC_UNUSED void

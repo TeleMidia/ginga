@@ -23,10 +23,10 @@ main (void)
   // ABORT lambda from state OCCURRING.
   {
     Formatter *fmt;
-    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop;
+    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop, *m1_sel;
 
     tests_create_document_with_media_and_start (
-        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop);
+        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop, &m1_sel);
 
     // ABORT is done and return true
     g_assert (m1_lambda->transition (Event::ABORT));
@@ -37,6 +37,7 @@ main (void)
     g_assert (m1_anchor_0s->getState () == Event::SLEEPING);
     g_assert (m1_label->getState () == Event::SLEEPING);
     g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () ==Event::SLEEPING);
 
     delete fmt;
   }
@@ -44,10 +45,10 @@ main (void)
   // ABORT lambda from state PAUSED
   {
     Formatter *fmt;
-    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop;
+    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop, *m1_sel;
 
     tests_create_document_with_media_and_start (
-        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop);
+        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop, &m1_sel);
 
     // PAUSE is done and return true
     g_assert_true (m1_lambda->transition (Event::PAUSE));
@@ -58,6 +59,7 @@ main (void)
     g_assert (m1_anchor_0s->getState () == Event::PAUSED);
     g_assert (m1_label->getState () == Event::SLEEPING);
     g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () ==Event::SLEEPING);
 
     // PAUSE is done and return true
     g_assert_true (m1_lambda->transition (Event::ABORT));
@@ -68,6 +70,7 @@ main (void)
     g_assert (m1_anchor_0s->getState () == Event::SLEEPING);
     g_assert (m1_label->getState () == Event::SLEEPING);
     g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () ==Event::SLEEPING);
 
     delete fmt;
   }
@@ -75,10 +78,10 @@ main (void)
   // ABORT lambda from state SLEEPING
   {
     Formatter *fmt;
-    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop;
+    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop, *m1_sel;
 
     tests_create_document_with_media_and_start (
-        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop);
+        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop, &m1_sel);
 
     // STOP is done and return true
     g_assert_true (m1_lambda->transition (Event::STOP));
@@ -89,6 +92,7 @@ main (void)
     g_assert (m1_anchor_0s->getState () == Event::SLEEPING);
     g_assert (m1_label->getState () == Event::SLEEPING);
     g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () ==Event::SLEEPING);
 
     // ABORT is not done and return false
     g_assert_false (m1_lambda->transition (Event::ABORT));
@@ -99,6 +103,7 @@ main (void)
     g_assert (m1_anchor_0s->getState () == Event::SLEEPING);
     g_assert (m1_label->getState () == Event::SLEEPING);
     g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () ==Event::SLEEPING);
 
     delete fmt;
   }
@@ -106,10 +111,10 @@ main (void)
   // PAUSE lambda from state OCCURRING.
   {
     Formatter *fmt;
-    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop;
+    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop, *m1_sel;
 
     tests_create_document_with_media_and_start (
-        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop);
+        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop, &m1_sel);
     // --------------------------------
     // main check
 
@@ -122,6 +127,7 @@ main (void)
     g_assert (m1_anchor_0s->getState () == Event::PAUSED);
     g_assert (m1_label->getState () == Event::SLEEPING);
     g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () ==Event::SLEEPING);
 
     delete fmt;
   }
@@ -129,10 +135,10 @@ main (void)
   // PAUSE lambda from state PAUSED
   {
     Formatter *fmt;
-    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop;
+    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop, *m1_sel;
 
     tests_create_document_with_media_and_start (
-        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop);
+        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop, &m1_sel);
 
     // PAUSE is done and return true
     g_assert_true (m1_lambda->transition (Event::PAUSE));
@@ -143,6 +149,7 @@ main (void)
     g_assert (m1_anchor_0s->getState () == Event::PAUSED);
     g_assert (m1_label->getState () == Event::SLEEPING);
     g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () ==Event::SLEEPING);
 
     // PAUSE is done and return false
     g_assert_false (m1_lambda->transition (Event::PAUSE));
@@ -153,6 +160,7 @@ main (void)
     g_assert (m1_anchor_0s->getState () == Event::PAUSED);
     g_assert (m1_label->getState () == Event::SLEEPING);
     g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () ==Event::SLEEPING);
 
     delete fmt;
   }
@@ -160,10 +168,10 @@ main (void)
   // PAUSE lambda from state SLEEPING
   {
     Formatter *fmt;
-    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop;
+    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop, *m1_sel;
 
     tests_create_document_with_media_and_start (
-        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop);
+        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop, &m1_sel);
 
     // STOP is done and return true
     g_assert_true (m1_lambda->transition (Event::STOP));
@@ -174,6 +182,7 @@ main (void)
     g_assert (m1_anchor_0s->getState () == Event::SLEEPING);
     g_assert (m1_label->getState () == Event::SLEEPING);
     g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () ==Event::SLEEPING);
 
     // PAUSE is not done and return false
     g_assert_false (m1_lambda->transition (Event::PAUSE));
@@ -184,6 +193,7 @@ main (void)
     g_assert (m1_anchor_0s->getState () == Event::SLEEPING);
     g_assert (m1_label->getState () == Event::SLEEPING);
     g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () ==Event::SLEEPING);
 
     delete fmt;
   }
@@ -191,10 +201,10 @@ main (void)
   // RESUME lambda from state OCCURRING.
   {
     Formatter *fmt;
-    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop;
+    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop, *m1_sel;
 
     tests_create_document_with_media_and_start (
-        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop);
+        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop, &m1_sel);
 
     // RESUME is not done and return false
     g_assert_false (m1_lambda->transition (Event::RESUME));
@@ -205,6 +215,7 @@ main (void)
     g_assert (m1_anchor_0s->getState () == Event::OCCURRING);
     g_assert (m1_label->getState () == Event::SLEEPING);
     g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () ==Event::SLEEPING);
 
     delete fmt;
   }
@@ -212,10 +223,10 @@ main (void)
   // RESUME lambda from state PAUSED
   {
     Formatter *fmt;
-    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop;
+    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop, *m1_sel;
 
     tests_create_document_with_media_and_start (
-        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop);
+        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop, &m1_sel);
 
     // PAUSE is done and return true
     g_assert (m1_lambda->transition (Event::PAUSE));
@@ -226,6 +237,7 @@ main (void)
     g_assert (m1_anchor_0s->getState () == Event::PAUSED);
     g_assert (m1_label->getState () == Event::SLEEPING);
     g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () ==Event::SLEEPING);
 
     // RESUME is done and return true
     g_assert (m1_lambda->transition (Event::RESUME));
@@ -236,6 +248,7 @@ main (void)
     g_assert (m1_anchor_0s->getState () == Event::OCCURRING);
     g_assert (m1_label->getState () == Event::SLEEPING);
     g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () ==Event::SLEEPING);
 
     delete fmt;
   }
@@ -243,10 +256,10 @@ main (void)
   // START lambda from state PAUSED
   {
     Formatter *fmt;
-    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop;
+    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop, *m1_sel;
 
     tests_create_document_with_media_and_start (
-        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop);
+        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop, &m1_sel);
 
     // PAUSE is done and return true
     g_assert (m1_lambda->transition (Event::PAUSE));
@@ -257,6 +270,7 @@ main (void)
     g_assert (m1_anchor_0s->getState () == Event::PAUSED);
     g_assert (m1_label->getState () == Event::SLEEPING);
     g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () ==Event::SLEEPING);
 
     // START is done and return true
     g_assert_true (m1_lambda->transition (Event::START));
@@ -267,6 +281,7 @@ main (void)
     g_assert (m1_anchor_0s->getState () == Event::PAUSED);
     g_assert (m1_label->getState () == Event::SLEEPING);
     g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () ==Event::SLEEPING);
 
     // advance time
     fmt->sendTick (0, 0, 0);
@@ -277,6 +292,7 @@ main (void)
     g_assert (m1_anchor_0s->getState () == Event::OCCURRING);
     g_assert (m1_label->getState () == Event::SLEEPING);
     g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () ==Event::SLEEPING);
 
     delete fmt;
   }
@@ -284,10 +300,10 @@ main (void)
   // START lambda from state SLEEPING
   {
     Formatter *fmt;
-    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop;
+    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop, *m1_sel;
 
     tests_create_document_with_media_and_start (
-        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop);
+        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop, &m1_sel);
 
     // STOP is done and return true
     g_assert_true (m1_lambda->transition (Event::STOP));
@@ -298,6 +314,7 @@ main (void)
     g_assert (m1_anchor_0s->getState () == Event::SLEEPING);
     g_assert (m1_label->getState () == Event::SLEEPING);
     g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () ==Event::SLEEPING);
 
     // START is done and return true
     g_assert_true (m1_lambda->transition (Event::START));
@@ -308,6 +325,7 @@ main (void)
     g_assert (m1_anchor_0s->getState () == Event::SLEEPING);
     g_assert (m1_label->getState () == Event::SLEEPING);
     g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () ==Event::SLEEPING);
 
     // advance time
     fmt->sendTick (0, 0, 0);
@@ -318,6 +336,7 @@ main (void)
     g_assert (m1_anchor_0s->getState () == Event::OCCURRING);
     g_assert (m1_label->getState () == Event::SLEEPING);
     g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () ==Event::SLEEPING);
 
     delete fmt;
   }
@@ -325,10 +344,10 @@ main (void)
   // STOP lambda from state OCCURRING.
   {
     Formatter *fmt;
-    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop;
+    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop, *m1_sel;
 
     tests_create_document_with_media_and_start (
-        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop);
+        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop, &m1_sel);
 
     // STOP is done and return true
     g_assert_true (m1_lambda->transition (Event::STOP));
@@ -339,6 +358,7 @@ main (void)
     g_assert (m1_anchor_0s->getState () == Event::SLEEPING);
     g_assert (m1_label->getState () == Event::SLEEPING);
     g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () ==Event::SLEEPING);
 
     delete fmt;
   }
@@ -346,10 +366,10 @@ main (void)
   // STOP lambda from state PAUSED
   {
     Formatter *fmt;
-    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop;
+    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop, *m1_sel;
 
     tests_create_document_with_media_and_start (
-        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop);
+        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop, &m1_sel);
 
     // PAUSE is done and return true
     g_assert_true (m1_lambda->transition (Event::PAUSE));
@@ -360,6 +380,7 @@ main (void)
     g_assert (m1_anchor_0s->getState () == Event::PAUSED);
     g_assert (m1_label->getState () == Event::SLEEPING);
     g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () ==Event::SLEEPING);
 
     // STOP is done and return true
     g_assert_true (m1_lambda->transition (Event::STOP));
@@ -370,6 +391,7 @@ main (void)
     g_assert (m1_anchor_0s->getState () == Event::SLEEPING);
     g_assert (m1_label->getState () == Event::SLEEPING);
     g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () ==Event::SLEEPING);
 
     delete fmt;
   }
@@ -377,10 +399,10 @@ main (void)
   // STOP lambda from state SLEEPING
   {
     Formatter *fmt;
-    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop;
+    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop, *m1_sel;
 
     tests_create_document_with_media_and_start (
-        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop);
+        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop, &m1_sel);
 
     // STOP is done and return true
     g_assert_true (m1_lambda->transition (Event::STOP));
@@ -391,6 +413,7 @@ main (void)
     g_assert (m1_anchor_0s->getState () == Event::SLEEPING);
     g_assert (m1_label->getState () == Event::SLEEPING);
     g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () ==Event::SLEEPING);
 
     // STOP is not done and return false
     g_assert_false (m1_lambda->transition (Event::STOP));
@@ -401,6 +424,7 @@ main (void)
     g_assert (m1_anchor_0s->getState () == Event::SLEEPING);
     g_assert (m1_label->getState () == Event::SLEEPING);
     g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () ==Event::SLEEPING);
 
     delete fmt;
   }

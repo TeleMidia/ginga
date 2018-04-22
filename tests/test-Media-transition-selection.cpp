@@ -20,98 +20,87 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  // ABORT selection when Media is OCCURRING.
-  // ABORT selection when Media is PAUSED.
-  // ABORT selection when Media is SLEEPING.
+  // ABORT selection from state OCCURRING
+  // ABORT selection from state PAUSED
+  // ABORT selection from state SLEEPING
 
-  // PAUSE selection when Media is OCCURRING.
-  // PAUSE selection when Media is PAUSED.
-  // PAUSE selection when Media is SLEEPING.
+  // PAUSE selection from state OCCURRING
+  // PAUSE selection from state PAUSED
+  // PAUSE selection from state SLEEPING
 
-  // START selection when Media is OCCURRING.
+  // START selection from state OCCURRING
   {
     Formatter *fmt;
-    Document *doc;
-    tests_parse_and_start (&fmt, &doc, "\
-<ncl>\n\
- <head>\n\
-  <connectorBase>\n\
-    <causalConnector id='onKeySelectionStop'>\n\
-      <simpleCondition role='onSelection'/>\n\
-      <simpleAction role='stop'/>\n\
-    </causalConnector>\n\
-  </connectorBase>\n\
- </head>\n\
- <body>\n\
-  <port id='start' component='m1'/>\n\
-  <media id='m1'>\n\
-   <property name='focusIndex' value='0'/>\n\
-  </media>\n\
-  <link xconnector='onKeySelectionStop'>\n\
-    <bind role='onSelection' component='m1'/>\n\
-    <bind role='stop' component='m1'/>\n\
-  </link>\n\
- </body>\n\
-</ncl>");
+    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop,
+        *m1_sel;
 
-    Context *body = cast (Context *, doc->getRoot ());
-    g_assert_nonnull (body);
-    Event *body_lambda = body->getLambda ();
-    g_assert_nonnull (body_lambda);
-
-    Media *m1 = cast (Media *, body->getChildById ("m1"));
-    g_assert_nonnull (m1);
-    puts(m1->toString ().c_str ());
-    Event *m1_lambda = m1->getLambda ();
-    g_assert_nonnull (m1_lambda);
-    Event *m1_selection = m1->getSelectionEvent ("");
-    g_assert_nonnull (m1_selection);
-
-    // --------------------------------
-    // check start document
-
-    // when document is started, only the body@lambda is OCCURING
-    g_assert (body_lambda->getState () == Event::OCCURRING);
-    g_assert (m1_lambda->getState () == Event::SLEEPING);
-    g_assert (m1_selection->getState () == Event::SLEEPING);
+    tests_create_document_with_media_and_start (
+        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop,
+        &m1_sel);
 
     // START is done and return true
-    g_assert (m1_lambda->transition (Event::START));
+    g_assert (m1_sel->transition (Event::START));
 
-    // after START lambda is in OCCURRING
+    // after START, m1_sel is OCCURRING
     g_assert (body_lambda->getState () == Event::OCCURRING);
     g_assert (m1_lambda->getState () == Event::OCCURRING);
-    g_assert (m1_selection->getState () == Event::SLEEPING);
+    g_assert (m1_anchor_0s->getState () == Event::OCCURRING);
+    g_assert (m1_label->getState () == Event::SLEEPING);
+    g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () == Event::OCCURRING);
 
-    // advance time
+    // START is not done and return true
+    g_assert_false (m1_sel->transition (Event::START));
+
+    // when advance time, m1_sel is still OCCURRING
     fmt->sendTick (0, 0, 0);
-
-    // when advance time, anchors events go to OCCURRING
-    // and properties events are SLEEPING
-    g_assert (body_lambda->getState () == Event::OCCURRING);
-    g_assert (m1_selection->getState () == Event::SLEEPING);
-    g_assert (m1_lambda->getState () == Event::OCCURRING);
-
-    // --------------------------------
-    // main check
-
-    // START is done
-    g_assert (m1_selection->transition (Event::START));
-
-    // after START, selection is OCCURRING
     g_assert (body_lambda->getState () == Event::OCCURRING);
     g_assert (m1_lambda->getState () == Event::OCCURRING);
-    g_assert (m1_selection->getState () == Event::OCCURRING);
+    g_assert (m1_anchor_0s->getState () == Event::OCCURRING);
+    g_assert (m1_label->getState () == Event::SLEEPING);
+    g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () == Event::OCCURRING);
 
     delete fmt;
   }
 
-  // START selection when Media is PAUSED.
-  // START selection when Media is SLEEPING.
+  // START selection from state PAUSED
+  // START selection from state SLEEPING
+  {
+    Formatter *fmt;
+    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop,
+        *m1_sel;
 
-  // STOP selection when Media is OCCURRING.
-  // STOP selection when Media is PAUSED.
-  // STOP selection when Media is SLEEPING.
+    tests_create_document_with_media_and_start (
+        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop,
+        &m1_sel);
+
+    // START is done
+    g_assert (m1_sel->transition (Event::START));
+
+    // after START, m1_sel is OCCURRING
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_anchor_0s->getState () == Event::OCCURRING);
+    g_assert (m1_label->getState () == Event::SLEEPING);
+    g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () == Event::OCCURRING);
+
+    // when advance time, m1_sel is still OCCURRING
+    fmt->sendTick (0, 0, 0);
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_anchor_0s->getState () == Event::OCCURRING);
+    g_assert (m1_label->getState () == Event::SLEEPING);
+    g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () == Event::OCCURRING);
+
+    delete fmt;
+  }
+
+  // STOP selection from state OCCURRING
+  // STOP selection from state PAUSED
+  // STOP selection from state SLEEPING
 
   exit (EXIT_SUCCESS);
 }
