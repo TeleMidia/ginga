@@ -125,6 +125,7 @@ main (void)
   g_assert_nonnull (m12);
   Media *m13 = cast (Media *, body->getChildById ("m13"));
   g_assert_nonnull (m12);
+  fmt->sendTick (0, 0, 0);
 
   delete fmt;
 
