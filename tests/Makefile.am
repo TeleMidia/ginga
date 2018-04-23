@@ -249,8 +249,8 @@ test_Media_nested_explicitDur_SOURCES= test-Media-nested-explicitDur.cpp
 progs+= test-Media-4grid
 test_Media_4grid_SOURCES= test-Media-4grid.cpp
 
-progs+= test-Media-focusIndex
-test_Media_focusIndex_SOURCES= test-Media-focusIndex.cpp
+progs+= test-Media-focusIndex-changed-by-link
+test_Media_focusIndex_changed_by_link_SOURCES= test-Media-focusIndex-changed-by-link.cpp
 
 progs+= test-Media-selection
 test_Media_selection_SOURCES= test-Media-selection.cpp
