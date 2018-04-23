@@ -288,7 +288,7 @@ Document::evalAction (Action init)
       Event *evt;
       Object *obj;
       Composition *comp;
-      Context *ctx;
+      Context *ctx_parent, *ctx_grandparent;
 
       act = stack.back ();
       stack.pop_back ();
@@ -312,23 +312,28 @@ Document::evalAction (Action init)
       if (comp != nullptr &&
           instanceof (Context *, comp) && comp->isOccurring ())
         {
-          ctx = cast (Context *, comp);
-          g_assert_nonnull (ctx);
+          ctx_parent = cast (Context *, comp);
+          g_assert_nonnull (ctx_parent);
 
           // Trigger links in the parent context
-          list<Action> ret = evalActionInContext (act, ctx);
+          list<Action> ret = evalActionInContext (act, ctx_parent);
           stack.insert (stack.end (), ret.begin (), ret.end ());
 
           // If the event object is pointed by a port in the parent context,
-          // trigger links in the parent context ( and ancestors)
-          for (auto port : *ctx->getPorts ())
+          // trigger links in the its grantparent context ( and ancestors)
+          comp = ctx_parent->getParent ();
+          if (comp != nullptr &&
+              instanceof (Context *, comp) && comp->isOccurring ())
             {
-              if (port->getObject () == evt->getObject ()
-                  && ctx->getParent () != nullptr)
+              ctx_grandparent = cast (Context *, comp);
+              for (auto port : *ctx_parent->getPorts ())
                 {
-                  ctx = cast (Context *, ctx->getParent ());
-                  list<Action> ret = evalActionInContext (act, ctx);
-                  stack.insert (stack.end (), ret.begin (), ret.end ());
+                  if (port->getObject () == evt->getObject ())
+                    {
+                      list<Action> ret
+                          = evalActionInContext (act, ctx_grandparent);
+                      stack.insert (stack.end (), ret.begin (), ret.end ());
+                    }
                 }
             }
         }
@@ -361,9 +366,9 @@ Document::evalAction (Action init)
       // If event object is a context, trigger the context itself
       if (instanceof (Context *, obj))
         {
-          ctx = cast (Context *, obj);
-          g_assert_nonnull (ctx);
-          list<Action> ret = evalActionInContext (act, ctx);
+          ctx_parent = cast (Context *, obj);
+          g_assert_nonnull (ctx_parent);
+          list<Action> ret = evalActionInContext (act, ctx_parent);
           stack.insert (stack.end (), ret.begin (), ret.end ());
         }
     }
