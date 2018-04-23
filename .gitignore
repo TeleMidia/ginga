@@ -153,6 +153,7 @@
 /tests/test-Media-4grid
 /tests/test-Media-mime
 /tests/test-Media-focusIndex-changed-by-link
+/tests/test-Media-focusIndex-changed-by-sendKey
 /tests/test-Media-explicitDur
 /tests/test-Media-nested-explicitDur
 /tests/test-Media-anchors-started-from-ports

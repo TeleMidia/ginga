@@ -252,6 +252,9 @@ test_Media_4grid_SOURCES= test-Media-4grid.cpp
 progs+= test-Media-focusIndex-changed-by-link
 test_Media_focusIndex_changed_by_link_SOURCES= test-Media-focusIndex-changed-by-link.cpp
 
+progs+= test-Media-focusIndex-changed-by-sendKey
+test_Media_focusIndex_changed_by_sendKey_SOURCES= test-Media-focusIndex-changed-by-sendKey.cpp
+
 progs+= test-Media-selection
 test_Media_selection_SOURCES= test-Media-selection.cpp
 
