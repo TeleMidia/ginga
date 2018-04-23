@@ -148,6 +148,7 @@
 /tests/test-Ginga-version
 /tests/test-GingaInternal-getData
 /tests/test-GingaInternal-setData
+/tests/test-Ginga-resize
 /tests/test-Media-new
 /tests/test-Media-selection
 /tests/test-Media-4grid
