@@ -100,9 +100,10 @@ Object::toString ()
   auto it = _aliases.begin ();
   if (it != _aliases.end ())
     {
-      str += "  aliases: " + *it;
+      str += "  aliases: " + (*it).first;
       while (++it != _aliases.end ())
-        str += ", " + *it;
+        str += ", " + (*it).first + "(at Composition "
+               + xstrbuild ("%p", (*it).second) + ")";
       str += "\n";
     }
 
@@ -157,7 +158,7 @@ Object::toString ()
   return str;
 }
 
-const list<string> *
+const list<pair<string, Composition *> > *
 Object::getAliases ()
 {
   return &_aliases;
@@ -167,15 +168,17 @@ bool
 Object::hasAlias (const string &alias)
 {
   for (auto curr : _aliases)
-    if (curr == alias)
+    if (curr.first == alias)
       return true;
   return false;
 }
 
 void
-Object::addAlias (const string &alias)
+Object::addAlias (const string &alias, Composition * parent)
 {
-  tryinsert (alias, _aliases, push_back);
+  auto alias_pair = make_pair (alias, parent);
+  // _aliases.push_back (alias_pair);
+  tryinsert (alias_pair, _aliases, push_back);
 }
 
 const set<Event *> *
