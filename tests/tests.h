@@ -36,6 +36,8 @@ typedef struct
   const char *uri;
 } sample;
 
+vector<const char *> samples_keys
+    = { "RED", "GREEN", "YELLOW", "BLUE", "INFO" };
 vector<sample> samples = {
   { "application/x-ginga-timer", "" },
   { "audio/mp3", ABS_TOP_SRCDIR "/tests-ncl/samples/arcade.mp3" },
@@ -349,7 +351,6 @@ tests_create_document_with_switch_and_start (
   g_assert_cmpint ((*m1_lambda)->getState (), ==, Event::OCCURRING);
   g_assert_cmpint ((*m2_lambda)->getState (), ==, Event::SLEEPING);
   // g_assert_cmpint ((*swt1_sel)->getState (), ==, Event::SLEEPING);
-
 }
 
 #endif // TESTS_H
