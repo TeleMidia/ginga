@@ -39,7 +39,7 @@ main (void)
 
     pred = new Predicate (Predicate::ATOM);
     g_assert (pred->getType () == Predicate::ATOM);
-    g_assert (pred->getChildren ()->size () == 0);
+    g_assert_cmpint (pred->getChildren ()->size (), ==, 0);
     g_assert (!pred->toString ().empty ());
 
     CHECK_TEST (pred, "", Predicate::EQ, "");
@@ -82,7 +82,7 @@ main (void)
 
     pred = new Predicate (Predicate::VERUM);
     g_assert (pred->getType () == Predicate::VERUM);
-    g_assert (pred->getChildren ()->size () == 0);
+    g_assert_cmpint (pred->getChildren ()->size (), ==, 0);
     g_assert (!pred->toString ().empty ());
 
     delete pred;
@@ -94,7 +94,7 @@ main (void)
 
     pred = new Predicate (Predicate::NEGATION);
     g_assert (pred->getType () == Predicate::NEGATION);
-    g_assert (pred->getChildren ()->size () == 0);
+    g_assert_cmpint (pred->getChildren ()->size (), ==, 0);
     g_assert (!pred->toString ().empty ());
 
     delete pred;
@@ -106,18 +106,18 @@ main (void)
 
     pred = new Predicate (Predicate::CONJUNCTION);
     g_assert (pred->getType () == Predicate::CONJUNCTION);
-    g_assert (pred->getChildren ()->size () == 0);
+    g_assert_cmpint (pred->getChildren ()->size (), ==, 0);
     g_assert (!pred->toString ().empty ());
 
     child1 = new Predicate (Predicate::ATOM);
     child1->setTest ("a", Predicate::EQ, "a");
     pred->addChild (child1);
-    g_assert (pred->getChildren ()->size () == 1);
+    g_assert_cmpint (pred->getChildren ()->size (), ==, 1);
 
     child2 = new Predicate (Predicate::ATOM);
     child2->setTest ("b", Predicate::EQ, "b");
     pred->addChild (child2);
-    g_assert (pred->getChildren ()->size () == 2);
+    g_assert_cmpint (pred->getChildren ()->size (), ==, 2);
 
     delete pred;
   }
@@ -128,19 +128,19 @@ main (void)
 
     pred = new Predicate (Predicate::DISJUNCTION);
     g_assert (pred->getType () == Predicate::DISJUNCTION);
-    g_assert (pred->getChildren ()->size () == 0);
+    g_assert_cmpint (pred->getChildren ()->size (), ==, 0);
     g_assert (!pred->toString ().empty ());
 
     child1 = new Predicate (Predicate::ATOM);
     child1->setTest ("a", Predicate::EQ, "a");
     pred->addChild (child1);
-    g_assert (pred->getChildren ()->size () == 1);
+    g_assert_cmpint (pred->getChildren ()->size (), ==, 1);
     g_assert (child1->getParent () == pred);
 
     child2 = new Predicate (Predicate::ATOM);
     child2->setTest ("b", Predicate::EQ, "b");
     pred->addChild (child2);
-    g_assert (pred->getChildren ()->size () == 2);
+    g_assert_cmpint (pred->getChildren ()->size (), ==, 2);
     g_assert (child2->getParent () == pred);
 
     delete pred;

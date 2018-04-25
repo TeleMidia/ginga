@@ -2569,9 +2569,9 @@ main (void)
 </ncl>\n\
 ");
     g_assert_nonnull (doc);
-    g_assert (doc->getObjects ()->size () == 2);
-    g_assert (doc->getMedias ()->size () == 1);
-    g_assert (doc->getContexts ()->size () == 1);
+    g_assert_cmpint (doc->getObjects ()->size (), ==, 2);
+    g_assert_cmpint (doc->getMedias ()->size (), ==, 1);
+    g_assert_cmpint (doc->getContexts ()->size (), ==, 1);
     delete doc;
   }
 
@@ -2623,16 +2623,16 @@ main (void)
 </ncl>\n\
 ");
     g_assert_nonnull (doc);
-    g_assert (doc->getObjects ()->size () == 2);
-    g_assert (doc->getMedias ()->size () == 1);
-    g_assert (doc->getContexts ()->size () == 1);
+    g_assert_cmpint (doc->getObjects ()->size (), ==, 2);
+    g_assert_cmpint (doc->getMedias ()->size (), ==, 1);
+    g_assert_cmpint (doc->getContexts ()->size (), ==, 1);
 
     Context *root = cast (Context *, doc->getRoot ());
     g_assert_nonnull (root);
 
     Media *m = cast (MediaSettings *, doc->getObjectByIdOrAlias ("m"));
     g_assert_nonnull (m);
-    g_assert (m->getEvents ()->size () == 6);
+    g_assert_cmpint (m->getEvents ()->size (), ==, 6);
 
     g_assert (m->getAttributionEvent ("service.currentFocus") != nullptr);
     g_assert (m->getProperty ("service.currentFocus") == "0");
@@ -2673,13 +2673,13 @@ main (void)
 </ncl>\n\
 ");
     g_assert_nonnull (doc);
-    g_assert (doc->getObjects ()->size () == 3);
-    g_assert (doc->getMedias ()->size () == 2);
-    g_assert (doc->getContexts ()->size () == 1);
+    g_assert_cmpint (doc->getObjects ()->size (), ==, 3);
+    g_assert_cmpint (doc->getMedias ()->size (), ==, 2);
+    g_assert_cmpint (doc->getContexts ()->size (), ==, 1);
 
     Media *m = cast (Media *, doc->getObjectById ("m"));
     g_assert_nonnull (m);
-    g_assert (m->getEvents ()->size () == 7);
+    g_assert_cmpint (m->getEvents ()->size (), ==, 7);
 
     Time begin, end;
     Event *evt = m->getPresentationEvent ("a1");
@@ -2734,13 +2734,13 @@ main (void)
 </ncl>\n\
 ");
     g_assert_nonnull (doc);
-    g_assert (doc->getObjects ()->size () == 3);
-    g_assert (doc->getMedias ()->size () == 2);
-    g_assert (doc->getContexts ()->size () == 1);
+    g_assert_cmpint (doc->getObjects ()->size (), ==, 3);
+    g_assert_cmpint (doc->getMedias ()->size (), ==, 2);
+    g_assert_cmpint (doc->getContexts ()->size (), ==, 1);
 
     Media *m = cast (Media *, doc->getObjectById ("m"));
     g_assert_nonnull (m);
-    g_assert (m->getEvents ()->size () == 10);
+    g_assert_cmpint (m->getEvents ()->size (), ==, 10);
 
     g_assert (m->getAttributionEvent ("x") != nullptr);
     g_assert (m->getProperty ("x") == "1");
@@ -2792,13 +2792,13 @@ main (void)
 </ncl>\n\
 ");
     g_assert_nonnull (doc);
-    g_assert (doc->getObjects ()->size () == 3);
-    g_assert (doc->getMedias ()->size () == 2);
-    g_assert (doc->getContexts ()->size () == 1);
+    g_assert_cmpint (doc->getObjects ()->size (), ==, 3);
+    g_assert_cmpint (doc->getMedias ()->size (), ==, 2);
+    g_assert_cmpint (doc->getContexts ()->size (), ==, 1);
 
     Media *m = cast (Media *, doc->getObjectById ("m"));
     g_assert_nonnull (m);
-    g_assert (m->getEvents ()->size () == 3);
+    g_assert_cmpint (m->getEvents ()->size (), ==, 3);
 
     g_assert (m->getAttributionEvent ("transIn") != nullptr);
     g_assert (m->getProperty ("transIn") == "\
@@ -2907,9 +2907,9 @@ borderWidth='0',borderColor=''}");
 ",
                      B0.c_str (), B1.c_str (), B2.c_str ()));
     g_assert_nonnull (doc);
-    g_assert (doc->getObjects ()->size () == 5);
-    g_assert (doc->getMedias ()->size () == 4);
-    g_assert (doc->getContexts ()->size () == 1);
+    g_assert_cmpint (doc->getObjects ()->size (), ==, 5);
+    g_assert_cmpint (doc->getMedias ()->size (), ==, 4);
+    g_assert_cmpint (doc->getContexts ()->size (), ==, 1);
 
     Media *m1 = cast (Media *, doc->getObjectById ("m1"));
     g_assert_nonnull (m1);
@@ -2967,9 +2967,9 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
 </ncl>\n\
 ");
     g_assert_nonnull (doc);
-    g_assert (doc->getObjects ()->size () == 4);
-    g_assert (doc->getMedias ()->size () == 2);
-    g_assert (doc->getContexts ()->size () == 2);
+    g_assert_cmpint (doc->getObjects ()->size (), ==, 4);
+    g_assert_cmpint (doc->getMedias ()->size (), ==, 2);
+    g_assert_cmpint (doc->getContexts ()->size (), ==, 2);
 
     Media *m = cast (Media *, doc->getObjectByIdOrAlias ("m"));
     g_assert_nonnull (m);
@@ -3022,9 +3022,9 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
 </ncl>\n\
 ");
     g_assert_nonnull (doc);
-    g_assert (doc->getObjects ()->size () == 5);
-    g_assert (doc->getMedias ()->size () == 2);
-    g_assert (doc->getContexts ()->size () == 3);
+    g_assert_cmpint (doc->getObjects ()->size (), ==, 5);
+    g_assert_cmpint (doc->getMedias ()->size (), ==, 2);
+    g_assert_cmpint (doc->getContexts ()->size (), ==, 3);
 
     Context *root = cast (Context *, doc->getRoot ());
     g_assert_nonnull (root);
@@ -3038,7 +3038,7 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
     Media *m = cast (Media *, doc->getObjectById ("m"));
     g_assert_nonnull (m);
 
-    g_assert (root->getPorts ()->size () == 5);
+    g_assert_cmpint (root->getPorts ()->size (), ==, 5);
     auto port = root->getPorts ()->begin ();
     g_assert (*port++ == c1->getLambda ());
     g_assert (*port++ == root->getLambda ());
@@ -3081,9 +3081,9 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
 </ncl>\n\
 ");
     g_assert_nonnull (doc);
-    g_assert (doc->getObjects ()->size () == 3);
-    g_assert (doc->getMedias ()->size () == 2);
-    g_assert (doc->getContexts ()->size () == 1);
+    g_assert_cmpint (doc->getObjects ()->size (), ==, 3);
+    g_assert_cmpint (doc->getMedias ()->size (), ==, 2);
+    g_assert_cmpint (doc->getContexts ()->size (), ==, 1);
 
     Context *root = cast (Context *, doc->getRoot ());
     g_assert_nonnull (root);
@@ -3092,11 +3092,11 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
     g_assert_nonnull (m);
 
     auto links = doc->getRoot ()->getLinks ();
-    g_assert (links->size () == 1);
+    g_assert_cmpint (links->size (), ==, 1);
 
     auto link = links->begin ();
-    g_assert (link->first.size () == 1);
-    g_assert (link->second.size () == 1);
+    g_assert_cmpint (link->first.size (), ==, 1);
+    g_assert_cmpint (link->second.size (), ==, 1);
 
     auto cond = link->first.begin ();
     g_assert (cond->event == m->getPresentationEvent ("a1"));
@@ -3164,9 +3164,9 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
 </ncl>\n\
 ");
     g_assert_nonnull (doc);
-    g_assert (doc->getObjects ()->size () == 3);
-    g_assert (doc->getMedias ()->size () == 2);
-    g_assert (doc->getContexts ()->size () == 1);
+    g_assert_cmpint (doc->getObjects ()->size (), ==, 3);
+    g_assert_cmpint (doc->getMedias ()->size (), ==, 2);
+    g_assert_cmpint (doc->getContexts ()->size (), ==, 1);
 
     Context *root = cast (Context *, doc->getRoot ());
     g_assert_nonnull (root);
@@ -3175,11 +3175,11 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
     g_assert_nonnull (m);
 
     auto links = doc->getRoot ()->getLinks ();
-    g_assert (links->size () == 1);
+    g_assert_cmpint (links->size (), ==, 1);
 
     auto link = links->begin ();
-    g_assert (link->first.size () == 1);
-    g_assert (link->second.size () == 1);
+    g_assert_cmpint (link->first.size (), ==, 1);
+    g_assert_cmpint (link->second.size (), ==, 1);
 
     auto cond = link->first.begin ();
     g_assert (cond->event == m->getPresentationEvent ("a1"));
@@ -3259,9 +3259,9 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
 </ncl>\n\
 ");
     g_assert_nonnull (doc);
-    g_assert (doc->getObjects ()->size () == 3);
-    g_assert (doc->getMedias ()->size () == 2);
-    g_assert (doc->getContexts ()->size () == 1);
+    g_assert_cmpint (doc->getObjects ()->size (), ==, 3);
+    g_assert_cmpint (doc->getMedias ()->size (), ==, 2);
+    g_assert_cmpint (doc->getContexts ()->size (), ==, 1);
 
     Context *root = doc->getRoot ();
     g_assert_nonnull (root);
@@ -3270,11 +3270,11 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
     g_assert_nonnull (m);
 
     auto links = doc->getRoot ()->getLinks ();
-    g_assert (links->size () == 2);
+    g_assert_cmpint (links->size (), ==, 2);
 
     auto link = links->begin ();
-    g_assert (link->first.size () == 2);
-    g_assert (link->second.size () == 2);
+    g_assert_cmpint (link->first.size (), ==, 2);
+    g_assert_cmpint (link->second.size (), ==, 2);
 
     auto cond = link->first.begin ();
     g_assert (cond->event == m->getPresentationEvent ("a1"));
@@ -3403,9 +3403,9 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
 </ncl>");
 
     g_assert_nonnull (doc);
-    g_assert (doc->getObjects ()->size () == 7);
-    g_assert (doc->getMedias ()->size () == 4);
-    g_assert (doc->getContexts ()->size () == 3);
+    g_assert_cmpint (doc->getObjects ()->size (), ==, 7);
+    g_assert_cmpint (doc->getMedias ()->size (), ==, 4);
+    g_assert_cmpint (doc->getContexts ()->size (), ==, 3);
 
     Context *root = doc->getRoot ();
     g_assert_nonnull (root);
@@ -3426,11 +3426,11 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
     g_assert_nonnull (c2);
 
     auto links = doc->getRoot ()->getLinks ();
-    g_assert (links->size () == 1);
+    g_assert_cmpint (links->size (), ==, 1);
 
     auto link = links->begin ();
-    g_assert (link->first.size () == 2);
-    g_assert (link->second.size () == 4);
+    g_assert_cmpint (link->first.size (), ==, 2);
+    g_assert_cmpint (link->second.size (), ==, 4);
 
     auto cond = link->first.begin ();
     g_assert (cond->event == c1->getLambda ());
@@ -3510,19 +3510,19 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
 </ncl>");
 
     g_assert_nonnull (doc);
-    g_assert (doc->getObjects ()->size () == 2);
-    g_assert (doc->getMedias ()->size () == 1);
-    g_assert (doc->getContexts ()->size () == 1);
+    g_assert_cmpint (doc->getObjects ()->size (), ==, 2);
+    g_assert_cmpint (doc->getMedias ()->size (), ==, 1);
+    g_assert_cmpint (doc->getContexts ()->size (), ==, 1);
 
     Context *root = doc->getRoot ();
     g_assert_nonnull (root);
 
     auto links = doc->getRoot ()->getLinks ();
-    g_assert (links->size () == 1);
+    g_assert_cmpint (links->size (), ==, 1);
 
     auto link = links->begin ();
-    g_assert (link->first.size () == 1);
-    g_assert (link->second.size () == 1);
+    g_assert_cmpint (link->first.size (), ==, 1);
+    g_assert_cmpint (link->second.size (), ==, 1);
 
     auto cond = link->first.begin ();
     g_assert (cond->event == root->getLambda ());
@@ -3587,9 +3587,9 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
 </ncl>");
 
     g_assert_nonnull (doc);
-    g_assert (doc->getObjects ()->size () == 3);
-    g_assert (doc->getMedias ()->size () == 2);
-    g_assert (doc->getContexts ()->size () == 1);
+    g_assert_cmpint (doc->getObjects ()->size (), ==, 3);
+    g_assert_cmpint (doc->getMedias ()->size (), ==, 2);
+    g_assert_cmpint (doc->getContexts ()->size (), ==, 1);
 
     Context *root = doc->getRoot ();
     g_assert_nonnull (root);
@@ -3598,12 +3598,12 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
     g_assert_nonnull (m);
 
     auto links = doc->getRoot ()->getLinks ();
-    g_assert (links->size () == 2);
+    g_assert_cmpint (links->size (), ==, 2);
 
     // First link.
     auto link = links->begin ();
-    g_assert (link->first.size () == 1);
-    g_assert (link->second.size () == 1);
+    g_assert_cmpint (link->first.size (), ==, 1);
+    g_assert_cmpint (link->second.size (), ==, 1);
 
     auto cond = link->first.begin ();
     g_assert (cond->event == root->getLambda ());
@@ -3692,19 +3692,19 @@ horzRepeat='0',vertRepeat='0',borderWidth='0',borderColor=''}");
 </ncl>");
 
     g_assert_nonnull (doc);
-    g_assert (doc->getObjects ()->size () == 2);
-    g_assert (doc->getMedias ()->size () == 1);
-    g_assert (doc->getContexts ()->size () == 1);
+    g_assert_cmpint (doc->getObjects ()->size (), ==, 2);
+    g_assert_cmpint (doc->getMedias ()->size (), ==, 1);
+    g_assert_cmpint (doc->getContexts ()->size (), ==, 1);
 
     Context *root = doc->getRoot ();
     g_assert_nonnull (root);
 
     auto links = doc->getRoot ()->getLinks ();
-    g_assert (links->size () == 1);
+    g_assert_cmpint (links->size (), ==, 1);
 
     auto link = links->begin ();
-    g_assert (link->first.size () == 1);
-    g_assert (link->second.size () == 1);
+    g_assert_cmpint (link->first.size (), ==, 1);
+    g_assert_cmpint (link->second.size (), ==, 1);
 
     auto cond = link->first.begin ();
     g_assert (cond->event == root->getLambda ());
@@ -3798,9 +3798,9 @@ and($__root__.p<='1',\
 </ncl>");
 
     g_assert_nonnull (doc);
-    g_assert (doc->getObjects ()->size () == 5);
-    g_assert (doc->getMedias ()->size () == 3);
-    g_assert (doc->getContexts ()->size () == 2);
+    g_assert_cmpint (doc->getObjects ()->size (), ==, 5);
+    g_assert_cmpint (doc->getMedias ()->size (), ==, 3);
+    g_assert_cmpint (doc->getContexts ()->size (), ==, 2);
 
     Context *root = doc->getRoot ();
     g_assert_nonnull (root);
@@ -3815,11 +3815,11 @@ and($__root__.p<='1',\
     g_assert_nonnull (m2);
 
     auto links = doc->getRoot ()->getLinks ();
-    g_assert (links->size () == 1);
+    g_assert_cmpint (links->size (), ==, 1);
 
     auto link = links->begin ();
-    g_assert (link->first.size () == 3);
-    g_assert (link->second.size () == 1);
+    g_assert_cmpint (link->first.size (), ==, 3);
+    g_assert_cmpint (link->second.size (), ==, 1);
 
     auto cond = link->first.begin ();
     g_assert (cond->event == m->getSelectionEvent ("RED"));
@@ -4075,11 +4075,11 @@ and(and('0'!='0', '1'>'1'), not($__root__.q==$c.p), $m.r<'33')");
     Context *root = doc->getRoot ();
     g_assert_nonnull (root);
     g_assert (root->getId () == "__root__");
-    g_assert (root->getPorts ()->size () == 3);
-    g_assert (root->getChildren ()->size () == 3);
-    g_assert (root->getLinks ()->size () == 0);
+    g_assert_cmpint (root->getPorts ()->size (), ==, 3);
+    g_assert_cmpint (root->getChildren ()->size (), ==, 3);
+    g_assert_cmpint (root->getLinks ()->size (), ==, 0);
 
-    g_assert (doc->getMedias ()->size () == 3);
+    g_assert_cmpint (doc->getMedias ()->size (), ==, 3);
 
     Media *m = cast (Media *, doc->getObjectById ("m"));
     g_assert_nonnull (m);

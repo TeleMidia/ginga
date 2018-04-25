@@ -67,9 +67,9 @@ main (void)
 return ncl");
 
     g_assert_nonnull (doc);
-    g_assert (doc->getObjects ()->size () == 5);
-    g_assert (doc->getMedias ()->size () == 3);
-    g_assert (doc->getContexts ()->size () == 2);
+    g_assert_cmpint (doc->getObjects ()->size (), ==, 5);
+    g_assert_cmpint (doc->getMedias ()->size (), ==,  3);
+    g_assert_cmpint (doc->getContexts ()->size (), ==, 2);
 
     Context *body = cast (Context *, doc->getRoot ());
     g_assert_nonnull (body);
@@ -114,10 +114,10 @@ return ncl");
 return ncl");
 
     g_assert_nonnull (doc);
-    g_assert (doc->getObjects ()->size () == 7);
-    g_assert (doc->getMedias ()->size () == 3);
-    g_assert (doc->getContexts ()->size () == 2);
-    g_assert (doc->getSwitches ()->size () == 2);
+    g_assert_cmpint (doc->getObjects ()->size (), ==, 7);
+    g_assert_cmpint (doc->getMedias ()->size (), ==,  3);
+    g_assert_cmpint (doc->getContexts ()->size (), ==, 2);
+    g_assert_cmpint (doc->getSwitches ()->size (), ==, 2);
 
     Context *body = cast (Context *, doc->getRoot ());
     g_assert_nonnull (body);
@@ -175,9 +175,9 @@ return ncl");
 return ncl");
 
     g_assert_nonnull (doc);
-    g_assert (doc->getObjects ()->size () == 4);
-    g_assert (doc->getMedias ()->size () == 3);
-    g_assert (doc->getContexts ()->size () == 1);
+    g_assert_cmpint (doc->getObjects ()->size (), ==, 4);
+    g_assert_cmpint (doc->getMedias ()->size (), ==,  3);
+    g_assert_cmpint (doc->getContexts ()->size (), ==, 1);
 
     Context *body = cast (Context *, doc->getRoot ());
     g_assert_nonnull (body);
@@ -218,16 +218,16 @@ return ncl");
 return ncl");
 
     g_assert_nonnull (doc);
-    g_assert (doc->getObjects ()->size () == 3);
-    g_assert (doc->getMedias ()->size () == 2);
-    g_assert (doc->getContexts ()->size () == 1);
+    g_assert_cmpint (doc->getObjects ()->size (), ==, 3);
+    g_assert_cmpint (doc->getMedias ()->size (), ==,  2);
+    g_assert_cmpint (doc->getContexts ()->size (), ==, 1);
 
     Context *body = cast (Context *, doc->getRoot ());
     g_assert_nonnull (body);
     Event *body_lambda = body->getLambda ();
     g_assert_nonnull (body_lambda);
 
-    g_assert (body->getLinks ()->size () == 1);
+    g_assert_cmpint (body->getLinks ()->size (), ==, 1);
 
     Media *m1 = cast (Media *, body->getChildById ("m1"));
     g_assert_nonnull (m1);
@@ -256,16 +256,16 @@ return ncl");
 return ncl");
 
     g_assert_nonnull (doc);
-    g_assert (doc->getObjects ()->size () == 3);
-    g_assert (doc->getMedias ()->size () == 2);
-    g_assert (doc->getContexts ()->size () == 1);
+    g_assert_cmpint (doc->getObjects ()->size (), ==, 3);
+    g_assert_cmpint (doc->getMedias ()->size (), ==,  2);
+    g_assert_cmpint (doc->getContexts ()->size (), ==, 1);
 
     Context *body = cast (Context *, doc->getRoot ());
     g_assert_nonnull (body);
     Event *body_lambda = body->getLambda ();
     g_assert_nonnull (body_lambda);
 
-    g_assert (body->getLinks ()->size () == 1);
+    g_assert_cmpint (body->getLinks ()->size (), ==, 1);
 
     Media *m1 = cast (Media *, body->getChildById ("m1"));
     g_assert_nonnull (m1);
@@ -297,10 +297,10 @@ return ncl");
 return ncl");
 
     g_assert_nonnull (doc);
-    g_assert (doc->getObjects ()->size () == 5);
-    g_assert (doc->getMedias ()->size () == 3);
-    g_assert (doc->getContexts ()->size () == 1);
-    g_assert (doc->getSwitches ()->size () == 1);
+    g_assert_cmpint (doc->getObjects ()->size (), ==, 5);
+    g_assert_cmpint (doc->getMedias ()->size (), ==,  3);
+    g_assert_cmpint (doc->getContexts ()->size (), ==, 1);
+    g_assert_cmpint (doc->getSwitches ()->size (), ==, 1);
 
     Context *body = cast (Context *, doc->getRoot ());
     g_assert_nonnull (body);

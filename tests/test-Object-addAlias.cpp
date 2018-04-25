@@ -29,7 +29,7 @@ main (void)
 
   for (auto obj : objs)
     {
-      g_assert (obj->getAliases ()->size () == 0);
+      g_assert_cmpint (obj->getAliases ()->size (), ==, 0);
 
       g_assert_false (obj->hasAlias ("a1"));
       obj->addAlias ("a1");
@@ -42,12 +42,12 @@ main (void)
       g_assert_false (obj->hasAlias ("a3"));
       obj->addAlias ("a3");
       g_assert_true (obj->hasAlias ("a3"));
-      g_assert (obj->getAliases ()->size () == 3);
+      g_assert_cmpint (obj->getAliases ()->size (), ==, 3);
 
       obj->addAlias ("a1");
       obj->addAlias ("a2");
       obj->addAlias ("a3");
-      g_assert (obj->getAliases ()->size () == 3);
+      g_assert_cmpint (obj->getAliases ()->size (), ==, 3);
       g_assert (!obj->toString ().empty ());
 
       delete obj;

@@ -35,7 +35,7 @@ main (void)
   g_assert_false (s->isOccurring ());
   g_assert_false (s->isPaused ());
   g_assert_true (s->isSleeping ());
-  g_assert (s->getDelayedActions ()->size () == 0);
+  g_assert_cmpint (s->getDelayedActions ()->size (), ==, 0);
   g_assert (!s->toString ().empty ());
 
   // Composition-only.
