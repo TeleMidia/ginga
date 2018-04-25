@@ -21,11 +21,11 @@ int
 main (void)
 {
   g_assert (!ginga::try_parse_bool ("*** invalid ***", nullptr));
-  g_assert (ginga::parse_bool ("true") == true);
-  g_assert (ginga::parse_bool ("false") == false);
-  g_assert (ginga::parse_bool ("True") == true);
-  g_assert (ginga::parse_bool ("False") == false);
-  g_assert (ginga::parse_bool ("TRUE") == true);
-  g_assert (ginga::parse_bool ("FALSE") == false);
+  g_assert_true (ginga::parse_bool ("true"));
+  g_assert_false (ginga::parse_bool ("false"));
+  g_assert_true (ginga::parse_bool ("True"));
+  g_assert_false (ginga::parse_bool ("False"));
+  g_assert_true (ginga::parse_bool ("TRUE"));
+  g_assert_false (ginga::parse_bool ("FALSE"));
   exit (EXIT_SUCCESS);
 }

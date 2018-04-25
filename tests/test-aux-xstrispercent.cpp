@@ -20,15 +20,15 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  g_assert (xstrispercent ("") == false);
-  g_assert (xstrispercent ("%50") == false);
-  g_assert (xstrispercent ("50") == false);
-  g_assert (xstrispercent ("50 %") == false);
-  g_assert (xstrispercent ("a50%") == false);
-  g_assert (xstrispercent ("50b%") == false);
-  g_assert (xstrispercent ("c%") == false);
+  g_assert_false (xstrispercent (""));
+  g_assert_false (xstrispercent ("%50"));
+  g_assert_false (xstrispercent ("50"));
+  g_assert_false (xstrispercent ("50 %"));
+  g_assert_false (xstrispercent ("a50%"));
+  g_assert_false (xstrispercent ("50b%"));
+  g_assert_false (xstrispercent ("c%"));
 
-  g_assert (xstrispercent ("50%") == true);
-  g_assert (xstrispercent ("1250%") == true);
+  g_assert_true (xstrispercent ("50%"));
+  g_assert_true (xstrispercent ("1250%"));
   exit (EXIT_SUCCESS);
 }

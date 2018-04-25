@@ -23,16 +23,16 @@ main (void)
   string s;
 
   s = xpathbuildabs ("this/is/", "a/directory/");
-  g_assert (xpathisabs (s) == true);
+  g_assert_true (xpathisabs (s));
 
   s = xpathbuildabs ("this/", "");
-  g_assert (xpathisabs (s) == true);
+  g_assert_true (xpathisabs (s));
 
   s = xpathbuildabs ("./", "this");
-  g_assert (xpathisabs (s) == true);
+  g_assert_true (xpathisabs (s));
 
   s = xpathbuildabs ("/", "this/");
-  g_assert (xpathisabs (s) == true);
+  g_assert_true (xpathisabs (s));
 
   exit (EXIT_SUCCESS);
 }

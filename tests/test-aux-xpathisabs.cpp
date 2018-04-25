@@ -20,11 +20,11 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  g_assert (xpathisabs ("this/is/a/directory/") == false);
-  g_assert (xpathisabs ("this/is/ not a/directory/") == false);
-  g_assert (xpathisabs ("/this/is/a/directory/") == true);
-  g_assert (xpathisabs ("./") == false);
-  g_assert (xpathisabs ("/") == true);
-  g_assert (xpathisabs ("") == false);
+  g_assert_false (xpathisabs ("this/is/a/directory/"));
+  g_assert_false (xpathisabs ("this/is/ not a/directory/"));
+  g_assert_true (xpathisabs ("/this/is/a/directory/"));
+  g_assert_false (xpathisabs ("./"));
+  g_assert_true (xpathisabs ("/"));
+  g_assert_false (xpathisabs (""));
   exit (EXIT_SUCCESS);
 }
