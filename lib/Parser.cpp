@@ -540,8 +540,7 @@ static map<string, ParserSyntaxElt> parser_syntax_table = {
         nullptr,
         0,
         { "causalConnector" },
-        { { "name", ATTR_NONEMPTY_NAME },
-          { "type", 0 } } },
+        { { "name", ATTR_NONEMPTY_NAME }, { "type", 0 } } },
   },
   {
       "compoundCondition",
@@ -3845,39 +3844,66 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
   string type;
   string refer;
   string src;
+  bool hasType;
+  bool hasRefer;
+  bool hasSrc;
 
   g_assert (elt->getAttribute ("id", &id));
-  if (elt->getAttribute ("type", &type))
+
+  hasType = elt->getAttribute ("type", &type);
+  hasRefer = elt->getAttribute ("refer", &refer);
+  hasSrc = elt->getAttribute ("src", &src);
+
+  if (hasType && hasRefer)
+    return st->errEltMutuallyExclAttributes (elt->getNode (), "type",
+                                             "refer");
+  if (hasSrc && hasRefer)
+    return st->errEltMutuallyExclAttributes (elt->getNode (), "src",
+                                             "refer");
+
+  // case is an already referred Media
+  if (st->referMapIndex (id, &media))
     {
-      if (unlikely (elt->getAttribute ("refer", &refer)))
-        {
-          return st->errEltMutuallyExclAttributes (elt->getNode (), "type",
-                                                   "refer");
-        }
-      if (type == "application/x-ginga-settings")
-        {
-          refer = st->_doc->getSettings ()->getId ();
-          media = cast (Media *, st->_doc->getObjectByIdOrAlias (refer));
-          if (media != nullptr)
-            goto almost_done;
-        }
+      media->setProperty ("uri", src);
     }
-
-  if (elt->getAttribute ("refer", &refer))
+  // case is an MediaSettings
+  else if (type == "application/x-ginga-settings")
     {
-      if (unlikely (elt->getAttribute ("src", &src)))
-        {
-          return st->errEltMutuallyExclAttributes (elt->getNode (), "src",
-                                                   "refer");
-        }
-
+      refer = st->_doc->getSettings ()->getId ();
+      media = st->_doc->getSettings ();
+      media->addAlias (id);
+      g_assert (st->referMapAdd (id, media));
+    }
+  // case is Media refer instSame
+  else if (hasRefer)
+    {
       media = cast (Media *, st->_doc->getObjectByIdOrAlias (refer));
+      // if referenced Media exist
       if (media != nullptr)
-        goto almost_done;
+        {
+          media->addAlias (id);
+          st->referMapAdd (refer, media);
+          g_assert (st->referMapAdd (id, media));
+        }
+      else
+        {
+          // if referenced Media not existing yet, create it
+          media = new Media (id);
+          media->setProperty ("uri", src);
+          media->setProperty ("type", type);
+          parent = cast (Composition *, st->objStackPeek ());
+          g_assert_nonnull (parent);
+          parent->addChild (media);
+
+          media->addAlias (refer);
+          st->referMapAdd (refer, media);
+          g_assert (st->referMapAdd (id, media));
+        }
     }
+  // case src filled or empty (timer)
   else
     {
-      elt->getAttribute ("src", &src);
+      // case src filled
       if (src != "")
         {
           // Makes uri based in the main document uri
@@ -3892,31 +3918,15 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
           xmlFree (s);
         }
 
-      if (st->referMapIndex (id, &media))
-        {
-          media->setProperty ("uri", src);
-          goto done;
-        }
+      // create new Media
+      media = new Media (id);
+      media->setProperty ("uri", src);
+      media->setProperty ("type", type);
+      parent = cast (Composition *, st->objStackPeek ());
+      g_assert_nonnull (parent);
+      parent->addChild (media);
     }
 
-  media = new Media (id);
-  media->setProperty ("uri", src);
-  media->setProperty ("type", type);
-
-  parent = cast (Composition *, st->objStackPeek ());
-  g_assert_nonnull (parent);
-  parent->addChild (media);
-
-almost_done:
-  if (refer != "")
-    {
-      media->addAlias (id);
-      media->addAlias (refer);
-      st->referMapAdd (refer, media);
-      g_assert (st->referMapAdd (id, media));
-    }
-
-done:
   st->objStackPush (media);
   return true;
 }
