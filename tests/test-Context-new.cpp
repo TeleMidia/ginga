@@ -44,9 +44,9 @@ main (void)
   // Context-only.
   g_assert_cmpint (c->getPorts ()->size (), ==,  0);
   g_assert_cmpint (c->getLinks ()->size (), ==, 0);
-  g_assert (c->getLinksStatus () == true);
+  g_assert_true (c->getLinksStatus ());
   c->setLinksStatus (false);
-  g_assert (c->getLinksStatus () == false);
+  g_assert_false (c->getLinksStatus ());
 
   delete c;
 
