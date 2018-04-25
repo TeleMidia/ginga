@@ -613,5 +613,107 @@ main (void)
       delete fmt;
     }
 
+  // start in anchor with non-zero end and link waiting an anchor with end
+  // time the end before to the first anchor
+  for (int i = 0; i < samples.size (); i++)
+    {
+      Formatter *fmt;
+      Document *doc;
+      tests_parse_and_start (&fmt, &doc,
+                             xstrbuild ("\
+<ncl>\n\
+  <head>\n\
+    <connectorBase>\n\
+    <causalConnector id='onBeginStart'>\n\
+      <simpleCondition role='onBegin'/>\n\
+      <simpleAction role='start'/>\n\
+    </causalConnector>\n\
+    <causalConnector id='onEndStart'>\n\
+      <simpleCondition role='onEnd'/>\n\
+      <simpleAction role='start'/>\n\
+    </causalConnector>\n\
+  </connectorBase>\n\
+  </head>\n\
+  <body>\n\
+    <port id='start0' component='m1' interface='a1'/>\n\
+    <media id='m1' src='%s'>\n\
+      <property name='explicitDur' value='10s'/>\n\
+      <area id='a1' begin='10s' end='20s'/>\n\
+      <area id='a2' begin='5s' end='15s'/>\n\
+    </media>\n\
+    <media id='m2' src='%s'/>\n\
+    <link xconnector='onEndStart'>\n\
+      <bind role='onEnd' component='m1' interface='a1'/>\n\
+      <bind role='start' component='m2'/>\n\
+    </link>\n\
+  </body>\n\
+</ncl>\n",
+                                        samples[i].uri, samples[i].uri));
+
+      Context *body = cast (Context *, doc->getRoot ());
+      g_assert_nonnull (body);
+      Event *body_lambda = body->getLambda ();
+      g_assert_nonnull (body_lambda);
+
+      Media *m1 = cast (Media *, doc->getObjectById ("m1"));
+      g_assert_nonnull (m1);
+      Event *m1_lambda = m1->getLambda ();
+      g_assert_nonnull (m1_lambda);
+
+      Time begin, end;
+      Event *a1 = m1->getPresentationEvent ("a1");
+      a1->getInterval (&begin, &end);
+      g_assert_nonnull (a1);
+      g_assert_cmpuint (begin, ==, 10 * GINGA_SECOND);
+      g_assert_cmpuint (end, ==, 20 * GINGA_SECOND);
+      Event *a2 = m1->getPresentationEvent ("a2");
+      g_assert_nonnull (a2);
+      a2->getInterval (&begin, &end);
+      g_assert_cmpuint (begin, ==, 5 * GINGA_SECOND);
+      g_assert_cmpuint (end, ==, 15 * GINGA_SECOND);
+
+      Media *m2 = cast (Media *, doc->getObjectById ("m2"));
+      g_assert_nonnull (m2);
+      Event *m2_lambda = m2->getLambda ();
+      g_assert_nonnull (m2_lambda);
+
+      // --------------------------------
+      // check start document
+
+      g_assert (body_lambda->getState () == Event::OCCURRING);
+      g_assert (m1_lambda->getState () == Event::SLEEPING);
+      g_assert (m2_lambda->getState () == Event::SLEEPING);
+
+      fmt->sendTick (0, 0, 0);
+      // when start document, a1 and a2 is OCCURRING
+      g_assert (body_lambda->getState () == Event::OCCURRING);
+      g_assert (m1_lambda->getState () == Event::OCCURRING);
+      g_assert (a1->getState () == Event::OCCURRING);
+      g_assert (a2->getState () == Event::OCCURRING);
+      g_assert (m2_lambda->getState () == Event::SLEEPING);
+
+      // --------------------------------
+      // main check
+
+      // when advance 5, a1 OCCURRING
+      fmt->sendTick (5 * GINGA_SECOND, 5 * GINGA_SECOND, 0);
+      g_assert (body_lambda->getState () == Event::OCCURRING);
+      g_assert (a1->getState () == Event::OCCURRING);
+      g_assert (a2->getState () == Event::SLEEPING);
+      g_assert (m1_lambda->getState () == Event::OCCURRING);
+      g_assert (m2_lambda->getState () == Event::SLEEPING);
+
+      // when advance 5, a2 is OCCURRING
+      fmt->sendTick (5 * GINGA_SECOND, 5 * GINGA_SECOND, 0);
+      g_assert (body_lambda->getState () == Event::OCCURRING);
+      g_assert (a1->getState () == Event::SLEEPING);
+      g_assert (a2->getState () == Event::SLEEPING);
+      // TODO: this should SLEEPING
+      // g_assert (m1_lambda->getState () == Event::SLEEPING);
+      g_assert (m2_lambda->getState () == Event::OCCURRING);
+
+      delete fmt;
+    }
+
   exit (EXIT_SUCCESS);
 }
