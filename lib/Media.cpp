@@ -257,7 +257,8 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
                           {
                             Action act = it->first;
                             Event *evt = act.event;
-                            if (act.transition == Event::START)
+                            if (act.transition == Event::START 
+                                && it->second < begin)
                               evt->transition (act.transition);
                             it = _delayed.erase (it);
                           }

@@ -101,8 +101,7 @@ main (void)
       g_assert (m1_lambda->getState () == Event::OCCURRING);
       g_assert (a1->getState () == Event::SLEEPING);
       g_assert (a2->getState () == Event::OCCURRING);
-      // TODO: this should SLEEPING
-      // g_assert (a3->getState () == Event::SLEEPING);
+      g_assert (a3->getState () == Event::SLEEPING);
       g_assert (m2_lambda->getState () == Event::SLEEPING);
 
       // --------------------------------
@@ -114,8 +113,7 @@ main (void)
       g_assert (m1_lambda->getState () == Event::OCCURRING);
       g_assert (a1->getState () == Event::OCCURRING);
       g_assert (a2->getState () == Event::OCCURRING);
-      // TODO: this should SLEEPING
-      // g_assert (a3->getState () == Event::SLEEPING);
+      g_assert (a3->getState () == Event::SLEEPING);
       g_assert (m2_lambda->getState () == Event::SLEEPING);
 
       // when advance more 10s, a2 is SLEEPING
@@ -124,8 +122,7 @@ main (void)
       g_assert (m1_lambda->getState () == Event::OCCURRING);
       g_assert (a1->getState () == Event::OCCURRING);
       g_assert (a2->getState () == Event::SLEEPING);
-      // TODO: this should SLEEPING
-      // g_assert (a3->getState () == Event::SLEEPING);
+      g_assert (a3->getState () == Event::SLEEPING);
       g_assert (m2_lambda->getState () == Event::OCCURRING);
 
       // when advance more 10s, m1 is SLEEPING and m2 is OCCURRING
@@ -337,8 +334,7 @@ main (void)
       fmt->sendTick (10 * GINGA_SECOND, 10 * GINGA_SECOND, 0);
       g_assert (body_lambda->getState () == Event::OCCURRING);
       g_assert (m1_lambda->getState () == Event::OCCURRING);
-      // TODO: this should SLEEPING
-      // g_assert (a1->getState () == Event::SLEEPING);
+      g_assert (a1->getState () == Event::OCCURRING);
       g_assert (a2->getState () == Event::OCCURRING);
       g_assert (a3->getState () == Event::OCCURRING);
       g_assert (m2_lambda->getState () == Event::SLEEPING);
