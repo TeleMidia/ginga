@@ -345,7 +345,8 @@ Media::afterTransition (Event *evt, Event::Transition transition)
                       this->addDelayedAction (e, Event::STOP, "", end);
                     }
                 }
-              TRACE ("start %s", evt->getFullId ().c_str ());
+              TRACE ("start %s at %" GINGA_TIME_FORMAT,
+                     evt->getFullId ().c_str (), GINGA_TIME_ARGS (_time));
             }
           else if (evt->hasLabel ())
             {
@@ -354,11 +355,13 @@ Media::afterTransition (Event *evt, Event::Transition transition)
           break;
 
         case Event::PAUSE:
-          TRACE ("pause %s", evt->getFullId ().c_str ());
+          TRACE ("pause %s at %" GINGA_TIME_FORMAT,
+                 evt->getFullId ().c_str (), GINGA_TIME_ARGS (_time));
           break; // nothing to do
 
         case Event::RESUME:
-          TRACE ("resume %s", evt->getFullId ().c_str ());
+          TRACE ("resume %s at %" GINGA_TIME_FORMAT,
+                 evt->getFullId ().c_str (), GINGA_TIME_ARGS (_time));
           break; // nothing to do
 
         case Event::STOP:
@@ -367,11 +370,13 @@ Media::afterTransition (Event *evt, Event::Transition transition)
             {
               // Stop object.
               g_assert_nonnull (_player);
-              this->doStop ();
               if (transition == Event::ABORT)
-                TRACE ("abort %s", evt->getFullId ().c_str ());
+                TRACE ("abort %s at %" GINGA_TIME_FORMAT,
+                       evt->getFullId ().c_str (), GINGA_TIME_ARGS (_time));
               else
-                TRACE ("stop %s", evt->getFullId ().c_str ());
+                TRACE ("stop %s at %" GINGA_TIME_FORMAT,
+                       evt->getFullId ().c_str (), GINGA_TIME_ARGS (_time));
+              this->doStop ();
             }
           else if (evt->getLabel () != "")
             {
@@ -423,8 +428,10 @@ Media::afterTransition (Event *evt, Event::Transition transition)
                 }
               this->setProperty (name, value, dur);
               this->addDelayedAction (evt, Event::STOP, value, dur);
-              TRACE ("start %s:='%s' (dur=%s)", evt->getFullId ().c_str (),
-                     value.c_str (), (s != "") ? s.c_str () : "0s");
+              TRACE ("start %s:='%s' (dur=%s) at %" GINGA_TIME_FORMAT,
+                     evt->getFullId ().c_str (), value.c_str (),
+                     (s != "") ? s.c_str () : "0s",
+                     GINGA_TIME_ARGS (_time));
               break;
             }
 
