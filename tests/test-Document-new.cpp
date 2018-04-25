@@ -26,10 +26,10 @@ main (void)
 
   tests_create_document (&doc, &root, &settings);
 
-  g_assert (doc->getObjects ()->size () == 2);  // root and settings
-  g_assert (doc->getMedias ()->size () == 1);   // settings
-  g_assert (doc->getContexts ()->size () == 1); // root
-  g_assert (doc->getSwitches ()->size () == 0); // none
+  g_assert_cmpint (doc->getObjects ()->size (), ==, 2);  // root and settings
+  g_assert_cmpint (doc->getMedias ()->size (), ==,  1);   // settings
+  g_assert_cmpint (doc->getContexts ()->size (), ==, 1); // root
+  g_assert_cmpint (doc->getSwitches ()->size (), ==, 0); // none
 
   delete doc;
 
