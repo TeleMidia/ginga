@@ -29,8 +29,8 @@ main (void)
   g_assert_null (s->getParent ());
   g_assert (s->getObjectTypeAsString () == "Switch");
   g_assert (s->toString () != "");
-  g_assert (s->getAliases ()->size () == 0);
-  g_assert (s->getEvents ()->size () == 1);
+  g_assert_cmpint (s->getAliases ()->size (), ==, 0);
+  g_assert_cmpint (s->getEvents ()->size (), ==, 1);
   g_assert_nonnull (s->getLambda ());
   g_assert_false (s->isOccurring ());
   g_assert_false (s->isPaused ());
@@ -39,10 +39,10 @@ main (void)
   g_assert (!s->toString ().empty ());
 
   // Composition-only.
-  g_assert (s->getChildren ()->size () == 0);
+  g_assert_cmpint (s->getChildren ()->size (), ==, 0);
 
   // Switch-only.
-  g_assert (s->getRules ()->size () == 0);
+  g_assert_cmpint (s->getRules ()->size (), ==, 0);
 
   delete s;
 
