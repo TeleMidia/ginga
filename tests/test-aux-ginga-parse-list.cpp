@@ -27,7 +27,7 @@ main (void)
   g_assert (!ginga::try_parse_list ("a,b,c,d", ',', 1, 2, NULL));
 
   lst = ginga::parse_list ("a,b,c", ',', 0, 3);
-  g_assert (lst.size () == 3);
+  g_assert_cmpint (lst.size (), ==, 3);
   auto it = lst.begin ();
   g_assert (*it++ == "a");
   g_assert (*it++ == "b");
@@ -35,16 +35,16 @@ main (void)
   g_assert (it == lst.end ());
 
   lst = ginga::parse_list ("", ';', 0, 3);
-  g_assert (lst.size () == 0);
+  g_assert_cmpint (lst.size (), ==, 0);
 
   lst = ginga::parse_list ("x", ';', 0, 3);
-  g_assert (lst.size () == 1);
+  g_assert_cmpint (lst.size (), ==, 1);
   it = lst.begin ();
   g_assert (*it++ == "x");
   g_assert (it == lst.end ());
 
   lst = ginga::parse_list ("x;y;z", ';', 2, 5);
-  g_assert (lst.size () == 3);
+  g_assert_cmpint (lst.size (), ==, 3);
   it = lst.begin ();
   g_assert (*it++ == "x");
   g_assert (*it++ == "y");
@@ -52,7 +52,7 @@ main (void)
   g_assert (it == lst.end ());
 
   lst = ginga::parse_list (" aa , bb , cc , dd", ',', 0, 10);
-  g_assert (lst.size () == 4);
+  g_assert_cmpint (lst.size (), ==, 4);
   it = lst.begin ();
   g_assert (*it++ == "aa");
   g_assert (*it++ == "bb");

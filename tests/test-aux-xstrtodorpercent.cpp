@@ -25,22 +25,22 @@ int
 main (void)
 {
   bool perc;
-  g_assert (xstrtodorpercent ("", &perc) == 0.);
+  g_assert_cmpint (xstrtodorpercent ("", &perc), ==, 0.);
   g_assert_false (perc);
 
-  g_assert (xstrtodorpercent ("0", &perc) == 0.);
+  g_assert_cmpint (xstrtodorpercent ("0", &perc), ==, 0.);
   g_assert_false (perc);
 
-  g_assert (xstrtodorpercent ("0%", &perc) == 0.);
+  g_assert_cmpint (xstrtodorpercent ("0%", &perc), ==, 0.);
   g_assert_true (perc);
 
-  g_assert (xstrtodorpercent ("50%", &perc) == .5);
+  g_assert_cmpint (xstrtodorpercent ("50%", &perc), ==, .5);
   g_assert_true (perc);
 
-  g_assert (xstrtodorpercent ("a", &perc) == 0.);
+  g_assert_cmpint (xstrtodorpercent ("a", &perc), ==, 0.);
   g_assert_false (perc);
 
-  g_assert (xstrtodorpercent ("a%", &perc) == 0.);
+  g_assert_cmpint (xstrtodorpercent ("a%", &perc), ==, 0.);
   g_assert_false (perc);
 
   exit (EXIT_SUCCESS);

@@ -24,9 +24,9 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-equal)
 int
 main (void)
 {
-  g_assert (xstrtod ("1") == 1.);
-  g_assert (xstrtod ("   1") == 1.);
-  g_assert (xstrtod ("50") == 50.);
-  g_assert (xstrtod ("1   ") == 1.);
+  g_assert_cmpint (xstrtod ("1"), ==, 1.);
+  g_assert_cmpint (xstrtod ("   1"), ==, 1.);
+  g_assert_cmpint (xstrtod ("50"), ==, 50.);
+  g_assert_cmpint (xstrtod ("1   "), ==, 1.);
   exit (EXIT_SUCCESS);
 }

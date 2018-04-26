@@ -26,14 +26,14 @@ main (void)
   ginga = Ginga::create (nullptr);
   g_assert_nonnull (ginga);
   ginga->setOptionInt ("width", 800);
-  g_assert (ginga->getOptionInt ("width") == 800);
+  g_assert_cmpint (ginga->getOptionInt ("width"), ==, 800);
   ginga->setOptionInt ("height", 600);
-  g_assert (ginga->getOptionInt ("height") == 600);
+  g_assert_cmpint (ginga->getOptionInt ("height"), ==, 600);
   tmp = tests_write_tmp_file ("<ncl/>");
   g_assert_true (ginga->start (tmp, &errmsg));
   ginga->resize (640, 480);
-  g_assert (ginga->getOptionInt ("width") == 640);
-  g_assert (ginga->getOptionInt ("height") == 480);
+  g_assert_cmpint (ginga->getOptionInt ("width"), ==, 640);
+  g_assert_cmpint (ginga->getOptionInt ("height"), ==, 480);
   g_remove (tmp.c_str ());
 
   exit (EXIT_SUCCESS);
