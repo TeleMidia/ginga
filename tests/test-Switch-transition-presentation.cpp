@@ -36,7 +36,7 @@ main (void)
     g_assert_cmpint (swt1_lambda->getState (), ==, Event::SLEEPING);
     g_assert_cmpint (m1_lambda->getState (), ==, Event::SLEEPING);
     g_assert_cmpint (m2_lambda->getState (), ==, Event::SLEEPING);
-    // g_assert_cmpint ((*swt1_sel)->getState (), ==, Event::SLEEPING);
+    g_assert (swt1_sel->getState () == Event::SLEEPING);
 
     delete fmt;
   }
@@ -60,7 +60,7 @@ main (void)
     g_assert (swt1_lambda->getState () == Event::PAUSED);
     g_assert (m1_lambda->getState () == Event::PAUSED);
     g_assert (m2_lambda->getState () == Event::SLEEPING);
-    // g_assert_cmpint ((*swt1_sel)->getState (), ==, Event::SLEEPING);
+    g_assert (swt1_sel->getState () == Event::SLEEPING);
 
     delete fmt;
   }
@@ -83,7 +83,7 @@ main (void)
     g_assert (swt1_lambda->getState () == Event::OCCURRING);
     g_assert (m1_lambda->getState () == Event::OCCURRING);
     g_assert (m2_lambda->getState () == Event::SLEEPING);
-    // g_assert_cmpint ((*swt1_sel)->getState (), ==, Event::SLEEPING);
+    g_assert (swt1_sel->getState () == Event::SLEEPING);
 
     delete fmt;
   }
@@ -107,7 +107,7 @@ main (void)
     g_assert (swt1_lambda->getState () == Event::OCCURRING);
     g_assert (m1_lambda->getState () == Event::OCCURRING);
     g_assert (m2_lambda->getState () == Event::SLEEPING);
-    // g_assert_cmpint ((*swt1_sel)->getState (), ==, Event::SLEEPING);
+    g_assert (swt1_sel->getState () == Event::SLEEPING);
 
     delete fmt;
   }
@@ -131,12 +131,42 @@ main (void)
     g_assert (swt1_lambda->getState () == Event::SLEEPING);
     g_assert (m1_lambda->getState () == Event::SLEEPING);
     g_assert (m2_lambda->getState () == Event::SLEEPING);
-    // g_assert_cmpint ((*swt1_sel)->getState (), ==, Event::SLEEPING);
+    g_assert (swt1_sel->getState () == Event::SLEEPING);
 
     delete fmt;
   }
   // STOP lambda from state PAUSED
   // STOP lambda from state SLEEPING
+  {
+    Formatter *fmt;
+    Event *body_lambda, *swt1_lambda, *swt1_sel, *m1_lambda, *m2_lambda;
+
+    tests_create_document_with_switch_and_start (&fmt, &body_lambda,
+                                                 &swt1_lambda, &swt1_sel,
+                                                 &m1_lambda, &m2_lambda);
+
+    // STOP is done
+    g_assert (swt1_lambda->transition (Event::STOP));
+
+    // after STOP, swt1_lambda is SLEEPING
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (swt1_lambda->getState () == Event::SLEEPING);
+    g_assert (m1_lambda->getState () == Event::SLEEPING);
+    g_assert (m2_lambda->getState () == Event::SLEEPING);
+    g_assert (swt1_sel->getState () == Event::SLEEPING);
+
+    // STOP is not done
+    g_assert_false (swt1_lambda->transition (Event::STOP));
+
+    // after STOP, swt1_lambda is SLEEPING
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (swt1_lambda->getState () == Event::SLEEPING);
+    g_assert (m1_lambda->getState () == Event::SLEEPING);
+    g_assert (m2_lambda->getState () == Event::SLEEPING);
+    g_assert (swt1_sel->getState () == Event::SLEEPING);
+
+    delete fmt;
+  }
 
   exit (EXIT_SUCCESS);
 }
