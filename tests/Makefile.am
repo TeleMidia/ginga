@@ -261,8 +261,8 @@ test_Media_focusIndex_changed_by_link_SOURCES= test-Media-focusIndex-changed-by-
 progs+= test-Media-focusIndex-changed-by-sendKey
 test_Media_focusIndex_changed_by_sendKey_SOURCES= test-Media-focusIndex-changed-by-sendKey.cpp
 
-progs+= test-Media-selection
-test_Media_selection_SOURCES= test-Media-selection.cpp
+progs+= test-Media-link-onSelection
+test_Media_link_onSelection_SOURCES= test-Media-link-onSelection.cpp
 
 progs+= test-Media-mime
 test_Media_mime_SOURCES= test-Media-mime.cpp
