@@ -23,7 +23,7 @@ main (void)
   list<Object *> objs;
 
   objs.push_back (new Media ("m"));
-  objs.push_back (new MediaSettings ("m"));
+  objs.push_back (new MediaSettings ("stgs"));
   objs.push_back (new Context ("c"));
   objs.push_back (new Switch ("s"));
 

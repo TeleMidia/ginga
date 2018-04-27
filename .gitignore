@@ -162,6 +162,8 @@
 /tests/test-MediaSettings-instances
 /tests/test-MediaSettings-new
 /tests/test-Siggen-new
+/tests/test-Object-getTime
+/tests/test-Object-sendKey
 /tests/test-Object-addAlias
 /tests/test-Object-addEvent
 /tests/test-Parser-parseBuffer

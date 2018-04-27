@@ -20,7 +20,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  list<Object *> objs;
+  vector<Object *> objs;
 
   objs.push_back (new Media ("m"));
   objs.push_back (new MediaSettings ("stgs"));
@@ -29,28 +29,11 @@ main (void)
 
   for (auto obj : objs)
     {
-      g_assert_cmpint (obj->getAliases ()->size (), ==, 0);
-
-      g_assert_false (obj->hasAlias ("a1"));
-      obj->addAlias ("a1");
-      g_assert_true (obj->hasAlias ("a1"));
-
-      g_assert_false (obj->hasAlias ("a2"));
-      obj->addAlias ("a2");
-      g_assert_true (obj->hasAlias ("a2"));
-
-      g_assert_false (obj->hasAlias ("a3"));
-      obj->addAlias ("a3");
-      g_assert_true (obj->hasAlias ("a3"));
-      g_assert_cmpint (obj->getAliases ()->size (), ==, 3);
-
-      obj->addAlias ("a1");
-      obj->addAlias ("a2");
-      obj->addAlias ("a3");
-      g_assert_cmpint (obj->getAliases ()->size (), ==, 3);
-
+      for (int j = 0; j < samples_keys.size (); j++)
+        {
+          obj->sendKey (samples_keys[j], true);
+        }
       delete obj;
     }
-
   exit (EXIT_SUCCESS);
 }
