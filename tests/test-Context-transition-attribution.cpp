@@ -34,10 +34,12 @@ main (void)
     // START prop from state SLEEPING
     {
       Formatter *fmt;
-      Event *body_lambda, *c1_lambda, *c1_prop, *m1_lambda, *m2_lambda;
+      Event *body_lambda, *c1_lambda, *c1_prop, *c1_sel, *m1_lambda,
+          *m2_lambda;
 
       tests_create_document_with_context_and_start (
-          &fmt, &body_lambda, &c1_lambda, &c1_prop, &m1_lambda, &m2_lambda);
+          &fmt, &body_lambda, &c1_lambda, &c1_prop, &c1_sel, &m1_lambda,
+          &m2_lambda);
 
       // START AttributionEvent is done and return true
       g_assert_true (c1_prop->transition (Event::START));
@@ -48,6 +50,7 @@ main (void)
       g_assert (m1_lambda->getState () == Event::OCCURRING);
       g_assert (m2_lambda->getState () == Event::OCCURRING);
       g_assert (c1_prop->getState () == Event::OCCURRING);
+      g_assert (c1_sel->getState () == Event::SLEEPING);
 
       // when advance time AttributionEvent is SLEEPING
       fmt->sendTick (0, 0, 0);
@@ -56,6 +59,7 @@ main (void)
       g_assert (m1_lambda->getState () == Event::OCCURRING);
       g_assert (m2_lambda->getState () == Event::OCCURRING);
       g_assert (c1_prop->getState () == Event::SLEEPING);
+      g_assert (c1_sel->getState () == Event::SLEEPING);
 
       delete fmt;
     }
