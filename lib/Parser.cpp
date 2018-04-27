@@ -3871,7 +3871,9 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
     {
       refer = st->_doc->getSettings ()->getId ();
       media = st->_doc->getSettings ();
-      media->addAlias (id);
+      parent = cast (Composition *, st->objStackPeek ());
+      g_assert_nonnull (parent);
+      media->addAlias (id, parent);
       g_assert (st->referMapAdd (id, media));
     }
   // case is Media refer instSame
@@ -3881,7 +3883,9 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
       // if referenced Media exist
       if (media != nullptr)
         {
-          media->addAlias (id);
+          parent = cast (Composition *, st->objStackPeek ());
+          g_assert_nonnull (parent);
+          media->addAlias (id, parent);
           st->referMapAdd (refer, media);
           g_assert (st->referMapAdd (id, media));
         }

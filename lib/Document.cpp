@@ -296,6 +296,11 @@ Document::evalAction (Action init)
       evt = act.event;
       g_assert_nonnull (evt);
 
+      TRACE ("next stacked Action: event=%s transtion=%s value=%s",
+             act.event->getFullId ().c_str (),
+             Event::getEventTransitionAsString (act.transition).c_str (),
+             act.value.c_str ());
+
       evt->setParameter ("duration", act.duration);
       if (evt->getType () == Event::ATTRIBUTION)
         evt->setParameter ("value", act.value);
@@ -370,6 +375,19 @@ Document::evalAction (Action init)
           g_assert_nonnull (ctx_parent);
           list<Action> ret = evalActionInContext (act, ctx_parent);
           stack.insert (stack.end (), ret.begin (), ret.end ());
+        }
+      // If have refer elements, trigger in the contexts
+      else if (obj->getAliases ()->size ())
+        {
+          for (const auto &alias : *obj->getAliases ())
+            {
+              ctx_parent = cast (Context *, alias.second);
+              if (ctx_parent)
+                {
+                  list<Action> ret = evalActionInContext (act, ctx_parent);
+                  stack.insert (stack.end (), ret.begin (), ret.end ());
+                }
+            }
         }
     }
   return n;
