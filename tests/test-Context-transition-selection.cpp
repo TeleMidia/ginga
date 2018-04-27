@@ -23,12 +23,14 @@ main (void)
   // ABORT selection from state OCCURRING
   {
     // not applicable
-  } // ABORT selection from state PAUSED
+  }
 
+  // ABORT selection from state PAUSED
   {
     // not applicable
-  } // ABORT selection from state SLEEPING
+  }
 
+  // ABORT selection from state SLEEPING
   {
     Formatter *fmt;
     Event *body_lambda, *c1_lambda, *c1_prop, *c1_sel, *m1_lambda,
@@ -41,8 +43,7 @@ main (void)
     // ABORT is not done and return false
     g_assert_false (c1_sel->transition (Event::ABORT));
 
-    // after advance time, c1_lambda, m1_lambda and m2_lambda are PAUSED
-    // are OCCURRING, and its properties are SLEEPING
+    // after advance time, c1_sel is SLEEPING
     fmt->sendTick (0, 0, 0);
     g_assert (body_lambda->getState () == Event::OCCURRING);
     g_assert (c1_lambda->getState () == Event::OCCURRING);
@@ -77,8 +78,7 @@ main (void)
     // PAUSE is not done and return false
     g_assert_false (c1_sel->transition (Event::PAUSE));
 
-    // after advance time, c1_lambda, m1_lambda and m2_lambda are PAUSED
-    // are OCCURRING, and its properties are SLEEPING
+    // after advance time, c1_sel is SLEEPING
     fmt->sendTick (0, 0, 0);
     g_assert (body_lambda->getState () == Event::OCCURRING);
     g_assert (c1_lambda->getState () == Event::OCCURRING);
@@ -112,8 +112,7 @@ main (void)
     // START is not done and return false
     g_assert_false (c1_sel->transition (Event::START));
 
-    // after advance time, c1_lambda, m1_lambda and m2_lambda are PAUSED
-    // are OCCURRING, and its properties are SLEEPING
+    // after advance time, c1_sel is SLEEPING
     fmt->sendTick (0, 0, 0);
     g_assert (body_lambda->getState () == Event::OCCURRING);
     g_assert (c1_lambda->getState () == Event::OCCURRING);
@@ -126,7 +125,15 @@ main (void)
   }
 
   // STOP selection from state OCCURRING
+  {
+    // not applicable
+  }
+
   // STOP selection from state PAUSED
+  {
+    // not applicable
+  }
+
   // STOP selection from state SLEEPING
   {
     Formatter *fmt;
@@ -137,11 +144,10 @@ main (void)
         &fmt, &body_lambda, &c1_lambda, &c1_prop, &c1_sel, &m1_lambda,
         &m2_lambda);
 
-    // START is not done and return false
+    // STOP is not done and return false
     g_assert_false (c1_sel->transition (Event::STOP));
 
-    // after advance time, c1_lambda, m1_lambda and m2_lambda are PAUSED
-    // are OCCURRING, and its properties are SLEEPING
+    // after advance time, c1_sel is SLEEPING
     fmt->sendTick (0, 0, 0);
     g_assert (body_lambda->getState () == Event::OCCURRING);
     g_assert (c1_lambda->getState () == Event::OCCURRING);

@@ -23,6 +23,29 @@ main (void)
   // ABORT selection from state OCCURRING
   // ABORT selection from state PAUSED
   // ABORT selection from state SLEEPING
+  {
+    Formatter *fmt;
+    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop,
+        *m1_sel;
+
+    tests_create_document_with_media_and_start (
+        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop,
+        &m1_sel);
+
+    // ABORT is not done and return true
+    g_assert_false (m1_sel->transition (Event::ABORT));
+
+    // when advance time, m1_sel is SLEEPING
+    fmt->sendTick (0, 0, 0);
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_anchor_0s->getState () == Event::OCCURRING);
+    g_assert (m1_label->getState () == Event::SLEEPING);
+    g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () == Event::SLEEPING);
+
+    delete fmt;
+  }
 
   // PAUSE selection from state OCCURRING
   // PAUSE selection from state PAUSED
@@ -99,8 +122,63 @@ main (void)
   }
 
   // STOP selection from state OCCURRING
+  {
+    Formatter *fmt;
+    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop,
+        *m1_sel;
+
+    tests_create_document_with_media_and_start (
+        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop,
+        &m1_sel);
+
+    // START is done
+    g_assert (m1_sel->transition (Event::START));
+
+    // after START, m1_sel is OCCURRING
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_anchor_0s->getState () == Event::OCCURRING);
+    g_assert (m1_label->getState () == Event::SLEEPING);
+    g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () == Event::OCCURRING);
+
+    // STOP is done
+    g_assert (m1_sel->transition (Event::STOP));
+
+    // after START, m1_sel is SLEEPING
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_anchor_0s->getState () == Event::OCCURRING);
+    g_assert (m1_label->getState () == Event::SLEEPING);
+    g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () == Event::SLEEPING);
+
+    delete fmt;
+  }
   // STOP selection from state PAUSED
   // STOP selection from state SLEEPING
+  {
+    Formatter *fmt;
+    Event *body_lambda, *m1_lambda, *m1_anchor_0s, *m1_label, *m1_prop,
+        *m1_sel;
+
+    tests_create_document_with_media_and_start (
+        &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop,
+        &m1_sel);
+
+    // STOP is not done
+    g_assert_false (m1_sel->transition (Event::STOP));
+
+    // after START, m1_sel is SLEEPING
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_anchor_0s->getState () == Event::OCCURRING);
+    g_assert (m1_label->getState () == Event::SLEEPING);
+    g_assert (m1_prop->getState () == Event::SLEEPING);
+    g_assert (m1_sel->getState () == Event::SLEEPING);
+
+    delete fmt;
+  }
 
   exit (EXIT_SUCCESS);
 }
