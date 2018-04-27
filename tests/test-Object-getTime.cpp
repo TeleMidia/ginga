@@ -29,25 +29,12 @@ main (void)
 
   for (auto obj : objs)
     {
-      g_assert_cmpint (obj->getAliases ()->size (), ==, 0);
+      g_assert_cmpint (obj->getTime (), ==, GINGA_TIME_NONE);
 
-      g_assert_false (obj->hasAlias ("a1"));
-      obj->addAlias ("a1");
-      g_assert_true (obj->hasAlias ("a1"));
-
-      g_assert_false (obj->hasAlias ("a2"));
-      obj->addAlias ("a2");
-      g_assert_true (obj->hasAlias ("a2"));
-
-      g_assert_false (obj->hasAlias ("a3"));
-      obj->addAlias ("a3");
-      g_assert_true (obj->hasAlias ("a3"));
-      g_assert_cmpint (obj->getAliases ()->size (), ==, 3);
-
-      obj->addAlias ("a1");
-      obj->addAlias ("a2");
-      obj->addAlias ("a3");
-      g_assert_cmpint (obj->getAliases ()->size (), ==, 3);
+      // only advance time after a Object::doStart, which
+      // is done when start @lambada
+      obj->sendTick (1 * GINGA_SECOND, 1 * GINGA_SECOND, 0);
+      g_assert_cmpint (obj->getTime (), ==, GINGA_TIME_NONE);
 
       delete obj;
     }

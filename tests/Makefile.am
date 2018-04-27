@@ -226,6 +226,12 @@ test_Context_ports_started_from_links_SOURCES=\
   test-Context-ports-started-from-links.cpp
 
 # lib/Object.h -------------------------------------------------------------
+progs+= test-Object-getTime
+test_Object_getTime_SOURCES= test-Object-getTime.cpp
+
+progs+= test-Object-sendKey
+test_Object_sendKey_SOURCES= test-Object-sendKey.cpp
+
 progs+= test-Object-addAlias
 test_Object_addAlias_SOURCES= test-Object-addAlias.cpp
 
