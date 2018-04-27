@@ -201,7 +201,7 @@ tests_create_document_with_media_and_start (Formatter **fmt,
 static G_GNUC_UNUSED void
 tests_create_document_with_context_and_start (
     Formatter **fmt, Event **body_lambda, Event **c1_lambda,
-    Event **c1_prop, Event **m1_lambda, Event **m2_lambda)
+    Event **c1_prop, Event **c1_sel, Event **m1_lambda, Event **m2_lambda)
 {
   Document *doc;
   Context *body, *c1;
@@ -209,7 +209,15 @@ tests_create_document_with_context_and_start (
 
   tests_parse_and_start (fmt, &doc, "\
 <ncl>\n\
-<body>\n\
+ <head>\n\
+  <connectorBase>\n\
+   <causalConnector id='onSelectionStart'>\n\
+    <simpleCondition role='onSelection'/>\n\
+    <simpleAction role='start'/>\n\
+   </causalConnector>\n\
+  </connectorBase>\n\
+ </head>\n\
+<body id='body'>\n\
   <port id='p1' component='c1'/>\n\
   <context id='c1'>\n\
     <property name='p1' value='0'/>\n\
@@ -218,6 +226,10 @@ tests_create_document_with_context_and_start (
     <media id='m1'/>\n\
     <media id='m2'/>\n\
   </context>\n\
+  <link xconnector='onSelectionStart'>\n\
+    <bind role='onSelection' component='c1'/>\n\
+    <bind role='start' component='body'/>\n\
+  </link>\n\
 </body>\n\
 </ncl>");
 
@@ -232,6 +244,8 @@ tests_create_document_with_context_and_start (
   g_assert_nonnull (c1_lambda);
   *c1_prop = c1->getAttributionEvent ("p1");
   g_assert_nonnull (c1_prop);
+  *c1_sel = c1->getSelectionEvent ("");
+  g_assert_nonnull (*c1_sel);
 
   m1 = cast (Media *, c1->getChildById ("m1"));
   g_assert_nonnull (m1);
