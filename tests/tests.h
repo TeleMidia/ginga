@@ -335,8 +335,8 @@ tests_create_document_with_switch_and_start (
   g_assert_nonnull (swt1);
   *swt1_lambda = swt1->getLambda ();
   g_assert_nonnull (swt1_lambda);
-  // *swt1_sel = swt1->getSelectionEvent ("");
-  // g_assert_nonnull (*m1_sel);
+  *swt1_sel = swt1->getSelectionEvent ("");
+  g_assert_nonnull (*swt1_sel);
 
   m1 = cast (Media *, swt1->getChildById ("m1"));
   g_assert_nonnull (m1);
@@ -356,7 +356,7 @@ tests_create_document_with_switch_and_start (
   g_assert_cmpint ((*swt1_lambda)->getState (), ==, Event::SLEEPING);
   g_assert_cmpint ((*m1_lambda)->getState (), ==, Event::SLEEPING);
   g_assert_cmpint ((*m2_lambda)->getState (), ==, Event::SLEEPING);
-  // g_assert_cmpint ((*swt1_sel)->getState (), ==, Event::SLEEPING);
+  g_assert_cmpint ((*swt1_sel)->getState (), ==, Event::SLEEPING);
 
   // when advance time, c1_lambda is OCCURRING
   (*fmt)->sendTick (0, 0, 0);
@@ -364,7 +364,7 @@ tests_create_document_with_switch_and_start (
   g_assert_cmpint ((*swt1_lambda)->getState (), ==, Event::OCCURRING);
   g_assert_cmpint ((*m1_lambda)->getState (), ==, Event::OCCURRING);
   g_assert_cmpint ((*m2_lambda)->getState (), ==, Event::SLEEPING);
-  // g_assert_cmpint ((*swt1_sel)->getState (), ==, Event::SLEEPING);
+  g_assert_cmpint ((*swt1_sel)->getState (), ==, Event::SLEEPING);
 }
 
 #endif // TESTS_H
