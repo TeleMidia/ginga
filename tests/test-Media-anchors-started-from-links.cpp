@@ -699,12 +699,12 @@ main (void)
       g_assert (m2_lambda->getState () == Event::SLEEPING);
 
       // when advance 5, a2 is OCCURRING
-      fmt->sendTick (5 * GINGA_SECOND, 5 * GINGA_SECOND, 0);
+      fmt->sendTick (6 * GINGA_SECOND, 6 * GINGA_SECOND, 0);
       g_assert (body_lambda->getState () == Event::OCCURRING);
       g_assert (a1->getState () == Event::SLEEPING);
       g_assert (a2->getState () == Event::SLEEPING);
       // TODO: this should SLEEPING
-      // g_assert (m1_lambda->getState () == Event::SLEEPING);
+      g_assert (m1_lambda->getState () == Event::SLEEPING);
       g_assert (m2_lambda->getState () == Event::OCCURRING);
 
       delete fmt;
