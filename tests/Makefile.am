@@ -246,6 +246,9 @@ test_Siggen_new_SOURCES= test-Siggen-new.cpp
 progs+= test-Media-new
 test_Media_new_SOURCES= test-Media-new.cpp
 
+progs+= test-Media-getZ
+test_Media_getZ_SOURCES= test-Media-getZ.cpp
+
 progs+= test-Media-explicitDur
 test_Media_explicitDur_SOURCES= test-Media-explicitDur.cpp
 
