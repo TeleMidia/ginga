@@ -118,7 +118,7 @@ g_log_default_handler (unused (const gchar *log_domain),
                        GLogLevelFlags log_level, const gchar *message,
                        unused (gpointer unused_data))
 {
-  // printf ("%s \n", message);
+
   if (!g_str_has_prefix (message, "ginga::"))
     return; // is not a ginga message
 
@@ -468,6 +468,16 @@ select_historic_line (GtkListBox *box, GtkListBoxRow *row,
 
   gtk_widget_show_all (historicBox);
   hide_historicbox ();
+
+  if (!inPlayMode)
+    {
+      play_pause_button_callback ();
+    }
+  else
+    {
+      stop_button_callback ();
+      play_pause_button_callback ();
+    }
 }
 
 void
@@ -479,11 +489,11 @@ keyboard_callback (unused (GtkWidget *widget), GdkEventKey *e,
   switch (e->keyval)
     {
     case GDK_KEY_Escape: /* quit */
-      if (isFullScreenMode)
-        set_unfullscreen_mode ();
-      else if (inBigPictureMode
+      if (inBigPictureMode
                && (g_strcmp0 ((const char *) type, "press") != 0))
-         destroy_bigpicture_window ();
+        destroy_bigpicture_window ();
+      else  if (isFullScreenMode)
+        set_unfullscreen_mode ();
       break;
     case GDK_KEY_Meta_L:
     case GDK_KEY_Meta_R:
@@ -507,8 +517,8 @@ keyboard_callback (unused (GtkWidget *widget), GdkEventKey *e,
     case GDK_KEY_B:
     case GDK_KEY_b:
       if (isCrtlModifierActive)
-      //  create_bigpicture_window ();
-      break;
+        //  create_bigpicture_window ();
+        break;
     case GDK_KEY_D:
     case GDK_KEY_d:
       if (isCrtlModifierActive)
@@ -532,10 +542,10 @@ keyboard_callback (unused (GtkWidget *widget), GdkEventKey *e,
       key = "GREEN";
       break;
     case GDK_KEY_F3:
-      key = "BLUE";
+      key = "YELLOW";
       break;
     case GDK_KEY_F4:
-      key = "YELLOW";
+      key = "BLUE";
       break;
     case GDK_KEY_F5:
       key = "INFO";
@@ -570,6 +580,7 @@ keyboard_callback (unused (GtkWidget *widget), GdkEventKey *e,
   if (GINGA->getState () == GINGA_STATE_PLAYING)
     GINGA->sendKey (std::string (key),
                     g_strcmp0 ((const char *) type, "press") == 0);
+ 
 }
 
 void
@@ -641,13 +652,13 @@ create_window_components ()
   g_assert_nonnull (playButton);
   g_signal_connect (playButton, "clicked",
                     G_CALLBACK (play_pause_button_callback), NULL);
-  gtk_widget_set_can_focus(playButton, FALSE);
+  gtk_widget_set_can_focus (playButton, FALSE);
 
   stopButton = gtk_button_new ();
   g_assert_nonnull (stopButton);
   g_signal_connect (stopButton, "clicked",
                     G_CALLBACK (stop_button_callback), NULL);
-  gtk_widget_set_can_focus(stopButton, FALSE);                  
+  gtk_widget_set_can_focus (stopButton, FALSE);
 
   fullscreenButton = gtk_button_new ();
   g_assert_nonnull (fullscreenButton);
@@ -655,7 +666,7 @@ create_window_components ()
   gtk_widget_set_tooltip_text (fullscreenButton, "Fullscreen");
   g_signal_connect (fullscreenButton, "clicked",
                     G_CALLBACK (set_fullscreen_mode), NULL);
-  gtk_widget_set_can_focus(fullscreenButton, FALSE);                  
+  gtk_widget_set_can_focus (fullscreenButton, FALSE);
 
   volumeButton = gtk_volume_button_new ();
   g_assert_nonnull (volumeButton);
@@ -666,7 +677,7 @@ create_window_components ()
   gtk_widget_set_tooltip_text (settingsButton, "Preferences");
   g_signal_connect (settingsButton, "clicked", G_CALLBACK (show_optbox),
                     NULL);
-  gtk_widget_set_can_focus(settingsButton, FALSE);                  
+  gtk_widget_set_can_focus (settingsButton, FALSE);
 
   remoteButton = gtk_button_new ();
   g_assert_nonnull (remoteButton);
@@ -681,7 +692,7 @@ create_window_components ()
   gtk_widget_set_tooltip_text (toolsButton, "Tools");
   g_signal_connect (toolsButton, "clicked", G_CALLBACK (show_toolbox),
                     NULL);
-  gtk_widget_set_can_focus(toolsButton, FALSE);    
+  gtk_widget_set_can_focus (toolsButton, FALSE);
 
   debugButton = gtk_button_new ();
   g_assert_nonnull (debugButton);
@@ -1025,40 +1036,6 @@ enable_disable_debug (void)
 }
 
 void
-select_ncl_file_callback (unused (GtkWidget *widget),
-                          unused (gpointer data))
-{
-  GtkWidget *dialog = gtk_file_chooser_dialog_new (
-      "Open File", GTK_WINDOW (mainWindow), GTK_FILE_CHOOSER_ACTION_OPEN,
-      "_Cancel", GTK_RESPONSE_CANCEL, "_Open", GTK_RESPONSE_ACCEPT, NULL);
-
-  gint res = gtk_dialog_run (GTK_DIALOG (dialog));
-  if (res == GTK_RESPONSE_ACCEPT)
-    {
-      gchar *filename;
-      GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
-      filename = gtk_file_chooser_get_filename (chooser);
-
-      gchar *ext = strrchr (filename, '.');
-      if (g_strcmp0 (ext, ".ncl"))
-        {
-          show_infobar (g_markup_printf_escaped (
-              "Error reading \"%s\": %s is a invalid formart file.",
-              filename, ext));
-        }
-      else
-        {
-          insert_historicbox (filename);
-          save_settings ();
-        }
-
-      g_free (filename);
-    }
-
-  gtk_widget_destroy (dialog);
-}
-
-void
 stop_button_callback (void)
 {
   inPlayMode = false;
@@ -1107,4 +1084,47 @@ play_pause_button_callback (void)
     }
 
   gtk_button_set_image (GTK_BUTTON (playButton), play_icon);
+}
+
+void select_ncl_file_callback (unused (GtkWidget *widget),
+                               unused (gpointer data))
+{
+  GtkWidget *dialog = gtk_file_chooser_dialog_new (
+      "Open File", GTK_WINDOW (mainWindow), GTK_FILE_CHOOSER_ACTION_OPEN,
+      "_Cancel", GTK_RESPONSE_CANCEL, "_Open", GTK_RESPONSE_ACCEPT, NULL);
+
+  gint res = gtk_dialog_run (GTK_DIALOG (dialog));
+  if (res == GTK_RESPONSE_ACCEPT)
+    {
+      gchar *filename;
+      GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
+      filename = gtk_file_chooser_get_filename (chooser);
+
+      gchar *ext = strrchr (filename, '.');
+      if (g_strcmp0 (ext, ".ncl"))
+        {
+          show_infobar (g_markup_printf_escaped (
+              "Error reading \"%s\": %s is a invalid formart file.",
+              filename, ext));
+        }
+      else
+        {
+          insert_historicbox (filename);
+          save_settings ();
+
+          if (!inPlayMode)
+            {
+              play_pause_button_callback ();
+            }
+          else
+            {
+              stop_button_callback ();
+              play_pause_button_callback ();
+            }
+        }
+
+      g_free (filename);
+    }
+
+  gtk_widget_destroy (dialog);
 }

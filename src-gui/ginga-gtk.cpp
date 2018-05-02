@@ -27,7 +27,7 @@ using namespace ::std;
 #include <windows.h>
 #endif
 
-//Global formatter
+// Global formatter
 Ginga *GINGA = nullptr;
 gchar *gingaID = nullptr;
 
@@ -68,6 +68,9 @@ main (int argc, char **argv)
   opts.opengl = false;
   opts.experimental = true;
 
+  GINGA = Ginga::create (&opts);
+  g_assert_nonnull (GINGA);
+
   gtk_init (&saved_argc, &saved_argv);
 
   // Parse command-line options.
@@ -76,21 +79,18 @@ main (int argc, char **argv)
   status = g_option_context_parse (ctx, &saved_argc, &saved_argv, &error);
   g_option_context_free (ctx);
 
-/*
-  if (!status)
-    {
-      g_assert_nonnull (error);
-      // usage_error ("%s", error->message);
-      g_error_free (error);
-      _exit (0);
-    }
-*/
+  /*
+    if (!status)
+      {
+        g_assert_nonnull (error);
+        // usage_error ("%s", error->message);
+        g_error_free (error);
+        _exit (0);
+      }
+  */
 
   init_ginga_data ();
   load_settings ();
-
-  GINGA = Ginga::create (&opts);
-  g_assert_nonnull (GINGA);
 
   setlocale (LC_ALL, "C");
 
@@ -104,26 +104,28 @@ main (int argc, char **argv)
   // check for ginga updates
   send_http_log_message (-1, (gchar *) "Check for Ginga updates");
   g_assert (g_setenv ("G_MESSAGES_DEBUG", "all", true));
-  
+
   create_main_window ();
 
   if (saved_argc > 1)
     {
-      printf("saved arg... \n");
-      if( strcmp(saved_argv[1], "-b") == 0)
-      {
-          printf("create bigpicture window.\n");
+      if (strcmp (saved_argv[1], "-b") == 0)
+        {
+  
           create_bigpicture_window ();
-      } 
+
+         // printf ("w: %d - h: %d", presentationAttributes.resolutionWidth,
+         //         presentationAttributes.resolutionHeight);
+        }
       else
-      {
+        {
           gchar *filename = saved_argv[1];
           gchar *ext = strrchr (filename, '.');
           if (!g_strcmp0 (ext, ".ncl"))
-          {
-            insert_historicbox (filename);
-          }
-      }
+            {
+              insert_historicbox (filename);
+            }
+        }
     }
 
   gtk_main ();

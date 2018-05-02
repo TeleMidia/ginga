@@ -50,7 +50,18 @@ update_draw_callback (GtkWidget *widget)
       last = time;
     }
 
-  GINGA->sendTick (time - first, time - last, frame);
+  if (!GINGA->sendTick (time - first, time - last, frame))
+    {
+      if (inBigPictureMode)
+        {
+          destroy_bigpicture_window ();
+        }
+      // force stop button callback to reset interface
+      else
+        {
+          stop_button_callback ();
+        }
+    }
 
   last = time;
 
