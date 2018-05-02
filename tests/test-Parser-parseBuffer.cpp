@@ -1794,20 +1794,22 @@ main (void)
 </ncl>\n\
   ");
 
-  //  XFAIL ("mapping: Bad component",
-  //         "<mapping> at line 6: bad value 'x'",
-  //         "\
-//<ncl>\n\
-//  <head/>\n\
-//  <body>\n\
-//    <switch id='sw'>\n\
-//      <switchPort id='swp'>\n\
-//        <mapping component='x'/>\n\
-//      </switchPort>\n\
-//    </switch>\n\
-//  </body>\n\
-//</ncl>\n\
-//  ");
+#if 0
+  XFAIL ("mapping: Bad component",
+         "<mapping> at line 6: bad value 'x'",
+         "\
+<ncl>\n\
+  <head/>\n\
+  <body>\n\
+    <switch id='sw'>\n\
+      <switchPort id='swp'>\n\
+        <mapping component='x'/>\n\
+      </switchPort>\n\
+    </switch>\n\
+  </body>\n\
+</ncl>\n\
+  ");
+#endif
 
   // -------------------------------------------------------------------------
   // <defaultComponent>

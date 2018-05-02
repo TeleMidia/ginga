@@ -41,7 +41,7 @@ main (void)
   nclFolders.push_back (
       xpathbuildabs (ABS_TOP_SRCDIR, "examples/primeiro-joao/"));
 
-  for (int i = 0; i < nclFolders.size (); i++)
+  for (guint i = 0; i < nclFolders.size (); i++)
     {
       dir = g_dir_open (nclFolders[i].c_str (), 0, nullptr);
       g_assert_nonnull (dir);

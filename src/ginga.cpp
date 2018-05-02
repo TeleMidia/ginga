@@ -23,6 +23,10 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include <cairo.h>
 #include <gtk/gtk.h>
 
+// clang-format off
+PRAGMA_DIAG_IGNORE (-Wunused-macros)
+// clang-format on
+
 #include "ginga.h"
 using namespace ::std;
 
@@ -30,7 +34,6 @@ using namespace ::std;
 static Ginga *GINGA = nullptr;
 
 // Options.
-
 #define OPTION_LINE "FILE..."
 #define OPTION_DESC                                                        \
   "Report bugs to: " PACKAGE_BUGREPORT "\n"                                \

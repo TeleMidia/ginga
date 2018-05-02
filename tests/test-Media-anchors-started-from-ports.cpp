@@ -21,7 +21,7 @@ int
 main (void)
 {
   // start in anchor with begin nonzero and link waiting for this anchor end
-  for (int i = 0; i < samples.size (); i++)
+  for (guint i = 0; i < samples.size (); i++)
     {
       Formatter *fmt;
       Document *doc;
@@ -139,7 +139,7 @@ main (void)
 
   // start in anchor with begin nonzero and link waiting another anchor with
   // begin after the begin of the first anchor
-  for (int i = 0; i < samples.size (); i++)
+  for (guint i = 0; i < samples.size (); i++)
     {
       Formatter *fmt;
       Document *doc;
@@ -237,7 +237,7 @@ main (void)
 
   // start in anchor with begin nonzero and link waiting another anchor
   // begin with time before the begin of the first anchor
-  for (int i = 0; i < samples.size (); i++)
+  for (guint i = 0; i < samples.size (); i++)
     {
       Formatter *fmt;
       Document *doc;
@@ -337,7 +337,7 @@ main (void)
 
   // start in anchor with non-zero end and link waiting
   // an anchor end with time after the end of the first anchor
-  for (int i = 0; i < samples.size (); i++)
+  for (guint i = 0; i < samples.size (); i++)
     {
       Formatter *fmt;
       Document *doc;
@@ -428,7 +428,7 @@ main (void)
 
   // start in anchor with non-zero end and link waiting an anchor with end
   // time the end before to the first anchor
-  for (int i = 0; i < samples.size (); i++)
+  for (guint i = 0; i < samples.size (); i++)
     {
       Formatter *fmt;
       Document *doc;
@@ -519,7 +519,7 @@ main (void)
     }
 
   // start an anchor and start another anchor
-  for (int i = 0; i < samples.size (); i++)
+  for (guint i = 0; i < samples.size (); i++)
     {
       Formatter *fmt;
       Document *doc;
@@ -611,7 +611,7 @@ main (void)
 
   // start in anchor with non-zero end and link waiting an anchor with end
   // time the end before to the first anchor
-  for (int i = 0; i < samples.size (); i++)
+  for (guint i = 0; i < samples.size (); i++)
     {
       Formatter *fmt;
       Document *doc;

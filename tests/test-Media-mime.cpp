@@ -22,11 +22,10 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  for (int i = 2; i < samples.size (); i++)
+  for (guint i = 2; i < samples.size (); i++)
     {
       Formatter *fmt;
       Document *doc;
-      Player *p;
       tests_parse_and_start (&fmt, &doc, xstrbuild ("\
 <ncl>\n\
   <body>\n\
