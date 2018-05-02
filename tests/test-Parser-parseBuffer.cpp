@@ -1794,9 +1794,9 @@ main (void)
 </ncl>\n\
   ");
 
-#if 0
-  XFAIL ("mapping: Bad component",
-         "<mapping> at line 6: bad value 'x'",
+  XFAIL ("mapping: Bad component", "Element <mapping> at line 6: Bad value "
+                                   "'x' for attribute 'component' (no such "
+                                   "object in scope)",
          "\
 <ncl>\n\
   <head/>\n\
@@ -1809,7 +1809,6 @@ main (void)
   </body>\n\
 </ncl>\n\
   ");
-#endif
 
   // -------------------------------------------------------------------------
   // <defaultComponent>
