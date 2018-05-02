@@ -376,6 +376,9 @@ test_Ginga_setOptionInt_SOURCES= test-Ginga-setOptionInt.cpp
 progs+= test-Ginga-resize
 test_Ginga_resize_SOURCES= test-Ginga-resize.cpp
 
+progs+= test-Ginga-redraw
+test_Ginga_redraw_SOURCES= test-Ginga-redraw.cpp
+
 progs+= xfail-test-Ginga-getOptionInt
 xfail_test_Ginga_getOptionInt_SOURCES= xfail-test-Ginga-getOptionInt.cpp
 
