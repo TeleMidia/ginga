@@ -29,7 +29,7 @@ main (void)
 
   for (auto obj : objs)
     {
-      for (int j = 0; j < samples_keys.size (); j++)
+      for (guint j = 0; j < samples_keys.size (); j++)
         {
           obj->sendKey (samples_keys[j], true);
         }

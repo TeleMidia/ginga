@@ -23,7 +23,7 @@ main (void)
 
   Formatter *fmt;
   Document *doc;
-  Player *p;
+
   tests_parse_and_start (&fmt, &doc, "\
 <ncl>\n\
   <head></head>\n\
@@ -124,7 +124,7 @@ main (void)
   Media *m12 = cast (Media *, body->getChildById ("m12"));
   g_assert_nonnull (m12);
   Media *m13 = cast (Media *, body->getChildById ("m13"));
-  g_assert_nonnull (m12);
+  g_assert_nonnull (m13);
   fmt->sendTick (0, 0, 0);
 
   delete fmt;

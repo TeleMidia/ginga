@@ -20,7 +20,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  for (int i = 0; i < samples.size (); i++)
+  for (guint i = 0; i < samples.size (); i++)
     {
       Formatter *fmt;
       Document *doc;

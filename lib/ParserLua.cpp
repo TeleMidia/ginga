@@ -44,7 +44,7 @@ static int l_parse_link (lua_State *L);
 static int l_parse_predicate (lua_State *L);
 
 // Helper function
-Event *
+static Event *
 getEventStringAsEvent (string str, Context *parent)
 {
   Object *obj;
