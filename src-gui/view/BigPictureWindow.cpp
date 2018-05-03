@@ -432,14 +432,6 @@ destroy_card_list (gpointer data)
 void
 destroy_bigpicture_window ()
 {
-  if (isPlayingApp)
-    {
-      set_unfullscreen_mode ();
-      isPlayingApp=FALSE;
-      GINGA->stop();
-      return;
-    }
-
   inBigPictureMode = FALSE;
   g_source_remove (timeOutTagB);
   gtk_widget_destroy (bigPictureWindow);
