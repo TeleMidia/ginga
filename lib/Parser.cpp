@@ -467,7 +467,7 @@ static map<string, ParserSyntaxElt> parser_syntax_table = {
           { "bottom", 0 },
           { "height", 0 },
           { "width", 0 },
-          { "zIndex", 0 }} }, // unused
+          { "zIndex", 0 } } }, // unused
   },
   {
       "descriptorBase",
@@ -483,33 +483,34 @@ static map<string, ParserSyntaxElt> parser_syntax_table = {
         nullptr,
         ELT_CACHE,
         { "descriptorBase" },
-        { { "id", ATTR_ID },
-          { "player", 0 }, // unused
-          { "explicitDur", 0 },
-          { "region", ATTR_OPT_IDREF },
-          { "freeze", 0 },
-          { "moveLeft", 0 },
-          { "moveRight", 0 },
-          { "moveUp", 0 },
-          { "moveDown", 0 },
-          { "focusIndex", 0 },
-          { "focusBorderColor", 0 },
-          { "focusBorderWidth", 0 },
-          { "focusBorderTransparency", 0 },
-          { "focusSrc", 0 },
-          { "focusSelSrc", 0 },
-          { "selBorderColor", 0 },
-          { "transIn", 0 },
-          { "transOut", 0 },
-          // extra attributes
-          { "left", 0 },
-          { "right", 0 },
-          { "top", 0 },
-          { "bottom", 0 },
-          { "height", 0 },
-          { "width", 0 },
-          { "zIndex", 0 },
-          }},
+        {
+            { "id", ATTR_ID },
+            { "player", 0 }, // unused
+            { "explicitDur", 0 },
+            { "region", ATTR_OPT_IDREF },
+            { "freeze", 0 },
+            { "moveLeft", 0 },
+            { "moveRight", 0 },
+            { "moveUp", 0 },
+            { "moveDown", 0 },
+            { "focusIndex", 0 },
+            { "focusBorderColor", 0 },
+            { "focusBorderWidth", 0 },
+            { "focusBorderTransparency", 0 },
+            { "focusSrc", 0 },
+            { "focusSelSrc", 0 },
+            { "selBorderColor", 0 },
+            { "transIn", 0 },
+            { "transOut", 0 },
+            // extra attributes
+            { "left", 0 },
+            { "right", 0 },
+            { "top", 0 },
+            { "bottom", 0 },
+            { "height", 0 },
+            { "width", 0 },
+            { "zIndex", 0 },
+        } },
   },
   {
       "descriptorParam",
@@ -3866,7 +3867,22 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
   // case is an already referred Media
   if (st->referMapIndex (id, &media))
     {
+      // case src filled
+      if (src != "")
+        {
+          // Makes uri based in the main document uri
+          xmlChar *s = xmlBuildURI (toXmlChar (src),
+                                    toXmlChar (st->getURI ()));
+          src = toCPPString (s);
+          // If fails makes the uri based in the current dir
+          if (!xpathisuri (src) && !xpathisabs (src))
+            {
+              src = xpathmakeabs (src);
+            }
+          xmlFree (s);
+        }
       media->setProperty ("uri", src);
+      media->setProperty ("type", type);
     }
   // case is an MediaSettings
   else if (type == "application/x-ginga-settings")
@@ -3894,16 +3910,13 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
       else
         {
           // if referenced Media not existing yet, create it
-          media = new Media (id);
-          media->setProperty ("uri", src);
-          media->setProperty ("type", type);
+          media = new Media (refer);
           parent = cast (Composition *, st->objStackPeek ());
           g_assert_nonnull (parent);
-          parent->addChild (media);
 
-          media->addAlias (refer);
-          st->referMapAdd (refer, media);
-          g_assert (st->referMapAdd (id, media));
+          parent->addChild (media);
+          media->addAlias (id);
+          g_assert (st->referMapAdd (refer, media));
         }
     }
   // case src filled or empty (timer)
