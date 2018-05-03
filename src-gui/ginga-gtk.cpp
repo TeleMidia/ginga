@@ -36,6 +36,13 @@ gchar *gingaID = nullptr;
   "Report bugs to: " PACKAGE_BUGREPORT "\n"                                \
   "Ginga home page: " PACKAGE_URL
 
+static gboolean opt_bigpicture = FALSE;        // toggle bigpicture mode
+
+static GOptionEntry options[]
+    = { { "bigpicture", 'b', 0, G_OPTION_ARG_NONE, &opt_bigpicture,
+        "Enable bigpicture mode", NULL },
+        { NULL, 0, 0, G_OPTION_ARG_NONE, NULL, NULL, NULL } };
+
 void
 init_ginga_data ()
 {
@@ -75,6 +82,7 @@ main (int argc, char **argv)
   // Parse command-line options.
   ctx = g_option_context_new (OPTION_LINE);
   g_assert_nonnull (ctx);
+  g_option_context_add_main_entries (ctx, options, NULL);
   if (!g_option_context_parse (ctx, &saved_argc, &saved_argv, &error))
     {
       g_print ("option parsing failed: %s\n", error->message);
@@ -82,16 +90,6 @@ main (int argc, char **argv)
     }
 
   g_option_context_free (ctx);
-
-  /*
-    if (!status)
-      {
-        g_assert_nonnull (error);
-        // usage_error ("%s", error->message);
-        g_error_free (error);
-        _exit (0);
-      }
-  */
 
   init_ginga_data ();
   load_settings ();
@@ -111,24 +109,17 @@ main (int argc, char **argv)
 
   create_main_window ();
 
-  if (saved_argc > 1)
+  if (opt_bigpicture)
     {
-      if (strcmp (saved_argv[1], "-b") == 0)
+      create_bigpicture_window ();
+    }
+  else
+    {
+      gchar *filename = saved_argv [1];
+      gchar *ext = strrchr (filename, '.');
+      if (!g_strcmp0 (ext, ".ncl"))
         {
-  
-          create_bigpicture_window ();
-
-         // printf ("w: %d - h: %d", presentationAttributes.resolutionWidth,
-         //         presentationAttributes.resolutionHeight);
-        }
-      else
-        {
-          gchar *filename = saved_argv[1];
-          gchar *ext = strrchr (filename, '.');
-          if (!g_strcmp0 (ext, ".ncl"))
-            {
-              insert_historicbox (filename);
-            }
+          insert_historicbox (filename);
         }
     }
 
