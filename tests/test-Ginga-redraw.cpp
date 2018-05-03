@@ -21,7 +21,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 Formatter *fmt;
 Media *m1, *m2;
 int tickCounter;
-int width = 800, height = 600;
+int WIDTH = 800, HEIGHT = 600;
 
 #if GTK_CHECK_VERSION(3, 8, 0)
 static gboolean
@@ -49,8 +49,8 @@ draw_callback (unused (GtkWidget *widget), cairo_t *cr,
   fmt->redraw (cr);
 
   // get center pixel
-  pixbuf = gdk_pixbuf_get_from_surface (cairo_get_target (cr), 0, 0, width,
-                                        height);
+  pixbuf = gdk_pixbuf_get_from_surface (cairo_get_target (cr), 0, 0, WIDTH,
+                                        HEIGHT);
   n_channels = gdk_pixbuf_get_n_channels (pixbuf);
 
   g_assert (gdk_pixbuf_get_colorspace (pixbuf) == GDK_COLORSPACE_RGB);
@@ -59,13 +59,13 @@ draw_callback (unused (GtkWidget *widget), cairo_t *cr,
   // g_assert (n_channels == 4);
   g_assert_cmpint (n_channels, ==, 3);
 
-  width = gdk_pixbuf_get_width (pixbuf);
-  height = gdk_pixbuf_get_height (pixbuf);
+  WIDTH = gdk_pixbuf_get_width (pixbuf);
+  HEIGHT = gdk_pixbuf_get_height (pixbuf);
   rowstride = gdk_pixbuf_get_rowstride (pixbuf);
   pixels = gdk_pixbuf_get_pixels (pixbuf);
 
-  x = width / 2;
-  y = height / 2;
+  x = WIDTH / 2;
+  y = HEIGHT / 2;
   p = pixels + y * rowstride + x * n_channels;
   red = p[0];
   green = p[1];
@@ -73,7 +73,8 @@ draw_callback (unused (GtkWidget *widget), cairo_t *cr,
   alpha = p[3];
 
   // printf ("\n--------tickCounter=%d\n", tickCounter);
-  // printf ("center pixel: red=%d, green=%d, blue=%d, \n", red, green, blue);
+  // printf ("center pixel: red=%d, green=%d, blue=%d, \n", red, green,
+  // blue);
   // printf ("m1 state=%d, m1.zIndex=%s, m2 state=%d, m2.zIndex=%s\n",
   //         m1->isOccurring (), m1->getProperty ("zIndex").c_str (),
   //         m2->isOccurring (), m2->getProperty ("zIndex").c_str ());
@@ -116,20 +117,21 @@ draw_callback (unused (GtkWidget *widget), cairo_t *cr,
 int
 main (void)
 {
-  gtk_init (nullptr, nullptr);
-  Document *doc;
-  GtkWidget *app;
-  GingaOptions opts;
+  {
+    gtk_init (nullptr, nullptr);
+    Document *doc;
+    GtkWidget *app;
+    GingaOptions opts;
 
-  app = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  g_assert_nonnull (app);
-  gtk_window_set_default_size (GTK_WINDOW (app), width, height);
-  gtk_widget_set_app_paintable (app, TRUE);
-  g_signal_connect (app, "draw", G_CALLBACK (draw_callback), NULL);
-  gtk_widget_add_tick_callback (app, (GtkTickCallback) tick_callback, NULL,
-                                NULL);
+    app = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+    g_assert_nonnull (app);
+    gtk_window_set_default_size (GTK_WINDOW (app), WIDTH, HEIGHT);
+    gtk_widget_set_app_paintable (app, TRUE);
+    g_signal_connect (app, "draw", G_CALLBACK (draw_callback), NULL);
+    gtk_widget_add_tick_callback (app, (GtkTickCallback) tick_callback,
+                                  NULL, NULL);
 
-  tests_parse_and_start (&fmt, &doc, "\
+    tests_parse_and_start (&fmt, &doc, "\
 <ncl>\n\
   <head>\n\
     <connectorBase>\n\
@@ -176,42 +178,146 @@ main (void)
   </body>\n\
 </ncl>\n");
 
-  Context *body = cast (Context *, doc->getRoot ());
-  g_assert_nonnull (body);
-  Event *body_lambda = body->getLambda ();
-  g_assert_nonnull (body_lambda);
+    Context *body = cast (Context *, doc->getRoot ());
+    g_assert_nonnull (body);
+    Event *body_lambda = body->getLambda ();
+    g_assert_nonnull (body_lambda);
 
-  m1 = cast (Media *, doc->getObjectById ("m1"));
-  g_assert_nonnull (m1);
-  Event *m1_lambda = m1->getLambda ();
-  g_assert_nonnull (m1_lambda);
+    m1 = cast (Media *, doc->getObjectById ("m1"));
+    g_assert_nonnull (m1);
+    Event *m1_lambda = m1->getLambda ();
+    g_assert_nonnull (m1_lambda);
 
-  m2 = cast (Media *, doc->getObjectById ("m2"));
-  g_assert_nonnull (m2);
-  Event *m2_lambda = m2->getLambda ();
-  g_assert_nonnull (m2_lambda);
+    m2 = cast (Media *, doc->getObjectById ("m2"));
+    g_assert_nonnull (m2);
+    Event *m2_lambda = m2->getLambda ();
+    g_assert_nonnull (m2_lambda);
 
-  // --------------------------------
-  // check start document
+    // --------------------------------
+    // check start document
 
-  g_assert (body_lambda->getState () == Event::OCCURRING);
-  g_assert (m1_lambda->getState () == Event::SLEEPING);
-  g_assert (m2_lambda->getState () == Event::SLEEPING);
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::SLEEPING);
+    g_assert (m2_lambda->getState () == Event::SLEEPING);
 
-  // when start document, m1 is OCCURRING
-  fmt->sendTick (0, 0, 0);
-  g_assert (body_lambda->getState () == Event::OCCURRING);
-  g_assert (m1_lambda->getState () == Event::OCCURRING);
-  g_assert (m2_lambda->getState () == Event::OCCURRING);
+    // when start document, m1 is OCCURRING
+    fmt->sendTick (0, 0, 0);
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::OCCURRING);
+    g_assert (m2_lambda->getState () == Event::OCCURRING);
 
-  // --------------------------------
-  // main check
-  tickCounter = 0;
-  // gtk_widget_queue_draw (app);
-  gtk_widget_show_all (app);
-  gtk_main ();
+    // --------------------------------
+    // main check
+    tickCounter = 0;
+    gtk_widget_show_all (app);
+    gtk_main ();
 
-  delete fmt;
+    delete fmt;
+  }
+
+  {
+    gtk_init (nullptr, nullptr);
+    Document *doc;
+    GtkWidget *app;
+    GingaOptions opts;
+
+    app = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+    g_assert_nonnull (app);
+    gtk_window_set_default_size (GTK_WINDOW (app), WIDTH, HEIGHT);
+    gtk_widget_set_app_paintable (app, TRUE);
+    g_signal_connect (app, "draw", G_CALLBACK (draw_callback), NULL);
+    gtk_widget_add_tick_callback (app, (GtkTickCallback) tick_callback,
+                                  NULL, NULL);
+
+    tests_parse_and_start (&fmt, &doc, "\
+<ncl>\n\
+  <head>\n\
+    <regionBase>\n\
+      <region id='reg1' width='100%%' height='100%%'/>\n\
+      <region id='reg2' width='100%%' height='100%%'/>\n\
+    </regionBase>\n\
+    <descriptorBase>\n\
+      <descriptor id='desc1' region='reg1' zIndex='1'/>\n\
+      <descriptor id='desc2' region='reg2' zIndex='2'/>\n\
+    </descriptorBase>\n\
+    <connectorBase>\n\
+      <causalConnector id='onBeginSet'>\n\
+        <simpleCondition role='onBegin'/>\n\
+        <simpleAction role='set' value='$var'/>\n\
+      </causalConnector>\n\
+    </connectorBase>\n\
+  </head>\n\
+  <body>\n\
+    <port id='startTimer' component='timer'/>\n\
+    <port id='start1' component='m1'/>\n\
+    <port id='start2' component='m2'/>\n\
+    <media id='timer'>\n\
+      <area id='a1' begin='1s'/>\n\
+      <area id='a2' begin='2s'/>\n\
+    </media>\n\
+    <media id='m1' descriptor='desc1'>\n\
+      <property name='background' value='red'/>\n\
+    </media>\n\
+    <media id='m2' descriptor='desc2'>\n\
+      <property name='background' value='green'/>\n\
+    </media>\n\
+    <link xconnector='onBeginSet'>\n\
+      <bind role='onBegin' component='timer' interface='a1'/>\n\
+      <bind role='set' component='m1' interface='zIndex'>\n\
+        <bindParam name='var' value='2'/>\n\
+      </bind>\n\
+      <bind role='set' component='m2' interface='zIndex'>\n\
+        <bindParam name='var' value='1'/>\n\
+      </bind>\n\
+    </link>\n\
+    <link xconnector='onBeginSet'>\n\
+      <bind role='onBegin' component='timer' interface='a2'/>\n\
+      <bind role='set' component='m1' interface='zIndex'>\n\
+        <bindParam name='var' value='1'/>\n\
+      </bind>\n\
+      <bind role='set' component='m2' interface='zIndex'>\n\
+        <bindParam name='var' value='2'/>\n\
+      </bind>\n\
+    </link>\n\
+  </body>\n\
+</ncl>\n");
+
+    Context *body = cast (Context *, doc->getRoot ());
+    g_assert_nonnull (body);
+    Event *body_lambda = body->getLambda ();
+    g_assert_nonnull (body_lambda);
+
+    m1 = cast (Media *, doc->getObjectById ("m1"));
+    g_assert_nonnull (m1);
+    Event *m1_lambda = m1->getLambda ();
+    g_assert_nonnull (m1_lambda);
+
+    m2 = cast (Media *, doc->getObjectById ("m2"));
+    g_assert_nonnull (m2);
+    Event *m2_lambda = m2->getLambda ();
+    g_assert_nonnull (m2_lambda);
+
+    // --------------------------------
+    // check start document
+
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::SLEEPING);
+    g_assert (m2_lambda->getState () == Event::SLEEPING);
+
+    // when start document, m1 is OCCURRING
+    fmt->sendTick (0, 0, 0);
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::OCCURRING);
+    g_assert (m2_lambda->getState () == Event::OCCURRING);
+
+    // --------------------------------
+    // main check
+    tickCounter = 0;
+    gtk_widget_show_all (app);
+    gtk_main ();
+
+    delete fmt;
+  }
 
   exit (EXIT_SUCCESS);
 }
