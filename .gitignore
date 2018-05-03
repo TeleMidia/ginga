@@ -152,6 +152,7 @@
 /tests/test-Ginga-redraw
 /tests/test-Media-new
 /tests/test-Media-getZ
+/tests/test-Media-refer
 /tests/test-Media-link-onSelection
 /tests/test-Media-4grid
 /tests/test-Media-mime

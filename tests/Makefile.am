@@ -255,6 +255,9 @@ test_Media_getZ_SOURCES= test-Media-getZ.cpp
 progs+= test-Media-explicitDur
 test_Media_explicitDur_SOURCES= test-Media-explicitDur.cpp
 
+progs+= test-Media-refer
+test_Media_refer_SOURCES= test-Media-refer.cpp
+
 progs+= test-Media-nested-explicitDur
 test_Media_nested_explicitDur_SOURCES= test-Media-nested-explicitDur.cpp
 
