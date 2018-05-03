@@ -147,7 +147,7 @@ protected:
     bool debug;        // true if debugging mode is on
     bool visible;      // true if visible
     guint8 alpha;      // alpha
-    int z;             // z-index
+    int zindex;        // z-index
     int zorder;        // z-order
     string focusIndex; // focus index
     string type;       // content mime-type

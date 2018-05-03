@@ -24,8 +24,8 @@ main (void)
     {
       Formatter *fmt;
       Document *doc;
-      int m1_z, m1_zorder;
-      int m2_z, m2_zorder;
+      int m1_zindex, m1_zorder;
+      int m2_zindex, m2_zorder;
 
       tests_parse_and_start (&fmt, &doc,
                              xstrbuild ("\
@@ -106,30 +106,30 @@ main (void)
       // main check
       g_assert (m1->getProperty ("zIndex") == "1");
       g_assert (m2->getProperty ("zIndex") == "2");
-      g_assert_true (m1->getZ (&m1_z, &m1_zorder));
-      g_assert_cmpint (m1_z, ==, 1);
-      g_assert_true (m2->getZ (&m2_z, &m2_zorder));
-      g_assert_cmpint (m2_z, ==, 2);
+      g_assert_true (m1->getZ (&m1_zindex, &m1_zorder));
+      g_assert_cmpint (m1_zindex, ==, 1);
+      g_assert_true (m2->getZ (&m2_zindex, &m2_zorder));
+      g_assert_cmpint (m2_zindex, ==, 2);
 
       fmt->sendTick (1 * GINGA_SECOND, 1 * GINGA_SECOND, 0);
       g_assert (m1->getProperty ("zIndex") == "2");
       g_assert (m2->getProperty ("zIndex") == "1");
-      g_assert_true (m1->getZ (&m1_z, &m1_zorder));
-      g_assert_true (m2->getZ (&m2_z, &m2_zorder));
-      g_assert_true (m1->getZ (&m1_z, &m1_zorder));
-      g_assert_cmpint (m1_z, ==, 2);
-      g_assert_true (m2->getZ (&m2_z, &m2_zorder));
-      g_assert_cmpint (m2_z, ==, 1);
+      g_assert_true (m1->getZ (&m1_zindex, &m1_zorder));
+      g_assert_true (m2->getZ (&m2_zindex, &m2_zorder));
+      g_assert_true (m1->getZ (&m1_zindex, &m1_zorder));
+      g_assert_cmpint (m1_zindex, ==, 2);
+      g_assert_true (m2->getZ (&m2_zindex, &m2_zorder));
+      g_assert_cmpint (m2_zindex, ==, 1);
 
       fmt->sendTick (1 * GINGA_SECOND, 1 * GINGA_SECOND, 0);
       g_assert (m1->getProperty ("zIndex") == "1");
       g_assert (m2->getProperty ("zIndex") == "1");
-      g_assert_true (m1->getZ (&m1_z, &m1_zorder));
-      g_assert_true (m2->getZ (&m2_z, &m2_zorder));
-      g_assert_true (m1->getZ (&m1_z, &m1_zorder));
-      g_assert_cmpint (m1_z, ==, 1);
-      g_assert_true (m2->getZ (&m2_z, &m2_zorder));
-      g_assert_cmpint (m2_z, ==, 1);
+      g_assert_true (m1->getZ (&m1_zindex, &m1_zorder));
+      g_assert_true (m2->getZ (&m2_zindex, &m2_zorder));
+      g_assert_true (m1->getZ (&m1_zindex, &m1_zorder));
+      g_assert_cmpint (m1_zindex, ==, 1);
+      g_assert_true (m2->getZ (&m2_zindex, &m2_zorder));
+      g_assert_cmpint (m2_zindex, ==, 1);
 
       delete fmt;
     }
