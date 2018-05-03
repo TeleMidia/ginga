@@ -51,7 +51,6 @@ main (int argc, char **argv)
 
   GingaOptions opts;
   GOptionContext *ctx;
-  gboolean status;
   GError *error = NULL;
 
   saved_argc = argc;
@@ -76,7 +75,12 @@ main (int argc, char **argv)
   // Parse command-line options.
   ctx = g_option_context_new (OPTION_LINE);
   g_assert_nonnull (ctx);
-  status = g_option_context_parse (ctx, &saved_argc, &saved_argv, &error);
+  if (!g_option_context_parse (ctx, &saved_argc, &saved_argv, &error))
+    {
+      g_print ("option parsing failed: %s\n", error->message);
+      exit (1);
+    }
+
   g_option_context_free (ctx);
 
   /*
