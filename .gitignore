@@ -202,6 +202,7 @@
 /tests/test-aux-xstrtod
 /tests/test-aux-xstrtodorpercent
 /tests/test-aux-xstrtoll
+/tests/test-aux-xstrtoull
 /tests/test-aux-xstrup
 /tests/test-aux-xurifromsrc
 /tests/test-aux-xurigetcontents

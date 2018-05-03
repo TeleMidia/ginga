@@ -144,6 +144,9 @@ test_aux_xstrtod_SOURCES= test-aux-xstrtod.cpp
 progs+= test-aux-xstrtoll
 test_aux_xstrtoll_SOURCES= test-aux-xstrtoll.cpp
 
+progs+= test-aux-xstrtoull
+test_aux_xstrtoull_SOURCES= test-aux-xstrtoull.cpp
+
 progs+= test-aux-xstrassign
 test_aux_xstrassign_SOURCES= test-aux-xstrassign.cpp
 
