@@ -117,6 +117,7 @@ draw_callback (unused (GtkWidget *widget), cairo_t *cr,
 int
 main (void)
 {
+  // zIndex defined by properties
   {
     gtk_init (nullptr, nullptr);
     Document *doc;
@@ -215,6 +216,112 @@ main (void)
     delete fmt;
   }
 
+  // zIndex defined by region
+  {
+    gtk_init (nullptr, nullptr);
+    Document *doc;
+    GtkWidget *app;
+    GingaOptions opts;
+
+    app = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+    g_assert_nonnull (app);
+    gtk_window_set_default_size (GTK_WINDOW (app), WIDTH, HEIGHT);
+    gtk_widget_set_app_paintable (app, TRUE);
+    g_signal_connect (app, "draw", G_CALLBACK (draw_callback), NULL);
+    gtk_widget_add_tick_callback (app, (GtkTickCallback) tick_callback,
+                                  NULL, NULL);
+
+    tests_parse_and_start (&fmt, &doc, "\
+<ncl>\n\
+  <head>\n\
+    <regionBase>\n\
+      <region id='reg1' width='100%%' height='100%%' zIndex='1'/>\n\
+      <region id='reg2' width='100%%' height='100%%' zIndex='2'/>\n\
+    </regionBase>\n\
+    <descriptorBase>\n\
+      <descriptor id='desc1' region='reg1'/>\n\
+      <descriptor id='desc2' region='reg2'/>\n\
+    </descriptorBase>\n\
+    <connectorBase>\n\
+      <causalConnector id='onBeginSet'>\n\
+        <simpleCondition role='onBegin'/>\n\
+        <simpleAction role='set' value='$var'/>\n\
+      </causalConnector>\n\
+    </connectorBase>\n\
+  </head>\n\
+  <body>\n\
+    <port id='startTimer' component='timer'/>\n\
+    <port id='start1' component='m1'/>\n\
+    <port id='start2' component='m2'/>\n\
+    <media id='timer'>\n\
+      <area id='a1' begin='1s'/>\n\
+      <area id='a2' begin='2s'/>\n\
+    </media>\n\
+    <media id='m1' descriptor='desc1'>\n\
+      <property name='background' value='red'/>\n\
+    </media>\n\
+    <media id='m2' descriptor='desc2'>\n\
+      <property name='background' value='green'/>\n\
+    </media>\n\
+    <link xconnector='onBeginSet'>\n\
+      <bind role='onBegin' component='timer' interface='a1'/>\n\
+      <bind role='set' component='m1' interface='zIndex'>\n\
+        <bindParam name='var' value='2'/>\n\
+      </bind>\n\
+      <bind role='set' component='m2' interface='zIndex'>\n\
+        <bindParam name='var' value='1'/>\n\
+      </bind>\n\
+    </link>\n\
+    <link xconnector='onBeginSet'>\n\
+      <bind role='onBegin' component='timer' interface='a2'/>\n\
+      <bind role='set' component='m1' interface='zIndex'>\n\
+        <bindParam name='var' value='1'/>\n\
+      </bind>\n\
+      <bind role='set' component='m2' interface='zIndex'>\n\
+        <bindParam name='var' value='2'/>\n\
+      </bind>\n\
+    </link>\n\
+  </body>\n\
+</ncl>\n");
+
+    Context *body = cast (Context *, doc->getRoot ());
+    g_assert_nonnull (body);
+    Event *body_lambda = body->getLambda ();
+    g_assert_nonnull (body_lambda);
+
+    m1 = cast (Media *, doc->getObjectById ("m1"));
+    g_assert_nonnull (m1);
+    Event *m1_lambda = m1->getLambda ();
+    g_assert_nonnull (m1_lambda);
+
+    m2 = cast (Media *, doc->getObjectById ("m2"));
+    g_assert_nonnull (m2);
+    Event *m2_lambda = m2->getLambda ();
+    g_assert_nonnull (m2_lambda);
+
+    // --------------------------------
+    // check start document
+
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::SLEEPING);
+    g_assert (m2_lambda->getState () == Event::SLEEPING);
+
+    // when start document, m1 is OCCURRING
+    fmt->sendTick (0, 0, 0);
+    g_assert (body_lambda->getState () == Event::OCCURRING);
+    g_assert (m1_lambda->getState () == Event::OCCURRING);
+    g_assert (m2_lambda->getState () == Event::OCCURRING);
+
+    // --------------------------------
+    // main check
+    tickCounter = 0;
+    gtk_widget_show_all (app);
+    gtk_main ();
+
+    delete fmt;
+  }
+
+  // zIndex defined by descriptor
   {
     gtk_init (nullptr, nullptr);
     Document *doc;
