@@ -257,7 +257,7 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
                           {
                             Action act = it->first;
                             Event *evt = act.event;
-                            if (act.transition == Event::START 
+                            if (act.transition == Event::START
                                 && it->second < begin)
                               evt->transition (act.transition);
                             it = _delayed.erase (it);
@@ -483,12 +483,12 @@ Media::isFocused ()
 }
 
 bool
-Media::getZ (int *z, int *zorder)
+Media::getZ (int *zindex, int *zorder)
 {
   if (this->isSleeping () || _player == nullptr)
     return false; // nothing to do
   g_assert_nonnull (_player);
-  _player->getZ (z, zorder);
+  _player->getZ (zindex, zorder);
   return true;
 }
 
