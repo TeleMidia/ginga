@@ -127,6 +127,19 @@ main (void)
 </ncl>\n\
 ");
 
+  XFAIL ("Element <region> at line 4:", "Unknown attribute 'zOrder'",
+         "\
+<ncl>\n\
+ <head>\n\
+  <regionBase>\n\
+   <region id='rg1' zOrder='1' />\n\
+  </regionBase>\n\
+ </head>\n\
+ <body>\n\
+ </body>\n\
+</ncl>\n\
+");
+
   // -------------------------------------------------------------------------
   // <descriptor>
   // -------------------------------------------------------------------------
