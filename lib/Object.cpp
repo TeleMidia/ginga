@@ -121,13 +121,19 @@ Object::toString ()
     switch (evt->getType ())
       {
       case Event::PRESENTATION:
-        pres.push_back (evt->getId ());
+        pres.push_back (evt->getId () + " ("
+                        + Event::getEventStateAsString (evt->getState ())
+                        + ')');
         break;
       case Event::ATTRIBUTION:
-        attr.push_back (evt->getId ());
+        attr.push_back (evt->getId () + " ("
+                        + Event::getEventStateAsString (evt->getState ())
+                        + ')');
         break;
       case Event::SELECTION:
-        sel.push_back (evt->getId ());
+        sel.push_back (evt->getId () + " ("
+                       + Event::getEventStateAsString (evt->getState ())
+                       + ')');
         break;
       default:
         g_assert_not_reached ();
@@ -174,7 +180,7 @@ Object::hasAlias (const string &alias)
 }
 
 void
-Object::addAlias (const string &alias, Composition * parent)
+Object::addAlias (const string &alias, Composition *parent)
 {
   auto alias_pair = make_pair (alias, parent);
   // _aliases.push_back (alias_pair);

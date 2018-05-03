@@ -54,12 +54,6 @@ Media::toString ()
   string uri;
 
   str = Object::toString ();
-  type = _properties["type"];
-  if (type != "")
-    str += "  type: " + type + "\n";
-  uri = _properties["uri"];
-  if (uri != "")
-    str += "  uri: " + uri + "\n";
   str += xstrbuild ("  player: %p\n", _player);
 
   return str;
