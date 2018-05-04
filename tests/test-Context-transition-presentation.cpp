@@ -30,7 +30,7 @@ main (void)
         &fmt, &body_lambda, &c1_lambda, &c1_prop, &c1_sel, &m1_lambda,
         &m2_lambda);
 
-    // ABORT is done and return true
+    // ABORT is done
     g_assert_true (c1_lambda->transition (Event::ABORT));
 
     // after ABORT c1_lambda, m1_lambda and m2_lambda are SLEEPING
@@ -55,7 +55,7 @@ main (void)
         &fmt, &body_lambda, &c1_lambda, &c1_prop, &c1_sel, &m1_lambda,
         &m2_lambda);
 
-    // PAUSE is done and return true
+    // PAUSE is done
     g_assert_true (c1_lambda->transition (Event::PAUSE));
 
     // after PAUSE, c1_lambda, m1_lambda and m2_lambda are PAUSED
@@ -66,7 +66,7 @@ main (void)
     g_assert (m1_lambda->getState () == Event::PAUSED);
     g_assert (m2_lambda->getState () == Event::PAUSED);
 
-    // ABORT is done and return true
+    // ABORT is done
     g_assert_true (c1_lambda->transition (Event::ABORT));
 
     // after ABORT c1_lambda, m1_lambda and m2_lambda are SLEEPING
@@ -90,7 +90,7 @@ main (void)
         &fmt, &body_lambda, &c1_lambda, &c1_prop, &c1_sel, &m1_lambda,
         &m2_lambda);
 
-    // STOP is done and return true
+    // STOP is done
     g_assert_true (c1_lambda->transition (Event::STOP));
 
     // after STOP c1_lambda, m1_lambda and m2_lambda are SLEEPING
@@ -101,7 +101,7 @@ main (void)
     g_assert (m1_lambda->getState () == Event::SLEEPING);
     g_assert (m2_lambda->getState () == Event::SLEEPING);
 
-    // ABORT is not done and return false
+    // ABORT is not done
     g_assert_false (c1_lambda->transition (Event::ABORT));
 
     // after ABORT c1_lambda, m1_lambda and m2_lambda are still SLEEPING
@@ -125,7 +125,7 @@ main (void)
         &fmt, &body_lambda, &c1_lambda, &c1_prop, &c1_sel, &m1_lambda,
         &m2_lambda);
 
-    // PAUSE is done and return true
+    // PAUSE is done
     g_assert_true (c1_lambda->transition (Event::PAUSE));
 
     // after PAUSE c1_lambda, m1_lambda and m2_lambda are PAUSED
@@ -149,7 +149,7 @@ main (void)
         &fmt, &body_lambda, &c1_lambda, &c1_prop, &c1_sel, &m1_lambda,
         &m2_lambda);
 
-    // PAUSE is done and return true
+    // PAUSE is done
     g_assert_true (c1_lambda->transition (Event::PAUSE));
 
     // after PAUSE c1_lambda, m1_lambda and m2_lambda are PAUSED
@@ -159,7 +159,7 @@ main (void)
     g_assert (m1_lambda->getState () == Event::PAUSED);
     g_assert (m2_lambda->getState () == Event::PAUSED);
 
-    // PAUSE is not done and return false
+    // PAUSE is not done
     g_assert_false (c1_lambda->transition (Event::PAUSE));
 
     // after PAUSE c1_lambda, m1_lambda and m2_lambda are still PAUSED
@@ -183,7 +183,7 @@ main (void)
         &fmt, &body_lambda, &c1_lambda, &c1_prop, &c1_sel, &m1_lambda,
         &m2_lambda);
 
-    // STOP is done and return true
+    // STOP is done
     g_assert_true (c1_lambda->transition (Event::STOP));
 
     // after STOP c1_lambda, m1_lambda and m2_lambda are SLEEPING
@@ -194,7 +194,7 @@ main (void)
     g_assert (m1_lambda->getState () == Event::SLEEPING);
     g_assert (m2_lambda->getState () == Event::SLEEPING);
 
-    // PAUSE is not done and return false
+    // PAUSE is not done
     g_assert_false (c1_lambda->transition (Event::PAUSE));
 
     // after PAUSE c1_lambda, m1_lambda and m2_lambda still SLEEPING
@@ -218,7 +218,7 @@ main (void)
         &fmt, &body_lambda, &c1_lambda, &c1_prop, &c1_sel, &m1_lambda,
         &m2_lambda);
 
-    // RESUME is done and return true
+    // RESUME is done
     g_assert_false (c1_lambda->transition (Event::RESUME));
 
     // after RESUME, anchors events go to OCCURRING
@@ -243,7 +243,7 @@ main (void)
         &fmt, &body_lambda, &c1_lambda, &c1_prop, &c1_sel, &m1_lambda,
         &m2_lambda);
 
-    // PAUSE is done and return true
+    // PAUSE is done
     g_assert_true (c1_lambda->transition (Event::PAUSE));
 
     // after PAUSE, anchors events go to PAUSED
@@ -254,7 +254,7 @@ main (void)
     g_assert (m1_lambda->getState () == Event::PAUSED);
     g_assert (m2_lambda->getState () == Event::PAUSED);
 
-    // RESUME is done and return true
+    // RESUME is done
     g_assert_true (c1_lambda->transition (Event::RESUME));
 
     // after RESUME, anchors events go to OCCURRING
@@ -278,7 +278,7 @@ main (void)
         &fmt, &body_lambda, &c1_lambda, &c1_prop, &c1_sel, &m1_lambda,
         &m2_lambda);
 
-    // STOP is done and return true
+    // STOP is done
     g_assert_true (c1_lambda->transition (Event::STOP));
 
     // after STOP c1_lambda, m1_lambda and m2_lambda are SLEEPING
@@ -289,7 +289,7 @@ main (void)
     g_assert (m1_lambda->getState () == Event::SLEEPING);
     g_assert (m2_lambda->getState () == Event::SLEEPING);
 
-    // RESUME is not done and return false
+    // RESUME is not done
     g_assert_false (c1_lambda->transition (Event::RESUME));
 
     // after PAUSE c1_lambda, m1_lambda and m2_lambda still SLEEPING
@@ -313,7 +313,7 @@ main (void)
         &fmt, &body_lambda, &c1_lambda, &c1_prop, &c1_sel, &m1_lambda,
         &m2_lambda);
 
-    // START is not done and return false
+    // START is not done
     g_assert_false (c1_lambda->transition (Event::START));
 
     // after start, c1_lambda, m1_lambda and m2_lambda are PAUSED
@@ -338,7 +338,7 @@ main (void)
         &fmt, &body_lambda, &c1_lambda, &c1_prop, &c1_sel, &m1_lambda,
         &m2_lambda);
 
-    // PAUSE is done and return true
+    // PAUSE is done
     g_assert_true (c1_lambda->transition (Event::PAUSE));
 
     // after PAUSE c1_lambda, m1_lambda and m2_lambda are PAUSED
@@ -348,7 +348,7 @@ main (void)
     g_assert (m1_lambda->getState () == Event::PAUSED);
     g_assert (m2_lambda->getState () == Event::PAUSED);
 
-    // START is done and return true
+    // START is done
     g_assert_true (c1_lambda->transition (Event::START));
 
     // after start, c1_lambda, m1_lambda and m2_lambda are PAUSED
@@ -381,7 +381,7 @@ main (void)
         &fmt, &body_lambda, &c1_lambda, &c1_prop, &c1_sel, &m1_lambda,
         &m2_lambda);
 
-    // STOP is done and return true
+    // STOP is done
     g_assert (c1_lambda->transition (Event::STOP));
 
     // after STOP, c1_lambda, m1_lambda and m2_lambda are PAUSED
@@ -392,7 +392,7 @@ main (void)
     g_assert (m1_lambda->getState () == Event::SLEEPING);
     g_assert (m2_lambda->getState () == Event::SLEEPING);
 
-    // START is done and return true
+    // START is done
     g_assert_true (c1_lambda->transition (Event::START));
 
     // after START, c1_lambda is SLEEPING
@@ -424,7 +424,7 @@ main (void)
         &fmt, &body_lambda, &c1_lambda, &c1_prop, &c1_sel, &m1_lambda,
         &m2_lambda);
 
-    // STOP is done and return true
+    // STOP is done
     g_assert_true (c1_lambda->transition (Event::STOP));
 
     // after STOP c1_lambda, m1_lambda and m2_lambda are SLEEPING
@@ -448,7 +448,7 @@ main (void)
         &fmt, &body_lambda, &c1_lambda, &c1_prop, &c1_sel, &m1_lambda,
         &m2_lambda);
 
-    // PAUSE is done and return true
+    // PAUSE is done
     g_assert_true (c1_lambda->transition (Event::PAUSE));
 
     // after PAUSE c1_lambda, m1_lambda and m2_lambda are PAUSED
@@ -458,7 +458,7 @@ main (void)
     g_assert (m1_lambda->getState () == Event::PAUSED);
     g_assert (m2_lambda->getState () == Event::PAUSED);
 
-    // STOP is done and return true
+    // STOP is done
     g_assert_true (c1_lambda->transition (Event::STOP));
 
     // after STOP c1_lambda, m1_lambda and m2_lambda are still SLEEPING
@@ -482,7 +482,7 @@ main (void)
         &fmt, &body_lambda, &c1_lambda, &c1_prop, &c1_sel, &m1_lambda,
         &m2_lambda);
 
-    // STOP is done and return true
+    // STOP is done
     g_assert (c1_lambda->transition (Event::STOP));
 
     // after STOP c1_lambda, m1_lambda and m2_lambda SLEEPING
@@ -493,7 +493,7 @@ main (void)
     g_assert (m1_lambda->getState () == Event::SLEEPING);
     g_assert (m2_lambda->getState () == Event::SLEEPING);
 
-    // STOP is not done and return false
+    // STOP is not done
     g_assert_false (c1_lambda->transition (Event::STOP));
 
     // after STOP c1_lambda, m1_lambda and m2_lambda still SLEEPING

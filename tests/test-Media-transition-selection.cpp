@@ -32,7 +32,7 @@ main (void)
         &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop,
         &m1_sel);
 
-    // ABORT is not done and return true
+    // ABORT is not done
     g_assert_false (m1_sel->transition (Event::ABORT));
 
     // when advance time, m1_sel is SLEEPING
@@ -61,8 +61,8 @@ main (void)
         &fmt, &body_lambda, &m1_lambda, &m1_anchor_0s, &m1_label, &m1_prop,
         &m1_sel);
 
-    // START is done and return true
-    g_assert (m1_sel->transition (Event::START));
+    // START is done
+    g_assert_true (m1_sel->transition (Event::START));
 
     // after START, m1_sel is OCCURRING
     g_assert (body_lambda->getState () == Event::OCCURRING);
@@ -72,7 +72,7 @@ main (void)
     g_assert (m1_prop->getState () == Event::SLEEPING);
     g_assert (m1_sel->getState () == Event::OCCURRING);
 
-    // START is not done and return true
+    // START is not done
     g_assert_false (m1_sel->transition (Event::START));
 
     // when advance time, m1_sel is still OCCURRING
@@ -99,7 +99,7 @@ main (void)
         &m1_sel);
 
     // START is done
-    g_assert (m1_sel->transition (Event::START));
+    g_assert_true (m1_sel->transition (Event::START));
 
     // after START, m1_sel is OCCURRING
     g_assert (body_lambda->getState () == Event::OCCURRING);
@@ -132,7 +132,7 @@ main (void)
         &m1_sel);
 
     // START is done
-    g_assert (m1_sel->transition (Event::START));
+    g_assert_true (m1_sel->transition (Event::START));
 
     // after START, m1_sel is OCCURRING
     g_assert (body_lambda->getState () == Event::OCCURRING);
@@ -143,7 +143,7 @@ main (void)
     g_assert (m1_sel->getState () == Event::OCCURRING);
 
     // STOP is done
-    g_assert (m1_sel->transition (Event::STOP));
+    g_assert_true (m1_sel->transition (Event::STOP));
 
     // after START, m1_sel is SLEEPING
     g_assert (body_lambda->getState () == Event::OCCURRING);

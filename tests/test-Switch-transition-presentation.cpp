@@ -28,8 +28,8 @@ main (void)
     tests_create_document_with_switch_and_start (&fmt, &body_lambda,
                                                  &swt1_lambda, &swt1_sel,
                                                  &m1_lambda, &m2_lambda);
-    // ABORT is done and return true
-    g_assert (swt1_lambda->transition (Event::ABORT));
+    // ABORT is done
+    g_assert_true (swt1_lambda->transition (Event::ABORT));
 
     // after start, swt1_lambda is SLEEPING
     g_assert_cmpint (body_lambda->getState (), ==, Event::OCCURRING);
@@ -53,7 +53,7 @@ main (void)
                                                  &m1_lambda, &m2_lambda);
 
     // PAUSE is done
-    g_assert (swt1_lambda->transition (Event::PAUSE));
+    g_assert_true (swt1_lambda->transition (Event::PAUSE));
 
     // after start, swt1_lambda is PAUSED
     g_assert (body_lambda->getState () == Event::OCCURRING);
@@ -124,7 +124,7 @@ main (void)
                                                  &m1_lambda, &m2_lambda);
 
     // STOP is done
-    g_assert (swt1_lambda->transition (Event::STOP));
+    g_assert_true (swt1_lambda->transition (Event::STOP));
 
     // after STOP, swt1_lambda is SLEEPING
     g_assert (body_lambda->getState () == Event::OCCURRING);
@@ -146,7 +146,7 @@ main (void)
                                                  &m1_lambda, &m2_lambda);
 
     // STOP is done
-    g_assert (swt1_lambda->transition (Event::STOP));
+    g_assert_true (swt1_lambda->transition (Event::STOP));
 
     // after STOP, swt1_lambda is SLEEPING
     g_assert (body_lambda->getState () == Event::OCCURRING);

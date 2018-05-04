@@ -40,7 +40,7 @@ main (void)
         &fmt, &body_lambda, &c1_lambda, &c1_prop, &c1_sel, &m1_lambda,
         &m2_lambda);
 
-    // ABORT is not done and return false
+    // ABORT is not done
     g_assert_false (c1_sel->transition (Event::ABORT));
 
     // after advance time, c1_sel is SLEEPING
@@ -75,7 +75,7 @@ main (void)
         &fmt, &body_lambda, &c1_lambda, &c1_prop, &c1_sel, &m1_lambda,
         &m2_lambda);
 
-    // PAUSE is not done and return false
+    // PAUSE is not done
     g_assert_false (c1_sel->transition (Event::PAUSE));
 
     // after advance time, c1_sel is SLEEPING
@@ -109,7 +109,7 @@ main (void)
         &fmt, &body_lambda, &c1_lambda, &c1_prop, &c1_sel, &m1_lambda,
         &m2_lambda);
 
-    // START is not done and return false
+    // START is not done
     g_assert_false (c1_sel->transition (Event::START));
 
     // after advance time, c1_sel is SLEEPING
@@ -144,7 +144,7 @@ main (void)
         &fmt, &body_lambda, &c1_lambda, &c1_prop, &c1_sel, &m1_lambda,
         &m2_lambda);
 
-    // STOP is not done and return false
+    // STOP is not done
     g_assert_false (c1_sel->transition (Event::STOP));
 
     // after advance time, c1_sel is SLEEPING
