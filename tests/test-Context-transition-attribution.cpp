@@ -41,7 +41,7 @@ main (void)
           &fmt, &body_lambda, &c1_lambda, &c1_prop, &c1_sel, &m1_lambda,
           &m2_lambda);
 
-      // START AttributionEvent is done and return true
+      // START is done
       g_assert_true (c1_prop->transition (Event::START));
 
       // after START AttributionEvent is OCCURRING
