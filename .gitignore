@@ -163,6 +163,7 @@
 /tests/test-Media-anchors-started-from-ports
 /tests/test-Media-anchors-started-from-links
 /tests/test-MediaSettings-instances
+/tests/test-MediaSettings-refer
 /tests/test-MediaSettings-new
 /tests/test-Siggen-new
 /tests/test-Object-getTime

@@ -298,6 +298,9 @@ test_MediaSettings_instances_SOURCES= test-MediaSettings-instances.cpp
 progs+= test-MediaSettings-new
 test_MediaSettings_new_SOURCES= test-MediaSettings-new.cpp
 
+progs+= test-MediaSettings-refer
+test_MediaSettings_refer_SOURCES= test-MediaSettings-refer.cpp
+
 # lib/Context.h ------------------------------------------------------------
 progs+= test-Context-new
 test_Context_new_SOURCES= test-Context-new.cpp
