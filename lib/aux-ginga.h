@@ -50,6 +50,7 @@ GINGA_PRAGMA_DIAG_POP ()
 GINGA_END_DECLS
 
 // C++ library.
+#include <iostream>
 #include <algorithm>
 #include <list>
 #include <map>
