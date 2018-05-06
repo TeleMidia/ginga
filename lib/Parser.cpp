@@ -3867,20 +3867,27 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
   // case is an refer to an Media
   if (hasRefer)
     {
+      // if referred Media not existing Media yet
       media = cast (Media *, st->_doc->getObjectByIdOrAlias (refer));
-      // if referred Media not existing yet, create it
       if (media == nullptr)
         {
-          // only create
-          // when found, the Parser it will set uri, type and parent
-          media = new Media (refer);
-          g_assert (st->referMapAdd (refer, media));
+          // try if is an multiple refer, if not create Media
+          if (!st->referMapIndex (refer, &media))
+            {
+              // when Parser find the reffered Media
+              // (a) if an Media, the Parser will set uri, type and parent
+              // (b) if an MediaSettings, the Parser will replace
+              media = new Media (refer);
+            }
+
+          st->referMapAdd (refer, media);
         }
+      // if is multiple refer to a not existing Media yet
       // save refer as alias
       parent = cast (Composition *, st->objStackPeek ());
       g_assert_nonnull (parent);
       media->addAlias (id, parent);
-      g_assert (st->referMapAdd (id, media));
+      st->referMapAdd (id, media);
     }
   // case is a new Media
   else
@@ -3888,12 +3895,32 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
       // case is an MediaSettings
       if (type == "application/x-ginga-settings")
         {
-          refer = st->_doc->getSettings ()->getId ();
+          Media *tmpMedia = nullptr;
+
+          // there is only one MediaSettings
           media = st->_doc->getSettings ();
+
+          // if there are refers to this MediaSettings, those refers
+          // are using a tmp Media, which should be this MediaSettings
+          st->referMapIndex (id, &tmpMedia);
+          if (tmpMedia)
+            {
+              auto it = st->_referMap.begin ();
+              while ((*it).second == tmpMedia)
+                {
+                  st->_referMap[(*it).first] = media;
+                  media->addAlias ((*it).first);
+                  it++;
+                }
+              if (it != st->_referMap.begin ())
+                delete tmpMedia;
+            }
+
+          // add this Media as refer to MediaSettings
           parent = cast (Composition *, st->objStackPeek ());
           g_assert_nonnull (parent);
           media->addAlias (id, parent);
-          g_assert (st->referMapAdd (id, media));
+          st->referMapAdd (id, media);
         }
       // case os other Media type
       else
