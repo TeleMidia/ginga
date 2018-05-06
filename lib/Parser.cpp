@@ -3864,86 +3864,66 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
     return st->errEltMutuallyExclAttributes (elt->getNode (), "src",
                                              "refer");
 
-  // case is an already referred Media
-  if (st->referMapIndex (id, &media))
+  // case is an refer to an Media
+  if (hasRefer)
     {
-      // case src filled
-      if (src != "")
+      media = cast (Media *, st->_doc->getObjectByIdOrAlias (refer));
+      // if referred Media not existing yet, create it
+      if (media == nullptr)
         {
-          // Makes uri based in the main document uri
-          xmlChar *s = xmlBuildURI (toXmlChar (src),
-                                    toXmlChar (st->getURI ()));
-          src = toCPPString (s);
-          // If fails makes the uri based in the current dir
-          if (!xpathisuri (src) && !xpathisabs (src))
-            {
-              src = xpathmakeabs (src);
-            }
-          xmlFree (s);
+          // only create
+          // when found, the Parser it will set uri, type and parent
+          media = new Media (refer);
+          g_assert (st->referMapAdd (refer, media));
         }
-      media->setProperty ("uri", src);
-      media->setProperty ("type", type);
-    }
-  // case is an MediaSettings
-  else if (type == "application/x-ginga-settings")
-    {
-      refer = st->_doc->getSettings ()->getId ();
-      media = st->_doc->getSettings ();
+      // save refer as alias
       parent = cast (Composition *, st->objStackPeek ());
       g_assert_nonnull (parent);
       media->addAlias (id, parent);
       g_assert (st->referMapAdd (id, media));
     }
-  // case is Media refer instSame
-  else if (hasRefer)
+  // case is a new Media
+  else
     {
-      media = cast (Media *, st->_doc->getObjectByIdOrAlias (refer));
-      // if referenced Media exist
-      if (media != nullptr)
+      // case is an MediaSettings
+      if (type == "application/x-ginga-settings")
         {
+          refer = st->_doc->getSettings ()->getId ();
+          media = st->_doc->getSettings ();
           parent = cast (Composition *, st->objStackPeek ());
           g_assert_nonnull (parent);
           media->addAlias (id, parent);
-          st->referMapAdd (refer, media);
           g_assert (st->referMapAdd (id, media));
         }
+      // case os other Media type
       else
         {
-          // if referenced Media not existing yet, create it
-          media = new Media (refer);
+          // case src filled
+          if (src != "")
+            {
+              // Makes uri based in the main document uri
+              xmlChar *s = xmlBuildURI (toXmlChar (src),
+                                        toXmlChar (st->getURI ()));
+              src = toCPPString (s);
+              // If fails makes the uri based in the current dir
+              if (!xpathisuri (src) && !xpathisabs (src))
+                {
+                  src = xpathmakeabs (src);
+                }
+              xmlFree (s);
+            }
+          // create Media if not found refer that created the referred Media
+          if (!st->referMapIndex (id, &media))
+            {
+              media = new Media (id);
+            }
+          // create new Media src filled or empty (timer)
+          media->setProperty ("uri", src);
+          media->setProperty ("type", type);
           parent = cast (Composition *, st->objStackPeek ());
           g_assert_nonnull (parent);
-
           parent->addChild (media);
-          media->addAlias (id);
-          g_assert (st->referMapAdd (refer, media));
         }
-    }
-  // case src filled or empty (timer)
-  else
-    {
-      // case src filled
-      if (src != "")
-        {
-          // Makes uri based in the main document uri
-          xmlChar *s
-              = xmlBuildURI (toXmlChar (src), toXmlChar (st->getURI ()));
-          src = toCPPString (s);
-          // If fails makes the uri based in the current dir
-          if (!xpathisuri (src) && !xpathisabs (src))
-            {
-              src = xpathmakeabs (src);
-            }
-          xmlFree (s);
-        }
-
-      // create new Media
-      media = new Media (id);
-      media->setProperty ("uri", src);
-      media->setProperty ("type", type);
-      parent = cast (Composition *, st->objStackPeek ());
-      g_assert_nonnull (parent);
-      parent->addChild (media);
     }
 
   st->objStackPush (media);
