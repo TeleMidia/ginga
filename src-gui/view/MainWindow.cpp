@@ -1046,6 +1046,7 @@ stop_button_callback (void)
   gtk_widget_set_sensitive (fileEntry, true);
   gtk_widget_set_sensitive (openButton, true);
   gtk_widget_set_sensitive (histButton, true);
+  gtk_widget_set_sensitive (playButton, true);
 
   GINGA->stop ();
 }
@@ -1054,9 +1055,9 @@ void
 play_pause_button_callback (void)
 {
   inPlayMode = !inPlayMode;
-  GtkWidget *play_icon = gtk_image_new_from_file (
+/*  GtkWidget *play_icon = gtk_image_new_from_file (
       g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
-                    get_icon_folder (), "play-icon.png", NULL));
+                    get_icon_folder (), "play-icon.png", NULL)); */
   if (inPlayMode)
     {
       const gchar *file = gtk_entry_get_text (GTK_ENTRY (fileEntry));
@@ -1069,12 +1070,13 @@ play_pause_button_callback (void)
           return;
         }
 
-      play_icon = gtk_image_new_from_file (
+   /*   play_icon = gtk_image_new_from_file (
           g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
-                        get_icon_folder (), "pause-icon.png", NULL));
+                        get_icon_folder (), "pause-icon.png", NULL)); */
       gtk_widget_set_sensitive (fileEntry, false);
       gtk_widget_set_sensitive (openButton, false);
       gtk_widget_set_sensitive (histButton, false);
+      gtk_widget_set_sensitive (playButton, !inPlayMode);
 
       // Start Ginga.
       GINGA->start (file, nullptr);
@@ -1083,7 +1085,7 @@ play_pause_button_callback (void)
       gtk_text_buffer_set_text (consoleTxtBuffer, "", 0);
     }
 
-  gtk_button_set_image (GTK_BUTTON (playButton), play_icon);
+//  gtk_button_set_image (GTK_BUTTON (playButton), play_icon);
 }
 
 void select_ncl_file_callback (unused (GtkWidget *widget),
