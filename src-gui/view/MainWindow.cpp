@@ -986,7 +986,7 @@ create_main_window ()
   gtk_window_set_title (GTK_WINDOW (mainWindow), "Ginga");
   gtk_window_set_default_size (GTK_WINDOW (mainWindow),
                                presentationAttributes.resolutionWidth,
-                               presentationAttributes.resolutionHeight);
+                               presentationAttributes.resolutionHeight+ (BUTTON_SIZE*2)) ;
   gtk_window_set_position (GTK_WINDOW (mainWindow), GTK_WIN_POS_CENTER);
   gtk_window_set_resizable (GTK_WINDOW (mainWindow), true);
   gtk_container_set_border_width (GTK_CONTAINER (mainWindow), 5);
