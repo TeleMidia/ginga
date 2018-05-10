@@ -79,34 +79,36 @@ main (int argc, char **argv)
 
   gtk_init (&saved_argc, &saved_argv);
 
+  
   // Parse command-line options.
   ctx = g_option_context_new (OPTION_LINE);
   g_assert_nonnull (ctx);
   g_option_context_add_main_entries (ctx, options, NULL);
   if (!g_option_context_parse (ctx, &saved_argc, &saved_argv, &error))
-    {
-      g_print ("option parsing failed: %s\n", error->message);
-      exit (1);
-    }
-
+  {
+          g_print ("option parsing failed: %s\n", error->message);
+          exit (1);
+  }
   g_option_context_free (ctx);
-
+  
   init_ginga_data ();
+  
   load_settings ();
-
+  
   setlocale (LC_ALL, "C");
 
   gtk_window_set_default_icon_from_file (
       g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons", "common",
                     "ginga_icon.png", NULL),
       &error);
-
+ 
+ 
   // send log message to server
   send_http_log_message (0, (gchar *) "Open Ginga");
   // check for ginga updates
   send_http_log_message (-1, (gchar *) "Check for Ginga updates");
   g_assert (g_setenv ("G_MESSAGES_DEBUG", "all", true));
-
+  
   create_main_window ();
 
   if (opt_bigpicture)
@@ -114,13 +116,13 @@ main (int argc, char **argv)
       create_bigpicture_window ();
     }
   else
-    {
-      gchar *filename = saved_argv [1];
-      gchar *ext = strrchr (filename, '.');
-      if (!g_strcmp0 (ext, ".ncl"))
-        {
+    { 
+      if(saved_argc > 1){ 
+        gchar *filename = saved_argv [1];
+        gchar *ext = strrchr (filename, '.');
+        if (!g_strcmp0 (ext, ".ncl"))
           insert_historicbox (filename);
-        }
+      }
     }
 
   gtk_main ();
