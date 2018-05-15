@@ -15,8 +15,8 @@
 
 Root: HKCR; Subkey: ".ncl";                             ValueData: "{#MyAppName}";          Flags: uninsdeletevalue; ValueType: string;  ValueName: ""
 Root: HKCR; Subkey: "{#MyAppName}";                     ValueData: "Program {#MyAppName}";  Flags: uninsdeletekey;   ValueType: string;  ValueName: ""
-Root: HKCR; Subkey: "{#MyAppName}\DefaultIcon";         ValueData: "{app}\ginga\\{#MyAppExeName},0";               ValueType: string;  ValueName: ""
-Root: HKCR; Subkey: "{#MyAppName}\shell\open\command";  ValueData: """{app}\ginga\\{#MyAppExeName}"" ""%1""";  ValueType: string;  ValueName: ""
+Root: HKCR; Subkey: "{#MyAppName}\DefaultIcon";         ValueData: "{app}\ginga\{#MyAppExeName},0";               ValueType: string;  ValueName: ""
+Root: HKCR; Subkey: "{#MyAppName}\shell\open\command";  ValueData: """{app}\ginga\{#MyAppExeName}"" ""%1""";  ValueType: string;  ValueName: ""
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -52,18 +52,20 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 
 ; Ginga
-Source: "C:\msys64\mingw64\bin\ginga.exe"; DestDir: "{app}\ginga\"; Flags: ignoreversion
+;Source: "C:\msys64\mingw64\bin\ginga.exe"; DestDir: "{app}\ginga\"; Flags: ignoreversion
 Source: "C:\msys64\mingw64\bin\gingagui.exe"; DestDir: "{app}\ginga\"; Flags: ignoreversion
 
 ; Ginga-gui GTK icons & depends
-Source: "C:\msys64\mingw64\share\icons\Adwaita\16x16\*"; DestDir: "{app}\ginga\\share\icons\Adwaita\16x16"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\msys64\mingw64\share\icons\hicolor\16x16\*"; DestDir: "{app}\ginga\\share\icons\hicolor\16x16"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\msys64\mingw64\share\icons\hicolor\index.theme"; DestDir: "{app}\ginga\\share\icons\hicolor"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\msys64\mingw64\share\glib-2.0\schemas\*"; DestDir: "{app}\ginga\\share\glib-2.0\schemas"; Flags: ignoreversion recursesubdirs createallsubdirs
-
+;Source: "C:\msys64\mingw64\share\icons\Adwaita\16x16\*"; DestDir: "{app}\ginga\share\icons\Adwaita\16x16"; Flags: ignoreversion recursesubdirs createallsubdirs
+;Source: "C:\msys64\mingw64\share\icons\hicolor\16x16\*"; DestDir: "{app}\ginga\share\icons\hicolor\16x16"; Flags: ignoreversion recursesubdirs createallsubdirs
+;Source: "C:\msys64\mingw64\share\icons\hicolor\index.theme"; DestDir: "{app}\ginga\share\icons\hicolor"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\msys64\mingw64\share\glib-2.0\*"; DestDir: "{app}\ginga\share\glib-2.0"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\msys64\mingw64\share\icons\*"; DestDir: "{app}\ginga\share\icons"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\msys64\mingw64\share\ginga\*"; DestDir: "{app}\ginga\share\ginga"; Flags: ignoreversion recursesubdirs createallsubdirs
+                                   
 ; Nclua deps
-Source: "C:\msys64\mingw64\lib\lua\*"; DestDir: "{app}\\lib\lua"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\msys64\mingw64\share\lua\*"; DestDir: "{app}\\share\lua"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\msys64\mingw64\lib\lua\*"; DestDir: "{app}\lib\lua"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\msys64\mingw64\share\lua\*"; DestDir: "{app}\share\lua"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 ; Ginga deps
 Source: "C:\msys64\mingw64\bin\libatk-1.0-0.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion
@@ -120,7 +122,7 @@ Source: "C:\msys64\mingw64\bin\zlib1.dll"; DestDir: "{app}\ginga\"; Flags: ignor
 
 ; Gstreamer plugin libs
 
-Source: "C:\msys64\mingw64\lib\gstreamer-1.0\*"; DestDir: "{app}\ginga\\lib\gstreamer-1.0"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\msys64\mingw64\lib\gstreamer-1.0\*"; DestDir: "{app}\ginga\lib\gstreamer-1.0"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 ; Gstreamer plugin bin
 
@@ -242,6 +244,6 @@ Source: "C:\msys64\mingw64\bin\xvidcore.dll"; DestDir: "{app}\ginga\"; Flags: ig
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{commonprograms}\{#MyAppName}"; Filename: "{app}\ginga\\{#MyAppExeName}"
-Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\ginga\\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{commonprograms}\{#MyAppName}"; Filename: "{app}\ginga\{#MyAppExeName}"
+Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\ginga\{#MyAppExeName}"; Tasks: desktopicon
 
