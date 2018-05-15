@@ -18,7 +18,7 @@ Root: HKCR; Subkey: "{#MyAppName}";                     ValueData: "Program {#My
 Root: HKCR; Subkey: "{#MyAppName}\DefaultIcon";         ValueData: "{app}\ginga\{#MyAppExeName},0";               ValueType: string;  ValueName: ""
 Root: HKCR; Subkey: "{#MyAppName}\shell\open\command";  ValueData: """{app}\ginga\{#MyAppExeName}"" ""%1""";  ValueType: string;  ValueName: ""
 
-[Setup]
+[Setup] 
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
@@ -56,11 +56,11 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "C:\msys64\mingw64\bin\gingagui.exe"; DestDir: "{app}\ginga\"; Flags: ignoreversion
 
 ; Ginga-gui GTK icons & depends
-;Source: "C:\msys64\mingw64\share\icons\Adwaita\16x16\*"; DestDir: "{app}\ginga\share\icons\Adwaita\16x16"; Flags: ignoreversion recursesubdirs createallsubdirs
-;Source: "C:\msys64\mingw64\share\icons\hicolor\16x16\*"; DestDir: "{app}\ginga\share\icons\hicolor\16x16"; Flags: ignoreversion recursesubdirs createallsubdirs
-;Source: "C:\msys64\mingw64\share\icons\hicolor\index.theme"; DestDir: "{app}\ginga\share\icons\hicolor"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\msys64\mingw64\share\icons\Adwaita\16x16\*"; DestDir: "{app}\ginga\share\icons\Adwaita\16x16"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\msys64\mingw64\share\icons\hicolor\16x16\*"; DestDir: "{app}\ginga\share\icons\hicolor\16x16"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\msys64\mingw64\share\icons\hicolor\index.theme"; DestDir: "{app}\ginga\share\icons\hicolor"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "C:\msys64\mingw64\share\glib-2.0\*"; DestDir: "{app}\ginga\share\glib-2.0"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\msys64\mingw64\share\icons\*"; DestDir: "{app}\ginga\share\icons"; Flags: ignoreversion recursesubdirs createallsubdirs
+;Source: "C:\msys64\mingw64\share\icons\hicolor\*"; DestDir: "{app}\ginga\share\icons"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "C:\msys64\mingw64\share\ginga\*"; DestDir: "{app}\ginga\share\ginga"; Flags: ignoreversion recursesubdirs createallsubdirs
                                    
 ; Nclua deps
