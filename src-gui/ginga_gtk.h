@@ -125,4 +125,7 @@ void load_settings (void);
 /* Model/HttpMessages */
 void send_http_log_message (gint, const gchar *);
 
+/* util */
+const gchar * get_installation_directory();
+
 #endif /* GINGA_GTK_H */

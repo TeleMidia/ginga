@@ -94,7 +94,7 @@ instantiateInAppLibrary (unused (xmlDocPtr doc), xmlNodePtr cur)
                 = cairo_image_surface_create_from_png ((gchar *) thumbnail);
           else
             bigPictureCard->surface = cairo_image_surface_create_from_png (
-                g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                g_build_path (G_DIR_SEPARATOR_S, get_installation_directory (), "icons",
                               "common", "app_thumbnail.png", NULL));
 
           if (g_file_test ((gchar *) cover, G_FILE_TEST_EXISTS))
@@ -103,7 +103,7 @@ instantiateInAppLibrary (unused (xmlDocPtr doc), xmlNodePtr cur)
           else
             bigPictureCard->print_surface
                 = cairo_image_surface_create_from_png (
-                    g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                    g_build_path (G_DIR_SEPARATOR_S, get_installation_directory (), "icons",
                                   "common", "app_cover.png", NULL));
 
           bigPictureCard->src = g_strdup ((gchar *) src);
@@ -381,7 +381,7 @@ create_bigpicture_window ()
     return;
 
   cairo_surface_t *image_p = cairo_image_surface_create_from_png (
-      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons", "common",
+      g_build_path (G_DIR_SEPARATOR_S, get_installation_directory (), "icons", "common",
                     "background_pattern.png", NULL));
 
   g_assert_nonnull (image_p);

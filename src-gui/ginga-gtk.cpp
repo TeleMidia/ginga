@@ -50,6 +50,63 @@ init_ginga_data ()
     gingaID = g_strdup_printf ("%li", g_get_real_time ());
 }
 
+#if defined(G_OS_WIN32)
+
+static HMODULE libgimpbase_dll = NULL;
+
+BOOL WINAPI /* Avoid silly "no previous prototype" gcc warning */
+DllMain (HINSTANCE hinstDLL,
+         DWORD     fdwReason,
+         LPVOID    lpvReserved);
+
+BOOL WINAPI
+DllMain (HINSTANCE hinstDLL,
+         DWORD     fdwReason,
+         LPVOID    lpvReserved)
+{
+  switch (fdwReason)
+    {
+    case DLL_PROCESS_ATTACH:
+      libgimpbase_dll = hinstDLL;
+      break;
+    }
+
+  return TRUE;
+}
+#endif
+
+const gchar *
+get_installation_directory (void)
+{
+  static gchar *dir = NULL;
+
+  if (dir)
+    return dir;
+
+#ifdef PLATFORM_OSX
+  NSAutoreleasePool *pool;
+  NSArray           *path;
+  NSString          *library_dir;
+
+  pool = [[NSAutoreleasePool alloc] init];
+  path = NSSearchPathForDirectoriesInDomains (NSApplicationSupportDirectory,
+                                              NSUserDomainMask, YES);
+  library_dir = [path objectAtIndex:0];
+  dir = g_build_filename ([library_dir UTF8String],
+                                GIMPDIR, GIMP_USER_VERSION, NULL);
+  [pool drain];
+
+#elif defined G_OS_WIN32
+  gchar * tmpdir = g_win32_get_package_installation_directory_of_module (libgimpbase_dll);
+  if (! tmpdir)
+    g_error ("g_win32_get_package_installation_directory_of_module() failed");
+ dir = g_build_filename (tmpdir, "share", "ginga", NULL);
+#else
+  dir = GINGADATADIR;
+#endif
+  return dir;
+}
+
 int
 main (int argc, char **argv)
 {
@@ -79,7 +136,6 @@ main (int argc, char **argv)
 
   gtk_init (&saved_argc, &saved_argv);
 
-  
   // Parse command-line options.
   ctx = g_option_context_new (OPTION_LINE);
   g_assert_nonnull (ctx);
@@ -90,25 +146,24 @@ main (int argc, char **argv)
           exit (1);
   }
   g_option_context_free (ctx);
-  
+
   init_ginga_data ();
-  
+
   load_settings ();
-  
+
   setlocale (LC_ALL, "C");
 
   gtk_window_set_default_icon_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons", "common",
+      g_build_path (G_DIR_SEPARATOR_S, get_installation_directory (), "icons", "common",
                     "ginga_icon.png", NULL),
       &error);
- 
- 
+
   // send log message to server
   send_http_log_message (0, (gchar *) "Open Ginga");
   // check for ginga updates
   send_http_log_message (-1, (gchar *) "Check for Ginga updates");
   g_assert (g_setenv ("G_MESSAGES_DEBUG", "all", true));
-  
+
   create_main_window ();
 
   if (opt_bigpicture)
@@ -116,8 +171,8 @@ main (int argc, char **argv)
       create_bigpicture_window ();
     }
   else
-    { 
-      if(saved_argc > 1){ 
+    {
+      if(saved_argc > 1){
         gchar *filename = saved_argv [1];
         gchar *ext = strrchr (filename, '.');
         if (!g_strcmp0 (ext, ".ncl"))
