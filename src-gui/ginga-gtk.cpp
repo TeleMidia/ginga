@@ -107,6 +107,38 @@ get_installation_directory (void)
   return dir;
 }
 
+
+
+void
+env_init ()
+{
+  static gboolean env_initialized = FALSE;
+
+  if(env_initialized)
+    g_error ("env_init() must only be called once!");
+  env_initialized = TRUE;
+
+#ifdef PLATFORM_OSX
+  const gchar *ldpath = g_getenv ("GST_PLUGIN_PATH");
+  gchar       *libdir = g_build_filename (gimp_installation_directory (),
+                                          "lib",
+                                          NULL);
+
+  if (ldpath && *ldpath)
+    {
+      gchar *tmp = g_strconcat (libdir, ":", ldpath, NULL);
+      g_setenv ("GST_PLUGIN_PATH", tmp, TRUE);
+      g_free (tmp);
+    }
+  else
+    {
+      g_setenv ("GST_PLUGIN_PATH", libdir, TRUE);
+    }
+  g_free (libdir);
+#endif
+
+}
+
 int
 main (int argc, char **argv)
 {
@@ -134,6 +166,7 @@ main (int argc, char **argv)
   GINGA = Ginga::create (&opts);
   g_assert_nonnull (GINGA);
 
+  env_init ();
   gtk_init (&saved_argc, &saved_argv);
 
   // Parse command-line options.
