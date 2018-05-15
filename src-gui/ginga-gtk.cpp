@@ -27,6 +27,10 @@ using namespace ::std;
 #include <windows.h>
 #endif
 
+#ifdef PLATFORM_OSX
+#include <AppKit/AppKit.h>
+#endif
+
 // Global formatter
 Ginga *GINGA = nullptr;
 gchar *gingaID = nullptr;
@@ -52,7 +56,7 @@ init_ginga_data ()
 
 #if defined(G_OS_WIN32)
 
-static HMODULE libgimpbase_dll = NULL;
+static HMODULE libbase_dll = NULL;
 
 BOOL WINAPI /* Avoid silly "no previous prototype" gcc warning */
 DllMain (HINSTANCE hinstDLL,
@@ -67,7 +71,7 @@ DllMain (HINSTANCE hinstDLL,
   switch (fdwReason)
     {
     case DLL_PROCESS_ATTACH:
-      libgimpbase_dll = hinstDLL;
+      libbase_dll = hinstDLL;
       break;
     }
 
@@ -76,12 +80,12 @@ DllMain (HINSTANCE hinstDLL,
 #endif
 
 const gchar *
-get_installation_directory (void)
+get_installation_dir (void)
 {
-  static gchar *dir = NULL;
+  static gchar *instalationdir = NULL;
 
-  if (dir)
-    return dir;
+  if (instalationdir)
+    return instalationdir;
 
 #ifdef PLATFORM_OSX
   NSAutoreleasePool *pool;
@@ -92,22 +96,35 @@ get_installation_directory (void)
   path = NSSearchPathForDirectoriesInDomains (NSApplicationSupportDirectory,
                                               NSUserDomainMask, YES);
   library_dir = [path objectAtIndex:0];
-  dir = g_build_filename ([library_dir UTF8String],
-                                GIMPDIR, GIMP_USER_VERSION, NULL);
+  instalationdir = [library_dir UTF8String];
   [pool drain];
 
 #elif defined G_OS_WIN32
-  gchar * tmpdir = g_win32_get_package_installation_directory_of_module (libgimpbase_dll);
-  if (! tmpdir)
+  instalationdir = g_win32_get_package_installation_directory_of_module (libbase_dll);
+  if (! instalationdir)
     g_error ("g_win32_get_package_installation_directory_of_module() failed");
- dir = g_build_filename (tmpdir, "share", "ginga", NULL);
 #else
-  dir = GINGADATADIR;
+  instalationdir = GINGABINDIR;
 #endif
-  return dir;
+  return instalationdir;
 }
 
+const gchar *
+get_data_dir (void)
+{
+  static gchar *datadir = NULL;
 
+  if (datadir)
+    return datadir;
+
+#if defined PLATFORM_OSX || defined G_OS_WIN32
+  datadir = g_build_filename (get_installation_dir (), "share", "ginga", NULL);
+#else
+  datadir = GINGADATADIR;
+#endif
+
+  return datadir;
+}
 
 void
 env_init ()
@@ -120,8 +137,7 @@ env_init ()
 
 #ifdef PLATFORM_OSX
   const gchar *ldpath = g_getenv ("GST_PLUGIN_PATH");
-  gchar       *libdir = g_build_filename (gimp_installation_directory (),
-                                          "lib",
+  gchar       *libdir = g_build_filename (get_installation_dir (),"lib",
                                           NULL);
 
   if (ldpath && *ldpath)
@@ -152,10 +168,10 @@ main (int argc, char **argv)
   saved_argc = argc;
   saved_argv = g_strdupv (argv);
 
-#ifdef G_OS_WIN32
-  HWND var = GetConsoleWindow ();
-  ShowWindow (var, SW_HIDE);
-#endif
+// #ifdef G_OS_WIN32
+//   HWND var = GetConsoleWindow ();
+//   ShowWindow (var, SW_HIDE);
+// #endif
 
   opts.width = presentationAttributes.resolutionWidth;
   opts.height = presentationAttributes.resolutionHeight;
@@ -186,8 +202,10 @@ main (int argc, char **argv)
 
   setlocale (LC_ALL, "C");
 
+  puts(get_data_dir ());
+
   gtk_window_set_default_icon_from_file (
-      g_build_path (G_DIR_SEPARATOR_S, get_installation_directory (), "icons", "common",
+      g_build_path (G_DIR_SEPARATOR_S, get_data_dir (), "icons", "common",
                     "ginga_icon.png", NULL),
       &error);
 

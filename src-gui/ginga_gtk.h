@@ -126,6 +126,6 @@ void load_settings (void);
 void send_http_log_message (gint, const gchar *);
 
 /* util */
-const gchar * get_installation_directory();
+const gchar * get_data_dir();
 
 #endif /* GINGA_GTK_H */
