@@ -131,6 +131,21 @@ AC_LANG_PUSH([C])
 AU_ARG_ENABLE_WARNINGS([$nw])
 AC_LANG_POP
 
+# Check for MacOS X
+platform_osx=no
+AC_MSG_CHECKING([if compiling for Mac OS X])
+case "$host_os" in
+  darwin*)
+     AC_MSG_RESULT(yes)
+     AC_DEFINE(PLATFORM_OSX, 1, [define to 1 if compiling for Mac OS X])
+     platform_osx=yes
+     ;;
+  *)
+     ;;
+esac
+AC_MSG_RESULT($platform_osx)
+AM_CONDITIONAL(PLATFORM_OSX, test "x$platform_osx" = xyes)
+
 # Required dependencies.
 AU_VERSION_BREAK([cairo], cairo_required_version)
 AU_CHECK_PKG([CAIRO], [cairo >= cairo_required_version],
