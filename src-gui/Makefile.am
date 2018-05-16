@@ -22,7 +22,7 @@ SUBDIRS= icons style
 
 AM_CPPFLAGS= -I$(top_srcdir)/lib -I$(top_builddir)/lib\
   -DABS_TOP_SRCDIR=\"$(abs_top_srcdir)\"\
-  -DGINGADATADIR=\"$(gingadatadir)\"
+  -DGINGADATADIR=\"$(gingadatadir)\"\
   -DGINGABINDIR=\"$(bindir)\"
 
 if PLATFORM_OSX
