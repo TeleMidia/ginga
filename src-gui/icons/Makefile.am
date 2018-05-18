@@ -29,6 +29,7 @@ icons_DATA=\
 common_DATA=\
   common/blue-icon.png\
   common/ginga_icon.png\
+	common/icon-gingagui.ico\
   common/green-icon.png\
   common/red-icon.png\
   common/yellow-icon.png\
