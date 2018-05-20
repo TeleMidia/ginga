@@ -27,7 +27,7 @@ using namespace ::std;
 #include <windows.h>
 #endif
 
-#ifdef PLATFORM_OSX
+#ifdef __APPLE__
 #include <AppKit/AppKit.h>
 #endif
 
@@ -40,11 +40,11 @@ gchar *gingaID = nullptr;
   "Report bugs to: " PACKAGE_BUGREPORT "\n"                                \
   "Ginga home page: " PACKAGE_URL
 
-static gboolean opt_bigpicture = FALSE;        // toggle bigpicture mode
+static gboolean opt_bigpicture = FALSE; // toggle bigpicture mode
 
 static GOptionEntry options[]
     = { { "bigpicture", 'b', 0, G_OPTION_ARG_NONE, &opt_bigpicture,
-        "Enable bigpicture mode", NULL },
+          "Enable bigpicture mode", NULL },
         { NULL, 0, 0, G_OPTION_ARG_NONE, NULL, NULL, NULL } };
 
 void
@@ -59,14 +59,10 @@ init_ginga_data ()
 static HMODULE libbase_dll = NULL;
 
 BOOL WINAPI /* Avoid silly "no previous prototype" gcc warning */
-DllMain (HINSTANCE hinstDLL,
-         DWORD     fdwReason,
-         LPVOID    lpvReserved);
+DllMain (HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved);
 
 BOOL WINAPI
-DllMain (HINSTANCE hinstDLL,
-         DWORD     fdwReason,
-         LPVOID    lpvReserved)
+DllMain (HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
   switch (fdwReason)
     {
@@ -80,31 +76,41 @@ DllMain (HINSTANCE hinstDLL,
 #endif
 
 const gchar *
-get_installation_dir (void)
+get_binary_dir (void)
 {
-  static gchar *instalationdir = NULL;
+  static const gchar *instalationdir = NULL;
 
   if (instalationdir)
     return instalationdir;
 
-#ifdef PLATFORM_OSX
+#ifdef __APPLE__
   NSAutoreleasePool *pool;
-  NSArray           *path;
-  NSString          *library_dir;
+  NSString *resource_path;
+  gchar *basename;
+  gchar *dirname;
 
   pool = [[NSAutoreleasePool alloc] init];
-  path = NSSearchPathForDirectoriesInDomains (NSApplicationSupportDirectory,
-                                              NSUserDomainMask, YES);
-  library_dir = [path objectAtIndex:0];
-  instalationdir = [library_dir UTF8String];
+
+  resource_path = [[NSBundle mainBundle] resourcePath];
+
+  basename = g_path_get_basename ([resource_path UTF8String]);
+  dirname = g_path_get_dirname ([resource_path UTF8String]);
+
+  instalationdir = g_build_filename (dirname, basename, NULL);
+
+  g_free (basename);
+  g_free (dirname);
+
   [pool drain];
 
 #elif defined G_OS_WIN32
-  instalationdir = g_win32_get_package_installation_directory_of_module (libbase_dll);
-  if (! instalationdir)
-    g_error ("g_win32_get_package_installation_directory_of_module() failed");
+  instalationdir
+      = g_win32_get_package_installation_directory_of_module (libbase_dll);
+  if (!instalationdir)
+    g_error (
+        "g_win32_get_package_installation_directory_of_module() failed");
 #else
-  instalationdir = GINGABINDIR;
+  instalationdir = (char *) GINGABINDIR;
 #endif
   return instalationdir;
 }
@@ -117,10 +123,13 @@ get_data_dir (void)
   if (datadir)
     return datadir;
 
-#if defined PLATFORM_OSX || defined G_OS_WIN32
-  datadir = g_build_filename (get_installation_dir (), "share", "ginga", NULL);
+#if defined __APPLE__
+  datadir = g_path_get_dirname (get_binary_dir ());
+
+#elif defined G_OS_WIN32
+  datadir = g_build_filename (get_binary_dir (), "share", "ginga", NULL);
 #else
-  datadir = GINGADATADIR;
+  datadir = (char *) GINGADATADIR;
 #endif
 
   return datadir;
@@ -131,15 +140,18 @@ env_init ()
 {
   static gboolean env_initialized = FALSE;
 
-  if(env_initialized)
+  if (env_initialized)
     g_error ("env_init() must only be called once!");
   env_initialized = TRUE;
 
-#ifdef PLATFORM_OSX
-  const gchar *ldpath = g_getenv ("GST_PLUGIN_PATH");
-  gchar       *libdir = g_build_filename (get_installation_dir (),"lib",
-                                          NULL);
+#ifdef __APPLE__
 
+  if(!strcmp(g_path_get_basename (get_binary_dir ()), ".libs"))
+    return;
+
+  const gchar *ldpath = g_getenv ("GST_PLUGIN_PATH");
+  gchar *libdir = g_build_filename ("/usr", "local", "Cellar/", NULL);
+  printf("GST: %s \n", libdir);
   if (ldpath && *ldpath)
     {
       gchar *tmp = g_strconcat (libdir, ":", ldpath, NULL);
@@ -151,8 +163,8 @@ env_init ()
       g_setenv ("GST_PLUGIN_PATH", libdir, TRUE);
     }
   g_free (libdir);
+  
 #endif
-
 }
 
 int
@@ -168,10 +180,10 @@ main (int argc, char **argv)
   saved_argc = argc;
   saved_argv = g_strdupv (argv);
 
-// #ifdef G_OS_WIN32
-//   HWND var = GetConsoleWindow ();
-//   ShowWindow (var, SW_HIDE);
-// #endif
+  // #ifdef G_OS_WIN32
+  //   HWND var = GetConsoleWindow ();
+  //   ShowWindow (var, SW_HIDE);
+  // #endif
 
   opts.width = presentationAttributes.resolutionWidth;
   opts.height = presentationAttributes.resolutionHeight;
@@ -190,10 +202,10 @@ main (int argc, char **argv)
   g_assert_nonnull (ctx);
   g_option_context_add_main_entries (ctx, options, NULL);
   if (!g_option_context_parse (ctx, &saved_argc, &saved_argv, &error))
-  {
-          g_print ("option parsing failed: %s\n", error->message);
-          exit (1);
-  }
+    {
+      g_print ("option parsing failed: %s\n", error->message);
+      exit (1);
+    }
   g_option_context_free (ctx);
 
   init_ginga_data ();
@@ -202,12 +214,14 @@ main (int argc, char **argv)
 
   setlocale (LC_ALL, "C");
 
-  puts(get_data_dir ());
-
   gtk_window_set_default_icon_from_file (
       g_build_path (G_DIR_SEPARATOR_S, get_data_dir (), "icons", "common",
                     "ginga_icon.png", NULL),
       &error);
+
+  printf ("PATH: %s",
+          g_build_path (G_DIR_SEPARATOR_S, get_data_dir (), "icons",
+                        "common", "ginga_icon.png", NULL));
 
   // send log message to server
   send_http_log_message (0, (gchar *) "Open Ginga");
@@ -223,12 +237,13 @@ main (int argc, char **argv)
     }
   else
     {
-      if(saved_argc > 1){
-        gchar *filename = saved_argv [1];
-        gchar *ext = strrchr (filename, '.');
-        if (!g_strcmp0 (ext, ".ncl"))
-          insert_historicbox (filename);
-      }
+      if (saved_argc > 1)
+        {
+          gchar *filename = saved_argv[1];
+          gchar *ext = strrchr (filename, '.');
+          if (!g_strcmp0 (ext, ".ncl"))
+            insert_historicbox (filename);
+        }
     }
 
   gtk_main ();

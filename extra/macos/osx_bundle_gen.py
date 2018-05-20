@@ -58,6 +58,7 @@ def process_dylib(line_index, otool_line, binary_path):
             subprocess.call('cp '+dylib_path+' Ginga.app/Contents/Frameworks/', shell=True)
             dylibs_list.append('Ginga.app/Contents/Frameworks/'+dylib_name)
             subprocess.call('install_name_tool -change '+dylib_path+' @executable_path/../Frameworks/'+dylib_name+' '+binary_path, shell=True)
+            DYLIBS_COUNT = DYLIBS_COUNT + 1
         return
 
     if not pathlib.Path('Ginga.app/Contents/Frameworks'+cur_path+'/'+dylib_name).is_file():
@@ -79,10 +80,12 @@ def process_binary(binary_path):
             process_dylib(index, dependency, binary_path)  
 
 subprocess.call('mkdir -p Ginga.app/Contents/{MacOS,Resources,Frameworks,Frameworks/usr,Frameworks/usr/local,Frameworks/usr/local/share,Frameworks/usr/local/lib,Frameworks/usr/local/Cellar,Frameworks/usr/local/opt}', shell=True)
-subprocess.call('cp ../../src-gui/gingagui Ginga.app/Contents/MacOS/Ginga', shell=True)
+subprocess.call('cp /usr/local/bin/gingagui Ginga.app/Contents/MacOS/Ginga', shell=True)
 subprocess.call('cp Icon.icns Ginga.app/Contents/Resources/', shell=True)
 subprocess.call('cp Info.plist Ginga.app/Contents/', shell=True)
-subprocess.call('cp -r /usr/local/share/ginga* Ginga.app/Contents/Frameworks/usr/local/share', shell=True)
+subprocess.call('cp -r ../../src-gui/icons* Ginga.app/Contents/', shell=True)
+subprocess.call('cp -r ../../src-gui/style* Ginga.app/Contents/', shell=True)
+
 subprocess.call('cp -r /usr/local/share/glib-2.0* Ginga.app/Contents/Frameworks/usr/local/share', shell=True)
 subprocess.call('cp -r /usr/local/share/icons* Ginga.app/Contents/Frameworks/usr/local/share', shell=True)
 subprocess.call('cp -r /usr/local/share/lua* Ginga.app/Contents/Frameworks/usr/local/share', shell=True)
@@ -98,7 +101,7 @@ subprocess.call('cp -r /usr/local/opt/gst-plugins-ugly* Ginga.app/Contents/Frame
 subprocess.call('cp -r /usr/local/opt/gst-plugins-bad* Ginga.app/Contents/Frameworks/usr/local/opt', shell=True)
 subprocess.call('cp -r /usr/local/opt/gst-plugins-good* Ginga.app/Contents/Frameworks/usr/local/opt', shell=True)
 subprocess.call('cp -r /usr/local/opt/gst-plugins-base* Ginga.app/Contents/Frameworks/usr/local/opt', shell=True)
-
+subprocess.call('cp -r /usr/local/opt/orc* Ginga.app/Contents/Frameworks/usr/local/opt', shell=True)
 
 
 #process main binary
@@ -116,6 +119,3 @@ while(True):
             break
     if not need_iterate:
         break
-  
-   
-

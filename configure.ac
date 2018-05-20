@@ -321,8 +321,10 @@ AC_SUBST([GINGA_ALL_LDFLAGS])
 # Directories.
 gingadatadir="$datadir/$PACKAGE"
 gingasysconfdir="$sysconfdir/$PACKAGE"
+gingabindir="$bindir"
 AC_SUBST([gingadatadir])
 AC_SUBST([gingasysconfdir])
+AC_SUBST([gingabindir])
 
 # Epilogue.
 AC_CONFIG_FILES([
