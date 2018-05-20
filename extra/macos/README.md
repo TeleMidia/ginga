@@ -1,6 +1,6 @@
 ## Building the repository on macOS
 
-Download [brew](<brew.sh>).
+Download [brew](<http://brew.sh>).
 
 To install the dependencies run on macOS terminal:
 
