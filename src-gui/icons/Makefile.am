@@ -19,9 +19,14 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
 iconsdir= $(gingadatadir)/icons
+applicationsdir= $(datadir)/applications
 commondir= $(iconsdir)/common
 lightdir= $(iconsdir)/light-theme
 darkdir= $(iconsdir)/dark-theme
+
+applications_DATA=\
+  ginga.desktop\
+  $(NULL)
 
 icons_DATA=\
   $(NULL)
