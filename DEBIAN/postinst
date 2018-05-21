@@ -5,6 +5,7 @@ set -e
 case "$1" in
     configure)
     xdg-mime install application-x-ncl-NCL.xml
+    cp ginga.desktop /usr/share/applications/
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
