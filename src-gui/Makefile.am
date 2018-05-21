@@ -18,6 +18,8 @@
 
 include $(top_srcdir)/build-aux/Makefile.am.common
 
+applicationsdir= $(datadir)/applications
+
 SUBDIRS= icons style
 
 AM_CPPFLAGS= -I$(top_srcdir)/lib -I$(top_builddir)/lib\
@@ -32,6 +34,10 @@ endif
 
 AM_CXXFLAGS= $(CAIRO_CFLAGS) $(GLIB_CFLAGS) $(GTK_CFLAGS) $(LIBXML_CFLAGS) $(SOUP_CFLAGS) $(OSX_CFLAGS)
 AM_LDFLAGS= $(CAIRO_LIBS) $(GLIB_LIBS) $(GTK_LIBS) $(LIBXML_LIBS) $(SOUP_LIBS) $(FRAMEWORK_COCOA)
+
+applications_DATA=\
+  ginga.desktop\
+  $(NULL)
 
 bin_PROGRAMS= gingagui
 gingagui_CXXFLAGS= $(AM_CXXFLAGS)
