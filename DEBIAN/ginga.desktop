@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Name=Ginga
+Exec=/usr/bin/gingagui
+Comment=Ginga Player
+Icon=/usr/share/pixmaps/icon-gingagui.ico
+StartupNotify=false
+Encoding=UTF-8
+Categories=AudioVideo;
+MimeType=application/x-ncl-NCL
+Keywords=Player;Audio;Video;
