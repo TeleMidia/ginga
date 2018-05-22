@@ -17,6 +17,7 @@ set (PACKAGE "ginga")
 set (GINGA_BINARY_DIR ${CMAKE_BINARY_DIR}/bin)
 set (GINGA_BINARY_TESTS_DIR ${CMAKE_BINARY_DIR}/tests)
 add_definitions (-DGINGADATADIR="${CMAKE_INSTALL_FULL_DATADIR}/${PACKAGE}")
+add_definitions (-DGINGABINDIR="${CMAKE_INSTALL_FULL_BINDIR}")
 
 # Find dependencies
 find_package (GLIB 2.32 REQUIRED COMPONENTS gobject gio gthread gmodule)
