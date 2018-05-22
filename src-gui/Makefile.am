@@ -19,6 +19,7 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
 applicationsdir= $(datadir)/applications
+mimesdir= $(datadir)/mime/application
 
 SUBDIRS= icons style
 
@@ -37,6 +38,10 @@ AM_LDFLAGS= $(CAIRO_LIBS) $(GLIB_LIBS) $(GTK_LIBS) $(LIBXML_LIBS) $(SOUP_LIBS) $
 
 applications_DATA=\
   ginga.desktop\
+  $(NULL)
+
+mimes_DATA=\
+  application-x-ncl-NCL.xml\
   $(NULL)
 
 bin_PROGRAMS= gingagui
