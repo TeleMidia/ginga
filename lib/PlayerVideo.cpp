@@ -73,7 +73,7 @@ PlayerVideo::PlayerVideo (Formatter *formatter, Media *media)
 
   _playbin = gst_element_factory_make ("playbin", "playbin");
   g_assert_nonnull (_playbin);
-  
+
   //g_object_set (G_OBJECT (_playbin), "connection-speed", 56, nullptr);
 
   bus = gst_pipeline_get_bus (GST_PIPELINE (_playbin));
@@ -158,7 +158,7 @@ PlayerVideo::PlayerVideo (Formatter *formatter, Media *media)
   _callbacks.new_sample = cb_NewSample;
   gst_app_sink_set_callbacks (GST_APP_SINK (_video.sink), &_callbacks, this,
                               nullptr);
-  
+
   g_signal_connect (G_OBJECT (_playbin), "about-to-finish", (GCallback) cb_EOS,
                     this);
 
@@ -593,7 +593,7 @@ PlayerVideo::getPipelineState ()
 
   if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
     {
-      return nullptr;
+      ERROR("cannot create PlayerVideo for %s", Player::_prop.uri.c_str ());
     }
   return gst_element_state_get_name (curr);
 }
@@ -622,7 +622,7 @@ PlayerVideo::cb_Bus (GstBus *bus, GstMessage *msg, PlayerVideo *player)
           {
             gst_message_parse_error (msg, &error, nullptr);
             g_assert_nonnull (error);
-            
+
             string advice = "";
             switch (error->code)
             {
