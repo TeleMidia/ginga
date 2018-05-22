@@ -593,6 +593,8 @@ Player::createPlayer (Formatter *formatter, Media *media, const string &uri,
         {
           WARNING ("unknown mime '%s': creating an empty player",
                    mime.c_str ());
+          if (!media->getProperty("uri").empty ())
+            ERROR ("media from \"application/x-ginga-timer\" type should not have src");
         }
     }
 
