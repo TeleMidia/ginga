@@ -79,12 +79,6 @@ main (void)
     g_assert (ctx1_lambda->getState () == Event::OCCURRING);
     g_assert (m1_lambda->getState () == Event::SLEEPING);
 
-    // In the next reaction, ctx1 is SLEEPING.
-    fmt->sendTick (0, 0, 0);
-    g_assert (root_lambda->getState () == Event::OCCURRING);
-    g_assert (ctx1_lambda->getState () == Event::SLEEPING);
-    g_assert (m1_lambda->getState () == Event::SLEEPING);
-
     // In the next reaction, root is SLEEPING.
     fmt->sendTick (0, 0, 0);
     g_assert (root_lambda->getState () == Event::SLEEPING);
