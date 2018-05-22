@@ -42,12 +42,18 @@ vector<sample> samples = {
   { "application/x-ginga-timer", "" },
   { "audio/mp3", ABS_TOP_SRCDIR "/tests-ncl/samples/arcade.mp3" },
   { "image/png", ABS_TOP_SRCDIR "/tests-ncl/samples/gnu.png" },
+#if defined WITH_NCLUA && WITH_NCLUA
   { "application/x-ginga-NCLua",
     ABS_TOP_SRCDIR "/tests-ncl/samples/fps.lua" },
+#endif
+#if defined WITH_LIBRSVG && WITH_LIBRSVG
   { "image/svg+xml", ABS_TOP_SRCDIR "/tests-ncl/samples/vector.svg" },
+#endif
   { "text/plain", ABS_TOP_SRCDIR "/tests-ncl/samples/text.txt" },
   { "video/ogg", ABS_TOP_SRCDIR "/tests-ncl/samples/clock.ogv" },
+#if defined WITH_CEF && WITH_CEF
   { "text/html", ABS_TOP_SRCDIR "/tests-ncl/samples/page.html" },
+#endif
 };
 
 static G_GNUC_UNUSED string
