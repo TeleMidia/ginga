@@ -14,5 +14,29 @@
     <string>APPL</string>
     <key>CFBundleIconFile</key>
     <string>Icon.icns</string>
+    <key>UTExportedTypeDeclarations</key>
+    <array>
+        <dict>
+            <key>UTTypeIdentifier</key>
+            <string>com.telemidia.ginga.ncl</string>
+            <key>UTTypeTagSpecification</key>
+            <dict>
+            <key>public.filename-extension</key>
+              <array>
+                <string>ncl</string>
+              </array>
+            </dict>
+            <key>UTTypeConformsTo</key>
+            <array>
+             <string>public.data</string>
+            </array>
+            <key>UTTypeDescription</key>
+            <string>NCL file</string>
+            <key>UTTypeIconFile</key>
+            <string>Icon.icns</string>
+            <key>UTTypeReferenceURL</key>
+            <string>http://www.ncl.org.br/</string>
+        </dict>
+    </array>
 </dict>
 </plist>

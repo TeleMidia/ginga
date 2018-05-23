@@ -17,3 +17,4 @@
 # along with Ginga.  If not, see <https://www.gnu.org/licenses/>.
 
 cp -r /Applications/Ginga.app/Contents/Frameworks/usr/local* /usr/
+/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister /Applications/Ginga.app
