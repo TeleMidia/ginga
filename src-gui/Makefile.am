@@ -19,7 +19,7 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
 applicationsdir= $(datadir)/applications
-mimesdir= $(datadir)/mime/application
+mimesdir= $(gingadatadir)/mime
 
 SUBDIRS= icons style
 
