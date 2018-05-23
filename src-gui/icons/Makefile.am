@@ -19,12 +19,12 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
 iconsdir= $(datadir)/pixmaps
-commondir= $(iconsdir)/common
-lightdir= $(iconsdir)/light-theme
-darkdir= $(iconsdir)/dark-theme
+commondir= $(gingadatadir)/icons/common
+lightdir= $(gingadatadir)/icons/light-theme
+darkdir= $(gingadatadir)/icons/dark-theme
 
 icons_DATA=\
-	common/icon-gingagui.ico\
+	common/ginga.ico\
 	$(NULL)
 
 common_DATA=\
