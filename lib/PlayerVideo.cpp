@@ -74,6 +74,8 @@ PlayerVideo::PlayerVideo (Formatter *formatter, Media *media)
   _playbin = gst_element_factory_make ("playbin", "playbin");
   g_assert_nonnull (_playbin);
 
+  //g_object_set (G_OBJECT (_playbin), "connection-speed", 56, nullptr);
+
   bus = gst_pipeline_get_bus (GST_PIPELINE (_playbin));
   g_assert_nonnull (bus);
   ret = gst_bus_add_watch (bus, (GstBusFunc) cb_Bus, this);
@@ -151,11 +153,14 @@ PlayerVideo::PlayerVideo (Formatter *formatter, Media *media)
   g_object_set (G_OBJECT (_playbin), "video-sink", _video.bin, nullptr);
 
   // Callbacks.
-  _callbacks.eos = nullptr;
+  _callbacks.eos = nullptr; //Seldom the EOS event is triggered by appsink.
   _callbacks.new_preroll = nullptr;
   _callbacks.new_sample = cb_NewSample;
   gst_app_sink_set_callbacks (GST_APP_SINK (_video.sink), &_callbacks, this,
                               nullptr);
+
+  g_signal_connect (G_OBJECT (_playbin), "about-to-finish", (GCallback) cb_EOS,
+                    this);
 
   // Initialize some handled properties.
   static set<string> handled = { "balance", "bass",   "freeze", "mute",
@@ -588,7 +593,7 @@ PlayerVideo::getPipelineState ()
 
   if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
     {
-      return "NULL";
+      ERROR("cannot create PlayerVideo for %s", Player::_prop.uri.c_str ());
     }
   return gst_element_state_get_name (curr);
 }
@@ -604,13 +609,6 @@ PlayerVideo::cb_Bus (GstBus *bus, GstMessage *msg, PlayerVideo *player)
 
   switch (GST_MESSAGE_TYPE (msg))
     {
-    case GST_MESSAGE_EOS:
-      {
-        if (unlikely (!player->getFreeze ()))
-          player->setEOS (true);
-        TRACE ("EOS of %s", player->_id.c_str ());
-        break;
-      }
     case GST_MESSAGE_ERROR:
     case GST_MESSAGE_WARNING:
       {
@@ -624,13 +622,39 @@ PlayerVideo::cb_Bus (GstBus *bus, GstMessage *msg, PlayerVideo *player)
           {
             gst_message_parse_error (msg, &error, nullptr);
             g_assert_nonnull (error);
-            ERROR ("%s", error->message);
+
+            string advice = "";
+            switch (error->code)
+            {
+              case GST_CORE_ERROR_MISSING_PLUGIN:
+                {
+                  advice = "Check if the following plugins are installed: gstreamer1.0-plugins-good, gstreamer1.0-plugins-bad and gstreamer1.0-libav.";
+                  break;
+                }
+              default:
+                break;
+            }
+
+            ERROR ("%s %s", error->message, advice.c_str ());
           }
         else
           {
             gst_message_parse_warning (msg, &error, nullptr);
             g_assert_nonnull (error);
-            WARNING ("%s", error->message);
+
+            string advice = "";
+            switch (error->code)
+            {
+              case GST_LIBRARY_ERROR_ENCODE:
+                {
+                  advice = "You should verify if there is some decoder installed to run this file type.";
+                  break;
+                }
+              default:
+                break;
+            }
+
+            WARNING ("%s %s", error->message, advice.c_str ());
           }
         g_error_free (error);
         gst_object_unref (obj);
@@ -648,7 +672,6 @@ PlayerVideo::cb_Bus (GstBus *bus, GstMessage *msg, PlayerVideo *player)
     default:
       break;
     }
-  // gst_object_unref (msg);
   return TRUE;
 }
 
@@ -659,6 +682,17 @@ PlayerVideo::cb_NewSample (unused (GstAppSink *appsink), gpointer data)
   g_assert_nonnull (player);
   g_atomic_int_compare_and_exchange (&player->_sample_flag, 0, 1);
   return GST_FLOW_OK;
+}
+
+void
+PlayerVideo::cb_EOS (unused (GstElement *playbin), gpointer data)
+{
+  PlayerVideo *player = (PlayerVideo *) data;
+  g_assert_nonnull (player);
+  TRACE ("EOS of %s", player->_id.c_str ());
+
+  if (unlikely (!player->getFreeze ()))
+    player->setEOS (true);
 }
 
 GINGA_NAMESPACE_END

@@ -18,12 +18,31 @@
 
 include $(top_srcdir)/build-aux/Makefile.am.common
 
+applicationsdir= $(datadir)/applications
+mimesdir= $(gingadatadir)/mime
+
 SUBDIRS= icons style
 
 AM_CPPFLAGS= -I$(top_srcdir)/lib -I$(top_builddir)/lib\
-  -DGINGADATADIR=\"$(gingadatadir)\"
-AM_CXXFLAGS= $(CAIRO_CFLAGS) $(GLIB_CFLAGS) $(GTK_CFLAGS) $(LIBXML_CFLAGS) $(SOUP_CFLAGS)
-AM_LDFLAGS= $(CAIRO_LIBS) $(GLIB_LIBS) $(GTK_LIBS) $(LIBXML_LIBS) $(SOUP_LIBS)
+  -DABS_TOP_SRCDIR=\"$(abs_top_srcdir)\"\
+  -DGINGADATADIR=\"$(gingadatadir)\"\
+  -DGINGABINDIR=\"$(gingabindir)\"
+
+if PLATFORM_OSX
+  OSX_CFLAGS = "-ObjC++"
+  FRAMEWORK_COCOA = -framework Cocoa
+endif
+
+AM_CXXFLAGS= $(CAIRO_CFLAGS) $(GLIB_CFLAGS) $(GTK_CFLAGS) $(LIBXML_CFLAGS) $(SOUP_CFLAGS) $(OSX_CFLAGS)
+AM_LDFLAGS= $(CAIRO_LIBS) $(GLIB_LIBS) $(GTK_LIBS) $(LIBXML_LIBS) $(SOUP_LIBS) $(FRAMEWORK_COCOA)
+
+applications_DATA=\
+  ginga.desktop\
+  $(NULL)
+
+mimes_DATA=\
+  application-x-ncl-NCL.xml\
+  $(NULL)
 
 bin_PROGRAMS= gingagui
 gingagui_CXXFLAGS= $(AM_CXXFLAGS)

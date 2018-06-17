@@ -192,9 +192,9 @@ Player::getState ()
 }
 
 void
-Player::getZ (int *z, int *zorder)
+Player::getZ (int *zindex, int *zorder)
 {
-  tryset (z, _prop.z);
+  tryset (zindex, _prop.zindex);
   tryset (zorder, _prop.zorder);
 }
 
@@ -593,6 +593,8 @@ Player::createPlayer (Formatter *formatter, Media *media, const string &uri,
         {
           WARNING ("unknown mime '%s': creating an empty player",
                    mime.c_str ());
+          if (!media->getProperty("uri").empty ())
+            ERROR ("media from \"application/x-ginga-timer\" type should not have src");
         }
     }
 
@@ -711,7 +713,7 @@ Player::doSetProperty (Property code, unused (const string &name),
       }
     case PROP_Z_INDEX:
       {
-        _prop.z = xstrtoint (value, 10);
+        _prop.zindex = xstrtoint (value, 10);
         break;
       }
     case PROP_Z_ORDER:
@@ -786,7 +788,7 @@ Player::redrawDebuggingInfo (cairo_t *cr)
   str = xstrbuild ("%s:%.1fs\n%dx%d:(%d,%d):%d", id.c_str (),
                    ((double) GINGA_TIME_AS_MSECONDS (_time)) / 1000.,
                    _prop.rect.width, _prop.rect.height, _prop.rect.x,
-                   _prop.rect.y, _prop.z);
+                   _prop.rect.y, _prop.zindex);
 
   debug = PlayerText::renderSurface (
       str, "monospace", "", "", "7", { 1., 0, 0, 1. }, { 0, 0, 0, .75 },

@@ -20,10 +20,10 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  g_assert (xstrhassuffix ("", "") == true);
-  g_assert (xstrhassuffix ("hassuffix", "") == true);
-  g_assert (xstrhassuffix ("hassuffix", "x") == true);
-  g_assert (xstrhassuffix ("hassuffix", "has") == false);
-  g_assert (xstrhassuffix ("", "has") == false);
+  g_assert_true (xstrhassuffix ("", ""));
+  g_assert_true (xstrhassuffix ("hassuffix", ""));
+  g_assert_true (xstrhassuffix ("hassuffix", "x"));
+  g_assert_false (xstrhassuffix ("hassuffix", "has"));
+  g_assert_false (xstrhassuffix ("", "has"));
   exit (EXIT_SUCCESS);
 }

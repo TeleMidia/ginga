@@ -77,6 +77,8 @@ void create_window_components (void);
 void show_ginga_update_alertbox (void);
 gchar *get_icon_folder (void);
 void insert_historicbox (gchar *filename);
+void stop_button_callback (void);
+void play_pause_button_callback (void);
 
 /* View/TvControlWindow */
 void create_tvcontrol_window (void);
@@ -122,5 +124,8 @@ void load_settings (void);
 
 /* Model/HttpMessages */
 void send_http_log_message (gint, const gchar *);
+
+/* util */
+const gchar * get_data_dir();
 
 #endif /* GINGA_GTK_H */

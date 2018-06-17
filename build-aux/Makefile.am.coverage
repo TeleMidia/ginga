@@ -16,7 +16,7 @@
 
 LCOV_DIR= coverage
 LCOV_INFO= coverage.info
-COVERAGE_EXCLUDE=
+COVERAGE_EXCLUDE=tests/* /usr/include/c++/5/* /usr/include/c++/5/**/* /usr/include/gstreamer-1.0/gst/*
 
 lcov_capture_options= --capture --directory $(top_builddir)\
   --output-file $(LCOV_INFO) --test-name '$(PACKAGE_NAME)_PERF'\

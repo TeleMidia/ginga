@@ -75,18 +75,6 @@ main (void)
 
     // after 4 second, m1 is SLEEPING
     fmt->sendTick (4 * GINGA_SECOND, 4 * GINGA_SECOND, 0);
-    g_assert (root_lambda->getState () == Event::OCCURRING);
-    g_assert (ctx1_lambda->getState () == Event::OCCURRING);
-    g_assert (m1_lambda->getState () == Event::SLEEPING);
-
-    // in next reaction, ctx1 is SLEEPING
-    fmt->sendTick (0, 0, 0);
-    g_assert (root_lambda->getState () == Event::OCCURRING);
-    g_assert (ctx1_lambda->getState () == Event::SLEEPING);
-    g_assert (m1_lambda->getState () == Event::SLEEPING);
-
-    // in next reaction, root is SLEEPING
-    fmt->sendTick (0, 0, 0);
     g_assert (root_lambda->getState () == Event::SLEEPING);
     g_assert (ctx1_lambda->getState () == Event::SLEEPING);
     g_assert (m1_lambda->getState () == Event::SLEEPING);
@@ -105,8 +93,8 @@ main (void)
         printf ("uri=%s\n", sample.uri);
         Formatter *fmt;
         Document *doc;
-        tests_parse_and_start (
-            &fmt, &doc, xstrbuild ("\
+        tests_parse_and_start (&fmt, &doc,
+                               xstrbuild ("\
   <ncl>\n\
     <head>\n\
     </head>\n\
@@ -125,7 +113,8 @@ main (void)
         </media>\n\
       </context>\n\
     </body>\n\
-  </ncl>\n", sample.uri, sample.uri));
+  </ncl>\n",
+                                          sample.uri, sample.uri));
 
         Context *body = cast (Context *, doc->getRoot ());
         g_assert_nonnull (body);

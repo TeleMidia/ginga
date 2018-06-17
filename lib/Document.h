@@ -57,6 +57,7 @@ public:
   bool setData (const string &, void *, UserDataCleanFunc fn = nullptr);
 
 private:
+  list<Action> evalActionInContext (Action, Context *);
   set<Object *> _objects;             ///< Objects.
   map<string, Object *> _objectsById; ///< Objects indexed by id.
   Context *_root;                     ///< Root context (body).

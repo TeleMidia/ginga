@@ -21,6 +21,7 @@ int
 main (void)
 {
   const GingaOptions *out;
+  ignore_unused (out);
   GingaOptions opts = {
     10,      // width
     20,      // height
@@ -36,6 +37,8 @@ main (void)
   g_assert (out->width == opts.width);
   g_assert (out->height == opts.height);
   g_assert (out->debug == opts.debug);
+  g_assert (out->experimental == opts.experimental);
+  g_assert (out->opengl == opts.opengl);
   g_assert (out->background == opts.background);
 
   exit (EXIT_SUCCESS);

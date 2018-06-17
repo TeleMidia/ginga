@@ -23,7 +23,7 @@ main (void)
   list<Object *> objs;
 
   objs.push_back (new Media ("m"));
-  objs.push_back (new MediaSettings ("m"));
+  objs.push_back (new MediaSettings ("stgs"));
   objs.push_back (new Context ("c"));
   objs.push_back (new Switch ("s"));
 
@@ -34,7 +34,7 @@ main (void)
       Time begin, end;
 
       n = (instanceof (MediaSettings *, obj)) ? 2 : 1;
-      g_assert (obj->getEvents ()->size () == n);
+      g_assert_cmpint (obj->getEvents ()->size (), ==, n);
 
       // Presentation events.
       g_assert_null (obj->getPresentationEvent ("p1"));
@@ -42,16 +42,16 @@ main (void)
       evt = obj->getPresentationEvent ("p1");
       g_assert_nonnull (evt);
       evt->getInterval (&begin, &end);
-      g_assert (begin == 0);
-      g_assert (end == 0);
+      g_assert_cmpint (begin, ==, 0);
+      g_assert_cmpint (end, ==, 0);
 
       g_assert_null (obj->getPresentationEvent ("p2"));
       obj->addPresentationEvent ("p2", 1, 10);
       evt = obj->getPresentationEvent ("p2");
       g_assert_nonnull (evt);
       evt->getInterval (&begin, &end);
-      g_assert (begin == 1);
-      g_assert (end == 10);
+      g_assert_cmpint (begin, ==, 1);
+      g_assert_cmpint (end, ==, 10);
 
       g_assert_null (obj->getPresentationEvent ("p3"));
       obj->addPresentationEvent ("p3", GINGA_TIME_NONE, GINGA_TIME_NONE);
@@ -59,21 +59,21 @@ main (void)
       g_assert_null (obj->getPresentationEventByLabel ("label1"));
       g_assert_nonnull (evt);
       evt->getInterval (&begin, &end);
-      g_assert (begin == GINGA_TIME_NONE);
-      g_assert (end == GINGA_TIME_NONE);
+      g_assert_cmpint (begin, ==, GINGA_TIME_NONE);
+      g_assert_cmpint (end, ==, GINGA_TIME_NONE);
 
       g_assert_null (obj->getPresentationEvent ("p4"));
       obj->addPresentationEvent ("p4", "label1");
       evt = obj->getPresentationEvent ("p4");
       g_assert_nonnull (evt);
 
-      g_assert (obj->getEvents ()->size () == n + 4);
+      g_assert_cmpint (obj->getEvents ()->size (), ==, n + 4);
       obj->addPresentationEvent ("p1", 0, 0);
       obj->addPresentationEvent ("p2", 0, 0);
       obj->addPresentationEvent ("p3", 0, 0);
       obj->addPresentationEvent ("p4", "label1");
       g_assert_nonnull (obj->getPresentationEventByLabel ("label1"));
-      g_assert (obj->getEvents ()->size () == n + 4);
+      g_assert_cmpint (obj->getEvents ()->size (), ==, n + 4);
 
       // Attribution events.
       g_assert_null (obj->getAttributionEvent ("a1"));
@@ -88,11 +88,11 @@ main (void)
       obj->addAttributionEvent ("a3");
       g_assert_nonnull (obj->getAttributionEvent ("a3"));
 
-      g_assert (obj->getEvents ()->size () == n + 7);
+      g_assert_cmpint (obj->getEvents ()->size (), ==, n + 7);
       obj->addAttributionEvent ("a1");
       obj->addAttributionEvent ("a2");
       obj->addAttributionEvent ("a3");
-      g_assert (obj->getEvents ()->size () == n + 7);
+      g_assert_cmpint (obj->getEvents ()->size (), ==, n + 7);
 
       // Selection events.
       g_assert_null (obj->getSelectionEvent ("s1"));
@@ -107,11 +107,11 @@ main (void)
       obj->addSelectionEvent ("s3");
       g_assert_nonnull (obj->getSelectionEvent ("s3"));
 
-      g_assert (obj->getEvents ()->size () == n + 10);
+      g_assert_cmpint (obj->getEvents ()->size (), ==, n + 10);
       obj->addSelectionEvent ("s1");
       obj->addSelectionEvent ("s2");
       obj->addSelectionEvent ("s3");
-      g_assert (obj->getEvents ()->size () == n + 10);
+      g_assert_cmpint (obj->getEvents ()->size (), ==, n + 10);
 
       delete obj;
     }

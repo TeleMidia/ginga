@@ -27,17 +27,17 @@ main (void)
   tests_create_document (&doc, &root, &settings);
 
   g_assert_false (doc->addObject (root));
-  g_assert (doc->getObjects ()->size () == 2);
+  g_assert_cmpint (doc->getObjects ()->size (), ==, 2);
 
   g_assert_false (doc->addObject (settings));
-  g_assert (doc->getObjects ()->size () == 2);
+  g_assert_cmpint (doc->getObjects ()->size (), ==, 2);
 
   // Add media.
   {
     Media *m = new Media ("m");
     g_assert (doc->addObject (m));
-    g_assert (doc->getObjects ()->size () == 3);
-    g_assert (doc->getMedias ()->size () == 2);
+    g_assert_cmpint (doc->getObjects ()->size (), ==, 3);
+    g_assert_cmpint (doc->getMedias ()->size (), ==,  2);
     auto it = doc->getMedias ()->find (m);
     g_assert (it != doc->getMedias ()->end ());
   }
@@ -46,8 +46,8 @@ main (void)
   {
     Context *c = new Context ("c");
     g_assert (doc->addObject (c));
-    g_assert (doc->getObjects ()->size () == 4);
-    g_assert (doc->getContexts ()->size () == 2);
+    g_assert_cmpint (doc->getObjects ()->size (), ==, 4);
+    g_assert_cmpint (doc->getContexts ()->size (), ==, 2);
     auto it = doc->getContexts ()->find (c);
     g_assert (it != doc->getContexts ()->end ());
   }
@@ -56,8 +56,8 @@ main (void)
   {
     Switch *s = new Switch ("s");
     g_assert (doc->addObject (s));
-    g_assert (doc->getObjects ()->size () == 5);
-    g_assert (doc->getSwitches ()->size () == 1);
+    g_assert_cmpint (doc->getObjects ()->size (), ==, 5);
+    g_assert_cmpint (doc->getSwitches ()->size (), ==, 1);
     auto it = doc->getSwitches ()->find (s);
     g_assert (it != doc->getSwitches ()->end ());
   }

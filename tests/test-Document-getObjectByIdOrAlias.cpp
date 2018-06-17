@@ -52,7 +52,7 @@ main (void)
           m[i]->addAlias (alias);
         }
     }
-  g_assert (doc->getObjects ()->size () == N + 2);
+  g_assert_cmpint (doc->getObjects ()->size (), ==, N + 2);
 
   for (size_t i = 0; i < N; i++)
     {

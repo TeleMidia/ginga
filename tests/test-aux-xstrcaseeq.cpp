@@ -20,10 +20,10 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  g_assert (xstrcaseeq ("", "") == true);
-  g_assert (xstrcaseeq ("equal", "equal") == true);
-  g_assert (xstrcaseeq ("equal", "EqUAl") == true);
-  g_assert (xstrcaseeq ("eq", "equal") == false);
-  g_assert (xstrcaseeq ("not equal", "not") == false);
+  g_assert_true (xstrcaseeq ("", ""));
+  g_assert_true (xstrcaseeq ("equal", "equal"));
+  g_assert_true (xstrcaseeq ("equal", "EqUAl"));
+  g_assert_false (xstrcaseeq ("eq", "equal"));
+  g_assert_false (xstrcaseeq ("not equal", "not"));
   exit (EXIT_SUCCESS);
 }

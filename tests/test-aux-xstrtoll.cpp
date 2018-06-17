@@ -22,13 +22,13 @@ main (void)
 {
   gint64 ip;
 
-  g_assert (_xstrtoll ("1", &ip, 10) == true);
-  g_assert (_xstrtoll ("   1", &ip, 10) == true);
-  g_assert (_xstrtoll ("50", &ip, 10) == true);
-  g_assert (_xstrtoll ("1   ", &ip, 10) == true);
-  g_assert (_xstrtoll ("", &ip, 10) == false);
-  g_assert (_xstrtoll ("a", &ip, 10) == false);
-  g_assert (_xstrtoll ("   a", &ip, 10) == false);
+  g_assert_true (_xstrtoll ("1", &ip, 10));
+  g_assert_true (_xstrtoll ("   1", &ip, 10));
+  g_assert_true (_xstrtoll ("50", &ip, 10));
+  g_assert_true (_xstrtoll ("1   ", &ip, 10));
+  g_assert_false (_xstrtoll ("", &ip, 10));
+  g_assert_false (_xstrtoll ("a", &ip, 10));
+  g_assert_false (_xstrtoll ("   a", &ip, 10));
 
   exit (EXIT_SUCCESS);
 }

@@ -6,16 +6,16 @@
         <simpleCondition role="onBegin"/>
         <simpleAction role="pause"/>
       </causalConnector>
-      <!-- <causalConnector id="onBeginResume">
+      <causalConnector id="onBeginResume">
         <connectorParam name="var"/>
         <simpleCondition role="onBegin"/>
         <simpleAction role="resume"/>
       </causalConnector>
       <causalConnector id="onResumeSet">
         <connectorParam name="var"/>
-        <simpleCondition role="onResumes"/>
+        <simpleCondition role="onResume"/>
         <simpleAction role="set" value="$var"/>
-      </causalConnector> -->
+      </causalConnector>
     </connectorBase>
   </head>
   <body>
@@ -33,15 +33,15 @@
       <bind role="onBegin" component="time0" interface="a1"/>
       <bind role="pause" component="media0"/>
     </link>
-    <!-- <link xconnector="onBeginResume">
+    <link xconnector="onBeginResume">
       <bind role="onBegin" component="time0" interface="a2"/>
       <bind role="resume" component="media0"/>
-    </link> -->
-    <!-- <link xconnector="onResumeSet">
-      <bind role="onResumes" component="media0"/>
+    </link>
+    <link xconnector="onResumeSet">
+      <bind role="onResume" component="media0"/>
       <bind role="set" component="media0" interface="background">
         <bindParam name="var" value="green"/>
       </bind>
-    </link> -->
+    </link>
   </body>
 </ncl>

@@ -16,5 +16,5 @@
 # You should have received a copy of the GNU General Public License
 # along with Ginga.  If not, see <https://www.gnu.org/licenses/>.
 
-cp -r /Applications/Ginga.app/Contents/Resources/share/glib-2.0* /usr/local/share
-cp -r /Applications/Ginga.app/Contents/Resources/share/icons* /usr/local/share
+cp -r /Applications/Ginga.app/Contents/Frameworks/usr/local* /usr/
+/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister /Applications/Ginga.app

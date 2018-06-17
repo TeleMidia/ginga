@@ -262,21 +262,26 @@ Context::afterTransition (Event *evt, Event::Transition transition)
                 this->addDelayedAction (port, Event::START, "", 0);
             }
           evt->setParameter ("fromport", "");
-          TRACE ("start %s", evt->getFullId ().c_str ());
+          TRACE ("start %s at %" GINGA_TIME_FORMAT,
+                 evt->getFullId ().c_str (), GINGA_TIME_ARGS (_time));
           break;
         case Event::PAUSE:
-          TRACE ("pause %s", evt->getFullId ().c_str ());
+          TRACE ("pause %s at %" GINGA_TIME_FORMAT,
+                 evt->getFullId ().c_str (), GINGA_TIME_ARGS (_time));
           break;
         case Event::RESUME:
-          TRACE ("resume %s", evt->getFullId ().c_str ());
+          TRACE ("resume %s at %" GINGA_TIME_FORMAT,
+                 evt->getFullId ().c_str (), GINGA_TIME_ARGS (_time));
           break;
         case Event::STOP:
+          TRACE ("stop %s at %" GINGA_TIME_FORMAT,
+                 evt->getFullId ().c_str (), GINGA_TIME_ARGS (_time));
           Object::doStop ();
-          TRACE ("stop %s", evt->getFullId ().c_str ());
           break;
         case Event::ABORT:
+          TRACE ("abort %s at %" GINGA_TIME_FORMAT,
+                 evt->getFullId ().c_str (), GINGA_TIME_ARGS (_time));
           Object::doStop ();
-          TRACE ("abort %s", evt->getFullId ().c_str ());
           break;
         default:
           g_assert_not_reached ();

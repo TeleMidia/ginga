@@ -1,6 +1,6 @@
 ## Building the repository on Windows
 
-Download [MSYS2](www.msys2.org).
+Download [MSYS2](<http://www.msys2.org>).
 
 To install the dependencies run on MSYS terminal:
 

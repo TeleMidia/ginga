@@ -154,7 +154,7 @@
       <port id="pTechno" component="imgTechno"/>
       <port id="pCartoon" component="imgCartoon"/>
       <port id="pNCLua" component="changes"/>
-      <media id="changes" src="../script/counter.lua" descriptor="changesDesc">
+      <media id="changes" src="script/counter.lua" descriptor="changesDesc">
         <area id="print" label="fim"/>
         <property name="add"/>
       </media>

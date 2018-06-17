@@ -20,11 +20,11 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  g_assert (xstrcasecmp ("", "") == 0);
-  g_assert (xstrcasecmp ("testing", "TESTING") == 0);
-  g_assert (xstrcasecmp ("test", "TeStING") < 0);
-  g_assert (xstrcasecmp ("testing", "test") > 0);
-  g_assert (xstrcasecmp ("", "test") < 0);
-  g_assert (xstrcasecmp ("test ing", "test") > 0);
+  g_assert_cmpint (xstrcasecmp ("", ""), ==, 0);
+  g_assert_cmpint (xstrcasecmp ("testing", "TESTING"), ==, 0);
+  g_assert_cmpint (xstrcasecmp ("test", "TeStING"), <, 0);
+  g_assert_cmpint (xstrcasecmp ("testing", "test"), >, 0);
+  g_assert_cmpint (xstrcasecmp ("", "test"), <, 0);
+  g_assert_cmpint (xstrcasecmp ("test ing", "test"), >, 0);
   exit (EXIT_SUCCESS);
 }

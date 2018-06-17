@@ -9,7 +9,6 @@ RUN apt-get update -y -qq
 RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test
 RUN apt-add-repository -y ppa:george-edison55/cmake-3.x
 RUN add-apt-repository -y ppa:gnome3-team/gnome3
-RUN add-apt-repository -y ppa:gnome3-team/gnome3-staging
 RUN apt-get update -y -qq
 
 RUN apt-get install -y git gcc g++ autotools-dev dh-autoreconf \
