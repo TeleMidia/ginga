@@ -131,6 +131,21 @@ AC_LANG_PUSH([C])
 AU_ARG_ENABLE_WARNINGS([$nw])
 AC_LANG_POP
 
+# Check for MacOS X
+platform_osx=no
+AC_MSG_CHECKING([if compiling for Mac OS X])
+case "$host_os" in
+  darwin*)
+     AC_MSG_RESULT(yes)
+     AC_DEFINE(PLATFORM_OSX, 1, [define to 1 if compiling for Mac OS X])
+     platform_osx=yes
+     ;;
+  *)
+     ;;
+esac
+AC_MSG_RESULT($platform_osx)
+AM_CONDITIONAL(PLATFORM_OSX, test "x$platform_osx" = xyes)
+
 # Required dependencies.
 AU_VERSION_BREAK([cairo], cairo_required_version)
 AU_CHECK_PKG([CAIRO], [cairo >= cairo_required_version],
@@ -270,8 +285,7 @@ AU_CHECK_OPTIONAL_PKG([nclua], [build with NCLua support], [],
 
 AU_CHECK_OPTIONAL_PKG([opengl], [build with OpenGL support], [],
  [OPENGL],
- [gl >= opengl_required_version
-  sdl2])
+ [gl >= opengl_required_version and sdl2])
 
 # Aliases for compiler flags.
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $WARN_CFLAGS $WERROR_CFLAGS "])
@@ -306,8 +320,10 @@ AC_SUBST([GINGA_ALL_LDFLAGS])
 # Directories.
 gingadatadir="$datadir/$PACKAGE"
 gingasysconfdir="$sysconfdir/$PACKAGE"
+gingabindir="$bindir"
 AC_SUBST([gingadatadir])
 AC_SUBST([gingasysconfdir])
+AC_SUBST([gingabindir])
 
 # Epilogue.
 AC_CONFIG_FILES([
@@ -318,7 +334,7 @@ src/Makefile
 src-gui/Makefile
 src-gui/icons/Makefile
 src-gui/style/Makefile
-tests-ncl/Makefile
+tests-ncl/generated/Makefile
 tests/Makefile
 ])
 

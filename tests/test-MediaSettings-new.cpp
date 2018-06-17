@@ -29,20 +29,20 @@ main (void)
   g_assert_null (m->getParent ());
   g_assert (m->getObjectTypeAsString () == "MediaSettings");
   g_assert (m->toString () != "");
-  g_assert (m->getAliases ()->size () == 0);
+  g_assert_cmpint (m->getAliases ()->size (), ==, 0);
   g_assert_nonnull (m->getLambda ());
   g_assert_false (m->isOccurring ());
   g_assert_false (m->isPaused ());
   g_assert_true (m->isSleeping ());
   g_assert (m->getProperty ("zIndex") == "");
-  g_assert (m->getDelayedActions ()->size () == 0);
+  g_assert_cmpint (m->getDelayedActions ()->size (), ==,0);
 
   // Media-only.
   g_assert_false (m->isFocused ());
   g_assert_false (m->getZ (nullptr, nullptr));
 
   // MediaSettings-only.
-  g_assert (m->getEvents ()->size () == 2);
+  g_assert_cmpint (m->getEvents ()->size (), ==, 2);
   g_assert_nonnull (m->getAttributionEvent ("service.currentFocus"));
 
   delete m;

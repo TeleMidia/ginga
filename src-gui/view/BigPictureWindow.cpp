@@ -94,7 +94,7 @@ instantiateInAppLibrary (unused (xmlDocPtr doc), xmlNodePtr cur)
                 = cairo_image_surface_create_from_png ((gchar *) thumbnail);
           else
             bigPictureCard->surface = cairo_image_surface_create_from_png (
-                g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                g_build_path (G_DIR_SEPARATOR_S, get_data_dir (), "icons",
                               "common", "app_thumbnail.png", NULL));
 
           if (g_file_test ((gchar *) cover, G_FILE_TEST_EXISTS))
@@ -103,7 +103,7 @@ instantiateInAppLibrary (unused (xmlDocPtr doc), xmlNodePtr cur)
           else
             bigPictureCard->print_surface
                 = cairo_image_surface_create_from_png (
-                    g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons",
+                    g_build_path (G_DIR_SEPARATOR_S, get_data_dir (), "icons",
                                   "common", "app_cover.png", NULL));
 
           bigPictureCard->src = g_strdup ((gchar *) src);
@@ -141,8 +141,7 @@ instantiateInAppLibrary (unused (xmlDocPtr doc), xmlNodePtr cur)
 bool
 loadApplicationsXML ()
 {
-  const char *docname
-      = g_strdup ("/Users/antoniobusson/git/ginga/src-gui/ncl-apps.xml");
+  const char *docname = g_strdup (ABS_TOP_SRCDIR "/src-gui/ncl-apps.xml");
 
   xmlDocPtr doc;
   xmlNodePtr cur;
@@ -175,36 +174,6 @@ loadApplicationsXML ()
   xmlFreeDoc (doc);
 
   return TRUE;
-}
-
-void
-draw_ginga_surface (GtkWidget *widget, cairo_t *cr, unused (gpointer data))
-{
-  int w, h;
-  w = gtk_widget_get_allocated_width (widget);
-  h = gtk_widget_get_allocated_height (widget);
-
-  cairo_set_source_rgb (cr, 0., 0., 0.);
-  cairo_rectangle (cr, 0, 0, w, h);
-  cairo_fill (cr);
-
-  if (presentationAttributes.aspectRatio == 0)
-    {
-      cairo_translate (cr, (w - (w * 0.75)) / 2, 0);
-      cairo_scale (cr, 0.75, 1.0);
-    }
-  else if (presentationAttributes.aspectRatio == 1)
-    {
-      cairo_translate (cr, 0, (h - (h * 0.5625)) / 2);
-      cairo_scale (cr, 1.0, 0.5625);
-    }
-  else if (presentationAttributes.aspectRatio == 2)
-    {
-      cairo_translate (cr, 0, (h - (h * 0.625)) / 2);
-      cairo_scale (cr, 1.0, 0.625);
-    }
-
-  GINGA->redraw (cr);
 }
 
 gboolean
@@ -246,11 +215,6 @@ void
 draw_bigpicture_callback (GtkWidget *widget, cairo_t *cr,
                           unused (gpointer data))
 {
-  if (isPlayingApp)
-    {
-      draw_ginga_surface (widget, cr, data);
-      return;
-    }
 
   int h = gtk_widget_get_allocated_height (widget);
 
@@ -272,8 +236,8 @@ draw_bigpicture_callback (GtkWidget *widget, cairo_t *cr,
           cairo_rectangle (cr, posX - 10, posY - 10, cardWidth + 20,
                            cardHeight + 20);
         }
-      cairo_fill (cr);
 
+      cairo_fill (cr);
       cairo_set_source_surface (cr, card->surface, posX, posY);
 
       gdouble b = screen_width - card->position;
@@ -341,8 +305,9 @@ play_application_in_bigpicture ()
 
       if (card->index == 0)
         {
-          isPlayingApp = TRUE;
           GINGA->start (card->src, nullptr);
+          isPlayingApp = TRUE;
+          set_fullscreen_mode ();
         }
     }
 }
@@ -389,7 +354,6 @@ carrousel_rotate (gint dir)
 void
 create_bigpicture_window ()
 {
-
   GdkRectangle rect;
   GdkDisplay *display = gdk_display_get_default ();
   g_assert_nonnull (display);
@@ -417,7 +381,7 @@ create_bigpicture_window ()
     return;
 
   cairo_surface_t *image_p = cairo_image_surface_create_from_png (
-      g_build_path (G_DIR_SEPARATOR_S, GINGADATADIR, "icons", "common",
+      g_build_path (G_DIR_SEPARATOR_S, get_data_dir (), "icons", "common",
                     "background_pattern.png", NULL));
 
   g_assert_nonnull (image_p);
@@ -437,6 +401,7 @@ create_bigpicture_window ()
                     G_CALLBACK (keyboard_callback), (void *) "press");
   g_signal_connect (bigPictureWindow, "key-release-event",
                     G_CALLBACK (keyboard_callback), (void *) "release");
+
   gtk_container_set_border_width (GTK_CONTAINER (bigPictureWindow), 0);
 
   // Create Drawing area
@@ -449,18 +414,10 @@ create_bigpicture_window ()
   gtk_container_add (GTK_CONTAINER (bigPictureWindow), canvas);
   timeOutTagB = g_timeout_add (
       1000 / 60, (GSourceFunc) update_bigpicture_callback, canvas);
-
-  gtk_window_fullscreen (GTK_WINDOW (bigPictureWindow));
-
   g_signal_connect (bigPictureWindow, "destroy",
                     G_CALLBACK (destroy_bigpicture_window), NULL);
-
   gtk_widget_show_all (bigPictureWindow);
-
-  GINGA->resize (rect.width, rect.height);
-
-  // carrousel_rotate (-1);
-  // carrousel_rotate (1);
+  gtk_window_fullscreen (GTK_WINDOW (bigPictureWindow));
 }
 
 void
@@ -475,13 +432,6 @@ destroy_card_list (gpointer data)
 void
 destroy_bigpicture_window ()
 {
-  if (isPlayingApp)
-    {
-      isPlayingApp = FALSE;
-      GINGA->stop ();
-      return;
-    };
-
   inBigPictureMode = FALSE;
   g_source_remove (timeOutTagB);
   gtk_widget_destroy (bigPictureWindow);
@@ -489,7 +439,5 @@ destroy_bigpicture_window ()
   g_list_free_full (cards_list, destroy_card_list);
   cards_list = NULL;
   currentCard = 0;
-
-  GINGA->resize (presentationAttributes.resolutionWidth,
-                 presentationAttributes.resolutionHeight);
+  exit (1);
 }

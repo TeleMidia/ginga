@@ -27,9 +27,6 @@ AM_LDFLAGS= -static $(GINGA_ALL_LDFLAGS)
 LDADD= $(top_builddir)/lib/libginga.la
 EXTRA_DIST+= tests.h
 
-# Auxiliary programs.
-noinst_PROGRAMS= test-SigGen-transmission
-
 # Auxiliary scripts.
 noinst_SCRIPTS=
 
@@ -56,9 +53,6 @@ AM_TESTS_ENVIRONMENT=\
   $(NULL)
 
 # Auxiliary programs.
-
-test_SigGen_transmission_SOURCES=\
-  test-SigGen-transmission.cpp
 
 # Test applications.
 ncls=
@@ -150,6 +144,9 @@ test_aux_xstrtod_SOURCES= test-aux-xstrtod.cpp
 progs+= test-aux-xstrtoll
 test_aux_xstrtoll_SOURCES= test-aux-xstrtoll.cpp
 
+progs+= test-aux-xstrtoull
+test_aux_xstrtoull_SOURCES= test-aux-xstrtoull.cpp
+
 progs+= test-aux-xstrassign
 test_aux_xstrassign_SOURCES= test-aux-xstrassign.cpp
 
@@ -188,6 +185,9 @@ test_Document_evalPredicate_from_link_SOURCES= test-Document-evalPredicate-from-
 progs+= test-Document-evalPredicate-from-rule
 test_Document_evalPredicate_from_rule_SOURCES= test-Document-evalPredicate-from-rule.cpp
 
+progs+= test-Document-empty
+test_Document_empty_SOURCES= test-Document-empty.cpp
+
 # lib/Predicate.h ----------------------------------------------------------
 progs+= test-Predicate-new
 test_Predicate_new_SOURCES= test-Predicate-new.cpp
@@ -216,67 +216,47 @@ progs+= test-Event-getEventTransitionAsString
 test_Event_getEventTransitionAsString_SOURCES=\
   test-Event-getEventTransitionAsString.cpp
 
-progs+= test-Event-transition-Media-start
-test_Event_transition_Media_start_SOURCES=\
-  test-Event-transition-Media-start.cpp
-
-progs+= test-Event-transition-Context-start
-test_Event_transition_Context_start_SOURCES=\
-  test-Event-transition-Context-start.cpp
-
-progs+= test-Event-transition-Switch-start
-test_Event_transition_Switch_start_SOURCES=\
-  test-Event-transition-Switch-start.cpp
-
 progs+= test-Context-ports
 test_Context_ports_SOURCES=\
   test-Context-ports.cpp
 
-progs+= test-Event-transition-Media-stop
-test_Event_transition_Media_stop_SOURCES=\
-  test-Event-transition-Media-stop.cpp
+progs+= test-Context-ports-started-from-ports
+test_Context_ports_started_from_ports_SOURCES=\
+  test-Context-ports-started-from-ports.cpp
 
-progs+= test-Event-transition-Context-stop
-test_Event_transition_Context_stop_SOURCES=\
-  test-Event-transition-Context-stop.cpp
-
-progs+= test-Event-transition-Media-abort
-test_Event_transition_Media_abort_SOURCES=\
-  test-Event-transition-Media-abort.cpp
-
-progs+= test-Event-transition-Context-abort
-test_Event_transition_Context_abort_SOURCES=\
-  test-Event-transition-Context-abort.cpp
-
-progs+= test-Event-transition-Media-pause
-test_Event_transition_Media_pause_SOURCES=\
-  test-Event-transition-Media-pause.cpp
-
-progs+= test-Event-transition-Context-pause
-test_Event_transition_Context_pause_SOURCES=\
-  test-Event-transition-Context-pause.cpp
-
-progs+= test-Event-transition-Media-resume
-test_Event_transition_Media_resume_SOURCES=\
-  test-Event-transition-Media-resume.cpp
-
-progs+= test-Event-transition-Context-resume
-test_Event_transition_Context_resume_SOURCES=\
-  test-Event-transition-Context-resume.cpp
+progs+= test-Context-ports-started-from-links
+test_Context_ports_started_from_links_SOURCES=\
+  test-Context-ports-started-from-links.cpp
 
 # lib/Object.h -------------------------------------------------------------
+progs+= test-Object-getTime
+test_Object_getTime_SOURCES= test-Object-getTime.cpp
+
+progs+= test-Object-sendKey
+test_Object_sendKey_SOURCES= test-Object-sendKey.cpp
+
 progs+= test-Object-addAlias
 test_Object_addAlias_SOURCES= test-Object-addAlias.cpp
 
 progs+= test-Object-addEvent
 test_Object_addEvent_SOURCES= test-Object-addEvent.cpp
 
+# lib/PlayerSiggen.h -------------------------------------------------------
+progs+= test-Siggen-new
+test_Siggen_new_SOURCES= test-Siggen-new.cpp
+
 # lib/Media.h --------------------------------------------------------------
 progs+= test-Media-new
 test_Media_new_SOURCES= test-Media-new.cpp
 
+progs+= test-Media-getZ
+test_Media_getZ_SOURCES= test-Media-getZ.cpp
+
 progs+= test-Media-explicitDur
 test_Media_explicitDur_SOURCES= test-Media-explicitDur.cpp
+
+progs+= test-Media-refer
+test_Media_refer_SOURCES= test-Media-refer.cpp
 
 progs+= test-Media-nested-explicitDur
 test_Media_nested_explicitDur_SOURCES= test-Media-nested-explicitDur.cpp
@@ -284,11 +264,32 @@ test_Media_nested_explicitDur_SOURCES= test-Media-nested-explicitDur.cpp
 progs+= test-Media-4grid
 test_Media_4grid_SOURCES= test-Media-4grid.cpp
 
-progs+= test-Media-focusIndex
-test_Media_focusIndex_SOURCES= test-Media-focusIndex.cpp
+progs+= test-Media-focusIndex-changed-by-link
+test_Media_focusIndex_changed_by_link_SOURCES= test-Media-focusIndex-changed-by-link.cpp
+
+progs+= test-Media-focusIndex-changed-by-sendKey
+test_Media_focusIndex_changed_by_sendKey_SOURCES= test-Media-focusIndex-changed-by-sendKey.cpp
+
+progs+= test-Media-link-onSelection
+test_Media_link_onSelection_SOURCES= test-Media-link-onSelection.cpp
 
 progs+= test-Media-mime
 test_Media_mime_SOURCES= test-Media-mime.cpp
+
+progs+= test-Media-transition-presentation
+test_Media_transition_presentation_SOURCES= test-Media-transition-presentation.cpp
+
+progs+= test-Media-transition-selection
+test_Media_transition_selection_SOURCES= test-Media-transition-selection.cpp
+
+progs+= test-Media-transition-attribution
+test_Media_transition_attribution_SOURCES= test-Media-transition-attribution.cpp
+
+progs+= test-Media-anchors-started-from-ports
+test_Media_anchors_started_from_ports_SOURCES= test-Media-anchors-started-from-ports.cpp
+
+progs+= test-Media-anchors-started-from-links
+test_Media_anchors_started_from_links_SOURCES= test-Media-anchors-started-from-links.cpp
 
 # lib/MediaSettings.h ------------------------------------------------------
 progs+= test-MediaSettings-instances
@@ -296,6 +297,9 @@ test_MediaSettings_instances_SOURCES= test-MediaSettings-instances.cpp
 
 progs+= test-MediaSettings-new
 test_MediaSettings_new_SOURCES= test-MediaSettings-new.cpp
+
+progs+= test-MediaSettings-refer
+test_MediaSettings_refer_SOURCES= test-MediaSettings-refer.cpp
 
 # lib/Context.h ------------------------------------------------------------
 progs+= test-Context-new
@@ -307,9 +311,27 @@ test_Context_naturalend_SOURCES= test-Context-naturalend.cpp
 progs+= test-Context-nested-naturalend
 test_Context_nested_naturalend_SOURCES= test-Context-nested-naturalend.cpp
 
+progs+= test-Context-transition-presentation
+test_Context_transition_presentation_SOURCES= test-Context-transition-presentation.cpp
+
+progs+= test-Context-transition-attribution
+test_Context_transition_attribution_SOURCES= test-Context-transition-attribution.cpp
+
+progs+= test-Context-transition-selection
+test_Context_transition_selection_SOURCES= test-Context-transition-selection.cpp
+
 # lib/Switch.h ------------------------------------------------------------
 progs+= test-Switch-new
 test_Switch_new_SOURCES= test-Switch-new.cpp
+
+progs+= test-Switch-transition-presentation
+test_Switch_transition_presentation_SOURCES= test-Switch-transition-presentation.cpp
+
+progs+= test-Switch-transition-attribution
+test_Switch_transition_attribution_SOURCES= test-Switch-transition-attribution.cpp
+
+progs+= test-Switch-transition-selection
+test_Switch_transition_selection_SOURCES= test-Switch-transition-selection.cpp
 
 # lib/Parser.h -------------------------------------------------------------
 progs+= test-Parser-parseFile
@@ -320,8 +342,13 @@ test_Parser_parseBuffer_SOURCES= test-Parser-parseBuffer.cpp
 
 # lib/ParserLua.h ----------------------------------------------------------
 if WITH_LUA
+
+progs+= test-ParserLua-parseFile
+test_ParserLua_parseFile_SOURCES= test-ParserLua-parseFile.cpp
+
 progs+= test-ParserLua-parseBuffer
 test_ParserLua_parseBuffer_SOURCES= test-ParserLua-parseBuffer.cpp
+
 endif
 
 # lib/ginga.h (Ginga Library API) ------------------------------------------
@@ -354,6 +381,12 @@ test_Ginga_getOptionInt_SOURCES= test-Ginga-getOptionInt.cpp
 
 progs+= test-Ginga-setOptionInt
 test_Ginga_setOptionInt_SOURCES= test-Ginga-setOptionInt.cpp
+
+progs+= test-Ginga-resize
+test_Ginga_resize_SOURCES= test-Ginga-resize.cpp
+
+progs+= test-Ginga-redraw
+test_Ginga_redraw_SOURCES= test-Ginga-redraw.cpp
 
 progs+= xfail-test-Ginga-getOptionInt
 xfail_test_Ginga_getOptionInt_SOURCES= xfail-test-Ginga-getOptionInt.cpp

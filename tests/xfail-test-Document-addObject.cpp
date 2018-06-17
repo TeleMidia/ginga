@@ -24,7 +24,7 @@ main (void)
 
   doc = new Document ();
   g_assert_nonnull (doc);
-  g_assert (doc->getObjects ()->size () == 2);
+  g_assert_cmpint (doc->getObjects ()->size (), ==, 2);
   doc->addObject (new MediaSettings ("s")); // die
   delete doc;
 

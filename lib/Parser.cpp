@@ -1,4 +1,4 @@
-/* Copyright (C) 2006-2018 PUC-Rio/Laboratorio TeleMidia
+      /* Copyright (C) 2006-2018 PUC-Rio/Laboratorio TeleMidia
 
 This file is part of Ginga (Ginga-NCL).
 
@@ -463,14 +463,14 @@ static map<string, ParserSyntaxElt> parser_syntax_table = {
         ELT_CACHE,
         { "region", "regionBase" },
         { { "id", ATTR_ID },
+          { "title", 0 },
           { "left", 0 },
           { "right", 0 },
           { "top", 0 },
           { "bottom", 0 },
           { "height", 0 },
           { "width", 0 },
-          { "zIndex", 0 },
-          { "title", 0 } } }, // unused
+          { "zIndex", 0 } } }, // unused
   },
   {
       "descriptorBase",
@@ -486,31 +486,34 @@ static map<string, ParserSyntaxElt> parser_syntax_table = {
         nullptr,
         ELT_CACHE,
         { "descriptorBase" },
-        { { "id", ATTR_ID },
-          { "left", 0 },
-          { "right", 0 },
-          { "top", 0 },
-          { "bottom", 0 },
-          { "height", 0 },
-          { "width", 0 },
-          { "zIndex", 0 },
-          { "region", ATTR_OPT_IDREF },
-          { "explicitDur", 0 },
-          { "freeze", 0 },
-          { "moveLeft", 0 },
-          { "moveRight", 0 },
-          { "moveUp", 0 },
-          { "moveDown", 0 },
-          { "focusIndex", 0 },
-          { "focusBorderColor", 0 },
-          { "focusBorderWidth", 0 },
-          { "focusBorderTransparency", 0 },
-          { "focusSrc", 0 },
-          { "focusSelSrc", 0 },
-          { "selBorderColor", 0 },
-          { "player", 0 }, // unused
-          { "transIn", 0 },
-          { "transOut", 0 } } },
+        {
+            { "id", ATTR_ID },
+            { "player", 0 }, // unused
+            { "explicitDur", 0 },
+            { "region", ATTR_OPT_IDREF },
+            { "freeze", 0 },
+            { "moveLeft", 0 },
+            { "moveRight", 0 },
+            { "moveUp", 0 },
+            { "moveDown", 0 },
+            { "focusIndex", 0 },
+            { "focusBorderColor", 0 },
+            { "focusBorderWidth", 0 },
+            { "focusBorderTransparency", 0 },
+            { "focusSrc", 0 },
+            { "focusSelSrc", 0 },
+            { "selBorderColor", 0 },
+            { "transIn", 0 },
+            { "transOut", 0 },
+            // extra attributes
+            { "left", 0 },
+            { "right", 0 },
+            { "top", 0 },
+            { "bottom", 0 },
+            { "height", 0 },
+            { "width", 0 },
+            { "zIndex", 0 },
+        } },
   },
   {
       "descriptorParam",
@@ -538,12 +541,12 @@ static map<string, ParserSyntaxElt> parser_syntax_table = {
         { { "id", ATTR_ID } } },
   },
   {
-      "connectorParam",
+      "connectorParam", // unused
       { nullptr,
         nullptr,
         0,
         { "causalConnector" },
-        { { "name", ATTR_NONEMPTY_NAME } } }, // unused
+        { { "name", ATTR_NONEMPTY_NAME }, { "type", 0 } } },
   },
   {
       "compoundCondition",
@@ -762,14 +765,12 @@ static map<string, ParserSyntaxElt> parser_syntax_table = {
         { "switch" },
         { { "id", ATTR_ID } } },
   },
-  {
-      "mapping",
-      { ParserState::pushMapping,
-        nullptr,
-        ELT_CACHE,
-        { "switchPort" },
-        { { "component", ATTR_IDREF }, { "interface", ATTR_OPT_IDREF } } }
-  },
+  { "mapping",
+    { ParserState::pushMapping,
+      nullptr,
+      ELT_CACHE,
+      { "switchPort" },
+      { { "component", ATTR_IDREF }, { "interface", ATTR_OPT_IDREF } } } },
   {
       "bindRule",
       { ParserState::pushBindRule,
@@ -886,7 +887,7 @@ static map<string, pair<Event::Type, Event::Transition> >
       { "onEnd", { Event::PRESENTATION, Event::STOP } },
       { "onAbort", { Event::PRESENTATION, Event::ABORT } },
       { "onPause", { Event::PRESENTATION, Event::PAUSE } },
-      { "onResumes", { Event::PRESENTATION, Event::RESUME } },
+      { "onResume", { Event::PRESENTATION, Event::RESUME } },
       { "onBeginAttribution", { Event::ATTRIBUTION, Event::START } },
       { "onEndAttribution", { Event::ATTRIBUTION, Event::STOP } },
       { "onSelection", { Event::SELECTION, Event::START } },
@@ -1707,7 +1708,8 @@ ParserState::resolveComponent (Composition *scope, ParserElt *elt,
  * @return \c true if successful, or \c false otherwise.
  */
 bool
-ParserState::resolveInterface (Composition *ctx, ParserElt *elt, Event **evt)
+ParserState::resolveInterface (Composition *ctx, ParserElt *elt,
+                               Event **evt)
 {
   string comp;
   string iface;
@@ -1780,8 +1782,9 @@ ParserState::resolveInterface (Composition *ctx, ParserElt *elt, Event **evt)
     }
   else if (instanceof (Switch *, obj))
     {
-      result = obj->getPresentationEvent (iface); // A switchPort is resolved
-                                                  // as a PresentationEvent.
+      result
+          = obj->getPresentationEvent (iface); // A switchPort is resolved
+                                               // as a PresentationEvent.
       if (unlikely (result == nullptr))
         goto fail;
     }
@@ -2786,7 +2789,8 @@ borderColor='%s'}",
                   for (auto bind : tests_buf)
                     {
                       for (auto &p : bind->params)
-                        tests_map.insert (std::make_pair(p.first, p.second));
+                        tests_map.insert (
+                            std::make_pair (p.first, p.second));
                     }
                   switch (type)
                     {
@@ -3678,7 +3682,6 @@ ParserState::pushSwitch (ParserState *st, ParserElt *elt)
   return true;
 }
 
-
 /// Cleans up the mapping list cache attached to a switchPort #ParserElt.
 static void
 mappingsCleanup (void *ptr)
@@ -3689,7 +3692,8 @@ mappingsCleanup (void *ptr)
 /**
  * @brief Starts the processing of \<switchPort\>.
  *
- * This function parsers \p elt and pushes it as a \<switchPort\> on the object
+ * This function parsers \p elt and pushes it as a \<switchPort\> on the
+ * object
  * stack.
  *
  * @fn ParserState::pushSwitchPort
@@ -3707,7 +3711,8 @@ ParserState::pushSwitchPort (ParserState *st, ParserElt *elt)
   g_assert (elt->getAttribute ("id", &id));
   g_assert (st->eltCacheIndexParent (elt->getNode (), &parent_elt));
   UDATA_GET (parent_elt, "switchPorts", &switchPorts);
-  UDATA_SET (elt, "mappings", new list<const ParserElt *> (), mappingsCleanup);
+  UDATA_SET (elt, "mappings", new list<const ParserElt *> (),
+             mappingsCleanup);
   switchPorts->push_back (id);
 
   return true;
@@ -3716,7 +3721,8 @@ ParserState::pushSwitchPort (ParserState *st, ParserElt *elt)
 /**
  * @brief Starts the processing of \<mapping\>.
  *
- * This function parsers \p elt and pushes it component/interface attributes in
+ * This function parsers \p elt and pushes it component/interface attributes
+ * in
  * the mappings list cache in the \<switchPort\>.
  *
  * @fn ParserState::pushSwitchPort
@@ -3727,7 +3733,7 @@ ParserState::pushSwitchPort (ParserState *st, ParserElt *elt)
 bool
 ParserState::pushMapping (ParserState *st, ParserElt *elt)
 {
-  list <ParserElt *> *mappings;
+  list<ParserElt *> *mappings;
   string component, interface;
   ParserElt *parent_elt;
 
@@ -3784,13 +3790,13 @@ ParserState::popSwitch (ParserState *st, unused (ParserElt *elt))
   for (auto switchPort_id : *switchPorts)
     {
       ParserElt *switchPort_elt;
-      list <ParserElt *> *mappings;
+      list<ParserElt *> *mappings;
 
       g_assert (st->eltCacheIndexById (switchPort_id, &switchPort_elt,
                                        { "switchPort" }));
       UDATA_GET (switchPort_elt, "mappings", &mappings);
 
-      list <Event *> mapping_evts;
+      list<Event *> mapping_evts;
       for (auto &mapping_elt : *mappings)
         {
           Event *evt;
@@ -3865,50 +3871,75 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
   string type;
   string refer;
   string src;
+  bool hasType;
+  bool hasRefer;
+  bool hasSrc;
 
   g_assert (elt->getAttribute ("id", &id));
-  if (elt->getAttribute ("type", &type))
-    {
-      if (unlikely (elt->getAttribute ("refer", &refer)))
-        {
-          return st->errEltMutuallyExclAttributes (elt->getNode (), "type",
-                                                   "refer");
-        }
-      if (type == "application/x-ginga-settings")
-        {
-          refer = st->_doc->getSettings ()->getId();
-          media = cast (Media *, st->_doc->getObjectByIdOrAlias (refer));
-          if (media != nullptr)
-            goto almost_done;
-        }
-    }
 
-  if (elt->getAttribute ("refer", &refer))
-    {
-      if (unlikely (elt->getAttribute ("src", &src)))
-        {
-          return st->errEltMutuallyExclAttributes (elt->getNode (), "src",
-                                                   "refer");
-        }
+  hasType = elt->getAttribute ("type", &type);
+  hasRefer = elt->getAttribute ("refer", &refer);
+  hasSrc = elt->getAttribute ("src", &src);
 
+  if (hasType && hasRefer)
+    return st->errEltMutuallyExclAttributes (elt->getNode (), "type",
+                                             "refer");
+  if (hasSrc && hasRefer)
+    return st->errEltMutuallyExclAttributes (elt->getNode (), "src",
+                                             "refer");
+
+  // case is an refer to an Media
+  if (hasRefer)
+    {
+      // if referred Media not existing Media yet
       media = cast (Media *, st->_doc->getObjectByIdOrAlias (refer));
-      if (media != nullptr)
-        goto almost_done;
+      if (media == nullptr)
+        {
+          // try if is an multiple refer, if not create Media
+          if (!st->referMapIndex (refer, &media))
+            {
+              // when Parser find the reffered Media
+              // (a) if an Media, the Parser will set uri, type and parent
+              // (b) if an MediaSettings, the Parser will replace
+              media = new Media (refer);
+            }
+
+          st->referMapAdd (refer, media);
+        }
+      // if is multiple refer to a not existing Media yet
+      // save refer as alias
+      parent = cast (Composition *, st->objStackPeek ());
+      g_assert_nonnull (parent);
+      media->addAlias (id, parent);
+      st->referMapAdd (id, media);
     }
+  // case is a new Media
   else
     {
-      elt->getAttribute ("src", &src);
-      if (src != "")
+      // case is an MediaSettings
+      if (type == "application/x-ginga-settings")
         {
-          // Makes uri based in the main document uri
-          xmlChar *s
-              = xmlBuildURI (toXmlChar (src), toXmlChar (st->getURI ()));
-          src = toCPPString (s);
-          // If fails makes the uri based in the current dir
-          if (!xpathisuri (src) && !xpathisabs (src))
+          Media *tmpMedia = nullptr;
+
+          // there is only one MediaSettings
+          media = st->_doc->getSettings ();
+
+          // if there are refers to this MediaSettings, those refers
+          // are using a tmp Media, which should be this MediaSettings
+          st->referMapIndex (id, &tmpMedia);
+          if (tmpMedia)
             {
-              src = xpathmakeabs (src);
+              auto it = st->_referMap.begin ();
+              while ((*it).second == tmpMedia)
+                {
+                  st->_referMap[(*it).first] = media;
+                  media->addAlias ((*it).first);
+                  it++;
+                }
+              if (it != st->_referMap.begin ())
+                delete tmpMedia;
             }
+
           gchar *scheme = g_uri_parse_scheme (src.c_str  ());
           if (g_strcmp0 (scheme, "streambuf") == 0)
             {
@@ -3916,34 +3947,45 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
               src = string ("file:/tmp/") + filename + ".mp4";
             }
           g_free (scheme);
-          xmlFree (s);
-        }
+          // xmlFree (s);
 
-      if (st->referMapIndex (id, &media))
+          // add this Media as refer to MediaSettings
+          parent = cast (Composition *, st->objStackPeek ());
+          g_assert_nonnull (parent);
+          media->addAlias (id, parent);
+          st->referMapAdd (id, media);
+        }
+      // case os other Media type
+      else
         {
+          // case src filled
+          if (src != "")
+            {
+              // Makes uri based in the main document uri
+              xmlChar *s = xmlBuildURI (toXmlChar (src),
+                                        toXmlChar (st->getURI ()));
+              src = toCPPString (s);
+              // If fails makes the uri based in the current dir
+              if (!xpathisuri (src) && !xpathisabs (src))
+                {
+                  src = xpathmakeabs (src);
+                }
+              xmlFree (s);
+            }
+          // create Media if not found refer that created the referred Media
+          if (!st->referMapIndex (id, &media))
+            {
+              media = new Media (id);
+            }
+          // create new Media src filled or empty (timer)
           media->setProperty ("uri", src);
-          goto done;
+          media->setProperty ("type", type);
+          parent = cast (Composition *, st->objStackPeek ());
+          g_assert_nonnull (parent);
+          parent->addChild (media);
         }
     }
 
-  media = new Media (id);
-  media->setProperty ("uri", src);
-  media->setProperty ("type", type);
-
-  parent = cast (Composition *, st->objStackPeek ());
-  g_assert_nonnull (parent);
-  parent->addChild (media);
-
-almost_done:
-  if (refer != "")
-    {
-      media->addAlias (id);
-      media->addAlias (refer);
-      st->referMapAdd (refer, media);
-      g_assert (st->referMapAdd (id, media));
-    }
-
-done:
   st->objStackPush (media);
   return true;
 }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+    <mime-type type="application/x-ncl-NCL">
+        <comment xml:lang="pt-br">Applicação NCL</comment>
+        <comment xml:lang="en">NCL Application</comment>
+        <icon name="application/x-ncl-NCL"/>
+        <glob-deleteall/>
+        <glob pattern="*.ncl"/>
+    </mime-type>
+</mime-info>

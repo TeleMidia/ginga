@@ -58,13 +58,8 @@ main (void)
     // --------------------------------
     // main check
 
-    // after 3 second, m1 is SLEEPING
+    // after 3 seconds, m1 is SLEEPING
     fmt->sendTick (4 * GINGA_SECOND, 4 * GINGA_SECOND, 0);
-    g_assert (root_lambda->getState () == Event::OCCURRING);
-    g_assert (m1_lambda->getState () == Event::SLEEPING);
-
-    // in next reaction, root is SLEEPING
-    fmt->sendTick (0, 0, 0);
     g_assert (root_lambda->getState () == Event::SLEEPING);
     g_assert (m1_lambda->getState () == Event::SLEEPING);
 
@@ -82,8 +77,8 @@ main (void)
         printf ("uri=%s\n", sample.uri);
         Formatter *fmt;
         Document *doc;
-        tests_parse_and_start (
-            &fmt, &doc, xstrbuild ("\
+        tests_parse_and_start (&fmt, &doc,
+                               xstrbuild ("\
   <ncl>\n\
     <head>\n\
     </head>\n\
@@ -99,7 +94,8 @@ main (void)
         <property name='bounds' value='50%%,50%%,50%%,50%%'/>\n\
       </media>\n\
     </body>\n\
-  </ncl>\n", sample.uri, sample.uri));
+  </ncl>\n",
+                                          sample.uri, sample.uri));
 
         Context *body = cast (Context *, doc->getRoot ());
         g_assert_nonnull (body);

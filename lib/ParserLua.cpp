@@ -31,7 +31,6 @@ GINGA_END_DECLS
 GINGA_NAMESPACE_BEGIN
 
 // TODO:
-// switch
 // make l_parse_children to avoid duplicated code
 // remember to test if property exist before adding to document
 // make maps<> to help parsing and avoid big if/case
@@ -44,9 +43,8 @@ static int l_parse_media (lua_State *L);
 static int l_parse_link (lua_State *L);
 static int l_parse_predicate (lua_State *L);
 
-
 // Helper function
-Event *
+static Event *
 getEventStringAsEvent (string str, Context *parent)
 {
   Object *obj;
@@ -54,7 +52,7 @@ getEventStringAsEvent (string str, Context *parent)
 
   size_t at = str.find ('@');
 
-  if (at != str.npos)           // presentation
+  if (at != str.npos) // presentation
     {
       id = str.substr (0, at);
       evt = str.substr (at + 1, str.npos);
@@ -74,17 +72,16 @@ getEventStringAsEvent (string str, Context *parent)
       obj = parent->getChildById (id);
       return obj->getEvent (Event::ATTRIBUTION, evt);
     }
-  else                          // selection
+  else // selection
     {
       at = str.find ('<');
       id = str.substr (0, at);
       evt = str.substr (at + 1, str.npos);
-      evt.pop_back();
+      evt.pop_back ();
       obj = parent->getChildById (id);
       return obj->getEvent (Event::SELECTION, evt);
     }
 }
-
 
 // Parsing functions.
 
@@ -300,7 +297,7 @@ l_parse_switch (lua_State *L)
         {
           lua_rawgeti (L, 10, 1);
           const string id_media = string (luaL_checkstring (L, -1));
-          Object* obj = swtch->getChildById (id_media);
+          Object *obj = swtch->getChildById (id_media);
 
           lua_rawgeti (L, 10, 2);
           luaL_checktype (L, -1, LUA_TTABLE);
@@ -311,7 +308,7 @@ l_parse_switch (lua_State *L)
           lua_pushvalue (L, -3);
           lua_call (L, 2, 0);
 
-          Predicate *pred = predicate->getChildren()->front();
+          Predicate *pred = predicate->getChildren ()->front ();
           swtch->addRule (obj, pred);
 
           lua_pop (L, 3);
@@ -381,7 +378,6 @@ l_parse_media (lua_State *L)
       lua_pushfstring (L, "parent missing: %s", id);
       lua_error (L);
     }
-
 
   lua_rawgeti (L, 3, 3);
   if (lua_isnil (L, -1) == 0) // have property list
@@ -493,7 +489,7 @@ l_parse_media (lua_State *L)
               str += "borderColor='" + aux + "',";
 
               str += "}";
-              value = str.c_str();
+              value = str.c_str ();
               lua_pop (L, 11);
             }
 
@@ -573,26 +569,26 @@ l_parse_link (lua_State *L)
 
   luaL_checktype (L, 3, LUA_TTABLE);
 
-  lua_rawgeti (L, 3, 1);        // condition list
+  lua_rawgeti (L, 3, 1); // condition table
   luaL_checktype (L, 4, LUA_TTABLE);
   lua_pushnil (L);
   while (lua_next (L, 4) != 0)
     {
       Action act;
 
-      lua_rawgeti (L, 6, 1);    // transition
+      lua_rawgeti (L, 6, 1); // transition
       string transition = luaL_checkstring (L, -1);
 
       if (xstrcasecmp (transition, "set") == 0)
         transition = "start";
 
-      act.transition =  Event::getStringAsTransition (transition);
+      act.transition = Event::getStringAsTransition (transition);
 
-      lua_rawgeti (L, 6, 2);    // event
+      lua_rawgeti (L, 6, 2); // event
       string event = luaL_checkstring (L, -1);
       act.event = getEventStringAsEvent (event, parent);
 
-      lua_rawgeti (L, 6, 3);    // predicate
+      lua_rawgeti (L, 6, 3); // predicate
       act.predicate = nullptr;
       if (!lua_isnil (L, -1))
         {
@@ -604,7 +600,7 @@ l_parse_link (lua_State *L)
           lua_pushvalue (L, -3);
           lua_call (L, 2, 0);
 
-          Predicate *pred = predicate->getChildren()->front();
+          Predicate *pred = predicate->getChildren ()->front ();
           act.predicate = pred;
         }
 
@@ -612,30 +608,30 @@ l_parse_link (lua_State *L)
       lua_pop (L, 4);
     }
 
-  lua_rawgeti (L, 3, 2);        // action list
+  lua_rawgeti (L, 3, 2); // action table
   luaL_checktype (L, 5, LUA_TTABLE);
   lua_pushnil (L);
   while (lua_next (L, 5) != 0)
     {
       Action act;
 
-      lua_rawgeti (L, 7, 1);    // transition
+      lua_rawgeti (L, 7, 1); // transition
       string transition = luaL_checkstring (L, -1);
 
       if (xstrcasecmp (transition, "set") == 0)
         transition = "start";
 
-      act.transition =  Event::getStringAsTransition (transition);
+      act.transition = Event::getStringAsTransition (transition);
 
-      lua_rawgeti (L, 7, 2);    // event
+      lua_rawgeti (L, 7, 2); // event
       string event = luaL_checkstring (L, -1);
       act.event = getEventStringAsEvent (event, parent);
 
-      lua_rawgeti (L, 7, 3);    // value
+      lua_rawgeti (L, 7, 3); // value
       if (!lua_isnil (L, -1))
         act.value = luaL_checkstring (L, -1);
 
-      lua_rawgeti (L, 7, 4);    // parameter list
+      lua_rawgeti (L, 7, 4); // parameter list
       if (!lua_isnil (L, -1))
         {
           luaL_checktype (L, 11, LUA_TTABLE);
@@ -655,6 +651,8 @@ l_parse_link (lua_State *L)
 
           lua_pop (L, 2);
         }
+
+      act.predicate = nullptr;
 
       actions.push_back (act);
       lua_pop (L, 5);
@@ -703,33 +701,34 @@ l_parse_predicate (lua_State *L)
 
   switch (type)
     {
-    case Predicate::ATOM: {
-      string left = str;
+    case Predicate::ATOM:
+      {
+        string left = str;
 
-      lua_rawgeti (L, 2, 2);
-      str = luaL_checkstring (L, -1);
+        lua_rawgeti (L, 2, 2);
+        str = luaL_checkstring (L, -1);
 
-      lua_rawgeti (L, 2, 3);
-      string right = luaL_checkstring (L, -1);
+        lua_rawgeti (L, 2, 3);
+        string right = luaL_checkstring (L, -1);
 
-      if (xstrcasecmp (str, "==") == 0)
-        test = Predicate::EQ;
-      else if (xstrcasecmp (str, "!=") == 0)
-        test = Predicate::NE;
-      else if (xstrcasecmp (str, "<") == 0)
-        test = Predicate::LT;
-      else if (xstrcasecmp (str, "<=") == 0)
-        test = Predicate::LE;
-      else if (xstrcasecmp (str, ">") == 0)
-        test = Predicate::GT;
-      else if (xstrcasecmp (str, ">=") == 0)
-        test = Predicate::GE;
-      else
-        g_assert_not_reached ();
+        if (xstrcasecmp (str, "==") == 0)
+          test = Predicate::EQ;
+        else if (xstrcasecmp (str, "!=") == 0)
+          test = Predicate::NE;
+        else if (xstrcasecmp (str, "<") == 0)
+          test = Predicate::LT;
+        else if (xstrcasecmp (str, "<=") == 0)
+          test = Predicate::LE;
+        else if (xstrcasecmp (str, ">") == 0)
+          test = Predicate::GT;
+        else if (xstrcasecmp (str, ">=") == 0)
+          test = Predicate::GE;
+        else
+          g_assert_not_reached ();
 
-      it->setTest (left, test, right);
-      break;
-    }
+        it->setTest (left, test, right);
+        break;
+      }
     case Predicate::FALSUM:
     case Predicate::VERUM:
       break;
@@ -739,7 +738,7 @@ l_parse_predicate (lua_State *L)
       lua_pushlightuserdata (L, it);
       lua_rawgeti (L, 2, 3);
       lua_call (L, 2, 0);
-    case Predicate::NEGATION:   // fall through
+    case Predicate::NEGATION: // fall through
       lua_pushcfunction (L, l_parse_predicate);
       lua_pushlightuserdata (L, it);
       lua_rawgeti (L, 2, 2);
@@ -752,7 +751,6 @@ l_parse_predicate (lua_State *L)
   parent->addChild (it);
   return 0;
 }
-
 
 // External API.
 
@@ -812,7 +810,7 @@ ParserLua::parseBuffer (const void *buf, size_t size, string *errmsg)
 
   doc = process (L, path, errmsg);
 
- done:
+done:
   g_free (str);
   lua_close (L);
   return doc;
@@ -845,7 +843,7 @@ ParserLua::parseFile (const string &path, string *errmsg)
 
   doc = process (L, path, errmsg);
 
- done:
+done:
   lua_close (L);
   return doc;
 }

@@ -87,6 +87,7 @@ private:
   // GStreamer callbacks.
   static gboolean cb_Bus (GstBus *, GstMessage *, PlayerVideo *);
   static GstFlowReturn cb_NewSample (GstAppSink *, gpointer);
+  static void cb_EOS (GstElement *, gpointer);
 };
 
 GINGA_NAMESPACE_END

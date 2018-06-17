@@ -29,24 +29,24 @@ main (void)
   g_assert_null (c->getParent ());
   g_assert (c->getObjectTypeAsString () == "Context");
   g_assert (c->toString () != "");
-  g_assert (c->getAliases ()->size () == 0);
-  g_assert (c->getEvents ()->size () == 1);
+  g_assert_cmpint (c->getAliases ()->size (), ==, 0);
+  g_assert_cmpint (c->getEvents ()->size (), ==, 1);
   g_assert_nonnull (c->getLambda ());
   g_assert_false (c->isOccurring ());
   g_assert_false (c->isPaused ());
   g_assert_true (c->isSleeping ());
-  g_assert (c->getDelayedActions ()->size () == 0);
+  g_assert_cmpint (c->getDelayedActions ()->size (), ==, 0);
   g_assert (!c->toString ().empty ());
 
   // Composition-only.
-  g_assert (c->getChildren ()->size () == 0);
+  g_assert_cmpint (c->getChildren ()->size (), == ,0);
 
   // Context-only.
-  g_assert (c->getPorts ()->size () == 0);
-  g_assert (c->getLinks ()->size () == 0);
-  g_assert (c->getLinksStatus () == true);
+  g_assert_cmpint (c->getPorts ()->size (), ==,  0);
+  g_assert_cmpint (c->getLinks ()->size (), ==, 0);
+  g_assert_true (c->getLinksStatus ());
   c->setLinksStatus (false);
-  g_assert (c->getLinksStatus () == false);
+  g_assert_false (c->getLinksStatus ());
 
   delete c;
 

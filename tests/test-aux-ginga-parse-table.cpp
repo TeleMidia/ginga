@@ -27,16 +27,16 @@ main (void)
   g_assert (!ginga::try_parse_table ("{a=x}", NULL));
 
   tab = ginga::parse_table ("{a='1',  b='2' , c='3'  }");
-  g_assert (tab.size () == 3);
+  g_assert_cmpint (tab.size (), ==, 3);
   g_assert (tab["a"] == "1");
   g_assert (tab["b"] == "2");
   g_assert (tab["c"] == "3");
 
   tab = ginga::parse_table ("{}");
-  g_assert (tab.size () == 0);
+  g_assert_cmpint (tab.size (), ==, 0);
 
   tab = ginga::parse_table ("{a=' x '}");
-  g_assert (tab.size () == 1);
+  g_assert_cmpint (tab.size (), ==, 1);
   g_assert (tab["a"] == " x ");
 
   exit (EXIT_SUCCESS);

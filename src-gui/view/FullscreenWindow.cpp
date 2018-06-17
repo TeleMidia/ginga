@@ -106,5 +106,8 @@ set_fullscreen_mode (void)
 void
 set_unfullscreen_mode (void)
 {
+  if(inBigPictureMode)
+    GINGA->stop();
+	
   destroy_fullscreen_window ();
 }

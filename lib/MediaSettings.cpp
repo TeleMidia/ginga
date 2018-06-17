@@ -73,7 +73,7 @@ MediaSettings::isFocused ()
 }
 
 bool
-MediaSettings::getZ (unused (int *z), unused (int *zorder))
+MediaSettings::getZ (unused (int *zindex), unused (int *zorder))
 {
   return false;
 }

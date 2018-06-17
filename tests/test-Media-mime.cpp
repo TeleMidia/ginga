@@ -22,19 +22,18 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 int
 main (void)
 {
-  for (int i = 2; i < samples.size (); i++)
+  for (guint i = 2; i < samples.size (); i++)
     {
-      printf ("### %s\n", samples[i].uri);
       Formatter *fmt;
       Document *doc;
-      Player *p;
       tests_parse_and_start (&fmt, &doc, xstrbuild ("\
 <ncl>\n\
   <body>\n\
     <port id='start' component='m'/>\n\
     <media id='m' src='%s'/>\n\
   </body>\n\
-</ncl>\n", samples[i].uri));
+</ncl>\n",
+                                                    samples[i].uri));
 
       Context *body = cast (Context *, doc->getRoot ());
       g_assert_nonnull (body);
