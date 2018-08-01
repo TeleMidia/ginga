@@ -13,13 +13,13 @@ end
 begin
         button = KEY_YELLOW
         prog   = irexec
-        config = xte 'key F4'
+        config = xte 'key F3'
 end
 
 begin
         button = KEY_BLUE
         prog   = irexec
-        config = xte 'key F3'
+        config = xte 'key F4'
 end
 
 begin
@@ -77,13 +77,13 @@ begin
 end
 
 begin
-        button = KEY_2
+        button = KEY_2   
         prog   = irexec
         config = xte 'key 2'
 end
 
 begin
-        button = KEY_3
+        button = KEY_3   
         prog   = irexec
         config = xte 'key 3'
 end
