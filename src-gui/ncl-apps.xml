@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <ncl-apps>
+    <!-- <app src="../acoustic-fingerprint/transmission/NCL/bgmain.ncl" 
+         thumbnail=""
+         cover="../acoustic-fingerprint/transmission/NCL/app_img.png" 
+         title="Inaudible sound data Matrix"
+         description="Inaudible sound data Matrix" /> -->
     <app src="../ginga/examples/comerciais-proview/main.ncl" 
          thumbnail="../ginga/examples/comerciais-proview/app_thumbnail.png"
          cover="../ginga/examples/comerciais-proview/app_cover.png" 
