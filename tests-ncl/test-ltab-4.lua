@@ -1,6 +1,8 @@
 ncl = {
   'context',
   'ncl',
+  -- list of properties
+  {},
   -- list of ports
   {'time@lambda', 'm1@lambda'},
   -- list of children
