@@ -1,6 +1,8 @@
 ncl = {
   'context',
   'ncl',
+  -- list of properties
+  {},
   -- list of ports
   {'time@lambda', 's1@lambda'},
   -- list of children
@@ -8,7 +10,7 @@ ncl = {
     {'media', 'settings',
       {type = 'application/x-ginga-settings', var = 'm1'}
     },
-    {'media', 'time', nil, {a1 = {'3s'}}},
+    {'media', 'time', nil, {{'a1', '3s'}}},
     {
       'switch',
       's1',

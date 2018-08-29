@@ -56,10 +56,10 @@ main (void)
     Document *doc;
 
     PASS (&doc, "Context check", "ncl =\
-{'context', 'ncl',\n                         \
+{'context', 'ncl', {},\n                     \
    {'m2@lambda'},\n                          \
    {\n                                       \
-      {'context', 'c1', nil,\n               \
+      {'context', 'c1', {}, nil,\n           \
        {{'media', 'm1'}}},\n                 \
       {'media', 'm2'}\n                      \
    }\n                                       \
@@ -99,12 +99,12 @@ return ncl");
     Document *doc;
 
     PASS (&doc, "Switch check", "ncl =\
-{'context', 'ncl', nil,\n                    \
+{'context', 'ncl', {}, nil,\n                \
    {\n                                       \
       {'switch', 's1',\n                     \
        {\n                                   \
         {'media', 'm1'},\n                   \
-        {'context', 'c1'},\n                 \
+        {'context', 'c1', {}},\n             \
         {'switch', 's2'}\n                   \
        }\n                                   \
       },\n                                   \
@@ -157,7 +157,7 @@ return ncl");
     Document *doc;
 
     PASS (&doc, "Media check", "ncl =\
-{'context', 'ncl', nil,\n                    \
+{'context', 'ncl', {}, nil,\n                \
    {\n                                       \
       {'media', 'm1',\n                      \
        {src='path/to/file.txt',\n            \
@@ -165,11 +165,11 @@ return ncl");
                  dur='1s'},\n                \
         transOut={type='barWipe',\n          \
                   dur='1s'}\n                \
-       }\n                                   \
+       },\n                                  \
       },\n                                   \
       {'media', 'm2', nil,\n                 \
-       {a1={'5s', '8s'},\n                   \
-        a2={'1s', nil}}}\n                   \
+       {{'a1', '5s', '8s'},\n                \
+        {'a2', '1s', nil}}}\n                \
    }\n                                       \
 }\n                                          \
 return ncl");
@@ -206,7 +206,7 @@ return ncl");
     Document *doc;
 
     PASS (&doc, "Link check", "ncl = \
-{'context', 'ncl', nil,\n                     \
+{'context', 'ncl', {}, nil,\n                 \
    {\n                                        \
       {'media', 'm1'},\n                      \
    },\n                                       \
@@ -242,7 +242,7 @@ return ncl");
     Document *doc;
 
     PASS (&doc, "Predicate check", "ncl = \
-{'context', 'ncl', nil,\n                     \
+{'context', 'ncl', {}, nil,\n                 \
    {\n                                        \
       {'media', 'm1'},\n                      \
    },\n                                       \
@@ -285,7 +285,7 @@ return ncl");
     Document *doc;
 
     PASS (&doc, "Switch rule check", "ncl =\
-{'context', 'ncl', nil,\n                    \
+{'context', 'ncl', {}, nil,\n                \
    {\n                                       \
       {'switch', 's1',\n                     \
        {{'media', 'm1'}},\n                  \

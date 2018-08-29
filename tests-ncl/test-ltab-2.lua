@@ -1,11 +1,13 @@
 ncl = {
   'context',
   'ncl',
+  -- list of properties
+  {},
   -- list of ports
   {'m1@lambda'},
   -- list of children
   {
-    {'media', 'm1', {src = 'samples/clock.ogv'}, {a1 = {'3s'}}},
+    {'media', 'm1', {src = 'samples/clock.ogv'}, {{'a1', '3s'}}},
     {'media', 'm2', {src = 'samples/gnu.png'}}
   },
   -- list of links
