@@ -341,15 +341,11 @@ progs+= test-Parser-parseBuffer
 test_Parser_parseBuffer_SOURCES= test-Parser-parseBuffer.cpp
 
 # lib/ParserLua.h ----------------------------------------------------------
-if WITH_LUA
-
 progs+= test-ParserLua-parseFile
 test_ParserLua_parseFile_SOURCES= test-ParserLua-parseFile.cpp
 
 progs+= test-ParserLua-parseBuffer
 test_ParserLua_parseBuffer_SOURCES= test-ParserLua-parseBuffer.cpp
-
-endif
 
 # lib/ginga.h (Ginga Library API) ------------------------------------------
 progs+= test-Ginga-version

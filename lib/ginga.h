@@ -56,7 +56,7 @@ struct GingaOptions
   bool experimental;
 
   /// @brief Whether to use OpenGL back-end.
-  /// @remark Can only when Ginga object is created.
+  /// @remark Can only be altered when Ginga object is created.
   bool opengl;
 
   /// @brief Background color.

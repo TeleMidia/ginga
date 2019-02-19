@@ -44,6 +44,7 @@ src+= Media.cpp
 src+= MediaSettings.cpp
 src+= Object.cpp
 src+= Parser.cpp
+src+= ParserLua.cpp
 src+= Player.cpp
 src+= PlayerAnimator.cpp
 src+= PlayerImage.cpp
@@ -59,9 +60,7 @@ if WITH_LIBRSVG
 src+= PlayerSvg.cpp
 endif # WITH_LIBRSVG
 
-if WITH_LUA
-src+= ParserLua.cpp
-endif # WITH_LUA
+
 
 if WITH_NCLUA
 src+= PlayerLua.cpp

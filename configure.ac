@@ -57,28 +57,29 @@ m4_define([glib_required_version],       [2.32.4])
 m4_define([gstreamer_required_version],  [1.2.0])
 m4_define([gtk_required_version],        [3.4.2])
 m4_define([libxml_required_version],     [2.9])
+m4_define([lua_required_version],        [5.2])
 m4_define([pango_required_version],      [1.30.0])
-m4_define([soup_required_version],       [2.42])
 AC_SUBST([CAIRO_REQUIRED_VERSION],       cairo_required_version)
 AC_SUBST([GLIB_REQUIRED_VERSION],        glib_required_version)
 AC_SUBST([GSTREAMER_REQUIRED_VERSION],   gstreamer_required_version)
 AC_SUBST([GTK_REQUIRED_VERSION],         gtk_required_version)
 AC_SUBST([LIBXML_REQUIRED_VERSION],      libxml_required_version)
+AC_SUBST([LUA_REQUIRED_VERSION],         lua_required_version)
 AC_SUBST([PANGO_REQUIRED_VERSION],       pango_required_version)
-AC_SUBST([SOUP_REQUIRED_VERSION],        soup_required_version)
 
 # Optional dependencies version.
 m4_define([cef_required_version],        [3.0])
 m4_define([librsvg_required_version],    [2.40.0])
-m4_define([lua_required_version],        [5.2])
 m4_define([nclua_required_version],      [1.0])
 m4_define([opengl_required_version],     [17.0])
+m4_define([sdl2_required_version],       [2.0])
 m4_define([soup_required_version],       [2.42])
 AC_SUBST([CEF_REQUIRED_VERSION],         cef_required_version)
 AC_SUBST([LIBRSVG_REQUIRED_VERSION],     librsvg_required_version)
-AC_SUBST([LUA_REQUIRED_VERSION],         cef_required_version)
 AC_SUBST([NCLUA_REQUIRED_VERSION],       nclua_required_version)
 AC_SUBST([OPENGL_REQUIRED_VERSION],      opengl_required_version)
+AC_SUBST([SDL2_REQUIRED_VERSION],        sdl2_required_version)
+AC_SUBST([SOUP_REQUIRED_VERSION],        soup_required_version)
 
 # Compiler checks.
 AC_PROG_CXX
@@ -199,23 +200,17 @@ AU_CHECK_PKG([GTK],
 AU_CHECK_PKG([LIBXML],
  [libxml-2.0 >= libxml_required_version])
 
+AU_CHECK_LUA(lua_required_version)
+LUA_LIBS="$LUA_LIBS -export-dynamic"
+AS_IF([test "$au_lua_version" = 5.3],
+ [AC_DEFINE([LUA_COMPAT_APIINTCASTS], [1],
+   [Define to 1 to enable Lua macros for integer manipulation])])
+
 AU_CHECK_PKG([PANGO],
  [pango >= pango_required_version
   pangocairo >= pango_required_version])
 
 # Optional dependencies.
-
-# AU_CHECK_OPTIONAL_PKG([SOUP], [libsoup-2.4 >= soup_required_version],
-#  [AC_LANG_PROGRAM([[
-# #include <libsoup/soup.h>
-# #if !SOUP_CHECK_VERSION  \
-#     (SOUP_REQUIRED_MAJOR,\
-#      SOUP_REQUIRED_MINOR,\
-#      SOUP_REQUIRED_MICRO)
-# # error "soup is too old"
-# #endif
-#  ]])],
-#  [AC_LANG_PROGRAM([[]], [[glib_check_version (0, 0, 0);]])])
 
 AU_CHECK_OPTIONAL_PKG([soup], [build with gingagui GTK support], [],
  [SOUP], libsoup-2.4 >= soup_required_version,
@@ -264,28 +259,14 @@ AU_CHECK_OPTIONAL_PKG([librsvg], [build with LibRsvg support], [],
  [LIBRSVG],
  [librsvg-2.0 >= librsvg_required_version])
 
-AU_CHECK_LUA([lua_required_version], [with_lua=yes], [with_lua=no])
-AS_IF([test "$au_lua_version" = 5.3],
- [AC_DEFINE([LUA_COMPAT_APIINTCASTS], [1],
-  [Define to 1 to enable Lua macros for integer manipulation])])
-AS_IF([test "$with_lua" = yes],
- [with_lua=yes
-  with_lua_result="yes"
-  LUA_LIBS="$LUA_LIBS -export-dynamic"
-  AC_SUBST([LUA_LIBS])
-  AC_DEFINE([WITH_LUA], [1], [Define to 1 if you have Lua.])],
- [with_lua=no
-  with_lua_result="no	(requires: lua >= $au_lua_min_version_num)"
-  AC_DEFINE([WITH_LUA], [0], [Define to 1 if you have Lua.])])
-AM_CONDITIONAL([WITH_LUA], [test "$with_lua" = yes])
-
 AU_CHECK_OPTIONAL_PKG([nclua], [build with NCLua support], [],
  [NCLUA],
  [nclua >= nclua_required_version])
 
 AU_CHECK_OPTIONAL_PKG([opengl], [build with OpenGL support], [],
  [OPENGL],
- [gl >= opengl_required_version and sdl2])
+ [gl >= opengl_required_version
+  sdl2 >= sdl2_required-version])
 
 # Aliases for compiler flags.
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $WARN_CFLAGS $WERROR_CFLAGS "])

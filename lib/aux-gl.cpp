@@ -18,6 +18,10 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "aux-gl.h"
 
+// clang-format off
+PRAGMA_DIAG_IGNORE (-Wunused-macros)
+// clang-format on
+
 // OpenGL ------------------------------------------------------------------
 #if defined WITH_OPENGL && WITH_OPENGL
 auto vertexSource = R"glsl(

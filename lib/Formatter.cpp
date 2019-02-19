@@ -33,9 +33,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
  * @brief The Formatter class.
  */
 
-#if defined WITH_LUA && WITH_LUA
 #include "ParserLua.h" // for ncl-ltab support
-#endif
 
 GINGA_NAMESPACE_BEGIN
 
@@ -135,14 +133,12 @@ Formatter::start (const string &file, string *errmsg)
   h = _opts.height;
   _doc = nullptr;
 
-#if defined WITH_LUA && WITH_LUA
   if (xstrhassuffix (file, ".lua"))
     {
       _doc = ParserLua::parseFile (file, errmsg);
       if (unlikely (_doc == nullptr))
         return false;
     }
-#endif
 
   if (_doc == nullptr)
     _doc = Parser::parseFile (file, w, h, errmsg);
