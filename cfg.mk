@@ -57,7 +57,7 @@ sc-copyright:
 	    $(SC_COPYRIGHT_EXCLUDE))
 
 # Copy utility stuff from gflima/autoutils project.
-util:= https://github.com/gflima/autoutils/raw/master
+util:= https://gitlab.com/gflima/autoutils/raw/master
 UTIL_FILES+= build-aux/Makefile.am.common
 UTIL_FILES+= build-aux/Makefile.am.coverage
 UTIL_FILES+= build-aux/Makefile.am.env
