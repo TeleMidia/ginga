@@ -751,9 +751,14 @@ l_parse_predicate (lua_State *L)
 static Document *
 process (lua_State *L, const string &path, string *errmsg)
 {
+  lua_State *_L;
   Document *doc;
 
-  doc = new Document ();
+  _L = luaL_newstate ();
+  g_assert_nonnull (_L);
+  luaL_openlibs (_L);
+
+  doc = new Document (_L);
   lua_pushcfunction (L, l_parse_context);
   lua_pushlightuserdata (L, doc);
   lua_pushlightuserdata (L, nullptr);

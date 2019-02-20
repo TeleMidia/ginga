@@ -30,9 +30,17 @@ GINGA_NAMESPACE_BEGIN
 
 // Public.
 
+/**
+ * @brief Creates a new object.
+ * @param id Object id.
+ *
+ * The newly created object has a single presentation event: the lambda
+ * event, called "@lambda".
+ */
 Object::Object (const string &id) : _id (id)
 {
   _doc = nullptr;
+  _L = nullptr;
   _parent = nullptr;
   _time = GINGA_TIME_NONE;
 
@@ -41,38 +49,67 @@ Object::Object (const string &id) : _id (id)
   g_assert_nonnull (_lambda);
 }
 
+/**
+ * @brief Destroys object.
+ *
+ * Destroys the object and all its events.
+ */
 Object::~Object ()
 {
   for (auto evt : _events)
     delete evt;
 }
 
+/**
+ * @brief Gets object id.
+ * @return Object id.
+ */
 string
 Object::getId ()
 {
   return _id;
 }
 
+/**
+ * @brief Gets container document.
+ * @return Container #Document.
+ */
 Document *
 Object::getDocument ()
 {
   return _doc;
 }
 
+/**
+ * @brief Initializes container document.
+ * @param Container #Document (nonnull).
+ * @warning This function can only be called once.
+ */
 void
 Object::initDocument (Document *doc)
 {
   g_assert_nonnull (doc);
   g_assert_null (_doc);
   _doc = doc;
+  _L = doc->getLuaState ();
+  g_assert_nonnull (_L);
 }
 
+/**
+ * @brief Gets parent object.
+ * @return Parent #Object, or null.
+ */
 Composition *
 Object::getParent ()
 {
   return _parent;
 }
 
+/**
+ * @brief Initializes parent object.
+ * @param Parent #Object (nonnull).
+ * @warning This function can only be called once.
+ */
 void
 Object::initParent (Composition *parent)
 {

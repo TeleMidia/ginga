@@ -2246,11 +2246,16 @@ ParserState::getError (string *message)
 Document *
 ParserState::process (xmlDoc *xml)
 {
+  lua_State *L;
   xmlNode *root;
+
+  L = luaL_newstate ();
+  g_assert_nonnull (L);
+  luaL_openlibs (L);
 
   g_assert_nonnull (xml);
   _xml = xml;
-  _doc = new Document ();
+  _doc = new Document (L);
 
   root = xmlDocGetRootElement (xml);
   g_assert_nonnull (root);

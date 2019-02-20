@@ -18,6 +18,10 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #ifndef OBJECT_H
 #define OBJECT_H
 
+GINGA_BEGIN_DECLS
+#include "aux-lua.h"
+GINGA_END_DECLS
+
 #include "Event.h"
 
 GINGA_NAMESPACE_BEGIN
@@ -29,7 +33,7 @@ class MediaSettings;
 class Object
 {
 public:
-  explicit Object (const string &);
+  explicit Object (const string &id);
   virtual ~Object ();
 
   string getId ();
@@ -88,7 +92,8 @@ public:
    * @return \c true if successful, or \c false otherwise (cancel
    * transition).
    */
-  virtual bool beforeTransition (Event *, Event::Transition) = 0;
+  virtual bool beforeTransition (Event *evt,
+                                 Event::Transition transition) = 0;
 
   /**
    * @brief Finishes event transition.
@@ -103,11 +108,13 @@ public:
    * @return \c true if successful, or \c false otherwise (cancel
    * transition).
    */
-  virtual bool afterTransition (Event *, Event::Transition) = 0;
+  virtual bool afterTransition (Event *evt,
+                                Event::Transition transition) = 0;
 
 protected:
   string _id;                                  // id
   Document *_doc;                              // parent document
+  lua_State *_L;                               // parent Lua state
   Composition *_parent;                        // parent object
   list<pair<string, Composition *> > _aliases; // aliases
   Time _time;                                  // playback time

@@ -29,13 +29,15 @@ class Switch;
 /**
  * @brief NCL document.
  *
- * Maintains all objects in document.
+ * Interface to NCL document.
  */
 class Document
 {
 public:
-  Document ();
+  Document (lua_State *L);
   virtual ~Document ();
+
+  lua_State *getLuaState ();
 
   const set<Object *> *getObjects ();
   Object *getObjectById (const string &);
@@ -58,6 +60,7 @@ public:
 
 private:
   list<Action> evalActionInContext (Action, Context *);
+  lua_State *_L;                      ///< Associated Lua state.
   set<Object *> _objects;             ///< Objects.
   map<string, Object *> _objectsById; ///< Objects indexed by id.
   Context *_root;                     ///< Root context (body).

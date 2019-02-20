@@ -18,7 +18,9 @@ HAVE_DOT           = YES
 MACRO_EXPANSION    = YES
 EXPAND_ONLY_PREDEF = YES
 INCLUDE_PATH       = @top_srcdir@/lib
-PREDEFINED         = unused(x)=x
+PREDEFINED         = "unused(x)=x"\
+                     "GINGA_NAMESPACE_BEGIN="\
+                     "GINGA_NAMESPACE_END="
 EXTRACT_PRIVATE    = YES
 
 QUIET              = NO

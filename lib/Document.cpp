@@ -27,17 +27,23 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 GINGA_NAMESPACE_BEGIN
 
 /**
- * @brief Creates a new document.
+ * @brief Creates a new document with Lua state.
+ * @param L Lua state (nonnull).
  *
- * This function creates a new NCL document containing a root context (the
- * document body) with id "__root__" and a child settings media object with
- * id "__settings__".
+ * The newly created document has an empty root context (called "__root__").
+ * This context contains a single settings media object (called
+ * "__settings__").
  *
  * @return New #Document.
  */
-Document::Document ()
+Document::Document (lua_State *L)
 {
   MediaSettings *obj;
+
+  g_assert_nonnull (L);
+  _L = L;
+  lua_pushlightuserdata (L, this);
+  lua_setglobal (L, "_D");
 
   _root = new Context ("__root__");
   _settings = nullptr;
@@ -51,11 +57,23 @@ Document::Document ()
 /**
  * @brief Destroys document.
  *
- * This function destroys the document and all its child objects.
+ * Destroys the document and all its child objects, and closes the
+ * associated Lua state.
  */
 Document::~Document ()
 {
   delete _root;
+  lua_close (_L);
+}
+
+/**
+ * @brief Gets document Lua state.
+ * @return Lua state.
+ */
+lua_State *
+Document::getLuaState ()
+{
+  return _L;
 }
 
 /**
@@ -102,11 +120,11 @@ Document::getObjectByIdOrAlias (const string &id)
 /**
  * @brief Adds object to document.
  *
- * This function assumes that \p obj is not in another document.
- *
  * @param obj The object to add.
  * @return \c true if successful, or \c false otherwise (object already in
  * document).
+ *
+ * @warning This function assumes that \p obj is not in another document.
  */
 bool
 Document::addObject (Object *obj)
