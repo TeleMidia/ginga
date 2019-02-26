@@ -40,12 +40,15 @@ public:
 
   // Media:
   virtual bool isFocused ();
+  virtual Event *getCurrentPreparationEvent ();
   virtual bool getZ (int *, int *);
   virtual void redraw (cairo_t *);
 
 protected:
   Player *_player; // underlying player
+  Event *_currentPreparationEvent;
 
+  void createPlayer ();
   void doStop () override;
 };
 

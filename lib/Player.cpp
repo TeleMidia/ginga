@@ -128,6 +128,7 @@ static map<string, PlayerPropertyInfo> player_property_map = {
   { "right", { Player::PROP_RIGHT, false, "0%" } },
   { "size", { Player::PROP_SIZE, false, "100%,100%" } },
   { "speed", { Player::PROP_SPEED, false, "1" } },
+  {"currentTime", {Player::PROP_TIME, false, "indefinite"} },
   { "time", { Player::PROP_TIME, false, "indefinite" } },
   { "top", { Player::PROP_TOP, true, "0" } },
   { "transparency", { Player::PROP_TRANSPARENCY, true, "0%" } },
@@ -141,6 +142,8 @@ static map<string, PlayerPropertyInfo> player_property_map = {
   { "zOrder", { Player::PROP_Z_ORDER, true, "0" } },
   { "uri", { Player::PROP_URI, true, "" } },
   { "type", { Player::PROP_TYPE, true, "application/x-ginga-timer" } },
+  {"offsetBuffer", {Player::PROP_BUFFER_OFFSET, true, "0"} },
+  {"endOffsetBuffer", {Player::PROP_BUFFER_OFFSET_END, true, "indefinite"} },
 };
 
 static map<string, string> player_property_aliases = {
@@ -167,6 +170,7 @@ Player::Player (Formatter *formatter, Media *media)
   _state = SLEEPING;
   _time = 0;
   _eos = false;
+  _prepared = false;
   _dirty = true;
   _animator = new PlayerAnimator (_formatter, &_time);
   _surface = nullptr;
@@ -229,6 +233,18 @@ Player::setDuration (Time duration)
 }
 
 bool
+Player::getPrepared ()
+{
+  return _prepared;
+}
+
+void
+Player::setPrepared (bool prepared)
+{
+  _prepared = prepared;
+}
+
+bool
 Player::getEOS ()
 {
   return _eos;
@@ -250,6 +266,13 @@ Player::start ()
   this->reload ();
   _animator->scheduleTransition ("start", &_prop.rect, &_prop.bgColor,
                                  &_prop.alpha, &_crop);
+}
+
+void
+Player::startPreparation ()
+{
+  g_assert (_state != PREPARING);
+  _state = PREPARING;
 }
 
 void
@@ -758,6 +781,14 @@ Player::doSetProperty (Property code, unused (const string &name),
     case PROP_TYPE:
       {
         _prop.type = value;
+        break;
+      }
+    case PROP_BUFFER_OFFSET:
+      {
+        break;
+      }
+    case PROP_BUFFER_OFFSET_END:
+      {
         break;
       }
     default:
