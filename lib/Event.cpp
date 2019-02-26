@@ -73,6 +73,11 @@ Event::getFullId ()
       return obj_id + "." + _id;
     case Event::SELECTION:
       return obj_id + "<" + _id + ">";
+    case Event::PREPARATION:
+      if (_id == "@lambda")
+        return obj_id + "$" + _id.substr (1, _id.length() - 1);
+      else
+        return obj_id + "$" + _id;
     default:
       g_assert_not_reached ();
     }
@@ -247,6 +252,8 @@ Event::getEventTypeAsString (Event::Type type)
       return "attribution";
     case Event::SELECTION:
       return "selection";
+    case Event::PREPARATION:
+      return "preparation";
     default:
       g_assert_not_reached ();
     }
