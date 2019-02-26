@@ -869,12 +869,22 @@ static map<string, pair<Event::Type, Event::Transition> >
       { "onSelection", { Event::SELECTION, Event::START } },
       { "onBeginSelection", { Event::SELECTION, Event::START } },
       { "onEndSelection", { Event::SELECTION, Event::STOP } },
+      { "onBeginPreparation", { Event::PREPARATION, Event::START } },
+      { "onEndPreparation", { Event::PREPARATION, Event::STOP } },
+      { "onAbortPreparation", { Event::PREPARATION, Event::ABORT } },
+      { "onPausePreparation", { Event::PREPARATION, Event::PAUSE } },
+      { "onResumePreparation", { Event::PREPARATION, Event::RESUME } },
       { "start", { Event::PRESENTATION, Event::START } }, // actions
       { "stop", { Event::PRESENTATION, Event::STOP } },
       { "abort", { Event::PRESENTATION, Event::ABORT } },
       { "pause", { Event::PRESENTATION, Event::PAUSE } },
       { "resume", { Event::PRESENTATION, Event::RESUME } },
       { "set", { Event::ATTRIBUTION, Event::START } },
+      { "startPreparation", { Event::PREPARATION, Event::START } },
+      { "stopPreparation", { Event::PREPARATION, Event::STOP } },
+      { "abortPreparation", { Event::PREPARATION, Event::ABORT } },
+      { "pausePreparation", { Event::PREPARATION, Event::PAUSE } },
+      { "resumePreparation", { Event::PREPARATION, Event::RESUME } },
     };
 
 /// Index reserved role table.
@@ -897,6 +907,7 @@ static map<string, Event::Type> parser_syntax_event_type_table = {
   { "presentation", Event::PRESENTATION },
   { "attribution", Event::ATTRIBUTION },
   { "selection", Event::SELECTION },
+  { "preparation", Event::PREPARATION },
 };
 
 /// Known transitions.
@@ -2736,6 +2747,19 @@ borderColor='%s'}",
                     act.event->setParameter ("key", act.value);
                     break;
                   }
+                case Event::PREPARATION:
+                  {
+                    string eventId = evt->getId ();
+
+                    if(evt->getId () == "@lambda")
+                      {
+                        obj->addPreparationEvent(eventId);
+                      }
+
+                    act.event = obj->getPreparationEvent (eventId);
+                    g_assert_nonnull (act.event);
+                    break;
+                  }
                 default:
                   g_assert_not_reached ();
                 }
@@ -4028,6 +4052,7 @@ ParserState::pushArea (ParserState *st, ParserElt *elt)
         }
 
       media->addPresentationEvent (id, begin, end);
+      media->addPreparationEvent (id, begin, end);
     }
 
   return true;

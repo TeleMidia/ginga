@@ -82,6 +82,8 @@ PlayerVideo::PlayerVideo (Formatter *formatter, Media *media)
   g_assert (ret > 0);
   gst_object_unref (bus);
 
+  is_buffering = FALSE;
+
   // Setup audio pipeline.
   _audio.bin = gst_bin_new ("audio.bin");
   g_assert_nonnull (_audio.bin);
@@ -177,37 +179,53 @@ PlayerVideo::~PlayerVideo ()
 void
 PlayerVideo::start ()
 {
-  GstCaps *caps;
-  GstStructure *st;
-  GstStateChangeReturn ret;
+  if (!Player::getPrepared ())
+    {
+      GstCaps *caps;
+      GstStructure *st;
+      GstStateChangeReturn ret;
 
-  g_assert (_state != OCCURRING);
-  TRACE ("starting %s", _id.c_str ());
+      g_assert (_state != OCCURRING);
+      TRACE ("starting %s", _id.c_str ());
 
-  st = gst_structure_new_empty ("video/x-raw");
-  gst_structure_set (st, "format", G_TYPE_STRING, "BGRA", nullptr);
+      st = gst_structure_new_empty ("video/x-raw");
+      gst_structure_set (st, "format", G_TYPE_STRING, "BGRA", nullptr);
 
-  caps = gst_caps_new_full (st, nullptr);
-  g_assert_nonnull (caps);
-  g_object_set (_video.caps, "caps", caps, nullptr);
-  gst_caps_unref (caps);
+      caps = gst_caps_new_full (st, nullptr);
+      g_assert_nonnull (caps);
+      g_object_set (_video.caps, "caps", caps, nullptr);
+      gst_caps_unref (caps);
 
-  Player::setEOS (false);
-  g_atomic_int_set (&_sample_flag, 0);
+      Player::setEOS (false);
+      g_atomic_int_set (&_sample_flag, 0);
 
-  g_object_set (_audio.volume, "volume", _prop.volume, "mute", _prop.mute,
-                nullptr);
+      g_object_set (_audio.volume, "volume", _prop.volume, "mute", _prop.mute,
+          nullptr);
 
-  g_object_set (_audio.pan, "panorama", _prop.balance, nullptr);
+      g_object_set (_audio.pan, "panorama", _prop.balance, nullptr);
 
-  g_object_set (_audio.equalizer, "band0", _prop.bass, "band1",
-                _prop.treble, "band2", _prop.treble, nullptr);
+      g_object_set (_audio.equalizer, "band0", _prop.bass, "band1",
+          _prop.treble, "band2", _prop.treble, nullptr);
 
-  ret = gst_element_set_state (_playbin, GST_STATE_PLAYING);
-  if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
-    Player::setEOS (true);
+      ret = gst_element_set_state (_playbin, GST_STATE_PLAYING);
+      if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
+        Player::setEOS (true);
 
-  Player::start ();
+      Player::start ();
+    }
+  else
+    {
+      GstStateChangeReturn ret;
+
+      g_assert (_state != OCCURRING);
+      TRACE ("starting %s", _id.c_str ());
+      Player::setEOS (false);
+      ret = gst_element_set_state (_playbin, GST_STATE_PLAYING);
+      if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
+        Player::setEOS (true);
+
+      Player::start ();
+    }
 }
 
 void
@@ -293,6 +311,64 @@ PlayerVideo::speed (double value)
   if (unlikely (!gst_element_send_event (_video.sink, seek_event)))
     TRACE ("speed failed");
   gst_event_unref (seek_event);
+}
+
+void
+PlayerVideo::startPreparation ()
+{
+  GstCaps *caps;
+  GstStructure *st;
+  GstStateChangeReturn ret;
+
+  g_assert (_state != PREPARING);
+  TRACE ("preparing %s", _id.c_str ());
+
+  st = gst_structure_new_empty ("video/x-raw");
+  gst_structure_set (st, "format", G_TYPE_STRING, "BGRA", nullptr);
+
+  caps = gst_caps_new_full (st, nullptr);
+  g_assert_nonnull (caps);
+  g_object_set (_video.caps, "caps", caps, nullptr);
+  gst_caps_unref (caps);
+
+  Player::setEOS (false);
+  g_atomic_int_set (&_sample_flag, 0);
+
+  g_object_set (_audio.volume, "volume", _prop.volume, "mute", _prop.mute,
+                nullptr);
+
+  g_object_set (_audio.pan, "panorama", _prop.balance, nullptr);
+
+  g_object_set (_audio.equalizer, "band0", _prop.bass, "band1",
+                _prop.treble, "band2", _prop.treble, nullptr);
+
+  ret = gst_element_set_state (_playbin, GST_STATE_PAUSED);
+  if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
+    {
+      Player::setEOS (true);
+    }
+
+  Player::startPreparation ();
+}
+
+void
+PlayerVideo::doPreparationActions ()
+{
+  GstQuery *query;
+  gboolean busy;
+  gint percent;
+
+  query = gst_query_new_buffering (GST_FORMAT_TIME);
+
+  if (unlikely (!gst_element_query (_playbin, query)))
+    return;
+
+  gst_query_parse_buffering_percent (query, &busy, &percent);
+
+  if(percent == 100)
+    {
+      Player::setPrepared(true);
+    }
 }
 
 void
@@ -503,6 +579,16 @@ PlayerVideo::doSetProperty (Property code, unused (const string &name),
         g_object_set (_audio.volume, "volume", _prop.volume, nullptr);
         break;
       }
+    case PROP_BUFFER_OFFSET:
+      {
+        _prop.bufferOffset =  xstrtod (value);
+        break;
+      }
+    case PROP_BUFFER_OFFSET_END:
+      {
+        _prop.bufferOffsetEnd = xstrtod (value);
+        break;
+      }
     default:
       {
         return Player::doSetProperty (code, name, value);
@@ -668,6 +754,10 @@ PlayerVideo::cb_Bus (GstBus *bus, GstMessage *msg, PlayerVideo *player)
             player->doStackedActions ();
           }
         break;
+      }
+    case GST_MESSAGE_BUFFERING:
+      {
+        player->doPreparationActions ();
       }
     default:
       break;

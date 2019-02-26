@@ -35,6 +35,7 @@ Object::Object (const string &id) : _id (id)
   _doc = nullptr;
   _parent = nullptr;
   _time = GINGA_TIME_NONE;
+  _isPreparing = false;
 
   this->addPresentationEvent ("@lambda", 0, GINGA_TIME_NONE);
   _lambda = this->getPresentationEvent ("@lambda");
@@ -279,6 +280,36 @@ Object::addSelectionEvent (const string &key)
 }
 
 Event *
+Object::getPreparationEvent (const string &key)
+{
+  return this->getEvent (Event::PREPARATION, key);
+}
+
+void
+Object::addPreparationEvent (const string &id)
+{
+  Event *evt;
+  if (this->getPreparationEvent (id))
+    return;
+
+  evt = new Event (Event::PREPARATION, this, id);
+  _events.insert (evt);
+}
+
+void
+Object::addPreparationEvent (const string &id, Time begin, Time end)
+{
+  Event *evt;
+
+  if (this->getPreparationEvent (id))
+    return;
+
+  evt = new Event (Event::PREPARATION, this, id);
+  evt->setInterval (begin, end);
+  _events.insert (evt);
+}
+
+Event *
 Object::getLambda ()
 {
   g_assert_nonnull (_lambda);
@@ -290,6 +321,12 @@ Object::isOccurring ()
 {
   g_assert_nonnull (_lambda);
   return _lambda->getState () == Event::OCCURRING;
+}
+
+bool
+Object::isPreparing ()
+{
+  return _isPreparing;
 }
 
 bool
