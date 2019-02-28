@@ -19,55 +19,52 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include <stdio.h>
 #include <string.h>
 
-#include "aux-glib.h"
 #include <cairo.h>
+#include <gdk/gdk.h>
 #include <gtk/gtk.h>
-
-// clang-format off
-PRAGMA_DIAG_IGNORE (-Wunused-macros)
-// clang-format on
 
 #include "ginga.h"
 using namespace ::std;
 
-// Global formatter.
-static Ginga *GINGA = nullptr;
+GINGA_BEGIN_DECLS
+#include "aux-glib.h"
+#include "aux-lua.h"
+GINGA_END_DECLS
+
+PRAGMA_DIAG_IGNORE (-Wunused-function)
+PRAGMA_DIAG_IGNORE (-Wunused-macros)
 
 // Options.
-#define OPTION_LINE "FILE..."
-#define OPTION_DESC                                                        \
-  "Report bugs to: " PACKAGE_BUGREPORT "\n"                                \
-  "Ginga home page: " PACKAGE_URL
 
-static gboolean opt_debug = FALSE;        // toggle debug
-static gboolean opt_experimental = FALSE; // toggle experimental stuff
-static gboolean opt_fullscreen = FALSE;   // toggle fullscreen-mode
-static gboolean opt_opengl = FALSE;       // toggle OpenGL backend
-static string opt_background = "";        // background color
-static gint opt_width = 800;              // initial window width
-static gint opt_height = 600;             // initial window height
+// True means enable debugging mode.           -d, --debug
+static gboolean debugging_on = FALSE;
 
-static gboolean
-opt_background_cb (unused (const gchar *opt), const gchar *arg,
-                   unused (gpointer data), unused (GError **err))
-{
-  g_assert_nonnull (arg);
-  opt_background = string (arg);
-  return TRUE;
-}
+// True means enable fullscreen mode.          -f, --fullscreen, <F11>
+static gboolean fullscreen_on = FALSE;
+
+// Name or RGB of the canvas background color. -b, --background
+static gchar *background_color = NULL;
+
+// Main window dimensions.                     -s, --size
+static gint initial_width  = 800; // pixels
+static gint initial_height = 600; // pixels
 
 static gboolean
-opt_size_cb (unused (const gchar *opt), const gchar *arg,
-             unused (gpointer data), GError **err)
+opt_parse_size (unused (const gchar *opt),
+                const gchar *arg,
+                unused (gpointer data),
+                GError **err)
 {
   gint64 width;
   gint64 height;
   gchar *end;
 
+  g_return_val_if_fail (arg != NULL, FALSE);
+
   width = g_ascii_strtoll (arg, &end, 10);
   if (width == 0)
     goto syntax_error;
-  opt_width = (gint) (CLAMP (width, 0, G_MAXINT));
+  initial_width = (gint) (CLAMP (width, 0, G_MAXINT));
 
   if (*end != 'x')
     goto syntax_error;
@@ -75,7 +72,7 @@ opt_size_cb (unused (const gchar *opt), const gchar *arg,
   height = g_ascii_strtoll (++end, NULL, 10);
   if (height == 0)
     goto syntax_error;
-  opt_height = (gint) (CLAMP (height, 0, G_MAXINT));
+  initial_height = (gint) (CLAMP (height, 0, G_MAXINT));
 
   return TRUE;
 
@@ -86,42 +83,43 @@ syntax_error:
 }
 
 static void
-opt_version_cb (void)
+version (void)
 {
   puts (PACKAGE_STRING);
   _exit (0);
 }
 
-static GOptionEntry options[]
-    = { { "background", 'b', 0, G_OPTION_ARG_CALLBACK,
-          pointerof (opt_background_cb), "Set background color", "COLOR" },
-        { "debug", 'd', 0, G_OPTION_ARG_NONE, &opt_debug,
-          "Enable debugging", NULL },
-        { "fullscreen", 'f', 0, G_OPTION_ARG_NONE, &opt_fullscreen,
-          "Enable full-screen mode", NULL },
-        { "opengl", 'g', 0, G_OPTION_ARG_NONE, &opt_opengl,
-          "Use OpenGL backend", NULL },
-        { "size", 's', 0, G_OPTION_ARG_CALLBACK, pointerof (opt_size_cb),
-          "Set initial window size", "WIDTHxHEIGHT" },
-        { "experimental", 'x', 0, G_OPTION_ARG_NONE, &opt_experimental,
-          "Enable experimental stuff", NULL },
-        { "version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
-          pointerof (opt_version_cb), "Print version information and exit",
-          NULL },
-        { NULL, 0, 0, G_OPTION_ARG_NONE, NULL, NULL, NULL } };
+static GOptionEntry options[] =
+{
+ {"background", 'b', 0, G_OPTION_ARG_STRING, &background_color,
+  "Set background color", "COLOR"},
+ {"debug", 'd', 0, G_OPTION_ARG_NONE, &debugging_on,
+  "Enable debugging", NULL},
+ {"fullscreen", 'f', 0, G_OPTION_ARG_NONE, &fullscreen_on,
+  "Enable fullscreen mode", NULL},
+ {"size", 's', 0, G_OPTION_ARG_CALLBACK, pointerof (opt_parse_size),
+  "Set initial window size", "WIDTHxHEIGHT"},
+ {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
+  pointerof (version), "Print version information and exit", NULL},
+ {NULL, 0, 0, G_OPTION_ARG_NONE, NULL, NULL, NULL}
+};
 
 // Error handling.
 
-#define usage_error(fmt, ...) _error (TRUE, 0, fmt, ##__VA_ARGS__)
+#define usage_error(fmt, ...)\
+  _error (TRUE, 0, fmt, ##__VA_ARGS__)
 
-#define usage_die(fmt, ...) _error (TRUE, EXIT_FAILURE, fmt, ##__VA_ARGS__)
+#define usage_die(fmt, ...)\
+  _error (TRUE, EXIT_FAILURE, fmt, ##__VA_ARGS__)
 
-#define error(fmt, ...) _error (FALSE, 0, fmt, ##__VA_ARGS__)
+#define error(fmt, ...)\
+  _error (FALSE, 0, fmt, ##__VA_ARGS__)
 
-#define die(fmt, ...) _error (FALSE, 1, fmt, ##__VA_ARGS__)
+#define die(fmt, ...)\
+  _error (FALSE, 1, fmt, ##__VA_ARGS__)
 
-static G_GNUC_PRINTF (3, 4) void _error (gboolean try_help, int die,
-                                         const gchar *format, ...)
+static G_GNUC_PRINTF (3, 4) void
+_error (gboolean try_help, gint die, const gchar *format, ...)
 {
   const gchar *me = g_get_application_name ();
   va_list args;
@@ -138,72 +136,115 @@ static G_GNUC_PRINTF (3, 4) void _error (gboolean try_help, int die,
     _exit (die);
 }
 
-// Callbacks.
+// GTK+ Widgets.
 
-#if GTK_CHECK_VERSION(3, 16, 0)
-static gboolean
-render_gl_callback (unused (GtkGLArea *area), unused (GdkGLContext *ctx))
-{
-  GINGA->redraw (nullptr);
-  return TRUE;
-}
-#endif
+// Application window.
+static GtkWidget *app_win = NULL;
 
-static gboolean
-draw_callback (unused (GtkWidget *widget), cairo_t *cr,
-               unused (gpointer data))
-{
-  GINGA->redraw (cr);
-  return TRUE;
-}
+// Vertical box container.
+static GtkWidget *app_vbox = NULL;
 
-static void
-exit_callback (void)
-{
-  _exit (0);
-}
+// Header bar: shows document path, time, and controls.
+static GtkWidget *app_header_bar = NULL;
 
-static gboolean
-resize_callback (unused (GtkWidget *widget), GdkEventConfigure *e,
-                 unused (gpointer data))
-{
-  opt_width = e->width;
-  opt_height = e->height;
-  GINGA->resize (opt_width, opt_height);
+// Info bar: shows error messages.
+static GtkWidget *app_info_bar = NULL;
+static GtkWidget *app_info_bar_label = NULL;
 
-  // We must return FALSE here, otherwise the new geometry is not propagated
-  // to the draw_callback().
-  return FALSE;
-}
+// Drawing area: renders Ginga's output.
+static GtkWidget *app_canvas = NULL;
+
+// Text entry: captures Lua code for on-the-fly evaluation.
+static GtkWidget *app_cmd_buf = NULL;
+
+// The application CSS provider.
+static GtkCssProvider *app_css = NULL;
+
+// The CSS code to load in the provider.
+#define CSS                                     \
+  .subtitle {                                   \
+    font-family: monospace;                     \
+  }
+
+// GTK+ Callbacks.
 
 static gboolean
-keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
+on_canvas_draw (unused (GtkWidget *canvas),
+                cairo_t *cr,
+                Ginga *ginga)
 {
-  const char *key;
-  bool free_key = false;
+  gint64 t;
+  guint h, m, s, ms;
+  gchar *str;
 
-  switch (e->keyval)
+  g_return_val_if_fail (cr != NULL, FALSE);
+  g_return_val_if_fail (ginga != NULL, FALSE);
+
+  ginga->redraw (cr);
+
+  t = ginga->debug_getLastTickFrame ();
+
+#define SECOND ((gint64)(G_USEC_PER_SEC * G_GINT64_CONSTANT (1000)))
+  h = (guint)(t / (SECOND * 60 * 60));
+  m = (guint)(t / (SECOND * 60) % 60);
+  s = (guint)(t / (SECOND % 60));
+  ms = (guint)(t % SECOND);
+
+  str = g_strdup_printf ("%u:%02u:%02u.%03u", h, m, s, ms);
+  gtk_header_bar_set_subtitle (GTK_HEADER_BAR (app_header_bar), str);
+  g_free (str);
+
+  return FALSE;                 // propagate
+}
+
+static gboolean
+on_canvas_key_event (unused (GtkWidget *canvas),
+                     GdkEventKey *evt,
+                     Ginga *ginga)
+{
+  const gchar *key;
+  gboolean free_key = false;
+
+  g_return_val_if_fail (evt != NULL, FALSE);
+  g_return_val_if_fail (ginga != NULL, FALSE);
+
+  switch (evt->keyval)
     {
-    case GDK_KEY_Escape: // quit
-      if (g_str_equal ((const char *) type, "release"))
-        return TRUE;
-      gtk_main_quit ();
-      return TRUE;
-    case GDK_KEY_F10: // toggle debugging
-      if (g_str_equal ((const char *) type, "release"))
-        return TRUE;
-      opt_debug = !opt_debug;
-      GINGA->setOptionBool ("debug", opt_debug);
-      return TRUE;
-    case GDK_KEY_F11: // toggle full-screen
-      if (g_str_equal ((const char *) type, "release"))
-        return TRUE;
-      opt_fullscreen = !opt_fullscreen;
-      if (opt_fullscreen)
-        gtk_window_fullscreen (GTK_WINDOW (widget));
-      else
-        gtk_window_unfullscreen (GTK_WINDOW (widget));
-      return TRUE;
+    case GDK_KEY_Escape:        // <ESC> clears error messages
+      {
+        if (evt->type == GDK_KEY_RELEASE)
+          goto done;
+
+        gtk_info_bar_set_revealed (GTK_INFO_BAR (app_info_bar), FALSE);
+        gtk_widget_grab_focus (GTK_WIDGET (app_canvas));
+        goto done;
+      }
+    case GDK_KEY_F10:           // <F10> toggles debugging mode
+      {
+        if (evt->type == GDK_KEY_RELEASE)
+          goto done;
+
+        debugging_on = !debugging_on;
+        ginga->setOptionBool ("debug", debugging_on);
+        goto done;
+      }
+    case GDK_KEY_F11:           // <F11> toggles full-screen
+      {
+        if (evt->type == GDK_KEY_RELEASE)
+          goto done;
+
+        fullscreen_on = !fullscreen_on;
+        if (fullscreen_on)
+          gtk_window_fullscreen (GTK_WINDOW (app_win));
+        else
+          gtk_window_unfullscreen (GTK_WINDOW (app_win));
+        goto done;
+      }
+    case GDK_KEY_colon:         // <:> focuses command-buffer
+      {
+        gtk_widget_grab_focus (GTK_WIDGET (app_cmd_buf));
+        goto done;
+      }
     case GDK_KEY_asterisk:
       key = "*";
       break;
@@ -241,7 +282,7 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
       key = "CURSOR_UP";
       break;
     default:
-      key = gdk_keyval_name (e->keyval);
+      key = gdk_keyval_name (evt->keyval);
       if (strlen (key) > 1)
         {
           key = g_utf8_strup (key, -1);
@@ -250,42 +291,125 @@ keyboard_callback (GtkWidget *widget, GdkEventKey *e, gpointer type)
       break;
     }
 
-  bool status = GINGA->sendKey (
-      string (key), g_str_equal ((const char *) type, "press") == 0);
-
-  if (free_key)
-    g_free (deconst (char *, key));
-
-  if (!status)
+  if (!ginga->sendKey (string (key), evt->type == GDK_KEY_PRESS))
     {
-      g_assert (GINGA->getState () == GINGA_STATE_STOPPED);
-      gtk_main_quit (); // all done
+      g_assert (ginga->getState () == GINGA_STATE_STOPPED);
+      gtk_main_quit ();         // all done
     }
 
-  return status;
+  if (free_key)
+    g_free (deconst (gchar *, key));
+
+ done:
+  return FALSE;                 // propagate
 }
 
-#if GTK_CHECK_VERSION(3, 8, 0)
+static void
+on_canvas_size_allocate (unused (GtkWidget *canvas),
+                         GdkRectangle *rect,
+                         Ginga *ginga)
+{
+  g_return_if_fail (rect != NULL);
+  g_return_if_fail (ginga != NULL);
+
+  ginga->resize (rect->width, rect->height);
+}
+
+static void
+on_cmd_buf_activate (GtkWidget *cmd_buf,
+                     Ginga *ginga)
+{
+  lua_State *L;
+  const gchar *str;
+  const gchar *errmsg;
+
+  g_return_if_fail (cmd_buf != NULL);
+  g_return_if_fail (ginga != NULL);
+
+  str = gtk_entry_get_text (GTK_ENTRY (cmd_buf));
+  g_assert_nonnull (str);
+
+  L = ginga->getLuaState ();
+  if (unlikely (L == NULL))
+    {
+      errmsg = "Lua state is null";
+      goto fail;
+    }
+
+  if (unlikely (luaL_dostring (L, str) != LUA_OK))
+    {
+      errmsg = lua_tostring (L, -1);
+      lua_pop (L, 1);
+      goto fail;
+    }
+
+  gtk_widget_grab_focus (GTK_WIDGET (app_canvas));
+  return;
+
+ fail:
+  gtk_label_set_text (GTK_LABEL (app_info_bar_label), errmsg);
+  gtk_info_bar_set_message_type (GTK_INFO_BAR (app_info_bar),
+                                 GTK_MESSAGE_ERROR);
+  gtk_info_bar_set_revealed (GTK_INFO_BAR (app_info_bar), TRUE);
+}
+
 static gboolean
-tick_callback (GtkWidget *widget, GdkFrameClock *frame_clock,
-               unused (gpointer data))
-#else
+on_cmd_buf_key_press_event (unused (GtkWidget *cmd_buf),
+                            GdkEventKey *evt)
+{
+  g_return_val_if_fail (evt != NULL, FALSE);
+
+  g_assert (evt->type == GDK_KEY_PRESS);
+
+  switch (evt->keyval)
+    {
+    case GDK_KEY_Escape:
+      gtk_info_bar_set_revealed (GTK_INFO_BAR (app_info_bar), FALSE);
+      gtk_widget_grab_focus (GTK_WIDGET (app_canvas));
+      break;
+    default:
+      break;
+    }
+
+  return FALSE;                 // propagate
+}
+
+static void
+on_info_bar_response (unused (GtkWidget *info_bar),
+                      gint response)
+{
+  switch (response)
+    {
+    case GTK_RESPONSE_CLOSE:
+      gtk_info_bar_set_revealed (GTK_INFO_BAR (app_info_bar), FALSE);
+      return;
+    default:
+      return;
+    }
+}
+
+static void
+on_win_destroy (void)
+{
+  _exit (0);
+}
+
 static gboolean
-tick_callback (GtkWidget *widget)
-#endif
+on_win_tick (GtkWidget *window,
+             GdkFrameClock *frame_clock,
+             Ginga *ginga)
 {
   guint64 time;
   static guint64 frame = (guint64) -1;
   static guint64 last;
   static guint64 first;
 
-#if GTK_CHECK_VERSION(3, 8, 0)
+  g_return_val_if_fail (window != NULL, G_SOURCE_CONTINUE);
+  g_return_val_if_fail (frame_clock != NULL, G_SOURCE_CONTINUE);
+  g_return_val_if_fail (ginga != NULL, G_SOURCE_CONTINUE);
+
   time = (guint64) (gdk_frame_clock_get_frame_time (frame_clock) * 1000);
   frame = (guint64) gdk_frame_clock_get_frame_counter (frame_clock);
-#else
-  time = (guint64) g_get_monotonic_time ();
-  frame++;
-#endif
 
   if (frame == 0)
     {
@@ -293,40 +417,128 @@ tick_callback (GtkWidget *widget)
       last = time;
     }
 
-  if (!GINGA->sendTick (time - first, time - last, frame))
+  if (!ginga->sendTick (time - first, time - last, frame))
     {
-      g_assert (GINGA->getState () == GINGA_STATE_STOPPED);
-      gtk_main_quit (); // all done
+      g_assert (ginga->getState () == GINGA_STATE_STOPPED);
+      gtk_main_quit ();         // all done
       return G_SOURCE_REMOVE;
     }
 
   last = time;
-  gtk_widget_queue_draw (widget);
-  return G_SOURCE_CONTINUE;
+  gtk_widget_queue_draw (window);
+
+  return G_SOURCE_CONTINUE;     // keep callback installed
+}
+
+static void
+app_init (Ginga *ginga)
+{
+  GError *error = NULL;
+
+  g_assert_nonnull (ginga);
+
+  // Window.
+  app_win = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title (GTK_WINDOW (app_win), PACKAGE_STRING);
+  if (fullscreen_on)
+    gtk_window_fullscreen (GTK_WINDOW (app_win));
+
+  g_signal_connect (app_win, "destroy", G_CALLBACK (on_win_destroy), NULL);
+  gtk_widget_add_tick_callback (GTK_WIDGET (app_win),
+                                (GtkTickCallback) on_win_tick, ginga, NULL);
+
+  app_vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  gtk_container_add (GTK_CONTAINER (app_win), app_vbox);
+
+  // Header bar.
+  app_header_bar = gtk_header_bar_new ();
+  gtk_box_pack_start (GTK_BOX (app_vbox), app_header_bar, FALSE, TRUE, 0);
+  gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (app_header_bar),
+                                        TRUE);
+  gtk_header_bar_set_title (GTK_HEADER_BAR (app_header_bar), "");
+  gtk_header_bar_set_subtitle (GTK_HEADER_BAR (app_header_bar), "");
+
+  // Info bar.
+  app_info_bar = gtk_info_bar_new ();
+  gtk_box_pack_start (GTK_BOX (app_vbox), app_info_bar, FALSE, TRUE, 0);
+  gtk_info_bar_set_revealed (GTK_INFO_BAR (app_info_bar), FALSE);
+  gtk_info_bar_set_message_type (GTK_INFO_BAR (app_info_bar),
+                                 GTK_MESSAGE_ERROR);
+  gtk_info_bar_set_show_close_button (GTK_INFO_BAR (app_info_bar), TRUE);
+
+  g_signal_connect (app_info_bar, "response",
+                    G_CALLBACK (on_info_bar_response), NULL);
+
+  app_info_bar_label = gtk_label_new ("");
+  gtk_container_add
+    (GTK_CONTAINER
+     (gtk_info_bar_get_content_area (GTK_INFO_BAR (app_info_bar))),
+      app_info_bar_label);
+  gtk_label_set_xalign (GTK_LABEL (app_info_bar_label), 0);
+
+  // Canvas.
+  app_canvas = gtk_drawing_area_new ();
+  gtk_box_pack_start (GTK_BOX (app_vbox), app_canvas, TRUE, TRUE, 0);
+  gtk_widget_set_size_request (app_canvas, initial_width, initial_height);
+  gtk_widget_set_can_focus (app_canvas, TRUE);
+
+  g_signal_connect (app_canvas, "draw",
+                    G_CALLBACK (on_canvas_draw), ginga);
+  g_signal_connect (app_canvas, "key-press-event",
+                    G_CALLBACK (on_canvas_key_event), ginga);
+  g_signal_connect (app_canvas, "key-release-event",
+                    G_CALLBACK (on_canvas_key_event), ginga);
+  g_signal_connect (app_canvas, "size-allocate",
+                    G_CALLBACK (on_canvas_size_allocate), ginga);
+
+  // Command buffer.
+  app_cmd_buf = gtk_entry_new ();
+  gtk_box_pack_end (GTK_BOX (app_vbox), app_cmd_buf, FALSE, TRUE, 0);
+  g_object_set (app_cmd_buf, "placeholder-text",
+                "Type Lua code here", NULL);
+
+  g_signal_connect (app_cmd_buf, "activate",
+                    G_CALLBACK (on_cmd_buf_activate), ginga);
+  g_signal_connect (app_cmd_buf, "key-press-event",
+                    G_CALLBACK (on_cmd_buf_key_press_event), ginga);
+
+  // CSS.
+  app_css = gtk_css_provider_new ();
+  gtk_css_provider_load_from_data (app_css, G_STRINGIFY (CSS), -1, &error);
+  if (unlikely (error != NULL))
+    g_error ("%s", error->message);
+  g_assert_null (error);
+
+  gtk_style_context_add_provider_for_screen
+    (gtk_widget_get_screen (app_win), GTK_STYLE_PROVIDER (app_css),
+     GTK_STYLE_PROVIDER_PRIORITY_USER);
 }
 
 // Main.
 
-int
-main (int argc, char **argv)
+gint
+main (gint argc, gchar **argv)
 {
   int saved_argc;
-  char **saved_argv;
+  gchar **saved_argv;
 
-  GingaOptions opts;
-  GtkWidget *app;
   GOptionContext *ctx;
   gboolean status;
   GError *error = NULL;
+
+  Ginga *ginga;
+  GingaOptions ginga_opts;
 
   saved_argc = argc;
   saved_argv = g_strdupv (argv);
   gtk_init (&saved_argc, &saved_argv);
 
   // Parse command-line options.
-  ctx = g_option_context_new (OPTION_LINE);
+  ctx = g_option_context_new ("[FILE]");
   g_assert_nonnull (ctx);
-  g_option_context_set_description (ctx, OPTION_DESC);
+  g_option_context_set_description (ctx, "\
+Report bugs to:  " PACKAGE_BUGREPORT "\n\
+Ginga home page: " PACKAGE_URL "\n");
   g_option_context_add_main_entries (ctx, options, NULL);
   status = g_option_context_parse (ctx, &saved_argc, &saved_argv, &error);
   g_option_context_free (ctx);
@@ -345,75 +557,26 @@ main (int argc, char **argv)
       _exit (0);
     }
 
-  if (opt_opengl)
-    {
-#if !(defined WITH_OPENGL && WITH_OPENGL)
-      die ("Option -g requires OpenGL support");
-#endif
-#if !(GTK_CHECK_VERSION(3, 16, 0))
-      die ("Option -g requires gtk+ >= 3.16");
-#endif
-    }
+  // Create Ginga handle.
+  ginga_opts.width = initial_width;
+  ginga_opts.height = initial_height;
+  ginga_opts.debug = debugging_on;
+  ginga_opts.experimental = FALSE;
+  ginga_opts.opengl = FALSE;
+  ginga_opts.background = string (background_color != NULL
+                                  ? background_color : "");
+  ginga = Ginga::create (&ginga_opts);
+  g_assert_nonnull (ginga);
 
   // Create application window.
-  app = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  g_assert_nonnull (app);
-  gtk_window_set_title (GTK_WINDOW (app), PACKAGE_STRING);
-  gtk_window_set_default_size (GTK_WINDOW (app), opt_width, opt_height);
-  if (opt_fullscreen)
-    gtk_window_fullscreen (GTK_WINDOW (app));
-
-  // Setup draw area.
-  if (opt_opengl)
-    {
-#if GTK_CHECK_VERSION(3, 16, 0)
-      GtkWidget *area = gtk_gl_area_new ();
-      g_assert_nonnull (area);
-      gtk_container_add (GTK_CONTAINER (app), area);
-      g_signal_connect (area, "render", G_CALLBACK (render_gl_callback),
-                        NULL);
-#else
-      g_assert_not_reached ();
-#endif
-    }
-  else
-    {
-      gtk_widget_set_app_paintable (app, TRUE);
-      g_signal_connect (app, "draw", G_CALLBACK (draw_callback), NULL);
-    }
-
-  // Setup GTK+ callbacks.
-  g_signal_connect (app, "destroy", G_CALLBACK (exit_callback), NULL);
-  g_signal_connect (app, "configure-event", G_CALLBACK (resize_callback),
-                    NULL);
-  g_signal_connect (app, "key-press-event", G_CALLBACK (keyboard_callback),
-                    deconst (void *, "press"));
-  g_signal_connect (app, "key-release-event",
-                    G_CALLBACK (keyboard_callback),
-                    deconst (void *, "release"));
-#if GTK_CHECK_VERSION(3, 8, 0)
-  gtk_widget_add_tick_callback (app, (GtkTickCallback) tick_callback, NULL,
-                                NULL);
-#else
-  g_timeout_add (1000 / 60, (GSourceFunc) tick_callback, app);
-#endif
-
-  // Create Ginga handle.
-  opts.width = opt_width;
-  opts.height = opt_height;
-  opts.debug = opt_debug;
-  opts.experimental = opt_experimental;
-  opts.opengl = opt_opengl;
-  opts.background = string (opt_background);
-  GINGA = Ginga::create (&opts);
-  g_assert_nonnull (GINGA);
+  app_init (ginga);
 
   // Run each NCL file, one after another.
-  int fail_count = 0;
-  for (int i = 1; i < saved_argc; i++)
+  gint fail_count = 0;
+  for (gint i = 1; i < saved_argc; i++)
     {
       string errmsg;
-      if (unlikely (!GINGA->start (string (saved_argv[i]), &errmsg)))
+      if (unlikely (!ginga->start (string (saved_argv[i]), &errmsg)))
         {
           if (saved_argc > 2)
             error ("%s: %s", saved_argv[i], errmsg.c_str ());
@@ -422,14 +585,17 @@ main (int argc, char **argv)
           fail_count++;
           continue;
         }
-      gtk_widget_show_all (app);
+      gtk_header_bar_set_title (GTK_HEADER_BAR (app_header_bar),
+                                saved_argv[i]);
+      gtk_widget_show_all (app_win);
       gtk_main ();
-      GINGA->stop ();
+      ginga->stop ();
     }
 
   // Done.
-  delete GINGA;
+  delete ginga;
+  gtk_widget_destroy (app_win);
   g_strfreev (saved_argv);
 
-  _exit (fail_count);
+  _exit (0);
 }

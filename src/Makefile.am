@@ -28,8 +28,8 @@ if WITH_OPENGL
 bin_PROGRAMS+= ginga-gl
 endif
 
-ginga_CXXFLAGS= $(AM_CXXFLAGS)
-ginga_LDFLAGS= $(AM_LDFLAGS)
+ginga_CXXFLAGS= $(AM_CXXFLAGS) $(LUA_CFLAGS)
+ginga_LDFLAGS= $(AM_LDFLAGS) $(LUA_LIBS)
 ginga_SOURCES= ginga.cpp
 ginga_LDADD= $(top_builddir)/lib/libginga.la
 

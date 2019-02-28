@@ -65,6 +65,12 @@ Ginga::version ()
 }
 
 /**
+ * @fn Ginga::getLuaState
+ * @brief Gets Ginga object Lua state (if any).
+ * @return The associated Lua state, or null (no Lua state).
+ */
+
+/**
  * @fn Ginga::getState
  * @brief Gets Ginga object state.
  * @return Ginga object state.
@@ -108,7 +114,7 @@ Ginga::version ()
 /**
  * @fn Ginga::sendTick
  * @brief Sends tick event to presentation.
- * @param total Time since the presentation started.
+ * @param time Time since the presentation started.
  * @param diff Time since last tick.
  * @param frame Tick number.
  * @return \c true if successful, or \c false otherwise.

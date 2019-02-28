@@ -28,6 +28,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_BEGIN_DECLS
 #include <cairo.h>
+#include <lua.h>
 GINGA_END_DECLS
 
 #include <cstdint>
@@ -83,7 +84,9 @@ public:
   explicit Ginga (const GingaOptions *opts);
   virtual ~Ginga () = 0;
 
+  virtual lua_State *getLuaState () = 0;
   virtual GingaState getState () = 0;
+
   virtual bool start (const std::string &path, std::string *errmsg) = 0;
   virtual bool stop () = 0;
 
@@ -104,6 +107,11 @@ public:
 
   static Ginga *create (const GingaOptions *opts);
   static std::string version ();
+
+  virtual std::string debug_getDocPath () = 0;
+  virtual uint64_t debug_getLastTickDiff () = 0;
+  virtual uint64_t debug_getLastTickFrame () = 0;
+  virtual uint64_t debug_getLastTickTime () = 0;
 };
 
 #endif // GINGA_H

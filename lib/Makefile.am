@@ -60,8 +60,6 @@ if WITH_LIBRSVG
 src+= PlayerSvg.cpp
 endif # WITH_LIBRSVG
 
-
-
 if WITH_NCLUA
 src+= PlayerLua.cpp
 endif # WITH_NCLUA

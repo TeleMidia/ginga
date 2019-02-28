@@ -111,6 +111,16 @@ zcmp (Media *a, Media *b)
 
 // Public: External API.
 
+lua_State *
+Formatter::getLuaState ()
+{
+  if (_state != GINGA_STATE_PLAYING)
+    return nullptr;
+
+  g_assert_nonnull (_doc);
+  return _doc->getLuaState ();
+}
+
 GingaState
 Formatter::getState ()
 {
@@ -156,9 +166,9 @@ Formatter::start (const string &file, string *errmsg)
   // Initialize formatter variables.
   _docPath = file;
   _eos = false;
-  _lastTickTotal = 0;
+  _lastTickTime = 0;
   _lastTickDiff = 0;
-  _lastTickFrameNo = 0;
+  _lastTickFrame = 0;
 
   // Run document.
   TRACE ("%s", file.c_str ());
@@ -285,18 +295,16 @@ Formatter::redraw (cairo_t *cr)
       static Color fg = { 1., 1., 1., 1. };
       static Color bg = { 0, 0, 0, 0 };
       static Rect rect = { 0, 0, 0, 0 };
-      string info;
+      string status;
       cairo_surface_t *debug;
       Rect ink;
-      info = xstrbuild ("%s: #%lu %" GINGA_TIME_FORMAT " %.1ffps",
-                        _docPath.c_str (), _lastTickFrameNo,
-                        GINGA_TIME_ARGS (_lastTickTotal),
-                        1 * GINGA_SECOND / (double) _lastTickDiff);
+
+      status = "debugging mode";
       rect.width = _opts.width;
       rect.height = _opts.height;
-      debug = PlayerText::renderSurface (info, "monospace", "", "bold", "9",
-                                         fg, bg, rect, "center", "", true,
-                                         &ink);
+      debug = PlayerText::renderSurface (status, "monospace", "", "bold",
+                                         "9", fg, bg, rect, "center",
+                                         "", true, &ink);
       ink = { 0, 0, rect.width, ink.height - ink.y + 4 };
       cairo_save (cr);
       cairo_set_source_rgba (cr, 1., 0., 0., .5);
@@ -357,7 +365,7 @@ Formatter::sendKey (const string &key, bool press)
 }
 
 bool
-Formatter::sendTick (uint64_t total, uint64_t diff, uint64_t frame)
+Formatter::sendTick (uint64_t time, uint64_t diff, uint64_t frame)
 {
   list<Object *> buf;
 
@@ -368,9 +376,9 @@ Formatter::sendTick (uint64_t total, uint64_t diff, uint64_t frame)
   if (_state != GINGA_STATE_PLAYING)
     return false;
 
-  _lastTickTotal = total;
+  _lastTickTime = time;
   _lastTickDiff = diff;
-  _lastTickFrameNo = frame;
+  _lastTickFrame = frame;
 
   // IMPORTANT: The same warning about propagation that appear in
   // Formatter::sendKeyEvent() applies here.  The difference is that ticks
@@ -379,7 +387,7 @@ Formatter::sendTick (uint64_t total, uint64_t diff, uint64_t frame)
     if (obj->isOccurring ())
       buf.push_back (obj);
   for (auto obj : buf)
-    obj->sendTick (total, diff, frame);
+    obj->sendTick (time, diff, frame);
 
   return true;
 }
@@ -423,6 +431,30 @@ OPT_GETSET_DEFN (Bool, bool, G_TYPE_BOOLEAN)
 OPT_GETSET_DEFN (Int, int, G_TYPE_INT)
 OPT_GETSET_DEFN (String, string, G_TYPE_STRING)
 
+string
+Formatter::debug_getDocPath ()
+{
+  return (_state != GINGA_STATE_PLAYING) ? "" : _docPath;
+}
+
+uint64_t
+Formatter::debug_getLastTickDiff ()
+{
+  return (_state != GINGA_STATE_PLAYING) ? 0 : _lastTickDiff;
+}
+
+uint64_t
+Formatter::debug_getLastTickFrame ()
+{
+  return (_state != GINGA_STATE_PLAYING) ? 0 : _lastTickFrame;
+}
+
+uint64_t
+Formatter::debug_getLastTickTime ()
+{
+  return (_state != GINGA_STATE_PLAYING) ? 0 : _lastTickTime;
+}
+
 // Public: Internal API.
 
 /**
@@ -438,9 +470,9 @@ Formatter::Formatter (const GingaOptions *opts) : Ginga (opts)
   _opts = (opts) ? *opts : opts_defaults;
   _background = { 0., 0., 0., 0. };
 
-  _lastTickTotal = 0;
+  _lastTickTime = 0;
   _lastTickDiff = 0;
-  _lastTickFrameNo = 0;
+  _lastTickFrame = 0;
   _saved_G_MESSAGES_DEBUG
       = (s = g_getenv ("G_MESSAGES_DEBUG")) ? string (s) : "";
 

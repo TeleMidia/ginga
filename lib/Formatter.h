@@ -38,6 +38,7 @@ class Formatter : public Ginga
 {
 public:
   // Ginga:
+  lua_State *getLuaState ();
   GingaState getState ();
 
   bool start (const std::string &, std::string *);
@@ -56,6 +57,11 @@ public:
   void setOptionInt (const std::string &, int);
   string getOptionString (const std::string &);
   void setOptionString (const std::string &, std::string);
+
+  string debug_getDocPath ();
+  uint64_t debug_getLastTickDiff ();
+  uint64_t debug_getLastTickFrame ();
+  uint64_t debug_getLastTickTime ();
 
   // Formatter:
   explicit Formatter (const GingaOptions *);
@@ -82,13 +88,13 @@ private:
   Color _background;
 
   /// @brief The last total time informed via Formatter::sendTick.
-  Time _lastTickTotal;
+  Time _lastTickTime;
 
   /// @brief The last diff time informed via Formatter::sendTick.
   Time _lastTickDiff;
 
   /// @brief The last frame number informed via Formatter::sendTick.
-  uint64_t _lastTickFrameNo;
+  uint64_t _lastTickFrame;
 
   /// @brief The saved value of environment variable G_MESSAGES_DEBUG.
   string _saved_G_MESSAGES_DEBUG;
