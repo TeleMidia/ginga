@@ -88,9 +88,11 @@ Object::getDocument ()
 void
 Object::initDocument (Document *doc)
 {
-  g_assert_nonnull (doc);
+  g_return_if_fail (doc);
+
   g_assert_null (_doc);
   _doc = doc;
+
   _L = doc->getLuaState ();
   g_assert_nonnull (_L);
 }

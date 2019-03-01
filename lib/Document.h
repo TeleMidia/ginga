@@ -38,11 +38,16 @@ public:
   virtual ~Document ();
 
   lua_State *getLuaState ();
+  string toString ();
 
   const set<Object *> *getObjects ();
   Object *getObjectById (const string &);
   Object *getObjectByIdOrAlias (const string &);
   bool addObject (Object *);
+
+  // Media *createMedia (Composition *parent, const string &id);
+  // Context *createContext (Composition *parent, const string &id);
+  // Switch *createSwitch (Composition *parent, const string &id);
 
   Context *getRoot ();
   MediaSettings *getSettings ();

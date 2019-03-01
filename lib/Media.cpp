@@ -26,6 +26,8 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
+#include "LuaMedia.cpp"
+
 // Public.
 
 Media::Media (const string &id) : Object (id)
@@ -39,6 +41,17 @@ Media::~Media ()
 }
 
 // Public: Object.
+
+void
+Media::initDocument (Document *doc)
+{
+  g_return_if_fail (doc != NULL);
+
+  Object::initDocument (doc);
+  g_assert_nonnull (_L);
+
+  media_attach_lua_api (_L, this);
+}
 
 string
 Media::getObjectTypeAsString ()

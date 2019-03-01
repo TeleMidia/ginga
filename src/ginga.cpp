@@ -166,7 +166,7 @@ static GtkCssProvider *app_css = NULL;
     font-family: monospace;                     \
   }
 
-// GTK+ Callbacks.
+// GTK+ callbacks.
 
 static gboolean
 on_canvas_draw (unused (GtkWidget *canvas),

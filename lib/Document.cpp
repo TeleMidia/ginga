@@ -26,13 +26,15 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
+#include "LuaDocument.cpp"
+
 /**
- * @brief Creates a new document with Lua state.
- * @param L Lua state (nonnull).
+ * @brief Creates a new document.
+ * @param L Lua state (must be nonnull).
  *
- * The newly created document has an empty root context (called "__root__").
- * This context contains a single settings media object (called
- * "__settings__").
+ * The newly created document has an empty root context, called "__root__".
+ * This context contains a single settings media object, called
+ * "__settings__".
  *
  * @return New #Document.
  */
@@ -40,10 +42,10 @@ Document::Document (lua_State *L)
 {
   MediaSettings *obj;
 
-  g_assert_nonnull (L);
+  g_return_if_fail (L != NULL);
+
   _L = L;
-  lua_pushlightuserdata (L, this);
-  lua_setglobal (L, "_D");
+  document_attach_lua_api (L, this);
 
   _root = new Context ("__root__");
   _settings = nullptr;
@@ -67,7 +69,7 @@ Document::~Document ()
 }
 
 /**
- * @brief Gets document Lua state.
+ * @brief Gets Lua state.
  * @return Lua state.
  */
 lua_State *
@@ -77,8 +79,25 @@ Document::getLuaState ()
 }
 
 /**
- * @brief Gets document objects.
- * @return The set of objects in document.
+ * @brief Gets a string representation of document.
+ * @return String representation of document.
+ */
+string
+Document::toString ()
+{
+  string str;
+
+  str = xstrbuild ("\
+Document (%p)\n\
+",
+                   this);
+
+  return str;
+}
+
+/**
+ * @brief Gets child objects.
+ * @return Child objects.
  */
 const set<Object *> *
 Document::getObjects ()
@@ -87,9 +106,9 @@ Document::getObjects ()
 }
 
 /**
- * @brief Gets document object by id.
- * @param id Object id.
- * @return The object if successful, or null otherwise.
+ * @brief Gets child object by id.
+ * @param id Child object id.
+ * @return Child object, or null (no such object).
  */
 Object *
 Document::getObjectById (const string &id)
@@ -101,9 +120,9 @@ Document::getObjectById (const string &id)
 }
 
 /**
- * @brief Gets document object by id or alias.
- * @param id Object id or alias.
- * @return The object if successful, or null otherwise.
+ * @brief Gets child object by id or alias.
+ * @param id Child object id or alias.
+ * @return Child object, or null (no such object).
  */
 Object *
 Document::getObjectByIdOrAlias (const string &id)
@@ -118,10 +137,10 @@ Document::getObjectByIdOrAlias (const string &id)
 }
 
 /**
- * @brief Adds object to document.
+ * @brief Adds child object.
  *
- * @param obj The object to add.
- * @return \c true if successful, or \c false otherwise (object already in
+ * @param obj Object to add.
+ * @return \c true if successful, or \c false (object already in
  * document).
  *
  * @warning This function assumes that \p obj is not in another document.
@@ -129,12 +148,12 @@ Document::getObjectByIdOrAlias (const string &id)
 bool
 Document::addObject (Object *obj)
 {
-  g_assert_nonnull (obj);
+  g_return_val_if_fail (obj != NULL, false);
 
   if (_objects.find (obj) != _objects.end ()
-      || getObjectByIdOrAlias (obj->getId ()) != nullptr)
+      || getObjectByIdOrAlias (obj->getId ()) != NULL)
     {
-      return false; // already in document
+      return false;             // already in document
     }
 
   // Settings can only be added once.
@@ -171,8 +190,8 @@ Document::addObject (Object *obj)
 }
 
 /**
- * @brief Gets document's root object.
- * @return The root object.
+ * @brief Gets root context object.
+ * @return Root context object.
  */
 Context *
 Document::getRoot ()
@@ -182,8 +201,8 @@ Document::getRoot ()
 }
 
 /**
- * @brief Gets document's settings object.
- * @return The settings object.
+ * @brief Gets settings media object.
+ * @return Settings media object.
  */
 MediaSettings *
 Document::getSettings ()
@@ -192,18 +211,30 @@ Document::getSettings ()
   return _settings;
 }
 
+/**
+ * @brief Gets child media objects.
+ * @return Child media objects.
+ */
 const set<Media *> *
 Document::getMedias ()
 {
   return &_medias;
 }
 
+/**
+ * @brief Gets child context objects.
+ * @return Child context objects.
+ */
 const set<Context *> *
 Document::getContexts ()
 {
   return &_contexts;
 }
 
+/**
+ * @brief Gets child switch objects.
+ * @return Child switch objects.
+ */
 const set<Switch *> *
 Document::getSwitches ()
 {

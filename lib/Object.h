@@ -39,7 +39,7 @@ public:
   string getId ();
 
   Document *getDocument ();
-  void initDocument (Document *);
+  virtual void initDocument (Document *);
 
   Composition *getParent ();
   void initParent (Composition *);

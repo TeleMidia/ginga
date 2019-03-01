@@ -90,8 +90,7 @@ Event::toString ()
 {
   string str;
 
-  str = xstrbuild (
-      "\
+  str = xstrbuild ("\
 Event (%p)\n\
   object: %p (%s, id: %s)\n\
   id: %s\n\

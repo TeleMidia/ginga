@@ -30,6 +30,7 @@ public:
   virtual ~Media ();
 
   // Object:
+  void initDocument (Document *) override;
   string getObjectTypeAsString () override;
   string toString () override;
   void setProperty (const string &, const string &, Time dur = 0) override;
