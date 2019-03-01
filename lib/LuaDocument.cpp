@@ -62,16 +62,20 @@ static int
 l_Document_getMediaObjects (lua_State *L)
 {
   Document *doc;
-  set <Media *> medias;
+  set<Object *> objects;
   lua_Integer i;
 
   doc = CHECK_DOCUMENT (L, 1);
-  doc->getMediaObjects (&medias);
+  doc->getObjects (Object::MEDIA, &objects);
 
   lua_newtable (L);
   i = 1;
-  for (auto media : medias)
+  for (auto obj: objects)
     {
+      Media *media;
+
+      media = cast (Media *, obj);
+      g_assert_nonnull (media);
       PUSH_LUA_WRAPPER (L, media);
       g_assert (media == CHECK_MEDIA (L, -1));
       lua_rawseti (L, -2, i++);

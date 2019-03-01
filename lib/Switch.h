@@ -32,7 +32,7 @@ public:
   ~Switch ();
 
   // Object:
-  string getObjectTypeAsString () override;
+  Object::Type getType () override;
   string toString () override;
   bool beforeTransition (Event *, Event::Transition) override;
   bool afterTransition (Event *, Event::Transition) override;

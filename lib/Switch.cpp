@@ -39,10 +39,10 @@ Switch::~Switch ()
 
 // Public: Object.
 
-string
-Switch::getObjectTypeAsString ()
+Object::Type
+Switch::getType ()
 {
-  return "Switch";
+  return Object::SWITCH;
 }
 
 string

@@ -66,50 +66,28 @@ Document::getObjects ()
   return &_objects;
 }
 
+void
+Document::getObjects (int mask, set<Object *> *objects)
+{
+  g_return_if_fail (objects != NULL);
+
+  for (auto obj: _objects)
+    if (obj->getType () & mask)
+      objects->insert (obj);
+}
+
 Object *
 Document::getObjectById (const string &id)
 {
   auto it = _objectsById.find (id);
-  return it != _objectsById.end () ? it->second : NULL;
-}
-
-Object *
-Document::getObjectByIdOrAlias (const string &id)
-{
-  Object *obj;
-
-  obj = this->getObjectById (id);
-  if (obj != NULL)
-    return obj;
+  if (it != _objectsById.end ())
+    return it->second;          // id matched
 
   for (auto obj : _objects)
     if (obj->hasAlias (id))
-      return obj;
+      return obj;               // alias matched
 
-  return NULL;
-}
-
-bool
-Document::addObject (Object *obj)
-{
-  g_return_val_if_fail (obj != NULL, false);
-
-  if (_objects.find (obj) != _objects.end ()
-      || getObjectByIdOrAlias (obj->getId ()) != NULL)
-    {
-      return false;             // id already in document
-    }
-
-  if (_settings != NULL && instanceof (MediaSettings *, obj))
-    {
-      return false;             // settings already in document
-    }
-
-  g_assert (obj->getDocument () == this);
-  _objects.insert (obj);
-  _objectsById[obj->getId ()] = obj;
-
-  return true;
+  return NULL;                  // no match
 }
 
 Context *
@@ -126,42 +104,55 @@ Document::getSettingsObject ()
   return _settings;
 }
 
-void
-Document::getMediaObjects (set<Media *> *medias)
+bool
+Document::addObject (Object *object)
 {
-  for (auto obj : _objects)
-    if (instanceof (Media *, obj))
-      medias->insert (cast (Media *, obj));
+  g_return_val_if_fail (object != NULL, false);
+  g_return_val_if_fail (object->getDocument () == this, false);
+
+  if (_objects.find (object) != _objects.end ()
+      || getObjectById (object->getId ()) != NULL)
+    {
+      return false;             // id already in document
+    }
+
+  if (_settings != NULL && instanceof (MediaSettings *, object))
+    {
+      return false;             // settings already in document
+    }
+
+  _objects.insert (object);
+  _objectsById[object->getId ()] = object;
+
+  return true;
 }
 
-void
-Document::getContextObjects (set<Context *> *contexts)
-{
-  for (auto obj : _objects)
-    if (instanceof (Context *, obj))
-      contexts->insert (cast (Context *, obj));
-}
-
-void
-Document::getSwitchObjects (set<Switch *> *switches)
-{
-  for (auto obj : _objects)
-    if (instanceof (Switch *, obj))
-      switches->insert (cast (Switch *, obj));
-}
-
-Media *
-Document::createMedia (Composition *parent, const string &id)
+Object *
+Document::createObject (Object::Type type,
+                        Composition *parent,
+                        const string &id)
 {
   g_return_val_if_fail (parent != NULL, NULL);
 
   if (_objects.find (parent) == _objects.end ())
     return NULL;               // parent not in document
 
-  if (this->getObjectByIdOrAlias (id) != NULL)
+  if (this->getObjectById (id) != NULL)
     return NULL;               // id already in document
 
-  return new Media (this, parent, id);
+  switch (type)
+    {
+    case Object::MEDIA:
+      return new Media (this, parent, id);
+    case Object::MEDIA_SETTINGS:
+      return new MediaSettings (this, parent, id);
+    case Object::CONTEXT:
+      return new Context (this, parent, id);
+    case Object::SWITCH:
+      return new Switch (this, parent, id);
+    default:
+      g_assert_not_reached ();
+    }
 }
 
 // TODO
@@ -493,7 +484,7 @@ Document::evalPropertyRef (const string &ref, string *result)
 
   id = ref.substr (1, i - 1);
   name = ref.substr (i + 1);
-  object = this->getObjectByIdOrAlias (id);
+  object = this->getObjectById (id);
   if (object == NULL)
     return false;
 

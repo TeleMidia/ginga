@@ -29,8 +29,8 @@ class Switch;
 /**
  * @brief Run-time representation of an NCL document.
  *
- * The Document is a run-time representation of an NCL document.  It holds
- * and acts as a top-level interface to an NCL object tree.
+ * The Document is a run-time representation of an NCL document.  It acts as
+ * a top-level interface to the NCL object tree.
  */
 class Document
 {
@@ -51,9 +51,7 @@ public:
   Document ();
 
   /**
-   * @brief Destroys document.
-   *
-   * Destroys document and all of its objects.
+   * @brief Destroys document and all of its objects.
    */
   virtual ~Document ();
 
@@ -70,35 +68,24 @@ public:
   string toString ();
 
   /**
-   * @brief Gets the set of objects in document.
-   * @return The set of objects in document.
+   * @brief Gets the set of all objects in document.
+   * @return The set of all objects in document.
    */
   const set<Object *> *getObjects ();
 
   /**
-   * @brief Gets an object from document by its id.
-   * @param id Object id.
-   * @return Object or \c NULL (no such object).
+   * @brief Gets the set of objects in document whose type match \p mask.
+   * @param mask Bit-mask of Object::Type.
+   * @param[out] objects The set of matched objects.
+   */
+  void getObjects (int mask, set<Object *> *objects);
+
+  /**
+   * @brief Gets the object in document whose id or alias match \p id.
+   * @param id The object id or alias to match.
+   * @return The matched object or \c NULL (no such object).
    */
   Object *getObjectById (const string &id);
-
-  /**
-   * @brief Gets an object from document by its id or alias.
-   * @param id Object id or alias.
-   * @return Object or \c NULL (no such object).
-   */
-  Object *getObjectByIdOrAlias (const string &id);
-
-  /**
-   * @brief Adds an object to document.
-   *
-   * @param obj Object to add.
-   * @return \c true if successful, or \c false otherwise (object already in
-   * document).
-   *
-   * @warning \p obj must not be in another document.
-   */
-  bool addObject (Object *obj);
 
   /**
    * @brief Gets the root Context of document.
@@ -113,31 +100,22 @@ public:
   MediaSettings *getSettingsObject ();
 
   /**
-   * @brief Gets the set of Media objects in document.
-   * @param[out] medias The set of Media objects in document.
+   * @brief Adds object to document.
+   * @param object The object to add.
+   * @return \c true if successful, or \c false otherwise.
    */
-  void getMediaObjects (set <Media *> *medias);
+  bool addObject (Object *object);
 
   /**
-   * @brief Gets the set of Context objects in document.
-   * @param[out] contexts The set of Context objects in document.
+   * @brief Creates and adds a new object to document.
+   * @param type The type of the new object.
+   * @param parent The parent object to add the new object to.
+   * @param id The id of the new object (must not occur in document).
+   * @return The newly created object if successful, or \c NULL otherwise.
    */
-  void getContextObjects (set <Context *> *contexts);
-
-  /**
-   * @brief Gets the set of Switch objects in document.
-   * @param[out] switches The set of Switch objects in document.
-   */
-  void getSwitchObjects (set <Switch *> *switches);
-
-  /**
-   * @brief Creates and adds a new Media to document.
-   * @param parent The parent object to add the new Media to.
-   * @param id The id of the new Media (must not occur in document).
-   * @return The newly created Media if successful, or \c NULL otherwise.
-   */
-  Media *createMedia (Composition *parent,
-                      const string &id);
+  Object *createObject (Object::Type type,
+                        Composition *parent,
+                        const string &id);
 
   // TODO
 

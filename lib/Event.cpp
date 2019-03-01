@@ -90,14 +90,15 @@ Event::toString ()
 {
   string str;
 
-  str = xstrbuild ("\
+  str = xstrbuild
+    ("\
 Event (%p)\n\
   object: %p (%s, id: %s)\n\
   id: %s\n\
   full-id: %s\n\
   type: %s\n\
   state: %s\n",
-      this, _object, _object->getObjectTypeAsString ().c_str (),
+     this, _object, Object::getTypeAsString (_object->getType ()).c_str (),
       _object->getId ().c_str (), _id.c_str (), this->getFullId ().c_str (),
       Event::getEventTypeAsString (_type).c_str (),
       Event::getEventStateAsString (_state).c_str ());

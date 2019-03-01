@@ -52,9 +52,11 @@ static int
 l_Media_getType (lua_State *L)
 {
   Media *media;
+  const char *type;
 
   media = CHECK_MEDIA (L, 1);
-  lua_pushstring (L, media->getObjectTypeAsString ().c_str ());
+  type = Object::getTypeAsString (media->getType ()).c_str ();
+  lua_pushstring (L, type);
 
   return 1;
 }

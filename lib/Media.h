@@ -31,7 +31,7 @@ public:
   virtual ~Media ();
 
   // Object:
-  string getObjectTypeAsString () override;
+  Object::Type getType () override;
   string toString () override;
   void setProperty (const string &, const string &, Time dur = 0) override;
   void sendKey (const string &, bool) override;

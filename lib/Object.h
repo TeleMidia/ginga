@@ -33,6 +33,17 @@ class MediaSettings;
 class Object
 {
 public:
+
+  enum Type {
+    MEDIA          = 1 << 1,
+    MEDIA_SETTINGS = 1 << 2,
+    CONTEXT        = 1 << 3,
+    SWITCH         = 1 << 4
+  };
+
+  virtual Object::Type getType () = 0;
+  static string getTypeAsString (Object::Type type);
+
   explicit Object (Document *doc,
                    Composition *parent,
                    const string &id);
@@ -44,7 +55,8 @@ public:
   Document *getDocument ();
   Composition *getParent ();
 
-  virtual string getObjectTypeAsString () = 0;
+
+
   virtual string toString ();
 
   const list<pair<string, Composition *> > *getAliases ();

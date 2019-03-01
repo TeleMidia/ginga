@@ -106,19 +106,40 @@ Object::getParent ()
 }
 
 string
+Object::getTypeAsString (Object::Type type)
+{
+  switch (type)
+    {
+    case MEDIA:
+      return "Media";
+    case MEDIA_SETTINGS:
+      return "MediaSettings";
+    case CONTEXT:
+      return "Context";
+    case SWITCH:
+      return "Switch";
+    default:
+      g_assert_not_reached ();
+    }
+}
+
+string
 Object::toString ()
 {
   string str;
 
-  str = xstrbuild ("%s (%p):\n", this->getObjectTypeAsString ().c_str (),
+  str = xstrbuild ("%s (%p):\n",
+                   Object::getTypeAsString (this->getType ()).c_str (),
                    this);
 
   if (_parent != nullptr)
     {
-      str += xstrbuild ("\
+      str += xstrbuild
+        ("\
   parent: %p (%s, id: %s)\n",
-                        _parent, _parent->getObjectTypeAsString ().c_str (),
-                        _parent->getId ().c_str ());
+         _parent,
+         Object::getTypeAsString (_parent->getType ()).c_str (),
+         _parent->getId ().c_str ());
     }
   str += "  id: " + _id + "\n";
   auto it = _aliases.begin ();

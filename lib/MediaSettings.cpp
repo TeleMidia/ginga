@@ -41,10 +41,10 @@ MediaSettings::~MediaSettings ()
 
 // Public: Object.
 
-string
-MediaSettings::getObjectTypeAsString ()
+Object::Type
+MediaSettings::getType ()
 {
-  return "MediaSettings";
+  return Object::MEDIA_SETTINGS;
 }
 
 void
@@ -100,11 +100,16 @@ MediaSettings::updateCurrentFocus (const string &index)
     }
   else
     {
-      set <Media *> medias;
+      set<Object *> objects;
 
-      _doc->getMediaObjects (&medias);
-      for (auto media : medias)
+      _doc->getObjects (Object::MEDIA, &objects);
+      for (auto obj: objects)
         {
+          Media *media;
+
+          media = cast (Media *, obj);
+          g_assert_nonnull (media);
+
           if (media->isOccurring ()
               && (i = media->getProperty ("focusIndex")) != ""
               && (next == "" || i < next))

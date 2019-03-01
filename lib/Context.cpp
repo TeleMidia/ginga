@@ -54,10 +54,10 @@ Context::~Context ()
 
 // Public: Object.
 
-string
-Context::getObjectTypeAsString ()
+Object::Type
+Context::getType ()
 {
-  return "Context";
+  return Object::CONTEXT;
 }
 
 string

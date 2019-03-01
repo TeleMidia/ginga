@@ -45,10 +45,10 @@ Media::~Media ()
 
 // Public: Object.
 
-string
-Media::getObjectTypeAsString ()
+Object::Type
+Media::getType ()
 {
-  return "Media";
+  return Object::MEDIA;
 }
 
 string

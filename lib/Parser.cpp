@@ -2427,7 +2427,7 @@ borderColor='%s'}",
 
               g_assert (media_elt->getAttribute ("id", &media_id));
               media = cast (Media *,
-                            st->_doc->getObjectByIdOrAlias (media_id));
+                            st->_doc->getObjectById (media_id));
               g_assert_nonnull (media);
 
               for (auto it : *desc_elt->getAttributes ())
@@ -2477,7 +2477,7 @@ borderColor='%s'}",
 
           g_assert (switch_elt->getAttribute ("id", &switch_id));
           swtch
-              = cast (Switch *, st->_doc->getObjectByIdOrAlias (switch_id));
+              = cast (Switch *, st->_doc->getObjectById (switch_id));
           g_assert_nonnull (swtch);
 
           UDATA_GET (switch_elt, "rules", &rules);
@@ -3867,12 +3867,13 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
 
   if (hasRefer)
     {
-      media = cast (Media *, st->_doc->getObjectByIdOrAlias (refer));
+      media = cast (Media *, st->_doc->getObjectById (refer));
       if (media == nullptr)
         {
           if (!st->referMapIndex (refer, &media))
             {
-              media = st->_doc->createMedia (parent, refer);
+              media = cast (Media *, st->_doc->createObject
+                            (Object::MEDIA, parent, refer));
               g_assert_nonnull (media);
             }
 
@@ -3904,7 +3905,8 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
             }
           if (!st->referMapIndex (id, &media))
             {
-              media = st->_doc->createMedia (parent, id);
+              media = cast (Media *, st->_doc->createObject
+                            (Object::MEDIA, parent, id));
               g_assert_nonnull (media);
             }
           media->setProperty ("uri", src);
