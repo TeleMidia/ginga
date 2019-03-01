@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef MEDIA_SETTINGS_H
-#define MEDIA_SETTINGS_H
+#ifndef GINGA_MEDIA_SETTINGS_H
+#define GINGA_MEDIA_SETTINGS_H
 
 #include "Media.h"
 
@@ -25,7 +25,9 @@ GINGA_NAMESPACE_BEGIN
 class MediaSettings : public Media
 {
 public:
-  explicit MediaSettings (const string &);
+  explicit MediaSettings (Document *doc,
+                          Composition *parent,
+                          const string &id);
   ~MediaSettings ();
 
   // Object:
@@ -49,4 +51,4 @@ private:
 
 GINGA_NAMESPACE_END
 
-#endif // MEDIA_SETTINGS_H
+#endif // GINGA_MEDIA_SETTINGS_H

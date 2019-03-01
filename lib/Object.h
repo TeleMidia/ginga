@@ -33,16 +33,16 @@ class MediaSettings;
 class Object
 {
 public:
-  explicit Object (const string &id);
+  explicit Object (Document *doc,
+                   Composition *parent,
+                   const string &id);
+
   virtual ~Object ();
 
   string getId ();
 
   Document *getDocument ();
-  virtual void initDocument (Document *);
-
   Composition *getParent ();
-  void initParent (Composition *);
 
   virtual string getObjectTypeAsString () = 0;
   virtual string toString ();
@@ -112,9 +112,9 @@ public:
                                 Event::Transition transition) = 0;
 
 protected:
-  string _id;                                  // id
-  Document *_doc;                              // parent document
-  lua_State *_L;                               // parent Lua state
+  string _id;                                  // object id
+  Document *_doc;                              // document
+  lua_State *_L;                               // Lua state
   Composition *_parent;                        // parent object
   list<pair<string, Composition *> > _aliases; // aliases
   Time _time;                                  // playback time

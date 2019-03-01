@@ -20,14 +20,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "LuaAPI.h"
 
 static int
-__l_document_gc (unused (lua_State *L))
-{
-  // The wrapped Document should not be deleted by Lua's GC.
-  return 0;
-}
-
-static int
-__l_document_toString (lua_State *L)
+__l_Document_toString (lua_State *L)
 {
   Document *doc;
 
@@ -38,14 +31,14 @@ __l_document_toString (lua_State *L)
 }
 
 static int
-__l_document_getUnderlyingObject (lua_State *L)
+__l_Document_getUnderlyingObject (lua_State *L)
 {
   lua_pushlightuserdata (L, CHECK_DOCUMENT (L, 1));
   return 1;
 }
 
 static int
-l_document_getObjectById (lua_State *L)
+l_Document_getObjectById (lua_State *L)
 {
   Document *doc;
   const gchar *id;
@@ -61,22 +54,43 @@ l_document_getObjectById (lua_State *L)
       return 1;
     }
 
-  lua_pushvalue (L, LUA_REGISTRYINDEX);
-  lua_rawgetp (L, -1, obj);
+  PUSH_LUA_WRAPPER (L, obj);
+  return 1;
+}
+
+static int
+l_Document_getMediaObjects (lua_State *L)
+{
+  Document *doc;
+  set <Media *> medias;
+  lua_Integer i;
+
+  doc = CHECK_DOCUMENT (L, 1);
+  doc->getMediaObjects (&medias);
+
+  lua_newtable (L);
+  i = 1;
+  for (auto media : medias)
+    {
+      PUSH_LUA_WRAPPER (L, media);
+      g_assert (media == CHECK_MEDIA (L, -1));
+      lua_rawseti (L, -2, i++);
+    }
+
   return 1;
 }
 
 static const struct luaL_Reg funcs[] =
 {
- {"__gc", __l_document_gc},
- {"__tostring", __l_document_toString},
- {"__getUnderlyingObject", __l_document_getUnderlyingObject},
- {"getObjectById", l_document_getObjectById},
+ {"__tostring", __l_Document_toString},
+ {"__getUnderlyingObject", __l_Document_getUnderlyingObject},
+ {"getObjectById", l_Document_getObjectById},
+ {"getMediaObjects", l_Document_getMediaObjects},
  {NULL, NULL},
 };
 
 static void
-document_attach_lua_api (lua_State *L, Document *doc)
+attachLuaAPI_Document (lua_State *L, Document *doc)
 {
   Document **wrapper;
 

@@ -26,7 +26,10 @@ GINGA_NAMESPACE_BEGIN
 class Context : public Composition
 {
 public:
-  explicit Context (const string &);
+  explicit Context (Document *doc,
+                    Composition *parent,
+                    const string &id);
+
   virtual ~Context ();
 
   // Object:
@@ -55,8 +58,8 @@ public:
 private:
   list<Event *> _ports;                            ///< List of ports.
   list<pair<list<Action>, list<Action> > > _links; ///< List of links.
-  int _awakeChildren; ///< Counts awake children.
-  bool _status;       ///< Whether links are active.
+  int _awakeChildren;           ///< Counts awake children.
+  bool _status;                 ///< Whether links are active.
 };
 
 GINGA_NAMESPACE_END

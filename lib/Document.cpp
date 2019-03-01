@@ -28,123 +28,67 @@ GINGA_NAMESPACE_BEGIN
 
 #include "LuaDocument.cpp"
 
-/**
- * @brief Creates a new document.
- * @param L Lua state (must be nonnull).
- *
- * The newly created document has an empty root context, called "__root__".
- * This context contains a single settings media object, called
- * "__settings__".
- *
- * @return New #Document.
- */
-Document::Document (lua_State *L)
+Document::Document ()
 {
-  MediaSettings *obj;
+  _L = luaL_newstate ();
+  g_assert_nonnull (_L);
+  luaL_openlibs (_L);
+  attachLuaAPI_Document (_L, this);
 
-  g_return_if_fail (L != NULL);
-
-  _L = L;
-  document_attach_lua_api (L, this);
-
-  _root = new Context ("__root__");
-  _settings = nullptr;
-  g_assert (this->addObject (_root));
-
-  obj = new MediaSettings ("__settings__");
-  _root->addChild (obj);
-  _settings = obj;
+  _root = new Context (this, NULL, "__root__");
+  _settings = new MediaSettings (this, _root, "__settings__");
 }
 
-/**
- * @brief Destroys document.
- *
- * Destroys the document and all its child objects, and closes the
- * associated Lua state.
- */
 Document::~Document ()
 {
+  g_assert_nonnull (_root);
   delete _root;
+
+  g_assert_nonnull (_L);
   lua_close (_L);
 }
 
-/**
- * @brief Gets Lua state.
- * @return Lua state.
- */
 lua_State *
 Document::getLuaState ()
 {
   return _L;
 }
 
-/**
- * @brief Gets a string representation of document.
- * @return String representation of document.
- */
 string
 Document::toString ()
 {
-  string str;
-
-  str = xstrbuild ("\
-Document (%p)\n\
-",
-                   this);
-
-  return str;
+  return xstrbuild ("Document (%p)\n", this);
 }
 
-/**
- * @brief Gets child objects.
- * @return Child objects.
- */
 const set<Object *> *
 Document::getObjects ()
 {
   return &_objects;
 }
 
-/**
- * @brief Gets child object by id.
- * @param id Child object id.
- * @return Child object, or null (no such object).
- */
 Object *
 Document::getObjectById (const string &id)
 {
   auto it = _objectsById.find (id);
-  if (it == _objectsById.end ())
-    return nullptr;
-  return it->second;
+  return it != _objectsById.end () ? it->second : NULL;
 }
 
-/**
- * @brief Gets child object by id or alias.
- * @param id Child object id or alias.
- * @return Child object, or null (no such object).
- */
 Object *
 Document::getObjectByIdOrAlias (const string &id)
 {
   Object *obj;
-  if ((obj = this->getObjectById (id)) != nullptr)
+
+  obj = this->getObjectById (id);
+  if (obj != NULL)
     return obj;
+
   for (auto obj : _objects)
     if (obj->hasAlias (id))
       return obj;
-  return nullptr;
+
+  return NULL;
 }
 
-/**
- * @brief Adds child object.
- *
- * @param obj Object to add.
- * @return \c true if successful, or \c false (object already in
- * document).
- *
- * @warning This function assumes that \p obj is not in another document.
- */
 bool
 Document::addObject (Object *obj)
 {
@@ -153,46 +97,21 @@ Document::addObject (Object *obj)
   if (_objects.find (obj) != _objects.end ()
       || getObjectByIdOrAlias (obj->getId ()) != NULL)
     {
-      return false;             // already in document
+      return false;             // id already in document
     }
 
-  // Settings can only be added once.
-  if (unlikely (_settings != nullptr && instanceof (MediaSettings *, obj)))
-    g_assert_false (instanceof (MediaSettings *, obj));
+  if (_settings != NULL && instanceof (MediaSettings *, obj))
+    {
+      return false;             // settings already in document
+    }
 
-  obj->initDocument (this);
+  g_assert (obj->getDocument () == this);
   _objects.insert (obj);
   _objectsById[obj->getId ()] = obj;
 
-  if (instanceof (Media *, obj))
-    {
-      Media *media = cast (Media *, obj);
-      g_assert_nonnull (media);
-      _medias.insert (media);
-    }
-  else if (instanceof (Context *, obj))
-    {
-      Context *ctx = cast (Context *, obj);
-      g_assert_nonnull (ctx);
-      _contexts.insert (ctx);
-    }
-  else if (instanceof (Switch *, obj))
-    {
-      Switch *swtch = cast (Switch *, obj);
-      g_assert_nonnull (swtch);
-      _switches.insert (swtch);
-    }
-  else
-    {
-      g_assert_not_reached ();
-    }
   return true;
 }
 
-/**
- * @brief Gets root context object.
- * @return Root context object.
- */
 Context *
 Document::getRoot ()
 {
@@ -200,46 +119,52 @@ Document::getRoot ()
   return _root;
 }
 
-/**
- * @brief Gets settings media object.
- * @return Settings media object.
- */
 MediaSettings *
-Document::getSettings ()
+Document::getSettingsObject ()
 {
   g_assert_nonnull (_settings);
   return _settings;
 }
 
-/**
- * @brief Gets child media objects.
- * @return Child media objects.
- */
-const set<Media *> *
-Document::getMedias ()
+void
+Document::getMediaObjects (set<Media *> *medias)
 {
-  return &_medias;
+  for (auto obj : _objects)
+    if (instanceof (Media *, obj))
+      medias->insert (cast (Media *, obj));
 }
 
-/**
- * @brief Gets child context objects.
- * @return Child context objects.
- */
-const set<Context *> *
-Document::getContexts ()
+void
+Document::getContextObjects (set<Context *> *contexts)
 {
-  return &_contexts;
+  for (auto obj : _objects)
+    if (instanceof (Context *, obj))
+      contexts->insert (cast (Context *, obj));
 }
 
-/**
- * @brief Gets child switch objects.
- * @return Child switch objects.
- */
-const set<Switch *> *
-Document::getSwitches ()
+void
+Document::getSwitchObjects (set<Switch *> *switches)
 {
-  return &_switches;
+  for (auto obj : _objects)
+    if (instanceof (Switch *, obj))
+      switches->insert (cast (Switch *, obj));
 }
+
+Media *
+Document::createMedia (Composition *parent, const string &id)
+{
+  g_return_val_if_fail (parent != NULL, NULL);
+
+  if (_objects.find (parent) == _objects.end ())
+    return NULL;               // parent not in document
+
+  if (this->getObjectByIdOrAlias (id) != NULL)
+    return NULL;               // id already in document
+
+  return new Media (this, parent, id);
+}
+
+// TODO
 
 /**
  * @brief Evaluates action over document.
@@ -252,7 +177,7 @@ Document::evalAction (Event *event, Event::Transition transition,
   act.event = event;
   g_assert_nonnull (event);
   act.transition = transition;
-  act.predicate = nullptr;
+  act.predicate = NULL;
   act.value = value;
   return this->evalAction (act);
 }
@@ -281,7 +206,7 @@ Document::evalActionInContext (Action act, Context *ctx)
             continue;
 
           pred = cond.predicate;
-          if (pred != nullptr && !this->evalPredicate (pred))
+          if (pred != NULL && !this->evalPredicate (pred))
             continue;
 
           // Success.
@@ -362,7 +287,7 @@ Document::evalAction (Action init)
       comp = obj->getParent ();
 
       // If parent composition is a context
-      if (comp != nullptr &&
+      if (comp != NULL &&
           instanceof (Context *, comp) && comp->isOccurring ())
         {
           ctx_parent = cast (Context *, comp);
@@ -375,7 +300,7 @@ Document::evalAction (Action init)
           // If the event object is pointed by a port in the parent context,
           // trigger links in the its grantparent context ( and ancestors)
           comp = ctx_parent->getParent ();
-          if (comp != nullptr &&
+          if (comp != NULL &&
               instanceof (Context *, comp) && comp->isOccurring ())
             {
               ctx_grandparent = cast (Context *, comp);
@@ -391,7 +316,7 @@ Document::evalAction (Action init)
             }
         }
       // If parent composition is a switch
-      else if (comp != nullptr && instanceof (Switch *, comp))
+      else if (comp != NULL && instanceof (Switch *, comp))
         {
           // Trigger the switchPort labelled action mapped to the switch's
           // media object.
@@ -401,7 +326,7 @@ Document::evalAction (Action init)
               for (const auto &mapped_evt : swtchPort.second)
                 {
                   if (mapped_evt->getObject () == evt->getObject ()
-                      && swtch->getParent () != nullptr)
+                      && swtch->getParent () != NULL)
                     {
                       Event *label_evt = swtch->getEvent (
                           Event::PRESENTATION, swtchPort.first);
@@ -569,7 +494,7 @@ Document::evalPropertyRef (const string &ref, string *result)
   id = ref.substr (1, i - 1);
   name = ref.substr (i + 1);
   object = this->getObjectByIdOrAlias (id);
-  if (object == nullptr)
+  if (object == NULL)
     return false;
 
   tryset (result, object->getProperty (name));

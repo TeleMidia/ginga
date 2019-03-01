@@ -30,9 +30,12 @@ GINGA_NAMESPACE_BEGIN
 
 // Public.
 
-Media::Media (const string &id) : Object (id)
+Media::Media (Document *doc,
+              Composition *parent,
+              const string &id) : Object (doc, parent, id)
 {
-  _player = nullptr;
+  _player = NULL;
+  attachLuaAPI_Media (_L, this);
 }
 
 Media::~Media ()
@@ -41,17 +44,6 @@ Media::~Media ()
 }
 
 // Public: Object.
-
-void
-Media::initDocument (Document *doc)
-{
-  g_return_if_fail (doc != NULL);
-
-  Object::initDocument (doc);
-  g_assert_nonnull (_L);
-
-  media_attach_lua_api (_L, this);
-}
 
 string
 Media::getObjectTypeAsString ()
@@ -111,10 +103,7 @@ Media::sendKey (const string &key, bool press)
           || ((key == "CURSOR_RIGHT"
                && (next = _player->getProperty ("moveRight")) != "")))
         {
-          MediaSettings *settings;
-          settings = _doc->getSettings ();
-          g_assert_nonnull (settings);
-          settings->scheduleFocusUpdate (next);
+          _doc->getSettingsObject ()->scheduleFocusUpdate (next);
         }
     }
 

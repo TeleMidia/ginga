@@ -2246,16 +2246,11 @@ ParserState::getError (string *message)
 Document *
 ParserState::process (xmlDoc *xml)
 {
-  lua_State *L;
   xmlNode *root;
-
-  L = luaL_newstate ();
-  g_assert_nonnull (L);
-  luaL_openlibs (L);
 
   g_assert_nonnull (xml);
   _xml = xml;
-  _doc = new Document (L);
+  _doc = new Document ();
 
   root = xmlDocGetRootElement (xml);
   g_assert_nonnull (root);
@@ -3547,8 +3542,7 @@ ParserState::pushContext (ParserState *st, ParserElt *elt)
       g_assert_nonnull (parent);
 
       g_assert (elt->getAttribute ("id", &id));
-      ctx = new Context (id);
-      parent->addChild (ctx);
+      ctx = new Context (st->_doc, parent, id);
     }
 
   // Create port list.
@@ -3647,8 +3641,7 @@ ParserState::pushSwitch (ParserState *st, ParserElt *elt)
   g_assert_nonnull (parent);
 
   g_assert (elt->getAttribute ("id", &id));
-  swtch = new Switch (id);
-  parent->addChild (swtch);
+  swtch = new Switch (st->_doc, parent, id);
 
   // Create rule list.
   UDATA_SET (elt, "rules", (new list<pair<ParserElt *, Object *> > ()),
@@ -3869,92 +3862,53 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
     return st->errEltMutuallyExclAttributes (elt->getNode (), "src",
                                              "refer");
 
-  // case is an refer to an Media
+  parent = cast (Composition *, st->objStackPeek ());
+  g_assert_nonnull (parent);
+
   if (hasRefer)
     {
-      // if referred Media not existing Media yet
       media = cast (Media *, st->_doc->getObjectByIdOrAlias (refer));
       if (media == nullptr)
         {
-          // try if is an multiple refer, if not create Media
           if (!st->referMapIndex (refer, &media))
             {
-              // when Parser find the reffered Media
-              // (a) if an Media, the Parser will set uri, type and parent
-              // (b) if an MediaSettings, the Parser will replace
-              media = new Media (refer);
+              media = st->_doc->createMedia (parent, refer);
+              g_assert_nonnull (media);
             }
 
           st->referMapAdd (refer, media);
         }
-      // if is multiple refer to a not existing Media yet
-      // save refer as alias
-      parent = cast (Composition *, st->objStackPeek ());
-      g_assert_nonnull (parent);
       media->addAlias (id, parent);
       st->referMapAdd (id, media);
     }
-  // case is a new Media
   else
     {
-      // case is an MediaSettings
       if (type == "application/x-ginga-settings")
         {
-          Media *tmpMedia = nullptr;
-
-          // there is only one MediaSettings
-          media = st->_doc->getSettings ();
-
-          // if there are refers to this MediaSettings, those refers
-          // are using a tmp Media, which should be this MediaSettings
-          st->referMapIndex (id, &tmpMedia);
-          if (tmpMedia)
-            {
-              auto it = st->_referMap.begin ();
-              while ((*it).second == tmpMedia)
-                {
-                  st->_referMap[(*it).first] = media;
-                  media->addAlias ((*it).first);
-                  it++;
-                }
-              if (it != st->_referMap.begin ())
-                delete tmpMedia;
-            }
-
-          // add this Media as refer to MediaSettings
-          parent = cast (Composition *, st->objStackPeek ());
-          g_assert_nonnull (parent);
+          media = st->_doc->getSettingsObject ();
           media->addAlias (id, parent);
           st->referMapAdd (id, media);
         }
-      // case os other Media type
       else
         {
-          // case src filled
           if (src != "")
             {
-              // Makes uri based in the main document uri
               xmlChar *s = xmlBuildURI (toXmlChar (src),
                                         toXmlChar (st->getURI ()));
               src = toCPPString (s);
-              // If fails makes the uri based in the current dir
               if (!xpathisuri (src) && !xpathisabs (src))
                 {
                   src = xpathmakeabs (src);
                 }
               xmlFree (s);
             }
-          // create Media if not found refer that created the referred Media
           if (!st->referMapIndex (id, &media))
             {
-              media = new Media (id);
+              media = st->_doc->createMedia (parent, id);
+              g_assert_nonnull (media);
             }
-          // create new Media src filled or empty (timer)
           media->setProperty ("uri", src);
           media->setProperty ("type", type);
-          parent = cast (Composition *, st->objStackPeek ());
-          g_assert_nonnull (parent);
-          parent->addChild (media);
         }
     }
 

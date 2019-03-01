@@ -296,7 +296,10 @@ Player::setProperty (const string &name, const string &value)
 
   code = Player::getPlayerProperty (name, &defval);
   if (code == Player::PROP_UNKNOWN)
-    goto done;
+    {
+      TRACE ("unknown property: %s", name.c_str ());
+      goto done;
+    }
 
   if (_value == "")
     {
@@ -751,6 +754,7 @@ Player::doSetProperty (Property code, unused (const string &name),
     case PROP_URI:
       {
         _prop.uri = value;
+        _dirty = true;
         break;
       }
     case PROP_TYPE:

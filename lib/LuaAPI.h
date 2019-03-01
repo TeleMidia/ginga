@@ -27,4 +27,13 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #define CHECK_DOCUMENT(L,i)\
   (*((Document **) luaL_checkudata ((L), (i), GINGA_LUA_API_DOCUMENT)))
 
+#define PUSH_LUA_WRAPPER(L,p)                   \
+  G_STMT_START                                  \
+  {                                             \
+    lua_pushvalue ((L), LUA_REGISTRYINDEX);     \
+    lua_rawgetp ((L), -1, (p));                 \
+    lua_remove (L, -2);                         \
+  }                                             \
+  G_STMT_END
+
 #endif // GINGA_LUA_API_H

@@ -164,6 +164,12 @@ static GtkCssProvider *app_css = NULL;
 #define CSS                                     \
   .subtitle {                                   \
     font-family: monospace;                     \
+  }                                             \
+  #cmdbuf {                                     \
+    font-family: monospace;                     \
+  }                                             \
+  #cmdbuf:focus {                               \
+    background-color: yellow;                   \
   }
 
 // GTK+ callbacks.
@@ -173,8 +179,7 @@ on_canvas_draw (unused (GtkWidget *canvas),
                 cairo_t *cr,
                 Ginga *ginga)
 {
-  gint64 t;
-  guint h, m, s, ms;
+  guint64 ms;
   gchar *str;
 
   g_return_val_if_fail (cr != NULL, FALSE);
@@ -182,15 +187,14 @@ on_canvas_draw (unused (GtkWidget *canvas),
 
   ginga->redraw (cr);
 
-  t = ginga->debug_getLastTickFrame ();
+  ms = ginga->debug_getLastTickTime () / 1000000;
+  str = g_strdup_printf
+    ("%u:%02u:%02u.%03u",
+     (guint) ((ms / (1000 * 60 * 60))),
+     (guint) ((ms / (1000 * 60)) % 60),
+     (guint) ((ms / 1000) % 60),
+     (guint) ((ms % 1000)));
 
-#define SECOND ((gint64)(G_USEC_PER_SEC * G_GINT64_CONSTANT (1000)))
-  h = (guint)(t / (SECOND * 60 * 60));
-  m = (guint)(t / (SECOND * 60) % 60);
-  s = (guint)(t / (SECOND % 60));
-  ms = (guint)(t % SECOND);
-
-  str = g_strdup_printf ("%u:%02u:%02u.%03u", h, m, s, ms);
   gtk_header_bar_set_subtitle (GTK_HEADER_BAR (app_header_bar), str);
   g_free (str);
 
@@ -494,8 +498,10 @@ app_init (Ginga *ginga)
   // Command buffer.
   app_cmd_buf = gtk_entry_new ();
   gtk_box_pack_end (GTK_BOX (app_vbox), app_cmd_buf, FALSE, TRUE, 0);
-  g_object_set (app_cmd_buf, "placeholder-text",
-                "Type Lua code here", NULL);
+
+  gtk_widget_set_name (app_cmd_buf, "cmdbuf");
+  gtk_entry_set_placeholder_text (GTK_ENTRY (app_cmd_buf),
+                                  "Type Lua code here");
 
   g_signal_connect (app_cmd_buf, "activate",
                     G_CALLBACK (on_cmd_buf_activate), ginga);

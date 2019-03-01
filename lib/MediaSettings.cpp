@@ -25,9 +25,12 @@ GINGA_NAMESPACE_BEGIN
 
 // Public.
 
-MediaSettings::MediaSettings (const string &id)
-    : Media (id), _nextFocus (""), _hasNextFocus (false)
+MediaSettings::MediaSettings (Document *doc,
+                              Composition *parent,
+                              const string &id) : Media (doc, parent, id)
 {
+  _nextFocus = "";
+  _hasNextFocus = false;
   _properties["type"] = "application/x-ginga-settings";
   this->addAttributionEvent ("service.currentFocus");
 }
@@ -97,7 +100,10 @@ MediaSettings::updateCurrentFocus (const string &index)
     }
   else
     {
-      for (auto media : *_doc->getMedias ())
+      set <Media *> medias;
+
+      _doc->getMediaObjects (&medias);
+      for (auto media : medias)
         {
           if (media->isOccurring ()
               && (i = media->getProperty ("focusIndex")) != ""

@@ -25,13 +25,16 @@ GINGA_NAMESPACE_BEGIN
 class Composition : public Object
 {
 public:
-  explicit Composition (const string &);
+  explicit Composition (Document *doc,
+                        Composition *parent,
+                        const string &id);
+
   virtual ~Composition () = 0;
 
   const set<Object *> *getChildren ();
   Object *getChildById (const string &);
   Object *getChildByIdOrAlias (const string &);
-  void addChild (Object *);
+  bool addChild (Object *);
 
 protected:
   set<Object *> _children;

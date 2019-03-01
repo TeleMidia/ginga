@@ -33,7 +33,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
  * @brief The Formatter class.
  */
 
-#include "ParserLua.h" // for ncl-ltab support
+//#include "ParserLua.h"
 
 GINGA_NAMESPACE_BEGIN
 
@@ -143,12 +143,12 @@ Formatter::start (const string &file, string *errmsg)
   h = _opts.height;
   _doc = nullptr;
 
-  if (xstrhassuffix (file, ".lua"))
-    {
-      _doc = ParserLua::parseFile (file, errmsg);
-      if (unlikely (_doc == nullptr))
-        return false;
-    }
+  // if (xstrhassuffix (file, ".lua"))
+  //   {
+  //     _doc = ParserLua::parseFile (file, errmsg);
+  //     if (unlikely (_doc == nullptr))
+  //       return false;
+  //   }
 
   if (_doc == nullptr)
     _doc = Parser::parseFile (file, w, h, errmsg);
@@ -160,7 +160,7 @@ Formatter::start (const string &file, string *errmsg)
 
   Context *root = _doc->getRoot ();
   g_assert_nonnull (root);
-  MediaSettings *settings = _doc->getSettings ();
+  MediaSettings *settings = _doc->getSettingsObject ();
   g_assert_nonnull (settings);
 
   // Initialize formatter variables.
@@ -178,7 +178,7 @@ Formatter::start (const string &file, string *errmsg)
     return false;
 
   // Start settings.
-  evt = _doc->getSettings ()->getLambda ();
+  evt = settings->getLambda ();
   g_assert_nonnull (evt);
   g_assert (evt->transition (Event::START));
 
@@ -205,6 +205,8 @@ Formatter::stop ()
 void
 Formatter::resize (int width, int height)
 {
+  set<Media *> medias;
+
   g_assert (width > 0 && height > 0);
   _opts.width = width;
   _opts.height = height;
@@ -213,16 +215,17 @@ Formatter::resize (int width, int height)
   if (_state != GINGA_STATE_PLAYING)
     return;
 
-  // Resize each media object in document.
-  for (auto media : *_doc->getMedias ())
-    {
-#define UPDATE_IF_HAVE(PROP)                                               \
-  {                                                                        \
-    string s = media->getProperty (PROP);                                  \
-    if (s != "")                                                           \
-      media->setProperty (PROP, s);                                        \
+#define UPDATE_IF_HAVE(PROP)                    \
+  {                                             \
+    string s = media->getProperty (PROP);       \
+    if (s != "")                                \
+      media->setProperty (PROP, s);             \
   }
 
+  // Resize each media object in document.
+  _doc->getMediaObjects (&medias);
+  for (auto media : medias)
+    {
       UPDATE_IF_HAVE ("top");
       UPDATE_IF_HAVE ("left");
       UPDATE_IF_HAVE ("width");
@@ -235,6 +238,7 @@ Formatter::resize (int width, int height)
 void
 Formatter::redraw (cairo_t *cr)
 {
+  set<Media *> medias;
   GList *zlist;
   GList *l;
 
@@ -276,8 +280,9 @@ Formatter::redraw (cairo_t *cr)
         }
     }
 
-  zlist = nullptr;
-  for (auto &media : *_doc->getMedias ())
+  _doc->getMediaObjects (&medias);
+  zlist = NULL;
+  for (auto &media : medias)
     zlist = g_list_insert_sorted (zlist, media, (GCompareFunc) zcmp);
 
   l = zlist;

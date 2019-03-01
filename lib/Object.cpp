@@ -32,16 +32,31 @@ GINGA_NAMESPACE_BEGIN
 
 /**
  * @brief Creates a new object.
+ * @param doc Container #Document
+ * @param parent Parent #Composition or null (no parent)
  * @param id Object id.
  *
  * The newly created object has a single presentation event: the lambda
  * event, called "@lambda".
+ *
+ * @warning The given object \p id must be unique within #Document \p doc.
  */
-Object::Object (const string &id) : _id (id)
+Object::Object (Document *doc,
+                Composition *parent,
+                const string &id)
 {
-  _doc = nullptr;
-  _L = nullptr;
-  _parent = nullptr;
+  g_return_if_fail (doc != NULL);
+
+  _id = id;
+
+  _doc = doc;
+  _L = doc->getLuaState ();
+  g_assert (doc->addObject (this));
+
+  _parent = parent;
+  if (_parent != NULL)
+    _parent->addChild (this);
+
   _time = GINGA_TIME_NONE;
 
   this->addPresentationEvent ("@lambda", 0, GINGA_TIME_NONE);
@@ -81,23 +96,6 @@ Object::getDocument ()
 }
 
 /**
- * @brief Initializes container document.
- * @param Container #Document (nonnull).
- * @warning This function can only be called once.
- */
-void
-Object::initDocument (Document *doc)
-{
-  g_return_if_fail (doc);
-
-  g_assert_null (_doc);
-  _doc = doc;
-
-  _L = doc->getLuaState ();
-  g_assert_nonnull (_L);
-}
-
-/**
  * @brief Gets parent object.
  * @return Parent #Object, or null.
  */
@@ -105,19 +103,6 @@ Composition *
 Object::getParent ()
 {
   return _parent;
-}
-
-/**
- * @brief Initializes parent object.
- * @param Parent #Object (nonnull).
- * @warning This function can only be called once.
- */
-void
-Object::initParent (Composition *parent)
-{
-  g_assert_nonnull (parent);
-  g_assert_null (_parent);
-  _parent = parent;
 }
 
 string
@@ -436,7 +421,7 @@ Object::doStart ()
 
   // schedule set currentFocus if the object have focusIndex
   if (!this->getProperty ("focusIndex").empty ())
-    _doc->getSettings ()->scheduleFocusUpdate ("");
+    _doc->getSettingsObject ()->scheduleFocusUpdate ("");
 }
 
 void

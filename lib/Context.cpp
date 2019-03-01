@@ -25,7 +25,9 @@ GINGA_NAMESPACE_BEGIN
 
 // Public.
 
-Context::Context (const string &id) : Composition (id)
+Context::Context (Document *doc,
+                  Composition *parent,
+                  const string &id) : Composition (doc, parent, id)
 {
   _awakeChildren = 0;
   _status = true;
@@ -152,7 +154,7 @@ Context::sendTick (Time total, Time diff, Time frame)
   // Check for EOS.
   if (_parent == nullptr && _awakeChildren == 1)
     {
-      if (_doc->getSettings ()->isOccurring ())
+      if (_doc->getSettingsObject ()->isOccurring ())
         {
           _doc->evalAction (_lambda, Event::STOP);
         }

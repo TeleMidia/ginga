@@ -21,7 +21,7 @@ include $(top_srcdir)/build-aux/Makefile.am.common
 AM_CPPFLAGS= -I$(top_srcdir)/lib -I$(top_builddir)/lib
 AM_CXXFLAGS= $(WARN_CFLAGS) $(WERROR_CFLAGS)\
   $(CAIRO_CFLAGS) $(GLIB_CFLAGS) $(GTK_CFLAGS)
-AM_LDFLAGS= $(CAIRO_LIBS) $(GLIB_LIBS) $(GTK_LIBS)
+AM_LDFLAGS= $(CAIRO_LIBS) $(GLIB_LIBS) $(GTK_LIBS) -static
 
 bin_PROGRAMS= ginga
 if WITH_OPENGL

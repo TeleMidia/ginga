@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef SWITCH_H
-#define SWITCH_H
+#ifndef GINGA_SWITCH_H
+#define GINGA_SWITCH_H
 
 #include "Composition.h"
 #include "Event.h"
@@ -26,7 +26,9 @@ GINGA_NAMESPACE_BEGIN
 class Switch : public Composition
 {
 public:
-  explicit Switch (const string &);
+  explicit Switch (Document *doc,
+                   Composition *parent,
+                   const string &id);
   ~Switch ();
 
   // Object:
@@ -49,4 +51,4 @@ private:
 
 GINGA_NAMESPACE_END
 
-#endif // SWITCH_H
+#endif // GINGA_SWITCH_H

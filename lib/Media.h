@@ -27,10 +27,10 @@ class Media : public Object
 {
 public:
   explicit Media (const string &);
+  explicit Media (Document *doc, Composition *parent, const string &id);
   virtual ~Media ();
 
   // Object:
-  void initDocument (Document *) override;
   string getObjectTypeAsString () override;
   string toString () override;
   void setProperty (const string &, const string &, Time dur = 0) override;

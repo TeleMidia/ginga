@@ -22,7 +22,9 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-Composition::Composition (const string &id) : Object (id)
+Composition::Composition (Document *doc,
+                          Composition *parent,
+                          const string &id) : Object (doc, parent, id)
 {
 }
 
@@ -57,15 +59,14 @@ Composition::getChildByIdOrAlias (const string &id)
   return nullptr;
 }
 
-void
+bool
 Composition::addChild (Object *child)
 {
-  g_assert_nonnull (child);
-  if (tryinsert (child, _children, insert))
-    {
-      child->initParent (this);
-      g_assert (_doc->addObject (child));
-    }
+  g_return_val_if_fail (child != NULL, false);
+
+  g_assert (this->getDocument () == child->getDocument ());
+
+  return tryinsert (child, _children, insert);
 }
 
 GINGA_NAMESPACE_END

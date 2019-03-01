@@ -24,7 +24,9 @@ GINGA_NAMESPACE_BEGIN
 
 // Public.
 
-Switch::Switch (const string &id) : Composition (id)
+Switch::Switch (Document *doc,
+                Composition *parent,
+                const string &id) : Composition (doc, parent, id)
 {
   _selected = nullptr;
 }

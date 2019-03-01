@@ -19,27 +19,8 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "LuaAPI.h"
 
-// static int
-// l_media_new (lua_State *L)
-// {
-//   const gchar *id;
-//   Document *doc;
-//   Media *media;
-//   id = luaL_checkstring (L, 1);
-//   lua_pushvalue (L, LUA_REGISTYINDEX);
-//   lua_rawgetp (L, -1, L);
-//   doc = CHECK_DOCUMENT (L, -1);
-// }
-
 static int
-__l_media_gc (unused (lua_State *L))
-{
-  // The wrapped Media should not be deleted by Lua's GC.
-  return 0;
-}
-
-static int
-__l_media_toString (lua_State *L)
+__l_Media_toString (lua_State *L)
 {
   Media *media;
 
@@ -50,14 +31,14 @@ __l_media_toString (lua_State *L)
 }
 
 static int
-__l_media_getUnderlyingObject (lua_State *L)
+__l_Media_getUnderlyingObject (lua_State *L)
 {
   lua_pushlightuserdata (L, CHECK_MEDIA (L, 1));
   return 1;
 }
 
 static int
-l_media_getId (lua_State *L)
+l_Media_getId (lua_State *L)
 {
   Media *media;
 
@@ -67,17 +48,47 @@ l_media_getId (lua_State *L)
   return 1;
 }
 
+static int
+l_Media_getType (lua_State *L)
+{
+  Media *media;
+
+  media = CHECK_MEDIA (L, 1);
+  lua_pushstring (L, media->getObjectTypeAsString ().c_str ());
+
+  return 1;
+}
+
+static int
+l_Media_setProperty (lua_State *L)
+{
+  Media *media;
+  const gchar *name;
+  const gchar *value;
+  lua_Integer dur;
+
+  media = CHECK_MEDIA (L, 1);
+  name = luaL_checkstring (L, 2);
+  value = luaL_checkstring (L, 3);
+  dur = luaL_optinteger (L, 4, 0);
+
+  media->setProperty (name, value, dur);
+
+  return 0;
+}
+
 static const struct luaL_Reg funcs[] =
 {
- {"__gc", __l_media_gc},
- {"__tostring", __l_media_toString},
- {"__getUnderlyingObject", __l_media_getUnderlyingObject},
- {"getId", l_media_getId},
+ {"__tostring", __l_Media_toString},
+ {"__getUnderlyingObject", __l_Media_getUnderlyingObject},
+ {"getId", l_Media_getId},
+ {"getType", l_Media_getType},
+ {"setProperty", l_Media_setProperty},
  {NULL, NULL},
 };
 
 static void
-media_attach_lua_api (lua_State *L, Media *media)
+attachLuaAPI_Media (lua_State *L, Media *media)
 {
   Media **wrapper;
 
