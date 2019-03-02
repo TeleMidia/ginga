@@ -28,19 +28,28 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
+// Public: Static.
+
+string
+Object::getTypeAsString (Object::Type type)
+{
+  switch (type)
+    {
+    case MEDIA:
+      return "Media";
+    case MEDIA_SETTINGS:
+      return "MediaSettings";
+    case CONTEXT:
+      return "Context";
+    case SWITCH:
+      return "Switch";
+    default:
+      g_assert_not_reached ();
+    }
+}
+
 // Public.
 
-/**
- * @brief Creates a new object.
- * @param doc Container #Document
- * @param parent Parent #Composition or null (no parent)
- * @param id Object id.
- *
- * The newly created object has a single presentation event: the lambda
- * event, called "@lambda".
- *
- * @warning The given object \p id must be unique within #Document \p doc.
- */
 Object::Object (Document *doc,
                 Composition *parent,
                 const string &id)
@@ -64,63 +73,10 @@ Object::Object (Document *doc,
   g_assert_nonnull (_lambda);
 }
 
-/**
- * @brief Destroys object.
- *
- * Destroys the object and all its events.
- */
 Object::~Object ()
 {
-  for (auto evt : _events)
+  for (auto evt: _events)
     delete evt;
-}
-
-/**
- * @brief Gets object id.
- * @return Object id.
- */
-string
-Object::getId ()
-{
-  return _id;
-}
-
-/**
- * @brief Gets container document.
- * @return Container #Document.
- */
-Document *
-Object::getDocument ()
-{
-  return _doc;
-}
-
-/**
- * @brief Gets parent object.
- * @return Parent #Object, or null.
- */
-Composition *
-Object::getParent ()
-{
-  return _parent;
-}
-
-string
-Object::getTypeAsString (Object::Type type)
-{
-  switch (type)
-    {
-    case MEDIA:
-      return "Media";
-    case MEDIA_SETTINGS:
-      return "MediaSettings";
-    case CONTEXT:
-      return "Context";
-    case SWITCH:
-      return "Switch";
-    default:
-      g_assert_not_reached ();
-    }
 }
 
 string
@@ -132,7 +88,7 @@ Object::toString ()
                    Object::getTypeAsString (this->getType ()).c_str (),
                    this);
 
-  if (_parent != nullptr)
+  if (_parent != NULL)
     {
       str += xstrbuild
         ("\
@@ -209,6 +165,24 @@ Object::toString ()
   return str;
 }
 
+Document *
+Object::getDocument ()
+{
+  return _doc;
+}
+
+Composition *
+Object::getParent ()
+{
+  return _parent;
+}
+
+string
+Object::getId ()
+{
+  return _id;
+}
+
 const list<pair<string, Composition *> > *
 Object::getAliases ()
 {
@@ -218,7 +192,7 @@ Object::getAliases ()
 bool
 Object::hasAlias (const string &alias)
 {
-  for (auto curr : _aliases)
+  for (auto curr: _aliases)
     if (curr.first == alias)
       return true;
   return false;
@@ -228,7 +202,6 @@ void
 Object::addAlias (const string &alias, Composition *parent)
 {
   auto alias_pair = make_pair (alias, parent);
-  // _aliases.push_back (alias_pair);
   tryinsert (alias_pair, _aliases, push_back);
 }
 
@@ -238,13 +211,15 @@ Object::getEvents ()
   return &_events;
 }
 
+// TODO
+
 Event *
 Object::getEvent (Event::Type type, const string &id)
 {
   for (auto evt : _events)
     if (evt->getType () == type && evt->getId () == id)
       return evt;
-  return nullptr;
+  return NULL;
 }
 
 Event *

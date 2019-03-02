@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef MEDIA_H
-#define MEDIA_H
+#ifndef GINGA_MEDIA_H
+#define GINGA_MEDIA_H
 
 #include "Object.h"
 #include "Player.h"
@@ -26,13 +26,35 @@ GINGA_NAMESPACE_BEGIN
 class Media : public Object
 {
 public:
-  explicit Media (const string &);
-  explicit Media (Document *doc, Composition *parent, const string &id);
-  virtual ~Media ();
 
-  // Object:
-  Object::Type getType () override;
+  /**
+   * @brief Creates a new media object.
+   * @see Object::Object().
+   */
+  Media (Document *doc,
+         Composition *parent,
+         const string &id);
+  /**
+   * @brief Destroys media object.
+   * @see Object::~Object().
+   */
+  ~Media ();
+
+  /**
+   * @brief Gets a string representation of media object.
+   * @see Object::toString().
+   */
   string toString () override;
+
+  /**
+   * @brief Gets the type of media object.
+   * @return Object::MEDIA.
+   * @see Object::getType().
+   */
+  Object::Type getType () override;
+
+  // TODO
+
   void setProperty (const string &, const string &, Time dur = 0) override;
   void sendKey (const string &, bool) override;
   void sendTick (Time, Time, Time) override;
@@ -52,4 +74,4 @@ protected:
 
 GINGA_NAMESPACE_END
 
-#endif // MEDIA_H
+#endif // GINGA_MEDIA_H

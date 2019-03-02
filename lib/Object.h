@@ -30,40 +30,115 @@ class Document;
 class Composition;
 class MediaSettings;
 
+/**
+ * @brief Object in an NCL document.
+ *
+ * Run-time representation of an NCL object.
+ *
+ * @see Media, MediaSettings, Context, Switch.
+ */
 class Object
 {
 public:
 
-  enum Type {
-    MEDIA          = 1 << 1,
-    MEDIA_SETTINGS = 1 << 2,
-    CONTEXT        = 1 << 3,
-    SWITCH         = 1 << 4
+  /**
+   * @brief Possible concrete types for NCL objects.
+   */
+  enum Type
+  {
+    MEDIA          = 1 << 1,    ///< Media object.
+    MEDIA_SETTINGS = 1 << 2,    ///< MediaSettings object.
+    CONTEXT        = 1 << 3,    ///< Context object.
+    SWITCH         = 1 << 4     ///< Switch object.
   };
 
-  virtual Object::Type getType () = 0;
+  /**
+   * @brief Converts Object::Type to a human-readable string.
+   * @param type The Object::Type to convert.
+   * @return The resulting string.
+   */
   static string getTypeAsString (Object::Type type);
 
-  explicit Object (Document *doc,
-                   Composition *parent,
-                   const string &id);
+  /**
+   * @brief Creates a new object.
+   * @param doc The container document.
+   * @param parent The parent object to add the new object to
+   *        or \p NULL (no parent).
+   * @param id The id of the new object (must not occur in \p doc).
+   *
+   * The newly created object has a single presentation event: the lambda
+   * event, called <tt>@lambda</tt>.
+   *
+   * @see Object::createObject().
+   */
+  Object (Document *doc,
+          Composition *parent,
+          const string &id);
 
+  /**
+   * @brief Destroys the object and all its events.
+   */
   virtual ~Object ();
 
-  string getId ();
-
-  Document *getDocument ();
-  Composition *getParent ();
-
-
-
+  /**
+   * @brief Gets a string representation of object.
+   * @return A string representation of object.
+   */
   virtual string toString ();
 
-  const list<pair<string, Composition *> > *getAliases ();
-  bool hasAlias (const string &);
-  void addAlias (const string &, Composition * = nullptr);
+  /**
+   * @brief Gets the type of object.
+   * @return The type of object.
+   */
+  virtual Object::Type getType () = 0;
 
+  /**
+   * @brief Gets the container document of object.
+   * @return The container document of object.
+   */
+  Document *getDocument ();
+
+  /**
+   * @brief Gets the parent of object.
+   * @return The parent object or \c NULL (no parent).
+   */
+  Composition *getParent ();
+
+  /**
+   * @brief Gets the id of object.
+   * @return The id of object.
+   */
+  string getId ();
+
+  /**
+   * @brief Gets the list of aliases of object.
+   * @return The list of aliases of object.
+   */
+  const list<pair<string, Composition *> > *getAliases ();
+
+  /**
+   * @brief Tests whether object has alias.
+   * @param alias The alias to test.
+   * @return \c true if successful, or \c false otherwise.
+   */
+  bool hasAlias (const string &alias);
+
+  /**
+   * @brief Adds alias to object.
+   * @param alias The alias to add.
+   * @param comp The composition where this alias occur or \p NULL (none).
+   */
+  void addAlias (const string &alias,
+                 Composition *comp);
+
+  /**
+   * @brief Gets the set of events in object.
+   * @return The set of events in object.
+   */
   const set<Event *> *getEvents ();
+
+  // TODO
+
   Event *getEvent (Event::Type, const string &);
   Event *getAttributionEvent (const string &);
   void addAttributionEvent (const string &);
@@ -124,16 +199,36 @@ public:
                                 Event::Transition transition) = 0;
 
 protected:
-  string _id;                                  // object id
-  Document *_doc;                              // document
-  lua_State *_L;                               // Lua state
-  Composition *_parent;                        // parent object
-  list<pair<string, Composition *> > _aliases; // aliases
-  Time _time;                                  // playback time
-  map<string, string> _properties;             // property map
-  Event *_lambda;                              // lambda event
-  set<Event *> _events;                        // all events
-  list<pair<Action, Time> > _delayed;          // delayed actions
+
+  /// Container document.
+  Document *_doc;
+
+  /// Lua state associated with the container document.
+  lua_State *_L;
+
+  /// Parent object.
+  Composition *_parent;
+
+  /// Object id.
+  string _id;
+
+  /// Aliases of this object and the compositions where they occur.
+  list<pair<string, Composition *> > _aliases;
+
+  /// Total playback time.
+  Time _time;
+
+  /// Property map.
+  map<string, string> _properties;
+
+  /// The lambda (presentation) event.
+  Event *_lambda;
+
+  /// All events, including lambda.
+  set<Event *> _events;
+
+  /// Delayed actions.
+  list<pair<Action, Time> > _delayed;
 
   virtual void doStart ();
   virtual void doStop ();

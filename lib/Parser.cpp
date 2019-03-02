@@ -2284,7 +2284,7 @@ ParserState::pushNcl (ParserState *st, ParserElt *elt)
   g_assert_nonnull (root);
 
   if (elt->getAttribute ("id", &id))
-    root->addAlias (id);
+    root->addAlias (id, NULL);
 
   st->objStackPush (root);
   return true;
@@ -3532,7 +3532,7 @@ ParserState::pushContext (ParserState *st, ParserElt *elt)
       g_assert_nonnull (ctx);
 
       if (elt->getAttribute ("id", &id))
-        ctx->addAlias (id);
+        ctx->addAlias (id, NULL);
     }
   else
     {

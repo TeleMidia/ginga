@@ -27,10 +27,10 @@ class Media;
 class Switch;
 
 /**
- * @brief Run-time representation of an NCL document.
+ * @brief The NCL document.
  *
- * The Document is a run-time representation of an NCL document.  It acts as
- * a top-level interface to the NCL object tree.
+ * Run-time representation of an NCL document.
+ * The Document maintains the NCL object tree.
  */
 class Document
 {
@@ -45,13 +45,12 @@ public:
    *
    * @return The newly created document.
    *
-   * @see Document::getRoot()
-   * @see Document::getSettingsObject()
+   * @see Document::getRoot(), Document::getSettingsObject().
    */
   Document ();
 
   /**
-   * @brief Destroys document and all of its objects.
+   * @brief Destroys document and all its objects.
    */
   virtual ~Document ();
 

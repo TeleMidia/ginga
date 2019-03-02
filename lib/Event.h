@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef EVENT_H
-#define EVENT_H
+#ifndef GINGA_EVENT_H
+#define GINGA_EVENT_H
 
 #include "aux-ginga.h"
 #include "Predicate.h"
@@ -133,4 +133,4 @@ typedef struct
 
 GINGA_NAMESPACE_END
 
-#endif // EVENT_H
+#endif // GINGA_EVENT_H

@@ -38,17 +38,6 @@ __l_Media_getUnderlyingObject (lua_State *L)
 }
 
 static int
-l_Media_getId (lua_State *L)
-{
-  Media *media;
-
-  media = CHECK_MEDIA (L, 1);
-  lua_pushstring (L, media->getId ().c_str ());
-
-  return 1;
-}
-
-static int
 l_Media_getType (lua_State *L)
 {
   Media *media;
@@ -57,6 +46,17 @@ l_Media_getType (lua_State *L)
   media = CHECK_MEDIA (L, 1);
   type = Object::getTypeAsString (media->getType ()).c_str ();
   lua_pushstring (L, type);
+
+  return 1;
+}
+
+static int
+l_Media_getId (lua_State *L)
+{
+  Media *media;
+
+  media = CHECK_MEDIA (L, 1);
+  lua_pushstring (L, media->getId ().c_str ());
 
   return 1;
 }
@@ -83,8 +83,8 @@ static const struct luaL_Reg funcs[] =
 {
  {"__tostring", __l_Media_toString},
  {"__getUnderlyingObject", __l_Media_getUnderlyingObject},
- {"getId", l_Media_getId},
  {"getType", l_Media_getType},
+ {"getId", l_Media_getId},
  {"setProperty", l_Media_setProperty},
  {NULL, NULL},
 };
