@@ -17,6 +17,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 #include "Object.h"
+#include "LuaAPI.h"
 
 #include "Context.h"
 #include "MediaSettings.h"
@@ -26,8 +27,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-#include "LuaMedia.cpp"
-
 // Public.
 
 Media::Media (Document *doc,
@@ -35,7 +34,7 @@ Media::Media (Document *doc,
               const string &id) : Object (doc, parent, id)
 {
   _player = NULL;
-  attachLuaAPI_Media (_L, this);
+  LuaAPI::_Media_attachWrapper (_L, this);
 }
 
 Media::~Media ()

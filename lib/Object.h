@@ -18,10 +18,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #ifndef OBJECT_H
 #define OBJECT_H
 
-GINGA_BEGIN_DECLS
-#include "aux-lua.h"
-GINGA_END_DECLS
-
 #include "Event.h"
 
 GINGA_NAMESPACE_BEGIN

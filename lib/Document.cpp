@@ -17,6 +17,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 #include "Document.h"
+#include "LuaAPI.h"
 
 #include "Context.h"
 #include "Media.h"
@@ -26,14 +27,12 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-#include "LuaDocument.cpp"
-
 Document::Document ()
 {
   _L = luaL_newstate ();
   g_assert_nonnull (_L);
   luaL_openlibs (_L);
-  attachLuaAPI_Document (_L, this);
+  LuaAPI::_Document_attachWrapper (_L, this);
 
   _root = new Context (this, NULL, "__root__");
   _settings = new MediaSettings (this, _root, "__settings__");
