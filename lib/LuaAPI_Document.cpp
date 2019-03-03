@@ -21,43 +21,42 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 const char *LuaAPI::DOCUMENT = "Ginga.Document";
 
-static const struct luaL_Reg _Document_methods[] =
-{
- {"__tostring", LuaAPI::__l_Document_toString},
- {"__getUnderlyingObject", LuaAPI::__l_Document_getUnderlyingObject},
- {"getObjects", LuaAPI::l_Document_getObjects},
- {"getObjectById", LuaAPI::l_Document_getObjectById},
- {"getRoot", LuaAPI::l_Document_getRoot},
- {"getSettingsObject", LuaAPI::l_Document_getSettingsObject},
- {"createObject", LuaAPI::l_Document_createObject},
- {NULL, NULL},
-};
-
 void
 LuaAPI::_Document_attachWrapper (lua_State *L,
                                  Document *doc)
 {
+  static const struct luaL_Reg funcs[] =
+    {
+     {"__tostring",            LuaAPI::__l_Document_toString},
+     {"__getUnderlyingObject", LuaAPI::__l_Document_getUnderlyingObject},
+     {"getObjects",            LuaAPI::l_Document_getObjects},
+     {"getObjectById",         LuaAPI::l_Document_getObjectById},
+     {"getRoot",               LuaAPI::l_Document_getRoot},
+     {"getSettingsObject",     LuaAPI::l_Document_getSettingsObject},
+     {"createObject",          LuaAPI::l_Document_createObject},
+     {NULL, NULL},
+    };
   Document **wrapper;
 
   g_return_if_fail (L != NULL);
   g_return_if_fail (doc != NULL);
 
-  LuaAPI::loadLuaWrapperMt (L,
-                            _Document_methods,
-                            LuaAPI::DOCUMENT,
+  // Load and initialize metatable, if not loaded yet.
+  LuaAPI::loadLuaWrapperMt (L, funcs, LuaAPI::DOCUMENT,
                             (const char *) LuaAPI::Document_initMt_lua,
                             (size_t) LuaAPI::Document_initMt_lua_len);
 
+  // Create Lua wrapper for document.
   wrapper = (Document **) lua_newuserdata (L, sizeof (Document **));
   g_assert_nonnull (wrapper);
   *wrapper = doc;
   luaL_setmetatable (L, LuaAPI::DOCUMENT);
 
-  // Set doc:=wrapper in LUA_REGISTY.
+  // Set LUA_REGISTY[doc]=wrapper.
   lua_pushvalue (L, -1);
   LuaAPI::attachLuaWrapper (L, doc);
 
-  // Set _D:=doc.
+  // Set _G._D=wrapper.
   lua_setglobal (L, "_D");
 
   // Call _D:__attachData().
@@ -78,7 +77,7 @@ LuaAPI::_Document_detachWrapper (lua_State *L,
   lua_pushnil (L);
   lua_setglobal (L, "_D");
 
-  // Set doc:=nil in LUA_REGISTY.
+  // Set LUA_REGISTY[doc]=nil.
   LuaAPI::detachLuaWrapper (L, doc);
 }
 
@@ -178,6 +177,7 @@ LuaAPI::l_Document_createObject (lua_State *L)
   int idx;
   const char *id;
   Composition *parent;
+  Object::Type type;
   Object *obj;
 
   doc = LuaAPI::_Document_check (L, 1);
@@ -189,8 +189,8 @@ LuaAPI::l_Document_createObject (lua_State *L)
   parent = (Composition *) obj;
   id = luaL_checkstring (L, 4);
 
-  obj = doc->createObject (LuaAPI::_Object_getTypeFromOptIndex (idx),
-                           parent, id);
+  type = LuaAPI::_Object_getOptIndexType (idx);
+  obj = doc->createObject (type, parent, id);
   if (unlikely (obj == NULL))
     {
       lua_pushnil (L);

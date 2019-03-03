@@ -80,11 +80,20 @@ class LuaAPI
   static const char *const _Object_optTypes[];
 
   /**
-   * @brief Get Object::Type from an index of LuaAPI::_Object_optTypes.
+   * @brief Gets the type associated with index of LuaAPI_Object_optTypes.
+   * @param i Valid index of LuaAPI_Object_optTypes.
+   * @return The associated Object::Type.
    */
-  static Object::Type _Object_getTypeFromOptIndex (int i);
+  static Object::Type _Object_getOptIndexType (int i);
 
-  static void _Object_attachWrapper_tail (lua_State *L, Object *obj);
+  /**
+   * @brief Gets registry key associated with object metatable.
+   * @param obj Object.
+   * @return The registry key of the Object metatable.
+   */
+  static const char *_Object_getRegistryKey (Object *obj);
+
+  static void _Object_attachWrapper (lua_State *L, Object *obj);
 
   static void _Object_detachWrapper (lua_State *L, Object *obj);
 
@@ -158,7 +167,7 @@ class LuaAPI
     if (!lua_isnil (L, -1))
       {
         lua_pop (L, 1);
-        return;
+        return;                 // nothing to do
       }
 
     lua_pop (L, 1);
@@ -166,23 +175,23 @@ class LuaAPI
     luax_newmetatable (L, name);
     luaL_setfuncs (L, funcs, 0);
 
-    if (chunk != NULL)
-      {
-        if (unlikely (luaL_loadbuffer (L, chunk, len, name) != LUA_OK))
-          {
-            luax_dump_stack (L);
-            ERROR ("%s", lua_tostring (L, -1));
-          }
-        lua_insert (L, -2);
-        if (unlikely (lua_pcall (L, 1, 0, 0) != LUA_OK))
-          {
-            luax_dump_stack (L);
-            ERROR ("%s", lua_tostring (L, -1));
-          }
-      }
-    else
+    if (chunk == NULL)
       {
         lua_pop (L, 1);
+        return;
+      }
+
+    // Load and call chunk.
+    if (unlikely (luaL_loadbuffer (L, chunk, len, name) != LUA_OK))
+      {
+        luax_dump_stack (L);
+        ERROR ("%s", lua_tostring (L, -1));
+      }
+    lua_insert (L, -2);
+    if (unlikely (lua_pcall (L, 1, 0, 0) != LUA_OK))
+      {
+        luax_dump_stack (L);
+        ERROR ("%s", lua_tostring (L, -1));
       }
   }
 

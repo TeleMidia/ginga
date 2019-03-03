@@ -20,38 +20,10 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 const char *LuaAPI::MEDIA = "Ginga.Media";
 
-static const struct luaL_Reg _Media_methods[] =
-{
- {"__tostring", LuaAPI::__l_Object_toString},
- {"__getUnderlyingObject", LuaAPI::__l_Object_getUnderlyingObject},
- {"getType", LuaAPI::l_Object_getType},
- {"getDocument", LuaAPI::l_Object_getDocument},
- {"getParent", LuaAPI::l_Object_getParent},
- {"getId", LuaAPI::l_Object_getId},
- {"setProperty", LuaAPI::l_Object_setProperty},
- {NULL, NULL},
-};
-
 void
 LuaAPI::_Media_attachWrapper (lua_State *L, Media *media)
 {
-  Media **wrapper;
-
-  g_return_if_fail (L != NULL);
-  g_return_if_fail (media != NULL);
-
-  LuaAPI::loadLuaWrapperMt (L, _Media_methods, LuaAPI::MEDIA, NULL, 0);
-
-  wrapper = (Media **) lua_newuserdata (L, sizeof (Media **));
-  g_assert_nonnull (wrapper);
-  *wrapper = media;
-  luaL_setmetatable (L, LuaAPI::MEDIA);
-
-  // Set media:=wrapper in LUA_REGISTY.
-  LuaAPI::attachLuaWrapper (L, media);
-
-  // Set _D.object[id]:=wrapper, where id is the id of media.
-  LuaAPI::_Object_attachWrapper_tail (L, media);
+  LuaAPI::_Object_attachWrapper (L, media);
 }
 
 void
