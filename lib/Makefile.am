@@ -45,6 +45,7 @@ src+= LuaAPI_Document.cpp
 src+= LuaAPI_Document_initMt.cpp
 src+= LuaAPI_Media.cpp
 src+= LuaAPI_Object.cpp
+src+= LuaAPI_Object_initMt.cpp
 src+= LuaAPI_Switch.cpp
 src+= Media.cpp
 src+= MediaSettings.cpp

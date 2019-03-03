@@ -75,6 +75,16 @@ class LuaAPI
   // Object:
 
   /**
+   * @brief Lua code to run when loading Object metatable.
+   */
+  static unsigned char Object_initMt_lua[];
+
+  /**
+   * @brief Length in bytes of LuaAPI::Object_initMt_lua.
+   */
+  static unsigned int Object_initMt_lua_len;
+
+  /**
    * @brief Array of type names; used in luaL_checkoption() calls.
    */
   static const char *const _Object_optTypes[];

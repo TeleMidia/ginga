@@ -70,5 +70,10 @@ MAINTAINERCLEANFILES+=\
   configure\
   $(NULL)
 
+if ENABLE_COVERAGE
 clean-local: coverage-clean
 	rm -rf $(CLEANDIRS)
+else
+clean-local:
+	rm -rf $(CLEANDIRS)
+endif

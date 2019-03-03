@@ -22,8 +22,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 const char *LuaAPI::DOCUMENT = "Ginga.Document";
 
 void
-LuaAPI::_Document_attachWrapper (lua_State *L,
-                                 Document *doc)
+LuaAPI::_Document_attachWrapper (lua_State *L, Document *doc)
 {
   static const struct luaL_Reg funcs[] =
     {
@@ -64,8 +63,7 @@ LuaAPI::_Document_attachWrapper (lua_State *L,
 }
 
 void
-LuaAPI::_Document_detachWrapper (lua_State *L,
-                                 Document *doc)
+LuaAPI::_Document_detachWrapper (lua_State *L, Document *doc)
 {
   g_return_if_fail (L != NULL);
   g_return_if_fail (doc != NULL);

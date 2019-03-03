@@ -79,7 +79,9 @@ LuaAPI::_Object_attachWrapper (lua_State *L, Object *obj)
 
   // Load and initialize metatable, if not loaded yet.
   name = LuaAPI::_Object_getRegistryKey (obj);
-  LuaAPI::loadLuaWrapperMt (L, funcs, name, NULL, 0);
+  LuaAPI::loadLuaWrapperMt (L, funcs, name,
+                            (const char *) LuaAPI::Object_initMt_lua,
+                            (size_t) LuaAPI::Object_initMt_lua_len);
 
   // Create Lua wrapper for object.
   switch (obj->getType ())
@@ -120,6 +122,9 @@ LuaAPI::_Object_attachWrapper (lua_State *L, Object *obj)
   // Set LUA_REGISTRY[obj]=wrapper.
   LuaAPI::attachLuaWrapper (L, obj);
 
+  // Call obj:__attachData().
+  LuaAPI::callLuaWrapper (L, obj, "_attachData", 0, 0);
+
   // Call _D:_addObject (obj).
   LuaAPI::pushLuaWrapper (L, obj);
   LuaAPI::callLuaWrapper (L, obj->getDocument (), "_addObject", 1, 0);
@@ -130,6 +135,9 @@ LuaAPI::_Object_detachWrapper (lua_State *L, Object *obj)
 {
   g_return_if_fail (L != NULL);
   g_return_if_fail (obj != NULL);
+
+  // Call obj:__detachData().
+  LuaAPI::callLuaWrapper (L, obj, "_detachData", 0, 0);
 
   // Call _D:_removeObject (obj).
   LuaAPI::pushLuaWrapper (L, obj);
