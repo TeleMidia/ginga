@@ -16,11 +16,11 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "LuaAPI.h"
-#include "Media.h"
+#include "Context.h"
 
-const char *LuaAPI::MEDIA = "Ginga.Media";
+const char *LuaAPI::CONTEXT = "Ginga.Context";
 
-static const struct luaL_Reg _Media_methods[] =
+static const struct luaL_Reg _Context_methods[] =
 {
  {"__tostring", LuaAPI::__l_Object_toString},
  {"__getUnderlyingObject", LuaAPI::__l_Object_getUnderlyingObject},
@@ -33,35 +33,36 @@ static const struct luaL_Reg _Media_methods[] =
 };
 
 void
-LuaAPI::_Media_attachWrapper (lua_State *L, Media *media)
+LuaAPI::_Context_attachWrapper (lua_State *L, Context *ctx)
 {
-  Media **wrapper;
+  Context **wrapper;
 
   g_return_if_fail (L != NULL);
-  g_return_if_fail (media != NULL);
+  g_return_if_fail (ctx != NULL);
 
-  LuaAPI::loadLuaWrapperMt (L, _Media_methods, LuaAPI::MEDIA, NULL, 0);
+  LuaAPI::loadLuaWrapperMt (L, _Context_methods, LuaAPI::CONTEXT,
+                            NULL, 0);
 
-  wrapper = (Media **) lua_newuserdata (L, sizeof (Media **));
+  wrapper = (Context **) lua_newuserdata (L, sizeof (Context **));
   g_assert_nonnull (wrapper);
-  *wrapper = media;
-  luaL_setmetatable (L, LuaAPI::MEDIA);
+  *wrapper = ctx;
+  luaL_setmetatable (L, LuaAPI::CONTEXT);
 
-  // Set media:=wrapper in LUA_REGISTY.
-  LuaAPI::attachLuaWrapper (L, media);
+  // Set ctx:=wrapper in LUA_REGISTY.
+  LuaAPI::attachLuaWrapper (L, ctx);
 
-  // Set _D.object[id]:=wrapper, where id is the id of media.
-  LuaAPI::_Object_attachWrapper_tail (L, media);
+  // Set _D.object[id]:=wrapper, where id is the id of ctx.
+  LuaAPI::_Object_attachWrapper_tail (L, ctx);
 }
 
 void
-LuaAPI::_Media_detachWrapper (lua_State *L, Media *media)
+LuaAPI::_Context_detachWrapper (lua_State *L, Context *ctx)
 {
-  LuaAPI::_Object_detachWrapper (L, media);
+  LuaAPI::_Object_detachWrapper (L, ctx);
 }
 
-Media *
-LuaAPI::_Media_check (lua_State *L, int i)
+Context *
+LuaAPI::_Context_check (lua_State *L, int i)
 {
-  return *((Media **) luaL_checkudata (L, i, LuaAPI::MEDIA));
+  return *((Context **) luaL_checkudata (L, i, LuaAPI::CONTEXT));
 }

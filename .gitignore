@@ -61,6 +61,7 @@
 /data/ini/ginga.ini
 /doc/Doxyfile
 /doc/html
+/lib/LuaAPI_Document_initMt.cpp
 /lib/Makefile
 /lib/Makefile.in
 /lib/config.h

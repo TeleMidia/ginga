@@ -40,15 +40,10 @@ Media::Media (Document *doc,
 Media::~Media ()
 {
   this->doStop ();
+  LuaAPI::_Media_detachWrapper (_L, this);
 }
 
 // Public: Object.
-
-Object::Type
-Media::getType ()
-{
-  return Object::MEDIA;
-}
 
 string
 Media::toString ()
@@ -61,6 +56,12 @@ Media::toString ()
   str += xstrbuild ("  player: %p\n", _player);
 
   return str;
+}
+
+Object::Type
+Media::getType ()
+{
+  return Object::MEDIA;
 }
 
 void

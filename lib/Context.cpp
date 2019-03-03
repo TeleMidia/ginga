@@ -17,6 +17,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 #include "Context.h"
+#include "LuaAPI.h"
 
 #include "Document.h"
 #include "MediaSettings.h"
@@ -31,34 +32,33 @@ Context::Context (Document *doc,
 {
   _awakeChildren = 0;
   _status = true;
+  LuaAPI::_Context_attachWrapper (_L, this);
 }
 
 Context::~Context ()
 {
-  // Stop and delete children.
+  // Stop.
   _lambda->transition (Event::STOP);
-  for (auto child : _children)
+
+  // Delete children.
+  for (auto child: _children)
     delete child;
 
   // Delete predicates in links.
-  for (auto link : _links)
+  for (auto link: _links)
     {
       for (auto &cond : link.first)
-        if (cond.predicate != nullptr)
+        if (cond.predicate != NULL)
           delete cond.predicate;
       for (auto &act : link.second)
-        if (act.predicate != nullptr)
+        if (act.predicate != NULL)
           delete act.predicate;
     }
+
+  LuaAPI::_Context_detachWrapper (_L, this);
 }
 
 // Public: Object.
-
-Object::Type
-Context::getType ()
-{
-  return Object::CONTEXT;
-}
 
 string
 Context::toString ()
@@ -127,6 +127,14 @@ Context::toString ()
 
   return str;
 }
+
+Object::Type
+Context::getType ()
+{
+  return Object::CONTEXT;
+}
+
+// TODO
 
 string
 Context::getProperty (unused (const string &name))

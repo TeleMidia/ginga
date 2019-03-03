@@ -23,26 +23,17 @@ GINGA_BEGIN_DECLS
 #include "aux-lua.h"
 GINGA_END_DECLS
 
+#include "Object.h"
+
 GINGA_NAMESPACE_BEGIN
 
+class Context;
 class Document;
 class Media;
 
 class LuaAPI
 {
  public:
-
-  /**
-   * @brief Pushes onto stack the Lua wrapper of a pointer.
-   * @param L Lua State
-   * @param ptr The pointer whose wrapper is to be pushed.
-   */
-  static void pushLuaWrapper (lua_State *L, void *ptr)
-  {
-    lua_pushvalue (L, LUA_REGISTRYINDEX);
-    lua_rawgetp (L, -1, ptr);
-    lua_remove (L, -2);
-  }
 
   // Document:
 
@@ -51,7 +42,19 @@ class LuaAPI
    */
   static const char *DOCUMENT;
 
+  /**
+   * @brief Lua code to run when loading Document metatable.
+   */
+  static unsigned char Document_initMt_lua[];
+
+  /**
+   * @brief Length in bytes of LuaAPI::Document_initMt_lua.
+   */
+  static unsigned int Document_initMt_lua_len;
+
   static void _Document_attachWrapper (lua_State *L, Document *doc);
+
+  static void _Document_detachWrapper (lua_State *L, Document *doc);
 
   static Document *_Document_check (lua_State *L, int i);
 
@@ -61,7 +64,65 @@ class LuaAPI
 
   static int l_Document_getObjectById (lua_State *L);
 
-  static int l_Document_getMediaObjects (lua_State *L);
+  static int l_Document_getObjects (lua_State *L);
+
+  static int l_Document_getRoot (lua_State *L);
+
+  static int l_Document_getSettingsObject (lua_State *L);
+
+  static int l_Document_createObject (lua_State *L);
+
+  // Object:
+
+  /**
+   * @brief Array of type names; used in luaL_checkoption() calls.
+   */
+  static const char *const _Object_optTypes[];
+
+  /**
+   * @brief Get Object::Type from an index of LuaAPI::_Object_optTypes.
+   */
+  static Object::Type _Object_getTypeFromOptIndex (int i);
+
+  static void _Object_attachWrapper_tail (lua_State *L, Object *obj);
+
+  static void _Object_detachWrapper (lua_State *L, Object *obj);
+
+  static Object *_Object_check (lua_State *L, int i);
+
+  static int __l_Object_toString (lua_State *L);
+
+  static int __l_Object_getUnderlyingObject (lua_State *L);
+
+  static int l_Object_getType (lua_State *L);
+
+  static int l_Object_getDocument (lua_State *L);
+
+  static int l_Object_getParent (lua_State *L);
+
+  static int l_Object_getId (lua_State *L);
+
+  static int l_Object_setProperty (lua_State *L);
+
+  // Context:
+
+  /**
+   * @brief Registry key for the Context metatable.
+   */
+  static const char *CONTEXT;
+
+  static void _Context_attachWrapper (lua_State *L, Context *ctx);
+
+  static void _Context_detachWrapper (lua_State *L, Context *ctx);
+
+  static Context *_Context_check (lua_State *L, int i);
+
+  // Switch:
+
+  /**
+   * @brief Registry key for the Switch metatable.
+   */
+  static const char *SWITCH;
 
   // Media:
 
@@ -72,17 +133,124 @@ class LuaAPI
 
   static void _Media_attachWrapper (lua_State *L, Media *media);
 
+  static void _Media_detachWrapper (lua_State *L, Media *media);
+
   static Media *_Media_check (lua_State *L, int i);
 
-  static int __l_Media_toString (lua_State *L);
+  // Auxiliary:
 
-  static int __l_Media_getUnderlyingObject (lua_State *L);
+  /**
+   * @brief Loads metatable of Lua wrapper.
+   * @param L Lua state
+   * @param funcs The functions to install in the metatable.
+   * @param name The name for the metatable in LUA_REGISTRY.
+   * @param chunk A Lua chunk to run immediately after the metatable is
+   *              loaded, or NULL (no chunk).  If given, \p chunk is loaded
+   *              and called with the newly created metatable as first
+   *              argument.
+   * @param len Then length of \p chunk in bytes.
+   */
+  static void
+  loadLuaWrapperMt (lua_State *L, const luaL_Reg *funcs, const char *name,
+                    const char *chunk, size_t len)
+  {
+    luaL_getmetatable (L, name);
+    if (!lua_isnil (L, -1))
+      {
+        lua_pop (L, 1);
+        return;
+      }
 
-  static int l_Media_getType (lua_State *L);
+    lua_pop (L, 1);
+    //luaL_newmetatable (L, name);
+    luax_newmetatable (L, name);
+    luaL_setfuncs (L, funcs, 0);
 
-  static int l_Media_getId (lua_State *L);
+    if (chunk != NULL)
+      {
+        if (unlikely (luaL_loadbuffer (L, chunk, len, name) != LUA_OK))
+          {
+            luax_dump_stack (L);
+            ERROR ("%s", lua_tostring (L, -1));
+          }
+        lua_insert (L, -2);
+        if (unlikely (lua_pcall (L, 1, 0, 0) != LUA_OK))
+          {
+            luax_dump_stack (L);
+            ERROR ("%s", lua_tostring (L, -1));
+          }
+      }
+    else
+      {
+        lua_pop (L, 1);
+      }
+  }
 
-  static int l_Media_setProperty (lua_State *L);
+  /**
+   * @brief Pops a value from the stack and sets it as the Lua wrapper of
+   * pointer.
+   *
+   * @param L Lua state.
+   * @param ptr The pointer whose wrapper is to be be set.
+   */
+  static void
+  attachLuaWrapper (lua_State *L, void *ptr)
+  {
+    lua_pushvalue (L, LUA_REGISTRYINDEX);
+    lua_insert (L, -2);
+    lua_rawsetp (L, -2, ptr);
+    lua_pop (L, 1);
+  }
+
+  /**
+   * @brief Detaches Lua wrapper from pointer.
+   * @param L Lua state.
+   * @param ptr The pointer whose wrapper is to be detached.
+   */
+  static void
+  detachLuaWrapper (lua_State *L, void *ptr)
+  {
+    lua_pushnil (L);
+    attachLuaWrapper (L, ptr);
+  }
+
+  /**
+   * @brief Pushes Lua wrapper onto stack.
+   * @param L Lua state.
+   * @param ptr The pointer whose wrapper is to be pushed.
+   */
+  static void
+  pushLuaWrapper (lua_State *L, void *ptr)
+  {
+    lua_pushvalue (L, LUA_REGISTRYINDEX);
+    lua_rawgetp (L, -1, ptr);
+    lua_remove (L, -2);
+  }
+
+  /**
+   * @brief Calls method of Lua wrapper.
+   * @param L Lua state.
+   * @param ptr The pointer whose wrapper is to be called.
+   * @param name The name of the method to call.
+   * @param nargs The number of arguments
+   * @param nresults The number of results.
+   */
+  static void
+  callLuaWrapper (lua_State *L, void *ptr, const char *name,
+                  int nargs, int nresults)
+  {
+    LuaAPI::pushLuaWrapper (L, ptr);
+    g_assert (luaL_getmetafield (L, -1, name) != LUA_TNIL);
+
+    lua_insert (L, (-nargs) -2);
+    lua_insert (L, (-nargs) -1);
+
+    if (unlikely (lua_pcall (L, nargs + 1, nresults, 0) != LUA_OK))
+      {
+        luax_dump_stack (L);
+        ERROR ("%s", lua_tostring (L, -1));
+      }
+  }
 };
 
 GINGA_NAMESPACE_END

@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef CONTEXT_H
-#define CONTEXT_H
+#ifndef GINGA_CONTEXT_H
+#define GINGA_CONTEXT_H
 
 #include "Composition.h"
 #include "Event.h"
@@ -26,15 +26,36 @@ GINGA_NAMESPACE_BEGIN
 class Context : public Composition
 {
 public:
-  explicit Context (Document *doc,
-                    Composition *parent,
-                    const string &id);
 
-  virtual ~Context ();
+  /**
+   * @brief Creates a new context object.
+   * @see Object::Object().
+   */
+  Context (Document *doc,
+           Composition *parent,
+           const string &id);
 
-  // Object:
-  Object::Type getType () override;
+  /**
+   * @brief Destroys context object.
+   * @see Object::~Object().
+   */
+  ~Context ();
+
+  /**
+   * @brief Gets a string representation of context object.
+   * @see Object::toString().
+   */
   string toString () override;
+
+  /**
+   * @brief Gets the type of context object.
+   * @return Object::CONTEXT.
+   * @see Object::getType().
+   */
+  Object::Type getType () override;
+
+  // TODO
+
   string getProperty (const string &) override;
   void setProperty (const string &, const string &, Time dur = 0) override;
   void sendKey (const string &, bool) override;
@@ -64,4 +85,4 @@ private:
 
 GINGA_NAMESPACE_END
 
-#endif // CONTEXT_H
+#endif // GINGA_CONTEXT_H

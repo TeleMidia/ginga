@@ -89,6 +89,10 @@ AX_CXX_COMPILE_STDCXX_11([ext],[mandatory])
 # Tool checks.
 AU_PROG_PKG_CONFIG
 AU_PROG_UNIX_TOOLS
+AC_CHECK_PROGS([XXD], [xxd])
+AS_IF([test -z "$XXD"],
+ [AU_ERROR_REQ([xxd])])
+AM_CONDITIONAL([HAVE_XXD], [test -n "$XXD"])
 
 # System checks.
 AU_SYSTEM

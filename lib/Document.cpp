@@ -35,7 +35,9 @@ Document::Document ()
   LuaAPI::_Document_attachWrapper (_L, this);
 
   _root = new Context (this, NULL, "__root__");
-  _settings = new MediaSettings (this, _root, "__settings__");
+  _settings = cast (MediaSettings *, this->createObject
+                    (Object::MEDIA_SETTINGS, _root, "__settings__"));
+  g_assert_nonnull (_settings);
 }
 
 Document::~Document ()
@@ -44,6 +46,7 @@ Document::~Document ()
   delete _root;
 
   g_assert_nonnull (_L);
+  LuaAPI::_Document_detachWrapper (_L, this);
   lua_close (_L);
 }
 
@@ -71,7 +74,7 @@ Document::getObjects (int mask, set<Object *> *objects)
   g_return_if_fail (objects != NULL);
 
   for (auto obj: _objects)
-    if (obj->getType () & mask)
+    if (obj->getType () & ((guint) mask))
       objects->insert (obj);
 }
 

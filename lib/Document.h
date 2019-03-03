@@ -118,9 +118,6 @@ public:
 
   // TODO
 
-  // Context *createContext (Composition *parent, const string &id);
-  // Switch *createSwitch (Composition *parent, const string &id);
-
   int evalAction (Event *, Event::Transition, const string &value = "");
 
   int evalAction (Action);

@@ -25,49 +25,61 @@ static const struct luaL_Reg _Document_methods[] =
 {
  {"__tostring", LuaAPI::__l_Document_toString},
  {"__getUnderlyingObject", LuaAPI::__l_Document_getUnderlyingObject},
+ {"getObjects", LuaAPI::l_Document_getObjects},
  {"getObjectById", LuaAPI::l_Document_getObjectById},
- {"getMediaObjects", LuaAPI::l_Document_getMediaObjects},
+ {"getRoot", LuaAPI::l_Document_getRoot},
+ {"getSettingsObject", LuaAPI::l_Document_getSettingsObject},
+ {"createObject", LuaAPI::l_Document_createObject},
  {NULL, NULL},
 };
 
 void
-LuaAPI::_Document_attachWrapper (lua_State *L, Document *doc)
+LuaAPI::_Document_attachWrapper (lua_State *L,
+                                 Document *doc)
 {
   Document **wrapper;
 
   g_return_if_fail (L != NULL);
   g_return_if_fail (doc != NULL);
 
-  // Load metatable if necessary.
-  luaL_getmetatable (L, LuaAPI::DOCUMENT);
-  if (lua_isnil (L, -1))
-    {
-      lua_pop (L, 1);
-      luax_newmetatable (L, LuaAPI::DOCUMENT);
-      luaL_setfuncs (L, _Document_methods, 0);
-    }
-  lua_pop (L, 1);
+  LuaAPI::loadLuaWrapperMt (L,
+                            _Document_methods,
+                            LuaAPI::DOCUMENT,
+                            (const char *) LuaAPI::Document_initMt_lua,
+                            (size_t) LuaAPI::Document_initMt_lua_len);
 
   wrapper = (Document **) lua_newuserdata (L, sizeof (Document **));
   g_assert_nonnull (wrapper);
   *wrapper = doc;
   luaL_setmetatable (L, LuaAPI::DOCUMENT);
 
-  // Set Document:=Wrapper in LUA_REGISTY.
-  lua_pushvalue (L, LUA_REGISTRYINDEX);
-  lua_pushvalue (L, -2);
-  lua_rawsetp (L, -2, doc);
-  lua_pop (L, 1);
+  // Set doc:=wrapper in LUA_REGISTY.
+  lua_pushvalue (L, -1);
+  LuaAPI::attachLuaWrapper (L, doc);
 
-  // Set L:=Document in LUA_REGISTRY.
-  lua_pushvalue (L, LUA_REGISTRYINDEX);
-  lua_pushlightuserdata (L, L);
-  lua_pushvalue (L, -3);
-  lua_rawset (L, -3);
-  lua_pop (L, 1);
-
-  // Set _D:=Document.
+  // Set _D:=doc.
   lua_setglobal (L, "_D");
+
+  // Call _D:__attachData().
+  LuaAPI::callLuaWrapper (L, doc, "_attachData", 0, 0);
+}
+
+void
+LuaAPI::_Document_detachWrapper (lua_State *L,
+                                 Document *doc)
+{
+  g_return_if_fail (L != NULL);
+  g_return_if_fail (doc != NULL);
+
+  // Call _D:__detachData().
+  LuaAPI::callLuaWrapper (L, doc, "_detachData", 1, 0);
+
+  // Set _D:=nil.
+  lua_pushnil (L);
+  lua_setglobal (L, "_D");
+
+  // Set doc:=nil in LUA_REGISTY.
+  LuaAPI::detachLuaWrapper (L, doc);
 }
 
 Document *
@@ -95,6 +107,27 @@ LuaAPI::__l_Document_getUnderlyingObject (lua_State *L)
 }
 
 int
+LuaAPI::l_Document_getObjects (lua_State *L)
+{
+  Document *doc;
+  set<Object *> objects;
+  lua_Integer i;
+
+  doc = LuaAPI::_Document_check (L, 1);
+  doc->getObjects (-1, &objects);
+
+  lua_newtable (L);
+  i = 1;
+  for (auto obj: objects)
+    {
+      LuaAPI::pushLuaWrapper (L, obj);
+      lua_rawseti (L, -2, i++);
+    }
+
+  return 1;
+}
+
+int
 LuaAPI::l_Document_getObjectById (lua_State *L)
 {
   Document *doc;
@@ -112,31 +145,59 @@ LuaAPI::l_Document_getObjectById (lua_State *L)
     }
 
   LuaAPI::pushLuaWrapper (L, obj);
+
   return 1;
 }
 
 int
-LuaAPI::l_Document_getMediaObjects (lua_State *L)
+LuaAPI::l_Document_getRoot (lua_State *L)
 {
   Document *doc;
-  set<Object *> objects;
-  lua_Integer i;
 
   doc = LuaAPI::_Document_check (L, 1);
-  doc->getObjects (Object::MEDIA, &objects);
+  LuaAPI::pushLuaWrapper (L, doc->getRoot ());
 
-  lua_newtable (L);
-  i = 1;
-  for (auto obj: objects)
+  return 1;
+}
+
+int
+LuaAPI::l_Document_getSettingsObject (lua_State *L)
+{
+  Document *doc;
+
+  doc = LuaAPI::_Document_check (L, 1);
+  LuaAPI::pushLuaWrapper (L, doc->getSettingsObject ());
+
+  return 1;
+}
+
+int
+LuaAPI::l_Document_createObject (lua_State *L)
+{
+  Document *doc;
+  int idx;
+  const char *id;
+  Composition *parent;
+  Object *obj;
+
+  doc = LuaAPI::_Document_check (L, 1);
+  idx = luaL_checkoption (L, 2, NULL, LuaAPI::_Object_optTypes);
+  obj = LuaAPI::_Object_check (L, 3);
+  luaL_argcheck (L, obj->getType () == Object::CONTEXT
+                 || obj->getType () == Object::SWITCH, 3,
+                 "Ginga.Composition expected");
+  parent = (Composition *) obj;
+  id = luaL_checkstring (L, 4);
+
+  obj = doc->createObject (LuaAPI::_Object_getTypeFromOptIndex (idx),
+                           parent, id);
+  if (unlikely (obj == NULL))
     {
-      Media *media;
-
-      media = cast (Media *, obj);
-      g_assert_nonnull (media);
-      LuaAPI::pushLuaWrapper (L, media);
-      g_assert (media == LuaAPI::_Media_check (L, -1));
-      lua_rawseti (L, -2, i++);
+      lua_pushnil (L);
+      lua_pushliteral (L, "id already in use");
+      return 2;
     }
 
+  LuaAPI::pushLuaWrapper (L, obj);
   return 1;
 }

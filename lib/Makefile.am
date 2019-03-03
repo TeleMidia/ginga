@@ -40,8 +40,12 @@ src+= Document.cpp
 src+= Event.cpp
 src+= Formatter.cpp
 src+= Ginga.cpp
+src+= LuaAPI_Context.cpp
 src+= LuaAPI_Document.cpp
+src+= LuaAPI_Document_initMt.cpp
 src+= LuaAPI_Media.cpp
+src+= LuaAPI_Object.cpp
+src+= LuaAPI_Switch.cpp
 src+= Media.cpp
 src+= MediaSettings.cpp
 src+= Object.cpp
@@ -65,18 +69,9 @@ if WITH_NCLUA
 src+= PlayerLua.cpp
 endif # WITH_NCLUA
 
-if WITH_CEF
-src+= PlayerHTML.cpp
-cef_filesdir= $(bindir)
-cef_files_DATA=\
-  $(cef_dir)/Release/chrome-sandbox\
-  $(cef_dir)/Release/libcef.so\
-  $(cef_dir)/Release/natives_blob.bin\
-  $(cef_dir)/Release/snapshot_blob.bin\
-  $(cef_dir)/Resources/cef.pak\
-  $(cef_dir)/Resources/cef_100_percent.pak\
-  $(cef_dir)/Resources/cef_200_percent.pak\
-  $(cef_dir)/Resources/cef_extensions.pak\
-  $(cef_dir)/Resources/icudtl.dat\
-  $(NULL)
-endif # WITH_CEF
+# Convert .lua's to static strings.
+.lua.cpp:
+	@echo '#include "LuaAPI.h"' >$@
+	$(AM_V_GEN)$(XXD) -i $< | sed s/LuaAPI_/LuaAPI::/ >>$@
+
+CLEANFILES+= LuaAPI_Document_initMt.cpp
