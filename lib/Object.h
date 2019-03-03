@@ -31,7 +31,7 @@ class MediaSettings;
  *
  * Run-time representation of an NCL object.
  *
- * @see Media, MediaSettings, Context, Switch.
+ * @see Context, Switch, Media, MediaSettings.
  */
 class Object
 {
@@ -59,7 +59,7 @@ public:
    * @brief Creates a new object.
    * @param doc The container document.
    * @param parent The parent object to add the new object to
-   *        or \p NULL (no parent).
+   *               or \p NULL (no parent).
    * @param id The id of the new object (must not occur in \p doc).
    *
    * The newly created object has a single presentation event: the lambda
@@ -126,16 +126,16 @@ public:
 
   /**
    * @brief Gets the current value of an object property.
-   * @param name Property name.
-   * @return Current value.
+   * @param name The name of the property to get.
+   * @return The property current value.
    */
   virtual string getProperty (const string &name);
 
   /**
    * @brief Sets the current value of an object property.
-   * @param name Property name.
-   * @param value Value to set.
-   * @param duration The duration of the set action.
+   * @param name The name of the property to set.
+   * @param value the value to set.
+   * @param duration The duration of the set operation.
    */
   virtual void setProperty (const string &name, const string &value,
                             Time duration = 0);
@@ -206,26 +206,28 @@ public:
 
 protected:
 
-  /// Container document.
+  /// The container document of this object.
   Document *_doc;
 
-  /// Lua state associated with the container document.
+  /// The Lua state associated with the container document.
   lua_State *_L;
 
-  /// Parent object.
+  /// The parent of this object.
   Composition *_parent;
 
-  /// Object id.
+  /// The id of this object.
   string _id;
 
-  /// Aliases of this object and the compositions where they occur.
+  /// The aliases of this object and the compositions where they occur.
   list<pair<string, Composition *> > _aliases;
+
+  /// A map with the properties of this object indexed by name.
+  map<string, string> _properties;
+
+  // TODO ------------------------------------------------------------------
 
   /// Total playback time.
   Time _time;
-
-  /// Property map.
-  map<string, string> _properties;
 
   /// The lambda (presentation) event.
   Event *_lambda;

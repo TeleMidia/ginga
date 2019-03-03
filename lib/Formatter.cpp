@@ -223,7 +223,7 @@ Formatter::resize (int width, int height)
   }
 
   // Resize each media object in document.
-  _doc->getObjects (Object::MEDIA, &objects);
+  _doc->getObjects (&objects, Object::MEDIA);
   for (auto obj : objects)
     {
       Media *media;
@@ -287,7 +287,7 @@ Formatter::redraw (cairo_t *cr)
 
 
   zlist = NULL;
-  _doc->getObjects (Object::MEDIA, &objects);
+  _doc->getObjects (&objects, Object::MEDIA);
   for (auto &obj: objects)
     {
       Media *media;
@@ -358,6 +358,7 @@ Formatter::redraw (cairo_t *cr)
 bool
 Formatter::sendKey (const string &key, bool press)
 {
+  set<Object *> objects;
   list<Object *> buf;
 
   // This must be the first check.
@@ -368,14 +369,17 @@ Formatter::sendKey (const string &key, bool press)
     return false;
 
   // IMPORTANT: When propagating a key to the objects, we cannot traverse
-  // the object set directly, as the reception of a key may cause this set
-  // to be modified.  We thus need to create a buffer with the objects that
-  // should receive the key, i.e., those that are not sleeping, and then
-  // propagate the key only to the objects in this buffer.
-  for (auto obj : *_doc->getObjects ())
+  // the object set directly, as the reception of a key may cause the state
+  // of some objects in this set to be modified.  We thus need to create a
+  // buffer with the objects that should receive the key, i.e., those that
+  // are not sleeping, and then propagate the key only to the objects in
+  // this buffer.
+
+  _doc->getObjects (&objects);
+  for (auto obj: objects)
     if (!obj->isSleeping ())
       buf.push_back (obj);
-  for (auto obj : buf)
+  for (auto obj: buf)
     obj->sendKey (key, press);
 
   return true;
@@ -384,6 +388,7 @@ Formatter::sendKey (const string &key, bool press)
 bool
 Formatter::sendTick (uint64_t time, uint64_t diff, uint64_t frame)
 {
+  set<Object *> objects;
   list<Object *> buf;
 
   // This must be the first check.
@@ -400,10 +405,12 @@ Formatter::sendTick (uint64_t time, uint64_t diff, uint64_t frame)
   // IMPORTANT: The same warning about propagation that appear in
   // Formatter::sendKeyEvent() applies here.  The difference is that ticks
   // should only be propagated to objects that are occurring.
-  for (auto obj : *_doc->getObjects ())
+
+  _doc->getObjects (&objects);
+  for (auto obj: objects)
     if (obj->isOccurring ())
       buf.push_back (obj);
-  for (auto obj : buf)
+  for (auto obj: buf)
     obj->sendTick (time, diff, frame);
 
   return true;

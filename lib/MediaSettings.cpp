@@ -102,7 +102,7 @@ MediaSettings::updateCurrentFocus (const string &index)
     {
       set<Object *> objects;
 
-      _doc->getObjects (Object::MEDIA, &objects);
+      _doc->getObjects (&objects, Object::MEDIA);
       for (auto obj: objects)
         {
           Media *media;

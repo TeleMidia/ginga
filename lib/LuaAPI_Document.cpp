@@ -111,7 +111,7 @@ LuaAPI::l_Document_getObjects (lua_State *L)
   lua_Integer i;
 
   doc = LuaAPI::_Document_check (L, 1);
-  doc->getObjects (-1, &objects);
+  doc->getObjects (&objects);
 
   lua_newtable (L);
   i = 1;

@@ -67,21 +67,15 @@ public:
   string toString ();
 
   /**
-   * @brief Gets the set of all objects in document.
-   * @return The set of all objects in document.
-   */
-  const set<Object *> *getObjects ();
-
-  /**
    * @brief Gets the set of objects in document whose type match \p mask.
-   * @param mask Bit-mask of Object::Type.
    * @param[out] objects The set of matched objects.
+   * @param mask A bitmask of or-ed Object::Type values.
    */
-  void getObjects (int mask, set<Object *> *objects);
+  void getObjects (set<Object *> *objects, uint mask=(uint) -1);
 
   /**
    * @brief Gets the object in document whose id or alias match \p id.
-   * @param id The object id or alias to match.
+   * @param id The id or alias to match.
    * @return The matched object or \c NULL (no such object).
    */
   Object *getObjectById (const string &id);
@@ -130,25 +124,26 @@ public:
   bool setData (const string &, void *, UserDataCleanFunc fn = nullptr);
 
 private:
-  list<Action> evalActionInContext (Action, Context *);
-
-  /// Associated Lua state.
+  /// The Lua state associate with this document.
   lua_State *_L;
 
-  /// Object set.
+  /// The set of all objects in this document.
   set<Object *> _objects;
 
-  /// Object map (indexed by id).
+  /// A map with all objects in this document indexed by id.
   map<string, Object *> _objectsById;
 
-  /// The document's root Context (body).
+  /// The root Context (body) of this document.
   Context *_root;
 
-  /// The document's settings node (MediaSettings object).
+  /// The settings object (MediaSettings) of this document.
   MediaSettings *_settings;
 
-  /// Attached user data.
+  /// User data attached to this document.
   UserData _udata;
+
+  // TODO ------------------------------------------------------------------
+  list<Action> evalActionInContext (Action, Context *);
 };
 
 GINGA_NAMESPACE_END

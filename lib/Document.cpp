@@ -62,19 +62,13 @@ Document::toString ()
   return xstrbuild ("Document (%p)", this);
 }
 
-const set<Object *> *
-Document::getObjects ()
-{
-  return &_objects;
-}
-
 void
-Document::getObjects (int mask, set<Object *> *objects)
+Document::getObjects (set<Object *> *objects, uint mask)
 {
   g_return_if_fail (objects != NULL);
 
   for (auto obj: _objects)
-    if (obj->getType () & ((guint) mask))
+    if (obj->getType () & mask)
       objects->insert (obj);
 }
 
