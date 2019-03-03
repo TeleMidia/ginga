@@ -94,7 +94,7 @@ Document::getRoot ()
 }
 
 MediaSettings *
-Document::getSettingsObject ()
+Document::getSettings ()
 {
   g_assert_nonnull (_settings);
   return _settings;
@@ -124,8 +124,7 @@ Document::addObject (Object *object)
 }
 
 Object *
-Document::createObject (Object::Type type,
-                        Composition *parent,
+Document::createObject (Object::Type type, Composition *parent,
                         const string &id)
 {
   g_return_val_if_fail (parent != NULL, NULL);
@@ -258,7 +257,7 @@ Document::evalAction (Action init)
       g_assert_nonnull (evt);
 
       TRACE ("trigger stacked action: %s %s",
-             Event::getEventTransitionAsString (act.transition).c_str (),
+             Event::getTransitionAsString (act.transition).c_str (),
              act.event->getFullId ().c_str ());
 
       evt->setParameter ("duration", act.duration);
@@ -315,7 +314,7 @@ Document::evalAction (Action init)
                   if (mapped_evt->getObject () == evt->getObject ()
                       && swtch->getParent () != NULL)
                     {
-                      Event *label_evt = swtch->getEvent (
+                      Event *label_evt = swtch->getEventById (
                           Event::PRESENTATION, swtchPort.first);
                       g_assert_nonnull (label_evt);
 

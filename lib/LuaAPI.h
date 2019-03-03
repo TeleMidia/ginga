@@ -30,6 +30,7 @@ GINGA_NAMESPACE_BEGIN
 class Context;
 class Document;
 class Media;
+class Switch;
 
 class LuaAPI
 {
@@ -85,13 +86,13 @@ class LuaAPI
   static unsigned int Object_initMt_lua_len;
 
   /**
-   * @brief Array of type names; used in luaL_checkoption() calls.
+   * @brief Array of Object-type names; used in luaL_checkoption() calls.
    */
   static const char *const _Object_optTypes[];
 
   /**
    * @brief Gets the type associated with index of LuaAPI_Object_optTypes.
-   * @param i Valid index of LuaAPI_Object_optTypes.
+   * @param i A valid index of LuaAPI_Object_optTypes.
    * @return The associated Object::Type.
    */
   static Object::Type _Object_getOptIndexType (int i);
@@ -125,6 +126,10 @@ class LuaAPI
 
   static int l_Object_setProperty (lua_State *L);
 
+  static int l_Object_getEvents (lua_State *L);
+
+  static int l_Object_getEventById (lua_State *L);
+
   // Context:
 
   /**
@@ -145,6 +150,12 @@ class LuaAPI
    */
   static const char *SWITCH;
 
+  static void _Switch_attachWrapper (lua_State *L, Switch *swtch);
+
+  static void _Switch_detachWrapper (lua_State *L, Switch *swtch);
+
+  static Switch *_Switch_check (lua_State *L, int i);
+
   // Media:
 
   /**
@@ -157,6 +168,53 @@ class LuaAPI
   static void _Media_detachWrapper (lua_State *L, Media *media);
 
   static Media *_Media_check (lua_State *L, int i);
+
+  // Event:
+
+  /**
+   * @brief Registry key for the Event metatable.
+   */
+  static const char *EVENT;
+
+  /**
+   * @brief Lua code to run when loading Event metatable.
+   */
+  static unsigned char Event_initMt_lua[];
+
+  /**
+   * @brief Length in bytes of LuaAPI::Event_initMt_lua.
+   */
+  static unsigned int Event_initMt_lua_len;
+
+  /**
+   * @brief Array of Event-type names; used in luaL_checkoption() calls.
+   */
+  static const char *const _Event_optTypes[];
+
+  /**
+   * @brief Gets the type associated with index of LuaAPI_Event_optTypes.
+   * @param i A valid index of LuaAPI_Event_optTypes.
+   * @return The associated Event::Type.
+   */
+  static Event::Type _Event_getOptIndexType (int i);
+
+  static void _Event_attachWrapper (lua_State *L, Event *evt);
+
+  static void _Event_detachWrapper (lua_State *L, Event *evt);
+
+  static Event *_Event_check (lua_State *L, int i);
+
+  static int __l_Event_toString (lua_State *L);
+
+  static int __l_Event_getUnderlyingObject (lua_State *L);
+
+  static int l_Event_getType (lua_State *L);
+
+  static int l_Event_getObject (lua_State *L);
+
+  static int l_Event_getId (lua_State *L);
+
+  static int l_Event_getState (lua_State *L);
 
   // Auxiliary:
 

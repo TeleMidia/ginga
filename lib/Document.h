@@ -74,7 +74,7 @@ public:
   void getObjects (set<Object *> *objects, uint mask=(uint) -1);
 
   /**
-   * @brief Gets the object in document whose id or alias match \p id.
+   * @brief Gets the object in document with the given id or alias.
    * @param id The id or alias to match.
    * @return The matched object or \c NULL (no such object).
    */
@@ -90,7 +90,7 @@ public:
    * @brief Gets the MediaSettings of document.
    * @return The MediaSettings of document.
    */
-  MediaSettings *getSettingsObject ();
+  MediaSettings *getSettings ();
 
   /**
    * @brief Adds object to document.

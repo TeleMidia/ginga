@@ -16,9 +16,11 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "LuaAPI.h"
+#include "Object.h"
+
 #include "Context.h"
 #include "Media.h"
-#include "Object.h"
+#include "Switch.h"
 
 const char *const LuaAPI::_Object_optTypes[] =
   {"context", "switch", "media", NULL};
@@ -71,6 +73,8 @@ LuaAPI::_Object_attachWrapper (lua_State *L, Object *obj)
      {"getId",                 LuaAPI::l_Object_getId},
      {"getProperty",           LuaAPI::l_Object_getProperty},
      {"setProperty",           LuaAPI::l_Object_setProperty},
+     {"getEvents",             LuaAPI::l_Object_getEvents},
+     {"getEventById",          LuaAPI::l_Object_getEventById},
      {NULL, NULL},
     };
   const char *name;
@@ -170,6 +174,8 @@ LuaAPI::_Object_check (lua_State *L, int i)
   lua_pop (L, 2);
   if (g_str_equal (name, LuaAPI::CONTEXT))
     return LuaAPI::_Context_check (L, i);
+  else if (g_str_equal (name, LuaAPI::SWITCH))
+    return LuaAPI::_Switch_check (L, i);
   else if (g_str_equal (name, LuaAPI::MEDIA))
     return LuaAPI::_Media_check (L, i);
 
@@ -275,4 +281,51 @@ LuaAPI::l_Object_setProperty (lua_State *L)
   obj->setProperty (name, value, dur);
 
   return 0;
+}
+
+int
+LuaAPI::l_Object_getEvents (lua_State *L)
+{
+  Object *obj;
+  set<Event *> events;
+  lua_Integer i;
+
+  obj = LuaAPI::_Object_check (L, 1);
+  obj->getEvents (&events);
+
+  lua_newtable (L);
+  i = 1;
+  for (auto evt: events)
+    {
+      LuaAPI::pushLuaWrapper (L, evt);
+      lua_rawseti (L, -2, i++);
+    }
+
+  return 1;
+}
+
+int
+LuaAPI::l_Object_getEventById (lua_State *L)
+{
+  Object *obj;
+  int idx;
+  const char *id;
+
+  Event::Type type;
+  Event *evt;
+
+  obj = LuaAPI::_Object_check (L, 1);
+  idx = luaL_checkoption (L, 2, NULL, LuaAPI::_Event_optTypes);
+  id = luaL_checkstring (L, 3);
+
+  type = LuaAPI::_Event_getOptIndexType (idx);
+  evt = obj->getEventById (type, id);
+  if (evt == NULL)
+    {
+      lua_pushnil (L);
+      return 1;
+    }
+
+  LuaAPI::pushLuaWrapper (L, evt);
+  return 1;
 }

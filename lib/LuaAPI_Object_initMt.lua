@@ -14,11 +14,26 @@ do
       mt[self] = {
          id     = self:getId (),
          parent = self:getParent (),
+         event  = {
+            presentation = {},
+            selection = {},
+            attribution = {},
+         },
       }
    end
 
    mt._detachData = function (self)
       trace ('_detachData')
       mt[self] = nil
+   end
+
+   mt._addEvent = function (self, evt)
+      trace ('_addEvent(%s)', evt:getId ())
+      mt[self].event[evt:getType ()][evt:getId ()] = evt
+   end
+
+   mt._removeEvent = function (self, evt)
+      trace ('_removeEvent(%s)', evt:getId ())
+      mt[self].event[evt:getType ()][evt:getId ()] = nil
    end
 end

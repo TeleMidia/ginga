@@ -17,6 +17,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 #include "Switch.h"
+#include "LuaAPI.h"
 
 #include "Document.h"
 
@@ -29,12 +30,18 @@ Switch::Switch (Document *doc,
                 const string &id) : Composition (doc, parent, id)
 {
   _selected = nullptr;
+
+  LuaAPI::_Switch_attachWrapper (_L, this);
+  this->createEvents ();
 }
 
 Switch::~Switch ()
 {
   for (auto item : _rules)
     delete item.second;
+
+  this->destroyEvents ();
+  LuaAPI::_Switch_detachWrapper (_L, this);
 }
 
 // Public: Object.

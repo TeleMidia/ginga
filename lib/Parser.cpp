@@ -3886,7 +3886,7 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
     {
       if (type == "application/x-ginga-settings")
         {
-          media = st->_doc->getSettingsObject ();
+          media = st->_doc->getSettings ();
           media->addAlias (id, parent);
           st->referMapAdd (id, media);
         }

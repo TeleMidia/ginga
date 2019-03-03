@@ -160,7 +160,7 @@ Formatter::start (const string &file, string *errmsg)
 
   Context *root = _doc->getRoot ();
   g_assert_nonnull (root);
-  MediaSettings *settings = _doc->getSettingsObject ();
+  MediaSettings *settings = _doc->getSettings ();
   g_assert_nonnull (settings);
 
   // Initialize formatter variables.

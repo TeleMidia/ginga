@@ -17,6 +17,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "LuaAPI.h"
 #include "Document.h"
+
 #include "Media.h"
 
 const char *LuaAPI::DOCUMENT = "Ginga.Document";
@@ -163,7 +164,7 @@ LuaAPI::l_Document_getSettingsObject (lua_State *L)
   Document *doc;
 
   doc = LuaAPI::_Document_check (L, 1);
-  LuaAPI::pushLuaWrapper (L, doc->getSettingsObject ());
+  LuaAPI::pushLuaWrapper (L, doc->getSettings ());
 
   return 1;
 }
@@ -174,6 +175,7 @@ LuaAPI::l_Document_createObject (lua_State *L)
   Document *doc;
   int idx;
   const char *id;
+
   Composition *parent;
   Object::Type type;
   Object *obj;
@@ -184,9 +186,9 @@ LuaAPI::l_Document_createObject (lua_State *L)
   luaL_argcheck (L, obj->getType () == Object::CONTEXT
                  || obj->getType () == Object::SWITCH, 3,
                  "Ginga.Composition expected");
-  parent = (Composition *) obj;
   id = luaL_checkstring (L, 4);
 
+  parent = (Composition *) obj;
   type = LuaAPI::_Object_getOptIndexType (idx);
   obj = doc->createObject (type, parent, id);
   if (unlikely (obj == NULL))

@@ -34,7 +34,9 @@ Context::Context (Document *doc,
 {
   _awakeChildren = 0;
   _status = true;
+
   LuaAPI::_Context_attachWrapper (_L, this);
+  this->createEvents ();
 }
 
 Context::~Context ()
@@ -57,6 +59,7 @@ Context::~Context ()
           delete act.predicate;
     }
 
+  this->destroyEvents ();
   LuaAPI::_Context_detachWrapper (_L, this);
 }
 
@@ -84,7 +87,7 @@ Context::toString ()
 #define COND_TOSTRING(str, act)                                            \
   G_STMT_START                                                             \
   {                                                                        \
-    (str) += Event::getEventTransitionAsString ((act).transition);         \
+    (str) += Event::getTransitionAsString ((act).transition);           \
     (str) += "(" + (act).event->getFullId ();                              \
     if ((act).predicate != nullptr)                                        \
       (str) += " ? " + (act).predicate->toString ();                       \
@@ -95,7 +98,7 @@ Context::toString ()
 #define ACT_TOSTRING(str, act)                                             \
   G_STMT_START                                                             \
   {                                                                        \
-    (str) += Event::getEventTransitionAsString ((act).transition);         \
+    (str) += Event::getTransitionAsString ((act).transition);           \
     (str) += "(" + (act).event->getFullId ();                              \
     if ((act).event->getType () == Event::ATTRIBUTION)                     \
       (str) += ":='" + (act).value + "'";                                  \
@@ -164,7 +167,7 @@ Context::sendTick (Time total, Time diff, Time frame)
   // Check for EOS.
   if (_parent == nullptr && _awakeChildren == 1)
     {
-      if (_doc->getSettingsObject ()->isOccurring ())
+      if (_doc->getSettings ()->isOccurring ())
         {
           _doc->evalAction (_lambda, Event::STOP);
         }

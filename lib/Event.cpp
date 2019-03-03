@@ -17,25 +17,126 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 #include "Event.h"
+#include "LuaAPI.h"
+
+#include "Document.h"
 #include "Object.h"
 
 GINGA_NAMESPACE_BEGIN
+
+// Public: Static.
+
+string
+Event::getTypeAsString (Event::Type type)
+{
+  switch (type)
+    {
+    case Event::PRESENTATION:
+      return "presentation";
+    case Event::ATTRIBUTION:
+      return "attribution";
+    case Event::SELECTION:
+      return "selection";
+    default:
+      g_assert_not_reached ();
+    }
+}
+
+string
+Event::getStateAsString (Event::State state)
+{
+  switch (state)
+    {
+    case Event::SLEEPING:
+      return "sleeping";
+    case Event::OCCURRING:
+      return "occurring";
+    case Event::PAUSED:
+      return "paused";
+    default:
+      g_assert_not_reached ();
+    }
+}
+
+string
+Event::getTransitionAsString (Event::Transition trans)
+{
+  switch (trans)
+    {
+    case Event::START:
+      return "start";
+    case Event::PAUSE:
+      return "pause";
+    case Event::RESUME:
+      return "resume";
+    case Event::STOP:
+      return "stop";
+    case Event::ABORT:
+      return "abort";
+    default:
+      g_assert_not_reached ();
+    }
+}
 
 // Public.
 
 Event::Event (Event::Type type, Object *object, const string &id)
 {
+  g_return_if_fail (object != NULL);
+
   _type = type;
-  g_assert_nonnull (object);
   _object = object;
+  _L = object->getDocument ()->getLuaState ();
   _id = id;
   _state = Event::SLEEPING;
   _begin = 0;
   _end = GINGA_TIME_NONE;
+  _label = "";
+  LuaAPI::_Event_attachWrapper (_L, this);
 }
 
 Event::~Event ()
 {
+  LuaAPI::_Event_detachWrapper (_L, this);
+}
+
+string
+Event::toString ()
+{
+  string str;
+
+  str = xstrbuild
+    ("\
+Event (%p)\n\
+  object: %p (%s, id: %s)\n\
+  id: %s\n\
+  full-id: %s\n\
+  type: %s\n\
+  state: %s\n",
+     this, _object, Object::getTypeAsString (_object->getType ()).c_str (),
+      _object->getId ().c_str (), _id.c_str (), this->getFullId ().c_str (),
+      Event::getTypeAsString (_type).c_str (),
+      Event::getStateAsString (_state).c_str ());
+
+  if (_type == Event::PRESENTATION)
+    {
+      str += xstrbuild ("\
+    begin: %" GINGA_TIME_FORMAT "\n\
+    end: %" GINGA_TIME_FORMAT "\n",
+                        GINGA_TIME_ARGS (_begin), GINGA_TIME_ARGS (_end));
+    }
+
+  if (_parameters.size () > 0)
+    {
+      str += xstrbuild ("    params:\n");
+      for (auto it : _parameters)
+        {
+          str += xstrbuild ("    %s='%s'\n", it.first.c_str (),
+                            it.second.c_str ());
+        }
+    }
+
+  return str;
 }
 
 Event::Type
@@ -55,6 +156,14 @@ Event::getId ()
 {
   return _id;
 }
+
+Event::State
+Event::getState ()
+{
+  return _state;
+}
+
+// TODO --------------------------------------------------------------------
 
 string
 Event::getFullId ()
@@ -77,51 +186,6 @@ Event::getFullId ()
       g_assert_not_reached ();
     }
   g_assert_not_reached ();
-}
-
-Event::State
-Event::getState ()
-{
-  return _state;
-}
-
-string
-Event::toString ()
-{
-  string str;
-
-  str = xstrbuild
-    ("\
-Event (%p)\n\
-  object: %p (%s, id: %s)\n\
-  id: %s\n\
-  full-id: %s\n\
-  type: %s\n\
-  state: %s\n",
-     this, _object, Object::getTypeAsString (_object->getType ()).c_str (),
-      _object->getId ().c_str (), _id.c_str (), this->getFullId ().c_str (),
-      Event::getEventTypeAsString (_type).c_str (),
-      Event::getEventStateAsString (_state).c_str ());
-
-  if (_type == Event::PRESENTATION)
-    {
-      str += xstrbuild ("\
-    begin: %" GINGA_TIME_FORMAT "\n\
-    end: %" GINGA_TIME_FORMAT "\n",
-                        GINGA_TIME_ARGS (_begin), GINGA_TIME_ARGS (_end));
-    }
-
-  if (_parameters.size () > 0)
-    {
-      str += xstrbuild ("    params:\n");
-      for (auto it : _parameters)
-        {
-          str += xstrbuild ("    %s='%s'\n", it.first.c_str (),
-                            it.second.c_str ());
-        }
-    }
-
-  return str;
 }
 
 bool
@@ -236,57 +300,7 @@ Event::reset ()
 
 // Public: Static.
 
-string
-Event::getEventTypeAsString (Event::Type type)
-{
-  switch (type)
-    {
-    case Event::PRESENTATION:
-      return "presentation";
-    case Event::ATTRIBUTION:
-      return "attribution";
-    case Event::SELECTION:
-      return "selection";
-    default:
-      g_assert_not_reached ();
-    }
-}
 
-string
-Event::getEventStateAsString (Event::State state)
-{
-  switch (state)
-    {
-    case Event::SLEEPING:
-      return "sleeping";
-    case Event::OCCURRING:
-      return "occurring";
-    case Event::PAUSED:
-      return "paused";
-    default:
-      g_assert_not_reached ();
-    }
-}
-
-string
-Event::getEventTransitionAsString (Event::Transition tr)
-{
-  switch (tr)
-    {
-    case Event::START:
-      return "start";
-    case Event::PAUSE:
-      return "pause";
-    case Event::RESUME:
-      return "resume";
-    case Event::STOP:
-      return "stop";
-    case Event::ABORT:
-      return "abort";
-    default:
-      g_assert_not_reached ();
-    }
-}
 
 Event::Transition
 Event::getStringAsTransition (string str)

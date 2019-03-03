@@ -1,4 +1,5 @@
 /LuaAPI_Document_initMt.cpp
+/LuaAPI_Event_initMt.cpp
 /LuaAPI_Object_initMt.cpp
 /config.h
 /config.h.in

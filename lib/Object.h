@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef OBJECT_H
-#define OBJECT_H
+#ifndef GINGA_OBJECT_H
+#define GINGA_OBJECT_H
 
 #include "Event.h"
 
@@ -42,10 +42,10 @@ public:
    */
   enum Type
   {
-    MEDIA          = 1 << 1,    ///< Media object.
-    MEDIA_SETTINGS = 1 << 2,    ///< MediaSettings object.
-    CONTEXT        = 1 << 3,    ///< Context object.
-    SWITCH         = 1 << 4     ///< Switch object.
+     MEDIA          = 1 << 1,   ///< Media object.
+     MEDIA_SETTINGS = 1 << 2,   ///< MediaSettings object.
+     CONTEXT        = 1 << 3,   ///< Context object.
+     SWITCH         = 1 << 4    ///< Switch object.
   };
 
   /**
@@ -141,14 +141,22 @@ public:
                             Time duration = 0);
 
   /**
-   * @brief Gets the set of events in object.
-   * @return The set of events in object.
+   * @brief Gets the set of events in object whose type match \p mask.
+   * @param[out] events The set of matched events.
+   * @param mask A bitmask of or-ed Event::Type values.
    */
-  const set<Event *> *getEvents ();
+  void getEvents (set <Event *> *events, uint mask=(uint) -1);
+
+  /**
+   * @brief Gets the event in object with the given type and id.
+   * @param type The type to match
+   * @param id The id to match.
+   * @return The matched event or \c NULL (no such event).
+   */
+  Event *getEventById (Event::Type type, const string &id);
 
   // TODO ------------------------------------------------------------------
 
-  Event *getEvent (Event::Type, const string &);
   Event *getAttributionEvent (const string &);
   void addAttributionEvent (const string &);
   Event *getPresentationEvent (const string &);
@@ -224,16 +232,28 @@ protected:
   /// A map with the properties of this object indexed by name.
   map<string, string> _properties;
 
-  // TODO ------------------------------------------------------------------
+  /// The set of all events in this object (including lambda).
+  set<Event *> _events;
 
-  /// Total playback time.
-  Time _time;
-
-  /// The lambda (presentation) event.
+  /// The lambda (presentation) event of this object.
   Event *_lambda;
 
-  /// All events, including lambda.
-  set<Event *> _events;
+  /// The playback time of this object.
+  Time _time;
+
+  /**
+   * @brief Creates the initial events of this object.
+   * @warning This should only be called in subclass constructors.
+   */
+  void createEvents ();
+
+  /**
+   * @brief Destroys all events of this object.
+   * @warning This should only be called in subclass destructors.
+   */
+  void destroyEvents ();
+
+  // TODO ------------------------------------------------------------------
 
   /// Delayed actions.
   list<pair<Action, Time> > _delayed;
@@ -244,4 +264,4 @@ protected:
 
 GINGA_NAMESPACE_END
 
-#endif // OBJECT_H
+#endif // GINGA_OBJECT_H

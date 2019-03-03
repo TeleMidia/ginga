@@ -26,66 +26,127 @@ GINGA_NAMESPACE_BEGIN
 class Object;
 
 /**
- * @brief Event state machine.
+ * @brief Event in an NCL object.
+ *
+ * Run-time representation of an NCL event state machine.
+ *
+ * @see Object.
  */
 class Event
 {
 public:
-  /// @brief Event type.
+
+  /**
+   * @brief Possible types for NCL events.
+   */
   enum Type
   {
-    /**
-     * @brief Attribution event.
-     *
-     * Stands for the attribution of some value to a specific property of
-     * the object.
-     */
-    ATTRIBUTION = 0,
+     /**
+      * @brief Stands for the attribution of a value to a property of the
+      * object.
+      */
+     ATTRIBUTION = 1 << 1,
 
-    /**
-     * @brief Presentation event.
-     *
-     * Stands for the presentation of a specific time interval of the
-     * object.
-     */
-    PRESENTATION,
+     /**
+      * @brief Stands for the presentation of a time interval of the object.
+      */
+     PRESENTATION = 1 << 2,
 
-    /**
-     * @brief Selection event.
-     *
-     * Stands for the pressing or releasing of a specific key which is
-     * directed to the object.
-     */
-    SELECTION,
+     /**
+      * @brief Stands for a key press/release directed to the object.
+      */
+     SELECTION = 1 << 3,
   };
 
-  /// @brief Event state.
+  /**
+   * @brief Converts Event::Type to a human-readable string.
+   * @param type The Event::Type to convert.
+   * @return The resulting string.
+   */
+  static string getTypeAsString (Event::Type type);
+
+  /**
+   * @brief Possible states for NCL events.
+   */
   enum State
   {
-    OCCURRING = 0, ///< Occurring.
-    PAUSED,        ///< Paused.
-    SLEEPING,      ///< Sleeping.
+     OCCURRING,                 ///< The event is occurring.
+     PAUSED,                    ///< The event is paused.
+     SLEEPING,                  ///< The event is sleeping.
   };
 
-  /// @brief Event state transitions.
+  /**
+   * @brief Converts Event::State to a human-readable string.
+   * @param state The Event::State to convert.
+   * @return The resulting string.
+   */
+  static string getStateAsString (Event::State state);
+
+  /**
+   * @brief Possible transitions between states of an NCL event.
+   */
   enum Transition
   {
-    ABORT = 0, ///< Abort.
-    PAUSE,     ///< Pause.
-    RESUME,    ///< Resume.
-    START,     ///< Start.
-    STOP,      ///< Stop.
+     ABORT,                 ///< Occurring|Paused->Sleeping.
+     PAUSE,                 ///< Occurring->Paused.
+     RESUME,                ///< Paused->Occurring.
+     START,                 ///< Paused|Sleeping->Occurring.
+     STOP,                  ///< Occurring|Paused->Sleeping.
   };
 
-  Event (Event::Type, Object *, const string &id);
+  /**
+   * @brief Converts Event::Transition to a human-readable string
+   * @param trans The Event::Transition to convert.
+   * @return The resulting string.
+   */
+  static string getTransitionAsString (Event::Transition trans);
+
+  /**
+   * @brief Creates a new event.
+   * @param type The type of the new event.
+   * @param object The container object.
+   * @param id The id of the new event (must no occur in \p object).
+   */
+  Event (Event::Type type, Object *object, const string &id);
+
+  /**
+   * @brief Destroys the event.
+   */
   ~Event ();
 
-  Event::Type getType ();
-  Object *getObject ();
-  string getId ();
-  string getFullId ();
-  Event::State getState ();
+  /**
+   * @brief Gets a string representation of event.
+   * @return A string representation of event.
+   */
   string toString ();
+
+  /**
+   * @brief Gets the type of event.
+   * @return The type of event.
+   */
+  Event::Type getType ();
+
+  /**
+   * @brief Gets the container object of event.
+   * @return The container object of event.
+   */
+  Object *getObject ();
+
+  /**
+   * @brief Gets the id of event.
+   * @return The id of event.
+   */
+  string getId ();
+
+  /**
+   * @brief Gets the current state of event.
+   * @return The current state of event.
+   */
+  Event::State getState ();
+
+  // TODO ------------------------------------------------------------------
+
+  string getFullId ();
 
   bool isLambda ();
   void getInterval (Time *, Time *);
@@ -102,20 +163,35 @@ public:
   void reset ();
 
 public:
-  static string getEventTypeAsString (Event::Type);
-  static string getEventStateAsString (Event::State);
-  static string getEventTransitionAsString (Event::Transition);
   static Event::Transition getStringAsTransition (string str);
 
 private:
-  Event::Type _type;               ///< Event type.
-  Object *_object;                 ///< Target object.
-  string _id;                      ///< Event id.
-  Event::State _state;             ///< Event state.
-  Time _begin;                     ///< Begin time.
-  Time _end;                       ///< End time.
-  std::string _label;              ///< Label.
-  map<string, string> _parameters; ///< Parameters.
+  /// The type of this event.
+  Event::Type _type;
+
+  /// The container object of this event.
+  Object *_object;
+
+  /// The Lua state associated with the container object.
+  lua_State *_L;
+
+  /// The id of this event.
+  string _id;
+
+  /// The current state of this event.
+  Event::State _state;
+
+  /// The start time of this event.
+  Time _begin;
+
+  /// The end time of this event.
+  Time _end;
+
+  /// The label associated with this event (if any).
+  std::string _label;
+
+  /// Extra parameters to event transitions.
+  map<string, string> _parameters;
 };
 
 /**

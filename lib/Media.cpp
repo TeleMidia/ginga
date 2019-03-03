@@ -36,12 +36,16 @@ Media::Media (Document *doc,
               const string &id) : Object (doc, parent, id)
 {
   _player = NULL;
+
   LuaAPI::_Media_attachWrapper (_L, this);
+  this->createEvents ();
 }
 
 Media::~Media ()
 {
   this->doStop ();
+
+  this->destroyEvents ();
   LuaAPI::_Media_detachWrapper (_L, this);
 }
 
@@ -105,7 +109,7 @@ Media::sendKey (const string &key, bool press)
           || ((key == "CURSOR_RIGHT"
                && (next = _player->getProperty ("moveRight")) != "")))
         {
-          _doc->getSettingsObject ()->scheduleFocusUpdate (next);
+          _doc->getSettings ()->scheduleFocusUpdate (next);
         }
     }
 

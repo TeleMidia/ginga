@@ -17,6 +17,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 #include "Object.h"
+#include "LuaAPI.h"
 
 #include "Composition.h"
 #include "Context.h"
@@ -65,16 +66,10 @@ Object::Object (Document *doc, Composition *parent, const string &id)
     _parent->addChild (this);
 
   _time = GINGA_TIME_NONE;
-
-  this->addPresentationEvent ("@lambda", 0, GINGA_TIME_NONE);
-  _lambda = this->getPresentationEvent ("@lambda");
-  g_assert_nonnull (_lambda);
 }
 
 Object::~Object ()
 {
-  for (auto evt: _events)
-    delete evt;
 }
 
 string
@@ -121,17 +116,17 @@ Object::toString ()
       {
       case Event::PRESENTATION:
         pres.push_back (evt->getId () + " ("
-                        + Event::getEventStateAsString (evt->getState ())
+                        + Event::getStateAsString (evt->getState ())
                         + ')');
         break;
       case Event::ATTRIBUTION:
         attr.push_back (evt->getId () + " ("
-                        + Event::getEventStateAsString (evt->getState ())
+                        + Event::getStateAsString (evt->getState ())
                         + ')');
         break;
       case Event::SELECTION:
         sel.push_back (evt->getId () + " ("
-                       + Event::getEventStateAsString (evt->getState ())
+                       + Event::getStateAsString (evt->getState ())
                        + ')');
         break;
       default:
@@ -219,27 +214,50 @@ Object::setProperty (const string &name, const string &value, Time duration)
   _properties[name] = value;
 }
 
-const set<Event *> *
-Object::getEvents ()
+void
+Object::getEvents (set<Event *> *events, uint mask)
 {
-  return &_events;
+  g_return_if_fail (events != NULL);
+
+  for (auto evt: _events)
+    if (evt->getType () & mask)
+      events->insert (evt);
 }
 
-// TODO --------------------------------------------------------------------
-
 Event *
-Object::getEvent (Event::Type type, const string &id)
+Object::getEventById (Event::Type type, const string &id)
 {
-  for (auto evt : _events)
+  for (auto evt: _events)
     if (evt->getType () == type && evt->getId () == id)
       return evt;
   return NULL;
 }
 
+// Protected.
+
+void
+Object::createEvents ()
+{
+  this->addPresentationEvent ("@lambda", 0, GINGA_TIME_NONE);
+  _lambda = this->getPresentationEvent ("@lambda");
+  g_assert_nonnull (_lambda);
+}
+
+void
+Object::destroyEvents ()
+{
+  for (auto evt: _events)
+    delete evt;
+  _lambda = NULL;
+}
+
+// TODO --------------------------------------------------------------------
+
+
 Event *
 Object::getAttributionEvent (const string &propName)
 {
-  return this->getEvent (Event::ATTRIBUTION, propName);
+  return this->getEventById (Event::ATTRIBUTION, propName);
 }
 
 void
@@ -257,7 +275,7 @@ Object::addAttributionEvent (const string &propName)
 Event *
 Object::getPresentationEvent (const string &id)
 {
-  return this->getEvent (Event::PRESENTATION, id);
+  return this->getEventById (Event::PRESENTATION, id);
 }
 
 Event *
@@ -297,7 +315,7 @@ Object::addPresentationEvent (const string &id, const string &label)
 Event *
 Object::getSelectionEvent (const string &key)
 {
-  return this->getEvent (Event::SELECTION, key);
+  return this->getEventById (Event::SELECTION, key);
 }
 
 void
@@ -404,8 +422,6 @@ Object::getTime ()
   return _time;
 }
 
-// Private.
-
 void
 Object::doStart ()
 {
@@ -415,7 +431,7 @@ Object::doStart ()
 
   // schedule set currentFocus if the object have focusIndex
   if (!this->getProperty ("focusIndex").empty ())
-    _doc->getSettingsObject ()->scheduleFocusUpdate ("");
+    _doc->getSettings ()->scheduleFocusUpdate ("");
 }
 
 void
