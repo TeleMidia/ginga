@@ -50,9 +50,7 @@ Object::getTypeAsString (Object::Type type)
 
 // Public.
 
-Object::Object (Document *doc,
-                Composition *parent,
-                const string &id)
+Object::Object (Document *doc, Composition *parent, const string &id)
 {
   g_return_if_fail (doc != NULL);
 
@@ -205,13 +203,29 @@ Object::addAlias (const string &alias, Composition *parent)
   tryinsert (alias_pair, _aliases, push_back);
 }
 
+string
+Object::getProperty (const string &name)
+{
+  auto it = _properties.find (name);
+  if (it == _properties.end ())
+    return "";
+  return it->second;
+}
+
+void
+Object::setProperty (const string &name, const string &value, Time duration)
+{
+  g_return_if_fail (GINGA_TIME_IS_VALID (duration));
+  _properties[name] = value;
+}
+
 const set<Event *> *
 Object::getEvents ()
 {
   return &_events;
 }
 
-// TODO
+// TODO --------------------------------------------------------------------
 
 Event *
 Object::getEvent (Event::Type type, const string &id)
@@ -324,22 +338,6 @@ Object::isSleeping ()
 {
   g_assert_nonnull (_lambda);
   return _lambda->getState () == Event::SLEEPING;
-}
-
-string
-Object::getProperty (const string &name)
-{
-  auto it = _properties.find (name);
-  if (it == _properties.end ())
-    return "";
-  return it->second;
-}
-
-void
-Object::setProperty (const string &name, const string &value, Time dur)
-{
-  g_assert (GINGA_TIME_IS_VALID (dur));
-  _properties[name] = value;
 }
 
 const list<pair<Action, Time> > *

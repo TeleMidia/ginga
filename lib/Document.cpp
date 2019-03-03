@@ -59,7 +59,7 @@ Document::getLuaState ()
 string
 Document::toString ()
 {
-  return xstrbuild ("Document (%p)\n", this);
+  return xstrbuild ("Document (%p)", this);
 }
 
 const set<Object *> *
@@ -83,11 +83,11 @@ Document::getObjectById (const string &id)
 {
   auto it = _objectsById.find (id);
   if (it != _objectsById.end ())
-    return it->second;          // id matched
+    return it->second;          // found id
 
   for (auto obj : _objects)
     if (obj->hasAlias (id))
-      return obj;               // alias matched
+      return obj;               // found alias
 
   return NULL;                  // no match
 }
@@ -157,7 +157,7 @@ Document::createObject (Object::Type type,
     }
 }
 
-// TODO
+// TODO --------------------------------------------------------------------
 
 /**
  * @brief Evaluates action over document.

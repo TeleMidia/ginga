@@ -112,11 +112,10 @@ public:
    * @param id The id of the new object (must not occur in document).
    * @return The newly created object if successful, or \c NULL otherwise.
    */
-  Object *createObject (Object::Type type,
-                        Composition *parent,
+  Object *createObject (Object::Type type, Composition *parent,
                         const string &id);
 
-  // TODO
+  // TODO ------------------------------------------------------------------
 
   int evalAction (Event *, Event::Transition, const string &value = "");
 

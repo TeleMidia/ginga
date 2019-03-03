@@ -31,9 +31,8 @@ public:
    * @brief Creates a new media object.
    * @see Object::Object().
    */
-  Media (Document *doc,
-         Composition *parent,
-         const string &id);
+  Media (Document *doc, Composition *parent, const string &id);
+
   /**
    * @brief Destroys media object.
    * @see Object::~Object().
@@ -53,7 +52,7 @@ public:
    */
   Object::Type getType () override;
 
-  // TODO
+  // TODO ------------------------------------------------------------------
 
   void setProperty (const string &, const string &, Time dur = 0) override;
   void sendKey (const string &, bool) override;

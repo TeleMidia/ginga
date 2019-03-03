@@ -67,9 +67,7 @@ public:
    *
    * @see Object::createObject().
    */
-  Object (Document *doc,
-          Composition *parent,
-          const string &id);
+  Object (Document *doc, Composition *parent, const string &id);
 
   /**
    * @brief Destroys the object and all its events.
@@ -124,8 +122,23 @@ public:
    * @param alias The alias to add.
    * @param comp The composition where this alias occur or \p NULL (none).
    */
-  void addAlias (const string &alias,
-                 Composition *comp);
+  void addAlias (const string &alias, Composition *comp);
+
+  /**
+   * @brief Gets the current value of an object property.
+   * @param name Property name.
+   * @return Current value.
+   */
+  virtual string getProperty (const string &name);
+
+  /**
+   * @brief Sets the current value of an object property.
+   * @param name Property name.
+   * @param value Value to set.
+   * @param duration The duration of the set action.
+   */
+  virtual void setProperty (const string &name, const string &value,
+                            Time duration = 0);
 
   /**
    * @brief Gets the set of events in object.
@@ -133,7 +146,7 @@ public:
    */
   const set<Event *> *getEvents ();
 
-  // TODO
+  // TODO ------------------------------------------------------------------
 
   Event *getEvent (Event::Type, const string &);
   Event *getAttributionEvent (const string &);
@@ -149,9 +162,6 @@ public:
   bool isOccurring ();
   bool isPaused ();
   bool isSleeping ();
-
-  virtual string getProperty (const string &);
-  virtual void setProperty (const string &, const string &, Time dur = 0);
 
   const list<pair<Action, Time> > *getDelayedActions ();
   void addDelayedAction (Event *, Event::Transition,

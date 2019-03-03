@@ -69,6 +69,7 @@ LuaAPI::_Object_attachWrapper (lua_State *L, Object *obj)
      {"getDocument",           LuaAPI::l_Object_getDocument},
      {"getParent",             LuaAPI::l_Object_getParent},
      {"getId",                 LuaAPI::l_Object_getId},
+     {"getProperty",           LuaAPI::l_Object_getProperty},
      {"setProperty",           LuaAPI::l_Object_setProperty},
      {NULL, NULL},
     };
@@ -240,6 +241,20 @@ LuaAPI::l_Object_getId (lua_State *L)
 
   obj = LuaAPI::_Object_check (L, 1);
   lua_pushstring (L, obj->getId ().c_str ());
+
+  return 1;
+}
+
+int
+LuaAPI::l_Object_getProperty (lua_State *L)
+{
+  Object *obj;
+  const char *name;
+
+  obj = LuaAPI::_Object_check (L, 1);
+  name = luaL_checkstring (L, 2);
+
+  lua_pushstring (L, obj->getProperty (name).c_str ());
 
   return 1;
 }

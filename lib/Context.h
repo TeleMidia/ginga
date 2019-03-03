@@ -31,9 +31,7 @@ public:
    * @brief Creates a new context object.
    * @see Object::Object().
    */
-  Context (Document *doc,
-           Composition *parent,
-           const string &id);
+  Context (Document *doc, Composition *parent, const string &id);
 
   /**
    * @brief Destroys context object.
@@ -54,7 +52,7 @@ public:
    */
   Object::Type getType () override;
 
-  // TODO
+  // TODO ------------------------------------------------------------------
 
   string getProperty (const string &) override;
   void setProperty (const string &, const string &, Time dur = 0) override;

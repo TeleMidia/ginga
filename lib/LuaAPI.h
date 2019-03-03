@@ -121,6 +121,8 @@ class LuaAPI
 
   static int l_Object_getId (lua_State *L);
 
+  static int l_Object_getProperty (lua_State *L);
+
   static int l_Object_setProperty (lua_State *L);
 
   // Context:

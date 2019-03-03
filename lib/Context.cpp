@@ -24,6 +24,8 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
+// TODO --------------------------------------------------------------------
+
 // Public.
 
 Context::Context (Document *doc,
