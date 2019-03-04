@@ -1746,7 +1746,7 @@ ParserState::resolveInterface (Composition *ctx, ParserElt *elt,
             {
               string id;
               g_assert (parent_elt->getAttribute ("id", &id));
-              ctx = cast (Context *, _doc->getObjectById (id));
+              ctx = cast (Context *, _doc->getObject (id));
               g_assert_nonnull (ctx);
             }
 
@@ -2426,8 +2426,7 @@ borderColor='%s'}",
                 }
 
               g_assert (media_elt->getAttribute ("id", &media_id));
-              media = cast (Media *,
-                            st->_doc->getObjectById (media_id));
+              media = cast (Media *, st->_doc->getObject (media_id));
               g_assert_nonnull (media);
 
               for (auto it : *desc_elt->getAttributes ())
@@ -2476,8 +2475,7 @@ borderColor='%s'}",
           list<Object *> defaults;
 
           g_assert (switch_elt->getAttribute ("id", &switch_id));
-          swtch
-              = cast (Switch *, st->_doc->getObjectById (switch_id));
+          swtch = cast (Switch *, st->_doc->getObject (switch_id));
           g_assert_nonnull (swtch);
 
           UDATA_GET (switch_elt, "rules", &rules);
@@ -2659,7 +2657,7 @@ borderColor='%s'}",
                   g_assert (st->eltCacheIndex (bind->node, &elt));
                   if (unlikely (!st->resolveInterface (ctx, elt, &evt)))
                     return false;
-                  (*it.second)[bind->role] = "$" + evt->getFullId ();
+                  (*it.second)[bind->role] = "$" + evt->getQualifiedId ();
                 }
             }
 
@@ -3542,7 +3540,7 @@ ParserState::pushContext (ParserState *st, ParserElt *elt)
       g_assert_nonnull (parent);
 
       g_assert (elt->getAttribute ("id", &id));
-      ctx = new Context (st->_doc, parent, id);
+      ctx = st->_doc->createObject (Object::CONTEXT, parent, id);
     }
 
   // Create port list.
@@ -3641,7 +3639,7 @@ ParserState::pushSwitch (ParserState *st, ParserElt *elt)
   g_assert_nonnull (parent);
 
   g_assert (elt->getAttribute ("id", &id));
-  swtch = new Switch (st->_doc, parent, id);
+  swtch = st->_doc->createObject (Object::SWITCH, parent, id);
 
   // Create rule list.
   UDATA_SET (elt, "rules", (new list<pair<ParserElt *, Object *> > ()),
@@ -3867,7 +3865,7 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
 
   if (hasRefer)
     {
-      media = cast (Media *, st->_doc->getObjectById (refer));
+      media = cast (Media *, st->_doc->getObject (refer));
       if (media == nullptr)
         {
           if (!st->referMapIndex (refer, &media))

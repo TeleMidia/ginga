@@ -184,26 +184,26 @@ Switch::afterTransition (Event *evt, Event::Transition transition)
         case Event::START:
           Object::doStart ();
           TRACE ("start %s at %" GINGA_TIME_FORMAT,
-                 evt->getFullId ().c_str (), GINGA_TIME_ARGS (_time));
+                 evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
           if (_selected == nullptr)
             _doc->evalAction (evt, Event::STOP);
           break;
         case Event::PAUSE:
           TRACE ("pause %s at %" GINGA_TIME_FORMAT,
-                 evt->getFullId ().c_str (), GINGA_TIME_ARGS (_time));
+                 evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
           break;
         case Event::RESUME:
           TRACE ("resume %s at %" GINGA_TIME_FORMAT,
-                 evt->getFullId ().c_str (), GINGA_TIME_ARGS (_time));
+                 evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
           break;
         case Event::STOP:
           TRACE ("stop %s at %" GINGA_TIME_FORMAT,
-                 evt->getFullId ().c_str (), GINGA_TIME_ARGS (_time));
+                 evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
           Object::doStop ();
           break;
         case Event::ABORT:
           TRACE ("abort %s at %" GINGA_TIME_FORMAT,
-                 evt->getFullId ().c_str (), GINGA_TIME_ARGS (_time));
+                 evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
           Object::doStop ();
           break;
 

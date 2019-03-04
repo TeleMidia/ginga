@@ -14,15 +14,17 @@ RECURSIVE          = YES
 FILE_PATTERNS      = *.cpp *.h
 EXCLUDE_PATTERNS   = */aux-gl.h */aux-glib.h */aux-lua.h */config.h
 IMAGE_PATH         = @top_srcdir@/doc
-HAVE_DOT           = YES
+HAVE_DOT           = NO
 MACRO_EXPANSION    = YES
 EXPAND_ONLY_PREDEF = YES
 INCLUDE_PATH       = @top_srcdir@/lib
 PREDEFINED         = "unused(x)=x"\
                      "GINGA_NAMESPACE_BEGIN="\
                      "GINGA_NAMESPACE_END="
-EXTRACT_PRIVATE    = YES
 
 QUIET              = NO
 WARNINGS           = YES
-WARN_NO_PARAMDOC   = YES
+WARN_NO_PARAMDOC   = NO
+
+EXTRACT_PRIVATE    = YES
+JAVADOC_AUTOBRIEF  = YES

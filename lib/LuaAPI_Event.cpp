@@ -49,6 +49,7 @@ LuaAPI::_Event_attachWrapper (lua_State *L, Event *evt)
      {"getType",               LuaAPI::l_Event_getType},
      {"getObject",             LuaAPI::l_Event_getObject},
      {"getId",                 LuaAPI::l_Event_getId},
+     {"getQualifiedId",        LuaAPI::l_Event_getQualifiedId},
      {"getState",              LuaAPI::l_Event_getState},
      {NULL, NULL},
     };
@@ -150,6 +151,17 @@ LuaAPI::l_Event_getId (lua_State *L)
 
   evt = LuaAPI::_Event_check (L, 1);
   lua_pushstring (L, evt->getId ().c_str ());
+
+  return 1;
+}
+
+int
+LuaAPI::l_Event_getQualifiedId (lua_State *L)
+{
+  Event *evt;
+
+  evt = LuaAPI::_Event_check (L, 1);
+  lua_pushstring (L, evt->getQualifiedId ().c_str ());
 
   return 1;
 }

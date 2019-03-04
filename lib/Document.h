@@ -27,80 +27,68 @@ class Media;
 class Switch;
 
 /**
- * @brief The NCL document.
- *
  * Run-time representation of an NCL document.
- * The Document maintains the NCL object tree.
+ *
+ * The Document maintains the NCL object tree and acts a top-level interface
+ * to this tree.
  */
 class Document
 {
 public:
 
   /**
-   * @brief Creates a new document.
+   * Creates a new document.
    *
-   * The newly created document has a root Context, called
-   * <tt>__root__</tt>, which contains a single MediaSettings object, called
-   * <tt>__settings__</tt>.
-   *
-   * @return The newly created document.
-   *
-   * @see Document::getRoot(), Document::getSettingsObject().
+   * The newly created document has a root Context, called `__root__`, which
+   * contains a single MediaSettings object, called `__settings__`.
    */
   Document ();
 
   /**
-   * @brief Destroys document and all its objects.
+   * Destroys document and all its objects.
    */
   virtual ~Document ();
 
   /**
-   * @brief Gets the Lua state associated with document.
-   * @return The Lua state associated with document.
+   * Gets the Lua state associated with document.
    */
   lua_State *getLuaState ();
 
   /**
-   * @brief Gets a string representation of document.
-   * @return A string representation of document.
+   * Gets a string representation of document.
    */
   string toString ();
 
   /**
-   * @brief Gets the set of objects in document whose type match \p mask.
+   * Gets the set of objects in document whose type match \p mask.
+   *
    * @param[out] objects The set of matched objects.
    * @param mask A bitmask of or-ed Object::Type values.
    */
-  void getObjects (set<Object *> *objects, uint mask=(uint) -1);
+  void getObjects (set<Object *> *objects,
+                   unsigned int mask=(unsigned int) -1);
 
   /**
-   * @brief Gets the object in document with the given id or alias.
+   * Gets the object in document with the given id or alias.
+   *
    * @param id The id or alias to match.
    * @return The matched object or \c NULL (no such object).
    */
-  Object *getObjectById (const string &id);
+  Object *getObject (const string &id);
 
   /**
-   * @brief Gets the root Context of document.
-   * @return The root Context of document.
+   * Gets the root Context of document.
    */
   Context *getRoot ();
 
   /**
-   * @brief Gets the MediaSettings of document.
-   * @return The MediaSettings of document.
+   * Gets the MediaSettings object of document.
    */
   MediaSettings *getSettings ();
 
   /**
-   * @brief Adds object to document.
-   * @param object The object to add.
-   * @return \c true if successful, or \c false otherwise.
-   */
-  bool addObject (Object *object);
-
-  /**
-   * @brief Creates and adds a new object to document.
+   * Creates and adds a new object to document.
+   *
    * @param type The type of the new object.
    * @param parent The parent object to add the new object to.
    * @param id The id of the new object (must not occur in document).
@@ -111,6 +99,7 @@ public:
 
   // TODO ------------------------------------------------------------------
 
+public:
   int evalAction (Event *, Event::Transition, const string &value = "");
 
   int evalAction (Action);

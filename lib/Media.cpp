@@ -166,7 +166,8 @@ Media::sendTick (Time total, Time diff, Time frame)
     {
       Event *lambda = this->getLambda ();
       g_assert_nonnull (lambda);
-      TRACE ("eos %s at %" GINGA_TIME_FORMAT, lambda->getFullId ().c_str (),
+      TRACE ("eos %s at %" GINGA_TIME_FORMAT,
+             lambda->getQualifiedId ().c_str (),
              GINGA_TIME_ARGS (_time));
       _doc->evalAction (lambda, Event::STOP);
       return;
@@ -244,7 +245,7 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
                     TRACE ("start %s (begin=%" GINGA_TIME_FORMAT
                            " and end=%" GINGA_TIME_FORMAT
                            ") at %" GINGA_TIME_FORMAT,
-                           evt->getFullId ().c_str (),
+                           evt->getQualifiedId ().c_str (),
                            GINGA_TIME_ARGS (begin), GINGA_TIME_ARGS (end),
                            GINGA_TIME_ARGS (_time));
 
@@ -349,7 +350,7 @@ Media::afterTransition (Event *evt, Event::Transition transition)
                     }
                 }
               TRACE ("start %s at %" GINGA_TIME_FORMAT,
-                     evt->getFullId ().c_str (), GINGA_TIME_ARGS (_time));
+                     evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
             }
           else if (evt->hasLabel ())
             {
@@ -359,12 +360,12 @@ Media::afterTransition (Event *evt, Event::Transition transition)
 
         case Event::PAUSE:
           TRACE ("pause %s at %" GINGA_TIME_FORMAT,
-                 evt->getFullId ().c_str (), GINGA_TIME_ARGS (_time));
+                 evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
           break; // nothing to do
 
         case Event::RESUME:
           TRACE ("resume %s at %" GINGA_TIME_FORMAT,
-                 evt->getFullId ().c_str (), GINGA_TIME_ARGS (_time));
+                 evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
           break; // nothing to do
 
         case Event::STOP:
@@ -375,10 +376,10 @@ Media::afterTransition (Event *evt, Event::Transition transition)
               g_assert_nonnull (_player);
               if (transition == Event::ABORT)
                 TRACE ("abort %s at %" GINGA_TIME_FORMAT,
-                       evt->getFullId ().c_str (), GINGA_TIME_ARGS (_time));
+                       evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
               else
                 TRACE ("stop %s at %" GINGA_TIME_FORMAT,
-                       evt->getFullId ().c_str (), GINGA_TIME_ARGS (_time));
+                       evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
               this->doStop ();
             }
           else if (evt->getLabel () != "")
@@ -393,12 +394,12 @@ Media::afterTransition (Event *evt, Event::Transition transition)
               if (transition == Event::ABORT)
                 TRACE ("abort %s (end=%" GINGA_TIME_FORMAT
                        ") at %" GINGA_TIME_FORMAT,
-                       evt->getFullId ().c_str (), GINGA_TIME_ARGS (end),
+                       evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (end),
                        GINGA_TIME_ARGS (_time));
               else
                 TRACE ("stop %s (end=%" GINGA_TIME_FORMAT
                        ") at %" GINGA_TIME_FORMAT,
-                       evt->getFullId ().c_str (), GINGA_TIME_ARGS (end),
+                       evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (end),
                        GINGA_TIME_ARGS (_time));
             }
           break;
@@ -432,14 +433,14 @@ Media::afterTransition (Event *evt, Event::Transition transition)
               this->setProperty (name, value, dur);
               this->addDelayedAction (evt, Event::STOP, value, dur);
               TRACE ("start %s:='%s' (dur=%s) at %" GINGA_TIME_FORMAT,
-                     evt->getFullId ().c_str (), value.c_str (),
+                     evt->getQualifiedId ().c_str (), value.c_str (),
                      (s != "") ? s.c_str () : "0s",
                      GINGA_TIME_ARGS (_time));
               break;
             }
 
           case Event::STOP:
-            TRACE ("stop %s:='%s'", evt->getFullId ().c_str (),
+            TRACE ("stop %s:='%s'", evt->getQualifiedId ().c_str (),
                    value.c_str ());
             break;
 
@@ -455,10 +456,10 @@ Media::afterTransition (Event *evt, Event::Transition transition)
         switch (transition)
           {
           case Event::START:
-            TRACE ("start %s", evt->getFullId ().c_str ());
+            TRACE ("start %s", evt->getQualifiedId ().c_str ());
             break;
           case Event::STOP:
-            TRACE ("stop %s", evt->getFullId ().c_str ());
+            TRACE ("stop %s", evt->getQualifiedId ().c_str ());
             break;
           default:
             g_assert_not_reached ();

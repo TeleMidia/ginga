@@ -30,9 +30,9 @@ LuaAPI::_Document_attachWrapper (lua_State *L, Document *doc)
      {"__tostring",            LuaAPI::__l_Document_toString},
      {"__getUnderlyingObject", LuaAPI::__l_Document_getUnderlyingObject},
      {"getObjects",            LuaAPI::l_Document_getObjects},
-     {"getObjectById",         LuaAPI::l_Document_getObjectById},
+     {"getObject",             LuaAPI::l_Document_getObject},
      {"getRoot",               LuaAPI::l_Document_getRoot},
-     {"getSettingsObject",     LuaAPI::l_Document_getSettingsObject},
+     {"getSettings",           LuaAPI::l_Document_getSettings},
      {"createObject",          LuaAPI::l_Document_createObject},
      {NULL, NULL},
     };
@@ -126,7 +126,7 @@ LuaAPI::l_Document_getObjects (lua_State *L)
 }
 
 int
-LuaAPI::l_Document_getObjectById (lua_State *L)
+LuaAPI::l_Document_getObject (lua_State *L)
 {
   Document *doc;
   const gchar *id;
@@ -135,7 +135,7 @@ LuaAPI::l_Document_getObjectById (lua_State *L)
   doc = LuaAPI::_Document_check (L, 1);
   id = luaL_checkstring (L, 2);
 
-  obj = doc->getObjectById (string (id));
+  obj = doc->getObject (string (id));
   if (obj == NULL)
     {
       lua_pushnil (L);
@@ -159,7 +159,7 @@ LuaAPI::l_Document_getRoot (lua_State *L)
 }
 
 int
-LuaAPI::l_Document_getSettingsObject (lua_State *L)
+LuaAPI::l_Document_getSettings (lua_State *L)
 {
   Document *doc;
 

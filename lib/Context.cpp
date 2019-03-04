@@ -75,9 +75,9 @@ Context::toString ()
   if (_ports.size () > 0)
     {
       auto it = _ports.begin ();
-      str += "  ports: " + (*it)->getFullId ();
+      str += "  ports: " + (*it)->getQualifiedId ();
       while (++it != _ports.end ())
-        str += ", " + (*it)->getFullId ();
+        str += ", " + (*it)->getQualifiedId ();
       str += "\n";
     }
 
@@ -88,7 +88,7 @@ Context::toString ()
   G_STMT_START                                                             \
   {                                                                        \
     (str) += Event::getTransitionAsString ((act).transition);           \
-    (str) += "(" + (act).event->getFullId ();                              \
+    (str) += "(" + (act).event->getQualifiedId ();                              \
     if ((act).predicate != nullptr)                                        \
       (str) += " ? " + (act).predicate->toString ();                       \
     (str) += ")";                                                          \
@@ -99,7 +99,7 @@ Context::toString ()
   G_STMT_START                                                             \
   {                                                                        \
     (str) += Event::getTransitionAsString ((act).transition);           \
-    (str) += "(" + (act).event->getFullId ();                              \
+    (str) += "(" + (act).event->getQualifiedId ();                              \
     if ((act).event->getType () == Event::ATTRIBUTION)                     \
       (str) += ":='" + (act).value + "'";                                  \
     (str) += ")";                                                          \
@@ -278,24 +278,24 @@ Context::afterTransition (Event *evt, Event::Transition transition)
             }
           evt->setParameter ("fromport", "");
           TRACE ("start %s at %" GINGA_TIME_FORMAT,
-                 evt->getFullId ().c_str (), GINGA_TIME_ARGS (_time));
+                 evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
           break;
         case Event::PAUSE:
           TRACE ("pause %s at %" GINGA_TIME_FORMAT,
-                 evt->getFullId ().c_str (), GINGA_TIME_ARGS (_time));
+                 evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
           break;
         case Event::RESUME:
           TRACE ("resume %s at %" GINGA_TIME_FORMAT,
-                 evt->getFullId ().c_str (), GINGA_TIME_ARGS (_time));
+                 evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
           break;
         case Event::STOP:
           TRACE ("stop %s at %" GINGA_TIME_FORMAT,
-                 evt->getFullId ().c_str (), GINGA_TIME_ARGS (_time));
+                 evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
           Object::doStop ();
           break;
         case Event::ABORT:
           TRACE ("abort %s at %" GINGA_TIME_FORMAT,
-                 evt->getFullId ().c_str (), GINGA_TIME_ARGS (_time));
+                 evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
           Object::doStop ();
           break;
         default:
@@ -325,13 +325,13 @@ Context::afterTransition (Event *evt, Event::Transition transition)
               }
             this->setProperty (name, value, dur);
             this->addDelayedAction (evt, Event::STOP, value, dur);
-            TRACE ("start %s:='%s' (dur=%s)", evt->getFullId ().c_str (),
+            TRACE ("start %s:='%s' (dur=%s)", evt->getQualifiedId ().c_str (),
                    value.c_str (), (s != "") ? s.c_str () : "0s");
             break;
           }
         case Event::STOP:
           {
-            TRACE ("stop %s:=...", evt->getFullId ().c_str ());
+            TRACE ("stop %s:=...", evt->getQualifiedId ().c_str ());
             break;
           }
         default:

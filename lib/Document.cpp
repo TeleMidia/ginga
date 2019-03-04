@@ -29,14 +29,20 @@ GINGA_NAMESPACE_BEGIN
 
 Document::Document ()
 {
+  Object *obj;
+
   _L = luaL_newstate ();
   g_assert_nonnull (_L);
   luaL_openlibs (_L);
   LuaAPI::_Document_attachWrapper (_L, this);
 
   _root = new Context (this, NULL, "__root__");
-  _settings = cast (MediaSettings *, this->createObject
-                    (Object::MEDIA_SETTINGS, _root, "__settings__"));
+  _objects.insert (_root);
+  _objectsById[_root->getId ()] = _root;
+
+  _settings = NULL;
+  obj = this->createObject (Object::MEDIA_SETTINGS, _root, "__settings__");
+  _settings = cast (MediaSettings *, obj);
   g_assert_nonnull (_settings);
 }
 
@@ -63,7 +69,7 @@ Document::toString ()
 }
 
 void
-Document::getObjects (set<Object *> *objects, uint mask)
+Document::getObjects (set<Object *> *objects, unsigned int mask)
 {
   g_return_if_fail (objects != NULL);
 
@@ -73,7 +79,7 @@ Document::getObjects (set<Object *> *objects, uint mask)
 }
 
 Object *
-Document::getObjectById (const string &id)
+Document::getObject (const string &id)
 {
   auto it = _objectsById.find (id);
   if (it != _objectsById.end ())
@@ -100,54 +106,47 @@ Document::getSettings ()
   return _settings;
 }
 
-bool
-Document::addObject (Object *object)
-{
-  g_return_val_if_fail (object != NULL, false);
-  g_return_val_if_fail (object->getDocument () == this, false);
-
-  if (_objects.find (object) != _objects.end ()
-      || getObjectById (object->getId ()) != NULL)
-    {
-      return false;             // id already in document
-    }
-
-  if (_settings != NULL && instanceof (MediaSettings *, object))
-    {
-      return false;             // settings already in document
-    }
-
-  _objects.insert (object);
-  _objectsById[object->getId ()] = object;
-
-  return true;
-}
-
 Object *
 Document::createObject (Object::Type type, Composition *parent,
                         const string &id)
 {
+  Object *obj;
+
   g_return_val_if_fail (parent != NULL, NULL);
 
+  if (type == Object::MEDIA_SETTINGS && _settings != NULL)
+    return NULL;                // settings already in document
+
   if (_objects.find (parent) == _objects.end ())
-    return NULL;               // parent not in document
+    return NULL;                // parent not in document
 
-  if (this->getObjectById (id) != NULL)
-    return NULL;               // id already in document
+  if (this->getObject (id) != NULL)
+    return NULL;                // id already in document
 
+  obj = NULL;
   switch (type)
     {
     case Object::MEDIA:
-      return new Media (this, parent, id);
+      obj = new Media (this, parent, id);
+      break;
     case Object::MEDIA_SETTINGS:
-      return new MediaSettings (this, parent, id);
+      obj = new MediaSettings (this, parent, id);
+      break;
     case Object::CONTEXT:
-      return new Context (this, parent, id);
+      obj = new Context (this, parent, id);
+      break;
     case Object::SWITCH:
-      return new Switch (this, parent, id);
+      obj = new Switch (this, parent, id);
+      break;
     default:
       g_assert_not_reached ();
     }
+  g_assert_nonnull (obj);
+
+  _objects.insert (obj);
+  _objectsById[id] = obj;
+
+  return obj;
 }
 
 // TODO --------------------------------------------------------------------
@@ -258,7 +257,7 @@ Document::evalAction (Action init)
 
       TRACE ("trigger stacked action: %s %s",
              Event::getTransitionAsString (act.transition).c_str (),
-             act.event->getFullId ().c_str ());
+             act.event->getQualifiedId ().c_str ());
 
       evt->setParameter ("duration", act.duration);
       if (evt->getType () == Event::ATTRIBUTION)
@@ -314,7 +313,7 @@ Document::evalAction (Action init)
                   if (mapped_evt->getObject () == evt->getObject ()
                       && swtch->getParent () != NULL)
                     {
-                      Event *label_evt = swtch->getEventById (
+                      Event *label_evt = swtch->getEvent (
                           Event::PRESENTATION, swtchPort.first);
                       g_assert_nonnull (label_evt);
 
@@ -479,7 +478,7 @@ Document::evalPropertyRef (const string &ref, string *result)
 
   id = ref.substr (1, i - 1);
   name = ref.substr (i + 1);
-  object = this->getObjectById (id);
+  object = this->getObject (id);
   if (object == NULL)
     return false;
 

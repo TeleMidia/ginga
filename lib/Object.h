@@ -27,7 +27,7 @@ class Composition;
 class MediaSettings;
 
 /**
- * @brief Object in an NCL document.
+ * Object in an NCL document.
  *
  * Run-time representation of an NCL object.
  *
@@ -38,7 +38,7 @@ class Object
 public:
 
   /**
-   * @brief Possible concrete types for NCL objects.
+   * Possible concrete types for NCL objects.
    */
   enum Type
   {
@@ -49,111 +49,104 @@ public:
   };
 
   /**
-   * @brief Converts Object::Type to a human-readable string.
-   * @param type The Object::Type to convert.
-   * @return The resulting string.
+   * Converts Object::Type to a human-readable string.
    */
   static string getTypeAsString (Object::Type type);
 
   /**
-   * @brief Creates a new object.
+   * Creates a new object.
+   *
    * @param doc The container document.
    * @param parent The parent object to add the new object to
    *               or \p NULL (no parent).
    * @param id The id of the new object (must not occur in \p doc).
+   * @return The newly created object.
    *
    * The newly created object has a single presentation event: the lambda
-   * event, called <tt>@lambda</tt>.
+   * event, called `@lambda`.
    *
    * @see Object::createObject().
    */
   Object (Document *doc, Composition *parent, const string &id);
 
   /**
-   * @brief Destroys the object and all its events.
+   * Destroys the object and all its events.
    */
   virtual ~Object ();
 
   /**
-   * @brief Gets a string representation of object.
-   * @return A string representation of object.
+   * Gets a string representation of object.
    */
   virtual string toString ();
 
   /**
-   * @brief Gets the type of object.
-   * @return The type of object.
+   * Gets the type of object.
    */
   virtual Object::Type getType () = 0;
 
   /**
-   * @brief Gets the container document of object.
-   * @return The container document of object.
+   * Gets the container document of object.
    */
   Document *getDocument ();
 
   /**
-   * @brief Gets the parent of object.
+   * Gets the parent of object.
+   *
    * @return The parent object or \c NULL (no parent).
    */
   Composition *getParent ();
 
   /**
-   * @brief Gets the id of object.
-   * @return The id of object.
+   * Gets the id of object.
    */
   string getId ();
 
   /**
-   * @brief Gets the list of aliases of object.
-   * @return The list of aliases of object.
+   * Gets the list of aliases of object.
    */
   const list<pair<string, Composition *> > *getAliases ();
 
   /**
-   * @brief Tests whether object has alias.
-   * @param alias The alias to test.
-   * @return \c true if successful, or \c false otherwise.
+   * Tests whether object has alias.
    */
   bool hasAlias (const string &alias);
 
   /**
-   * @brief Adds alias to object.
+   * Adds alias to object.
+   *
    * @param alias The alias to add.
    * @param comp The composition where this alias occur or \p NULL (none).
    */
   void addAlias (const string &alias, Composition *comp);
 
   /**
-   * @brief Gets the current value of an object property.
-   * @param name The name of the property to get.
-   * @return The property current value.
+   * Gets the current value of an object property.
    */
   virtual string getProperty (const string &name);
 
   /**
-   * @brief Sets the current value of an object property.
-   * @param name The name of the property to set.
-   * @param value the value to set.
-   * @param duration The duration of the set operation.
+   * Sets the current value of an object property.
    */
   virtual void setProperty (const string &name, const string &value,
                             Time duration = 0);
 
   /**
-   * @brief Gets the set of events in object whose type match \p mask.
+   * Gets the set of events in object whose type match \p mask.
+   *
    * @param[out] events The set of matched events.
    * @param mask A bitmask of or-ed Event::Type values.
    */
-  void getEvents (set <Event *> *events, uint mask=(uint) -1);
+  void getEvents (set <Event *> *events,
+                  unsigned int mask=(unsigned int) -1);
 
   /**
-   * @brief Gets the event in object with the given type and id.
+   * Gets the event in object with the given type and id.
+   *
    * @param type The type to match
    * @param id The id to match.
    * @return The matched event or \c NULL (no such event).
    */
-  Event *getEventById (Event::Type type, const string &id);
+  Event *getEvent (Event::Type type, const string &id);
 
   // TODO ------------------------------------------------------------------
 

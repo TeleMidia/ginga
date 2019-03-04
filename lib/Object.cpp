@@ -59,7 +59,6 @@ Object::Object (Document *doc, Composition *parent, const string &id)
 
   _doc = doc;
   _L = doc->getLuaState ();
-  g_assert (doc->addObject (this));
 
   _parent = parent;
   if (_parent != NULL)
@@ -215,7 +214,7 @@ Object::setProperty (const string &name, const string &value, Time duration)
 }
 
 void
-Object::getEvents (set<Event *> *events, uint mask)
+Object::getEvents (set<Event *> *events, unsigned int mask)
 {
   g_return_if_fail (events != NULL);
 
@@ -225,7 +224,7 @@ Object::getEvents (set<Event *> *events, uint mask)
 }
 
 Event *
-Object::getEventById (Event::Type type, const string &id)
+Object::getEvent (Event::Type type, const string &id)
 {
   for (auto evt: _events)
     if (evt->getType () == type && evt->getId () == id)
@@ -257,7 +256,7 @@ Object::destroyEvents ()
 Event *
 Object::getAttributionEvent (const string &propName)
 {
-  return this->getEventById (Event::ATTRIBUTION, propName);
+  return this->getEvent (Event::ATTRIBUTION, propName);
 }
 
 void
@@ -275,7 +274,7 @@ Object::addAttributionEvent (const string &propName)
 Event *
 Object::getPresentationEvent (const string &id)
 {
-  return this->getEventById (Event::PRESENTATION, id);
+  return this->getEvent (Event::PRESENTATION, id);
 }
 
 Event *
@@ -315,7 +314,7 @@ Object::addPresentationEvent (const string &id, const string &label)
 Event *
 Object::getSelectionEvent (const string &key)
 {
-  return this->getEventById (Event::SELECTION, key);
+  return this->getEvent (Event::SELECTION, key);
 }
 
 void

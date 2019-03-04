@@ -109,12 +109,12 @@ Event::toString ()
     ("\
 Event (%p)\n\
   object: %p (%s, id: %s)\n\
-  id: %s\n\
-  full-id: %s\n\
+  id: %s (%s)\n\
   type: %s\n\
   state: %s\n",
      this, _object, Object::getTypeAsString (_object->getType ()).c_str (),
-      _object->getId ().c_str (), _id.c_str (), this->getFullId ().c_str (),
+      _object->getId ().c_str (), _id.c_str (),
+     this->getQualifiedId ().c_str (),
       Event::getTypeAsString (_type).c_str (),
       Event::getStateAsString (_state).c_str ());
 
@@ -157,6 +157,30 @@ Event::getId ()
   return _id;
 }
 
+string
+Event::getQualifiedId ()
+{
+  string obj;
+
+  g_assert_nonnull (_object);
+
+  obj = _object->getId ();
+  switch (_type)
+    {
+    case Event::PRESENTATION:
+      if (_id == "@lambda")
+        return obj + _id;
+      else
+        return obj + "@" + _id;
+    case Event::ATTRIBUTION:
+      return obj + "." + _id;
+    case Event::SELECTION:
+      return obj + "<" + _id + ">";
+    default:
+      g_assert_not_reached ();
+    }
+}
+
 Event::State
 Event::getState ()
 {
@@ -164,29 +188,6 @@ Event::getState ()
 }
 
 // TODO --------------------------------------------------------------------
-
-string
-Event::getFullId ()
-{
-  string obj_id;
-  g_assert_nonnull (_object);
-  obj_id = _object->getId ();
-  switch (_type)
-    {
-    case Event::PRESENTATION:
-      if (_id == "@lambda")
-        return obj_id + _id;
-      else
-        return obj_id + "@" + _id;
-    case Event::ATTRIBUTION:
-      return obj_id + "." + _id;
-    case Event::SELECTION:
-      return obj_id + "<" + _id + ">";
-    default:
-      g_assert_not_reached ();
-    }
-  g_assert_not_reached ();
-}
 
 bool
 Event::isLambda ()

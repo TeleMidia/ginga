@@ -270,7 +270,7 @@ AU_CHECK_OPTIONAL_PKG([nclua], [build with NCLua support], [],
 AU_CHECK_OPTIONAL_PKG([opengl], [build with OpenGL support], [],
  [OPENGL],
  [gl >= opengl_required_version
-  sdl2 >= sdl2_required-version])
+  sdl2 >= sdl2_required_version])
 
 # Aliases for compiler flags.
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $WARN_CFLAGS $WERROR_CFLAGS "])

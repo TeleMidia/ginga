@@ -74,7 +74,7 @@ LuaAPI::_Object_attachWrapper (lua_State *L, Object *obj)
      {"getProperty",           LuaAPI::l_Object_getProperty},
      {"setProperty",           LuaAPI::l_Object_setProperty},
      {"getEvents",             LuaAPI::l_Object_getEvents},
-     {"getEventById",          LuaAPI::l_Object_getEventById},
+     {"getEvent",              LuaAPI::l_Object_getEvent},
      {NULL, NULL},
     };
   const char *name;
@@ -305,7 +305,7 @@ LuaAPI::l_Object_getEvents (lua_State *L)
 }
 
 int
-LuaAPI::l_Object_getEventById (lua_State *L)
+LuaAPI::l_Object_getEvent (lua_State *L)
 {
   Object *obj;
   int idx;
@@ -319,7 +319,7 @@ LuaAPI::l_Object_getEventById (lua_State *L)
   id = luaL_checkstring (L, 3);
 
   type = LuaAPI::_Event_getOptIndexType (idx);
-  evt = obj->getEventById (type, id);
+  evt = obj->getEvent (type, id);
   if (evt == NULL)
     {
       lua_pushnil (L);
