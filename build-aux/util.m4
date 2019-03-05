@@ -130,7 +130,7 @@ AS_IF([test "$enable_valgrind" = yes],
  [AC_CHECK_PROGS([VALGRIND], [valgrind])
   AS_IF([test -n "$VALGRIND"],
    [VALGRIND="$VALGRIND -q --error-exitcode=1 --leak-check=full"],
-   [enable_valgrind=no])
+   [AC_MSG_ERROR([--enable-valgrind requires valgrind])])
   AC_SUBST([VALGRIND])
   AC_MSG_CHECKING([whether self tests are run under valgrind])
   AC_MSG_RESULT([$enable_valgrind])])])
