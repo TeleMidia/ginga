@@ -40,10 +40,9 @@ public:
   /// The newly created document has a root Context, called `__root__`,
   /// which contains a single MediaSettings object, called `__settings__`.
   ///
-  /// @param L The Lua state to associate this document to, or \c NULL
-  /// (create an empty Lua state with the standard libraries installed).
+  /// @param L The Lua state to associate this document to.
   ///
-  Document (lua_State *L=NULL);
+  Document (lua_State *L);
 
   /// Destroys document and all its objects.
   virtual ~Document ();
@@ -99,13 +98,19 @@ public:
   ///
   /// @param type The type of the new event.
   /// @param objId The id of the container object (must be in document).
-  /// @param id the id of the new event (must no occur in \p object).
+  /// @param evtId the id of the new event (must no occur in \p object).
   /// @return The newly created event if successful, or \c NULL otherwise.
   ///
   /// @see Object::createEvent().
   ///
   Event *createEvent (Event::Type type, const string &objId,
-                      const string &id);
+                      const string &evtId);
+
+  /// Creates a new event as specified by an event qualified id.
+  ///
+  /// @param qualId The qualified id of the event to be created.
+  /// @return The newly created event if successful, or \c NULL otherwise.
+  Event *createEvent (const string &qualId);
 
   // TODO ------------------------------------------------------------------
 

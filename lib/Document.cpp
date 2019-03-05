@@ -31,12 +31,7 @@ Document::Document (lua_State *L)
 {
   Object *obj;
 
-  if (L == NULL)
-    {
-      L = luaL_newstate ();
-      g_assert_nonnull (L);
-      luaL_openlibs (L);
-    }
+  g_return_if_fail (L != NULL);
 
   _L = L;
   LuaAPI::Document_attachWrapper (_L, this);
@@ -58,7 +53,6 @@ Document::~Document ()
 
   g_assert_nonnull (_L);
   LuaAPI::Document_detachWrapper (_L, this);
-  lua_close (_L);
 }
 
 lua_State *
@@ -175,7 +169,7 @@ Document::createObject (Object::Type type, Composition *parent,
 
 Event *
 Document::createEvent (Event::Type type, const string &objId,
-                       const string &id)
+                       const string &evtId)
 {
   Object *obj;
 
@@ -183,7 +177,26 @@ Document::createEvent (Event::Type type, const string &objId,
   if (obj == NULL)
     return NULL;                // no such object
 
-  return obj->createEvent (type, id);
+  return obj->createEvent (type, evtId);
+}
+
+Event *
+Document::createEvent (const string &qualId)
+{
+  lua_pushstring (_L, qualId.c_str ());
+  LuaAPI::Document_call (_L, this, "createEvent", 1, 1);
+  if (lua_isnil (_L, -1))
+    {
+      lua_pop (_L, 1);
+      return NULL;
+    }
+  else
+    {
+      Event *evt = LuaAPI::Event_check (_L, -1);
+      g_assert_nonnull (evt);
+      lua_pop (_L, 1);
+      return evt;
+    }
 }
 
 // TODO --------------------------------------------------------------------

@@ -22,25 +22,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Media.h"
 #include "Switch.h"
 
-const char *const LuaAPI::_Object_optTypes[] =
-  {"context", "switch", "media", NULL};
-
-Object::Type
-LuaAPI::_Object_getOptIndexType (int i)
-{
-  switch (i)
-    {
-    case 0:
-      return Object::CONTEXT;
-    case 1:
-      return Object::SWITCH;
-    case 2:
-      return Object::MEDIA;
-    default:
-      g_assert_not_reached ();
-    }
-}
-
 const char *
 LuaAPI::_Object_getRegistryKey (Object *obj)
 {
@@ -66,7 +47,7 @@ LuaAPI::_Object_attachWrapper (lua_State *L, Object *obj)
   static const struct luaL_Reg funcs[] =
     {
      {"__tostring",            LuaAPI::__l_Object_toString},
-     {"__getUnderlyingObject", LuaAPI::__l_Object_getUnderlyingObject},
+     {"__getUnderlyingObject", LuaAPI::_l_Object_getUnderlyingObject},
      {"getType",               LuaAPI::_l_Object_getType},
      {"getDocument",           LuaAPI::_l_Object_getDocument},
      {"getParent",             LuaAPI::_l_Object_getParent},
@@ -184,6 +165,25 @@ LuaAPI::_Object_check (lua_State *L, int i)
   return NULL;
 }
 
+Object::Type
+LuaAPI::_Object_Type_check (lua_State *L, int i)
+{
+  static const char *types[]
+    = {"context", "switch", "media", NULL};
+
+  switch (luaL_checkoption (L, i, NULL, types))
+    {
+    case 0:
+      return Object::CONTEXT;
+    case 1:
+      return Object::SWITCH;
+    case 2:
+      return Object::MEDIA;
+    default:
+      g_assert_not_reached ();
+    }
+}
+
 int
 LuaAPI::__l_Object_toString (lua_State *L)
 {
@@ -196,7 +196,7 @@ LuaAPI::__l_Object_toString (lua_State *L)
 }
 
 int
-LuaAPI::__l_Object_getUnderlyingObject (lua_State *L)
+LuaAPI::_l_Object_getUnderlyingObject (lua_State *L)
 {
   lua_pushlightuserdata (L, LuaAPI::_Object_check (L, 1));
   return 1;
@@ -206,11 +206,23 @@ int
 LuaAPI::_l_Object_getType (lua_State *L)
 {
   Object *obj;
-  const char *type;
 
   obj = LuaAPI::_Object_check (L, 1);
-  type = Object::getTypeAsString (obj->getType ()).c_str ();
-  lua_pushstring (L, type);
+  switch (obj->getType ())
+    {
+    case Object::CONTEXT:
+      lua_pushliteral (L, "context");
+      break;
+    case Object::SWITCH:
+      lua_pushliteral (L, "switch");
+      break;
+    case Object::MEDIA:
+    case Object::MEDIA_SETTINGS:
+      lua_pushliteral (L, "media");
+      break;
+    default:
+      g_assert_not_reached ();
+    }
 
   return 1;
 }
@@ -308,17 +320,14 @@ int
 LuaAPI::_l_Object_getEvent (lua_State *L)
 {
   Object *obj;
-  int idx;
-  const char *id;
-
   Event::Type type;
+  const char *id;
   Event *evt;
 
   obj = LuaAPI::_Object_check (L, 1);
-  idx = luaL_checkoption (L, 2, NULL, LuaAPI::_Event_optTypes);
+  type = LuaAPI::Event_Type_check (L, 2);
   id = luaL_checkstring (L, 3);
 
-  type = LuaAPI::_Event_getOptIndexType (idx);
   evt = obj->getEvent (type, id);
   if (evt == NULL)
     {

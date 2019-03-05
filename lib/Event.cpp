@@ -24,60 +24,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-// Public: Static.
-
-string
-Event::getTypeAsString (Event::Type type)
-{
-  switch (type)
-    {
-    case Event::PRESENTATION:
-      return "presentation";
-    case Event::ATTRIBUTION:
-      return "attribution";
-    case Event::SELECTION:
-      return "selection";
-    default:
-      g_assert_not_reached ();
-    }
-}
-
-string
-Event::getStateAsString (Event::State state)
-{
-  switch (state)
-    {
-    case Event::SLEEPING:
-      return "sleeping";
-    case Event::OCCURRING:
-      return "occurring";
-    case Event::PAUSED:
-      return "paused";
-    default:
-      g_assert_not_reached ();
-    }
-}
-
-string
-Event::getTransitionAsString (Event::Transition trans)
-{
-  switch (trans)
-    {
-    case Event::START:
-      return "start";
-    case Event::PAUSE:
-      return "pause";
-    case Event::RESUME:
-      return "resume";
-    case Event::STOP:
-      return "stop";
-    case Event::ABORT:
-      return "abort";
-    default:
-      g_assert_not_reached ();
-    }
-}
-
 // Public.
 
 Event::Event (Event::Type type, Object *object, const string &id)
@@ -112,7 +58,7 @@ Event (%p)\n\
   id: %s (%s)\n\
   type: %s\n\
   state: %s\n",
-     this, _object, Object::getTypeAsString (_object->getType ()).c_str (),
+     this, _object, "",
       _object->getId ().c_str (), _id.c_str (),
      this->getQualifiedId ().c_str (),
       Event::getTypeAsString (_type).c_str (),
@@ -185,6 +131,60 @@ Event::State
 Event::getState ()
 {
   return _state;
+}
+
+// Public: Static.
+
+string
+Event::getTypeAsString (Event::Type type)
+{
+  switch (type)
+    {
+    case Event::PRESENTATION:
+      return "presentation";
+    case Event::ATTRIBUTION:
+      return "attribution";
+    case Event::SELECTION:
+      return "selection";
+    default:
+      g_assert_not_reached ();
+    }
+}
+
+string
+Event::getStateAsString (Event::State state)
+{
+  switch (state)
+    {
+    case Event::SLEEPING:
+      return "sleeping";
+    case Event::OCCURRING:
+      return "occurring";
+    case Event::PAUSED:
+      return "paused";
+    default:
+      g_assert_not_reached ();
+    }
+}
+
+string
+Event::getTransitionAsString (Event::Transition trans)
+{
+  switch (trans)
+    {
+    case Event::START:
+      return "start";
+    case Event::PAUSE:
+      return "pause";
+    case Event::RESUME:
+      return "resume";
+    case Event::STOP:
+      return "stop";
+    case Event::ABORT:
+      return "abort";
+    default:
+      g_assert_not_reached ();
+    }
 }
 
 // TODO --------------------------------------------------------------------

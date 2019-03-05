@@ -12,8 +12,9 @@ do
    mt._attachData = function (self)
       trace ('_attachData (%s)', self:getId ())
       mt[self] = {
-         type = self:getType (),
-         id   = self:getId (),
+         object = self:getObject (),
+         type   = self:getType (),
+         id     = self:getId (),
       }
    end
 

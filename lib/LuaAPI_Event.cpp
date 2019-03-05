@@ -20,32 +20,13 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 const char *LuaAPI::_EVENT = "Ginga.Event";
 
-const char *const LuaAPI::_Event_optTypes[] =
-  {"attribution", "presentation", "selection", NULL};
-
-Event::Type
-LuaAPI::_Event_getOptIndexType (int i)
-{
-  switch (i)
-    {
-    case 0:
-      return Event::ATTRIBUTION;
-    case 1:
-      return Event::PRESENTATION;
-    case 2:
-      return Event::SELECTION;
-    default:
-      g_assert_not_reached ();
-    }
-}
-
 void
 LuaAPI::Event_attachWrapper (lua_State *L, Event *evt)
 {
   static const struct luaL_Reg funcs[] =
     {
      {"__tostring",            LuaAPI::__l_Event_toString},
-     {"__getUnderlyingObject", LuaAPI::__l_Event_getUnderlyingObject},
+     {"__getUnderlyingObject", LuaAPI::_l_Event_getUnderlyingObject},
      {"getType",               LuaAPI::_l_Event_getType},
      {"getObject",             LuaAPI::_l_Event_getObject},
      {"getId",                 LuaAPI::_l_Event_getId},
@@ -103,6 +84,25 @@ LuaAPI::Event_check (lua_State *L, int i)
   return *((Event **) luaL_checkudata (L, i, LuaAPI::_EVENT));
 }
 
+Event::Type
+LuaAPI::Event_Type_check (lua_State *L, int i)
+{
+  static const char *types[] =
+    {"attribution", "presentation", "selection", NULL};
+
+  switch (luaL_checkoption (L, i, NULL, types))
+    {
+    case 0:
+      return Event::ATTRIBUTION;
+    case 1:
+      return Event::PRESENTATION;
+    case 2:
+      return Event::SELECTION;
+    default:
+      g_assert_not_reached ();
+    }
+}
+
 int
 LuaAPI::__l_Event_toString (lua_State *L)
 {
@@ -115,7 +115,7 @@ LuaAPI::__l_Event_toString (lua_State *L)
 }
 
 int
-LuaAPI::__l_Event_getUnderlyingObject (lua_State *L)
+LuaAPI::_l_Event_getUnderlyingObject (lua_State *L)
 {
   lua_pushlightuserdata (L, LuaAPI::Event_check (L, 1));
   return 1;

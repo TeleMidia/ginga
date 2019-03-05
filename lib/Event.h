@@ -48,9 +48,6 @@ public:
      SELECTION    = 1 << 3,
   };
 
-  /// Converts Event::Type to a human-readable string.
-  static string getTypeAsString (Event::Type type);
-
   /// Possible states for NCL events.
   enum State
   {
@@ -58,9 +55,6 @@ public:
      PAUSED,                    ///< The event is paused.
      SLEEPING,                  ///< The event is sleeping.
   };
-
-  /// Converts Event::State to a human-readable string.
-  static string getStateAsString (Event::State state);
 
   /// Possible transitions between states of an NCL event.
   enum Transition
@@ -71,9 +65,6 @@ public:
      START,                     ///< `Paused|Sleeping->Occurring`.
      STOP,                      ///< `Occurring|Paused->Sleeping`.
   };
-
-  /// Converts Event::Transition to a human-readable string.
-  static string getTransitionAsString (Event::Transition trans);
 
   /// Creates a new event.
   ///
@@ -93,11 +84,11 @@ public:
   /// Gets a string representation of event.
   string toString ();
 
-  /// Gets the type of event.
-  Event::Type getType ();
-
   /// Gets the container object of event.
   Object *getObject ();
+
+  /// Gets the type of event.
+  Event::Type getType ();
 
   /// Gets the id of event.
   string getId ();
@@ -121,6 +112,15 @@ public:
 
   /// Gets the current state of event.
   Event::State getState ();
+
+  /// Converts Event::Type to a human-readable string.
+  static string getTypeAsString (Event::Type type);
+
+  /// Converts Event::State to a human-readable string.
+  static string getStateAsString (Event::State state);
+
+  /// Converts Event::Transition to a human-readable string.
+  static string getTransitionAsString (Event::Transition trans);
 
   // TODO ------------------------------------------------------------------
 

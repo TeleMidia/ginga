@@ -29,13 +29,15 @@ LuaAPI::Document_attachWrapper (lua_State *L, Document *doc)
 {
   static const struct luaL_Reg funcs[] =
     {
+     {"__gc",                  LuaAPI::__l_Document_gc},
      {"__tostring",            LuaAPI::__l_Document_toString},
-     {"__getUnderlyingObject", LuaAPI::__l_Document_getUnderlyingObject},
+     {"_getUnderlyingObject",  LuaAPI::_l_Document_getUnderlyingObject},
      {"getObjects",            LuaAPI::_l_Document_getObjects},
      {"getObject",             LuaAPI::_l_Document_getObject},
      {"getRoot",               LuaAPI::_l_Document_getRoot},
      {"getSettings",           LuaAPI::_l_Document_getSettings},
      {"createObject",          LuaAPI::_l_Document_createObject},
+     {"createEvent",           LuaAPI::_l_Document_createEvent},
      {NULL, NULL},
     };
   Document **wrapper;
@@ -55,11 +57,7 @@ LuaAPI::Document_attachWrapper (lua_State *L, Document *doc)
   luaL_setmetatable (L, LuaAPI::_DOCUMENT);
 
   // Set LUA_REGISTY[doc]=wrapper.
-  lua_pushvalue (L, -1);
   LuaAPI::_attachLuaWrapper (L, doc);
-
-  // Set _G._D=wrapper.
-  lua_setglobal (L, "_D");
 
   // Call _D:__attachData().
   LuaAPI::_callLuaWrapper (L, doc, "_attachData", 0, 0);
@@ -73,10 +71,6 @@ LuaAPI::Document_detachWrapper (lua_State *L, Document *doc)
 
   // Call _D:__detachData().
   LuaAPI::_callLuaWrapper (L, doc, "_detachData", 1, 0);
-
-  // Set _D:=nil.
-  lua_pushnil (L);
-  lua_setglobal (L, "_D");
 
   // Set LUA_REGISTY[doc]=nil.
   LuaAPI::_detachLuaWrapper (L, doc);
@@ -114,6 +108,17 @@ LuaAPI::Document_call (lua_State *L, Document *doc, const char *name,
 // Private.
 
 int
+LuaAPI::__l_Document_gc (lua_State *L)
+{
+  Document *doc;
+
+  doc = LuaAPI::Document_check (L, 1);
+  delete doc;
+
+  return 0;
+}
+
+int
 LuaAPI::__l_Document_toString (lua_State *L)
 {
   Document *doc;
@@ -125,7 +130,7 @@ LuaAPI::__l_Document_toString (lua_State *L)
 }
 
 int
-LuaAPI::__l_Document_getUnderlyingObject (lua_State *L)
+LuaAPI::_l_Document_getUnderlyingObject (lua_State *L)
 {
   lua_pushlightuserdata (L, LuaAPI::Document_check (L, 1));
   return 1;
@@ -200,15 +205,14 @@ int
 LuaAPI::_l_Document_createObject (lua_State *L)
 {
   Document *doc;
-  int idx;
+  Object::Type type;
   const char *id;
 
   Composition *parent;
-  Object::Type type;
   Object *obj;
 
   doc = LuaAPI::Document_check (L, 1);
-  idx = luaL_checkoption (L, 2, NULL, LuaAPI::_Object_optTypes);
+  type = LuaAPI::_Object_Type_check (L, 2);
   obj = LuaAPI::_Object_check (L, 3);
   luaL_argcheck (L, obj->getType () == Object::CONTEXT
                  || obj->getType () == Object::SWITCH, 3,
@@ -216,15 +220,39 @@ LuaAPI::_l_Document_createObject (lua_State *L)
   id = luaL_checkstring (L, 4);
 
   parent = (Composition *) obj;
-  type = LuaAPI::_Object_getOptIndexType (idx);
   obj = doc->createObject (type, parent, id);
   if (unlikely (obj == NULL))
     {
       lua_pushnil (L);
-      lua_pushliteral (L, "id already in use");
-      return 2;
+      return 1;
     }
 
   LuaAPI::_pushLuaWrapper (L, obj);
+  return 1;
+}
+
+int
+LuaAPI::_l_Document_createEvent (lua_State *L)
+{
+  Document *doc;
+  Event::Type type;
+  const char *objId;
+  const char *evtId;
+
+  Event *evt;
+
+  doc = LuaAPI::Document_check (L, 1);
+  type = LuaAPI::Event_Type_check (L, 2);
+  objId = luaL_checkstring (L, 3);
+  evtId = luaL_checkstring (L, 4);
+
+  evt = doc->createEvent (type, objId, evtId);
+  if (evt == NULL)
+    {
+      lua_pushnil (L);
+      return 1;
+    }
+
+  LuaAPI::_pushLuaWrapper (L, evt);
   return 1;
 }

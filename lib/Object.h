@@ -45,9 +45,6 @@ public:
      SWITCH         = 1 << 4    ///< Switch object.
   };
 
-  /// Converts Object::Type to a human-readable string.
-  static string getTypeAsString (Object::Type type);
-
   /// Creates a new object.
   ///
   /// The newly created object has a single presentation event: the lambda

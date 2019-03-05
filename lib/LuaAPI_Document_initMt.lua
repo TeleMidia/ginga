@@ -9,6 +9,12 @@ do
       return mt[k] or mt[self][k]
    end
 
+   local saved_mt__gc = mt.__gc
+   mt.__gc = function (self)
+      trace ('__gc ()')
+      saved_mt__gc (self)
+   end
+
    mt._attachData = function (self)
       trace ('_attachData ()')
       mt[self] = {
@@ -46,10 +52,12 @@ do
       mt[self].event[evt:getQualifiedId ()] = nil
    end
 
-   -- Lua implementation of Document::getEvent().
-   mt.getEvent = function (self, id)
-      trace ('getEvent (%s)', id)
-      local o, e, tp
+   -- Parses the given qualified id.
+   -- This can be called as a method or as an ordinary function.
+   mt._parseQualifiedId = function  (self, id)
+      local id = id or self
+      trace ('parseQualifiedId (%s)', id)
+      local tp, o, e
 
       o, e = id:match ('([%w_-]+)@([%w_-]+)')
       if o and e then
@@ -74,6 +82,30 @@ do
       end
 
       ::tail::
+      assert (tp)
+      assert (o)
+      assert (e)
+      return tp, o, e
+   end
+
+   -- Implementation of the 2nd version of Document::createEvent().
+   local saved_mt_createEvent = mt.createEvent
+   mt.createEvent = function (self, tp, objId, evtId)
+      trace ('createEvent (%s, %s, %s)', tp, objId, evtId)
+      if objId == nil and evtId == nil then
+         tp, objId, evtId = self:_parseQualifiedId (tp)
+      end
+      return saved_mt_createEvent (self, tp, objId, evtId)
+   end
+
+   -- Implementation of Document::getEvent().
+   mt.getEvent = function (self, id)
+      trace ('getEvent (%s)', id)
+      local tp, o, e = self:_parseQualifiedId (id)
+      if tp == nil then
+         return nil             -- bad format
+      end
+
       local obj = self.object[o]
       if not obj then
          return nil             -- no such object

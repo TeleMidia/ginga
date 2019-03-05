@@ -18,6 +18,10 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "Parser.h"
 
+GINGA_BEGIN_DECLS
+#include "aux-lua.h"
+GINGA_END_DECLS
+
 #include "Context.h"
 #include "Document.h"
 #include "Media.h"
@@ -2245,12 +2249,16 @@ ParserState::getError (string *message)
 Document *
 ParserState::process (xmlDoc *xml)
 {
+  lua_State *L;
   xmlNode *root;
 
   g_assert_nonnull (xml);
   _xml = xml;
 
-  _doc = new Document ();
+  L = luaL_newstate ();
+  g_assert_nonnull (L);
+  luaL_openlibs (L);
+  _doc = new Document (L);
 
   root = xmlDocGetRootElement (xml);
   g_assert_nonnull (root);

@@ -22,10 +22,19 @@ extern "C" {
 int luaopen_ginga (lua_State *L);
 }
 
+static int
+l_createDocument (lua_State *L)
+{
+  LuaAPI::Document_push (L, new Document (L));
+  return 1;
+}
+
 int
 luaopen_ginga (lua_State *L)
 {
-  Document *_D = new Document (L);
-  LuaAPI::Document_push (L, _D);
+  lua_newtable (L);
+  lua_pushcfunction (L, l_createDocument);
+  lua_setfield (L, -2, "createDocument");
+
   return 1;
 }

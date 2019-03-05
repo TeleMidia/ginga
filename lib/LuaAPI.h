@@ -99,6 +99,9 @@ public:
   /// Checks if the value at index \p i of stack is an Event wrapper.
   static Event *Event_check (lua_State *L, int i);
 
+  /// Checks if the value at index \p i of stack is an Event::Type.
+  static Event::Type Event_Type_check (lua_State *L, int i);
+
 private:
 
   // Document:
@@ -112,9 +115,11 @@ private:
   /// Length in bytes of LuaAPI::Document_initMt_lua.
   static unsigned int Document_initMt_lua_len;
 
+  static int __l_Document_gc (lua_State *L);
+
   static int __l_Document_toString (lua_State *L);
 
-  static int __l_Document_getUnderlyingObject (lua_State *L);
+  static int _l_Document_getUnderlyingObject (lua_State *L);
 
   static int _l_Document_getObject (lua_State *L);
 
@@ -126,6 +131,8 @@ private:
 
   static int _l_Document_createObject (lua_State *L);
 
+  static int _l_Document_createEvent (lua_State *L);
+
   // Object:
 
   /// Lua code to run when loading Object metatable.
@@ -133,13 +140,6 @@ private:
 
   /// Length in bytes of LuaAPI::Object_initMt_lua.
   static unsigned int Object_initMt_lua_len;
-
-  /// Array of Object::Type names; used in luaL_checkoption() calls.
-  static const char *const _Object_optTypes[];
-
-  /// Gets the Object::Type associated with index \p i of
-  /// LuaAPI::_Object_optTypes.
-  static Object::Type _Object_getOptIndexType (int i);
 
   /// Gets the registry key of the metatable of \p obj.
   static const char *_Object_getRegistryKey (Object *obj);
@@ -153,9 +153,12 @@ private:
   /// Checks if the value at index \p i of stack is an Object wrapper.
   static Object *_Object_check (lua_State *L, int i);
 
+  /// Checks if the value at index \p i of stack is an Object::Type.
+  static Object::Type _Object_Type_check (lua_State *L, int i);
+
   static int __l_Object_toString (lua_State *L);
 
-  static int __l_Object_getUnderlyingObject (lua_State *L);
+  static int _l_Object_getUnderlyingObject (lua_State *L);
 
   static int _l_Object_getType (lua_State *L);
 
@@ -195,16 +198,9 @@ private:
   /// Length in bytes of LuaAPI::Event_initMt_lua.
   static unsigned int Event_initMt_lua_len;
 
-  /// Array of Event::Type names; used in luaL_checkoption() calls.
-  static const char *const _Event_optTypes[];
-
-  /// Gets the Event::Type associated with index \p i of
-  /// LuaAPI::_Event_optTypes.
-  static Event::Type _Event_getOptIndexType (int i);
-
   static int __l_Event_toString (lua_State *L);
 
-  static int __l_Event_getUnderlyingObject (lua_State *L);
+  static int _l_Event_getUnderlyingObject (lua_State *L);
 
   static int _l_Event_getType (lua_State *L);
 

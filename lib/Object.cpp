@@ -29,26 +29,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-// Public: Static.
-
-string
-Object::getTypeAsString (Object::Type type)
-{
-  switch (type)
-    {
-    case MEDIA:
-      return "Media";
-    case MEDIA_SETTINGS:
-      return "MediaSettings";
-    case CONTEXT:
-      return "Context";
-    case SWITCH:
-      return "Switch";
-    default:
-      g_assert_not_reached ();
-    }
-}
-
 // Public.
 
 Object::Object (Document *doc, Composition *parent, const string &id)
@@ -74,87 +54,7 @@ Object::~Object ()
 string
 Object::toString ()
 {
-  string str;
-
-  str = xstrbuild ("%s (%p):\n",
-                   Object::getTypeAsString (this->getType ()).c_str (),
-                   this);
-
-  if (_parent != NULL)
-    {
-      str += xstrbuild
-        ("\
-  parent: %p (%s, id: %s)\n",
-         _parent,
-         Object::getTypeAsString (_parent->getType ()).c_str (),
-         _parent->getId ().c_str ());
-    }
-  str += "  id: " + _id + "\n";
-  auto it = _aliases.begin ();
-  if (it != _aliases.end ())
-    {
-      str += "  aliases: " + (*it).first;
-      while (++it != _aliases.end ())
-        str += ", " + (*it).first + "(at Composition "
-               + xstrbuild ("%p", (*it).second) + ")";
-      str += "\n";
-    }
-
-  str += "  time: ";
-  if (GINGA_TIME_IS_VALID (_time))
-    str += xstrbuild ("%" GINGA_TIME_FORMAT, GINGA_TIME_ARGS (_time));
-  else
-    str += "(none)";
-  str += "\n";
-
-  list<string> pres;
-  list<string> attr;
-  list<string> sel;
-  for (auto evt : _events)
-    switch (evt->getType ())
-      {
-      case Event::PRESENTATION:
-        pres.push_back (evt->getId () + " ("
-                        + Event::getStateAsString (evt->getState ())
-                        + ')');
-        break;
-      case Event::ATTRIBUTION:
-        attr.push_back (evt->getId () + " ("
-                        + Event::getStateAsString (evt->getState ())
-                        + ')');
-        break;
-      case Event::SELECTION:
-        sel.push_back (evt->getId () + " ("
-                       + Event::getStateAsString (evt->getState ())
-                       + ')');
-        break;
-      default:
-        g_assert_not_reached ();
-      }
-
-  list<pair<string, list<string> *> > evts = {
-    { "evts pres.", &pres }, { "evts attr.", &attr }, { "evts sel.", &sel },
-  };
-
-  for (auto it_evts : evts)
-    {
-      auto it_evt = it_evts.second->begin ();
-      if (it_evt == it_evts.second->end ())
-        continue;
-      str += "  " + it_evts.first + ": " + *it_evt;
-      while (++it_evt != it_evts.second->end ())
-        str += ", " + *it_evt;
-      str += "\n";
-    }
-
-  if (_properties.size () > 0)
-    {
-      str += "  properties:\n";
-      for (auto it : _properties)
-        str += "    " + it.first + "='" + it.second + "'\n";
-    }
-
-  return str;
+  return xstrbuild ("Object (%p)", this);
 }
 
 Document *
