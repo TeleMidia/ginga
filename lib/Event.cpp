@@ -92,12 +92,12 @@ Event::Event (Event::Type type, Object *object, const string &id)
   _begin = 0;
   _end = GINGA_TIME_NONE;
   _label = "";
-  LuaAPI::_Event_attachWrapper (_L, this);
+  LuaAPI::Event_attachWrapper (_L, this);
 }
 
 Event::~Event ()
 {
-  LuaAPI::_Event_detachWrapper (_L, this);
+  LuaAPI::Event_detachWrapper (_L, this);
 }
 
 string

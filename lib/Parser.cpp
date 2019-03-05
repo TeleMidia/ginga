@@ -1704,10 +1704,10 @@ ParserState::resolveInterface (Composition *ctx, ParserElt *elt,
   result = nullptr;
   if (instanceof (Media *, obj))
     {
-      result = obj->getPresentationEvent (iface);
+      result = obj->getEvent (Event::PRESENTATION, iface);
       if (result == nullptr)
         {
-          result = obj->getAttributionEvent (iface);
+          result = obj->getEvent (Event::ATTRIBUTION, iface);
           if (unlikely (result == nullptr))
             goto fail;
         }
@@ -1716,7 +1716,7 @@ ParserState::resolveInterface (Composition *ctx, ParserElt *elt,
     {
       if (obj == ctx)
         {
-          result = obj->getAttributionEvent (iface);
+          result = obj->getEvent (Event::ATTRIBUTION, iface);
           if (unlikely (result == nullptr))
             goto fail;
         }
@@ -1728,7 +1728,7 @@ ParserState::resolveInterface (Composition *ctx, ParserElt *elt,
           if (unlikely (
                   !this->eltCacheIndexById (iface, &iface_elt, { "port" })))
             {
-              result = obj->getAttributionEvent (iface);
+              result = obj->getEvent (Event::ATTRIBUTION, iface);
               if (likely (result != nullptr))
                 goto success; // interface point to context property
               else
@@ -1758,9 +1758,8 @@ ParserState::resolveInterface (Composition *ctx, ParserElt *elt,
     }
   else if (instanceof (Switch *, obj))
     {
-      result
-          = obj->getPresentationEvent (iface); // A switchPort is resolved
-                                               // as a PresentationEvent.
+      result = obj->getEvent (Event::PRESENTATION, iface);
+      // A switchPort is resolved as a PresentationEvent.
       if (unlikely (result == nullptr))
         goto fail;
     }
@@ -2433,9 +2432,11 @@ borderColor='%s'}",
                 {
                   if (it.first == "id" || it.first == "region")
                     continue; // nothing to do
-                  if (media->getAttributionEvent (it.first) != nullptr)
+                  if (media->getEvent (Event::ATTRIBUTION, it.first)
+                      != nullptr)
                     continue; // already defined
-                  media->addAttributionEvent (it.first);
+                  g_assert_nonnull (media->createEvent
+                                    (Event::ATTRIBUTION, it.first));
                   media->setProperty (it.first, it.second);
                 }
             }
@@ -2728,8 +2729,8 @@ borderColor='%s'}",
                       }
                     act.value = st->resolveParameter (
                         role->key, &bind->params, params, &ghosts_map);
-                    obj->addSelectionEvent (act.value);
-                    act.event = obj->getSelectionEvent (act.value);
+                    act.event = obj->createEvent (Event::SELECTION,
+                                                  act.value);
                     g_assert_nonnull (act.event);
                     act.event->setParameter ("key", act.value);
                     break;
@@ -3944,6 +3945,8 @@ ParserState::pushArea (ParserState *st, ParserElt *elt)
   Media *media;
   string id;
   string str;
+
+  Event *evt;
   string label;
   Time begin, end;
 
@@ -3951,6 +3954,8 @@ ParserState::pushArea (ParserState *st, ParserElt *elt)
   g_assert_nonnull (media);
 
   g_assert (elt->getAttribute ("id", &id));
+  evt = media->createEvent (Event::PRESENTATION, id);
+  g_assert_nonnull (evt);
 
   if (elt->getAttribute ("label", &label) && label != "")
     {
@@ -3964,7 +3969,7 @@ ParserState::pushArea (ParserState *st, ParserElt *elt)
           return st->errEltMutuallyExclAttributes (elt->getNode (), "label",
                                                    "end");
         }
-      media->addPresentationEvent (id, label);
+      evt->setLabel (label);
     }
   else
     {
@@ -3986,7 +3991,7 @@ ParserState::pushArea (ParserState *st, ParserElt *elt)
             }
         }
 
-      media->addPresentationEvent (id, begin, end);
+      evt->setInterval (begin, end);
     }
 
   return true;
@@ -4012,7 +4017,7 @@ ParserState::pushProperty (ParserState *st, ParserElt *elt)
   if (!elt->getAttribute ("value", &value))
     value = "";
 
-  obj->addAttributionEvent (name);
+  obj->createEvent (Event::ATTRIBUTION, name); // ignore if already there
   if (value != "")
     obj->setProperty (name, value);
 

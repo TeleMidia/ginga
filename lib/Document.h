@@ -26,76 +26,83 @@ class Context;
 class Media;
 class Switch;
 
-/**
- * Run-time representation of an NCL document.
- *
- * The Document maintains the NCL object tree and acts a top-level interface
- * to this tree.
- */
+/// Run-time representation of an NCL document.
+///
+/// The Document maintains the NCL object tree and acts a top-level interface
+/// to this tree.
+///
 class Document
 {
 public:
 
-  /**
-   * Creates a new document.
-   *
-   * The newly created document has a root Context, called `__root__`, which
-   * contains a single MediaSettings object, called `__settings__`.
-   */
+  /// Creates a new document.
+  ///
+  /// The newly created document has a root Context, called `__root__`,
+  /// which contains a single MediaSettings object, called `__settings__`.
+  ///
   Document ();
 
-  /**
-   * Destroys document and all its objects.
-   */
+  /// Destroys document and all its objects.
   virtual ~Document ();
 
-  /**
-   * Gets the Lua state associated with document.
-   */
+  /// Gets the Lua state associated with document.
   lua_State *getLuaState ();
 
-  /**
-   * Gets a string representation of document.
-   */
+  /// Gets a string representation of document.
   string toString ();
 
-  /**
-   * Gets the set of objects in document whose type match \p mask.
-   *
-   * @param[out] objects The set of matched objects.
-   * @param mask A bitmask of or-ed Object::Type values.
-   */
+  /// Gets the set of objects in document whose type match \p mask.
+  ///
+  /// @param[out] objects The set of matched objects.
+  /// @param mask A bitmask of or-ed Object::Type values.
+  ///
   void getObjects (set<Object *> *objects,
                    unsigned int mask=(unsigned int) -1);
 
-  /**
-   * Gets the object in document with the given id or alias.
-   *
-   * @param id The id or alias to match.
-   * @return The matched object or \c NULL (no such object).
-   */
+  /// Gets the object in document with the given id.
+  ///
+  /// @param id The id to match.
+  /// @return The matched object or \c NULL (no such object).
+  ///
   Object *getObject (const string &id);
 
-  /**
-   * Gets the root Context of document.
-   */
+  /// Gets the event in document with the given qualified id.
+  ///
+  /// @param id The qualified id to match.
+  /// @return The matched event or \c NULL (no such event).
+  ///
+  Event *getEvent (const string &id);
+
+  /// Gets the root Context of document.
   Context *getRoot ();
 
-  /**
-   * Gets the MediaSettings object of document.
-   */
+  /// Gets the MediaSettings object of document.
   MediaSettings *getSettings ();
 
-  /**
-   * Creates and adds a new object to document.
-   *
-   * @param type The type of the new object.
-   * @param parent The parent object to add the new object to.
-   * @param id The id of the new object (must not occur in document).
-   * @return The newly created object if successful, or \c NULL otherwise.
-   */
+  /// Creates a new object and adds it to document.
+  ///
+  /// The newly created object has a single presentation event: the lambda
+  /// event, called `@lambda`.
+  ///
+  /// @param type The type of the new object.
+  /// @param parent The parent object to add the new object to.
+  /// @param id The id of the new object (must not occur in document).
+  /// @return The newly created object if successful, or \c NULL otherwise.
+  ///
   Object *createObject (Object::Type type, Composition *parent,
                         const string &id);
+
+  /// Creates a new event and adds it to an object in document.
+  ///
+  /// @param type The type of the new event.
+  /// @param objId The id of the container object (must be in document).
+  /// @param id the id of the new event (must no occur in \p object).
+  /// @return The newly created event if successful, or \c NULL otherwise.
+  ///
+  /// @see Object::createEvent().
+  ///
+  Event *createEvent (Event::Type type, const string &objId,
+                      const string &id);
 
   // TODO ------------------------------------------------------------------
 

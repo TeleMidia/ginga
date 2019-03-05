@@ -31,8 +31,8 @@ Switch::Switch (Document *doc,
 {
   _selected = nullptr;
 
-  LuaAPI::_Switch_attachWrapper (_L, this);
-  this->createEvents ();
+  LuaAPI::Switch_attachWrapper (_L, this);
+  _initEvents ();
 }
 
 Switch::~Switch ()
@@ -40,8 +40,8 @@ Switch::~Switch ()
   for (auto item : _rules)
     delete item.second;
 
-  this->destroyEvents ();
-  LuaAPI::_Switch_detachWrapper (_L, this);
+  _finiEvents ();
+  LuaAPI::Switch_detachWrapper (_L, this);
 }
 
 // Public: Object.
@@ -245,7 +245,11 @@ Switch::getSwitchPorts ()
 void
 Switch::addSwitchPort (const string &id, const list<Event *> &evts)
 {
-  addPresentationEvent (id, id);
+  Event *evt;
+
+  evt = this->createEvent (Event::PRESENTATION, id);
+  g_assert_nonnull (evt);
+  evt->setLabel (id);
 
   TRACE ("Adding switchPort %s to %s mapping %u evts.", id.c_str (),
          getId ().c_str (), (guint) evts.size ());

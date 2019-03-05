@@ -37,16 +37,16 @@ Media::Media (Document *doc,
 {
   _player = NULL;
 
-  LuaAPI::_Media_attachWrapper (_L, this);
-  this->createEvents ();
+  LuaAPI::Media_attachWrapper (_L, this);
+  _initEvents ();
 }
 
 Media::~Media ()
 {
   this->doStop ();
 
-  this->destroyEvents ();
-  LuaAPI::_Media_detachWrapper (_L, this);
+  _finiEvents ();
+  LuaAPI::Media_detachWrapper (_L, this);
 }
 
 // Public: Object.
@@ -213,7 +213,9 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
                   }
                 else
                   { // Anchor
-                    Event *lambda = getPresentationEvent ("@lambda");
+                    Event *lambda;
+
+                    lambda = this->getLambda ();
                     if (lambda->getState () != Event::SLEEPING)
                       break;
 

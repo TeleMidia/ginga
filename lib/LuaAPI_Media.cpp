@@ -18,22 +18,23 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "LuaAPI.h"
 #include "Media.h"
 
-const char *LuaAPI::MEDIA = "Ginga.Media";
+const char *LuaAPI::_MEDIA = "Ginga.Media";
 
 void
-LuaAPI::_Media_attachWrapper (lua_State *L, Media *media)
+LuaAPI::Media_attachWrapper (lua_State *L, Media *media)
 {
   LuaAPI::_Object_attachWrapper (L, media);
 }
 
 void
-LuaAPI::_Media_detachWrapper (lua_State *L, Media *media)
+LuaAPI::Media_detachWrapper (lua_State *L, Media *media)
 {
   LuaAPI::_Object_detachWrapper (L, media);
 }
 
 Media *
-LuaAPI::_Media_check (lua_State *L, int i)
+LuaAPI::Media_check (lua_State *L, int i)
 {
-  return *((Media **) luaL_checkudata (L, i, LuaAPI::MEDIA));
+  g_return_val_if_fail (L != NULL, NULL);
+  return *((Media **) luaL_checkudata (L, i, LuaAPI::_MEDIA));
 }

@@ -113,11 +113,11 @@ tests_create_document (Document **doc, Context **root,
 
   tryset (root, (*doc)->getRoot ());
   g_assert_nonnull (root);
-  g_assert ((*doc)->getObjectById ("__root__") == *root);
+  g_assert ((*doc)->getObject ("__root__") == *root);
 
   tryset (settings, (*doc)->getSettings ());
   g_assert_nonnull (settings);
-  g_assert ((*doc)->getObjectById ("__settings__") == *settings);
+  g_assert ((*doc)->getObject ("__settings__") == *settings);
 }
 
 static G_GNUC_UNUSED void
@@ -169,9 +169,9 @@ tests_create_document_with_media_and_start (Formatter **fmt,
   g_assert_nonnull (*m1_anchor_0s);
   *m1_anchor_label = m1->getPresentationEvent ("a2");
   g_assert_nonnull (*m1_anchor_label);
-  *m1_prop = m1->getAttributionEvent ("p1");
+  *m1_prop = m1->getEvent (Event::ATTRIBUTION, "p1");
   g_assert_nonnull (*m1_prop);
-  *m1_sel = m1->getSelectionEvent ("");
+  *m1_sel = m1->getEvent (Event::SELECTION, "");
   g_assert_nonnull (*m1_sel);
 
   // --------------------------------
@@ -248,9 +248,9 @@ tests_create_document_with_context_and_start (
   g_assert_nonnull (c1);
   *c1_lambda = c1->getLambda ();
   g_assert_nonnull (c1_lambda);
-  *c1_prop = c1->getAttributionEvent ("p1");
+  *c1_prop = c1->getEvent (Event::ATTRIBUTION, "p1");
   g_assert_nonnull (c1_prop);
-  *c1_sel = c1->getSelectionEvent ("");
+  *c1_sel = c1->getEvent (Event::SELECTION, "");
   g_assert_nonnull (*c1_sel);
 
   m1 = cast (Media *, c1->getChildById ("m1"));
@@ -341,7 +341,7 @@ tests_create_document_with_switch_and_start (
   g_assert_nonnull (swt1);
   *swt1_lambda = swt1->getLambda ();
   g_assert_nonnull (swt1_lambda);
-  *swt1_sel = swt1->getSelectionEvent ("");
+  *swt1_sel = swt1->getEvent (Event::SELECTION, "");
   g_assert_nonnull (*swt1_sel);
 
   m1 = cast (Media *, swt1->getChildById ("m1"));

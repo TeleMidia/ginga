@@ -35,8 +35,8 @@ Context::Context (Document *doc,
   _awakeChildren = 0;
   _status = true;
 
-  LuaAPI::_Context_attachWrapper (_L, this);
-  this->createEvents ();
+  LuaAPI::Context_attachWrapper (_L, this);
+  _initEvents ();
 }
 
 Context::~Context ()
@@ -59,8 +59,8 @@ Context::~Context ()
           delete act.predicate;
     }
 
-  this->destroyEvents ();
-  LuaAPI::_Context_detachWrapper (_L, this);
+  _finiEvents ();
+  LuaAPI::Context_detachWrapper (_L, this);
 }
 
 // Public: Object.

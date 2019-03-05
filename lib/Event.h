@@ -82,6 +82,9 @@ public:
   /// @param id The id of the new event (must no occur in \p object).
   /// @return The newly created event.
   ///
+  /// @warning Do not call this constructor directly.  Use
+  /// Document::createEvent() or Object::createEvent() to create events.
+  ///
   Event (Event::Type type, Object *object, const string &id);
 
   /// Destroys the event.

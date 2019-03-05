@@ -26,20 +26,17 @@ class Document;
 class Composition;
 class MediaSettings;
 
-/**
- * Object in an NCL document.
- *
- * Run-time representation of an NCL object.
- *
- * @see Context, Switch, Media, MediaSettings.
- */
+/// Object in an NCL document.
+///
+/// Run-time representation of an NCL object.
+///
+/// @see Context, Switch, Media, MediaSettings.
+///
 class Object
 {
 public:
 
-  /**
-   * Possible concrete types for NCL objects.
-   */
+  /// Possible concrete types for NCL objects.
   enum Type
   {
      MEDIA          = 1 << 1,   ///< Media object.
@@ -48,116 +45,93 @@ public:
      SWITCH         = 1 << 4    ///< Switch object.
   };
 
-  /**
-   * Converts Object::Type to a human-readable string.
-   */
+  /// Converts Object::Type to a human-readable string.
   static string getTypeAsString (Object::Type type);
 
-  /**
-   * Creates a new object.
-   *
-   * @param doc The container document.
-   * @param parent The parent object to add the new object to
-   *               or \p NULL (no parent).
-   * @param id The id of the new object (must not occur in \p doc).
-   * @return The newly created object.
-   *
-   * The newly created object has a single presentation event: the lambda
-   * event, called `@lambda`.
-   *
-   * @see Object::createObject().
-   */
+  /// Creates a new object.
+  ///
+  /// The newly created object has a single presentation event: the lambda
+  /// event, called `@lambda`.
+  ///
+  /// @param doc The container document.
+  /// @param parent The parent object to add the new object to or \p NULL
+  ///               (no parent).
+  /// @param id The id of the new object (must not occur in \p doc).
+  /// @return The newly created object.
+  ///
+  /// @warning Do not call the constructors of Object subclasses directly.
+  /// Use Document::createObject() to create objects.
+  ///
   Object (Document *doc, Composition *parent, const string &id);
 
-  /**
-   * Destroys the object and all its events.
-   */
+  /// Destroys the object and all its events.
   virtual ~Object ();
 
-  /**
-   * Gets a string representation of object.
-   */
+  /// Gets a string representation of object.
   virtual string toString ();
 
-  /**
-   * Gets the type of object.
-   */
+  /// Gets the type of object.
   virtual Object::Type getType () = 0;
 
-  /**
-   * Gets the container document of object.
-   */
+  /// Gets the container document of object.
   Document *getDocument ();
 
-  /**
-   * Gets the parent of object.
-   *
-   * @return The parent object or \c NULL (no parent).
-   */
+  /// Gets the parent of object.
+  ///
+  /// @return The parent object or \c NULL (no parent).
+  ///
   Composition *getParent ();
 
-  /**
-   * Gets the id of object.
-   */
+  /// Gets the id of object.
   string getId ();
 
-  /**
-   * Gets the list of aliases of object.
-   */
+  /// Gets the list of aliases of object.
   const list<pair<string, Composition *> > *getAliases ();
 
-  /**
-   * Tests whether object has alias.
-   */
+  /// Tests whether object has the given alias.
   bool hasAlias (const string &alias);
 
-  /**
-   * Adds alias to object.
-   *
-   * @param alias The alias to add.
-   * @param comp The composition where this alias occur or \p NULL (none).
-   */
+  /// Adds alias to object.
+  ///
+  /// @param alias The alias to add.
+  /// @param comp The composition where this alias occur or \p NULL (none).
+  ///
   void addAlias (const string &alias, Composition *comp);
 
-  /**
-   * Gets the current value of an object property.
-   */
+  /// Gets the current value of an object property.
   virtual string getProperty (const string &name);
 
-  /**
-   * Sets the current value of an object property.
-   */
+  /// Sets the current value of an object property.
   virtual void setProperty (const string &name, const string &value,
                             Time duration = 0);
 
-  /**
-   * Gets the set of events in object whose type match \p mask.
-   *
-   * @param[out] events The set of matched events.
-   * @param mask A bitmask of or-ed Event::Type values.
-   */
+  /// Gets the set of events in object whose type match \p mask.
+  ///
+  /// @param[out] events The set of matched events.
+  /// @param mask A bitmask of or-ed Event::Type values.
+  ///
   void getEvents (set <Event *> *events,
                   unsigned int mask=(unsigned int) -1);
 
-  /**
-   * Gets the event in object with the given type and id.
-   *
-   * @param type The type to match
-   * @param id The id to match.
-   * @return The matched event or \c NULL (no such event).
-   */
+  /// Gets the event in object with the given type and id.
+  ///
+  /// @param type The type to match
+  /// @param id The id to match.
+  /// @return The matched event or \c NULL (no such event).
+  ///
   Event *getEvent (Event::Type type, const string &id);
 
-  // TODO ------------------------------------------------------------------
+  /// Creates a new event and adds it to object.
+  ///
+  /// @param type The type of the new event.
+  /// @param id the id of the new event (must no occur in \p object).
+  /// @return The newly created event if successful, or \c NULL otherwise.
+  ///
+  /// @see Document::createEvent().
+  ///
+  Event *createEvent (Event::Type type, const string &id);
 
-  Event *getAttributionEvent (const string &);
-  void addAttributionEvent (const string &);
-  Event *getPresentationEvent (const string &);
-  Event *getPresentationEventByLabel (const string &);
-  void addPresentationEvent (const string &, Time, Time);
-  void addPresentationEvent (const string &, const string &);
-  Event *getSelectionEvent (const string &);
-  void addSelectionEvent (const string &);
+  // TODO ------------------------------------------------------------------
 
   Event *getLambda ();
   bool isOccurring ();
@@ -234,17 +208,11 @@ protected:
   /// The playback time of this object.
   Time _time;
 
-  /**
-   * @brief Creates the initial events of this object.
-   * @warning This should only be called in subclass constructors.
-   */
-  void createEvents ();
+  /// Initializes the set of events of this object.
+  void _initEvents ();
 
-  /**
-   * @brief Destroys all events of this object.
-   * @warning This should only be called in subclass destructors.
-   */
-  void destroyEvents ();
+  /// Finalizes the set of events of this object.
+  void _finiEvents ();
 
   // TODO ------------------------------------------------------------------
 

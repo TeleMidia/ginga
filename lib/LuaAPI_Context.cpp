@@ -18,22 +18,23 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "LuaAPI.h"
 #include "Context.h"
 
-const char *LuaAPI::CONTEXT = "Ginga.Context";
+const char *LuaAPI::_CONTEXT = "Ginga.Context";
 
 void
-LuaAPI::_Context_attachWrapper (lua_State *L, Context *ctx)
+LuaAPI::Context_attachWrapper (lua_State *L, Context *ctx)
 {
   LuaAPI::_Object_attachWrapper (L, ctx);
 }
 
 void
-LuaAPI::_Context_detachWrapper (lua_State *L, Context *ctx)
+LuaAPI::Context_detachWrapper (lua_State *L, Context *ctx)
 {
   LuaAPI::_Object_detachWrapper (L, ctx);
 }
 
 Context *
-LuaAPI::_Context_check (lua_State *L, int i)
+LuaAPI::Context_check (lua_State *L, int i)
 {
-  return *((Context **) luaL_checkudata (L, i, LuaAPI::CONTEXT));
+  g_return_val_if_fail (L != NULL, NULL);
+  return *((Context **) luaL_checkudata (L, i, LuaAPI::_CONTEXT));
 }

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "LuaAPI.h"
 #include "Event.h"
 
-const char *LuaAPI::EVENT = "Ginga.Event";
+const char *LuaAPI::_EVENT = "Ginga.Event";
 
 const char *const LuaAPI::_Event_optTypes[] =
   {"attribution", "presentation", "selection", NULL};
@@ -40,17 +40,17 @@ LuaAPI::_Event_getOptIndexType (int i)
 }
 
 void
-LuaAPI::_Event_attachWrapper (lua_State *L, Event *evt)
+LuaAPI::Event_attachWrapper (lua_State *L, Event *evt)
 {
   static const struct luaL_Reg funcs[] =
     {
      {"__tostring",            LuaAPI::__l_Event_toString},
      {"__getUnderlyingObject", LuaAPI::__l_Event_getUnderlyingObject},
-     {"getType",               LuaAPI::l_Event_getType},
-     {"getObject",             LuaAPI::l_Event_getObject},
-     {"getId",                 LuaAPI::l_Event_getId},
-     {"getQualifiedId",        LuaAPI::l_Event_getQualifiedId},
-     {"getState",              LuaAPI::l_Event_getState},
+     {"getType",               LuaAPI::_l_Event_getType},
+     {"getObject",             LuaAPI::_l_Event_getObject},
+     {"getId",                 LuaAPI::_l_Event_getId},
+     {"getQualifiedId",        LuaAPI::_l_Event_getQualifiedId},
+     {"getState",              LuaAPI::_l_Event_getState},
      {NULL, NULL},
     };
   Event **wrapper;
@@ -59,47 +59,48 @@ LuaAPI::_Event_attachWrapper (lua_State *L, Event *evt)
   g_return_if_fail (evt != NULL);
 
   // Load and initialize metatable, if not loaded yet.
-  LuaAPI::loadLuaWrapperMt (L, funcs, LuaAPI::EVENT,
-                            (const char *) LuaAPI::Event_initMt_lua,
-                            (size_t) LuaAPI::Event_initMt_lua_len);
+  LuaAPI::_loadLuaWrapperMt (L, funcs, LuaAPI::_EVENT,
+                             (const char *) LuaAPI::Event_initMt_lua,
+                             (size_t) LuaAPI::Event_initMt_lua_len);
 
   wrapper = (Event **) lua_newuserdata (L, sizeof (Event **));
   g_assert_nonnull (wrapper);
   *wrapper = evt;
-  luaL_setmetatable (L, LuaAPI::EVENT);
+  luaL_setmetatable (L, LuaAPI::_EVENT);
 
   // Set LUA_REGISTRY[evt]=wrapper.
-  LuaAPI::attachLuaWrapper (L, evt);
+  LuaAPI::_attachLuaWrapper (L, evt);
 
   // Call evt:__attachData().
-  LuaAPI::callLuaWrapper (L, evt, "_attachData", 0, 0);
+  LuaAPI::_callLuaWrapper (L, evt, "_attachData", 0, 0);
 
   // Call evt.object:_addEvent (evt).
-  LuaAPI::pushLuaWrapper (L, evt);
-  LuaAPI::callLuaWrapper (L, evt->getObject (), "_addEvent", 1, 0);
+  LuaAPI::_pushLuaWrapper (L, evt);
+  LuaAPI::_callLuaWrapper (L, evt->getObject (), "_addEvent", 1, 0);
 }
 
 void
-LuaAPI::_Event_detachWrapper (lua_State *L, Event *evt)
+LuaAPI::Event_detachWrapper (lua_State *L, Event *evt)
 {
   g_return_if_fail (L != NULL);
   g_return_if_fail (evt != NULL);
 
   // Call evt:__detachData().
-  LuaAPI::callLuaWrapper (L, evt, "_detachData", 0, 0);
+  LuaAPI::_callLuaWrapper (L, evt, "_detachData", 0, 0);
 
   // Call evt.object:_removeEvent (evt).
-  LuaAPI::pushLuaWrapper (L, evt);
-  LuaAPI::callLuaWrapper (L, evt->getObject (), "_removeEvent", 1, 0);
+  LuaAPI::_pushLuaWrapper (L, evt);
+  LuaAPI::_callLuaWrapper (L, evt->getObject (), "_removeEvent", 1, 0);
 
   // Set LUA_REGISTRY[evt] = nil.
-  LuaAPI::detachLuaWrapper (L, evt);
+  LuaAPI::_detachLuaWrapper (L, evt);
 }
 
 Event *
-LuaAPI::_Event_check (lua_State *L, int i)
+LuaAPI::Event_check (lua_State *L, int i)
 {
-  return *((Event **) luaL_checkudata (L, i, LuaAPI::EVENT));
+  g_return_val_if_fail (L != NULL, NULL);
+  return *((Event **) luaL_checkudata (L, i, LuaAPI::_EVENT));
 }
 
 int
@@ -107,7 +108,7 @@ LuaAPI::__l_Event_toString (lua_State *L)
 {
   Event *evt;
 
-  evt = LuaAPI::_Event_check (L, 1);
+  evt = LuaAPI::Event_check (L, 1);
   lua_pushstring (L, evt->toString ().c_str ());
 
   return 1;
@@ -116,17 +117,17 @@ LuaAPI::__l_Event_toString (lua_State *L)
 int
 LuaAPI::__l_Event_getUnderlyingObject (lua_State *L)
 {
-  lua_pushlightuserdata (L, LuaAPI::_Event_check (L, 1));
+  lua_pushlightuserdata (L, LuaAPI::Event_check (L, 1));
   return 1;
 }
 
 int
-LuaAPI::l_Event_getType (lua_State *L)
+LuaAPI::_l_Event_getType (lua_State *L)
 {
   Event *evt;
   const char *type;
 
-  evt = LuaAPI::_Event_check (L, 1);
+  evt = LuaAPI::Event_check (L, 1);
   type = Event::getTypeAsString (evt->getType ()).c_str ();
   lua_pushstring (L, type);
 
@@ -134,44 +135,44 @@ LuaAPI::l_Event_getType (lua_State *L)
 }
 
 int
-LuaAPI::l_Event_getObject (lua_State *L)
+LuaAPI::_l_Event_getObject (lua_State *L)
 {
   Event *evt;
 
-  evt = LuaAPI::_Event_check (L, 1);
-  LuaAPI::pushLuaWrapper (L, evt->getObject ());
+  evt = LuaAPI::Event_check (L, 1);
+  LuaAPI::_pushLuaWrapper (L, evt->getObject ());
 
   return 1;
 }
 
 int
-LuaAPI::l_Event_getId (lua_State *L)
+LuaAPI::_l_Event_getId (lua_State *L)
 {
   Event *evt;
 
-  evt = LuaAPI::_Event_check (L, 1);
+  evt = LuaAPI::Event_check (L, 1);
   lua_pushstring (L, evt->getId ().c_str ());
 
   return 1;
 }
 
 int
-LuaAPI::l_Event_getQualifiedId (lua_State *L)
+LuaAPI::_l_Event_getQualifiedId (lua_State *L)
 {
   Event *evt;
 
-  evt = LuaAPI::_Event_check (L, 1);
+  evt = LuaAPI::Event_check (L, 1);
   lua_pushstring (L, evt->getQualifiedId ().c_str ());
 
   return 1;
 }
 
 int
-LuaAPI::l_Event_getState (lua_State *L)
+LuaAPI::_l_Event_getState (lua_State *L)
 {
   Event *evt;
 
-  evt = LuaAPI::_Event_check (L, 1);
+  evt = LuaAPI::Event_check (L, 1);
   switch (evt->getState ())
     {
     case Event::OCCURRING:

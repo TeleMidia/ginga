@@ -189,9 +189,23 @@ PlayerLua::redraw (cairo_t *cr)
           std::string label = evt->u.ncl.name;
 
           if (label == "")
-            nclEvt = _media->getPresentationEvent ("@lambda");
+            {
+              nclEvt = _media->getLambda ();
+            }
           else
-            nclEvt = _media->getPresentationEventByLabel (label);
+            {
+              set<Event *> events;
+
+              _media->getEvents (&events, Event::PRESENTATION);
+              for (auto &evt: events)
+                {
+                  if (evt->getLabel () == label)
+                    {
+                      nclEvt = evt;
+                      break;
+                    }
+                }
+            }
 
           g_assert_nonnull (nclEvt);
           g_assert (nclua_act_to_ncl.count (evt->u.ncl.action) != 0);
@@ -200,7 +214,9 @@ PlayerLua::redraw (cairo_t *cr)
         }
       else if (g_str_equal (evt->u.ncl.type, "attribution"))
         {
-          Event *nclEvt = _media->getAttributionEvent (evt->u.ncl.name);
+          Event *nclEvt;
+
+          nclEvt = _media->getEvent (Event::ATTRIBUTION, evt->u.ncl.name);
           g_assert_nonnull (nclEvt);
 
           g_assert (nclua_act_to_ncl.count (evt->u.ncl.action));

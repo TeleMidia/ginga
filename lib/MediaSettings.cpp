@@ -32,7 +32,7 @@ MediaSettings::MediaSettings (Document *doc,
   _nextFocus = "";
   _hasNextFocus = false;
   _properties["type"] = "application/x-ginga-settings";
-  this->addAttributionEvent ("service.currentFocus");
+  this->createEvent (Event::ATTRIBUTION, "service.currentFocus");
 }
 
 MediaSettings::~MediaSettings ()
@@ -121,7 +121,7 @@ MediaSettings::updateCurrentFocus (const string &index)
 
   // Do the actual attribution.
   string value = next;
-  Event *evt = this->getAttributionEvent ("service.currentFocus");
+  Event *evt = this->getEvent (Event::ATTRIBUTION, "service.currentFocus");
   g_assert_nonnull (evt);
   _doc->evalAction (evt, Event::START, value);
 }

@@ -232,18 +232,30 @@ Object::getEvent (Event::Type type, const string &id)
   return NULL;
 }
 
+Event *
+Object::createEvent (Event::Type type, const string &id)
+{
+  Event *evt;
+
+  if (this->getEvent (type, id) != NULL)
+    return NULL;                // id already in use
+
+  evt = new Event (type, this, id);
+  _events.insert (evt);
+
+  return evt;
+}
 // Protected.
 
 void
-Object::createEvents ()
+Object::_initEvents ()
 {
-  this->addPresentationEvent ("@lambda", 0, GINGA_TIME_NONE);
-  _lambda = this->getPresentationEvent ("@lambda");
+  _lambda = this->createEvent (Event::PRESENTATION, "@lambda");
   g_assert_nonnull (_lambda);
 }
 
 void
-Object::destroyEvents ()
+Object::_finiEvents ()
 {
   for (auto evt: _events)
     delete evt;
@@ -251,83 +263,6 @@ Object::destroyEvents ()
 }
 
 // TODO --------------------------------------------------------------------
-
-
-Event *
-Object::getAttributionEvent (const string &propName)
-{
-  return this->getEvent (Event::ATTRIBUTION, propName);
-}
-
-void
-Object::addAttributionEvent (const string &propName)
-{
-  Event *evt;
-
-  if (this->getAttributionEvent (propName))
-    return;
-
-  evt = new Event (Event::ATTRIBUTION, this, propName);
-  _events.insert (evt);
-}
-
-Event *
-Object::getPresentationEvent (const string &id)
-{
-  return this->getEvent (Event::PRESENTATION, id);
-}
-
-Event *
-Object::getPresentationEventByLabel (const string &label)
-{
-  for (Event *evt : _events)
-    if (evt->getType () == Event::PRESENTATION && evt->getLabel () == label)
-      return evt;
-  return nullptr;
-}
-
-void
-Object::addPresentationEvent (const string &id, Time begin, Time end)
-{
-  Event *evt;
-
-  if (this->getPresentationEvent (id))
-    return;
-
-  evt = new Event (Event::PRESENTATION, this, id);
-  evt->setInterval (begin, end);
-  _events.insert (evt);
-}
-
-void
-Object::addPresentationEvent (const string &id, const string &label)
-{
-  Event *evt;
-  if (this->getPresentationEvent (id))
-    return;
-
-  evt = new Event (Event::PRESENTATION, this, id);
-  evt->setLabel (label);
-  _events.insert (evt);
-}
-
-Event *
-Object::getSelectionEvent (const string &key)
-{
-  return this->getEvent (Event::SELECTION, key);
-}
-
-void
-Object::addSelectionEvent (const string &key)
-{
-  Event *evt;
-
-  if (this->getSelectionEvent (key))
-    return;
-
-  evt = new Event (Event::SELECTION, this, key);
-  _events.insert (evt);
-}
 
 Event *
 Object::getLambda ()

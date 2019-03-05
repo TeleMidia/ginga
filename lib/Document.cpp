@@ -34,7 +34,7 @@ Document::Document ()
   _L = luaL_newstate ();
   g_assert_nonnull (_L);
   luaL_openlibs (_L);
-  LuaAPI::_Document_attachWrapper (_L, this);
+  LuaAPI::Document_attachWrapper (_L, this);
 
   _root = new Context (this, NULL, "__root__");
   _objects.insert (_root);
@@ -52,7 +52,7 @@ Document::~Document ()
   delete _root;
 
   g_assert_nonnull (_L);
-  LuaAPI::_Document_detachWrapper (_L, this);
+  LuaAPI::Document_detachWrapper (_L, this);
   lua_close (_L);
 }
 
@@ -92,6 +92,25 @@ Document::getObject (const string &id)
   return NULL;                  // no match
 }
 
+Event *
+Document::getEvent (const string &id)
+{
+  lua_pushstring (_L, id.c_str ());
+  LuaAPI::Document_call (_L, this, "getEvent", 1, 1);
+  if (lua_isnil (_L, -1))
+    {
+      lua_pop (_L, 1);
+      return NULL;              //  no such event
+    }
+  else
+    {
+      Event *evt = LuaAPI::Event_check (_L, -1);
+      g_assert_nonnull (evt);
+      lua_pop (_L, 1);
+      return evt;
+    }
+}
+
 Context *
 Document::getRoot ()
 {
@@ -121,7 +140,7 @@ Document::createObject (Object::Type type, Composition *parent,
     return NULL;                // parent not in document
 
   if (this->getObject (id) != NULL)
-    return NULL;                // id already in document
+    return NULL;                // id already in use
 
   obj = NULL;
   switch (type)
@@ -147,6 +166,19 @@ Document::createObject (Object::Type type, Composition *parent,
   _objectsById[id] = obj;
 
   return obj;
+}
+
+Event *
+Document::createEvent (Event::Type type, const string &objId,
+                       const string &id)
+{
+  Object *obj;
+
+  obj = this->getObject (objId);
+  if (obj == NULL)
+    return NULL;                // no such object
+
+  return obj->createEvent (type, id);
 }
 
 // TODO --------------------------------------------------------------------
