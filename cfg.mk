@@ -62,6 +62,7 @@ UTIL_FILES+= build-aux/Makefile.am.common
 UTIL_FILES+= build-aux/Makefile.am.coverage
 UTIL_FILES+= build-aux/Makefile.am.env
 UTIL_FILES+= build-aux/Makefile.am.gitlog
+UTIL_FILES+= build-aux/Makefile.am.link
 UTIL_FILES+= build-aux/Makefile.am.valgrind
 UTIL_FILES+= build-aux/util.m4
 UTIL_FILES+= maint.mk

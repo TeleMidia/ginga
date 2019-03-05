@@ -108,7 +108,7 @@ static G_GNUC_UNUSED void
 tests_create_document (Document **doc, Context **root,
                        MediaSettings **settings)
 {
-  tryset (doc, new Document ());
+  tryset (doc, new Document (NULL));
   g_assert_nonnull (doc);
 
   tryset (root, (*doc)->getRoot ());

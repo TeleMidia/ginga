@@ -39,9 +39,10 @@ include $(top_srcdir)/build-aux/Makefile.am.valgrind
 # Setup test framework.
 AM_COLOR_TESTS= always
 DISABLE_HARD_ERRORS= true
-TEST_EXTENSIONS= .ncl
+TEST_EXTENSIONS= .lua .ncl
 LOG_COMPILER= $(_VALGRIND)
 NCL_LOG_COMPILER= $(_VALGRIND) $(top_builddir)/src/ginga
+LUA_LOG_COMPILER= $(_VALGRIND) lua
 
 # Setup tests environment.
 AM_TESTS_ENVIRONMENT=\
@@ -50,7 +51,10 @@ AM_TESTS_ENVIRONMENT=\
   export G_MESSAGES_DEBUG="all";\
   export G_SLICE="always-malloc";\
   export MALLOC_CHECK_=1;\
+  export LUA_CPATH="$(top_builddir)/lib/.libs/?$(SOEXT);$(top_builddir)/lib/?$(SOEXT);;";\
   $(NULL)
+
+LD_PRELOAD= ginga$(SOEXT)
 
 # Auxiliary programs.
 
@@ -65,11 +69,13 @@ ncls=
 # ncls+= xfail-test-syntax-ncl-bad-tag.ncl
 # ncls+= xfail-test-syntax-ncl-bad-child.ncl
 
-# Test programs.
+# Test programs and scripts.
 progs=
+scrts=
 
 progs+= test-Document
 test_Document_SOURCES= test-Document.cpp
+scrts+= test-lua-Document.lua
 
 # lib/aux-ginga.h ----------------------------------------------------------
 # progs+= xfail-test-aux-xstrtod
@@ -407,7 +413,7 @@ test_Document_SOURCES= test-Document.cpp
 # xfail_test_Ginga_setOptionString_SOURCES=\
 #   xfail-test-Ginga-setOptionString.cpp
 
-check_SCRIPTS= $(ncls)
+check_SCRIPTS= $(scrts) $(ncls)
 check_PROGRAMS= $(progs)
 TESTS= $(check_SCRIPTS) $(check_PROGRAMS)
 # XFAIL_TESTS=\

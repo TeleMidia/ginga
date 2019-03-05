@@ -56,6 +56,9 @@ public:
   /// Checks if the value at index \p i of stack is a Document wrapper.
   static Document *Document_check (lua_State *L, int i);
 
+  //// Pushes the Lua wrapper of document onto stack.
+  static void Document_push (lua_State *L, Document *doc);
+
   /// Calls a method of the Lua wrapper of the given document.
   static void Document_call (lua_State *L, Document *doc, const char *name,
                              int nargs, int nresults);

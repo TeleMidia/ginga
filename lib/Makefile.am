@@ -17,9 +17,11 @@
 # along with Ginga.  If not, see <https://www.gnu.org/licenses/>.
 
 include $(top_srcdir)/build-aux/Makefile.am.common
-MAINTAINERCLEANFILES+= config.h.in config.h.in~
+include $(top_srcdir)/build-aux/Makefile.am.link
+LINK_SO+= $(LTLIBRARIES:.la=$(SOEXT))
 
 EXTRA_DIST+= ginga.pc.in
+MAINTAINERCLEANFILES+= config.h.in config.h.in~
 DISTCLEANFILES+= ginga.pc
 
 pkgconfigdir= $(libdir)/pkgconfig
@@ -27,6 +29,12 @@ pkgconfig_DATA= ginga.pc
 
 AM_CXXFLAGS= $(GINGA_ALL_CXXFLAGS)
 AM_LDFLAGS= $(GINGA_ALL_LDFLAGS)
+
+lualib_LTLIBRARIES = ginga.la
+ginga_la_LIBADD = libginga.la
+ginga_la_CXXFLAGS = $(AM_CXXFLAGS) $(LUA_CFLAGS)
+ginga_la_LDFLAGS = $(LIBM) -module $(LT_MODULE_LDFLAGS) $(LUA_LIBS)
+ginga_la_SOURCES = LuaAPI_libginga.cpp
 
 include_HEADERS= ginga.h
 lib_LTLIBRARIES= libginga.la

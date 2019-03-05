@@ -90,6 +90,15 @@ LuaAPI::Document_check (lua_State *L, int i)
 }
 
 void
+LuaAPI::Document_push (lua_State *L, Document *doc)
+{
+  g_return_if_fail (L != NULL);
+  g_return_if_fail (doc != NULL);
+
+  LuaAPI::_pushLuaWrapper (L, doc);
+}
+
+void
 LuaAPI::Document_call (lua_State *L, Document *doc, const char *name,
                        int nargs, int nresults)
 {

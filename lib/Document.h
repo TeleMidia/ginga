@@ -40,7 +40,10 @@ public:
   /// The newly created document has a root Context, called `__root__`,
   /// which contains a single MediaSettings object, called `__settings__`.
   ///
-  Document ();
+  /// @param L The Lua state to associate this document to, or \c NULL
+  /// (create an empty Lua state with the standard libraries installed).
+  ///
+  Document (lua_State *L=NULL);
 
   /// Destroys document and all its objects.
   virtual ~Document ();

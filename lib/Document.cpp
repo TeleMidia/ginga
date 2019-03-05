@@ -27,13 +27,18 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-Document::Document ()
+Document::Document (lua_State *L)
 {
   Object *obj;
 
-  _L = luaL_newstate ();
-  g_assert_nonnull (_L);
-  luaL_openlibs (_L);
+  if (L == NULL)
+    {
+      L = luaL_newstate ();
+      g_assert_nonnull (L);
+      luaL_openlibs (L);
+    }
+
+  _L = L;
   LuaAPI::Document_attachWrapper (_L, this);
 
   _root = new Context (this, NULL, "__root__");

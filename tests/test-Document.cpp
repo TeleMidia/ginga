@@ -1,4 +1,4 @@
-#include "tests.h"
+#include "Document.h"
 
 int
 main (void)

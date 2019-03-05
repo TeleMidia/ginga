@@ -2249,6 +2249,7 @@ ParserState::process (xmlDoc *xml)
 
   g_assert_nonnull (xml);
   _xml = xml;
+
   _doc = new Document ();
 
   root = xmlDocGetRootElement (xml);
