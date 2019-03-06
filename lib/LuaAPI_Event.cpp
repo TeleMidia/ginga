@@ -73,12 +73,12 @@ LuaAPI::Event_detachWrapper (lua_State *L, Event *evt)
   g_return_if_fail (L != NULL);
   g_return_if_fail (evt != NULL);
 
-  // Call evt:__detachData().
-  LuaAPI::_callLuaWrapper (L, evt, "_detachData", 0, 0);
-
   // Call evt.object:_removeEvent (evt).
   LuaAPI::_pushLuaWrapper (L, evt);
   LuaAPI::_callLuaWrapper (L, evt->getObject (), "_removeEvent", 1, 0);
+
+  // Call evt:__detachData().
+  LuaAPI::_callLuaWrapper (L, evt, "_detachData", 0, 0);
 
   // Set LUA_REGISTRY[evt] = nil.
   LuaAPI::_detachLuaWrapper (L, evt);

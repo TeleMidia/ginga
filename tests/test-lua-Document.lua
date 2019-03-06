@@ -7,20 +7,20 @@ do
 
       local root = doc.object.__root__
       assert (doc.object.__root__)
-      assert (root.doc == doc)
+      assert (root.document == doc)
       assert (root.parent == nil)
       assert (root.type == 'context')
       assert (root.id == '__root__')
-      assert (root.event.presentation['@lambda'])
+      assert (root.presentation['@lambda'])
       assert (doc.event['__root__@lambda'])
 
       local sett = doc.object.__settings__
-      assert (sett.doc == doc);
+      assert (sett.document == doc);
       assert (sett.parent == root);
       assert (sett.type == 'media')
       assert (sett.id == '__settings__')
-      assert (sett.event.presentation['@lambda'])
-      assert (sett.event.attribution['service.currentFocus'])
+      assert (sett.presentation['@lambda'])
+      assert (sett.attribution['service.currentFocus'])
    end
    local d1 = ginga.createDocument ()
    local d2 = ginga.createDocument ()

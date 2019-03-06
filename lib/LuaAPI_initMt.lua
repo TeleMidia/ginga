@@ -19,22 +19,28 @@ do
       assert (type (funcs) == 'table')
       local _mt = {}
       _mt.__index = function (_, k)
-         local fget = funcs[k][1]
-         if fget then
-            trace ('fget (%s)', tostring (k))
-            return fget (self)
-         else
+         local t = funcs[k]
+         if t == nil then
             return nil
          end
+         local f = t[1]
+         if f == nil then
+            return nil
+         end
+         trace ('fget (%s)', tostring (k))
+         return f (self)
       end
       _mt.__newindex = function (_, k, v)
-         local fset = funcs[k][2]
-         if fset then
-            trace ('fset (%s, %s)', tostring (k), tostring (v))
-            fset (self, v)
-         else
-            error (("field '%s' is read-only"):format (k))
+         local t = funcs[k]
+         if t == nil then
+            return
          end
+         local f = t[2]
+         if f == nil then
+            return
+         end
+         trace ('fset (%s, %s)', tostring (k), tostring (v))
+         fset (self, v)
       end
       mt[self] = setmetatable (data, _mt)
    end

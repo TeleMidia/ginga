@@ -105,6 +105,6 @@ do
          return nil             -- no such object
       end
 
-      return obj.event[tp][e]
+      return obj:getEvent (tp, e)
    end
 end

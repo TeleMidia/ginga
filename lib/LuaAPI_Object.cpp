@@ -122,12 +122,12 @@ LuaAPI::_Object_detachWrapper (lua_State *L, Object *obj)
   g_return_if_fail (L != NULL);
   g_return_if_fail (obj != NULL);
 
-  // Call obj:__detachData().
-  LuaAPI::_callLuaWrapper (L, obj, "_detachData", 0, 0);
-
   // Call _D:_removeObject (obj).
   LuaAPI::_pushLuaWrapper (L, obj);
   LuaAPI::_callLuaWrapper (L, obj->getDocument (), "_removeObject", 1, 0);
+
+  // Call obj:__detachData().
+  LuaAPI::_callLuaWrapper (L, obj, "_detachData", 0, 0);
 
   // Set LUA_REGISTRY[obj] = nil.
   LuaAPI::_detachLuaWrapper (L, obj);
