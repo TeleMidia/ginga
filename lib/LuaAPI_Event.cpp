@@ -32,6 +32,13 @@ LuaAPI::Event_attachWrapper (lua_State *L, Event *evt)
      {"getId",                 LuaAPI::_l_Event_getId},
      {"getQualifiedId",        LuaAPI::_l_Event_getQualifiedId},
      {"getState",              LuaAPI::_l_Event_getState},
+     {"setState",              LuaAPI::_l_Event_setState},
+     {"getBeginTime",          LuaAPI::_l_Event_getBeginTime},
+     {"setBeginTime",          LuaAPI::_l_Event_setBeginTime},
+     {"getEndTime",            LuaAPI::_l_Event_getEndTime},
+     {"setEndTime",            LuaAPI::_l_Event_setEndTime},
+     {"getLabel",              LuaAPI::_l_Event_getLabel},
+     {"setLabel",              LuaAPI::_l_Event_setLabel},
      {NULL, NULL},
     };
   Event **wrapper;
@@ -90,6 +97,8 @@ LuaAPI::Event_Type_check (lua_State *L, int i)
   static const char *types[] =
     {"attribution", "presentation", "selection", NULL};
 
+  g_return_val_if_fail (L != NULL, Event::PRESENTATION);
+
   switch (luaL_checkoption (L, i, NULL, types))
     {
     case 0:
@@ -101,6 +110,48 @@ LuaAPI::Event_Type_check (lua_State *L, int i)
     default:
       g_assert_not_reached ();
     }
+}
+
+Event::State
+LuaAPI::Event_State_check (lua_State *L, int i)
+{
+  static const char *states[] = {"occurring", "paused", "sleeping", NULL};
+
+  g_return_val_if_fail (L != NULL, Event::SLEEPING);
+
+  switch (luaL_checkoption (L, i, NULL, states))
+    {
+    case 0:
+      return Event::OCCURRING;
+    case 1:
+      return Event::PAUSED;
+    case 2:
+      return Event::SLEEPING;
+    default:
+      g_assert_not_reached ();
+    }
+}
+
+void
+LuaAPI::Event_push (lua_State *L, Event *evt)
+{
+  g_return_if_fail (L != NULL);
+  g_return_if_fail (evt != NULL);
+
+  LuaAPI::_pushLuaWrapper (L, evt);
+}
+
+void
+LuaAPI::Event_call (lua_State *L, Event *evt, const char *name,
+                    int nargs, int nresults)
+{
+  g_return_if_fail (L != NULL);
+  g_return_if_fail (evt != NULL);
+  g_return_if_fail (name != NULL);
+  g_return_if_fail (nargs >= 0);
+  g_return_if_fail (nresults >= 0);
+
+  LuaAPI::_callLuaWrapper (L, evt, name, nargs, nresults);
 }
 
 int
@@ -189,4 +240,105 @@ LuaAPI::_l_Event_getState (lua_State *L)
     }
 
   return 1;
+}
+
+int
+LuaAPI::_l_Event_setState (lua_State *L)
+{
+  Event *evt;
+  Event::State state;
+
+  evt = LuaAPI::Event_check (L, 1);
+  state = LuaAPI::Event_State_check (L, 2);
+
+  evt->setState (state);
+
+  return 0;
+}
+
+int
+LuaAPI::_l_Event_getBeginTime (lua_State *L)
+{
+  Event *evt;
+  Time time;
+
+  evt = LuaAPI::Event_check (L, 1);
+  time = evt->getBeginTime ();
+  if (time == GINGA_TIME_NONE)
+    lua_pushnil (L);
+  else
+    lua_pushinteger (L, (lua_Integer) time);
+
+  return 1;
+}
+
+int
+LuaAPI::_l_Event_setBeginTime (lua_State *L)
+{
+  Event *evt;
+  Time time;
+
+  evt = LuaAPI::Event_check (L, 1);
+  time = (Time) luaL_optinteger (L, 2, GINGA_TIME_NONE);
+  evt->setBeginTime (time);
+
+  return 0;
+}
+
+int
+LuaAPI::_l_Event_getEndTime (lua_State *L)
+{
+  Event *evt;
+  Time time;
+
+  evt = LuaAPI::Event_check (L, 1);
+  time = evt->getEndTime ();
+  if (time == GINGA_TIME_NONE)
+    lua_pushnil (L);
+  else
+    lua_pushinteger (L, (lua_Integer) time);
+
+  return 1;
+}
+
+int
+LuaAPI::_l_Event_setEndTime (lua_State *L)
+{
+  Event *evt;
+  Time time;
+
+  evt = LuaAPI::Event_check (L, 1);
+  time = (Time) luaL_optinteger (L, 2, GINGA_TIME_NONE);
+  evt->setEndTime (time);
+
+  return 0;
+}
+
+int
+LuaAPI::_l_Event_getLabel (lua_State *L)
+{
+  Event *evt;
+  const char *label;
+
+  evt = LuaAPI::Event_check (L, 1);
+  label = evt->getLabel ().c_str ();
+  if (g_str_equal (label, ""))
+    lua_pushnil (L);
+  else
+    lua_pushstring (L, label);
+
+  return 1;
+}
+
+int
+LuaAPI::_l_Event_setLabel (lua_State *L)
+{
+  Event *evt;
+  const char *label;
+
+  evt = LuaAPI::Event_check (L, 1);
+  label = luaL_optstring (L, 2, "");
+  evt->setLabel (label);
+
+  return 0;
 }

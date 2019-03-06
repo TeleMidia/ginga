@@ -222,11 +222,9 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
                     lambda->transition (Event::START);
 
                     Time begin, end, dur;
-                    evt->getInterval (&begin, &end);
 
-                    // Begin
-                    if (begin == GINGA_TIME_NONE)
-                      begin = 0;
+                    begin = evt->getBeginTime ();
+                    end = evt->getEndTime ();
 
                     string time_seek = xstrbuild ("%" G_GUINT64_FORMAT,
                                                   begin / GINGA_SECOND);
@@ -343,18 +341,19 @@ Media::afterTransition (Event *evt, Event::Transition transition)
                 {
                   if (!e->isLambda ()
                       && (e->getType () == Event::PRESENTATION)
-                      && !(e->hasLabel ()))
+                      && e->getLabel () == "")
                     {
-                      Time begin, end;
-                      e->getInterval (&begin, &end);
-                      this->addDelayedAction (e, Event::START, "", begin);
-                      this->addDelayedAction (e, Event::STOP, "", end);
+                      this->addDelayedAction (e, Event::START, "",
+                                              e->getBeginTime ());
+                      this->addDelayedAction (e, Event::STOP, "",
+                                              e->getEndTime ());
+
                     }
                 }
               TRACE ("start %s at %" GINGA_TIME_FORMAT,
                      evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
             }
-          else if (evt->hasLabel ())
+          else if (evt->getLabel () != "")
             {
               _player->sendPresentationEvent ("start", evt->getLabel ());
             }
@@ -390,9 +389,8 @@ Media::afterTransition (Event *evt, Event::Transition transition)
             }
           else // non-lambda area
             {
-              Time end;
+              Time end = evt->getEndTime ();
               g_assert (this->isOccurring ());
-              evt->getInterval (nullptr, &end);
               if (transition == Event::ABORT)
                 TRACE ("abort %s (end=%" GINGA_TIME_FORMAT
                        ") at %" GINGA_TIME_FORMAT,

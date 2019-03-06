@@ -4000,7 +4000,8 @@ ParserState::pushArea (ParserState *st, ParserElt *elt)
             }
         }
 
-      evt->setInterval (begin, end);
+      evt->setBeginTime (begin);
+      evt->setEndTime (end);
     }
 
   return true;

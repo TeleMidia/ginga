@@ -167,9 +167,6 @@ static GtkCssProvider *app_css = NULL;
   }                                             \
   #cmdbuf {                                     \
     font-family: monospace;                     \
-  }                                             \
-  #cmdbuf:focus {                               \
-    background-color: yellow;                   \
   }
 
 // GTK+ callbacks.

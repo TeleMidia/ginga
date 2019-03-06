@@ -102,6 +102,16 @@ public:
   /// Checks if the value at index \p i of stack is an Event::Type.
   static Event::Type Event_Type_check (lua_State *L, int i);
 
+  /// Checks if the value at index \p i of stack is an Event::State.
+  static Event::State Event_State_check (lua_State *L, int i);
+
+  //// Pushes the Lua wrapper of event onto stack.
+  static void Event_push (lua_State *L, Event *doc);
+
+  /// Calls a method of the Lua wrapper of the given event.
+  static void Event_call (lua_State *L, Event *doc, const char *name,
+                          int nargs, int nresults);
+
 private:
 
   // Document:
@@ -212,6 +222,20 @@ private:
 
   static int _l_Event_getState (lua_State *L);
 
+  static int _l_Event_setState (lua_State *L);
+
+  static int _l_Event_getBeginTime (lua_State *L);
+
+  static int _l_Event_setBeginTime (lua_State *L);
+
+  static int _l_Event_getEndTime (lua_State *L);
+
+  static int _l_Event_setEndTime (lua_State *L);
+
+  static int _l_Event_getLabel (lua_State *L);
+
+  static int _l_Event_setLabel (lua_State *L);
+
   // Auxiliary:
 
   /// Loads the metatable of a Lua wrapper (if not already loaded).
@@ -235,8 +259,8 @@ private:
         lua_pop (L, 1);
         return;                 // nothing to do
       }
-
     lua_pop (L, 1);
+
     //luaL_newmetatable (L, name);
     luax_newmetatable (L, name);
     luaL_setfuncs (L, funcs, 0);

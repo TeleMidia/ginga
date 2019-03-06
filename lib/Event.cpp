@@ -37,7 +37,8 @@ Event::Event (Event::Type type, Object *object, const string &id)
   _state = Event::SLEEPING;
   _begin = 0;
   _end = GINGA_TIME_NONE;
-  _label = "";
+  _label = "";                  // empty
+
   LuaAPI::Event_attachWrapper (_L, this);
 }
 
@@ -63,14 +64,6 @@ Event (%p)\n\
      this->getQualifiedId ().c_str (),
       Event::getTypeAsString (_type).c_str (),
       Event::getStateAsString (_state).c_str ());
-
-  if (_type == Event::PRESENTATION)
-    {
-      str += xstrbuild ("\
-    begin: %" GINGA_TIME_FORMAT "\n\
-    end: %" GINGA_TIME_FORMAT "\n",
-                        GINGA_TIME_ARGS (_begin), GINGA_TIME_ARGS (_end));
-    }
 
   if (_parameters.size () > 0)
     {
@@ -133,6 +126,48 @@ Event::getState ()
   return _state;
 }
 
+void
+Event::setState (Event::State state)
+{
+  _state = state;
+}
+
+Time
+Event::getBeginTime ()
+{
+  return _begin;
+}
+
+void
+Event::setBeginTime (Time time)
+{
+  _begin = time;
+}
+
+Time
+Event::getEndTime ()
+{
+  return _end;
+}
+
+void
+Event::setEndTime (Time time)
+{
+  _end = time;
+}
+
+string
+Event::getLabel ()
+{
+  return _label;
+}
+
+void
+Event::setLabel (const string &label)
+{
+  _label = label;
+}
+
 // Public: Static.
 
 string
@@ -193,38 +228,6 @@ bool
 Event::isLambda ()
 {
   return _type == Event::PRESENTATION && _id == "@lambda";
-}
-
-void
-Event::getInterval (Time *begin, Time *end)
-{
-  tryset (begin, _begin);
-  tryset (end, _end);
-}
-
-void
-Event::setInterval (Time begin, Time end)
-{
-  _begin = begin;
-  _end = end;
-}
-
-bool
-Event::hasLabel ()
-{
-  return _label != "";
-}
-
-string
-Event::getLabel ()
-{
-  return _label;
-}
-
-void
-Event::setLabel (const string &label)
-{
-  _label = label;
 }
 
 bool

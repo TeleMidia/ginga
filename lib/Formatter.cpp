@@ -19,6 +19,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "aux-gl.h"
 #include "Formatter.h"
 
+#include "LuaAPI.h"
 #include "Context.h"
 #include "Media.h"
 #include "MediaSettings.h"
@@ -130,6 +131,7 @@ Formatter::getState ()
 bool
 Formatter::start (const string &file, string *errmsg)
 {
+  lua_State *L;
   int w, h;
   Event *evt;
 
@@ -182,8 +184,14 @@ Formatter::start (const string &file, string *errmsg)
   g_assert_nonnull (evt);
   g_assert (evt->transition (Event::START));
 
-  // Sets formatter state.
+  // Set formatter state.
   _state = GINGA_STATE_PLAYING;
+
+  // Set global _D in Lua state.
+  L = this->getLuaState ();
+  g_assert_nonnull (L);
+  LuaAPI::Document_push (L, _doc);
+  lua_setglobal (L, "_D");
 
   return true;
 }

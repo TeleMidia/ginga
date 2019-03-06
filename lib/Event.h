@@ -113,6 +113,27 @@ public:
   /// Gets the current state of event.
   Event::State getState ();
 
+  /// Sets the current state of event (does not trigger links).
+  void setState (Event::State state);
+
+  /// Gets the begin time of event.
+  Time getBeginTime ();
+
+  /// Sets the begin time of event.
+  void setBeginTime (Time time);
+
+  /// Gets the end time of event.
+  Time getEndTime ();
+
+  /// Sets the end time of event.
+  void setEndTime (Time time);
+
+  /// Gets the label associated with this event ("" means none).
+  string getLabel ();
+
+  /// Sets the label associated with this event.
+  void setLabel (const string &label);
+
   /// Converts Event::Type to a human-readable string.
   static string getTypeAsString (Event::Type type);
 
@@ -125,12 +146,6 @@ public:
   // TODO ------------------------------------------------------------------
 
   bool isLambda ();
-  void getInterval (Time *, Time *);
-  void setInterval (Time, Time);
-
-  bool hasLabel ();
-  std::string getLabel ();
-  void setLabel (const std::string &);
 
   bool getParameter (const string &, string *);
   bool setParameter (const string &, const string &);
@@ -157,13 +172,13 @@ private:
   /// The current state of this event.
   Event::State _state;
 
-  /// The start time of this event.
+  /// The begin time of this event.
   Time _begin;
 
   /// The end time of this event.
   Time _end;
 
-  /// The label associated with this event (if any).
+  /// The label associated with this event ("" means none).
   std::string _label;
 
   /// Extra parameters to be used in event transitions.

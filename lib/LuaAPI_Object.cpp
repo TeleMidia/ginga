@@ -171,6 +171,8 @@ LuaAPI::_Object_Type_check (lua_State *L, int i)
   static const char *types[]
     = {"context", "switch", "media", NULL};
 
+  g_return_val_if_fail (L != NULL, Object::CONTEXT);
+
   switch (luaL_checkoption (L, i, NULL, types))
     {
     case 0:
