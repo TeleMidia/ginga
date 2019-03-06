@@ -238,6 +238,12 @@ private:
 
   // Auxiliary:
 
+  /// Lua code to run when loading any metatable.
+  static unsigned char initMt_lua[];
+
+  /// Length in bytes of LuaAPI::Lua_initMt_lua.
+  static unsigned int initMt_lua_len;
+
   /// Loads the metatable of a Lua wrapper (if not already loaded).
   ///
   /// @param L Lua state
@@ -249,68 +255,19 @@ private:
   ///              argument.
   /// @param len Then length of \p chunk in bytes.
   ///
-  static void
-  _loadLuaWrapperMt (lua_State *L, const luaL_Reg *funcs, const char *name,
-                     const char *chunk, size_t len)
-  {
-    luaL_getmetatable (L, name);
-    if (!lua_isnil (L, -1))
-      {
-        lua_pop (L, 1);
-        return;                 // nothing to do
-      }
-    lua_pop (L, 1);
+  static void _loadLuaWrapperMt (lua_State *L,
+                                 const luaL_Reg *funcs, const char *name,
+                                 const char *chunk, size_t len);
 
-    //luaL_newmetatable (L, name);
-    luax_newmetatable (L, name);
-    luaL_setfuncs (L, funcs, 0);
-
-    if (chunk == NULL)
-      {
-        lua_pop (L, 1);
-        return;
-      }
-
-    // Load and call chunk.
-    if (unlikely (luaL_loadbuffer (L, chunk, len, name) != LUA_OK))
-      {
-        luax_dump_stack (L);
-        ERROR ("%s", lua_tostring (L, -1));
-      }
-    lua_insert (L, -2);
-    if (unlikely (lua_pcall (L, 1, 0, 0) != LUA_OK))
-      {
-        luax_dump_stack (L);
-        ERROR ("%s", lua_tostring (L, -1));
-      }
-  }
 
   /// Pops a value from the stack and sets it as the Lua wrapper of \p ptr.
-  static void
-  _attachLuaWrapper (lua_State *L, void *ptr)
-  {
-    lua_pushvalue (L, LUA_REGISTRYINDEX);
-    lua_insert (L, -2);
-    lua_rawsetp (L, -2, ptr);
-    lua_pop (L, 1);
-  }
+  static void _attachLuaWrapper (lua_State *L, void *ptr);
 
   /// Detaches Lua wrapper from \p ptr.
-  static void
-  _detachLuaWrapper (lua_State *L, void *ptr)
-  {
-    lua_pushnil (L);
-    _attachLuaWrapper (L, ptr);
-  }
+  static void _detachLuaWrapper (lua_State *L, void *ptr);
 
   /// Pushes the Lua wrapper of \p ptr onto stack.
-  static void
-  _pushLuaWrapper (lua_State *L, void *ptr)
-  {
-    lua_pushvalue (L, LUA_REGISTRYINDEX);
-    lua_rawgetp (L, -1, ptr);
-    lua_remove (L, -2);
-  }
+  static void _pushLuaWrapper (lua_State *L, void *ptr);
 
   /// Calls a method of the Lua wrapper of \p ptr.
   ///
@@ -320,22 +277,8 @@ private:
   /// @param nargs The number of arguments to the method.
   /// @param nresults The number of results of the method.
   ///
-  static void
-  _callLuaWrapper (lua_State *L, void *ptr, const char *name,
-                   int nargs, int nresults)
-  {
-    LuaAPI::_pushLuaWrapper (L, ptr);
-    g_assert (luaL_getmetafield (L, -1, name) != LUA_TNIL);
-
-    lua_insert (L, (-nargs) -2);
-    lua_insert (L, (-nargs) -1);
-
-    if (unlikely (lua_pcall (L, nargs + 1, nresults, 0) != LUA_OK))
-      {
-        luax_dump_stack (L);
-        ERROR ("%s", lua_tostring (L, -1));
-      }
-  }
+  static void _callLuaWrapper (lua_State *L, void *ptr, const char *name,
+                               int nargs, int nresults);
 };
 
 GINGA_NAMESPACE_END

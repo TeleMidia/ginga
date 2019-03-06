@@ -1,55 +1,49 @@
 do
    local mt = ...
-   local trace = function (msg, ...)
-      print ('>>> '..mt.__name..': '..msg:format (...))
-   end
+   local trace = mt._trace
 
-   mt.__index = function (self, k)
-      --trace ('__index(%s)', k)
-      return mt[k] or mt[self][k]
-   end
-
-   local saved_mt__gc = mt.__gc
-   mt.__gc = function (self)
-      trace ('__gc ()')
-      saved_mt__gc (self)
-   end
-
+   local saved_attachData = assert (mt._attachData)
    mt._attachData = function (self)
-      trace ('_attachData ()')
-      mt[self] = {
-         object = {},           -- objects indexed by id
-         event  = {},           -- events indexed by qualified id
+      local data = {
+         _object  = {},
+         _event   = {},
       }
-   end
-
-   mt._detachData = function (self)
-      trace ('_detachData ()')
-      mt[self] = nil
+      local get_data_object = function ()
+         return assert (data._object)
+      end
+      local get_data_event = function ()
+         return assert (data._event)
+      end
+      local funcs = {
+         objects = {mt.getObjects,   nil},
+         object  = {get_data_object, nil},
+         event   = {get_data_event,  nil},
+      }
+      return saved_attachData (self, data, funcs)
    end
 
    -- Called when obj is added to document.
    mt._addObject = function (self, obj)
-      trace ('_addObject (%s)', obj:getId ())
-      mt[self].object[obj:getId ()] = obj
+      trace ('_addObject (%s)', obj.id)
+      mt[self]._object[obj.id] = obj
    end
 
    -- Called when obj is removed from document.
    mt._removeObject = function (self, obj)
-      trace ('_removeObject (%s)', obj:getId ())
-      mt[self].object[obj:getId ()] = nil
+      trace ('_removeObject (%s)', obj.id)
+      mt[self]._object[obj.id] = nil
    end
 
    -- Called when evt is added to some object.
    mt._addEvent = function (self, evt)
-      trace ('_addEvent (%s)', evt:getId ())
-      mt[self].event[evt:getQualifiedId ()] = evt
+      trace ('_addEvent (%s)', evt.id)
+      mt[self]._event[evt.qualifiedId] = evt
    end
 
    -- Called when evt is removed from some object.
    mt._removeEvent = function (self, evt)
-      trace ('_removeEvent (%s)', evt:getId ())
-      mt[self].event[evt:getQualifiedId ()] = nil
+      trace ('_removeEvent (%s)', evt.id)
+      mt[self]._event[evt.qualifiedId] = nil
    end
 
    -- Parses the given qualified id.

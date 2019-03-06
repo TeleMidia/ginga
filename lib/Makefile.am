@@ -48,6 +48,8 @@ src+= Document.cpp
 src+= Event.cpp
 src+= Formatter.cpp
 src+= Ginga.cpp
+src+= LuaAPI.cpp
+src+= LuaAPI_initMt.cpp
 src+= LuaAPI_Context.cpp
 src+= LuaAPI_Document.cpp
 src+= LuaAPI_Document_initMt.cpp
@@ -86,3 +88,6 @@ endif # WITH_NCLUA
 	$(AM_V_GEN)$(XXD) -i $< | sed s/LuaAPI_/LuaAPI::/ >>$@
 
 CLEANFILES+= LuaAPI_Document_initMt.cpp
+CLEANFILES+= LuaAPI_Event_initMt.cpp
+CLEANFILES+= LuaAPI_Object_initMt.cpp
+CLEANFILES+= LuaAPI_initMt.cpp
