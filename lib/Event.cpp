@@ -47,37 +47,6 @@ Event::~Event ()
   LuaAPI::Event_detachWrapper (_L, this);
 }
 
-string
-Event::toString ()
-{
-  string str;
-
-  str = xstrbuild
-    ("\
-Event (%p)\n\
-  object: %p (%s, id: %s)\n\
-  id: %s (%s)\n\
-  type: %s\n\
-  state: %s\n",
-     this, _object, "",
-      _object->getId ().c_str (), _id.c_str (),
-     this->getQualifiedId ().c_str (),
-      Event::getTypeAsString (_type).c_str (),
-      Event::getStateAsString (_state).c_str ());
-
-  if (_parameters.size () > 0)
-    {
-      str += xstrbuild ("    params:\n");
-      for (auto it : _parameters)
-        {
-          str += xstrbuild ("    %s='%s'\n", it.first.c_str (),
-                            it.second.c_str ());
-        }
-    }
-
-  return str;
-}
-
 Event::Type
 Event::getType ()
 {
@@ -168,60 +137,6 @@ Event::setLabel (const string &label)
   _label = label;
 }
 
-// Public: Static.
-
-string
-Event::getTypeAsString (Event::Type type)
-{
-  switch (type)
-    {
-    case Event::PRESENTATION:
-      return "presentation";
-    case Event::ATTRIBUTION:
-      return "attribution";
-    case Event::SELECTION:
-      return "selection";
-    default:
-      g_assert_not_reached ();
-    }
-}
-
-string
-Event::getStateAsString (Event::State state)
-{
-  switch (state)
-    {
-    case Event::SLEEPING:
-      return "sleeping";
-    case Event::OCCURRING:
-      return "occurring";
-    case Event::PAUSED:
-      return "paused";
-    default:
-      g_assert_not_reached ();
-    }
-}
-
-string
-Event::getTransitionAsString (Event::Transition trans)
-{
-  switch (trans)
-    {
-    case Event::START:
-      return "start";
-    case Event::PAUSE:
-      return "pause";
-    case Event::RESUME:
-      return "resume";
-    case Event::STOP:
-      return "stop";
-    case Event::ABORT:
-      return "abort";
-    default:
-      g_assert_not_reached ();
-    }
-}
-
 // TODO --------------------------------------------------------------------
 
 bool
@@ -294,33 +209,6 @@ Event::transition (Event::Transition trans)
     }
 
   return true;
-}
-
-void
-Event::reset ()
-{
-  _state = Event::SLEEPING;
-}
-
-// Public: Static.
-
-
-
-Event::Transition
-Event::getStringAsTransition (string str)
-{
-  if (xstrcasecmp (str, "start") == 0)
-    return Event::START;
-  else if (xstrcasecmp (str, "pause") == 0)
-    return Event::PAUSE;
-  else if (xstrcasecmp (str, "resume") == 0)
-    return Event::RESUME;
-  else if (xstrcasecmp (str, "stop") == 0)
-    return Event::STOP;
-  else if (xstrcasecmp (str, "abort") == 0)
-    return Event::ABORT;
-  else
-    g_assert_not_reached ();
 }
 
 GINGA_NAMESPACE_END

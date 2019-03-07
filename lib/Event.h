@@ -81,9 +81,6 @@ public:
   /// Destroys the event.
   ~Event ();
 
-  /// Gets a string representation of event.
-  string toString ();
-
   /// Gets the container object of event.
   Object *getObject ();
 
@@ -134,15 +131,6 @@ public:
   /// Sets the label associated with this event.
   void setLabel (const string &label);
 
-  /// Converts Event::Type to a human-readable string.
-  static string getTypeAsString (Event::Type type);
-
-  /// Converts Event::State to a human-readable string.
-  static string getStateAsString (Event::State state);
-
-  /// Converts Event::Transition to a human-readable string.
-  static string getTransitionAsString (Event::Transition trans);
-
   // TODO ------------------------------------------------------------------
 
   bool isLambda ();
@@ -151,9 +139,6 @@ public:
   bool setParameter (const string &, const string &);
 
   bool transition (Event::Transition);
-  void reset ();
-
-  static Event::Transition getStringAsTransition (string str);
 
 private:
 

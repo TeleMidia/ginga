@@ -39,8 +39,20 @@ do
 
    -- Called when evt is removed from object.
    mt._removeEvent = function (self, evt)
-      trace ('_removeEvent (%s, %s)', self:getId (), evt:getId ())
+      trace ('_removeEvent (%s, %s)', self.id, evt.id)
       mt[self]['_'..evt.type][evt.id] = nil
       self.document:_removeEvent (evt)
+   end
+
+   mt._beforeEventTransition = function (self, evt, from, to, params)
+      trace ('_beforeEventTransition (%s, %s, %s, %s)',
+             self.id, evt.id, from, to)
+      return true
+   end
+
+   mt._afterEventTransition = function (self, evt, from, to, params)
+      trace ('_afterEventTransition (%s, %s, %s, %s)',
+             self.id, evt.id, from, to)
+      return true
    end
 end

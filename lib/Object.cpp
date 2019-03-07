@@ -273,7 +273,7 @@ Object::doStop ()
 {
   _time = GINGA_TIME_NONE;
   for (auto evt : _events)
-    evt->reset ();
+    evt->setState (Event::SLEEPING);
   _delayed.clear ();
   if (_parent != nullptr && instanceof (Context *, _parent))
     cast (Context *, _parent)->decAwakeChildren ();

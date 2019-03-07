@@ -87,7 +87,6 @@ Context::toString ()
 #define COND_TOSTRING(str, act)                                            \
   G_STMT_START                                                             \
   {                                                                        \
-    (str) += Event::getTransitionAsString ((act).transition);           \
     (str) += "(" + (act).event->getQualifiedId ();                              \
     if ((act).predicate != nullptr)                                        \
       (str) += " ? " + (act).predicate->toString ();                       \
@@ -98,7 +97,6 @@ Context::toString ()
 #define ACT_TOSTRING(str, act)                                             \
   G_STMT_START                                                             \
   {                                                                        \
-    (str) += Event::getTransitionAsString ((act).transition);           \
     (str) += "(" + (act).event->getQualifiedId ();                              \
     if ((act).event->getType () == Event::ATTRIBUTION)                     \
       (str) += ":='" + (act).value + "'";                                  \

@@ -20,12 +20,21 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 const char *LuaAPI::_EVENT = "Ginga.Event";
 
+// Event type.
+#define EVENT_ATTRIBUTION_STRING   "attribution"
+#define EVENT_PRESENTATION_STRING  "presentation"
+#define EVENT_SELECTION_STRING     "selection"
+
+// Event state.
+#define EVENT_OCCURRING_STRING     "occurring"
+#define EVENT_PAUSED_STRING        "paused"
+#define EVENT_SLEEPING_STRING      "sleeping"
+
 void
 LuaAPI::Event_attachWrapper (lua_State *L, Event *evt)
 {
   static const struct luaL_Reg funcs[] =
     {
-     {"__tostring",            LuaAPI::__l_Event_toString},
      {"__getUnderlyingObject", LuaAPI::_l_Event_getUnderlyingObject},
      {"getType",               LuaAPI::_l_Event_getType},
      {"getObject",             LuaAPI::_l_Event_getObject},
@@ -94,8 +103,10 @@ LuaAPI::Event_check (lua_State *L, int i)
 Event::Type
 LuaAPI::Event_Type_check (lua_State *L, int i)
 {
-  static const char *types[] =
-    {"attribution", "presentation", "selection", NULL};
+  static const char *types[] = {EVENT_ATTRIBUTION_STRING,
+                                EVENT_PRESENTATION_STRING,
+                                EVENT_SELECTION_STRING,
+                                NULL};
 
   g_return_val_if_fail (L != NULL, Event::PRESENTATION);
 
@@ -115,7 +126,10 @@ LuaAPI::Event_Type_check (lua_State *L, int i)
 Event::State
 LuaAPI::Event_State_check (lua_State *L, int i)
 {
-  static const char *states[] = {"occurring", "paused", "sleeping", NULL};
+  static const char *states[] = {EVENT_OCCURRING_STRING,
+                                 EVENT_PAUSED_STRING,
+                                 EVENT_SLEEPING_STRING,
+                                 NULL};
 
   g_return_val_if_fail (L != NULL, Event::SLEEPING);
 
@@ -142,6 +156,48 @@ LuaAPI::Event_push (lua_State *L, Event *evt)
 }
 
 void
+LuaAPI::Event_Type_push (lua_State *L, Event::Type type)
+{
+  g_return_if_fail (L != NULL);
+
+  switch (type)
+    {
+    case Event::ATTRIBUTION:
+      lua_pushliteral (L, EVENT_ATTRIBUTION_STRING);
+      break;
+    case Event::PRESENTATION:
+      lua_pushliteral (L, EVENT_PRESENTATION_STRING);
+      break;
+    case Event::SELECTION:
+      lua_pushliteral (L, EVENT_SELECTION_STRING);
+      break;
+    default:
+      g_assert_not_reached ();
+    }
+}
+
+void
+LuaAPI::Event_State_push (lua_State *L, Event::State state)
+{
+  g_return_if_fail (L != NULL);
+
+  switch (state)
+    {
+    case Event::OCCURRING:
+      lua_pushliteral (L, EVENT_OCCURRING_STRING);
+      break;
+    case Event::PAUSED:
+      lua_pushliteral (L, EVENT_PAUSED_STRING);
+      break;
+    case Event::SLEEPING:
+      lua_pushliteral (L, EVENT_SLEEPING_STRING);
+      break;
+    default:
+      g_assert_not_reached ();
+    }
+}
+
+void
 LuaAPI::Event_call (lua_State *L, Event *evt, const char *name,
                     int nargs, int nresults)
 {
@@ -155,17 +211,6 @@ LuaAPI::Event_call (lua_State *L, Event *evt, const char *name,
 }
 
 int
-LuaAPI::__l_Event_toString (lua_State *L)
-{
-  Event *evt;
-
-  evt = LuaAPI::Event_check (L, 1);
-  lua_pushstring (L, evt->toString ().c_str ());
-
-  return 1;
-}
-
-int
 LuaAPI::_l_Event_getUnderlyingObject (lua_State *L)
 {
   lua_pushlightuserdata (L, LuaAPI::Event_check (L, 1));
@@ -176,11 +221,9 @@ int
 LuaAPI::_l_Event_getType (lua_State *L)
 {
   Event *evt;
-  const char *type;
 
   evt = LuaAPI::Event_check (L, 1);
-  type = Event::getTypeAsString (evt->getType ()).c_str ();
-  lua_pushstring (L, type);
+  Event_Type_push (L, evt->getType ());
 
   return 1;
 }
@@ -224,20 +267,7 @@ LuaAPI::_l_Event_getState (lua_State *L)
   Event *evt;
 
   evt = LuaAPI::Event_check (L, 1);
-  switch (evt->getState ())
-    {
-    case Event::OCCURRING:
-      lua_pushliteral (L, "occurring");
-      break;
-    case Event::PAUSED:
-      lua_pushliteral (L, "paused");
-      break;
-    case Event::SLEEPING:
-      lua_pushliteral (L, "sleeping");
-      break;
-    default:
-      g_assert_not_reached ();
-    }
+  Event_State_push (L, evt->getState ());
 
   return 1;
 }
@@ -250,7 +280,6 @@ LuaAPI::_l_Event_setState (lua_State *L)
 
   evt = LuaAPI::Event_check (L, 1);
   state = LuaAPI::Event_State_check (L, 2);
-
   evt->setState (state);
 
   return 0;

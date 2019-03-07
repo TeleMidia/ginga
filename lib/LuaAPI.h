@@ -108,6 +108,12 @@ public:
   //// Pushes the Lua wrapper of event onto stack.
   static void Event_push (lua_State *L, Event *doc);
 
+  /// Pushes event type onto stack.
+  static void Event_Type_push (lua_State *L, Event::Type type);
+
+  /// Pushes event state onto stack.
+  static void Event_State_push (lua_State *L, Event::State state);
+
   /// Calls a method of the Lua wrapper of the given event.
   static void Event_call (lua_State *L, Event *doc, const char *name,
                           int nargs, int nresults);
@@ -207,8 +213,6 @@ private:
 
   /// Length in bytes of LuaAPI::Event_initMt_lua.
   static unsigned int Event_initMt_lua_len;
-
-  static int __l_Event_toString (lua_State *L);
 
   static int _l_Event_getUnderlyingObject (lua_State *L);
 

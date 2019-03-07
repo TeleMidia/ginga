@@ -305,9 +305,9 @@ Document::evalAction (Action init)
       evt = act.event;
       g_assert_nonnull (evt);
 
-      TRACE ("trigger stacked action: %s %s",
-             Event::getTransitionAsString (act.transition).c_str (),
-             act.event->getQualifiedId ().c_str ());
+      // TRACE ("trigger stacked action: %s %s",
+      //        Event::getTransitionAsString (act.transition).c_str (),
+      //        act.event->getQualifiedId ().c_str ());
 
       evt->setParameter ("duration", act.duration);
       if (evt->getType () == Event::ATTRIBUTION)

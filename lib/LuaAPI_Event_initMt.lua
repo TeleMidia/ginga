@@ -17,4 +17,16 @@ do
       }
       return saved_attachData (self, data, funcs)
    end
+
+   -- Dumps event to string.
+   mt._dump = function (self)
+      trace ('_dump (%s)', self.id)
+      if self.type == 'presentation' then
+         return ('%s (%s,%s,%s,%s)')
+            :format (self.qualifiedId, self.state,
+                     self.beginTime, self.endTime, self.label)
+      else
+         return ('%s (%s)'):format (self.qualifiedId, self.state)
+      end
+   end
 end
