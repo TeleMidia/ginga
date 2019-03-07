@@ -18,7 +18,10 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "LuaAPI.h"
 #include "Document.h"
 
+#include "Composition.h"
+#include "Context.h"
 #include "Media.h"
+#include "Switch.h"
 
 const char *LuaAPI::_DOCUMENT = "Ginga.Document";
 
@@ -31,12 +34,8 @@ LuaAPI::Document_attachWrapper (lua_State *L, Document *doc)
     {
      {"__gc",                  LuaAPI::__l_Document_gc},
      {"_getUnderlyingObject",  LuaAPI::_l_Document_getUnderlyingObject},
-     {"getObjects",            LuaAPI::_l_Document_getObjects},
-     {"getObject",             LuaAPI::_l_Document_getObject},
-     {"getRoot",               LuaAPI::_l_Document_getRoot},
-     {"getSettings",           LuaAPI::_l_Document_getSettings},
      {"createObject",          LuaAPI::_l_Document_createObject},
-     {"createEvent",           LuaAPI::_l_Document_createEvent},
+     {"_createEvent",          LuaAPI::_l_Document_createEvent},
      {NULL, NULL},
     };
   Document **wrapper;
@@ -125,71 +124,6 @@ LuaAPI::_l_Document_getUnderlyingObject (lua_State *L)
 }
 
 int
-LuaAPI::_l_Document_getObjects (lua_State *L)
-{
-  Document *doc;
-  set<Object *> objects;
-  lua_Integer i;
-
-  doc = LuaAPI::Document_check (L, 1);
-  doc->getObjects (&objects);
-
-  lua_newtable (L);
-  i = 1;
-  for (auto obj: objects)
-    {
-      LuaAPI::_pushLuaWrapper (L, obj);
-      lua_rawseti (L, -2, i++);
-    }
-
-  return 1;
-}
-
-int
-LuaAPI::_l_Document_getObject (lua_State *L)
-{
-  Document *doc;
-  const gchar *id;
-  Object *obj;
-
-  doc = LuaAPI::Document_check (L, 1);
-  id = luaL_checkstring (L, 2);
-
-  obj = doc->getObject (string (id));
-  if (obj == NULL)
-    {
-      lua_pushnil (L);
-      return 1;
-    }
-
-  LuaAPI::_pushLuaWrapper (L, obj);
-
-  return 1;
-}
-
-int
-LuaAPI::_l_Document_getRoot (lua_State *L)
-{
-  Document *doc;
-
-  doc = LuaAPI::Document_check (L, 1);
-  LuaAPI::_pushLuaWrapper (L, doc->getRoot ());
-
-  return 1;
-}
-
-int
-LuaAPI::_l_Document_getSettings (lua_State *L)
-{
-  Document *doc;
-
-  doc = LuaAPI::Document_check (L, 1);
-  LuaAPI::_pushLuaWrapper (L, doc->getSettings ());
-
-  return 1;
-}
-
-int
 LuaAPI::_l_Document_createObject (lua_State *L)
 {
   Document *doc;
@@ -200,22 +134,42 @@ LuaAPI::_l_Document_createObject (lua_State *L)
   Object *obj;
 
   doc = LuaAPI::Document_check (L, 1);
-  type = LuaAPI::_Object_Type_check (L, 2);
-  obj = LuaAPI::_Object_check (L, 3);
+  type = LuaAPI::Object_Type_check (L, 2);
+  obj = LuaAPI::Object_check (L, 3);
   luaL_argcheck (L, obj->getType () == Object::CONTEXT
                  || obj->getType () == Object::SWITCH, 3,
                  "Ginga.Composition expected");
   id = luaL_checkstring (L, 4);
 
   parent = (Composition *) obj;
-  obj = doc->createObject (type, parent, id);
-  if (unlikely (obj == NULL))
+
+  if (parent->getDocument () != doc)
+    goto fail;
+
+  if (doc->getObject (id) != NULL)
+    goto fail;
+
+  obj = NULL;
+  switch (type)
     {
-      lua_pushnil (L);
-      return 1;
+    case Object::MEDIA:
+      obj = new Media (doc, parent, id);
+      break;
+    case Object::CONTEXT:
+      obj = new Context (doc, parent, id);
+      break;
+    case Object::SWITCH:
+      obj = new Switch (doc, parent, id);
+      break;
+    default:
+      g_assert_not_reached ();
     }
 
   LuaAPI::_pushLuaWrapper (L, obj);
+  return 1;
+
+ fail:
+  lua_pushnil (L);
   return 1;
 }
 
@@ -227,6 +181,7 @@ LuaAPI::_l_Document_createEvent (lua_State *L)
   const char *objId;
   const char *evtId;
 
+  Object *obj;
   Event *evt;
 
   doc = LuaAPI::Document_check (L, 1);
@@ -234,13 +189,18 @@ LuaAPI::_l_Document_createEvent (lua_State *L)
   objId = luaL_checkstring (L, 3);
   evtId = luaL_checkstring (L, 4);
 
-  evt = doc->createEvent (type, objId, evtId);
+  obj = doc->getObject (objId);
+  if (obj == NULL)
+    goto fail;
+
+  evt = obj->createEvent (type, evtId);
   if (evt == NULL)
-    {
-      lua_pushnil (L);
-      return 1;
-    }
+    goto fail;
 
   LuaAPI::_pushLuaWrapper (L, evt);
+  return 1;
+
+ fail:
+  lua_pushnil (L);
   return 1;
 }

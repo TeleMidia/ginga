@@ -29,29 +29,20 @@ GINGA_NAMESPACE_BEGIN
 
 Document::Document (lua_State *L)
 {
-  Object *obj;
+  Context *root;
 
   g_return_if_fail (L != NULL);
 
   _L = L;
   LuaAPI::Document_attachWrapper (_L, this);
 
-  _root = new Context (this, NULL, "__root__");
-  _objects.insert (_root);
-  _objectsById[_root->getId ()] = _root;
-
-  _settings = NULL;
-  obj = this->createObject (Object::MEDIA_SETTINGS, _root, "__settings__");
-  _settings = cast (MediaSettings *, obj);
-  g_assert_nonnull (_settings);
+  root = new Context (this, NULL, "__root__");
+  new MediaSettings (this, root, "__settings__");
 }
 
 Document::~Document ()
 {
-  g_assert_nonnull (_root);
-  delete _root;
-
-  g_assert_nonnull (_L);
+  delete this->getRoot ();
   LuaAPI::Document_detachWrapper (_L, this);
 }
 
@@ -64,99 +55,101 @@ Document::getLuaState ()
 void
 Document::getObjects (set<Object *> *objects, unsigned int mask)
 {
+  lua_Integer len;
+  lua_Integer i;
+
   g_return_if_fail (objects != NULL);
 
-  for (auto obj: _objects)
-    if (obj->getType () & mask)
+  LuaAPI::Object_Type_Mask_push (_L, mask);
+  LuaAPI::Document_call (_L, this, "getObjects", 1, 1);
+
+  g_assert (lua_type (_L, -1) == LUA_TTABLE);
+  len = luaL_len (_L, -1);
+  for (i = 1; i <= len; i++)
+    {
+      Object *obj;
+
+      lua_rawgeti (_L, -1, i);
+      obj = LuaAPI::Object_check (_L, -1);
       objects->insert (obj);
+      lua_pop (_L, 1);
+    }
 }
 
 Object *
 Document::getObject (const string &id)
 {
-  auto it = _objectsById.find (id);
-  if (it != _objectsById.end ())
-    return it->second;          // found id
+  Object *obj = NULL;
 
-  for (auto obj : _objects)
-    if (obj->hasAlias (id))
-      return obj;               // found alias
+  lua_pushstring (_L, id.c_str ());
+  LuaAPI::Document_call (_L, this, "getObject", 1, 1);
+  if (!lua_isnil (_L, -1))
+    {
+      obj = LuaAPI::Object_check (_L, -1);
+    }
+  lua_pop (_L, 1);
 
-  return NULL;                  // no match
+  return obj;
 }
 
 Event *
 Document::getEvent (const string &id)
 {
+  Event *evt = NULL;
+
   lua_pushstring (_L, id.c_str ());
   LuaAPI::Document_call (_L, this, "getEvent", 1, 1);
-  if (lua_isnil (_L, -1))
+  if (!lua_isnil (_L, -1))
     {
-      lua_pop (_L, 1);
-      return NULL;              //  no such event
+      evt = LuaAPI::Event_check (_L, -1);
     }
-  else
-    {
-      Event *evt = LuaAPI::Event_check (_L, -1);
-      g_assert_nonnull (evt);
-      lua_pop (_L, 1);
-      return evt;
-    }
+  lua_pop (_L, 1);
+
+  return evt;
 }
 
 Context *
 Document::getRoot ()
 {
-  g_assert_nonnull (_root);
-  return _root;
+  Context *root;
+
+  LuaAPI::Document_call (_L, this, "getRoot", 0, 1);
+  root = LuaAPI::Context_check (_L, -1);
+  lua_pop (_L, 1);
+
+  return root;
 }
 
 MediaSettings *
 Document::getSettings ()
 {
-  g_assert_nonnull (_settings);
-  return _settings;
+  Media *media;
+
+  LuaAPI::Document_call (_L, this, "getSettings", 0, 1);
+  media = LuaAPI::Media_check (_L, -1);
+  lua_pop (_L, 1);
+
+  return cast (MediaSettings *, media);
 }
 
 Object *
 Document::createObject (Object::Type type, Composition *parent,
                         const string &id)
 {
-  Object *obj;
+  Object *obj = NULL;
 
   g_return_val_if_fail (parent != NULL, NULL);
 
-  if (type == Object::MEDIA_SETTINGS && _settings != NULL)
-    return NULL;                // settings already in document
+  LuaAPI::Object_Type_push (_L, type);
+  LuaAPI::Object_push (_L, cast (Object *, parent));
+  lua_pushstring (_L, id.c_str ());
 
-  if (_objects.find (parent) == _objects.end ())
-    return NULL;                // parent not in document
-
-  if (this->getObject (id) != NULL)
-    return NULL;                // id already in use
-
-  obj = NULL;
-  switch (type)
+  LuaAPI::Document_call (_L, this, "createObject", 3, 1);
+  if (!lua_isnil (_L, -1))
     {
-    case Object::MEDIA:
-      obj = new Media (this, parent, id);
-      break;
-    case Object::MEDIA_SETTINGS:
-      obj = new MediaSettings (this, parent, id);
-      break;
-    case Object::CONTEXT:
-      obj = new Context (this, parent, id);
-      break;
-    case Object::SWITCH:
-      obj = new Switch (this, parent, id);
-      break;
-    default:
-      g_assert_not_reached ();
+      obj = LuaAPI::Object_check (_L, -1);
     }
-  g_assert_nonnull (obj);
-
-  _objects.insert (obj);
-  _objectsById[id] = obj;
+  lua_pop (_L, 1);
 
   return obj;
 }
@@ -165,32 +158,35 @@ Event *
 Document::createEvent (Event::Type type, const string &objId,
                        const string &evtId)
 {
-  Object *obj;
+  Event *evt = NULL;
 
-  obj = this->getObject (objId);
-  if (obj == NULL)
-    return NULL;                // no such object
+  LuaAPI::Event_Type_push (_L, type);
+  lua_pushstring (_L, objId.c_str ());
+  lua_pushstring (_L, evtId.c_str ());
+  LuaAPI::Document_call (_L, this, "createEvent", 3, 1);
+  if (!lua_isnil (_L, -1))
+    {
+      evt = LuaAPI::Event_check (_L, -1);
+    }
+  lua_pop (_L, 1);
 
-  return obj->createEvent (type, evtId);
+  return evt;
 }
 
 Event *
 Document::createEvent (const string &qualId)
 {
+  Event *evt = NULL;
+
   lua_pushstring (_L, qualId.c_str ());
   LuaAPI::Document_call (_L, this, "createEvent", 1, 1);
-  if (lua_isnil (_L, -1))
+  if (!lua_isnil (_L, -1))
     {
-      lua_pop (_L, 1);
-      return NULL;
+      evt = LuaAPI::Event_check (_L, -1);
     }
-  else
-    {
-      Event *evt = LuaAPI::Event_check (_L, -1);
-      g_assert_nonnull (evt);
-      lua_pop (_L, 1);
-      return evt;
-    }
+  lua_pop (_L, 1);
+
+  return evt;
 }
 
 // TODO --------------------------------------------------------------------

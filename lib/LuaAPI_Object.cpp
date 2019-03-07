@@ -47,7 +47,7 @@ LuaAPI::_Object_getRegistryKey (Object *obj)
 }
 
 void
-LuaAPI::_Object_attachWrapper (lua_State *L, Object *obj)
+LuaAPI::Object_attachWrapper (lua_State *L, Object *obj)
 {
   static const struct luaL_Reg funcs[] =
     {
@@ -121,7 +121,7 @@ LuaAPI::_Object_attachWrapper (lua_State *L, Object *obj)
 }
 
 void
-LuaAPI::_Object_detachWrapper (lua_State *L, Object *obj)
+LuaAPI::Object_detachWrapper (lua_State *L, Object *obj)
 {
   g_return_if_fail (L != NULL);
   g_return_if_fail (obj != NULL);
@@ -138,7 +138,7 @@ LuaAPI::_Object_detachWrapper (lua_State *L, Object *obj)
 }
 
 Object *
-LuaAPI::_Object_check (lua_State *L, int i)
+LuaAPI::Object_check (lua_State *L, int i)
 {
   const char *name;
 
@@ -170,7 +170,7 @@ LuaAPI::_Object_check (lua_State *L, int i)
 }
 
 Object::Type
-LuaAPI::_Object_Type_check (lua_State *L, int i)
+LuaAPI::Object_Type_check (lua_State *L, int i)
 {
   static const char *types[] = {OBJECT_CONTEXT_STRING,
                                 OBJECT_SWITCH_STRING,
@@ -192,9 +192,51 @@ LuaAPI::_Object_Type_check (lua_State *L, int i)
     }
 }
 
-void
-LuaAPI::_Object_Type_push (lua_State *L, Object::Type type)
+unsigned int
+LuaAPI::Object_Type_Mask_check (lua_State *L, int i)
 {
+  unsigned int mask;
+
+  g_return_val_if_fail (L != NULL, 0);
+
+  if (lua_isnoneornil (L, i))
+    return (unsigned int) -1;
+
+  luaL_argcheck (L, lua_type (L, i) == LUA_TTABLE, i, "expected table");
+
+  mask = 0;
+  lua_getfield (L, i, OBJECT_CONTEXT_STRING);
+  if (lua_toboolean (L, -1))
+    mask &= Object::CONTEXT;
+  lua_pop (L, 1);
+
+  lua_getfield (L, i, OBJECT_SWITCH_STRING);
+  if (lua_toboolean (L, -1))
+    mask &= Object::SWITCH;
+  lua_pop (L, 1);
+
+  lua_getfield (L, i, OBJECT_MEDIA_STRING);
+  if (lua_toboolean (L, -1))
+    mask &= Object::MEDIA;
+  lua_pop (L, 1);
+
+  return mask;
+}
+
+void
+LuaAPI::Object_push (lua_State *L, Object *obj)
+{
+  g_return_if_fail (L != NULL);
+  g_return_if_fail (obj != NULL);
+
+  LuaAPI::_pushLuaWrapper (L, obj);
+}
+
+void
+LuaAPI::Object_Type_push (lua_State *L, Object::Type type)
+{
+  g_return_if_fail (L != NULL);
+
   switch (type)
     {
     case Object::CONTEXT:
@@ -212,10 +254,36 @@ LuaAPI::_Object_Type_push (lua_State *L, Object::Type type)
     }
 }
 
+void
+LuaAPI::Object_Type_Mask_push (lua_State *L, unsigned int mask)
+{
+  g_return_if_fail (L != NULL);
+
+  lua_newtable (L);
+  if (mask & Object::CONTEXT)
+    {
+      lua_pushliteral (L, OBJECT_CONTEXT_STRING);
+      lua_pushboolean (L, 1);
+      lua_rawset (L, -3);
+    }
+  if (mask & Object::SWITCH)
+    {
+      lua_pushliteral (L, OBJECT_SWITCH_STRING);
+      lua_pushboolean (L, 1);
+      lua_rawset (L, -3);
+    }
+  if (mask & Object::MEDIA)
+    {
+      lua_pushliteral (L, OBJECT_MEDIA_STRING);
+      lua_pushboolean (L, 1);
+      lua_rawset (L, -3);
+    }
+}
+
 int
 LuaAPI::_l_Object_getUnderlyingObject (lua_State *L)
 {
-  lua_pushlightuserdata (L, LuaAPI::_Object_check (L, 1));
+  lua_pushlightuserdata (L, LuaAPI::Object_check (L, 1));
   return 1;
 }
 
@@ -224,8 +292,8 @@ LuaAPI::_l_Object_getType (lua_State *L)
 {
   Object *obj;
 
-  obj = LuaAPI::_Object_check (L, 1);
-  LuaAPI::_Object_Type_push (L, obj->getType ());
+  obj = LuaAPI::Object_check (L, 1);
+  LuaAPI::Object_Type_push (L, obj->getType ());
 
   return 1;
 }
@@ -235,7 +303,7 @@ LuaAPI::_l_Object_getDocument (lua_State *L)
 {
   Object *obj;
 
-  obj = LuaAPI::_Object_check (L, 1);
+  obj = LuaAPI::Object_check (L, 1);
   LuaAPI::_pushLuaWrapper (L, obj->getDocument ());
 
   return 1;
@@ -246,7 +314,7 @@ LuaAPI::_l_Object_getParent (lua_State *L)
 {
   Object *obj;
 
-  obj = LuaAPI::_Object_check (L, 1);
+  obj = LuaAPI::Object_check (L, 1);
   if (obj->getParent () != NULL)
     LuaAPI::_pushLuaWrapper (L, obj->getParent ());
   else
@@ -260,7 +328,7 @@ LuaAPI::_l_Object_getId (lua_State *L)
 {
   Object *obj;
 
-  obj = LuaAPI::_Object_check (L, 1);
+  obj = LuaAPI::Object_check (L, 1);
   lua_pushstring (L, obj->getId ().c_str ());
 
   return 1;
@@ -272,7 +340,7 @@ LuaAPI::_l_Object_getProperty (lua_State *L)
   Object *obj;
   const char *name;
 
-  obj = LuaAPI::_Object_check (L, 1);
+  obj = LuaAPI::Object_check (L, 1);
   name = luaL_checkstring (L, 2);
 
   lua_pushstring (L, obj->getProperty (name).c_str ());
@@ -288,7 +356,7 @@ LuaAPI::_l_Object_setProperty (lua_State *L)
   const gchar *value;
   lua_Integer dur;
 
-  obj = LuaAPI::_Object_check (L, 1);
+  obj = LuaAPI::Object_check (L, 1);
   name = luaL_checkstring (L, 2);
   value = luaL_checkstring (L, 3);
   dur = luaL_optinteger (L, 4, 0);
@@ -305,7 +373,7 @@ LuaAPI::_l_Object_getEvents (lua_State *L)
   set<Event *> events;
   lua_Integer i;
 
-  obj = LuaAPI::_Object_check (L, 1);
+  obj = LuaAPI::Object_check (L, 1);
   obj->getEvents (&events);
 
   lua_newtable (L);
@@ -327,7 +395,7 @@ LuaAPI::_l_Object_getEvent (lua_State *L)
   const char *id;
   Event *evt;
 
-  obj = LuaAPI::_Object_check (L, 1);
+  obj = LuaAPI::Object_check (L, 1);
   type = LuaAPI::Event_Type_check (L, 2);
   id = luaL_checkstring (L, 3);
 

@@ -23,13 +23,13 @@ const char *LuaAPI::_MEDIA = "Ginga.Media";
 void
 LuaAPI::Media_attachWrapper (lua_State *L, Media *media)
 {
-  LuaAPI::_Object_attachWrapper (L, media);
+  LuaAPI::Object_attachWrapper (L, media);
 }
 
 void
 LuaAPI::Media_detachWrapper (lua_State *L, Media *media)
 {
-  LuaAPI::_Object_detachWrapper (L, media);
+  LuaAPI::Object_detachWrapper (L, media);
 }
 
 Media *

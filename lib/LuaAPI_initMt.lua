@@ -27,7 +27,7 @@ do
          if f == nil then
             return nil
          end
-         trace ('fget (%s)', tostring (k))
+         --trace ('fget (%s)', tostring (k))
          return f (self)
       end
       _mt.__newindex = function (_, k, v)
@@ -39,7 +39,7 @@ do
          if f == nil then
             return
          end
-         trace ('fset (%s, %s)', tostring (k), tostring (v))
+         --trace ('fset (%s, %s)', tostring (k), tostring (v))
          fset (self, v)
       end
       mt[self] = setmetatable (data, _mt)

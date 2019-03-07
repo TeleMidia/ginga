@@ -109,6 +109,19 @@ public:
   /// @return The newly created event if successful, or \c NULL otherwise.
   Event *createEvent (const string &qualId);
 
+  /// Adds object to composition.
+  ///
+  /// @param obj The object to add to \p comp.
+  /// @param comp The composition to add \p obj to.
+  /// @return \c true if successful, or \c false otherwise.
+  ///
+  bool addObjectToComposition (Object *obj, Composition *comp);
+
+private:
+
+  /// The Lua state associate with this document.
+  lua_State *_L;
+
   // TODO ------------------------------------------------------------------
 
 public:
@@ -124,21 +137,8 @@ public:
 
   bool setData (const string &, void *, UserDataCleanFunc fn = nullptr);
 
+
 private:
-  /// The Lua state associate with this document.
-  lua_State *_L;
-
-  /// The set of all objects in this document.
-  set<Object *> _objects;
-
-  /// A map with all objects in this document indexed by id.
-  map<string, Object *> _objectsById;
-
-  /// The root Context (body) of this document.
-  Context *_root;
-
-  /// The settings object (MediaSettings) of this document.
-  MediaSettings *_settings;
 
   /// User data attached to this document.
   UserData _udata;

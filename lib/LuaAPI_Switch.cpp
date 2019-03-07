@@ -23,13 +23,13 @@ const char *LuaAPI::_SWITCH = "Ginga.Switch";
 void
 LuaAPI::Switch_attachWrapper (lua_State *L, Switch *swtch)
 {
-  LuaAPI::_Object_attachWrapper (L, swtch);
+  LuaAPI::Object_attachWrapper (L, swtch);
 }
 
 void
 LuaAPI::Switch_detachWrapper (lua_State *L, Switch *swtch)
 {
-  LuaAPI::_Object_detachWrapper (L, swtch);
+  LuaAPI::Object_detachWrapper (L, swtch);
 }
 
 Switch *

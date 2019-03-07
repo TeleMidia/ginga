@@ -23,13 +23,13 @@ const char *LuaAPI::_CONTEXT = "Ginga.Context";
 void
 LuaAPI::Context_attachWrapper (lua_State *L, Context *ctx)
 {
-  LuaAPI::_Object_attachWrapper (L, ctx);
+  LuaAPI::Object_attachWrapper (L, ctx);
 }
 
 void
 LuaAPI::Context_detachWrapper (lua_State *L, Context *ctx)
 {
-  LuaAPI::_Object_detachWrapper (L, ctx);
+  LuaAPI::Object_detachWrapper (L, ctx);
 }
 
 Context *

@@ -63,6 +63,30 @@ public:
   static void Document_call (lua_State *L, Document *doc, const char *name,
                              int nargs, int nresults);
 
+    /// Attaches Lua wrapper to \p obj.
+  static void Object_attachWrapper (lua_State *L, Object *obj);
+
+  /// Detaches Lua wrapper from \p obj.
+  static void Object_detachWrapper (lua_State *L, Object *obj);
+
+  /// Checks if the value at index \p i of stack is an Object wrapper.
+  static Object *Object_check (lua_State *L, int i);
+
+  /// Checks if the value at index \p i of stack is an Object::Type.
+  static Object::Type Object_Type_check (lua_State *L, int i);
+
+  /// Checks if the value at index \p i of stack is an Object::Type mask.
+  static unsigned int Object_Type_Mask_check (lua_State *L, int i);
+
+  /// Pushes the Lua wrapper of object onto stack.
+  static void Object_push (lua_State *L, Object *obj);
+
+  /// Pushes Object::Type (as string) onto stack.
+  static void Object_Type_push (lua_State *L, Object::Type type);
+
+  /// Pushes Object::Type bit-mask (as table) onto stack.
+  static void Object_Type_Mask_push (lua_State *L, unsigned int mask);
+
   /// Attaches Lua wrapper to \p ctx.
   static void Context_attachWrapper (lua_State *L, Context *ctx);
 
@@ -108,10 +132,10 @@ public:
   //// Pushes the Lua wrapper of event onto stack.
   static void Event_push (lua_State *L, Event *doc);
 
-  /// Pushes Event::Type onto stack.
+  /// Pushes Event::Type (as string) onto stack.
   static void Event_Type_push (lua_State *L, Event::Type type);
 
-  /// Pushes Event::State onto stack.
+  /// Pushes Event::State (as string) onto stack.
   static void Event_State_push (lua_State *L, Event::State state);
 
   /// Calls a method of the Lua wrapper of the given event.
@@ -133,17 +157,7 @@ private:
 
   static int __l_Document_gc (lua_State *L);
 
-  static int __l_Document_toString (lua_State *L);
-
   static int _l_Document_getUnderlyingObject (lua_State *L);
-
-  static int _l_Document_getObject (lua_State *L);
-
-  static int _l_Document_getObjects (lua_State *L);
-
-  static int _l_Document_getRoot (lua_State *L);
-
-  static int _l_Document_getSettings (lua_State *L);
 
   static int _l_Document_createObject (lua_State *L);
 
@@ -165,15 +179,6 @@ private:
 
   /// Detaches Lua wrapper from \p obj.
   static void _Object_detachWrapper (lua_State *L, Object *obj);
-
-  /// Checks if the value at index \p i of stack is an Object wrapper.
-  static Object *_Object_check (lua_State *L, int i);
-
-  /// Checks if the value at index \p i of stack is an Object::Type.
-  static Object::Type _Object_Type_check (lua_State *L, int i);
-
-  /// Pushes Object::Type onto stack.
-  static void _Object_Type_push (lua_State *L, Object::Type type);
 
   static int _l_Object_getUnderlyingObject (lua_State *L);
 
