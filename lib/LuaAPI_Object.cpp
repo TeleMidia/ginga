@@ -204,6 +204,7 @@ LuaAPI::_Object_Type_push (lua_State *L, Object::Type type)
       lua_pushliteral (L, OBJECT_SWITCH_STRING);
       break;
     case Object::MEDIA:
+    case Object::MEDIA_SETTINGS:
       lua_pushliteral (L, OBJECT_MEDIA_STRING);
       break;
     default:
