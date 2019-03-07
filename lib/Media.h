@@ -27,23 +27,11 @@ class Media : public Object
 {
 public:
 
-  /**
-   * @brief Creates a new media object.
-   * @see Object::Object().
-   */
+  /// Creates a new media object.
   Media (Document *doc, Composition *parent, const string &id);
 
-  /**
-   * @brief Destroys media object.
-   * @see Object::~Object().
-   */
+  /// Destroys media object.
   ~Media ();
-
-  /**
-   * @brief Gets a string representation of media object.
-   * @see Object::toString().
-   */
-  string toString () override;
 
   /**
    * @brief Gets the type of media object.

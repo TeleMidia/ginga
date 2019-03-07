@@ -51,12 +51,6 @@ Object::~Object ()
 {
 }
 
-string
-Object::toString ()
-{
-  return xstrbuild ("Object (%p)", this);
-}
-
 Document *
 Object::getDocument ()
 {

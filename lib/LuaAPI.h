@@ -108,10 +108,10 @@ public:
   //// Pushes the Lua wrapper of event onto stack.
   static void Event_push (lua_State *L, Event *doc);
 
-  /// Pushes event type onto stack.
+  /// Pushes Event::Type onto stack.
   static void Event_Type_push (lua_State *L, Event::Type type);
 
-  /// Pushes event state onto stack.
+  /// Pushes Event::State onto stack.
   static void Event_State_push (lua_State *L, Event::State state);
 
   /// Calls a method of the Lua wrapper of the given event.
@@ -172,7 +172,8 @@ private:
   /// Checks if the value at index \p i of stack is an Object::Type.
   static Object::Type _Object_Type_check (lua_State *L, int i);
 
-  static int __l_Object_toString (lua_State *L);
+  /// Pushes Object::Type onto stack.
+  static void _Object_Type_push (lua_State *L, Object::Type type);
 
   static int _l_Object_getUnderlyingObject (lua_State *L);
 

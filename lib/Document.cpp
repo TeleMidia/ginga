@@ -61,12 +61,6 @@ Document::getLuaState ()
   return _L;
 }
 
-string
-Document::toString ()
-{
-  return xstrbuild ("Document (%p)", this);
-}
-
 void
 Document::getObjects (set<Object *> *objects, unsigned int mask)
 {

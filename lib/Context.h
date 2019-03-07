@@ -40,12 +40,6 @@ public:
   ~Context ();
 
   /**
-   * @brief Gets a string representation of context object.
-   * @see Object::toString().
-   */
-  string toString () override;
-
-  /**
    * @brief Gets the type of context object.
    * @return Object::CONTEXT.
    * @see Object::getType().

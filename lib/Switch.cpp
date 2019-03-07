@@ -52,27 +52,6 @@ Switch::getType ()
   return Object::SWITCH;
 }
 
-string
-Switch::toString ()
-{
-  string str;
-
-  str = Object::toString ();
-  if (_rules.size () > 0)
-    {
-      int i = 1;
-      str += "  rules:\n";
-      for (auto rule : _rules)
-        {
-          str += xstrbuild ("    #%d %s if %s\n", i++,
-                            rule.first->getId ().c_str (),
-                            rule.second->toString ().c_str ());
-        }
-    }
-
-  return str;
-}
-
 bool
 Switch::beforeTransition (Event *evt, Event::Transition transition)
 {

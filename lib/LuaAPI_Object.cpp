@@ -22,6 +22,11 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Media.h"
 #include "Switch.h"
 
+// Object type.
+#define OBJECT_CONTEXT_STRING  "context"
+#define OBJECT_SWITCH_STRING   "switch"
+#define OBJECT_MEDIA_STRING    "media"
+
 const char *
 LuaAPI::_Object_getRegistryKey (Object *obj)
 {
@@ -46,7 +51,6 @@ LuaAPI::_Object_attachWrapper (lua_State *L, Object *obj)
 {
   static const struct luaL_Reg funcs[] =
     {
-     {"__tostring",            LuaAPI::__l_Object_toString},
      {"__getUnderlyingObject", LuaAPI::_l_Object_getUnderlyingObject},
      {"getType",               LuaAPI::_l_Object_getType},
      {"getDocument",           LuaAPI::_l_Object_getDocument},
@@ -168,8 +172,10 @@ LuaAPI::_Object_check (lua_State *L, int i)
 Object::Type
 LuaAPI::_Object_Type_check (lua_State *L, int i)
 {
-  static const char *types[]
-    = {"context", "switch", "media", NULL};
+  static const char *types[] = {OBJECT_CONTEXT_STRING,
+                                OBJECT_SWITCH_STRING,
+                                OBJECT_MEDIA_STRING,
+                                NULL};
 
   g_return_val_if_fail (L != NULL, Object::CONTEXT);
 
@@ -186,15 +192,23 @@ LuaAPI::_Object_Type_check (lua_State *L, int i)
     }
 }
 
-int
-LuaAPI::__l_Object_toString (lua_State *L)
+void
+LuaAPI::_Object_Type_push (lua_State *L, Object::Type type)
 {
-  Object *obj;
-
-  obj = LuaAPI::_Object_check (L, 1);
-  lua_pushstring (L, obj->toString ().c_str ());
-
-  return 1;
+  switch (type)
+    {
+    case Object::CONTEXT:
+      lua_pushliteral (L, OBJECT_CONTEXT_STRING);
+      break;
+    case Object::SWITCH:
+      lua_pushliteral (L, OBJECT_SWITCH_STRING);
+      break;
+    case Object::MEDIA:
+      lua_pushliteral (L, OBJECT_MEDIA_STRING);
+      break;
+    default:
+      g_assert_not_reached ();
+    }
 }
 
 int
@@ -210,21 +224,7 @@ LuaAPI::_l_Object_getType (lua_State *L)
   Object *obj;
 
   obj = LuaAPI::_Object_check (L, 1);
-  switch (obj->getType ())
-    {
-    case Object::CONTEXT:
-      lua_pushliteral (L, "context");
-      break;
-    case Object::SWITCH:
-      lua_pushliteral (L, "switch");
-      break;
-    case Object::MEDIA:
-    case Object::MEDIA_SETTINGS:
-      lua_pushliteral (L, "media");
-      break;
-    default:
-      g_assert_not_reached ();
-    }
+  LuaAPI::_Object_Type_push (L, obj->getType ());
 
   return 1;
 }

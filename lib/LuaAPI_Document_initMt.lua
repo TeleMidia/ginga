@@ -15,9 +15,12 @@ do
          return assert (data._event)
       end
       local funcs = {
-         objects = {mt.getObjects,   nil},
-         object  = {get_data_object, nil},
-         event   = {get_data_event,  nil},
+         objects  = {mt.getObjects,   nil},
+         root     = {mt.getRoot,      nil},
+         settings = {mt.getSettings,  nil},
+         --
+         object   = {get_data_object, nil},
+         event    = {get_data_event,  nil},
       }
       return saved_attachData (self, data, funcs)
    end

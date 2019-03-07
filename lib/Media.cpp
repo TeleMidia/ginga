@@ -51,19 +51,6 @@ Media::~Media ()
 
 // Public: Object.
 
-string
-Media::toString ()
-{
-  string str;
-  string type;
-  string uri;
-
-  str = Object::toString ();
-  str += xstrbuild ("  player: %p\n", _player);
-
-  return str;
-}
-
 Object::Type
 Media::getType ()
 {

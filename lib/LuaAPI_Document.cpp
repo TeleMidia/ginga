@@ -30,7 +30,6 @@ LuaAPI::Document_attachWrapper (lua_State *L, Document *doc)
   static const struct luaL_Reg funcs[] =
     {
      {"__gc",                  LuaAPI::__l_Document_gc},
-     {"__tostring",            LuaAPI::__l_Document_toString},
      {"_getUnderlyingObject",  LuaAPI::_l_Document_getUnderlyingObject},
      {"getObjects",            LuaAPI::_l_Document_getObjects},
      {"getObject",             LuaAPI::_l_Document_getObject},
@@ -116,17 +115,6 @@ LuaAPI::__l_Document_gc (lua_State *L)
   delete doc;
 
   return 0;
-}
-
-int
-LuaAPI::__l_Document_toString (lua_State *L)
-{
-  Document *doc;
-
-  doc = LuaAPI::Document_check (L, 1);
-  lua_pushstring (L, doc->toString ().c_str ());
-
-  return 1;
 }
 
 int

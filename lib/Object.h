@@ -64,9 +64,6 @@ public:
   /// Destroys the object and all its events.
   virtual ~Object ();
 
-  /// Gets a string representation of object.
-  virtual string toString ();
-
   /// Gets the type of object.
   virtual Object::Type getType () = 0;
 

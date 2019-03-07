@@ -50,9 +50,6 @@ public:
   /// Gets the Lua state associated with document.
   lua_State *getLuaState ();
 
-  /// Gets a string representation of document.
-  string toString ();
-
   /// Gets the set of objects in document whose type match \p mask.
   ///
   /// @param[out] objects The set of matched objects.
