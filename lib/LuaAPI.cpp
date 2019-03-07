@@ -17,6 +17,17 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "LuaAPI.h"
 
+#define CHUNK_INIT(name)                        \
+  {G_STRINGIFY (LuaAPI_##name.lua),             \
+   (const char *) LuaAPI::name##_lua,           \
+   (size_t) LuaAPI::name##_lua_len}
+
+LuaAPI::Chunk LuaAPI::_initMt             = CHUNK_INIT (initMt);
+LuaAPI::Chunk LuaAPI::_Document_initMt    = CHUNK_INIT (Document_initMt);
+LuaAPI::Chunk LuaAPI::_Object_initMt      = CHUNK_INIT (Object_initMt);
+LuaAPI::Chunk LuaAPI::_Composition_initMt = CHUNK_INIT (Composition_initMt);
+LuaAPI::Chunk LuaAPI::_Event_initMt       = CHUNK_INIT (Event_initMt);
+
 static void
 xloadbuffer (lua_State *L, const char *chunk, size_t len, const char *name)
 {
@@ -42,34 +53,41 @@ xpcall (lua_State *L, int nargs, int nresults)
     }
 }
 
-void
-LuaAPI::_loadLuaWrapperMt (lua_State *L, const luaL_Reg *funcs,
-                           const char *name, const char *chunk, size_t len)
+bool
+LuaAPI::_loadLuaWrapperMt (lua_State *L, const char *name,
+                           const luaL_Reg *const funcs[],
+                           const Chunk *const chunks[])
 {
+  size_t i;
+
   luaL_getmetatable (L, name);
   if (!lua_isnil (L, -1))
     {
       lua_pop (L, 1);
-      return;                 // nothing to do
+      return false;
     }
+
   lua_pop (L, 1);
-
   luaL_newmetatable (L, name);
-  luaL_setfuncs (L, funcs, 0);
-  xloadbuffer (L, (const char *) LuaAPI::initMt_lua,
-               (size_t) LuaAPI::initMt_lua_len, "Ginga.LuaAPI");
-  lua_pushvalue (L, -2);
-  xpcall (L, 1, 0);
 
-  if (chunk == NULL)
+  if (funcs != NULL)
     {
-      lua_pop (L, 1);
-      return;                   // nothing else to do
+      for (i = 0; funcs[i] != NULL; i++)
+        luaL_setfuncs (L, funcs[i], 0);
     }
 
-  xloadbuffer (L, chunk, len, name);
-  lua_insert (L, -2);
-  xpcall (L, 1, 0);
+  if (chunks != NULL)
+    {
+      for (i = 0; chunks[i] != NULL; i++)
+        {
+          xloadbuffer (L, chunks[i]->text, chunks[i]->len, chunks[i]->name);
+          lua_pushvalue (L, -2);
+          xpcall (L, 1, 0);
+        }
+    }
+
+  lua_pop (L, 1);
+  return true;
 }
 
 void

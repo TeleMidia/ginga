@@ -18,8 +18,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "LuaAPI.h"
 #include "Event.h"
 
-const char *LuaAPI::_EVENT = "Ginga.Event";
-
 // Event type.
 #define EVENT_ATTRIBUTION_STRING   "attribution"
 #define EVENT_PRESENTATION_STRING  "presentation"
@@ -30,36 +28,51 @@ const char *LuaAPI::_EVENT = "Ginga.Event";
 #define EVENT_PAUSED_STRING        "paused"
 #define EVENT_SLEEPING_STRING      "sleeping"
 
+const char *LuaAPI::_EVENT = "Ginga.Event";
+
+const struct luaL_Reg LuaAPI::_Event_funcs[] =
+  {
+   {"__getUnderlyingObject", LuaAPI::_l_Event_getUnderlyingObject},
+   {"getType",               LuaAPI::_l_Event_getType},
+   {"getObject",             LuaAPI::_l_Event_getObject},
+   {"getId",                 LuaAPI::_l_Event_getId},
+   {"getQualifiedId",        LuaAPI::_l_Event_getQualifiedId},
+   {"getState",              LuaAPI::_l_Event_getState},
+   {"setState",              LuaAPI::_l_Event_setState},
+   {"getBeginTime",          LuaAPI::_l_Event_getBeginTime},
+   {"setBeginTime",          LuaAPI::_l_Event_setBeginTime},
+   {"getEndTime",            LuaAPI::_l_Event_getEndTime},
+   {"setEndTime",            LuaAPI::_l_Event_setEndTime},
+   {"getLabel",              LuaAPI::_l_Event_getLabel},
+   {"setLabel",              LuaAPI::_l_Event_setLabel},
+   {NULL, NULL}
+  };
+
 void
 LuaAPI::Event_attachWrapper (lua_State *L, Event *evt)
 {
-  static const struct luaL_Reg funcs[] =
+  static const struct luaL_Reg *const funcs[] =
     {
-     {"__getUnderlyingObject", LuaAPI::_l_Event_getUnderlyingObject},
-     {"getType",               LuaAPI::_l_Event_getType},
-     {"getObject",             LuaAPI::_l_Event_getObject},
-     {"getId",                 LuaAPI::_l_Event_getId},
-     {"getQualifiedId",        LuaAPI::_l_Event_getQualifiedId},
-     {"getState",              LuaAPI::_l_Event_getState},
-     {"setState",              LuaAPI::_l_Event_setState},
-     {"getBeginTime",          LuaAPI::_l_Event_getBeginTime},
-     {"setBeginTime",          LuaAPI::_l_Event_setBeginTime},
-     {"getEndTime",            LuaAPI::_l_Event_getEndTime},
-     {"setEndTime",            LuaAPI::_l_Event_setEndTime},
-     {"getLabel",              LuaAPI::_l_Event_getLabel},
-     {"setLabel",              LuaAPI::_l_Event_setLabel},
-     {NULL, NULL},
+     _Event_funcs,
+     NULL,
     };
+
+  static const Chunk *const chunks[] =
+    {
+     &LuaAPI::_initMt,
+     &LuaAPI::_Event_initMt,
+     NULL,
+    };
+
   Event **wrapper;
 
   g_return_if_fail (L != NULL);
   g_return_if_fail (evt != NULL);
 
   // Load and initialize metatable, if not loaded yet.
-  LuaAPI::_loadLuaWrapperMt (L, funcs, LuaAPI::_EVENT,
-                             (const char *) LuaAPI::Event_initMt_lua,
-                             (size_t) LuaAPI::Event_initMt_lua_len);
+  LuaAPI::_loadLuaWrapperMt (L, LuaAPI::_EVENT, funcs, chunks);
 
+  // Create wrapper for event.
   wrapper = (Event **) lua_newuserdata (L, sizeof (Event **));
   g_assert_nonnull (wrapper);
   *wrapper = evt;
@@ -68,7 +81,7 @@ LuaAPI::Event_attachWrapper (lua_State *L, Event *evt)
   // Set LUA_REGISTRY[evt]=wrapper.
   LuaAPI::_attachLuaWrapper (L, evt);
 
-  // Call evt:__attachData().
+  // Call evt:_attachData().
   LuaAPI::_callLuaWrapper (L, evt, "_attachData", 0, 0);
 
   // Call evt.object:_addEvent (evt).
@@ -86,7 +99,7 @@ LuaAPI::Event_detachWrapper (lua_State *L, Event *evt)
   LuaAPI::_pushLuaWrapper (L, evt);
   LuaAPI::_callLuaWrapper (L, evt->getObject (), "_removeEvent", 1, 0);
 
-  // Call evt:__detachData().
+  // Call evt:_detachData().
   LuaAPI::_callLuaWrapper (L, evt, "_detachData", 0, 0);
 
   // Set LUA_REGISTRY[evt] = nil.

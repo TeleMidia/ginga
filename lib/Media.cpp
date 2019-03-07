@@ -37,7 +37,7 @@ Media::Media (Document *doc,
 {
   _player = NULL;
 
-  LuaAPI::Media_attachWrapper (_L, this);
+  LuaAPI::Object_attachWrapper (_L, this);
   _initEvents ();
 }
 
@@ -46,7 +46,7 @@ Media::~Media ()
   this->doStop ();
 
   _finiEvents ();
-  LuaAPI::Media_detachWrapper (_L, this);
+  LuaAPI::Object_detachWrapper (_L, this);
 }
 
 // Public: Object.

@@ -44,7 +44,7 @@ MediaSettings::~MediaSettings ()
 Object::Type
 MediaSettings::getType ()
 {
-  return Object::MEDIA_SETTINGS;
+  return Object::MEDIA;
 }
 
 void

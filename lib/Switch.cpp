@@ -31,7 +31,7 @@ Switch::Switch (Document *doc,
 {
   _selected = nullptr;
 
-  LuaAPI::Switch_attachWrapper (_L, this);
+  LuaAPI::Object_attachWrapper (_L, this);
   _initEvents ();
 }
 
@@ -41,7 +41,7 @@ Switch::~Switch ()
     delete item.second;
 
   _finiEvents ();
-  LuaAPI::Switch_detachWrapper (_L, this);
+  LuaAPI::Object_detachWrapper (_L, this);
 }
 
 // Public: Object.

@@ -49,7 +49,8 @@ src+= Event.cpp
 src+= Formatter.cpp
 src+= Ginga.cpp
 src+= LuaAPI.cpp
-src+= LuaAPI_initMt.cpp
+src+= LuaAPI_Composition.cpp
+src+= LuaAPI_Composition_initMt.cpp
 src+= LuaAPI_Context.cpp
 src+= LuaAPI_Document.cpp
 src+= LuaAPI_Document_initMt.cpp
@@ -59,6 +60,7 @@ src+= LuaAPI_Media.cpp
 src+= LuaAPI_Object.cpp
 src+= LuaAPI_Object_initMt.cpp
 src+= LuaAPI_Switch.cpp
+src+= LuaAPI_initMt.cpp
 src+= Media.cpp
 src+= MediaSettings.cpp
 src+= Object.cpp
@@ -88,6 +90,7 @@ endif # WITH_NCLUA
 	$(AM_V_GEN)$(XXD) -i $< | sed s/LuaAPI_/LuaAPI::/ >>$@
 
 CLEANFILES+= LuaAPI_Document_initMt.cpp
+CLEANFILES+= LuaAPI_Composition_initMt.cpp
 CLEANFILES+= LuaAPI_Event_initMt.cpp
 CLEANFILES+= LuaAPI_Object_initMt.cpp
 CLEANFILES+= LuaAPI_initMt.cpp

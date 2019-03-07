@@ -25,28 +25,40 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 const char *LuaAPI::_DOCUMENT = "Ginga.Document";
 
+const struct luaL_Reg LuaAPI::_Document_funcs[] =
+  {
+   {"__gc",                 LuaAPI::__l_Document_gc},
+   {"_getUnderlyingObject", LuaAPI::_l_Document_getUnderlyingObject},
+   {"createObject",         LuaAPI::_l_Document_createObject},
+   {"_createEvent",         LuaAPI::_l_Document_createEvent},
+   {NULL, NULL},
+  };
+
 // Public.
 
 void
 LuaAPI::Document_attachWrapper (lua_State *L, Document *doc)
 {
-  static const struct luaL_Reg funcs[] =
+  static const struct luaL_Reg *const funcs[] =
     {
-     {"__gc",                  LuaAPI::__l_Document_gc},
-     {"_getUnderlyingObject",  LuaAPI::_l_Document_getUnderlyingObject},
-     {"createObject",          LuaAPI::_l_Document_createObject},
-     {"_createEvent",          LuaAPI::_l_Document_createEvent},
-     {NULL, NULL},
+     _Document_funcs,
+     NULL
     };
+
+  static const Chunk *const chunks[] =
+    {
+     &LuaAPI::_initMt,
+     &LuaAPI::_Document_initMt,
+     NULL
+    };
+
   Document **wrapper;
 
   g_return_if_fail (L != NULL);
   g_return_if_fail (doc != NULL);
 
   // Load and initialize metatable, if not loaded yet.
-  LuaAPI::_loadLuaWrapperMt (L, funcs, LuaAPI::_DOCUMENT,
-                             (const char *) LuaAPI::Document_initMt_lua,
-                             (size_t) LuaAPI::Document_initMt_lua_len);
+  LuaAPI::_loadLuaWrapperMt (L, LuaAPI::_DOCUMENT, funcs, chunks);
 
   // Create Lua wrapper for document.
   wrapper = (Document **) lua_newuserdata (L, sizeof (Document **));
@@ -57,7 +69,7 @@ LuaAPI::Document_attachWrapper (lua_State *L, Document *doc)
   // Set LUA_REGISTY[doc]=wrapper.
   LuaAPI::_attachLuaWrapper (L, doc);
 
-  // Call _D:__attachData().
+  // Call _D:_attachData().
   LuaAPI::_callLuaWrapper (L, doc, "_attachData", 0, 0);
 }
 
@@ -67,7 +79,7 @@ LuaAPI::Document_detachWrapper (lua_State *L, Document *doc)
   g_return_if_fail (L != NULL);
   g_return_if_fail (doc != NULL);
 
-  // Call _D:__detachData().
+  // Call _D:_detachData().
   LuaAPI::_callLuaWrapper (L, doc, "_detachData", 1, 0);
 
   // Set LUA_REGISTY[doc]=nil.
@@ -128,20 +140,15 @@ LuaAPI::_l_Document_createObject (lua_State *L)
 {
   Document *doc;
   Object::Type type;
+  Composition *parent;
   const char *id;
 
-  Composition *parent;
   Object *obj;
 
   doc = LuaAPI::Document_check (L, 1);
   type = LuaAPI::Object_Type_check (L, 2);
-  obj = LuaAPI::Object_check (L, 3);
-  luaL_argcheck (L, obj->getType () == Object::CONTEXT
-                 || obj->getType () == Object::SWITCH, 3,
-                 "Ginga.Composition expected");
+  parent = LuaAPI::Composition_check (L, 3);
   id = luaL_checkstring (L, 4);
-
-  parent = (Composition *) obj;
 
   if (parent->getDocument () != doc)
     goto fail;

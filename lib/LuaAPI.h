@@ -45,6 +45,8 @@ class Switch;
 ///
 class LuaAPI
 {
+  // Document --------------------------------------------------------------
+
 public:
 
   /// Attaches Lua wrapper to \p doc.
@@ -63,7 +65,27 @@ public:
   static void Document_call (lua_State *L, Document *doc, const char *name,
                              int nargs, int nresults);
 
-    /// Attaches Lua wrapper to \p obj.
+private:
+
+  /// Registry key for the Document metatable.
+  static const char *_DOCUMENT;
+
+  /// The functions to load in the metatable of Document.
+  static const struct luaL_Reg _Document_funcs[];
+
+  static int __l_Document_gc (lua_State *L);
+
+  static int _l_Document_getUnderlyingObject (lua_State *L);
+
+  static int _l_Document_createObject (lua_State *L);
+
+  static int _l_Document_createEvent (lua_State *L);
+
+  // Object ----------------------------------------------------------------
+
+public:
+
+  /// Attaches Lua wrapper to \p obj.
   static void Object_attachWrapper (lua_State *L, Object *obj);
 
   /// Detaches Lua wrapper from \p obj.
@@ -87,32 +109,77 @@ public:
   /// Pushes Object::Type bit-mask (as table) onto stack.
   static void Object_Type_Mask_push (lua_State *L, unsigned int mask);
 
-  /// Attaches Lua wrapper to \p ctx.
-  static void Context_attachWrapper (lua_State *L, Context *ctx);
+private:
 
-  /// Detaches Lua wrapper from \p ctx.
-  static void Context_detachWrapper (lua_State *L, Context *ctx);
+  /// Gets the registry key of the metatable of \p obj.
+  static const char *_Object_getRegistryKey (Object *obj);
+
+  /// The functions to load in the metatable of Object.
+  static const struct luaL_Reg _Object_funcs[];
+
+  /// Attaches Lua wrapper to \p obj.
+  static void _Object_attachWrapper (lua_State *L, Object *obj);
+
+  /// Detaches Lua wrapper from \p obj.
+  static void _Object_detachWrapper (lua_State *L, Object *obj);
+
+  static int _l_Object_getUnderlyingObject (lua_State *L);
+
+  static int _l_Object_getType (lua_State *L);
+
+  static int _l_Object_getDocument (lua_State *L);
+
+  static int _l_Object_getParent (lua_State *L);
+
+  static int _l_Object_getId (lua_State *L);
+
+  static int _l_Object_getProperty (lua_State *L);
+
+  static int _l_Object_setProperty (lua_State *L);
+
+  static int _l_Object_getEvents (lua_State *L);
+
+  static int _l_Object_getEvent (lua_State *L);
+
+  // Composition -----------------------------------------------------------
+
+public:
+
+  /// Checks if the value at index \p i of stack is a Composition wrapper.
+  static Composition *Composition_check (lua_State *L, int i);
+
+  /// The functions to load in the metatable of Composition.
+  static const struct luaL_Reg _Composition_funcs[];
+
+private:
+
+  // Context, switch, and media --------------------------------------------
+
+public:
 
   /// Checks if the value at index \p i of stack is a Context wrapper.
   static Context *Context_check (lua_State *L, int i);
 
-  /// Attaches Lua wrapper to \p swtch.
-  static void Switch_attachWrapper (lua_State *L, Switch *swtch);
-
-  /// Detaches Lua wrapper from \p swtch.
-  static void Switch_detachWrapper (lua_State *L, Switch *swtch);
-
   /// Checks if the value at index \p i of stack is a Switch wrapper.
   static Switch *Switch_check (lua_State *L, int i);
 
-  /// Attaches Lua wrapper to \p media.
-  static void Media_attachWrapper (lua_State *L, Media *media);
-
-  /// Detaches Lua wrapper from \p media.
-  static void Media_detachWrapper (lua_State *L, Media *media);
-
   /// Checks if the value at index \p i of stack is a Media wrapper.
   static Media *Media_check (lua_State *L, int i);
+
+private:
+
+  /// Registry key for the Context metatable.
+  static const char *_CONTEXT;
+
+  /// Registry key for the Switch metatable.
+  static const char *_SWITCH;
+
+  /// Registry key for the Media metatable.
+  static const char *_MEDIA;
+
+  // Event -----------------------------------------------------------------
+
+public:
 
   /// Attaches Lua wrapper to \p evt.
   static void Event_attachWrapper (lua_State *L, Event *evt);
@@ -144,81 +211,11 @@ public:
 
 private:
 
-  // Document:
-
-  /// Registry key for the Document metatable.
-  static const char *_DOCUMENT;
-
-  /// Lua code to run when loading Document metatable.
-  static unsigned char Document_initMt_lua[];
-
-  /// Length in bytes of LuaAPI::Document_initMt_lua.
-  static unsigned int Document_initMt_lua_len;
-
-  static int __l_Document_gc (lua_State *L);
-
-  static int _l_Document_getUnderlyingObject (lua_State *L);
-
-  static int _l_Document_createObject (lua_State *L);
-
-  static int _l_Document_createEvent (lua_State *L);
-
-  // Object:
-
-  /// Lua code to run when loading Object metatable.
-  static unsigned char Object_initMt_lua[];
-
-  /// Length in bytes of LuaAPI::Object_initMt_lua.
-  static unsigned int Object_initMt_lua_len;
-
-  /// Gets the registry key of the metatable of \p obj.
-  static const char *_Object_getRegistryKey (Object *obj);
-
-  /// Attaches Lua wrapper to \p obj.
-  static void _Object_attachWrapper (lua_State *L, Object *obj);
-
-  /// Detaches Lua wrapper from \p obj.
-  static void _Object_detachWrapper (lua_State *L, Object *obj);
-
-  static int _l_Object_getUnderlyingObject (lua_State *L);
-
-  static int _l_Object_getType (lua_State *L);
-
-  static int _l_Object_getDocument (lua_State *L);
-
-  static int _l_Object_getParent (lua_State *L);
-
-  static int _l_Object_getId (lua_State *L);
-
-  static int _l_Object_getProperty (lua_State *L);
-
-  static int _l_Object_setProperty (lua_State *L);
-
-  static int _l_Object_getEvents (lua_State *L);
-
-  static int _l_Object_getEvent (lua_State *L);
-
-  // Context, switch, and media:
-
-  /// Registry key for the Context metatable.
-  static const char *_CONTEXT;
-
-  /// Registry key for the Switch metatable.
-  static const char *_SWITCH;
-
-  /// Registry key for the Media metatable.
-  static const char *_MEDIA;
-
-  // Event:
-
   /// Registry key for the Event metatable.
   static const char *_EVENT;
 
-  /// Lua code to run when loading Event metatable.
-  static unsigned char Event_initMt_lua[];
-
-  /// Length in bytes of LuaAPI::Event_initMt_lua.
-  static unsigned int Event_initMt_lua_len;
+  /// The functions to load in the metatable of Event.
+  static const struct luaL_Reg _Event_funcs[];
 
   static int _l_Event_getUnderlyingObject (lua_State *L);
 
@@ -246,29 +243,61 @@ private:
 
   static int _l_Event_setLabel (lua_State *L);
 
-  // Auxiliary:
+  // Auxiliary -------------------------------------------------------------
 
-  /// Lua code to run when loading any metatable.
+public:
+
+  /// Datatype for loadable Lua chunks.
+  typedef struct
+  {
+    const char *name;
+    const char *text;
+    size_t len;
+  } Chunk;
+
+  // Chunk containing the code in LuaAPI_initMt.lua.
+  static Chunk _initMt;
   static unsigned char initMt_lua[];
-
-  /// Length in bytes of LuaAPI::Lua_initMt_lua.
   static unsigned int initMt_lua_len;
+
+  /// Chunk containing the code in LuaAPI_Document_initMt.lua.
+  static Chunk _Document_initMt;
+  static unsigned char Document_initMt_lua[];
+  static unsigned int Document_initMt_lua_len;
+
+  /// Chunk containing the code in LuaAPI_Object_initMt.lua.
+  static Chunk _Object_initMt;
+  static unsigned char Object_initMt_lua[];
+  static unsigned int Object_initMt_lua_len;
+
+  /// Chunk containing the code in LuaAPI_Composition_initMt.lua.
+  static Chunk _Composition_initMt;
+  static unsigned char Composition_initMt_lua[];
+  static unsigned int Composition_initMt_lua_len;
+
+  /// Chunk containing the code in LuaAPI_Event_initMt.lua.
+  static Chunk _Event_initMt;
+  static unsigned char Event_initMt_lua[];
+  static unsigned int Event_initMt_lua_len;
+
+private:
 
   /// Loads the metatable of a Lua wrapper (if not already loaded).
   ///
   /// @param L Lua state
-  /// @param funcs The functions to install in the metatable.
   /// @param name The name for the metatable in LUA_REGISTRY.
-  /// @param chunk A Lua chunk to run immediately after the metatable is
-  ///              loaded, or NULL (no chunk).  If given, \p chunk is loaded
-  ///              and called with the newly created metatable as first
-  ///              argument.
-  /// @param len Then length of \p chunk in bytes.
+  /// @param funcs A `NULL`-terminated array of luaL_Reg entries to install
+  ///              or NULL (no entries to install).
+  /// @param chunks A `NULL`-terminated array of Chunk or NULL (no chunks to
+  ///              load).  If the array is given, each Lua chunk in it array
+  ///              is run immediately after the metatable is loaded; each
+  ///              receives the metatable as the first argument.
+  /// @return \c true if the metatable was loaded in this call, or \c false
+  ///         otherwise (metatable already loaded).
   ///
-  static void _loadLuaWrapperMt (lua_State *L,
-                                 const luaL_Reg *funcs, const char *name,
-                                 const char *chunk, size_t len);
-
+  static bool _loadLuaWrapperMt (lua_State *L, const char *name,
+                                 const luaL_Reg *const funcs[],
+                                 const Chunk *const chunks[]);
 
   /// Pops a value from the stack and sets it as the Lua wrapper of \p ptr.
   static void _attachLuaWrapper (lua_State *L, void *ptr);

@@ -16,13 +16,28 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "LuaAPI.h"
+#include "Composition.h"
+
 #include "Context.h"
+#include "Switch.h"
 
-const char *LuaAPI::_CONTEXT = "Ginga.Context";
-
-Context *
-LuaAPI::Context_check (lua_State *L, int i)
+Composition *
+LuaAPI::Composition_check (lua_State *L, int i)
 {
   g_return_val_if_fail (L != NULL, NULL);
-  return *((Context **) luaL_checkudata (L, i, LuaAPI::_CONTEXT));
+
+  if (luaL_testudata (L, i, LuaAPI::_CONTEXT))
+    {
+      Context *ctx = LuaAPI::Context_check (L, i);
+      return cast (Composition *, ctx);
+    }
+
+  if (luaL_testudata (L, i, LuaAPI::_SWITCH))
+    {
+      Switch *swtch = LuaAPI::Switch_check (L, i);
+      return cast (Composition *, swtch);
+    }
+
+  luaL_argerror (L, 3, "Ginga.Context or Ginga.Switch expected");
+  return NULL;
 }

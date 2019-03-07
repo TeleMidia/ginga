@@ -39,10 +39,9 @@ public:
   /// Possible concrete types for NCL objects.
   enum Type
   {
-     MEDIA          = 1 << 1,   ///< Media object.
-     MEDIA_SETTINGS = 1 << 2,   ///< MediaSettings object.
-     CONTEXT        = 1 << 3,   ///< Context object.
-     SWITCH         = 1 << 4    ///< Switch object.
+     CONTEXT = 1 << 1,   ///< Context object.
+     SWITCH  = 1 << 2,   ///< Switch object.
+     MEDIA   = 1 << 3,   ///< Media object.
   };
 
   /// Creates a new object.

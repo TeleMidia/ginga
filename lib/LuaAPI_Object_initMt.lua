@@ -3,12 +3,15 @@ do
    local trace = mt._trace
 
    local saved_attachData = assert (mt._attachData)
-   mt._attachData = function (self)
-      local data = {
-         _attribution  = {},    -- attribution evts indexed by id
-         _presentation = {},    -- presentation evts indexed by id
-         _selection    = {},    -- selection evts indexed by id
-      }
+   mt._attachData = function (self, data, funcs)
+      local data = data or {}
+      local funcs = funcs or {}
+
+      -- Private data.
+      data._attribution  = {}   -- attribution evts indexed by id
+      data._presentation = {}   -- presentation evts indexed by id
+      data._selection    = {}   -- selection evts indexed by id
+
       local get_data_attr = function ()
          return assert (data._attribution)
       end
@@ -18,16 +21,17 @@ do
       local get_data_seln = function ()
          return assert (data._selection)
       end
-      local funcs = {
-         document     = {mt.getDocument, nil},
-         parent       = {mt.getParent,   nil},
-         type         = {mt.getType,     nil},
-         id           = {mt.getId,       nil},
-         --
-         attribution  = {get_data_attr,  nil},
-         presentation = {get_data_pres,  nil},
-         selection    = {get_data_seln,  nil},
-      }
+
+      -- Getters & setters.
+      funcs.document     = {mt.getDocument, nil}
+      funcs.parent       = {mt.getParent,   nil}
+      funcs.type         = {mt.getType,     nil}
+      funcs.id           = {mt.getId,       nil}
+      --
+      funcs.attribution  = {get_data_attr,  nil}
+      funcs.presentation = {get_data_pres,  nil}
+      funcs.selection    = {get_data_seln,  nil}
+
       return saved_attachData (self, data, funcs)
    end
 

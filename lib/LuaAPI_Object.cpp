@@ -39,29 +39,29 @@ LuaAPI::_Object_getRegistryKey (Object *obj)
     case Object::SWITCH:
       return LuaAPI::_SWITCH;
     case Object::MEDIA:
-    case Object::MEDIA_SETTINGS:
       return LuaAPI::_MEDIA;
     default:
       g_assert_not_reached ();
     }
 }
 
+const struct luaL_Reg LuaAPI::_Object_funcs[] =
+  {
+   {"__getUnderlyingObject", LuaAPI::_l_Object_getUnderlyingObject},
+   {"getType",               LuaAPI::_l_Object_getType},
+   {"getDocument",           LuaAPI::_l_Object_getDocument},
+   {"getParent",             LuaAPI::_l_Object_getParent},
+   {"getId",                 LuaAPI::_l_Object_getId},
+   {"getProperty",           LuaAPI::_l_Object_getProperty},
+   {"setProperty",           LuaAPI::_l_Object_setProperty},
+   {"getEvents",             LuaAPI::_l_Object_getEvents},
+   {"getEvent",              LuaAPI::_l_Object_getEvent},
+   {NULL, NULL},
+  };
+
 void
 LuaAPI::Object_attachWrapper (lua_State *L, Object *obj)
 {
-  static const struct luaL_Reg funcs[] =
-    {
-     {"__getUnderlyingObject", LuaAPI::_l_Object_getUnderlyingObject},
-     {"getType",               LuaAPI::_l_Object_getType},
-     {"getDocument",           LuaAPI::_l_Object_getDocument},
-     {"getParent",             LuaAPI::_l_Object_getParent},
-     {"getId",                 LuaAPI::_l_Object_getId},
-     {"getProperty",           LuaAPI::_l_Object_getProperty},
-     {"setProperty",           LuaAPI::_l_Object_setProperty},
-     {"getEvents",             LuaAPI::_l_Object_getEvents},
-     {"getEvent",              LuaAPI::_l_Object_getEvent},
-     {NULL, NULL},
-    };
   const char *name;
 
   g_return_if_fail (L != NULL);
@@ -69,16 +69,29 @@ LuaAPI::Object_attachWrapper (lua_State *L, Object *obj)
 
   // Load and initialize metatable, if not loaded yet.
   name = LuaAPI::_Object_getRegistryKey (obj);
-  LuaAPI::_loadLuaWrapperMt (L, funcs, name,
-                             (const char *) LuaAPI::Object_initMt_lua,
-                             (size_t) LuaAPI::Object_initMt_lua_len);
 
   // Create Lua wrapper for object.
   switch (obj->getType ())
     {
     case Object::CONTEXT:
       {
+        static const struct luaL_Reg *const funcs[] =
+          {
+           _Object_funcs,
+           NULL
+          };
+
+        static const Chunk *const chunks[] =
+          {
+           &LuaAPI::_initMt,
+           &LuaAPI::_Object_initMt,
+           &LuaAPI::_Composition_initMt,
+           NULL
+          };
+
         Context **wrapper;
+
+        LuaAPI::_loadLuaWrapperMt (L, name, funcs, chunks);
         wrapper = (Context **) lua_newuserdata (L, sizeof (Context **));
         g_assert_nonnull (wrapper);
         *wrapper = (Context *) obj;
@@ -87,7 +100,23 @@ LuaAPI::Object_attachWrapper (lua_State *L, Object *obj)
       }
     case Object::SWITCH:
       {
+        static const struct luaL_Reg *const funcs[] =
+          {
+           _Object_funcs,
+           NULL
+          };
+
+        static const Chunk *const chunks[] =
+          {
+           &LuaAPI::_initMt,
+           &LuaAPI::_Object_initMt,
+           &LuaAPI::_Composition_initMt,
+           NULL
+          };
+
         Switch **wrapper;
+
+        LuaAPI::_loadLuaWrapperMt (L, name, funcs, chunks);
         wrapper = (Switch **) lua_newuserdata (L, sizeof (Switch **));
         g_assert_nonnull (wrapper);
         *wrapper = (Switch *) obj;
@@ -95,9 +124,24 @@ LuaAPI::Object_attachWrapper (lua_State *L, Object *obj)
         break;
       }
     case Object::MEDIA:
-    case Object::MEDIA_SETTINGS:
       {
-        Media **wrapper = (Media **) lua_newuserdata (L, sizeof (Media **));
+        static const struct luaL_Reg *const funcs[] =
+          {
+           _Object_funcs,
+           NULL
+          };
+
+        static const Chunk *const chunks[] =
+          {
+           &LuaAPI::_initMt,
+           &LuaAPI::_Object_initMt,
+           NULL
+          };
+
+        Media **wrapper;
+
+        LuaAPI::_loadLuaWrapperMt (L, name, funcs, chunks);
+        wrapper = (Media **) lua_newuserdata (L, sizeof (Media **));
         g_assert_nonnull (wrapper);
         *wrapper = (Media *) obj;
         g_assert_nonnull (*wrapper);
@@ -112,7 +156,7 @@ LuaAPI::Object_attachWrapper (lua_State *L, Object *obj)
   // Set LUA_REGISTRY[obj]=wrapper.
   LuaAPI::_attachLuaWrapper (L, obj);
 
-  // Call obj:__attachData().
+  // Call obj:_attachData().
   LuaAPI::_callLuaWrapper (L, obj, "_attachData", 0, 0);
 
   // Call _D:_addObject (obj).
@@ -130,7 +174,7 @@ LuaAPI::Object_detachWrapper (lua_State *L, Object *obj)
   LuaAPI::_pushLuaWrapper (L, obj);
   LuaAPI::_callLuaWrapper (L, obj->getDocument (), "_removeObject", 1, 0);
 
-  // Call obj:__detachData().
+  // Call obj:_detachData().
   LuaAPI::_callLuaWrapper (L, obj, "_detachData", 0, 0);
 
   // Set LUA_REGISTRY[obj] = nil.
@@ -246,7 +290,6 @@ LuaAPI::Object_Type_push (lua_State *L, Object::Type type)
       lua_pushliteral (L, OBJECT_SWITCH_STRING);
       break;
     case Object::MEDIA:
-    case Object::MEDIA_SETTINGS:
       lua_pushliteral (L, OBJECT_MEDIA_STRING);
       break;
     default:

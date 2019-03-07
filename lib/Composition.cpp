@@ -22,8 +22,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-Composition::Composition (Document *doc,
-                          Composition *parent,
+Composition::Composition (Document *doc, Composition *parent,
                           const string &id) : Object (doc, parent, id)
 {
 }

@@ -15,8 +15,8 @@ do
    end
 
    mt._attachData = function (self, data, funcs)
-      assert (type (data)  == 'table')
-      assert (type (funcs) == 'table')
+      local data = data or {}
+      local funcs = funcs or {}
       local _mt = {}
       _mt.__index = function (_, k)
          local t = funcs[k]

@@ -35,7 +35,7 @@ Context::Context (Document *doc,
   _awakeChildren = 0;
   _status = true;
 
-  LuaAPI::Context_attachWrapper (_L, this);
+  LuaAPI::Object_attachWrapper (_L, this);
   _initEvents ();
 }
 
@@ -60,7 +60,7 @@ Context::~Context ()
     }
 
   _finiEvents ();
-  LuaAPI::Context_detachWrapper (_L, this);
+  LuaAPI::Object_detachWrapper (_L, this);
 }
 
 // Public: Object.

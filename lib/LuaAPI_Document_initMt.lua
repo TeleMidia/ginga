@@ -5,8 +5,8 @@ do
    local saved_attachData = assert (mt._attachData)
    mt._attachData = function (self)
       local data = {
-         _object  = {},         -- all objects indexed by id
-         _event   = {},         -- all events indexed by id
+         _object    = {},         -- objects indexed by id
+         _event     = {},         -- events indexed by id
       }
       local get_data_object = function ()
          return assert (data._object)
@@ -110,12 +110,10 @@ do
       if tp == nil then
          return nil             -- bad format
       end
-
       local obj = self.object[o]
       if not obj then
          return nil             -- no such object
       end
-
       return obj:getEvent (tp, e)
    end
 

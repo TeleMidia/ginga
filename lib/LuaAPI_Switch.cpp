@@ -20,18 +20,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 const char *LuaAPI::_SWITCH = "Ginga.Switch";
 
-void
-LuaAPI::Switch_attachWrapper (lua_State *L, Switch *swtch)
-{
-  LuaAPI::Object_attachWrapper (L, swtch);
-}
-
-void
-LuaAPI::Switch_detachWrapper (lua_State *L, Switch *swtch)
-{
-  LuaAPI::Object_detachWrapper (L, swtch);
-}
-
 Switch *
 LuaAPI::Switch_check (lua_State *L, int i)
 {
