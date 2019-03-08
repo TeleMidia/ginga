@@ -1,32 +1,23 @@
 do
    local mt = ...
    local trace = mt._trace
+   mt._traceSelf = function (self) return self.qualifiedId end
 
    local saved_attachData = assert (mt._attachData)
-   mt._attachData = function (self)
-      local data  = {}
-      local funcs = {
-         object      = {mt.getObject,      nil},
-         type        = {mt.getType,        nil},
-         id          = {mt.getId,          nil},
-         qualifiedId = {mt.getQualifiedId, nil},
-         state       = {mt.getState,       mt.setState},
-         beginTime   = {mt.getBeginTime,   mt.setBeginTime},
-         endTime     = {mt.getEndTime,     mt.setEndTime},
-         label       = {mt.getLabel,       mt.setLabel},
-      }
-      return saved_attachData (self, data, funcs)
-   end
+   mt._attachData = function (self, data, funcs)
+      local data  = data or {}
+      local funcs = funcs or {}
 
-   -- Dumps event to string.
-   mt._dump = function (self)
-      trace ('_dump (%s)', self.id)
-      if self.type == 'presentation' then
-         return ('%s (%s,%s,%s,%s)')
-            :format (self.qualifiedId, self.state,
-                     self.beginTime, self.endTime, self.label)
-      else
-         return ('%s (%s)'):format (self.qualifiedId, self.state)
-      end
+      -- Getters & setters.
+      funcs.object      = {mt.getObject,      nil}
+      funcs.type        = {mt.getType,        nil}
+      funcs.id          = {mt.getId,          nil}
+      funcs.qualifiedId = {mt.getQualifiedId, nil}
+      funcs.state       = {mt.getState,       mt.setState}
+      funcs.beginTime   = {mt.getBeginTime,   mt.setBeginTime}
+      funcs.endTime     = {mt.getEndTime,     mt.setEndTime}
+      funcs.label       = {mt.getLabel,       mt.setLabel}
+
+      return saved_attachData (self, data, funcs)
    end
 end

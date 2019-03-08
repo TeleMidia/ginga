@@ -13,9 +13,9 @@ do
       return saved_attachData (self, data, funcs)
    end
 
-   -- Implementation of Composition::getChildren().
+   -- Composition::getChildren().
    mt.getChildren = function (self)
-      trace ('getChildren (%s)', self.id)
+      trace (self, 'getChildren')
       error ('not implemented')
    end
 end

@@ -1,93 +1,109 @@
+-- Parses qualified id.
+--
+-- Returns the resulting event type, object id, and event id if successful;
+-- otherwise returns nil.
+--
+local parseQualifiedId = function (id)
+   local tp, o, e
+
+   o, e = id:match ('([%w_-]+)@([%w_-]+)')
+   if o and e then
+      if e == 'lambda' then
+         e = '@lambda'
+      end
+      tp = 'presentation'
+      goto tail
+   end
+
+   o, e = id:match ('([%w_-]+)%.([%w_-]+)')
+   if o and e then
+      tp = 'attribution'
+      goto tail
+   end
+
+   o, e = id:match ('([%w_-]+)<([%w_-]+)>')
+   if o and e then
+      tp = 'selection'
+   else
+      return nil             -- bad format
+   end
+
+   ::tail::
+   assert (tp)
+   assert (o)
+   assert (e)
+   return tp, o, e
+end
+
+-- Initialize document metatable.
 do
    local mt = ...
+
    local trace = mt._trace
+   mt._traceOff.getObjects = true
+   mt._traceOff.getRoot    = true
 
    local saved_attachData = assert (mt._attachData)
-   mt._attachData = function (self)
-      local data = {
-         _object    = {},         -- objects indexed by id
-         _event     = {},         -- events indexed by id
-      }
+   mt._attachData = function (self, data, funcs)
+      local data = data or {}
+      local funcs = funcs or {}
+
+      -- Private data.
+      data._object = {}         -- objects indexed by id
+      data._event  = {}         -- events indexed by id
+
       local get_data_object = function ()
          return assert (data._object)
       end
       local get_data_event = function ()
          return assert (data._event)
       end
-      local funcs = {
-         objects  = {mt.getObjects,   nil},
-         root     = {mt.getRoot,      nil},
-         settings = {mt.getSettings,  nil},
-         --
-         object   = {get_data_object, nil},
-         event    = {get_data_event,  nil},
-      }
+
+      -- Getters & setters.
+      funcs.objects  = {mt.getObjects,   nil}
+      funcs.root     = {mt.getRoot,      nil}
+      funcs.settings = {mt.getSettings,  nil}
+      --
+      funcs.object   = {get_data_object, nil}
+      funcs.event    = {get_data_event,  nil}
+
       return saved_attachData (self, data, funcs)
    end
 
-   -- Called when obj is added to document.
+   -- Adds object to document.
    mt._addObject = function (self, obj)
-      trace ('_addObject (%s)', obj.id)
+      trace (self, '_addObject', obj.id)
       mt[self]._object[obj.id] = obj
    end
 
-   -- Called when obj is removed from document.
+   -- Removes object from document.
    mt._removeObject = function (self, obj)
-      trace ('_removeObject (%s)', obj.id)
+      trace (self, '_removeObject', obj.id)
       mt[self]._object[obj.id] = nil
    end
 
-   -- Called when evt is added to some object.
+   -- Adds event to document.
    mt._addEvent = function (self, evt)
-      trace ('_addEvent (%s)', evt.qualifiedId)
+      trace (self, '_addEvent', evt.qualifiedId)
       mt[self]._event[evt.qualifiedId] = evt
    end
 
-   -- Called when evt is removed from some object.
+   -- Removes event from document.
    mt._removeEvent = function (self, evt)
-      trace ('_removeEvent (%s)', evt.qualifiedId)
+      trace (self, '_removeEvent', evt.qualifiedId)
       mt[self]._event[evt.qualifiedId] = nil
    end
 
-   -- Parses the given qualified id.
-   -- This can be called as a method or as an ordinary function.
-   mt._parseQualifiedId = function  (self, id)
-      local id = id or self
-      --trace ('_parseQualifiedId (%s)', id)
-      local tp, o, e
-
-      o, e = id:match ('([%w_-]+)@([%w_-]+)')
-      if o and e then
-         if e == 'lambda' then
-            e = '@lambda'
-         end
-         tp = 'presentation'
-         goto tail
-      end
-
-      o, e = id:match ('([%w_-]+)%.([%w_-]+)')
-      if o and e then
-         tp = 'attribution'
-         goto tail
-      end
-
-      o, e = id:match ('([%w_-]+)<([%w_-]+)>')
-      if o and e then
-         tp = 'selection'
-      else
-         return nil             -- bad format
-      end
-
-      ::tail::
-      assert (tp)
-      assert (o)
-      assert (e)
-      return tp, o, e
+   -- Workhorse of Document::createEvent().
+   local saved_createEvent = assert (mt._createEvent)
+   mt._createEvent = function (self, type, objId, evtId)
+      trace (self, '_createEvent', type, objId, evtId)
+      return saved_createEvent (self, type, objId, evtId)
    end
 
-   -- Implementation of Document::getObjects().
+   -- Document::getObjects().
    mt.getObjects = function (self, tmask)
-      --trace ('getObjects ()')
+      trace (self, 'getObjects', tmask)
       local t = {}
       for _,v in pairs (mt[self]._object) do
          if tmask == nil or (type (tmask == 'table') and tmask[v.type]) then
@@ -97,16 +113,16 @@ do
       return t
    end
 
-   -- Implementation of Document::getObject().
+   -- Document::getObject().
    mt.getObject = function (self, id)
-      --trace ('getObject (%s)', id)
+      trace (self, 'getObject', id)
       return mt[self]._object[id]
    end
 
-   -- Implementation of Document::getEvent().
+   -- Document::getEvent().
    mt.getEvent = function (self, id)
-      --trace ('getEvent (%s)', id)
-      local tp, o, e = self:_parseQualifiedId (id)
+      trace (self, 'getEvent', id)
+      local tp, o, e = parseQualifiedId (id)
       if tp == nil then
          return nil             -- bad format
       end
@@ -117,23 +133,30 @@ do
       return obj:getEvent (tp, e)
    end
 
-   -- Implementation of Document::getRoot().
+   -- Document::getRoot().
    mt.getRoot = function (self)
-      --trace ('getRoot ()')
+      trace (self, 'getRoot')
       return mt[self]._object.__root__
    end
 
-   -- Implementation of Document::getSettings ().
+   -- Document::getSettings ().
    mt.getSettings = function (self)
-      --trace ('getSettings ()')
+      trace (self, 'getSettings')
       return mt[self]._object.__settings__
    end
 
-   -- Implementation of both versions of Document::createEvent().
+   -- Document::createObject().
+   local saved_createObject = assert (mt.createObject)
+   mt.createObject = function (self, tp, parent, id)
+      trace (self, 'createObject', tp, parent, id)
+      return saved_createObject (self, tp, parent, id)
+   end
+
+   -- Document::createEvent().
    mt.createEvent = function (self, tp, objId, evtId)
-      --trace ('createEvent (%s, %s, %s)', tp, objId, evtId)
+      trace (self, 'createEvent', tp, objId, evtId)
       if objId == nil and evtId == nil then
-         tp, objId, evtId = self:_parseQualifiedId (tp)
+         tp, objId, evtId = parseQualifiedId (tp)
       end
       return self:_createEvent (tp, objId, evtId)
    end

@@ -1,6 +1,9 @@
 do
    local mt = ...
    local trace = mt._trace
+   mt._traceSelf = function (self) return self.id end
+   mt._traceOff._addEvent    = true
+   mt._traceOff._removeEvent = true
 
    local saved_attachData = assert (mt._attachData)
    mt._attachData = function (self, data, funcs)
@@ -35,29 +38,17 @@ do
       return saved_attachData (self, data, funcs)
    end
 
-   -- Called when evt is added to object.
+   -- Adds event to object.
    mt._addEvent = function (self, evt)
-      --trace ('_addEvent (%s, %s)', self.id, evt.id)
+      trace (self, '_addEvent', evt.id)
       mt[self]['_'..evt.type][evt.id] = evt
       self.document:_addEvent (evt)
    end
 
-   -- Called when evt is removed from object.
+   -- Removes event from object.
    mt._removeEvent = function (self, evt)
-      --trace ('_removeEvent (%s, %s)', self.id, evt.id)
+      trace (self, '_removeEvent', evt.id)
       mt[self]['_'..evt.type][evt.id] = nil
       self.document:_removeEvent (evt)
-   end
-
-   mt._beforeEventTransition = function (self, evt, from, to, params)
-      -- trace ('_beforeEventTransition (%s, %s, %s, %s)',
-      --        self.id, evt.id, from, to)
-      return true
-   end
-
-   mt._afterEventTransition = function (self, evt, from, to, params)
-      -- trace ('_afterEventTransition (%s, %s, %s, %s)',
-      --        self.id, evt.id, from, to)
-      return true
    end
 end
