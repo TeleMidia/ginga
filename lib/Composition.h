@@ -15,31 +15,40 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef COMPOSITION_H
-#define COMPOSITION_H
+#ifndef GINGA_COMPOSITION_H
+#define GINGA_COMPOSITION_H
 
 #include "Object.h"
 
 GINGA_NAMESPACE_BEGIN
 
+/// Composition object in an NCL document.
+///
+/// @see Context, Switch.
+///
 class Composition : public Object
 {
 public:
-  explicit Composition (Document *doc,
-                        Composition *parent,
-                        const string &id);
 
+  /// Creates a new composition.
+  Composition (Document *doc, const string &id);
+
+  /// Destroys the composition.
   virtual ~Composition () = 0;
 
-  const set<Object *> *getChildren ();
-  Object *getChildById (const string &);
-  Object *getChildByIdOrAlias (const string &);
-  bool addChild (Object *);
+  /// Gets the set of objects in composition.
+  void getChildren (set<Object *> *children);
 
-protected:
-  set<Object *> _children;
+  /// Gets the object with the given id in the composition.
+  Object *getChild (const string &id);
+
+  /// Adds object to composition.
+  void addChild (Object *obj);
+
+  /// Removes object from composition.
+  void removeChild (Object *obj);
 };
 
 GINGA_NAMESPACE_END
 
-#endif // COMPOSITION_H
+#endif // GINGA_COMPOSITION_H

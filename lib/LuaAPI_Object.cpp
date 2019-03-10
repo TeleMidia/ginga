@@ -27,51 +27,25 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #define OBJECT_SWITCH_STRING   "switch"
 #define OBJECT_MEDIA_STRING    "media"
 
-const char *
-LuaAPI::_Object_getRegistryKey (Object *obj)
-{
-  g_return_val_if_fail (obj != NULL, NULL);
-
-  switch (obj->getType ())
-    {
-    case Object::CONTEXT:
-      return LuaAPI::_CONTEXT;
-    case Object::SWITCH:
-      return LuaAPI::_SWITCH;
-    case Object::MEDIA:
-      return LuaAPI::_MEDIA;
-    default:
-      g_assert_not_reached ();
-    }
-}
-
 const struct luaL_Reg LuaAPI::_Object_funcs[] =
   {
-   {"__getUnderlyingObject", LuaAPI::_l_Object_getUnderlyingObject},
-   {"getType",               LuaAPI::_l_Object_getType},
-   {"getDocument",           LuaAPI::_l_Object_getDocument},
-   {"getParent",             LuaAPI::_l_Object_getParent},
-   {"getId",                 LuaAPI::_l_Object_getId},
+   {"_getUnderlyingObject",  LuaAPI::_l_Object_getUnderlyingObject},
    {"getProperty",           LuaAPI::_l_Object_getProperty},
    {"setProperty",           LuaAPI::_l_Object_setProperty},
-   {"getEvents",             LuaAPI::_l_Object_getEvents},
-   {"getEvent",              LuaAPI::_l_Object_getEvent},
    {NULL, NULL},
   };
 
 void
-LuaAPI::Object_attachWrapper (lua_State *L, Object *obj)
+LuaAPI::Object_attachWrapper (lua_State *L, Object *obj, Document *doc,
+                              Object::Type type, const string &id)
 {
   const char *name;
 
   g_return_if_fail (L != NULL);
   g_return_if_fail (obj != NULL);
 
-  // Load and initialize metatable, if not loaded yet.
-  name = LuaAPI::_Object_getRegistryKey (obj);
-
   // Create Lua wrapper for object.
-  switch (obj->getType ())
+  switch (type)
     {
     case Object::CONTEXT:
       {
@@ -91,6 +65,7 @@ LuaAPI::Object_attachWrapper (lua_State *L, Object *obj)
 
         Context **wrapper;
 
+        name = LuaAPI::_CONTEXT;
         LuaAPI::_loadLuaWrapperMt (L, name, funcs, chunks);
         wrapper = (Context **) lua_newuserdata (L, sizeof (Context **));
         g_assert_nonnull (wrapper);
@@ -116,6 +91,7 @@ LuaAPI::Object_attachWrapper (lua_State *L, Object *obj)
 
         Switch **wrapper;
 
+        name = LuaAPI::_SWITCH;
         LuaAPI::_loadLuaWrapperMt (L, name, funcs, chunks);
         wrapper = (Switch **) lua_newuserdata (L, sizeof (Switch **));
         g_assert_nonnull (wrapper);
@@ -140,6 +116,7 @@ LuaAPI::Object_attachWrapper (lua_State *L, Object *obj)
 
         Media **wrapper;
 
+        name = LuaAPI::_MEDIA;
         LuaAPI::_loadLuaWrapperMt (L, name, funcs, chunks);
         wrapper = (Media **) lua_newuserdata (L, sizeof (Media **));
         g_assert_nonnull (wrapper);
@@ -157,11 +134,10 @@ LuaAPI::Object_attachWrapper (lua_State *L, Object *obj)
   LuaAPI::_attachLuaWrapper (L, obj);
 
   // Call obj:_attachData().
-  LuaAPI::_callLuaWrapper (L, obj, "_attachData", 0, 0);
-
-  // Call _D:_addObject (obj).
-  LuaAPI::_pushLuaWrapper (L, obj);
-  LuaAPI::_callLuaWrapper (L, obj->getDocument (), "_addObject", 1, 0);
+  LuaAPI::Document_push (L, doc);
+  LuaAPI::Object_Type_push (L, type);
+  lua_pushstring (L, id.c_str ());
+  LuaAPI::_callLuaWrapper (L, obj, "_attachData", 3, 0);
 }
 
 void
@@ -169,10 +145,6 @@ LuaAPI::Object_detachWrapper (lua_State *L, Object *obj)
 {
   g_return_if_fail (L != NULL);
   g_return_if_fail (obj != NULL);
-
-  // Call _D:_removeObject (obj).
-  LuaAPI::_pushLuaWrapper (L, obj);
-  LuaAPI::_callLuaWrapper (L, obj->getDocument (), "_removeObject", 1, 0);
 
   // Call obj:_detachData().
   LuaAPI::_callLuaWrapper (L, obj, "_detachData", 0, 0);
@@ -236,37 +208,6 @@ LuaAPI::Object_Type_check (lua_State *L, int i)
     }
 }
 
-unsigned int
-LuaAPI::Object_Type_Mask_check (lua_State *L, int i)
-{
-  unsigned int mask;
-
-  g_return_val_if_fail (L != NULL, 0);
-
-  if (lua_isnoneornil (L, i))
-    return (unsigned int) -1;
-
-  luaL_argcheck (L, lua_type (L, i) == LUA_TTABLE, i, "expected table");
-
-  mask = 0;
-  lua_getfield (L, i, OBJECT_CONTEXT_STRING);
-  if (lua_toboolean (L, -1))
-    mask &= Object::CONTEXT;
-  lua_pop (L, 1);
-
-  lua_getfield (L, i, OBJECT_SWITCH_STRING);
-  if (lua_toboolean (L, -1))
-    mask &= Object::SWITCH;
-  lua_pop (L, 1);
-
-  lua_getfield (L, i, OBJECT_MEDIA_STRING);
-  if (lua_toboolean (L, -1))
-    mask &= Object::MEDIA;
-  lua_pop (L, 1);
-
-  return mask;
-}
-
 void
 LuaAPI::Object_push (lua_State *L, Object *obj)
 {
@@ -298,82 +239,22 @@ LuaAPI::Object_Type_push (lua_State *L, Object::Type type)
 }
 
 void
-LuaAPI::Object_Type_Mask_push (lua_State *L, unsigned int mask)
+LuaAPI::Object_call (lua_State *L, Object *obj, const char *name,
+                     int nargs, int nresults)
 {
   g_return_if_fail (L != NULL);
+  g_return_if_fail (obj != NULL);
+  g_return_if_fail (name != NULL);
+  g_return_if_fail (nargs >= 0);
+  g_return_if_fail (nresults >= 0);
 
-  lua_newtable (L);
-  if (mask & Object::CONTEXT)
-    {
-      lua_pushliteral (L, OBJECT_CONTEXT_STRING);
-      lua_pushboolean (L, 1);
-      lua_rawset (L, -3);
-    }
-  if (mask & Object::SWITCH)
-    {
-      lua_pushliteral (L, OBJECT_SWITCH_STRING);
-      lua_pushboolean (L, 1);
-      lua_rawset (L, -3);
-    }
-  if (mask & Object::MEDIA)
-    {
-      lua_pushliteral (L, OBJECT_MEDIA_STRING);
-      lua_pushboolean (L, 1);
-      lua_rawset (L, -3);
-    }
+  LuaAPI::_callLuaWrapper (L, obj, name, nargs, nresults);
 }
 
 int
 LuaAPI::_l_Object_getUnderlyingObject (lua_State *L)
 {
   lua_pushlightuserdata (L, LuaAPI::Object_check (L, 1));
-  return 1;
-}
-
-int
-LuaAPI::_l_Object_getType (lua_State *L)
-{
-  Object *obj;
-
-  obj = LuaAPI::Object_check (L, 1);
-  LuaAPI::Object_Type_push (L, obj->getType ());
-
-  return 1;
-}
-
-int
-LuaAPI::_l_Object_getDocument (lua_State *L)
-{
-  Object *obj;
-
-  obj = LuaAPI::Object_check (L, 1);
-  LuaAPI::_pushLuaWrapper (L, obj->getDocument ());
-
-  return 1;
-}
-
-int
-LuaAPI::_l_Object_getParent (lua_State *L)
-{
-  Object *obj;
-
-  obj = LuaAPI::Object_check (L, 1);
-  if (obj->getParent () != NULL)
-    LuaAPI::_pushLuaWrapper (L, obj->getParent ());
-  else
-    lua_pushnil (L);
-
-  return 1;
-}
-
-int
-LuaAPI::_l_Object_getId (lua_State *L)
-{
-  Object *obj;
-
-  obj = LuaAPI::Object_check (L, 1);
-  lua_pushstring (L, obj->getId ().c_str ());
-
   return 1;
 }
 
@@ -407,48 +288,4 @@ LuaAPI::_l_Object_setProperty (lua_State *L)
   obj->setProperty (name, value, dur);
 
   return 0;
-}
-
-int
-LuaAPI::_l_Object_getEvents (lua_State *L)
-{
-  Object *obj;
-  set<Event *> events;
-  lua_Integer i;
-
-  obj = LuaAPI::Object_check (L, 1);
-  obj->getEvents (&events);
-
-  lua_newtable (L);
-  i = 1;
-  for (auto evt: events)
-    {
-      LuaAPI::_pushLuaWrapper (L, evt);
-      lua_rawseti (L, -2, i++);
-    }
-
-  return 1;
-}
-
-int
-LuaAPI::_l_Object_getEvent (lua_State *L)
-{
-  Object *obj;
-  Event::Type type;
-  const char *id;
-  Event *evt;
-
-  obj = LuaAPI::Object_check (L, 1);
-  type = LuaAPI::Event_Type_check (L, 2);
-  id = luaL_checkstring (L, 3);
-
-  evt = obj->getEvent (type, id);
-  if (evt == NULL)
-    {
-      lua_pushnil (L);
-      return 1;
-    }
-
-  LuaAPI::_pushLuaWrapper (L, evt);
-  return 1;
 }

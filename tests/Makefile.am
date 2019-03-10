@@ -73,8 +73,8 @@ ncls=
 progs=
 scrts=
 
-progs+= test-Document
-test_Document_SOURCES= test-Document.cpp
+#progs+= test-Document
+#test_Document_SOURCES= test-Document.cpp
 scrts+= test-lua-Document.lua
 
 # lib/aux-ginga.h ----------------------------------------------------------

@@ -25,13 +25,9 @@ GINGA_NAMESPACE_BEGIN
 class MediaSettings : public Media
 {
 public:
-  explicit MediaSettings (Document *doc,
-                          Composition *parent,
-                          const string &id);
+  MediaSettings (Document *doc, const string &id);
   ~MediaSettings ();
 
-  // Object:
-  Object::Type getType () override;
   void setProperty (const string &, const string &, Time) override;
   void sendTick (Time, Time, Time) override;
 

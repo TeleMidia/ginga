@@ -62,9 +62,17 @@ do
          fset (self, v)
       end
       mt[self] = setmetatable (data, _mt)
+      mt._init (self)
    end
 
    mt._detachData = function (self)
+      mt._fini (self)
       mt[self] = nil
+   end
+
+   mt._init = function ()
+   end
+
+   mt._fini = function ()
    end
 end

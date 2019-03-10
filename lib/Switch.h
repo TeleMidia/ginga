@@ -27,12 +27,10 @@ class Switch : public Composition
 {
 public:
   explicit Switch (Document *doc,
-                   Composition *parent,
                    const string &id);
   ~Switch ();
 
   // Object:
-  Object::Type getType () override;
   bool beforeTransition (Event *, Event::Transition) override;
   bool afterTransition (Event *, Event::Transition) override;
 

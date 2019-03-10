@@ -119,7 +119,11 @@ LuaAPI::_callLuaWrapper (lua_State *L, void *ptr, const char *name,
                          int nargs, int nresults)
 {
   LuaAPI::_pushLuaWrapper (L, ptr);
-  g_assert (luaL_getmetafield (L, -1, name) != LUA_TNIL);
+  if (unlikely (luaL_getmetafield (L, -1, name) == LUA_TNIL))
+    {
+      luax_dump_stack (L);
+      ERROR ("no method '%s' for object %p", name, ptr);
+    }
 
   lua_insert (L, (-nargs) -2);
   lua_insert (L, (-nargs) -1);

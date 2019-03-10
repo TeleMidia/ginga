@@ -62,8 +62,8 @@ public:
   static void Document_push (lua_State *L, Document *doc);
 
   /// Calls a method of the Lua wrapper of the given document.
-  static void Document_call (lua_State *L, Document *doc, const char *name,
-                             int nargs, int nresults);
+  static void Document_call (lua_State *L, Document *doc,
+                             const char *name, int nargs, int nresults);
 
 private:
 
@@ -86,7 +86,9 @@ private:
 public:
 
   /// Attaches Lua wrapper to \p obj.
-  static void Object_attachWrapper (lua_State *L, Object *obj);
+  static void Object_attachWrapper (lua_State *L, Object *obj,
+                                    Document *doc, Object::Type type,
+                                    const string &id);
 
   /// Detaches Lua wrapper from \p obj.
   static void Object_detachWrapper (lua_State *L, Object *obj);
@@ -97,31 +99,20 @@ public:
   /// Checks if the value at index \p i of stack is an Object::Type.
   static Object::Type Object_Type_check (lua_State *L, int i);
 
-  /// Checks if the value at index \p i of stack is an Object::Type mask.
-  static unsigned int Object_Type_Mask_check (lua_State *L, int i);
-
   /// Pushes the Lua wrapper of object onto stack.
   static void Object_push (lua_State *L, Object *obj);
 
   /// Pushes Object::Type (as string) onto stack.
   static void Object_Type_push (lua_State *L, Object::Type type);
 
-  /// Pushes Object::Type bit-mask (as table) onto stack.
-  static void Object_Type_Mask_push (lua_State *L, unsigned int mask);
+  /// Calls a method of the Lua wrapper of the given document.
+  static void Object_call (lua_State *L, Object *obj,
+                           const char *name, int nargs, int nresults);
 
 private:
 
-  /// Gets the registry key of the metatable of \p obj.
-  static const char *_Object_getRegistryKey (Object *obj);
-
   /// The functions to load in the metatable of Object.
   static const struct luaL_Reg _Object_funcs[];
-
-  /// Attaches Lua wrapper to \p obj.
-  static void _Object_attachWrapper (lua_State *L, Object *obj);
-
-  /// Detaches Lua wrapper from \p obj.
-  static void _Object_detachWrapper (lua_State *L, Object *obj);
 
   static int _l_Object_getUnderlyingObject (lua_State *L);
 
@@ -148,10 +139,14 @@ public:
   /// Checks if the value at index \p i of stack is a Composition wrapper.
   static Composition *Composition_check (lua_State *L, int i);
 
-  /// The functions to load in the metatable of Composition.
-  static const struct luaL_Reg _Composition_funcs[];
+  /// Calls a method of the Lua wrapper of the given composition.
+  static void Composition_call (lua_State *L, Composition *comp,
+                                const char *name, int nargs, int nresults);
 
 private:
+
+  /// The functions to load in the metatable of Composition.
+  static const struct luaL_Reg _Composition_funcs[];
 
   // Context, switch, and media --------------------------------------------
 
@@ -206,8 +201,8 @@ public:
   static void Event_State_push (lua_State *L, Event::State state);
 
   /// Calls a method of the Lua wrapper of the given event.
-  static void Event_call (lua_State *L, Event *doc, const char *name,
-                          int nargs, int nresults);
+  static void Event_call (lua_State *L, Event *doc,
+                          const char *name, int nargs, int nresults);
 
 private:
 
@@ -316,8 +311,8 @@ private:
   /// @param nargs The number of arguments to the method.
   /// @param nresults The number of results of the method.
   ///
-  static void _callLuaWrapper (lua_State *L, void *ptr, const char *name,
-                               int nargs, int nresults);
+  static void _callLuaWrapper (lua_State *L, void *ptr,
+                               const char *name, int nargs, int nresults);
 };
 
 GINGA_NAMESPACE_END

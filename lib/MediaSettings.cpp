@@ -23,11 +23,8 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-// Public.
-
-MediaSettings::MediaSettings (Document *doc,
-                              Composition *parent,
-                              const string &id) : Media (doc, parent, id)
+MediaSettings::MediaSettings (Document *doc, const string &id)
+  : Media (doc, id)
 {
   _nextFocus = "";
   _hasNextFocus = false;
@@ -40,12 +37,6 @@ MediaSettings::~MediaSettings ()
 }
 
 // Public: Object.
-
-Object::Type
-MediaSettings::getType ()
-{
-  return Object::MEDIA;
-}
 
 void
 MediaSettings::setProperty (const string &name, const string &value,
@@ -102,12 +93,13 @@ MediaSettings::updateCurrentFocus (const string &index)
     {
       set<Object *> objects;
 
-      _doc->getObjects (&objects, Object::MEDIA);
+      this->getDocument ()->getObjects (&objects);
       for (auto obj: objects)
         {
-          Media *media;
+          if (obj->getType () != Object::MEDIA)
+            continue;
 
-          media = cast (Media *, obj);
+          Media *media = cast (Media *, obj);
           g_assert_nonnull (media);
 
           if (media->isOccurring ()
@@ -123,7 +115,7 @@ MediaSettings::updateCurrentFocus (const string &index)
   string value = next;
   Event *evt = this->getEvent (Event::ATTRIBUTION, "service.currentFocus");
   g_assert_nonnull (evt);
-  _doc->evalAction (evt, Event::START, value);
+  this->getDocument ()->evalAction (evt, Event::START, value);
 }
 
 void

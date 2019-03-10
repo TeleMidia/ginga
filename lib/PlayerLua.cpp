@@ -196,10 +196,11 @@ PlayerLua::redraw (cairo_t *cr)
             {
               set<Event *> events;
 
-              _media->getEvents (&events, Event::PRESENTATION);
+              _media->getEvents (&events);
               for (auto &evt: events)
                 {
-                  if (evt->getLabel () == label)
+                  if (evt->getType () == Event::PRESENTATION
+                      && evt->getLabel () == label)
                     {
                       nclEvt = evt;
                       break;

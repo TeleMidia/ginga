@@ -38,14 +38,9 @@ public:
   /// Possible types for NCL events.
   enum Type
   {
-     /// Attribution of a value to a property of the object.
-     ATTRIBUTION  = 1 << 1,
-
-     /// Presentation of a time interval of the object.
-     PRESENTATION = 1 << 2,
-
-     /// Key press/release directed to the object.
-     SELECTION    = 1 << 3,
+     ATTRIBUTION,               ///< Attribution of a property.
+     PRESENTATION,              ///< Presentation of a time interval.
+     SELECTION,                 ///< Key press/release.
   };
 
   /// Possible states for NCL events.

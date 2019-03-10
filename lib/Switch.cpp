@@ -25,14 +25,11 @@ GINGA_NAMESPACE_BEGIN
 
 // Public.
 
-Switch::Switch (Document *doc,
-                Composition *parent,
-                const string &id) : Composition (doc, parent, id)
+Switch::Switch (Document *doc, const string &id) : Composition (doc, id)
 {
   _selected = nullptr;
 
-  LuaAPI::Object_attachWrapper (_L, this);
-  _initEvents ();
+  LuaAPI::Object_attachWrapper (_L, this, doc, Object::SWITCH, id);
 }
 
 Switch::~Switch ()
@@ -40,17 +37,10 @@ Switch::~Switch ()
   for (auto item : _rules)
     delete item.second;
 
-  _finiEvents ();
   LuaAPI::Object_detachWrapper (_L, this);
 }
 
 // Public: Object.
-
-Object::Type
-Switch::getType ()
-{
-  return Object::SWITCH;
-}
 
 bool
 Switch::beforeTransition (Event *evt, Event::Transition transition)
@@ -60,7 +50,9 @@ Switch::beforeTransition (Event *evt, Event::Transition transition)
     {
       // If we are acting on the switch's @lambda all the @lambda children
       // events can be selected.
-      for (Object *obj : *(getChildren ()))
+      set<Object *> children;
+      this->getChildren (&children);
+      for (Object *obj : children)
         switchPort_evts.insert (obj->getLambda ());
     }
   else
@@ -106,7 +98,7 @@ Switch::beforeTransition (Event *evt, Event::Transition transition)
               if (selected_evt == nullptr)
                 continue;
 
-              if (_doc->evalPredicate (pred))
+              if (this->getDocument ()->evalPredicate (pred))
                 {
                   g_assert_nonnull (selected_evt);
                   // Found one valid predicate.
@@ -165,7 +157,7 @@ Switch::afterTransition (Event *evt, Event::Transition transition)
           TRACE ("start %s at %" GINGA_TIME_FORMAT,
                  evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
           if (_selected == nullptr)
-            _doc->evalAction (evt, Event::STOP);
+            this->getDocument ()->evalAction (evt, Event::STOP);
           break;
         case Event::PAUSE:
           TRACE ("pause %s at %" GINGA_TIME_FORMAT,

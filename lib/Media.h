@@ -27,18 +27,9 @@ class Media : public Object
 {
 public:
 
-  /// Creates a new media object.
-  Media (Document *doc, Composition *parent, const string &id);
+  Media (Document *doc, const string &id);
 
-  /// Destroys media object.
   ~Media ();
-
-  /**
-   * @brief Gets the type of media object.
-   * @return Object::MEDIA.
-   * @see Object::getType().
-   */
-  Object::Type getType () override;
 
   // TODO ------------------------------------------------------------------
 

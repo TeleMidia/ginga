@@ -50,13 +50,8 @@ public:
   /// Gets the Lua state associated with document.
   lua_State *getLuaState ();
 
-  /// Gets the set of objects in document whose type match \p mask.
-  ///
-  /// @param[out] objects The set of matched objects.
-  /// @param mask A bitmask of or-ed Object::Type values.
-  ///
-  void getObjects (set<Object *> *objects,
-                   unsigned int mask=(unsigned int) -1);
+  /// Gets the set of objects in document.
+  void getObjects (set<Object *> *objects);
 
   /// Gets the object in document with the given id.
   ///
@@ -65,17 +60,10 @@ public:
   ///
   Object *getObject (const string &id);
 
-  /// Gets the event in document with the given qualified id.
-  ///
-  /// @param id The qualified id to match.
-  /// @return The matched event or \c NULL (no such event).
-  ///
-  Event *getEvent (const string &id);
-
   /// Gets the root Context of document.
   Context *getRoot ();
 
-  /// Gets the MediaSettings object of document.
+  /// Gets the settings Media object of document.
   MediaSettings *getSettings ();
 
   /// Creates a new object and adds it to document.
@@ -84,38 +72,30 @@ public:
   /// event, called `@lambda`.
   ///
   /// @param type The type of the new object.
-  /// @param parent The parent object to add the new object to.
   /// @param id The id of the new object (must not occur in document).
   /// @return The newly created object if successful, or \c NULL otherwise.
   ///
-  Object *createObject (Object::Type type, Composition *parent,
-                        const string &id);
+  Object *createObject (Object::Type type, const string &id);
 
-  /// Creates a new event and adds it to an object in document.
+  /// Gets the set of events in document.
+  void getEvents (set<Event *> *events);
+
+  /// Gets the event in document with the given qualified id.
   ///
-  /// @param type The type of the new event.
-  /// @param objId The id of the container object (must be in document).
-  /// @param evtId the id of the new event (must no occur in \p object).
-  /// @return The newly created event if successful, or \c NULL otherwise.
+  /// @param id The qualified id to match.
+  /// @return The matched event or \c NULL (no such event).
   ///
-  /// @see Object::createEvent().
-  ///
+  Event *getEvent (const string &id);
+
+  /// Creates a new event \p evtId in the object \p obj.
+  Event *createEvent (Event::Type type, Object *obj, const string &evtId);
+
+  /// Creates a new event \p evtId in the object with id \p objId.
   Event *createEvent (Event::Type type, const string &objId,
                       const string &evtId);
 
-  /// Creates a new event as specified by an event qualified id.
-  ///
-  /// @param qualId The qualified id of the event to be created.
-  /// @return The newly created event if successful, or \c NULL otherwise.
+  /// Creates a new event as specified by the qualified id \p qualId.
   Event *createEvent (const string &qualId);
-
-  /// Adds object to composition.
-  ///
-  /// @param obj The object to add to \p comp.
-  /// @param comp The composition to add \p obj to.
-  /// @return \c true if successful, or \c false otherwise.
-  ///
-  bool addObjectToComposition (Object *obj, Composition *comp);
 
 private:
 

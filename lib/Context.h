@@ -27,24 +27,10 @@ class Context : public Composition
 {
 public:
 
-  /**
-   * @brief Creates a new context object.
-   * @see Object::Object().
-   */
-  Context (Document *doc, Composition *parent, const string &id);
+  Context (Document *doc, const string &id);
 
-  /**
-   * @brief Destroys context object.
-   * @see Object::~Object().
-   */
   ~Context ();
 
-  /**
-   * @brief Gets the type of context object.
-   * @return Object::CONTEXT.
-   * @see Object::getType().
-   */
-  Object::Type getType () override;
 
   // TODO ------------------------------------------------------------------
 

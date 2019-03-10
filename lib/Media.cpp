@@ -31,31 +31,20 @@ GINGA_NAMESPACE_BEGIN
 
 // Public.
 
-Media::Media (Document *doc,
-              Composition *parent,
-              const string &id) : Object (doc, parent, id)
+Media::Media (Document *doc, const string &id) : Object (doc, id)
 {
   _player = NULL;
 
-  LuaAPI::Object_attachWrapper (_L, this);
-  _initEvents ();
+  LuaAPI::Object_attachWrapper (_L, this, doc, Object::MEDIA, id);
 }
 
 Media::~Media ()
 {
   this->doStop ();
 
-  _finiEvents ();
   LuaAPI::Object_detachWrapper (_L, this);
 }
 
-// Public: Object.
-
-Object::Type
-Media::getType ()
-{
-  return Object::MEDIA;
-}
 
 void
 Media::setProperty (const string &name, const string &value, Time dur)
@@ -96,7 +85,7 @@ Media::sendKey (const string &key, bool press)
           || ((key == "CURSOR_RIGHT"
                && (next = _player->getProperty ("moveRight")) != "")))
         {
-          _doc->getSettings ()->scheduleFocusUpdate (next);
+          this->getDocument ()->getSettings ()->scheduleFocusUpdate (next);
         }
     }
 
@@ -104,8 +93,11 @@ Media::sendKey (const string &key, bool press)
   if (_player->isFocused ())
     _player->sendKeyEvent (key, press);
 
+  set<Event *> events;
+  this->getEvents (&events);
+
   // Collect the events to be triggered.
-  for (auto evt : _events)
+  for (auto evt: events)
     {
       if (evt->getType () != Event::SELECTION)
         continue;
@@ -128,7 +120,8 @@ Media::sendKey (const string &key, bool press)
 
   // Run collected events.
   for (Event *evt : buf)
-    _doc->evalAction (evt, press ? Event::START : Event::STOP);
+    this->getDocument ()
+      ->evalAction (evt, press ? Event::START : Event::STOP);
 }
 
 void
@@ -156,7 +149,7 @@ Media::sendTick (Time total, Time diff, Time frame)
       TRACE ("eos %s at %" GINGA_TIME_FORMAT,
              lambda->getQualifiedId ().c_str (),
              GINGA_TIME_ARGS (_time));
-      _doc->evalAction (lambda, Event::STOP);
+      this->getDocument ()->evalAction (lambda, Event::STOP);
       return;
     }
 }
@@ -164,6 +157,11 @@ Media::sendTick (Time total, Time diff, Time frame)
 bool
 Media::beforeTransition (Event *evt, Event::Transition transition)
 {
+  set<Composition *> parents;
+  this->getParents (&parents);
+  auto it = parents.begin ();
+  Composition *parent = (it == parents.end ()) ? NULL: *it;
+
   switch (evt->getType ())
     {
     case Event::PRESENTATION:
@@ -171,10 +169,10 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
         {
         case Event::START:
           {
-            if (instanceof (Context *, _parent) && _parent->isSleeping ())
+            if (instanceof (Context *, parent) && parent->isSleeping ())
               {
-                _parent->getLambda ()->setParameter ("fromport", "true");
-                _parent->getLambda ()->transition (Event::START);
+                parent->getLambda ()->setParameter ("fromport", "true");
+                parent->getLambda ()->transition (Event::START);
               }
             // Create underlying player.
             if (evt->getState () == Event::SLEEPING)
@@ -183,7 +181,7 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
                   { // Lambda
                     Formatter *fmt;
 
-                    g_assert (_doc->getData ("formatter", (void **) &fmt));
+                    g_assert (this->getDocument ()->getData ("formatter", (void **) &fmt));
                     g_assert_null (_player);
                     _player = Player::createPlayer (
                         fmt, this, _properties["uri"], _properties["type"]);
@@ -268,13 +266,17 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
         case Event::PAUSE:
         case Event::RESUME:
           {
+
             if (!evt->isLambda ())
               break; // nothing to do
 
+            set<Event *> events;
+            this->getEvents (&events);
+
             // Pause/resume all the media anchors.
-            for (auto e : _events)
+            for (auto e: events)
               if (!e->isLambda () && e->getType () == Event::PRESENTATION)
-                _doc->evalAction (e, transition);
+                this->getDocument ()->evalAction (e, transition);
 
             // Pause/resume the underlying player.
             g_assert_nonnull (_player);
@@ -323,8 +325,11 @@ Media::afterTransition (Event *evt, Event::Transition transition)
               g_assert_nonnull (_player);
               Object::doStart ();
 
+              set<Event *> events;
+              this->getEvents (&events);
+
               // Schedule anchors.
-              for (Event *e : _events)
+              for (Event *e : events)
                 {
                   if (!e->isLambda ()
                       && (e->getType () == Event::PRESENTATION)
@@ -409,12 +414,12 @@ Media::afterTransition (Event *evt, Event::Transition transition)
               Time dur;
 
               name = evt->getId ();
-              _doc->evalPropertyRef (value, &value);
+              this->getDocument ()->evalPropertyRef (value, &value);
 
               dur = 0;
               if (evt->getParameter ("duration", &s))
                 {
-                  _doc->evalPropertyRef (s, &s);
+                  this->getDocument ()->evalPropertyRef (s, &s);
                   dur = ginga::parse_time (s);
                 }
               this->setProperty (name, value, dur);
@@ -496,10 +501,7 @@ void
 Media::doStop ()
 {
   if (_player == nullptr)
-    {
-      g_assert (this->isSleeping ());
-      return; // nothing to do
-    }
+    return; // nothing to do
 
   if (_player->getState () != Player::SLEEPING)
     _player->stop ();

@@ -41,3 +41,16 @@ LuaAPI::Composition_check (lua_State *L, int i)
   luaL_argerror (L, 3, "Ginga.Context or Ginga.Switch expected");
   return NULL;
 }
+
+void
+LuaAPI::Composition_call (lua_State *L, Composition *comp,
+                          const char *name, int nargs, int nresults)
+{
+  g_return_if_fail (L != NULL);
+  g_return_if_fail (comp != NULL);
+  g_return_if_fail (name != NULL);
+  g_return_if_fail (nargs >= 0);
+  g_return_if_fail (nresults >= 0);
+
+  LuaAPI::_callLuaWrapper (L, comp, name, nargs, nresults);
+}

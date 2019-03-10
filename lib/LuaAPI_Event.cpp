@@ -83,10 +83,6 @@ LuaAPI::Event_attachWrapper (lua_State *L, Event *evt)
 
   // Call evt:_attachData().
   LuaAPI::_callLuaWrapper (L, evt, "_attachData", 0, 0);
-
-  // Call evt.object:_addEvent (evt).
-  LuaAPI::_pushLuaWrapper (L, evt);
-  LuaAPI::_callLuaWrapper (L, evt->getObject (), "_addEvent", 1, 0);
 }
 
 void
@@ -94,10 +90,6 @@ LuaAPI::Event_detachWrapper (lua_State *L, Event *evt)
 {
   g_return_if_fail (L != NULL);
   g_return_if_fail (evt != NULL);
-
-  // Call evt.object:_removeEvent (evt).
-  LuaAPI::_pushLuaWrapper (L, evt);
-  LuaAPI::_callLuaWrapper (L, evt->getObject (), "_removeEvent", 1, 0);
 
   // Call evt:_detachData().
   LuaAPI::_callLuaWrapper (L, evt, "_detachData", 0, 0);

@@ -29,22 +29,14 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-// Public.
-
-Object::Object (Document *doc, Composition *parent, const string &id)
+Object::Object (Document *doc, unused (const string &id))
 {
   g_return_if_fail (doc != NULL);
 
-  _id = id;
-
-  _doc = doc;
   _L = doc->getLuaState ();
+  g_assert_nonnull (_L);
 
-  _parent = parent;
-  if (_parent != NULL)
-    _parent->addChild (this);
-
-  _time = GINGA_TIME_NONE;
+  _time = GINGA_TIME_NONE;      // DEPRECATED
 }
 
 Object::~Object ()
@@ -54,20 +46,132 @@ Object::~Object ()
 Document *
 Object::getDocument ()
 {
-  return _doc;
+  Document *doc;
+
+  LuaAPI::Object_call (_L, this, "getDocument", 0, 1);
+  doc = LuaAPI::Document_check (_L, -1);
+  lua_pop (_L, 1);
+
+  return doc;
 }
 
-Composition *
-Object::getParent ()
+Object::Type
+Object::getType ()
 {
-  return _parent;
+  Object::Type type;
+
+  LuaAPI::Object_call (_L, this, "getType", 0, 1);
+  type = LuaAPI::Object_Type_check (_L, -1);
+  lua_pop (_L, 1);
+
+  return type;
 }
 
 string
 Object::getId ()
 {
-  return _id;
+  const char *id;
+
+  LuaAPI::Object_call (_L, this, "getId", 0, 1);
+  id = luaL_checkstring (_L, -1);
+  lua_pop (_L, 1);
+
+  return string (id);
 }
+
+void
+Object::getParents (set<Composition *> *parents)
+{
+  lua_Integer len;
+  lua_Integer i;
+
+  g_return_if_fail (parents != NULL);
+
+  LuaAPI::Object_call (_L, this, "getParents", 0, 1);
+  g_assert (lua_type (_L, -1) == LUA_TTABLE);
+
+  len = luaL_len (_L, -1);
+  for (i = 1; i <= len; i++)
+    {
+      Composition *comp;
+
+      lua_rawgeti (_L, -1, i);
+      comp = LuaAPI::Composition_check (_L, -1);
+      parents->insert (comp);
+      lua_pop (_L, 1);
+    }
+}
+
+void
+Object::getEvents (set<Event *> *events)
+{
+  lua_Integer len;
+  lua_Integer i;
+
+  g_return_if_fail (events != NULL);
+
+  LuaAPI::Object_call (_L, this, "getEvents", 0, 1);
+  g_assert (lua_type (_L, -1) == LUA_TTABLE);
+
+  len = luaL_len (_L, -1);
+  for (i = 1; i <= len; i++)
+    {
+      Event *evt;
+
+      lua_rawgeti (_L, -1, i);
+      evt = LuaAPI::Event_check (_L, -1);
+      events->insert (evt);
+      lua_pop (_L, 1);
+    }
+}
+
+Event *
+Object::getEvent (Event::Type type, const string &id)
+{
+  Event *evt = NULL;
+
+  LuaAPI::Event_Type_push (_L, type);
+  lua_pushstring (_L, id.c_str ());
+  LuaAPI::Object_call (_L, this, "getEvent", 2, 1);
+  if (!lua_isnil (_L, -1))
+    {
+      evt = LuaAPI::Event_check (_L, -1);
+    }
+  lua_pop (_L, 1);
+
+  return evt;
+}
+
+Event *
+Object::getLambda ()
+{
+  Event *evt;
+
+  LuaAPI::Object_call (_L, this, "getLambda", 0, 1);
+  evt = LuaAPI::Event_check (_L, -1);
+  lua_pop (_L, 1);
+
+  return evt;
+}
+
+Event *
+Object::createEvent (Event::Type type, const string &id)
+{
+  Event *evt = NULL;
+
+  LuaAPI::Event_Type_push (_L, type);
+  lua_pushstring (_L, id.c_str ());
+  LuaAPI::Object_call (_L, this, "createEvent", 2, 1);
+  if (!lua_isnil (_L, -1))
+    {
+      evt = LuaAPI::Event_check (_L, -1);
+    }
+  lua_pop (_L, 1);
+
+  return evt;
+}
+
+// TODO --------------------------------------------------------------------
 
 const list<pair<string, Composition *> > *
 Object::getAliases ()
@@ -107,83 +211,24 @@ Object::setProperty (const string &name, const string &value, Time duration)
   _properties[name] = value;
 }
 
-void
-Object::getEvents (set<Event *> *events, unsigned int mask)
-{
-  g_return_if_fail (events != NULL);
-
-  for (auto evt: _events)
-    if (evt->getType () & mask)
-      events->insert (evt);
-}
-
-Event *
-Object::getEvent (Event::Type type, const string &id)
-{
-  for (auto evt: _events)
-    if (evt->getType () == type && evt->getId () == id)
-      return evt;
-  return NULL;
-}
-
-Event *
-Object::createEvent (Event::Type type, const string &id)
-{
-  Event *evt;
-
-  if (this->getEvent (type, id) != NULL)
-    return NULL;                // id already in use
-
-  evt = new Event (type, this, id);
-  _events.insert (evt);
-
-  return evt;
-}
-// Protected.
-
-void
-Object::_initEvents ()
-{
-  _lambda = this->createEvent (Event::PRESENTATION, "@lambda");
-  g_assert_nonnull (_lambda);
-}
-
-void
-Object::_finiEvents ()
-{
-  for (auto evt: _events)
-    delete evt;
-  _lambda = NULL;
-}
-
 // TODO --------------------------------------------------------------------
-
-Event *
-Object::getLambda ()
-{
-  g_assert_nonnull (_lambda);
-  return _lambda;
-}
 
 bool
 Object::isOccurring ()
 {
-  g_assert_nonnull (_lambda);
-  return _lambda->getState () == Event::OCCURRING;
+  return this->getLambda ()->getState () == Event::OCCURRING;
 }
 
 bool
 Object::isPaused ()
 {
-  g_assert_nonnull (_lambda);
-  return _lambda->getState () == Event::PAUSED;
+  return this->getLambda ()->getState () == Event::PAUSED;
 }
 
 bool
 Object::isSleeping ()
 {
-  g_assert_nonnull (_lambda);
-  return _lambda->getState () == Event::SLEEPING;
+  return this->getLambda ()->getState () == Event::SLEEPING;
 }
 
 const list<pair<Action, Time> > *
@@ -230,7 +275,7 @@ Object::sendTick (unused (Time total), Time diff, unused (Time frame))
 
   for (auto action : trigger)
     {
-      _doc->evalAction (action);
+      this->getDocument ()->evalAction (action);
       if (!this->isOccurring ())
         return;
     }
@@ -254,23 +299,38 @@ void
 Object::doStart ()
 {
   _time = 0;
-  if (_parent != nullptr && instanceof (Context *, _parent))
-    cast (Context *, _parent)->incAwakeChildren ();
+
+  set<Composition *> parents;
+  this->getParents (&parents);
+  auto it = parents.begin ();
+  Composition *parent = (it == parents.end ()) ? NULL: *it;
+
+  if (parent != NULL && instanceof (Context *, parent))
+    cast (Context *, parent)->incAwakeChildren ();
 
   // schedule set currentFocus if the object have focusIndex
   if (!this->getProperty ("focusIndex").empty ())
-    _doc->getSettings ()->scheduleFocusUpdate ("");
+    this->getDocument ()->getSettings ()->scheduleFocusUpdate ("");
 }
 
 void
 Object::doStop ()
 {
+  set<Event *> events;
+  this->getEvents (&events);
+
   _time = GINGA_TIME_NONE;
-  for (auto evt : _events)
+  for (auto evt: events)
     evt->setState (Event::SLEEPING);
   _delayed.clear ();
-  if (_parent != nullptr && instanceof (Context *, _parent))
-    cast (Context *, _parent)->decAwakeChildren ();
+
+  set<Composition *> parents;
+  this->getParents (&parents);
+  auto it = parents.begin ();
+  Composition *parent = (it == parents.end ()) ? NULL: *it;
+
+  if (parent != nullptr && instanceof (Context *, parent))
+    cast (Context *, parent)->decAwakeChildren ();
 }
 
 GINGA_NAMESPACE_END

@@ -24,31 +24,16 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-// TODO --------------------------------------------------------------------
-
-// Public.
-
-Context::Context (Document *doc,
-                  Composition *parent,
-                  const string &id) : Composition (doc, parent, id)
+Context::Context (Document *doc, const string &id) : Composition (doc, id)
 {
   _awakeChildren = 0;
   _status = true;
 
-  LuaAPI::Object_attachWrapper (_L, this);
-  _initEvents ();
+  LuaAPI::Object_attachWrapper (_L, this, doc, Object::CONTEXT, id);
 }
 
 Context::~Context ()
 {
-  // Stop.
-  _lambda->transition (Event::STOP);
-
-  // Delete children.
-  for (auto child: _children)
-    delete child;
-
-  // Delete predicates in links.
   for (auto link: _links)
     {
       for (auto &cond : link.first)
@@ -59,19 +44,8 @@ Context::~Context ()
           delete act.predicate;
     }
 
-  _finiEvents ();
   LuaAPI::Object_detachWrapper (_L, this);
 }
-
-// Public: Object.
-
-Object::Type
-Context::getType ()
-{
-  return Object::CONTEXT;
-}
-
-// TODO
 
 string
 Context::getProperty (unused (const string &name))
@@ -96,12 +70,17 @@ Context::sendTick (Time total, Time diff, Time frame)
   // Update object time.
   Object::sendTick (total, diff, frame);
 
+  set<Composition *> parents;
+  this->getParents (&parents);
+  auto it = parents.begin ();
+  Composition *parent = (it == parents.end ()) ? NULL: *it;
+
   // Check for EOS.
-  if (_parent == nullptr && _awakeChildren == 1)
+  if (parent == nullptr && _awakeChildren == 0)
     {
-      if (_doc->getSettings ()->isOccurring ())
+      if (this->getDocument ()->getSettings ()->isOccurring ())
         {
-          _doc->evalAction (_lambda, Event::STOP);
+          this->getDocument ()->evalAction (this->getLambda (), Event::STOP);
         }
       else
         {
@@ -110,7 +89,7 @@ Context::sendTick (Time total, Time diff, Time frame)
     }
   else if (_awakeChildren == 0)
     {
-      _doc->evalAction (_lambda, Event::STOP);
+      this->getDocument ()->evalAction (this->getLambda (), Event::STOP);
     }
 }
 
@@ -127,40 +106,56 @@ Context::beforeTransition (Event *evt, Event::Transition transition)
           break;
 
         case Event::STOP:
-          for (auto child : _children)
-            {
-              Event *lambda = child->getLambda ();
-              g_assert_nonnull (lambda);
-              lambda->transition (Event::STOP);
-            }
-          break;
+          {
+            set<Object *> children;
+            this->getChildren (&children);
+            for (auto child : children)
+              {
+                Event *lambda = child->getLambda ();
+                g_assert_nonnull (lambda);
+                lambda->transition (Event::STOP);
+              }
+            break;
+          }
 
         case Event::PAUSE:
-          for (auto child : _children)
-            {
-              Event *lambda = child->getLambda ();
-              g_assert_nonnull (lambda);
-              lambda->transition (Event::PAUSE);
-            }
-          break;
+          {
+            set<Object *> children;
+            this->getChildren (&children);
+            for (auto child : children)
+              {
+                Event *lambda = child->getLambda ();
+                g_assert_nonnull (lambda);
+                lambda->transition (Event::PAUSE);
+              }
+            break;
+          }
 
         case Event::RESUME:
-          for (auto child : _children)
-            {
-              Event *lambda = child->getLambda ();
-              g_assert_nonnull (lambda);
-              lambda->transition (Event::RESUME);
-            }
-          break;
+          {
+            set<Object *> children;
+            this->getChildren (&children);
+            for (auto child : children)
+              {
+                Event *lambda = child->getLambda ();
+                g_assert_nonnull (lambda);
+                lambda->transition (Event::RESUME);
+              }
+            break;
+          }
 
         case Event::ABORT:
-          for (auto child : _children)
-            {
-              Event *lambda = child->getLambda ();
-              g_assert_nonnull (lambda);
-              lambda->transition (Event::ABORT);
-            }
-          break;
+          {
+            set<Object *> children;
+            this->getChildren (&children);
+            for (auto child : children)
+              {
+                Event *lambda = child->getLambda ();
+                g_assert_nonnull (lambda);
+                lambda->transition (Event::ABORT);
+              }
+            break;
+          }
 
         default:
           g_assert_not_reached ();
@@ -182,6 +177,11 @@ Context::beforeTransition (Event *evt, Event::Transition transition)
 bool
 Context::afterTransition (Event *evt, Event::Transition transition)
 {
+  set<Composition *> parents;
+  this->getParents (&parents);
+  auto it = parents.begin ();
+  Composition *parent = (it == parents.end ()) ? NULL: *it;
+
   string param_test;
   switch (evt->getType ())
     {
@@ -193,10 +193,10 @@ Context::afterTransition (Event *evt, Event::Transition transition)
           // Start context as a whole.
           Object::doStart ();
 
-          if (instanceof (Context *, _parent) && _parent->isSleeping ())
+          if (instanceof (Context *, parent) && parent->isSleeping ())
             {
-              _parent->getLambda ()->setParameter ("fromport", "true");
-              _parent->getLambda ()->transition (Event::START);
+              parent->getLambda ()->setParameter ("fromport", "true");
+              parent->getLambda ()->transition (Event::START);
             }
 
           // Start all ports in the next tick if not started from port
@@ -247,12 +247,12 @@ Context::afterTransition (Event *evt, Event::Transition transition)
 
             name = evt->getId ();
             evt->getParameter ("value", &value);
-            _doc->evalPropertyRef (value, &value);
+            this->getDocument ()->evalPropertyRef (value, &value);
 
             dur = 0;
             if (evt->getParameter ("duration", &s))
               {
-                _doc->evalPropertyRef (s, &s);
+                this->getDocument ()->evalPropertyRef (s, &s);
                 dur = ginga::parse_time (s);
               }
             this->setProperty (name, value, dur);

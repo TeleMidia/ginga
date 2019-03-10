@@ -17,13 +17,14 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 #include "Composition.h"
+#include "LuaAPI.h"
 
 #include "Document.h"
 
 GINGA_NAMESPACE_BEGIN
 
-Composition::Composition (Document *doc, Composition *parent,
-                          const string &id) : Object (doc, parent, id)
+Composition::Composition (Document *doc, const string &id)
+  : Object (doc, id)
 {
 }
 
@@ -31,41 +32,61 @@ Composition::~Composition ()
 {
 }
 
-const set<Object *> *
-Composition::getChildren ()
+void
+Composition::getChildren (set<Object *> *children)
 {
-  return &_children;
+  lua_Integer len;
+  lua_Integer i;
+
+  g_return_if_fail (children != NULL);
+
+  LuaAPI::Composition_call (_L, this, "getChildren", 0, 1);
+  g_assert (lua_type (_L, -1) == LUA_TTABLE);
+
+  len = luaL_len (_L, -1);
+  for (i = 1; i <= len; i++)
+    {
+      Object *obj;
+
+      lua_rawgeti (_L, -1, i);
+      obj = LuaAPI::Object_check (_L, -1);
+      children->insert (obj);
+      lua_pop (_L, 1);
+    }
 }
 
 Object *
-Composition::getChildById (const string &id)
+Composition::getChild (const string &id)
 {
-  for (auto child : _children)
-    if (child->getId () == id)
-      return child;
-  return nullptr;
+  Object *obj = NULL;
+
+  lua_pushstring (_L, id.c_str ());
+  LuaAPI::Composition_call (_L, this, "getChild", 1, 1);
+  if (!lua_isnil (_L, -1))
+    {
+      obj = LuaAPI::Object_check (_L, -1);
+    }
+  lua_pop (_L, 1);
+
+  return obj;
 }
 
-Object *
-Composition::getChildByIdOrAlias (const string &id)
-{
-  Object *child;
-  if ((child = this->getChildById (id)) != nullptr)
-    return child;
-  for (auto child : _children)
-    if (child->hasAlias (id))
-      return child;
-  return nullptr;
-}
-
-bool
+void
 Composition::addChild (Object *child)
 {
-  g_return_val_if_fail (child != NULL, false);
+  g_return_if_fail (child != NULL);
 
-  g_assert (this->getDocument () == child->getDocument ());
+  LuaAPI::Object_push (_L, child);
+  LuaAPI::Composition_call (_L, this, "addChild", 1, 0);
+}
 
-  return tryinsert (child, _children, insert);
+void
+Composition::removeChild (Object *child)
+{
+  g_return_if_fail (child != NULL);
+
+  LuaAPI::Object_push (_L, child);
+  LuaAPI::Composition_call (_L, this, "removeChild", 1, 0);
 }
 
 GINGA_NAMESPACE_END

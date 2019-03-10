@@ -21,6 +21,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Composition.h"
 #include "Context.h"
 #include "Media.h"
+#include "MediaSettings.h"
 #include "Switch.h"
 
 const char *LuaAPI::_DOCUMENT = "Ginga.Document";
@@ -29,7 +30,7 @@ const struct luaL_Reg LuaAPI::_Document_funcs[] =
   {
    {"__gc",                 LuaAPI::__l_Document_gc},
    {"_getUnderlyingObject", LuaAPI::_l_Document_getUnderlyingObject},
-   {"createObject",         LuaAPI::_l_Document_createObject},
+   {"_createObject",        LuaAPI::_l_Document_createObject},
    {"_createEvent",         LuaAPI::_l_Document_createEvent},
    {NULL, NULL},
   };
@@ -140,33 +141,34 @@ LuaAPI::_l_Document_createObject (lua_State *L)
 {
   Document *doc;
   Object::Type type;
-  Composition *parent;
   const char *id;
 
   Object *obj;
 
   doc = LuaAPI::Document_check (L, 1);
   type = LuaAPI::Object_Type_check (L, 2);
-  parent = LuaAPI::Composition_check (L, 3);
-  id = luaL_checkstring (L, 4);
-
-  if (parent->getDocument () != doc)
-    goto fail;
+  id = luaL_checkstring (L, 3);
 
   if (doc->getObject (id) != NULL)
-    goto fail;
+    {
+      lua_pushnil (L);
+      return 1;
+    }
 
   obj = NULL;
   switch (type)
     {
     case Object::MEDIA:
-      obj = new Media (doc, parent, id);
+      if (g_str_equal (id, "__settings__")) // TODO: REMOVE
+        obj = new MediaSettings (doc, id);
+      else
+        obj = new Media (doc, id);
       break;
     case Object::CONTEXT:
-      obj = new Context (doc, parent, id);
+      obj = new Context (doc, id);
       break;
     case Object::SWITCH:
-      obj = new Switch (doc, parent, id);
+      obj = new Switch (doc, id);
       break;
     default:
       g_assert_not_reached ();
@@ -174,40 +176,24 @@ LuaAPI::_l_Document_createObject (lua_State *L)
 
   LuaAPI::_pushLuaWrapper (L, obj);
   return 1;
-
- fail:
-  lua_pushnil (L);
-  return 1;
 }
 
 int
 LuaAPI::_l_Document_createEvent (lua_State *L)
 {
-  Document *doc;
   Event::Type type;
-  const char *objId;
+  Object *obj;
   const char *evtId;
 
-  Object *obj;
-  Event *evt;
-
-  doc = LuaAPI::Document_check (L, 1);
+  LuaAPI::Document_check (L, 1);
   type = LuaAPI::Event_Type_check (L, 2);
-  objId = luaL_checkstring (L, 3);
+  obj = LuaAPI::Object_check (L, 3);
   evtId = luaL_checkstring (L, 4);
 
-  obj = doc->getObject (objId);
-  if (obj == NULL)
-    goto fail;
+  if (obj->getEvent (type, evtId))
+    lua_pushnil (L);
+  else
+    LuaAPI::_pushLuaWrapper (L, new Event (type, obj, evtId));
 
-  evt = obj->createEvent (type, evtId);
-  if (evt == NULL)
-    goto fail;
-
-  LuaAPI::_pushLuaWrapper (L, evt);
-  return 1;
-
- fail:
-  lua_pushnil (L);
   return 1;
 }

@@ -20,4 +20,20 @@ do
 
       return saved_attachData (self, data, funcs)
    end
+
+   -- Initialization.
+   local saved_init = assert (mt._init)
+   mt._init = function (self)
+      self.object:_addEvent (self) -- TODO: REMOVE
+      self.object.document:_addEvent (self)
+      return saved_init (self)
+   end
+
+   -- Finalization.
+   local saved_fini = assert (mt._fini)
+   mt._fini = function (self)
+      self.object:_removeEvent (self) -- TODO: REMOVE
+      self.object.document:_removeEvent (self)
+      return saved_fini (self)
+   end
 end

@@ -231,12 +231,13 @@ Formatter::resize (int width, int height)
   }
 
   // Resize each media object in document.
-  _doc->getObjects (&objects, Object::MEDIA);
-  for (auto obj : objects)
+  _doc->getObjects (&objects);
+  for (auto obj: objects)
     {
-      Media *media;
+      if (obj->getType () != Object::MEDIA)
+        continue;
 
-      media = cast (Media *, obj);
+      Media *media = cast (Media *, obj);
       g_assert_nonnull (media);
 
       UPDATE_IF_HAVE ("top");
@@ -295,12 +296,13 @@ Formatter::redraw (cairo_t *cr)
 
 
   zlist = NULL;
-  _doc->getObjects (&objects, Object::MEDIA);
+  _doc->getObjects (&objects);
   for (auto &obj: objects)
     {
-      Media *media;
+      if (obj->getType () != Object::MEDIA)
+        continue;
 
-      media = cast (Media *, obj);
+      Media *media = cast (Media *, obj);
       g_assert_nonnull (media);
       zlist = g_list_insert_sorted (zlist, media, (GCompareFunc) zcmp);
     }

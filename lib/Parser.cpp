@@ -1655,7 +1655,7 @@ ParserState::resolveComponent (Composition *scope, ParserElt *elt,
     }
 
   // Check if component refers to a child of scope.
-  Object *child = scope->getChildByIdOrAlias (comp);
+  Object *child = scope->getChild (comp);
   if (child != nullptr)
     {
       tryset (obj, child);
@@ -3550,7 +3550,8 @@ ParserState::pushContext (ParserState *st, ParserElt *elt)
       g_assert_nonnull (parent);
 
       g_assert (elt->getAttribute ("id", &id));
-      ctx = st->_doc->createObject (Object::CONTEXT, parent, id);
+      ctx = st->_doc->createObject (Object::CONTEXT, id);
+      parent->addChild (ctx);
     }
 
   // Create port list.
@@ -3649,7 +3650,8 @@ ParserState::pushSwitch (ParserState *st, ParserElt *elt)
   g_assert_nonnull (parent);
 
   g_assert (elt->getAttribute ("id", &id));
-  swtch = st->_doc->createObject (Object::SWITCH, parent, id);
+  swtch = st->_doc->createObject (Object::SWITCH, id);
+  parent->addChild (swtch);
 
   // Create rule list.
   UDATA_SET (elt, "rules", (new list<pair<ParserElt *, Object *> > ()),
@@ -3881,12 +3883,14 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
           if (!st->referMapIndex (refer, &media))
             {
               media = cast (Media *, st->_doc->createObject
-                            (Object::MEDIA, parent, refer));
+                            (Object::MEDIA, refer));
               g_assert_nonnull (media);
             }
 
           st->referMapAdd (refer, media);
         }
+      if (media->getId () != "__settings__")
+        parent->addChild (media);
       media->addAlias (id, parent);
       st->referMapAdd (id, media);
     }
@@ -3914,9 +3918,10 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
           if (!st->referMapIndex (id, &media))
             {
               media = cast (Media *, st->_doc->createObject
-                            (Object::MEDIA, parent, id));
+                            (Object::MEDIA, id));
               g_assert_nonnull (media);
             }
+          parent->addChild (media);
           media->setProperty ("uri", src);
           media->setProperty ("type", type);
         }

@@ -29,20 +29,25 @@ GINGA_NAMESPACE_BEGIN
 
 Document::Document (lua_State *L)
 {
-  Context *root;
-
   g_return_if_fail (L != NULL);
 
   _L = L;
   LuaAPI::Document_attachWrapper (_L, this);
-
-  root = new Context (this, NULL, "__root__");
-  new MediaSettings (this, root, "__settings__");
 }
 
 Document::~Document ()
 {
-  delete this->getRoot ();
+  set<Object *> objects;
+  set<Event *> events;
+
+  this->getEvents (&events);
+  for (auto evt: events)
+    delete evt;
+
+  this->getObjects (&objects);
+  for (auto obj: objects)
+    delete obj;
+
   LuaAPI::Document_detachWrapper (_L, this);
 }
 
@@ -53,17 +58,16 @@ Document::getLuaState ()
 }
 
 void
-Document::getObjects (set<Object *> *objects, unsigned int mask)
+Document::getObjects (set<Object *> *objects)
 {
   lua_Integer len;
   lua_Integer i;
 
   g_return_if_fail (objects != NULL);
 
-  LuaAPI::Object_Type_Mask_push (_L, mask);
-  LuaAPI::Document_call (_L, this, "getObjects", 1, 1);
-
+  LuaAPI::Document_call (_L, this, "getObjects", 0, 1);
   g_assert (lua_type (_L, -1) == LUA_TTABLE);
+
   len = luaL_len (_L, -1);
   for (i = 1; i <= len; i++)
     {
@@ -92,22 +96,6 @@ Document::getObject (const string &id)
   return obj;
 }
 
-Event *
-Document::getEvent (const string &id)
-{
-  Event *evt = NULL;
-
-  lua_pushstring (_L, id.c_str ());
-  LuaAPI::Document_call (_L, this, "getEvent", 1, 1);
-  if (!lua_isnil (_L, -1))
-    {
-      evt = LuaAPI::Event_check (_L, -1);
-    }
-  lua_pop (_L, 1);
-
-  return evt;
-}
-
 Context *
 Document::getRoot ()
 {
@@ -133,18 +121,13 @@ Document::getSettings ()
 }
 
 Object *
-Document::createObject (Object::Type type, Composition *parent,
-                        const string &id)
+Document::createObject (Object::Type type, const string &id)
 {
   Object *obj = NULL;
 
-  g_return_val_if_fail (parent != NULL, NULL);
-
   LuaAPI::Object_Type_push (_L, type);
-  LuaAPI::Object_push (_L, cast (Object *, parent));
   lua_pushstring (_L, id.c_str ());
-
-  LuaAPI::Document_call (_L, this, "createObject", 3, 1);
+  LuaAPI::Document_call (_L, this, "createObject", 2, 1);
   if (!lua_isnil (_L, -1))
     {
       obj = LuaAPI::Object_check (_L, -1);
@@ -152,6 +135,65 @@ Document::createObject (Object::Type type, Composition *parent,
   lua_pop (_L, 1);
 
   return obj;
+}
+
+Event *
+Document::getEvent (const string &id)
+{
+  Event *evt = NULL;
+
+  lua_pushstring (_L, id.c_str ());
+  LuaAPI::Document_call (_L, this, "getEvent", 1, 1);
+  if (!lua_isnil (_L, -1))
+    {
+      evt = LuaAPI::Event_check (_L, -1);
+    }
+  lua_pop (_L, 1);
+
+  return evt;
+}
+
+void
+Document::getEvents (set<Event *> *events)
+{
+  lua_Integer len;
+  lua_Integer i;
+
+  g_return_if_fail (events != NULL);
+
+  LuaAPI::Document_call (_L, this, "getEvents", 0, 1);
+  g_assert (lua_type (_L, -1) == LUA_TTABLE);
+
+  len = luaL_len (_L, -1);
+  for (i = 1; i <= len; i++)
+    {
+      Event *evt;
+
+      lua_rawgeti (_L, -1, i);
+      evt = LuaAPI::Event_check (_L, -1);
+      events->insert (evt);
+      lua_pop (_L, 1);
+    }
+}
+
+Event *
+Document::createEvent (Event::Type type, Object *obj, const string &evtId)
+{
+  Event *evt = NULL;
+
+  g_return_val_if_fail (obj != NULL, NULL);
+
+  LuaAPI::Event_Type_push (_L, type);
+  LuaAPI::Object_push (_L, obj);
+  lua_pushstring (_L, evtId.c_str ());
+  LuaAPI::Document_call (_L, this, "createEvent", 3, 1);
+  if (!lua_isnil (_L, -1))
+    {
+      evt = LuaAPI::Event_check (_L, -1);
+    }
+  lua_pop (_L, 1);
+
+  return evt;
 }
 
 Event *
@@ -309,7 +351,11 @@ Document::evalAction (Action init)
       n++;
       obj = evt->getObject ();
       g_assert_nonnull (obj);
-      comp = obj->getParent ();
+
+      set<Composition *> parents;
+      obj->getParents (&parents);
+      auto it = parents.begin ();
+      comp = (it == parents.end ()) ? NULL: *it;
 
       // If parent composition is a context
       if (comp != NULL &&
@@ -324,7 +370,12 @@ Document::evalAction (Action init)
 
           // If the event object is pointed by a port in the parent context,
           // trigger links in the its grantparent context ( and ancestors)
-          comp = ctx_parent->getParent ();
+
+          set<Composition *> parents;
+          ctx_parent->getParents (&parents);
+          auto it = parents.begin ();
+          Composition *comp = (it == parents.end ()) ? NULL: *it;
+
           if (comp != NULL &&
               instanceof (Context *, comp) && comp->isOccurring ())
             {
@@ -350,8 +401,13 @@ Document::evalAction (Action init)
             {
               for (const auto &mapped_evt : swtchPort.second)
                 {
+                  set<Composition *> parents;
+                  swtch->getParents (&parents);
+                  auto it = parents.begin ();
+                  Composition *sparent = (it == parents.end ()) ? NULL: *it;
+
                   if (mapped_evt->getObject () == evt->getObject ()
-                      && swtch->getParent () != NULL)
+                      && sparent != NULL)
                     {
                       Event *label_evt = swtch->getEvent (
                           Event::PRESENTATION, swtchPort.first);
