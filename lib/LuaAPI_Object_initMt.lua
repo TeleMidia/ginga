@@ -9,13 +9,14 @@ do
       local funcs = funcs or {}
 
       -- Private data.
-      data._document     = assert (doc)  -- the container document
-      data._type         = assert (type) -- object type
-      data._id           = assert (id)   -- object id
-      data._attribution  = {}            -- attribution evts indexed by id
-      data._presentation = {}            -- presentation evts indexed by id
-      data._selection    = {}            -- selection evts indexed by id
-      data._property     = {}            -- property table.
+      data._document       = assert (doc)  -- the container document
+      data._type           = assert (type) -- object type
+      data._id             = assert (id)   -- object id
+      data._attribution    = {}            -- attribution evts indexed by id
+      data._presentation   = {} -- presentation evts indexed by id
+      data._selection      = {} -- selection evts indexed by id
+      data._property       = {} -- property table
+      data._delayedActions = {} -- delayed actions
 
       local get_data_attr = function ()
          return data._attribution
@@ -29,19 +30,23 @@ do
       local get_data_prop = function (...)
          return data._property
       end
+      local get_data_delayed = function (...)
+         return data._delayedActions
+      end
 
       -- Getters & setters.
-      funcs.document     = {mt.getDocument, nil}
-      funcs.type         = {mt.getType,     nil}
-      funcs.id           = {mt.getId,       nil}
-      funcs.parents      = {mt.getParents,  nil}
-      funcs.events       = {mt.getEvents,   nil}
-      funcs.lambda       = {mt.getLambda,   nil}
-      funcs.property     = {get_data_prop,  nil}
+      funcs.document     = {mt.getDocument,   nil}
+      funcs.type         = {mt.getType,       nil}
+      funcs.id           = {mt.getId,         nil}
+      funcs.parents      = {mt.getParents,    nil}
+      funcs.events       = {mt.getEvents,     nil}
+      funcs.lambda       = {mt.getLambda,     nil}
+      funcs.property     = {get_data_prop,    nil}
       --
-      funcs.attribution  = {get_data_attr,  nil}
-      funcs.presentation = {get_data_pres,  nil}
-      funcs.selection    = {get_data_seln,  nil}
+      funcs.attribution  = {get_data_attr,    nil}
+      funcs.presentation = {get_data_pres,    nil}
+      funcs.selection    = {get_data_seln,    nil}
+      funcs.delayed      = {get_data_delayed, nil}
 
       return saved_attachData (self, data, funcs)
    end

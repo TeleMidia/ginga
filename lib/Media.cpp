@@ -248,7 +248,8 @@ Media::beforeTransition (Event *evt, Event::Transition transition,
                             || (end != GINGA_TIME_NONE && it->second > end))
                           {
                             Action act = it->first;
-                            Event *evt = act.event;
+                            Event *evt = this->getDocument ()
+                              ->getEvent (act.event);
                             if (act.transition == Event::START
                                 && it->second < begin)
                               evt->transition (act.transition, params);

@@ -140,7 +140,7 @@ private:
 /// Action.
 typedef struct
 {
-  Event *event;                 ///< Target event.
+  string event;                 ///< Target event.
   Event::Transition transition; ///< Desired transition.
   Predicate *predicate;         ///< Predicate conditioning the execution.
   string value;                 ///< Value to set (if attribution).

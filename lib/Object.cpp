@@ -262,7 +262,7 @@ Object::addDelayedAction (Event *event, Event::Transition transition,
 {
   Action act;
 
-  act.event = event;
+  act.event = event->getQualifiedId ();
   act.transition = transition;
   act.value = value;
   _delayed.push_back (std::make_pair (act, _time + delay));

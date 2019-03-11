@@ -2710,7 +2710,7 @@ borderColor='%s'}",
                             bind->node, "interface", bind->iface,
                             "expected a presentation event");
                       }
-                    act.event = evt;
+                    act.event = evt->getQualifiedId ();
                     break;
                   }
                 case Event::ATTRIBUTION:
@@ -2721,7 +2721,7 @@ borderColor='%s'}",
                             bind->node, "interface", bind->iface,
                             "expected an attribution event");
                       }
-                    act.event = evt;
+                    act.event = evt->getQualifiedId ();
                     act.value = st->resolveParameter (
                         role->value, &bind->params, params, &ghosts_map);
                     break;
@@ -2739,14 +2739,15 @@ borderColor='%s'}",
                     act.value = st->resolveParameter (
                         role->key, &bind->params, params, &ghosts_map);
                     act.event = obj->createEvent (Event::SELECTION,
-                                                  act.value);
-                    g_assert_nonnull (act.event);
+                                                  act.value)
+                      ->getQualifiedId ();
+                    //g_assert_nonnull (act.event);
                     break;
                   }
                 default:
                   g_assert_not_reached ();
                 }
-              g_assert_nonnull (act.event);
+              //g_assert_nonnull (act.event);
               act.transition = role->transition;
 
               act.duration = st->resolveParameter (

@@ -241,7 +241,7 @@ Document::evalAction (Event *event, Event::Transition transition,
                       const string &value)
 {
   Action act;
-  act.event = event;
+  act.event = event->getQualifiedId ();
   g_assert_nonnull (event);
   act.transition = transition;
   act.predicate = NULL;
@@ -258,7 +258,7 @@ Document::evalActionInContext (Action act, Context *ctx)
   list<Action> stack;
   Event *evt;
 
-  evt = act.event;
+  evt = this->getEvent (act.event);
   g_assert_nonnull (evt);
 
   if (!ctx->getLinksStatus ())
@@ -269,7 +269,8 @@ Document::evalActionInContext (Action act, Context *ctx)
         {
           Predicate *pred;
 
-          if (cond.event != evt || cond.transition != act.transition)
+          if (cond.event != evt->getQualifiedId ()
+              || cond.transition != act.transition)
             continue;
 
           pred = cond.predicate;
@@ -297,7 +298,7 @@ Document::evalActionInContext (Action act, Context *ctx)
                 }
               else
                 {
-                  Event *next_evt = next_act.event;
+                  Event *next_evt = this->getEvent (next_act.event);
                   g_assert_nonnull (next_evt);
                   Object *next_obj = next_evt->getObject ();
                   g_assert_nonnull (next_obj);
@@ -335,7 +336,7 @@ Document::evalAction (Action init)
       act = stack.back ();
       stack.pop_back ();
 
-      evt = act.event;
+      evt = this->getEvent (act.event);
       g_assert_nonnull (evt);
 
       // TRACE ("trigger stacked action: %s %s",
@@ -418,7 +419,7 @@ Document::evalAction (Action init)
 
                       // Do the same action in the "equivalent" switchPort
                       Action label_act = act;
-                      label_act.event = label_evt;
+                      label_act.event = label_evt->getQualifiedId ();
                       evalAction (label_act);
                     }
                 }

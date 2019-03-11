@@ -45,13 +45,13 @@ local function parseQualifiedId (id)
       goto tail
    end
 
-   o, e = id:match ('([%w_-]+)%.([%w_-]+)')
+   o, e = id:match ('([%w_-]+)%.([%w._-]+)')
    if o and e then
       tp = 'attribution'
       goto tail
    end
 
-   o, e = id:match ('([%w_-]+)<([%w_-]+)>')
+   o, e = id:match ('([%w_-]+)<([%w_-]*)>')
    if o and e then
       tp = 'selection'
    else
