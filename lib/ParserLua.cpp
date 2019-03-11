@@ -121,7 +121,7 @@ l_parse_context (lua_State *L)
   {
     Context *root = doc->getRoot ();
     ctx = root;
-    root->addAlias (string (id));
+    //root->addAlias (string (id));
     parent = root;
   }
   else // non-root

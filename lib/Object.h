@@ -104,10 +104,6 @@ public:
   virtual void setProperty (const string &name, const string &value,
                             Time duration = 0);
 
-  const list<pair<string, Composition *> > *getAliases ();
-  bool hasAlias (const string &alias);
-  void addAlias (const string &alias, Composition *comp);
-
 
   bool isOccurring ();
   bool isPaused ();

@@ -431,18 +431,18 @@ Document::evalAction (Action init)
           stack.insert (stack.end (), ret.begin (), ret.end ());
         }
       // If have refer elements, trigger in the contexts
-      else if (obj->getAliases ()->size ())
-        {
-          for (const auto &alias : *obj->getAliases ())
-            {
-              ctx_parent = cast (Context *, alias.second);
-              if (ctx_parent)
-                {
-                  list<Action> ret = evalActionInContext (act, ctx_parent);
-                  stack.insert (stack.end (), ret.begin (), ret.end ());
-                }
-            }
-        }
+      // else if (obj->getAliases ()->size ())
+      //   {
+      //     for (const auto &alias : *obj->getAliases ())
+      //       {
+      //         ctx_parent = cast (Context *, alias.second);
+      //         if (ctx_parent)
+      //           {
+      //             list<Action> ret = evalActionInContext (act, ctx_parent);
+      //             stack.insert (stack.end (), ret.begin (), ret.end ());
+      //           }
+      //       }
+      //   }
     }
   return n;
 }

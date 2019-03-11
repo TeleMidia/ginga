@@ -185,28 +185,6 @@ Object::createEvent (Event::Type type, const string &id)
 
 // TODO --------------------------------------------------------------------
 
-const list<pair<string, Composition *> > *
-Object::getAliases ()
-{
-  return &_aliases;
-}
-
-bool
-Object::hasAlias (const string &alias)
-{
-  for (auto curr: _aliases)
-    if (curr.first == alias)
-      return true;
-  return false;
-}
-
-void
-Object::addAlias (const string &alias, Composition *parent)
-{
-  auto alias_pair = make_pair (alias, parent);
-  tryinsert (alias_pair, _aliases, push_back);
-}
-
 string
 Object::getProperty (const string &name)
 {

@@ -1648,7 +1648,7 @@ ParserState::resolveComponent (Composition *scope, ParserElt *elt,
   g_assert (elt->getAttribute (label, &comp));
 
   // Check if component refers to scope itself.
-  if (comp == scope->getId () || scope->hasAlias (comp))
+  if (comp == scope->getId ())
     {
       tryset (obj, scope);
       return true;
@@ -2283,7 +2283,7 @@ ParserState::process (xmlDoc *xml)
  * @return \c true if successful, or \c false otherwise.
  */
 bool
-ParserState::pushNcl (ParserState *st, ParserElt *elt)
+ParserState::pushNcl (ParserState *st, unused (ParserElt *elt))
 {
   Context *root;
   string id;
@@ -2291,8 +2291,8 @@ ParserState::pushNcl (ParserState *st, ParserElt *elt)
   root = st->_doc->getRoot ();
   g_assert_nonnull (root);
 
-  if (elt->getAttribute ("id", &id))
-    root->addAlias (id, NULL);
+  // if (elt->getAttribute ("id", &id))
+  //   root->addAlias (id, NULL);
 
   st->objStackPush (root);
   return true;
@@ -3539,8 +3539,8 @@ ParserState::pushContext (ParserState *st, ParserElt *elt)
       ctx = cast (Context *, st->objStackPeek ());
       g_assert_nonnull (ctx);
 
-      if (elt->getAttribute ("id", &id))
-        ctx->addAlias (id, NULL);
+      // if (elt->getAttribute ("id", &id))
+      //   ctx->addAlias (id, NULL);
     }
   else
     {
@@ -3891,7 +3891,7 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
         }
       if (media->getId () != "__settings__")
         parent->addChild (media);
-      media->addAlias (id, parent);
+      //media->addAlias (id, parent);
       st->referMapAdd (id, media);
     }
   else
@@ -3899,7 +3899,7 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
       if (type == "application/x-ginga-settings")
         {
           media = st->_doc->getSettings ();
-          media->addAlias (id, parent);
+          //media->addAlias (id, parent);
           st->referMapAdd (id, media);
         }
       else
