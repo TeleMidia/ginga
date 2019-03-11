@@ -143,9 +143,7 @@ typedef struct
   string event;                 ///< Target event.
   Event::Transition transition; ///< Desired transition.
   Predicate *predicate;         ///< Predicate conditioning the execution.
-  string value;                 ///< Value to set (if attribution).
-  string duration;              ///< Duration.
-  string delay;                 ///< Delay.
+  map<string, string> params;   ///< Parameters.
 } Action;
 
 GINGA_NAMESPACE_END

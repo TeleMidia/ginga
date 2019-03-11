@@ -68,62 +68,64 @@ do
 
    -- Event::getObject().
    mt.getObject = function (self)
-      return assert (mt[self]._object)
+      return assert (rawget (mt[self], '_object'))
    end
 
    -- Event::getType().
    mt.getType = function (self)
-      return assert (mt[self]._type)
+      return assert (rawget (mt[self], '_type'))
    end
 
    -- Event::getId().
    mt.getId = function (self)
-      return assert (mt[self]._id)
+      return assert (rawget (mt[self], '_id'))
    end
 
    -- Event::getQualifiedId().
    mt.getQualifiedId = function (self)
-      return assert (mt[self]._qualifiedId)
+      return assert (rawget (mt[self], '_qualifiedId'))
    end
 
    -- Event::getState().
    mt.getState = function (self)
-      return assert (mt[self]._state)
+      return assert (rawget (mt[self], '_state'))
    end
 
    -- Event::setState().
-   mt.setState = function (self, state)
-      assert (state)
-      mt[self]._state = state
+   mt.setState = function (self, st)
+      if st ~= 'occurring' and st ~= 'paused' and st ~= 'sleeping' then
+         error ('bad state: '..tostring (st))
+      end
+      rawset (mt[self], '_state', st)
    end
 
    -- Event::getBeginTime().
    mt.getBeginTime = function (self)
-      return mt[self]._beginTime
+      return rawget (mt[self], '_beginTime')
    end
 
    -- Event::setBeginTime().
    mt.setBeginTime = function (self, time)
-      mt[self]._beginTime = time
+      rawset (mt[self], '_beginTime', time)
    end
 
    -- Event::getEndTime().
    mt.getEndTime = function (self)
-      return mt[self]._endTime
+      return rawget (mt[self], '_endTime')
    end
 
    -- Event::setEndTime().
    mt.setEndTime = function (self, time)
-      mt[self]._endTime = time
+      rawset (mt[self], '_endTime', time)
    end
 
    -- Event::getLabel().
    mt.getLabel = function (self)
-      return mt[self]._label
+      return rawget (mt[self], '_label')
    end
 
    -- Event::setLabel().
    mt.setLabel = function (self, label)
-      mt[self]._label = label
+      rawset (mt[self], '_label', label)
    end
 end

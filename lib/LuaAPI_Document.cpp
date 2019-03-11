@@ -183,9 +183,13 @@ LuaAPI::_l_Document_createEvent (lua_State *L)
   evtId = luaL_checkstring (L, 4);
 
   if (obj->getEvent (type, evtId))
-    lua_pushnil (L);
+    {
+      lua_pushnil (L);
+    }
   else
-    LuaAPI::_pushLuaWrapper (L, new Event (obj, type, evtId));
+    {
+      LuaAPI::_pushLuaWrapper (L, new Event (obj, type, evtId));
+    }
 
   return 1;
 }

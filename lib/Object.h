@@ -85,6 +85,16 @@ public:
   /// Gets the lambda presentation event of object.
   Event *getLambda ();
 
+  /// Creates a new event and adds it to object.
+  ///
+  /// @param type The type of the new event.
+  /// @param id the id of the new event (must no occur in \p object).
+  /// @return The newly created event if successful, or \c NULL otherwise.
+  ///
+  /// @see Document::createEvent().
+  ///
+  Event *createEvent (Event::Type type, const string &id);
+
   /// Gets the set of properties of object.
   void getProperties (set<pair<string,string> > *properties);
 
@@ -95,15 +105,11 @@ public:
   virtual void setProperty (const string &name, const string &value,
                             Time duration=0);
 
-  /// Creates a new event and adds it to object.
-  ///
-  /// @param type The type of the new event.
-  /// @param id the id of the new event (must no occur in \p object).
-  /// @return The newly created event if successful, or \c NULL otherwise.
-  ///
-  /// @see Document::createEvent().
-  ///
-  Event *createEvent (Event::Type type, const string &id);
+  /// Gets the playback time of object.
+  Time getTime ();
+
+  /// Sets the playback time of object.
+  void setTime (Time time);
 
   // TODO ------------------------------------------------------------------
 
@@ -117,8 +123,6 @@ public:
 
   virtual void sendKey (const string &, bool);
   virtual void sendTick (Time, Time, Time);
-
-  Time getTime ();
 
   /**
    * @brief Initiates event transition.
@@ -160,9 +164,6 @@ protected:
   lua_State *_L;
 
   // TODO ------------------------------------------------------------------
-
-  /// The playback time of this object.
-  Time _time;
 
   /// Delayed actions.
   list<pair<Action, Time> > _delayed;

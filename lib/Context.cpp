@@ -261,26 +261,24 @@ Context::afterTransition (Event *evt, Event::Transition transition,
                   this->addDelayedAction (port, Event::START, "", 0);
               }
             //evt->setParameter ("fromport", "");
-            TRACE ("start %s at %" GINGA_TIME_FORMAT,
-                   evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
             break;
           }
         case Event::PAUSE:
-          TRACE ("pause %s at %" GINGA_TIME_FORMAT,
-                 evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
+          // TRACE ("pause %s at %" GINGA_TIME_FORMAT,
+          //        evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
           break;
         case Event::RESUME:
-          TRACE ("resume %s at %" GINGA_TIME_FORMAT,
-                 evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
+          // TRACE ("resume %s at %" GINGA_TIME_FORMAT,
+          //        evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
           break;
         case Event::STOP:
-          TRACE ("stop %s at %" GINGA_TIME_FORMAT,
-                 evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
+          // TRACE ("stop %s at %" GINGA_TIME_FORMAT,
+          //        evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
           Object::doStop ();
           break;
         case Event::ABORT:
-          TRACE ("abort %s at %" GINGA_TIME_FORMAT,
-                 evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
+          // TRACE ("abort %s at %" GINGA_TIME_FORMAT,
+          //        evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
           Object::doStop ();
           break;
         default:

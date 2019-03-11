@@ -2722,7 +2722,7 @@ borderColor='%s'}",
                             "expected an attribution event");
                       }
                     act.event = evt->getQualifiedId ();
-                    act.value = st->resolveParameter (
+                    act.params["value"] = st->resolveParameter (
                         role->value, &bind->params, params, &ghosts_map);
                     break;
                   }
@@ -2736,10 +2736,10 @@ borderColor='%s'}",
                             bind->node, "interface", evt->getId (),
                             "must be empty");
                       }
-                    act.value = st->resolveParameter (
+                    act.params["value"] = st->resolveParameter (
                         role->key, &bind->params, params, &ghosts_map);
                     act.event = obj->createEvent (Event::SELECTION,
-                                                  act.value)
+                                                  act.params["value"])
                       ->getQualifiedId ();
                     //g_assert_nonnull (act.event);
                     break;
@@ -2750,11 +2750,11 @@ borderColor='%s'}",
               //g_assert_nonnull (act.event);
               act.transition = role->transition;
 
-              act.duration = st->resolveParameter (
-                  role->duration, &bind->params, params, &ghosts_map);
+              act.params["duration"] = st->resolveParameter
+                (role->duration, &bind->params, params, &ghosts_map);
 
-              act.delay = st->resolveParameter (role->delay, &bind->params,
-                                                params, &ghosts_map);
+              act.params["delay"] = st->resolveParameter
+                (role->delay, &bind->params, params, &ghosts_map);
 
               act.predicate = nullptr;
               if (role->predicate != nullptr)

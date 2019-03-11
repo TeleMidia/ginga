@@ -82,20 +82,28 @@ do
       data._children = {}       -- table of children indexed by object
 
       local get_data_object = function ()
-         return assert (data._object)
+         return assert (rawget (data, '_object'))
       end
       local get_data_event = function ()
-         return assert (data._event)
+         return assert (rawget (data, '_event'))
+      end
+      local get_data_parents = function ()
+         return rawget (data, '_parents')
+      end
+      local get_data_children = function ()
+         return rawget (data, '_children')
       end
 
       -- Getters & setters.
-      funcs.objects  = {mt.getObjects,   nil}
-      funcs.root     = {mt.getRoot,      nil}
-      funcs.settings = {mt.getSettings,  nil}
-      funcs.events   = {mt.getEvents,    nil}
+      funcs.objects  = {mt.getObjects,     nil}
+      funcs.root     = {mt.getRoot,        nil}
+      funcs.settings = {mt.getSettings,    nil}
+      funcs.events   = {mt.getEvents,      nil}
       --
-      funcs.object   = {get_data_object, nil}
-      funcs.event    = {get_data_event,  nil}
+      funcs.object   = {get_data_object,   nil}
+      funcs.event    = {get_data_event,    nil}
+      funcs.parents  = {get_data_parents,  nil}
+      funcs.children = {get_data_children, nil}
 
       return saved_attachData (self, data, funcs)
    end
@@ -117,36 +125,36 @@ do
    -- Adds object to document.
    mt._addObject = function (self, obj)
       assert (obj.document == self)
-      mt[self]._object[obj.id] = obj
-      mt[self]._parents[obj] = {}
+      assert (rawget (mt[self], '_object'))[obj.id] = obj
+      assert (rawget (mt[self], '_parents'))[obj] = {}
       if obj:isComposition () then
-         mt[self]._children[obj] = {}
+         assert (rawget (mt[self], '_children'))[obj] = {}
       end
    end
 
    -- Removes object from document.
    mt._removeObject = function (self, obj)
       assert (obj.document == self)
-      mt[self]._object[obj.id] = nil
+      assert (rawget (mt[self], '_object'))[obj.id] = nil
    end
 
    -- Adds event to document.
    mt._addEvent = function (self, evt)
       assert (evt.object.document == self)
-      mt[self]._event[evt.qualifiedId] = evt
+      assert (rawget (mt[self], '_event'))[evt.qualifiedId] = evt
    end
 
    -- Removes event from document.
    mt._removeEvent = function (self, evt)
       assert (evt.object.document == self)
-      mt[self]._event[evt.qualifiedId] = nil
+      assert (rawget (mt[self], '_event'))[evt.qualifiedId] = nil
    end
 
    -- Gets the table of parents of obj.
    mt._getParents = function (self, obj)
       assert (obj.document == self)
       local t = {}
-      for k,_ in pairs (self._parents[obj] or {}) do
+      for k,_ in pairs (self.parents[obj] or {}) do
          table.insert (t, k)
       end
       return t
@@ -157,7 +165,7 @@ do
       assert (obj.document == self)
       assert (obj:isComposition ())
       local t = {}
-      for k,_ in pairs (assert (self._children[obj])) do
+      for k,_ in pairs (assert (self.children[obj])) do
          table.insert (t, k)
       end
       return t
@@ -168,9 +176,9 @@ do
       assert (parent.document == self)
       assert (obj.document == self)
       assert (parent:isComposition ())
-      local tchildren = assert (self._children[parent])
+      local tchildren = assert (self.children[parent])
       tchildren[obj] = true
-      local tparents = assert (self._parents[obj])
+      local tparents = assert (self.parents[obj])
       tparents[parent] = true
    end
 
@@ -178,16 +186,16 @@ do
    mt._removeChild = function (self, parent, obj)
       assert (parent.document == self)
       assert (obj.document == self)
-      local tchildren = assert (self._children[parent])
+      local tchildren = assert (self.children[parent])
       tchildren[obj] = nil
-      local tparents = assert (self._parents[obj])
+      local tparents = assert (self.parents[obj])
       tparents[parent] = nil
    end
 
    -- Dumps document graph.
    mt._dump = function (self)
-      local tparents = assert (mt[self]._parents)
-      local tchildren = assert (mt[self]._children)
+      local tparents = assert (mt[self].parents)
+      local tchildren = assert (mt[self].children)
       local roots = {}
       for _,obj in ipairs (self:getObjects ()) do
          if #obj:getParents () == 0 then

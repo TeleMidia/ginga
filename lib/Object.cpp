@@ -34,9 +34,6 @@ Object::Object (Document *doc, unused (const string &id))
   g_return_if_fail (doc != NULL);
 
   _L = doc->getLuaState ();
-  g_assert_nonnull (_L);
-
-  _time = GINGA_TIME_NONE;      // DEPRECATED
 }
 
 Object::~Object ()
@@ -166,6 +163,23 @@ Object::getLambda ()
   return evt;
 }
 
+Event *
+Object::createEvent (Event::Type type, const string &id)
+{
+  Event *evt = NULL;
+
+  LuaAPI::Event_Type_push (_L, type);
+  lua_pushstring (_L, id.c_str ());
+  LuaAPI::Object_call (_L, this, "createEvent", 2, 1);
+  if (!lua_isnil (_L, -1))
+    {
+      evt = LuaAPI::Event_check (_L, -1);
+    }
+  lua_pop (_L, 1);
+
+  return evt;
+}
+
 void
 Object::getProperties (set<pair<string, string> > *properties)
 {
@@ -213,21 +227,34 @@ Object::setProperty (const string &name, const string &value,
   LuaAPI::Object_call (_L, this, "setProperty", 2, 0);
 }
 
-Event *
-Object::createEvent (Event::Type type, const string &id)
+Time
+Object::getTime ()
 {
-  Event *evt = NULL;
+  Time time;
 
-  LuaAPI::Event_Type_push (_L, type);
-  lua_pushstring (_L, id.c_str ());
-  LuaAPI::Object_call (_L, this, "createEvent", 2, 1);
+  LuaAPI::Object_call (_L, this, "getTime", 0, 1);
   if (!lua_isnil (_L, -1))
     {
-      evt = LuaAPI::Event_check (_L, -1);
+      time = (Time) luaL_checkinteger (_L, -1);
     }
   lua_pop (_L, 1);
 
-  return evt;
+  return time;
+}
+
+void
+Object::setTime (Time time)
+{
+  if (time == GINGA_TIME_NONE)
+    {
+      lua_pushnil (_L);
+    }
+  else
+    {
+      lua_pushinteger (_L, time);
+    }
+
+  LuaAPI::Object_call (_L, this, "setTime", 1, 0);
 }
 
 // TODO --------------------------------------------------------------------
@@ -264,8 +291,8 @@ Object::addDelayedAction (Event *event, Event::Transition transition,
 
   act.event = event->getQualifiedId ();
   act.transition = transition;
-  act.value = value;
-  _delayed.push_back (std::make_pair (act, _time + delay));
+  act.params["value"] = value;
+  _delayed.push_back (std::make_pair (act, this->getTime () + delay));
 }
 
 void
@@ -279,13 +306,14 @@ Object::sendTick (unused (Time total), Time diff, unused (Time frame))
   if (unlikely (!this->isOccurring ()))
     return;                     // nothing to do
 
-  g_assert (GINGA_TIME_IS_VALID (_time));
-  _time += diff;
+  Time time = this->getTime ();
+  g_assert (GINGA_TIME_IS_VALID (time));
+  this->setTime (time + diff);
 
   list<Action> trigger;
   for (auto &it : _delayed)
     {
-      if (_time >= it.second)
+      if (this->getTime () >= it.second)
         {
           it.second = GINGA_TIME_NONE;
           trigger.push_back (it.first);
@@ -308,16 +336,10 @@ Object::sendTick (unused (Time total), Time diff, unused (Time frame))
     }
 }
 
-Time
-Object::getTime ()
-{
-  return _time;
-}
-
 void
 Object::doStart ()
 {
-  _time = 0;
+  this->setTime (0);
 
   set<Composition *> parents;
   this->getParents (&parents);
@@ -338,7 +360,7 @@ Object::doStop ()
   set<Event *> events;
   this->getEvents (&events);
 
-  _time = GINGA_TIME_NONE;
+  this->setTime (GINGA_TIME_NONE);
   for (auto evt: events)
     evt->setState (Event::SLEEPING);
   _delayed.clear ();

@@ -169,9 +169,13 @@ void
 Event::setLabel (const string &label)
 {
   if (label == "")
-    lua_pushnil (_L);
+    {
+      lua_pushnil (_L);
+    }
   else
-    lua_pushstring (_L, label.c_str ());
+    {
+      lua_pushstring (_L, label.c_str ());
+    }
 
   LuaAPI::Event_call (_L, this, "setLabel", 1, 0);
 }

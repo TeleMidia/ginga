@@ -9,44 +9,41 @@ do
       local funcs = funcs or {}
 
       -- Private data.
-      data._document       = assert (doc)  -- the container document
-      data._type           = assert (type) -- object type
-      data._id             = assert (id)   -- object id
-      data._attribution    = {}            -- attribution evts indexed by id
-      data._presentation   = {} -- presentation evts indexed by id
-      data._selection      = {} -- selection evts indexed by id
-      data._property       = {} -- property table
-      data._delayedActions = {} -- delayed actions
+      data._document     = assert (doc)  -- the container document
+      data._type         = assert (type) -- object type
+      data._id           = assert (id)   -- object id
+      data._attribution  = {}            -- attribution evts indexed by id
+      data._presentation = {}            -- presentation evts indexed by id
+      data._selection    = {}            -- selection evts indexed by id
+      data._property     = {}            -- property table
+      data._time         = nil           -- playback time
 
       local get_data_attr = function ()
-         return data._attribution
+         return assert (rawget (data, '_attribution'))
       end
       local get_data_pres = function ()
-         return data._presentation
+         return assert (rawget (data, '_presentation'))
       end
       local get_data_seln = function (...)
-         return data._selection
+         return assert (rawget (data, '_selection'))
       end
       local get_data_prop = function (...)
-         return data._property
-      end
-      local get_data_delayed = function (...)
-         return data._delayedActions
+         return assert (rawget (data, '_property'))
       end
 
       -- Getters & setters.
-      funcs.document     = {mt.getDocument,   nil}
-      funcs.type         = {mt.getType,       nil}
-      funcs.id           = {mt.getId,         nil}
-      funcs.parents      = {mt.getParents,    nil}
-      funcs.events       = {mt.getEvents,     nil}
-      funcs.lambda       = {mt.getLambda,     nil}
-      funcs.property     = {get_data_prop,    nil}
+      funcs.document     = {mt.getDocument, nil}
+      funcs.type         = {mt.getType,     nil}
+      funcs.id           = {mt.getId,       nil}
+      funcs.parents      = {mt.getParents,  nil}
+      funcs.events       = {mt.getEvents,   nil}
+      funcs.lambda       = {mt.getLambda,   nil}
+      funcs.time         = {mt.getTime,     nil}
       --
-      funcs.attribution  = {get_data_attr,    nil}
-      funcs.presentation = {get_data_pres,    nil}
-      funcs.selection    = {get_data_seln,    nil}
-      funcs.delayed      = {get_data_delayed, nil}
+      funcs.attribution  = {get_data_attr,  nil}
+      funcs.presentation = {get_data_pres,  nil}
+      funcs.selection    = {get_data_seln,  nil}
+      funcs.property     = {get_data_prop,  nil}
 
       return saved_attachData (self, data, funcs)
    end
@@ -69,18 +66,18 @@ do
    -- Adds event to object.
    mt._addEvent = function (self, evt)
       assert (evt)
-      mt[self]['_'..evt.type][evt.id] = evt
+      assert (rawget (mt[self], '_'..evt.type))[evt.id] = evt
    end
 
    -- Removes event from object.
    mt._removeEvent = function (self, evt)
       assert (evt)
-      mt[self]['_'..evt.type][evt.id] = nil
+      assert (rawget (mt[self], '_'..evt.type))[evt.id] = nil
    end
 
    -- Gets a string representation of object.
    mt.__tostring = function (self)
-      return assert (mt[self]._id)
+      return assert (rawget (mt[self], '_id'))
    end
 
    -- Exported functions ---------------------------------------------------
@@ -92,17 +89,17 @@ do
 
    -- Object::getDocument().
    mt.getDocument = function (self)
-      return assert (mt[self]._document)
+      return assert (rawget (mt[self], '_document'))
    end
 
    -- Object::getType().
    mt.getType = function (self)
-      return assert (mt[self]._type)
+      return assert (rawget (mt[self], '_type'))
    end
 
    -- Object::getId().
    mt.getId = function (self)
-      return assert (mt[self]._id)
+      return assert (rawget (mt[self], '_id'))
    end
 
    -- Object::getParents().
@@ -139,23 +136,37 @@ do
       return self.presentation['@lambda']
    end
 
+   -- Object::createEvent().
+   mt.createEvent = function (self, type, id)
+      return self.document:createEvent (type, self, id)
+   end
+
    -- Object::getProperties().
    mt.getProperties = function (self)
-      return mt[self]._property -- FIXME: Clone?
+      local t = {}
+      for k,v in pairs (assert (mt[self].property)) do
+         t[k] = v
+      end
+      return t
    end
 
    -- Object::getProperty().
    mt.getProperty = function (self, name)
-      return mt[self]._property[name]
+      return mt[self].property[name]
    end
 
    -- Object::setProperty().
    mt.setProperty = function (self, name, value)
-      mt[self]._property[name] = value
+      mt[self].property[name] = value
    end
 
-   -- Object::createEvent().
-   mt.createEvent = function (self, type, id)
-      return self.document:createEvent (type, self, id)
+   -- Object::getTime().
+   mt.getTime = function (self)
+      return rawget (mt[self], '_time')
+   end
+
+   -- Object:setTime().
+   mt.setTime = function (self, time)
+      rawset (mt[self], '_time', time)
    end
 end

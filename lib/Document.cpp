@@ -245,7 +245,7 @@ Document::evalAction (Event *event, Event::Transition transition,
   g_assert_nonnull (event);
   act.transition = transition;
   act.predicate = NULL;
-  act.value = value;
+  act.params["value"] = value;
   return this->evalAction (act);
 }
 
@@ -285,9 +285,9 @@ Document::evalActionInContext (Action act, Context *ctx)
               string s;
               Time delay;
 
-              if (!this->evalPropertyRef (next_act.delay, &s))
+              if (!this->evalPropertyRef (next_act.params["delay"], &s))
                 {
-                  s = next_act.delay;
+                  s = next_act.params["delay"];
                 }
 
               delay = ginga::parse_time (s);
@@ -304,7 +304,7 @@ Document::evalActionInContext (Action act, Context *ctx)
                   g_assert_nonnull (next_obj);
 
                   ctx->addDelayedAction (next_evt, next_act.transition,
-                                         next_act.value, delay);
+                                         next_act.params["value"],delay);
                 }
             }
         }
@@ -343,10 +343,10 @@ Document::evalAction (Action init)
       //        Event::getTransitionAsString (act.transition).c_str (),
       //        act.event->getQualifiedId ().c_str ());
 
-      params["duration"] = act.duration;
+      params["duration"] = act.params["duration"];
       if (evt->getType () == Event::ATTRIBUTION)
         {
-          params["value"] = act.value;
+          params["value"] = act.params["value"];
         }
 
       if (!evt->transition (act.transition, params))
