@@ -24,6 +24,64 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
+void
+Context::getPorts (list<Event *> *ports)
+{
+  lua_Integer len;
+  lua_Integer i;
+
+  g_return_if_fail (ports != NULL);
+
+  LuaAPI::Context_call (_L, this, "getPorts", 0, 1);
+  g_assert (lua_type (_L, -1) == LUA_TTABLE);
+
+  len = luaL_len (_L, -1);
+  for (i = 1; i <= len; i++)
+    {
+      const char *qualId;
+      Event *evt;
+
+      lua_rawgeti (_L, -1, i);
+      qualId = luaL_checkstring (_L, -1);
+      evt = this->getDocument ()->getEvent (qualId);
+      if (evt != NULL)
+        ports->push_back (evt);
+      lua_pop (_L, 1);
+    }
+}
+
+bool
+Context::addPort (Event *event)
+{
+  bool status;
+
+  g_return_val_if_fail (event != NULL, false);
+
+  LuaAPI::Event_push (_L, event);
+  LuaAPI::Context_call (_L, this, "addPort", 1, 1);
+  status = lua_toboolean (_L, -1);
+  lua_pop (_L, 1);
+
+  return status;
+}
+
+bool
+Context::removePort (Event *event)
+{
+  bool status;
+
+  g_return_val_if_fail (event != NULL, false);
+
+  LuaAPI::Event_push (_L, event);
+  LuaAPI::Context_call (_L, this, "removePort", 1, 1);
+  status = lua_toboolean (_L, -1);
+  lua_pop (_L, 1);
+
+  return status;
+}
+
+// TODO --------------------------------------------------------------------
+
 Context::Context (Document *doc, const string &id) : Composition (doc, id)
 {
   _awakeChildren = 0;
@@ -180,28 +238,33 @@ Context::afterTransition (Event *evt, Event::Transition transition,
       switch (transition)
         {
         case Event::START:
-          // Start context as a whole.
-          Object::doStart ();
+          {
+            // Start context as a whole.
+            Object::doStart ();
 
-          if (instanceof (Context *, parent) && parent->isSleeping ())
-            {
-              //parent->getLambda ()->setParameter ("fromport", "true");
-              parent->getLambda ()->transition (Event::START, params);
-            }
+            if (instanceof (Context *, parent) && parent->isSleeping ())
+              {
+                //parent->getLambda ()->setParameter ("fromport", "true");
+                parent->getLambda ()->transition (Event::START, params);
+              }
 
-          // Start all ports in the next tick if not started from port
-          //evt->getParameter ("fromport", &param_test);
-          if (param_test != "")
+            // Start all ports in the next tick if not started from port
+            //evt->getParameter ("fromport", &param_test);
+            if (param_test != "")
+              break;
+
+            list<Event *> ports;
+            this->getPorts (&ports);
+            for (auto port : ports)
+              {
+                if (port->getType () == Event::PRESENTATION)
+                  this->addDelayedAction (port, Event::START, "", 0);
+              }
+            //evt->setParameter ("fromport", "");
+            TRACE ("start %s at %" GINGA_TIME_FORMAT,
+                   evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
             break;
-          for (auto port : _ports)
-            {
-              if (port->getType () == Event::PRESENTATION)
-                this->addDelayedAction (port, Event::START, "", 0);
-            }
-          //evt->setParameter ("fromport", "");
-          TRACE ("start %s at %" GINGA_TIME_FORMAT,
-                 evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
-          break;
+          }
         case Event::PAUSE:
           TRACE ("pause %s at %" GINGA_TIME_FORMAT,
                  evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
@@ -275,19 +338,6 @@ Context::afterTransition (Event *evt, Event::Transition transition,
 }
 
 // Public.
-
-const list<Event *> *
-Context::getPorts ()
-{
-  return &_ports;
-}
-
-void
-Context::addPort (Event *event)
-{
-  g_assert_nonnull (event);
-  tryinsert (event, _ports, push_back);
-}
 
 const list<pair<list<Action>, list<Action> > > *
 Context::getLinks ()

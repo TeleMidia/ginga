@@ -108,13 +108,24 @@ public:
   static void Composition_call (lua_State *L, Composition *comp,
                                 const char *name, int nargs, int nresults);
 
-  // Context, switch, and media --------------------------------------------
+  // Context ---------------------------------------------------------------
 
   /// Checks if the value at index \p i of stack is a Context wrapper.
   static Context *Context_check (lua_State *L, int i);
 
+  //// Pushes the Lua wrapper of event onto stack.
+  static void Context_push (lua_State *L, Context *ctx);
+
+  /// Calls a method of the Lua wrapper of the given event.
+  static void Context_call (lua_State *L, Context *ctx,
+                            const char *name, int nargs, int nresults);
+
+  // Switch ----------------------------------------------------------------
+
   /// Checks if the value at index \p i of stack is a Switch wrapper.
   static Switch *Switch_check (lua_State *L, int i);
+
+  /// Media ----------------------------------------------------------------
 
   /// Checks if the value at index \p i of stack is a Media wrapper.
   static Media *Media_check (lua_State *L, int i);
@@ -140,7 +151,7 @@ public:
   static Event::State Event_State_check (lua_State *L, int i);
 
   //// Pushes the Lua wrapper of event onto stack.
-  static void Event_push (lua_State *L, Event *doc);
+  static void Event_push (lua_State *L, Event *evt);
 
   /// Pushes Event::Type (as string) onto stack.
   static void Event_Type_push (lua_State *L, Event::Type type);
@@ -149,7 +160,7 @@ public:
   static void Event_State_push (lua_State *L, Event::State state);
 
   /// Calls a method of the Lua wrapper of the given event.
-  static void Event_call (lua_State *L, Event *doc,
+  static void Event_call (lua_State *L, Event *evt,
                           const char *name, int nargs, int nresults);
 
   // Auxiliary -------------------------------------------------------------
@@ -178,6 +189,7 @@ private:
   LUAAPI_CHUNK_DECL (initMt);
   LUAAPI_CHUNK_DECL (Document_initMt);
   LUAAPI_CHUNK_DECL (Object_initMt);
+  LUAAPI_CHUNK_DECL (Context_initMt);
   LUAAPI_CHUNK_DECL (Media_initMt);
   LUAAPI_CHUNK_DECL (Composition_initMt);
   LUAAPI_CHUNK_DECL (Event_initMt);

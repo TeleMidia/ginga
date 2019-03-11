@@ -1,4 +1,5 @@
 /LuaAPI_Composition_initMt.cpp
+/LuaAPI_Context_initMt.cpp
 /LuaAPI_Document_initMt.cpp
 /LuaAPI_Event_initMt.cpp
 /LuaAPI_Media_initMt.cpp

@@ -20,6 +20,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 LUAAPI_CHUNK_DEFN (initMt);
 LUAAPI_CHUNK_DEFN (Document_initMt);
 LUAAPI_CHUNK_DEFN (Object_initMt);
+LUAAPI_CHUNK_DEFN (Context_initMt);
 LUAAPI_CHUNK_DEFN (Media_initMt);
 LUAAPI_CHUNK_DEFN (Composition_initMt);
 LUAAPI_CHUNK_DEFN (Event_initMt);

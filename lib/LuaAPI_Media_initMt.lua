@@ -1,3 +1,4 @@
+-- Media metatable.
 do
    local mt = ...
 

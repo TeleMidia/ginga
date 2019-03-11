@@ -75,30 +75,6 @@ template <typename...T> void ignore_unused (const T&...) {}
 #define cast(a, b)       (dynamic_cast<a>((b)))
 #define instanceof(a, b) (cast (a,(b)) != nullptr)
 
-#define tryinsert(a, b, fn)                             \
-  (std::count ((b).begin (), (b).end (), (a)) == 0)     \
-  ? ((b).fn (a), true) : false
-
-#define MAP_GET_IMPL(m, a, b)                   \
-  G_STMT_START                                  \
-  {                                             \
-    auto it = (m).find ((a));                   \
-    if (it == (m).end ())                       \
-      return false;                             \
-    tryset ((b), it->second);                   \
-    return true;                                \
-  }                                             \
-  G_STMT_END                                    \
-
-#define MAP_SET_IMPL(m, a, b)                           \
-  G_STMT_START                                          \
-  {                                                     \
-    auto it = (m).find ((a));                           \
-    (m)[(a)] = (b);                                     \
-    return it == (m).end ();                            \
-  }                                                     \
-  G_STMT_END
-
 // Logging, warnings and errors.
 #define GINGA_STRFUNC (__ginga_strfunc (G_STRFUNC)).c_str ()
 string __ginga_strfunc (const string &);
@@ -195,7 +171,6 @@ string xpathbuildabs (const string &, const string &);
 string xpathfromuri (const string &);
 string xurifromsrc (const string &, const string &);
 bool xurigetcontents (const string &, string &);
-
 
 // User data.
 typedef void (*UserDataCleanFunc)(void *);

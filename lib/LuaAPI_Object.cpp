@@ -53,6 +53,7 @@ LuaAPI::Object_attachWrapper (lua_State *L, Object *obj, Document *doc,
            &LuaAPI::_initMt,
            &LuaAPI::_Object_initMt,
            &LuaAPI::_Composition_initMt,
+           &LuaAPI::_Context_initMt,
            &LuaAPI::_traceMt,
            NULL
           };

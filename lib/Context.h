@@ -23,14 +23,25 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
+/// Context in an NCL document.
 class Context : public Composition
 {
 public:
 
+  /// Creates a new context.
   Context (Document *doc, const string &id);
 
+  /// Destroys context.
   ~Context ();
 
+  /// Gets the list of ports of context.
+  void getPorts (list<Event *> *ports);
+
+  /// Adds event to the list of ports of context.
+  bool addPort (Event *);
+
+  /// Removes event from the list of ports of context.
+  bool removePort (Event *);
 
   // TODO ------------------------------------------------------------------
 
@@ -41,9 +52,6 @@ public:
   bool afterTransition (Event *, Event::Transition,
                         map<string, string> &params) override;
 
-  // Context:
-  const list<Event *> *getPorts ();
-  void addPort (Event *);
 
   const list<pair<list<Action>, list<Action> > > *getLinks ();
   void addLink (list<Action>, list<Action>);
@@ -55,7 +63,6 @@ public:
   void setLinksStatus (bool);
 
 private:
-  list<Event *> _ports;                            ///< List of ports.
   list<pair<list<Action>, list<Action> > > _links; ///< List of links.
   int _awakeChildren;           ///< Counts awake children.
   bool _status;                 ///< Whether links are active.

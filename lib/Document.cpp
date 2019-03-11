@@ -384,7 +384,9 @@ Document::evalAction (Action init)
               instanceof (Context *, comp) && comp->isOccurring ())
             {
               ctx_grandparent = cast (Context *, comp);
-              for (auto port : *ctx_parent->getPorts ())
+              list<Event *> ports;
+              ctx_parent->getPorts (&ports);
+              for (auto port : ports)
                 {
                   if (port->getObject () == evt->getObject ())
                     {
