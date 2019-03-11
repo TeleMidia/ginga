@@ -42,6 +42,7 @@ LuaAPI::Document_attachWrapper (lua_State *L, Document *doc)
 {
   static const struct luaL_Reg *const funcs[] =
     {
+     _funcs,
      _Document_funcs,
      NULL
     };

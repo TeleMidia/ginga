@@ -25,6 +25,34 @@ LUAAPI_CHUNK_DEFN (Composition_initMt);
 LUAAPI_CHUNK_DEFN (Event_initMt);
 LUAAPI_CHUNK_DEFN (traceMt);
 
+const struct luaL_Reg LuaAPI::_funcs[] =
+  {
+   {"_debug",   LuaAPI::_l_debug},
+   {"_warning", LuaAPI::_l_warn},
+   {"_error",   LuaAPI::_l_error},
+   {NULL, NULL},
+  };
+
+int
+LuaAPI::_l_debug (lua_State *L)
+{
+  g_debug ("%s", luaL_checkstring (L, -1));
+  return 0;
+}
+
+int
+LuaAPI::_l_warn (lua_State *L)
+{
+  g_warning ("%s", luaL_checkstring (L, -1));
+  return 0;
+}
+
+int G_GNUC_NORETURN
+LuaAPI::_l_error (lua_State *L)
+{
+  g_error ("%s", luaL_checkstring (L, -1));
+}
+
 static void
 xloadbuffer (lua_State *L, const char *chunk, size_t len, const char *name)
 {

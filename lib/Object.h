@@ -162,8 +162,6 @@ protected:
 
   // TODO ------------------------------------------------------------------
 
-  list<pair<string, Composition *> > _aliases;
-
   /// Delayed actions.
   list<pair<Action, Time> > _delayed;
 

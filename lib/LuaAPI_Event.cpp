@@ -53,6 +53,7 @@ LuaAPI::Event_attachWrapper (lua_State *L, Event *evt)
 {
   static const struct luaL_Reg *const funcs[] =
     {
+     _funcs,
      _Event_funcs,
      NULL,
     };

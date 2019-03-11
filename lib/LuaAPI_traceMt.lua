@@ -41,6 +41,33 @@ do
    -- Disable trace for these functions.
    mt._traceOff = mt._traceOff or {}
 
+   -- Wrap basic logging functions into more convenient functions.
+   assert (mt._debug)
+   assert (mt._warning)
+   assert (mt._error)
+   for name,func in pairs {_debug=mt._debug,
+                           _warning=mt._warning,
+                           _error=mt._error} do
+      assert (type (func) == 'function')
+      mt[name] = function (self, fmt, ...)
+         local tag
+         local args
+         if type (self) == 'userdata' then
+            args = {...}
+            local _mt = assert (getmetatable (self))
+            tag = assert (_mt.__name)..': '
+         elseif type (self) == 'string' then
+            args = {fmt, ...}
+            tag = ''
+            fmt = self
+         else
+            error ('bad format')
+         end
+         return func ((tag..fmt):format (table.unpack (args)))
+      end
+      mt._traceOff[name] = true
+   end
+
    -- Install trace wrappers.
    for name,func in pairs (mt) do
 
@@ -59,12 +86,11 @@ do
       mt[name] = function (...)
          local input, output = {...}, {func (...)}
          if #output == 0 then
-            io.stderr:write (('%s:\t%s (%s)\n')
-                  :format (mt.__name, name, listToString (input)))
+            mt._debug ('%s:\t%s (%s)', mt.__name, name,
+                       listToString (input))
          else
-            io.stderr:write (('%s:\t%s (%s) -> %s\n')
-                  :format (mt.__name, name, listToString (input),
-                           listToString (output)))
+            mt._debug ('%s:\t%s (%s) -> %s', mt.__name, name,
+                       listToString (input), listToString (output))
          end
          return table.unpack (output)
       end

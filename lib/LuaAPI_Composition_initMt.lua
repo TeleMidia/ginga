@@ -1,12 +1,15 @@
+-- Composition metatable.
 do
    local mt = ...
 
+   -- Attaches private data and access functions.
    local saved_attachData = assert (mt._attachData)
    mt._attachData = function (self, doc, type, id, data, funcs)
       local data = data or {}
       local funcs = funcs or {}
 
       -- Private data.
+      -- none
 
       -- Getters & setters.
       funcs.children      = {mt.getChildren,       nil}

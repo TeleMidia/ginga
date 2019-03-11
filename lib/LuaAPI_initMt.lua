@@ -1,12 +1,4 @@
--- Gets a string representation of list.
--- local function listToString (list)
---    local t = {}
---    for _,v in ipairs (list) do
---       table.insert (t, tostring (v))
---    end
---    return table.concat (t, ', ')
--- end
-
+-- Code shared by all metatables.
 do
    local mt = ...
 
@@ -62,23 +54,4 @@ do
    -- Finalizes private data.
    mt._fini = function ()
    end
-
-   -- Trace.
-   -- for k,f in pairs (mt) do
-   --    if k:sub (1,2) ~= '__' and type (f) == 'function' then
-   --       mt[k] = function (...)
-   --          local fin = {...}
-   --          local fout = {f (...)}
-   --          if #fout > 0 then
-   --             print (('%s: %s (%s) -> %s')
-   --                   :format (mt.__name, k, listToString (fin),
-   --                            listToString (fout)))
-   --          else
-   --             print (('%s: %s (%s)')
-   --                   :format (mt.__name, k, listToString (fin)))
-   --          end
-   --          return table.unpack (fout)
-   --       end
-   --    end
-   -- end
 end

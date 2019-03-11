@@ -124,10 +124,6 @@ private:
 
   static int _l_Object_getId (lua_State *L);
 
-  static int _l_Object_getProperty (lua_State *L);
-
-  static int _l_Object_setProperty (lua_State *L);
-
   static int _l_Object_getEvents (lua_State *L);
 
   static int _l_Object_getEvent (lua_State *L);
@@ -240,7 +236,7 @@ private:
 
   // Auxiliary -------------------------------------------------------------
 
-public:
+private:
 
   /// Datatype for loadable Lua chunks.
   typedef struct
@@ -269,7 +265,12 @@ public:
   LUAAPI_CHUNK_DECL (Event_initMt);
   LUAAPI_CHUNK_DECL (traceMt);
 
-private:
+  /// The functions to load in all metatables.
+  static const struct luaL_Reg _funcs[];
+
+  static int _l_debug (lua_State *L);
+  static int _l_warn (lua_State *L);
+  static int _l_error (lua_State *L);
 
   /// Loads the metatable of a Lua wrapper (if not already loaded).
   ///
