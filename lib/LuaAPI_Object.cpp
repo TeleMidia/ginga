@@ -26,12 +26,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #define OBJECT_SWITCH_STRING   "switch"
 #define OBJECT_MEDIA_STRING    "media"
 
-const struct luaL_Reg LuaAPI::_Object_funcs[] =
-  {
-   {"_getUnderlyingObject",  LuaAPI::_l_Object_getUnderlyingObject},
-   {NULL, NULL},
-  };
-
 // Public.
 
 void
@@ -51,7 +45,6 @@ LuaAPI::Object_attachWrapper (lua_State *L, Object *obj, Document *doc,
         static const struct luaL_Reg *const funcs[] =
           {
            _funcs,
-           _Object_funcs,
            NULL
           };
 
@@ -79,7 +72,6 @@ LuaAPI::Object_attachWrapper (lua_State *L, Object *obj, Document *doc,
         static const struct luaL_Reg *const funcs[] =
           {
            _funcs,
-           _Object_funcs,
            NULL
           };
 
@@ -107,7 +99,6 @@ LuaAPI::Object_attachWrapper (lua_State *L, Object *obj, Document *doc,
         static const struct luaL_Reg *const funcs[] =
           {
            _funcs,
-           _Object_funcs,
            NULL
           };
 
@@ -255,13 +246,4 @@ LuaAPI::Object_call (lua_State *L, Object *obj, const char *name,
   g_return_if_fail (nresults >= 0);
 
   LuaAPI::_callLuaWrapper (L, obj, name, nargs, nresults);
-}
-
-// Private.
-
-int
-LuaAPI::_l_Object_getUnderlyingObject (lua_State *L)
-{
-  lua_pushlightuserdata (L, LuaAPI::Object_check (L, 1));
-  return 1;
 }

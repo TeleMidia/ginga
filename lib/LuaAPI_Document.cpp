@@ -24,22 +24,19 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "MediaSettings.h"
 #include "Switch.h"
 
-const char *LuaAPI::_DOCUMENT = "Ginga.Document";
-
-const struct luaL_Reg LuaAPI::_Document_funcs[] =
-  {
-   {"__gc",                 LuaAPI::__l_Document_gc},
-   {"_getUnderlyingObject", LuaAPI::_l_Document_getUnderlyingObject},
-   {"_createObject",        LuaAPI::_l_Document_createObject},
-   {"_createEvent",         LuaAPI::_l_Document_createEvent},
-   {NULL, NULL},
-  };
-
 // Public.
 
 void
 LuaAPI::Document_attachWrapper (lua_State *L, Document *doc)
 {
+  static const struct luaL_Reg _Document_funcs[] =
+    {
+     {"__gc",          LuaAPI::__l_Document_gc},
+     {"_createObject", LuaAPI::_l_Document_createObject},
+     {"_createEvent",  LuaAPI::_l_Document_createEvent},
+     {NULL, NULL},
+    };
+
   static const struct luaL_Reg *const funcs[] =
     {
      _funcs,
@@ -132,13 +129,6 @@ LuaAPI::__l_Document_gc (lua_State *L)
 }
 
 int
-LuaAPI::_l_Document_getUnderlyingObject (lua_State *L)
-{
-  lua_pushlightuserdata (L, LuaAPI::Document_check (L, 1));
-  return 1;
-}
-
-int
 LuaAPI::_l_Document_createObject (lua_State *L)
 {
   Document *doc;
@@ -195,7 +185,7 @@ LuaAPI::_l_Document_createEvent (lua_State *L)
   if (obj->getEvent (type, evtId))
     lua_pushnil (L);
   else
-    LuaAPI::_pushLuaWrapper (L, new Event (type, obj, evtId));
+    LuaAPI::_pushLuaWrapper (L, new Event (obj, type, evtId));
 
   return 1;
 }

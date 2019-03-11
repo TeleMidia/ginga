@@ -157,14 +157,13 @@ protected:
   /// The Lua state associated with this object.
   lua_State *_L;
 
+  // TODO ------------------------------------------------------------------
+
   /// The playback time of this object.
   Time _time;
 
-  // TODO ------------------------------------------------------------------
-
   /// Delayed actions.
   list<pair<Action, Time> > _delayed;
-
   virtual void doStart ();
   virtual void doStop ();
 };

@@ -18,8 +18,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "LuaAPI.h"
 #include "Context.h"
 
-const char *LuaAPI::_CONTEXT = "Ginga.Context";
-
 Context *
 LuaAPI::Context_check (lua_State *L, int i)
 {

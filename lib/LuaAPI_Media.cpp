@@ -18,8 +18,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "LuaAPI.h"
 #include "Media.h"
 
-const char *LuaAPI::_MEDIA = "Ginga.Media";
-
 Media *
 LuaAPI::Media_check (lua_State *L, int i)
 {

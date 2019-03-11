@@ -18,8 +18,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "LuaAPI.h"
 #include "Switch.h"
 
-const char *LuaAPI::_SWITCH = "Ginga.Switch";
-
 Switch *
 LuaAPI::Switch_check (lua_State *L, int i)
 {

@@ -18,43 +18,21 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "LuaAPI.h"
 #include "Event.h"
 
-// Event type.
 #define EVENT_ATTRIBUTION_STRING   "attribution"
 #define EVENT_PRESENTATION_STRING  "presentation"
 #define EVENT_SELECTION_STRING     "selection"
 
-// Event state.
 #define EVENT_OCCURRING_STRING     "occurring"
 #define EVENT_PAUSED_STRING        "paused"
 #define EVENT_SLEEPING_STRING      "sleeping"
 
-const char *LuaAPI::_EVENT = "Ginga.Event";
-
-const struct luaL_Reg LuaAPI::_Event_funcs[] =
-  {
-   {"__getUnderlyingObject", LuaAPI::_l_Event_getUnderlyingObject},
-   {"getType",               LuaAPI::_l_Event_getType},
-   {"getObject",             LuaAPI::_l_Event_getObject},
-   {"getId",                 LuaAPI::_l_Event_getId},
-   {"getQualifiedId",        LuaAPI::_l_Event_getQualifiedId},
-   {"getState",              LuaAPI::_l_Event_getState},
-   {"setState",              LuaAPI::_l_Event_setState},
-   {"getBeginTime",          LuaAPI::_l_Event_getBeginTime},
-   {"setBeginTime",          LuaAPI::_l_Event_setBeginTime},
-   {"getEndTime",            LuaAPI::_l_Event_getEndTime},
-   {"setEndTime",            LuaAPI::_l_Event_setEndTime},
-   {"getLabel",              LuaAPI::_l_Event_getLabel},
-   {"setLabel",              LuaAPI::_l_Event_setLabel},
-   {NULL, NULL}
-  };
-
 void
-LuaAPI::Event_attachWrapper (lua_State *L, Event *evt)
+LuaAPI::Event_attachWrapper (lua_State *L, Event *evt, Object *obj,
+                             Event::Type type, const string &id)
 {
   static const struct luaL_Reg *const funcs[] =
     {
      _funcs,
-     _Event_funcs,
      NULL,
     };
 
@@ -84,7 +62,10 @@ LuaAPI::Event_attachWrapper (lua_State *L, Event *evt)
   LuaAPI::_attachLuaWrapper (L, evt);
 
   // Call evt:_attachData().
-  LuaAPI::_callLuaWrapper (L, evt, "_attachData", 0, 0);
+  LuaAPI::Object_push (L, obj);
+  LuaAPI::Event_Type_push (L, type);
+  lua_pushstring (L, id.c_str ());
+  LuaAPI::_callLuaWrapper (L, evt, "_attachData", 3, 0);
 }
 
 void
@@ -215,166 +196,4 @@ LuaAPI::Event_call (lua_State *L, Event *evt, const char *name,
   g_return_if_fail (nresults >= 0);
 
   LuaAPI::_callLuaWrapper (L, evt, name, nargs, nresults);
-}
-
-int
-LuaAPI::_l_Event_getUnderlyingObject (lua_State *L)
-{
-  lua_pushlightuserdata (L, LuaAPI::Event_check (L, 1));
-  return 1;
-}
-
-int
-LuaAPI::_l_Event_getType (lua_State *L)
-{
-  Event *evt;
-
-  evt = LuaAPI::Event_check (L, 1);
-  Event_Type_push (L, evt->getType ());
-
-  return 1;
-}
-
-int
-LuaAPI::_l_Event_getObject (lua_State *L)
-{
-  Event *evt;
-
-  evt = LuaAPI::Event_check (L, 1);
-  LuaAPI::_pushLuaWrapper (L, evt->getObject ());
-
-  return 1;
-}
-
-int
-LuaAPI::_l_Event_getId (lua_State *L)
-{
-  Event *evt;
-
-  evt = LuaAPI::Event_check (L, 1);
-  lua_pushstring (L, evt->getId ().c_str ());
-
-  return 1;
-}
-
-int
-LuaAPI::_l_Event_getQualifiedId (lua_State *L)
-{
-  Event *evt;
-
-  evt = LuaAPI::Event_check (L, 1);
-  lua_pushstring (L, evt->getQualifiedId ().c_str ());
-
-  return 1;
-}
-
-int
-LuaAPI::_l_Event_getState (lua_State *L)
-{
-  Event *evt;
-
-  evt = LuaAPI::Event_check (L, 1);
-  Event_State_push (L, evt->getState ());
-
-  return 1;
-}
-
-int
-LuaAPI::_l_Event_setState (lua_State *L)
-{
-  Event *evt;
-  Event::State state;
-
-  evt = LuaAPI::Event_check (L, 1);
-  state = LuaAPI::Event_State_check (L, 2);
-  evt->setState (state);
-
-  return 0;
-}
-
-int
-LuaAPI::_l_Event_getBeginTime (lua_State *L)
-{
-  Event *evt;
-  Time time;
-
-  evt = LuaAPI::Event_check (L, 1);
-  time = evt->getBeginTime ();
-  if (time == GINGA_TIME_NONE)
-    lua_pushnil (L);
-  else
-    lua_pushinteger (L, (lua_Integer) time);
-
-  return 1;
-}
-
-int
-LuaAPI::_l_Event_setBeginTime (lua_State *L)
-{
-  Event *evt;
-  Time time;
-
-  evt = LuaAPI::Event_check (L, 1);
-  time = (Time) luaL_optinteger (L, 2, GINGA_TIME_NONE);
-  evt->setBeginTime (time);
-
-  return 0;
-}
-
-int
-LuaAPI::_l_Event_getEndTime (lua_State *L)
-{
-  Event *evt;
-  Time time;
-
-  evt = LuaAPI::Event_check (L, 1);
-  time = evt->getEndTime ();
-  if (time == GINGA_TIME_NONE)
-    lua_pushnil (L);
-  else
-    lua_pushinteger (L, (lua_Integer) time);
-
-  return 1;
-}
-
-int
-LuaAPI::_l_Event_setEndTime (lua_State *L)
-{
-  Event *evt;
-  Time time;
-
-  evt = LuaAPI::Event_check (L, 1);
-  time = (Time) luaL_optinteger (L, 2, GINGA_TIME_NONE);
-  evt->setEndTime (time);
-
-  return 0;
-}
-
-int
-LuaAPI::_l_Event_getLabel (lua_State *L)
-{
-  Event *evt;
-  const char *label;
-
-  evt = LuaAPI::Event_check (L, 1);
-  label = evt->getLabel ().c_str ();
-  if (g_str_equal (label, ""))
-    lua_pushnil (L);
-  else
-    lua_pushstring (L, label);
-
-  return 1;
-}
-
-int
-LuaAPI::_l_Event_setLabel (lua_State *L)
-{
-  Event *evt;
-  const char *label;
-
-  evt = LuaAPI::Event_check (L, 1);
-  label = luaL_optstring (L, 2, "");
-  evt->setLabel (label);
-
-  return 0;
 }

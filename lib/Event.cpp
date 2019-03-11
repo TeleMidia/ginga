@@ -26,20 +26,12 @@ GINGA_NAMESPACE_BEGIN
 
 // Public.
 
-Event::Event (Event::Type type, Object *object, const string &id)
+Event::Event (Object *object, Event::Type type, const string &id)
 {
   g_return_if_fail (object != NULL);
 
-  _type = type;
-  _object = object;
   _L = object->getDocument ()->getLuaState ();
-  _id = id;
-  _state = Event::SLEEPING;
-  _begin = 0;
-  _end = GINGA_TIME_NONE;
-  _label = "";                  // empty
-
-  LuaAPI::Event_attachWrapper (_L, this);
+  LuaAPI::Event_attachWrapper (_L, this, object, type, id);
 }
 
 Event::~Event ()
@@ -47,94 +39,141 @@ Event::~Event ()
   LuaAPI::Event_detachWrapper (_L, this);
 }
 
-Event::Type
-Event::getType ()
-{
-  return _type;
-}
-
 Object *
 Event::getObject ()
 {
-  return _object;
+  Object *obj;
+
+  LuaAPI::Event_call (_L, this, "getObject", 0, 1);
+  obj = LuaAPI::Object_check (_L, -1);
+  lua_pop (_L, 1);
+
+  return obj;
+}
+
+Event::Type
+Event::getType ()
+{
+  Event::Type type;
+
+  LuaAPI::Event_call (_L, this, "getType", 0, 1);
+  type = LuaAPI::Event_Type_check (_L, -1);
+  lua_pop (_L, 1);
+
+  return type;
 }
 
 string
 Event::getId ()
 {
-  return _id;
+  const char *id;
+
+  LuaAPI::Event_call (_L, this, "getId", 0, 1);
+  id = luaL_checkstring (_L, -1);
+  lua_pop (_L, 1);
+
+  return string (id);
 }
 
 string
 Event::getQualifiedId ()
 {
-  string obj;
+  const char *qualId;
 
-  g_assert_nonnull (_object);
+  LuaAPI::Event_call (_L, this, "getQualifiedId", 0, 1);
+  qualId = luaL_checkstring (_L, -1);
+  lua_pop (_L, 1);
 
-  obj = _object->getId ();
-  switch (_type)
-    {
-    case Event::PRESENTATION:
-      if (_id == "@lambda")
-        return obj + _id;
-      else
-        return obj + "@" + _id;
-    case Event::ATTRIBUTION:
-      return obj + "." + _id;
-    case Event::SELECTION:
-      return obj + "<" + _id + ">";
-    default:
-      g_assert_not_reached ();
-    }
+  return string (qualId);
 }
 
 Event::State
 Event::getState ()
 {
-  return _state;
+  Event::State state;
+
+  LuaAPI::Event_call (_L, this, "getState", 0, 1);
+  state = LuaAPI::Event_State_check (_L, -1);
+  lua_pop (_L, 1);
+
+  return state;
 }
 
 void
 Event::setState (Event::State state)
 {
-  _state = state;
+  LuaAPI::Event_State_push (_L, state);
+  LuaAPI::Event_call (_L, this, "setState", 1, 0);
 }
 
 Time
 Event::getBeginTime ()
 {
-  return _begin;
+  Time time = GINGA_TIME_NONE;
+
+  LuaAPI::Event_call (_L, this, "getBeginTime", 0, 1);
+  if (!lua_isnil (_L, -1))
+    {
+      time = luaL_checkinteger (_L, -1);
+    }
+  lua_pop (_L, 1);
+
+  return time;
 }
 
 void
 Event::setBeginTime (Time time)
 {
-  _begin = time;
+  lua_pushinteger (_L, (lua_Integer) time);
+  LuaAPI::Event_call (_L, this, "setBeginTime", 1, 0);
 }
 
 Time
 Event::getEndTime ()
 {
-  return _end;
+  Time time = GINGA_TIME_NONE;
+
+  LuaAPI::Event_call (_L, this, "getEndTime", 0, 1);
+  if (!lua_isnil (_L, -1))
+    {
+      time = luaL_checkinteger (_L, -1);
+    }
+  lua_pop (_L, 1);
+
+  return time;
 }
 
 void
 Event::setEndTime (Time time)
 {
-  _end = time;
+  lua_pushinteger (_L, (lua_Integer) time);
+  LuaAPI::Event_call (_L, this, "setEndTime", 1, 0);
 }
 
 string
 Event::getLabel ()
 {
-  return _label;
+  const char *label = NULL;
+
+  LuaAPI::Event_call (_L, this, "getLabel", 0, 1);
+  if (!lua_isnil (_L, -1))
+    {
+      label = luaL_checkstring (_L, -1);
+    }
+  lua_pop (_L, 1);
+
+  return string (label != NULL ? label : "");
 }
 
 void
 Event::setLabel (const string &label)
 {
-  _label = label;
+  if (label == "")
+    lua_pushnil (_L);
+  else
+    lua_pushstring (_L, label.c_str ());
+
+  LuaAPI::Event_call (_L, this, "setLabel", 1, 0);
 }
 
 // TODO --------------------------------------------------------------------
@@ -142,7 +181,8 @@ Event::setLabel (const string &label)
 bool
 Event::isLambda ()
 {
-  return _type == Event::PRESENTATION && _id == "@lambda";
+  return this->getType () == Event::PRESENTATION
+    && this->getId () == "@lambda";
 }
 
 bool
@@ -165,7 +205,7 @@ Event::setParameter (const string &name, const string &value)
 bool
 Event::transition (Event::Transition trans)
 {
-  Event::State curr = _state;
+  Event::State curr = this->getState ();
   Event::State next;
   switch (trans)
     {
@@ -195,16 +235,16 @@ Event::transition (Event::Transition trans)
     }
 
   // Initiate transition.
-  if (unlikely (!_object->beforeTransition (this, trans)))
+  if (unlikely (!this->getObject ()->beforeTransition (this, trans)))
     return false;
 
   // Update event state.
-  _state = next;
+  this->setState (next);
 
   // Finish transition.
-  if (unlikely (!_object->afterTransition (this, trans)))
+  if (unlikely (!this->getObject ()->afterTransition (this, trans)))
     {
-      _state = curr;
+      this->setState (curr);
       return false;
     }
 

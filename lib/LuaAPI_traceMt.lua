@@ -41,13 +41,9 @@ do
    -- Disable trace for these functions.
    mt._traceOff = mt._traceOff or {}
 
-   -- Wrap basic logging functions into more convenient functions.
-   assert (mt._debug)
-   assert (mt._warning)
-   assert (mt._error)
-   for name,func in pairs {_debug=mt._debug,
-                           _warning=mt._warning,
-                           _error=mt._error} do
+   -- Wrap GLib logging functions into more convenient functions.
+   local t = {_debug=mt._debug, _warning=mt._warning, _error=mt._error}
+   for name,func in pairs  (t) do
       assert (type (func) == 'function')
       mt[name] = function (self, fmt, ...)
          local tag
@@ -61,7 +57,7 @@ do
             tag = ''
             fmt = self
          else
-            error ('bad format')
+            error ('bad format: '..tostring (fmt))
          end
          return func ((tag..fmt):format (table.unpack (args)))
       end

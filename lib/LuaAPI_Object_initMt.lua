@@ -63,17 +63,19 @@ do
 
    -- Adds event to object.
    mt._addEvent = function (self, evt)
+      assert (evt)
       mt[self]['_'..evt.type][evt.id] = evt
    end
 
    -- Removes event from object.
    mt._removeEvent = function (self, evt)
+      assert (evt)
       mt[self]['_'..evt.type][evt.id] = nil
    end
 
    -- Gets a string representation of object.
    mt.__tostring = function (self)
-      return mt[self]._id
+      return assert (mt[self]._id)
    end
 
    -- Exported functions ---------------------------------------------------
@@ -85,17 +87,17 @@ do
 
    -- Object::getDocument().
    mt.getDocument = function (self)
-      return mt[self]._document
+      return assert (mt[self]._document)
    end
 
    -- Object::getType().
    mt.getType = function (self)
-      return mt[self]._type
+      return assert (mt[self]._type)
    end
 
    -- Object::getId().
    mt.getId = function (self)
-      return mt[self]._id
+      return assert (mt[self]._id)
    end
 
    -- Object::getParents().
@@ -123,7 +125,7 @@ do
       elseif type == 'selection' then
          return self.selection[id]
       else
-         error ('should not get here')
+         error ('bad event type: '..tostring (type))
       end
    end
 

@@ -25,6 +25,12 @@ LUAAPI_CHUNK_DEFN (Composition_initMt);
 LUAAPI_CHUNK_DEFN (Event_initMt);
 LUAAPI_CHUNK_DEFN (traceMt);
 
+const char *LuaAPI::_DOCUMENT = "Ginga.Document";
+const char *LuaAPI::_CONTEXT  = "Ginga.Context";
+const char *LuaAPI::_SWITCH   = "Ginga.Switch";
+const char *LuaAPI::_MEDIA    = "Ginga.Media";
+const char *LuaAPI::_EVENT = "Ginga.Event";
+
 const struct luaL_Reg LuaAPI::_funcs[] =
   {
    {"_debug",   LuaAPI::_l_debug},

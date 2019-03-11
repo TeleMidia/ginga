@@ -63,15 +63,15 @@ public:
 
   /// Creates a new event.
   ///
-  /// @param type The type of the new event.
   /// @param object The container object.
+  /// @param type The type of the new event.
   /// @param id The id of the new event (must no occur in \p object).
   /// @return The newly created event.
   ///
   /// @warning Do not call this constructor directly.  Use
   /// Document::createEvent() or Object::createEvent() to create events.
   ///
-  Event (Event::Type type, Object *object, const string &id);
+  Event (Object *object, Event::Type type, const string &id);
 
   /// Destroys the event.
   ~Event ();
@@ -129,37 +129,14 @@ public:
   // TODO ------------------------------------------------------------------
 
   bool isLambda ();
-
   bool getParameter (const string &, string *);
   bool setParameter (const string &, const string &);
-
   bool transition (Event::Transition);
 
 private:
 
-  /// The type of this event.
-  Event::Type _type;
-
-  /// The container object of this event.
-  Object *_object;
-
   /// The Lua state associated with the container object.
   lua_State *_L;
-
-  /// The id of this event.
-  string _id;
-
-  /// The current state of this event.
-  Event::State _state;
-
-  /// The begin time of this event.
-  Time _begin;
-
-  /// The end time of this event.
-  Time _end;
-
-  /// The label associated with this event ("" means none).
-  std::string _label;
 
   /// Extra parameters to be used in event transitions.
   map<string, string> _parameters;

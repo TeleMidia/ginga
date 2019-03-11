@@ -45,9 +45,9 @@ class Switch;
 ///
 class LuaAPI
 {
-  // Document --------------------------------------------------------------
-
 public:
+
+  // Document --------------------------------------------------------------
 
   /// Attaches Lua wrapper to \p doc.
   static void Document_attachWrapper (lua_State *L, Document *doc);
@@ -67,18 +67,8 @@ public:
 
 private:
 
-  /// Registry key for the Document metatable.
-  static const char *_DOCUMENT;
-
-  /// The functions to load in the metatable of Document.
-  static const struct luaL_Reg _Document_funcs[];
-
   static int __l_Document_gc (lua_State *L);
-
-  static int _l_Document_getUnderlyingObject (lua_State *L);
-
   static int _l_Document_createObject (lua_State *L);
-
   static int _l_Document_createEvent (lua_State *L);
 
   // Object ----------------------------------------------------------------
@@ -109,28 +99,7 @@ public:
   static void Object_call (lua_State *L, Object *obj,
                            const char *name, int nargs, int nresults);
 
-private:
-
-  /// The functions to load in the metatable of Object.
-  static const struct luaL_Reg _Object_funcs[];
-
-  static int _l_Object_getUnderlyingObject (lua_State *L);
-
-  static int _l_Object_getType (lua_State *L);
-
-  static int _l_Object_getDocument (lua_State *L);
-
-  static int _l_Object_getParent (lua_State *L);
-
-  static int _l_Object_getId (lua_State *L);
-
-  static int _l_Object_getEvents (lua_State *L);
-
-  static int _l_Object_getEvent (lua_State *L);
-
   // Composition -----------------------------------------------------------
-
-public:
 
   /// Checks if the value at index \p i of stack is a Composition wrapper.
   static Composition *Composition_check (lua_State *L, int i);
@@ -139,14 +108,7 @@ public:
   static void Composition_call (lua_State *L, Composition *comp,
                                 const char *name, int nargs, int nresults);
 
-private:
-
-  /// The functions to load in the metatable of Composition.
-  static const struct luaL_Reg _Composition_funcs[];
-
   // Context, switch, and media --------------------------------------------
-
-public:
 
   /// Checks if the value at index \p i of stack is a Context wrapper.
   static Context *Context_check (lua_State *L, int i);
@@ -157,23 +119,13 @@ public:
   /// Checks if the value at index \p i of stack is a Media wrapper.
   static Media *Media_check (lua_State *L, int i);
 
-private:
-
-  /// Registry key for the Context metatable.
-  static const char *_CONTEXT;
-
-  /// Registry key for the Switch metatable.
-  static const char *_SWITCH;
-
-  /// Registry key for the Media metatable.
-  static const char *_MEDIA;
 
   // Event -----------------------------------------------------------------
 
-public:
-
   /// Attaches Lua wrapper to \p evt.
-  static void Event_attachWrapper (lua_State *L, Event *evt);
+  static void Event_attachWrapper (lua_State *L, Event *evt,
+                                   Object *obj, Event::Type type,
+                                   const string &id);
 
   /// Detaches Lua wrapper from \p evt.
   static void Event_detachWrapper (lua_State *L, Event *evt);
@@ -199,40 +151,6 @@ public:
   /// Calls a method of the Lua wrapper of the given event.
   static void Event_call (lua_State *L, Event *doc,
                           const char *name, int nargs, int nresults);
-
-private:
-
-  /// Registry key for the Event metatable.
-  static const char *_EVENT;
-
-  /// The functions to load in the metatable of Event.
-  static const struct luaL_Reg _Event_funcs[];
-
-  static int _l_Event_getUnderlyingObject (lua_State *L);
-
-  static int _l_Event_getType (lua_State *L);
-
-  static int _l_Event_getObject (lua_State *L);
-
-  static int _l_Event_getId (lua_State *L);
-
-  static int _l_Event_getQualifiedId (lua_State *L);
-
-  static int _l_Event_getState (lua_State *L);
-
-  static int _l_Event_setState (lua_State *L);
-
-  static int _l_Event_getBeginTime (lua_State *L);
-
-  static int _l_Event_setBeginTime (lua_State *L);
-
-  static int _l_Event_getEndTime (lua_State *L);
-
-  static int _l_Event_setEndTime (lua_State *L);
-
-  static int _l_Event_getLabel (lua_State *L);
-
-  static int _l_Event_setLabel (lua_State *L);
 
   // Auxiliary -------------------------------------------------------------
 
@@ -264,6 +182,13 @@ private:
   LUAAPI_CHUNK_DECL (Composition_initMt);
   LUAAPI_CHUNK_DECL (Event_initMt);
   LUAAPI_CHUNK_DECL (traceMt);
+
+  /// Registry keys for the metatables.
+  static const char *_DOCUMENT;
+  static const char *_CONTEXT;
+  static const char *_SWITCH;
+  static const char *_MEDIA;
+  static const char *_EVENT;
 
   /// The functions to load in all metatables.
   static const struct luaL_Reg _funcs[];
