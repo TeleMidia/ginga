@@ -17,16 +17,13 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "LuaAPI.h"
 
-#define CHUNK_INIT(name)                        \
-  {G_STRINGIFY (LuaAPI_##name.lua),             \
-   (const char *) LuaAPI::name##_lua,           \
-   (size_t) LuaAPI::name##_lua_len}
-
-LuaAPI::Chunk LuaAPI::_initMt             = CHUNK_INIT (initMt);
-LuaAPI::Chunk LuaAPI::_Document_initMt    = CHUNK_INIT (Document_initMt);
-LuaAPI::Chunk LuaAPI::_Object_initMt      = CHUNK_INIT (Object_initMt);
-LuaAPI::Chunk LuaAPI::_Composition_initMt = CHUNK_INIT (Composition_initMt);
-LuaAPI::Chunk LuaAPI::_Event_initMt       = CHUNK_INIT (Event_initMt);
+LUAAPI_CHUNK_DEFN (initMt);
+LUAAPI_CHUNK_DEFN (Document_initMt);
+LUAAPI_CHUNK_DEFN (Object_initMt);
+LUAAPI_CHUNK_DEFN (Media_initMt);
+LUAAPI_CHUNK_DEFN (Composition_initMt);
+LUAAPI_CHUNK_DEFN (Event_initMt);
+LUAAPI_CHUNK_DEFN (traceMt);
 
 static void
 xloadbuffer (lua_State *L, const char *chunk, size_t len, const char *name)

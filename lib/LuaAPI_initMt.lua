@@ -1,3 +1,12 @@
+-- Gets a string representation of list.
+-- local function listToString (list)
+--    local t = {}
+--    for _,v in ipairs (list) do
+--       table.insert (t, tostring (v))
+--    end
+--    return table.concat (t, ', ')
+-- end
+
 do
    local mt = ...
 
@@ -9,32 +18,7 @@ do
       mt[self][k] = v
    end
 
-   mt._traceOff  = {}
-   mt._traceSelf = nil
-   mt._trace = function (self, func, ...)
-      if mt._traceOff[func] then
-         return                 -- nothing to do
-      end
-      local args = {}
-      for _,v in ipairs ({...}) do
-         table.insert (args, tostring (v))
-      end
-      args = table.concat (args, ', ')
-      local prefix
-      if mt._traceSelf then
-         prefix = self:_traceSelf ()..':'
-      else
-         prefix = ''
-      end
-      local tag = tostring (self)
-      local tp, ptr = tag:match ('^Ginga.(%w+): (.-)$')
-      if tp and ptr then
-         local fill = #'Document' - #tp
-         tag = ('%s::%s%s'):format (ptr, tp, (' '):rep (fill))
-      end
-      print (('>>> [%s] %s%s (%s)'):format (tag, prefix, func, args))
-   end
-
+   -- Attaches private data and access functions.
    mt._attachData = function (self, data, funcs)
       local data = data or {}
       local funcs = funcs or {}
@@ -65,14 +49,36 @@ do
       mt._init (self)
    end
 
+   -- Detaches private data.
    mt._detachData = function (self)
       mt._fini (self)
       mt[self] = nil
    end
 
+   -- Initializes private data.
    mt._init = function ()
    end
 
+   -- Finalizes private data.
    mt._fini = function ()
    end
+
+   -- Trace.
+   -- for k,f in pairs (mt) do
+   --    if k:sub (1,2) ~= '__' and type (f) == 'function' then
+   --       mt[k] = function (...)
+   --          local fin = {...}
+   --          local fout = {f (...)}
+   --          if #fout > 0 then
+   --             print (('%s: %s (%s) -> %s')
+   --                   :format (mt.__name, k, listToString (fin),
+   --                            listToString (fout)))
+   --          else
+   --             print (('%s: %s (%s)')
+   --                   :format (mt.__name, k, listToString (fin)))
+   --          end
+   --          return table.unpack (fout)
+   --       end
+   --    end
+   -- end
 end

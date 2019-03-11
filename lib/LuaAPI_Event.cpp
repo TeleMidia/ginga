@@ -61,6 +61,7 @@ LuaAPI::Event_attachWrapper (lua_State *L, Event *evt)
     {
      &LuaAPI::_initMt,
      &LuaAPI::_Event_initMt,
+     &LuaAPI::_traceMt,
      NULL,
     };
 

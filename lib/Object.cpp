@@ -43,6 +43,18 @@ Object::~Object ()
 {
 }
 
+bool
+Object::isComposition ()
+{
+  bool result;
+
+  LuaAPI::Object_call (_L, this, "isComposition", 0, 1);
+  result = (bool) lua_toboolean (_L, -1);
+  lua_pop (_L, 1);
+
+  return result;
+}
+
 Document *
 Object::getDocument ()
 {

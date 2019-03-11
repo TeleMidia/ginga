@@ -57,10 +57,12 @@ src+= LuaAPI_Document_initMt.cpp
 src+= LuaAPI_Event.cpp
 src+= LuaAPI_Event_initMt.cpp
 src+= LuaAPI_Media.cpp
+src+= LuaAPI_Media_initMt.cpp
 src+= LuaAPI_Object.cpp
 src+= LuaAPI_Object_initMt.cpp
 src+= LuaAPI_Switch.cpp
 src+= LuaAPI_initMt.cpp
+src+= LuaAPI_traceMt.cpp
 src+= Media.cpp
 src+= MediaSettings.cpp
 src+= Object.cpp
@@ -89,8 +91,10 @@ endif # WITH_NCLUA
 	@echo '#include "LuaAPI.h"' >$@
 	$(AM_V_GEN)$(XXD) -i $< | sed s/LuaAPI_/LuaAPI::/ >>$@
 
-CLEANFILES+= LuaAPI_Document_initMt.cpp
 CLEANFILES+= LuaAPI_Composition_initMt.cpp
+CLEANFILES+= LuaAPI_Document_initMt.cpp
 CLEANFILES+= LuaAPI_Event_initMt.cpp
+CLEANFILES+= LuaAPI_Media_initMt.cpp
 CLEANFILES+= LuaAPI_Object_initMt.cpp
 CLEANFILES+= LuaAPI_initMt.cpp
+CLEANFILES+= LuaAPI_traceMt.cpp

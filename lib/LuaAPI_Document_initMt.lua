@@ -1,12 +1,12 @@
 -- Dumps graph rooted at node.
 local function dumpGraph (node, prefix)
    local prefix = prefix or ''
-   if node.composition then
+   if node:isComposition () then
       print (('%s+ %s::%s'):format (prefix, node.id, node.type))
       local comps = {}
       local atoms = {}
       for _,child in ipairs (node:getChildren ()) do
-         if child.composition then
+         if child:isComposition () then
             table.insert (comps, child)
          else
             table.insert (atoms, child)
@@ -69,26 +69,7 @@ end
 do
    local mt = ...
 
-   local trace = mt._trace
-   -- mt._traceOff._init         = true
-   -- mt._traceOff._fini         = true
-   -- mt._traceOff._addObject    = true
-   -- mt._traceOff._removeObject = true
-   -- mt._traceOff._addEvent     = true
-   -- mt._traceOff._removeEvent  = true
-   mt._traceOff._getParents   = true
-   mt._traceOff._getChildren  = true
-   -- mt._traceOff._addChild     = true
-   -- mt._traceOff._removeChild  = true
-   mt._traceOff.getObjects    = true
-   mt._traceOff.getObject     = true
-   mt._traceOff.getRoot       = true
-   mt._traceOff.getSettings   = true
-   mt._traceOff.createObject  = true
-   mt._traceOff.getEvents     = true
-   mt._traceOff.getEvent      = true
-   mt._traceOff.createEvent   = true
-
+   -- Attaches private data and access functions.
    local saved_attachData = assert (mt._attachData)
    mt._attachData = function (self, data, funcs)
       local data = data or {}
@@ -119,57 +100,50 @@ do
       return saved_attachData (self, data, funcs)
    end
 
-   -- Initialization.
+   -- Initializes private data.
    local saved_init = assert (mt._init)
    mt._init = function (self)
-      trace (self, '_init')
       assert (self:createObject ('context', '__root__'))
       assert (self:createObject ('media', '__settings__'))
       return saved_init (self)
    end
 
-   -- Finalization.
+   -- Finalizes private data.
    local saved_fini = assert (mt._fini)
    mt._fini = function (self)
-      trace (self, '_fini')
       return saved_fini (self)
    end
 
    -- Adds object to document.
    mt._addObject = function (self, obj)
-      trace (self, '_addObject', obj.id)
       assert (obj.document == self)
       mt[self]._object[obj.id] = obj
       mt[self]._parents[obj] = {}
-      if obj.composition then
+      if obj:isComposition () then
          mt[self]._children[obj] = {}
       end
    end
 
    -- Removes object from document.
    mt._removeObject = function (self, obj)
-      trace (self, '_removeObject', obj.id)
       assert (obj.document == self)
       mt[self]._object[obj.id] = nil
    end
 
    -- Adds event to document.
    mt._addEvent = function (self, evt)
-      trace (self, '_addEvent', evt.qualifiedId)
       assert (evt.object.document == self)
       mt[self]._event[evt.qualifiedId] = evt
    end
 
    -- Removes event from document.
    mt._removeEvent = function (self, evt)
-      trace (self, '_removeEvent', evt.qualifiedId)
       assert (evt.object.document == self)
       mt[self]._event[evt.qualifiedId] = nil
    end
 
    -- Gets the table of parents of obj.
    mt._getParents = function (self, obj)
-      trace (self, '_getParents', obj)
       assert (obj.document == self)
       local t = {}
       for k,_ in pairs (self._parents[obj] or {}) do
@@ -180,9 +154,8 @@ do
 
    -- Gets the table of children of obj.
    mt._getChildren = function (self, obj)
-      trace (self, '_getChildren', obj)
       assert (obj.document == self)
-      assert (obj.composition)
+      assert (obj:isComposition ())
       local t = {}
       for k,_ in pairs (assert (self._children[obj])) do
          table.insert (t, k)
@@ -190,12 +163,11 @@ do
       return t
    end
 
-   -- Adds obj into parent.
+   -- Adds obj to parent.
    mt._addChild = function (self, parent, obj)
-      trace (self, '_addChild', parent, obj)
       assert (parent.document == self)
       assert (obj.document == self)
-      assert (parent.composition)
+      assert (parent:isComposition ())
       local tchildren = assert (self._children[parent])
       tchildren[obj] = true
       local tparents = assert (self._parents[obj])
@@ -204,7 +176,6 @@ do
 
    -- Removes obj from parent.
    mt._removeChild = function (self, parent, obj)
-      trace (self, '_removeChild', parent, obj)
       assert (parent.document == self)
       assert (obj.document == self)
       local tchildren = assert (self._children[parent])
@@ -213,7 +184,7 @@ do
       tparents[parent] = nil
    end
 
-   -- Dumps document string.
+   -- Dumps document graph.
    mt._dump = function (self)
       local tparents = assert (mt[self]._parents)
       local tchildren = assert (mt[self]._children)
@@ -233,7 +204,6 @@ do
 
    -- Document::getObjects().
    mt.getObjects = function (self)
-      trace (self, 'getObjects')
       local t = {}
       for _,v in pairs (self.object) do
          table.insert (t, v)
@@ -243,31 +213,26 @@ do
 
    -- Document::getObject().
    mt.getObject = function (self, id)
-      trace (self, 'getObject', id)
       return self.object[id]
    end
 
    -- Document::getRoot().
    mt.getRoot = function (self)
-      trace (self, 'getRoot')
       return self.object.__root__
    end
 
    -- Document::getSettings ().
    mt.getSettings = function (self)
-      trace (self, 'getSettings')
       return self.object.__settings__
    end
 
    -- Document::createObject().
    mt.createObject = function (self, tp, id)
-      trace (self, 'createObject', tp, id)
       return self:_createObject (tp, id)
    end
 
    -- Document::getEvents().
    mt.getEvents = function (self)
-      trace (self, 'getEvents')
       local t = {}
       for _,v in pairs (self.event) do
          table.insert (t, v)
@@ -277,7 +242,6 @@ do
 
    -- Document::getEvent().
    mt.getEvent = function (self, id)
-      trace (self, 'getEvent', id)
       local tp, o, e = parseQualifiedId (id)
       if tp == nil then
          return nil             -- bad format
@@ -291,7 +255,6 @@ do
 
    -- Document::createEvent().
    mt.createEvent = function (self, tp, obj, evtId)
-      trace (self, 'createEvent', tp, obj, evtId)
       if obj == nil and evtId == nil then
          tp, objId, evtId = parseQualifiedId (tp)
       end

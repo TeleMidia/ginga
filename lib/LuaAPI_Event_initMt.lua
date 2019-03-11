@@ -1,7 +1,5 @@
 do
    local mt = ...
-   local trace = mt._trace
-   mt._traceSelf = function (self) return self.qualifiedId end
 
    local saved_attachData = assert (mt._attachData)
    mt._attachData = function (self, data, funcs)

@@ -56,6 +56,9 @@ public:
   /// Destroys the object and all its events.
   virtual ~Object ();
 
+  /// Tests whether this document is a composition.
+  bool isComposition ();
+
   /// Gets the container document of object.
   Document *getDocument ();
 

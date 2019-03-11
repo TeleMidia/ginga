@@ -50,6 +50,7 @@ LuaAPI::Document_attachWrapper (lua_State *L, Document *doc)
     {
      &LuaAPI::_initMt,
      &LuaAPI::_Document_initMt,
+     &LuaAPI::_traceMt,
      NULL
     };
 

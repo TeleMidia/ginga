@@ -250,30 +250,24 @@ public:
     size_t len;
   } Chunk;
 
-  // Chunk containing the code in LuaAPI_initMt.lua.
-  static Chunk _initMt;
-  static unsigned char initMt_lua[];
-  static unsigned int initMt_lua_len;
+#define LUAAPI_CHUNK_DECL(name)                 \
+  static Chunk _##name;                         \
+  static unsigned char name##_lua[];            \
+  static unsigned int name##_lua_len;
 
-  /// Chunk containing the code in LuaAPI_Document_initMt.lua.
-  static Chunk _Document_initMt;
-  static unsigned char Document_initMt_lua[];
-  static unsigned int Document_initMt_lua_len;
+#define LUAAPI_CHUNK_DEFN(name)                 \
+  LuaAPI::Chunk LuaAPI::_##name =               \
+    {G_STRINGIFY (LuaAPI_##name.lua),           \
+     (const char *) LuaAPI::name##_lua,         \
+     (size_t) LuaAPI::name##_lua_len}
 
-  /// Chunk containing the code in LuaAPI_Object_initMt.lua.
-  static Chunk _Object_initMt;
-  static unsigned char Object_initMt_lua[];
-  static unsigned int Object_initMt_lua_len;
-
-  /// Chunk containing the code in LuaAPI_Composition_initMt.lua.
-  static Chunk _Composition_initMt;
-  static unsigned char Composition_initMt_lua[];
-  static unsigned int Composition_initMt_lua_len;
-
-  /// Chunk containing the code in LuaAPI_Event_initMt.lua.
-  static Chunk _Event_initMt;
-  static unsigned char Event_initMt_lua[];
-  static unsigned int Event_initMt_lua_len;
+  LUAAPI_CHUNK_DECL (initMt);
+  LUAAPI_CHUNK_DECL (Document_initMt);
+  LUAAPI_CHUNK_DECL (Object_initMt);
+  LUAAPI_CHUNK_DECL (Media_initMt);
+  LUAAPI_CHUNK_DECL (Composition_initMt);
+  LUAAPI_CHUNK_DECL (Event_initMt);
+  LUAAPI_CHUNK_DECL (traceMt);
 
 private:
 

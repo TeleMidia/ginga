@@ -1,8 +1,10 @@
 /LuaAPI_Composition_initMt.cpp
 /LuaAPI_Document_initMt.cpp
 /LuaAPI_Event_initMt.cpp
+/LuaAPI_Media_initMt.cpp
 /LuaAPI_Object_initMt.cpp
 /LuaAPI_initMt.cpp
+/LuaAPI_traceMt.cpp
 /config.h
 /config.h.in
 /ginga.pc
