@@ -43,7 +43,8 @@ Switch::~Switch ()
 // Public: Object.
 
 bool
-Switch::beforeTransition (Event *evt, Event::Transition transition)
+Switch::beforeTransition (Event *evt, Event::Transition transition,
+                          map<string, string> &params)
 {
   set<Event *> switchPort_evts; // The possible selected events.
   if (evt->isLambda ())
@@ -102,7 +103,7 @@ Switch::beforeTransition (Event *evt, Event::Transition transition)
                 {
                   g_assert_nonnull (selected_evt);
                   // Found one valid predicate.
-                  if (selected_evt->transition (transition))
+                  if (selected_evt->transition (transition, params))
                     {
                       _selected = obj;
                       return true;
@@ -124,7 +125,7 @@ Switch::beforeTransition (Event *evt, Event::Transition transition)
             {
               Event *lambda = _selected->getLambda ();
               g_assert_nonnull (lambda);
-              lambda->transition (transition);
+              lambda->transition (transition, params);
               _selected = nullptr;
             }
           break;
@@ -143,8 +144,10 @@ Switch::beforeTransition (Event *evt, Event::Transition transition)
 }
 
 bool
-Switch::afterTransition (Event *evt, Event::Transition transition)
+Switch::afterTransition (Event *evt, Event::Transition transition,
+                         map<string, string> &params)
 {
+  (void) params;
   switch (evt->getType ())
     {
     case Event::PRESENTATION:

@@ -330,6 +330,7 @@ Document::evalAction (Action init)
       Object *obj;
       Composition *comp;
       Context *ctx_parent, *ctx_grandparent;
+      map<string, string> params;
 
       act = stack.back ();
       stack.pop_back ();
@@ -341,11 +342,13 @@ Document::evalAction (Action init)
       //        Event::getTransitionAsString (act.transition).c_str (),
       //        act.event->getQualifiedId ().c_str ());
 
-      evt->setParameter ("duration", act.duration);
+      params["duration"] = act.duration;
       if (evt->getType () == Event::ATTRIBUTION)
-        evt->setParameter ("value", act.value);
+        {
+          params["value"] = act.value;
+        }
 
-      if (!evt->transition (act.transition))
+      if (!evt->transition (act.transition, params))
         continue;
 
       n++;

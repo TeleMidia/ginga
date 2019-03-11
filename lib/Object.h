@@ -134,7 +134,8 @@ public:
    * transition).
    */
   virtual bool beforeTransition (Event *evt,
-                                 Event::Transition transition) = 0;
+                                 Event::Transition transition,
+                                 map<string, string> &params) = 0;
 
   /**
    * @brief Finishes event transition.
@@ -150,7 +151,8 @@ public:
    * transition).
    */
   virtual bool afterTransition (Event *evt,
-                                Event::Transition transition) = 0;
+                                Event::Transition transition,
+                                map<string, string> &params) = 0;
 
 protected:
 

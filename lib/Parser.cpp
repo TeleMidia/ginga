@@ -2741,7 +2741,6 @@ borderColor='%s'}",
                     act.event = obj->createEvent (Event::SELECTION,
                                                   act.value);
                     g_assert_nonnull (act.event);
-                    act.event->setParameter ("key", act.value);
                     break;
                   }
                 default:

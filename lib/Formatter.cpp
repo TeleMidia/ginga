@@ -134,6 +134,7 @@ Formatter::start (const string &file, string *errmsg)
   lua_State *L;
   int w, h;
   Event *evt;
+  map<string, string> params;
 
   // This must be the first check.
   if (_state != GINGA_STATE_STOPPED)
@@ -182,7 +183,7 @@ Formatter::start (const string &file, string *errmsg)
   // Start settings.
   evt = settings->getLambda ();
   g_assert_nonnull (evt);
-  g_assert (evt->transition (Event::START));
+  g_assert (evt->transition (Event::START, params));
 
   // Set formatter state.
   _state = GINGA_STATE_PLAYING;

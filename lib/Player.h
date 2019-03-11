@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef PLAYER_H
-#define PLAYER_H
+#ifndef GINGA_PLAYER_H
+#define GINGA_PLAYER_H
 
 #include "Formatter.h"
 #include "PlayerAnimator.h"
@@ -166,4 +166,4 @@ private:
 
 GINGA_NAMESPACE_END
 
-#endif // PLAYER_H
+#endif // GINGA_PLAYER_H

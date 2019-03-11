@@ -31,8 +31,10 @@ public:
   ~Switch ();
 
   // Object:
-  bool beforeTransition (Event *, Event::Transition) override;
-  bool afterTransition (Event *, Event::Transition) override;
+  bool beforeTransition (Event *, Event::Transition,
+                         map<string, string> &params) override;
+  bool afterTransition (Event *, Event::Transition,
+                        map<string, string> &params) override;
 
   // Switch:
   const list<pair<Object *, Predicate *> > *getRules ();

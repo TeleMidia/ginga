@@ -129,17 +129,12 @@ public:
   // TODO ------------------------------------------------------------------
 
   bool isLambda ();
-  bool getParameter (const string &, string *);
-  bool setParameter (const string &, const string &);
-  bool transition (Event::Transition);
+  bool transition (Event::Transition, map<string, string> &params);
 
 private:
 
   /// The Lua state associated with the container object.
   lua_State *_L;
-
-  /// Extra parameters to be used in event transitions.
-  map<string, string> _parameters;
 };
 
 /// Action.

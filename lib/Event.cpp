@@ -186,24 +186,8 @@ Event::isLambda ()
 }
 
 bool
-Event::getParameter (const string &name, string *value)
-{
-  MAP_GET_IMPL (_parameters, name, value);
-}
-
-bool
-Event::setParameter (const string &name, const string &value)
-{
-  MAP_SET_IMPL (_parameters, name, value);
-}
-
-/**
- * @brief Transitions event.
- * @param trans The desired transition.
- * @return \c true if successful, or \c false otherwise.
- */
-bool
-Event::transition (Event::Transition trans)
+Event::transition (Event::Transition trans,
+                   map<string, string> &params)
 {
   Event::State curr = this->getState ();
   Event::State next;
@@ -235,14 +219,16 @@ Event::transition (Event::Transition trans)
     }
 
   // Initiate transition.
-  if (unlikely (!this->getObject ()->beforeTransition (this, trans)))
+  if (unlikely (!this->getObject ()
+                ->beforeTransition (this, trans, params)))
     return false;
 
   // Update event state.
   this->setState (next);
 
   // Finish transition.
-  if (unlikely (!this->getObject ()->afterTransition (this, trans)))
+  if (unlikely (!this->getObject ()
+                ->afterTransition (this, trans, params)))
     {
       this->setState (curr);
       return false;

@@ -102,9 +102,7 @@ Media::sendKey (const string &key, bool press)
       if (evt->getType () != Event::SELECTION)
         continue;
 
-      string expected = "";
-      evt->getParameter ("key", &expected);
-
+      string expected = evt->getId ();
       if (expected[0] == '$')
         expected = ""; // A param could not be resolved.  Should we generate
                        // an error?
@@ -155,7 +153,8 @@ Media::sendTick (Time total, Time diff, Time frame)
 }
 
 bool
-Media::beforeTransition (Event *evt, Event::Transition transition)
+Media::beforeTransition (Event *evt, Event::Transition transition,
+                         map<string, string> &params)
 {
   set<Composition *> parents;
   this->getParents (&parents);
@@ -171,8 +170,8 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
           {
             if (instanceof (Context *, parent) && parent->isSleeping ())
               {
-                parent->getLambda ()->setParameter ("fromport", "true");
-                parent->getLambda ()->transition (Event::START);
+                //parent->getLambda ()->setParameter ("fromport", "true");
+                parent->getLambda ()->transition (Event::START, params);
               }
             // Create underlying player.
             if (evt->getState () == Event::SLEEPING)
@@ -209,7 +208,7 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
                     if (lambda->getState () != Event::SLEEPING)
                       break;
 
-                    lambda->transition (Event::START);
+                    lambda->transition (Event::START, params);
 
                     Time begin, end, dur;
 
@@ -252,7 +251,7 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
                             Event *evt = act.event;
                             if (act.transition == Event::START
                                 && it->second < begin)
-                              evt->transition (act.transition);
+                              evt->transition (act.transition, params);
                             it = _delayed.erase (it);
                           }
                         else if (it->second >= begin)
@@ -316,7 +315,8 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
 }
 
 bool
-Media::afterTransition (Event *evt, Event::Transition transition)
+Media::afterTransition (Event *evt, Event::Transition transition,
+                        map<string, string> &params)
 {
   switch (evt->getType ())
     {
@@ -408,8 +408,7 @@ Media::afterTransition (Event *evt, Event::Transition transition)
 
     case Event::ATTRIBUTION:
       {
-        string value;
-        evt->getParameter ("value", &value);
+        string value = params["value"];
         switch (transition)
           {
           case Event::START:
@@ -422,7 +421,8 @@ Media::afterTransition (Event *evt, Event::Transition transition)
               this->getDocument ()->evalPropertyRef (value, &value);
 
               dur = 0;
-              if (evt->getParameter ("duration", &s))
+              s = params["duration"];
+              if (s != "")
                 {
                   this->getDocument ()->evalPropertyRef (s, &s);
                   dur = ginga::parse_time (s);
@@ -448,8 +448,7 @@ Media::afterTransition (Event *evt, Event::Transition transition)
       }
     case Event::SELECTION:
       {
-        string key;
-        evt->getParameter ("key", &key);
+        string key = params["key"];
         switch (transition)
           {
           case Event::START:

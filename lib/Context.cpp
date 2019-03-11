@@ -94,7 +94,8 @@ Context::sendTick (Time total, Time diff, Time frame)
 }
 
 bool
-Context::beforeTransition (Event *evt, Event::Transition transition)
+Context::beforeTransition (Event *evt, Event::Transition transition,
+                           map<string, string> &params)
 {
   switch (evt->getType ())
     {
@@ -113,7 +114,7 @@ Context::beforeTransition (Event *evt, Event::Transition transition)
               {
                 Event *lambda = child->getLambda ();
                 g_assert_nonnull (lambda);
-                lambda->transition (Event::STOP);
+                lambda->transition (Event::STOP, params);
               }
             break;
           }
@@ -126,7 +127,7 @@ Context::beforeTransition (Event *evt, Event::Transition transition)
               {
                 Event *lambda = child->getLambda ();
                 g_assert_nonnull (lambda);
-                lambda->transition (Event::PAUSE);
+                lambda->transition (Event::PAUSE, params);
               }
             break;
           }
@@ -139,7 +140,7 @@ Context::beforeTransition (Event *evt, Event::Transition transition)
               {
                 Event *lambda = child->getLambda ();
                 g_assert_nonnull (lambda);
-                lambda->transition (Event::RESUME);
+                lambda->transition (Event::RESUME, params);
               }
             break;
           }
@@ -152,7 +153,7 @@ Context::beforeTransition (Event *evt, Event::Transition transition)
               {
                 Event *lambda = child->getLambda ();
                 g_assert_nonnull (lambda);
-                lambda->transition (Event::ABORT);
+                lambda->transition (Event::ABORT, params);
               }
             break;
           }
@@ -175,7 +176,8 @@ Context::beforeTransition (Event *evt, Event::Transition transition)
 }
 
 bool
-Context::afterTransition (Event *evt, Event::Transition transition)
+Context::afterTransition (Event *evt, Event::Transition transition,
+                          map<string, string> &params)
 {
   set<Composition *> parents;
   this->getParents (&parents);
@@ -195,12 +197,12 @@ Context::afterTransition (Event *evt, Event::Transition transition)
 
           if (instanceof (Context *, parent) && parent->isSleeping ())
             {
-              parent->getLambda ()->setParameter ("fromport", "true");
-              parent->getLambda ()->transition (Event::START);
+              //parent->getLambda ()->setParameter ("fromport", "true");
+              parent->getLambda ()->transition (Event::START, params);
             }
 
           // Start all ports in the next tick if not started from port
-          evt->getParameter ("fromport", &param_test);
+          //evt->getParameter ("fromport", &param_test);
           if (param_test != "")
             break;
           for (auto port : _ports)
@@ -208,7 +210,7 @@ Context::afterTransition (Event *evt, Event::Transition transition)
               if (port->getType () == Event::PRESENTATION)
                 this->addDelayedAction (port, Event::START, "", 0);
             }
-          evt->setParameter ("fromport", "");
+          //evt->setParameter ("fromport", "");
           TRACE ("start %s at %" GINGA_TIME_FORMAT,
                  evt->getQualifiedId ().c_str (), GINGA_TIME_ARGS (_time));
           break;
@@ -246,11 +248,12 @@ Context::afterTransition (Event *evt, Event::Transition transition)
             Time dur;
 
             name = evt->getId ();
-            evt->getParameter ("value", &value);
+            value = params["value"];
             this->getDocument ()->evalPropertyRef (value, &value);
 
             dur = 0;
-            if (evt->getParameter ("duration", &s))
+            s = params["duration"];
+            if (s != "")
               {
                 this->getDocument ()->evalPropertyRef (s, &s);
                 dur = ginga::parse_time (s);

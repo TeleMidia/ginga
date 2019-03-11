@@ -38,8 +38,10 @@ public:
   void setProperty (const string &, const string &, Time dur = 0) override;
   void sendKey (const string &, bool) override;
   void sendTick (Time, Time, Time) override;
-  bool beforeTransition (Event *, Event::Transition) override;
-  bool afterTransition (Event *, Event::Transition) override;
+  bool beforeTransition (Event *, Event::Transition,
+                         map<string, string> &params) override;
+  bool afterTransition (Event *, Event::Transition,
+                        map<string, string> &params) override;
 
   // Context:
   const list<Event *> *getPorts ();
