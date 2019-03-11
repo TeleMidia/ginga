@@ -85,6 +85,16 @@ public:
   /// Gets the lambda presentation event of object.
   Event *getLambda ();
 
+  /// Gets the set of properties of object.
+  void getProperties (set<pair<string,string> > *properties);
+
+  /// Gets the current value of an object property.
+  virtual string getProperty (const string &name);
+
+  /// Sets the current value of an object property.
+  virtual void setProperty (const string &name, const string &value,
+                            Time duration=0);
+
   /// Creates a new event and adds it to object.
   ///
   /// @param type The type of the new event.
@@ -96,14 +106,6 @@ public:
   Event *createEvent (Event::Type type, const string &id);
 
   // TODO ------------------------------------------------------------------
-
-  /// Gets the current value of an object property.
-  virtual string getProperty (const string &name);
-
-  /// Sets the current value of an object property.
-  virtual void setProperty (const string &name, const string &value,
-                            Time duration = 0);
-
 
   bool isOccurring ();
   bool isPaused ();
@@ -154,9 +156,6 @@ protected:
 
   /// The Lua state associated with this object.
   lua_State *_L;
-
-  /// A map with the properties of this object indexed by name.
-  map<string, string> _properties;
 
   /// The playback time of this object.
   Time _time;

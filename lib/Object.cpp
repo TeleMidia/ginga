@@ -166,6 +166,53 @@ Object::getLambda ()
   return evt;
 }
 
+void
+Object::getProperties (set<pair<string, string> > *properties)
+{
+  g_return_if_fail (properties != NULL);
+
+  LuaAPI::Object_call (_L, this, "getProperties", 0, 1);
+  g_assert (lua_type (_L, -1) == LUA_TTABLE);
+
+  lua_pushnil (_L);
+  while (lua_next (_L, -2))
+    {
+      string name;
+      string value;
+
+      name = string (luaL_checkstring (_L, -2));
+      value = string (luaL_checkstring (_L, -1));
+      properties->insert (std::make_pair (name, value));
+      lua_pop (_L, 1);
+    }
+  lua_pop (_L, 1);
+}
+
+string
+Object::getProperty (const string &name)
+{
+  const char *value = NULL;
+
+  lua_pushstring (_L, name.c_str ());
+  LuaAPI::Object_call (_L, this, "getProperty", 1, 1);
+  if (!lua_isnil (_L, -1))
+    {
+      value = luaL_checkstring (_L, -1);
+    }
+  lua_pop (_L, 1);
+
+  return string (value != NULL ? value : "");
+}
+
+void
+Object::setProperty (const string &name, const string &value,
+                     unused (Time duration))
+{
+  lua_pushstring (_L, name.c_str ());
+  lua_pushstring (_L, value.c_str ());
+  LuaAPI::Object_call (_L, this, "setProperty", 2, 0);
+}
+
 Event *
 Object::createEvent (Event::Type type, const string &id)
 {
@@ -181,24 +228,6 @@ Object::createEvent (Event::Type type, const string &id)
   lua_pop (_L, 1);
 
   return evt;
-}
-
-// TODO --------------------------------------------------------------------
-
-string
-Object::getProperty (const string &name)
-{
-  auto it = _properties.find (name);
-  if (it == _properties.end ())
-    return "";
-  return it->second;
-}
-
-void
-Object::setProperty (const string &name, const string &value, Time duration)
-{
-  g_return_if_fail (GINGA_TIME_IS_VALID (duration));
-  _properties[name] = value;
 }
 
 // TODO --------------------------------------------------------------------

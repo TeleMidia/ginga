@@ -183,12 +183,17 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
 
                     g_assert (this->getDocument ()->getData ("formatter", (void **) &fmt));
                     g_assert_null (_player);
-                    _player = Player::createPlayer (
-                        fmt, this, _properties["uri"], _properties["type"]);
+                    _player = Player::createPlayer
+                      (fmt, this,
+                       this->getProperty ("uri"),
+                       this->getProperty("type"));
                     if (unlikely (_player == nullptr))
                       return false; // fail
 
-                    for (auto it : _properties)
+                    set<pair<string, string> > props;
+                    this->getProperties (&props);
+
+                    for (auto it: props)
                       _player->setProperty (it.first, it.second);
 
                     g_assert_nonnull (_player);

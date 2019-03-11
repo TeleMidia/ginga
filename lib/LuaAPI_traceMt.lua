@@ -2,7 +2,15 @@
 local function tableToString (tab)
    local t = {}
    for k,v in pairs (tab) do
-      table.insert (t, tostring (k)..'='..tostring (v))
+      local str
+      if type (v) == 'table' then
+         str = tableToString (v)
+      elseif type (v) == 'string' then
+         str = "'"..v.."'"
+      else
+         str = tostring (v)
+      end
+      table.insert (t, tostring (k)..'='..str)
    end
    return '{'..table.concat (t, ', ')..'}'
 end
@@ -51,10 +59,10 @@ do
       mt[name] = function (...)
          local input, output = {...}, {func (...)}
          if #output == 0 then
-            print (('%s:\t%s (%s)')
+            io.stderr:write (('%s:\t%s (%s)\n')
                   :format (mt.__name, name, listToString (input)))
          else
-            print (('%s:\t%s (%s) -> %s')
+            io.stderr:write (('%s:\t%s (%s) -> %s\n')
                   :format (mt.__name, name, listToString (input),
                            listToString (output)))
          end

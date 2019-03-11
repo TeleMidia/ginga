@@ -28,7 +28,7 @@ MediaSettings::MediaSettings (Document *doc, const string &id)
 {
   _nextFocus = "";
   _hasNextFocus = false;
-  _properties["type"] = "application/x-ginga-settings";
+  this->setProperty ("type", "application/x-ginga-settings", 0);
   this->createEvent (Event::ATTRIBUTION, "service.currentFocus");
 }
 

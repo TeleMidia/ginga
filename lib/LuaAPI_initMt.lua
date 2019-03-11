@@ -43,7 +43,7 @@ do
          if f == nil then
             return
          end
-         fset (self, v)
+         f (self, v)
       end
       mt[self] = setmetatable (data, _mt)
       mt._init (self)

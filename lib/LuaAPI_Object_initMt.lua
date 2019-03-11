@@ -1,4 +1,4 @@
--- Initialize object metatable.
+-- Object metatable.
 do
    local mt = ...
 
@@ -15,6 +15,7 @@ do
       data._attribution  = {}            -- attribution evts indexed by id
       data._presentation = {}            -- presentation evts indexed by id
       data._selection    = {}            -- selection evts indexed by id
+      data._property     = {}            -- property table.
 
       local get_data_attr = function ()
          return data._attribution
@@ -22,17 +23,21 @@ do
       local get_data_pres = function ()
          return data._presentation
       end
-      local get_data_seln = function ()
+      local get_data_seln = function (...)
          return data._selection
+      end
+      local get_data_prop = function (...)
+         return data._property
       end
 
       -- Getters & setters.
       funcs.document     = {mt.getDocument, nil}
       funcs.type         = {mt.getType,     nil}
       funcs.id           = {mt.getId,       nil}
-      funcs.parents      = {mt.getParents,  nil} -- deprecated
+      funcs.parents      = {mt.getParents,  nil}
       funcs.events       = {mt.getEvents,   nil}
       funcs.lambda       = {mt.getLambda,   nil}
+      funcs.property     = {get_data_prop,  nil}
       --
       funcs.attribution  = {get_data_attr,  nil}
       funcs.presentation = {get_data_pres,  nil}
@@ -125,6 +130,21 @@ do
    -- Object::getLambda().
    mt.getLambda = function (self, type, id)
       return self.presentation['@lambda']
+   end
+
+   -- Object::getProperties().
+   mt.getProperties = function (self)
+      return mt[self]._property -- FIXME: Clone?
+   end
+
+   -- Object::getProperty().
+   mt.getProperty = function (self, name)
+      return mt[self]._property[name]
+   end
+
+   -- Object::setProperty().
+   mt.setProperty = function (self, name, value)
+      mt[self]._property[name] = value
    end
 
    -- Object::createEvent().

@@ -65,7 +65,7 @@ local function parseQualifiedId (id)
    return tp, o, e
 end
 
--- Initialize document metatable.
+-- Document metatable.
 do
    local mt = ...
 
