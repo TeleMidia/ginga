@@ -144,7 +144,6 @@ public:
   void addDelayedAction (Event *, Event::Transition,
                          const string &value = "", Time delay = 0);
 
-  virtual void sendKey (const string &, bool);
   virtual void sendTick (Time, Time, Time);
 
   /**

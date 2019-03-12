@@ -226,15 +226,14 @@ Formatter::redraw (cairo_t *cr)
   cairo_fill (cr);
   cairo_restore (cr);
 
-  // if (_background.alpha > 0)
-  //   {
-  //     cairo_save (cr);
-  //     cairo_set_source_rgba (cr, _background.red, _background.green,
-  //                            _background.blue, _background.alpha);
-  //     cairo_rectangle (cr, 0, 0, _opts.width, _opts.height);
-  //     cairo_fill (cr);
-  //     cairo_restore (cr);
-  //   }
+  if (true)
+    {
+      cairo_save (cr);
+      cairo_set_source_rgba (cr, .5, 0, .5, 1);
+      cairo_rectangle (cr, 0, 0, (double) width, (double) height);
+      cairo_fill (cr);
+      cairo_restore (cr);
+    }
 
   zlist = NULL;
   _doc->getObjects (&objects);
@@ -341,7 +340,13 @@ Formatter::sendKey (const string &key, bool press)
     if (!obj->isSleeping ())
       buf.push_back (obj);
   for (auto obj: buf)
-    obj->sendKey (key, press);
+    {
+      if (obj->getType () == Object::MEDIA)
+        {
+          Media *media = cast (Media *, obj);
+          media->sendKey (key, press);
+        }
+    }
 
   return true;
 }

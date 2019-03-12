@@ -447,11 +447,6 @@ Object::addDelayedAction (Event *event, Event::Transition transition,
 }
 
 void
-Object::sendKey (unused (const string &key), unused (bool press))
-{
-}
-
-void
 Object::sendTick (unused (Time total), Time diff, unused (Time frame))
 {
   if (unlikely (!this->isOccurring ()))

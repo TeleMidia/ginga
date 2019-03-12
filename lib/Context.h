@@ -45,7 +45,6 @@ public:
 
   // TODO ------------------------------------------------------------------
 
-  void sendKey (const string &, bool) override;
   void sendTick (Time, Time, Time) override;
   bool beforeTransition (Event *, Event::Transition,
                          map<string, string> &params) override;

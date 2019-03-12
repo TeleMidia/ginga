@@ -106,11 +106,6 @@ Context::~Context ()
 }
 
 void
-Context::sendKey (unused (const string &key), unused (bool press))
-{
-}
-
-void
 Context::sendTick (Time total, Time diff, Time frame)
 {
   // Update object time.

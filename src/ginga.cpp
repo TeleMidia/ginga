@@ -235,7 +235,8 @@ on_canvas_key_event (unused (GtkWidget *canvas),
         doc = (Document *) ginga->getDocument ();
         if (doc != NULL)
           {
-            doc->getSettings ()->setPropertyBool ("ginga.debug", true);
+            doc->getSettings ()
+              ->setPropertyBool ("ginga.debug", debugging_on);
           }
         goto done;
       }
