@@ -27,6 +27,7 @@ GINGA_NAMESPACE_BEGIN
 MediaSettings::MediaSettings (Document *doc, const string &id)
   : Media (doc, id)
 {
+  this->setPropertyBool ("ginga.debug", true);
   this->setPropertyString ("type", "application/x-ginga-settings");
   this->createEvent (Event::ATTRIBUTION, "service.currentFocus");
 }
