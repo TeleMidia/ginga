@@ -192,12 +192,6 @@ Player::getZ (int *zindex, int *zorder)
   tryset (zorder, _prop.zorder);
 }
 
-bool
-Player::isFocused ()
-{
-  return _prop.focusIndex != "" && _prop.focusIndex == _currentFocus;
-}
-
 Time
 Player::getTime ()
 {
@@ -386,7 +380,7 @@ Player::redraw (cairo_t *cr)
       cairo_restore (cr);
     }
 
-  if (this->isFocused ())
+  if (_media->isFocused ())
     {
       cairo_save (cr);
       cairo_set_source_rgba (cr, 1., 1., 0., 1.);
@@ -437,21 +431,6 @@ Player::sendKeyEvent (unused (const string &key), unused (bool press))
 }
 
 // Public: Static.
-
-// Current focus index value.
-string Player::_currentFocus = "";
-
-string
-Player::getCurrentFocus ()
-{
-  return _currentFocus;
-}
-
-void
-Player::setCurrentFocus (const string &index)
-{
-  _currentFocus = index;
-}
 
 Player::Property
 Player::getPlayerProperty (const string &name, string *defval)

@@ -27,9 +27,14 @@ class Media : public Object
 {
 public:
 
+  /// Creates a new media object.
   Media (Document *doc, const string &id);
 
+  /// Destroys media object.
   ~Media ();
+
+  /// Tests whether media object is focused.
+  bool isFocused ();
 
   // TODO ------------------------------------------------------------------
 
@@ -42,7 +47,6 @@ public:
                         map<string, string> &params) override;
 
   // Media:
-  virtual bool isFocused ();
   virtual bool getZ (int *, int *);
   virtual void redraw (cairo_t *);
 

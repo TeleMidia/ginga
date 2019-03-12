@@ -25,7 +25,6 @@ class Player
 {
 public:
 
-  /// Player state.
   enum State
     {
      OCCURRING,
@@ -33,7 +32,6 @@ public:
      PAUSED,
     };
 
-  /// Player properties.
   enum Property
   {
     PROP_UNKNOWN = 0,
@@ -110,15 +108,12 @@ public:
 
   virtual void sendKeyEvent (const string &, bool);
 
-  // For now, only for the lua player (which reimplements it).
   virtual void
   sendPresentationEvent (const string &, const string &)
   {
   }
 
   // Static.
-  static string getCurrentFocus ();
-  static void setCurrentFocus (const string &);
   static Property getPlayerProperty (const string &, string *);
   static Player *createPlayer (Media *, const string &,
                                const string &type = "");
@@ -127,8 +122,6 @@ protected:
 
   /// The Lua state of the associated media object.
   lua_State *_L;
-
-  // TODO ------------------------------------------------------------------
 
   Media *_media;             // associated media object
   string _id;                // id of the associated media object
@@ -160,9 +153,6 @@ protected:
 
 private:
   void redrawDebuggingInfo (cairo_t *);
-
-  // Static.
-  static string _currentFocus; // current (global) focus index
 };
 
 GINGA_NAMESPACE_END

@@ -408,6 +408,14 @@ Object::setPropertyString (const string &name, const string &value)
   g_value_unset (&val);
 }
 
+void
+Object::unsetProperty (const string &name)
+{
+  lua_pushstring (_L, name.c_str ());
+  lua_pushnil (_L);
+  LuaAPI::Object_call (_L, this, "setProperty", 2, 0);
+}
+
 // TODO --------------------------------------------------------------------
 
 bool
@@ -497,8 +505,11 @@ Object::doStart ()
 
   // schedule set currentFocus if the object have focusIndex
   string str;
-  if (this->getPropertyString ("focusIndex", &str) && str != "")
-    this->getDocument ()->getSettings ()->scheduleFocusUpdate ("");
+  if (this->getPropertyString ("focusIndex", &str))
+    {
+      this->getDocument ()->getSettings ()
+        ->setPropertyString ("_nextFocus", "");
+    }
 }
 
 void

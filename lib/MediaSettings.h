@@ -26,23 +26,10 @@ class MediaSettings : public Media
 {
 public:
   MediaSettings (Document *doc, const string &id);
+
   ~MediaSettings ();
 
-  void setProperty (const string &name, const GValue *value) override;
   void sendTick (Time, Time, Time) override;
-
-  // Media;
-  bool isFocused () override;
-  bool getZ (int *, int *) override;
-  void redraw (cairo_t *) override;
-
-  // MediaSettings:
-  void updateCurrentFocus (const string &);
-  void scheduleFocusUpdate (const string &);
-
-private:
-  string _nextFocus;  // next focus index
-  bool _hasNextFocus; // true if a focus update is scheduled
 };
 
 GINGA_NAMESPACE_END

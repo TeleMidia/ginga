@@ -104,35 +104,38 @@ public:
   /// Gets the property table of object.
   void G_GNUC_DEPRECATED getProperties (map<string, GValue> *properties);
 
-  /// Gets the current value of an object property.
+  /// Gets the value of an object property.
   virtual bool getProperty (const string &name, GValue *value);
 
-  /// Gets the current value of a boolean property.
+  /// Gets the value of a boolean property.
   bool getPropertyBool (const string &name, bool *value);
 
-  /// Gets the current value of an integer property.
+  /// Gets the value of an integer property.
   bool getPropertyInteger (const string &name, lua_Integer *value);
 
-  /// Gets the current value of a number property.
+  /// Gets the value of a number property.
   bool getPropertyNumber (const string &name, lua_Number *value);
 
-  /// Gets the current value of a string property.
+  /// Gets the value of a string property.
   bool getPropertyString (const string &name, string *value);
 
-  /// Sets the current value of an object property.
+  /// Sets the value of an object property.
   virtual void setProperty (const string &name, const GValue *value);
 
-  /// Sets the current value of a boolean property.
+  /// Sets the value of a boolean property.
   void setPropertyBool (const string &name, bool value);
 
-  /// Sets the current value of an integer property.
+  /// Sets the value of an integer property.
   void setPropertyInteger (const string &name, lua_Integer value);
 
-  /// Sets the current value of a number property.
+  /// Sets the value of a number property.
   void setPropertyNumber (const string &name, lua_Number value);
 
-  /// Sets the current value of a string property.
+  /// Sets the value of a string property.
   void setPropertyString (const string &name, const string &value);
+
+  /// Unsets an object property.
+  void unsetProperty (const string &name);
 
   // TODO ------------------------------------------------------------------
 

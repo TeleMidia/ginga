@@ -42,6 +42,20 @@ Media::~Media ()
   LuaAPI::Object_detachWrapper (_L, this);
 }
 
+bool
+Media::isFocused ()
+{
+  bool status;
+
+  LuaAPI::Media_call (_L, this, "isFocused", 0, 1);
+  status = lua_toboolean (_L, -1);
+  lua_pop (_L, 1);
+
+  return status;
+}
+
+// TODO --------------------------------------------------------------------
+
 
 void
 Media::setProperty (const string &name, const GValue *value)
@@ -66,7 +80,7 @@ Media::sendKey (const string &key, bool press)
   if (_player == nullptr)
     return; // nothing to do
 
-  if (press && xstrhasprefix (key, "CURSOR_") && _player->isFocused ())
+  if (press && xstrhasprefix (key, "CURSOR_") && this->isFocused ())
     {
       string next;
       if ((key == "CURSOR_UP"
@@ -78,12 +92,13 @@ Media::sendKey (const string &key, bool press)
           || ((key == "CURSOR_RIGHT"
                && (next = _player->getProperty ("moveRight")) != "")))
         {
-          this->getDocument ()->getSettings ()->scheduleFocusUpdate (next);
+          this->getDocument ()->getSettings ()
+            ->setPropertyString ("_nextFocus", next);
         }
     }
 
   // Pass key to player.
-  if (_player->isFocused ())
+  if (this->isFocused ())
     _player->sendKeyEvent (key, press);
 
   set<Event *> events;
@@ -100,7 +115,7 @@ Media::sendKey (const string &key, bool press)
         expected = ""; // A param could not be resolved.  Should we generate
                        // an error?
 
-      if (!((expected == "" && key == "ENTER" && _player->isFocused ())
+      if (!((expected == "" && key == "ENTER" && this->isFocused ())
             || (expected != "" && key == expected)))
         {
           continue;
@@ -435,15 +450,6 @@ Media::afterTransition (Event *evt, Event::Transition transition,
 }
 
 // Public.
-
-bool
-Media::isFocused ()
-{
-  if (!this->isOccurring ())
-    return false;
-  g_assert_nonnull (_player);
-  return _player->isFocused ();
-}
 
 bool
 Media::getZ (int *zindex, int *zorder)

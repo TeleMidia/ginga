@@ -45,7 +45,7 @@ public:
   Document (lua_State *L);
 
   /// Destroys document and all its objects.
-  virtual ~Document ();
+  ~Document ();
 
   /// Gets the Lua state associated with document.
   lua_State *getLuaState ();

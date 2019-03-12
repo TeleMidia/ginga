@@ -20,4 +20,20 @@ do
    mt.isComposition = function (self)
       return false
    end
+
+   -- Media::isFocused().
+   mt.isFocused = function (self)
+      if self.lambda.state ~= 'occurring' then
+         return false
+      end
+      local focus = self.document.settings.property['service.currentFocus']
+      if not focus then
+         return false
+      end
+      local me = self.property.focusIndex
+      if not me then
+         return false
+      end
+      return focus == me
+   end
 end

@@ -27,8 +27,6 @@ GINGA_NAMESPACE_BEGIN
 MediaSettings::MediaSettings (Document *doc, const string &id)
   : Media (doc, id)
 {
-  _nextFocus = "";
-  _hasNextFocus = false;
   this->setPropertyString ("type", "application/x-ginga-settings");
   this->createEvent (Event::ATTRIBUTION, "service.currentFocus");
 }
@@ -37,98 +35,50 @@ MediaSettings::~MediaSettings ()
 {
 }
 
-// Public: Object.
-
-void
-MediaSettings::setProperty (const string &name, const GValue *value)
-{
-  if (name == "service.currentFocus" && G_VALUE_HOLDS (value, G_TYPE_STRING))
-    {
-      Player::setCurrentFocus (string (g_value_get_string (value)));
-    }
-  Media::setProperty (name, value);
-}
-
 void
 MediaSettings::sendTick (Time total, Time diff, Time frame)
 {
-  if (_hasNextFocus) // effectuate pending focus index update
-    {
-      this->updateCurrentFocus (_nextFocus);
-      _hasNextFocus = false;
-    }
-  Media::sendTick (total, diff, frame);
-}
-
-// Public: Media.
-
-bool
-MediaSettings::isFocused ()
-{
-  return false;
-}
-
-bool
-MediaSettings::getZ (unused (int *zindex), unused (int *zorder))
-{
-  return false;
-}
-
-void
-MediaSettings::redraw (unused (cairo_t *cr))
-{
-}
-
-// Public.
-
-void
-MediaSettings::updateCurrentFocus (const string &index)
-{
   string next;
-  string i;
 
-  if (index != "")
+  if (this->getPropertyString ("_nextFocus", &next))
     {
-      next = index;
-    }
-  else
-    {
-      set<Object *> objects;
+      this->unsetProperty ("_nextFocus");
 
-      this->getDocument ()->getObjects (&objects);
-      for (auto obj: objects)
+      // Find object with the lowest index.
+      if (next == "")
         {
-          if (obj->getType () != Object::MEDIA)
-            continue;
+          set<Object *> objects;
+          string i;
 
-          Media *media = cast (Media *, obj);
-          g_assert_nonnull (media);
-
-          if (!media->isOccurring ())
-            continue;
-
-          if (!media->getPropertyString ("focusIndex", &i) || i == "")
-            continue;
-
-          if (next == "" || i < next)
+          this->getDocument ()->getObjects (&objects);
+          for (auto obj: objects)
             {
-              next = i;
+              if (obj->getType () != Object::MEDIA)
+                continue;
+
+              Media *media = cast (Media *, obj);
+              g_assert_nonnull (media);
+
+              if (media->getLambda ()->getState () != Event::OCCURRING)
+                continue;
+
+              if (!media->getPropertyString ("focusIndex", &i) || i == "")
+                continue;
+
+              if (next == "" || i < next)
+                {
+                  next = i;
+                }
             }
         }
+
+      Event *evt = this->getEvent
+        (Event::ATTRIBUTION, "service.currentFocus");
+      g_assert_nonnull (evt);
+      this->getDocument ()->evalAction (evt, Event::START, next);
     }
 
-  // Do the actual attribution.
-  string value = next;
-  Event *evt = this->getEvent (Event::ATTRIBUTION, "service.currentFocus");
-  g_assert_nonnull (evt);
-  this->getDocument ()->evalAction (evt, Event::START, value);
-}
-
-void
-MediaSettings::scheduleFocusUpdate (const string &next)
-{
-  _hasNextFocus = true;
-  _nextFocus = next;
+  Media::sendTick (total, diff, frame);
 }
 
 GINGA_NAMESPACE_END
