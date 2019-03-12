@@ -192,6 +192,79 @@ do
       tparents[parent] = nil
    end
 
+   -- File extension to mime-type.
+   mt._mimetable = {
+      ['ac3']    = 'audio/ac3',
+      ['avi']    = 'video/x-msvideo',
+      ['bmp']    = 'image/bmp',
+      ['gif']    = 'image/gif',
+      ['jpeg']   = 'image/jpeg',
+      ['jpg']    = 'image/jpeg',
+      ['lua']    = 'application/x-ginga-NCLua',
+      ['mov']    = 'video/quicktime',
+      ['mp2']    = 'audio/mp2',
+      ['mp3']    = 'audio/mp3',
+      ['mp4']    = 'video/mp4',
+      ['mpa']    = 'audio/mpa',
+      ['mpeg']   = 'video/mpeg',
+      ['mpg']    = 'video/mpeg',
+      ['mpv']    = 'video/mpv',
+      ['oga']    = 'audio/ogg',
+      ['ogg']    = 'audio/ogg',
+      ['ogv']    = 'video/ogg',
+      ['opus']   = 'audio/ogg',
+      ['png']    = 'image/png',
+      ['spx']    = 'audio/ogg',
+      ['srt']    = 'text/srt',
+      ['svg']    = 'image/svg+xml',
+      ['svgz']   = 'image/svg+xml',
+      ['ts']     = 'video/mpeg',
+      ['txt']    = 'text/plain',
+      ['wav']    = 'audio/basic',
+      ['webp']   = 'image/x-webp',
+      ['wmv']    = 'video/x-ms-wmv',
+      ['xml']    = 'text/xml',
+   }
+
+   -- Gets player name from mime-type and URI.
+   mt._getPlayerName = function (self, type, uri)
+      local str
+      if type == nil then       -- use uri to determine type
+         if uri == nil then
+            goto default
+         end
+         local ext = uri:match ('.*%.(.*)$')
+         if ext == nil then
+            goto default
+         end
+         type = assert (mt._mimetable)[ext]
+      end
+      if type == nil then
+         goto default
+      end
+      if type == 'application/x-ginga-NCLua' then
+         return type, 'PlayerLua'
+      end
+      if type == 'image/svg+xml' then
+         return type, 'PlayerSvg'
+      end
+      str = type:match ('^([^/]*)/?')
+      if str == nil then
+         goto default
+      end
+      if str == 'audio' or str == 'video' then
+         return type, 'PlayerVideo'
+      end
+      if str == 'image' then
+         return type, 'PlayerImage'
+      end
+      if str == 'text' then
+         return type, 'PlayerText'
+      end
+      ::default::
+      return 'application/x-ginga-timer', nil
+   end
+
    -- Dumps document graph.
    mt._dump = function (self)
       local tparents = assert (mt[self].parents)

@@ -17,8 +17,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "LuaAPI.h"
 
-// Public.
-
 bool
 LuaAPI::GValue_to (lua_State *L, int i, GValue *value)
 {
@@ -91,7 +89,6 @@ LuaAPI::GValue_push (lua_State *L, const GValue *value)
 
   return true;
 }
-
 
 // Private.
 

@@ -28,8 +28,8 @@ class Switch;
 
 /// Run-time representation of an NCL document.
 ///
-/// The Document maintains the NCL object tree and acts a top-level interface
-/// to this tree.
+/// The Document maintains the NCL object graph and acts a top-level
+/// interface to this graph.
 ///
 class Document
 {
@@ -81,20 +81,16 @@ public:
   void getEvents (set<Event *> *events);
 
   /// Gets the event in document with the given qualified id.
-  ///
-  /// @param id The qualified id to match.
-  /// @return The matched event or \c NULL (no such event).
-  ///
   Event *getEvent (const string &id);
 
-  /// Creates a new event \p evtId in the object \p obj.
+  /// Creates a new event in object.
   Event *createEvent (Event::Type type, Object *obj, const string &evtId);
 
-  /// Creates a new event \p evtId in the object with id \p objId.
+  /// Creates a new event in object.
   Event *createEvent (Event::Type type, const string &objId,
                       const string &evtId);
 
-  /// Creates a new event as specified by the qualified id \p qualId.
+  /// Creates a new event as specified by the qualified id.
   Event *createEvent (const string &qualId);
 
 private:

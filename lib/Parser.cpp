@@ -3922,8 +3922,10 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
               g_assert_nonnull (media);
             }
           parent->addChild (media);
-          media->setPropertyString ("uri", src);
-          media->setPropertyString ("type", type);
+          if (src != "")
+            media->setPropertyString ("uri", src);
+          if (type != "")
+            media->setPropertyString ("type", type);
         }
     }
 

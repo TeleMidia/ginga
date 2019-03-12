@@ -44,7 +44,7 @@ MediaSettings::sendTick (Time total, Time diff, Time frame)
     {
       this->unsetProperty ("_nextFocus");
 
-      // Find object with the lowest index.
+      // Find object with the lowest focus index.
       if (next == "")
         {
           set<Object *> objects;

@@ -24,6 +24,17 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "MediaSettings.h"
 #include "Switch.h"
 
+#include "Player.h"
+#include "PlayerImage.h"
+#if defined WITH_NCLUA && WITH_NCLUA
+#include "PlayerLua.h"
+#endif
+#if defined WITH_LIBRSVG && WITH_LIBRSVG
+#include "PlayerSvg.h"
+#endif
+#include "PlayerText.h"
+#include "PlayerVideo.h"
+
 // Public.
 
 void
@@ -34,6 +45,7 @@ LuaAPI::Document_attachWrapper (lua_State *L, Document *doc)
      {"__gc",          LuaAPI::__l_Document_gc},
      {"_createObject", LuaAPI::_l_Document_createObject},
      {"_createEvent",  LuaAPI::_l_Document_createEvent},
+     {"_createPlayer", LuaAPI::_l_Document_createPlayer},
      {NULL, NULL},
     };
 
@@ -192,4 +204,60 @@ LuaAPI::_l_Document_createEvent (lua_State *L)
     }
 
   return 1;
+}
+
+int
+LuaAPI::_l_Document_createPlayer (lua_State *L)
+{
+  Document *doc;
+  Media *media;
+  const char *type;
+  const char *name;
+
+  Player *player = NULL;
+
+  doc = LuaAPI::Document_check (L, 1);
+  media = LuaAPI::Media_check (L, 2);
+  lua_remove (L, 2);
+  LuaAPI::Document_call (L, doc, "_getPlayerName", 2, 2);
+  type = luaL_checkstring (L, -2);
+  name = luaL_optstring (L, -1, NULL);
+
+  if (name != NULL && g_str_equal (name, "PlayerImage"))
+    {
+      player = new PlayerImage (media);
+    }
+#if defined WITH_NCLUA && WITH_NCLUA
+  else if (name != NULL && g_str_equal (name, "PlayerLua"))
+    {
+      player = new PlayerLua (media);
+    }
+#endif
+#if defined WITH_LIBRSVG && WITH_LIBRSVG
+  else if (name != NULL && g_str_equal (name, "PlayerSvg"))
+    {
+      player = new PlayerSvg (media);
+    }
+#endif
+  else if (name != NULL && g_str_equal (name, "PlayerText"))
+    {
+      player = new PlayerText (media);
+    }
+  else if (name != NULL && g_str_equal (name, "PlayerVideo"))
+    {
+      player = new PlayerVideo (media);
+    }
+  else
+    {
+      player = new Player (media);
+      if (!g_str_equal (type, "application/x-ginga-timer"))
+        g_warning ("unknown mime '%s' for '%s': creating an empty player",
+                   type, media->getId().c_str ());
+    }
+
+  g_assert_nonnull (player);
+  lua_pushstring (L, type);
+  LuaAPI::Player_push (L, player);
+
+  return 2;
 }

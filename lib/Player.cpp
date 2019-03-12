@@ -23,73 +23,9 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Media.h"
 #include "MediaSettings.h"
 
-#include "PlayerImage.h"
 #include "PlayerText.h"
-#include "PlayerVideo.h"
-
-#if defined WITH_NCLUA && WITH_NCLUA
-#include "PlayerLua.h"
-#endif
-
-#if defined WITH_LIBRSVG && WITH_LIBRSVG
-#include "PlayerSvg.h"
-#endif
 
 GINGA_NAMESPACE_BEGIN
-
-// Mime-type table.
-static map<string, string> mime_table = {
-  { "ac3", "audio/ac3" },
-  { "avi", "video/x-msvideo" },
-  { "bmp", "image/bmp" },
-  { "bpg", "image/x-bpg" },
-  { "class", "application/x-ginga-NCLet" },
-  { "css", "text/css" },
-  { "gif", "image/gif" },
-  { "htm", "text/html" },
-  { "html", "text/html" },
-  { "jpeg", "image/jpeg" },
-  { "jpg", "image/jpeg" },
-  { "lua", "application/x-ginga-NCLua" },
-  { "mov", "video/quicktime" },
-  { "mp2", "audio/mp2" },
-  { "mp3", "audio/mp3" },
-  { "mp4", "video/mp4" },
-  { "mpa", "audio/mpa" },
-  { "mpeg", "video/mpeg" },
-  { "mpg", "video/mpeg" },
-  { "mpv", "video/mpv" },
-  { "ncl", "application/x-ginga-ncl" },
-  { "oga", "audio/ogg" },
-  { "ogg", "audio/ogg" },
-  { "ogv", "video/ogg" },
-  { "opus", "audio/ogg" },
-  { "png", "image/png" },
-  { "smil", "application/smil" },
-  { "spx", "audio/ogg" },
-  { "srt", "text/srt" },
-  { "ssml", "application/ssml+xml" },
-  { "svg", "image/svg+xml" },
-  { "svgz", "image/svg+xml" },
-  { "ts", "video/mpeg" },
-  { "txt", "text/plain" },
-  { "wav", "audio/basic" },
-  { "webp", "image/x-webp" },
-  { "wmv", "video/x-ms-wmv" },
-  { "xlet", "application/x-ginga-NCLet" },
-  { "xlt", "application/x-ginga-NCLet" },
-  { "xml", "text/xml" },
-};
-
-static bool
-mime_table_index (const string &key, string *result)
-{
-  map<string, string>::iterator it;
-  if ((it = mime_table.find (key)) == mime_table.end ())
-    return false;
-  tryset (result, it->second);
-  return true;
-}
 
 // Property table.
 typedef struct PlayerPropertyInfo
@@ -236,8 +172,6 @@ Player::start ()
   _time = 0;
   _eos = false;
   this->reload ();
-  // _animator->scheduleTransition ("start", &_prop.rect, &_prop.bgColor,
-  //                                &_prop.alpha, &_crop);
 }
 
 void
@@ -275,9 +209,6 @@ Player::setProperty (const string &name, const string &value)
   bool use_defval;
   string defval;
   string _value;
-
-  // if (name == "transIn" || name == "transOut")
-  //   _animator->setTransitionProperties (name, value);
 
   use_defval = false;
   _value = value;
@@ -325,13 +256,6 @@ Player::resetProperties (set<string> *props)
     this->setProperty (name, "");
 }
 
-// void
-// Player::schedulePropertyAnimation (const string &name, const string &from,
-//                                    const string &to, Time dur)
-// {
-//   _animator->schedule (name, from, to, dur);
-// }
-
 void
 Player::reload ()
 {
@@ -342,7 +266,6 @@ void
 Player::redraw (cairo_t *cr)
 {
   g_assert (_state != SLEEPING);
-  // _animator->update (&_prop.rect, &_prop.bgColor, &_prop.alpha, &_crop);
 
   if (!_prop.visible || !(_prop.rect.width > 0 && _prop.rect.height > 0))
     {
@@ -430,8 +353,6 @@ Player::sendKeyEvent (unused (const string &key), unused (bool press))
 {
 }
 
-// Public: Static.
-
 Player::Property
 Player::getPlayerProperty (const string &name, string *defval)
 {
@@ -456,87 +377,6 @@ Player::getPlayerProperty (const string &name, string *defval)
   tryset (defval, info->defval);
   return info->code;
 }
-
-Player *
-Player::createPlayer (Media *media, const string &uri,
-                      const string &type)
-{
-  Player *player;
-  string mime;
-
-  player = nullptr;
-  mime = type;
-
-  if (mime == "" && uri != "")
-    {
-      string::size_type index, len;
-      index = uri.find_last_of (".");
-      if (index != std::string::npos)
-        {
-          index++;
-          len = uri.length ();
-          if (index < len)
-            {
-              string extension = uri.substr (index, (len - index));
-              if (extension != "")
-                mime_table_index (extension, &mime);
-            }
-        }
-    }
-
-  if (mime == "")
-    mime = "application/x-ginga-timer";
-
-  if (mime == "application/x-ginga-ncl")
-    {
-      ERROR_NOT_IMPLEMENTED ("NCL as Media object is not supported");
-    }
-  else if (xstrhasprefix (mime, "audio") || xstrhasprefix (mime, "video"))
-    {
-      player = new PlayerVideo (media);
-    }
-  else if (xstrhasprefix (mime, "image"))
-    {
-      player = new PlayerImage (media);
-    }
-  else if (mime == "text/plain")
-    {
-      player = new PlayerText (media);
-    }
-#if defined WITH_CEF && WITH_CEF
-  else if (xstrhasprefix (mime, "text/html"))
-    {
-      player = new PlayerHTML (media);
-    }
-#endif // WITH_CEF
-#if defined WITH_LIBRSVG && WITH_LIBRSVG
-  else if (xstrhasprefix (mime, "image/svg"))
-    {
-      player = new PlayerSvg (media);
-    }
-#endif // WITH_LIBRSVG
-#if defined WITH_NCLUA && WITH_NCLUA
-  else if (mime == "application/x-ginga-NCLua")
-    {
-      player = new PlayerLua (media);
-    }
-#endif // WITH_NCLUA
-  else
-    {
-      player = new Player (media);
-      if (unlikely (mime != "application/x-ginga-timer" && uri != ""))
-        {
-          WARNING ("unknown mime '%s': creating an empty player",
-                   mime.c_str ());
-        }
-    }
-
-  g_assert_nonnull (player);
-  media->setPropertyString ("type", mime);
-  return player;
-}
-
-// Protected.
 
 bool
 Player::doSetProperty (Property code, unused (const string &name),

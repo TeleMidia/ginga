@@ -183,17 +183,37 @@ Media::beforeTransition (Event *evt, Event::Transition transition,
               {
                 if (evt->isLambda ())
                   {
-                    string uri;
                     string type;
+                    string uri;
 
                     g_assert_null (_player);
 
-                    this->getPropertyString ("uri", &uri);
-                    this->getPropertyString ("type", &type);
+                    LuaAPI::Media_push (_L, this);
+                    if (this->getPropertyString ("type", &type))
+                      {
+                        lua_pushstring (_L, type.c_str ());
+                      }
+                    else
+                      {
+                        lua_pushnil (_L);
+                      }
+                    if (this->getPropertyString ("uri", &uri))
+                      {
+                        lua_pushstring (_L, uri.c_str ());
+                      }
+                    else
+                      {
+                        lua_pushnil (_L);
+                      }
+                    LuaAPI::Document_call (_L, this->getDocument (),
+                                           "_createPlayer", 3, 2);
+                    type = string (luaL_checkstring (_L, -2));
+                    _player = LuaAPI::Player_check (_L, -1);
+                    this->setPropertyString ("type", type);
 
-                    _player = Player::createPlayer (this, uri, type);
-                    if (unlikely (_player == nullptr))
-                      return false; // fail
+                    // _player = Player::createPlayer (this, uri, type);
+                    // if (unlikely (_player == nullptr))
+                    //   return false; // fail
 
                     map<string, GValue> props;
                     this->getProperties (&props);

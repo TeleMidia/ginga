@@ -79,9 +79,11 @@ public:
   Player (Media *);
   virtual ~Player ();
 
+  string getProperty (const string &);
+  void setProperty (const string &, const string &);
+
   State getState ();
   void getZ (int *, int *);
-  bool isFocused ();
 
   Time getTime ();
   void incTime (Time);
@@ -97,8 +99,6 @@ public:
   virtual void pause ();
   virtual void resume ();
 
-  virtual string getProperty (const string &);
-  virtual void setProperty (const string &, const string &);
   void resetProperties ();
   void resetProperties (set<string> *);
   void schedulePropertyAnimation (const string &, const string &,
@@ -115,8 +115,6 @@ public:
 
   // Static.
   static Property getPlayerProperty (const string &, string *);
-  static Player *createPlayer (Media *, const string &,
-                               const string &type = "");
 
 protected:
 

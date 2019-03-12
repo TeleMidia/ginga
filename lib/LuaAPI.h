@@ -71,6 +71,7 @@ private:
   static int __l_Document_gc (lua_State *L);
   static int _l_Document_createObject (lua_State *L);
   static int _l_Document_createEvent (lua_State *L);
+  static int _l_Document_createPlayer (lua_State *L);
 
   // Object ----------------------------------------------------------------
 
