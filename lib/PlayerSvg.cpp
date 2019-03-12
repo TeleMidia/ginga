@@ -24,8 +24,8 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-PlayerSvg::PlayerSvg (Formatter *formatter, Media *media)
-    : Player (formatter, media)
+PlayerSvg::PlayerSvg (Media *media)
+    : Player (media)
 {
 }
 

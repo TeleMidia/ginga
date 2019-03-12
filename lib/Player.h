@@ -18,12 +18,10 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #ifndef GINGA_PLAYER_H
 #define GINGA_PLAYER_H
 
-#include "Formatter.h"
 #include "PlayerAnimator.h"
 
 GINGA_NAMESPACE_BEGIN
 
-class Formatter;
 class Media;
 class Player
 {
@@ -82,7 +80,7 @@ public:
     PROP_Z_ORDER,
   };
 
-  Player (Formatter *, Media *);
+  Player (Media *);
   virtual ~Player ();
 
   State getState ();
@@ -124,11 +122,10 @@ public:
   static string getCurrentFocus ();
   static void setCurrentFocus (const string &);
   static Property getPlayerProperty (const string &, string *);
-  static Player *createPlayer (Formatter *, Media *, const string &,
+  static Player *createPlayer (Media *, const string &,
                                const string &type = "");
 
 protected:
-  Formatter *_formatter;     // formatter handle
   Media *_media;             // associated media object
   string _id;                // id of the associated media object
   State _state;              // current state

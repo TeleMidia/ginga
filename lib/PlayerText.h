@@ -31,7 +31,7 @@ public:
                                          const string &, const string &,
                                          bool, Rect *);
 
-  PlayerText (Formatter *, Media *);
+  PlayerText (Media *);
   ~PlayerText ();
   void reload () override;
 

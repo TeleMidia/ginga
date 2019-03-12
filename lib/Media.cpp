@@ -181,7 +181,7 @@ Media::beforeTransition (Event *evt, Event::Transition transition,
                     this->getPropertyString ("uri", &uri);
                     this->getPropertyString ("type", &type);
 
-                    _player = Player::createPlayer (fmt, this, uri, type);
+                    _player = Player::createPlayer (this, uri, type);
                     if (unlikely (_player == nullptr))
                       return false; // fail
 

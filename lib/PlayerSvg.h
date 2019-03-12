@@ -25,7 +25,7 @@ GINGA_NAMESPACE_BEGIN
 class PlayerSvg : public Player
 {
 public:
-  PlayerSvg (Formatter *, Media *);
+  PlayerSvg (Media *);
   ~PlayerSvg ();
   void reload () override;
 };

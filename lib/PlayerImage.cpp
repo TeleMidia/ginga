@@ -84,8 +84,8 @@ cairox_surface_create_from_uri (const char *path, cairo_surface_t **dup)
   return CAIRO_STATUS_SUCCESS;
 }
 
-PlayerImage::PlayerImage (Formatter *formatter, Media *media)
-    : Player (formatter, media)
+PlayerImage::PlayerImage (Media *media)
+    : Player (media)
 {
 }
 

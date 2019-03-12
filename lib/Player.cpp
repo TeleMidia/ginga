@@ -156,11 +156,8 @@ static map<string, string> player_property_aliases = {
 
 // Public.
 
-Player::Player (Formatter *formatter, Media *media)
+Player::Player (Media *media)
 {
-  g_assert_nonnull (formatter);
-  _formatter = formatter;
-
   g_assert_nonnull (media);
   _media = media;
   _id = media->getId ();
@@ -480,13 +477,12 @@ Player::getPlayerProperty (const string &name, string *defval)
 }
 
 Player *
-Player::createPlayer (Formatter *formatter, Media *media, const string &uri,
+Player::createPlayer (Media *media, const string &uri,
                       const string &type)
 {
   Player *player;
   string mime;
 
-  g_assert_nonnull (formatter);
   player = nullptr;
   mime = type;
 
@@ -516,41 +512,37 @@ Player::createPlayer (Formatter *formatter, Media *media, const string &uri,
     }
   else if (xstrhasprefix (mime, "audio") || xstrhasprefix (mime, "video"))
     {
-      player = new PlayerVideo (formatter, media);
-    }
-  else if (mime == "application/x-ginga-siggen")
-    {
-      player = new PlayerSigGen (formatter, media);
+      player = new PlayerVideo (media);
     }
   else if (xstrhasprefix (mime, "image"))
     {
-      player = new PlayerImage (formatter, media);
+      player = new PlayerImage (media);
     }
   else if (mime == "text/plain")
     {
-      player = new PlayerText (formatter, media);
+      player = new PlayerText (media);
     }
 #if defined WITH_CEF && WITH_CEF
   else if (xstrhasprefix (mime, "text/html"))
     {
-      player = new PlayerHTML (formatter, media);
+      player = new PlayerHTML (media);
     }
 #endif // WITH_CEF
 #if defined WITH_LIBRSVG && WITH_LIBRSVG
   else if (xstrhasprefix (mime, "image/svg"))
     {
-      player = new PlayerSvg (formatter, media);
+      player = new PlayerSvg (media);
     }
 #endif // WITH_LIBRSVG
 #if defined WITH_NCLUA && WITH_NCLUA
   else if (mime == "application/x-ginga-NCLua")
     {
-      player = new PlayerLua (formatter, media);
+      player = new PlayerLua (media);
     }
 #endif // WITH_NCLUA
   else
     {
-      player = new Player (formatter, media);
+      player = new Player (media);
       if (unlikely (mime != "application/x-ginga-timer" && uri != ""))
         {
           WARNING ("unknown mime '%s': creating an empty player",

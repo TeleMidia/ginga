@@ -29,7 +29,7 @@ GINGA_NAMESPACE_BEGIN
 class PlayerLua : public Player
 {
 public:
-  PlayerLua (Formatter *, Media *);
+  PlayerLua (Media *);
   ~PlayerLua ();
   void start () override;
   void stop () override;

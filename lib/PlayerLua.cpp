@@ -46,8 +46,8 @@ static map<string, Event::Transition> nclua_act_to_ncl = {
 
 // Public.
 
-PlayerLua::PlayerLua (Formatter *formatter, Media *media)
-    : Player (formatter, media)
+PlayerLua::PlayerLua (Media *media)
+    : Player (media)
 {
   _nw = NULL;
   _init_rect = { 0, 0, 0, 0 };

@@ -149,8 +149,8 @@ PlayerText::renderSurface (const string &text, const string &family,
 
 // Public.
 
-PlayerText::PlayerText (Formatter *formatter, Media *media)
-    : Player (formatter, media)
+PlayerText::PlayerText (Media *media)
+    : Player (media)
 {
   // Initialize handled properties.
   static set<string> handled = {
