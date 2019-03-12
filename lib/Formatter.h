@@ -31,17 +31,13 @@ class Media;
 class MediaSettings;
 class Object;
 
-/**
- * @brief Interface between libginga and the external world.
- */
 class Formatter : public Ginga
 {
 public:
-  // Ginga:
   lua_State *getLuaState ();
   GingaState getState ();
 
-  bool start (const std::string &, std::string *);
+  bool start (const std::string &, int, int, std::string *);
   bool stop ();
 
   void resize (int, int);
@@ -50,62 +46,26 @@ public:
   bool sendKey (const std::string &, bool);
   bool sendTick (uint64_t, uint64_t, uint64_t);
 
-  const GingaOptions *getOptions ();
-  bool getOptionBool (const std::string &);
-  void setOptionBool (const std::string &, bool);
-  int getOptionInt (const std::string &);
-  void setOptionInt (const std::string &, int);
-  string getOptionString (const std::string &);
-  void setOptionString (const std::string &, std::string);
-
   string debug_getDocPath ();
   uint64_t debug_getLastTickDiff ();
   uint64_t debug_getLastTickFrame ();
   uint64_t debug_getLastTickTime ();
 
-  // Formatter:
-  explicit Formatter (const GingaOptions *);
+  Formatter ();
   ~Formatter ();
 
-  Document *getDocument ();
+  void *getDocument ();
   bool getEOS ();
   void setEOS (bool);
 
-  static void setOptionBackground (Formatter *, const string &, string);
-  static void setOptionDebug (Formatter *, const string &, bool);
-  static void setOptionExperimental (Formatter *, const string &, bool);
-  static void setOptionOpenGL (Formatter *, const string &, bool);
-  static void setOptionSize (Formatter *, const string &, int);
-
 private:
-  /// @brief Current state.
   GingaState _state;
-
-  /// @brief Current options.
-  GingaOptions _opts;
-
-  /// @brief Current background color.
-  Color _background;
-
-  /// @brief The last total time informed via Formatter::sendTick.
   Time _lastTickTime;
-
-  /// @brief The last diff time informed via Formatter::sendTick.
   Time _lastTickDiff;
-
-  /// @brief The last frame number informed via Formatter::sendTick.
   uint64_t _lastTickFrame;
-
-  /// @brief The saved value of environment variable G_MESSAGES_DEBUG.
   string _saved_G_MESSAGES_DEBUG;
-
-  /// @brief Current document tree.
   Document *_doc;
-
-  /// @brief Path of the file that originated the current document.
   string _docPath;
-
-  /// @brief Whether the presentation has ended naturally.
   bool _eos;
 };
 

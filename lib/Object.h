@@ -95,6 +95,12 @@ public:
   ///
   Event *createEvent (Event::Type type, const string &id);
 
+    /// Gets the playback time of object.
+  Time getTime ();
+
+  /// Sets the playback time of object.
+  void setTime (Time time);
+
   /// Gets the property table of object.
   void getProperties (map<string, GValue> *properties);
 
@@ -105,7 +111,7 @@ public:
   bool getPropertyBool (const string &name, bool *value);
 
   /// Gets the current value of an integer property.
-  bool getPropertInteger (const string &name, lua_Integer *value);
+  bool getPropertyInteger (const string &name, lua_Integer *value);
 
   /// Gets the current value of a number property.
   bool getPropertyNumber (const string &name, lua_Number *value);
@@ -120,19 +126,13 @@ public:
   void setPropertyBool (const string &name, bool value);
 
   /// Sets the current value of an integer property.
-  void setPropertInteger (const string &name, lua_Integer value);
+  void setPropertyInteger (const string &name, lua_Integer value);
 
   /// Sets the current value of a number property.
   void setPropertyNumber (const string &name, lua_Number value);
 
   /// Sets the current value of a string property.
   void setPropertyString (const string &name, const string &value);
-
-  /// Gets the playback time of object.
-  Time getTime ();
-
-  /// Sets the playback time of object.
-  void setTime (Time time);
 
   // TODO ------------------------------------------------------------------
 

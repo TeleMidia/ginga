@@ -191,9 +191,11 @@ Media::beforeTransition (Event *evt, Event::Transition transition,
                     for (auto it: props)
                       {
                         GValue *value = &it.second;
-                        g_assert (G_VALUE_HOLDS (value, G_TYPE_STRING));
-                        string str = string (g_value_get_string (value));
-                        _player->setProperty (it.first, str);
+                        if (G_VALUE_HOLDS (value, G_TYPE_STRING))
+                          {
+                            string str = string (g_value_get_string (value));
+                            _player->setProperty (it.first, str);
+                          }
                         g_value_unset (value);
                       }
 

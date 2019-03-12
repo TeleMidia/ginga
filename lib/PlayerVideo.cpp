@@ -337,29 +337,17 @@ PlayerVideo::redraw (cairo_t *cr)
   height = GST_VIDEO_FRAME_HEIGHT (&v_frame);
   stride = (int) GST_VIDEO_FRAME_PLANE_STRIDE (&v_frame, 0);
 
-  if (_opengl)
-    {
-      if (_gltexture)
-        GL::delete_texture (&_gltexture);
-      // FIXME: Do not create a new texture for each frame.
-      GL::create_texture (&_gltexture, width, height, pixels);
-      gst_video_frame_unmap (&v_frame);
-      gst_sample_unref (sample);
-    }
-  else
-    {
-      if (_surface != nullptr)
-        cairo_surface_destroy (_surface);
+  if (_surface != nullptr)
+    cairo_surface_destroy (_surface);
 
-      _surface = cairo_image_surface_create_for_data (
-          pixels, CAIRO_FORMAT_ARGB32, width, height, stride);
-      g_assert_nonnull (_surface);
-      gst_video_frame_unmap (&v_frame);
-      status = cairo_surface_set_user_data (
-          _surface, &key, (void *) sample,
-          (cairo_destroy_func_t) gst_sample_unref);
-      g_assert (status == CAIRO_STATUS_SUCCESS);
-    }
+  _surface = cairo_image_surface_create_for_data
+    (pixels, CAIRO_FORMAT_ARGB32, width, height, stride);
+  g_assert_nonnull (_surface);
+  gst_video_frame_unmap (&v_frame);
+  status = cairo_surface_set_user_data
+    (_surface, &key, (void *) sample,
+     (cairo_destroy_func_t) gst_sample_unref);
+  g_assert (status == CAIRO_STATUS_SUCCESS);
 
 done:
   Player::redraw (cr);

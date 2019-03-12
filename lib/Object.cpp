@@ -180,6 +180,36 @@ Object::createEvent (Event::Type type, const string &id)
   return evt;
 }
 
+Time
+Object::getTime ()
+{
+  Time time;
+
+  LuaAPI::Object_call (_L, this, "getTime", 0, 1);
+  if (!lua_isnil (_L, -1))
+    {
+      time = (Time) luaL_checkinteger (_L, -1);
+    }
+  lua_pop (_L, 1);
+
+  return time;
+}
+
+void
+Object::setTime (Time time)
+{
+  if (time == GINGA_TIME_NONE)
+    {
+      lua_pushnil (_L);
+    }
+  else
+    {
+      lua_pushinteger (_L, time);
+    }
+
+  LuaAPI::Object_call (_L, this, "setTime", 1, 0);
+}
+
 void
 Object::getProperties (map<string, GValue> *properties)
 {
@@ -247,7 +277,7 @@ Object::getPropertyBool (const string &name, bool *value)
 }
 
 bool
-Object::getPropertInteger (const string &name, lua_Integer *value)
+Object::getPropertyInteger (const string &name, lua_Integer *value)
 {
   GValue val = G_VALUE_INIT;
 
@@ -346,7 +376,7 @@ Object::setPropertyBool (const string &name, bool value)
 }
 
 void
-Object::setPropertInteger (const string &name, lua_Integer value)
+Object::setPropertyInteger (const string &name, lua_Integer value)
 {
   GValue val = G_VALUE_INIT;
 
@@ -376,36 +406,6 @@ Object::setPropertyString (const string &name, const string &value)
   g_value_set_string (&val, value.c_str ());
   this->setProperty (name, &val);
   g_value_unset (&val);
-}
-
-Time
-Object::getTime ()
-{
-  Time time;
-
-  LuaAPI::Object_call (_L, this, "getTime", 0, 1);
-  if (!lua_isnil (_L, -1))
-    {
-      time = (Time) luaL_checkinteger (_L, -1);
-    }
-  lua_pop (_L, 1);
-
-  return time;
-}
-
-void
-Object::setTime (Time time)
-{
-  if (time == GINGA_TIME_NONE)
-    {
-      lua_pushnil (_L);
-    }
-  else
-    {
-      lua_pushinteger (_L, time);
-    }
-
-  LuaAPI::Object_call (_L, this, "setTime", 1, 0);
 }
 
 // TODO --------------------------------------------------------------------

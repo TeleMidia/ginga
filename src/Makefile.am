@@ -19,13 +19,12 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
 AM_CPPFLAGS= -I$(top_srcdir)/lib -I$(top_builddir)/lib
-AM_CXXFLAGS= $(WARN_CFLAGS) $(WERROR_CFLAGS)\
-  $(CAIRO_CFLAGS) $(GLIB_CFLAGS) $(GTK_CFLAGS)
-AM_LDFLAGS= $(CAIRO_LIBS) $(GLIB_LIBS) $(GTK_LIBS) -static
+AM_CXXFLAGS= $(WARN_CFLAGS) $(WERROR_CFLAGS) $(GINGA_ALL_CXXFLAGS)
+AM_LDFLAGS= $(GINGA_ALL_LDFLAGS) -static
 
 bin_PROGRAMS= ginga
 if WITH_OPENGL
-bin_PROGRAMS+= ginga-gl
+#bin_PROGRAMS+= ginga-gl
 endif
 
 ginga_CXXFLAGS= $(AM_CXXFLAGS) $(LUA_CFLAGS)
@@ -33,7 +32,7 @@ ginga_LDFLAGS= $(AM_LDFLAGS) $(LUA_LIBS)
 ginga_SOURCES= ginga.cpp
 ginga_LDADD= $(top_builddir)/lib/libginga.la
 
-ginga_gl_CXXFLAGS= $(AM_CXXFLAGS) $(OPENGL_CFLAGS)
-ginga_gl_LDFLAGS= $(AM_LDFLAGS) $(OPENGL_LIBS)
-ginga_gl_SOURCES= ginga-gl.cpp
-ginga_gl_LDADD= $(top_builddir)/lib/libginga.la
+# ginga_gl_CXXFLAGS= $(AM_CXXFLAGS) $(OPENGL_CFLAGS)
+# ginga_gl_LDFLAGS= $(AM_LDFLAGS) $(OPENGL_LIBS)
+# ginga_gl_SOURCES= ginga-gl.cpp
+# ginga_gl_LDADD= $(top_builddir)/lib/libginga.la

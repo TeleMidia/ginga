@@ -24,6 +24,9 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include <gtk/gtk.h>
 
 #include "ginga.h"
+#include "Document.h"
+#include "Media.h"
+#include "MediaSettings.h"
 using namespace ::std;
 
 GINGA_BEGIN_DECLS
@@ -222,11 +225,18 @@ on_canvas_key_event (unused (GtkWidget *canvas),
       }
     case GDK_KEY_F10:           // <F10> toggles debugging mode
       {
+        Document *doc;
+
         if (evt->type == GDK_KEY_RELEASE)
           goto done;
 
         debugging_on = !debugging_on;
-        ginga->setOptionBool ("debug", debugging_on);
+
+        doc = (Document *) ginga->getDocument ();
+        if (doc != NULL)
+          {
+            doc->getSettings ()->setPropertyBool ("ginga.debug", true);
+          }
         goto done;
       }
     case GDK_KEY_F11:           // <F11> toggles full-screen
@@ -320,6 +330,7 @@ static void
 on_cmd_buf_activate (GtkWidget *cmd_buf,
                      Ginga *ginga)
 {
+  Document *doc;
   lua_State *L;
   const gchar *str;
   const gchar *errmsg;
@@ -330,7 +341,14 @@ on_cmd_buf_activate (GtkWidget *cmd_buf,
   str = gtk_entry_get_text (GTK_ENTRY (cmd_buf));
   g_assert_nonnull (str);
 
-  L = ginga->getLuaState ();
+  doc = (Document *) ginga->getDocument ();
+  if (unlikely (doc == NULL))
+    {
+      errmsg = "Document is NULL";
+      goto fail;
+    }
+
+  L = doc->getLuaState ();
   if (unlikely (L == NULL))
     {
       errmsg = "Lua state is null";
@@ -530,7 +548,6 @@ main (gint argc, gchar **argv)
   GError *error = NULL;
 
   Ginga *ginga;
-  GingaOptions ginga_opts;
 
   saved_argc = argc;
   saved_argv = g_strdupv (argv);
@@ -561,14 +578,7 @@ Ginga home page: " PACKAGE_URL "\n");
     }
 
   // Create Ginga handle.
-  ginga_opts.width = initial_width;
-  ginga_opts.height = initial_height;
-  ginga_opts.debug = debugging_on;
-  ginga_opts.experimental = FALSE;
-  ginga_opts.opengl = FALSE;
-  ginga_opts.background = string (background_color != NULL
-                                  ? background_color : "");
-  ginga = Ginga::create (&ginga_opts);
+  ginga = Ginga::create ();
   g_assert_nonnull (ginga);
 
   // Create application window.
@@ -579,7 +589,10 @@ Ginga home page: " PACKAGE_URL "\n");
   for (gint i = 1; i < saved_argc; i++)
     {
       string errmsg;
-      if (unlikely (!ginga->start (string (saved_argv[i]), &errmsg)))
+      if (unlikely (!ginga->start (string (saved_argv[i]),
+                                   initial_width,
+                                   initial_height,
+                                   &errmsg)))
         {
           if (saved_argc > 2)
             error ("%s: %s", saved_argv[i], errmsg.c_str ());

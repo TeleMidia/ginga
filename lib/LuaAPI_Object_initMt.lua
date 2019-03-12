@@ -15,8 +15,8 @@ do
       data._attribution  = {}            -- attribution evts indexed by id
       data._presentation = {}            -- presentation evts indexed by id
       data._selection    = {}            -- selection evts indexed by id
-      data._property     = {}            -- property table
       data._time         = nil           -- playback time
+      data._property     = {}            -- property table
 
       local get_data_attr = function ()
          return assert (rawget (data, '_attribution'))
@@ -150,16 +150,6 @@ do
       return t
    end
 
-   -- Object::getProperty().
-   mt.getProperty = function (self, name)
-      return mt[self].property[name]
-   end
-
-   -- Object::setProperty().
-   mt.setProperty = function (self, name, value)
-      mt[self].property[name] = value
-   end
-
    -- Object::getTime().
    mt.getTime = function (self)
       return rawget (mt[self], '_time')
@@ -168,5 +158,15 @@ do
    -- Object:setTime().
    mt.setTime = function (self, time)
       rawset (mt[self], '_time', time)
+   end
+
+   -- Object::getProperty().
+   mt.getProperty = function (self, name)
+      return mt[self].property[name]
+   end
+
+   -- Object::setProperty().
+   mt.setProperty = function (self, name, value)
+      mt[self].property[name] = value
    end
 end

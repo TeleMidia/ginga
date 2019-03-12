@@ -44,20 +44,20 @@ mimes_DATA=\
   application-x-ncl-NCL.xml\
   $(NULL)
 
-bin_PROGRAMS= gingagui
-gingagui_CXXFLAGS= $(AM_CXXFLAGS)
-gingagui_LDADD= $(top_builddir)/lib/libginga.la
-gingagui_LDFLAGS= $(AM_LDFLAGS)
-gingagui_SOURCES=\
-  ginga-gtk.cpp\
-  model/SaveLoadSettings.cpp\
-  model/HttpMessage.cpp\
-  view/TrackerWindow.cpp\
-  view/AboutWindow.cpp\
-  view/HelpWindow.cpp\
-  view/Draw.cpp\
-  view/FullscreenWindow.cpp\
-  view/MainWindow.cpp\
-  view/BigPictureWindow.cpp\
-  view/TvControlWindow.cpp\
-  $(NULL)
+#bin_PROGRAMS= gingagui
+# gingagui_CXXFLAGS= $(AM_CXXFLAGS)
+# gingagui_LDADD= $(top_builddir)/lib/libginga.la
+# gingagui_LDFLAGS= $(AM_LDFLAGS)
+# gingagui_SOURCES=\
+#   ginga-gtk.cpp\
+#   model/SaveLoadSettings.cpp\
+#   model/HttpMessage.cpp\
+#   view/TrackerWindow.cpp\
+#   view/AboutWindow.cpp\
+#   view/HelpWindow.cpp\
+#   view/Draw.cpp\
+#   view/FullscreenWindow.cpp\
+#   view/MainWindow.cpp\
+#   view/BigPictureWindow.cpp\
+#   view/TvControlWindow.cpp\
+#   $(NULL)

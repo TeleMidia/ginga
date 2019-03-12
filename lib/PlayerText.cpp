@@ -177,8 +177,6 @@ PlayerText::reload ()
   if (_surface != nullptr)
     {
       cairo_surface_destroy (_surface);
-      if (_opengl)
-        GL::delete_texture (&_gltexture);
     }
 
   _surface = PlayerText::renderSurface (
@@ -187,12 +185,6 @@ PlayerText::reload ()
       Player::_prop.rect, _prop.horzAlign, _prop.vertAlign, true, nullptr);
 
   g_assert_nonnull (_surface);
-
-  if (_opengl)
-    GL::create_texture (&_gltexture,
-                        cairo_image_surface_get_width (_surface),
-                        cairo_image_surface_get_height (_surface),
-                        cairo_image_surface_get_data (_surface));
 
   Player::reload ();
 }

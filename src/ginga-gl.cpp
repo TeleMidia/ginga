@@ -235,8 +235,6 @@ main (int argc, char **argv)
   opts.width = opt_width;
   opts.height = opt_height;
   opts.debug = opt_debug;
-  opts.experimental = opt_experimental;
-  opts.opengl = true;
   opts.background = string (opt_background);
   opts.opengl = true;
   GINGA = Ginga::create (&opts);

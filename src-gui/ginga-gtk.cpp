@@ -188,8 +188,6 @@ main (int argc, char **argv)
   opts.width = presentationAttributes.resolutionWidth;
   opts.height = presentationAttributes.resolutionHeight;
   opts.debug = false;
-  opts.opengl = false;
-  opts.experimental = true;
 
   GINGA = Ginga::create (&opts);
   g_assert_nonnull (GINGA);

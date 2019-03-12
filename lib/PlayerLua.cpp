@@ -102,9 +102,6 @@ PlayerLua::stop ()
   ncluaw_close (_nw);
   _nw = nullptr;
 
-  if (_opengl && _gltexture != 0)
-    GL::delete_texture (&_gltexture);
-
   Player::stop ();
 }
 
@@ -152,27 +149,9 @@ PlayerLua::redraw (cairo_t *cr)
   sfc = (cairo_surface_t *) ncluaw_debug_get_surface (_nw);
   g_assert_nonnull (sfc);
 
-  if (_opengl)
-    {
-      if (_gltexture == 0)
-        GL::create_texture (&_gltexture,
-                            cairo_image_surface_get_width (sfc),
-                            cairo_image_surface_get_height (sfc),
-                            cairo_image_surface_get_data (sfc));
-      else
-        GL::update_subtexture (_gltexture, 0, 0,
-                               cairo_image_surface_get_width (sfc),
-                               cairo_image_surface_get_height (sfc),
-                               cairo_image_surface_get_data (sfc));
-    }
-  else
-    {
-      _surface = sfc;
-    }
+  _surface = sfc;
 
   Player::redraw (cr);
-  if (!_opengl)
-    _surface = nullptr;
 
   // Get events posted from NCLua.
   while ((evt = ncluaw_receive (_nw)) != nullptr)

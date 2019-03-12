@@ -101,8 +101,6 @@ PlayerImage::reload ()
   if (_surface != nullptr)
     {
       cairo_surface_destroy (_surface);
-      if (_opengl && _gltexture)
-        GL::delete_texture (&_gltexture);
     }
 
   status = cairox_surface_create_from_uri (_prop.uri.c_str (), &_surface);
@@ -112,12 +110,6 @@ PlayerImage::reload ()
              cairo_status_to_string (status));
     }
   g_assert_nonnull (_surface);
-
-  if (_opengl)
-    GL::create_texture (&_gltexture,
-                        cairo_image_surface_get_width (_surface),
-                        cairo_image_surface_get_height (_surface),
-                        cairo_image_surface_get_data (_surface));
 
   Player::reload ();
 }

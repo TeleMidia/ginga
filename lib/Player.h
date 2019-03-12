@@ -135,10 +135,7 @@ protected:
   Time _time;                // playback time
   bool _eos;                 // true if content was exhausted
   cairo_surface_t *_surface; // player surface
-  bool _opengl;              // true if OpenGL is used
-  guint _gltexture;          // OpenGL texture (if OpenGL is used)
   bool _dirty;               // true if surface should be reloaded
-  PlayerAnimator *_animator; // associated animator
   list<int> _crop;           // polygon for cropping effect
 
   map<string, string> _properties; // property table

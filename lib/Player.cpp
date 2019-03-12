@@ -20,6 +20,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "Player.h"
 #include "Media.h"
+#include "MediaSettings.h"
 
 #include "PlayerImage.h"
 #include "PlayerText.h"
@@ -168,20 +169,14 @@ Player::Player (Formatter *formatter, Media *media)
   _time = 0;
   _eos = false;
   _dirty = true;
-  _animator = new PlayerAnimator (_formatter, &_time);
   _surface = nullptr;
-  _opengl = _formatter->getOptionBool ("opengl");
-  _gltexture = 0;
   this->resetProperties ();
 }
 
 Player::~Player ()
 {
-  delete _animator;
   if (_surface != nullptr)
     cairo_surface_destroy (_surface);
-  if (_gltexture)
-    GL::delete_texture (&_gltexture);
   _properties.clear ();
 }
 
@@ -248,8 +243,8 @@ Player::start ()
   _time = 0;
   _eos = false;
   this->reload ();
-  _animator->scheduleTransition ("start", &_prop.rect, &_prop.bgColor,
-                                 &_prop.alpha, &_crop);
+  // _animator->scheduleTransition ("start", &_prop.rect, &_prop.bgColor,
+  //                                &_prop.alpha, &_crop);
 }
 
 void
@@ -288,8 +283,8 @@ Player::setProperty (const string &name, const string &value)
   string defval;
   string _value;
 
-  if (name == "transIn" || name == "transOut")
-    _animator->setTransitionProperties (name, value);
+  // if (name == "transIn" || name == "transOut")
+  //   _animator->setTransitionProperties (name, value);
 
   use_defval = false;
   _value = value;
@@ -337,12 +332,12 @@ Player::resetProperties (set<string> *props)
     this->setProperty (name, "");
 }
 
-void
-Player::schedulePropertyAnimation (const string &name, const string &from,
-                                   const string &to, Time dur)
-{
-  _animator->schedule (name, from, to, dur);
-}
+// void
+// Player::schedulePropertyAnimation (const string &name, const string &from,
+//                                    const string &to, Time dur)
+// {
+//   _animator->schedule (name, from, to, dur);
+// }
 
 void
 Player::reload ()
@@ -354,7 +349,7 @@ void
 Player::redraw (cairo_t *cr)
 {
   g_assert (_state != SLEEPING);
-  _animator->update (&_prop.rect, &_prop.bgColor, &_prop.alpha, &_crop);
+  // _animator->update (&_prop.rect, &_prop.bgColor, &_prop.alpha, &_crop);
 
   if (!_prop.visible || !(_prop.rect.width > 0 && _prop.rect.height > 0))
     {
@@ -368,106 +363,70 @@ Player::redraw (cairo_t *cr)
 
   if (_prop.bgColor.alpha > 0)
     {
-      if (_opengl)
-        {
-          GL::draw_quad (_prop.rect.x, _prop.rect.y, _prop.rect.width,
-                         _prop.rect.height, (GLfloat) _prop.bgColor.red,
-                         (GLfloat) _prop.bgColor.green,
-                         (GLfloat) _prop.bgColor.blue,
-                         (GLfloat) (_prop.alpha / 255.));
-        }
-      else
-        {
-          cairo_save (cr);
-          cairo_set_source_rgba (cr, _prop.bgColor.red, _prop.bgColor.green,
-                                 _prop.bgColor.blue, _prop.alpha / 255.);
-
-          cairo_rectangle (cr, _prop.rect.x, _prop.rect.y, _prop.rect.width,
-                           _prop.rect.height);
-          cairo_fill (cr);
-          cairo_restore (cr);
-        }
+      cairo_save (cr);
+      cairo_set_source_rgba (cr, _prop.bgColor.red, _prop.bgColor.green,
+                             _prop.bgColor.blue, _prop.alpha / 255.);
+      cairo_rectangle (cr, _prop.rect.x, _prop.rect.y, _prop.rect.width,
+                       _prop.rect.height);
+      cairo_fill (cr);
+      cairo_restore (cr);
     }
 
-  if (_opengl)
+  if (_surface != nullptr)
     {
-      if (_gltexture)
-        {
-          GL::draw_quad (_prop.rect.x, _prop.rect.y, _prop.rect.width,
-                         _prop.rect.height, _gltexture,
-                         (GLfloat) (_prop.alpha / 255.));
-        }
-    }
-  else
-    {
-      if (_surface != nullptr)
-        {
-          double sx, sy;
-          sx = (double) _prop.rect.width
-               / cairo_image_surface_get_width (_surface);
-          sy = (double) _prop.rect.height
-               / cairo_image_surface_get_height (_surface);
-          cairo_save (cr);
-          cairo_translate (cr, _prop.rect.x, _prop.rect.y);
-          cairo_scale (cr, sx, sy);
-          cairo_set_source_surface (cr, _surface, 0., 0.);
-          cairo_paint_with_alpha (cr, _prop.alpha / 255.);
-          cairo_restore (cr);
-        }
+      double sx, sy;
+      sx = (double) _prop.rect.width
+        / cairo_image_surface_get_width (_surface);
+      sy = (double) _prop.rect.height
+        / cairo_image_surface_get_height (_surface);
+      cairo_save (cr);
+      cairo_translate (cr, _prop.rect.x, _prop.rect.y);
+      cairo_scale (cr, sx, sy);
+      cairo_set_source_surface (cr, _surface, 0., 0.);
+      cairo_paint_with_alpha (cr, _prop.alpha / 255.);
+      cairo_restore (cr);
     }
 
   if (this->isFocused ())
     {
-      if (_opengl)
-        {
-          // TODO.
-        }
-      else
-        {
-          cairo_save (cr);
-          cairo_set_source_rgba (cr, 1., 1., 0., 1.);
-          cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
-          cairo_rectangle (cr, _prop.rect.x, _prop.rect.y, _prop.rect.width,
-                           _prop.rect.height);
-          cairo_stroke (cr);
-          cairo_restore (cr);
-        }
-    }
-
-  if (_opengl)
-    {
-      // TODO.
-    }
-  else
-    {
       cairo_save (cr);
-      cairo_set_operator (cr, CAIRO_OPERATOR_CLEAR);
-      cairo_set_source_rgba (cr, 1., 1., 1., 1.);
-
-      for (auto it = _crop.begin (); it != _crop.end (); ++it)
-        {
-          bool fdot = false;
-          if (it == _crop.begin ())
-            fdot = true;
-
-          int x = *it;
-          advance (it, 1);
-          int y = *it;
-
-          if (fdot)
-            cairo_move_to (cr, x, y);
-          else
-            cairo_line_to (cr, x, y);
-        }
-
-      cairo_close_path (cr);
-      cairo_stroke_preserve (cr);
-      cairo_fill (cr);
-      cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
+      cairo_set_source_rgba (cr, 1., 1., 0., 1.);
+      cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+      cairo_rectangle (cr, _prop.rect.x, _prop.rect.y, _prop.rect.width,
+                       _prop.rect.height);
+      cairo_stroke (cr);
       cairo_restore (cr);
     }
 
-  if (_prop.debug || _formatter->getOptionBool ("debug"))
+  cairo_save (cr);
+  cairo_set_operator (cr, CAIRO_OPERATOR_CLEAR);
+  cairo_set_source_rgba (cr, 1., 1., 1., 1.);
+
+  for (auto it = _crop.begin (); it != _crop.end (); ++it)
+    {
+      bool fdot = false;
+      if (it == _crop.begin ())
+        fdot = true;
+
+      int x = *it;
+      advance (it, 1);
+      int y = *it;
+
+      if (fdot)
+        cairo_move_to (cr, x, y);
+      else
+        cairo_line_to (cr, x, y);
+    }
+
+  cairo_close_path (cr);
+  cairo_stroke_preserve (cr);
+  cairo_fill (cr);
+  cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
+  cairo_restore (cr);
+
+  bool debug;
+  if (_media->getDocument ()->getSettings ()
+      ->getPropertyBool ("ginga.debug", &debug) && debug)
     {
       this->redrawDebuggingInfo (cr);
     }
@@ -659,30 +618,39 @@ Player::doSetProperty (Property code, unused (const string &name),
       }
     case PROP_LEFT:
       {
-        int width = _formatter->getOptionInt ("width");
-        _prop.rect.x = ginga::parse_percent (value, width, 0, G_MAXINT);
+        lua_Integer width;
+        g_assert (_media->getDocument ()->getSettings ()
+                  ->getPropertyInteger ("ginga.width", &width));
+        _prop.rect.x = ginga::parse_percent (value, (int) width, 0, G_MAXINT);
         _dirty = true;
         break;
       }
     case PROP_RIGHT:
       {
-        int width = _formatter->getOptionInt ("width");
-        _prop.rect.x = width - _prop.rect.width
-                       - ginga::parse_percent (value, width, 0, G_MAXINT);
+        lua_Integer width;
+        g_assert (_media->getDocument ()->getSettings ()
+                  ->getPropertyInteger ("ginga.width", &width));
+        _prop.rect.x = (int) width - _prop.rect.width
+          - ginga::parse_percent (value, (int) width, 0, G_MAXINT);
         _dirty = true;
         break;
       }
     case PROP_TOP:
       {
-        int height = _formatter->getOptionInt ("height");
-        _prop.rect.y = ginga::parse_percent (value, height, 0, G_MAXINT);
+        lua_Integer height;
+        g_assert (_media->getDocument ()->getSettings ()
+                  ->getPropertyInteger ("ginga.height", &height));
+        _prop.rect.y = ginga::parse_percent
+          (value, (int) height, 0, G_MAXINT);
         _dirty = true;
         break;
       }
     case PROP_BOTTOM:
       {
-        int height = _formatter->getOptionInt ("height");
-        _prop.rect.y = height - _prop.rect.height
+        lua_Integer height;
+        g_assert (_media->getDocument ()->getSettings ()
+                  ->getPropertyInteger ("ginga.height", &height));
+        _prop.rect.y = (int) height - _prop.rect.height
                        - ginga::parse_percent (value, _prop.rect.height, 0,
                                                G_MAXINT);
         _dirty = true;
@@ -690,8 +658,12 @@ Player::doSetProperty (Property code, unused (const string &name),
       }
     case PROP_WIDTH:
       {
-        int width = _formatter->getOptionInt ("width");
-        _prop.rect.width = ginga::parse_percent (value, width, 0, G_MAXINT);
+        lua_Integer width;
+        g_assert (_media->getDocument ()->getSettings ()
+                  ->getPropertyInteger ("ginga.width", &width));
+
+        _prop.rect.width = ginga::parse_percent
+          (value, (int) width, 0, G_MAXINT);
         _dirty = true;
 
         string right;
@@ -701,9 +673,11 @@ Player::doSetProperty (Property code, unused (const string &name),
       }
     case PROP_HEIGHT:
       {
-        int height = _formatter->getOptionInt ("height");
+        lua_Integer height;
+        g_assert (_media->getDocument ()->getSettings ()
+                  ->getPropertyInteger ("ginga.height", &height));
         _prop.rect.height
-            = ginga::parse_percent (value, height, 0, G_MAXINT);
+          = ginga::parse_percent (value, (int) height, 0, G_MAXINT);
         _dirty = true;
 
         string bottom;
