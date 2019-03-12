@@ -224,13 +224,6 @@ Formatter::resize (int width, int height)
   if (_state != GINGA_STATE_PLAYING)
     return;
 
-#define UPDATE_IF_HAVE(PROP)                    \
-  {                                             \
-    string s = media->getProperty (PROP);       \
-    if (s != "")                                \
-      media->setProperty (PROP, s);             \
-  }
-
   // Resize each media object in document.
   _doc->getObjects (&objects);
   for (auto obj: objects)
@@ -241,12 +234,24 @@ Formatter::resize (int width, int height)
       Media *media = cast (Media *, obj);
       g_assert_nonnull (media);
 
-      UPDATE_IF_HAVE ("top");
-      UPDATE_IF_HAVE ("left");
-      UPDATE_IF_HAVE ("width");
-      UPDATE_IF_HAVE ("height");
-      UPDATE_IF_HAVE ("bottom");
-      UPDATE_IF_HAVE ("right");
+      string value;
+      if (media->getPropertyString ("top", &value))
+        media->setPropertyString ("top", value);
+
+      if (media->getPropertyString ("left", &value))
+        media->setPropertyString ("left", value);
+
+      if (media->getPropertyString ("bottom", &value))
+        media->setPropertyString ("bottom", value);
+
+      if (media->getPropertyString ("right", &value))
+        media->setPropertyString ("right", value);
+
+      if (media->getPropertyString ("width", &value))
+        media->setPropertyString ("width", value);
+
+      if (media->getPropertyString ("height", &value))
+        media->setPropertyString ("height", value);
     }
 }
 

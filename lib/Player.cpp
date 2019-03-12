@@ -596,13 +596,11 @@ Player::createPlayer (Formatter *formatter, Media *media, const string &uri,
         {
           WARNING ("unknown mime '%s': creating an empty player",
                    mime.c_str ());
-          if (!media->getProperty("uri").empty ())
-            ERROR ("media from \"application/x-ginga-timer\" type should not have src");
         }
     }
 
   g_assert_nonnull (player);
-  media->setProperty ("type", mime);
+  media->setPropertyString ("type", mime);
   return player;
 }
 
@@ -625,10 +623,10 @@ Player::doSetProperty (Property code, unused (const string &name),
         if (unlikely (!ginga::try_parse_list (value, ',', 4, 4, &lst)))
           return false;
         auto it = lst.begin ();
-        _media->setProperty ("left", *it++);
-        _media->setProperty ("top", *it++);
-        _media->setProperty ("width", *it++);
-        _media->setProperty ("height", *it++);
+        _media->setPropertyString ("left", *it++);
+        _media->setPropertyString ("top", *it++);
+        _media->setPropertyString ("width", *it++);
+        _media->setPropertyString ("height", *it++);
         g_assert (it == lst.end ());
         break;
       }
@@ -643,8 +641,8 @@ Player::doSetProperty (Property code, unused (const string &name),
         if (unlikely (!ginga::try_parse_list (value, ',', 2, 2, &lst)))
           return false;
         auto it = lst.begin ();
-        _media->setProperty ("left", *it++);
-        _media->setProperty ("top", *it++);
+        _media->setPropertyString ("left", *it++);
+        _media->setPropertyString ("top", *it++);
         g_assert (it == lst.end ());
         break;
       }
@@ -654,8 +652,8 @@ Player::doSetProperty (Property code, unused (const string &name),
         if (unlikely (!ginga::try_parse_list (value, ',', 2, 2, &lst)))
           return false;
         auto it = lst.begin ();
-        _media->setProperty ("width", *it++);
-        _media->setProperty ("height", *it++);
+        _media->setPropertyString ("width", *it++);
+        _media->setPropertyString ("height", *it++);
         g_assert (it == lst.end ());
         break;
       }
@@ -696,9 +694,9 @@ Player::doSetProperty (Property code, unused (const string &name),
         _prop.rect.width = ginga::parse_percent (value, width, 0, G_MAXINT);
         _dirty = true;
 
-        string right = _media->getProperty ("right");
-        if (right != "")
-          _media->setProperty ("right", right);
+        string right;
+        if (_media->getPropertyString ("right", &right))
+          _media->setPropertyString ("right", right);
         break;
       }
     case PROP_HEIGHT:
@@ -708,9 +706,9 @@ Player::doSetProperty (Property code, unused (const string &name),
             = ginga::parse_percent (value, height, 0, G_MAXINT);
         _dirty = true;
 
-        string bottom = _media->getProperty ("bottom");
-        if (bottom != "")
-          _media->setProperty ("bottom", bottom);
+        string bottom;
+        if (_media->getPropertyString ("bottom", &bottom))
+          _media->setPropertyString ("bottom", bottom);
 
         break;
       }

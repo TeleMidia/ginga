@@ -165,6 +165,14 @@ public:
 
   // Auxiliary -------------------------------------------------------------
 
+public:
+
+  /// Converts the value at index \p i of stack to a GValue.
+  static bool GValue_to (lua_State *L, int i, GValue *value);
+
+  /// Pushes the given GValue onto stack.
+  static bool GValue_push (lua_State *L, const GValue *value);
+
 private:
 
   /// Datatype for loadable Lua chunks.

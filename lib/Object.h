@@ -95,15 +95,38 @@ public:
   ///
   Event *createEvent (Event::Type type, const string &id);
 
-  /// Gets the set of properties of object.
-  void getProperties (set<pair<string,string> > *properties);
+  /// Gets the property table of object.
+  void getProperties (map<string, GValue> *properties);
 
   /// Gets the current value of an object property.
-  virtual string getProperty (const string &name);
+  virtual bool getProperty (const string &name, GValue *value);
+
+  /// Gets the current value of a boolean property.
+  bool getPropertyBool (const string &name, bool *value);
+
+  /// Gets the current value of an integer property.
+  bool getPropertInteger (const string &name, lua_Integer *value);
+
+  /// Gets the current value of a number property.
+  bool getPropertyNumber (const string &name, lua_Number *value);
+
+  /// Gets the current value of a string property.
+  bool getPropertyString (const string &name, string *value);
 
   /// Sets the current value of an object property.
-  virtual void setProperty (const string &name, const string &value,
-                            Time duration=0);
+  virtual void setProperty (const string &name, const GValue *value);
+
+  /// Sets the current value of a boolean property.
+  void setPropertyBool (const string &name, bool value);
+
+  /// Sets the current value of an integer property.
+  void setPropertInteger (const string &name, lua_Integer value);
+
+  /// Sets the current value of a number property.
+  void setPropertyNumber (const string &name, lua_Number value);
+
+  /// Sets the current value of a string property.
+  void setPropertyString (const string &name, const string &value);
 
   /// Gets the playback time of object.
   Time getTime ();

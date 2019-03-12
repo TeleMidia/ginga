@@ -575,6 +575,8 @@ Document::evalPropertyRef (const string &ref, string *result)
   string name;
   Object *object;
 
+  g_return_val_if_fail (result != NULL, false);
+
   if (ref[0] != '$' || (i = ref.find ('.')) == string::npos)
     return false;
 
@@ -582,10 +584,11 @@ Document::evalPropertyRef (const string &ref, string *result)
   name = ref.substr (i + 1);
   object = this->getObject (id);
   if (object == NULL)
-    return false;
+    {
+      return false;
+    }
 
-  tryset (result, object->getProperty (name));
-  return true;
+  return object->getPropertyString (name, result);
 }
 
 bool

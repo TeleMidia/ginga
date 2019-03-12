@@ -17,6 +17,84 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "LuaAPI.h"
 
+// Public.
+
+bool
+LuaAPI::GValue_to (lua_State *L, int i, GValue *value)
+{
+  g_return_val_if_fail (L != NULL, false);
+  g_return_val_if_fail (value != NULL, false);
+
+  switch (lua_type (L, i))
+    {
+    case LUA_TBOOLEAN:
+      {
+        g_value_init (value, G_TYPE_BOOLEAN);
+        g_value_set_boolean (value, lua_toboolean (L, i));
+        break;
+      }
+    case LUA_TNUMBER:
+      {
+        if (lua_isinteger (L, i))
+          {
+            g_value_init (value, G_TYPE_INT64);
+            g_value_set_int64 (value, luaL_checkinteger (L, i));
+          }
+        else
+          {
+            g_value_init (value, G_TYPE_DOUBLE);
+            g_value_set_double (value, luaL_checknumber (L, i));
+          }
+        break;
+      }
+    case LUA_TSTRING:
+      {
+        g_value_init (value, G_TYPE_STRING);
+        g_value_set_string (value, luaL_checkstring (L, i));
+        break;
+      }
+    default:
+      {
+        return false;
+      }
+    }
+
+  return true;
+}
+
+bool
+LuaAPI::GValue_push (lua_State *L, const GValue *value)
+{
+  g_return_val_if_fail (L != NULL, false);
+  g_return_val_if_fail (value != NULL, false);
+
+  if (G_VALUE_HOLDS (value, G_TYPE_BOOLEAN))
+    {
+      lua_pushboolean (L, g_value_get_boolean (value));
+    }
+  else if (G_VALUE_HOLDS (value, G_TYPE_INT64))
+    {
+      lua_pushinteger (L, g_value_get_int64 (value));
+    }
+  else if (G_VALUE_HOLDS (value, G_TYPE_DOUBLE))
+    {
+      lua_pushnumber (L, g_value_get_double (value));
+    }
+  else if (G_VALUE_HOLDS (value, G_TYPE_STRING))
+    {
+      lua_pushstring (L, g_value_get_string (value));
+    }
+  else
+    {
+      return false;
+    }
+
+  return true;
+}
+
+
+// Private.
+
 LUAAPI_CHUNK_DEFN (initMt);
 LUAAPI_CHUNK_DEFN (Document_initMt);
 LUAAPI_CHUNK_DEFN (Object_initMt);

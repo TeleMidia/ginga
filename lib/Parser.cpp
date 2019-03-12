@@ -2446,7 +2446,7 @@ borderColor='%s'}",
                     continue; // already defined
                   g_assert_nonnull (media->createEvent
                                     (Event::ATTRIBUTION, it.first));
-                  media->setProperty (it.first, it.second);
+                  media->setPropertyString (it.first, it.second);
                 }
             }
 
@@ -3922,8 +3922,8 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
               g_assert_nonnull (media);
             }
           parent->addChild (media);
-          media->setProperty ("uri", src);
-          media->setProperty ("type", type);
+          media->setPropertyString ("uri", src);
+          media->setPropertyString ("type", type);
         }
     }
 
@@ -4034,7 +4034,7 @@ ParserState::pushProperty (ParserState *st, ParserElt *elt)
 
   obj->createEvent (Event::ATTRIBUTION, name); // ignore if already there
   if (value != "")
-    obj->setProperty (name, value);
+    obj->setPropertyString (name, value);
 
   return true;
 }

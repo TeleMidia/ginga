@@ -33,7 +33,7 @@ public:
 
   // TODO ------------------------------------------------------------------
 
-  void setProperty (const string &, const string &, Time dur = 0) override;
+  void setProperty (const string &, const GValue *value) override;
   void sendKey (const string &, bool) override;
   void sendTick (Time, Time, Time) override;
   bool beforeTransition (Event *, Event::Transition,

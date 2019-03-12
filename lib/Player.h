@@ -28,14 +28,17 @@ class Media;
 class Player
 {
 public:
-  enum State
-  {
-    SLEEPING = 1, // stopped
-    OCCURRING,    // playing
-    PAUSED,       // paused
-  };
 
-  enum Property // known properties
+  /// Player state.
+  enum State
+    {
+     OCCURRING,
+     SLEEPING,
+     PAUSED,
+    };
+
+  /// Player properties.
+  enum Property
   {
     PROP_UNKNOWN = 0,
     PROP_BACKGROUND,

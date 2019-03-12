@@ -181,7 +181,7 @@ Object::createEvent (Event::Type type, const string &id)
 }
 
 void
-Object::getProperties (set<pair<string, string> > *properties)
+Object::getProperties (map<string, GValue> *properties)
 {
   g_return_if_fail (properties != NULL);
 
@@ -192,39 +192,190 @@ Object::getProperties (set<pair<string, string> > *properties)
   while (lua_next (_L, -2))
     {
       string name;
-      string value;
+      GValue value = G_VALUE_INIT;
 
       name = string (luaL_checkstring (_L, -2));
-      value = string (luaL_checkstring (_L, -1));
-      properties->insert (std::make_pair (name, value));
+      if (LuaAPI::GValue_to (_L, -1, &value))
+        {
+          g_value_init (&((*properties)[name]), G_VALUE_TYPE (&value));
+          g_value_copy (&value, &((*properties)[name]));
+          g_value_unset (&value);
+        }
       lua_pop (_L, 1);
     }
   lua_pop (_L, 1);
 }
 
-string
-Object::getProperty (const string &name)
+bool
+Object::getProperty (const string &name, GValue *value)
 {
-  const char *value = NULL;
+  bool status = false;
 
   lua_pushstring (_L, name.c_str ());
   LuaAPI::Object_call (_L, this, "getProperty", 1, 1);
   if (!lua_isnil (_L, -1))
     {
-      value = luaL_checkstring (_L, -1);
+      status = LuaAPI::GValue_to (_L, -1, value);
     }
   lua_pop (_L, 1);
 
-  return string (value != NULL ? value : "");
+  return status;
+}
+
+bool
+Object::getPropertyBool (const string &name, bool *value)
+{
+  GValue val = G_VALUE_INIT;
+
+  g_return_val_if_fail (value != NULL, false);
+
+  if (!this->getProperty (name, &val))
+    {
+      return false;
+    }
+
+  if (!G_VALUE_HOLDS (&val, G_TYPE_BOOLEAN))
+    {
+      g_value_unset (&val);
+      return false;
+    }
+
+  *value = g_value_get_boolean (&val);
+  g_value_unset (&val);
+
+  return true;
+}
+
+bool
+Object::getPropertInteger (const string &name, lua_Integer *value)
+{
+  GValue val = G_VALUE_INIT;
+
+  g_return_val_if_fail (value != NULL, false);
+
+  if (!this->getProperty (name, &val))
+    {
+      return false;
+    }
+
+  if (!G_VALUE_HOLDS (&val, G_TYPE_INT64))
+    {
+      g_value_unset (&val);
+      return false;
+    }
+
+  *value = (lua_Integer) g_value_get_int64 (&val);
+  g_value_unset (&val);
+
+  return true;
+}
+
+bool
+Object::getPropertyNumber (const string &name, lua_Number *value)
+{
+  GValue val = G_VALUE_INIT;
+
+  g_return_val_if_fail (value != NULL, false);
+
+  if (!this->getProperty (name, &val))
+    {
+      return false;
+    }
+
+  if (!G_VALUE_HOLDS (&val, G_TYPE_DOUBLE))
+    {
+      g_value_unset (&val);
+      return false;
+    }
+
+  *value = (lua_Number) g_value_get_double (&val);
+  g_value_unset (&val);
+
+  return true;
+}
+
+bool
+Object::getPropertyString (const string &name, string *value)
+{
+  GValue val = G_VALUE_INIT;
+  const char *str;
+
+  g_return_val_if_fail (value != NULL, false);
+
+  if (!this->getProperty (name, &val))
+    {
+      return false;
+    }
+
+  if (!G_VALUE_HOLDS (&val, G_TYPE_STRING))
+    {
+      g_value_unset (&val);
+      return false;
+    }
+
+  str = g_value_get_string (&val);
+  if (str == NULL)
+    {
+      g_value_unset (&val);
+      return false;
+    }
+
+  *value = string (str);
+  g_value_unset (&val);
+
+  return true;
 }
 
 void
-Object::setProperty (const string &name, const string &value,
-                     unused (Time duration))
+Object::setProperty (const string &name, const GValue *value)
 {
   lua_pushstring (_L, name.c_str ());
-  lua_pushstring (_L, value.c_str ());
+  g_assert (LuaAPI::GValue_push (_L, value));
   LuaAPI::Object_call (_L, this, "setProperty", 2, 0);
+}
+
+void
+Object::setPropertyBool (const string &name, bool value)
+{
+  GValue val = G_VALUE_INIT;
+
+  g_value_init (&val, G_TYPE_BOOLEAN);
+  g_value_set_boolean (&val, value);
+  this->setProperty (name, &val);
+  g_value_unset (&val);
+}
+
+void
+Object::setPropertInteger (const string &name, lua_Integer value)
+{
+  GValue val = G_VALUE_INIT;
+
+  g_value_init (&val, G_TYPE_INT64);
+  g_value_set_int64 (&val, value);
+  this->setProperty (name, &val);
+  g_value_unset (&val);
+}
+
+void
+Object::setPropertyNumber (const string &name, lua_Number value)
+{
+  GValue val = G_VALUE_INIT;
+
+  g_value_init (&val, G_TYPE_DOUBLE);
+  g_value_set_double (&val, value);
+  this->setProperty (name, &val);
+  g_value_unset (&val);
+}
+
+void
+Object::setPropertyString (const string &name, const string &value)
+{
+  GValue val = G_VALUE_INIT;
+
+  g_value_init (&val, G_TYPE_STRING);
+  g_value_set_string (&val, value.c_str ());
+  this->setProperty (name, &val);
+  g_value_unset (&val);
 }
 
 Time
@@ -350,7 +501,8 @@ Object::doStart ()
     cast (Context *, parent)->incAwakeChildren ();
 
   // schedule set currentFocus if the object have focusIndex
-  if (!this->getProperty ("focusIndex").empty ())
+  string str;
+  if (this->getPropertyString ("focusIndex", &str) && str != "")
     this->getDocument ()->getSettings ()->scheduleFocusUpdate ("");
 }
 

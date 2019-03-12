@@ -28,7 +28,7 @@ public:
   MediaSettings (Document *doc, const string &id);
   ~MediaSettings ();
 
-  void setProperty (const string &, const string &, Time) override;
+  void setProperty (const string &name, const GValue *value) override;
   void sendTick (Time, Time, Time) override;
 
   // Media;

@@ -28,7 +28,7 @@ MediaSettings::MediaSettings (Document *doc, const string &id)
 {
   _nextFocus = "";
   _hasNextFocus = false;
-  this->setProperty ("type", "application/x-ginga-settings", 0);
+  this->setPropertyString ("type", "application/x-ginga-settings");
   this->createEvent (Event::ATTRIBUTION, "service.currentFocus");
 }
 
@@ -39,12 +39,13 @@ MediaSettings::~MediaSettings ()
 // Public: Object.
 
 void
-MediaSettings::setProperty (const string &name, const string &value,
-                            Time dur)
+MediaSettings::setProperty (const string &name, const GValue *value)
 {
-  if (name == "service.currentFocus")
-    Player::setCurrentFocus (value);
-  Media::setProperty (name, value, dur);
+  if (name == "service.currentFocus" && G_VALUE_HOLDS (value, G_TYPE_STRING))
+    {
+      Player::setCurrentFocus (string (g_value_get_string (value)));
+    }
+  Media::setProperty (name, value);
 }
 
 void
@@ -102,9 +103,13 @@ MediaSettings::updateCurrentFocus (const string &index)
           Media *media = cast (Media *, obj);
           g_assert_nonnull (media);
 
-          if (media->isOccurring ()
-              && (i = media->getProperty ("focusIndex")) != ""
-              && (next == "" || i < next))
+          if (!media->isOccurring ())
+            continue;
+
+          if (!media->getPropertyString ("focusIndex", &i) || i == "")
+            continue;
+
+          if (next == "" || i < next)
             {
               next = i;
             }

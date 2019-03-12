@@ -292,13 +292,10 @@ Context::afterTransition (Event *evt, Event::Transition transition,
         case Event::START:
           {
             string name;
-            string value;
             string s;
             Time dur;
 
             name = evt->getId ();
-            value = params["value"];
-            this->getDocument ()->evalPropertyRef (value, &value);
 
             dur = 0;
             s = params["duration"];
@@ -307,10 +304,8 @@ Context::afterTransition (Event *evt, Event::Transition transition,
                 this->getDocument ()->evalPropertyRef (s, &s);
                 dur = ginga::parse_time (s);
               }
-            this->setProperty (name, value, dur);
-            this->addDelayedAction (evt, Event::STOP, value, dur);
-            TRACE ("start %s:='%s' (dur=%s)", evt->getQualifiedId ().c_str (),
-                   value.c_str (), (s != "") ? s.c_str () : "0s");
+            this->setPropertyString (name, params["value"]);
+            this->addDelayedAction (evt, Event::STOP, params["value"], dur);
             break;
           }
         case Event::STOP:

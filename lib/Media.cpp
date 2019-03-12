@@ -47,19 +47,15 @@ Media::~Media ()
 
 
 void
-Media::setProperty (const string &name, const string &value, Time dur)
+Media::setProperty (const string &name, const GValue *value)
 {
-  string from = this->getProperty (name);
-  Object::setProperty (name, value, dur);
+  Object::setProperty (name, value);
 
   if (_player == nullptr)
     return;
 
-  g_assert (GINGA_TIME_IS_VALID (dur));
-  if (dur > 0)
-    _player->schedulePropertyAnimation (name, from, value, dur);
-  else
-    _player->setProperty (name, value);
+  if (G_VALUE_HOLDS (value, G_TYPE_STRING))
+    _player->setProperty (name, string (g_value_get_string (value)));
 }
 
 void
@@ -174,28 +170,35 @@ Media::beforeTransition (Event *evt, Event::Transition transition,
             if (evt->getState () == Event::SLEEPING)
               {
                 if (evt->isLambda ())
-                  { // Lambda
+                  {
                     Formatter *fmt;
+                    string uri;
+                    string type;
 
                     g_assert (this->getDocument ()->getData ("formatter", (void **) &fmt));
                     g_assert_null (_player);
-                    _player = Player::createPlayer
-                      (fmt, this,
-                       this->getProperty ("uri"),
-                       this->getProperty("type"));
+
+                    this->getPropertyString ("uri", &uri);
+                    this->getPropertyString ("type", &type);
+
+                    _player = Player::createPlayer (fmt, this, uri, type);
                     if (unlikely (_player == nullptr))
                       return false; // fail
 
-                    set<pair<string, string> > props;
+                    map<string, GValue> props;
                     this->getProperties (&props);
 
                     for (auto it: props)
-                      _player->setProperty (it.first, it.second);
+                      {
+                        GValue *value = &it.second;
+                        g_assert (G_VALUE_HOLDS (value, G_TYPE_STRING));
+                        string str = string (g_value_get_string (value));
+                        _player->setProperty (it.first, str);
+                        g_value_unset (value);
+                      }
 
                     g_assert_nonnull (_player);
-                    // Start underlying player.
-                    // TODO: Check player failure.
-                    _player->start (); // Just lambda events reaches this!
+                    _player->start ();
                   }
                 else
                   { // Anchor
@@ -395,7 +398,7 @@ Media::afterTransition (Event *evt, Event::Transition transition,
                   this->getDocument ()->evalPropertyRef (s, &s);
                   dur = ginga::parse_time (s);
                 }
-              this->setProperty (name, value, dur);
+              this->setPropertyString (name, value);
               this->addDelayedAction (evt, Event::STOP, value, dur);
               break;
             }
