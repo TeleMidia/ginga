@@ -24,3 +24,25 @@ LuaAPI::Media_check (lua_State *L, int i)
   g_return_val_if_fail (L != NULL, NULL);
   return *((Media **) luaL_checkudata (L, i, LuaAPI::_MEDIA));
 }
+
+void
+LuaAPI::Media_push (lua_State *L, Media *media)
+{
+  g_return_if_fail (L != NULL);
+  g_return_if_fail (media != NULL);
+
+  LuaAPI::_pushLuaWrapper (L, media);
+}
+
+void
+LuaAPI::Media_call (lua_State *L, Media *media, const char *name,
+                    int nargs, int nresults)
+{
+  g_return_if_fail (L != NULL);
+  g_return_if_fail (media != NULL);
+  g_return_if_fail (name != NULL);
+  g_return_if_fail (nargs >= 0);
+  g_return_if_fail (nresults >= 0);
+
+  LuaAPI::_callLuaWrapper (L, media, name, nargs, nresults);
+}

@@ -48,6 +48,7 @@ LuaAPI::Event_attachWrapper (lua_State *L, Event *evt, Object *obj,
 
   g_return_if_fail (L != NULL);
   g_return_if_fail (evt != NULL);
+  g_return_if_fail (obj != NULL);
 
   // Load and initialize metatable, if not loaded yet.
   LuaAPI::_loadLuaWrapperMt (L, LuaAPI::_EVENT, funcs, chunks);

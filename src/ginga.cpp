@@ -225,18 +225,31 @@ on_canvas_key_event (unused (GtkWidget *canvas),
       }
     case GDK_KEY_F10:           // <F10> toggles debugging mode
       {
-        Document *doc;
+        static string saved_G_MESSAGES_DEBUG;
 
         if (evt->type == GDK_KEY_RELEASE)
           goto done;
 
         debugging_on = !debugging_on;
 
-        doc = (Document *) ginga->getDocument ();
-        if (doc != NULL)
+        if (debugging_on)
           {
-            doc->getSettings ()
-              ->setPropertyBool ("ginga.debug", debugging_on);
+            const char *curr = g_getenv ("G_MESSAGES_DEBUG");
+            if (curr != nullptr)
+              saved_G_MESSAGES_DEBUG = string (curr);
+            g_assert (g_setenv ("G_MESSAGES_DEBUG", "all", true));
+
+            Document *doc = (Document *) ginga->getDocument ();
+            if (doc != NULL)
+              {
+                doc->getSettings ()
+                  ->setPropertyBool ("ginga.debug", debugging_on);
+              }
+          }
+        else
+          {
+            g_assert (g_setenv ("G_MESSAGES_DEBUG",
+                                saved_G_MESSAGES_DEBUG.c_str (), true));
           }
         goto done;
       }

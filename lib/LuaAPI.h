@@ -27,10 +27,11 @@ GINGA_END_DECLS
 
 GINGA_NAMESPACE_BEGIN
 
-class Context;
 class Document;
-class Media;
+class Context;
 class Switch;
+class Media;
+class Player;
 
 /// The Lua interface to the internal model.
 ///
@@ -95,7 +96,7 @@ public:
   /// Pushes Object::Type (as string) onto stack.
   static void Object_Type_push (lua_State *L, Object::Type type);
 
-  /// Calls a method of the Lua wrapper of the given document.
+  /// Calls a method of the Lua wrapper of the given object.
   static void Object_call (lua_State *L, Object *obj,
                            const char *name, int nargs, int nresults);
 
@@ -113,10 +114,10 @@ public:
   /// Checks if the value at index \p i of stack is a Context wrapper.
   static Context *Context_check (lua_State *L, int i);
 
-  //// Pushes the Lua wrapper of event onto stack.
+  //// Pushes the Lua wrapper of context onto stack.
   static void Context_push (lua_State *L, Context *ctx);
 
-  /// Calls a method of the Lua wrapper of the given event.
+  /// Calls a method of the Lua wrapper of the given context.
   static void Context_call (lua_State *L, Context *ctx,
                             const char *name, int nargs, int nresults);
 
@@ -130,6 +131,12 @@ public:
   /// Checks if the value at index \p i of stack is a Media wrapper.
   static Media *Media_check (lua_State *L, int i);
 
+  //// Pushes the Lua wrapper of media onto stack.
+  static void Media_push (lua_State *L, Media *media);
+
+  /// Calls a method of the Lua wrapper of the given media.
+  static void Media_call (lua_State *L, Media *media,
+                          const char *name, int nargs, int nresults);
 
   // Event -----------------------------------------------------------------
 
@@ -162,6 +169,25 @@ public:
   /// Calls a method of the Lua wrapper of the given event.
   static void Event_call (lua_State *L, Event *evt,
                           const char *name, int nargs, int nresults);
+
+  // Player ----------------------------------------------------------------
+
+  /// Attaches Lua wrapper to \p player.
+  static void Player_attachWrapper (lua_State *L, Player *player,
+                                    Media *media);
+
+  /// Detaches Lua wrapper from \p player.
+  static void Player_detachWrapper (lua_State *L, Player *player);
+
+  /// Checks if the value at index \p i of stack is a Player wrapper.
+  static Player *Player_check (lua_State *L, int i);
+
+  /// Pushes the Lua wrapper of player onto stack.
+  static void Player_push (lua_State *L, Player *player);
+
+  /// Calls a method of the Lua wrapper of the given player.
+  static void Player_call (lua_State *L, Player *player,
+                           const char *name, int nargs, int nresults);
 
   // Auxiliary -------------------------------------------------------------
 
@@ -201,6 +227,7 @@ private:
   LUAAPI_CHUNK_DECL (Media_initMt);
   LUAAPI_CHUNK_DECL (Composition_initMt);
   LUAAPI_CHUNK_DECL (Event_initMt);
+  LUAAPI_CHUNK_DECL (Player_initMt);
   LUAAPI_CHUNK_DECL (traceMt);
 
   /// Registry keys for the metatables.
@@ -209,6 +236,7 @@ private:
   static const char *_SWITCH;
   static const char *_MEDIA;
   static const char *_EVENT;
+  static const char *_PLAYER;
 
   /// The functions to load in all metatables.
   static const struct luaL_Reg _funcs[];

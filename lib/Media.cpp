@@ -19,6 +19,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Object.h"
 #include "LuaAPI.h"
 
+#include "Document.h"
 #include "Context.h"
 #include "MediaSettings.h"
 #include "Switch.h"
@@ -167,11 +168,9 @@ Media::beforeTransition (Event *evt, Event::Transition transition,
               {
                 if (evt->isLambda ())
                   {
-                    Formatter *fmt;
                     string uri;
                     string type;
 
-                    g_assert (this->getDocument ()->getData ("formatter", (void **) &fmt));
                     g_assert_null (_player);
 
                     this->getPropertyString ("uri", &uri);

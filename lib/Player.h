@@ -18,8 +18,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #ifndef GINGA_PLAYER_H
 #define GINGA_PLAYER_H
 
-#include "PlayerAnimator.h"
-
 GINGA_NAMESPACE_BEGIN
 
 class Media;
@@ -126,6 +124,12 @@ public:
                                const string &type = "");
 
 protected:
+
+  /// The Lua state of the associated media object.
+  lua_State *_L;
+
+  // TODO ------------------------------------------------------------------
+
   Media *_media;             // associated media object
   string _id;                // id of the associated media object
   State _state;              // current state

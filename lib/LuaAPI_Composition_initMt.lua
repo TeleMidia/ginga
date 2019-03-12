@@ -12,8 +12,8 @@ do
       -- none
 
       -- Getters & setters.
-      funcs.children      = {mt.getChildren,       nil}
-      funcs.child         = {mt.getChild,          nil}
+      funcs.children = {mt.getChildren,       nil}
+      funcs.child    = {mt.getChild,          nil}
 
       return saved_attachData (self, doc, type, id, data, funcs)
    end

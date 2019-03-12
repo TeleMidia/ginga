@@ -4,6 +4,7 @@
 /LuaAPI_Event_initMt.cpp
 /LuaAPI_Media_initMt.cpp
 /LuaAPI_Object_initMt.cpp
+/LuaAPI_Player_initMt.cpp
 /LuaAPI_initMt.cpp
 /LuaAPI_traceMt.cpp
 /config.h

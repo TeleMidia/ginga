@@ -102,7 +102,7 @@ public:
   void setTime (Time time);
 
   /// Gets the property table of object.
-  void getProperties (map<string, GValue> *properties);
+  void G_GNUC_DEPRECATED getProperties (map<string, GValue> *properties);
 
   /// Gets the current value of an object property.
   virtual bool getProperty (const string &name, GValue *value);

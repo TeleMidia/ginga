@@ -133,7 +133,7 @@ public:
 
 private:
 
-  /// The Lua state associated with the container object.
+  /// The Lua state of the container object.
   lua_State *_L;
 };
 

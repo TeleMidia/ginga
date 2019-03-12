@@ -31,6 +31,8 @@ GINGA_BEGIN_DECLS
 #define GINGA_PRAGMA_DIAG_IGNORE  PRAGMA_DIAG_IGNORE
 #define GINGA_PRAGMA_DIAG_WARNING PRAGMA_DIAG_WARNING
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wdeprecated-declarations)
+
 // C library.
 #include <string.h>
 #include <math.h>

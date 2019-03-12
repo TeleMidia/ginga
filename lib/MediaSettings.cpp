@@ -18,6 +18,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "MediaSettings.h"
 
+#include "Document.h"
 #include "Context.h"
 #include "Switch.h"
 

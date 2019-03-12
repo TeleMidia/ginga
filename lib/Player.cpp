@@ -16,16 +16,16 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
-#include "aux-gl.h"
-
 #include "Player.h"
+#include "LuaAPI.h"
+
+#include "Document.h"
 #include "Media.h"
 #include "MediaSettings.h"
 
 #include "PlayerImage.h"
 #include "PlayerText.h"
 #include "PlayerVideo.h"
-#include "PlayerSigGen.h"
 
 #if defined WITH_NCLUA && WITH_NCLUA
 #include "PlayerLua.h"
@@ -33,10 +33,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #if defined WITH_LIBRSVG && WITH_LIBRSVG
 #include "PlayerSvg.h"
-#endif
-
-#if defined WITH_CEF && WITH_CEF
-#include "PlayerHTML.h"
 #endif
 
 GINGA_NAMESPACE_BEGIN
@@ -158,7 +154,9 @@ static map<string, string> player_property_aliases = {
 
 Player::Player (Media *media)
 {
-  g_assert_nonnull (media);
+  g_return_if_fail (media != NULL);
+  _L = media->getDocument ()->getLuaState ();
+
   _media = media;
   _id = media->getId ();
 
@@ -168,6 +166,8 @@ Player::Player (Media *media)
   _dirty = true;
   _surface = nullptr;
   this->resetProperties ();
+
+  LuaAPI::Player_attachWrapper (_L, this, media);
 }
 
 Player::~Player ()
@@ -175,6 +175,8 @@ Player::~Player ()
   if (_surface != nullptr)
     cairo_surface_destroy (_surface);
   _properties.clear ();
+
+  LuaAPI::Player_detachWrapper (_L, this);
 }
 
 Player::State

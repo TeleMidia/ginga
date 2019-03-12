@@ -102,13 +102,15 @@ LUAAPI_CHUNK_DEFN (Context_initMt);
 LUAAPI_CHUNK_DEFN (Media_initMt);
 LUAAPI_CHUNK_DEFN (Composition_initMt);
 LUAAPI_CHUNK_DEFN (Event_initMt);
+LUAAPI_CHUNK_DEFN (Player_initMt);
 LUAAPI_CHUNK_DEFN (traceMt);
 
 const char *LuaAPI::_DOCUMENT = "Ginga.Document";
 const char *LuaAPI::_CONTEXT  = "Ginga.Context";
 const char *LuaAPI::_SWITCH   = "Ginga.Switch";
 const char *LuaAPI::_MEDIA    = "Ginga.Media";
-const char *LuaAPI::_EVENT = "Ginga.Event";
+const char *LuaAPI::_EVENT    = "Ginga.Event";
+const char *LuaAPI::_PLAYER   = "Ginga.Player";
 
 const struct luaL_Reg LuaAPI::_funcs[] =
   {
