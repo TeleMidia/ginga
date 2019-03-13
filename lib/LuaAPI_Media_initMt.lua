@@ -28,13 +28,35 @@ do
 
    -- Behaviors ------------------------------------------------------------
 
-   -- mt._behavior.before.lambda.start = function (self, evt, trans, params)
-   --    assert (evt.object == self)
-   --    assert (evt.id == '@lambda')
-   --    print ('ooooooooooe')
-   --    os.exit (1)
-   --    return true
-   -- end
+   mt._behavior.before.lambda.start = function (self, evt, trans, params)
+      assert (evt.object == self)
+      assert (evt.id == '@lambda')
+
+      -- Start/resume parent context if it is not occurring.
+      local parent = self.parent
+      if parent and parent.lambda.state ~= 'occurring' then
+         error ('TODO: Start parent')
+      end
+
+      -- Check if this start is in fact a resume.
+      if self.state == 'paused' then
+         error ('TODO: Resume object')
+      end
+
+      -- Create the underlying player.
+      assert (self.player == nil)
+      local type, player = self.document
+         :_createPlayer (self, self.property.uri, self.property.type)
+      assert (player)
+      self:setProperty ('type', assert (type))
+
+      -- Start the underlying player.
+      if not player:start () then
+         return false
+      end
+
+      return true
+   end
 
    -- mt._behavior.after.lambda.start = function (self, evt, trans, params)
    --    assert (evt.object == self)

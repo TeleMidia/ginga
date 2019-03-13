@@ -316,6 +316,7 @@ Makefile
 lib/Makefile
 lib/ginga.pc
 src/Makefile
+tests/Makefile
 ])
 
 AC_OUTPUT

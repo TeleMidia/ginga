@@ -19,7 +19,7 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
 ACLOCAL_AMFLAGS= -I build-aux ${ACLOCAL_FLAGS}
-SUBDIRS= lib src
+SUBDIRS= lib src tests
 
 # Setup code coverage.
 include $(top_srcdir)/build-aux/Makefile.am.coverage
