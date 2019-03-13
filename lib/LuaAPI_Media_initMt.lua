@@ -26,6 +26,22 @@ do
       rawset (mt[self], '_player', player)
    end
 
+   -- Behaviors ------------------------------------------------------------
+
+   -- mt._behavior.before.lambda.start = function (self, evt, trans, params)
+   --    assert (evt.object == self)
+   --    assert (evt.id == '@lambda')
+   --    print ('ooooooooooe')
+   --    os.exit (1)
+   --    return true
+   -- end
+
+   -- mt._behavior.after.lambda.start = function (self, evt, trans, params)
+   --    assert (evt.object == self)
+   --    assert (evt.id == '@lambda')
+   --    return true
+   -- end
+
    -- Exported functions ---------------------------------------------------
 
    -- Object::isComposition().

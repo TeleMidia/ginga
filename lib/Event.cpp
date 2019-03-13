@@ -180,6 +180,26 @@ Event::setLabel (const string &label)
   LuaAPI::Event_call (_L, this, "setLabel", 1, 0);
 }
 
+bool
+Event::transition (Event::Transition trans, map<string, string> &params)
+{
+  bool status;
+
+  LuaAPI::Event_Transition_push (_L, trans);
+  lua_newtable (_L);
+  for (auto &it: params)
+    {
+      lua_pushstring (_L, it.first.c_str ());
+      lua_pushstring (_L, it.second.c_str ());
+      lua_rawset (_L, -3);
+    }
+  LuaAPI::Event_call (_L, this, "transition", 2, 1);
+  status = lua_toboolean (_L, 1);
+  lua_pop (_L, 1);
+
+  return status;
+}
+
 // TODO --------------------------------------------------------------------
 
 bool
@@ -187,58 +207,6 @@ Event::isLambda ()
 {
   return this->getType () == Event::PRESENTATION
     && this->getId () == "@lambda";
-}
-
-bool
-Event::transition (Event::Transition trans,
-                   map<string, string> &params)
-{
-  Event::State curr = this->getState ();
-  Event::State next;
-  switch (trans)
-    {
-    case Event::START:
-      if (curr == Event::OCCURRING)
-        return false;
-      next = Event::OCCURRING;
-      break;
-    case Event::PAUSE:
-      if (curr != Event::OCCURRING)
-        return false;
-      next = Event::PAUSED;
-      break;
-    case Event::RESUME:
-      if (curr != Event::PAUSED)
-        return false;
-      next = Event::OCCURRING;
-      break;
-    case Event::STOP: // fall through
-    case Event::ABORT:
-      if (curr == Event::SLEEPING)
-        return false;
-      next = Event::SLEEPING;
-      break;
-    default:
-      g_assert_not_reached ();
-    }
-
-  // Initiate transition.
-  if (unlikely (!this->getObject ()
-                ->beforeTransition (this, trans, params)))
-    return false;
-
-  // Update event state.
-  this->setState (next);
-
-  // Finish transition.
-  if (unlikely (!this->getObject ()
-                ->afterTransition (this, trans, params)))
-    {
-      this->setState (curr);
-      return false;
-    }
-
-  return true;
 }
 
 GINGA_NAMESPACE_END

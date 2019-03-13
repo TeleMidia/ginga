@@ -46,9 +46,8 @@ class Player;
 ///
 class LuaAPI
 {
-public:
-
   // Document --------------------------------------------------------------
+public:
 
   /// Attaches Lua wrapper to \p doc.
   static void Document_attachWrapper (lua_State *L, Document *doc);
@@ -67,14 +66,12 @@ public:
                              const char *name, int nargs, int nresults);
 
 private:
-
   static int __l_Document_gc (lua_State *L);
   static int _l_Document_createObject (lua_State *L);
   static int _l_Document_createEvent (lua_State *L);
   static int _l_Document_createPlayer (lua_State *L);
 
   // Object ----------------------------------------------------------------
-
 public:
 
   /// Attaches Lua wrapper to \p obj.
@@ -100,8 +97,12 @@ public:
   /// Calls a method of the Lua wrapper of the given object.
   static void Object_call (lua_State *L, Object *obj,
                            const char *name, int nargs, int nresults);
+private:
+  static int _l_Object_beforeTransition (lua_State *L);
+  static int _l_Object_afterTransition (lua_State *L);
 
   // Composition -----------------------------------------------------------
+public:
 
   /// Checks if the value at index \p i of stack is a Composition wrapper.
   static Composition *Composition_check (lua_State *L, int i);
@@ -123,6 +124,7 @@ public:
                             const char *name, int nargs, int nresults);
 
   // Switch ----------------------------------------------------------------
+public:
 
   /// Checks if the value at index \p i of stack is a Switch wrapper.
   static Switch *Switch_check (lua_State *L, int i);
@@ -140,6 +142,7 @@ public:
                           const char *name, int nargs, int nresults);
 
   // Event -----------------------------------------------------------------
+public:
 
   /// Attaches Lua wrapper to \p evt.
   static void Event_attachWrapper (lua_State *L, Event *evt,
@@ -158,6 +161,9 @@ public:
   /// Checks if the value at index \p i of stack is an Event::State.
   static Event::State Event_State_check (lua_State *L, int i);
 
+  /// Checks if the value at index \p i of stack is an Event::Transition.
+  static Event::Transition Event_Transition_check (lua_State *L, int i);
+
   //// Pushes the Lua wrapper of event onto stack.
   static void Event_push (lua_State *L, Event *evt);
 
@@ -167,11 +173,15 @@ public:
   /// Pushes Event::State (as string) onto stack.
   static void Event_State_push (lua_State *L, Event::State state);
 
+  /// Pushes Event::Transition (as string) onto stack.
+  static void Event_Transition_push (lua_State *L, Event::Transition trans);
+
   /// Calls a method of the Lua wrapper of the given event.
   static void Event_call (lua_State *L, Event *evt,
                           const char *name, int nargs, int nresults);
 
   // Player ----------------------------------------------------------------
+public:
 
   /// Attaches Lua wrapper to \p player.
   static void Player_attachWrapper (lua_State *L, Player *player,
@@ -190,13 +200,13 @@ public:
   static void Player_call (lua_State *L, Player *player,
                            const char *name, int nargs, int nresults);
 
+private:
   static int l_Player_getEOS (lua_State *L);
   static int l_Player_setEOS (lua_State *L);
   static int _l_Player_getProperty (lua_State *L);
   static int _l_Player_setProperty (lua_State *L);
 
   // Auxiliary -------------------------------------------------------------
-
 public:
 
   /// Converts the value at index \p i of stack to a GValue.

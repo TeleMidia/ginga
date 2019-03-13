@@ -129,6 +129,8 @@ public:
   // TODO ------------------------------------------------------------------
 
   bool isLambda ();
+
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   bool transition (Event::Transition, map<string, string> &params);
 
 private:

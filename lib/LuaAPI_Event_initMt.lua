@@ -64,6 +64,11 @@ do
       return saved_fini (self)
    end
 
+   -- Gets a string representation of event.
+   mt.__tostring = function (self)
+      return assert (rawget (mt[self], '_qualifiedId'))
+   end
+
    -- Exported functions ---------------------------------------------------
 
    -- Event::getObject().
@@ -127,5 +132,59 @@ do
    -- Event::setLabel().
    mt.setLabel = function (self, label)
       rawset (mt[self], '_label', label)
+   end
+
+   -- Event::transition().
+   mt.transition = function (self, trans, params)
+      local curr = self.state
+      local next
+      if trans == 'start' then
+         if curr == 'occurring' then
+            return false
+         end
+         next = 'occurring'
+      elseif trans == 'pause' then
+         if curr ~= 'occurring' then
+            return false
+         end
+         next = 'paused'
+      elseif trans == 'resume' then
+         if curr ~= 'paused' then
+            return false
+         end
+         next = 'occurring'
+      elseif trans == 'stop' or trans == 'abort' then
+         if curr == 'sleeping' then
+            return false
+         end
+         next = 'sleeping'
+      else
+         error ('bad transition: '..tostring (trans))
+      end
+
+      -- Try to use the behavior interface.
+      local before, after = self.object:_getBehavior (self, trans, params)
+      if not before then
+         before = self.object._beforeTransition
+      end
+      if not after then
+         after = self.object._afterTransition
+      end
+
+      -- Initiate transition.
+      if not before (self.object, self, trans, params) then
+         return false
+      end
+
+      -- Update event state.
+      self.state = next
+
+      -- Finish transition.
+      if not after (self.object, self, trans, params) then
+         self.state = curr
+         return false
+      end
+
+      return true
    end
 end

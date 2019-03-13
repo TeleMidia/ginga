@@ -21,7 +21,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 void
 LuaAPI::Player_attachWrapper (lua_State *L, Player *player, Media *media)
 {
-
   static const struct luaL_Reg _Player_funcs[] =
     {
      {"getEOS",       LuaAPI::l_Player_getEOS},

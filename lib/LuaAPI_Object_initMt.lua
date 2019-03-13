@@ -80,6 +80,45 @@ do
       return assert (rawget (mt[self], '_id'))
    end
 
+   -- Behaviors ------------------------------------------------------------
+
+   -- Behavior table.
+   mt._behavior = {
+      before = {
+         lambda       = {},
+         attribution  = {},
+         presentation = {},
+         selection    = {},
+      },
+      after = {
+         lambda       = {},
+         attribution  = {},
+         presentation = {},
+         selection    = {},
+      }
+   }
+
+   -- Gets behavior associated with event transition.
+   mt._getBehavior = function (self, evt, trans, params)
+      local behavior = assert (mt._behavior)
+      assert (evt.object == self)
+      local key
+      if evt.id == '@lambda' then
+         key = 'lambda'
+      else
+         key = evt.type
+      end
+      local before = assert (behavior.before)[key]
+      local after = assert (behavior.after)[key]
+      if before then
+         before = before[trans]
+      end
+      if after then
+         after = after[trans]
+      end
+      return before, after
+   end
+
    -- Exported functions ---------------------------------------------------
 
    -- Object::isComposition().

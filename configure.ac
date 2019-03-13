@@ -316,11 +316,6 @@ Makefile
 lib/Makefile
 lib/ginga.pc
 src/Makefile
-src-gui/Makefile
-src-gui/icons/Makefile
-src-gui/style/Makefile
-tests-ncl/generated/Makefile
-tests/Makefile
 ])
 
 AC_OUTPUT

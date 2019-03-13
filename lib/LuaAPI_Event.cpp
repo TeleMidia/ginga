@@ -18,13 +18,19 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "LuaAPI.h"
 #include "Event.h"
 
-#define EVENT_ATTRIBUTION_STRING   "attribution"
-#define EVENT_PRESENTATION_STRING  "presentation"
-#define EVENT_SELECTION_STRING     "selection"
+#define EVENT_ATTRIBUTION_STRING  "attribution"
+#define EVENT_PRESENTATION_STRING "presentation"
+#define EVENT_SELECTION_STRING    "selection"
 
-#define EVENT_OCCURRING_STRING     "occurring"
-#define EVENT_PAUSED_STRING        "paused"
-#define EVENT_SLEEPING_STRING      "sleeping"
+#define EVENT_OCCURRING_STRING "occurring"
+#define EVENT_PAUSED_STRING    "paused"
+#define EVENT_SLEEPING_STRING  "sleeping"
+
+#define EVENT_ABORT_STRING  "abort"
+#define EVENT_PAUSE_STRING  "pause"
+#define EVENT_RESUME_STRING "resume"
+#define EVENT_START_STRING  "start"
+#define EVENT_STOP_STRING   "stop"
 
 void
 LuaAPI::Event_attachWrapper (lua_State *L, Event *evt, Object *obj,
@@ -135,6 +141,35 @@ LuaAPI::Event_State_check (lua_State *L, int i)
     }
 }
 
+Event::Transition
+LuaAPI::Event_Transition_check (lua_State *L, int i)
+{
+  static const char *transitions[] = {EVENT_ABORT_STRING,
+                                      EVENT_PAUSE_STRING,
+                                      EVENT_RESUME_STRING,
+                                      EVENT_START_STRING,
+                                      EVENT_STOP_STRING,
+                                      NULL};
+
+  g_return_val_if_fail (L != NULL, Event::ABORT);
+
+  switch (luaL_checkoption (L, i, NULL, transitions))
+    {
+    case 0:
+      return Event::ABORT;
+    case 1:
+      return Event::PAUSE;
+    case 2:
+      return Event::RESUME;
+    case 3:
+      return Event::START;
+    case 4:
+      return Event::STOP;
+    default:
+      g_assert_not_reached ();
+    }
+}
+
 void
 LuaAPI::Event_push (lua_State *L, Event *evt)
 {
@@ -180,6 +215,33 @@ LuaAPI::Event_State_push (lua_State *L, Event::State state)
       break;
     case Event::SLEEPING:
       lua_pushliteral (L, EVENT_SLEEPING_STRING);
+      break;
+    default:
+      g_assert_not_reached ();
+    }
+}
+
+void
+LuaAPI::Event_Transition_push (lua_State *L, Event::Transition trans)
+{
+  g_return_if_fail (L != NULL);
+
+  switch (trans)
+    {
+    case Event::ABORT:
+      lua_pushliteral (L, EVENT_ABORT_STRING);
+      break;
+    case Event::PAUSE:
+      lua_pushliteral (L, EVENT_PAUSE_STRING);
+      break;
+    case Event::RESUME:
+      lua_pushliteral (L, EVENT_RESUME_STRING);
+      break;
+    case Event::START:
+      lua_pushliteral (L, EVENT_START_STRING);
+      break;
+    case Event::STOP:
+      lua_pushliteral (L, EVENT_STOP_STRING);
       break;
     default:
       g_assert_not_reached ();
