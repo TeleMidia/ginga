@@ -46,12 +46,8 @@ public:
   bool afterTransition (Event *, Event::Transition,
                         map<string, string> &params) override;
 
-  // Media:
-  virtual bool getZ (int *, int *);
-  virtual void redraw (cairo_t *);
-
 protected:
-  Player *_player; // underlying player
+  Player *_player;
 
   void doStop () override;
 };

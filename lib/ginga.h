@@ -55,7 +55,6 @@ public:
   virtual bool stop () = 0;
 
   virtual void resize (int width, int height) = 0;
-  virtual void redraw (cairo_t *cr) = 0;
 
   virtual bool sendKey (const std::string &key, bool press) = 0;
   virtual bool sendTick (uint64_t total, uint64_t diff, uint64_t frame) = 0;

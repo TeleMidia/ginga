@@ -31,30 +31,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-// Compares the z-index and z-order of two media objects.
-static int
-zcmp (Media *a, Media *b)
-{
-  int z1, zo1, z2, zo2;
-
-  g_assert_nonnull (a);
-  g_assert_nonnull (b);
-
-  z1 = zo1 = z2 = zo2 = 0;
-  a->getZ (&z1, &zo1);
-  b->getZ (&z2, &zo2);
-
-  if (z1 < z2)
-    return -1;
-  if (z1 > z2)
-    return 1;
-  if (zo1 < zo2)
-    return -1;
-  if (zo1 > zo2)
-    return 1;
-  return 0;
-}
-
 // Public: External API.
 
 lua_State *
@@ -108,8 +84,8 @@ Formatter::start (const string &file, int w, int h, string *errmsg)
   MediaSettings *settings = _doc->getSettings ();
   g_assert_nonnull (settings);
 
-  settings->setPropertyInteger ("ginga.width", w);
-  settings->setPropertyInteger ("ginga.height", h);
+  settings->setPropertyInteger ("width", w);
+  settings->setPropertyInteger ("height", h);
 
   // Initialize formatter variables.
   _docPath = file;
@@ -166,8 +142,8 @@ Formatter::resize (int width, int height)
   if (_state != GINGA_STATE_PLAYING)
     return;
 
-  _doc->getSettings ()->setPropertyInteger ("ginga.width", width);
-  _doc->getSettings ()->setPropertyInteger ("ginga.height", height);
+  _doc->getSettings ()->setPropertyInteger ("width", width);
+  _doc->getSettings ()->setPropertyInteger ("height", height);
 
   // Resize each media object in document.
   _doc->getObjects (&objects);
@@ -197,100 +173,6 @@ Formatter::resize (int width, int height)
 
       if (media->getPropertyString ("height", &value))
         media->setPropertyString ("height", value);
-    }
-}
-
-void
-Formatter::redraw (cairo_t *cr)
-{
-  set<Object *> objects;
-  GList *zlist;
-  GList *l;
-
-  lua_Integer width;
-  lua_Integer height;
-  string background;
-
-  // This must be the first check.
-  if (_state != GINGA_STATE_PLAYING)
-    return;
-
-  g_assert (_doc->getSettings ()
-            ->getPropertyInteger ("ginga.width", &width));
-  g_assert (_doc->getSettings ()
-            ->getPropertyInteger ("ginga.height", &height));
-
-  cairo_save (cr);
-  cairo_set_source_rgba (cr, 0, 0, 0, 1.0);
-  cairo_rectangle (cr, 0, 0, (double) width, (double) height);
-  cairo_fill (cr);
-  cairo_restore (cr);
-
-  if (true)
-    {
-      cairo_save (cr);
-      cairo_set_source_rgba (cr, .5, 0, .5, 1);
-      cairo_rectangle (cr, 0, 0, (double) width, (double) height);
-      cairo_fill (cr);
-      cairo_restore (cr);
-    }
-
-  zlist = NULL;
-  _doc->getObjects (&objects);
-  for (auto &obj: objects)
-    {
-      if (obj->getType () != Object::MEDIA)
-        continue;
-
-      Media *media = cast (Media *, obj);
-      g_assert_nonnull (media);
-      zlist = g_list_insert_sorted (zlist, media, (GCompareFunc) zcmp);
-    }
-
-  l = zlist;
-  while (l != NULL)
-    {
-      GList *next = l->next;
-      ((Media *) l->data)->redraw (cr);
-      zlist = g_list_delete_link (zlist, l);
-      l = next;
-    }
-  g_assert_null (zlist);
-
-  bool debug;
-  if (_doc->getSettings ()->getPropertyBool ("ginga.debug", &debug)
-      && debug)
-    {
-      static Color fg = { 1., 1., 1., 1. };
-      static Color bg = { 0, 0, 0, 0 };
-      static Rect rect = { 0, 0, 0, 0 };
-      string status;
-      cairo_surface_t *debug;
-      Rect ink;
-
-      lua_Integer width;
-      lua_Integer height;
-
-      g_assert (_doc->getSettings ()
-                ->getPropertyInteger ("ginga.width", &width));
-      g_assert (_doc->getSettings ()
-                ->getPropertyInteger ("ginga.height", &height));
-
-      status = "debugging mode";
-      rect.width = (int) width;
-      rect.height = (int) height;
-      debug = PlayerText::renderSurface (status, "monospace", "", "bold",
-                                         "9", fg, bg, rect, "center",
-                                         "", true, &ink);
-      ink = { 0, 0, rect.width, ink.height - ink.y + 4 };
-      cairo_save (cr);
-      cairo_set_source_rgba (cr, 1., 0., 0., .5);
-      cairo_rectangle (cr, 0, 0, ink.width, ink.height);
-      cairo_fill (cr);
-      cairo_set_source_surface (cr, debug, 0, 0);
-      cairo_paint (cr);
-      cairo_restore (cr);
-      cairo_surface_destroy (debug);
     }
 }
 

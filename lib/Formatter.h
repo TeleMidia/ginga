@@ -41,7 +41,6 @@ public:
   bool stop ();
 
   void resize (int, int);
-  void redraw (cairo_t *);
 
   bool sendKey (const std::string &, bool);
   bool sendTick (uint64_t, uint64_t, uint64_t);

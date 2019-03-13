@@ -21,10 +21,20 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 void
 LuaAPI::Player_attachWrapper (lua_State *L, Player *player, Media *media)
 {
+
+  static const struct luaL_Reg _Player_funcs[] =
+    {
+     {"getEOS",       LuaAPI::l_Player_getEOS},
+     {"setEOS",       LuaAPI::l_Player_setEOS},
+     {"_getProperty", LuaAPI::_l_Player_getProperty}, // TODO: REMOVE
+     {"_setProperty", LuaAPI::_l_Player_setProperty}, // TODO: REMOVE
+     {NULL, NULL},
+    };
+
   static const struct luaL_Reg *const funcs[] =
     {
      _funcs,
-     NULL,
+     _Player_funcs,
     };
 
   static const Chunk *const chunks[] =
@@ -98,4 +108,56 @@ LuaAPI::Player_call (lua_State *L, Player *player, const char *name,
   g_return_if_fail (nresults >= 0);
 
   LuaAPI::_callLuaWrapper (L, player, name, nargs, nresults);
+}
+
+int
+LuaAPI::l_Player_getEOS (lua_State *L)
+{
+  Player *player;
+
+  player = LuaAPI::Player_check (L, 1);
+  lua_pushboolean (L, player->getEOS ());
+
+  return 1;
+}
+
+int
+LuaAPI::l_Player_setEOS (lua_State *L)
+{
+  Player *player;
+
+  player = LuaAPI::Player_check (L, 1);
+  luaL_checkany (L, 2);
+
+  player->setEOS (lua_toboolean (L, 2));
+
+  return 0;
+}
+
+int
+LuaAPI::_l_Player_getProperty (lua_State *L)
+{
+  Player *player;
+  const char *name;
+
+  player = LuaAPI::Player_check (L, 1);
+  name = luaL_checkstring (L, 2);
+  lua_pushstring (L, player->getProperty (string (name)).c_str ());
+
+  return 1;
+}
+
+int
+LuaAPI::_l_Player_setProperty (lua_State *L)
+{
+  Player *player;
+  const char *name;
+  const char *value;
+
+  player = LuaAPI::Player_check (L, 1);
+  name = luaL_checkstring (L, 2);
+  value = luaL_checkstring (L, 3);
+  player->setProperty (string (name), string (value));
+
+  return 0;
 }

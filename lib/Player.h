@@ -25,6 +25,20 @@ class Player
 {
 public:
 
+  /// Creates a new player for media object.
+  Player (Media *media);
+
+  /// Destroys player.
+  virtual ~Player ();
+
+  /// Gets end-of-stream flag of player.
+  bool getEOS ();
+
+  /// Sets end-of-stream flag of player.
+  void setEOS (bool eos);
+
+  // TODO ------------------------------------------------------------------
+
   enum State
     {
      OCCURRING,
@@ -76,23 +90,11 @@ public:
     PROP_Z_ORDER,
   };
 
-  Player (Media *);
-  virtual ~Player ();
 
   string getProperty (const string &);
   void setProperty (const string &, const string &);
 
   State getState ();
-  void getZ (int *, int *);
-
-  Time getTime ();
-  void incTime (Time);
-
-  Time getDuration ();
-  void setDuration (Time);
-
-  bool getEOS ();
-  void setEOS (bool);
 
   virtual void start ();
   virtual void stop ();
@@ -121,11 +123,15 @@ protected:
   /// The Lua state of the associated media object.
   lua_State *_L;
 
-  Media *_media;             // associated media object
-  string _id;                // id of the associated media object
+  /// The associated media object.
+  Media *_media;
+
+  /// The end-of-stream flag; indicates whether player content was
+  /// exhausted.
+  bool _eos;
+
   State _state;              // current state
-  Time _time;                // playback time
-  bool _eos;                 // true if content was exhausted
+
   cairo_surface_t *_surface; // player surface
   bool _dirty;               // true if surface should be reloaded
   list<int> _crop;           // polygon for cropping effect

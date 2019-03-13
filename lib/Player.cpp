@@ -22,10 +22,24 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Document.h"
 #include "Media.h"
 #include "MediaSettings.h"
-
 #include "PlayerText.h"
 
 GINGA_NAMESPACE_BEGIN
+
+bool
+Player::getEOS ()
+{
+  return _eos;
+}
+
+void
+Player::setEOS (bool eos)
+{
+  _eos = eos;
+}
+
+// TODO --------------------------------------------------------------------
+
 
 // Property table.
 typedef struct PlayerPropertyInfo
@@ -41,8 +55,6 @@ static map<string, PlayerPropertyInfo> player_property_map = {
   { "bass", { Player::PROP_BASS, false, "0" } },
   { "bottom", { Player::PROP_BOTTOM, false, "0%" } },
   { "bounds", { Player::PROP_BOUNDS, false, "0%,0%,100%,100%" } },
-  { "debug", { Player::PROP_DEBUG, true, "false" } },
-  { "duration", { Player::PROP_DURATION, true, "indefinite" } },
   { "focusIndex", { Player::PROP_FOCUS_INDEX, true, "" } },
   { "fontBgColor", { Player::PROP_FONT_BG_COLOR, true, "" } },
   { "fontColor", { Player::PROP_FONT_COLOR, true, "black" } },
@@ -70,8 +82,6 @@ static map<string, PlayerPropertyInfo> player_property_map = {
   { "volume", { Player::PROP_VOLUME, false, "100%" } },
   { "wave", { Player::PROP_WAVE, true, "sine" } },
   { "width", { Player::PROP_WIDTH, true, "100%" } },
-  { "zIndex", { Player::PROP_Z_INDEX, true, "0" } },
-  { "zOrder", { Player::PROP_Z_ORDER, true, "0" } },
   { "uri", { Player::PROP_URI, true, "" } },
   { "type", { Player::PROP_TYPE, true, "application/x-ginga-timer" } },
 };
@@ -80,7 +90,6 @@ static map<string, string> player_property_aliases = {
   { "backgroundColor", "background" },
   { "balanceLevel", "balance" },
   { "bassLevel", "bass" },
-  { "explicitDur", "duration" },
   { "soundLevel", "volume" },
   { "rate", "speed" },
   { "trebleLevel", "treble" },
@@ -91,14 +100,12 @@ static map<string, string> player_property_aliases = {
 Player::Player (Media *media)
 {
   g_return_if_fail (media != NULL);
-  _L = media->getDocument ()->getLuaState ();
 
+  _L = media->getDocument ()->getLuaState ();
   _media = media;
-  _id = media->getId ();
+  _eos = false;
 
   _state = SLEEPING;
-  _time = 0;
-  _eos = false;
   _dirty = true;
   _surface = nullptr;
   this->resetProperties ();
@@ -122,54 +129,10 @@ Player::getState ()
 }
 
 void
-Player::getZ (int *zindex, int *zorder)
-{
-  tryset (zindex, _prop.zindex);
-  tryset (zorder, _prop.zorder);
-}
-
-Time
-Player::getTime ()
-{
-  return _time;
-}
-
-void
-Player::incTime (Time inc)
-{
-  _time += inc;
-}
-
-Time
-Player::getDuration ()
-{
-  return _prop.duration;
-}
-
-void
-Player::setDuration (Time duration)
-{
-  _prop.duration = duration;
-}
-
-bool
-Player::getEOS ()
-{
-  return _eos;
-}
-
-void
-Player::setEOS (bool eos)
-{
-  _eos = eos;
-}
-
-void
 Player::start ()
 {
   g_assert (_state != OCCURRING);
   _state = OCCURRING;
-  _time = 0;
   _eos = false;
   this->reload ();
 }
@@ -265,7 +228,8 @@ Player::reload ()
 void
 Player::redraw (cairo_t *cr)
 {
-  g_assert (_state != SLEEPING);
+  if (_state == SLEEPING)
+    return;                     // nothing to do
 
   if (!_prop.visible || !(_prop.rect.width > 0 && _prop.rect.height > 0))
     {
@@ -339,13 +303,6 @@ Player::redraw (cairo_t *cr)
   cairo_fill (cr);
   cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
   cairo_restore (cr);
-
-  bool debug;
-  if (_media->getDocument ()->getSettings ()
-      ->getPropertyBool ("ginga.debug", &debug) && debug)
-    {
-      this->redrawDebuggingInfo (cr);
-    }
 }
 
 void
@@ -384,11 +341,6 @@ Player::doSetProperty (Property code, unused (const string &name),
 {
   switch (code)
     {
-    case PROP_DEBUG:
-      {
-        _prop.debug = ginga::parse_bool (value);
-        break;
-      }
     case PROP_BOUNDS:
       {
         list<string> lst;
@@ -433,7 +385,7 @@ Player::doSetProperty (Property code, unused (const string &name),
       {
         lua_Integer width;
         g_assert (_media->getDocument ()->getSettings ()
-                  ->getPropertyInteger ("ginga.width", &width));
+                  ->getPropertyInteger ("width", &width));
         _prop.rect.x = ginga::parse_percent (value, (int) width, 0, G_MAXINT);
         _dirty = true;
         break;
@@ -442,7 +394,7 @@ Player::doSetProperty (Property code, unused (const string &name),
       {
         lua_Integer width;
         g_assert (_media->getDocument ()->getSettings ()
-                  ->getPropertyInteger ("ginga.width", &width));
+                  ->getPropertyInteger ("width", &width));
         _prop.rect.x = (int) width - _prop.rect.width
           - ginga::parse_percent (value, (int) width, 0, G_MAXINT);
         _dirty = true;
@@ -452,7 +404,7 @@ Player::doSetProperty (Property code, unused (const string &name),
       {
         lua_Integer height;
         g_assert (_media->getDocument ()->getSettings ()
-                  ->getPropertyInteger ("ginga.height", &height));
+                  ->getPropertyInteger ("height", &height));
         _prop.rect.y = ginga::parse_percent
           (value, (int) height, 0, G_MAXINT);
         _dirty = true;
@@ -462,7 +414,7 @@ Player::doSetProperty (Property code, unused (const string &name),
       {
         lua_Integer height;
         g_assert (_media->getDocument ()->getSettings ()
-                  ->getPropertyInteger ("ginga.height", &height));
+                  ->getPropertyInteger ("height", &height));
         _prop.rect.y = (int) height - _prop.rect.height
                        - ginga::parse_percent (value, _prop.rect.height, 0,
                                                G_MAXINT);
@@ -473,7 +425,7 @@ Player::doSetProperty (Property code, unused (const string &name),
       {
         lua_Integer width;
         g_assert (_media->getDocument ()->getSettings ()
-                  ->getPropertyInteger ("ginga.width", &width));
+                  ->getPropertyInteger ("width", &width));
 
         _prop.rect.width = ginga::parse_percent
           (value, (int) width, 0, G_MAXINT);
@@ -488,7 +440,7 @@ Player::doSetProperty (Property code, unused (const string &name),
       {
         lua_Integer height;
         g_assert (_media->getDocument ()->getSettings ()
-                  ->getPropertyInteger ("ginga.height", &height));
+                  ->getPropertyInteger ("height", &height));
         _prop.rect.height
           = ginga::parse_percent (value, (int) height, 0, G_MAXINT);
         _dirty = true;
@@ -528,14 +480,6 @@ Player::doSetProperty (Property code, unused (const string &name),
         _prop.visible = ginga::parse_bool (value);
         break;
       }
-    case PROP_DURATION:
-      {
-        if (value == "indefinite")
-          _prop.duration = GINGA_TIME_NONE;
-        else
-          _prop.duration = ginga::parse_time (value);
-        break;
-      }
     case PROP_URI:
       {
         _prop.uri = value;
@@ -553,48 +497,6 @@ Player::doSetProperty (Property code, unused (const string &name),
       }
     }
   return true;
-}
-
-// Private.
-
-void
-Player::redrawDebuggingInfo (cairo_t *cr)
-{
-  cairo_surface_t *debug;
-  string id;
-  string str;
-  double sx, sy;
-
-  id = _id;
-  if (id.find ("/") != std::string::npos)
-    {
-      id = xpathdirname (id);
-      if (id.find ("/") != std::string::npos)
-        id = xpathbasename (id);
-    }
-
-  // Draw info.
-  str = xstrbuild ("%s:%.1fs\n%dx%d:(%d,%d):%d", id.c_str (),
-                   ((double) GINGA_TIME_AS_MSECONDS (_time)) / 1000.,
-                   _prop.rect.width, _prop.rect.height, _prop.rect.x,
-                   _prop.rect.y, _prop.zindex);
-
-  debug = PlayerText::renderSurface (
-      str, "monospace", "", "", "7", { 1., 0, 0, 1. }, { 0, 0, 0, .75 },
-      _prop.rect, "center", "middle", true, nullptr);
-  g_assert_nonnull (debug);
-
-  sx = (double) _prop.rect.width / cairo_image_surface_get_width (debug);
-  sy = (double) _prop.rect.height / cairo_image_surface_get_height (debug);
-
-  cairo_save (cr);
-  cairo_translate (cr, _prop.rect.x, _prop.rect.y);
-  cairo_scale (cr, sx, sy);
-  cairo_set_source_surface (cr, debug, 0., 0.);
-  cairo_paint (cr);
-  cairo_restore (cr);
-
-  cairo_surface_destroy (debug);
 }
 
 GINGA_NAMESPACE_END

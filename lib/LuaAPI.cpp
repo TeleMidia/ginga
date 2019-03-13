@@ -144,7 +144,6 @@ xloadbuffer (lua_State *L, const char *chunk, size_t len, const char *name)
   err = luaL_loadbuffer (L, chunk, len, name);
   if (unlikely (err != LUA_OK))
     {
-      luax_dump_stack (L);
       ERROR ("%s", lua_tostring (L, -1));
     }
 }
@@ -157,7 +156,6 @@ xpcall (lua_State *L, int nargs, int nresults)
   err = lua_pcall (L, nargs, nresults, 0);
   if (unlikely (err != LUA_OK))
     {
-      luax_dump_stack (L);
       ERROR ("%s", lua_tostring (L, -1));
     }
 }
@@ -230,7 +228,6 @@ LuaAPI::_callLuaWrapper (lua_State *L, void *ptr, const char *name,
   LuaAPI::_pushLuaWrapper (L, ptr);
   if (unlikely (luaL_getmetafield (L, -1, name) == LUA_TNIL))
     {
-      luax_dump_stack (L);
       ERROR ("no method '%s' for object %p", name, ptr);
     }
 
@@ -239,7 +236,6 @@ LuaAPI::_callLuaWrapper (lua_State *L, void *ptr, const char *name,
 
   if (unlikely (lua_pcall (L, nargs + 1, nresults, 0) != LUA_OK))
     {
-      luax_dump_stack (L);
       ERROR ("%s", lua_tostring (L, -1));
     }
 }

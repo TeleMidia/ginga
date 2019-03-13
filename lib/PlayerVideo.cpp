@@ -182,7 +182,6 @@ PlayerVideo::start ()
   GstStateChangeReturn ret;
 
   g_assert (_state != OCCURRING);
-  TRACE ("starting %s", _id.c_str ());
 
   st = gst_structure_new_empty ("video/x-raw");
   gst_structure_set (st, "format", G_TYPE_STRING, "BGRA", nullptr);
@@ -214,7 +213,6 @@ void
 PlayerVideo::stop ()
 {
   g_assert (_state != SLEEPING);
-  TRACE ("stopping %s", _id.c_str ());
 
   gstx_element_set_state_sync (_playbin, GST_STATE_NULL);
   gst_object_unref (_playbin);
@@ -227,7 +225,6 @@ void
 PlayerVideo::pause ()
 {
   g_assert (_state != PAUSED && _state != SLEEPING);
-  TRACE ("pausing %s", _id.c_str ());
 
   gstx_element_set_state_sync (_playbin, GST_STATE_PAUSED);
   Player::pause ();
@@ -237,7 +234,6 @@ void
 PlayerVideo::resume ()
 {
   g_assert (_state == PAUSED);
-  TRACE ("resuming %s", _id.c_str ());
 
   gstx_element_set_state_sync (_playbin, GST_STATE_PLAYING);
   Player::resume ();
@@ -246,9 +242,6 @@ PlayerVideo::resume ()
 void
 PlayerVideo::seek (gint64 value)
 {
-  TRACE ("seek %s to: %" GST_TIME_FORMAT, _id.c_str (),
-         GST_TIME_ARGS (value));
-
   GstState curr, pending;
   GstStateChangeReturn ret;
 
@@ -270,7 +263,6 @@ PlayerVideo::seek (gint64 value)
 void
 PlayerVideo::speed (double value)
 {
-  TRACE ("speed %s to: %f", _id.c_str (), value);
   if (doubleeq (value, 0.))
     {
       return; // nothing to do
@@ -364,9 +356,7 @@ gint64
 PlayerVideo::getStreamMediaTime ()
 {
   gint64 cur;
-  if (unlikely (
-          !gst_element_query_position (_playbin, GST_FORMAT_TIME, &cur)))
-    TRACE ("Get %s time failed", _id.c_str ());
+  gst_element_query_position (_playbin, GST_FORMAT_TIME, &cur);
   return cur;
 }
 
@@ -374,9 +364,7 @@ gint64
 PlayerVideo::getStreamMediaDuration ()
 {
   gint64 dur;
-  if (unlikely (
-          !gst_element_query_duration (_playbin, GST_FORMAT_TIME, &dur)))
-    TRACE ("Get %s duration failed", _id.c_str ());
+  gst_element_query_duration (_playbin, GST_FORMAT_TIME, &dur);
   return dur;
 }
 
@@ -677,7 +665,6 @@ PlayerVideo::cb_EOS (unused (GstElement *playbin), gpointer data)
 {
   PlayerVideo *player = (PlayerVideo *) data;
   g_assert_nonnull (player);
-  TRACE ("EOS of %s", player->_id.c_str ());
 
   if (unlikely (!player->getFreeze ()))
     player->setEOS (true);

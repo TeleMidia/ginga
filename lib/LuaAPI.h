@@ -190,6 +190,11 @@ public:
   static void Player_call (lua_State *L, Player *player,
                            const char *name, int nargs, int nresults);
 
+  static int l_Player_getEOS (lua_State *L);
+  static int l_Player_setEOS (lua_State *L);
+  static int _l_Player_getProperty (lua_State *L);
+  static int _l_Player_setProperty (lua_State *L);
+
   // Auxiliary -------------------------------------------------------------
 
 public:

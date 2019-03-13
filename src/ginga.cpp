@@ -206,7 +206,9 @@ on_canvas_draw (unused (GtkWidget *canvas),
   g_return_val_if_fail (cr != NULL, FALSE);
   g_return_val_if_fail (ginga != NULL, FALSE);
 
-  ginga->redraw (cr);
+  Document *doc = (Document *) ginga->getDocument ();
+  g_assert_nonnull (doc);
+  doc->draw (cr);
 
   ms = ginga->debug_getLastTickTime () / 1000000;
   str = g_strdup_printf
@@ -424,7 +426,7 @@ on_info_bar_response (unused (GtkWidget *info_bar),
 static void
 on_win_destroy (void)
 {
-  _exit (0);
+  gtk_main_quit ();
 }
 
 static gboolean

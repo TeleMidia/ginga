@@ -93,6 +93,9 @@ public:
   /// Creates a new event as specified by the qualified id.
   Event *createEvent (const string &qualId);
 
+  /// Draws the current frame into cairo context.
+  void draw (cairo_t *cr);
+
 private:
 
   /// The Lua state associate with this document.

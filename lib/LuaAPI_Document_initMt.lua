@@ -1,4 +1,24 @@
--- Dumps graph rooted at node.
+-- Compares players by zIndex and zOrder.
+local function comparePlayers (p1, p2)
+   local m1, m2 = p1.media, p2.media
+   local z1 = tonumber (m1.property.zIndex) or math.mininteger
+   local z2 = tonumber (m2.property.zIndex) or math.mininteger
+   if z1 < z2 then
+      return true
+   end
+   if z1 > z2 then
+      return false
+   end
+   local zo1 = tonumber (m1.property.zOrder) or math.mininteger
+   local zo2 = tonumber (m2.property.zOrder) or math.mininteger
+   if zo1 < zo2 then
+      return true
+   else
+      return false
+   end
+end
+
+-- Dumps object graph rooted at node.
 local function dumpGraph (node, prefix)
    local prefix = prefix or ''
    if node:isComposition () then
@@ -80,6 +100,7 @@ do
       data._event    = {}       -- events indexed by qualified id
       data._parents  = {}       -- table of parents indexed by object
       data._children = {}       -- table of children indexed by object
+      data._players  = {}       -- list of players sorted by zIndex
 
       local get_data_object = function ()
          return assert (rawget (data, '_object'))
@@ -171,7 +192,7 @@ do
       return t
    end
 
-   -- Adds obj to parent.
+   -- Adds object to parent.
    mt._addChild = function (self, parent, obj)
       assert (parent.document == self)
       assert (obj.document == self)
@@ -182,7 +203,7 @@ do
       tparents[parent] = true
    end
 
-   -- Removes obj from parent.
+   -- Removes object from parent.
    mt._removeChild = function (self, parent, obj)
       assert (parent.document == self)
       assert (obj.document == self)
@@ -190,6 +211,41 @@ do
       tchildren[obj] = nil
       local tparents = assert (self.parents[obj])
       tparents[parent] = nil
+   end
+
+   -- Adds player to document.
+   mt._addPlayer = function (self, player)
+      local media = assert (player.media)
+      assert (media.document == self)
+      local players = assert (rawget (mt[self], '_players'))
+      table.insert (players, player)
+      self:_sortPlayers ()
+   end
+
+   -- Removes player from document.
+   mt._removePlayer = function (self, player)
+      local media = assert (player.media)
+      assert (media.document == self)
+      local players = assert (rawget (mt[self], '_players'))
+      for i,v in ipairs (players) do
+         if player == i then
+            table.remove (players, i)
+            self:_sortPlayers ()
+            break
+         end
+      end
+   end
+
+   -- Gets the list of players in document sorted by zIndex.
+   -- Warning: This list is read-only!
+   mt._getPlayers = function (self)
+      return assert (rawget (mt[self], '_players'))
+   end
+
+   -- Sorts the list of players by zIndex.
+   mt._sortPlayers = function (self)
+      local players = assert (rawget (mt[self], '_players'))
+      table.sort (players, comparePlayers)
    end
 
    -- File extension to mime-type.

@@ -168,5 +168,6 @@ do
    -- Object::setProperty().
    mt.setProperty = function (self, name, value)
       mt[self].property[name] = value
+      return true
    end
 end

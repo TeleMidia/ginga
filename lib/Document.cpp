@@ -231,11 +231,50 @@ Document::createEvent (const string &qualId)
   return evt;
 }
 
+void
+Document::draw (cairo_t *cr)
+{
+  lua_Integer width;
+  lua_Integer height;
+
+  lua_Integer len;
+  lua_Integer i;
+
+  g_assert (this->getSettings ()->getPropertyInteger ("width", &width));
+  g_assert (this->getSettings ()->getPropertyInteger ("height", &height));
+
+  // Clear frame.
+  cairo_save (cr);
+  cairo_set_source_rgba (cr, 0, 0, 0, 1.0);
+  cairo_rectangle (cr, 0, 0, (double) width, (double) height);
+  cairo_fill (cr);
+  cairo_restore (cr);
+
+  // Draw background color.
+  cairo_save (cr);
+  cairo_set_source_rgba (cr, .5, 0, .5, 1);
+  cairo_rectangle (cr, 0, 0, (double) width, (double) height);
+  cairo_fill (cr);
+  cairo_restore (cr);
+
+  // Draw players.
+  LuaAPI::Document_call (_L, this, "_getPlayers", 0, 1);
+  g_assert (lua_type (_L, -1) == LUA_TTABLE);
+  len = luaL_len (_L, -1);
+  for (i = 1; i <= len; i++)
+    {
+      Player *player;
+
+      lua_rawgeti (_L, -1, i);
+      player = LuaAPI::Player_check (_L, -1);
+      player->redraw (cr);
+      lua_pop (_L, 1);
+    }
+  lua_pop (_L, 1);
+}
+
 // TODO --------------------------------------------------------------------
 
-/**
- * @brief Evaluates action over document.
- */
 int
 Document::evalAction (Event *event, Event::Transition transition,
                       const string &value)
@@ -249,9 +288,7 @@ Document::evalAction (Event *event, Event::Transition transition,
   return this->evalAction (act);
 }
 
-/**
- * @brief Evaluates action over Context.
- */
+
 list<Action>
 Document::evalActionInContext (Action act, Context *ctx)
 {
@@ -312,9 +349,6 @@ Document::evalActionInContext (Action act, Context *ctx)
   return stack;
 }
 
-/**
- * @brief Evaluates action over document.
- */
 int
 Document::evalAction (Action init)
 {

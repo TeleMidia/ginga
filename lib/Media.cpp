@@ -133,27 +133,19 @@ Media::sendKey (const string &key, bool press)
 void
 Media::sendTick (Time total, Time diff, Time frame)
 {
-  Time dur;
-
   // Update object time.
   Object::sendTick (total, diff, frame);
 
   if (_player == nullptr)
-    return; // nothing to do.
+    return;                     // nothing to do.
 
   // Update player time.
   g_assert_nonnull (_player);
-  _player->incTime (diff);
 
   // Check EOS.
-  if (_player->getEOS ()
-      || (GINGA_TIME_IS_VALID (dur = _player->getDuration ())
-          && this->getTime () > dur))
+  if (_player->getEOS ())       // TODO: "duration" property
     {
-      Event *lambda = this->getLambda ();
-      g_assert_nonnull (lambda);
-      this->getDocument ()->evalAction (lambda, Event::STOP);
-      return;
+      this->getDocument ()->evalAction (this->getLambda (), Event::STOP);
     }
 }
 
@@ -468,28 +460,6 @@ Media::afterTransition (Event *evt, Event::Transition transition,
 
   return true;
 }
-
-// Public.
-
-bool
-Media::getZ (int *zindex, int *zorder)
-{
-  if (this->isSleeping () || _player == nullptr)
-    return false; // nothing to do
-  g_assert_nonnull (_player);
-  _player->getZ (zindex, zorder);
-  return true;
-}
-
-void
-Media::redraw (cairo_t *cr)
-{
-  if (this->isSleeping () || _player == nullptr)
-    return; // nothing to do
-  _player->redraw (cr);
-}
-
-// Protected.
 
 void
 Media::doStop ()
