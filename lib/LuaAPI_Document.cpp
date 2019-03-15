@@ -25,6 +25,8 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Switch.h"
 
 #include "Player.h"
+#include "PlayerGStreamer.h"
+
 #include "PlayerImage.h"
 #if defined WITH_NCLUA && WITH_NCLUA
 #include "PlayerLua.h"
@@ -225,7 +227,7 @@ LuaAPI::_l_Document_createPlayer (lua_State *L)
 
   if (name != NULL && g_str_equal (name, "PlayerImage"))
     {
-      player = new PlayerImage (media);
+      player = new PlayerGStreamer (media);
     }
 #if defined WITH_NCLUA && WITH_NCLUA
   else if (name != NULL && g_str_equal (name, "PlayerLua"))
@@ -236,16 +238,16 @@ LuaAPI::_l_Document_createPlayer (lua_State *L)
 #if defined WITH_LIBRSVG && WITH_LIBRSVG
   else if (name != NULL && g_str_equal (name, "PlayerSvg"))
     {
-      player = new PlayerSvg (media);
+      player = new PlayerGStreamer (media);
     }
 #endif
   else if (name != NULL && g_str_equal (name, "PlayerText"))
     {
-      player = new PlayerText (media);
+      player = new PlayerGStreamer (media);
     }
   else if (name != NULL && g_str_equal (name, "PlayerVideo"))
     {
-      player = new PlayerVideo (media);
+      player = new PlayerGStreamer (media);
     }
   else
     {

@@ -36,7 +36,14 @@ public:
   /// Tests whether media object is focused.
   bool isFocused ();
 
+protected:
+
+  /// Gets the player associated with media object (if any).
+  Player *_getPlayer ();
+
+
   // TODO ------------------------------------------------------------------
+public:
 
   void setProperty (const string &, const GValue *value) override;
   void sendKey (const string &, bool);
@@ -47,8 +54,6 @@ public:
                         map<string, string> &params) override;
 
 protected:
-  Player *_player;
-
   void doStop () override;
 };
 

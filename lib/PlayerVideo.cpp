@@ -181,7 +181,16 @@ PlayerVideo::start ()
   GstStructure *st;
   GstStateChangeReturn ret;
 
-  g_assert (_state != OCCURRING);
+  g_assert (_state != Player::PLAYING);
+
+  if (_state == PAUSED)
+    {
+      gstx_element_set_state_sync (_playbin, GST_STATE_PLAYING);
+      Player::start ();
+      return;
+    }
+
+  g_object_set (G_OBJECT (_playbin), "uri", _uri, NULL);
 
   st = gst_structure_new_empty ("video/x-raw");
   gst_structure_set (st, "format", G_TYPE_STRING, "BGRA", nullptr);
@@ -212,7 +221,7 @@ PlayerVideo::start ()
 void
 PlayerVideo::stop ()
 {
-  g_assert (_state != SLEEPING);
+  g_assert (_state != Player::STOPPED);
 
   gstx_element_set_state_sync (_playbin, GST_STATE_NULL);
   gst_object_unref (_playbin);
@@ -224,19 +233,10 @@ PlayerVideo::stop ()
 void
 PlayerVideo::pause ()
 {
-  g_assert (_state != PAUSED && _state != SLEEPING);
+  g_assert (_state != PAUSED && _state != Player::STOPPED);
 
   gstx_element_set_state_sync (_playbin, GST_STATE_PAUSED);
   Player::pause ();
-}
-
-void
-PlayerVideo::resume ()
-{
-  g_assert (_state == PAUSED);
-
-  gstx_element_set_state_sync (_playbin, GST_STATE_PLAYING);
-  Player::resume ();
 }
 
 void
@@ -303,7 +303,7 @@ PlayerVideo::redraw (cairo_t *cr)
   static cairo_user_data_key_t key;
   cairo_status_t status;
 
-  g_assert (_state != SLEEPING);
+  g_assert (_state != Player::STOPPED);
 
   if (Player::getEOS ())
     goto done;
@@ -411,7 +411,7 @@ PlayerVideo::doSetProperty (Property code, unused (const string &name),
             break;
           }
 
-        if (_state != SLEEPING)
+        if (_state != Player::STOPPED)
           {
             _prop.speed = xstrtod (value);
             speed (_prop.speed);
@@ -427,7 +427,7 @@ PlayerVideo::doSetProperty (Property code, unused (const string &name),
             break;
           }
 
-        if (_state != SLEEPING)
+        if (_state != Player::STOPPED)
           {
             if (value == "indefinite" || value == "")
               break;
@@ -464,13 +464,6 @@ PlayerVideo::doSetProperty (Property code, unused (const string &name),
         _prop.treble = xstrtodorpercent (value, nullptr);
         g_object_set (_audio.equalizer, "band1", _prop.treble, "band2",
                       _prop.treble, nullptr);
-        break;
-      }
-    case PROP_URI:
-      {
-        Player::_prop.uri = value;
-        TRACE ("uri = %s\n", value.c_str ());
-        g_object_set (G_OBJECT (_playbin), "uri", value.c_str (), nullptr);
         break;
       }
     case PROP_VOLUME:
@@ -569,7 +562,7 @@ PlayerVideo::getPipelineState ()
 
   if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
     {
-      ERROR("cannot create PlayerVideo for %s", Player::_prop.uri.c_str ());
+      ERROR("cannot create PlayerVideo for %s", _uri.c_str ());
     }
   return gst_element_state_get_name (curr);
 }

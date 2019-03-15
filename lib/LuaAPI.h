@@ -24,6 +24,7 @@ GINGA_BEGIN_DECLS
 GINGA_END_DECLS
 
 #include "Object.h"
+#include "Player.h"
 
 GINGA_NAMESPACE_BEGIN
 
@@ -31,7 +32,6 @@ class Document;
 class Context;
 class Switch;
 class Media;
-class Player;
 
 /// The Lua interface to the internal model.
 ///
@@ -58,7 +58,7 @@ public:
   /// Checks if the value at index \p i of stack is a Document wrapper.
   static Document *Document_check (lua_State *L, int i);
 
-  //// Pushes the Lua wrapper of document onto stack.
+  /// Pushes the Lua wrapper of document onto stack.
   static void Document_push (lua_State *L, Document *doc);
 
   /// Calls a method of the Lua wrapper of the given document.
@@ -116,7 +116,7 @@ public:
   /// Checks if the value at index \p i of stack is a Context wrapper.
   static Context *Context_check (lua_State *L, int i);
 
-  //// Pushes the Lua wrapper of context onto stack.
+  /// Pushes the Lua wrapper of context onto stack.
   static void Context_push (lua_State *L, Context *ctx);
 
   /// Calls a method of the Lua wrapper of the given context.
@@ -134,7 +134,7 @@ public:
   /// Checks if the value at index \p i of stack is a Media wrapper.
   static Media *Media_check (lua_State *L, int i);
 
-  //// Pushes the Lua wrapper of media onto stack.
+  /// Pushes the Lua wrapper of media onto stack.
   static void Media_push (lua_State *L, Media *media);
 
   /// Calls a method of the Lua wrapper of the given media.
@@ -164,7 +164,7 @@ public:
   /// Checks if the value at index \p i of stack is an Event::Transition.
   static Event::Transition Event_Transition_check (lua_State *L, int i);
 
-  //// Pushes the Lua wrapper of event onto stack.
+  /// Pushes the Lua wrapper of event onto stack.
   static void Event_push (lua_State *L, Event *evt);
 
   /// Pushes Event::Type (as string) onto stack.
@@ -193,16 +193,28 @@ public:
   /// Checks if the value at index \p i of stack is a Player wrapper.
   static Player *Player_check (lua_State *L, int i);
 
+  /// Checks if the value at index \p i of stack is a Player::State.
+  static Player::State Player_State_check (lua_State *L, int i);
+
   /// Pushes the Lua wrapper of player onto stack.
   static void Player_push (lua_State *L, Player *player);
+
+  /// Pushes Player::State (as string) onto stack.
+  static void Player_State_push (lua_State *L, Player::State state);
 
   /// Calls a method of the Lua wrapper of the given player.
   static void Player_call (lua_State *L, Player *player,
                            const char *name, int nargs, int nresults);
 
 private:
+  static int l_Player_getState (lua_State *L);
   static int l_Player_getEOS (lua_State *L);
   static int l_Player_setEOS (lua_State *L);
+  static int l_Player_getURI (lua_State *L);
+  static int l_Player_setURI (lua_State *L);
+  static int l_Player_start (lua_State *L);
+  static int l_Player_pause (lua_State *L);
+  static int l_Player_stop (lua_State *L);
   static int _l_Player_getProperty (lua_State *L);
   static int _l_Player_setProperty (lua_State *L);
 

@@ -47,13 +47,13 @@ PlayerSvg::reload ()
   cairo_surface_t *sfc;
   cairo_t *cr;
 
-  g_assert (_state != SLEEPING);
+  g_assert (_state != Player::STOPPED);
 
-  GFile *file = g_file_new_for_uri (_prop.uri.c_str ());
+  GFile *file = g_file_new_for_uri (_uri.c_str ());
   svg = rsvg_handle_new_from_gfile_sync (file, RSVG_HANDLE_FLAGS_NONE, NULL,
                                          &err);
   if (unlikely (svg == NULL))
-    ERROR ("cannot load SVG file %s: %s", _prop.uri.c_str (), err->message);
+    ERROR ("cannot load SVG file %s: %s", _uri.c_str (), err->message);
   g_object_unref (file);
 
   g_assert_cmpint (_prop.rect.width, >, 0);

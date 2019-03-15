@@ -423,12 +423,6 @@ on_info_bar_response (unused (GtkWidget *info_bar),
     }
 }
 
-static void
-on_win_destroy (void)
-{
-  gtk_main_quit ();
-}
-
 static gboolean
 on_win_tick (GtkWidget *window,
              GdkFrameClock *frame_clock,
@@ -478,7 +472,7 @@ app_init (Ginga *ginga)
   if (fullscreen_on)
     gtk_window_fullscreen (GTK_WINDOW (app_win));
 
-  g_signal_connect (app_win, "destroy", G_CALLBACK (on_win_destroy), NULL);
+  g_signal_connect (app_win, "destroy", G_CALLBACK (gtk_main_quit), NULL);
   gtk_widget_add_tick_callback (GTK_WIDGET (app_win),
                                 (GtkTickCallback) on_win_tick, ginga, NULL);
 
@@ -627,8 +621,13 @@ Ginga home page: " PACKAGE_URL "\n");
     }
 
   // Done.
+  Document *doc = (Document *) ginga->getDocument ();
+  if (doc)
+    {
+      delete doc;
+    }
   delete ginga;
-  gtk_widget_destroy (app_win);
+
   g_strfreev (saved_argv);
 
   _exit (0);

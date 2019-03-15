@@ -156,6 +156,14 @@ do
    -- Removes object from document.
    mt._removeObject = function (self, obj)
       assert (obj.document == self)
+      for _,parent in ipairs (obj.parents) do
+         parent:removeChild (obj)
+      end
+      if obj:isComposition () then
+         for _,child in ipairs (obj.children) do
+            obj:removeChild (child)
+         end
+      end
       assert (rawget (mt[self], '_object'))[obj.id] = nil
    end
 
@@ -171,7 +179,7 @@ do
       assert (rawget (mt[self], '_event'))[evt.qualifiedId] = nil
    end
 
-   -- Gets the table of parents of obj.
+   -- Gets the list of parents of obj.
    mt._getParents = function (self, obj)
       assert (obj.document == self)
       local t = {}
@@ -181,7 +189,7 @@ do
       return t
    end
 
-   -- Gets the table of children of obj.
+   -- Gets the list of children of obj.
    mt._getChildren = function (self, obj)
       assert (obj.document == self)
       assert (obj:isComposition ())
@@ -228,7 +236,7 @@ do
       assert (media.document == self)
       local players = assert (rawget (mt[self], '_players'))
       for i,v in ipairs (players) do
-         if player == i then
+         if player == v then
             table.remove (players, i)
             self:_sortPlayers ()
             break

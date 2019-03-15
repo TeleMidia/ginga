@@ -62,10 +62,10 @@ PlayerLua::start ()
 {
   char *errmsg;
 
-  g_assert (_state != OCCURRING);
+  g_assert (_state != Player::PLAYING);
   g_assert_null (_nw);
   GError *err;
-  char *filename = g_filename_from_uri (_prop.uri.c_str (), NULL, &err);
+  char *filename = g_filename_from_uri (_uri.c_str (), NULL, &err);
   if (filename == NULL)
     {
       ERROR ("%s.", err->message);
@@ -89,7 +89,7 @@ PlayerLua::start ()
 void
 PlayerLua::stop ()
 {
-  g_assert (_state != SLEEPING);
+  g_assert (_state != Player::STOPPED);
   g_assert_nonnull (_nw);
   TRACE ("stopping");
 
@@ -103,20 +103,6 @@ PlayerLua::stop ()
   _nw = nullptr;
 
   Player::stop ();
-}
-
-void G_GNUC_NORETURN
-PlayerLua::pause ()
-{
-  g_assert (_state != PAUSED && _state != SLEEPING);
-  g_assert_not_reached ();
-}
-
-void G_GNUC_NORETURN
-PlayerLua::resume ()
-{
-  g_assert (_state != PAUSED && _state != SLEEPING);
-  g_assert_not_reached ();
 }
 
 void
@@ -139,7 +125,7 @@ PlayerLua::redraw (cairo_t *cr)
   cairo_surface_t *sfc;
   ncluaw_event_t *evt;
 
-  g_assert (_state != SLEEPING);
+  g_assert (_state != Player::STOPPED);
   g_assert_nonnull (_nw);
 
   this->pwdSave ();
@@ -214,7 +200,7 @@ bool
 PlayerLua::doSetProperty (Property code, const string &name,
                           const string &value)
 {
-  if (_nw != nullptr && _state == OCCURRING)
+  if (_nw != nullptr && _state == Player::PLAYING)
     {
       const char *k = name.c_str ();
       const char *v = value.c_str ();

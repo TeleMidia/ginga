@@ -43,26 +43,29 @@ do
          error ('TODO: Resume object')
       end
 
-      -- Create the underlying player.
+      -- Create player.
       assert (self.player == nil)
+      local type, uri = self.property.type, self.property.uri
       local type, player = self.document
-         :_createPlayer (self, self.property.uri, self.property.type)
+         :_createPlayer (self, type, uri)
       assert (player)
-      self:setProperty ('type', assert (type))
 
-      -- Start the underlying player.
-      if not player:start () then
-         return false
-      end
+      -- Initialize player.
+      self:setProperty ('type', assert (type))
+      player:setURI (uri)
+
+      -- Start player.
+      player:start ()
 
       return true
    end
 
-   -- mt._behavior.after.lambda.start = function (self, evt, trans, params)
-   --    assert (evt.object == self)
-   --    assert (evt.id == '@lambda')
-   --    return true
-   -- end
+   mt._behavior.after.lambda.start = function (self, evt, trans, params)
+      assert (evt.object == self)
+      assert (evt.id == '@lambda')
+      self:setTime (0)
+      return true
+   end
 
    -- Exported functions ---------------------------------------------------
 

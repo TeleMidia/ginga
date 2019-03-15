@@ -25,11 +25,22 @@ class Player
 {
 public:
 
+  /// Possible playback state.
+  enum State
+  {
+    PLAYING,                    ///< Playback in progress.
+    PAUSED,                     ///< Playback paused.
+    STOPPED,                    ///< No playback.
+  };
+
   /// Creates a new player for media object.
   Player (Media *media);
 
   /// Destroys player.
   virtual ~Player ();
+
+  /// Gets the playback state of player.
+  Player::State getState ();
 
   /// Gets end-of-stream flag of player.
   bool getEOS ();
@@ -37,15 +48,40 @@ public:
   /// Sets end-of-stream flag of player.
   void setEOS (bool eos);
 
+  /// Gets the URI of the content of player.
+  string getURI ();
+
+  /// Sets the URI of the content of player.
+  virtual void setURI (const string &uri);
+
+  /// Starts playback.
+  virtual void start ();
+
+  /// Stops playback.
+  virtual void stop ();
+
+  /// Pauses playback.
+  virtual void pause ();
+
+protected:
+
+  /// The Lua state of the media object of player.
+  lua_State *_L;
+
+  /// The media object associated with player.
+  Media *_media;
+
+  /// The playback state of player.
+  State _state;
+
+  /// Whether player content was exhausted.
+  bool _eos;
+
+  /// The URI of the content of player.
+  string _uri;
+
   // TODO ------------------------------------------------------------------
-
-  enum State
-    {
-     OCCURRING,
-     SLEEPING,
-     PAUSED,
-    };
-
+public:
   enum Property
   {
     PROP_UNKNOWN = 0,
@@ -80,7 +116,6 @@ public:
     PROP_TRANSPARENCY,
     PROP_TREBLE,
     PROP_TYPE,
-    PROP_URI,
     PROP_VERT_ALIGN,
     PROP_VISIBLE,
     PROP_VOLUME,
@@ -93,13 +128,6 @@ public:
 
   string getProperty (const string &);
   void setProperty (const string &, const string &);
-
-  State getState ();
-
-  virtual void start ();
-  virtual void stop ();
-  virtual void pause ();
-  virtual void resume ();
 
   void resetProperties ();
   void resetProperties (set<string> *);
@@ -120,17 +148,6 @@ public:
 
 protected:
 
-  /// The Lua state of the associated media object.
-  lua_State *_L;
-
-  /// The associated media object.
-  Media *_media;
-
-  /// The end-of-stream flag; indicates whether player content was
-  /// exhausted.
-  bool _eos;
-
-  State _state;              // current state
 
   cairo_surface_t *_surface; // player surface
   bool _dirty;               // true if surface should be reloaded
@@ -142,14 +159,12 @@ protected:
     Color bgColor;     // background color
     Rect rect;         // x, y, w, h in pixels
     Time duration;     // explicit duration
-    bool debug;        // true if debugging mode is on
     bool visible;      // true if visible
     guint8 alpha;      // alpha
     int zindex;        // z-index
     int zorder;        // z-order
     string focusIndex; // focus index
     string type;       // content mime-type
-    string uri;        // content URI
   } _prop;
 
 protected:

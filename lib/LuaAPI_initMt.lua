@@ -44,6 +44,7 @@ do
    -- Detaches private data.
    mt._detachData = function (self)
       mt._fini (self)
+      rawset (mt, '__tostring', nil) -- avoid crashing tracer
       mt[self] = nil
    end
 

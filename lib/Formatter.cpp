@@ -125,8 +125,8 @@ Formatter::stop ()
   if (_state == GINGA_STATE_STOPPED)
     return false;
 
-  delete _doc;
-  _doc = nullptr;
+  // delete _doc;
+  // _doc = nullptr;
 
   _state = GINGA_STATE_STOPPED;
   return true;
@@ -315,7 +315,7 @@ Formatter::~Formatter ()
 void *
 Formatter::getDocument ()
 {
-  return (_state != GINGA_STATE_PLAYING) ? NULL : _doc;
+  return _doc;
 }
 
 bool

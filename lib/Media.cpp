@@ -30,8 +30,6 @@ GINGA_NAMESPACE_BEGIN
 
 Media::Media (Document *doc, const string &id) : Object (doc, id)
 {
-  _player = NULL;
-
   LuaAPI::Object_attachWrapper (_L, this, doc, Object::MEDIA, id);
 }
 
@@ -54,6 +52,23 @@ Media::isFocused ()
   return status;
 }
 
+// Private.
+
+Player *
+Media::_getPlayer ()
+{
+  Player *player = NULL;
+
+  LuaAPI::Media_call (_L, this, "_getPlayer", 0, 1);
+  if (!lua_isnil (_L, -1))
+    {
+      player = LuaAPI::Player_check (_L, -1);
+    }
+  lua_pop (_L, 1);
+
+  return player;
+}
+
 // TODO --------------------------------------------------------------------
 
 
@@ -62,11 +77,12 @@ Media::setProperty (const string &name, const GValue *value)
 {
   Object::setProperty (name, value);
 
-  if (_player == nullptr)
+  if (_getPlayer () == nullptr)
     return;
 
   if (G_VALUE_HOLDS (value, G_TYPE_STRING))
-    _player->setProperty (name, string (g_value_get_string (value)));
+    _getPlayer ()
+      ->setProperty (name, string (g_value_get_string (value)));
 }
 
 void
@@ -74,23 +90,27 @@ Media::sendKey (const string &key, bool press)
 {
   list<Event *> buf;
 
-  if (unlikely (this->isSleeping ()))
-    return; // nothing to do
+  if (this->isSleeping ())
+    return;
 
-  if (_player == nullptr)
-    return; // nothing to do
+  if (_getPlayer () == NULL)
+    return;
 
   if (press && xstrhasprefix (key, "CURSOR_") && this->isFocused ())
     {
       string next;
       if ((key == "CURSOR_UP"
-           && (next = _player->getProperty ("moveUp")) != "")
+           && (next = _getPlayer ()
+               ->getProperty ("moveUp")) != "")
           || ((key == "CURSOR_DOWN"
-               && (next = _player->getProperty ("moveDown")) != ""))
+               && (next = _getPlayer ()
+                   ->getProperty ("moveDown")) != ""))
           || ((key == "CURSOR_LEFT"
-               && (next = _player->getProperty ("moveLeft")) != ""))
+               && (next = _getPlayer ()
+                   ->getProperty ("moveLeft")) != ""))
           || ((key == "CURSOR_RIGHT"
-               && (next = _player->getProperty ("moveRight")) != "")))
+               && (next = _getPlayer ()
+                   ->getProperty ("moveRight")) != "")))
         {
           this->getDocument ()->getSettings ()
             ->setPropertyString ("_nextFocus", next);
@@ -99,7 +119,7 @@ Media::sendKey (const string &key, bool press)
 
   // Pass key to player.
   if (this->isFocused ())
-    _player->sendKeyEvent (key, press);
+    _getPlayer ()->sendKeyEvent (key, press);
 
   set<Event *> events;
   this->getEvents (&events);
@@ -136,14 +156,14 @@ Media::sendTick (Time total, Time diff, Time frame)
   // Update object time.
   Object::sendTick (total, diff, frame);
 
-  if (_player == nullptr)
-    return;                     // nothing to do.
+  if (_getPlayer () == NULL)
+    return;
 
   // Update player time.
-  g_assert_nonnull (_player);
+  g_assert_nonnull (_getPlayer ());
 
   // Check EOS.
-  if (_player->getEOS ())       // TODO: "duration" property
+  if (_getPlayer ()->getEOS ()) // TODO: "duration" property
     {
       this->getDocument ()->evalAction (this->getLambda (), Event::STOP);
     }
@@ -175,54 +195,56 @@ Media::beforeTransition (Event *evt, Event::Transition transition,
               {
                 if (evt->isLambda ())
                   {
-                    string type;
-                    string uri;
+                    // string type;
+                    // string uri;
 
-                    g_assert_null (_player);
+                    g_assert_not_reached ();
 
-                    LuaAPI::Media_push (_L, this);
-                    if (this->getPropertyString ("type", &type))
-                      {
-                        lua_pushstring (_L, type.c_str ());
-                      }
-                    else
-                      {
-                        lua_pushnil (_L);
-                      }
-                    if (this->getPropertyString ("uri", &uri))
-                      {
-                        lua_pushstring (_L, uri.c_str ());
-                      }
-                    else
-                      {
-                        lua_pushnil (_L);
-                      }
-                    LuaAPI::Document_call (_L, this->getDocument (),
-                                           "_createPlayer", 3, 2);
-                    type = string (luaL_checkstring (_L, -2));
-                    _player = LuaAPI::Player_check (_L, -1);
-                    this->setPropertyString ("type", type);
+                    // g_assert_null (_getPlayer ());
 
-                    // _player = Player::createPlayer (this, uri, type);
-                    // if (unlikely (_player == nullptr))
-                    //   return false; // fail
+                    // LuaAPI::Media_push (_L, this);
+                    // if (this->getPropertyString ("type", &type))
+                    //   {
+                    //     lua_pushstring (_L, type.c_str ());
+                    //   }
+                    // else
+                    //   {
+                    //     lua_pushnil (_L);
+                    //   }
+                    // if (this->getPropertyString ("uri", &uri))
+                    //   {
+                    //     lua_pushstring (_L, uri.c_str ());
+                    //   }
+                    // else
+                    //   {
+                    //     lua_pushnil (_L);
+                    //   }
+                    // LuaAPI::Document_call (_L, this->getDocument (),
+                    //                        "_createPlayer", 3, 2);
+                    // type = string (luaL_checkstring (_L, -2));
+                    // _player = LuaAPI::Player_check (_L, -1);
+                    // this->setPropertyString ("type", type);
 
-                    map<string, GValue> props;
-                    this->getProperties (&props);
+                    // // _player = Player::createPlayer (this, uri, type);
+                    // // if (unlikely (_player == nullptr))
+                    // //   return false; // fail
 
-                    for (auto it: props)
-                      {
-                        GValue *value = &it.second;
-                        if (G_VALUE_HOLDS (value, G_TYPE_STRING))
-                          {
-                            string str = string (g_value_get_string (value));
-                            _player->setProperty (it.first, str);
-                          }
-                        g_value_unset (value);
-                      }
+                    // map<string, GValue> props;
+                    // this->getProperties (&props);
 
-                    g_assert_nonnull (_player);
-                    _player->start ();
+                    // for (auto it: props)
+                    //   {
+                    //     GValue *value = &it.second;
+                    //     if (G_VALUE_HOLDS (value, G_TYPE_STRING))
+                    //       {
+                    //         string str = string (g_value_get_string (value));
+                    //         _getPlayer ()->setProperty (it.first, str);
+                    //       }
+                    //     g_value_unset (value);
+                    //   }
+
+                    // g_assert_nonnull (_player);
+                    // _getPlayer ()->start ();
                   }
                 else
                   { // Anchor
@@ -242,7 +264,7 @@ Media::beforeTransition (Event *evt, Event::Transition transition,
                     string time_seek = xstrbuild ("%" G_GUINT64_FORMAT,
                                                   begin / GINGA_SECOND);
                     TRACE ("time_seek %ss", time_seek.c_str ());
-                    _player->setProperty ("time", time_seek);
+                    _getPlayer ()->setProperty ("time", time_seek);
 
                     // End
                     if (end != GINGA_TIME_NONE)
@@ -251,7 +273,7 @@ Media::beforeTransition (Event *evt, Event::Transition transition,
                         string time_end = xstrbuild ("%" G_GUINT64_FORMAT,
                                                      dur / GINGA_SECOND);
                         TRACE ("time_end in %ss", time_end.c_str ());
-                        _player->setProperty ("duration", time_end);
+                        _getPlayer ()->setProperty ("duration", time_end);
                         this->addDelayedAction (evt, Event::STOP, "", end);
                       }
 
@@ -301,11 +323,11 @@ Media::beforeTransition (Event *evt, Event::Transition transition,
                 this->getDocument ()->evalAction (e, transition);
 
             // Pause/resume the underlying player.
-            g_assert_nonnull (_player);
+            g_assert_nonnull (_getPlayer ());
             if (transition == Event::PAUSE)
-              _player->pause ();
+              _getPlayer ()->pause ();
             else
-              _player->resume ();
+              _getPlayer ()->start ();
             break;
           }
 
@@ -345,7 +367,7 @@ Media::afterTransition (Event *evt, Event::Transition transition,
           if (evt->isLambda ())
             {
               // Start media as a whole.
-              g_assert_nonnull (_player);
+              g_assert_nonnull (_getPlayer ());
               Object::doStart ();
 
               set<Event *> events;
@@ -368,7 +390,7 @@ Media::afterTransition (Event *evt, Event::Transition transition,
             }
           else if (evt->getLabel () != "")
             {
-              _player->sendPresentationEvent ("start", evt->getLabel ());
+              _getPlayer ()->sendPresentationEvent ("start", evt->getLabel ());
             }
           break;
 
@@ -383,12 +405,12 @@ Media::afterTransition (Event *evt, Event::Transition transition,
           if (evt->isLambda ())
             {
               // Stop object.
-              g_assert_nonnull (_player);
+              g_assert_nonnull (_getPlayer ());
               this->doStop ();
             }
           else if (evt->getLabel () != "")
             {
-              _player->sendPresentationEvent ("stop", evt->getLabel ());
+              _getPlayer ()->sendPresentationEvent ("stop", evt->getLabel ());
             }
           else // non-lambda area
             {
@@ -464,13 +486,13 @@ Media::afterTransition (Event *evt, Event::Transition transition,
 void
 Media::doStop ()
 {
-  if (_player == nullptr)
-    return; // nothing to do
+  if (_getPlayer () == nullptr)
+    return;
 
-  if (_player->getState () != Player::SLEEPING)
-    _player->stop ();
-  delete _player;
-  _player = nullptr;
+  if (_getPlayer ()->getState () != Player::STOPPED)
+    _getPlayer ()->stop ();
+
+  delete _getPlayer ();
   Object::doStop ();
 }
 

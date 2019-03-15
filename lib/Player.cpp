@@ -26,6 +26,38 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
+Player::Player (Media *media)
+{
+  g_return_if_fail (media != NULL);
+
+  _L = media->getDocument ()->getLuaState ();
+  _media = media;
+  _state = Player::STOPPED;
+  _eos = false;
+  _uri = "";
+
+  _dirty = true;
+  _surface = nullptr;
+  this->resetProperties ();
+
+  LuaAPI::Player_attachWrapper (_L, this, media);
+}
+
+Player::~Player ()
+{
+  if (_surface != nullptr)
+    cairo_surface_destroy (_surface);
+  _properties.clear ();
+
+  LuaAPI::Player_detachWrapper (_L, this);
+}
+
+Player::State
+Player::getState ()
+{
+  return _state;
+}
+
 bool
 Player::getEOS ()
 {
@@ -36,6 +68,44 @@ void
 Player::setEOS (bool eos)
 {
   _eos = eos;
+}
+
+string
+Player::getURI ()
+{
+  return _uri;
+}
+
+void
+Player::setURI (const string &uri)
+{
+  _uri = uri;
+  _dirty = true;
+}
+
+void
+Player::start ()
+{
+  g_assert (_state != Player::PLAYING);
+  _state = Player::PLAYING;
+  if (_state != PAUSED)
+    _eos = false;
+  this->reload ();
+}
+
+void
+Player::pause ()
+{
+  g_assert (_state != PAUSED && _state != Player::STOPPED);
+  _state = PAUSED;
+}
+
+void
+Player::stop ()
+{
+  g_assert (_state != Player::STOPPED);
+  _state = Player::STOPPED;
+  //this->resetProperties ();
 }
 
 // TODO --------------------------------------------------------------------
@@ -82,7 +152,6 @@ static map<string, PlayerPropertyInfo> player_property_map = {
   { "volume", { Player::PROP_VOLUME, false, "100%" } },
   { "wave", { Player::PROP_WAVE, true, "sine" } },
   { "width", { Player::PROP_WIDTH, true, "100%" } },
-  { "uri", { Player::PROP_URI, true, "" } },
   { "type", { Player::PROP_TYPE, true, "application/x-ginga-timer" } },
 };
 
@@ -97,67 +166,6 @@ static map<string, string> player_property_aliases = {
 
 // Public.
 
-Player::Player (Media *media)
-{
-  g_return_if_fail (media != NULL);
-
-  _L = media->getDocument ()->getLuaState ();
-  _media = media;
-  _eos = false;
-
-  _state = SLEEPING;
-  _dirty = true;
-  _surface = nullptr;
-  this->resetProperties ();
-
-  LuaAPI::Player_attachWrapper (_L, this, media);
-}
-
-Player::~Player ()
-{
-  if (_surface != nullptr)
-    cairo_surface_destroy (_surface);
-  _properties.clear ();
-
-  LuaAPI::Player_detachWrapper (_L, this);
-}
-
-Player::State
-Player::getState ()
-{
-  return _state;
-}
-
-void
-Player::start ()
-{
-  g_assert (_state != OCCURRING);
-  _state = OCCURRING;
-  _eos = false;
-  this->reload ();
-}
-
-void
-Player::stop ()
-{
-  g_assert (_state != SLEEPING);
-  _state = SLEEPING;
-  this->resetProperties ();
-}
-
-void
-Player::pause ()
-{
-  g_assert (_state != PAUSED && _state != SLEEPING);
-  _state = PAUSED;
-}
-
-void
-Player::resume ()
-{
-  g_assert (_state == PAUSED);
-  _state = OCCURRING;
-}
 
 string
 Player::getProperty (string const &name)
@@ -228,7 +236,7 @@ Player::reload ()
 void
 Player::redraw (cairo_t *cr)
 {
-  if (_state == SLEEPING)
+  if (_state == Player::STOPPED)
     return;                     // nothing to do
 
   if (!_prop.visible || !(_prop.rect.width > 0 && _prop.rect.height > 0))
@@ -478,12 +486,6 @@ Player::doSetProperty (Property code, unused (const string &name),
     case PROP_VISIBLE:
       {
         _prop.visible = ginga::parse_bool (value);
-        break;
-      }
-    case PROP_URI:
-      {
-        _prop.uri = value;
-        _dirty = true;
         break;
       }
     case PROP_TYPE:

@@ -111,27 +111,27 @@ Context::sendTick (Time total, Time diff, Time frame)
   // Update object time.
   Object::sendTick (total, diff, frame);
 
-  set<Composition *> parents;
-  this->getParents (&parents);
-  auto it = parents.begin ();
-  Composition *parent = (it == parents.end ()) ? NULL: *it;
+  // set<Composition *> parents;
+  // this->getParents (&parents);
+  // auto it = parents.begin ();
+  // Composition *parent = (it == parents.end ()) ? NULL: *it;
 
   // Check for EOS.
-  if (parent == nullptr && _awakeChildren == 0)
-    {
-      if (this->getDocument ()->getSettings ()->isOccurring ())
-        {
-          this->getDocument ()->evalAction (this->getLambda (), Event::STOP);
-        }
-      else
-        {
-          g_assert_not_reached ();
-        }
-    }
-  else if (_awakeChildren == 0)
-    {
-      this->getDocument ()->evalAction (this->getLambda (), Event::STOP);
-    }
+  // if (parent == nullptr && _awakeChildren == 0)
+  //   {
+  //     if (this->getDocument ()->getSettings ()->isOccurring ())
+  //       {
+  //         this->getDocument ()->evalAction (this->getLambda (), Event::STOP);
+  //       }
+  //     else
+  //       {
+  //         g_assert_not_reached ();
+  //       }
+  //   }
+  // else if (_awakeChildren == 0)
+  //   {
+  //     this->getDocument ()->evalAction (this->getLambda (), Event::STOP);
+  //   }
 }
 
 bool

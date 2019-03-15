@@ -187,7 +187,7 @@ PlayerSigGen::start ()
   GstStructure *st;
   GstStateChangeReturn ret;
 
-  g_assert (_state != OCCURRING);
+  g_assert (_state != Player::PLAYING);
   TRACE ("starting");
 
   st = gst_structure_new_empty ("audio/x-raw");
@@ -214,7 +214,7 @@ PlayerSigGen::start ()
 void
 PlayerSigGen::stop ()
 {
-  g_assert (_state != SLEEPING);
+  g_assert (_state != Player::STOPPED);
   TRACE ("stopping");
 
   gstx_element_set_state_sync (_pipeline, GST_STATE_NULL);
@@ -225,7 +225,7 @@ PlayerSigGen::stop ()
 void
 PlayerSigGen::pause ()
 {
-  g_assert (_state != PAUSED && _state != SLEEPING);
+  g_assert (_state != PAUSED && _state != Player::STOPPED);
   TRACE ("pausing");
 
   gstx_element_set_state_sync (_pipeline, GST_STATE_PAUSED);
@@ -258,7 +258,7 @@ PlayerSigGen::redraw (cairo_t *cr)
   static cairo_user_data_key_t key;
   cairo_status_t status;
 
-  g_assert (_state != SLEEPING);
+  g_assert (_state != Player::STOPPED);
 
   if (Player::getEOS ())
     goto done;
@@ -311,7 +311,7 @@ PlayerSigGen::doSetProperty (Property code, unused (const string &name),
     {
     case PROP_FREQ:
       _prop.freq = xstrtodorpercent (value, nullptr);
-      if (_state != SLEEPING)
+      if (_state != Player::STOPPED)
         g_object_set (_audio.src, "freq", _prop.freq, nullptr);
       break;
     case PROP_WAVE:
@@ -345,7 +345,7 @@ PlayerSigGen::doSetProperty (Property code, unused (const string &name),
       else if (value == "violet-noise")
         _prop.wave = 12;
 
-      if (_state != SLEEPING)
+      if (_state != Player::STOPPED)
         {
           g_object_set (_audio.src, "wave", _prop.wave, nullptr);
         }
@@ -353,7 +353,7 @@ PlayerSigGen::doSetProperty (Property code, unused (const string &name),
     case PROP_VOLUME:
       _prop.volume = xstrtodorpercent (value, nullptr);
       TRACE ("Vol: %f", _prop.volume);
-      if (_state != SLEEPING)
+      if (_state != Player::STOPPED)
         g_object_set (_audio.src, "volume", _prop.volume, nullptr);
       break;
     default:

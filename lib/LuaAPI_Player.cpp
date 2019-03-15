@@ -18,13 +18,23 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "LuaAPI.h"
 #include "Player.h"
 
+#define PLAYER_PLAYING_STRING "playing"
+#define PLAYER_PAUSED_STRING  "paused"
+#define PLAYER_STOPPED_STRING "stopped"
+
 void
 LuaAPI::Player_attachWrapper (lua_State *L, Player *player, Media *media)
 {
   static const struct luaL_Reg _Player_funcs[] =
     {
+     {"getState",     LuaAPI::l_Player_getState},
      {"getEOS",       LuaAPI::l_Player_getEOS},
      {"setEOS",       LuaAPI::l_Player_setEOS},
+     {"getURI",       LuaAPI::l_Player_getURI},
+     {"setURI",       LuaAPI::l_Player_setURI},
+     {"start",        LuaAPI::l_Player_start},
+     {"pause",        LuaAPI::l_Player_pause},
+     {"stop",         LuaAPI::l_Player_stop},
      {"_getProperty", LuaAPI::_l_Player_getProperty}, // TODO: REMOVE
      {"_setProperty", LuaAPI::_l_Player_setProperty}, // TODO: REMOVE
      {NULL, NULL},
@@ -34,6 +44,7 @@ LuaAPI::Player_attachWrapper (lua_State *L, Player *player, Media *media)
     {
      _funcs,
      _Player_funcs,
+     NULL,
     };
 
   static const Chunk *const chunks[] =
@@ -87,6 +98,29 @@ LuaAPI::Player_check (lua_State *L, int i)
   return *((Player **) luaL_checkudata (L, i, LuaAPI::_PLAYER));
 }
 
+Player::State
+LuaAPI::Player_State_check (lua_State *L, int i)
+{
+  static const char *states[] = {PLAYER_PLAYING_STRING,
+                                 PLAYER_PAUSED_STRING,
+                                 PLAYER_STOPPED_STRING,
+                                 NULL};
+
+  g_return_val_if_fail (L != NULL, Player::STOPPED);
+
+  switch (luaL_checkoption (L, i, NULL, states))
+    {
+    case 0:
+      return Player::PLAYING;
+    case 1:
+      return Player::PAUSED;
+    case 2:
+      return Player::STOPPED;
+    default:
+      g_assert_not_reached ();
+    }
+}
+
 void
 LuaAPI::Player_push (lua_State *L, Player *player)
 {
@@ -94,6 +128,27 @@ LuaAPI::Player_push (lua_State *L, Player *player)
   g_return_if_fail (player != NULL);
 
   LuaAPI::_pushLuaWrapper (L, player);
+}
+
+void
+LuaAPI::Player_State_push (lua_State *L, Player::State state)
+{
+  g_return_if_fail (L != NULL);
+
+  switch (state)
+    {
+    case Player::PLAYING:
+      lua_pushliteral (L, PLAYER_PLAYING_STRING);
+      break;
+    case Player::PAUSED:
+      lua_pushliteral (L, PLAYER_PAUSED_STRING);
+      break;
+    case Player::STOPPED:
+      lua_pushliteral (L, PLAYER_STOPPED_STRING);
+      break;
+    default:
+      g_assert_not_reached ();
+    }
 }
 
 void
@@ -107,6 +162,17 @@ LuaAPI::Player_call (lua_State *L, Player *player, const char *name,
   g_return_if_fail (nresults >= 0);
 
   LuaAPI::_callLuaWrapper (L, player, name, nargs, nresults);
+}
+
+int
+LuaAPI::l_Player_getState (lua_State *L)
+{
+  Player *player;
+
+  player = LuaAPI::Player_check (L, 1);
+  LuaAPI::Player_State_push (L, player->getState ());
+
+  return 1;
 }
 
 int
@@ -127,14 +193,70 @@ LuaAPI::l_Player_setEOS (lua_State *L)
 
   player = LuaAPI::Player_check (L, 1);
   luaL_checkany (L, 2);
-
   player->setEOS (lua_toboolean (L, 2));
 
   return 0;
 }
 
 int
-LuaAPI::_l_Player_getProperty (lua_State *L)
+LuaAPI::l_Player_getURI (lua_State *L)
+{
+  Player *player;
+
+  player = LuaAPI::Player_check (L, 1);
+  lua_pushstring (L, player->getURI ().c_str ());
+
+  return 1;
+}
+
+int
+LuaAPI::l_Player_setURI (lua_State *L)
+{
+  Player *player;
+  const char *uri;
+
+  player = LuaAPI::Player_check (L, 1);
+  uri = luaL_optstring (L, 2, "");
+  player->setURI (string (uri));
+
+  return 0;
+}
+
+int
+LuaAPI::l_Player_start (lua_State *L)
+{
+  Player *player;
+
+  player = LuaAPI::Player_check (L, 1);
+  player->start ();
+
+  return 0;
+}
+
+int
+LuaAPI::l_Player_pause (lua_State *L)
+{
+  Player *player;
+
+  player = LuaAPI::Player_check (L, 1);
+  player->pause ();
+
+  return 0;
+}
+
+int
+LuaAPI::l_Player_stop (lua_State *L)
+{
+  Player *player;
+
+  player = LuaAPI::Player_check (L, 1);
+  player->stop ();
+
+  return 0;
+}
+
+int
+LuaAPI::_l_Player_getProperty (lua_State *L) // TODO: Remove
 {
   Player *player;
   const char *name;
@@ -147,7 +269,7 @@ LuaAPI::_l_Player_getProperty (lua_State *L)
 }
 
 int
-LuaAPI::_l_Player_setProperty (lua_State *L)
+LuaAPI::_l_Player_setProperty (lua_State *L) // TODO: Remove
 {
   Player *player;
   const char *name;

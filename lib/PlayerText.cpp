@@ -169,9 +169,9 @@ PlayerText::reload ()
 {
   string text;
 
-  if (unlikely (!xurigetcontents (Player::_prop.uri, text)))
+  if (unlikely (!xurigetcontents (_uri, text)))
     {
-      ERROR ("cannot load text file %s", Player::_prop.uri.c_str ());
+      ERROR ("cannot load text file %s", _uri.c_str ());
     }
 
   if (_surface != nullptr)

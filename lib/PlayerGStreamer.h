@@ -15,43 +15,49 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef PLAYER_LUA_H
-#define PLAYER_LUA_H
+#ifndef GINGA_PLAYER_GSTREAMER_H
+#define GINGA_PLAYER_GSTREAMER_H
 
 #include "Player.h"
 
-#if defined WITH_NCLUA && WITH_NCLUA
-#include <ncluaw.h>
-#endif
-
 GINGA_NAMESPACE_BEGIN
 
-class PlayerLua : public Player
+class PlayerGStreamer : public Player
 {
 public:
-  PlayerLua (Media *);
-  ~PlayerLua ();
-  void start () override;
-  void stop () override;
-  void redraw (cairo_t *) override;
-  void sendKeyEvent (const string &, bool) override;
-  void sendPresentationEvent (const string &, const string &) override;
 
-protected:
-  virtual bool doSetProperty (Property, const string &,
-                              const string &) override;
+  PlayerGStreamer (Media *);
+
+  ~PlayerGStreamer ();
+
+  void setURI (const string &uri) override;
+
+  void start () override;
+
+  void pause () override;
+
+  void stop () override;
+
+  void redraw (cairo_t *) override;
 
 private:
-  ncluaw_t *_nw;     // the NCLua state
-  Rect _init_rect;   // initial output rectangle
-  string _pwd;       // script's working dir
-  string _saved_pwd; // saved working dir
 
-  void pwdSave (const string &);
-  void pwdSave ();
-  void pwdRestore ();
+  /// The GStreamer playbin (pipeline) of this player.
+  GstElement *_playbin;
+
+  /// The elements that process the video output of playbin.
+  struct {
+    GstElement *bin;            // bin
+    GstElement *caps;           // capsfilter
+    GstElement *sink;           // appsink
+  } _video;
+
+  /// The bus-watch callback.  Called whenever a message is posted in
+  /// playbin's bus.
+  static gboolean busWatch (GstBus *bus, GstMessage *msg,
+                            PlayerGStreamer *player);
 };
 
 GINGA_NAMESPACE_END
 
-#endif // PLAYER_LUA_H
+#endif // GINGA_PLAYER_GSTREAMER_H

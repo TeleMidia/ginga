@@ -39,8 +39,7 @@ cairox_surface_create_from_uri (const char *path, cairo_surface_t **dup)
   g_assert_nonnull (file);
 
   GFileInputStream *input = g_file_read (file, NULL, &error);
-  g_assert_nonnull (input);
-  if (input)
+  if (input != NULL)
     {
       pixbuf = gdk_pixbuf_new_from_stream (G_INPUT_STREAM (input), NULL,
                                            &error);
@@ -48,7 +47,7 @@ cairox_surface_create_from_uri (const char *path, cairo_surface_t **dup)
     }
   else
     {
-      ERROR ("%s.", error->message);
+      ERROR ("%s: %s", path, error->message);
       g_error_free (error);
     }
 
@@ -103,10 +102,10 @@ PlayerImage::reload ()
       cairo_surface_destroy (_surface);
     }
 
-  status = cairox_surface_create_from_uri (_prop.uri.c_str (), &_surface);
+  status = cairox_surface_create_from_uri (_uri.c_str (), &_surface);
   if (unlikely (status != CAIRO_STATUS_SUCCESS))
     {
-      ERROR ("cannot load image file %s: %s", _prop.uri.c_str (),
+      ERROR ("cannot load image file %s: %s", _uri.c_str (),
              cairo_status_to_string (status));
     }
   g_assert_nonnull (_surface);
