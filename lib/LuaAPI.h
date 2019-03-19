@@ -70,6 +70,7 @@ private:
   static int _l_Document_createObject (lua_State *L);
   static int _l_Document_createEvent (lua_State *L);
   static int _l_Document_createPlayer (lua_State *L);
+  static int _l_Document_isinteger (lua_State *L);
 
   // Object ----------------------------------------------------------------
 public:
@@ -208,10 +209,12 @@ public:
 
 private:
   static int l_Player_getState (lua_State *L);
-  static int l_Player_getEOS (lua_State *L);
-  static int l_Player_setEOS (lua_State *L);
   static int l_Player_getURI (lua_State *L);
   static int l_Player_setURI (lua_State *L);
+  static int l_Player_getRect (lua_State *L);
+  static int l_Player_setRect (lua_State *L);
+  static int l_Player_getEOS (lua_State *L);
+  static int l_Player_setEOS (lua_State *L);
   static int l_Player_start (lua_State *L);
   static int l_Player_pause (lua_State *L);
   static int l_Player_stop (lua_State *L);

@@ -28,10 +28,12 @@ LuaAPI::Player_attachWrapper (lua_State *L, Player *player, Media *media)
   static const struct luaL_Reg _Player_funcs[] =
     {
      {"getState",     LuaAPI::l_Player_getState},
-     {"getEOS",       LuaAPI::l_Player_getEOS},
-     {"setEOS",       LuaAPI::l_Player_setEOS},
      {"getURI",       LuaAPI::l_Player_getURI},
      {"setURI",       LuaAPI::l_Player_setURI},
+     {"getRect",      LuaAPI::l_Player_getRect},
+     {"setRect",      LuaAPI::l_Player_setRect},
+     {"getEOS",       LuaAPI::l_Player_getEOS},
+     {"setEOS",       LuaAPI::l_Player_setEOS},
      {"start",        LuaAPI::l_Player_start},
      {"pause",        LuaAPI::l_Player_pause},
      {"stop",         LuaAPI::l_Player_stop},
@@ -176,29 +178,6 @@ LuaAPI::l_Player_getState (lua_State *L)
 }
 
 int
-LuaAPI::l_Player_getEOS (lua_State *L)
-{
-  Player *player;
-
-  player = LuaAPI::Player_check (L, 1);
-  lua_pushboolean (L, player->getEOS ());
-
-  return 1;
-}
-
-int
-LuaAPI::l_Player_setEOS (lua_State *L)
-{
-  Player *player;
-
-  player = LuaAPI::Player_check (L, 1);
-  luaL_checkany (L, 2);
-  player->setEOS (lua_toboolean (L, 2));
-
-  return 0;
-}
-
-int
 LuaAPI::l_Player_getURI (lua_State *L)
 {
   Player *player;
@@ -218,6 +197,63 @@ LuaAPI::l_Player_setURI (lua_State *L)
   player = LuaAPI::Player_check (L, 1);
   uri = luaL_optstring (L, 2, "");
   player->setURI (string (uri));
+
+  return 0;
+}
+
+int
+LuaAPI::l_Player_getRect (lua_State *L)
+{
+  Player *player;
+  int x, y, width, height;
+
+  player = LuaAPI::Player_check (L, 1);
+  player->getRect (&x, &y, &width, &height);
+  lua_pushinteger (L, x);
+  lua_pushinteger (L, y);
+  lua_pushinteger (L, width);
+  lua_pushinteger (L, height);
+
+  return 4;
+}
+
+int
+LuaAPI::l_Player_setRect (lua_State *L)
+{
+  Player *player;
+  lua_Integer x, y, width, height;
+
+  player = LuaAPI::Player_check (L, 1);
+  x = luaL_checkinteger (L, 2);
+  y = luaL_checkinteger (L, 3);
+  width = luaL_checkinteger (L, 4);
+  height = luaL_checkinteger (L, 5);
+  player->setRect ((int) CLAMP (x, G_MININT, G_MAXINT),
+                   (int) CLAMP (y, G_MININT, G_MAXINT),
+                   (int) CLAMP (width, G_MININT, G_MAXINT),
+                   (int) CLAMP (height, G_MININT, G_MAXINT));
+  return 0;
+}
+
+int
+LuaAPI::l_Player_getEOS (lua_State *L)
+{
+  Player *player;
+
+  player = LuaAPI::Player_check (L, 1);
+  lua_pushboolean (L, player->getEOS ());
+
+  return 1;
+}
+
+int
+LuaAPI::l_Player_setEOS (lua_State *L)
+{
+  Player *player;
+
+  player = LuaAPI::Player_check (L, 1);
+  luaL_checkany (L, 2);
+  player->setEOS (lua_toboolean (L, 2));
 
   return 0;
 }

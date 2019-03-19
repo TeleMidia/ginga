@@ -29,10 +29,13 @@ noinst_SCRIPTS=
 # Generate env.sh, env.csh, and gdb.cfg.
 include $(top_srcdir)/build-aux/Makefile.am.env
 
+# Configure valgrind and generate suppfile from suppfile.m4.
+include $(top_srcdir)/build-aux/Makefile.am.valgrind
+
 # Setup tests environment.
 AM_TESTS_ENVIRONMENT=\
   export GST_DEBUG="*:WARN";\
-  export G_DEBUG="error";\
+  export G_DEBUG="fatal-criticals,resident-modules";\
   export G_MESSAGES_DEBUG="all";\
   export G_SLICE="always-malloc";\
   export MALLOC_CHECK_=1;\

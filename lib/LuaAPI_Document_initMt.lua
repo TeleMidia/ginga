@@ -1,16 +1,16 @@
 -- Compares players by zIndex and zOrder.
 local function comparePlayers (p1, p2)
    local m1, m2 = p1.media, p2.media
-   local z1 = tonumber (m1.property.zIndex) or math.mininteger
-   local z2 = tonumber (m2.property.zIndex) or math.mininteger
+   local z1 = m1:getProperty ('zIndex') or math.mininteger
+   local z2 = m2:getProperty ('zIndex') or math.mininteger
    if z1 < z2 then
       return true
    end
    if z1 > z2 then
       return false
    end
-   local zo1 = tonumber (m1.property.zOrder) or math.mininteger
-   local zo2 = tonumber (m2.property.zOrder) or math.mininteger
+   local zo1 = m1:getProperty ('zOrder') or math.mininteger
+   local zo2 = m2:getProperty ('zOrder') or math.mininteger
    if zo1 < zo2 then
       return true
    else
@@ -256,77 +256,21 @@ do
       table.sort (players, comparePlayers)
    end
 
-   -- File extension to mime-type.
-   mt._mimetable = {
-      ['ac3']    = 'audio/ac3',
-      ['avi']    = 'video/x-msvideo',
-      ['bmp']    = 'image/bmp',
-      ['gif']    = 'image/gif',
-      ['jpeg']   = 'image/jpeg',
-      ['jpg']    = 'image/jpeg',
-      ['lua']    = 'application/x-ginga-NCLua',
-      ['mov']    = 'video/quicktime',
-      ['mp2']    = 'audio/mp2',
-      ['mp3']    = 'audio/mp3',
-      ['mp4']    = 'video/mp4',
-      ['mpa']    = 'audio/mpa',
-      ['mpeg']   = 'video/mpeg',
-      ['mpg']    = 'video/mpeg',
-      ['mpv']    = 'video/mpv',
-      ['oga']    = 'audio/ogg',
-      ['ogg']    = 'audio/ogg',
-      ['ogv']    = 'video/ogg',
-      ['opus']   = 'audio/ogg',
-      ['png']    = 'image/png',
-      ['spx']    = 'audio/ogg',
-      ['srt']    = 'text/srt',
-      ['svg']    = 'image/svg+xml',
-      ['svgz']   = 'image/svg+xml',
-      ['ts']     = 'video/mpeg',
-      ['txt']    = 'text/plain',
-      ['wav']    = 'audio/basic',
-      ['webp']   = 'image/x-webp',
-      ['wmv']    = 'video/x-ms-wmv',
-      ['xml']    = 'text/xml',
-   }
-
    -- Gets player name from mime-type and URI.
-   mt._getPlayerName = function (self, type, uri)
+   mt._getPlayerName = function (self, uri)
       local str
-      if type == nil then       -- use uri to determine type
-         if uri == nil then
-            goto default
-         end
-         local ext = uri:match ('.*%.(.*)$')
-         if ext == nil then
-            goto default
-         end
-         type = assert (mt._mimetable)[ext]
+      if uri == nil then
+         return nil
       end
-      if type == nil then
-         goto default
+      local ext = uri:match ('.*%.(.*)$')
+      if ext == nil then
+         return nil
       end
-      if type == 'application/x-ginga-NCLua' then
-         return type, 'PlayerLua'
+      if ext == 'lua' then
+         return 'PlayerLua'
+      else
+         return 'PlayerGStreamer'
       end
-      if type == 'image/svg+xml' then
-         return type, 'PlayerSvg'
-      end
-      str = type:match ('^([^/]*)/?')
-      if str == nil then
-         goto default
-      end
-      if str == 'audio' or str == 'video' then
-         return type, 'PlayerVideo'
-      end
-      if str == 'image' then
-         return type, 'PlayerImage'
-      end
-      if str == 'text' then
-         return type, 'PlayerText'
-      end
-      ::default::
-      return 'application/x-ginga-timer', nil
    end
 
    -- Dumps document graph.

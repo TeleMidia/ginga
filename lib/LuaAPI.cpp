@@ -236,6 +236,7 @@ LuaAPI::_callLuaWrapper (lua_State *L, void *ptr, const char *name,
 
   if (unlikely (lua_pcall (L, nargs + 1, nresults, 0) != LUA_OK))
     {
-      ERROR ("%s", lua_tostring (L, -1));
+      ERROR ("method '%s' of object %p: %s", name, ptr,
+             lua_tostring (L, -1));
     }
 }

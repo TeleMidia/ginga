@@ -463,6 +463,7 @@ static void
 app_init (Ginga *ginga)
 {
   GError *error = NULL;
+  gulong id;
 
   g_assert_nonnull (ginga);
 
@@ -472,7 +473,9 @@ app_init (Ginga *ginga)
   if (fullscreen_on)
     gtk_window_fullscreen (GTK_WINDOW (app_win));
 
-  g_signal_connect (app_win, "destroy", G_CALLBACK (gtk_main_quit), NULL);
+  id = g_signal_connect (app_win, "delete-event",
+                         G_CALLBACK (gtk_main_quit), NULL);
+  g_assert (id > 0);
   gtk_widget_add_tick_callback (GTK_WIDGET (app_win),
                                 (GtkTickCallback) on_win_tick, ginga, NULL);
 
@@ -537,7 +540,7 @@ app_init (Ginga *ginga)
   app_css = gtk_css_provider_new ();
   gtk_css_provider_load_from_data (app_css, G_STRINGIFY (CSS), -1, &error);
   if (unlikely (error != NULL))
-    g_error ("%s", error->message);
+    die ("%s", error->message);
   g_assert_null (error);
 
   gtk_style_context_add_provider_for_screen
@@ -550,18 +553,13 @@ app_init (Ginga *ginga)
 gint
 main (gint argc, gchar **argv)
 {
-  int saved_argc;
-  gchar **saved_argv;
 
   GOptionContext *ctx;
   gboolean status;
   GError *error = NULL;
-
   Ginga *ginga;
 
-  saved_argc = argc;
-  saved_argv = g_strdupv (argv);
-  gtk_init (&saved_argc, &saved_argv);
+  gtk_init (&argc, &argv);
 
   // Parse command-line options.
   ctx = g_option_context_new ("[FILE]");
@@ -570,7 +568,7 @@ main (gint argc, gchar **argv)
 Report bugs to:  " PACKAGE_BUGREPORT "\n\
 Ginga home page: " PACKAGE_URL "\n");
   g_option_context_add_main_entries (ctx, options, NULL);
-  status = g_option_context_parse (ctx, &saved_argc, &saved_argv, &error);
+  status = g_option_context_parse (ctx, &argc, &argv, &error);
   g_option_context_free (ctx);
 
   if (!status)
@@ -581,7 +579,7 @@ Ginga home page: " PACKAGE_URL "\n");
       _exit (0);
     }
 
-  if (saved_argc < 2)
+  if (argc < 2)
     {
       usage_error ("Missing file operand");
       _exit (0);
@@ -597,38 +595,25 @@ Ginga home page: " PACKAGE_URL "\n");
   app_init (ginga);
 
   // Run each NCL file, one after another.
-  gint fail_count = 0;
-  for (gint i = 1; i < saved_argc; i++)
+  string errmsg;
+  if (unlikely (!ginga->start (string (argv[1]),
+                               initial_width, initial_height, &errmsg)))
     {
-      string errmsg;
-      if (unlikely (!ginga->start (string (saved_argv[i]),
-                                   initial_width,
-                                   initial_height,
-                                   &errmsg)))
-        {
-          if (saved_argc > 2)
-            error ("%s: %s", saved_argv[i], errmsg.c_str ());
-          else
-            error ("%s", errmsg.c_str ());
-          fail_count++;
-          continue;
-        }
-      gtk_header_bar_set_title (GTK_HEADER_BAR (app_header_bar),
-                                saved_argv[i]);
-      gtk_widget_show_all (app_win);
-      gtk_main ();
-      ginga->stop ();
+      die ("%s", errmsg.c_str ());
     }
+  gtk_header_bar_set_title (GTK_HEADER_BAR (app_header_bar), argv[1]);
+  gtk_widget_show_all (app_win);
+  gtk_main ();
 
   // Done.
+  ginga->stop ();
   Document *doc = (Document *) ginga->getDocument ();
-  if (doc)
+  if (doc != NULL)
     {
-      delete doc;
+      lua_close (doc->getLuaState ()); // GC deletes doc
     }
+
   delete ginga;
-
-  g_strfreev (saved_argv);
-
+  g_print ("DONE\n");
   _exit (0);
 }

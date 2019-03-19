@@ -45,7 +45,6 @@ protected:
   // TODO ------------------------------------------------------------------
 public:
 
-  void setProperty (const string &, const GValue *value) override;
   void sendKey (const string &, bool);
   void sendTick (Time, Time, Time) override;
   bool beforeTransition (Event *, Event::Transition,

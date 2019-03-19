@@ -33,8 +33,12 @@ Player::Player (Media *media)
   _L = media->getDocument ()->getLuaState ();
   _media = media;
   _state = Player::STOPPED;
-  _eos = false;
   _uri = "";
+  _rect.x = 0;
+  _rect.y = 0;
+  _rect.width = 0;
+  _rect.height = 0;
+  _eos = false;
 
   _dirty = true;
   _surface = nullptr;
@@ -58,18 +62,6 @@ Player::getState ()
   return _state;
 }
 
-bool
-Player::getEOS ()
-{
-  return _eos;
-}
-
-void
-Player::setEOS (bool eos)
-{
-  _eos = eos;
-}
-
 string
 Player::getURI ()
 {
@@ -79,8 +71,57 @@ Player::getURI ()
 void
 Player::setURI (const string &uri)
 {
+  if (_uri == uri)
+    return;                     // nothing to do
+
   _uri = uri;
-  _dirty = true;
+  _flag.uri = true;
+}
+
+void
+Player::getRect (int *x, int *y, int *width, int *height)
+{
+  if (x != NULL)
+    *x = _rect.x;
+  if (y != NULL)
+    *y = _rect.y;
+  if (width != NULL)
+    *width = _rect.width;
+  if (height != NULL)
+    *height = _rect.height;
+}
+
+void
+Player::setRect (int x, int y, int width, int height)
+{
+  if (_rect.x == x
+      && _rect.y == y
+      && _rect.width == width
+      && _rect.height == height)
+    {
+      return;                   // nothing to do
+    }
+  _rect.x = x;
+  _rect.y = y;
+  _rect.width = width;
+  _rect.height = height;
+  _flag.rect = true;
+}
+
+bool
+Player::getEOS ()
+{
+  return _eos;
+}
+
+void
+Player::setEOS (bool eos)
+{
+  if (_eos == eos)
+    return;                     // nothing to do
+
+  _eos = eos;
+  _flag.eos = true;
 }
 
 void
@@ -123,9 +164,6 @@ static map<string, PlayerPropertyInfo> player_property_map = {
   { "background", { Player::PROP_BACKGROUND, true, "" } },
   { "balance", { Player::PROP_BALANCE, false, "0.0" } },
   { "bass", { Player::PROP_BASS, false, "0" } },
-  { "bottom", { Player::PROP_BOTTOM, false, "0%" } },
-  { "bounds", { Player::PROP_BOUNDS, false, "0%,0%,100%,100%" } },
-  { "focusIndex", { Player::PROP_FOCUS_INDEX, true, "" } },
   { "fontBgColor", { Player::PROP_FONT_BG_COLOR, true, "" } },
   { "fontColor", { Player::PROP_FONT_COLOR, true, "black" } },
   { "fontFamily", { Player::PROP_FONT_FAMILY, true, "sans" } },
@@ -135,24 +173,16 @@ static map<string, PlayerPropertyInfo> player_property_map = {
   { "fontWeight", { Player::PROP_FONT_WEIGHT, true, "" } },
   { "freeze", { Player::PROP_FREEZE, true, "false" } },
   { "freq", { Player::PROP_FREQ, true, "440" } },
-  { "height", { Player::PROP_HEIGHT, true, "100%" } },
   { "horzAlign", { Player::PROP_HORZ_ALIGN, true, "left" } },
-  { "left", { Player::PROP_LEFT, true, "0" } },
-  { "location", { Player::PROP_LOCATION, false, "0,0" } },
   { "mute", { Player::PROP_MUTE, false, "false" } },
-  { "right", { Player::PROP_RIGHT, false, "0%" } },
-  { "size", { Player::PROP_SIZE, false, "100%,100%" } },
   { "speed", { Player::PROP_SPEED, false, "1" } },
   { "time", { Player::PROP_TIME, false, "indefinite" } },
-  { "top", { Player::PROP_TOP, true, "0" } },
   { "transparency", { Player::PROP_TRANSPARENCY, true, "0%" } },
   { "treble", { Player::PROP_TREBLE, false, "0" } },
   { "vertAlign", { Player::PROP_VERT_ALIGN, true, "top" } },
   { "visible", { Player::PROP_VISIBLE, true, "true" } },
   { "volume", { Player::PROP_VOLUME, false, "100%" } },
   { "wave", { Player::PROP_WAVE, true, "sine" } },
-  { "width", { Player::PROP_WIDTH, true, "100%" } },
-  { "type", { Player::PROP_TYPE, true, "application/x-ginga-timer" } },
 };
 
 static map<string, string> player_property_aliases = {
@@ -237,11 +267,13 @@ void
 Player::redraw (cairo_t *cr)
 {
   if (_state == Player::STOPPED)
-    return;                     // nothing to do
-
-  if (!_prop.visible || !(_prop.rect.width > 0 && _prop.rect.height > 0))
     {
-      return; // nothing to do
+      return;                   // nothing to do
+    }
+
+  if (!_prop.visible || !(_rect.width > 0 && _rect.height > 0))
+    {
+      return;                   // nothing to do
     }
 
   if (_dirty)
@@ -254,8 +286,8 @@ Player::redraw (cairo_t *cr)
       cairo_save (cr);
       cairo_set_source_rgba (cr, _prop.bgColor.red, _prop.bgColor.green,
                              _prop.bgColor.blue, _prop.alpha / 255.);
-      cairo_rectangle (cr, _prop.rect.x, _prop.rect.y, _prop.rect.width,
-                       _prop.rect.height);
+      cairo_rectangle (cr, _rect.x, _rect.y, _rect.width,
+                       _rect.height);
       cairo_fill (cr);
       cairo_restore (cr);
     }
@@ -263,12 +295,12 @@ Player::redraw (cairo_t *cr)
   if (_surface != nullptr)
     {
       double sx, sy;
-      sx = (double) _prop.rect.width
+      sx = (double) _rect.width
         / cairo_image_surface_get_width (_surface);
-      sy = (double) _prop.rect.height
+      sy = (double) _rect.height
         / cairo_image_surface_get_height (_surface);
       cairo_save (cr);
-      cairo_translate (cr, _prop.rect.x, _prop.rect.y);
+      cairo_translate (cr, _rect.x, _rect.y);
       cairo_scale (cr, sx, sy);
       cairo_set_source_surface (cr, _surface, 0., 0.);
       cairo_paint_with_alpha (cr, _prop.alpha / 255.);
@@ -280,8 +312,8 @@ Player::redraw (cairo_t *cr)
       cairo_save (cr);
       cairo_set_source_rgba (cr, 1., 1., 0., 1.);
       cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
-      cairo_rectangle (cr, _prop.rect.x, _prop.rect.y, _prop.rect.width,
-                       _prop.rect.height);
+      cairo_rectangle (cr, _rect.x, _rect.y, _rect.width,
+                       _rect.height);
       cairo_stroke (cr);
       cairo_restore (cr);
     }
@@ -349,126 +381,6 @@ Player::doSetProperty (Property code, unused (const string &name),
 {
   switch (code)
     {
-    case PROP_BOUNDS:
-      {
-        list<string> lst;
-        if (unlikely (!ginga::try_parse_list (value, ',', 4, 4, &lst)))
-          return false;
-        auto it = lst.begin ();
-        _media->setPropertyString ("left", *it++);
-        _media->setPropertyString ("top", *it++);
-        _media->setPropertyString ("width", *it++);
-        _media->setPropertyString ("height", *it++);
-        g_assert (it == lst.end ());
-        break;
-      }
-    case PROP_FOCUS_INDEX:
-      {
-        _prop.focusIndex = value;
-        break;
-      }
-    case PROP_LOCATION:
-      {
-        list<string> lst;
-        if (unlikely (!ginga::try_parse_list (value, ',', 2, 2, &lst)))
-          return false;
-        auto it = lst.begin ();
-        _media->setPropertyString ("left", *it++);
-        _media->setPropertyString ("top", *it++);
-        g_assert (it == lst.end ());
-        break;
-      }
-    case PROP_SIZE:
-      {
-        list<string> lst;
-        if (unlikely (!ginga::try_parse_list (value, ',', 2, 2, &lst)))
-          return false;
-        auto it = lst.begin ();
-        _media->setPropertyString ("width", *it++);
-        _media->setPropertyString ("height", *it++);
-        g_assert (it == lst.end ());
-        break;
-      }
-    case PROP_LEFT:
-      {
-        lua_Integer width;
-        g_assert (_media->getDocument ()->getSettings ()
-                  ->getPropertyInteger ("width", &width));
-        _prop.rect.x = ginga::parse_percent (value, (int) width, 0, G_MAXINT);
-        _dirty = true;
-        break;
-      }
-    case PROP_RIGHT:
-      {
-        lua_Integer width;
-        g_assert (_media->getDocument ()->getSettings ()
-                  ->getPropertyInteger ("width", &width));
-        _prop.rect.x = (int) width - _prop.rect.width
-          - ginga::parse_percent (value, (int) width, 0, G_MAXINT);
-        _dirty = true;
-        break;
-      }
-    case PROP_TOP:
-      {
-        lua_Integer height;
-        g_assert (_media->getDocument ()->getSettings ()
-                  ->getPropertyInteger ("height", &height));
-        _prop.rect.y = ginga::parse_percent
-          (value, (int) height, 0, G_MAXINT);
-        _dirty = true;
-        break;
-      }
-    case PROP_BOTTOM:
-      {
-        lua_Integer height;
-        g_assert (_media->getDocument ()->getSettings ()
-                  ->getPropertyInteger ("height", &height));
-        _prop.rect.y = (int) height - _prop.rect.height
-                       - ginga::parse_percent (value, _prop.rect.height, 0,
-                                               G_MAXINT);
-        _dirty = true;
-        break;
-      }
-    case PROP_WIDTH:
-      {
-        lua_Integer width;
-        g_assert (_media->getDocument ()->getSettings ()
-                  ->getPropertyInteger ("width", &width));
-
-        _prop.rect.width = ginga::parse_percent
-          (value, (int) width, 0, G_MAXINT);
-        _dirty = true;
-
-        string right;
-        if (_media->getPropertyString ("right", &right))
-          _media->setPropertyString ("right", right);
-        break;
-      }
-    case PROP_HEIGHT:
-      {
-        lua_Integer height;
-        g_assert (_media->getDocument ()->getSettings ()
-                  ->getPropertyInteger ("height", &height));
-        _prop.rect.height
-          = ginga::parse_percent (value, (int) height, 0, G_MAXINT);
-        _dirty = true;
-
-        string bottom;
-        if (_media->getPropertyString ("bottom", &bottom))
-          _media->setPropertyString ("bottom", bottom);
-
-        break;
-      }
-    case PROP_Z_INDEX:
-      {
-        _prop.zindex = xstrtoint (value, 10);
-        break;
-      }
-    case PROP_Z_ORDER:
-      {
-        _prop.zorder = xstrtoint (value, 10);
-        break;
-      }
     case PROP_TRANSPARENCY:
       {
         _prop.alpha
@@ -486,11 +398,6 @@ Player::doSetProperty (Property code, unused (const string &name),
     case PROP_VISIBLE:
       {
         _prop.visible = ginga::parse_bool (value);
-        break;
-      }
-    case PROP_TYPE:
-      {
-        _prop.type = value;
         break;
       }
     default:

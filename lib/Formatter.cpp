@@ -135,8 +135,6 @@ Formatter::stop ()
 void
 Formatter::resize (int width, int height)
 {
-  set<Object *> objects;
-
   g_assert (width > 0 && height > 0);
 
   if (_state != GINGA_STATE_PLAYING)
@@ -144,36 +142,6 @@ Formatter::resize (int width, int height)
 
   _doc->getSettings ()->setPropertyInteger ("width", width);
   _doc->getSettings ()->setPropertyInteger ("height", height);
-
-  // Resize each media object in document.
-  _doc->getObjects (&objects);
-  for (auto obj: objects)
-    {
-      if (obj->getType () != Object::MEDIA)
-        continue;
-
-      Media *media = cast (Media *, obj);
-      g_assert_nonnull (media);
-
-      string value;
-      if (media->getPropertyString ("top", &value))
-        media->setPropertyString ("top", value);
-
-      if (media->getPropertyString ("left", &value))
-        media->setPropertyString ("left", value);
-
-      if (media->getPropertyString ("bottom", &value))
-        media->setPropertyString ("bottom", value);
-
-      if (media->getPropertyString ("right", &value))
-        media->setPropertyString ("right", value);
-
-      if (media->getPropertyString ("width", &value))
-        media->setPropertyString ("width", value);
-
-      if (media->getPropertyString ("height", &value))
-        media->setPropertyString ("height", value);
-    }
 }
 
 // Stops formatter if EOS has been seen.

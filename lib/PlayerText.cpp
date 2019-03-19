@@ -182,7 +182,7 @@ PlayerText::reload ()
   _surface = PlayerText::renderSurface (
       text, _prop.fontFamily, _prop.fontWeight, _prop.fontStyle,
       _prop.fontSize, _prop.fontColor, _prop.fontBgColor,
-      Player::_prop.rect, _prop.horzAlign, _prop.vertAlign, true, nullptr);
+      Player::_rect, _prop.horzAlign, _prop.vertAlign, true, nullptr);
 
   g_assert_nonnull (_surface);
 

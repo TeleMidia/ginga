@@ -35,7 +35,11 @@ Media::Media (Document *doc, const string &id) : Object (doc, id)
 
 Media::~Media ()
 {
-  this->doStop ();
+  Player *player;
+
+  player = _getPlayer ();
+  if (player != NULL)
+    delete player;
 
   LuaAPI::Object_detachWrapper (_L, this);
 }
@@ -70,20 +74,6 @@ Media::_getPlayer ()
 }
 
 // TODO --------------------------------------------------------------------
-
-
-void
-Media::setProperty (const string &name, const GValue *value)
-{
-  Object::setProperty (name, value);
-
-  if (_getPlayer () == nullptr)
-    return;
-
-  if (G_VALUE_HOLDS (value, G_TYPE_STRING))
-    _getPlayer ()
-      ->setProperty (name, string (g_value_get_string (value)));
-}
 
 void
 Media::sendKey (const string &key, bool press)

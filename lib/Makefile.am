@@ -72,7 +72,7 @@ src+= Object.cpp
 src+= Parser.cpp
 src+= Player.cpp
 src+= PlayerGStreamer.cpp
-src+= PlayerImage.cpp
+# src+= PlayerImage.cpp
 src+= PlayerText.cpp
 src+= PlayerVideo.cpp
 src+= Predicate.cpp
@@ -80,9 +80,9 @@ src+= Switch.cpp
 src+= aux-ginga.cpp
 src+= aux-gl.cpp
 
-if WITH_LIBRSVG
-src+= PlayerSvg.cpp
-endif # WITH_LIBRSVG
+# if WITH_LIBRSVG
+# src+= PlayerSvg.cpp
+# endif # WITH_LIBRSVG
 
 if WITH_NCLUA
 src+= PlayerLua.cpp

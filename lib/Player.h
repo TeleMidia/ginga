@@ -42,17 +42,23 @@ public:
   /// Gets the playback state of player.
   Player::State getState ();
 
-  /// Gets end-of-stream flag of player.
-  bool getEOS ();
-
-  /// Sets end-of-stream flag of player.
-  void setEOS (bool eos);
-
   /// Gets the URI of the content of player.
   string getURI ();
 
   /// Sets the URI of the content of player.
   virtual void setURI (const string &uri);
+
+  /// Gets the dimensions of the drawing area of player.
+  void getRect (int *x, int *y, int *width, int *height);
+
+  /// Sets dimensions of the drawing area of player.
+  void setRect (int x, int y, int width, int height);
+
+  /// Gets end-of-stream flag of player.
+  bool getEOS ();
+
+  /// Sets end-of-stream flag of player.
+  void setEOS (bool eos);
 
   /// Starts playback.
   virtual void start ();
@@ -74,11 +80,24 @@ protected:
   /// The playback state of player.
   State _state;
 
-  /// Whether player content was exhausted.
-  bool _eos;
+  /// The surface of player.
+  cairo_surface_t *_surface;
 
   /// The URI of the content of player.
   string _uri;
+
+  /// The dimensions of player drawing area (x, y, w, h in pixels).
+  Rect _rect;
+
+  /// Indicates whether the content of player was exhausted.
+  bool _eos;
+
+  /// Flags: indicate attribute changes.
+  struct {
+    bool uri;
+    bool rect;
+    bool eos;
+  } _flag;
 
   // TODO ------------------------------------------------------------------
 public:
@@ -88,12 +107,9 @@ public:
     PROP_BACKGROUND,
     PROP_BALANCE,
     PROP_BASS,
-    PROP_BOTTOM,
-    PROP_BOUNDS,
     PROP_DEBUG,
     PROP_DURATION,
     PROP_EXPLICIT_DUR,
-    PROP_FOCUS_INDEX,
     PROP_FONT_BG_COLOR,
     PROP_FONT_COLOR,
     PROP_FONT_FAMILY,
@@ -103,26 +119,16 @@ public:
     PROP_FONT_WEIGHT,
     PROP_FREEZE,
     PROP_FREQ,
-    PROP_HEIGHT,
     PROP_HORZ_ALIGN,
-    PROP_LEFT,
-    PROP_LOCATION,
     PROP_MUTE,
-    PROP_RIGHT,
-    PROP_SIZE,
     PROP_SPEED,
     PROP_TIME,
-    PROP_TOP,
     PROP_TRANSPARENCY,
     PROP_TREBLE,
-    PROP_TYPE,
     PROP_VERT_ALIGN,
     PROP_VISIBLE,
     PROP_VOLUME,
     PROP_WAVE,
-    PROP_WIDTH,
-    PROP_Z_INDEX,
-    PROP_Z_ORDER,
   };
 
 
@@ -148,8 +154,6 @@ public:
 
 protected:
 
-
-  cairo_surface_t *_surface; // player surface
   bool _dirty;               // true if surface should be reloaded
   list<int> _crop;           // polygon for cropping effect
 
@@ -157,7 +161,6 @@ protected:
   struct
   {
     Color bgColor;     // background color
-    Rect rect;         // x, y, w, h in pixels
     Time duration;     // explicit duration
     bool visible;      // true if visible
     guint8 alpha;      // alpha

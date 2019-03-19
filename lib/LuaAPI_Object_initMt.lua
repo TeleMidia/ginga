@@ -27,9 +27,6 @@ do
       local get_data_seln = function (...)
          return assert (rawget (data, '_selection'))
       end
-      local get_data_prop = function (...)
-         return assert (rawget (data, '_property'))
-      end
 
       -- Getters & setters.
       funcs.document     = {mt.getDocument, nil}
@@ -43,7 +40,6 @@ do
       funcs.attribution  = {get_data_attr,  nil}
       funcs.presentation = {get_data_pres,  nil}
       funcs.selection    = {get_data_seln,  nil}
-      funcs.property     = {get_data_prop,  nil}
 
       return saved_attachData (self, data, funcs)
    end
@@ -183,7 +179,7 @@ do
    -- Object::getProperties().
    mt.getProperties = function (self)
       local t = {}
-      for k,v in pairs (assert (mt[self].property)) do
+      for k,v in pairs (assert (rawget (mt[self], '_property'))) do
          t[k] = v
       end
       return t
@@ -201,12 +197,11 @@ do
 
    -- Object::getProperty().
    mt.getProperty = function (self, name)
-      return mt[self].property[name]
+      return assert (rawget (mt[self], '_property'))[name]
    end
 
    -- Object::setProperty().
    mt.setProperty = function (self, name, value)
-      mt[self].property[name] = value
-      return true
+      assert (rawget (mt[self], '_property'))[name] = value
    end
 end

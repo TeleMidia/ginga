@@ -20,8 +20,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-equal)
 
-GINGA_NAMESPACE_BEGIN
-
 #define _ERROR(fmt, ...)\
   ERROR ("PlayerGStreamer error: " fmt, ## __VA_ARGS__)
 
@@ -29,13 +27,54 @@ GINGA_NAMESPACE_BEGIN
   WARNING ("PlayerGStreamer warning: " fmt, ## __VA_ARGS__)
 
 #define _TRACE(fmt, ...)\
-  g_print ("PlayerGStreamer: " fmt "\n", ## __VA_ARGS__)
+  __ginga_log (g_print, fmt "\n", ## __VA_ARGS__)
 
 #define _TRACE_MESSAGE(msg, fmt, ...)           \
   _TRACE ("%s: %s: " fmt,                       \
-    GST_MESSAGE_SRC_NAME (msg),                 \
-    GST_MESSAGE_TYPE_NAME (msg),                \
-    ## __VA_ARGS__)
+         GST_MESSAGE_SRC_NAME (msg),            \
+         GST_MESSAGE_TYPE_NAME (msg),           \
+         ## __VA_ARGS__)
+
+#define gstx_element_get_state(elt, state, pending, timeout)            \
+  G_STMT_START                                                          \
+  {                                                                     \
+    if (unlikely (gst_element_get_state                                 \
+                  ((elt), (state), (pending), (timeout))                \
+                  == GST_STATE_CHANGE_FAILURE))                         \
+      {                                                                 \
+        _ERROR ("failed to get %s state", gst_element_get_name (elt));  \
+      }                                                                 \
+  }                                                                     \
+  G_STMT_END
+
+#define gstx_element_get_state_sync(elt, state, pending)        \
+  G_STMT_START                                                  \
+  {                                                             \
+    gstx_element_get_state ((elt), (state), (pending),          \
+                            GST_CLOCK_TIME_NONE);               \
+  }                                                             \
+  G_STMT_END
+
+#define gstx_element_set_state(elt, state)                              \
+  G_STMT_START                                                          \
+  {                                                                     \
+    if (unlikely (gst_element_set_state ((elt), (state))                \
+                  == GST_STATE_CHANGE_FAILURE))                         \
+      {                                                                 \
+        _ERROR ("failed to set %s state", gst_element_get_name (elt));  \
+      }                                                                 \
+  }                                                                     \
+  G_STMT_END
+
+#define gstx_element_set_state_sync(elt, state)                 \
+  G_STMT_START                                                  \
+  {                                                             \
+    gstx_element_set_state ((elt), (state));                    \
+    gstx_element_get_state_sync ((elt), NULL, NULL);            \
+  }                                                             \
+  G_STMT_END
+
+GINGA_NAMESPACE_BEGIN
 
 PlayerGStreamer::PlayerGStreamer (Media *media) : Player (media)
 {
@@ -48,7 +87,7 @@ PlayerGStreamer::PlayerGStreamer (Media *media) : Player (media)
   GstPad *pad;
   GstPad *ghost;
 
-  TRACE ("");
+  _TRACE ("");
 
   // Initialize GStreamer.
   if (!gst_is_initialized ())
@@ -106,18 +145,21 @@ PlayerGStreamer::PlayerGStreamer (Media *media) : Player (media)
   g_assert_nonnull (ghost);
   g_assert (gst_element_add_pad (_video.bin, ghost));
   gst_object_unref (pad);
+
   g_object_set (G_OBJECT (_playbin), "video-sink", _video.bin, nullptr);
 }
 
 PlayerGStreamer::~PlayerGStreamer ()
 {
-  TRACE ("");
+  _TRACE ("");
+  gstx_element_set_state_sync (_playbin, GST_STATE_NULL);
   gst_object_unref (_playbin);
 }
 
 void
 PlayerGStreamer::setURI (const string &uri)
 {
+  _TRACE ("%s", uri.c_str ());
   Player::setURI (uri);
   g_object_set (G_OBJECT (_playbin), "uri", _uri.c_str (), NULL);
 }
@@ -125,42 +167,30 @@ PlayerGStreamer::setURI (const string &uri)
 void
 PlayerGStreamer::start ()
 {
-  GstStateChangeReturn ret;
-
   g_assert_nonnull (_playbin);
 
-  ret = gst_element_set_state (_playbin, GST_STATE_PLAYING);
-  if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
-    _ERROR ("state change failed");
-
+  _TRACE ("");
+  gstx_element_set_state (_playbin, GST_STATE_PLAYING);
   Player::start ();
 }
 
 void
 PlayerGStreamer::pause ()
 {
-  GstStateChangeReturn ret;
-
   g_assert_nonnull (_playbin);
 
-  ret = gst_element_set_state (_playbin, GST_STATE_PAUSED);
-  if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
-    _ERROR ("state change failed");
-
+  _TRACE ("");
+  gstx_element_set_state (_playbin, GST_STATE_PAUSED);
   Player::pause ();
 }
 
 void
 PlayerGStreamer::stop ()
 {
-  GstStateChangeReturn ret;
-
   g_assert_nonnull (_playbin);
 
-  ret = gst_element_set_state (_playbin, GST_STATE_NULL);
-  if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
-    ERROR ("state change failed");
-
+  _TRACE ("");
+  gstx_element_set_state (_playbin, GST_STATE_NULL);
   Player::stop ();
 }
 
@@ -217,85 +247,6 @@ done:
   Player::redraw (cr);
 }
 
-static void G_GNUC_UNUSED
-print_tag (const GstTagList * list, const gchar *tag,
-           unused (gpointer unused))
-{
-  gint i, count;
-
-  count = gst_tag_list_get_tag_size (list, tag);
-
-  for (i = 0; i < count; i++) {
-    gchar *str = NULL;
-
-    if (gst_tag_get_type (tag) == G_TYPE_STRING) {
-      if (!gst_tag_list_get_string_index (list, tag, i, &str)) {
-        g_warning ("Couldn't fetch string for %s tag", tag);
-        g_assert_not_reached ();
-      }
-    } else if (gst_tag_get_type (tag) == GST_TYPE_SAMPLE) {
-      GstSample *sample = NULL;
-
-      if (gst_tag_list_get_sample_index (list, tag, i, &sample)) {
-        GstBuffer *img = gst_sample_get_buffer (sample);
-        GstCaps *caps = gst_sample_get_caps (sample);
-
-        if (img) {
-          if (caps) {
-            gchar *caps_str;
-
-            caps_str = gst_caps_to_string (caps);
-            str = g_strdup_printf ("buffer of %" G_GSIZE_FORMAT " bytes, "
-                "type: %s", gst_buffer_get_size (img), caps_str);
-            g_free (caps_str);
-          } else {
-            str = g_strdup_printf ("buffer of %" G_GSIZE_FORMAT " bytes",
-                gst_buffer_get_size (img));
-          }
-        } else {
-          str = g_strdup ("NULL buffer");
-        }
-      } else {
-        g_warning ("Couldn't fetch sample for %s tag", tag);
-        g_assert_not_reached ();
-      }
-      gst_sample_unref (sample);
-    } else if (gst_tag_get_type (tag) == GST_TYPE_DATE_TIME) {
-      GstDateTime *dt = NULL;
-
-      gst_tag_list_get_date_time_index (list, tag, i, &dt);
-      if (!gst_date_time_has_time (dt)) {
-        str = gst_date_time_to_iso8601_string (dt);
-      } else {
-        gdouble tz_offset = gst_date_time_get_time_zone_offset (dt);
-        gchar tz_str[32];
-
-        if (tz_offset != 0.0) {
-          g_snprintf (tz_str, sizeof (tz_str), "(UTC %s%gh)",
-              (tz_offset > 0.0) ? "+" : "", tz_offset);
-        } else {
-          g_snprintf (tz_str, sizeof (tz_str), "(UTC)");
-        }
-
-        str = g_strdup_printf ("%04d-%02d-%02d %02d:%02d:%02d %s",
-            gst_date_time_get_year (dt), gst_date_time_get_month (dt),
-            gst_date_time_get_day (dt), gst_date_time_get_hour (dt),
-            gst_date_time_get_minute (dt), gst_date_time_get_second (dt),
-            tz_str);
-      }
-      gst_date_time_unref (dt);
-    } else {
-      str =
-          g_strdup_value_contents (gst_tag_list_get_value_index (list, tag, i));
-    }
-
-    if (str) {
-      _TRACE ("%16s: %s\n", i == 0 ? gst_tag_get_nick (tag) : "", str);
-      g_free (str);
-    }
-  }
-}
-
 gboolean
 PlayerGStreamer::busWatch (GstBus *bus, GstMessage *msg,
                            PlayerGStreamer *player)
@@ -309,10 +260,8 @@ PlayerGStreamer::busWatch (GstBus *bus, GstMessage *msg,
     case GST_MESSAGE_ASYNC_DONE:
       {
         GstClockTime running_time;
-        // GstState target;
 
         gst_message_parse_async_done (msg, &running_time);
-        //        gst_message_parse_request_state (msg, &target);
         _TRACE_MESSAGE (msg, "%" GST_TIME_FORMAT,
                         GST_TIME_ARGS (running_time));
         break;
@@ -368,6 +317,15 @@ PlayerGStreamer::busWatch (GstBus *bus, GstMessage *msg,
         //player->stop (); // set eos or use player state to signal eos
         break;
       }
+    case GST_MESSAGE_NEW_CLOCK:
+      {
+        GstClock *clock = NULL;
+
+        gst_message_parse_new_clock (msg, &clock);
+        _TRACE_MESSAGE (msg, "%s",
+                        (clock ? GST_OBJECT_NAME (clock) : "NULL"));
+        break;
+      }
     case GST_MESSAGE_STATE_CHANGED:
       {
         GstState old_state;
@@ -397,30 +355,6 @@ PlayerGStreamer::busWatch (GstBus *bus, GstMessage *msg,
           }
         break;
       }
-#if 0
-    case GST_MESSAGE_TAG:
-      {
-        GstTagList *tag_list;
-
-        // if (GST_IS_ELEMENT (GST_MESSAGE_SRC (message))) {
-        //   PRINT (_("FOUND TAG      : found by element \"%s\".\n"),
-        //          GST_MESSAGE_SRC_NAME (message));
-        // } else if (GST_IS_PAD (GST_MESSAGE_SRC (message))) {
-        //   PRINT (_("FOUND TAG      : found by pad \"%s:%s\".\n"),
-        //          GST_DEBUG_PAD_NAME (GST_MESSAGE_SRC (message)));
-        // } else if (GST_IS_OBJECT (GST_MESSAGE_SRC (message))) {
-        //   PRINT (_("FOUND TAG      : found by object \"%s\".\n"),
-        //          GST_MESSAGE_SRC_NAME (message));
-        // } else {
-        //   PRINT (_("FOUND TAG\n"));
-        // }
-
-        gst_message_parse_tag (msg, &tag_list);
-        gst_tag_list_foreach (tag_list, print_tag, NULL);
-        gst_tag_list_unref (tag_list);
-        break;
-      }
-#endif
     case GST_MESSAGE_ERROR:
     case GST_MESSAGE_WARNING:
       {

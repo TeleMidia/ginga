@@ -73,7 +73,7 @@ PlayerLua::start ()
     }
 
   this->pwdSave (filename);
-  _init_rect = _prop.rect;
+  _init_rect = _rect;
   _nw = ncluaw_open (filename, _init_rect.width, _init_rect.height,
                      &errmsg);
   g_free (filename);
