@@ -1,4 +1,5 @@
-local function parseNumber (str)
+-- Parses a dimension value (e.g, '100%', '10px').
+local function parseDimension (str)
    local n = tonumber (str)
    if n then
       return n
@@ -14,6 +15,9 @@ local function parseNumber (str)
    end
    return nil
 end
+
+-- Parses a position value.
+local parsePosition = parseDimension
 
 -- Media metatable.
 do
@@ -43,8 +47,7 @@ do
       rawset (mt[self], '_player', player)
    end
 
-   -- Updates the dimensions of the drawing area of the player of media
-   -- object.
+   -- Updates the dimensions of visual output the media object's player.
    mt._updatePlayerRect = function (self)
       if not self.player then
          return                 -- nothing to do
@@ -152,12 +155,11 @@ do
 
    local _setProperty_width_height = function (self, name, value)
       if type (value) == 'string' then
-         value = parseNumber (value)
+         value = parseDimension (value)
       end
       if type (value) ~= 'number' then
-         return                 -- bad value, do nothing
+         value = nil            -- bad value, revert to default
       end
-      value = math.abs (value)
       saved_setProperty (self, name, value)
       if self ~= self.document.settings then
          self:_updatePlayerRect ()
@@ -172,10 +174,10 @@ do
 
    local _setProperty_tblr = function (self, name, value)
       if type (value) == 'string' then
-         value = parseNumber (value)
+         value = parsePosition (value)
       end
       if type (value) ~= 'number' then
-         return                 -- bad value, do nothing
+         value = nil            -- bad value, revert to default
       end
       if name == 'top' then
          saved_setProperty (self, 'bottom', nil)
@@ -192,10 +194,6 @@ do
       self:_updatePlayerRect ()
    end
 
-   local _getProperty_bounds = function (self, name)
-      error ('TODO')
-   end
-
    local _setProperty_bounds_re
       ='^%s*([%w%.]+%%?)%s*,%s*([%w%.]+%%?)%s*,'
       ..'%s*([%w%.]+%%?)%s*,%s*([%w%.]+%%?)%s*$'
@@ -207,9 +205,6 @@ do
       elseif type (value) == 'string' then
          top, left, width, height = value:match (_setProperty_bounds_re)
       end
-      if not top then
-         return                 -- bad value, nothing to do
-      end
       self:setProperty ('top', top)
       self:setProperty ('left', left)
       self:setProperty ('width', width)
@@ -218,9 +213,6 @@ do
 
    local _setProperty_z = function (self, name, value)
       local value = tonumber (value)
-      if value == nil then
-         return                 -- bad value, do nothing
-      end
       assert (saved_setProperty (self, name, value))
       self.document:_sortPlayers ()
    end

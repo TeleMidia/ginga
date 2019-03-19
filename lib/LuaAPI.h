@@ -218,8 +218,6 @@ private:
   static int l_Player_start (lua_State *L);
   static int l_Player_pause (lua_State *L);
   static int l_Player_stop (lua_State *L);
-  static int _l_Player_getProperty (lua_State *L);
-  static int _l_Player_setProperty (lua_State *L);
 
   // Auxiliary -------------------------------------------------------------
 public:

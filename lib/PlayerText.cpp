@@ -147,114 +147,105 @@ PlayerText::renderSurface (const string &text, const string &family,
   return sfc;
 }
 
-// Public.
-
-PlayerText::PlayerText (Media *media)
-    : Player (media)
+PlayerText::PlayerText (Media *media) : Player (media)
 {
-  // Initialize handled properties.
-  static set<string> handled = {
-    "fontColor",   "bgColor",    "fontFamily", "fontSize",  "fontStyle",
-    "fontVariant", "fontWeight", "horzAlign",  "vertAlign",
-  };
-  this->resetProperties (&handled);
 }
 
 PlayerText::~PlayerText ()
 {
 }
 
-void
-PlayerText::reload ()
-{
-  string text;
+// void
+// PlayerText::reload ()
+// {
+//   string text;
 
-  if (unlikely (!xurigetcontents (_uri, text)))
-    {
-      ERROR ("cannot load text file %s", _uri.c_str ());
-    }
+//   if (unlikely (!xurigetcontents (_uri, text)))
+//     {
+//       ERROR ("cannot load text file %s", _uri.c_str ());
+//     }
 
-  if (_surface != nullptr)
-    {
-      cairo_surface_destroy (_surface);
-    }
+//   if (_surface != nullptr)
+//     {
+//       cairo_surface_destroy (_surface);
+//     }
 
-  _surface = PlayerText::renderSurface (
-      text, _prop.fontFamily, _prop.fontWeight, _prop.fontStyle,
-      _prop.fontSize, _prop.fontColor, _prop.fontBgColor,
-      Player::_rect, _prop.horzAlign, _prop.vertAlign, true, nullptr);
+//   _surface = PlayerText::renderSurface (
+//       text, _prop.fontFamily, _prop.fontWeight, _prop.fontStyle,
+//       _prop.fontSize, _prop.fontColor, _prop.fontBgColor,
+//       Player::_rect, _prop.horzAlign, _prop.vertAlign, true, nullptr);
 
-  g_assert_nonnull (_surface);
+//   g_assert_nonnull (_surface);
 
-  Player::reload ();
-}
+//   Player::reload ();
+// }
 
 // Protected.
 
-bool
-PlayerText::doSetProperty (Property code, unused (const string &name),
-                           const string &value)
-{
-  switch (code)
-    {
-    case PROP_FONT_COLOR:
-      if (unlikely (!ginga::try_parse_color (value, &_prop.fontColor)))
-        return false;
-      _dirty = true;
-      break;
-    case PROP_FONT_BG_COLOR:
-      if (unlikely (!ginga::try_parse_color (value, &_prop.fontBgColor)))
-        return false;
-      _dirty = true;
-      break;
-    case PROP_FONT_FAMILY:
-      _prop.fontFamily = value;
-      _dirty = true;
-      break;
-    case PROP_FONT_SIZE:
-      _prop.fontSize = value;
-      _dirty = true;
-      break;
-    case PROP_FONT_STYLE:
-      if (unlikely (value != "" && value != "normal" && value != "italic"))
-        return false;
-      _prop.fontStyle = value;
-      _dirty = true;
-      break;
-    case PROP_FONT_VARIANT:
-      if (unlikely (value != "" && value != "small-caps"))
-        return false;
-      _prop.fontVariant = value;
-      _dirty = true;
-      break;
-    case PROP_FONT_WEIGHT:
-      if (unlikely (value != "" && value != "normal" && value != "bold"))
-        return false;
-      _prop.fontWeight = value;
-      _dirty = true;
-      break;
-    case PROP_HORZ_ALIGN:
-      if (unlikely (value != "" && value != "left" && value != "right"
-                    && value != "center" && value != "justified"))
-        {
-          return false;
-        }
-      _prop.horzAlign = value;
-      _dirty = true;
-      break;
-    case PROP_VERT_ALIGN:
-      if (unlikely (value != "" && value != "top" && value != "middle"
-                    && value != "bottom"))
-        {
-          return false;
-        }
-      _prop.vertAlign = value;
-      _dirty = true;
-      break;
-    default:
-      return Player::doSetProperty (code, name, value);
-    }
-  return true;
-}
+// bool
+// PlayerText::doSetProperty (Property code, unused (const string &name),
+//                            const string &value)
+// {
+//   switch (code)
+//     {
+//     case PROP_FONT_COLOR:
+//       if (unlikely (!ginga::try_parse_color (value, &_prop.fontColor)))
+//         return false;
+//       _dirty = true;
+//       break;
+//     case PROP_FONT_BG_COLOR:
+//       if (unlikely (!ginga::try_parse_color (value, &_prop.fontBgColor)))
+//         return false;
+//       _dirty = true;
+//       break;
+//     case PROP_FONT_FAMILY:
+//       _prop.fontFamily = value;
+//       _dirty = true;
+//       break;
+//     case PROP_FONT_SIZE:
+//       _prop.fontSize = value;
+//       _dirty = true;
+//       break;
+//     case PROP_FONT_STYLE:
+//       if (unlikely (value != "" && value != "normal" && value != "italic"))
+//         return false;
+//       _prop.fontStyle = value;
+//       _dirty = true;
+//       break;
+//     case PROP_FONT_VARIANT:
+//       if (unlikely (value != "" && value != "small-caps"))
+//         return false;
+//       _prop.fontVariant = value;
+//       _dirty = true;
+//       break;
+//     case PROP_FONT_WEIGHT:
+//       if (unlikely (value != "" && value != "normal" && value != "bold"))
+//         return false;
+//       _prop.fontWeight = value;
+//       _dirty = true;
+//       break;
+//     case PROP_HORZ_ALIGN:
+//       if (unlikely (value != "" && value != "left" && value != "right"
+//                     && value != "center" && value != "justified"))
+//         {
+//           return false;
+//         }
+//       _prop.horzAlign = value;
+//       _dirty = true;
+//       break;
+//     case PROP_VERT_ALIGN:
+//       if (unlikely (value != "" && value != "top" && value != "middle"
+//                     && value != "bottom"))
+//         {
+//           return false;
+//         }
+//       _prop.vertAlign = value;
+//       _dirty = true;
+//       break;
+//     default:
+//       return Player::doSetProperty (code, name, value);
+//     }
+//   return true;
+// }
 
 GINGA_NAMESPACE_END

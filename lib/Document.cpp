@@ -267,7 +267,7 @@ Document::draw (cairo_t *cr)
 
       lua_rawgeti (_L, -1, i);
       player = LuaAPI::Player_check (_L, -1);
-      player->redraw (cr);
+      player->draw (cr);
       lua_pop (_L, 1);
     }
   lua_pop (_L, 1);

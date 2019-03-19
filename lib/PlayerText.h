@@ -32,11 +32,8 @@ public:
                                          bool, Rect *);
 
   PlayerText (Media *);
-  ~PlayerText ();
-  void reload () override;
 
-protected:
-  bool doSetProperty (Property, const string &, const string &) override;
+  ~PlayerText ();
 
 private:
   struct

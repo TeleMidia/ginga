@@ -33,13 +33,7 @@ public:
   ~PlayerLua ();
   void start () override;
   void stop () override;
-  void redraw (cairo_t *) override;
-  void sendKeyEvent (const string &, bool) override;
-  void sendPresentationEvent (const string &, const string &) override;
-
-protected:
-  virtual bool doSetProperty (Property, const string &,
-                              const string &) override;
+  void draw (cairo_t *) override;
 
 private:
   ncluaw_t *_nw;     // the NCLua state

@@ -195,7 +195,7 @@ PlayerGStreamer::stop ()
 }
 
 void
-PlayerGStreamer::redraw (cairo_t *cr)
+PlayerGStreamer::draw (cairo_t *cr)
 {
   GstSample *sample;
   GstVideoFrame v_frame;
@@ -244,7 +244,7 @@ PlayerGStreamer::redraw (cairo_t *cr)
   g_assert (status == CAIRO_STATUS_SUCCESS);
 
 done:
-  Player::redraw (cr);
+  Player::draw (cr);
 }
 
 gboolean

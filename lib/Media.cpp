@@ -86,30 +86,27 @@ Media::sendKey (const string &key, bool press)
   if (_getPlayer () == NULL)
     return;
 
-  if (press && xstrhasprefix (key, "CURSOR_") && this->isFocused ())
-    {
-      string next;
-      if ((key == "CURSOR_UP"
-           && (next = _getPlayer ()
-               ->getProperty ("moveUp")) != "")
-          || ((key == "CURSOR_DOWN"
-               && (next = _getPlayer ()
-                   ->getProperty ("moveDown")) != ""))
-          || ((key == "CURSOR_LEFT"
-               && (next = _getPlayer ()
-                   ->getProperty ("moveLeft")) != ""))
-          || ((key == "CURSOR_RIGHT"
-               && (next = _getPlayer ()
-                   ->getProperty ("moveRight")) != "")))
-        {
-          this->getDocument ()->getSettings ()
-            ->setPropertyString ("_nextFocus", next);
-        }
-    }
+  // if (press && xstrhasprefix (key, "CURSOR_") && this->isFocused ())
+  //   {
+  //     string next;
+  //
+  //     if ((key == "CURSOR_UP"
+  //          && (next = this->getProperty ("moveUp")) != "")
+  //         || ((key == "CURSOR_DOWN"
+  //              && (next = this->getProperty ("moveDown")) != ""))
+  //         || ((key == "CURSOR_LEFT"
+  //              && (next = this->getProperty ("moveLeft")) != ""))
+  //         || ((key == "CURSOR_RIGHT"
+  //              && (next = this->getProperty ("moveRight")) != "")))
+  //       {
+  //         this->getDocument ()->getSettings ()
+  //           ->setPropertyString ("_nextFocus", next);
+  //       }
+  //   }
 
   // Pass key to player.
-  if (this->isFocused ())
-    _getPlayer ()->sendKeyEvent (key, press);
+  // if (this->isFocused ())
+  //   _getPlayer ()->sendKeyEvent (key, press);
 
   set<Event *> events;
   this->getEvents (&events);
@@ -246,52 +243,50 @@ Media::beforeTransition (Event *evt, Event::Transition transition,
 
                     lambda->transition (Event::START, params);
 
-                    Time begin, end, dur;
+                    // begin = evt->getBeginTime ();
+                    // end = evt->getEndTime ();
 
-                    begin = evt->getBeginTime ();
-                    end = evt->getEndTime ();
-
-                    string time_seek = xstrbuild ("%" G_GUINT64_FORMAT,
-                                                  begin / GINGA_SECOND);
-                    TRACE ("time_seek %ss", time_seek.c_str ());
-                    _getPlayer ()->setProperty ("time", time_seek);
+                    // string time_seek = xstrbuild ("%" G_GUINT64_FORMAT,
+                    //                               begin / GINGA_SECOND);
+                    // TRACE ("time_seek %ss", time_seek.c_str ());
+                    //_getPlayer ()->setProperty ("time", time_seek);
 
                     // End
-                    if (end != GINGA_TIME_NONE)
-                      {
-                        dur = end - begin;
-                        string time_end = xstrbuild ("%" G_GUINT64_FORMAT,
-                                                     dur / GINGA_SECOND);
-                        TRACE ("time_end in %ss", time_end.c_str ());
-                        _getPlayer ()->setProperty ("duration", time_end);
-                        this->addDelayedAction (evt, Event::STOP, "", end);
-                      }
+                    // if (end != GINGA_TIME_NONE)
+                    //   {
+                    //     dur = end - begin;
+                    //     string time_end = xstrbuild ("%" G_GUINT64_FORMAT,
+                    //                                  dur / GINGA_SECOND);
+                    //     TRACE ("time_end in %ss", time_end.c_str ());
+                    //     _getPlayer ()->setProperty ("duration", time_end);
+                    //     this->addDelayedAction (evt, Event::STOP, "", end);
+                    //   }
 
                     // remove events of anchors that happens before or after
                     // anchor started.
-                    for (auto it = _delayed.begin ();
-                         it != _delayed.end ();)
-                      {
-                        if (it->second == GINGA_TIME_NONE
-                            || it->second < begin
-                            || (end != GINGA_TIME_NONE && it->second > end))
-                          {
-                            Action act = it->first;
-                            Event *evt = this->getDocument ()
-                              ->getEvent (act.event);
-                            if (act.transition == Event::START
-                                && it->second < begin)
-                              evt->transition (act.transition, params);
-                            it = _delayed.erase (it);
-                          }
-                        else if (it->second >= begin)
-                          {
-                            it->second = it->second - begin;
-                            ++it;
-                          }
-                        else
-                          ++it;
-                      }
+                    // for (auto it = _delayed.begin ();
+                    //      it != _delayed.end ();)
+                    //   {
+                    //     if (it->second == GINGA_TIME_NONE
+                    //         || it->second < begin
+                    //         || (end != GINGA_TIME_NONE && it->second > end))
+                    //       {
+                    //         Action act = it->first;
+                    //         Event *evt = this->getDocument ()
+                    //           ->getEvent (act.event);
+                    //         if (act.transition == Event::START
+                    //             && it->second < begin)
+                    //           evt->transition (act.transition, params);
+                    //         it = _delayed.erase (it);
+                    //       }
+                    //     else if (it->second >= begin)
+                    //       {
+                    //         it->second = it->second - begin;
+                    //         ++it;
+                    //       }
+                    //     else
+                    //       ++it;
+                    //   }
                   }
               }
             break;
@@ -380,7 +375,7 @@ Media::afterTransition (Event *evt, Event::Transition transition,
             }
           else if (evt->getLabel () != "")
             {
-              _getPlayer ()->sendPresentationEvent ("start", evt->getLabel ());
+              //_getPlayer ()->sendPresentationEvent ("start", evt->getLabel ());
             }
           break;
 
@@ -400,7 +395,7 @@ Media::afterTransition (Event *evt, Event::Transition transition,
             }
           else if (evt->getLabel () != "")
             {
-              _getPlayer ()->sendPresentationEvent ("stop", evt->getLabel ());
+              //_getPlayer ()->sendPresentationEvent ("stop", evt->getLabel ());
             }
           else // non-lambda area
             {

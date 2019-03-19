@@ -38,7 +38,7 @@ public:
 
   void stop () override;
 
-  void redraw (cairo_t *) override;
+  void draw (cairo_t *) override;
 
 private:
 

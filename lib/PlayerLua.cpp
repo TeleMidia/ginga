@@ -24,18 +24,15 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 GINGA_NAMESPACE_BEGIN
 
 // Event handling.
-#define evt_ncl_send_attribution(nw, action, name, value)                  \
-  ncluaw_send_ncl_event (nw, "attribution", action, name, value)
+// #define evt_ncl_send_attribution(nw, action, name, value)
+//   ncluaw_send_ncl_event (nw, "attribution", action, name, value)
 
 #define evt_ncl_send_presentation(nw, action, name)                        \
   ncluaw_send_ncl_event (nw, "presentation", action, name, NULL)
 
-#if 0
-#define evt_ncl_send_selection(nw, action, name)                           \
-  ncluaw_send_ncl_event (nw, "selection", action, name, NULL)
-#endif
-
-#define evt_key_send ncluaw_send_key_event
+// #define evt_ncl_send_selection(nw, action, name)
+//   ncluaw_send_ncl_event (nw, "selection", action, name, NULL)
+// #define evt_key_send ncluaw_send_key_event
 
 /// Conversion from NCLua actions to NCL transitions
 static map<string, Event::Transition> nclua_act_to_ncl = {
@@ -105,22 +102,22 @@ PlayerLua::stop ()
   Player::stop ();
 }
 
-void
-PlayerLua::sendKeyEvent (const string &key, bool press)
-{
-  g_assert_nonnull (_nw);
-  evt_key_send (_nw, press ? "press" : "release", key.c_str ());
-}
+// void
+// PlayerLua::sendKeyEvent (const string &key, bool press)
+// {
+//   g_assert_nonnull (_nw);
+//   evt_key_send (_nw, press ? "press" : "release", key.c_str ());
+// }
+
+// void
+// PlayerLua::sendPresentationEvent (const string &action, const string &label)
+// {
+//   g_assert_nonnull (_nw);
+//   evt_ncl_send_presentation (_nw, action.c_str (), label.c_str ());
+// }
 
 void
-PlayerLua::sendPresentationEvent (const string &action, const string &label)
-{
-  g_assert_nonnull (_nw);
-  evt_ncl_send_presentation (_nw, action.c_str (), label.c_str ());
-}
-
-void
-PlayerLua::redraw (cairo_t *cr)
+PlayerLua::draw (cairo_t *cr)
 {
   cairo_surface_t *sfc;
   ncluaw_event_t *evt;
@@ -137,7 +134,7 @@ PlayerLua::redraw (cairo_t *cr)
 
   _surface = sfc;
 
-  Player::redraw (cr);
+  Player::draw (cr);
 
   // Get events posted from NCLua.
   while ((evt = ncluaw_receive (_nw)) != nullptr)
@@ -196,19 +193,19 @@ PlayerLua::redraw (cairo_t *cr)
 
 // Protected.
 
-bool
-PlayerLua::doSetProperty (Property code, const string &name,
-                          const string &value)
-{
-  if (_nw != nullptr && _state == Player::PLAYING)
-    {
-      const char *k = name.c_str ();
-      const char *v = value.c_str ();
-      evt_ncl_send_attribution (_nw, "start", k, v);
-      evt_ncl_send_attribution (_nw, "stop", k, v);
-    }
-  return Player::doSetProperty (code, name, value);
-}
+// bool
+// PlayerLua::doSetProperty (Property code, const string &name,
+//                           const string &value)
+// {
+//   if (_nw != nullptr && _state == Player::PLAYING)
+//     {
+//       const char *k = name.c_str ();
+//       const char *v = value.c_str ();
+//       evt_ncl_send_attribution (_nw, "start", k, v);
+//       evt_ncl_send_attribution (_nw, "stop", k, v);
+//     }
+//   return Player::doSetProperty (code, name, value);
+// }
 
 // Private.
 

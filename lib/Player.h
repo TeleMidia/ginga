@@ -48,10 +48,10 @@ public:
   /// Sets the URI of the content of player.
   virtual void setURI (const string &uri);
 
-  /// Gets the dimensions of the drawing area of player.
+  /// Gets the dimensions of the visual output of player.
   void getRect (int *x, int *y, int *width, int *height);
 
-  /// Sets dimensions of the drawing area of player.
+  /// Sets dimensions of the visual output of player.
   void setRect (int x, int y, int width, int height);
 
   /// Gets end-of-stream flag of player.
@@ -68,6 +68,9 @@ public:
 
   /// Pauses playback.
   virtual void pause ();
+
+  /// Draws the visual output of player into Cairo context.
+  virtual void draw (cairo_t *cr);
 
 protected:
 
@@ -86,95 +89,17 @@ protected:
   /// The URI of the content of player.
   string _uri;
 
-  /// The dimensions of player drawing area (x, y, w, h in pixels).
+  /// The dimensions of player's visual output  (x, y, w, h in pixels).
   Rect _rect;
 
-  /// Indicates whether the content of player was exhausted.
+  /// Whether the content of player was exhausted.
   bool _eos;
 
-  /// Flags: indicate attribute changes.
-  struct {
-    bool uri;
-    bool rect;
-    bool eos;
-  } _flag;
+  /// The alpha to be applied to player's visual output.
+  guint8 _alpha;
 
-  // TODO ------------------------------------------------------------------
-public:
-  enum Property
-  {
-    PROP_UNKNOWN = 0,
-    PROP_BACKGROUND,
-    PROP_BALANCE,
-    PROP_BASS,
-    PROP_DEBUG,
-    PROP_DURATION,
-    PROP_EXPLICIT_DUR,
-    PROP_FONT_BG_COLOR,
-    PROP_FONT_COLOR,
-    PROP_FONT_FAMILY,
-    PROP_FONT_SIZE,
-    PROP_FONT_STYLE,
-    PROP_FONT_VARIANT,
-    PROP_FONT_WEIGHT,
-    PROP_FREEZE,
-    PROP_FREQ,
-    PROP_HORZ_ALIGN,
-    PROP_MUTE,
-    PROP_SPEED,
-    PROP_TIME,
-    PROP_TRANSPARENCY,
-    PROP_TREBLE,
-    PROP_VERT_ALIGN,
-    PROP_VISIBLE,
-    PROP_VOLUME,
-    PROP_WAVE,
-  };
-
-
-  string getProperty (const string &);
-  void setProperty (const string &, const string &);
-
-  void resetProperties ();
-  void resetProperties (set<string> *);
-  void schedulePropertyAnimation (const string &, const string &,
-                                  const string &, Time);
-  virtual void reload ();
-  virtual void redraw (cairo_t *);
-
-  virtual void sendKeyEvent (const string &, bool);
-
-  virtual void
-  sendPresentationEvent (const string &, const string &)
-  {
-  }
-
-  // Static.
-  static Property getPlayerProperty (const string &, string *);
-
-protected:
-
-  bool _dirty;               // true if surface should be reloaded
-  list<int> _crop;           // polygon for cropping effect
-
-  map<string, string> _properties; // property table
-  struct
-  {
-    Color bgColor;     // background color
-    Time duration;     // explicit duration
-    bool visible;      // true if visible
-    guint8 alpha;      // alpha
-    int zindex;        // z-index
-    int zorder;        // z-order
-    string focusIndex; // focus index
-    string type;       // content mime-type
-  } _prop;
-
-protected:
-  virtual bool doSetProperty (Property, const string &, const string &);
-
-private:
-  void redrawDebuggingInfo (cairo_t *);
+  /// The color of the background of player's visual output.
+  Color _bgColor;
 };
 
 GINGA_NAMESPACE_END

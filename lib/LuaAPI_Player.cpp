@@ -37,8 +37,6 @@ LuaAPI::Player_attachWrapper (lua_State *L, Player *player, Media *media)
      {"start",        LuaAPI::l_Player_start},
      {"pause",        LuaAPI::l_Player_pause},
      {"stop",         LuaAPI::l_Player_stop},
-     {"_getProperty", LuaAPI::_l_Player_getProperty}, // TODO: REMOVE
-     {"_setProperty", LuaAPI::_l_Player_setProperty}, // TODO: REMOVE
      {NULL, NULL},
     };
 
@@ -287,34 +285,6 @@ LuaAPI::l_Player_stop (lua_State *L)
 
   player = LuaAPI::Player_check (L, 1);
   player->stop ();
-
-  return 0;
-}
-
-int
-LuaAPI::_l_Player_getProperty (lua_State *L) // TODO: Remove
-{
-  Player *player;
-  const char *name;
-
-  player = LuaAPI::Player_check (L, 1);
-  name = luaL_checkstring (L, 2);
-  lua_pushstring (L, player->getProperty (string (name)).c_str ());
-
-  return 1;
-}
-
-int
-LuaAPI::_l_Player_setProperty (lua_State *L) // TODO: Remove
-{
-  Player *player;
-  const char *name;
-  const char *value;
-
-  player = LuaAPI::Player_check (L, 1);
-  name = luaL_checkstring (L, 2);
-  value = luaL_checkstring (L, 3);
-  player->setProperty (string (name), string (value));
 
   return 0;
 }
