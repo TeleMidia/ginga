@@ -20,7 +20,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "LuaAPI.h"
 
 #include "Document.h"
-#include "MediaSettings.h"
 
 GINGA_NAMESPACE_BEGIN
 
@@ -101,8 +100,6 @@ Context::~Context ()
 
   LuaAPI::Object_detachWrapper (_L, this);
 }
-
-// Public.
 
 const list<pair<list<Action>, list<Action> > > *
 Context::getLinks ()

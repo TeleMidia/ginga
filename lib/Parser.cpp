@@ -25,7 +25,6 @@ GINGA_END_DECLS
 #include "Context.h"
 #include "Document.h"
 #include "Media.h"
-#include "MediaSettings.h"
 #include "Switch.h"
 
 #include <libxml/tree.h>

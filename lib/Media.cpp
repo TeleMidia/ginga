@@ -16,12 +16,11 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
-#include "Object.h"
+#include "Media.h"
 #include "LuaAPI.h"
 
 #include "Document.h"
 #include "Context.h"
-#include "MediaSettings.h"
 #include "Switch.h"
 #include "Event.h"
 #include "Player.h"

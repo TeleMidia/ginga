@@ -26,7 +26,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "Document.h"
 #include "Media.h"
-#include "MediaSettings.h"
 using namespace ::std;
 
 GINGA_BEGIN_DECLS

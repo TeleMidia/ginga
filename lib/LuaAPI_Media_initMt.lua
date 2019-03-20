@@ -57,6 +57,11 @@ do
    mt._init = function (self)
       saved_init (self)
       --
+      -- Check if this is the settings object.
+      if self == self.document.settings then
+         assert (self:createEvent ('attribution', 'service.currentFocus'))
+      end
+      --
       -- Default behavior.
       self:run {
          function ()            -- start lambda

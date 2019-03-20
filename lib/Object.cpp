@@ -24,7 +24,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Document.h"
 #include "Event.h"
 #include "Media.h"
-#include "MediaSettings.h"
 #include "Switch.h"
 
 GINGA_NAMESPACE_BEGIN

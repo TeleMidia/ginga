@@ -21,7 +21,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "Document.h"
 #include "Media.h"
-#include "MediaSettings.h"
 #include "PlayerText.h"
 
 GINGA_NAMESPACE_BEGIN

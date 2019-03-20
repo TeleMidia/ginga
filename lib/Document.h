@@ -38,7 +38,7 @@ public:
   /// Creates a new document.
   ///
   /// The newly created document has a Context, called `__root__`, and a
-  /// single MediaSettings object, called `__settings__`.
+  /// single Media object, called `__settings__`.
   ///
   /// @param L The Lua state to associate this document to.
   ///
@@ -64,7 +64,7 @@ public:
   Context *getRoot ();
 
   /// Gets the settings Media object of document.
-  MediaSettings *getSettings ();
+  Media *getSettings ();
 
   /// Creates a new object and adds it to document.
   Object *createObject (Object::Type type, const string &id);

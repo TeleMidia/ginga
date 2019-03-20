@@ -16,13 +16,11 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
-#include "aux-gl.h"
 #include "Formatter.h"
 
 #include "LuaAPI.h"
 #include "Context.h"
 #include "Media.h"
-#include "MediaSettings.h"
 #include "Object.h"
 #include "Switch.h"
 
@@ -68,7 +66,7 @@ Formatter::start (const string &file, int w, int h, string *errmsg)
 
   Context *root = _doc->getRoot ();
   g_assert_nonnull (root);
-  MediaSettings *settings = _doc->getSettings ();
+  Media *settings = _doc->getSettings ();
   g_assert_nonnull (settings);
 
   settings->setPropertyInteger ("width", w);

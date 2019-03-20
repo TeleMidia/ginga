@@ -21,7 +21,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "Context.h"
 #include "Media.h"
-#include "MediaSettings.h"
 #include "Object.h"
 #include "Switch.h"
 
@@ -108,7 +107,7 @@ Document::getRoot ()
   return root;
 }
 
-MediaSettings *
+Media *
 Document::getSettings ()
 {
   Media *media;
@@ -117,7 +116,7 @@ Document::getSettings ()
   media = LuaAPI::Media_check (_L, -1);
   lua_pop (_L, 1);
 
-  return cast (MediaSettings *, media);
+  return media;
 }
 
 Object *

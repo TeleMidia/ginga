@@ -67,7 +67,6 @@ src+= LuaAPI_Switch.cpp
 src+= LuaAPI_initMt.cpp
 src+= LuaAPI_traceMt.cpp
 src+= Media.cpp
-src+= MediaSettings.cpp
 src+= Object.cpp
 src+= Parser.cpp
 src+= Player.cpp

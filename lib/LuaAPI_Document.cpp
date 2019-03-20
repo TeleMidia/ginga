@@ -21,17 +21,13 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Composition.h"
 #include "Context.h"
 #include "Media.h"
-#include "MediaSettings.h"
 #include "Switch.h"
 
 #include "Player.h"
-
+#include "PlayerGStreamer.h"
 #if defined WITH_NCLUA && WITH_NCLUA
 #include "PlayerLua.h"
 #endif
-#include "PlayerGStreamer.h"
-
-// Public.
 
 void
 LuaAPI::Document_attachWrapper (lua_State *L, Document *doc)
@@ -124,8 +120,6 @@ LuaAPI::Document_call (lua_State *L, Document *doc, const char *name,
   LuaAPI::_callLuaWrapper (L, doc, name, nargs, nresults);
 }
 
-// Private.
-
 int
 LuaAPI::__l_Document_gc (lua_State *L)
 {
@@ -160,10 +154,7 @@ LuaAPI::_l_Document_createObject (lua_State *L)
   switch (type)
     {
     case Object::MEDIA:
-      if (g_str_equal (id, "__settings__")) // TODO: REMOVE
-        obj = new MediaSettings (doc, id);
-      else
-        obj = new Media (doc, id);
+      obj = new Media (doc, id);
       break;
     case Object::CONTEXT:
       obj = new Context (doc, id);
