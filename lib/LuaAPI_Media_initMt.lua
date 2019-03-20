@@ -147,12 +147,12 @@ do
 
    -- Exported functions ---------------------------------------------------
 
-   -- Object::isComposition().
+   -- Media::isComposition().
    mt.isComposition = function (self)
       return false
    end
 
-   -- Object::getProperty() and Object::setProperty().
+   -- Media::getProperty() and Media::setProperty().
    local saved_getProperty = mt.getProperty
    local saved_setProperty = mt.setProperty
 

@@ -1,14 +1,19 @@
-local assert    = assert
-local await     = coroutine.yield
-local coroutine = coroutine
-local ipairs    = ipairs
-local math      = math
-local pairs     = pairs
-local rawget    = rawget
-local rawset    = rawset
-local table     = table
-local tostring  = tostring
-local type      = type
+local _G           = _G
+local assert       = assert
+local await        = coroutine.yield
+local coroutine    = coroutine
+local error        = error
+local ipairs       = ipairs
+local load         = load
+local math         = math
+local pairs        = pairs
+local print        = print
+local rawget       = rawget
+local rawset       = rawset
+local setmetatable = setmetatable
+local table        = table
+local tostring     = tostring
+local type         = type
 _ENV = nil
 
 -- Compares two players by zIndex and zOrder.
@@ -153,15 +158,15 @@ do
    -- Initializes private data.
    local saved_init = assert (mt._init)
    mt._init = function (self)
+      saved_init (self)
       assert (self:createObject ('context', '__root__'))
       assert (self:createObject ('media', '__settings__'))
-      return saved_init (self)
    end
 
    -- Finalizes private data.
    local saved_fini = assert (mt._fini)
    mt._fini = function (self)
-      return saved_fini (self)
+      saved_fini (self)
    end
 
    -- Adds object to document.
@@ -316,20 +321,24 @@ do
    end
 
    -- Checks condition for any missing data, and updates it if necessary.
-   -- Returns the updated condition and the corresponding behavior data.
+   -- If successful, returns the updated condition and the corresponding
+   -- behavior data if successful.  Otherwise, returns nil plus an error
+   -- message.
    mt._checkBehaviorCondition = function (self, cond)
-      assert (type (cond) == 'table', 'bad cond: '..tostring (cond))
+      if type (cond) ~= 'table' then
+         return nil, ('expected condition (got %s)'):format (cond)
+      end
       local data
       if cond.time then
          local obj = cond.object
          if not obj then
             obj = self          -- target is document
-         else
+         elseif obj ~= self then
             if type (obj) == 'string' then
                obj = self:getObject (obj)
             end
             if obj == nil or obj.document ~= self then
-               error ('bad object :'..tostring (obj))
+               return nil, ('expected object (got %s)'):format (obj)
             end
          end
          cond.object = obj
@@ -339,19 +348,22 @@ do
          if type (evt) == 'string' then
             evt = self:getEvent (evt)
          end
-         assert (evt and evt.object.document == self,
-                 'bad event: '..tostring (evt))
-         assert (cond.transition == 'start'
-                    or transition == 'pause'
-                    or transition == 'resume'
-                    or transition == 'stop'
-                    or transition == 'abort',
-                 'bad transition: '..tostring (cond.transition))
+         if not evt or evt.object.document ~= self then
+            return nil, ('expected event (got %s)'):format (evt)
+         end
+         local trans = cond.transition
+         if trans ~= 'start'
+            and trans ~= 'pause'
+            and trans ~= 'resume'
+            and trans ~= 'stop'
+            and trans ~= 'abort' then
+            return nil, ('expected transition (got %s)'):format (trans)
+         end
          cond.event = evt
          cond.object = evt.object
          data = evt:_getBehaviorData ()
       else
-         error ('bad cond: '..tostring (cond))
+         return nil, ('expected condition (got %s)'):format (cond)
       end
       return cond, data
    end
@@ -362,6 +374,7 @@ do
          return                 -- nothing to do
       end
       local cond, data = self:_checkBehaviorCondition (cond)
+      assert (cond, data)
       cond.behavior = co
       if cond.time then
          local list = assert (data.time)
@@ -383,13 +396,24 @@ do
    mt._awakeBehavior = function (self, co, ...)
       assert (type (co) == 'thread')
       local status, cond = coroutine.resume (co, ...)
-      assert (status, 'behavior error: '..tostring (cond))
+      if not status then
+         self:_warning ('behavior error: '..tostring (cond))
+         cond = nil
+      end
+      if cond then
+         local status, errmsg = self:_checkBehaviorCondition (cond)
+         if not status then
+            self:_warning ('behavior error: await: '..errmsg)
+            cond = nil
+         end
+      end
       return co, cond
    end
 
    -- Awakes any behaviors waiting on the given condition.
    mt._awakeBehaviors = function (self, cond)
       local cond, data = self:_checkBehaviorCondition (cond)
+      assert (cond, data)
       local schedule = {}
       if cond.time then         -- awake behaviors waiting for time
          local obj = assert (cond.object)
@@ -400,7 +424,8 @@ do
             local delta = time - t.time -- delta compensation
             local co, cond = self:_awakeBehavior (t.behavior, cond)
             if cond then
-               cond = self:_checkBehaviorCondition (cond)
+               cond, data = self:_checkBehaviorCondition (cond)
+               assert (cond, data)
                if cond.time then
                   cond.time = cond.time + cond.object.time - delta
                end
@@ -422,7 +447,8 @@ do
                local t = table.remove (list, i)
                local co, cond = self:_awakeBehavior (t.behavior, cond)
                if cond then
-                  cond = self:_checkBehaviorCondition (cond)
+                  cond, data = self:_checkBehaviorCondition (cond)
+                  assert (cond, data)
                   table.insert (schedule, {co, cond})
                end
             else
@@ -434,6 +460,35 @@ do
       end
       for _,v in ipairs (schedule) do
          self:_scheduleBehavior (table.unpack (v))
+      end
+   end
+
+   -- Runs the given function as behavior of object.
+   mt._runBehavior = function (self, t, obj, debug)
+      if type (t) == 'string' then
+         local _await = function (t)
+            if type (t) == 'number' then
+               return coroutine.yield {object=obj, time=t*1000000}
+            else
+               return coroutine.yield (t)
+            end
+         end
+         local env = setmetatable ({_D=self, await=_await}, {__index=_G})
+         local f, errmsg = load (t, debug, nil, env)
+         if not f then
+            self:_warning ('behavior error: '..errmsg)
+            return
+         end
+         t = f
+      end
+      if type (t) == 'function' then
+         t = {t}
+      end
+      assert (type (t) == 'table',
+              ('expected behavior (got %s)'):format (t))
+      for _,f in ipairs (t) do
+         local co = coroutine.create (f)
+         self:_scheduleBehavior (self:_awakeBehavior (co, obj or self))
       end
    end
 
@@ -518,9 +573,7 @@ do
    end
 
    -- Runs the given behavior.
-   mt.run = function (self, func)
-      assert (type (func) == 'function')
-      local co = coroutine.create (func)
-      self:_scheduleBehavior (self:_awakeBehavior (co, self))
+   mt.run = function (self, t, debug)
+      self:_runBehavior (t, nil, debug)
    end
 end

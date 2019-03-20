@@ -201,15 +201,7 @@ do
    end
 
    -- Runs the given behavior.
-   mt.run = function (self, t)
-      if type (t) == 'function' then
-         t = {t}
-      end
-      assert (type (t) == 'table', 'bad behavior: '..tostring (t))
-      local doc = assert (self.document)
-      for _,f in ipairs (t) do
-         local co = coroutine.create (f)
-         doc:_scheduleBehavior(doc:_awakeBehavior (co, self))
-      end
+   mt.run = function (self, t, debug)
+      self.document:_runBehavior (t, self, debug)
    end
 end

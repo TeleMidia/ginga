@@ -36,7 +36,6 @@ ginga_la_CXXFLAGS = $(AM_CXXFLAGS) $(LUA_CFLAGS)
 ginga_la_LDFLAGS = $(LIBM) -module $(LT_MODULE_LDFLAGS) $(LUA_LIBS)
 ginga_la_SOURCES = LuaAPI_libginga.cpp
 
-include_HEADERS= ginga.h
 lib_LTLIBRARIES= libginga.la
 libginga_la_CXXFLAGS= $(AM_CXXFLAGS)
 libginga_la_LDFLAGS= $(AM_LDFLAGS)
