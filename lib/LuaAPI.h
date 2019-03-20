@@ -98,10 +98,6 @@ public:
   /// Calls a method of the Lua wrapper of the given object.
   static void Object_call (lua_State *L, Object *obj,
                            const char *name, int nargs, int nresults);
-private:
-  static int _l_Object_beforeTransition (lua_State *L);
-  static int _l_Object_afterTransition (lua_State *L);
-
   // Composition -----------------------------------------------------------
 public:
 

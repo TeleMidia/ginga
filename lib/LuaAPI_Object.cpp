@@ -30,13 +30,6 @@ void
 LuaAPI::Object_attachWrapper (lua_State *L, Object *obj, Document *doc,
                               Object::Type type, const string &id)
 {
-  static const struct luaL_Reg _Object_funcs[] =
-    {                           // TODO: REMOVE
-     {"_beforeTransition", LuaAPI::_l_Object_beforeTransition},
-     {"_afterTransition",  LuaAPI::_l_Object_afterTransition},
-     {NULL, NULL},
-    };
-
   const char *name;
 
   g_return_if_fail (L != NULL);
@@ -50,7 +43,6 @@ LuaAPI::Object_attachWrapper (lua_State *L, Object *obj, Document *doc,
         static const struct luaL_Reg *const funcs[] =
           {
            _funcs,
-           _Object_funcs,
            NULL,
           };
 
@@ -79,7 +71,6 @@ LuaAPI::Object_attachWrapper (lua_State *L, Object *obj, Document *doc,
         static const struct luaL_Reg *const funcs[] =
           {
            _funcs,
-           _Object_funcs,
            NULL,
           };
 
@@ -107,7 +98,6 @@ LuaAPI::Object_attachWrapper (lua_State *L, Object *obj, Document *doc,
         static const struct luaL_Reg *const funcs[] =
           {
            _funcs,
-           _Object_funcs,
            NULL,
           };
 
@@ -256,43 +246,3 @@ LuaAPI::Object_call (lua_State *L, Object *obj, const char *name,
 
   LuaAPI::_callLuaWrapper (L, obj, name, nargs, nresults);
 }
-
-#define OBJECT_XTRANSITION_DEFN(Name)                                   \
-  int                                                                   \
-  LuaAPI::_l_Object_##Name##Transition (lua_State *L)                   \
-  {                                                                     \
-    Object *obj;                                                        \
-    Event *evt;                                                         \
-    Event::Transition trans;                                            \
-    map<string, string> params;                                         \
-                                                                        \
-    obj = LuaAPI::Object_check (L, 1);                                  \
-    evt = LuaAPI::Event_check (L, 2);                                   \
-    trans = LuaAPI::Event_Transition_check (L, 3);                      \
-    if (!lua_isnoneornil (L, 4))                                        \
-      {                                                                 \
-        luaL_checktype (L, 4, LUA_TTABLE);                              \
-        lua_pushnil (L);                                                \
-        while (lua_next (L, -2))                                        \
-          {                                                             \
-            const char *name;                                           \
-            const char *value;                                          \
-                                                                        \
-            name = lua_tostring (L, -2);                                \
-            value = lua_tostring (L, -1);                               \
-            if (name != NULL && value != NULL)                          \
-              {                                                         \
-                params[string (name)] = string (value);                 \
-              }                                                         \
-            lua_pop (L, 1);                                             \
-          }                                                             \
-        lua_pop (L, 1);                                                 \
-      }                                                                 \
-                                                                        \
-    lua_pushboolean (L, obj->Name##Transition (evt, trans, params));    \
-                                                                        \
-    return 1;                                                           \
-  }
-
-OBJECT_XTRANSITION_DEFN (before);
-OBJECT_XTRANSITION_DEFN (after)

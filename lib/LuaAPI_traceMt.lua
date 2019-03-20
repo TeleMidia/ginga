@@ -41,29 +41,9 @@ do
    -- Disable trace for these functions.
    mt._traceOff = mt._traceOff or {}
 
-   -- Wrap GLib logging functions into more convenient functions.
-   -- TODO: Move this to initMt.
-   local t = {_debug=mt._debug, _warning=mt._warning, _error=mt._error}
-   for name,func in pairs  (t) do
-      assert (type (func) == 'function')
-      mt[name] = function (self, fmt, ...)
-         local tag
-         local args
-         if type (self) == 'userdata' then
-            args = {...}
-            local _mt = assert (getmetatable (self))
-            tag = assert (_mt.__name)..': '
-         elseif type (self) == 'string' then
-            args = {fmt, ...}
-            tag = ''
-            fmt = self
-         else
-            error ('bad format: '..tostring (fmt))
-         end
-         return func ((tag..fmt):format (table.unpack (args)))
-      end
-      mt._traceOff[name] = true
-   end
+   mt._traceOff._debug   = true
+   mt._traceOff._warning = true
+   mt._traceOff._error   = true
 
    -- Install trace wrappers.
    for name,func in pairs (mt) do

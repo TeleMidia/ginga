@@ -110,10 +110,13 @@ Formatter::resize (int width, int height)
 bool
 Formatter::sendKey (const string &key, bool press)
 {
-  set<Object *> objects;
-  list<Object *> buf;
+  // set<Object *> objects;
+  // list<Object *> buf;
 
-  g_assert_nonnull (_doc);
+  (void) key;
+  (void) press;
+
+  // g_assert_nonnull (_doc);
 
   // IMPORTANT: When propagating a key to the objects, we cannot traverse
   // the object set directly, as the reception of a key may cause the state
@@ -122,18 +125,18 @@ Formatter::sendKey (const string &key, bool press)
   // are not sleeping, and then propagate the key only to the objects in
   // this buffer.
 
-  _doc->getObjects (&objects);
-  for (auto obj: objects)
-    if (!obj->isSleeping ())
-      buf.push_back (obj);
-  for (auto obj: buf)
-    {
-      if (obj->getType () == Object::MEDIA)
-        {
-          Media *media = cast (Media *, obj);
-          media->sendKey (key, press);
-        }
-    }
+  // _doc->getObjects (&objects);
+  // for (auto obj: objects)
+  //   if (!obj->isSleeping ())
+  //     buf.push_back (obj);
+  // for (auto obj: buf)
+  //   {
+  //     if (obj->getType () == Object::MEDIA)
+  //       {
+  //         Media *media = cast (Media *, obj);
+  //         media->sendKey (key, press);
+  //       }
+  //   }
 
   return true;
 }

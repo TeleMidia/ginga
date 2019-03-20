@@ -30,11 +30,7 @@ public:
                    const string &id);
   ~Switch ();
 
-  // Object:
-  bool beforeTransition (Event *, Event::Transition,
-                         map<string, string> &params) override;
-  bool afterTransition (Event *, Event::Transition,
-                        map<string, string> &params) override;
+  // TODO ------------------------------------------------------------------
 
   // Switch:
   const list<pair<Object *, Predicate *> > *getRules ();
@@ -43,7 +39,7 @@ public:
   void addSwitchPort (const string &, const list<Event *> &);
 
 private:
-  map<string, list<Event *> > _switchPorts; ///< List of switchPorts.
+  map<string, list<Event *> > _switchPorts;
   list<pair<Object *, Predicate *> > _rules;
   Object *_selected;
 };

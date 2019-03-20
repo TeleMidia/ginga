@@ -134,63 +134,10 @@ public:
   /// Unsets an object property.
   void unsetProperty (const string &name);
 
-  // TODO ------------------------------------------------------------------
-
-  bool isOccurring ();
-  bool isPaused ();
-  bool isSleeping ();
-
-  const list<pair<Action, Time> > *getDelayedActions ();
-  void addDelayedAction (Event *, Event::Transition,
-                         const string &value = "", Time delay = 0);
-
-  virtual void sendTick (Time, Time, Time);
-
-  /**
-   * @brief Initiates event transition.
-   *
-   * This function is called by Event::transition() immediately before
-   * transitioning \p evt.  If the transition can go on, the function
-   * returns \c true.  Otherwise, if the transition must be cancelled, e.g.,
-   * due to some error, the function returns false.
-   *
-   * @param evt Event to be transitioned.
-   * @param transition The desired transition.
-   * @return \c true if successful, or \c false otherwise (cancel
-   * transition).
-   */
-  virtual bool beforeTransition (Event *evt,
-                                 Event::Transition transition,
-                                 map<string, string> &params) = 0;
-
-  /**
-   * @brief Finishes event transition.
-   *
-   * This function is called by Event::transition() immediately after
-   * transitioning \p evt.  If the transition can finish successfully, the
-   * function returns \c true.  Otherwise, if the transition must be
-   * reverted, e.g., due to some error, the function returns false.
-   *
-   * @param evt Event that was transitioned.
-   * @param transition The transition.
-   * @return \c true if successful, or \c false otherwise (cancel
-   * transition).
-   */
-  virtual bool afterTransition (Event *evt,
-                                Event::Transition transition,
-                                map<string, string> &params) = 0;
-
 protected:
 
   /// The Lua state associated with this object.
   lua_State *_L;
-
-  // TODO ------------------------------------------------------------------
-
-  /// Delayed actions.
-  list<pair<Action, Time> > _delayed;
-  virtual void doStart ();
-  virtual void doStop ();
 };
 
 GINGA_NAMESPACE_END

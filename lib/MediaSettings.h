@@ -26,10 +26,7 @@ class MediaSettings : public Media
 {
 public:
   MediaSettings (Document *doc, const string &id);
-
   ~MediaSettings ();
-
-  void sendTick (Time, Time, Time) override;
 };
 
 GINGA_NAMESPACE_END

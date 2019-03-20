@@ -317,8 +317,8 @@ Document::evalActionInContext (Action act, Context *ctx)
   evt = this->getEvent (act.event);
   g_assert_nonnull (evt);
 
-  if (!ctx->getLinksStatus ())
-    return stack;
+  // if (!ctx->getLinksStatus ())
+  //   return stack;
   for (auto link : *ctx->getLinks ())
     {
       for (auto cond : link.first)
@@ -358,9 +358,8 @@ Document::evalActionInContext (Action act, Context *ctx)
                   g_assert_nonnull (next_evt);
                   Object *next_obj = next_evt->getObject ();
                   g_assert_nonnull (next_obj);
-
-                  ctx->addDelayedAction (next_evt, next_act.transition,
-                                         next_act.params["value"],delay);
+                  // ctx->addDelayedAction (next_evt, next_act.transition,
+                  //                        next_act.params["value"],delay);
                 }
             }
         }
@@ -416,7 +415,8 @@ Document::evalAction (Action init)
 
       // If parent composition is a context
       if (comp != NULL &&
-          instanceof (Context *, comp) && comp->isOccurring ())
+          instanceof (Context *, comp)
+          && comp->getLambda ()->getState () == Event::OCCURRING)
         {
           ctx_parent = cast (Context *, comp);
           g_assert_nonnull (ctx_parent);
@@ -434,7 +434,8 @@ Document::evalAction (Action init)
           Composition *comp = (it == parents.end ()) ? NULL: *it;
 
           if (comp != NULL &&
-              instanceof (Context *, comp) && comp->isOccurring ())
+              instanceof (Context *, comp)
+              && comp->getLambda ()->getState () == Event::OCCURRING)
             {
               ctx_grandparent = cast (Context *, comp);
               list<Event *> ports;

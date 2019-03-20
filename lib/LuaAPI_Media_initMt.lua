@@ -1,3 +1,17 @@
+local assert    = assert
+local await     = coroutine.yield
+local coroutine = coroutine
+local error     = error
+local ipairs    = ipairs
+local math      = math
+local print     = print
+local rawget    = rawget
+local rawset    = rawset
+local table     = table
+local tonumber  = tonumber
+local type      = type
+_ENV = nil
+
 -- Parses a dimension value (e.g, '100%', '10px').
 local function parseDimension (str)
    local n = tonumber (str)
@@ -19,22 +33,47 @@ end
 -- Parses a position value.
 local parsePosition = parseDimension
 
--- Media metatable.
+-- Media metatable
 do
    local mt = ...
 
+   -- Attaches private data and access functions.
    local saved_attachData = assert (mt._attachData)
    mt._attachData = function (self, doc, type, id, data, funcs)
       local data = data or {}
       local funcs = funcs or {}
-
+      --
       -- Private data.
       data._player = nil
-
+      --
       -- Getters & setters.
       funcs.player = {mt._getPlayer, nil}
-
+      --
       return saved_attachData (self, doc, type, id, data, funcs)
+   end
+
+   -- Initializes media object.
+   local saved_init = assert (mt._init)
+   mt._init = function (self)
+      saved_init (self)
+      --
+      -- Default behavior.
+      self:run {
+         function ()            -- start lambda
+            while true do
+               await {event=self.lambda, transition='start'}
+               print ('media', self.id, 'lambda start')
+               assert (self.player == nil)
+               local uri = self:getProperty ('uri')
+               local player = self.document:_createPlayer (self, uri)
+               assert (player)
+               assert (self.player == player)
+               player:setURI (uri)
+               self:_updatePlayerRect ()
+               player:start ()
+            end
+         end
+      }
    end
 
    -- Gets the player of media object.
@@ -99,62 +138,6 @@ do
          y = math.floor (sheight * y)
       end
       self.player:setRect (x, y, width, height)
-   end
-
-   -- Default behavior -----------------------------------------------------
-
-   -- mt._defaultBehavior = function (self)
-   --    print ('starting default behavior of '..self.id)
-   --    while true do
-   --       local before = (self.time or 0) + 1000000
-   --       coroutine.yield {object=self, time=1000000}
-   --       print ('awake', self.id, before, self.time, self.time - before)
-   --    end
-   -- end
-
-   mt._defaultBehavior = function (self)
-      print ('starting default behavior of '..self.id)
-      coroutine.yield {event=self.lambda, transition='start'}
-      print ('done '..self.id)
-   end
-
-   mt._behavior.before.lambda.start = function (self, evt, trans, params)
-      assert (evt.object == self)
-      assert (evt.id == '@lambda')
-
-      -- Start/resume parent context if it is not occurring.
-      local parent = self.parent
-      if parent and parent.lambda.state ~= 'occurring' then
-         error ('TODO: Start parent')
-      end
-
-      -- Check if this start is in fact a resume.
-      if self.state == 'paused' then
-         error ('TODO: Resume object')
-      end
-
-      -- Create player.
-      assert (self.player == nil)
-      local uri = self:getProperty ('uri')
-      local player = self.document:_createPlayer (self, uri)
-      assert (player)
-      assert (self.player == player)
-
-      -- Initialize player.
-      player:setURI (uri)
-      self:_updatePlayerRect ()
-
-      -- Start player.
-      player:start ()
-
-      return true
-   end
-
-   mt._behavior.after.lambda.start = function (self, evt, trans, params)
-      assert (evt.object == self)
-      assert (evt.id == '@lambda')
-      self:setTime (0)
-      return true
    end
 
    -- Exported functions ---------------------------------------------------

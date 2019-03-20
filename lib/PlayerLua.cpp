@@ -172,8 +172,8 @@ PlayerLua::draw (cairo_t *cr)
 
           g_assert_nonnull (nclEvt);
           g_assert (nclua_act_to_ncl.count (evt->u.ncl.action) != 0);
-          _media->addDelayedAction (
-              nclEvt, nclua_act_to_ncl.at (evt->u.ncl.action));
+          // _media->addDelayedAction (
+          //     nclEvt, nclua_act_to_ncl.at (evt->u.ncl.action));
         }
       else if (g_str_equal (evt->u.ncl.type, "attribution"))
         {
@@ -183,9 +183,9 @@ PlayerLua::draw (cairo_t *cr)
           g_assert_nonnull (nclEvt);
 
           g_assert (nclua_act_to_ncl.count (evt->u.ncl.action));
-          _media->addDelayedAction (nclEvt,
-                                    nclua_act_to_ncl.at (evt->u.ncl.action),
-                                    evt->u.ncl.value);
+          // _media->addDelayedAction (nclEvt,
+          //                           nclua_act_to_ncl.at (evt->u.ncl.action),
+          //                           evt->u.ncl.value);
         }
       ncluaw_event_free (evt);
     }

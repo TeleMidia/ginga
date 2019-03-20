@@ -55,4 +55,26 @@ do
    -- Finalizes private data.
    mt._fini = function ()
    end
+
+   -- Wrap GLib logging functions into more convenient functions.
+   local t = {_debug=mt._debug, _warning=mt._warning, _error=mt._error}
+   for name,func in pairs  (t) do
+      assert (type (func) == 'function')
+      mt[name] = function (self, fmt, ...)
+         local tag
+         local args
+         if type (self) == 'userdata' then
+            args = {...}
+            local _mt = assert (getmetatable (self))
+            tag = assert (_mt.__name)..': '
+         elseif type (self) == 'string' then
+            args = {fmt, ...}
+            tag = ''
+            fmt = self
+         else
+            error ('bad format: '..tostring (fmt))
+         end
+         return func ((tag..fmt):format (table.unpack (args)))
+      end
+   end
 end

@@ -45,26 +45,11 @@ public:
 
   // TODO ------------------------------------------------------------------
 
-  void sendTick (Time, Time, Time) override;
-  bool beforeTransition (Event *, Event::Transition,
-                         map<string, string> &params) override;
-  bool afterTransition (Event *, Event::Transition,
-                        map<string, string> &params) override;
-
-
   const list<pair<list<Action>, list<Action> > > *getLinks ();
   void addLink (list<Action>, list<Action>);
 
-  void incAwakeChildren ();
-  void decAwakeChildren ();
-
-  bool getLinksStatus ();
-  void setLinksStatus (bool);
-
 private:
-  list<pair<list<Action>, list<Action> > > _links; ///< List of links.
-  int _awakeChildren;           ///< Counts awake children.
-  bool _status;                 ///< Whether links are active.
+  list<pair<list<Action>, list<Action> > > _links;
 };
 
 GINGA_NAMESPACE_END

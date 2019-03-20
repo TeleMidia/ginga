@@ -1,3 +1,15 @@
+local assert    = assert
+local await     = coroutine.yield
+local coroutine = coroutine
+local ipairs    = ipairs
+local print     = print
+local rawget    = rawget
+local rawset    = rawset
+local table     = table
+local tostring  = tostring
+local type      = type
+_ENV = nil
+
 -- Object metatable.
 do
    local mt = ...
@@ -7,7 +19,7 @@ do
    mt._attachData = function (self, doc, type, id, data, funcs)
       local data = data or {}
       local funcs = funcs or {}
-
+      --
       -- Private data.
       data._document     = assert (doc)  -- the container document
       data._type         = assert (type) -- object type
@@ -20,7 +32,7 @@ do
       data._behaviors = {                -- behavior data
          time = {}                       -- behaviors waiting on object time
       }
-
+      --
       local get_data_attr = function ()
          return assert (rawget (data, '_attribution'))
       end
@@ -30,7 +42,7 @@ do
       local get_data_seln = function (...)
          return assert (rawget (data, '_selection'))
       end
-
+      --
       -- Getters & setters.
       funcs.document     = {mt.getDocument, nil}
       funcs.type         = {mt.getType,     nil}
@@ -43,26 +55,36 @@ do
       funcs.attribution  = {get_data_attr,  nil}
       funcs.presentation = {get_data_pres,  nil}
       funcs.selection    = {get_data_seln,  nil}
-
+      --
       return saved_attachData (self, data, funcs)
    end
 
-   -- Initializes private data.
+   -- Initializes object.
    local saved_init = assert (mt._init)
    mt._init = function (self)
+      saved_init (self)
       self.document:_addObject (self)
       assert (self:createEvent ('presentation', '@lambda'))
-      if self._defaultBehavior then
-         self:run (self._defaultBehavior)
-      end
-      return saved_init (self)
+      --
+      -- Default behavior.
+      self:run {
+         function ()            -- start lambda
+            while true do
+               await {event=self.lambda, transition = 'start'}
+               print ('object', self.id, 'lambda start')
+               -- TODO: Start/resume parent if it is not occurring.
+               -- TODO: Check if this 'start' is in fact a 'resume'.
+               self:setTime (0)
+            end
+         end
+      }
    end
 
-   -- Finalizes private data.
+   -- Finalizes object.
    local saved_fini = assert (mt._fini)
    mt._fini = function (self)
       self.document:_removeObject (self)
-      return saved_fini (self)
+      saved_fini (self)
    end
 
    -- Adds event to object.
@@ -85,45 +107,6 @@ do
    -- Gets a string representation of object.
    mt.__tostring = function (self)
       return assert (rawget (mt[self], '_id'))
-   end
-
-   -- Behaviors ------------------------------------------------------------
-
-   -- Behavior table.
-   mt._behavior = {
-      before = {
-         lambda       = {},
-         attribution  = {},
-         presentation = {},
-         selection    = {},
-      },
-      after = {
-         lambda       = {},
-         attribution  = {},
-         presentation = {},
-         selection    = {},
-      }
-   }
-
-   -- Gets behavior associated with event transition.
-   mt._getBehavior = function (self, evt, trans, params)
-      local behavior = assert (mt._behavior)
-      assert (evt.object == self)
-      local key
-      if evt.id == '@lambda' then
-         key = 'lambda'
-      else
-         key = evt.type
-      end
-      local before = assert (behavior.before)[key]
-      local after = assert (behavior.after)[key]
-      if before then
-         before = before[trans]
-      end
-      if after then
-         after = after[trans]
-      end
-      return before, after
    end
 
    -- Exported functions ---------------------------------------------------
@@ -218,10 +201,15 @@ do
    end
 
    -- Runs the given behavior.
-   mt.run = function (self, func)
-      assert (type (func) == 'function')
-      local co = coroutine.create (func)
-      self.document
-         :_scheduleBehavior (self.document:_awakeBehavior (co, self))
+   mt.run = function (self, t)
+      if type (t) == 'function' then
+         t = {t}
+      end
+      assert (type (t) == 'table', 'bad behavior: '..tostring (t))
+      local doc = assert (self.document)
+      for _,f in ipairs (t) do
+         local co = coroutine.create (f)
+         doc:_scheduleBehavior(doc:_awakeBehavior (co, self))
+      end
    end
 end

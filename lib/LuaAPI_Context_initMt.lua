@@ -1,3 +1,12 @@
+local assert    = assert
+local await     = coroutine.yield
+local coroutine = coroutine
+local ipairs    = ipairs
+local print     = print
+local table     = table
+local type      = type
+_ENV = nil
+
 -- Context metatable.
 do
    local mt = ...
@@ -17,12 +26,34 @@ do
       return saved_attachData (self, doc, type, id, data, funcs)
    end
 
+   -- Initializes context.
+   local saved_init = assert (mt._init)
+   mt._init = function (self)
+      saved_init (self)
+      --
+      -- Default behavior.
+      self:run {
+         function ()            -- start lambda
+            while true do
+               await {event=self.lambda, transition='start'}
+               print ('context', self.id, 'lambda start')
+               for _,port in ipairs (self.ports) do
+                  local evt = self.document:getEvent (port)
+                  if evt then
+                     evt:transition ('start')
+                  end
+               end
+            end
+         end
+      }
+   end
+
    -- Exported functions ---------------------------------------------------
 
    -- Context::getPorts().
    mt.getPorts = function (self)
       local t = {}
-      for _,v in pairs (assert (mt[self]._ports)) do
+      for _,v in ipairs (assert (mt[self]._ports)) do
          table.insert (t, v)
       end
       return t

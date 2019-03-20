@@ -174,28 +174,22 @@ do
          error ('bad transition: '..tostring (trans))
       end
 
-      -- Try to use the behavior interface.
-      local before, after = self.object:_getBehavior (self, trans, params)
-      if not before then
-         before = self.object._beforeTransition
-      end
-      if not after then
-         after = self.object._afterTransition
-      end
+      -- local before = self.object._beforeTransition
+      -- local after = self.object._afterTransition
 
       -- Initiate transition.
-      if not before (self.object, self, trans, params) then
-         return false
-      end
+      -- if not before (self.object, self, trans, params) then
+      --    return false
+      -- end
 
       -- Update event state.
       self.state = next
 
       -- Finish transition.
-      if not after (self.object, self, trans, params) then
-         self.state = curr
-         return false
-      end
+      -- if not after (self.object, self, trans, params) then
+      --    self.state = curr
+      --    return false
+      -- end
 
       self.object.document:_awakeBehaviors {event=self, transition=trans}
       return true

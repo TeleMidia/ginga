@@ -44,16 +44,8 @@ protected:
 
   // TODO ------------------------------------------------------------------
 public:
-
   void sendKey (const string &, bool);
-  //void sendTick (Time, Time, Time) override;
-  bool beforeTransition (Event *, Event::Transition,
-                         map<string, string> &params) override;
-  bool afterTransition (Event *, Event::Transition,
-                        map<string, string> &params) override;
 
-protected:
-  void doStop () override;
 };
 
 GINGA_NAMESPACE_END

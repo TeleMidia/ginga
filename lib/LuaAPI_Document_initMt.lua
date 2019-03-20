@@ -1,4 +1,17 @@
--- Compares players by zIndex and zOrder.
+local assert    = assert
+local await     = coroutine.yield
+local coroutine = coroutine
+local ipairs    = ipairs
+local math      = math
+local pairs     = pairs
+local rawget    = rawget
+local rawset    = rawset
+local table     = table
+local tostring  = tostring
+local type      = type
+_ENV = nil
+
+-- Compares two players by zIndex and zOrder.
 local function comparePlayers (p1, p2)
    local m1, m2 = p1.media, p2.media
    local z1 = m1:getProperty ('zIndex') or math.mininteger
@@ -264,7 +277,7 @@ do
       table.sort (players, comparePlayers)
    end
 
-   -- Gets player name from mime-type and URI.
+   -- Gets player name from URI.
    mt._getPlayerName = function (self, uri)
       local str
       if uri == nil then
@@ -302,9 +315,8 @@ do
       return assert (rawget (mt[self], '_behaviors'))
    end
 
-   -- Checks the given behavior condition for any missing data, and updates
-   -- it if necessary.  Returns the updated condition and the corresponding
-   -- behavior data.
+   -- Checks condition for any missing data, and updates it if necessary.
+   -- Returns the updated condition and the corresponding behavior data.
    mt._checkBehaviorCondition = function (self, cond)
       assert (type (cond) == 'table', 'bad cond: '..tostring (cond))
       local data
@@ -336,6 +348,7 @@ do
                     or transition == 'abort',
                  'bad transition: '..tostring (cond.transition))
          cond.event = evt
+         cond.object = evt.object
          data = evt:_getBehaviorData ()
       else
          error ('bad cond: '..tostring (cond))
@@ -370,15 +383,15 @@ do
    mt._awakeBehavior = function (self, co, ...)
       assert (type (co) == 'thread')
       local status, cond = coroutine.resume (co, ...)
-      assert (status, 'behavior %s: '..tostring (cond))
+      assert (status, 'behavior error: '..tostring (cond))
       return co, cond
    end
 
    -- Awakes any behaviors waiting on the given condition.
    mt._awakeBehaviors = function (self, cond)
       local cond, data = self:_checkBehaviorCondition (cond)
-      local delay = {}
-      if cond.time then
+      local schedule = {}
+      if cond.time then         -- awake behaviors waiting for time
          local obj = assert (cond.object)
          local list = assert (data.time)
          local time = cond.time
@@ -391,23 +404,35 @@ do
                if cond.time then
                   cond.time = cond.time + cond.object.time - delta
                end
-               table.insert (delay, {co, cond})
+               table.insert (schedule, {co, cond})
             end
          end
-      elseif cond.event then
+      elseif cond.event then    -- awake behaviors waiting for event
          local list = assert (data[cond.transition])
-         while #list > 0 do     -- TODO: Match params
-            local t = table.remove (list, 1)
-            local co, cond = self:_awakeBehavior (t.behavior, cond)
-            if cond then
-               cond = self:_checkBehaviorCondition (cond)
-               table.insert (delay, {co, cond})
+         local awake = {}
+         local i = 1
+         while i <= #list do
+            local match = false
+            if cond.params then -- check if parameters match
+               error ('not implemented')
+            else
+               match = true
+            end
+            if match then
+               local t = table.remove (list, i)
+               local co, cond = self:_awakeBehavior (t.behavior, cond)
+               if cond then
+                  cond = self:_checkBehaviorCondition (cond)
+                  table.insert (schedule, {co, cond})
+               end
+            else
+               i = i + 1
             end
          end
       else
          error ('should not get here')
       end
-      for _,v in ipairs (delay) do
+      for _,v in ipairs (schedule) do
          self:_scheduleBehavior (table.unpack (v))
       end
    end
