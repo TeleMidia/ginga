@@ -34,13 +34,6 @@ GINGA_END_DECLS
 #include <cstdint>
 #include <string>
 
-typedef enum
-{
-  GINGA_STATE_PLAYING,
-  GINGA_STATE_STOPPED,
-}
-GingaState;
-
 class Ginga
 {
 public:
@@ -48,23 +41,17 @@ public:
   virtual ~Ginga () = 0;
 
   virtual void *getDocument () = 0;
-  virtual GingaState getState () = 0;
 
   virtual bool start (const std::string &path, int w, int h,
                       std::string *errmsg) = 0;
-  virtual bool stop () = 0;
 
   virtual void resize (int width, int height) = 0;
 
   virtual bool sendKey (const std::string &key, bool press) = 0;
-  virtual bool sendTick (uint64_t total, uint64_t diff, uint64_t frame) = 0;
 
   static Ginga *create ();
 
   virtual std::string debug_getDocPath () = 0;
-  virtual uint64_t debug_getLastTickDiff () = 0;
-  virtual uint64_t debug_getLastTickFrame () = 0;
-  virtual uint64_t debug_getLastTickTime () = 0;
 };
 
 #endif // GINGA_H

@@ -36,17 +36,8 @@ GINGA_NAMESPACE_BEGIN
 lua_State *
 Formatter::getLuaState ()
 {
-  if (_state != GINGA_STATE_PLAYING)
-    return nullptr;
-
   g_assert_nonnull (_doc);
   return _doc->getLuaState ();
-}
-
-GingaState
-Formatter::getState ()
-{
-  return _state;
 }
 
 bool
@@ -55,10 +46,6 @@ Formatter::start (const string &file, int w, int h, string *errmsg)
   lua_State *L;
   Event *evt;
   map<string, string> params;
-
-  // This must be the first check.
-  if (_state != GINGA_STATE_STOPPED)
-    return false;
 
   // Parse document.
   g_assert_null (_doc);
@@ -89,10 +76,6 @@ Formatter::start (const string &file, int w, int h, string *errmsg)
 
   // Initialize formatter variables.
   _docPath = file;
-  _eos = false;
-  _lastTickTime = 0;
-  _lastTickDiff = 0;
-  _lastTickFrame = 0;
 
   // Run document.
   TRACE ("%s", file.c_str ());
@@ -106,9 +89,6 @@ Formatter::start (const string &file, int w, int h, string *errmsg)
   g_assert_nonnull (evt);
   g_assert (evt->transition (Event::START, params));
 
-  // Set formatter state.
-  _state = GINGA_STATE_PLAYING;
-
   // Set global _D in Lua state.
   L = this->getLuaState ();
   g_assert_nonnull (L);
@@ -118,52 +98,14 @@ Formatter::start (const string &file, int w, int h, string *errmsg)
   return true;
 }
 
-bool
-Formatter::stop ()
-{
-  // This must be the first check.
-  if (_state == GINGA_STATE_STOPPED)
-    return false;
-
-  // delete _doc;
-  // _doc = nullptr;
-
-  _state = GINGA_STATE_STOPPED;
-  return true;
-}
-
 void
 Formatter::resize (int width, int height)
 {
+  g_assert_nonnull (_doc);
   g_assert (width > 0 && height > 0);
-
-  if (_state != GINGA_STATE_PLAYING)
-    return;
-
   _doc->getSettings ()->setPropertyInteger ("width", width);
   _doc->getSettings ()->setPropertyInteger ("height", height);
 }
-
-// Stops formatter if EOS has been seen.
-#define _GINGA_CHECK_EOS(ginga)                                            \
-  G_STMT_START                                                             \
-  {                                                                        \
-    Context *root;                                                         \
-    root = _doc->getRoot ();                                               \
-    g_assert_nonnull (root);                                               \
-    if (root->isSleeping ())                                               \
-      {                                                                    \
-        (ginga)->setEOS (true);                                            \
-      }                                                                    \
-    if ((ginga)->getEOS ())                                                \
-      {                                                                    \
-        g_assert ((ginga)->_state == GINGA_STATE_PLAYING);                 \
-        (ginga)->setEOS (false);                                           \
-        g_assert ((ginga)->stop ());                                       \
-        g_assert ((ginga)->_state == GINGA_STATE_STOPPED);                 \
-      }                                                                    \
-  }                                                                        \
-  G_STMT_END
 
 bool
 Formatter::sendKey (const string &key, bool press)
@@ -171,12 +113,7 @@ Formatter::sendKey (const string &key, bool press)
   set<Object *> objects;
   list<Object *> buf;
 
-  // This must be the first check.
-  if (_state != GINGA_STATE_PLAYING)
-    return false;
-  _GINGA_CHECK_EOS (this);
-  if (_state != GINGA_STATE_PLAYING)
-    return false;
+  g_assert_nonnull (_doc);
 
   // IMPORTANT: When propagating a key to the objects, we cannot traverse
   // the object set directly, as the reception of a key may cause the state
@@ -201,101 +138,28 @@ Formatter::sendKey (const string &key, bool press)
   return true;
 }
 
-bool
-Formatter::sendTick (uint64_t time, uint64_t diff, uint64_t frame)
-{
-  set<Object *> objects;
-  list<Object *> buf;
-
-  // This must be the first check.
-  if (_state != GINGA_STATE_PLAYING)
-    return false;
-  _GINGA_CHECK_EOS (this);
-  if (_state != GINGA_STATE_PLAYING)
-    return false;
-
-  _lastTickTime = time;
-  _lastTickDiff = diff;
-  _lastTickFrame = frame;
-
-  // IMPORTANT: The same warning about propagation that appear in
-  // Formatter::sendKeyEvent() applies here.  The difference is that ticks
-  // should only be propagated to objects that are occurring.
-
-  _doc->getObjects (&objects);
-  for (auto obj: objects)
-    if (obj->isOccurring ())
-      buf.push_back (obj);
-  for (auto obj: buf)
-    obj->sendTick (time, diff, frame);
-
-  return true;
-}
-
 string
 Formatter::debug_getDocPath ()
 {
-  return (_state != GINGA_STATE_PLAYING) ? "" : _docPath;
-}
-
-uint64_t
-Formatter::debug_getLastTickDiff ()
-{
-  return (_state != GINGA_STATE_PLAYING) ? 0 : _lastTickDiff;
-}
-
-uint64_t
-Formatter::debug_getLastTickFrame ()
-{
-  return (_state != GINGA_STATE_PLAYING) ? 0 : _lastTickFrame;
-}
-
-uint64_t
-Formatter::debug_getLastTickTime ()
-{
-  return (_state != GINGA_STATE_PLAYING) ? 0 : _lastTickTime;
+  return _docPath;
 }
 
 // Public: Internal API.
 
 Formatter::Formatter () : Ginga ()
 {
-  const char *s;
-
-  _state = GINGA_STATE_STOPPED;
-
-  _lastTickTime = 0;
-  _lastTickDiff = 0;
-  _lastTickFrame = 0;
-  _saved_G_MESSAGES_DEBUG
-      = (s = g_getenv ("G_MESSAGES_DEBUG")) ? string (s) : "";
-
-  _doc = nullptr;
+  _doc = NULL;
   _docPath = "";
-  _eos = false;
 }
 
 Formatter::~Formatter ()
 {
-  this->stop ();
 }
 
 void *
 Formatter::getDocument ()
 {
   return _doc;
-}
-
-bool
-Formatter::getEOS ()
-{
-  return _eos;
-}
-
-void
-Formatter::setEOS (bool eos)
-{
-  _eos = eos;
 }
 
 GINGA_NAMESPACE_END

@@ -35,37 +35,23 @@ class Formatter : public Ginga
 {
 public:
   lua_State *getLuaState ();
-  GingaState getState ();
 
   bool start (const std::string &, int, int, std::string *);
-  bool stop ();
 
   void resize (int, int);
 
   bool sendKey (const std::string &, bool);
-  bool sendTick (uint64_t, uint64_t, uint64_t);
 
   string debug_getDocPath ();
-  uint64_t debug_getLastTickDiff ();
-  uint64_t debug_getLastTickFrame ();
-  uint64_t debug_getLastTickTime ();
 
   Formatter ();
   ~Formatter ();
 
   void *getDocument ();
-  bool getEOS ();
-  void setEOS (bool);
 
 private:
-  GingaState _state;
-  Time _lastTickTime;
-  Time _lastTickDiff;
-  uint64_t _lastTickFrame;
-  string _saved_G_MESSAGES_DEBUG;
   Document *_doc;
   string _docPath;
-  bool _eos;
 };
 
 GINGA_NAMESPACE_END
