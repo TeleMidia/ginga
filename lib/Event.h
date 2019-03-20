@@ -130,8 +130,7 @@ public:
 
   bool isLambda ();
 
-  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  bool transition (Event::Transition, map<string, string> &params);
+  bool transition (Event::Transition, const map<string, string> &params);
 
 private:
 

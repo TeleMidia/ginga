@@ -181,7 +181,8 @@ Event::setLabel (const string &label)
 }
 
 bool
-Event::transition (Event::Transition trans, map<string, string> &params)
+Event::transition (Event::Transition trans,
+                   const map<string,string> &params)
 {
   bool status;
 

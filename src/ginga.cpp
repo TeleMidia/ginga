@@ -23,9 +23,12 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
 
-#include "ginga.h"
+#include "Context.h"
 #include "Document.h"
+#include "Event.h"
+#include "LuaAPI.h"
 #include "Media.h"
+#include "Parser.h"
 using namespace ::std;
 
 GINGA_BEGIN_DECLS
@@ -197,18 +200,15 @@ static GtkCssProvider *app_css = NULL;
 static gboolean
 on_canvas_draw (unused (GtkWidget *canvas),
                 cairo_t *cr,
-                Ginga *ginga)
+                Document *doc)
 {
   gint64 ms;
   gchar *str;
 
   g_return_val_if_fail (cr != NULL, FALSE);
-  g_return_val_if_fail (ginga != NULL, FALSE);
+  g_return_val_if_fail (doc != NULL, FALSE);
 
-  Document *doc = (Document *) ginga->getDocument ();
-  g_assert_nonnull (doc);
   doc->draw (cr);
-
   ms = doc->getTime () / 1000;
   str = g_strdup_printf
     ("%u:%02u:%02u.%03u",
@@ -226,13 +226,13 @@ on_canvas_draw (unused (GtkWidget *canvas),
 static gboolean
 on_canvas_key_event (unused (GtkWidget *canvas),
                      GdkEventKey *evt,
-                     Ginga *ginga)
+                     Document *doc)
 {
   const gchar *key;
   gboolean free_key = false;
 
   g_return_val_if_fail (evt != NULL, FALSE);
-  g_return_val_if_fail (ginga != NULL, FALSE);
+  g_return_val_if_fail (doc != NULL, FALSE);
 
   switch (evt->keyval)
     {
@@ -333,30 +333,29 @@ on_canvas_key_event (unused (GtkWidget *canvas),
 static void
 on_canvas_size_allocate (unused (GtkWidget *canvas),
                          GdkRectangle *rect,
-                         Ginga *ginga)
+                         Document *doc)
 {
   g_return_if_fail (rect != NULL);
-  g_return_if_fail (ginga != NULL);
+  g_return_if_fail (doc != NULL);
 
-  ginga->resize (rect->width, rect->height);
+  doc->getSettings ()->setPropertyInteger ("width", rect->width);
+  doc->getSettings ()->setPropertyInteger ("height", rect->height);
 }
 
 static void
 on_cmd_buf_activate (GtkWidget *cmd_buf,
-                     Ginga *ginga)
+                     Document *doc)
 {
-  Document *doc;
   lua_State *L;
   const gchar *str;
   const gchar *errmsg;
 
   g_return_if_fail (cmd_buf != NULL);
-  g_return_if_fail (ginga != NULL);
+  g_return_if_fail (doc != NULL);
 
   str = gtk_entry_get_text (GTK_ENTRY (cmd_buf));
   g_assert_nonnull (str);
 
-  doc = (Document *) ginga->getDocument ();
   if (unlikely (doc == NULL))
     {
       errmsg = "Document is NULL";
@@ -425,7 +424,7 @@ on_info_bar_response (unused (GtkWidget *info_bar),
 static gboolean
 on_win_tick (GtkWidget *window,
              GdkFrameClock *frame_clock,
-             Ginga *ginga)
+             Document *doc)
 {
   guint64 time;
   static gint64 frame = -1;
@@ -433,7 +432,7 @@ on_win_tick (GtkWidget *window,
 
   g_return_val_if_fail (window != NULL, G_SOURCE_CONTINUE);
   g_return_val_if_fail (frame_clock != NULL, G_SOURCE_CONTINUE);
-  g_return_val_if_fail (ginga != NULL, G_SOURCE_CONTINUE);
+  g_return_val_if_fail (doc != NULL, G_SOURCE_CONTINUE);
 
   time = gdk_frame_clock_get_frame_time (frame_clock);
   frame = gdk_frame_clock_get_frame_counter (frame_clock);
@@ -441,9 +440,7 @@ on_win_tick (GtkWidget *window,
   if (frame == 0)
     last = time;
 
-  Document *doc = (Document *) ginga->getDocument ();
-  if (doc != NULL)
-    doc->advanceTime (time - last);
+  doc->advanceTime (time - last);
     // {
     //   g_assert (ginga->getState () == GINGA_STATE_STOPPED);
     //   gtk_main_quit ();         // all done
@@ -457,12 +454,12 @@ on_win_tick (GtkWidget *window,
 }
 
 static void
-app_init (Ginga *ginga)
+app_init (Document *doc)
 {
   GError *error = NULL;
   gulong id;
 
-  g_assert_nonnull (ginga);
+  g_assert_nonnull (doc);
 
   // Window.
   app_win = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -474,7 +471,7 @@ app_init (Ginga *ginga)
                          G_CALLBACK (gtk_main_quit), NULL);
   g_assert (id > 0);
   gtk_widget_add_tick_callback (GTK_WIDGET (app_win),
-                                (GtkTickCallback) on_win_tick, ginga, NULL);
+                                (GtkTickCallback) on_win_tick, doc, NULL);
 
   app_vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_container_add (GTK_CONTAINER (app_win), app_vbox);
@@ -512,13 +509,13 @@ app_init (Ginga *ginga)
   gtk_widget_set_can_focus (app_canvas, TRUE);
 
   g_signal_connect (app_canvas, "draw",
-                    G_CALLBACK (on_canvas_draw), ginga);
+                    G_CALLBACK (on_canvas_draw), doc);
   g_signal_connect (app_canvas, "key-press-event",
-                    G_CALLBACK (on_canvas_key_event), ginga);
+                    G_CALLBACK (on_canvas_key_event), doc);
   g_signal_connect (app_canvas, "key-release-event",
-                    G_CALLBACK (on_canvas_key_event), ginga);
+                    G_CALLBACK (on_canvas_key_event), doc);
   g_signal_connect (app_canvas, "size-allocate",
-                    G_CALLBACK (on_canvas_size_allocate), ginga);
+                    G_CALLBACK (on_canvas_size_allocate), doc);
 
   // Command buffer.
   app_cmd_buf = gtk_entry_new ();
@@ -529,9 +526,9 @@ app_init (Ginga *ginga)
                                   "Type Lua code here");
 
   g_signal_connect (app_cmd_buf, "activate",
-                    G_CALLBACK (on_cmd_buf_activate), ginga);
+                    G_CALLBACK (on_cmd_buf_activate), doc);
   g_signal_connect (app_cmd_buf, "key-press-event",
-                    G_CALLBACK (on_cmd_buf_key_press_event), ginga);
+                    G_CALLBACK (on_cmd_buf_key_press_event), doc);
 
   // CSS.
   app_css = gtk_css_provider_new ();
@@ -554,7 +551,10 @@ main (gint argc, gchar **argv)
   GOptionContext *ctx;
   gboolean status;
   GError *error = NULL;
-  Ginga *ginga;
+
+  string errmsg;
+  Document *doc;
+  lua_State *L;
 
   gtk_init (&argc, &argv);
 
@@ -584,32 +584,35 @@ Ginga home page: " PACKAGE_URL "\n");
 
   debugging_toggle ();
 
-  // Create Ginga handle.
-  ginga = Ginga::create ();
-  g_assert_nonnull (ginga);
-
-  // Create application window.
-  app_init (ginga);
-
-  // Run each NCL file, one after another.
-  string errmsg;
-  if (unlikely (!ginga->start (string (argv[1]),
-                               initial_width, initial_height, &errmsg)))
+  // Create document.
+  doc = Parser::parseFile (string (argv[1]),
+                           initial_height, initial_height, &errmsg);
+  if (doc == NULL)
     {
       die ("%s", errmsg.c_str ());
     }
+
+  // Start document.
+  L = doc->getLuaState ();
+  g_assert_nonnull (L);
+  LuaAPI::Document_push (L, doc);
+  lua_setglobal (L, "_D");
+
+  doc->getSettings ()->setPropertyInteger ("width", initial_width);
+  doc->getSettings ()->setPropertyInteger ("height", initial_height);
+
+  map<string,string> params;
+  doc->getRoot ()->getLambda ()->transition (Event::START, params);
+  doc->getSettings ()->getLambda ()->transition (Event::START, params);
+
+  // Create application window.
+  app_init (doc);
+
   gtk_header_bar_set_title (GTK_HEADER_BAR (app_header_bar), argv[1]);
   gtk_widget_show_all (app_win);
   gtk_main ();
 
   // Done.
-  Document *doc = (Document *) ginga->getDocument ();
-  if (doc != NULL)
-    {
-      lua_close (doc->getLuaState ()); // GC deletes doc
-    }
-
-  delete ginga;
-  g_print ("DONE\n");
+  lua_close (L);                // GC deletes doc
   _exit (0);
 }

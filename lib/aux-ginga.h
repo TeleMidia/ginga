@@ -18,7 +18,13 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #ifndef AUX_GINGA_H
 #define AUX_GINGA_H
 
-#include "ginga.h"
+#ifdef  __cplusplus
+# define GINGA_BEGIN_DECLS extern "C" {/*}*/
+# define GINGA_END_DECLS            /*{*/}
+#else
+# define GINGA_BEGIN_DECLS
+# define GINGA_END_DECLS
+#endif
 
 GINGA_BEGIN_DECLS
 
@@ -39,7 +45,9 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wdeprecated-declarations)
 #include <stdlib.h>
 
 // External C libraries.
+#include <cairo.h>
 #include <gdk/gdk.h>
+#include <lua.h>
 
 GINGA_PRAGMA_DIAG_PUSH ()
 GINGA_PRAGMA_DIAG_IGNORE (-Wcast-qual)
