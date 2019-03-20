@@ -101,9 +101,6 @@ public:
   /// Sets the playback time of object.
   void setTime (Time time);
 
-  /// Gets the property table of object.
-  void G_GNUC_DEPRECATED getProperties (map<string, GValue> *properties);
-
   /// Gets the value of an object property.
   virtual bool getProperty (const string &name, GValue *value);
 

@@ -200,7 +200,7 @@ on_canvas_draw (unused (GtkWidget *canvas),
                 cairo_t *cr,
                 Ginga *ginga)
 {
-  guint64 ms;
+  gint64 ms;
   gchar *str;
 
   g_return_val_if_fail (cr != NULL, FALSE);
@@ -210,7 +210,7 @@ on_canvas_draw (unused (GtkWidget *canvas),
   g_assert_nonnull (doc);
   doc->draw (cr);
 
-  ms = ginga->debug_getLastTickTime () / 1000000;
+  ms = doc->getTime () / 1000;
   str = g_strdup_printf
     ("%u:%02u:%02u.%03u",
      (guint) ((ms / (1000 * 60 * 60))),
@@ -429,29 +429,27 @@ on_win_tick (GtkWidget *window,
              Ginga *ginga)
 {
   guint64 time;
-  static guint64 frame = (guint64) -1;
-  static guint64 last;
-  static guint64 first;
+  static gint64 frame = -1;
+  static gint64 last;
 
   g_return_val_if_fail (window != NULL, G_SOURCE_CONTINUE);
   g_return_val_if_fail (frame_clock != NULL, G_SOURCE_CONTINUE);
   g_return_val_if_fail (ginga != NULL, G_SOURCE_CONTINUE);
 
-  time = (guint64) (gdk_frame_clock_get_frame_time (frame_clock) * 1000);
-  frame = (guint64) gdk_frame_clock_get_frame_counter (frame_clock);
+  time = gdk_frame_clock_get_frame_time (frame_clock);
+  frame = gdk_frame_clock_get_frame_counter (frame_clock);
 
   if (frame == 0)
-    {
-      first = time;
-      last = time;
-    }
+    last = time;
 
-  if (!ginga->sendTick (time - first, time - last, frame))
-    {
-      g_assert (ginga->getState () == GINGA_STATE_STOPPED);
-      gtk_main_quit ();         // all done
-      return G_SOURCE_REMOVE;
-    }
+  Document *doc = (Document *) ginga->getDocument ();
+  if (doc != NULL)
+    doc->advanceTime (time - last);
+    // {
+    //   g_assert (ginga->getState () == GINGA_STATE_STOPPED);
+    //   gtk_main_quit ();         // all done
+    //   return G_SOURCE_REMOVE;
+    // }
 
   last = time;
   gtk_widget_queue_draw (window);

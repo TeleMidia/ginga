@@ -37,8 +37,8 @@ public:
 
   /// Creates a new document.
   ///
-  /// The newly created document has a root Context, called `__root__`,
-  /// which contains a single MediaSettings object, called `__settings__`.
+  /// The newly created document has a Context, called `__root__`, and a
+  /// single MediaSettings object, called `__settings__`.
   ///
   /// @param L The Lua state to associate this document to.
   ///
@@ -67,14 +67,6 @@ public:
   MediaSettings *getSettings ();
 
   /// Creates a new object and adds it to document.
-  ///
-  /// The newly created object has a single presentation event: the lambda
-  /// event, called `@lambda`.
-  ///
-  /// @param type The type of the new object.
-  /// @param id The id of the new object (must not occur in document).
-  /// @return The newly created object if successful, or \c NULL otherwise.
-  ///
   Object *createObject (Object::Type type, const string &id);
 
   /// Gets the set of events in document.
@@ -93,7 +85,13 @@ public:
   /// Creates a new event as specified by the qualified id.
   Event *createEvent (const string &qualId);
 
-  /// Draws the current frame into cairo context.
+  /// Gets the playback time of document.
+  lua_Integer getTime ();
+
+  /// Advances the playback time of document by the specified amount.
+  void advanceTime (lua_Integer dt);
+
+  /// Draws the current frame of document into cairo context.
   void draw (cairo_t *cr);
 
 private:

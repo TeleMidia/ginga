@@ -17,6 +17,9 @@ do
       data._selection    = {}            -- selection evts indexed by id
       data._time         = nil           -- playback time
       data._property     = {}            -- property table
+      data._behaviors = {                -- behavior data
+         time = {}                       -- behaviors waiting on object time
+      }
 
       local get_data_attr = function ()
          return assert (rawget (data, '_attribution'))
@@ -49,6 +52,9 @@ do
    mt._init = function (self)
       self.document:_addObject (self)
       assert (self:createEvent ('presentation', '@lambda'))
+      if self._defaultBehavior then
+         self:run (self._defaultBehavior)
+      end
       return saved_init (self)
    end
 
@@ -69,6 +75,11 @@ do
    mt._removeEvent = function (self, evt)
       assert (evt)
       assert (rawget (mt[self], '_'..evt.type))[evt.id] = nil
+   end
+
+   -- Gets the behavior data of object.
+   mt._getBehaviorData = function (self)
+      return assert (rawget (mt[self], '_behaviors'))
    end
 
    -- Gets a string representation of object.
@@ -176,15 +187,6 @@ do
       return self.document:createEvent (type, self, id)
    end
 
-   -- Object::getProperties().
-   mt.getProperties = function (self)
-      local t = {}
-      for k,v in pairs (assert (rawget (mt[self], '_property'))) do
-         t[k] = v
-      end
-      return t
-   end
-
    -- Object::getTime().
    mt.getTime = function (self)
       return rawget (mt[self], '_time')
@@ -195,6 +197,16 @@ do
       rawset (mt[self], '_time', time)
    end
 
+   -- Object:advanceTime().
+   mt.advanceTime = function (self, dt)
+      if self.lambda.state ~= 'occurring' then
+         return                 -- nothing to do
+      end
+      local time = (self.time or 0) + dt
+      self:setTime (time)
+      self.document:_awakeBehaviors {object=self, time=time}
+   end
+
    -- Object::getProperty().
    mt.getProperty = function (self, name)
       return assert (rawget (mt[self], '_property'))[name]
@@ -203,5 +215,13 @@ do
    -- Object::setProperty().
    mt.setProperty = function (self, name, value)
       assert (rawget (mt[self], '_property'))[name] = value
+   end
+
+   -- Runs the given behavior.
+   mt.run = function (self, func)
+      assert (type (func) == 'function')
+      local co = coroutine.create (func)
+      self.document
+         :_scheduleBehavior (self.document:_awakeBehavior (co, self))
    end
 end

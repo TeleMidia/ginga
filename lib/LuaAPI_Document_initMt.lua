@@ -96,11 +96,15 @@ do
       local funcs = funcs or {}
 
       -- Private data.
-      data._object   = {}       -- objects indexed by id
-      data._event    = {}       -- events indexed by qualified id
-      data._parents  = {}       -- table of parents indexed by object
-      data._children = {}       -- table of children indexed by object
-      data._players  = {}       -- list of players sorted by zIndex
+      data._object    = {}       -- objects indexed by id
+      data._event     = {}       -- events indexed by qualified id
+      data._parents   = {}       -- table of parents indexed by object
+      data._children  = {}       -- table of children indexed by object
+      data._players   = {}       -- list of players sorted by zIndex
+      data._time      = 0        -- playback time
+      data._behaviors = {        -- behavior data
+         time = {}               -- behaviors waiting on document time
+      }
 
       local get_data_object = function ()
          return assert (rawget (data, '_object'))
@@ -114,6 +118,9 @@ do
       local get_data_children = function ()
          return rawget (data, '_children')
       end
+      local get_data_time = function ()
+         return assert (rawget (data, '_time'))
+      end
 
       -- Getters & setters.
       funcs.objects  = {mt.getObjects,     nil}
@@ -125,6 +132,7 @@ do
       funcs.event    = {get_data_event,    nil}
       funcs.parents  = {get_data_parents,  nil}
       funcs.children = {get_data_children, nil}
+      funcs.time     = {get_data_time,     nil}
 
       return saved_attachData (self, data, funcs)
    end
@@ -289,13 +297,128 @@ do
       return
    end
 
+   -- Gets the behavior data of document.
+   mt._getBehaviorData = function (self)
+      return assert (rawget (mt[self], '_behaviors'))
+   end
+
+   -- Checks the given behavior condition for any missing data, and updates
+   -- it if necessary.  Returns the updated condition and the corresponding
+   -- behavior data.
+   mt._checkBehaviorCondition = function (self, cond)
+      assert (type (cond) == 'table', 'bad cond: '..tostring (cond))
+      local data
+      if cond.time then
+         local obj = cond.object
+         if not obj then
+            obj = self          -- target is document
+         else
+            if type (obj) == 'string' then
+               obj = self:getObject (obj)
+            end
+            if obj == nil or obj.document ~= self then
+               error ('bad object :'..tostring (obj))
+            end
+         end
+         cond.object = obj
+         data = obj:_getBehaviorData ()
+      elseif cond.event and cond.transition then
+         local evt = cond.event
+         if type (evt) == 'string' then
+            evt = self:getEvent (evt)
+         end
+         assert (evt and evt.object.document == self,
+                 'bad event: '..tostring (evt))
+         assert (cond.transition == 'start'
+                    or transition == 'pause'
+                    or transition == 'resume'
+                    or transition == 'stop'
+                    or transition == 'abort',
+                 'bad transition: '..tostring (cond.transition))
+         cond.event = evt
+         data = evt:_getBehaviorData ()
+      else
+         error ('bad cond: '..tostring (cond))
+      end
+      return cond, data
+   end
+
+   -- Schedules behavior to execute on condition.
+   mt._scheduleBehavior = function (self, co, cond)
+      if not cond then
+         return                 -- nothing to do
+      end
+      local cond, data = self:_checkBehaviorCondition (cond)
+      cond.behavior = co
+      if cond.time then
+         local list = assert (data.time)
+         local pos = 1
+         while pos <= #list do
+            if cond.time < list[pos].time then
+               break
+            end
+         end
+         table.insert (list, pos, cond)
+      elseif cond.event then
+         table.insert (assert (data[cond.transition]), cond)
+      else
+         error ('should not get here')
+      end
+   end
+
+   -- Awakes the given behavior.
+   mt._awakeBehavior = function (self, co, ...)
+      assert (type (co) == 'thread')
+      local status, cond = coroutine.resume (co, ...)
+      assert (status, 'behavior %s: '..tostring (cond))
+      return co, cond
+   end
+
+   -- Awakes any behaviors waiting on the given condition.
+   mt._awakeBehaviors = function (self, cond)
+      local cond, data = self:_checkBehaviorCondition (cond)
+      local delay = {}
+      if cond.time then
+         local obj = assert (cond.object)
+         local list = assert (data.time)
+         local time = cond.time
+         while #list > 0 and list[1].time <= time do
+            local t = table.remove (list, 1)
+            local delta = time - t.time -- delta compensation
+            local co, cond = self:_awakeBehavior (t.behavior, cond)
+            if cond then
+               cond = self:_checkBehaviorCondition (cond)
+               if cond.time then
+                  cond.time = cond.time + cond.object.time - delta
+               end
+               table.insert (delay, {co, cond})
+            end
+         end
+      elseif cond.event then
+         local list = assert (data[cond.transition])
+         while #list > 0 do     -- TODO: Match params
+            local t = table.remove (list, 1)
+            local co, cond = self:_awakeBehavior (t.behavior, cond)
+            if cond then
+               cond = self:_checkBehaviorCondition (cond)
+               table.insert (delay, {co, cond})
+            end
+         end
+      else
+         error ('should not get here')
+      end
+      for _,v in ipairs (delay) do
+         self:_scheduleBehavior (table.unpack (v))
+      end
+   end
+
    -- Exported functions ---------------------------------------------------
 
    -- Document::getObjects().
    mt.getObjects = function (self)
       local t = {}
-      for _,v in pairs (self.object) do
-         table.insert (t, v)
+      for _,obj in pairs (self.object) do
+         table.insert (t, obj)
       end
       return t
    end
@@ -323,8 +446,8 @@ do
    -- Document::getEvents().
    mt.getEvents = function (self)
       local t = {}
-      for _,v in pairs (self.event) do
-         table.insert (t, v)
+      for _,evt in pairs (self.event) do
+         table.insert (t, evt)
       end
       return t
    end
@@ -352,5 +475,27 @@ do
       end
       assert (obj.document == self)
       return self:_createEvent (tp, obj, evtId)
+   end
+
+   -- Document::getTime().
+   mt.getTime = function (self)
+      return self.time
+   end
+
+   -- Document::advanceTime().
+   mt.advanceTime = function (self, dt)
+      local time = self.time + dt
+      rawset (mt[self], '_time', time)
+      self:_awakeBehaviors {time=time}
+      for _,obj in ipairs (self:getObjects ()) do
+         obj:advanceTime (dt)
+      end
+   end
+
+   -- Runs the given behavior.
+   mt.run = function (self, func)
+      assert (type (func) == 'function')
+      local co = coroutine.create (func)
+      self:_scheduleBehavior (self:_awakeBehavior (co, self))
    end
 end

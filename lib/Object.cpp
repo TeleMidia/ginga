@@ -210,32 +210,6 @@ Object::setTime (Time time)
   LuaAPI::Object_call (_L, this, "setTime", 1, 0);
 }
 
-void
-Object::getProperties (map<string, GValue> *properties)
-{
-  g_return_if_fail (properties != NULL);
-
-  LuaAPI::Object_call (_L, this, "getProperties", 0, 1);
-  g_assert (lua_type (_L, -1) == LUA_TTABLE);
-
-  lua_pushnil (_L);
-  while (lua_next (_L, -2))
-    {
-      string name;
-      GValue value = G_VALUE_INIT;
-
-      name = string (luaL_checkstring (_L, -2));
-      if (LuaAPI::GValue_to (_L, -1, &value))
-        {
-          g_value_init (&((*properties)[name]), G_VALUE_TYPE (&value));
-          g_value_copy (&value, &((*properties)[name]));
-          g_value_unset (&value);
-        }
-      lua_pop (_L, 1);
-    }
-  lua_pop (_L, 1);
-}
-
 bool
 Object::getProperty (const string &name, GValue *value)
 {
@@ -463,31 +437,6 @@ Object::sendTick (unused (Time total), Time diff, unused (Time frame))
   Time time = this->getTime ();
   g_assert (GINGA_TIME_IS_VALID (time));
   this->setTime (time + diff);
-
-  list<Action> trigger;
-  for (auto &it : _delayed)
-    {
-      if (this->getTime () >= it.second)
-        {
-          it.second = GINGA_TIME_NONE;
-          trigger.push_back (it.first);
-        }
-    }
-
-  for (auto action : trigger)
-    {
-      this->getDocument ()->evalAction (action);
-      if (!this->isOccurring ())
-        return;
-    }
-
-  for (auto it = _delayed.begin (); it != _delayed.end ();)
-    {
-      if (it->second == GINGA_TIME_NONE)
-        it = _delayed.erase (it);
-      else
-        ++it;
-    }
 }
 
 void

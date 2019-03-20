@@ -101,7 +101,22 @@ do
       self.player:setRect (x, y, width, height)
    end
 
-   -- Behaviors ------------------------------------------------------------
+   -- Default behavior -----------------------------------------------------
+
+   -- mt._defaultBehavior = function (self)
+   --    print ('starting default behavior of '..self.id)
+   --    while true do
+   --       local before = (self.time or 0) + 1000000
+   --       coroutine.yield {object=self, time=1000000}
+   --       print ('awake', self.id, before, self.time, self.time - before)
+   --    end
+   -- end
+
+   mt._defaultBehavior = function (self)
+      print ('starting default behavior of '..self.id)
+      coroutine.yield {event=self.lambda, transition='start'}
+      print ('done '..self.id)
+   end
 
    mt._behavior.before.lambda.start = function (self, evt, trans, params)
       assert (evt.object == self)

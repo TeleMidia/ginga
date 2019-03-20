@@ -96,7 +96,7 @@ protected:
   bool _eos;
 
   /// The alpha to be applied to player's visual output.
-  guint8 _alpha;
+  double _alpha;
 
   /// The color of the background of player's visual output.
   Color _bgColor;

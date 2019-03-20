@@ -46,7 +46,7 @@ protected:
 public:
 
   void sendKey (const string &, bool);
-  void sendTick (Time, Time, Time) override;
+  //void sendTick (Time, Time, Time) override;
   bool beforeTransition (Event *, Event::Transition,
                          map<string, string> &params) override;
   bool afterTransition (Event *, Event::Transition,

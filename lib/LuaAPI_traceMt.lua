@@ -42,6 +42,7 @@ do
    mt._traceOff = mt._traceOff or {}
 
    -- Wrap GLib logging functions into more convenient functions.
+   -- TODO: Move this to initMt.
    local t = {_debug=mt._debug, _warning=mt._warning, _error=mt._error}
    for name,func in pairs  (t) do
       assert (type (func) == 'function')

@@ -41,11 +41,11 @@ Player::Player (Media *media)
   _rect.width = 0;
   _rect.height = 0;
   _eos = false;
-  _alpha = 255;
-  _bgColor.red = 0;
-  _bgColor.green = 0;
-  _bgColor.blue = 0;
-  _bgColor.alpha = 0;
+  _alpha = 1.;
+  _bgColor.red = 0.;
+  _bgColor.green = 0.;
+  _bgColor.blue = 0.;
+  _bgColor.alpha = 0.;
 
   LuaAPI::Player_attachWrapper (_L, this, media);
 }
@@ -144,7 +144,7 @@ Player::draw (cairo_t *cr)
     {
       cairo_save (cr);
       cairo_set_source_rgba
-        (cr, _bgColor.red, _bgColor.green, _bgColor.blue, _alpha / 255.);
+        (cr, _bgColor.red, _bgColor.green, _bgColor.blue, _alpha);
       cairo_rectangle (cr, _rect.x, _rect.y, _rect.width, _rect.height);
       cairo_fill (cr);
       cairo_restore (cr);
@@ -161,7 +161,7 @@ Player::draw (cairo_t *cr)
       cairo_translate (cr, _rect.x, _rect.y);
       cairo_scale (cr, sx, sy);
       cairo_set_source_surface (cr, _surface, 0., 0.);
-      cairo_paint_with_alpha (cr, _alpha / 255.);
+      cairo_paint_with_alpha (cr, _alpha);
       cairo_restore (cr);
     }
 

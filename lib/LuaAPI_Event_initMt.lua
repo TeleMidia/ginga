@@ -26,14 +26,21 @@ do
       local funcs = funcs or {}
 
       -- Private data.
-      data._object        = assert (obj)
-      data._type          = assert (type)
-      data._id            = assert (id)
+      data._object        = assert (obj)  -- the container object
+      data._type          = assert (type) -- event type
+      data._id            = assert (id)   -- event id
       data._qualifiedId   = assert (buildQualifiedId (obj.id, type, id))
-      data._state         = 'sleeping'
-      data._beginTime     = 0
-      data._endTime       = nil
-      data._label         = nil
+      data._state         = 'sleeping'    -- event state
+      data._beginTime     = 0             -- begin time
+      data._endTime       = nil           -- end time
+      data._label         = nil           -- label
+      data._behaviors = {                 -- behavior data
+         start  = {},                     -- behaviors waiting on start
+         pause  = {},                     -- behaviors waiting on pause
+         resume = {},                     -- behaviors waiting on resume
+         stop   = {},                     -- behaviors waiting on stop
+         abort  = {},                     -- behaviors waiting on abort
+      }
 
       -- Getters & setters.
       funcs.object      = {mt.getObject,      nil}
@@ -62,6 +69,11 @@ do
       self.object:_removeEvent (self)
       self.object.document:_removeEvent (self)
       return saved_fini (self)
+   end
+
+   -- Gets the behavior data of object.
+   mt._getBehaviorData = function (self)
+      return assert (rawget (mt[self], '_behaviors'))
    end
 
    -- Gets a string representation of event.
@@ -185,6 +197,7 @@ do
          return false
       end
 
+      self.object.document:_awakeBehaviors {event=self, transition=trans}
       return true
    end
 end

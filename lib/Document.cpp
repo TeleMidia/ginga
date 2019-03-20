@@ -231,6 +231,25 @@ Document::createEvent (const string &qualId)
   return evt;
 }
 
+lua_Integer
+Document::getTime ()
+{
+  lua_Integer time;
+
+  LuaAPI::Document_call (_L, this, "getTime", 0, 1);
+  time = luaL_checkinteger (_L, -1);
+  lua_pop (_L, 1);
+
+  return time;
+}
+
+void
+Document::advanceTime (lua_Integer dt)
+{
+  lua_pushinteger (_L, dt);
+  LuaAPI::Document_call (_L, this, "advanceTime", 1, 0);
+}
+
 void
 Document::draw (cairo_t *cr)
 {

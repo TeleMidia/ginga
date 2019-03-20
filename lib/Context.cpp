@@ -253,7 +253,7 @@ Context::afterTransition (Event *evt, Event::Transition transition,
             for (auto port : ports)
               {
                 if (port->getType () == Event::PRESENTATION)
-                  this->addDelayedAction (port, Event::START, "", 0);
+                  this->getDocument ()->evalAction (port, Event::START);
               }
             //evt->setParameter ("fromport", "");
             break;

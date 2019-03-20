@@ -137,24 +137,24 @@ Media::sendKey (const string &key, bool press)
       ->evalAction (evt, press ? Event::START : Event::STOP);
 }
 
-void
-Media::sendTick (Time total, Time diff, Time frame)
-{
+// void
+// Media::sendTick (Time total, Time diff, Time frame)
+// {
   // Update object time.
-  Object::sendTick (total, diff, frame);
+  // Object::sendTick (total, diff, frame);
 
-  if (_getPlayer () == NULL)
-    return;
+  // if (_getPlayer () == NULL)
+  //   return;
 
   // Update player time.
-  g_assert_nonnull (_getPlayer ());
+  // g_assert_nonnull (_getPlayer ());
 
   // Check EOS.
-  if (_getPlayer ()->getEOS ()) // TODO: "duration" property
-    {
-      this->getDocument ()->evalAction (this->getLambda (), Event::STOP);
-    }
-}
+  // if (_getPlayer ()->getEOS ()) // TODO: "duration" property
+  //   {
+  //     this->getDocument ()->evalAction (this->getLambda (), Event::STOP);
+  //   }
+// }
 
 bool
 Media::beforeTransition (Event *evt, Event::Transition transition,
