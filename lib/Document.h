@@ -91,6 +91,9 @@ public:
   /// Advances the playback time of document by the specified amount.
   void advanceTime (lua_Integer dt);
 
+  /// Sends key press/release.
+  void sendKey (const string &key, bool press);
+
   /// Draws the current frame of document into cairo context.
   void draw (cairo_t *cr);
 

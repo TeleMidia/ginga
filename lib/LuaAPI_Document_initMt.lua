@@ -91,6 +91,12 @@ local function matchConditions (triggered, awaited)
          return true
       end
       return triggered.time >= awaited.time
+   elseif triggered.key and awaited.key then
+      if triggered.key ~= awaited.key then
+         return false
+      end
+      -- TODO: press/release
+      return true
    else
       return false
    end
@@ -442,7 +448,9 @@ do
    -- The "await" operator to be used inside behaviors.
    mt._await = function (t)
       assert (type (t) == 'table')
-      if t.object then          -- (object) time
+      if t.event then           -- event transition
+         assert (t.transition)
+      elseif t.object then      -- (object) time
          if t.time then
             if not t.absolute then
                t.time = t.time + (t.object.time or 0)
@@ -452,9 +460,7 @@ do
             t.time = 0
          end
       elseif t.key then         -- key press/release
-         error ('not implemented')
-      elseif t.event then       -- event transition
-         assert (t.transition)
+         assert (t.press or t.release)
       elseif t.forever then     -- forever
          error ('not implemented')
       else
@@ -625,6 +631,21 @@ do
          rawset (mt[self], '_time', time)
          self:_advanceTimeHelper (time)
       end
+   end
+
+   -- Document::sendKey().
+   mt.sendKey = function (self, key, press)
+      local str = tostring (key)
+      if not key then
+         return                 -- nothing to do
+      end
+      local t = {object=self, key=key}
+      if press then
+         t.press, t.release = true, false
+      else
+         t.press, t.release = false, true
+      end
+      self:_awakeBehaviors (t)
    end
 
    -- Spawns behavior.

@@ -317,7 +317,7 @@ on_canvas_key_event (unused (GtkWidget *canvas),
       break;
     }
 
-  // if (!ginga->sendKey (string (key), evt->type == GDK_KEY_PRESS))
+  doc->sendKey (string (key), evt->type == GDK_KEY_PRESS);
   //   {
   //     g_assert (ginga->getState () == GINGA_STATE_STOPPED);
   //     gtk_main_quit ();         // all done

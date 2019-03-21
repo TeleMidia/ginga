@@ -250,6 +250,14 @@ Document::advanceTime (lua_Integer dt)
 }
 
 void
+Document::sendKey (const string &key, bool press)
+{
+  lua_pushstring (_L, key.c_str ());
+  lua_pushboolean (_L, press);
+  LuaAPI::Document_call (_L, this, "sendKey", 2, 0);
+}
+
+void
 Document::draw (cairo_t *cr)
 {
   lua_Integer width;
