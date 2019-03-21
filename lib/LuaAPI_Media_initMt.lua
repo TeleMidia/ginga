@@ -1,5 +1,4 @@
 local assert    = assert
-local await     = coroutine.yield
 local coroutine = coroutine
 local error     = error
 local ipairs    = ipairs
@@ -63,10 +62,12 @@ do
       end
       --
       -- Default behavior.
+      local await, parOr = self.document._await, self.document._par
       self:run {
          function ()            -- start lambda
             while true do
                await {event=self.lambda, transition='start'}
+               print ('media', self.id, 'start lambda')
                assert (self.player == nil)
                local uri = self:getProperty ('uri')
                local player = self.document:_createPlayer (self, uri)

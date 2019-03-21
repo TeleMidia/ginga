@@ -1,11 +1,12 @@
 local _G           = _G
 local assert       = assert
-local await        = coroutine.yield
 local coroutine    = coroutine
 local error        = error
 local ipairs       = ipairs
 local load         = load
 local math         = math
+local math         = math
+local os           = os
 local pairs        = pairs
 local print        = print
 local rawget       = rawget
@@ -172,11 +173,9 @@ do
       data._children  = {}       -- table of children indexed by object
       data._players   = {}       -- list of players sorted by zIndex
       data._time      = 0        -- playback time
-      data._delta     = 0        -- delta to be discounted in next await
-      data._behaviors = {        -- behavior data
-         time = {},              -- behaviors waiting on document time
-         par  = {},              -- behaviors waiting on "par" tree
-      }
+      data._accum     = 0        -- accumulated "real" time
+      data._waitlist  = {}       -- list of behaviors waiting for conditions
+
       local get_data_object = function ()
          return assert (rawget (data, '_object'))
       end
@@ -189,25 +188,18 @@ do
       local get_data_children = function ()
          return rawget (data, '_children')
       end
-      local get_data_time = function ()
-         return assert (rawget (data, '_time'))
-      end
-      local get_data_delta = function ()
-         return assert (rawget (data, '_delta'))
-      end
       --
       -- Getters & setters.
       funcs.objects  = {mt.getObjects,     nil}
       funcs.root     = {mt.getRoot,        nil}
       funcs.settings = {mt.getSettings,    nil}
       funcs.events   = {mt.getEvents,      nil}
+      funcs.time     = {mt.getTime,        nil}
       --
       funcs.object   = {get_data_object,   nil}
       funcs.event    = {get_data_event,    nil}
       funcs.parents  = {get_data_parents,  nil}
       funcs.children = {get_data_children, nil}
-      funcs.time     = {get_data_time,     nil}
-      funcs.delta    = {get_data_delta,    nil}
       --
       return saved_attachData (self, data, funcs)
    end
@@ -372,97 +364,14 @@ do
       return
    end
 
-   -- Gets the behavior data of document.
-   mt._getBehaviorData = function (self)
-      return assert (rawget (mt[self], '_behaviors'))
-   end
-
-   -- Checks condition for any missing data, and updates it if necessary.
-   -- If successful, returns the updated condition and the corresponding
-   -- behavior data if successful.  Otherwise, returns nil plus an error
-   -- message.
-   mt._checkBehaviorCondition = function (self, cond)
-      if type (cond) ~= 'table' then
-         return nil, ('expected condition (got %s)'):format (cond)
-      end
-      local data
-      --
-      if cond.time then
-         local obj = cond.object
-         if not obj then
-            obj = self          -- target is document
-         elseif obj ~= self then
-            if type (obj) == 'string' then
-               obj = self:getObject (obj)
-            end
-            if obj == nil or obj.document ~= self then
-               return nil, ('expected object (got %s)'):format (obj)
-            end
-         end
-         cond.object = obj
-         data = obj:_getBehaviorData ()
-         --
-      elseif cond.event and cond.transition then
-         local evt = cond.event
-         if type (evt) == 'string' then
-            evt = self:getEvent (evt)
-         end
-         if not evt or evt.object.document ~= self then
-            return nil, ('expected event (got %s)'):format (evt)
-         end
-         local trans = cond.transition
-         if trans ~= 'start'
-            and trans ~= 'pause'
-            and trans ~= 'resume'
-            and trans ~= 'stop'
-            and trans ~= 'abort' then
-            return nil, ('expected transition (got %s)'):format (trans)
-         end
-         cond.event = evt
-         cond.object = evt.object
-         data = evt:_getBehaviorData ()
-         --
-      elseif cond[0] == 'par' then
-         for i,v in ipairs (cond) do
-            cond[i] = self:_checkBehaviorCondition (v)
-         end
-         data = self:_getBehaviorData ()
-         --
-      else
-         return nil, ('expected condition (got %s)'):format (cond)
-      end
-      return cond, data
-   end
-
    -- Schedules behavior to execute on condition.
    mt._scheduleBehavior = function (self, co, cond)
       if not cond then
-         return                 -- nothing to do
+         return
       end
-      local cond, data = self:_checkBehaviorCondition (cond)
-      assert (cond, data)
+      assert (cond[0] == 'par')
       cond.behavior = co
-      --
-      if cond.time then
-         local list = assert (data.time)
-         local pos = 1
-         while pos <= #list do
-            if cond.time < list[pos].time then
-               break
-            end
-            pos = pos + 1
-         end
-         table.insert (list, pos, cond)
-         --
-      elseif cond.event then
-         table.insert (assert (data[cond.transition]), cond)
-         --
-      elseif cond[0] == 'par' then
-         table.insert (assert (data.par), cond)
-         --
-      else
-         error ('should not get here')
-      end
+      table.insert (assert (rawget (mt[self], '_waitlist')), cond)
    end
 
    -- Awakes the given behavior.
@@ -473,80 +382,27 @@ do
          self:_warning ('behavior error: '..tostring (cond))
          cond = nil
       end
-      if cond then
-         local status, errmsg = self:_checkBehaviorCondition (cond)
-         if not status then
-            self:_warning ('behavior error: await: '..errmsg)
-            cond = nil
-         end
-      end
       return co, cond
    end
 
    -- Awakes any behaviors waiting on the given condition.
    mt._awakeBehaviors = function (self, cond)
-      local cond, data = self:_checkBehaviorCondition (cond)
-      assert (cond, data)
       local schedule = {}
-      if data.par then          -- awake "par" trees
-         local list = data.par
-         local i = 1
-         while i <= #list do
-            local par = list[i]
-            local result, flag = parsePar (cond, par)
-            if flag then
-               table.remove (list, i)
-               local co, cond = self:_awakeBehavior (par.behavior, result)
-               if cond then
-                  cond = assert (self:_checkBehaviorCondition (cond))
-                  table.insert (schedule, {co, cond})
-               end
-            else
-               i = i + 1        -- nothing to do
-            end
-         end
-      end
-      if cond.time then         -- awake scalar behaviors waiting for time
-         local obj = assert (cond.object)
-         local list = assert (data.time)
-         local time = cond.time
-         while #list > 0 and list[1].time <= time do
-            local t = table.remove (list, 1)
-            local delta = time - t.time -- delta compensation
-            local co, cond = self:_awakeBehavior (t.behavior, cond)
+      local waitlist = assert (rawget (mt[self], '_waitlist'))
+      local i = 1
+      while i <= #waitlist do
+         local par = assert (waitlist[i])
+         assert (par[0] == 'par')
+         local result, flag = parsePar (cond, par)
+         if flag then
+            table.remove (waitlist, i)
+            local co, cond = self:_awakeBehavior (par.behavior, result)
             if cond then
-               cond, data = self:_checkBehaviorCondition (cond)
-               assert (cond, data)
-               if cond.time then
-                  cond.time = cond.time + cond.object.time - delta
-               end
                table.insert (schedule, {co, cond})
             end
+         else
+            i = i + 1        -- nothing to do
          end
-      elseif cond.event then    -- awake scalar behaviors waiting for event
-         local list = assert (data[cond.transition])
-         local i = 1
-         while i <= #list do
-            local match = false
-            if cond.params then -- check if parameters match
-               error ('not implemented')
-            else
-               match = true
-            end
-            if match then
-               local t = table.remove (list, i)
-               local co, cond = self:_awakeBehavior (t.behavior, cond)
-               if cond then
-                  cond, data = self:_checkBehaviorCondition (cond)
-                  assert (cond, data)
-                  table.insert (schedule, {co, cond})
-               end
-            else
-               i = i + 1
-            end
-         end
-      else
-         error ('should not get here')
       end
       for _,v in ipairs (schedule) do
          self:_scheduleBehavior (table.unpack (v))
@@ -558,12 +414,13 @@ do
       if type (t) == 'string' then
          local _await = function (t)
             if type (t) == 'number' then
-               return coroutine.yield {object=obj, time=t*1000000}
+               return mt._await {object=(obj or self), time=t*1000000}
             else
-               return coroutine.yield (t)
+               return mt._await (t)
             end
          end
-         local env = setmetatable ({_D=self, await=_await}, {__index=_G})
+         local env = {_D=self, await=_await, parOr=mt._par}
+         setmetatable (env, {__index=_G})
          local f, errmsg = load (t, debug, nil, env)
          if not f then
             self:_warning ('behavior error: '..errmsg)
@@ -585,41 +442,41 @@ do
    -- The "await" operator to be used inside behaviors.
    mt._await = function (t)
       assert (type (t) == 'table')
-      if t.object then          -- time passage
-         local delta = assert (t.object.delta)
+      if t.object then          -- (object) time
          if t.time then
-            t.time = t.time + t.object.time - t.object.delta
+            if not t.absolute then
+               t.time = t.time + (t.object.time or 0)
+            end
+            t.time = t.time
          else
-            error ('bad argument to await: '..tostring (t))
+            t.time = 0
          end
-      elseif t.event then       -- event transition
+      elseif t.key then         -- key press/release
          error ('not implemented')
+      elseif t.event then       -- event transition
+         assert (t.transition)
       elseif t.forever then     -- forever
          error ('not implemented')
       else
          error ('bad argument to await: '..tostring (t))
       end
-      local res = coroutine.yield {[0]='par', t}
-      assert (res[0] == 'par')
-      res = assert (res[1])
-      if res.time then          -- update delta
-         local obj = assert (res.object)
-         local delta = res.time - t.time
-         if delta < 0 then
-            delta = 0
-         end
-         obj:setDelta (delta)
-      end
+      local res
+      repeat
+         res = assert (coroutine.yield {[0]='par', t})
+         assert (res[0] == 'par')
+         res = res[1]
+      until res
       return res
    end
 
    -- The "par" operator to be used inside behaviors.
    mt._par = function (t)
       assert (type (t) == 'table')
-      --
       if #t == 0 then
-         return                 -- nothing to do
+         return                 -- no trails, nothing to do
       end
+      --
+      -- Wrap trail functions into coroutines.
       for i,f in ipairs (t) do
          assert (type (f) == 'function')
          t[i] = coroutine.create (f)
@@ -630,7 +487,7 @@ do
       local conds = {[0]='par'}
       for i,co in ipairs (trails) do
          local status, cond = coroutine.resume (co)
-         assert (status)
+         assert (status, cond)
          if cond == nil then
             return              -- ith trail terminated
          end
@@ -641,27 +498,27 @@ do
       while true do
          local result = coroutine.yield (conds)
          local nextconds = {[0]='par'}
+         -- print ('---', 'awake cycle begin')
          -- dump (conds)
          -- dump (result)
+         -- print''
          for i,res in ipairs (result) do
             if res == false then
                nextconds[i] = assert (conds[i])
-            else
+            elseif type (res) == 'table' then
+               --
                -- Awake i-th trail.
+               -- dump ('>>> awake t'..i, trails[i], res)
                local status, cond = coroutine.resume (trails[i], res)
-               assert (status)
+               assert (status, cond)
                if cond == nil then
                   return        -- ith trail terminated
                end
                nextconds[i] = cond
+            else
+               error ('should not get here')
             end
          end
-         -- print'------'
-         -- dump (conds)
-         -- dump (nextconds)
-         -- print'------'
-         -- print''
-         -- print''
          conds = nextconds
       end
    end
@@ -733,27 +590,43 @@ do
 
    -- Document::getTime().
    mt.getTime = function (self)
-      return self.time
+      return rawget (mt[self], '_time')
+   end
+
+   -- Document:setTime().
+   mt.setTime = function (self, time)
+      rawset (mt[self], '_time', time)
    end
 
    -- Document::advanceTime().
-   mt.advanceTime = function (self, dt)
-      local time = self.time + dt
-      rawset (mt[self], '_time', time)
-      self:_awakeBehaviors {time=time}
+   local quantum = 1000         -- us
+
+   mt._advanceTimeHelper = function (self, time)
+      self:_awakeBehaviors {object=self, time=time}
       for _,obj in ipairs (self:getObjects ()) do
-         obj:advanceTime (dt)
+         self:_awakeBehaviors {object=obj, time=obj.time}
       end
    end
 
-   -- Document::getDelta().
-   mt.getDelta = function (self)
-      return self.delta
-   end
-
-   -- Document::setDelta().
-   mt.setDelta = function (self, delta)
-      rawset (mt[self], '_delta', delta)
+   mt.advanceTime = function (self, dt)
+      if dt == 0 then                -- bootstrap (empty) tick
+         self:_advanceTimeHelper (0)
+         return
+      end
+      local accum = assert (rawget (mt[self], '_accum'))
+      accum = accum + dt
+      if accum > 0 and accum < quantum then
+         return
+      end
+      local nticks, x = math.modf (accum/quantum)
+      x = math.modf (x)
+      rawset (mt[self], '_accum', x)
+      for i=1,nticks do
+         local tick = quantum
+         local time = self.time + tick
+         rawset (mt[self], '_time', time)
+         self:_advanceTimeHelper (time)
+      end
    end
 
    -- Runs the given behavior.

@@ -1,5 +1,4 @@
 local assert       = assert
-local await        = coroutine.yield
 local coroutine    = coroutine
 local ipairs       = ipairs
 local print        = print
@@ -28,11 +27,8 @@ do
       data._attribution  = {}            -- attribution evts indexed by id
       data._presentation = {}            -- presentation evts indexed by id
       data._selection    = {}            -- selection evts indexed by id
-      data._time         = nil           -- playback time
+      data._epoch        = nil           -- doc time when playback started
       data._property     = {}            -- property table
-      data._behaviors = {                -- behavior data
-         time = {}                       -- behaviors waiting on object time
-      }
       local _P_mt = {
          __index    = function (_, name)
             return self:getProperty (name)
@@ -81,14 +77,15 @@ do
       assert (self:createEvent ('presentation', '@lambda'))
       --
       -- Default behavior.
+      local await, parOr = self.document._await, self.document._par
       self:run {
          function ()            -- start lambda
             while true do
-               await {event=self.lambda, transition = 'start'}
+               await {event=self.lambda, transition='start'}
                print ('object', self.id, 'start lambda')
                -- TODO: Start/resume parent if it is not occurring.
                -- TODO: Check if this 'start' is in fact a 'resume'.
-               self:setTime (0)
+               rawset (mt[self], '_epoch', self.document.time)
             end
          end
       }
@@ -186,22 +183,12 @@ do
 
    -- Object::getTime().
    mt.getTime = function (self)
-      return rawget (mt[self], '_time')
-   end
-
-   -- Object:setTime().
-   mt.setTime = function (self, time)
-      rawset (mt[self], '_time', time)
-   end
-
-   -- Object:advanceTime().
-   mt.advanceTime = function (self, dt)
-      if self.lambda.state ~= 'occurring' then
-         return                 -- nothing to do
+      local epoch = rawget (mt[self], '_epoch')
+      if not epoch then
+         return nil
+      else
+         return self.document.time - epoch
       end
-      local time = assert (self.time) + dt
-      self:setTime (time)
-      self.document:_awakeBehaviors {object=self, time=time}
    end
 
    -- Object::getProperty().

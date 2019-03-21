@@ -1,5 +1,4 @@
 local assert    = assert
-local await     = coroutine.yield
 local coroutine = coroutine
 local ipairs    = ipairs
 local print     = print
@@ -32,6 +31,7 @@ do
       saved_init (self)
       --
       -- Default behavior.
+      local await, parOr = self.document._await, self.document._par
       self:run {
          function ()            -- start lambda
             while true do

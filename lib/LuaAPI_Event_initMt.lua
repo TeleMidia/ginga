@@ -1,8 +1,8 @@
-local assert = assert
-local await  = coroutine.yield
-local print  = print
-local rawget = rawget
-local rawset = rawset
+local assert    = assert
+local coroutine = coroutine
+local print     = print
+local rawget    = rawget
+local rawset    = rawset
 _ENV = nil
 
 -- Returns qualified id from objId and evtId.
@@ -41,13 +41,6 @@ do
       data._beginTime     = 0             -- begin time
       data._endTime       = nil           -- end time
       data._label         = nil           -- label
-      data._behaviors = {                 -- behavior data
-         start  = {},                     -- behaviors waiting on start
-         pause  = {},                     -- behaviors waiting on pause
-         resume = {},                     -- behaviors waiting on resume
-         stop   = {},                     -- behaviors waiting on stop
-         abort  = {},                     -- behaviors waiting on abort
-      }
       --
       -- Getters & setters.
       funcs.object      = {mt.getObject,      nil}
@@ -70,26 +63,36 @@ do
       self.object.document:_addEvent (self)
       --
       -- Default behavior.
+      local await = self.object.document._await
+      local parOr = self.object.document._par
       self.object:run {
          function ()
-            if self.type ~= 'presentation' then
+            if self.type ~= 'presentation'
+               or self == self.object.lambda
+               or self.label then
                return           -- nothing to do
             end
-            if self == self.object.lambda then
-               return           -- nothing to do
-            end
-            if self.label then
-               return           -- nothing to do
-            end
+            -- If we get here, this event is an <area>.
             while true do
                await {event=self.object.lambda, transition='start'}
-               if self.beginTime then
-                  await {object=self.object, time=self.beginTime}
+               if self.beginTime and self.beginTime > 0 then
+                  await {object=self.object, time=self.beginTime,
+                         absolute=true}
                end
                print ('event', self.qualifiedId, 'start', self.object.time)
                self:transition ('start')
-               if self.endTime then
-                  await {object=self.object, time=self.endTime}
+               if self.endTime and self.endTime > 0 then
+                  parOr {
+                     function ()
+                        await {object=self.object, time=self.endTime,
+                               absolute=true}
+                     end,
+                     function ()
+                        await {event=self.object.lambda, transition='stop'}
+                     end,
+                  }
+               else
+                  await {event=self.object.lambda, transition='stop'}
                end
                print ('event', self.qualifiedId, 'stop', self.object.time)
                self:transition ('stop')
@@ -104,11 +107,6 @@ do
       self.object:_removeEvent (self)
       self.object.document:_removeEvent (self)
       saved_fini (self)
-   end
-
-   -- Gets the behavior data of object.
-   mt._getBehaviorData = function (self)
-      return assert (rawget (mt[self], '_behaviors'))
    end
 
    -- Gets a string representation of event.

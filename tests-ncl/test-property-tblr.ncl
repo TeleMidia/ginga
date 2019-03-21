@@ -7,10 +7,14 @@
       <property name="top" value="50%"/>
       <property name="top" value="25%"/>
       <script>
+      <![CDATA[
+        print ('start')
         local m = ... -- gets the container object (m)
         await (.5)
+        print ('m.property.left=0')
         m.property.left = 0
         await (.5)
+        print ('m.property.top=0')
         m.property.top = 0
         await (.5)
         m.property.width = 100
@@ -43,6 +47,7 @@
         end
         m.property.left = '25%'
         m.property.top = .25
+      ]]>
       </script>
     </media>
   </body>

@@ -124,6 +124,14 @@ Event::getBeginTime ()
 void
 Event::setBeginTime (Time time)
 {
+  if (time >= 0)
+    {
+      lua_pushinteger (_L, (lua_Integer) time);
+    }
+  else
+    {
+      lua_pushnil (_L);
+    }
   lua_pushinteger (_L, (lua_Integer) time);
   LuaAPI::Event_call (_L, this, "setBeginTime", 1, 0);
 }
@@ -146,7 +154,14 @@ Event::getEndTime ()
 void
 Event::setEndTime (Time time)
 {
-  lua_pushinteger (_L, (lua_Integer) time);
+  if (time >= 0)
+    {
+      lua_pushinteger (_L, (lua_Integer) time);
+    }
+  else
+    {
+      lua_pushnil (_L);
+    }
   LuaAPI::Event_call (_L, this, "setEndTime", 1, 0);
 }
 
