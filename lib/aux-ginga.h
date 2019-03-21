@@ -102,26 +102,7 @@ string __ginga_strfunc (const string &);
 // Internal types.
 typedef GdkRGBA Color;
 typedef GdkRectangle Rect;
-typedef GstClockTime Time;
-
-// Time macros and functions.
-#define GINGA_TIME_NONE            GST_CLOCK_TIME_NONE
-#define GINGA_TIME_IS_VALID(t)     GST_CLOCK_TIME_IS_VALID ((t))
-#define GINGA_STIME_NONE           GST_CLOCK_STIME_NONE
-#define GINGA_STIME_IS_VALID(t)    GST_CLOCK_STIME_IS_VALID ((t))
-#define GINGA_SECOND               GST_SECOND
-#define GINGA_MSECOND              GST_MSECOND
-#define GINGA_USECOND              GST_USECOND
-#define GINGA_NSECOND              GST_NSECOND
-#define GINGA_TIME_AS_SECONDS(t)   GST_TIME_AS_SECONDS ((t))
-#define GINGA_TIME_AS_MSECONDS(t)  GST_TIME_AS_MSECONDS ((t))
-#define GINGA_TIME_AS_USECONDS(t)  GST_TIME_AS_USECONDS ((t))
-#define GINGA_TIME_AS_NSECONDS(t)  GST_TIME_AS_NSECONDS ((t))
-#define GINGA_TIME_DIFF(s,e)       GST_CLOCK_DIFF ((s), (e))
-#define GINGA_TIME_FORMAT          GST_TIME_FORMAT
-#define GINGA_TIME_ARGS(t)         GST_TIME_ARGS ((t))
-#define GINGA_STIME_FORMAT         GST_STIME_FORMAT
-#define GINGA_STIME_ARGS(t)        GST_STIME_ARGS ((t))
+typedef gint64 Time;            // microseconds
 
 // Numeric functions.
 bool floateq (double, double, double epsilon=.0000001);

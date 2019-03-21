@@ -383,6 +383,7 @@ do
             if cond.time < list[pos].time then
                break
             end
+            pos = pos + 1
          end
          table.insert (list, pos, cond)
       elseif cond.event then

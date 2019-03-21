@@ -8,14 +8,14 @@
     </script>
   </head>
   <body>
-    <port id="start" component="gnu"/>
-    <media id="gnu" src="samples/gnu.png">
+    <port id="start" component="m"/>
+    <media id="m" src="samples/bunny.ogg">
       <property name="bounds" value=".25,.25,.5,.5"/>
       <script>
-        local gnu = ...
-        assert (gnu == _D.object.gnu)        
-        await {object=gnu, time=1000000}
-        print (gnu.id, gnu.time)
+        local m = ...
+        assert (m == _D.object.m)        
+        await {object=m, time=1000000}
+        print (m.id, m.time)
       </script>
     </media>
   </body>

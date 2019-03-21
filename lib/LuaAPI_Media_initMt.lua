@@ -19,7 +19,7 @@ local function parseDimension (str)
       return n
    end
    if str:sub (-2) == 'px' then
-      return tonumber (str:sub (1,-3))
+      return math.tointeger (math.floor (tonumber (str:sub (1,-3))))
    end
    if str:sub (-1) == '%' then
       n = tonumber (str:sub (1,-2))
@@ -67,7 +67,6 @@ do
          function ()            -- start lambda
             while true do
                await {event=self.lambda, transition='start'}
-               print ('media', self.id, 'lambda start')
                assert (self.player == nil)
                local uri = self:getProperty ('uri')
                local player = self.document:_createPlayer (self, uri)

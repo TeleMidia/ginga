@@ -4067,7 +4067,7 @@ ParserState::pushArea (ParserState *st, ParserElt *elt)
             }
         }
 
-      end = GINGA_TIME_NONE;
+      end = -1;
       if (elt->getAttribute ("end", &str))
         {
           if (unlikely (!ginga::try_parse_time (str, &end)))

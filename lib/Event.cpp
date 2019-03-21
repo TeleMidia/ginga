@@ -109,7 +109,7 @@ Event::setState (Event::State state)
 Time
 Event::getBeginTime ()
 {
-  Time time = GINGA_TIME_NONE;
+  Time time = -1;
 
   LuaAPI::Event_call (_L, this, "getBeginTime", 0, 1);
   if (!lua_isnil (_L, -1))
@@ -131,7 +131,7 @@ Event::setBeginTime (Time time)
 Time
 Event::getEndTime ()
 {
-  Time time = GINGA_TIME_NONE;
+  Time time = -1;
 
   LuaAPI::Event_call (_L, this, "getEndTime", 0, 1);
   if (!lua_isnil (_L, -1))

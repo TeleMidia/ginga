@@ -1,13 +1,14 @@
-local assert    = assert
-local await     = coroutine.yield
-local coroutine = coroutine
-local ipairs    = ipairs
-local print     = print
-local rawget    = rawget
-local rawset    = rawset
-local table     = table
-local tostring  = tostring
-local type      = type
+local assert       = assert
+local await        = coroutine.yield
+local coroutine    = coroutine
+local ipairs       = ipairs
+local print        = print
+local rawget       = rawget
+local rawset       = rawset
+local setmetatable = setmetatable
+local table        = table
+local tostring     = tostring
+local type         = type
 _ENV = nil
 
 -- Object metatable.
@@ -32,6 +33,15 @@ do
       data._behaviors = {                -- behavior data
          time = {}                       -- behaviors waiting on object time
       }
+      local _P_mt = {
+         __index    = function (_, name)
+            return self:getProperty (name)
+         end,
+         __newindex = function (_, name, value)
+            return self:setProperty (name, value)
+         end,
+      }
+      data._P = setmetatable ({}, _P_mt) -- property table access
       --
       local get_data_attr = function ()
          return assert (rawget (data, '_attribution'))
@@ -41,6 +51,9 @@ do
       end
       local get_data_seln = function (...)
          return assert (rawget (data, '_selection'))
+      end
+      local get_data_prop = function (...)
+         return assert (rawget (data, '_P'))
       end
       --
       -- Getters & setters.
@@ -55,6 +68,7 @@ do
       funcs.attribution  = {get_data_attr,  nil}
       funcs.presentation = {get_data_pres,  nil}
       funcs.selection    = {get_data_seln,  nil}
+      funcs.property     = {get_data_prop,  nil}
       --
       return saved_attachData (self, data, funcs)
    end
@@ -71,7 +85,7 @@ do
          function ()            -- start lambda
             while true do
                await {event=self.lambda, transition = 'start'}
-               print ('object', self.id, 'lambda start')
+               print ('object', self.id, 'start lambda')
                -- TODO: Start/resume parent if it is not occurring.
                -- TODO: Check if this 'start' is in fact a 'resume'.
                self:setTime (0)
@@ -185,7 +199,7 @@ do
       if self.lambda.state ~= 'occurring' then
          return                 -- nothing to do
       end
-      local time = (self.time or 0) + dt
+      local time = assert (self.time) + dt
       self:setTime (time)
       self.document:_awakeBehaviors {object=self, time=time}
    end

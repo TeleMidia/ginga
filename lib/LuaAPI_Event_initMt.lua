@@ -1,5 +1,12 @@
+local assert = assert
+local await  = coroutine.yield
+local print  = print
+local rawget = rawget
+local rawset = rawset
+_ENV = nil
+
 -- Returns qualified id from objId and evtId.
-function buildQualifiedId (objId, evtType, evtId)
+local function buildQualifiedId (objId, evtType, evtId)
    if evtType == 'attribution' then
       return objId..'.'..evtId
    elseif evtType == 'presentation' then
@@ -24,7 +31,7 @@ do
    mt._attachData = function (self, obj, type, id, data, funcs)
       local data  = data or {}
       local funcs = funcs or {}
-
+      --
       -- Private data.
       data._object        = assert (obj)  -- the container object
       data._type          = assert (type) -- event type
@@ -41,7 +48,7 @@ do
          stop   = {},                     -- behaviors waiting on stop
          abort  = {},                     -- behaviors waiting on abort
       }
-
+      --
       -- Getters & setters.
       funcs.object      = {mt.getObject,      nil}
       funcs.type        = {mt.getType,        nil}
@@ -51,24 +58,52 @@ do
       funcs.beginTime   = {mt.getBeginTime,   mt.setBeginTime}
       funcs.endTime     = {mt.getEndTime,     mt.setEndTime}
       funcs.label       = {mt.getLabel,       mt.setLabel}
-
+      --
       return saved_attachData (self, data, funcs)
    end
 
-   -- Initializes private data.
+   -- Initializes event.
    local saved_init = assert (mt._init)
    mt._init = function (self)
+      saved_init (self)
       self.object:_addEvent (self)
       self.object.document:_addEvent (self)
-      return saved_init (self)
+      --
+      -- Default behavior.
+      self.object:run {
+         function ()
+            if self.type ~= 'presentation' then
+               return           -- nothing to do
+            end
+            if self == self.object.lambda then
+               return           -- nothing to do
+            end
+            if self.label then
+               return           -- nothing to do
+            end
+            while true do
+               await {event=self.object.lambda, transition='start'}
+               if self.beginTime then
+                  await {object=self.object, time=self.beginTime}
+               end
+               print ('event', self.qualifiedId, 'start', self.object.time)
+               self:transition ('start')
+               if self.endTime then
+                  await {object=self.object, time=self.endTime}
+               end
+               print ('event', self.qualifiedId, 'stop', self.object.time)
+               self:transition ('stop')
+            end
+         end
+      }
    end
 
-   -- Finalizes private data.
+   -- Finalizes event.
    local saved_fini = assert (mt._fini)
    mt._fini = function (self)
       self.object:_removeEvent (self)
       self.object.document:_removeEvent (self)
-      return saved_fini (self)
+      saved_fini (self)
    end
 
    -- Gets the behavior data of object.
@@ -173,24 +208,7 @@ do
       else
          error ('bad transition: '..tostring (trans))
       end
-
-      -- local before = self.object._beforeTransition
-      -- local after = self.object._afterTransition
-
-      -- Initiate transition.
-      -- if not before (self.object, self, trans, params) then
-      --    return false
-      -- end
-
-      -- Update event state.
       self.state = next
-
-      -- Finish transition.
-      -- if not after (self.object, self, trans, params) then
-      --    self.state = curr
-      --    return false
-      -- end
-
       self.object.document:_awakeBehaviors {event=self, transition=trans}
       return true
    end

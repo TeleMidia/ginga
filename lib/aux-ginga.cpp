@@ -220,7 +220,7 @@ try_parse_time (const string &s, Time *result)
 
 success:
   g_free (dup);
-  tryset (result, (Time) (secs * GINGA_SECOND));
+  tryset (result, (Time) (secs * G_USEC_PER_SEC));
   return true;
 
 failure:

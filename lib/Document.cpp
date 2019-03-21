@@ -347,7 +347,7 @@ Document::evalActionInContext (Action act, Context *ctx)
 
               delay = ginga::parse_time (s);
 
-              if (delay == 0 || delay == GINGA_TIME_NONE)
+              if (delay == 0 || delay == -1)
                 {
                   stack.push_back (*ri);
                 }
@@ -357,8 +357,6 @@ Document::evalActionInContext (Action act, Context *ctx)
                   g_assert_nonnull (next_evt);
                   Object *next_obj = next_evt->getObject ();
                   g_assert_nonnull (next_obj);
-                  // ctx->addDelayedAction (next_evt, next_act.transition,
-                  //                        next_act.params["value"],delay);
                 }
             }
         }

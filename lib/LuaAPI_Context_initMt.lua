@@ -36,7 +36,6 @@ do
          function ()            -- start lambda
             while true do
                await {event=self.lambda, transition='start'}
-               print ('context', self.id, 'lambda start')
                for _,port in ipairs (self.ports) do
                   local evt = self.document:getEvent (port)
                   if evt then

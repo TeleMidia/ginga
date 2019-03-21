@@ -197,7 +197,7 @@ Object::getTime ()
 void
 Object::setTime (Time time)
 {
-  if (time == GINGA_TIME_NONE)
+  if (time == -1)
     {
       lua_pushnil (_L);
     }
