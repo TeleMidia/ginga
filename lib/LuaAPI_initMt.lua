@@ -1,3 +1,36 @@
+local assert       = assert
+local getmetatable = getmetatable
+local io           = io
+local ipairs       = ipairs
+local pairs        = pairs
+local rawset       = rawset
+local setmetatable = setmetatable
+local table        = table
+local tostring     = tostring
+local type         = type
+_ENV = nil
+
+local function cat (s)
+   io.stdout:write (s)
+end
+
+local function dump (x, tab)
+   if type (x) ~= 'table' then
+      cat (tostring (x))
+   else
+      local tab = tab or 1
+      cat ('{\n')
+      for k,v in pairs (x) do
+         cat (('   '):rep (tab))
+         dump (k, tab + 1)
+         cat ('=')
+         dump (v, tab + 1)
+         cat (',\n')
+      end
+      cat (('   '):rep (tab - 1)..'}')
+   end
+end
+
 -- Code shared by all metatables.
 do
    local mt = ...
@@ -75,6 +108,14 @@ do
             error ('bad format: '..tostring (fmt))
          end
          return func ((tag..fmt):format (table.unpack (args)))
+      end
+   end
+
+   -- Dumps object to stdout.
+   mt._dump = function (...)
+      for _,v in ipairs {...} do
+         dump (v)
+         cat ('\n')
       end
    end
 end

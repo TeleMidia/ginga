@@ -66,6 +66,63 @@ local function dumpGraph (node, prefix)
    end
 end
 
+-- Tests whether two scalar conditions match.
+local function matchConditions (triggered, awaited)
+   if triggered.event and awaited.event then
+      if triggered.event ~= awaited.event then
+         return false
+      end
+      if not triggered.transition or not awaited.transition then
+         return false
+      end
+      if triggered.transition ~= awaited.transition then
+         return false
+      end
+      if not triggered.params and not awaited.params then
+         return true
+      end
+      error ('not implemented') -- compare parameters
+      --
+   elseif triggered.object and awaited.object then
+      if triggered.object ~= awaited.object then
+         return false
+      end
+      if not triggered.time and not awaited.time then
+         return true
+      end
+      return triggered.time >= awaited.time
+      --
+   else
+      return false
+   end
+end
+
+-- Parses the "par" tree triggering scalar condition satisfied by cond.
+-- Returns the resulting "par" tree and a flag indicating whether any scalar
+-- condition was satisfied.
+local function parsePar (cond, par)
+   local flag = false
+   local result = {[0]='par'}
+   assert (par[0] == 'par')
+   for i,v in ipairs (par) do
+      local status
+      if v[0] == 'par' then
+         result[i], status = parsePar (cond, v)
+      else
+         status = matchConditions (cond, v)
+         if status then
+            result[i] = cond
+         else
+            result[i] = false
+         end
+      end
+      if status then
+         flag = true
+      end
+   end
+   return result, flag
+end
+
 -- Parses qualified id.
 --
 -- Returns the resulting event type, object id, and event id if successful;
@@ -73,7 +130,7 @@ end
 --
 local function parseQualifiedId (id)
    local tp, o, e
-
+   --
    o, e = id:match ('([%w_-]+)@([%w_-]+)')
    if o and e then
       if e == 'lambda' then
@@ -82,20 +139,20 @@ local function parseQualifiedId (id)
       tp = 'presentation'
       goto tail
    end
-
+   --
    o, e = id:match ('([%w_-]+)%.([%w._-]+)')
    if o and e then
       tp = 'attribution'
       goto tail
    end
-
+   --
    o, e = id:match ('([%w_-]+)<([%w_-]*)>')
    if o and e then
       tp = 'selection'
    else
       return nil             -- bad format
    end
-
+   --
    ::tail::
    assert (tp)
    assert (o)
@@ -106,6 +163,7 @@ end
 -- Document metatable.
 do
    local mt = ...
+   local dump = mt._dump
 
    -- Attaches private data and access functions.
    local saved_attachData = assert (mt._attachData)
@@ -121,7 +179,8 @@ do
       data._players   = {}       -- list of players sorted by zIndex
       data._time      = 0        -- playback time
       data._behaviors = {        -- behavior data
-         time = {}               -- behaviors waiting on document time
+         time = {},              -- behaviors waiting on document time
+         par  = {},              -- behaviors waiting on "par" tree
       }
 
       local get_data_object = function ()
@@ -300,7 +359,7 @@ do
    end
 
    -- Dumps document graph.
-   mt._dump = function (self)
+   mt._dumpGraph = function (self)
       local tparents = assert (mt[self].parents)
       local tchildren = assert (mt[self].children)
       local roots = {}
@@ -329,6 +388,7 @@ do
          return nil, ('expected condition (got %s)'):format (cond)
       end
       local data
+      --
       if cond.time then
          local obj = cond.object
          if not obj then
@@ -343,6 +403,7 @@ do
          end
          cond.object = obj
          data = obj:_getBehaviorData ()
+         --
       elseif cond.event and cond.transition then
          local evt = cond.event
          if type (evt) == 'string' then
@@ -362,6 +423,13 @@ do
          cond.event = evt
          cond.object = evt.object
          data = evt:_getBehaviorData ()
+         --
+      elseif cond[0] == 'par' then
+         for i,v in ipairs (cond) do
+            cond[i] = self:_checkBehaviorCondition (v)
+         end
+         data = self:_getBehaviorData ()
+         --
       else
          return nil, ('expected condition (got %s)'):format (cond)
       end
@@ -376,6 +444,7 @@ do
       local cond, data = self:_checkBehaviorCondition (cond)
       assert (cond, data)
       cond.behavior = co
+      --
       if cond.time then
          local list = assert (data.time)
          local pos = 1
@@ -386,8 +455,13 @@ do
             pos = pos + 1
          end
          table.insert (list, pos, cond)
+         --
       elseif cond.event then
          table.insert (assert (data[cond.transition]), cond)
+         --
+      elseif cond[0] == 'par' then
+         table.insert (assert (data.par), cond)
+         --
       else
          error ('should not get here')
       end
@@ -416,7 +490,25 @@ do
       local cond, data = self:_checkBehaviorCondition (cond)
       assert (cond, data)
       local schedule = {}
-      if cond.time then         -- awake behaviors waiting for time
+      if data.par then          -- awake "par" trees
+         local list = data.par
+         local i = 1
+         while i <= #list do
+            local par = list[i]
+            local result, flag = parsePar (cond, par)
+            if flag then
+               table.remove (list, i)
+               local co, cond = self:_awakeBehavior (par.behavior, result)
+               if cond then
+                  cond = assert (self:_checkBehaviorCondition (cond))
+                  table.insert (schedule, {co, cond})
+               end
+            else
+               i = i + 1        -- nothing to do
+            end
+         end
+      end
+      if cond.time then         -- awake scalar behaviors waiting for time
          local obj = assert (cond.object)
          local list = assert (data.time)
          local time = cond.time
@@ -433,9 +525,8 @@ do
                table.insert (schedule, {co, cond})
             end
          end
-      elseif cond.event then    -- awake behaviors waiting for event
+      elseif cond.event then    -- awake scalar behaviors waiting for event
          local list = assert (data[cond.transition])
-         local awake = {}
          local i = 1
          while i <= #list do
             local match = false
@@ -490,6 +581,58 @@ do
       for _,f in ipairs (t) do
          local co = coroutine.create (f)
          self:_scheduleBehavior (self:_awakeBehavior (co, obj or self))
+      end
+   end
+
+   -- The "par" operator to be used inside behaviors.
+   mt._par = function (t)
+      assert (type (t) == 'table')
+      if #t == 0 then
+         return                 -- nothing to do
+      end
+      for i,f in ipairs (t) do
+         assert (type (f) == 'function')
+         t[i] = coroutine.create (f)
+      end
+      local trails = t
+      --
+      -- Bootstrap trails.
+      local conds = {[0]='par'}
+      for i,co in ipairs (trails) do
+         local status, cond = coroutine.resume (co)
+         assert (status)
+         if cond == nil then
+            return              -- ith trail terminated
+         end
+         conds[i] = cond
+      end
+      --
+      -- Awake trails.
+      while true do
+         local result = coroutine.yield (conds)
+         local nextconds = {[0]='par'}
+         -- dump (conds)
+         -- dump (result)
+         for i,res in ipairs (result) do
+            if res == false then
+               nextconds[i] = assert (conds[i])
+            else
+               -- Awake i-th trail.
+               local status, cond = coroutine.resume (trails[i], res)
+               assert (status)
+               if cond == nil then
+                  return        -- ith trail terminated
+               end
+               nextconds[i] = cond
+            end
+         end
+         -- print'------'
+         -- dump (conds)
+         -- dump (nextconds)
+         -- print'------'
+         -- print''
+         -- print''
+         conds = nextconds
       end
    end
 

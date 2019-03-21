@@ -44,6 +44,7 @@ do
    mt._traceOff._debug   = true
    mt._traceOff._warning = true
    mt._traceOff._error   = true
+   mt._traceOff._dump    = true
 
    -- Install trace wrappers.
    for name,func in pairs (mt) do
