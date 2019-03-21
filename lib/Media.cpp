@@ -127,7 +127,6 @@ Media::sendKey (const string &key, bool press)
       buf.push_back (evt);
     }
 
-  // Run collected events.
   for (Event *evt : buf)
     this->getDocument ()
       ->evalAction (evt, press ? Event::START : Event::STOP);

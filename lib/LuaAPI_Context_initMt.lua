@@ -32,7 +32,7 @@ do
       --
       -- Default behavior.
       local await, parOr = self.document._await, self.document._par
-      self:run {
+      self:spawn {
          function ()            -- start lambda
             while true do
                await {event=self.lambda, transition='start'}

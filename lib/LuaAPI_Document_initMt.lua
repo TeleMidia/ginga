@@ -409,8 +409,8 @@ do
       end
    end
 
-   -- Runs the given function as behavior of object.
-   mt._runBehavior = function (self, t, obj, debug)
+   -- Spawns the given function as a new behavior of object.
+   mt._spawnBehavior = function (self, t, obj, debug)
       if type (t) == 'string' then
          local _await = function (t)
             if type (t) == 'number' then
@@ -600,14 +600,12 @@ do
 
    -- Document::advanceTime().
    local quantum = 1000         -- us
-
    mt._advanceTimeHelper = function (self, time)
       self:_awakeBehaviors {object=self, time=time}
       for _,obj in ipairs (self:getObjects ()) do
          self:_awakeBehaviors {object=obj, time=obj.time}
       end
    end
-
    mt.advanceTime = function (self, dt)
       if dt == 0 then                -- bootstrap (empty) tick
          self:_advanceTimeHelper (0)
@@ -629,8 +627,8 @@ do
       end
    end
 
-   -- Runs the given behavior.
-   mt.run = function (self, t, debug)
-      self:_runBehavior (t, nil, debug)
+   -- Spawns behavior.
+   mt.spawn = function (self, t, debug)
+      self:_spawnBehavior (t, nil, debug)
    end
 end

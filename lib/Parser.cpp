@@ -2332,11 +2332,11 @@ ParserState::process (xmlDoc *xml)
 
           if (script_elt->getData ("object", (void **) &obj))
             {
-              LuaAPI::Object_call (L, obj, "run", 2, 0);
+              LuaAPI::Object_call (L, obj, "spawn", 2, 0);
             }
           else
             {
-              LuaAPI::Document_call (L, _doc, "run", 2, 0);
+              LuaAPI::Document_call (L, _doc, "spawn", 2, 0);
             }
 
           xmlFree (text);

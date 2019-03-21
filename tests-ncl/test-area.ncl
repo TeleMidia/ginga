@@ -21,7 +21,7 @@
         assert (a3.state == 'sleeping')
         assert (a4.state == 'sleeping')
 
-        await (0)
+        await (0) -- bootstrap tick
         assert (m.time == 0)
         assert (m.lambda.state == 'occurring')
         assert (a1.state == 'occurring')
@@ -48,6 +48,8 @@
         m.lambda:transition ('stop')
         assert (a1.state == 'sleeping')
         assert (a2.state == 'sleeping')
+        assert (a3.state == 'sleeping')
+        assert (a4.state == 'sleeping')
         assert (m.time == 2000000)
       ]]>
       </script>

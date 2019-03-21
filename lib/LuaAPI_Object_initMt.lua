@@ -78,7 +78,7 @@ do
       --
       -- Default behavior.
       local await, parOr = self.document._await, self.document._par
-      self:run {
+      self:spawn {
          function ()            -- start lambda
             while true do
                await {event=self.lambda, transition='start'}
@@ -201,8 +201,8 @@ do
       assert (rawget (mt[self], '_property'))[name] = value
    end
 
-   -- Runs the given behavior.
-   mt.run = function (self, t, debug)
-      self.document:_runBehavior (t, self, debug)
+   -- Spawns behavior.
+   mt.spawn = function (self, t, debug)
+      self.document:_spawnBehavior (t, self, debug)
    end
 end

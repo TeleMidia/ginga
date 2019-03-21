@@ -65,7 +65,7 @@ do
       -- Default behavior.
       local await = self.object.document._await
       local parOr = self.object.document._par
-      self.object:run {
+      self.object:spawn {
          function ()
             if self.type ~= 'presentation'
                or self == self.object.lambda
