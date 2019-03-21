@@ -66,7 +66,7 @@ local function dumpGraph (node, prefix)
    end
 end
 
--- Tests whether two scalar conditions match.
+-- Tests whether two conditions match.
 local function matchConditions (triggered, awaited)
    if triggered.event and awaited.event then
       if triggered.event ~= awaited.event then
@@ -82,7 +82,6 @@ local function matchConditions (triggered, awaited)
          return true
       end
       error ('not implemented') -- compare parameters
-      --
    elseif triggered.object and awaited.object then
       if triggered.object ~= awaited.object then
          return false
@@ -91,19 +90,18 @@ local function matchConditions (triggered, awaited)
          return true
       end
       return triggered.time >= awaited.time
-      --
    else
       return false
    end
 end
 
--- Parses the "par" tree triggering scalar condition satisfied by cond.
--- Returns the resulting "par" tree and a flag indicating whether any scalar
--- condition was satisfied.
+-- Traverses "par" tree triggering the conditions satisfied by cond.
+-- Returns the resulting "par" tree and a flag indicating whether any
+-- condition was triggered.
 local function parsePar (cond, par)
+   assert (par[0] == 'par')
    local flag = false
    local result = {[0]='par'}
-   assert (par[0] == 'par')
    for i,v in ipairs (par) do
       local status
       if v[0] == 'par' then
@@ -111,13 +109,13 @@ local function parsePar (cond, par)
       else
          status = matchConditions (cond, v)
          if status then
-            result[i] = cond
+            result[i] = cond    -- ith trail should be awaken
          else
-            result[i] = false
+            result[i] = false   -- no-op
          end
       end
       if status then
-         flag = true
+         flag = true            -- some trail should be awaken
       end
    end
    return result, flag
@@ -130,7 +128,6 @@ end
 --
 local function parseQualifiedId (id)
    local tp, o, e
-   --
    o, e = id:match ('([%w_-]+)@([%w_-]+)')
    if o and e then
       if e == 'lambda' then
@@ -139,20 +136,17 @@ local function parseQualifiedId (id)
       tp = 'presentation'
       goto tail
    end
-   --
    o, e = id:match ('([%w_-]+)%.([%w._-]+)')
    if o and e then
       tp = 'attribution'
       goto tail
    end
-   --
    o, e = id:match ('([%w_-]+)<([%w_-]*)>')
    if o and e then
       tp = 'selection'
    else
       return nil             -- bad format
    end
-   --
    ::tail::
    assert (tp)
    assert (o)
@@ -164,13 +158,13 @@ end
 do
    local mt = ...
    local dump = mt._dump
-
+   --
    -- Attaches private data and access functions.
    local saved_attachData = assert (mt._attachData)
    mt._attachData = function (self, data, funcs)
       local data = data or {}
       local funcs = funcs or {}
-
+      --
       -- Private data.
       data._object    = {}       -- objects indexed by id
       data._event     = {}       -- events indexed by qualified id
@@ -178,11 +172,11 @@ do
       data._children  = {}       -- table of children indexed by object
       data._players   = {}       -- list of players sorted by zIndex
       data._time      = 0        -- playback time
+      data._delta     = 0        -- delta to be discounted in next await
       data._behaviors = {        -- behavior data
          time = {},              -- behaviors waiting on document time
          par  = {},              -- behaviors waiting on "par" tree
       }
-
       local get_data_object = function ()
          return assert (rawget (data, '_object'))
       end
@@ -198,7 +192,10 @@ do
       local get_data_time = function ()
          return assert (rawget (data, '_time'))
       end
-
+      local get_data_delta = function ()
+         return assert (rawget (data, '_delta'))
+      end
+      --
       -- Getters & setters.
       funcs.objects  = {mt.getObjects,     nil}
       funcs.root     = {mt.getRoot,        nil}
@@ -210,7 +207,8 @@ do
       funcs.parents  = {get_data_parents,  nil}
       funcs.children = {get_data_children, nil}
       funcs.time     = {get_data_time,     nil}
-
+      funcs.delta    = {get_data_delta,    nil}
+      --
       return saved_attachData (self, data, funcs)
    end
 
@@ -584,9 +582,41 @@ do
       end
    end
 
+   -- The "await" operator to be used inside behaviors.
+   mt._await = function (t)
+      assert (type (t) == 'table')
+      if t.object then          -- time passage
+         local delta = assert (t.object.delta)
+         if t.time then
+            t.time = t.time + t.object.time - t.object.delta
+         else
+            error ('bad argument to await: '..tostring (t))
+         end
+      elseif t.event then       -- event transition
+         error ('not implemented')
+      elseif t.forever then     -- forever
+         error ('not implemented')
+      else
+         error ('bad argument to await: '..tostring (t))
+      end
+      local res = coroutine.yield {[0]='par', t}
+      assert (res[0] == 'par')
+      res = assert (res[1])
+      if res.time then          -- update delta
+         local obj = assert (res.object)
+         local delta = res.time - t.time
+         if delta < 0 then
+            delta = 0
+         end
+         obj:setDelta (delta)
+      end
+      return res
+   end
+
    -- The "par" operator to be used inside behaviors.
    mt._par = function (t)
       assert (type (t) == 'table')
+      --
       if #t == 0 then
          return                 -- nothing to do
       end
@@ -714,6 +744,16 @@ do
       for _,obj in ipairs (self:getObjects ()) do
          obj:advanceTime (dt)
       end
+   end
+
+   -- Document::getDelta().
+   mt.getDelta = function (self)
+      return self.delta
+   end
+
+   -- Document::setDelta().
+   mt.setDelta = function (self, delta)
+      rawset (mt[self], '_delta', delta)
    end
 
    -- Runs the given behavior.
