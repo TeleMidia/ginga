@@ -17,7 +17,8 @@ local tostring     = tostring
 local type         = type
 _ENV = nil
 
--- Compares two players by zIndex and zOrder.
+-- Compares two players by zIndex and zOrder.  Returns true if p1 has a
+-- lower z than p2, otherwise returns false.
 local function comparePlayers (p1, p2)
    local m1, m2 = p1.media, p2.media
    local z1 = m1:getProperty ('zIndex') or math.mininteger
@@ -167,7 +168,7 @@ do
       data._time      = 0        -- playback time
       data._accum     = 0        -- accumulated "real" time
       data._waitlist  = {}       -- list of behaviors waiting for conditions
-
+      --
       local get_data_object = function ()
          return assert (rawget (data, '_object'))
       end
@@ -181,7 +182,7 @@ do
          return rawget (data, '_children')
       end
       --
-      -- Getters & setters.
+      -- Access functions.
       funcs.objects  = {mt.getObjects,     nil}
       funcs.root     = {mt.getRoot,        nil}
       funcs.settings = {mt.getSettings,    nil}
@@ -196,7 +197,7 @@ do
       return saved_attachData (self, data, funcs)
    end
 
-   -- Initializes private data.
+   -- Initializes document.
    local saved_init = assert (mt._init)
    mt._init = function (self)
       saved_init (self)
@@ -204,7 +205,7 @@ do
       assert (self:createObject ('media', '__settings__'))
    end
 
-   -- Finalizes private data.
+   -- Finalizes document.
    local saved_fini = assert (mt._fini)
    mt._fini = function (self)
       saved_fini (self)
@@ -345,7 +346,7 @@ do
       local tparents = assert (mt[self].parents)
       local tchildren = assert (mt[self].children)
       local roots = {}
-      for _,obj in ipairs (self:getObjects ()) do
+      for _,obj in ipairs (self.objects) do
          if #obj:getParents () == 0 then
             table.insert (roots, obj)
          end
@@ -353,7 +354,6 @@ do
       for _,root in ipairs (roots) do
          dumpGraph (root)
       end
-      return
    end
 
    -- Schedules behavior to execute on condition.
@@ -580,30 +580,53 @@ do
 
    -- Document::advanceTime().
    local quantum = 1000         -- us
-   mt._advanceTimeHelper = function (self, time)
-      self:_awakeBehaviors {target=self, time=time}
-      for _,obj in ipairs (self:getObjects ()) do
-         self:_awakeBehaviors {target=obj, time=obj.time}
+
+   local function _advanceObjectTime (self, obj)
+      self:_awakeBehaviors {target=obj, time=obj.time}
+      if obj:isComposition () then
+         for _,child in ipairs (obj.children) do
+            _advanceObjectTime (self, child)
+         end
       end
    end
+
+   local function _advanceDocumentTime (self, time)
+      self:_awakeBehaviors {target=self, time=time}
+      local tparents = assert (mt[self].parents)
+      local tchildren = assert (mt[self].children)
+      local roots = {}
+      for _,obj in ipairs (self.objects) do
+         if #obj:getParents () == 0
+            and obj ~= self.root
+            and obj ~= self.settings then
+            table.insert (roots, obj)
+         end
+      end
+      _advanceObjectTime (self, self.root)
+      _advanceObjectTime (self, self.settings)
+      for _,root in ipairs (roots) do
+         _advanceObjectTime (self, root)
+      end
+   end
+
    mt.advanceTime = function (self, dt)
       if dt == 0 then           -- bootstrap (empty) tick
-         self:_advanceTimeHelper (0)
-         return
-      end
-      local accum = assert (rawget (mt[self], '_accum'))
-      accum = accum + dt
-      if accum > 0 and accum < quantum then
-         return
-      end
-      local nticks, x = math.modf (accum/quantum)
-      x = math.modf (x)
-      rawset (mt[self], '_accum', x)
-      for i=1,nticks do
-         local tick = quantum
-         local time = self.time + tick
-         rawset (mt[self], '_time', time)
-         self:_advanceTimeHelper (time)
+         _advanceDocumentTime (self, 0)
+      else
+         local accum = assert (rawget (mt[self], '_accum'))
+         accum = accum + dt
+         if accum > 0 and accum < quantum then
+            return
+         end
+         local nticks, x = math.modf (accum/quantum)
+         x = math.modf (x)
+         rawset (mt[self], '_accum', x)
+         for i=1,nticks do
+            local tick = quantum
+            local time = self.time + tick
+            rawset (mt[self], '_time', time)
+            _advanceDocumentTime (self, time)
+         end
       end
    end
 

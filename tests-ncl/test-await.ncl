@@ -4,8 +4,11 @@
     <![CDATA[
       while true do
          e = await {}
-         for k,v in pairs (e) do print (k,v) end
-         print''
+         local t = {}
+         for k,v in pairs (e) do
+            table.insert (t, k..'='..tostring (v))
+         end
+         print ('{'..table.concat (t, ', ')..'}')
       end
     ]]>
     </behavior>

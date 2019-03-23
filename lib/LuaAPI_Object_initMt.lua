@@ -52,7 +52,7 @@ do
          return assert (rawget (data, '_P'))
       end
       --
-      -- Getters & setters.
+      -- Access functions.
       funcs.document     = {mt.getDocument, nil}
       funcs.type         = {mt.getType,     nil}
       funcs.id           = {mt.getId,       nil}
@@ -82,7 +82,6 @@ do
          function ()            -- start lambda
             while true do
                await {event=self.lambda, transition='start'}
-               print ('object', self.id, 'start lambda')
                -- TODO: Start/resume parent if it is not occurring.
                -- TODO: Check if this 'start' is in fact a 'resume'.
                rawset (mt[self], '_epoch', self.document.time)
@@ -199,6 +198,8 @@ do
    -- Object::setProperty().
    mt.setProperty = function (self, name, value)
       assert (rawget (mt[self], '_property'))[name] = value
+      self.document:_awakeBehaviors {target=self, property=name,
+                                     value=value}
    end
 
    -- Spawns behavior.

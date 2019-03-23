@@ -11,7 +11,8 @@ local tonumber  = tonumber
 local type      = type
 _ENV = nil
 
--- Parses a dimension value (e.g, '100%', '10px').
+-- Parses a dimension value (e.g, '100%', '10px').  Returns a number if the
+-- value is relative.  Otherwise, if value is absolute, returns an integer.
 local function parseDimension (str)
    local n = tonumber (str)
    if n then
@@ -45,7 +46,7 @@ do
       -- Private data.
       data._player = nil
       --
-      -- Getters & setters.
+      -- Access functions.
       funcs.player = {mt._getPlayer, nil}
       --
       return saved_attachData (self, doc, type, id, data, funcs)
@@ -56,7 +57,7 @@ do
    mt._init = function (self)
       saved_init (self)
       --
-      -- Check if this is the settings object.
+      -- Settings object?
       if self == self.document.settings then
          assert (self:createEvent ('attribution', 'service.currentFocus'))
       end
@@ -67,7 +68,6 @@ do
          function ()            -- start lambda
             while true do
                await {event=self.lambda, transition='start'}
-               print ('media', self.id, 'start lambda')
                assert (self.player == nil)
                local uri = self:getProperty ('uri')
                local player = self.document:_createPlayer (self, uri)
@@ -197,6 +197,10 @@ do
       self:_updatePlayerRect ()
    end
 
+   local _getProperty_bounds = function (self, name, value)
+      error ('should not get here')
+   end
+
    local _setProperty_bounds_re
       ='^%s*([%w%.]+%%?)%s*,%s*([%w%.]+%%?)%s*,'
       ..'%s*([%w%.]+%%?)%s*,%s*([%w%.]+%%?)%s*$'
@@ -221,15 +225,15 @@ do
    end
 
    local _knownProperties = {
-      width  = {nil, _setProperty_width_height},
-      height = {nil, _setProperty_width_height},
-      top    = {nil, _setProperty_tblr},
-      bottom = {nil, _setProperty_tblr},
-      left   = {nil, _setProperty_tblr},
-      right  = {nil, _setProperty_tblr},
-      bounds = {nil, _setProperty_bounds},
-      zIndex = {nil, _setProperty_z},
-      zOrder = {nil, _setProperty_z},
+      width  = {nil,                 _setProperty_width_height},
+      height = {nil,                 _setProperty_width_height},
+      top    = {nil,                 _setProperty_tblr},
+      bottom = {nil,                 _setProperty_tblr},
+      left   = {nil,                 _setProperty_tblr},
+      right  = {nil,                 _setProperty_tblr},
+      bounds = {_getProperty_bounds, _setProperty_bounds},
+      zIndex = {nil,                 _setProperty_z},
+      zOrder = {nil,                 _setProperty_z},
    }
 
    mt.getProperty = function (self, name)

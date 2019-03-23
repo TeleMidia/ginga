@@ -1,22 +1,16 @@
 <ncl>
-  <head>
-    <script>
-      local doc = ...
-      assert (doc == _D)
-      await (1.5)
-      print ('doc', doc.time)
-    </script>
-  </head>
   <body>
     <port id="start" component="m"/>
     <media id="m" src="samples/bunny.ogg">
       <property name="bounds" value=".25,.25,.5,.5"/>
-      <script>
+      <behavior>
+      <![CDATA[
         local m = ...
-        assert (m == _D.object.m)        
-        await {object=m, time=1000000}
+        assert (m == _D.object.m)
+        await {target=m, time=1000000}
         print (m.id, m.time)
-      </script>
+      ]]>
+      </behavior>
     </media>
   </body>
 </ncl>

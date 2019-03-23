@@ -15,13 +15,13 @@ do
    mt._attachData = function (self, doc, type, id, data, funcs)
       local data = data or {}
       local funcs = funcs or {}
-
+      --
       -- Private data.
       data._ports = {}
-
-      -- Getters & setters.
+      --
+      -- Access functions.
       funcs.ports = {mt.getPorts, nil}
-
+      --
       return saved_attachData (self, doc, type, id, data, funcs)
    end
 
