@@ -23,9 +23,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 GINGA_NAMESPACE_BEGIN
 
 /// Composition object in an NCL document.
-///
-/// @see Context, Switch.
-///
 class Composition : public Object
 {
 public:

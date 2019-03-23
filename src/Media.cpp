@@ -22,7 +22,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Document.h"
 #include "Context.h"
 #include "Switch.h"
-#include "Event.h"
+#include "StateMachine.h"
 #include "Player.h"
 
 GINGA_NAMESPACE_BEGIN
@@ -55,8 +55,6 @@ Media::isFocused ()
   return status;
 }
 
-// Private.
-
 Player *
 Media::_getPlayer ()
 {
@@ -70,66 +68,6 @@ Media::_getPlayer ()
   lua_pop (_L, 1);
 
   return player;
-}
-
-// TODO --------------------------------------------------------------------
-
-void
-Media::sendKey (const string &key, bool press)
-{
-  list<Event *> buf;
-
-  if (_getPlayer () == NULL)
-    return;
-
-  // if (press && xstrhasprefix (key, "CURSOR_") && this->isFocused ())
-  //   {
-  //     string next;
-  //
-  //     if ((key == "CURSOR_UP"
-  //          && (next = this->getProperty ("moveUp")) != "")
-  //         || ((key == "CURSOR_DOWN"
-  //              && (next = this->getProperty ("moveDown")) != ""))
-  //         || ((key == "CURSOR_LEFT"
-  //              && (next = this->getProperty ("moveLeft")) != ""))
-  //         || ((key == "CURSOR_RIGHT"
-  //              && (next = this->getProperty ("moveRight")) != "")))
-  //       {
-  //         this->getDocument ()->getSettings ()
-  //           ->setPropertyString ("_nextFocus", next);
-  //       }
-  //   }
-
-  // Pass key to player.
-  // if (this->isFocused ())
-  //   _getPlayer ()->sendKeyEvent (key, press);
-
-  set<Event *> events;
-  this->getEvents (&events);
-
-  // Collect the events to be triggered.
-  for (auto evt: events)
-    {
-      if (evt->getType () != Event::SELECTION)
-        continue;
-
-      string expected = evt->getId ();
-      if (expected[0] == '$')
-        expected = ""; // A param could not be resolved.  Should we generate
-                       // an error?
-
-      if (!((expected == "" && key == "ENTER" && this->isFocused ())
-            || (expected != "" && key == expected)))
-        {
-          continue;
-        }
-
-      buf.push_back (evt);
-    }
-
-  for (Event *evt : buf)
-    this->getDocument ()
-      ->evalAction (evt, press ? Event::START : Event::STOP);
 }
 
 GINGA_NAMESPACE_END

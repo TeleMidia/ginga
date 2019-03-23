@@ -53,18 +53,18 @@ do
       end
       --
       -- Access functions.
-      funcs.document     = {mt.getDocument, nil}
-      funcs.type         = {mt.getType,     nil}
-      funcs.id           = {mt.getId,       nil}
-      funcs.parents      = {mt.getParents,  nil}
-      funcs.events       = {mt.getEvents,   nil}
-      funcs.lambda       = {mt.getLambda,   nil}
-      funcs.time         = {mt.getTime,     nil}
+      funcs.document      = {mt.getDocument, nil}
+      funcs.type          = {mt.getType,     nil}
+      funcs.id            = {mt.getId,       nil}
+      funcs.parents       = {mt.getParents,  nil}
+      funcs.statemachines = {mt.getStateMachines,   nil}
+      funcs.lambda        = {mt.getLambda,   nil}
+      funcs.time          = {mt.getTime,     nil}
       --
-      funcs.attribution  = {get_data_attr,  nil}
-      funcs.presentation = {get_data_pres,  nil}
-      funcs.selection    = {get_data_seln,  nil}
-      funcs.property     = {get_data_prop,  nil}
+      funcs.attribution   = {get_data_attr,  nil}
+      funcs.presentation  = {get_data_pres,  nil}
+      funcs.selection     = {get_data_seln,  nil}
+      funcs.property      = {get_data_prop,  nil}
       --
       return saved_attachData (self, data, funcs)
    end
@@ -74,14 +74,14 @@ do
    mt._init = function (self)
       saved_init (self)
       self.document:_addObject (self)
-      assert (self:createEvent ('presentation', '@lambda'))
+      assert (self:createStateMachine ('presentation', '@lambda'))
       --
       -- Default behavior.
       local await, parOr = self.document._await, self.document._par
       self:spawn {
          function ()            -- start lambda
             while true do
-               await {event=self.lambda, transition='start'}
+               await {statemachine=self.lambda, transition='start'}
                -- TODO: Start/resume parent if it is not occurring.
                -- TODO: Check if this 'start' is in fact a 'resume'.
                rawset (mt[self], '_epoch', self.document.time)
@@ -97,16 +97,16 @@ do
       saved_fini (self)
    end
 
-   -- Adds event to object.
-   mt._addEvent = function (self, evt)
-      assert (evt)
-      assert (rawget (mt[self], '_'..evt.type))[evt.id] = evt
+   -- Adds state machine to object.
+   mt._addStateMachine = function (self, sm)
+      assert (sm)
+      assert (rawget (mt[self], '_'..sm.type))[sm.id] = sm
    end
 
-   -- Removes event from object.
-   mt._removeEvent = function (self, evt)
-      assert (evt)
-      assert (rawget (mt[self], '_'..evt.type))[evt.id] = nil
+   -- Removes state machine from object.
+   mt._removeStateMachine = function (self, sm)
+      assert (sm)
+      assert (rawget (mt[self], '_'..sm.type))[sm.id] = nil
    end
 
    -- Gets the behavior data of object.
@@ -146,8 +146,8 @@ do
       return self.document:_getParents (self)
    end
 
-   -- Object::getEvents().
-   mt.getEvents = function (self)
+   -- Object::getStateMachines().
+   mt.getStateMachines = function (self)
       local t = {}
       for _,tp in ipairs {'attribution', 'presentation', 'selection'} do
          for _,v in pairs (self[tp]) do
@@ -157,8 +157,8 @@ do
       return t
    end
 
-   -- Object::getEvent().
-   mt.getEvent = function (self, type, id)
+   -- Object::getStateMachine().
+   mt.getStateMachine = function (self, type, id)
       if type == 'attribution' then
          return self.attribution[id]
       elseif type == 'presentation' then
@@ -166,7 +166,7 @@ do
       elseif type == 'selection' then
          return self.selection[id]
       else
-         error ('bad event type: '..tostring (type))
+         error ('bad state machine type: '..tostring (type))
       end
    end
 
@@ -175,9 +175,9 @@ do
       return self.presentation['@lambda']
    end
 
-   -- Object::createEvent().
-   mt.createEvent = function (self, type, id)
-      return self.document:createEvent (type, self, id)
+   -- Object::createStateMachine().
+   mt.createStateMachine = function (self, type, id)
+      return self.document:createStateMachine (type, self, id)
    end
 
    -- Object::getTime().

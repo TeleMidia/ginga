@@ -24,7 +24,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 GINGA_NAMESPACE_BEGIN
 
 void
-Context::getPorts (list<Event *> *ports)
+Context::getPorts (list<StateMachine *> *ports)
 {
   lua_Integer len;
   lua_Integer i;
@@ -38,25 +38,25 @@ Context::getPorts (list<Event *> *ports)
   for (i = 1; i <= len; i++)
     {
       const char *qualId;
-      Event *evt;
+      StateMachine *sm;
 
       lua_rawgeti (_L, -1, i);
       qualId = luaL_checkstring (_L, -1);
-      evt = this->getDocument ()->getEvent (qualId);
-      if (evt != NULL)
-        ports->push_back (evt);
+      sm = this->getDocument ()->getStateMachine (qualId);
+      if (sm != NULL)
+        ports->push_back (sm);
       lua_pop (_L, 1);
     }
 }
 
 bool
-Context::addPort (Event *event)
+Context::addPort (StateMachine *sm)
 {
   bool status;
 
-  g_return_val_if_fail (event != NULL, false);
+  g_return_val_if_fail (sm != NULL, false);
 
-  LuaAPI::Event_push (_L, event);
+  LuaAPI::StateMachine_push (_L, sm);
   LuaAPI::Context_call (_L, this, "addPort", 1, 1);
   status = lua_toboolean (_L, -1);
   lua_pop (_L, 1);
@@ -65,13 +65,13 @@ Context::addPort (Event *event)
 }
 
 bool
-Context::removePort (Event *event)
+Context::removePort (StateMachine *sm)
 {
   bool status;
 
-  g_return_val_if_fail (event != NULL, false);
+  g_return_val_if_fail (sm != NULL, false);
 
-  LuaAPI::Event_push (_L, event);
+  LuaAPI::StateMachine_push (_L, sm);
   LuaAPI::Context_call (_L, this, "removePort", 1, 1);
   status = lua_toboolean (_L, -1);
   lua_pop (_L, 1);

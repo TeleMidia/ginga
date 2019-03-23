@@ -115,11 +115,8 @@ local function parsePar (cond, par)
    return result, flag
 end
 
--- Parses qualified id.
---
--- Returns the resulting event type, object id, and event id if successful;
--- otherwise returns nil.
---
+-- Parses qualified id.  If successful, returns the resulting state machine
+-- type, object id, and state machine id.  Otherwise, returns nil.
 local function parseQualifiedId (id)
    local tp, o, e
    o, e = id:match ('([%w_-]+)@([%w_-]+)')
@@ -161,7 +158,7 @@ do
       --
       -- Private data.
       data._object    = {}       -- objects indexed by id
-      data._event     = {}       -- events indexed by qualified id
+      data._sm        = {}       -- state machines indexed by qualified id
       data._parents   = {}       -- table of parents indexed by object
       data._children  = {}       -- table of children indexed by object
       data._players   = {}       -- list of players sorted by zIndex
@@ -172,8 +169,8 @@ do
       local get_data_object = function ()
          return assert (rawget (data, '_object'))
       end
-      local get_data_event = function ()
-         return assert (rawget (data, '_event'))
+      local get_data_sm = function ()
+         return assert (rawget (data, '_sm'))
       end
       local get_data_parents = function ()
          return rawget (data, '_parents')
@@ -183,16 +180,16 @@ do
       end
       --
       -- Access functions.
-      funcs.objects  = {mt.getObjects,     nil}
-      funcs.root     = {mt.getRoot,        nil}
-      funcs.settings = {mt.getSettings,    nil}
-      funcs.events   = {mt.getEvents,      nil}
-      funcs.time     = {mt.getTime,        nil}
+      funcs.objects  = {mt.getObjects,       nil}
+      funcs.root     = {mt.getRoot,          nil}
+      funcs.settings = {mt.getSettings,      nil}
+      funcs.machines = {mt.getStateMachines, nil}
+      funcs.time     = {mt.getTime,          nil}
       --
-      funcs.object   = {get_data_object,   nil}
-      funcs.event    = {get_data_event,    nil}
-      funcs.parents  = {get_data_parents,  nil}
-      funcs.children = {get_data_children, nil}
+      funcs.object   = {get_data_object,     nil}
+      funcs.sm       = {get_data_sm,         nil}
+      funcs.parents  = {get_data_parents,    nil}
+      funcs.children = {get_data_children,   nil}
       --
       return saved_attachData (self, data, funcs)
    end
@@ -235,16 +232,16 @@ do
       assert (rawget (mt[self], '_object'))[obj.id] = nil
    end
 
-   -- Adds event to document.
-   mt._addEvent = function (self, evt)
-      assert (evt.object.document == self)
-      assert (rawget (mt[self], '_event'))[evt.qualifiedId] = evt
+   -- Adds state machine to document.
+   mt._addStateMachine = function (self, sm)
+      assert (sm.object.document == self)
+      assert (rawget (mt[self], '_sm'))[sm.qualifiedId] = sm
    end
 
-   -- Removes event from document.
-   mt._removeEvent = function (self, evt)
-      assert (evt.object.document == self)
-      assert (rawget (mt[self], '_event'))[evt.qualifiedId] = nil
+   -- Removes state machine from document.
+   mt._removeStateMachine = function (self, sm)
+      assert (sm.object.document == self)
+      assert (rawget (mt[self], '_sm'))[sm.qualifiedId] = nil
    end
 
    -- Gets the list of parents of obj.
@@ -534,17 +531,17 @@ do
       return self:_createObject (tp, id)
    end
 
-   -- Document::getEvents().
-   mt.getEvents = function (self)
+   -- Document::getStateMachines().
+   mt.getStateMachines = function (self)
       local t = {}
-      for _,evt in pairs (self.event) do
-         table.insert (t, evt)
+      for _,sm in pairs (self.sm) do
+         table.insert (t, sm)
       end
       return t
    end
 
-   -- Document::getEvent().
-   mt.getEvent = function (self, id)
+   -- Document::getStateMachine().
+   mt.getStateMachine = function (self, id)
       local tp, o, e = parseQualifiedId (id)
       if tp == nil then
          return nil             -- bad format
@@ -553,19 +550,19 @@ do
       if not obj then
          return nil             -- no such object
       end
-      return obj:getEvent (tp, e)
+      return obj:getStateMachine (tp, e)
    end
 
-   -- Document::createEvent().
-   mt.createEvent = function (self, tp, obj, evtId)
-      if obj == nil and evtId == nil then
-         tp, objId, evtId = parseQualifiedId (tp)
+   -- Document::createStateMachine().
+   mt.createStateMachine = function (self, tp, obj, smId)
+      if obj == nil and smId == nil then
+         tp, objId, smId = parseQualifiedId (tp)
       end
       if type (obj) == 'string' then
          obj = self:getObject (obj)
       end
       assert (obj.document == self)
-      return self:_createEvent (tp, obj, evtId)
+      return self:_createStateMachine (tp, obj, smId)
    end
 
    -- Document::getTime().

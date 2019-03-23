@@ -34,10 +34,10 @@ GINGA_NAMESPACE_BEGIN
 // #define evt_key_send ncluaw_send_key_event
 
 /// Conversion from NCLua actions to NCL transitions
-static map<string, Event::Transition> nclua_act_to_ncl = {
-  { "start", Event::START },   { "pause", Event::PAUSE },
-  { "resume", Event::RESUME }, { "stop", Event::STOP },
-  { "abort", Event::ABORT },
+static map<string, StateMachine::Transition> nclua_act_to_ncl = {
+  { "start", StateMachine::START },   { "pause", StateMachine::PAUSE },
+  { "resume", StateMachine::RESUME }, { "stop", StateMachine::STOP },
+  { "abort", StateMachine::ABORT },
 };
 
 // Public.
@@ -101,20 +101,6 @@ PlayerLua::stop ()
   Player::stop ();
 }
 
-// void
-// PlayerLua::sendKeyEvent (const string &key, bool press)
-// {
-//   g_assert_nonnull (_nw);
-//   evt_key_send (_nw, press ? "press" : "release", key.c_str ());
-// }
-
-// void
-// PlayerLua::sendPresentationEvent (const string &action, const string &label)
-// {
-//   g_assert_nonnull (_nw);
-//   evt_ncl_send_presentation (_nw, action.c_str (), label.c_str ());
-// }
-
 void
 PlayerLua::draw (cairo_t *cr)
 {
@@ -146,7 +132,7 @@ PlayerLua::draw (cairo_t *cr)
 
       if (g_str_equal (evt->u.ncl.type, "presentation"))
         {
-          Event *nclEvt;
+          StateMachine *nclEvt;
           std::string label = evt->u.ncl.name;
 
           if (label == "")
@@ -155,12 +141,12 @@ PlayerLua::draw (cairo_t *cr)
             }
           else
             {
-              set<Event *> events;
+              set<StateMachine *> events;
 
-              _media->getEvents (&events);
+              _media->getStateMachines (&events);
               for (auto &evt: events)
                 {
-                  if (evt->getType () == Event::PRESENTATION
+                  if (evt->getType () == StateMachine::PRESENTATION
                       && evt->getLabel () == label)
                     {
                       nclEvt = evt;
@@ -176,9 +162,9 @@ PlayerLua::draw (cairo_t *cr)
         }
       else if (g_str_equal (evt->u.ncl.type, "attribution"))
         {
-          Event *nclEvt;
+          StateMachine *nclEvt;
 
-          nclEvt = _media->getEvent (Event::ATTRIBUTION, evt->u.ncl.name);
+          nclEvt = _media->getStateMachine (StateMachine::ATTRIBUTION, evt->u.ncl.name);
           g_assert_nonnull (nclEvt);
 
           g_assert (nclua_act_to_ncl.count (evt->u.ncl.action));

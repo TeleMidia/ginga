@@ -25,7 +25,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "Context.h"
 #include "Document.h"
-#include "Event.h"
+#include "StateMachine.h"
 #include "LuaAPI.h"
 #include "Media.h"
 #include "Parser.h"
@@ -607,8 +607,8 @@ Ginga home page: " PACKAGE_URL "\n");
   doc->getSettings ()->setPropertyInteger ("height", initial_height);
 
   map<string,string> params;
-  doc->getRoot ()->getLambda ()->transition (Event::START, params);
-  doc->getSettings ()->getLambda ()->transition (Event::START, params);
+  doc->getRoot ()->getLambda ()->transition (StateMachine::START, params);
+  doc->getSettings ()->getLambda ()->transition (StateMachine::START, params);
 
   // Create application window.
   app_init (doc);

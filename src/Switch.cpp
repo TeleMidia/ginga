@@ -56,25 +56,22 @@ Switch::addRule (Object *obj, Predicate *pred)
   _rules.push_back (std::make_pair (obj, pred));
 }
 
-const map<string, list<Event *> > *
+const map<string, list<StateMachine *> > *
 Switch::getSwitchPorts ()
 {
   return &_switchPorts;
 }
 
 void
-Switch::addSwitchPort (const string &id, const list<Event *> &evts)
+Switch::addSwitchPort (const string &id,
+                       const list<StateMachine *> &machines)
 {
-  Event *evt;
+  StateMachine *sm;
 
-  evt = this->createEvent (Event::PRESENTATION, id);
-  g_assert_nonnull (evt);
-  evt->setLabel (id);
-
-  TRACE ("Adding switchPort %s to %s mapping %u evts.", id.c_str (),
-         getId ().c_str (), (guint) evts.size ());
-
-  _switchPorts[id] = evts;
+  sm = this->createStateMachine (StateMachine::PRESENTATION, id);
+  g_assert_nonnull (sm);
+  sm->setLabel (id);
+  _switchPorts[id] = machines;
 }
 
 GINGA_NAMESPACE_END

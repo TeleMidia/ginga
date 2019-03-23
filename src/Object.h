@@ -18,7 +18,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #ifndef GINGA_OBJECT_H
 #define GINGA_OBJECT_H
 
-#include "Event.h"
+#include "StateMachine.h"
 
 GINGA_NAMESPACE_BEGIN
 
@@ -27,14 +27,11 @@ class Composition;
 class MediaSettings;
 
 /// Object in an NCL document.
-///
-/// @see Context, Switch, Media, MediaSettings.
-///
 class Object
 {
 public:
 
-  /// Possible concrete types for NCL objects.
+  /// Types of NCL objects.
   enum Type
   {
      CONTEXT,                   ///< Context object.
@@ -44,8 +41,8 @@ public:
 
   /// Creates a new object.
   ///
-  /// The newly created object has a single presentation event: the lambda
-  /// event, called `@lambda`.
+  /// The newly created object has a single presentation state machine: the
+  /// lambda state machine, called `@lambda`.
   ///
   /// @param doc The container document.
   /// @param id The id of the new object (must not occur in \p doc).
@@ -53,7 +50,7 @@ public:
   ///
   Object (Document *doc, const string &id);
 
-  /// Destroys the object and all its events.
+  /// Destroys the object and all its state machines.
   virtual ~Object ();
 
   /// Tests whether this document is a composition.
@@ -71,31 +68,34 @@ public:
   /// Gets the set of parents of object.
   void getParents (set<Composition *> *parents);
 
-  /// Gets the set of events in object.
-  void getEvents (set<Event *> *events);
+  /// Gets the set of state machines in object.
+  void getStateMachines (set<StateMachine *> *machines);
 
-  /// Gets the event in object with the given type and id.
+  /// Gets the state machine in object with the given type and id.
   ///
   /// @param type The type to match
   /// @param id The id to match.
-  /// @return The matched event or \c NULL (no such event).
+  /// @return The matched state machine or \c NULL (no such state machine).
   ///
-  Event *getEvent (Event::Type type, const string &id);
+  StateMachine *getStateMachine (StateMachine::Type type, const string &id);
 
-  /// Gets the lambda presentation event of object.
-  Event *getLambda ();
+  /// Gets the lambda presentation state machine of object.
+  StateMachine *getLambda ();
 
-  /// Creates a new event and adds it to object.
+  /// Creates a new state machine and adds it to object.
   ///
-  /// @param type The type of the new event.
-  /// @param id the id of the new event (must no occur in \p object).
-  /// @return The newly created event if successful, or \c NULL otherwise.
+  /// @param type The type of the new state machine.
+  /// @param id the id of the new state machine (must no occur in \p
+  ///        object).
+  /// @return The newly created state machine if successful, or \c NULL
+  ///         otherwise.
   ///
-  /// @see Document::createEvent().
+  /// @see Document::createStateMachine().
   ///
-  Event *createEvent (Event::Type type, const string &id);
+  StateMachine *createStateMachine (StateMachine::Type type,
+                                    const string &id);
 
-    /// Gets the playback time of object.
+  /// Gets the playback time of object.
   Time getTime ();
 
   /// Sets the playback time of object.

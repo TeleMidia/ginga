@@ -69,21 +69,23 @@ public:
   /// Creates a new object and adds it to document.
   Object *createObject (Object::Type type, const string &id);
 
-  /// Gets the set of events in document.
-  void getEvents (set<Event *> *events);
+  /// Gets the set of state machines in document.
+  void getStateMachines (set<StateMachine *> *machines);
 
-  /// Gets the event in document with the given qualified id.
-  Event *getEvent (const string &id);
+  /// Gets the state machine in document with the given qualified id.
+  StateMachine *getStateMachine (const string &id);
 
-  /// Creates a new event in object.
-  Event *createEvent (Event::Type type, Object *obj, const string &evtId);
+  /// Creates a new state machine in object.
+  StateMachine *createStateMachine (StateMachine::Type type,
+                                    Object *obj, const string &smId);
 
-  /// Creates a new event in object.
-  Event *createEvent (Event::Type type, const string &objId,
-                      const string &evtId);
+  /// Creates a new state machine in object.
+  StateMachine *createStateMachine (StateMachine::Type type,
+                                    const string &objId,
+                                    const string &smId);
 
-  /// Creates a new event as specified by the qualified id.
-  Event *createEvent (const string &qualId);
+  /// Creates a new state machine as specified by the qualified id.
+  StateMachine *createStateMachine (const string &qualId);
 
   /// Gets the playback time of document.
   lua_Integer getTime ();
@@ -105,7 +107,7 @@ private:
   // TODO ------------------------------------------------------------------
 
 public:
-  int evalAction (Event *, Event::Transition, const string &value = "");
+  int evalAction (StateMachine *, StateMachine::Transition, const string &value = "");
 
   int evalAction (Action);
 

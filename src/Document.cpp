@@ -37,11 +37,11 @@ Document::Document (lua_State *L)
 Document::~Document ()
 {
   set<Object *> objects;
-  set<Event *> events;
+  set<StateMachine *> machines;
 
-  this->getEvents (&events);
-  for (auto evt: events)
-    delete evt;
+  this->getStateMachines (&machines);
+  for (auto sm: machines)
+    delete sm;
 
   this->getObjects (&objects);
   for (auto obj: objects)
@@ -136,98 +136,99 @@ Document::createObject (Object::Type type, const string &id)
   return obj;
 }
 
-Event *
-Document::getEvent (const string &id)
+StateMachine *
+Document::getStateMachine (const string &id)
 {
-  Event *evt = NULL;
+  StateMachine *sm = NULL;
 
   lua_pushstring (_L, id.c_str ());
-  LuaAPI::Document_call (_L, this, "getEvent", 1, 1);
+  LuaAPI::Document_call (_L, this, "getStateMachine", 1, 1);
   if (!lua_isnil (_L, -1))
     {
-      evt = LuaAPI::Event_check (_L, -1);
+      sm = LuaAPI::StateMachine_check (_L, -1);
     }
   lua_pop (_L, 1);
 
-  return evt;
+  return sm;
 }
 
 void
-Document::getEvents (set<Event *> *events)
+Document::getStateMachines (set<StateMachine *> *machines)
 {
   lua_Integer len;
   lua_Integer i;
 
-  g_return_if_fail (events != NULL);
+  g_return_if_fail (machines != NULL);
 
-  LuaAPI::Document_call (_L, this, "getEvents", 0, 1);
+  LuaAPI::Document_call (_L, this, "getStateMachines", 0, 1);
   g_assert (lua_type (_L, -1) == LUA_TTABLE);
 
   len = luaL_len (_L, -1);
   for (i = 1; i <= len; i++)
     {
-      Event *evt;
+      StateMachine *sm;
 
       lua_rawgeti (_L, -1, i);
-      evt = LuaAPI::Event_check (_L, -1);
-      events->insert (evt);
+      sm = LuaAPI::StateMachine_check (_L, -1);
+      machines->insert (sm);
       lua_pop (_L, 1);
     }
 }
 
-Event *
-Document::createEvent (Event::Type type, Object *obj, const string &evtId)
+StateMachine *
+Document::createStateMachine (StateMachine::Type type, Object *obj,
+                              const string &smId)
 {
-  Event *evt = NULL;
+  StateMachine *sm = NULL;
 
   g_return_val_if_fail (obj != NULL, NULL);
 
-  LuaAPI::Event_Type_push (_L, type);
+  LuaAPI::StateMachine_Type_push (_L, type);
   LuaAPI::Object_push (_L, obj);
-  lua_pushstring (_L, evtId.c_str ());
-  LuaAPI::Document_call (_L, this, "createEvent", 3, 1);
+  lua_pushstring (_L, smId.c_str ());
+  LuaAPI::Document_call (_L, this, "createStateMachine", 3, 1);
   if (!lua_isnil (_L, -1))
     {
-      evt = LuaAPI::Event_check (_L, -1);
+      sm = LuaAPI::StateMachine_check (_L, -1);
     }
   lua_pop (_L, 1);
 
-  return evt;
+  return sm;
 }
 
-Event *
-Document::createEvent (Event::Type type, const string &objId,
-                       const string &evtId)
+StateMachine *
+Document::createStateMachine (StateMachine::Type type, const string &objId,
+                              const string &smId)
 {
-  Event *evt = NULL;
+  StateMachine *sm = NULL;
 
-  LuaAPI::Event_Type_push (_L, type);
+  LuaAPI::StateMachine_Type_push (_L, type);
   lua_pushstring (_L, objId.c_str ());
-  lua_pushstring (_L, evtId.c_str ());
-  LuaAPI::Document_call (_L, this, "createEvent", 3, 1);
+  lua_pushstring (_L, smId.c_str ());
+  LuaAPI::Document_call (_L, this, "createStateMachine", 3, 1);
   if (!lua_isnil (_L, -1))
     {
-      evt = LuaAPI::Event_check (_L, -1);
+      sm = LuaAPI::StateMachine_check (_L, -1);
     }
   lua_pop (_L, 1);
 
-  return evt;
+  return sm;
 }
 
-Event *
-Document::createEvent (const string &qualId)
+StateMachine *
+Document::createStateMachine (const string &qualId)
 {
-  Event *evt = NULL;
+  StateMachine *sm = NULL;
 
   lua_pushstring (_L, qualId.c_str ());
-  LuaAPI::Document_call (_L, this, "createEvent", 1, 1);
+  LuaAPI::Document_call (_L, this, "createStateMachine", 1, 1);
   if (!lua_isnil (_L, -1))
     {
-      evt = LuaAPI::Event_check (_L, -1);
+      sm = LuaAPI::StateMachine_check (_L, -1);
     }
   lua_pop (_L, 1);
 
-  return evt;
+  return sm;
 }
 
 lua_Integer
@@ -302,12 +303,13 @@ Document::draw (cairo_t *cr)
 // TODO --------------------------------------------------------------------
 
 int
-Document::evalAction (Event *event, Event::Transition transition,
+Document::evalAction (StateMachine *sm,
+                      StateMachine::Transition transition,
                       const string &value)
 {
   Action act;
-  act.event = event->getQualifiedId ();
-  g_assert_nonnull (event);
+  act.target = sm->getQualifiedId ();
+  g_assert_nonnull (sm);
   act.transition = transition;
   act.predicate = NULL;
   act.params["value"] = value;
@@ -319,10 +321,10 @@ list<Action>
 Document::evalActionInContext (Action act, Context *ctx)
 {
   list<Action> stack;
-  Event *evt;
+  StateMachine *sm;
 
-  evt = this->getEvent (act.event);
-  g_assert_nonnull (evt);
+  sm = this->getStateMachine (act.target);
+  g_assert_nonnull (sm);
 
   // if (!ctx->getLinksStatus ())
   //   return stack;
@@ -332,7 +334,7 @@ Document::evalActionInContext (Action act, Context *ctx)
         {
           Predicate *pred;
 
-          if (cond.event != evt->getQualifiedId ()
+          if (cond.target != sm->getQualifiedId ()
               || cond.transition != act.transition)
             continue;
 
@@ -361,9 +363,12 @@ Document::evalActionInContext (Action act, Context *ctx)
                 }
               else
                 {
-                  Event *next_evt = this->getEvent (next_act.event);
-                  g_assert_nonnull (next_evt);
-                  Object *next_obj = next_evt->getObject ();
+                  StateMachine *next_sm;
+
+                  next_sm = this->getStateMachine (next_act.target);
+                  g_assert_nonnull (next_sm);
+
+                  Object *next_obj = next_sm->getObject ();
                   g_assert_nonnull (next_obj);
                 }
             }
@@ -384,7 +389,7 @@ Document::evalAction (Action init)
   while (!stack.empty ())
     {
       Action act;
-      Event *evt;
+      StateMachine *sm;
       Object *obj;
       Composition *comp;
       Context *ctx_parent, *ctx_grandparent;
@@ -393,24 +398,20 @@ Document::evalAction (Action init)
       act = stack.back ();
       stack.pop_back ();
 
-      evt = this->getEvent (act.event);
-      g_assert_nonnull (evt);
-
-      // TRACE ("trigger stacked action: %s %s",
-      //        Event::getTransitionAsString (act.transition).c_str (),
-      //        act.event->getQualifiedId ().c_str ());
+      sm = this->getStateMachine (act.target);
+      g_assert_nonnull (sm);
 
       params["duration"] = act.params["duration"];
-      if (evt->getType () == Event::ATTRIBUTION)
+      if (sm->getType () == StateMachine::ATTRIBUTION)
         {
           params["value"] = act.params["value"];
         }
 
-      if (!evt->transition (act.transition, params))
+      if (!sm->transition (act.transition, params))
         continue;
 
       n++;
-      obj = evt->getObject ();
+      obj = sm->getObject ();
       g_assert_nonnull (obj);
 
       set<Composition *> parents;
@@ -421,7 +422,7 @@ Document::evalAction (Action init)
       // If parent composition is a context
       if (comp != NULL &&
           instanceof (Context *, comp)
-          && comp->getLambda ()->getState () == Event::OCCURRING)
+          && comp->getLambda ()->getState () == StateMachine::OCCURRING)
         {
           ctx_parent = cast (Context *, comp);
           g_assert_nonnull (ctx_parent);
@@ -430,9 +431,6 @@ Document::evalAction (Action init)
           list<Action> ret = evalActionInContext (act, ctx_parent);
           stack.insert (stack.end (), ret.begin (), ret.end ());
 
-          // If the event object is pointed by a port in the parent context,
-          // trigger links in the its grantparent context ( and ancestors)
-
           set<Composition *> parents;
           ctx_parent->getParents (&parents);
           auto it = parents.begin ();
@@ -440,14 +438,14 @@ Document::evalAction (Action init)
 
           if (comp != NULL &&
               instanceof (Context *, comp)
-              && comp->getLambda ()->getState () == Event::OCCURRING)
+              && comp->getLambda ()->getState () == StateMachine::OCCURRING)
             {
               ctx_grandparent = cast (Context *, comp);
-              list<Event *> ports;
+              list<StateMachine *> ports;
               ctx_parent->getPorts (&ports);
               for (auto port : ports)
                 {
-                  if (port->getObject () == evt->getObject ())
+                  if (port->getObject () == sm->getObject ())
                     {
                       list<Action> ret
                           = evalActionInContext (act, ctx_grandparent);
@@ -464,30 +462,30 @@ Document::evalAction (Action init)
           Switch *swtch = cast (Switch *, comp);
           for (const auto &swtchPort : *swtch->getSwitchPorts ())
             {
-              for (const auto &mapped_evt : swtchPort.second)
+              for (const auto &mapped_sm : swtchPort.second)
                 {
                   set<Composition *> parents;
                   swtch->getParents (&parents);
                   auto it = parents.begin ();
                   Composition *sparent = (it == parents.end ()) ? NULL: *it;
 
-                  if (mapped_evt->getObject () == evt->getObject ()
+                  if (mapped_sm->getObject () == sm->getObject ()
                       && sparent != NULL)
                     {
-                      Event *label_evt = swtch->getEvent (
-                          Event::PRESENTATION, swtchPort.first);
-                      g_assert_nonnull (label_evt);
+                      StateMachine *label_sm = swtch->getStateMachine (
+                          StateMachine::PRESENTATION, swtchPort.first);
+                      g_assert_nonnull (label_sm);
 
                       // Do the same action in the "equivalent" switchPort
                       Action label_act = act;
-                      label_act.event = label_evt->getQualifiedId ();
+                      label_act.target = label_sm->getQualifiedId ();
                       evalAction (label_act);
                     }
                 }
             }
         }
 
-      // If event object is a context, trigger the context itself
+      // If state machine is a context, trigger the context itself
       if (instanceof (Context *, obj))
         {
           ctx_parent = cast (Context *, obj);

@@ -148,16 +148,16 @@ private:
  */
 typedef struct ParserConnRole
 {
-  xmlNode *node;                ///< Source node.
-  string role;                  ///< Role label.
-  Event::Type eventType;        ///< Role event type.
-  Event::Transition transition; ///< Role transition.
-  bool condition;               ///< Whether role is a condition.
-  Predicate *predicate;         ///< Role predicate (if condition).
-  string duration;              ///< Role duration (if action).
-  string delay;                 ///< Role delay.
-  string key;                   ///< Role key (if selection).
-  string value;                 ///< Role value (if attribution).
+  xmlNode *node;                       ///< Source node.
+  string role;                         ///< Role label.
+  StateMachine::Type smType;           ///< Role NCL event type.
+  StateMachine::Transition transition; ///< Role transition.
+  bool condition;                      ///< Whether role is a condition.
+  Predicate *predicate;                ///< Role predicate (if condition).
+  string duration;                     ///< Role duration (if action).
+  string delay;                        ///< Role delay.
+  string key;                          ///< Role key (if selection).
+  string value;                        ///< Role value (if attribution).
 } ParserConnRole;
 
 /**
@@ -316,7 +316,7 @@ private:
 
   // Reference solving.
   bool resolveComponent (Composition *, ParserElt *, Object **);
-  bool resolveInterface (Composition *, ParserElt *, Event **);
+  bool resolveInterface (Composition *, ParserElt *, StateMachine **);
   string resolveParameter (const string &, const map<string, string> *,
                            const map<string, string> *,
                            const map<string, string> *);
@@ -879,32 +879,32 @@ parser_syntax_table_get_possible_children (const string &tag)
 }
 
 /// Reserved connector roles.
-static map<string, pair<Event::Type, Event::Transition> >
+static map<string, pair<StateMachine::Type, StateMachine::Transition> >
 parser_syntax_reserved_role_table =
 {
- {"onBegin",            {Event::PRESENTATION, Event::START}}, // conditions
- {"onEnd",              {Event::PRESENTATION, Event::STOP}},
- {"onAbort",            {Event::PRESENTATION, Event::ABORT}},
- {"onPause",            {Event::PRESENTATION, Event::PAUSE}},
- {"onResume",           {Event::PRESENTATION, Event::RESUME}},
- {"onBeginAttribution", {Event::ATTRIBUTION,  Event::START}},
- {"onEndAttribution",   {Event::ATTRIBUTION,  Event::STOP}},
- {"onSelection",        {Event::SELECTION,    Event::START}},
- {"onBeginSelection",   {Event::SELECTION,    Event::START}},
- {"onEndSelection",     {Event::SELECTION,    Event::STOP}},
- {"start",              {Event::PRESENTATION, Event::START}}, // actions
- {"stop",               {Event::PRESENTATION, Event::STOP}},
- {"abort",              {Event::PRESENTATION, Event::ABORT}},
- {"pause",              {Event::PRESENTATION, Event::PAUSE}},
- {"resume",             {Event::PRESENTATION, Event::RESUME}},
- {"set",                {Event::ATTRIBUTION,  Event::START}},
+ {"onBegin",            {StateMachine::PRESENTATION, StateMachine::START}}, // conditions
+ {"onEnd",              {StateMachine::PRESENTATION, StateMachine::STOP}},
+ {"onAbort",            {StateMachine::PRESENTATION, StateMachine::ABORT}},
+ {"onPause",            {StateMachine::PRESENTATION, StateMachine::PAUSE}},
+ {"onResume",           {StateMachine::PRESENTATION, StateMachine::RESUME}},
+ {"onBeginAttribution", {StateMachine::ATTRIBUTION,  StateMachine::START}},
+ {"onEndAttribution",   {StateMachine::ATTRIBUTION,  StateMachine::STOP}},
+ {"onSelection",        {StateMachine::SELECTION,    StateMachine::START}},
+ {"onBeginSelection",   {StateMachine::SELECTION,    StateMachine::START}},
+ {"onEndSelection",     {StateMachine::SELECTION,    StateMachine::STOP}},
+ {"start",              {StateMachine::PRESENTATION, StateMachine::START}}, // actions
+ {"stop",               {StateMachine::PRESENTATION, StateMachine::STOP}},
+ {"abort",              {StateMachine::PRESENTATION, StateMachine::ABORT}},
+ {"pause",              {StateMachine::PRESENTATION, StateMachine::PAUSE}},
+ {"resume",             {StateMachine::PRESENTATION, StateMachine::RESUME}},
+ {"set",                {StateMachine::ATTRIBUTION,  StateMachine::START}},
 };
 
 /// Index reserved role table.
 static bool
 parser_syntax_reserved_role_table_index (const string &role,
-                                         bool *condition, Event::Type *type,
-                                         Event::Transition *transition)
+                                         bool *condition, StateMachine::Type *type,
+                                         StateMachine::Transition *transition)
 {
   auto it = parser_syntax_reserved_role_table.find (role);
   if (it == parser_syntax_reserved_role_table.end ())
@@ -915,42 +915,38 @@ parser_syntax_reserved_role_table_index (const string &role,
   return true;
 }
 
-/// Known event types.
-static map<string, Event::Type> parser_syntax_event_type_table = {
-  {"presentation", Event::PRESENTATION},
-  {"attribution", Event::ATTRIBUTION},
-  {"selection", Event::SELECTION},
-};
+/// Known NCL event types.
+static map<string, StateMachine::Type> parser_syntax_event_type_table
+= {{"presentation", StateMachine::PRESENTATION},
+   {"attribution",  StateMachine::ATTRIBUTION},
+   {"selection",    StateMachine::SELECTION}};
 
 /// Known transitions.
-static map<string, Event::Transition> parser_syntax_transition_table = {
-  {"start", Event::START},   {"starts", Event::START},
-  {"pause", Event::PAUSE},   {"pauses", Event::PAUSE},
-  {"resume", Event::RESUME}, {"resumes", Event::RESUME},
-  {"stop", Event::STOP},     {"stops", Event::STOP},
-  {"abort", Event::ABORT},   {"aborts", Event::ABORT},
-};
+static map<string, StateMachine::Transition> parser_syntax_transition_table
+= {{"start",  StateMachine::START},  {"starts",  StateMachine::START},
+   {"pause",  StateMachine::PAUSE},  {"pauses",  StateMachine::PAUSE},
+   {"resume", StateMachine::RESUME}, {"resumes", StateMachine::RESUME},
+   {"stop",   StateMachine::STOP},   {"stops",   StateMachine::STOP},
+   {"abort",  StateMachine::ABORT},  {"aborts",  StateMachine::ABORT}};
 
 /// Known logical connectives.
-static map<string, Predicate::Type> parser_syntax_connective_table = {
-  {"not", Predicate::NEGATION},
-  {"and", Predicate::CONJUNCTION},
-  {"or", Predicate::DISJUNCTION},
-};
+static map<string, Predicate::Type> parser_syntax_connective_table
+= {{"not", Predicate::NEGATION},
+   {"and", Predicate::CONJUNCTION},
+   {"or",  Predicate::DISJUNCTION}};
 
 /// Known string comparators.
-static map<string, Predicate::Test> parser_syntax_comparator_table = {
-  {"eq", Predicate::EQ},  // ==
-  {"ne", Predicate::NE},  // !=
-  {"lt", Predicate::LT},  // <
-  {"lte", Predicate::LE}, // <=
-  {"gt", Predicate::GT},  // >
-  {"gte", Predicate::GE}, // >=
-};
+static map<string, Predicate::Test> parser_syntax_comparator_table
+= {{"eq",  Predicate::EQ},
+   {"ne",  Predicate::NE},
+   {"lt",  Predicate::LT},
+   {"lte", Predicate::LE},
+   {"gt",  Predicate::GT},
+   {"gte", Predicate::GE}};
 
 // Index functions.
-PARSER_SYNTAX_TABLE_INDEX_DEFN (event_type, Event::Type);
-PARSER_SYNTAX_TABLE_INDEX_DEFN (transition, Event::Transition);
+PARSER_SYNTAX_TABLE_INDEX_DEFN (event_type, StateMachine::Type);
+PARSER_SYNTAX_TABLE_INDEX_DEFN (transition, StateMachine::Transition);
 PARSER_SYNTAX_TABLE_INDEX_DEFN (connective, Predicate::Type);
 PARSER_SYNTAX_TABLE_INDEX_DEFN (comparator, Predicate::Test);
 
@@ -1703,17 +1699,17 @@ ParserState::resolveComponent (Composition *scope, ParserElt *elt,
  *
  * @param ctx The contexts that determines the resolution scope.
  * @param elt The element to be resolved.
- * @param[out] evt Variable to store the resulting event (if any).
+ * @param[out] sm Variable to store the resulting state machine (if any).
  * @return \c true if successful, or \c false otherwise.
  */
 bool
 ParserState::resolveInterface (Composition *ctx, ParserElt *elt,
-                               Event **evt)
+                               StateMachine **sm)
 {
   string comp;
   string iface;
   Object *obj;
-  Event *result;
+  StateMachine *result;
 
   if (unlikely (!this->resolveComponent (ctx, elt, &obj)))
     return false;
@@ -1727,10 +1723,10 @@ ParserState::resolveInterface (Composition *ctx, ParserElt *elt,
   result = NULL;
   if (instanceof (Media *, obj))
     {
-      result = obj->getEvent (Event::PRESENTATION, iface);
+      result = obj->getStateMachine (StateMachine::PRESENTATION, iface);
       if (result == NULL)
         {
-          result = obj->getEvent (Event::ATTRIBUTION, iface);
+          result = obj->getStateMachine (StateMachine::ATTRIBUTION, iface);
           if (unlikely (result == NULL))
             goto fail;
         }
@@ -1739,7 +1735,7 @@ ParserState::resolveInterface (Composition *ctx, ParserElt *elt,
     {
       if (obj == ctx)
         {
-          result = obj->getEvent (Event::ATTRIBUTION, iface);
+          result = obj->getStateMachine (StateMachine::ATTRIBUTION, iface);
           if (unlikely (result == NULL))
             goto fail;
         }
@@ -1751,7 +1747,7 @@ ParserState::resolveInterface (Composition *ctx, ParserElt *elt,
           if (unlikely (
                   !this->eltCacheIndexById (iface, &iface_elt, {"port"})))
             {
-              result = obj->getEvent (Event::ATTRIBUTION, iface);
+              result = obj->getStateMachine (StateMachine::ATTRIBUTION, iface);
               if (likely (result != NULL))
                 goto success; // interface point to context property
               else
@@ -1776,13 +1772,13 @@ ParserState::resolveInterface (Composition *ctx, ParserElt *elt,
           if (ctx->getId () != obj->getId ())
             goto fail;
 
-          return this->resolveInterface (ctx, iface_elt, evt);
+          return this->resolveInterface (ctx, iface_elt, sm);
         }
     }
   else if (instanceof (Switch *, obj))
     {
-      result = obj->getEvent (Event::PRESENTATION, iface);
-      // A switchPort is resolved as a PresentationEvent.
+      result = obj->getStateMachine (StateMachine::PRESENTATION, iface);
+      // A switchPort is resolved as a PresentationStateMachine.
       if (unlikely (result == NULL))
         goto fail;
     }
@@ -1793,7 +1789,7 @@ ParserState::resolveInterface (Composition *ctx, ParserElt *elt,
 
 success:
   g_assert_nonnull (result);
-  tryset (evt, result);
+  tryset (sm, result);
   return true;
 
 fail:
@@ -1958,7 +1954,9 @@ ParserState::solvePredicate (Predicate *pred, const map<string, string> *tr)
         {
         case Predicate::FALSUM:
         case Predicate::VERUM:
-          break; // nothing to do
+          {
+            break;              // nothing to do
+          }
         case Predicate::ATOM:
           {
             Predicate::Test test;
@@ -2448,34 +2446,26 @@ horzRepeat='%s',\
 vertRepeat='%s',\
 borderWidth='%s',\
 borderColor='%s'}",
-                  (trans_elt->getAttribute ("subtype", &str)) ? str.c_str ()
-                                                              : "",
-                  +(trans_elt->getAttribute ("dur", &str)) ? str.c_str ()
-                                                           : "0",
+                  (trans_elt->getAttribute ("subtype", &str))
+                  ? str.c_str () : "",
+                  +(trans_elt->getAttribute ("dur", &str))
+                  ? str.c_str () : "0",
                   +(trans_elt->getAttribute ("startProgress", &str))
-                      ? str.c_str ()
-                      : "0",
+                  ? str.c_str () : "0",
                   +(trans_elt->getAttribute ("endProgress", &str))
-                      ? str.c_str ()
-                      : "0",
+                  ? str.c_str () : "0",
                   +(trans_elt->getAttribute ("direction", &str))
-                      ? str.c_str ()
-                      : "forward",
+                  ? str.c_str () : "forward",
                   +(trans_elt->getAttribute ("fadeColor", &str))
-                      ? str.c_str ()
-                      : "",
+                  ? str.c_str () : "",
                   +(trans_elt->getAttribute ("horzRepeat", &str))
-                      ? str.c_str ()
-                      : "0",
+                  ? str.c_str () : "0",
                   +(trans_elt->getAttribute ("vertRepeat", &str))
-                      ? str.c_str ()
-                      : "0",
+                  ? str.c_str () : "0",
                   +(trans_elt->getAttribute ("borderWidth", &str))
-                      ? str.c_str ()
-                      : "0",
+                  ? str.c_str () : "0",
                   +(trans_elt->getAttribute ("borderColor", &str))
-                      ? str.c_str ()
-                      : "");
+                  ? str.c_str () : "");
               desc_elt->setAttribute (trans_attr[i], val);
             }
         }
@@ -2513,12 +2503,16 @@ borderColor='%s'}",
               for (auto it : *desc_elt->getAttributes ())
                 {
                   if (it.first == "id" || it.first == "region")
-                    continue; // nothing to do
-                  if (media->getEvent (Event::ATTRIBUTION, it.first)
-                      != NULL)
-                    continue; // already defined
-                  g_assert_nonnull (media->createEvent
-                                    (Event::ATTRIBUTION, it.first));
+                    {
+                      continue; // nothing to do
+                    }
+                  if (media->getStateMachine
+                      (StateMachine::ATTRIBUTION, it.first) != NULL)
+                    {
+                      continue; // already defined
+                    }
+                  g_assert_nonnull (media->createStateMachine
+                                    (StateMachine::ATTRIBUTION, it.first));
                   media->setPropertyString (it.first, it.second);
                 }
             }
@@ -2684,7 +2678,7 @@ borderColor='%s'}",
                 }
             }
 
-          // Check if all event roles are bound.
+          // Check if all roles are bound.
           for (auto &role : *roles)
             {
               bool found = false;
@@ -2735,16 +2729,16 @@ borderColor='%s'}",
               for (auto &bind : *it.first)
                 {
                   ParserElt *elt;
-                  Event *evt;
+                  StateMachine *sm;
                   g_assert_nonnull (bind->node);
                   g_assert (st->eltCacheIndex (bind->node, &elt));
-                  if (unlikely (!st->resolveInterface (ctx, elt, &evt)))
+                  if (unlikely (!st->resolveInterface (ctx, elt, &sm)))
                     return false;
-                  (*it.second)[bind->role] = "$" + evt->getQualifiedId ();
+                  (*it.second)[bind->role] = "$" + sm->getQualifiedId ();
                 }
             }
 
-          // Resolve event roles.
+          // Resolve roles.
           list<Action> conditions;
           list<Action> actions;
           for (auto it : bound)
@@ -2753,8 +2747,8 @@ borderColor='%s'}",
               ParserLinkBind *bind;
               ParserElt *bind_elt;
               Object *obj;
-              Event *evt;
-              Event::Type evtType;
+              StateMachine *sm;
+              StateMachine::Type smType;
               Action act;
               string iface;
 
@@ -2766,61 +2760,59 @@ borderColor='%s'}",
               g_assert_nonnull (bind->node);
               g_assert (st->eltCacheIndex (bind->node, &bind_elt));
 
-              if (unlikely (!st->resolveInterface (ctx, bind_elt, &evt)))
+              if (unlikely (!st->resolveInterface (ctx, bind_elt, &sm)))
                 return false;
 
-              evtType = evt->getType ();
-              obj = evt->getObject ();
+              smType = sm->getType ();
+              obj = sm->getObject ();
               g_assert_nonnull (obj);
 
-              switch (role->eventType)
+              switch (role->smType)
                 {
-                case Event::PRESENTATION:
+                case StateMachine::PRESENTATION:
                   {
-                    if (unlikely (evtType != role->eventType))
+                    if (unlikely (smType != role->smType))
                       {
                         return st->errEltBadAttribute (
                             bind->node, "interface", bind->iface,
                             "expected a presentation event");
                       }
-                    act.event = evt->getQualifiedId ();
+                    act.target = sm->getQualifiedId ();
                     break;
                   }
-                case Event::ATTRIBUTION:
+                case StateMachine::ATTRIBUTION:
                   {
-                    if (unlikely (evtType != role->eventType))
+                    if (unlikely (smType != role->smType))
                       {
                         return st->errEltBadAttribute (
                             bind->node, "interface", bind->iface,
                             "expected an attribution event");
                       }
-                    act.event = evt->getQualifiedId ();
+                    act.target = sm->getQualifiedId ();
                     act.params["value"] = st->resolveParameter (
                         role->value, &bind->params, params, &ghosts_map);
                     break;
                   }
-                case Event::SELECTION:
+                case StateMachine::SELECTION:
                   {
-                    if (unlikely ((evtType == Event::PRESENTATION
-                                   && evt->getId () != "@lambda")
-                                  || evtType == Event::ATTRIBUTION))
+                    if (unlikely ((smType == StateMachine::PRESENTATION
+                                   && sm->getId () != "@lambda")
+                                  || smType == StateMachine::ATTRIBUTION))
                       {
-                        return st->errEltBadAttribute (
-                            bind->node, "interface", evt->getId (),
-                            "must be empty");
+                        return st->errEltBadAttribute
+                          (bind->node, "interface", sm->getId (),
+                           "must be empty");
                       }
                     act.params["value"] = st->resolveParameter (
                         role->key, &bind->params, params, &ghosts_map);
-                    act.event = obj->createEvent (Event::SELECTION,
-                                                  act.params["value"])
+                    act.target = obj->createStateMachine
+                      (StateMachine::SELECTION, act.params["value"])
                       ->getQualifiedId ();
-                    //g_assert_nonnull (act.event);
                     break;
                   }
                 default:
                   g_assert_not_reached ();
                 }
-              //g_assert_nonnull (act.event);
               act.transition = role->transition;
 
               act.params["duration"] = st->resolveParameter
@@ -3116,11 +3108,11 @@ ParserState::pushSimpleCondition (ParserState *st, ParserElt *elt)
   g_assert_nonnull (node);
 
   if (parser_syntax_reserved_role_table_index (
-          role.role, &condition, &role.eventType, &role.transition))
+          role.role, &condition, &role.smType, &role.transition))
     {
       string str;
-      Event::Type type;
-      Event::Transition trans;
+      StateMachine::Type type;
+      StateMachine::Transition trans;
 
       if (unlikely (role.condition != condition))
         {
@@ -3132,7 +3124,7 @@ ParserState::pushSimpleCondition (ParserState *st, ParserElt *elt)
 
       if (unlikely (elt->getAttribute ("eventType", &str)
                     && (!parser_syntax_event_type_table_index (str, &type)
-                        || type != role.eventType)))
+                        || type != role.smType)))
         {
           return st->errEltBadAttribute (node, "eventType", str,
                                          "reserved role '" + role.role
@@ -3156,7 +3148,7 @@ ParserState::pushSimpleCondition (ParserState *st, ParserElt *elt)
           return st->errEltMissingAttribute (node, "eventType");
         }
       if (unlikely (
-              !parser_syntax_event_type_table_index (str, &role.eventType)))
+              !parser_syntax_event_type_table_index (str, &role.smType)))
         {
           return st->errEltBadAttribute (node, "eventType", str);
         }
@@ -3177,10 +3169,10 @@ ParserState::pushSimpleCondition (ParserState *st, ParserElt *elt)
   if (!role.condition)
     elt->getAttribute ("delay", &role.delay);
 
-  if (role.eventType == Event::SELECTION)
+  if (role.smType == StateMachine::SELECTION)
     elt->getAttribute ("key", &role.key);
 
-  if (unlikely (!role.condition && role.eventType == Event::ATTRIBUTION
+  if (unlikely (!role.condition && role.smType == StateMachine::ATTRIBUTION
                 && !elt->getAttribute ("value", &role.value)))
     {
       return st->errEltMissingAttribute (node, "value");
@@ -3655,13 +3647,13 @@ ParserState::popContext (ParserState *st, ParserElt *elt)
   for (auto port_id : *ports)
     {
       ParserElt *port_elt;
-      Event *evt;
+      StateMachine *sm;
 
       g_assert (st->eltCacheIndexById (port_id, &port_elt, {"port"}));
-      if (unlikely (!st->resolveInterface (ctx, port_elt, &evt)))
+      if (unlikely (!st->resolveInterface (ctx, port_elt, &sm)))
         return false;
 
-      ctx->addPort (evt);
+      ctx->addPort (sm);
     }
 
   st->objStackPop ();
@@ -3838,7 +3830,8 @@ ParserState::popSwitch (ParserState *st, unused (ParserElt *elt))
     }
 
   // Resolve switchPort references (each switchPort is added as a new
-  // PresentationEvent, which will be handled internally by the switch).
+  // presentation state machine, which will be handled internally by the
+  // switch).
   UDATA_GET (elt, "switchPorts", &switchPorts);
   for (auto switchPort_id : *switchPorts)
     {
@@ -3849,18 +3842,18 @@ ParserState::popSwitch (ParserState *st, unused (ParserElt *elt))
                 (switchPort_id, &switchPort_elt, {"switchPort"}));
       UDATA_GET (switchPort_elt, "mappings", &mappings);
 
-      list<Event *> mapping_evts;
+      list<StateMachine *> mapping_evts;
       for (auto &mapping_elt : *mappings)
         {
-          Event *evt;
+          StateMachine *sm;
           string comp, interf;
           mapping_elt->getAttribute ("component", &comp);
           mapping_elt->getAttribute ("interface", &interf);
 
-          if (unlikely (!st->resolveInterface (swtch, mapping_elt, &evt)))
+          if (unlikely (!st->resolveInterface (swtch, mapping_elt, &sm)))
             return false;
 
-          mapping_evts.push_back (evt);
+          mapping_evts.push_back (sm);
         }
 
       swtch->addSwitchPort (switchPort_id, mapping_evts);
@@ -4031,7 +4024,7 @@ ParserState::pushArea (ParserState *st, ParserElt *elt)
   string id;
   string str;
 
-  Event *evt;
+  StateMachine *sm;
   string label;
   Time begin, end;
 
@@ -4039,8 +4032,8 @@ ParserState::pushArea (ParserState *st, ParserElt *elt)
   g_assert_nonnull (media);
 
   g_assert (elt->getAttribute ("id", &id));
-  evt = media->createEvent (Event::PRESENTATION, id);
-  g_assert_nonnull (evt);
+  sm = media->createStateMachine (StateMachine::PRESENTATION, id);
+  g_assert_nonnull (sm);
 
   if (elt->getAttribute ("label", &label) && label != "")
     {
@@ -4054,7 +4047,7 @@ ParserState::pushArea (ParserState *st, ParserElt *elt)
           return st->errEltMutuallyExclAttributes (elt->getNode (), "label",
                                                    "end");
         }
-      evt->setLabel (label);
+      sm->setLabel (label);
     }
   else
     {
@@ -4076,8 +4069,8 @@ ParserState::pushArea (ParserState *st, ParserElt *elt)
             }
         }
 
-      evt->setBeginTime (begin);
-      evt->setEndTime (end);
+      sm->setBeginTime (begin);
+      sm->setEndTime (end);
     }
 
   return true;
@@ -4103,7 +4096,7 @@ ParserState::pushProperty (ParserState *st, ParserElt *elt)
   if (!elt->getAttribute ("value", &value))
     value = "";
 
-  obj->createEvent (Event::ATTRIBUTION, name); // ignore if already there
+  obj->createStateMachine (StateMachine::ATTRIBUTION, name);
   if (value != "")
     obj->setPropertyString (name, value);
 

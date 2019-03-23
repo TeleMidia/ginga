@@ -19,7 +19,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #define GINGA_SWITCH_H
 
 #include "Composition.h"
-#include "Event.h"
+#include "StateMachine.h"
 
 GINGA_NAMESPACE_BEGIN
 
@@ -35,11 +35,11 @@ public:
   // Switch:
   const list<pair<Object *, Predicate *> > *getRules ();
   void addRule (Object *, Predicate *);
-  const map<string, list<Event *> > *getSwitchPorts ();
-  void addSwitchPort (const string &, const list<Event *> &);
+  const map<string, list<StateMachine *> > *getSwitchPorts ();
+  void addSwitchPort (const string &, const list<StateMachine *> &);
 
 private:
-  map<string, list<Event *> > _switchPorts;
+  map<string, list<StateMachine *> > _switchPorts;
   list<pair<Object *, Predicate *> > _rules;
   Object *_selected;
 };

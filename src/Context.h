@@ -19,7 +19,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #define GINGA_CONTEXT_H
 
 #include "Composition.h"
-#include "Event.h"
+#include "StateMachine.h"
 
 GINGA_NAMESPACE_BEGIN
 
@@ -35,13 +35,13 @@ public:
   ~Context ();
 
   /// Gets the list of ports of context.
-  void getPorts (list<Event *> *ports);
+  void getPorts (list<StateMachine *> *ports);
 
-  /// Adds event to the list of ports of context.
-  bool addPort (Event *);
+  /// Adds state machine to the list of ports of context.
+  bool addPort (StateMachine *);
 
-  /// Removes event from the list of ports of context.
-  bool removePort (Event *);
+  /// Removes state machine from the list of ports of context.
+  bool removePort (StateMachine *);
 
   // TODO ------------------------------------------------------------------
 

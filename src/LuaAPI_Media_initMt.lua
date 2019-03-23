@@ -59,7 +59,8 @@ do
       --
       -- Settings object?
       if self == self.document.settings then
-         assert (self:createEvent ('attribution', 'service.currentFocus'))
+         assert (self:createStateMachine ('attribution',
+                                          'service.currentFocus'))
       end
       --
       -- Default behavior.
@@ -67,7 +68,7 @@ do
       self:spawn {
          function ()            -- start lambda
             while true do
-               await {event=self.lambda, transition='start'}
+               await {statemachine=self.lambda, transition='start'}
                assert (self.player == nil)
                local uri = self:getProperty ('uri')
                local player = self.document:_createPlayer (self, uri)

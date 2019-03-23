@@ -32,30 +32,24 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 void
 LuaAPI::Document_attachWrapper (lua_State *L, Document *doc)
 {
-  static const struct luaL_Reg _Document_funcs[] =
-    {
-     {"__gc",          LuaAPI::__l_Document_gc},
-     {"_createObject", LuaAPI::_l_Document_createObject},
-     {"_createEvent",  LuaAPI::_l_Document_createEvent},
-     {"_createPlayer", LuaAPI::_l_Document_createPlayer},
-     {"_isinteger",    LuaAPI::_l_Document_isinteger},
-     {NULL, NULL},
-    };
+  static const struct luaL_Reg _Document_funcs[]
+    ={{"__gc",                 LuaAPI::__l_Document_gc},
+      {"_createObject",        LuaAPI::_l_Document_createObject},
+      {"_createStateMachine",  LuaAPI::_l_Document_createStateMachine},
+      {"_createPlayer",        LuaAPI::_l_Document_createPlayer},
+      {"_isinteger",           LuaAPI::_l_Document_isinteger},
+      {NULL, NULL}};
 
-  static const struct luaL_Reg *const funcs[] =
-    {
-     _funcs,
-     _Document_funcs,
-     NULL
-    };
+  static const struct luaL_Reg *const funcs[]
+    ={_funcs,
+      _Document_funcs,
+      NULL};
 
-  static const Chunk *const chunks[] =
-    {
-     &LuaAPI::_initMt,
-     &LuaAPI::_Document_initMt,
-     &LuaAPI::_traceMt,
-     NULL
-    };
+  static const Chunk *const chunks[]
+    = {&LuaAPI::_initMt,
+       &LuaAPI::_Document_initMt,
+       &LuaAPI::_traceMt,
+       NULL};
 
   Document **wrapper;
 
@@ -171,24 +165,24 @@ LuaAPI::_l_Document_createObject (lua_State *L)
 }
 
 int
-LuaAPI::_l_Document_createEvent (lua_State *L)
+LuaAPI::_l_Document_createStateMachine (lua_State *L)
 {
-  Event::Type type;
+  StateMachine::Type type;
   Object *obj;
-  const char *evtId;
+  const char *smId;
 
   LuaAPI::Document_check (L, 1);
-  type = LuaAPI::Event_Type_check (L, 2);
+  type = LuaAPI::StateMachine_Type_check (L, 2);
   obj = LuaAPI::Object_check (L, 3);
-  evtId = luaL_checkstring (L, 4);
+  smId = luaL_checkstring (L, 4);
 
-  if (obj->getEvent (type, evtId))
+  if (obj->getStateMachine (type, smId))
     {
       lua_pushnil (L);
     }
   else
     {
-      LuaAPI::_pushLuaWrapper (L, new Event (obj, type, evtId));
+      LuaAPI::_pushLuaWrapper (L, new StateMachine (obj, type, smId));
     }
 
   return 1;

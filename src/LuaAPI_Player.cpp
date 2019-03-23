@@ -64,7 +64,7 @@ LuaAPI::Player_attachWrapper (lua_State *L, Player *player, Media *media)
   // Load and initialize metatable, if not loaded yet.
   LuaAPI::_loadLuaWrapperMt (L, LuaAPI::_PLAYER, funcs, chunks);
 
-  // Create wrapper for event.
+  // Create wrapper for player.
   wrapper = (Player **) lua_newuserdata (L, sizeof (Player **));
   g_assert_nonnull (wrapper);
   *wrapper = player;

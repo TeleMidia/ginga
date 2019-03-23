@@ -98,24 +98,22 @@ LUAAPI_CHUNK_DEFN (Object_initMt);
 LUAAPI_CHUNK_DEFN (Context_initMt);
 LUAAPI_CHUNK_DEFN (Media_initMt);
 LUAAPI_CHUNK_DEFN (Composition_initMt);
-LUAAPI_CHUNK_DEFN (Event_initMt);
+LUAAPI_CHUNK_DEFN (StateMachine_initMt);
 LUAAPI_CHUNK_DEFN (Player_initMt);
 LUAAPI_CHUNK_DEFN (traceMt);
 
-const char *LuaAPI::_DOCUMENT = "Ginga.Document";
-const char *LuaAPI::_CONTEXT  = "Ginga.Context";
-const char *LuaAPI::_SWITCH   = "Ginga.Switch";
-const char *LuaAPI::_MEDIA    = "Ginga.Media";
-const char *LuaAPI::_EVENT    = "Ginga.Event";
-const char *LuaAPI::_PLAYER   = "Ginga.Player";
+const char *LuaAPI::_DOCUMENT      = "Ginga.Document";
+const char *LuaAPI::_CONTEXT       = "Ginga.Context";
+const char *LuaAPI::_SWITCH        = "Ginga.Switch";
+const char *LuaAPI::_MEDIA         = "Ginga.Media";
+const char *LuaAPI::_STATE_MACHINE = "Ginga.StateMachine";
+const char *LuaAPI::_PLAYER        = "Ginga.Player";
 
-const struct luaL_Reg LuaAPI::_funcs[] =
-  {
-   {"_debug",   LuaAPI::_l_debug},
-   {"_warning", LuaAPI::_l_warn},
-   {"_error",   LuaAPI::_l_error},
-   {NULL, NULL},
-  };
+const struct luaL_Reg LuaAPI::_funcs[]
+  = {{"_debug",   LuaAPI::_l_debug},
+     {"_warning", LuaAPI::_l_warn},
+     {"_error",   LuaAPI::_l_error},
+     {NULL, NULL}};
 
 int
 LuaAPI::_l_debug (lua_State *L)

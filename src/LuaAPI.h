@@ -1,19 +1,19 @@
 /* Copyright (C) 2006-2018 PUC-Rio/Laboratorio TeleMidia
 
-This file is part of Ginga (Ginga-NCL).
+   This file is part of Ginga (Ginga-NCL).
 
-Ginga is free software: you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 2 of the License, or
-(at your option) any later version.
+   Ginga is free software: you can redistribute it and/or modify it
+   under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 2 of the License, or
+   (at your option) any later version.
 
-Ginga is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
-License for more details.
+   Ginga is distributed in the hope that it will be useful, but WITHOUT
+   ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+   or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+   License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
+   You should have received a copy of the GNU General Public License
+   along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #ifndef GINGA_LUA_API_H
 #define GINGA_LUA_API_H
@@ -34,16 +34,6 @@ class Switch;
 class Media;
 
 /// The Lua interface to the internal model.
-///
-/// This class implements the Lua interface to the objects of the internal
-/// model (Document, Object, Event, etc.).  We expose these C++ objects to
-/// Lua using wrappers.  By _wrapper_ we mean a full Lua userdata consisting
-/// of a single pointer, which points to the actual C++ object.  We call the
-/// object associated with a Lua wrapper its _underlying object_.  We keep
-/// the mapping between C++ objects and their wrappers in the
-/// `LUA_REGISTRY`.  That is, for each C++ object `o` we set
-/// `LUA_REGISTRY[o]=w`, where `w` is the Lua wrapper of object `o`.
-///
 class LuaAPI
 {
   // Document --------------------------------------------------------------
@@ -68,7 +58,7 @@ public:
 private:
   static int __l_Document_gc (lua_State *L);
   static int _l_Document_createObject (lua_State *L);
-  static int _l_Document_createEvent (lua_State *L);
+  static int _l_Document_createStateMachine (lua_State *L);
   static int _l_Document_createPlayer (lua_State *L);
   static int _l_Document_isinteger (lua_State *L);
 
@@ -138,44 +128,50 @@ public:
   static void Media_call (lua_State *L, Media *media,
                           const char *name, int nargs, int nresults);
 
-  // Event -----------------------------------------------------------------
+  // StateMachine ----------------------------------------------------------
 public:
 
-  /// Attaches Lua wrapper to \p evt.
-  static void Event_attachWrapper (lua_State *L, Event *evt,
-                                   Object *obj, Event::Type type,
-                                   const string &id);
+  /// Attaches Lua wrapper to \p sm.
+  static void StateMachine_attachWrapper (lua_State *L, StateMachine *sm,
+                                          Object *obj,
+                                          StateMachine::Type type,
+                                          const string &id);
 
-  /// Detaches Lua wrapper from \p evt.
-  static void Event_detachWrapper (lua_State *L, Event *evt);
+  /// Detaches Lua wrapper from \p sm.
+  static void StateMachine_detachWrapper (lua_State *L, StateMachine *sm);
 
-  /// Checks if the value at index \p i of stack is an Event wrapper.
-  static Event *Event_check (lua_State *L, int i);
+  /// Checks if the value at index \p i of stack is an StateMachine wrapper.
+  static StateMachine *StateMachine_check (lua_State *L, int i);
 
-  /// Checks if the value at index \p i of stack is an Event::Type.
-  static Event::Type Event_Type_check (lua_State *L, int i);
+  /// Checks if the value at index \p i of stack is an StateMachine::Type.
+  static StateMachine::Type StateMachine_Type_check (lua_State *L, int i);
 
-  /// Checks if the value at index \p i of stack is an Event::State.
-  static Event::State Event_State_check (lua_State *L, int i);
+  /// Checks if the value at index \p i of stack is an StateMachine::State.
+  static StateMachine::State StateMachine_State_check (lua_State *L, int i);
 
-  /// Checks if the value at index \p i of stack is an Event::Transition.
-  static Event::Transition Event_Transition_check (lua_State *L, int i);
+  /// Checks if the value at index \p i of stack is an
+  /// StateMachine::Transition.
+  static StateMachine::Transition StateMachine_Transition_check
+  (lua_State *L, int i);
 
-  /// Pushes the Lua wrapper of event onto stack.
-  static void Event_push (lua_State *L, Event *evt);
+  /// Pushes the Lua wrapper of state machine onto stack.
+  static void StateMachine_push (lua_State *L, StateMachine *sm);
 
-  /// Pushes Event::Type (as string) onto stack.
-  static void Event_Type_push (lua_State *L, Event::Type type);
+  /// Pushes StateMachine::Type (as string) onto stack.
+  static void StateMachine_Type_push (lua_State *L,
+                                      StateMachine::Type type);
 
-  /// Pushes Event::State (as string) onto stack.
-  static void Event_State_push (lua_State *L, Event::State state);
+  /// Pushes StateMachine::State (as string) onto stack.
+  static void StateMachine_State_push (lua_State *L,
+                                       StateMachine::State state);
 
-  /// Pushes Event::Transition (as string) onto stack.
-  static void Event_Transition_push (lua_State *L, Event::Transition trans);
+  /// Pushes StateMachine::Transition (as string) onto stack.
+  static void StateMachine_Transition_push (lua_State *L,
+                                            StateMachine::Transition trans);
 
-  /// Calls a method of the Lua wrapper of the given event.
-  static void Event_call (lua_State *L, Event *evt,
-                          const char *name, int nargs, int nresults);
+  /// Calls a method of the Lua wrapper of the given state machine.
+  static void StateMachine_call (lua_State *L, StateMachine *sm,
+                                 const char *name, int nargs, int nresults);
 
   // Player ----------------------------------------------------------------
 public:
@@ -251,7 +247,7 @@ private:
   LUAAPI_CHUNK_DECL (Context_initMt);
   LUAAPI_CHUNK_DECL (Media_initMt);
   LUAAPI_CHUNK_DECL (Composition_initMt);
-  LUAAPI_CHUNK_DECL (Event_initMt);
+  LUAAPI_CHUNK_DECL (StateMachine_initMt);
   LUAAPI_CHUNK_DECL (Player_initMt);
   LUAAPI_CHUNK_DECL (traceMt);
 
@@ -260,7 +256,7 @@ private:
   static const char *_CONTEXT;
   static const char *_SWITCH;
   static const char *_MEDIA;
-  static const char *_EVENT;
+  static const char *_STATE_MACHINE;
   static const char *_PLAYER;
 
   /// The functions to load in all metatables.

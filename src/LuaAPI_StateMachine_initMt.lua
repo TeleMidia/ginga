@@ -5,24 +5,24 @@ local rawget    = rawget
 local rawset    = rawset
 _ENV = nil
 
--- Returns qualified id from objId and evtId.
-local function buildQualifiedId (objId, evtType, evtId)
-   if evtType == 'attribution' then
-      return objId..'.'..evtId
-   elseif evtType == 'presentation' then
-      if evtId == '@lambda' then
-         return objId..evtId
+-- Returns qualified id from objId and smId.
+local function buildQualifiedId (objId, smType, smId)
+   if smType == 'attribution' then
+      return objId..'.'..smId
+   elseif smType == 'presentation' then
+      if smId == '@lambda' then
+         return objId..smId
       else
-         return objId..'@'..evtId
+         return objId..'@'..smId
       end
-   elseif evtType == 'selection' then
-      return objId..'<'..evtId..'>'
+   elseif smType == 'selection' then
+      return objId..'<'..smId..'>'
    else
-      error ('bad event type: '..tostring (evtType))
+      error ('bad state machine type: '..tostring (smType))
    end
 end
 
--- Event metatable.
+-- State machine metatable.
 do
    local mt = ...
 
@@ -34,10 +34,10 @@ do
       --
       -- Private data.
       data._object        = assert (obj)  -- the container object
-      data._type          = assert (type) -- event type
-      data._id            = assert (id)   -- event id
+      data._type          = assert (type) -- type
+      data._id            = assert (id)   -- id
       data._qualifiedId   = assert (buildQualifiedId (obj.id, type, id))
-      data._state         = 'sleeping'    -- event state
+      data._state         = 'sleeping'    -- current state
       data._beginTime     = 0             -- begin time
       data._endTime       = nil           -- end time
       data._label         = nil           -- label
@@ -55,12 +55,12 @@ do
       return saved_attachData (self, data, funcs)
    end
 
-   -- Initializes event.
+   -- Initializes state machine.
    local saved_init = assert (mt._init)
    mt._init = function (self)
       saved_init (self)
-      self.object:_addEvent (self)
-      self.object.document:_addEvent (self)
+      self.object:_addStateMachine (self)
+      self.object.document:_addStateMachine (self)
       --
       -- Default behavior.
       local await = self.object.document._await
@@ -72,76 +72,75 @@ do
                or self.label then
                return           -- nothing to do
             end
-            -- If we get here, this event is an <area>.
+            -- If we get here, this state machine is an <area>.
             while true do
-               await {event=self.object.lambda, transition='start'}
+               await {statemachine=self.object.lambda, transition='start'}
                if self.beginTime and self.beginTime > 0 then
-                  await {object=self.object, time=self.beginTime,
+                  await {target=self.object, time=self.beginTime,
                          absolute=true}
                end
-               print ('event', self.qualifiedId, 'start', self.object.time)
                self:transition ('start')
                if self.endTime and self.endTime > 0 then
                   parOr {
                      function ()
-                        await {object=self.object, time=self.endTime,
+                        await {target=self.object, time=self.endTime,
                                absolute=true}
                      end,
                      function ()
-                        await {event=self.object.lambda, transition='stop'}
+                        await {statemachine=self.object.lambda,
+                               transition='stop'}
                      end,
                   }
                else
-                  await {event=self.object.lambda, transition='stop'}
+                  await {statemachine=self.object.lambda, transition='stop'}
                end
-               print ('event', self.qualifiedId, 'stop', self.object.time)
                self:transition ('stop')
             end
          end
       }
    end
 
-   -- Finalizes event.
+   -- Finalizes state machine.
    local saved_fini = assert (mt._fini)
    mt._fini = function (self)
-      self.object:_removeEvent (self)
-      self.object.document:_removeEvent (self)
+      self.object:_removeStateMachine (self)
+      self.object.document:_removeStateMachine (self)
       saved_fini (self)
    end
 
-   -- Gets a string representation of event.
+   -- Gets a string representation of state machine.
    mt.__tostring = function (self)
       return assert (rawget (mt[self], '_qualifiedId'))
    end
 
    -- Exported functions ---------------------------------------------------
 
-   -- Event::getObject().
+   -- StateMachine::getObject().
    mt.getObject = function (self)
       return assert (rawget (mt[self], '_object'))
    end
 
-   -- Event::getType().
+   -- StateMachine::getType().
    mt.getType = function (self)
       return assert (rawget (mt[self], '_type'))
    end
 
-   -- Event::getId().
+   -- StateMachine::getId().
    mt.getId = function (self)
       return assert (rawget (mt[self], '_id'))
    end
 
-   -- Event::getQualifiedId().
+   -- StateMachine::getQualifiedId().
    mt.getQualifiedId = function (self)
       return assert (rawget (mt[self], '_qualifiedId'))
    end
 
-   -- Event::getState().
+   -- StateMachine::getState().
    mt.getState = function (self)
       return assert (rawget (mt[self], '_state'))
    end
 
-   -- Event::setState().
+   -- StateMachine::setState().
    mt.setState = function (self, st)
       if st ~= 'occurring' and st ~= 'paused' and st ~= 'sleeping' then
          error ('bad state: '..tostring (st))
@@ -149,37 +148,37 @@ do
       rawset (mt[self], '_state', st)
    end
 
-   -- Event::getBeginTime().
+   -- StateMachine::getBeginTime().
    mt.getBeginTime = function (self)
       return rawget (mt[self], '_beginTime')
    end
 
-   -- Event::setBeginTime().
+   -- StateMachine::setBeginTime().
    mt.setBeginTime = function (self, time)
       rawset (mt[self], '_beginTime', time)
    end
 
-   -- Event::getEndTime().
+   -- StateMachine::getEndTime().
    mt.getEndTime = function (self)
       return rawget (mt[self], '_endTime')
    end
 
-   -- Event::setEndTime().
+   -- StateMachine::setEndTime().
    mt.setEndTime = function (self, time)
       rawset (mt[self], '_endTime', time)
    end
 
-   -- Event::getLabel().
+   -- StateMachine::getLabel().
    mt.getLabel = function (self)
       return rawget (mt[self], '_label')
    end
 
-   -- Event::setLabel().
+   -- StateMachine::setLabel().
    mt.setLabel = function (self, label)
       rawset (mt[self], '_label', label)
    end
 
-   -- Event::transition().
+   -- StateMachine::transition().
    mt.transition = function (self, trans, params)
       local curr = self.state
       local next
@@ -208,7 +207,7 @@ do
       end
       self.state = next
       self.object.document:_awakeBehaviors {target=self.object,
-                                            event=self,
+                                            statemachine=self,
                                             transition=trans}
       return true
    end

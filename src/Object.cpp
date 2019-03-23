@@ -22,7 +22,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Composition.h"
 #include "Context.h"
 #include "Document.h"
-#include "Event.h"
+#include "StateMachine.h"
 #include "Media.h"
 #include "Switch.h"
 
@@ -111,72 +111,72 @@ Object::getParents (set<Composition *> *parents)
 }
 
 void
-Object::getEvents (set<Event *> *events)
+Object::getStateMachines (set<StateMachine *> *machines)
 {
   lua_Integer len;
   lua_Integer i;
 
-  g_return_if_fail (events != NULL);
+  g_return_if_fail (machines != NULL);
 
-  LuaAPI::Object_call (_L, this, "getEvents", 0, 1);
+  LuaAPI::Object_call (_L, this, "getStateMachines", 0, 1);
   g_assert (lua_type (_L, -1) == LUA_TTABLE);
 
   len = luaL_len (_L, -1);
   for (i = 1; i <= len; i++)
     {
-      Event *evt;
+      StateMachine *sm;
 
       lua_rawgeti (_L, -1, i);
-      evt = LuaAPI::Event_check (_L, -1);
-      events->insert (evt);
+      sm = LuaAPI::StateMachine_check (_L, -1);
+      machines->insert (sm);
       lua_pop (_L, 1);
     }
 }
 
-Event *
-Object::getEvent (Event::Type type, const string &id)
+StateMachine *
+Object::getStateMachine (StateMachine::Type type, const string &id)
 {
-  Event *evt = NULL;
+  StateMachine *sm = NULL;
 
-  LuaAPI::Event_Type_push (_L, type);
+  LuaAPI::StateMachine_Type_push (_L, type);
   lua_pushstring (_L, id.c_str ());
-  LuaAPI::Object_call (_L, this, "getEvent", 2, 1);
+  LuaAPI::Object_call (_L, this, "getStateMachine", 2, 1);
   if (!lua_isnil (_L, -1))
     {
-      evt = LuaAPI::Event_check (_L, -1);
+      sm = LuaAPI::StateMachine_check (_L, -1);
     }
   lua_pop (_L, 1);
 
-  return evt;
+  return sm;
 }
 
-Event *
+StateMachine *
 Object::getLambda ()
 {
-  Event *evt;
+  StateMachine *sm;
 
   LuaAPI::Object_call (_L, this, "getLambda", 0, 1);
-  evt = LuaAPI::Event_check (_L, -1);
+  sm = LuaAPI::StateMachine_check (_L, -1);
   lua_pop (_L, 1);
 
-  return evt;
+  return sm;
 }
 
-Event *
-Object::createEvent (Event::Type type, const string &id)
+StateMachine *
+Object::createStateMachine (StateMachine::Type type, const string &id)
 {
-  Event *evt = NULL;
+  StateMachine *sm = NULL;
 
-  LuaAPI::Event_Type_push (_L, type);
+  LuaAPI::StateMachine_Type_push (_L, type);
   lua_pushstring (_L, id.c_str ());
-  LuaAPI::Object_call (_L, this, "createEvent", 2, 1);
+  LuaAPI::Object_call (_L, this, "createStateMachine", 2, 1);
   if (!lua_isnil (_L, -1))
     {
-      evt = LuaAPI::Event_check (_L, -1);
+      sm = LuaAPI::StateMachine_check (_L, -1);
     }
   lua_pop (_L, 1);
 
-  return evt;
+  return sm;
 }
 
 Time

@@ -35,11 +35,11 @@ do
       self:spawn {
          function ()            -- start lambda
             while true do
-               await {event=self.lambda, transition='start'}
+               await {statemachine=self.lambda, transition='start'}
                for _,port in ipairs (self.ports) do
-                  local evt = self.document:getEvent (port)
-                  if evt then
-                     evt:transition ('start')
+                  local sm = self.document:getStateMachine (port)
+                  if sm then
+                     sm:transition ('start')
                   end
                end
             end
@@ -59,29 +59,29 @@ do
    end
 
    -- Context::addPort().
-   mt.addPort = function (self, evt)
-      if type (evt) == 'userdata' then
-         evt = evt:getQualifiedId ()
+   mt.addPort = function (self, sm)
+      if type (sm) == 'userdata' then
+         sm = sm:getQualifiedId ()
       end
-      if self.document:getEvent (evt) == nil then
-         return false           -- no such event
+      if self.document:getStateMachine (sm) == nil then
+         return false           -- no such port
       end
-      table.insert (mt[self]._ports, evt)
+      table.insert (mt[self]._ports, sm)
       return true
    end
 
    -- Context::removePort()
-   mt.removePort = function (self, evt)
-      if type (evt) == 'userdata' then
-         evt = evt:getQualifiedId ()
+   mt.removePort = function (self, sm)
+      if type (sm) == 'userdata' then
+         sm = sm:getQualifiedId ()
       end
       local t = assert (mt[self]._ports)
       for i=1,#t do
-         if t[i] == evt then
+         if t[i] == sm then
             table.remove (t, i)
             return true
          end
       end
-      return false              -- no such event
+      return false              -- no such port
    end
 end

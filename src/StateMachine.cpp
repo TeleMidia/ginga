@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
-#include "Event.h"
+#include "StateMachine.h"
 #include "LuaAPI.h"
 
 #include "Document.h"
@@ -26,49 +26,50 @@ GINGA_NAMESPACE_BEGIN
 
 // Public.
 
-Event::Event (Object *object, Event::Type type, const string &id)
+StateMachine::StateMachine (Object *object, StateMachine::Type type,
+                            const string &id)
 {
   g_return_if_fail (object != NULL);
 
   _L = object->getDocument ()->getLuaState ();
-  LuaAPI::Event_attachWrapper (_L, this, object, type, id);
+  LuaAPI::StateMachine_attachWrapper (_L, this, object, type, id);
 }
 
-Event::~Event ()
+StateMachine::~StateMachine ()
 {
-  LuaAPI::Event_detachWrapper (_L, this);
+  LuaAPI::StateMachine_detachWrapper (_L, this);
 }
 
 Object *
-Event::getObject ()
+StateMachine::getObject ()
 {
   Object *obj;
 
-  LuaAPI::Event_call (_L, this, "getObject", 0, 1);
+  LuaAPI::StateMachine_call (_L, this, "getObject", 0, 1);
   obj = LuaAPI::Object_check (_L, -1);
   lua_pop (_L, 1);
 
   return obj;
 }
 
-Event::Type
-Event::getType ()
+StateMachine::Type
+StateMachine::getType ()
 {
-  Event::Type type;
+  StateMachine::Type type;
 
-  LuaAPI::Event_call (_L, this, "getType", 0, 1);
-  type = LuaAPI::Event_Type_check (_L, -1);
+  LuaAPI::StateMachine_call (_L, this, "getType", 0, 1);
+  type = LuaAPI::StateMachine_Type_check (_L, -1);
   lua_pop (_L, 1);
 
   return type;
 }
 
 string
-Event::getId ()
+StateMachine::getId ()
 {
   const char *id;
 
-  LuaAPI::Event_call (_L, this, "getId", 0, 1);
+  LuaAPI::StateMachine_call (_L, this, "getId", 0, 1);
   id = luaL_checkstring (_L, -1);
   lua_pop (_L, 1);
 
@@ -76,42 +77,42 @@ Event::getId ()
 }
 
 string
-Event::getQualifiedId ()
+StateMachine::getQualifiedId ()
 {
   const char *qualId;
 
-  LuaAPI::Event_call (_L, this, "getQualifiedId", 0, 1);
+  LuaAPI::StateMachine_call (_L, this, "getQualifiedId", 0, 1);
   qualId = luaL_checkstring (_L, -1);
   lua_pop (_L, 1);
 
   return string (qualId);
 }
 
-Event::State
-Event::getState ()
+StateMachine::State
+StateMachine::getState ()
 {
-  Event::State state;
+  StateMachine::State state;
 
-  LuaAPI::Event_call (_L, this, "getState", 0, 1);
-  state = LuaAPI::Event_State_check (_L, -1);
+  LuaAPI::StateMachine_call (_L, this, "getState", 0, 1);
+  state = LuaAPI::StateMachine_State_check (_L, -1);
   lua_pop (_L, 1);
 
   return state;
 }
 
 void
-Event::setState (Event::State state)
+StateMachine::setState (StateMachine::State state)
 {
-  LuaAPI::Event_State_push (_L, state);
-  LuaAPI::Event_call (_L, this, "setState", 1, 0);
+  LuaAPI::StateMachine_State_push (_L, state);
+  LuaAPI::StateMachine_call (_L, this, "setState", 1, 0);
 }
 
 Time
-Event::getBeginTime ()
+StateMachine::getBeginTime ()
 {
   Time time = -1;
 
-  LuaAPI::Event_call (_L, this, "getBeginTime", 0, 1);
+  LuaAPI::StateMachine_call (_L, this, "getBeginTime", 0, 1);
   if (!lua_isnil (_L, -1))
     {
       time = luaL_checkinteger (_L, -1);
@@ -122,7 +123,7 @@ Event::getBeginTime ()
 }
 
 void
-Event::setBeginTime (Time time)
+StateMachine::setBeginTime (Time time)
 {
   if (time >= 0)
     {
@@ -133,15 +134,15 @@ Event::setBeginTime (Time time)
       lua_pushnil (_L);
     }
   lua_pushinteger (_L, (lua_Integer) time);
-  LuaAPI::Event_call (_L, this, "setBeginTime", 1, 0);
+  LuaAPI::StateMachine_call (_L, this, "setBeginTime", 1, 0);
 }
 
 Time
-Event::getEndTime ()
+StateMachine::getEndTime ()
 {
   Time time = -1;
 
-  LuaAPI::Event_call (_L, this, "getEndTime", 0, 1);
+  LuaAPI::StateMachine_call (_L, this, "getEndTime", 0, 1);
   if (!lua_isnil (_L, -1))
     {
       time = luaL_checkinteger (_L, -1);
@@ -152,7 +153,7 @@ Event::getEndTime ()
 }
 
 void
-Event::setEndTime (Time time)
+StateMachine::setEndTime (Time time)
 {
   if (time >= 0)
     {
@@ -162,15 +163,15 @@ Event::setEndTime (Time time)
     {
       lua_pushnil (_L);
     }
-  LuaAPI::Event_call (_L, this, "setEndTime", 1, 0);
+  LuaAPI::StateMachine_call (_L, this, "setEndTime", 1, 0);
 }
 
 string
-Event::getLabel ()
+StateMachine::getLabel ()
 {
   const char *label = NULL;
 
-  LuaAPI::Event_call (_L, this, "getLabel", 0, 1);
+  LuaAPI::StateMachine_call (_L, this, "getLabel", 0, 1);
   if (!lua_isnil (_L, -1))
     {
       label = luaL_checkstring (_L, -1);
@@ -181,7 +182,7 @@ Event::getLabel ()
 }
 
 void
-Event::setLabel (const string &label)
+StateMachine::setLabel (const string &label)
 {
   if (label == "")
     {
@@ -192,16 +193,16 @@ Event::setLabel (const string &label)
       lua_pushstring (_L, label.c_str ());
     }
 
-  LuaAPI::Event_call (_L, this, "setLabel", 1, 0);
+  LuaAPI::StateMachine_call (_L, this, "setLabel", 1, 0);
 }
 
 bool
-Event::transition (Event::Transition trans,
+StateMachine::transition (StateMachine::Transition trans,
                    const map<string,string> &params)
 {
   bool status;
 
-  LuaAPI::Event_Transition_push (_L, trans);
+  LuaAPI::StateMachine_Transition_push (_L, trans);
   lua_newtable (_L);
   for (auto &it: params)
     {
@@ -209,20 +210,11 @@ Event::transition (Event::Transition trans,
       lua_pushstring (_L, it.second.c_str ());
       lua_rawset (_L, -3);
     }
-  LuaAPI::Event_call (_L, this, "transition", 2, 1);
+  LuaAPI::StateMachine_call (_L, this, "transition", 2, 1);
   status = lua_toboolean (_L, 1);
   lua_pop (_L, 1);
 
   return status;
-}
-
-// TODO --------------------------------------------------------------------
-
-bool
-Event::isLambda ()
-{
-  return this->getType () == Event::PRESENTATION
-    && this->getId () == "@lambda";
 }
 
 GINGA_NAMESPACE_END
