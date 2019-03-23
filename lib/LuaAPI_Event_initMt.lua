@@ -207,7 +207,9 @@ do
          error ('bad transition: '..tostring (trans))
       end
       self.state = next
-      self.object.document:_awakeBehaviors {event=self, transition=trans}
+      self.object.document:_awakeBehaviors {target=self.object,
+                                            event=self,
+                                            transition=trans}
       return true
    end
 end

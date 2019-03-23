@@ -41,14 +41,17 @@ PRAGMA_DIAG_IGNORE (-Wunused-macros)
 
 // Options.
 
+// Name or RGB of the canvas background color. -b, --background
+static gchar *background_color = NULL;
+
 // True means enable debugging mode.           -d, --debug
 static gboolean debugging_on = FALSE;
 
 // True means enable fullscreen mode.          -f, --fullscreen, <F11>
 static gboolean fullscreen_on = FALSE;
 
-// Name or RGB of the canvas background color. -b, --background
-static gchar *background_color = NULL;
+// True means do not show GTK window.          -n, --hide
+static gboolean hide_window = FALSE;
 
 // Main window dimensions.                     -s, --size
 static gint initial_width  = 800; // pixels
@@ -102,6 +105,8 @@ static GOptionEntry options[] =
   "Enable debugging", NULL},
  {"fullscreen", 'f', 0, G_OPTION_ARG_NONE, &fullscreen_on,
   "Enable fullscreen mode", NULL},
+ {"hide", 'n', 0, G_OPTION_ARG_NONE, &hide_window,
+  "Hide window", NULL},
  {"size", 's', 0, G_OPTION_ARG_CALLBACK, pointerof (opt_parse_size),
   "Set initial window size", "WIDTHxHEIGHT"},
  {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
@@ -181,7 +186,7 @@ static GtkWidget *app_info_bar_label = NULL;
 static GtkWidget *app_canvas = NULL;
 
 // Text entry: captures Lua code for on-the-fly evaluation.
-static GtkWidget *app_cmd_buf = NULL;
+static GtkWidget *app_console = NULL;
 
 // The application CSS provider.
 static GtkCssProvider *app_css = NULL;
@@ -266,9 +271,9 @@ on_canvas_key_event (unused (GtkWidget *canvas),
           gtk_window_unfullscreen (GTK_WINDOW (app_win));
         goto done;
       }
-    case GDK_KEY_colon:         // <:> focuses command-buffer
+    case GDK_KEY_colon:         // <:> focuses console
       {
-        gtk_widget_grab_focus (GTK_WIDGET (app_cmd_buf));
+        gtk_widget_grab_focus (GTK_WIDGET (app_console));
         goto done;
       }
     case GDK_KEY_asterisk:
@@ -327,7 +332,7 @@ on_canvas_key_event (unused (GtkWidget *canvas),
     g_free (deconst (gchar *, key));
 
  done:
-  return FALSE;                 // propagate
+  return TRUE;                 // propagate
 }
 
 static void
@@ -343,17 +348,17 @@ on_canvas_size_allocate (unused (GtkWidget *canvas),
 }
 
 static void
-on_cmd_buf_activate (GtkWidget *cmd_buf,
+on_console_activate (GtkWidget *console,
                      Document *doc)
 {
   lua_State *L;
   const gchar *str;
   const gchar *errmsg;
 
-  g_return_if_fail (cmd_buf != NULL);
+  g_return_if_fail (console != NULL);
   g_return_if_fail (doc != NULL);
 
-  str = gtk_entry_get_text (GTK_ENTRY (cmd_buf));
+  str = gtk_entry_get_text (GTK_ENTRY (console));
   g_assert_nonnull (str);
 
   if (unlikely (doc == NULL))
@@ -387,7 +392,7 @@ on_cmd_buf_activate (GtkWidget *cmd_buf,
 }
 
 static gboolean
-on_cmd_buf_key_press_event (unused (GtkWidget *cmd_buf),
+on_console_key_press_event (unused (GtkWidget *console),
                             GdkEventKey *evt)
 {
   g_return_val_if_fail (evt != NULL, FALSE);
@@ -517,18 +522,18 @@ app_init (Document *doc)
   g_signal_connect (app_canvas, "size-allocate",
                     G_CALLBACK (on_canvas_size_allocate), doc);
 
-  // Command buffer.
-  app_cmd_buf = gtk_entry_new ();
-  gtk_box_pack_end (GTK_BOX (app_vbox), app_cmd_buf, FALSE, TRUE, 0);
+  // Lua console.
+  app_console = gtk_entry_new ();
+  gtk_box_pack_end (GTK_BOX (app_vbox), app_console, FALSE, TRUE, 0);
 
-  gtk_widget_set_name (app_cmd_buf, "cmdbuf");
-  gtk_entry_set_placeholder_text (GTK_ENTRY (app_cmd_buf),
-                                  "Type Lua code here");
+  gtk_widget_set_name (app_console, "cmdbuf");
+  gtk_entry_set_placeholder_text (GTK_ENTRY (app_console),
+                                  "Type ':' to focus the Lua console");
 
-  g_signal_connect (app_cmd_buf, "activate",
-                    G_CALLBACK (on_cmd_buf_activate), doc);
-  g_signal_connect (app_cmd_buf, "key-press-event",
-                    G_CALLBACK (on_cmd_buf_key_press_event), doc);
+  g_signal_connect (app_console, "activate",
+                    G_CALLBACK (on_console_activate), doc);
+  g_signal_connect (app_console, "key-press-event",
+                    G_CALLBACK (on_console_key_press_event), doc);
 
   // CSS.
   app_css = gtk_css_provider_new ();
@@ -609,7 +614,8 @@ Ginga home page: " PACKAGE_URL "\n");
   app_init (doc);
 
   gtk_header_bar_set_title (GTK_HEADER_BAR (app_header_bar), argv[1]);
-  gtk_widget_show_all (app_win);
+  if (!hide_window)
+    gtk_widget_show_all (app_win);
   gtk_main ();
 
   // Done.

@@ -235,7 +235,7 @@ public:
   static bool pushLink (ParserState *, ParserElt *);
   static bool pushLinkParam (ParserState *, ParserElt *);
   static bool pushBind (ParserState *, ParserElt *);
-  static bool pushScript (ParserState *, ParserElt *);
+  static bool pushBehavior (ParserState *, ParserElt *);
 
 private:
   Document *_doc;               ///< The resulting #Document.
@@ -846,8 +846,8 @@ static map<string, ParserSyntaxElt> parser_syntax_table =
     {"value", ATTR_REQUIRED}}},
  },
  {
-  "script",
-  {ParserState::pushScript,
+  "behavior",
+  {ParserState::pushBehavior,
    NULL,
    ELT_CACHE,
    {"head", "body", "context", "switch", "media"},
@@ -2285,7 +2285,7 @@ ParserState::process (xmlDoc *xml)
 {
   lua_State *L;
   xmlNode *root;
-  list<ParserElt *> script_list;
+  list<ParserElt *> behavior_list;
 
   g_assert_nonnull (xml);
   _xml = xml;
@@ -2305,20 +2305,20 @@ ParserState::process (xmlDoc *xml)
       return NULL;
     }
 
-  if (this->eltCacheIndexByTag ({"script"}, &script_list) > 0)
+  if (this->eltCacheIndexByTag ({"behavior"}, &behavior_list) > 0)
     {
       lua_State *L;
 
       L = _doc->getLuaState ();
       g_assert_nonnull (L);
 
-      for (auto script_elt: script_list)
+      for (auto behavior_elt: behavior_list)
         {
           xmlNode *node;
           xmlChar *text;
           Object *obj;
 
-          node = script_elt->getNode ();
+          node = behavior_elt->getNode ();
           g_assert_nonnull (node);
 
           text = xmlNodeGetContent (node);
@@ -2330,7 +2330,7 @@ ParserState::process (xmlDoc *xml)
                                         node->name,
                                         node->line).c_str ());
 
-          if (script_elt->getData ("object", (void **) &obj))
+          if (behavior_elt->getData ("object", (void **) &obj))
             {
               LuaAPI::Object_call (L, obj, "spawn", 2, 0);
             }
@@ -4201,13 +4201,13 @@ ParserState::pushBind (ParserState *st, ParserElt *elt)
 }
 
 /**
- * @brief Starts the processing of \<script\> element.
+ * @brief Starts the processing of \<behavior\> element.
  * @param st #ParserState.
  * @param elt Element wrapper.
  * @return \c true if successful, or \c false otherwise.
  */
 bool
-ParserState::pushScript (ParserState *st, ParserElt *elt)
+ParserState::pushBehavior (ParserState *st, ParserElt *elt)
 {
   xmlNode *parent_node;
 

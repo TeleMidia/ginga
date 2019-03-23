@@ -7,7 +7,7 @@
       <area id='a2' begin='1s'/>
       <area id='a3' end='1s'/>
       <area id='a4' begin='1s' end='2s'/>
-      <script>
+      <behavior>
       <![CDATA[
         local m = ...
         local a1 = m.presentation.a1
@@ -21,7 +21,7 @@
         assert (a3.state == 'sleeping')
         assert (a4.state == 'sleeping')
 
-        await (0) -- bootstrap tick
+        await (0) -- await for the first tick
         assert (m.time == 0)
         assert (m.lambda.state == 'occurring')
         assert (a1.state == 'occurring')
@@ -52,7 +52,7 @@
         assert (a4.state == 'sleeping')
         assert (m.time == 2000000)
       ]]>
-      </script>
+      </behavior>
     </media>
   </body>
 </ncl>

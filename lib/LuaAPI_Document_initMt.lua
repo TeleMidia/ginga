@@ -69,37 +69,23 @@ end
 
 -- Tests whether two conditions match.
 local function matchConditions (triggered, awaited)
-   if triggered.event and awaited.event then
-      if triggered.event ~= awaited.event then
+   assert (type (triggered) == 'table')
+   assert (type (awaited) == 'table')
+   if awaited.time then         -- time
+      if not triggered.time then
          return false
       end
-      if not triggered.transition or not awaited.transition then
+      if triggered.time < awaited.time then
          return false
       end
-      if triggered.transition ~= awaited.transition then
-         return false
-      end
-      if not triggered.params and not awaited.params then
-         return true
-      end
-      error ('not implemented') -- compare parameters
-   elseif triggered.object and awaited.object then
-      if triggered.object ~= awaited.object then
-         return false
-      end
-      if not triggered.time and not awaited.time then
-         return true
-      end
-      return triggered.time >= awaited.time
-   elseif triggered.key and awaited.key then
-      if triggered.key ~= awaited.key then
-         return false
-      end
-      -- TODO: press/release
-      return true
-   else
-      return false
    end
+   local t = triggered          -- generic match
+   for k,v in pairs (awaited) do
+      if not t[k] or t[k] ~= v then
+         return false
+      end
+   end
+   return true
 end
 
 -- Traverses "par" tree triggering the conditions satisfied by cond.
@@ -385,7 +371,7 @@ do
       assert (type (co) == 'thread')
       local status, cond = coroutine.resume (co, ...)
       if not status then
-         self:_warning ('behavior error: '..tostring (cond))
+         self:_error ('behavior error: '..tostring (cond))
          cond = nil
       end
       return co, cond
@@ -420,7 +406,7 @@ do
       if type (t) == 'string' then
          local _await = function (t)
             if type (t) == 'number' then
-               return mt._await {object=(obj or self), time=t*1000000}
+               return mt._await {target=(obj or self), time=t*1000000}
             else
                return mt._await (t)
             end
@@ -429,7 +415,7 @@ do
          setmetatable (env, {__index=_G})
          local f, errmsg = load (t, debug, nil, env)
          if not f then
-            self:_warning ('behavior error: '..errmsg)
+            self:_error ('behavior error: '..errmsg)
             return
          end
          t = f
@@ -448,23 +434,11 @@ do
    -- The "await" operator to be used inside behaviors.
    mt._await = function (t)
       assert (type (t) == 'table')
-      if t.event then           -- event transition
-         assert (t.transition)
-      elseif t.object then      -- (object) time
-         if t.time then
-            if not t.absolute then
-               t.time = t.time + (t.object.time or 0)
-            end
-            t.time = t.time
-         else
-            t.time = 0
+      if t.time then
+         if not t.absolute then
+            t.time = t.time + (t.target.time or 0)
          end
-      elseif t.key then         -- key press/release
-         assert (t.press or t.release)
-      elseif t.forever then     -- forever
-         error ('not implemented')
-      else
-         error ('bad argument to await: '..tostring (t))
+         t.time = t.time
       end
       local res
       repeat
@@ -607,13 +581,13 @@ do
    -- Document::advanceTime().
    local quantum = 1000         -- us
    mt._advanceTimeHelper = function (self, time)
-      self:_awakeBehaviors {object=self, time=time}
+      self:_awakeBehaviors {target=self, time=time}
       for _,obj in ipairs (self:getObjects ()) do
-         self:_awakeBehaviors {object=obj, time=obj.time}
+         self:_awakeBehaviors {target=obj, time=obj.time}
       end
    end
    mt.advanceTime = function (self, dt)
-      if dt == 0 then                -- bootstrap (empty) tick
+      if dt == 0 then           -- bootstrap (empty) tick
          self:_advanceTimeHelper (0)
          return
       end
@@ -639,11 +613,11 @@ do
       if not key then
          return                 -- nothing to do
       end
-      local t = {object=self, key=key}
+      local t = {target=self, key=key}
       if press then
-         t.press, t.release = true, false
+         t.type = 'press'
       else
-         t.press, t.release = false, true
+         t.type = 'release'
       end
       self:_awakeBehaviors (t)
    end
