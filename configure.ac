@@ -28,8 +28,8 @@ AC_INIT([Ginga],
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([build-aux])
 AC_USE_SYSTEM_EXTENSIONS
-AC_CONFIG_SRCDIR([lib/ginga.h])
-AC_CONFIG_HEADERS([lib/config.h])
+AC_CONFIG_SRCDIR([src/ginga.cpp])
+AC_CONFIG_HEADERS([src/config.h])
 
 AM_INIT_AUTOMAKE([1.14 -Wall -Werror gnu subdir-objects])
 AM_SILENT_RULES([yes])
@@ -58,6 +58,7 @@ m4_define([gstreamer_required_version],  [1.2.0])
 m4_define([gtk_required_version],        [3.4.2])
 m4_define([libxml_required_version],     [2.9])
 m4_define([lua_required_version],        [5.2])
+m4_define([nclua_required_version],      [1.0])
 m4_define([pango_required_version],      [1.30.0])
 AC_SUBST([CAIRO_REQUIRED_VERSION],       cairo_required_version)
 AC_SUBST([GLIB_REQUIRED_VERSION],        glib_required_version)
@@ -65,21 +66,8 @@ AC_SUBST([GSTREAMER_REQUIRED_VERSION],   gstreamer_required_version)
 AC_SUBST([GTK_REQUIRED_VERSION],         gtk_required_version)
 AC_SUBST([LIBXML_REQUIRED_VERSION],      libxml_required_version)
 AC_SUBST([LUA_REQUIRED_VERSION],         lua_required_version)
-AC_SUBST([PANGO_REQUIRED_VERSION],       pango_required_version)
-
-# Optional dependencies version.
-m4_define([cef_required_version],        [3.0])
-m4_define([librsvg_required_version],    [2.40.0])
-m4_define([nclua_required_version],      [1.0])
-m4_define([opengl_required_version],     [17.0])
-m4_define([sdl2_required_version],       [2.0])
-m4_define([soup_required_version],       [2.42])
-AC_SUBST([CEF_REQUIRED_VERSION],         cef_required_version)
-AC_SUBST([LIBRSVG_REQUIRED_VERSION],     librsvg_required_version)
 AC_SUBST([NCLUA_REQUIRED_VERSION],       nclua_required_version)
-AC_SUBST([OPENGL_REQUIRED_VERSION],      opengl_required_version)
-AC_SUBST([SDL2_REQUIRED_VERSION],        sdl2_required_version)
-AC_SUBST([SOUP_REQUIRED_VERSION],        soup_required_version)
+AC_SUBST([PANGO_REQUIRED_VERSION],       pango_required_version)
 
 # Compiler checks.
 AC_PROG_CXX
@@ -215,92 +203,9 @@ AU_CHECK_PKG([PANGO],
   pangocairo >= pango_required_version])
 
 # Optional dependencies.
-
-AU_CHECK_OPTIONAL_PKG([soup], [build with gingagui GTK support], [],
- [SOUP], libsoup-2.4 >= soup_required_version,
- [AC_LANG_PROGRAM([[
-#include <libsoup/soup.h>
-#if !SOUP_CHECK_VERSION  \
-    (SOUP_REQUIRED_MAJOR,\
-     SOUP_REQUIRED_MINOR,\
-     SOUP_REQUIRED_MICRO)
-# error "soup is too old"
-#endif
- ]])],
- [AC_LANG_PROGRAM([[]], [[soup_session_new_with_options (0, 0, 0);]])])
-
-AC_ARG_WITH([cef],
- [AS_HELP_STRING([--with-cef=DIR],
-   [build with Chromium embedded at DIR])])
-AS_IF([test -n "$with_cef"],
- [cef_dir=$with_cef
-  AS_IF([test -d "$with_cef"], [],
-   [AC_MSG_FAILURE([--with-cef was given a bad directory: $with_cef])])
-  with_cef=yes
-  with_cef_result="yes	($cef_dir)"
-  CEF_CFLAGS="-I$cef_dir -I$cef_dir/include"
-  CEF_LIBS="-L$cef_dir/Release -lcef"
-  CEF_LIBS="$CEF_LIBS $cef_dir/libcef_dll_wrapper/libcef_dll_wrapper.a"
-  AU_LANG_CPLUSPLUS([$CEF_CFLAGS], [$CEF_CFLAGS], [$CEF_LIBS],
-   [AC_CHECK_HEADER([cef_app.h], [],
-     [AC_MSG_FAILURE([cef_app.h is missing])])
-    AC_LINK_IFELSE(
-     [AC_LANG_PROGRAM([[#include <cef_app.h>]],
-       [[CefMainArgs args (0, NULL);]])],
-     [],
-     [AC_MSG_FAILURE([cannot link to libcef])])])
-  AC_SUBST([CEF_CFLAGS])
-  AC_SUBST([CEF_LIBS])
-  AC_DEFINE([WITH_CEF], [1], [Define to 1 if you have libcef.])],
- [cef_dir=""
-  with_cef=no
-  with_cef_result='no	(requires: cef)'
-  AC_DEFINE([WITH_CEF], [0], [Define to 1 if you have libcef.])])
-AC_SUBST([cef_dir])
-AM_CONDITIONAL([WITH_CEF], [test "$with_cef" = yes])
-
-AU_CHECK_OPTIONAL_PKG([librsvg], [build with LibRsvg support], [],
- [LIBRSVG],
- [librsvg-2.0 >= librsvg_required_version])
-
 AU_CHECK_OPTIONAL_PKG([nclua], [build with NCLua support], [],
  [NCLUA],
  [nclua >= nclua_required_version])
-
-AU_CHECK_OPTIONAL_PKG([opengl], [build with OpenGL support], [],
- [OPENGL],
- [gl >= opengl_required_version
-  sdl2 >= sdl2_required_version])
-
-# Aliases for compiler flags.
-AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $WARN_CFLAGS $WERROR_CFLAGS "])
-AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $CAIRO_CFLAGS"])
-AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $CEF_CFLAGS"])
-AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $GLIB_CFLAGS"])
-AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $GSTREAMER_CFLAGS"])
-AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $GTK_CFLAGS"])
-AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $LIBRSVG_CFLAGS"])
-AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $LIBXML_CFLAGS"])
-AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $LUA_CFLAGS"])
-AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $NCLUA_CFLAGS"])
-AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $OPENGL_CFLAGS"])
-AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $PANGO_CFLAGS"])
-AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $SOUP_CFLAGS"])
-AC_SUBST([GINGA_ALL_CXXFLAGS])
-
-AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $CAIRO_LIBS"])
-AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $CEF_LIBS"])
-AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $GLIB_LIBS"])
-AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $GSTREAMER_LIBS"])
-AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $GTK_LIBS"])
-AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $LIBRSVG_LIBS"])
-AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $LIBXML_LIBS"])
-AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $LUA_LIBS"])
-AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $NCLUA_LIBS"])
-AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $OPENGL_LIBS"])
-AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $PANGO_LIBS"])
-AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $SOUP_LIBS"])
-AC_SUBST([GINGA_ALL_LDFLAGS])
 
 # Directories.
 gingadatadir="$datadir/$PACKAGE"
@@ -313,9 +218,8 @@ AC_SUBST([gingabindir])
 # Epilogue.
 AC_CONFIG_FILES([
 Makefile
-lib/Makefile
-lib/ginga.pc
 src/Makefile
+src/ginga.pc
 tests/Makefile
 ])
 
@@ -329,13 +233,4 @@ AC_MSG_NOTICE([summary of main build options:
   ldflags:        ${LDFLAGS}
   warning flags:  ${WERROR_CFLAGS} ${WARN_CFLAGS}
   valgrind:       ${VALGRIND}
-
-  build html player:     ${with_cef_result}
-  build nclua player:    ${with_nclua_result}
-  build svg player:      ${with_librsvg_result}
-  build ncl-ltab parser: ${with_lua_result}
-
-  Optional executables:
-  ginga-gui (gtk):    ${with_soup_result}
-  ginga-gl:           ${with_opengl_result}
 ])
