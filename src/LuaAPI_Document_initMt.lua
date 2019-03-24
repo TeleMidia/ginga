@@ -13,6 +13,7 @@ local rawget       = rawget
 local rawset       = rawset
 local setmetatable = setmetatable
 local table        = table
+local tonumber     = tonumber
 local tostring     = tostring
 local type         = type
 _ENV = nil
@@ -76,9 +77,13 @@ local function matchConditions (triggered, awaited)
       if not triggered.time then
          return false
       end
+      if triggered.target ~= awaited.target then
+         return false
+      end
       if triggered.time < awaited.time then
          return false
       end
+      return true
    end
    local t = triggered          -- generic match
    for k,v in pairs (awaited) do
@@ -435,7 +440,6 @@ do
          if not t.absolute then
             t.time = t.time + (t.target.time or 0)
          end
-         t.time = t.time
       end
       local res
       repeat
@@ -621,5 +625,49 @@ do
 
    mt.spawn = function (self, t, debug)
       self:_spawnBehavior (t, nil, debug)
+   end
+
+   -- Utility functions ----------------------------------------------------
+   mt.util = {isinteger=mt._isinteger}
+
+   -- Parses a dimension value (e.g, '100%', '10px').  Returns a number if
+   -- the value is relative.  Otherwise, if value is absolute, returns an
+   -- integer.
+   mt.util.parseDimension = function (str)
+      local n = tonumber (str)
+      if n then
+         return n
+      end
+      if str:sub (-2) == 'px' then
+         return math.tointeger (math.floor (tonumber (str:sub (1,-3))))
+      end
+      if str:sub (-1) == '%' then
+         n = tonumber (str:sub (1,-2))
+         if n then
+            return n / 100.
+         end
+      end
+      return nil
+   end
+
+   -- Parses a position value.
+   mt.util.parsePosition = mt.util.parseDimension
+
+   -- Parses a time value (e.g., 10ms, 10s).
+   mt.util.parseTime = function (str)
+      local n = tonumber (str)
+      if n then
+         return n
+      end
+      if str:sub (-2) == 'ms' then
+         return math.modf (tonumber (str:sub (1,-3)))
+      end
+      if str:sub (-1) == 's' then
+         local s = math.modf (tonumber (str:sub (1,-2)))
+         if s then
+            return s * 1000     -- ms
+         end
+      end
+      return nil
    end
 end

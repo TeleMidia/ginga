@@ -355,7 +355,8 @@ Document::evalActionInContext (Action act, Context *ctx)
                   s = next_act.params["delay"];
                 }
 
-              delay = ginga::parse_time (s);
+              //delay = ginga::parse_time (s);
+              delay = 0;
 
               if (delay == 0 || delay == -1)
                 {

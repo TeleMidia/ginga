@@ -184,50 +184,6 @@ try_parse_table (const string &s, map<string, string> *result)
   return true;
 }
 
-/**
- * Parses time string ("Ns" or "NN:NN:NN").
- * @param s Time string.
- * @param result Variable to store the resulting time.
- * @return True if successful, or false otherwise.
- */
-bool
-try_parse_time (const string &s, lua_Integer *result)
-{
-  gchar *dup;
-  gchar *end;
-  double secs;
-
-  dup = g_strdup (s.c_str ());
-  g_assert_nonnull (dup);
-  g_strchomp (dup);
-
-  secs = g_strtod (dup, &end);
-  if (*end == '\0' || g_str_equal (end, "s"))
-    goto success;
-
-  if (*end != ':')
-    goto failure;
-
-  end++;
-  secs = 3600 * secs + 60 * g_strtod (end, &end);
-  if (*end != ':')
-    goto failure;
-
-  end++;
-  secs += g_strtod (end, &end);
-  if (*end != '\0')
-    goto failure;
-
-success:
-  g_free (dup);
-  tryset (result, (lua_Integer) (secs * G_USEC_PER_SEC));
-  return true;
-
-failure:
-  g_free (dup);
-  return false;
-}
-
 // Asserted wrappers for parse_*.
 #define _GINGA_PARSE_DEFN(Type, Name, Str)                                 \
   Type parse_##Name (const string &s)                                      \
@@ -240,7 +196,6 @@ failure:
 
 _GINGA_PARSE_DEFN (bool, bool, "boolean")
 _GINGA_PARSE_DEFN (Color, color, "color")
-_GINGA_PARSE_DEFN (lua_Integer, time, "time")
 
 list<string>
 parse_list (const string &s, char sep, size_t min, size_t max)

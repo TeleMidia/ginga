@@ -239,6 +239,7 @@ public:
 
 private:
   Document *_doc;               ///< The resulting #Document.
+  lua_State *_L;                ///< The Lua state associated with document.
   xmlDoc *_xml;                 ///< The DOM tree being processed.
   int _genid;                   ///< Last generated id.
   UserData _udata;              ///< Attached user data.
@@ -2281,17 +2282,16 @@ ParserState::getError (string *message)
 Document *
 ParserState::process (xmlDoc *xml)
 {
-  lua_State *L;
   xmlNode *root;
   list<ParserElt *> behavior_list;
 
   g_assert_nonnull (xml);
   _xml = xml;
 
-  L = luaL_newstate ();
-  g_assert_nonnull (L);
-  luaL_openlibs (L);
-  _doc = new Document (L);
+  _L = luaL_newstate ();
+  g_assert_nonnull (_L);
+  luaL_openlibs (_L);
+  _doc = new Document (_L);
 
   root = xmlDocGetRootElement (xml);
   g_assert_nonnull (root);
@@ -2305,11 +2305,6 @@ ParserState::process (xmlDoc *xml)
 
   if (this->eltCacheIndexByTag ({"behavior"}, &behavior_list) > 0)
     {
-      lua_State *L;
-
-      L = _doc->getLuaState ();
-      g_assert_nonnull (L);
-
       for (auto behavior_elt: behavior_list)
         {
           xmlNode *node;
@@ -2323,18 +2318,18 @@ ParserState::process (xmlDoc *xml)
           if (text == NULL)
             continue;           // nothing to do
 
-          lua_pushstring (L, (const char *) text);
-          lua_pushstring (L, xstrbuild ("<%s> at line %d",
-                                        node->name,
-                                        node->line).c_str ());
+          lua_pushstring (_L, (const char *) text);
+          lua_pushstring (_L, xstrbuild ("<%s> at line %d",
+                                         node->name,
+                                         node->line).c_str ());
 
           if (behavior_elt->getData ("object", (void **) &obj))
             {
-              LuaAPI::Object_call (L, obj, "spawn", 2, 0);
+              LuaAPI::Object_call (_L, obj, "spawn", 2, 0);
             }
           else
             {
-              LuaAPI::Document_call (L, _doc, "spawn", 2, 0);
+              LuaAPI::Document_call (_L, _doc, "spawn", 2, 0);
             }
 
           xmlFree (text);
@@ -4026,7 +4021,8 @@ ParserState::pushArea (ParserState *st, ParserElt *elt)
 
   StateMachine *sm;
   string label;
-  lua_Integer begin, end;
+  string begin;
+  string end;
 
   media = cast (Media *, st->objStackPeek ());
   g_assert_nonnull (media);
@@ -4039,38 +4035,37 @@ ParserState::pushArea (ParserState *st, ParserElt *elt)
     {
       if (unlikely (elt->getAttribute ("begin", &str)))
         {
-          return st->errEltMutuallyExclAttributes (elt->getNode (), "label",
-                                                   "begin");
+          return st->errEltMutuallyExclAttributes
+            (elt->getNode (), "label", "begin");
         }
       if (unlikely (elt->getAttribute ("end", &str)))
         {
-          return st->errEltMutuallyExclAttributes (elt->getNode (), "label",
-                                                   "end");
+          return st->errEltMutuallyExclAttributes
+            (elt->getNode (), "label", "end");
         }
-      sm->setLabel (label);
+      lua_pushstring (st->_L, label.c_str ());
+      LuaAPI::StateMachine_call (st->_L, sm, "setLabel", 1, 0);
     }
   else
     {
-      begin = 0;
-      if (elt->getAttribute ("begin", &str))
-        {
-          if (unlikely (!ginga::try_parse_time (str, &begin)))
-            {
-              return st->errEltBadAttribute (elt->getNode (), "begin", str);
-            }
-        }
+      string begin;
+      string end;
 
-      end = -1;
-      if (elt->getAttribute ("end", &str))
+      if (elt->getAttribute ("begin", &begin) && begin != "")
         {
-          if (unlikely (!ginga::try_parse_time (str, &end)))
-            {
-              return st->errEltBadAttribute (elt->getNode (), "end", str);
-            }
+          lua_pushstring (st->_L, begin.c_str ());
         }
+      else
+        {
+          lua_pushinteger (st->_L, 0);
+        }
+      LuaAPI::StateMachine_call (st->_L, sm, "setBeginTime", 1, 0);
 
-      sm->setBeginTime (begin);
-      sm->setEndTime (end);
+      if (elt->getAttribute ("end", &end) && end != "")
+        {
+          lua_pushstring (st->_L, end.c_str ());
+          LuaAPI::StateMachine_call (st->_L, sm, "setEndTime", 1, 0);
+        }
     }
 
   return true;

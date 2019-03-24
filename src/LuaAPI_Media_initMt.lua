@@ -11,28 +11,6 @@ local tonumber  = tonumber
 local type      = type
 _ENV = nil
 
--- Parses a dimension value (e.g, '100%', '10px').  Returns a number if the
--- value is relative.  Otherwise, if value is absolute, returns an integer.
-local function parseDimension (str)
-   local n = tonumber (str)
-   if n then
-      return n
-   end
-   if str:sub (-2) == 'px' then
-      return math.tointeger (math.floor (tonumber (str:sub (1,-3))))
-   end
-   if str:sub (-1) == '%' then
-      n = tonumber (str:sub (1,-2))
-      if n then
-         return n / 100.
-      end
-   end
-   return nil
-end
-
--- Parses a position value.
-local parsePosition = parseDimension
-
 -- Media metatable
 do
    local mt = ...
@@ -102,13 +80,13 @@ do
       --
       -- Get width in pixels.
       local width = self:getProperty ('width') or 1.0
-      if not self.document._isinteger (width) then
+      if not self.document.util.isinteger (width) then
          width = math.floor (swidth * width)
       end
       --
       -- Get height in pixels.
       local height = self:getProperty ('height') or 1.0
-      if not self.document._isinteger (height) then
+      if not self.document.util.isinteger (height) then
          height = math.floor (sheight * height)
       end
       --
@@ -119,12 +97,12 @@ do
          if not x then
             x = 0               -- default value
          else
-            if not self.document._isinteger (x) then
+            if not self.document.util.isinteger (x) then
                x = math.floor (swidth * x)
             end
             x = swidth - width - x
          end
-      elseif not self.document._isinteger (x) then
+      elseif not self.document.util.isinteger (x) then
          x = math.floor (swidth * x)
       end
       --
@@ -135,12 +113,12 @@ do
          if not y then
             y = 0               -- default value
          else
-            if not self.document._isinteger (y) then
+            if not self.document.util.isinteger (y) then
                y = math.floor (sheight * y)
             end
             y = sheight - height - y
          end
-      elseif not self.document._isinteger (y) then
+      elseif not self.document.util.isinteger (y) then
          y = math.floor (sheight * y)
       end
       self.player:setRect (x, y, width, height)
@@ -159,7 +137,7 @@ do
 
    local _setProperty_width_height = function (self, name, value)
       if type (value) == 'string' then
-         value = parseDimension (value)
+         value = self.document.util.parseDimension (value)
       end
       if type (value) ~= 'number' then
          value = nil            -- bad value, revert to default
@@ -178,7 +156,7 @@ do
 
    local _setProperty_tblr = function (self, name, value)
       if type (value) == 'string' then
-         value = parsePosition (value)
+         value = self.document.util.parsePosition (value)
       end
       if type (value) ~= 'number' then
          value = nil            -- bad value, revert to default

@@ -3,6 +3,7 @@ local coroutine = coroutine
 local print     = print
 local rawget    = rawget
 local rawset    = rawset
+local type      = type
 _ENV = nil
 
 -- Returns qualified id from objId and smId.
@@ -79,7 +80,7 @@ do
                   await {target=self.object, time=self.beginTime,
                          absolute=true}
                end
-               self:transition ('start')
+               self:transition'start'
                if self.endTime and self.endTime > 0 then
                   parOr {
                      function ()
@@ -115,32 +116,26 @@ do
 
    -- Exported functions ---------------------------------------------------
 
-   -- StateMachine::getObject().
    mt.getObject = function (self)
       return assert (rawget (mt[self], '_object'))
    end
 
-   -- StateMachine::getType().
    mt.getType = function (self)
       return assert (rawget (mt[self], '_type'))
    end
 
-   -- StateMachine::getId().
    mt.getId = function (self)
       return assert (rawget (mt[self], '_id'))
    end
 
-   -- StateMachine::getQualifiedId().
    mt.getQualifiedId = function (self)
       return assert (rawget (mt[self], '_qualifiedId'))
    end
 
-   -- StateMachine::getState().
    mt.getState = function (self)
       return assert (rawget (mt[self], '_state'))
    end
 
-   -- StateMachine::setState().
    mt.setState = function (self, st)
       if st ~= 'occurring' and st ~= 'paused' and st ~= 'sleeping' then
          error ('bad state: '..tostring (st))
@@ -148,37 +143,36 @@ do
       rawset (mt[self], '_state', st)
    end
 
-   -- StateMachine::getBeginTime().
    mt.getBeginTime = function (self)
       return rawget (mt[self], '_beginTime')
    end
 
-   -- StateMachine::setBeginTime().
    mt.setBeginTime = function (self, time)
+      if type (time) == 'string' then
+         time = self.object.document.util.parseTime (time)
+      end
       rawset (mt[self], '_beginTime', time)
    end
 
-   -- StateMachine::getEndTime().
    mt.getEndTime = function (self)
       return rawget (mt[self], '_endTime')
    end
 
-   -- StateMachine::setEndTime().
    mt.setEndTime = function (self, time)
+      if type (time) == 'string' then
+         time = self.object.document.util.parseTime (time)
+      end
       rawset (mt[self], '_endTime', time)
    end
 
-   -- StateMachine::getLabel().
    mt.getLabel = function (self)
       return rawget (mt[self], '_label')
    end
 
-   -- StateMachine::setLabel().
    mt.setLabel = function (self, label)
       rawset (mt[self], '_label', label)
    end
 
-   -- StateMachine::transition().
    mt.transition = function (self, trans, params)
       local curr = self.state
       local next
