@@ -214,7 +214,7 @@ on_canvas_draw (unused (GtkWidget *canvas),
   g_return_val_if_fail (doc != NULL, FALSE);
 
   doc->draw (cr);
-  ms = doc->getTime () / 1000;
+  ms = doc->getTime ();
   str = g_strdup_printf
     ("%u:%02u:%02u.%03u",
      (guint) ((ms / (1000 * 60 * 60))),

@@ -96,16 +96,16 @@ public:
   void setState (StateMachine::State state);
 
   /// Gets the begin time of (presentation) state machine.
-  Time getBeginTime ();
+  lua_Integer getBeginTime ();
 
   /// Sets the begin time of (presentation) state machine.
-  void setBeginTime (Time time);
+  void setBeginTime (lua_Integer time);
 
   /// Gets the end time of (presentation) state machine.
-  Time getEndTime ();
+  lua_Integer getEndTime ();
 
   /// Sets the end time of (presentation) state machine.
-  void setEndTime (Time time);
+  void setEndTime (lua_Integer time);
 
   /// Gets the label associated with this state machine ("" means none).
   string getLabel ();

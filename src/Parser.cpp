@@ -4026,7 +4026,7 @@ ParserState::pushArea (ParserState *st, ParserElt *elt)
 
   StateMachine *sm;
   string label;
-  Time begin, end;
+  lua_Integer begin, end;
 
   media = cast (Media *, st->objStackPeek ());
   g_assert_nonnull (media);

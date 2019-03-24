@@ -348,7 +348,7 @@ Document::evalActionInContext (Action act, Context *ctx)
             {
               Action next_act = *(ri);
               string s;
-              Time delay;
+              lua_Integer delay;
 
               if (!this->evalPropertyRef (next_act.params["delay"], &s))
                 {

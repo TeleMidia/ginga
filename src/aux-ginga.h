@@ -102,11 +102,6 @@ string __ginga_strfunc (const string &);
 // Internal types.
 typedef GdkRGBA Color;
 typedef GdkRectangle Rect;
-typedef gint64 Time;            // microseconds
-
-// Numeric functions.
-bool floateq (double, double, double epsilon=.0000001);
-#define doubleeq floateq
 
 // Parsing and evaluation functions.
 bool try_parse_bool (const string &, bool *);
@@ -121,8 +116,8 @@ list<string> parse_list (const string &, char, size_t, size_t);
 bool try_parse_table (const string &, map<string, string> *);
 map<string, string> parse_table (const string &);
 
-bool try_parse_time (const string &, Time *);
-Time parse_time (const string &);
+bool try_parse_time (const string &, lua_Integer *);
+lua_Integer parse_time (const string &);
 
 int parse_percent (const string &, int, int, int);
 guint8 parse_pixel (const string &);

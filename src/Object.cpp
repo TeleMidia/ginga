@@ -179,15 +179,15 @@ Object::createStateMachine (StateMachine::Type type, const string &id)
   return sm;
 }
 
-Time
+lua_Integer
 Object::getTime ()
 {
-  Time time;
+  lua_Integer time;
 
   LuaAPI::Object_call (_L, this, "getTime", 0, 1);
   if (!lua_isnil (_L, -1))
     {
-      time = (Time) luaL_checkinteger (_L, -1);
+      time = (lua_Integer) luaL_checkinteger (_L, -1);
     }
   lua_pop (_L, 1);
 
@@ -195,7 +195,7 @@ Object::getTime ()
 }
 
 void
-Object::setTime (Time time)
+Object::setTime (lua_Integer time)
 {
   if (time == -1)
     {

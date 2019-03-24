@@ -107,10 +107,10 @@ StateMachine::setState (StateMachine::State state)
   LuaAPI::StateMachine_call (_L, this, "setState", 1, 0);
 }
 
-Time
+lua_Integer
 StateMachine::getBeginTime ()
 {
-  Time time = -1;
+  lua_Integer time = -1;        // none
 
   LuaAPI::StateMachine_call (_L, this, "getBeginTime", 0, 1);
   if (!lua_isnil (_L, -1))
@@ -123,24 +123,23 @@ StateMachine::getBeginTime ()
 }
 
 void
-StateMachine::setBeginTime (Time time)
+StateMachine::setBeginTime (lua_Integer time)
 {
   if (time >= 0)
     {
-      lua_pushinteger (_L, (lua_Integer) time);
+      lua_pushinteger (_L, time);
     }
   else
     {
       lua_pushnil (_L);
     }
-  lua_pushinteger (_L, (lua_Integer) time);
   LuaAPI::StateMachine_call (_L, this, "setBeginTime", 1, 0);
 }
 
-Time
+lua_Integer
 StateMachine::getEndTime ()
 {
-  Time time = -1;
+  lua_Integer time = -1;        // none
 
   LuaAPI::StateMachine_call (_L, this, "getEndTime", 0, 1);
   if (!lua_isnil (_L, -1))
@@ -153,11 +152,11 @@ StateMachine::getEndTime ()
 }
 
 void
-StateMachine::setEndTime (Time time)
+StateMachine::setEndTime (lua_Integer time)
 {
   if (time >= 0)
     {
-      lua_pushinteger (_L, (lua_Integer) time);
+      lua_pushinteger (_L, time);
     }
   else
     {

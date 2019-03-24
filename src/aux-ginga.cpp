@@ -54,11 +54,11 @@ __ginga_strfunc (const string &strfunc)
  * @param epsilon Error threshold.
  * @return True if successful, or false otherwise.
  */
-bool
-floateq (double x, double y, double epsilon)
-{
-  return ABS (x - y) <= ABS (epsilon);
-}
+// bool
+// floateq (double x, double y, double epsilon)
+// {
+//   return ABS (x - y) <= ABS (epsilon);
+// }
 
 // Parsing and evaluation --------------------------------------------------
 
@@ -191,7 +191,7 @@ try_parse_table (const string &s, map<string, string> *result)
  * @return True if successful, or false otherwise.
  */
 bool
-try_parse_time (const string &s, Time *result)
+try_parse_time (const string &s, lua_Integer *result)
 {
   gchar *dup;
   gchar *end;
@@ -220,7 +220,7 @@ try_parse_time (const string &s, Time *result)
 
 success:
   g_free (dup);
-  tryset (result, (Time) (secs * G_USEC_PER_SEC));
+  tryset (result, (lua_Integer) (secs * G_USEC_PER_SEC));
   return true;
 
 failure:
@@ -240,7 +240,7 @@ failure:
 
 _GINGA_PARSE_DEFN (bool, bool, "boolean")
 _GINGA_PARSE_DEFN (Color, color, "color")
-_GINGA_PARSE_DEFN (Time, time, "time")
+_GINGA_PARSE_DEFN (lua_Integer, time, "time")
 
 list<string>
 parse_list (const string &s, char sep, size_t min, size_t max)

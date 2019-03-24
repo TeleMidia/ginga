@@ -403,7 +403,7 @@ do
       if type (t) == 'string' then
          local _await = function (t)
             if type (t) == 'number' then
-               return mt._await {target=(obj or self), time=t*1000000}
+               return mt._await {target=(obj or self), time=t*1000}
             else
                return mt._await (t)
             end
@@ -475,17 +475,12 @@ do
       while true do
          local result = coroutine.yield (conds)
          local nextconds = {[0]='par'}
-         -- print ('---', 'awake cycle begin')
-         -- dump (conds)
-         -- dump (result)
-         -- print''
          for i,res in ipairs (result) do
             if res == false then
                nextconds[i] = assert (conds[i])
             elseif type (res) == 'table' then
                --
                -- Awake i-th trail.
-               -- dump ('>>> awake t'..i, trails[i], res)
                local status, cond = coroutine.resume (trails[i], res)
                assert (status, cond)
                if cond == nil then
@@ -502,7 +497,6 @@ do
 
    -- Exported functions ---------------------------------------------------
 
-   -- Document::getObjects().
    mt.getObjects = function (self)
       local t = {}
       for _,obj in pairs (self.object) do
@@ -511,27 +505,22 @@ do
       return t
    end
 
-   -- Document::getObject().
    mt.getObject = function (self, id)
       return self.object[id]
    end
 
-   -- Document::getRoot().
    mt.getRoot = function (self)
       return self.object.__root__
    end
 
-   -- Document::getSettings ().
    mt.getSettings = function (self)
       return self.object.__settings__
    end
 
-   -- Document::createObject().
    mt.createObject = function (self, tp, id)
       return self:_createObject (tp, id)
    end
 
-   -- Document::getStateMachines().
    mt.getStateMachines = function (self)
       local t = {}
       for _,sm in pairs (self.sm) do
@@ -540,7 +529,6 @@ do
       return t
    end
 
-   -- Document::getStateMachine().
    mt.getStateMachine = function (self, id)
       local tp, o, e = parseQualifiedId (id)
       if tp == nil then
@@ -553,7 +541,6 @@ do
       return obj:getStateMachine (tp, e)
    end
 
-   -- Document::createStateMachine().
    mt.createStateMachine = function (self, tp, obj, smId)
       if obj == nil and smId == nil then
          tp, objId, smId = parseQualifiedId (tp)
@@ -565,19 +552,11 @@ do
       return self:_createStateMachine (tp, obj, smId)
    end
 
-   -- Document::getTime().
    mt.getTime = function (self)
       return rawget (mt[self], '_time')
    end
 
-   -- Document:setTime().
-   mt.setTime = function (self, time)
-      rawset (mt[self], '_time', time)
-   end
-
-   -- Document::advanceTime().
    local quantum = 1000         -- us
-
    local function _advanceObjectTime (self, obj)
       self:_awakeBehaviors {target=obj, time=obj.time}
       if obj:isComposition () then
@@ -606,28 +585,26 @@ do
       end
    end
 
-   mt.advanceTime = function (self, dt)
-      if dt == 0 then           -- bootstrap (empty) tick
+   mt.advanceTime = function (self, us)
+      if us == 0 then           -- bootstrap (empty) tick
          _advanceDocumentTime (self, 0)
       else
          local accum = assert (rawget (mt[self], '_accum'))
-         accum = accum + dt
+         accum = accum + us
          if accum > 0 and accum < quantum then
             return
          end
-         local nticks, x = math.modf (accum/quantum)
-         x = math.modf (x)
-         rawset (mt[self], '_accum', x)
-         for i=1,nticks do
-            local tick = quantum
-            local time = self.time + tick
-            rawset (mt[self], '_time', time)
-            _advanceDocumentTime (self, time)
+         local n, delta = math.modf (accum/quantum)
+         delta = math.modf (delta)
+         rawset (mt[self], '_accum', delta)
+         local ms = self.time
+         for i=1,n do           -- generate n ticks
+            rawset (mt[self], '_time', ms + i)
+            _advanceDocumentTime (self, ms + i)
          end
       end
    end
 
-   -- Document::sendKey().
    mt.sendKey = function (self, key, press)
       local str = tostring (key)
       if not key then
@@ -642,7 +619,6 @@ do
       self:_awakeBehaviors (t)
    end
 
-   -- Spawns behavior.
    mt.spawn = function (self, t, debug)
       self:_spawnBehavior (t, nil, debug)
    end

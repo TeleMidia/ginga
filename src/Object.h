@@ -96,10 +96,10 @@ public:
                                     const string &id);
 
   /// Gets the playback time of object.
-  Time getTime ();
+  lua_Integer getTime ();
 
   /// Sets the playback time of object.
-  void setTime (Time time);
+  void setTime (lua_Integer time);
 
   /// Gets the value of an object property.
   virtual bool getProperty (const string &name, GValue *value);
