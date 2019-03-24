@@ -95,24 +95,6 @@ public:
   /// Sets the current state of state machine.
   void setState (StateMachine::State state);
 
-  /// Gets the begin time of (presentation) state machine.
-  lua_Integer getBeginTime ();
-
-  /// Sets the begin time of (presentation) state machine.
-  void setBeginTime (lua_Integer time);
-
-  /// Gets the end time of (presentation) state machine.
-  lua_Integer getEndTime ();
-
-  /// Sets the end time of (presentation) state machine.
-  void setEndTime (lua_Integer time);
-
-  /// Gets the label associated with this state machine ("" means none).
-  string getLabel ();
-
-  /// Sets the label associated with this state machine.
-  void setLabel (const string &label);
-
   /// Transitions the state machine.
   bool transition (StateMachine::Transition transition,
                    const map<string, string> &params);

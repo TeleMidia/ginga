@@ -70,7 +70,7 @@ Switch::addSwitchPort (const string &id,
 
   sm = this->createStateMachine (StateMachine::PRESENTATION, id);
   g_assert_nonnull (sm);
-  sm->setLabel (id);
+  //sm->setLabel (id);
   _switchPorts[id] = machines;
 }
 

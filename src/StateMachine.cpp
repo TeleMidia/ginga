@@ -107,97 +107,9 @@ StateMachine::setState (StateMachine::State state)
   LuaAPI::StateMachine_call (_L, this, "setState", 1, 0);
 }
 
-lua_Integer
-StateMachine::getBeginTime ()
-{
-  lua_Integer time = -1;        // none
-
-  LuaAPI::StateMachine_call (_L, this, "getBeginTime", 0, 1);
-  if (!lua_isnil (_L, -1))
-    {
-      time = luaL_checkinteger (_L, -1);
-    }
-  lua_pop (_L, 1);
-
-  return time;
-}
-
-void
-StateMachine::setBeginTime (lua_Integer time)
-{
-  if (time >= 0)
-    {
-      lua_pushinteger (_L, time);
-    }
-  else
-    {
-      lua_pushnil (_L);
-    }
-  LuaAPI::StateMachine_call (_L, this, "setBeginTime", 1, 0);
-}
-
-lua_Integer
-StateMachine::getEndTime ()
-{
-  lua_Integer time = -1;        // none
-
-  LuaAPI::StateMachine_call (_L, this, "getEndTime", 0, 1);
-  if (!lua_isnil (_L, -1))
-    {
-      time = luaL_checkinteger (_L, -1);
-    }
-  lua_pop (_L, 1);
-
-  return time;
-}
-
-void
-StateMachine::setEndTime (lua_Integer time)
-{
-  if (time >= 0)
-    {
-      lua_pushinteger (_L, time);
-    }
-  else
-    {
-      lua_pushnil (_L);
-    }
-  LuaAPI::StateMachine_call (_L, this, "setEndTime", 1, 0);
-}
-
-string
-StateMachine::getLabel ()
-{
-  const char *label = NULL;
-
-  LuaAPI::StateMachine_call (_L, this, "getLabel", 0, 1);
-  if (!lua_isnil (_L, -1))
-    {
-      label = luaL_checkstring (_L, -1);
-    }
-  lua_pop (_L, 1);
-
-  return string (label != NULL ? label : "");
-}
-
-void
-StateMachine::setLabel (const string &label)
-{
-  if (label == "")
-    {
-      lua_pushnil (_L);
-    }
-  else
-    {
-      lua_pushstring (_L, label.c_str ());
-    }
-
-  LuaAPI::StateMachine_call (_L, this, "setLabel", 1, 0);
-}
-
 bool
 StateMachine::transition (StateMachine::Transition trans,
-                   const map<string,string> &params)
+                          const map<string,string> &params)
 {
   bool status;
 

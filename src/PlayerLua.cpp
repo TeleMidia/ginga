@@ -141,18 +141,18 @@ PlayerLua::draw (cairo_t *cr)
             }
           else
             {
-              set<StateMachine *> events;
+              // set<StateMachine *> events;
 
-              _media->getStateMachines (&events);
-              for (auto &evt: events)
-                {
-                  if (evt->getType () == StateMachine::PRESENTATION
-                      && evt->getLabel () == label)
-                    {
-                      nclEvt = evt;
-                      break;
-                    }
-                }
+              // _media->getStateMachines (&events);
+              // for (auto &evt: events)
+              //   {
+              //     if (evt->getType () == StateMachine::PRESENTATION
+              //         && evt->getLabel () == label)
+              //       {
+              //         nclEvt = evt;
+              //         break;
+              //       }
+              //   }
             }
 
           g_assert_nonnull (nclEvt);
