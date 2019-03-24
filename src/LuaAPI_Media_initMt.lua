@@ -42,11 +42,11 @@ do
       end
       --
       -- Default behavior.
-      local await, parOr = self.document._await, self.document._par
+      local doc = self.document
       self:spawn {
          function ()            -- start lambda
             while true do
-               await {statemachine=self.lambda, transition='start'}
+               doc:_await {statemachine=self.lambda, transition='start'}
                assert (self.player == nil)
                local uri = self:getProperty ('uri')
                local player = self.document:_createPlayer (self, uri)

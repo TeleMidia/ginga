@@ -77,11 +77,11 @@ do
       assert (self:createStateMachine ('presentation', '@lambda'))
       --
       -- Default behavior.
-      local await, parOr = self.document._await, self.document._par
+      local doc = self.document
       self:spawn {
          function ()            -- start lambda
             while true do
-               await {statemachine=self.lambda, transition='start'}
+               doc:_await {statemachine=self.lambda, transition='start'}
                -- TODO: Start/resume parent if it is not occurring.
                -- TODO: Check if this 'start' is in fact a 'resume'.
                rawset (mt[self], '_epoch', self.document.time)
@@ -198,12 +198,11 @@ do
    -- Object::setProperty().
    mt.setProperty = function (self, name, value)
       assert (rawget (mt[self], '_property'))[name] = value
-      self.document:_awakeBehaviors {target=self, property=name,
-                                     value=value}
+      self.document:_broadcast {target=self, property=name, value=value}
    end
 
    -- Spawns behavior.
    mt.spawn = function (self, t, debug)
-      self.document:_spawnBehavior (t, self, debug)
+      self.document:_spawn (t, self, debug)
    end
 end

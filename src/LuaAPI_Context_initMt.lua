@@ -31,15 +31,15 @@ do
       saved_init (self)
       --
       -- Default behavior.
-      local await, parOr = self.document._await, self.document._par
+      local doc = self.document
       self:spawn {
          function ()            -- start lambda
             while true do
-               await {statemachine=self.lambda, transition='start'}
+               doc:_await {statemachine=self.lambda, transition='start'}
                for _,port in ipairs (self.ports) do
-                  local sm = self.document:getStateMachine (port)
+                  local sm = doc:getStateMachine (port)
                   if sm then
-                     sm:transition ('start')
+                     sm:transition'start'
                   end
                end
             end

@@ -64,8 +64,7 @@ do
       self.object.document:_addStateMachine (self)
       --
       -- Default behavior.
-      local await = self.object.document._await
-      local parOr = self.object.document._par
+      local doc = self.object.document
       self.object:spawn {
          function ()
             if self.type ~= 'presentation'
@@ -75,27 +74,29 @@ do
             end
             -- If we get here, this state machine is an <area>.
             while true do
-               await {statemachine=self.object.lambda, transition='start'}
+               doc:_await {statemachine=self.object.lambda,
+                          transition='start'}
                if self.beginTime and self.beginTime > 0 then
-                  await {target=self.object, time=self.beginTime,
-                         absolute=true}
+                  doc:_await {target=self.object, time=self.beginTime,
+                              absolute=true}
                end
                self:transition'start'
                if self.endTime and self.endTime > 0 then
-                  parOr {
+                  doc:_parOr {
                      function ()
-                        await {target=self.object, time=self.endTime,
-                               absolute=true}
+                        doc:_await {target=self.object, time=self.endTime,
+                                    absolute=true}
                      end,
                      function ()
-                        await {statemachine=self.object.lambda,
-                               transition='stop'}
+                        doc:_await {statemachine=self.object.lambda,
+                                    transition='stop'}
                      end,
                   }
                else
-                  await {statemachine=self.object.lambda, transition='stop'}
+                  doc:_await {statemachine=self.object.lambda,
+                              transition='stop'}
                end
-               self:transition ('stop')
+               self:transition'stop'
             end
          end
       }
@@ -200,9 +201,9 @@ do
          error ('bad transition: '..tostring (trans))
       end
       self.state = next
-      self.object.document:_awakeBehaviors {target=self.object,
-                                            statemachine=self,
-                                            transition=trans}
+      self.object.document:_broadcast {target=self.object,
+                                       statemachine=self,
+                                       transition=trans}
       return true
    end
 end

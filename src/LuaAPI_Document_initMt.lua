@@ -69,24 +69,25 @@ local function dumpGraph (node, prefix)
    end
 end
 
--- Tests whether two conditions match.
-local function matchConditions (triggered, awaited)
-   assert (type (triggered) == 'table')
-   assert (type (awaited) == 'table')
-   if awaited.time then         -- time
-      if not triggered.time then
+-- Tests whether event matches condition.
+local function match (evt, cond)
+   if type (evt) ~= 'table' or type (cond) ~= 'table' then
+      return evt == cond
+   end
+   if cond.time then         -- time
+      if not evt.time then
          return false
       end
-      if triggered.target ~= awaited.target then
+      if evt.target ~= cond.target then
          return false
       end
-      if triggered.time < awaited.time then
+      if evt.time < cond.time then
          return false
       end
       return true
    end
-   local t = triggered          -- generic match
-   for k,v in pairs (awaited) do
+   local t = evt                -- generic match
+   for k,v in pairs (cond) do
       if not t[k] or t[k] ~= v then
          return false
       end
@@ -94,21 +95,21 @@ local function matchConditions (triggered, awaited)
    return true
 end
 
--- Traverses "par" tree triggering the conditions satisfied by cond.
--- Returns the resulting "par" tree and a flag indicating whether any
--- condition was triggered.
-local function parsePar (cond, par)
+-- Traverses "par" tree recursively checking for conditions satisfied by
+-- event.  Returns the resulting "par" tree and a flag indicating whether
+-- any condition was satisfied.
+local function processPar (par, evt)
    assert (par[0] == 'par')
    local flag = false
    local result = {[0]='par'}
    for i,v in ipairs (par) do
       local status
       if v[0] == 'par' then
-         result[i], status = parsePar (cond, v)
+         result[i], status = processPar (v, evt)
       else
-         status = matchConditions (cond, v)
+         status = match (evt, v)
          if status then
-            result[i] = cond    -- ith trail should be awaken
+            result[i] = evt     -- ith trail should be awaken
          else
             result[i] = false   -- no-op
          end
@@ -169,7 +170,7 @@ do
       data._players   = {}       -- list of players sorted by zIndex
       data._time      = 0        -- playback time
       data._accum     = 0        -- accumulated "real" time
-      data._waitlist  = {}       -- list of behaviors waiting for conditions
+      data._waitlist  = {}       -- list of behaviors waiting for events
       --
       local get_data_object = function ()
          return assert (rawget (data, '_object'))
@@ -379,15 +380,15 @@ do
       return co, cond
    end
 
-   -- Awakes any behaviors waiting on the given condition.
-   mt._awakeBehaviors = function (self, cond)
+   -- Broadcasts event to all behaviors in document.
+   mt._broadcast = function (self, evt)
       local schedule = {}
       local waitlist = assert (rawget (mt[self], '_waitlist'))
       local i = 1
       while i <= #waitlist do
          local par = assert (waitlist[i])
          assert (par[0] == 'par')
-         local result, flag = parsePar (cond, par)
+         local result, flag = processPar (par, evt)
          if flag then
             table.remove (waitlist, i)
             local co, cond = self:_awakeBehavior (par.behavior, result)
@@ -395,7 +396,7 @@ do
                table.insert (schedule, {co, cond})
             end
          else
-            i = i + 1        -- nothing to do
+            i = i + 1           -- nothing to do
          end
       end
       for _,v in ipairs (schedule) do
@@ -403,40 +404,9 @@ do
       end
    end
 
-   -- Spawns the given function as a new behavior of object.
-   mt._spawnBehavior = function (self, t, obj, debug)
-      if type (t) == 'string' then
-         local _await = function (t)
-            if type (t) == 'number' then
-               return mt._await {target=(obj or self), time=t*1000}
-            else
-               return mt._await (t)
-            end
-         end
-         local env = {_D=self, await=_await, parOr=mt._par}
-         setmetatable (env, {__index=_G})
-         local f, errmsg = load (t, debug, nil, env)
-         if not f then
-            self:_error ('behavior error: '..errmsg)
-            return
-         end
-         t = f
-      end
-      if type (t) == 'function' then
-         t = {t}
-      end
-      assert (type (t) == 'table',
-              ('expected behavior (got %s)'):format (t))
-      for _,f in ipairs (t) do
-         local co = coroutine.create (f)
-         self:_scheduleBehavior (self:_awakeBehavior (co, obj or self))
-      end
-   end
-
    -- The "await" operator to be used inside behaviors.
-   mt._await = function (t)
-      assert (type (t) == 'table')
-      if t.time then
+   mt._await = function (self, t)
+      if type (t) == 'table' and t.time then
          if not t.absolute then
             t.time = t.time + (t.target.time or 0)
          end
@@ -444,14 +414,13 @@ do
       local res
       repeat
          res = assert (coroutine.yield {[0]='par', t})
-         assert (res[0] == 'par')
          res = res[1]
       until res
       return res
    end
 
-   -- The "par" operator to be used inside behaviors.
-   mt._par = function (t)
+   -- The "parOr" operator to be used inside behaviors.
+   mt._parOr = function (self, t)
       assert (type (t) == 'table')
       if #t == 0 then
          return                 -- no trails, nothing to do
@@ -496,6 +465,39 @@ do
             end
          end
          conds = nextconds
+      end
+   end
+
+   -- Spawns the given function as a new behavior of object.
+   mt._spawn = function (self, t, obj, debug)
+      if type (t) == 'string' then
+         local _await = function (t)
+            if type (t) == 'number' then
+               return self:_await {target=(obj or self), time=t*1000}
+            else
+               return self:_await (t)
+            end
+         end
+         local _parOr = function (t)
+            return self:_parOr (t)
+         end
+         local env = {_D=self, await=_await, parOr=_parOr}
+         setmetatable (env, {__index=_G})
+         local f, errmsg = load (t, debug, nil, env)
+         if not f then
+            self:_error ('behavior error: '..errmsg)
+            return
+         end
+         t = f
+      end
+      if type (t) == 'function' then
+         t = {t}
+      end
+      assert (type (t) == 'table',
+              ('expected behavior (got %s)'):format (t))
+      for _,f in ipairs (t) do
+         local co = coroutine.create (f)
+         self:_scheduleBehavior (self:_awakeBehavior (co, obj or self))
       end
    end
 
@@ -562,7 +564,7 @@ do
 
    local quantum = 1000         -- us
    local function _advanceObjectTime (self, obj)
-      self:_awakeBehaviors {target=obj, time=obj.time}
+      self:_broadcast {target=obj, time=obj.time}
       if obj:isComposition () then
          for _,child in ipairs (obj.children) do
             _advanceObjectTime (self, child)
@@ -571,7 +573,7 @@ do
    end
 
    local function _advanceDocumentTime (self, time)
-      self:_awakeBehaviors {target=self, time=time}
+      self:_broadcast {target=self, time=time}
       local tparents = assert (mt[self].parents)
       local tchildren = assert (mt[self].children)
       local roots = {}
@@ -620,11 +622,11 @@ do
       else
          t.type = 'release'
       end
-      self:_awakeBehaviors (t)
+      self:_broadcast (t)
    end
 
    mt.spawn = function (self, t, debug)
-      self:_spawnBehavior (t, nil, debug)
+      self:_spawn (t, nil, debug)
    end
 
    -- Utility functions ----------------------------------------------------
