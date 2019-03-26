@@ -39,13 +39,15 @@ AM_TESTS_ENVIRONMENT=\
   export G_MESSAGES_DEBUG="all";\
   export G_SLICE="always-malloc";\
   export MALLOC_CHECK_=1;\
-  export LUA_CPATH="$(top_builddir)/lib/.libs/?$(SOEXT);$(top_builddir)/lib/?$(SOEXT);;";\
+  export LUA_PATH="$(top_builddir)/src/?.lua;;";\
+  export LUA_CPATH="$(top_builddir)/src/.libs/?$(SOEXT);;";\
   $(NULL)
 
 LD_PRELOAD= ginga$(SOEXT)
 
 # Test scripts.
 scripts=
+scripts+= test-behavior.lua
 scripts+= test-media-behavior-lambda.lua
 
 check_SCRIPTS= $(scripts)
