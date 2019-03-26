@@ -7,23 +7,28 @@ local behavior = require'behavior'
 _ENV = nil
 
 -- _new
-do
-   local bhv = behavior._new (function()end, 'init')
-   assert (bhv.co)
-   assert (bhv.name == 'init')
-   assert (bhv.parent == nil)
-   assert (bhv.root == bhv)
-   assert (bhv:getBehavior (bhv.co) == bhv)
-end
+-- do
+--    local bhv = behavior._new (function()end, 'init')
+--    assert (bhv.co)
+--    assert (bhv.name == 'init')
+--    assert (bhv.parent == nil)
+--    assert (bhv.root == bhv)
+--    assert (bhv:_getBehavior (bhv.co) == bhv)
+-- end
 
 -- spawn
 do
-   local init = behavior.init ()
-   init:spawn {
+   local bhv = behavior.init ()
+   bhv:spawn {
       function ()
-         print ('--', coroutine.yield ())
+         print'<t start>'
+         bhv:await'A'
+         print'<t end>'
+      end,
+      function ()
+         print'<y start>'
+         bhv:emit'A'
+         print'<y end>'
       end
    }
-   init:_dumpTree ()
-   init:_broadcast ('EVT')
 end
