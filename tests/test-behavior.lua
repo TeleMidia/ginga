@@ -21,14 +21,20 @@ do
    local bhv = behavior.init ()
    bhv:spawn {
       function ()
-         print'<t start>'
-         bhv:await'A'
-         print'<t end>'
+         print'<x start>'
+         bhv:await'B'
+         print'<x end>'
       end,
       function ()
          print'<y start>'
          bhv:emit'A'
          print'<y end>'
+      end,
+      function ()
+         print'<z start>'
+         bhv:emit'B'
+         bhv:await'C'
+         print'<z end>'
       end
    }
 end
