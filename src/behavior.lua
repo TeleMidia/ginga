@@ -14,40 +14,65 @@ local _ENV = nil
 local behavior = {}
 do
    behavior.__index    = behavior
-   behavior._debugging = false
 end
 
-local args2str = function (...)
-   local t = {}
-   for _,v in ipairs {...} do
-      table.insert (t, tostring (v))
-   end
-   return table.concat (t, ',')
-end
-
--- Creates a new behavior.
-local function behavior_new (f, name, parent)
+local function bhvNew (f, name, parent)
    local co = assert (coroutine.create (f))
    local t = {
       co       = co,                    -- the underlying coroutine
       name     = name or tostring (co), -- behavior name
       parent   = parent,                -- parent behavior
-      children = {},                    -- list of children
+      children = {},                    -- list of child trails
+      trace    = false,                 -- whether to trace calls
    }
    local bhv = setmetatable (t, behavior)
    if parent == nil then        -- root
-      bhv.root    = bhv
-      bhv._co2bhv = {[co]=bhv}  -- maps coroutine to behavior
-      bhv.stack   = {}          -- stack of events
-      bhv.inq     = {}          -- input queue
-      bhv.outq    = {}          -- output queue
+      bhv.root   = bhv
+      bhv.co2bhv = {[co]=bhv}   -- maps coroutine to behavior
+      bhv.stack  = {}           -- stack of events
    else
       assert (getmetatable (parent) == behavior)
-      table.insert (t.parent.children, bhv)
       bhv.root = assert (parent.root)
-      bhv.root._co2bhv[co] = bhv
+      bhv.root.co2bhv[co] = bhv
+      table.insert (t.parent.children, bhv)
    end
    return bhv
+end
+
+local function bhvRemoveChild (bhv, i)
+   local child = assert (table.remove (bhv.root.children, i))
+   bhv.root.co2bhv[child.co] = nil
+end
+
+local function dump (prefix, node, indent, highlight)
+   local me = ('  '):rep (indent or 0)..tostring (node)
+   if node == highlight then
+      me = me..'*'
+   end
+   if node:_isRoot () then
+      local evts = {}
+      for _,v in ipairs (node.stack) do
+         table.insert (evts, tostring (v))
+      end
+      me = me .. (' #%d: {%s}')
+         :format (#node.stack, table.concat (evts, ','))
+   end
+   print (prefix..me)
+   for _,child in ipairs (node.children) do
+      dump (prefix, child, indent + 1, highlight)
+   end
+end
+
+-- Private -----------------------------------------------------------------
+
+function behavior:_trace (fmt, ...)
+   if self.trace then
+      print (self.name..'\t'..(fmt):format (...))
+   end
+end
+
+function behavior:_dump (prefix)
+   dump (prefix or '', self.root, 0, self)
 end
 
 function behavior:__tostring ()
@@ -60,45 +85,15 @@ function behavior:__tostring ()
       status = ''
    end
    return ('%s (%s%s)'):format (self.name,
-                                 coroutine.status (self.co), status)
+                                coroutine.status (self.co), status)
 end
 
-function behavior:_debug (fmt, ...)
-   if behavior._debugging then
-      print (self.name..'\t'..(fmt):format (...))
-   end
-end
-
-function behavior:_debug1 (fmt, ...)
-   self:_debug ('-~- '..fmt, ...)
-end
-
-function behavior:_debug2 (fmt, ...)
-   self:_debug ('... '..fmt, ...)
-end
-
-local function _dumpTree (node, indent, highlight)
-   local me = ('  '):rep (indent or 0)..tostring (node)
-   if node == highlight then
-      me = me..'*'
-   end
-   if node.parent == nil then
-      me = me .. (' #%d'):format (#node.stack)
-   end
-   print (me)
-   for _,child in ipairs (node.children) do
-      _dumpTree (child, indent + 1, highlight)
-   end
-end
-
-function behavior:_dumpTree ()
-   if behavior._debugging then
-      _dumpTree (self.root, 0, self)
-   end
+function behavior:_isRoot ()
+   return self == self.root
 end
 
 function behavior:_getBehavior (co)
-   return self.root._co2bhv[co or coroutine.running ()]
+   return self.root.co2bhv[co or coroutine.running ()]
 end
 
 function behavior:_push (evt)
@@ -109,22 +104,22 @@ function behavior:_pop (evt)
    return assert (table.remove (self.root.stack))
 end
 
--- Start a new cycle with the given external event.
--- This function should not be called by a behavior.
-function behavior:_cycle (evt)
-   self:_debug1 ('_cycle (%s)', evt)
-   assert (self:_getBehavior () == nil)
-   assert (coroutine.resume (self.root.co, evt))
+function behavior:_resume (evt)
+   local status, result = coroutine.resume (self.co, evt)
+   if not status then
+      error (result)
+   end
+   return result
 end
 
 function behavior:_broadcast (evt)
    assert (evt)
    if self.emitting then
-      return                    -- nothing to do
+      return                    -- skip trail
    end
-   self:_debug1 ('_broadcast (%s)', evt)
+   self:_trace ('_broadcast (%s)', evt)
    if self.awaiting then
-      assert (coroutine.resume (self.co, evt))
+      self:_resume (evt)
    else
       for _,child in ipairs (self.children) do
          child:_broadcast (evt)
@@ -132,125 +127,114 @@ function behavior:_broadcast (evt)
    end
 end
 
--- Exported functions ------------------------------------------------------
+-- Public ------------------------------------------------------------------
 
 function behavior.init (name)
    local func = function (self)
       while true do
          local evt = coroutine.yield ()
-         self:_push (evt or true)
+         self:_push (evt or true) -- push sentinel if there is no event
          if evt then
             self:_broadcast (evt)
          end
-         --
-         self:_debug1 ('external cycle (%s)', evt)
-         --
+         self:_trace ('external cycle (%s)', evt)
          while #self.stack > 0 do
-            --
-            self:_debug1 ('internal cycle (%s)', evt)
-            self:_dumpTree ()
-            --
+            self:_trace ('internal cycle (%s)', evt)
+            --self:_dump ((' '):rep (4)..'\t|')
             local progress = false
             local i = 1
             while i <= #self.children do
                local child = assert (self.children[i])
                if not child.awaiting and not child.emitting then
-                  progress = true
+                  progress = true -- child will advance
                end
-               --
-               self:_debug2 ("resuming child '%s'", child)
-               --
+               self:_trace ('... resuming trail: %s', child)
                local status, result = coroutine.resume (child.co)
                if not status then
-                  error ('RESUME ERROR: '..tostring (child)
-                            ..': '..tostring (result))
+                  error (('RESUME ERROR: %s: %s')
+                        :format (tostring (child), tostring (result)))
                end
                if result == 'awaiting' then
                   i = i + 1
                elseif result == 'emitting' then
                   break
-               elseif result == nil then -- finished
-                  self:_debug2 ("removing child '%s'", child)
+               elseif result == nil then
+                  self:_trace ('... removing trail: %s', child)
                   assert (coroutine.status (child.co) == 'dead')
-                  self._co2bhv[child.co] = nil
-                  table.remove (self.children, i)
+                  bhvRemoveChild (self, i)
                else
                   error'should not get here'
                end
             end
             if not progress then
-               self:_debug2'popping'
+               self:_trace ('... popping')
                self:_pop ()
             end
-            self:_debug2'internal cycle done'
+            self:_trace ('... internal cycle done')
          end
-         self:_debug2'external cycle done'
+         self:_trace ('... external cycle done')
       end
    end
-   local init = assert (behavior_new (func, name or 'init'))
-   init:_cycle (init)           -- bootstrap init
+   local init = assert (bhvNew (func, name or 'init'))
+   init:_resume (init)          -- bootstrap init
    return init
 end
 
 function behavior:spawn (t)
-   assert (not self:_getBehavior (),
-           'should not be called by a behavior')
-   --
-   self:_debug1 ('spawn {%s}', args2str (table.unpack (t)))
+   self:_trace ('spawn (#%d)', #t)
    if type (t) == 'function' then
       t = {t}
    end
    assert (type (t) == 'table')
    for i,f in ipairs (t) do
-      local child = behavior_new (f, self.name..':'..i, self.root)
-      self:_debug2 ("adding child '%s'", child)
+      local child = bhvNew (f, self.name..':'..i, self.root)
+      self.root:_trace ('... spawing trail: %s', child)
    end
-   self:_cycle ()               -- bootstrap the spawn behaviors
-end
-
-function behavior:cycle (evt)
-   assert (not self:_getBehavior (),
-           'should not be called by a behavior')
-   --
-   -- pop event from INQ cycle it
-   self:_cycle (evt)
+   if self:_getBehavior () == nil then -- if not called by a behavior,
+      self.root:_resume ()             --   bootstrap the spawn behaviors
+   end
 end
 
 function behavior:await (cond)
    local curr = self:_getBehavior ()
-   assert (curr, 'should be called by a behavior')
-   --
-   curr:_debug1 ('await (%s)', cond)
+   if curr == nil then
+      return                    -- not called by a behavior, do nothing
+   end
+   curr:_trace ('await (%s)', cond)
    curr.awaiting = cond
    local res
    repeat
-      curr:_debug2 ("await yielding")
+      curr:_trace ('... await yielding')
       res = coroutine.yield ('awaiting')
    until res == cond
-   curr:_debug2 ("await '%s' consumed", res)
+   curr:_trace ('... await consumed')
    curr.awaiting = nil
-   coroutine.yield ()
+   coroutine.yield ()           -- ready to continue
 end
 
 function behavior:emit (evt)
    local curr = self:_getBehavior ()
-   assert (curr, 'should be called by a behavior')
-   --
-   curr:_debug1 ('emit (%s)', evt)
-   curr:_debug2 ('internal emit')
-   curr.canrun = #curr.root.stack
-   curr.root:_push (evt)
-   curr.emitting = evt
-   curr.root:_broadcast (evt)
-   curr:_debug2 ("emit yielding")
-   coroutine.yield ('emitting')
-   while curr.canrun ~= #curr.root.stack do
-      curr:_debug2 ("emit yielding")
-      coroutine.yield ('awaiting')
+   if curr == nil then          -- external
+      self:_trace ('emit external (%s)', evt)
+      self.root:_push (evt)
+      self.root:_broadcast (evt)
+      self.root:_resume ()
+   else                         -- internal
+      curr:_trace ('emit internal (%s)', evt)
+      curr.canrun = #curr.root.stack
+      curr.root:_push (evt)
+      curr.emitting = evt
+      curr.root:_broadcast (evt)
+      curr:_trace ('... emit yielding')
+      coroutine.yield ('emitting') -- start new cycle
+      while curr.canrun ~= #curr.root.stack do
+         curr:_trace ('... emit yielding')
+         coroutine.yield ('awaiting') -- awaiting for stack level
+      end
+      curr:_trace ('... emit consumed')
+      curr.canrun = nil
+      curr.emitting = nil
    end
-   curr:_debug2 ('awaking from emit')
-   curr.canrun = nil
-   curr.emitting = nil
 end
 
 return behavior
