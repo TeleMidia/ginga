@@ -214,12 +214,12 @@ end
 
 function behavior:emit (evt)
    local curr = self:_getBehavior ()
-   if curr == nil then          -- external
+   if curr == nil then          -- external call
       self:_trace ('emit external (%s)', evt)
       self.root:_push (evt)
       self.root:_broadcast (evt)
       self.root:_resume ()
-   else                         -- internal
+   else                         -- internal call
       curr:_trace ('emit internal (%s)', evt)
       curr.canrun = #curr.root.stack
       curr.root:_push (evt)
