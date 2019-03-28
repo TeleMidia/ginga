@@ -13,7 +13,7 @@ local type         = type
 local _ENV = nil
 local behavior = {}
 do
-   behavior.__index    = behavior
+   behavior.__index = behavior
 end
 
 local function bhvNew (f, name, parent)
@@ -23,10 +23,11 @@ local function bhvNew (f, name, parent)
       name     = name or tostring (co), -- behavior name
       parent   = parent,                -- parent behavior
       children = {},                    -- list of child trails
+      error    = error,                 -- error handler
       trace    = false,                 -- whether to trace calls
    }
    local bhv = setmetatable (t, behavior)
-   if parent == nil then        -- root
+   if parent == nil then        -- this is root
       bhv.root   = bhv
       bhv.co2bhv = {[co]=bhv}   -- maps coroutine to behavior
       bhv.stack  = {}           -- stack of events
@@ -151,8 +152,8 @@ function behavior.init (name)
                self:_trace ('... resuming trail: %s', child)
                local status, result = coroutine.resume (child.co)
                if not status then
-                  error (('RESUME ERROR: %s: %s')
-                        :format (tostring (child), tostring (result)))
+                  self.error (('%s: %s'):format (child, result))
+                  result = nil  -- force removal
                end
                if result == 'awaiting' then
                   i = i + 1

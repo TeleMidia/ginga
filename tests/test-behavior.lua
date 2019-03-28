@@ -77,6 +77,18 @@ do
    assert (t[5] == 'z2')
 end
 
+do
+   local bhv = behavior.init ()
+   -- bhv.trace = true
+   local t = {}
+   bhv.error = print
+   bhv:spawn {
+      function ()
+         error'argh'
+      end
+   }
+end
+
 -- await/emit --------------------------------------------------------------
 do
    local bhv = behavior.init ()
