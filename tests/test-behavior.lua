@@ -6,7 +6,7 @@ local pairs     = pairs
 local print     = print
 local type      = type
 
-local behavior = require'behavior'
+local behavior = require'Behavior'
 _ENV = nil
 
 -- init --------------------------------------------------------------------

@@ -55,52 +55,56 @@ libginga_la_CXXFLAGS= $(ALL_CXXFLAGS)
 libginga_la_LDFLAGS= $(ALL_LDFLAGS)
 libginga_la_SOURCES= $(src)
 src=
+src+= Behavior.cpp
 src+= Composition.cpp
+src+= Composition_initMt.cpp
 src+= Context.cpp
+src+= Context_initMt.cpp
 src+= Document.cpp
+src+= Document_initMt.cpp
 src+= LuaAPI.cpp
 src+= LuaAPI_Composition.cpp
-src+= LuaAPI_Composition_initMt.cpp
 src+= LuaAPI_Context.cpp
-src+= LuaAPI_Context_initMt.cpp
 src+= LuaAPI_Document.cpp
-src+= LuaAPI_Document_initMt.cpp
 src+= LuaAPI_Media.cpp
-src+= LuaAPI_Media_initMt.cpp
 src+= LuaAPI_Object.cpp
-src+= LuaAPI_Object_initMt.cpp
 src+= LuaAPI_Player.cpp
-src+= LuaAPI_Player_initMt.cpp
 src+= LuaAPI_StateMachine.cpp
-src+= LuaAPI_StateMachine_initMt.cpp
 src+= LuaAPI_Switch.cpp
-src+= LuaAPI_initMt.cpp
-src+= LuaAPI_traceMt.cpp
 src+= Media.cpp
+src+= Media_initMt.cpp
 src+= Object.cpp
+src+= Object_initMt.cpp
 src+= Parser.cpp
 src+= Player.cpp
 src+= PlayerGStreamer.cpp
+src+= PlayerText.cpp
+src+= Player_initMt.cpp
+src+= Predicate.cpp
+src+= StateMachine.cpp
+src+= StateMachine_initMt.cpp
+src+= Switch.cpp
+src+= aux-ginga.cpp
+src+= initMt.cpp
+src+= traceMt.cpp
+
 if WITH_NCLUA
 src+= PlayerLua.cpp
 endif
-src+= PlayerText.cpp
-src+= Predicate.cpp
-src+= StateMachine.cpp
-src+= Switch.cpp
-src+= aux-ginga.cpp
 
 # Convert .lua's to static strings.
 .lua.cpp:
 	@echo '#include "LuaAPI.h"' >$@
-	$(AM_V_GEN)$(XXD) -i $< | sed s/LuaAPI_/LuaAPI::/ >>$@
+	$(AM_V_GEN)$(XXD) -i $<\
+	  | sed 's,^\(unsigned [a-z]\+ \),\1LuaAPI::,' >>$@
 
-CLEANFILES+= LuaAPI_Composition_initMt.cpp
-CLEANFILES+= LuaAPI_Context_initMt.cpp
-CLEANFILES+= LuaAPI_Document_initMt.cpp
-CLEANFILES+= LuaAPI_Media_initMt.cpp
-CLEANFILES+= LuaAPI_Object_initMt.cpp
-CLEANFILES+= LuaAPI_Player_initMt.cpp
-CLEANFILES+= LuaAPI_StateMachine_initMt.cpp
-CLEANFILES+= LuaAPI_initMt.cpp
-CLEANFILES+= LuaAPI_traceMt.cpp
+CLEANFILES+= Behavior.cpp
+CLEANFILES+= Composition_initMt.cpp
+CLEANFILES+= Context_initMt.cpp
+CLEANFILES+= Document_initMt.cpp
+CLEANFILES+= Media_initMt.cpp
+CLEANFILES+= Object_initMt.cpp
+CLEANFILES+= Player_initMt.cpp
+CLEANFILES+= StateMachine_initMt.cpp
+CLEANFILES+= initMt.cpp
+CLEANFILES+= traceMt.cpp

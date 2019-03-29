@@ -241,14 +241,15 @@ private:
      (const char *) LuaAPI::name##_lua,         \
      (size_t) LuaAPI::name##_lua_len}
 
-  LUAAPI_CHUNK_DECL (initMt);
-  LUAAPI_CHUNK_DECL (Document_initMt);
-  LUAAPI_CHUNK_DECL (Object_initMt);
-  LUAAPI_CHUNK_DECL (Context_initMt);
-  LUAAPI_CHUNK_DECL (Media_initMt);
+  LUAAPI_CHUNK_DECL (Behavior);
   LUAAPI_CHUNK_DECL (Composition_initMt);
-  LUAAPI_CHUNK_DECL (StateMachine_initMt);
+  LUAAPI_CHUNK_DECL (Context_initMt);
+  LUAAPI_CHUNK_DECL (Document_initMt);
+  LUAAPI_CHUNK_DECL (Media_initMt);
+  LUAAPI_CHUNK_DECL (Object_initMt);
   LUAAPI_CHUNK_DECL (Player_initMt);
+  LUAAPI_CHUNK_DECL (StateMachine_initMt);
+  LUAAPI_CHUNK_DECL (initMt);
   LUAAPI_CHUNK_DECL (traceMt);
 
   /// Registry keys for the metatables.
