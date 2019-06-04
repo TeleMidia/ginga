@@ -64,8 +64,10 @@ create_about_window (void)
   g_signal_connect (aboutWindow, "delete-event",
                     G_CALLBACK (destroy_about_window), NULL);
 
+  g_signal_connect (aboutWindow, "response",
+                    G_CALLBACK (destroy_about_window), NULL);
+
   gtk_widget_show_all (aboutWindow);
-  // gtk_show_about_dialog(aboutWindow);
 }
 void
 destroy_about_window (void)
