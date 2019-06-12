@@ -136,7 +136,7 @@ info@telemidia.puc-rio.br.
     Find and file bug reports</a>.
 
 ---
-Copyright (C) 2006-2018 PUC-Rio/Laboratorio TeleMidia
+Copyright (C) 2006-2019 PUC-Rio/Laboratorio TeleMidia
 
 Permission is granted to copy, distribute and/or modify this document under
 the terms of the GNU Free Documentation License, Version 1.3 or any later
