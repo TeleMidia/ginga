@@ -104,7 +104,7 @@ On Ubuntu-based distros, to install the dependencies run:
 To build with autotools run:
 
     $ ./bootstrap
-    $ ./configure
+    $ ./configure --prefix=/usr/
     $ make
 
 To build with `cmake` run:
