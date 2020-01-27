@@ -390,13 +390,18 @@ ginga-qt:           ${WITH_GINGAQT}
 ginga-gl:           ${WITH_OPENGL}
 ")
 
-set (CPACK_PACKAGE_NAME ${PACKAGE})
-set (CPACK_PACKAGE_CONTACT robertogerson@telemidia.puc-rio.br)
-
-set (CPACK_DEBIAN_PACKAGE_DEPENDS
-     "liblua5.3-0, libpangocairo-1.0-0, librsvg2-2,\
-     libgstreamer1.0-0, libgstreamer-plugins-base1.0-0, \
-     libgstreamer-plugins-good1.0-0, libgtk-3-0")
+set (CPACK_GENERATOR "DEB")
+set (CPACK_PACKAGE_NAME "ginga-itv")
+set (CPACK_PACKAGE_VENDOR "TeleMídia Lab/PUC-Rio")
+set (CPACK_DEBIAN_PACKAGE_DESCRIPTION "Ginga® is the middleware of the Japanese-Brazilian Digital TV System (ISDB-TB) and ITU-T Recommendation for IPTV services. Ginga is made up by a set of standardized technologies and Brazilian innovations that make it the most advanced middleware specification.")
+set (CPACK_DEBIAN_PACKAGE_SECTION "contrib/graphics")
+set (CPACK_PACKAGE_CONTACT alan@telemidia.puc-rio.br)
+set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/README.md")
+set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/COPYING")
+set (CPACK_DEBIAN_PACKAGE_DEPENDS "libglib2.0, libpango1.0, liblua5.3-0, libpangocairo-1.0-0, librsvg2-2, libgstreamer1.0-0, libgstreamer-plugins-base1.0-0, libgstreamer-plugins-good1.0-0, libgtk-3-0, libsoup2.4")
+set (CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
+set (CPACK_DEBIAN_COMPRESSION_TYPE "xz")
+set (CPACK_DEBIAN_REPLACES "xz")
 
 install (DIRECTORY ${CMAKE_BINARY_OUTPUT_DIR} DESTINATION bin)
 install (TARGETS ginga DESTINATION bin)
