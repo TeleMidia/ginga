@@ -60,6 +60,7 @@ main (void)
 
     // after 3 seconds, m1 is SLEEPING
     fmt->sendTick (4 * GINGA_SECOND, 4 * GINGA_SECOND, 0);
+    fmt->sendTick (0, 0, 0);
     g_assert (root_lambda->getState () == Event::SLEEPING);
     g_assert (m1_lambda->getState () == Event::SLEEPING);
 

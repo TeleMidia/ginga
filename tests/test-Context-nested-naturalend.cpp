@@ -131,6 +131,7 @@ main (void)
 
     // In next the reaction, root_lambda is SLEEPING.
     fmt->sendTick (0, 0, 0);
+    fmt->sendTick (0, 0, 0);
     g_assert (root_lambda->getState () == Event::SLEEPING);
     g_assert (ctx1_lambda->getState () == Event::SLEEPING);
     g_assert (m1_lambda->getState () == Event::SLEEPING);
