@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.2)
 project(ginga)
 
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/build-cmake/CMakeModules)
 
 # Defaul C++ params
 set (CMAKE_CXX_STANDARD 11)
@@ -35,6 +35,7 @@ add_definitions (-DWITH_PANGO=1 -DWITH_GSTREAMER=1)
 
 find_package (Lua REQUIRED 5.2)
 
+option (WITH_NCLUA_BUILD "Download and build nclua." OFF)
 option (WITH_CEF "Build with chromium embedded support." OFF)
 option (WITH_OPENGL "Build Ginga with opengl support." OFF)
 option (WITH_GINGAQT "Build nclcomposer's ginga plugin." OFF)
@@ -58,29 +59,33 @@ if (WITH_OPENGL)
   add_definitions (-DWITH_OPENGL=1)
 endif ()
 
-# NCLUA download/configure/build/install
-include(ExternalProject)
-ExternalProject_Add(nclua_build
-  GIT_REPOSITORY "https://github.com/telemidia/nclua.git"
-  GIT_TAG master
-  UPDATE_COMMAND ""
+if (WITH_NCLUA_BUILD)
+#   NCLUA download/configure/build/install
+  include(ExternalProject)
+  ExternalProject_Add(nclua_build
+    GIT_REPOSITORY "https://github.com/telemidia/nclua.git"
+    GIT_TAG master
+    UPDATE_COMMAND ""
 
-  PREFIX ${CMAKE_CURRENT_BINARY_DIR}/3rdparty/nclua
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/3rdparty/nclua
 
-  CONFIGURE_COMMAND <SOURCE_DIR>/bootstrap &&
-                    <SOURCE_DIR>/configure --prefix=<INSTALL_DIR>
-                                           --without-nclua-gst
+    CONFIGURE_COMMAND <SOURCE_DIR>/bootstrap &&
+                      <SOURCE_DIR>/configure --prefix=<INSTALL_DIR>
+                                             --without-nclua-gst
 
-  BUILD_COMMAND make
-  INSTALL_COMMAND make install
-)
+    BUILD_COMMAND make
+    INSTALL_COMMAND make install
+  )
+  ExternalProject_Get_Property (nclua_build install_dir)
+  set (NCLUA_INCLUDE_DIRS "${install_dir}/include")
+  set (NCLUA_LIBRARIES "${install_dir}/lib/libnclua.a")
+  link_directories ("${install_dir}/lib")
+  add_definitions (-DWITH_NCLUA=1)
+else()
+  PKG_CHECK_MODULES(NCLUA nclua)
+  add_definitions (-DWITH_NCLUA=1)
+endif ()
 
-ExternalProject_Get_Property (nclua_build install_dir)
-set (NCLUA_INCLUDE_DIRS "${install_dir}/include")
-set (NCLUA_LIBRARY "${install_dir}/lib/libnclua.a")
-link_directories ("${install_dir}/lib")
-add_definitions (-DWITH_NCLUA=1)
-#end NCLUA
 
 if (WITH_CEF) # Download, link, build with CEF
   set(CEF_VERSION cef_binary_3.3029.1619.geeeb5d7_linux64_minimal)
@@ -118,41 +123,41 @@ else()
 endif()
 
 set (LIBGINGA_SOURCES
-  ../lib/ginga.h
-  ../lib/aux-ginga.cpp
-  ../lib/aux-gl.cpp
+  ./lib/ginga.h
+  ./lib/aux-ginga.cpp
+  ./lib/aux-gl.cpp
 
-  ../lib/Composition.cpp
-  ../lib/Context.cpp
-  ../lib/Document.cpp
-  ../lib/Event.cpp
-  ../lib/Formatter.cpp
-  ../lib/Ginga.cpp
-  ../lib/Media.cpp
-  ../lib/MediaSettings.cpp
-  ../lib/Object.cpp
-  ../lib/Parser.cpp
-  ../lib/ParserLua.cpp
-  ../lib/Predicate.cpp
-  ../lib/Switch.cpp
+  ./lib/Composition.cpp
+  ./lib/Context.cpp
+  ./lib/Document.cpp
+  ./lib/Event.cpp
+  ./lib/Formatter.cpp
+  ./lib/Ginga.cpp
+  ./lib/Media.cpp
+  ./lib/MediaSettings.cpp
+  ./lib/Object.cpp
+  ./lib/Parser.cpp
+  ./lib/ParserLua.cpp
+  ./lib/Predicate.cpp
+  ./lib/Switch.cpp
 
-  ../lib/Player.cpp
-  ../lib/PlayerAnimator.cpp
-  ../lib/PlayerImage.cpp
-  ../lib/PlayerLua.cpp
-  ../lib/PlayerSigGen.cpp
-  ../lib/PlayerText.cpp
-  ../lib/PlayerVideo.cpp
+  ./lib/Player.cpp
+  ./lib/PlayerAnimator.cpp
+  ./lib/PlayerImage.cpp
+  ./lib/PlayerLua.cpp
+  ./lib/PlayerSigGen.cpp
+  ./lib/PlayerText.cpp
+  ./lib/PlayerVideo.cpp
 
 #if WITH_LIBRSVG
-  ../lib/PlayerSvg.cpp
+  ./lib/PlayerSvg.cpp
 #WITH_LIBRSVG
 )
 
 set (LIBGINGA_INCLUDE_DIRS
   ${CMAKE_BINARY_DIR}
 
-  ${CMAKE_CURRENT_SOURCE_DIR}/../lib
+  ${CMAKE_CURRENT_SOURCE_DIR}/lib
 
   ${GLIB_INCLUDE_DIRS}
 
@@ -189,7 +194,7 @@ set (LIBGINGA_LIBS
   ${GSTREAMER_APP_LIBRARIES}
   ${GSTREAMER_VIDEO_LIBRARIES}
 
-  ${NCLUA_LIBRARY}
+  ${NCLUA_LIBRARIES}
   ${LUA_LIBRARIES}
 )
 
@@ -200,7 +205,7 @@ endif ()
 
 if (WITH_CEF)
   list (APPEND LIBGINGA_SOURCES
-    ../lib/player/HTMLPlayer.cpp
+    ./lib/player/HTMLPlayer.cpp
   )
   list (APPEND GINGA_INCLUDE_DIRS
     ${CEF_ROOT}
@@ -214,42 +219,44 @@ if (WITH_CEF)
 endif ()
 
 set (GINGAGUI_GTK_SOURCES
-  ../src-gui/ginga-gtk.cpp
-  ../src-gui/model/SaveLoadSettings.cpp
-  ../src-gui/model/HttpMessage.cpp
-  ../src-gui/view/TrackerWindow.cpp
-  ../src-gui/view/AboutWindow.cpp
-  ../src-gui/view/BigPictureWindow.cpp
-  ../src-gui/view/Draw.cpp
-  ../src-gui/view/FullscreenWindow.cpp
-  ../src-gui/view/HelpWindow.cpp
-  ../src-gui/view/MainWindow.cpp
-  ../src-gui/view/TvControlWindow.cpp
+  ./src-gui/ginga-gtk.cpp
+  ./src-gui/model/SaveLoadSettings.cpp
+  ./src-gui/model/HttpMessage.cpp
+  ./src-gui/view/TrackerWindow.cpp
+  ./src-gui/view/AboutWindow.cpp
+  ./src-gui/view/BigPictureWindow.cpp
+  ./src-gui/view/Draw.cpp
+  ./src-gui/view/FullscreenWindow.cpp
+  ./src-gui/view/HelpWindow.cpp
+  ./src-gui/view/MainWindow.cpp
+  ./src-gui/view/TvControlWindow.cpp
 )
 
 set (GINGAGUI_GTK_INCLUDE_DIRS
-  ../src-gui/
-  ../src-gui/model/
-  ../src-gui/view/
+  ./src-gui/
+  ./src-gui/model/
+  ./src-gui/view/
 )
 
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${GINGA_BINARY_DIR})
 
 # libginga target
 add_library (libginga STATIC ${LIBGINGA_SOURCES})
-add_dependencies (libginga nclua_build)
+if (WITH_NCLUA_BUILD)
+  add_dependencies (libginga nclua_build)
+endif()
 target_include_directories (libginga PUBLIC ${LIBGINGA_INCLUDE_DIRS})
 target_link_libraries (libginga PUBLIC ${LIBGINGA_LIBS})
 set_target_properties (libginga PROPERTIES OUTPUT_NAME "ginga")
 
 # ginga target
-add_executable (ginga ../src/ginga.cpp)
+add_executable (ginga src/ginga.cpp)
 target_include_directories (ginga PRIVATE ${GTK3_INCLUDE_DIRS})
 target_link_libraries (ginga PRIVATE libginga ${GTK3_LIBRARIES})
 
 # ginga-gl target
 if (WITH_OPENGL)
-  add_executable (ginga-gl ../src/ginga-gl.cpp)
+  add_executable (ginga-gl src/ginga-gl.cpp)
 
   target_include_directories (ginga-gl PRIVATE
     ${SDL2_INCLUDE_DIR}
@@ -291,7 +298,7 @@ if (WITH_GINGAQT)
   find_package (Qt5 REQUIRED COMPONENTS Core Widgets)
 
   add_executable (ginga-qt
-    ../src/ginga-qt.cpp
+    ./src/ginga-qt.cpp
   )
 
   target_link_libraries (ginga-qt
@@ -311,12 +318,6 @@ if (WITH_GINGAQT)
   )
 endif ()
 
-# Copy datafiles to build dir
-add_custom_target (copy-data-files ALL
-  COMMAND ${CMAKE_COMMAND} -E
-    copy_directory ${CMAKE_SOURCE_DIR}/../data ${CMAKE_BINARY_DIR}/data
-)
-
 # Set rpath so that libraries can be placed next to the executable.
 set_target_properties (ginga PROPERTIES INSTALL_RPATH "$ORIGIN")
 set_target_properties (ginga PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
@@ -330,14 +331,14 @@ if (WITH_CEF)
   SET_LINUX_SUID_PERMISSIONS(ginga "${CEF_TARGET_OUT_DIR}/chrome-sandbox")
 endif()
 
-configure_file (${CMAKE_SOURCE_DIR}/config.h.in config.h)
+configure_file (${CMAKE_SOURCE_DIR}/build-cmake/config.h.in config.h)
 
 # add a target to generate API documentation with Doxygen
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
   set (top_builddir ${CMAKE_CURRENT_BINARY_DIR})
   set (top_srcdir ${CMAKE_CURRENT_SOURCE_DIR}/..)
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../doc/Doxyfile.in
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/./doc/Doxyfile.in
                  ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile @ONLY)
   add_custom_target(doc
     ${DOXYGEN_EXECUTABLE} ${CMAKE_BINARY_DIR}/doc/Doxyfile
@@ -350,7 +351,9 @@ enable_testing ()
 add_custom_target (check COMMAND ${CMAKE_CTEST_COMMAND})
 macro (add_ginga_test target)
   add_executable (${target} EXCLUDE_FROM_ALL ${ARGN})
-  target_link_libraries (${target} PRIVATE libginga)
+  target_include_directories (${target} PRIVATE ${GTK3_INCLUDE_DIRS})
+  target_link_libraries (${target} PRIVATE libginga ${GTK3_LIBRARIES})
+
   set_target_properties (${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY
                          ${GINGA_BINARY_TESTS_DIR})
   add_test (${target} tests/${target})
@@ -358,10 +361,10 @@ macro (add_ginga_test target)
 endmacro ()
 
 file(GLOB GINGA_TESTS_SRC
-  "../tests/*.cpp")
+  "./tests/*.cpp")
 
-add_definitions (-DTOP_SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}/../")
-add_definitions (-DABS_TOP_SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}/../")
+add_definitions (-DTOP_SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}/./")
+add_definitions (-DABS_TOP_SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}/./")
 foreach (SRC ${GINGA_TESTS_SRC})
   get_filename_component (TEST_NAME ${SRC} NAME_WE)
   add_ginga_test (${TEST_NAME} ${SRC})
@@ -400,6 +403,6 @@ install (TARGETS ginga DESTINATION bin)
 if (WITH_GINGAGUI_GTK)
   install (TARGETS gingagui DESTINATION bin)
 endif ()
-install (DIRECTORY ../examples DESTINATION share/ginga/)
+install (DIRECTORY examples DESTINATION share/ginga/)
 
 include (CPack)
