@@ -1,4 +1,4 @@
-/* Copyright (C) 2006-2018 PUC-Rio/Laboratorio TeleMidia
+      /* Copyright (C) 2006-2018 PUC-Rio/Laboratorio TeleMidia
 
 This file is part of Ginga (Ginga-NCL).
 
@@ -26,6 +26,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include <libxml/tree.h>
 #include <libxml/parser.h>
+#include <fontconfig/fontconfig.h>
 #include <libxml/uri.h>
 
 GINGA_NAMESPACE_BEGIN
@@ -235,6 +236,8 @@ public:
   static bool pushLink (ParserState *, ParserElt *);
   static bool pushLinkParam (ParserState *, ParserElt *);
   static bool pushBind (ParserState *, ParserElt *);
+
+  static bool pushFont (ParserState *, ParserElt *);
 
 private:
   Document *_doc;      ///< The resulting #Document.
@@ -692,12 +695,33 @@ static map<string, ParserSyntaxElt> parser_syntax_table = {
       { ParserState::pushImportBase,
         nullptr,
         ELT_CACHE,
-        { "connectorBase", "descriptorBase", "regionBase", "ruleBase",
-          "transitionBase" },
+        {"connectorBase", "descriptorBase", "regionBase", "ruleBase",
+          "transitionBase", "fontBase"},
         { { "alias", ATTR_REQUIRED_NONEMPTY_NAME },
           { "documentURI", ATTR_REQUIRED },
           { "region", 0 },     // unused
           { "baseId", 0 } } }, // unused
+  },
+  {
+    "fontBase",
+    {
+      nullptr,
+      nullptr,
+      ELT_CACHE,
+      {"head"},
+      {} // no attributes
+    }
+  },
+  {
+    "font",
+    {ParserState::pushFont,
+      nullptr,
+      ELT_CACHE,
+      {"fontBase"},
+      { {"fontFamily", ATTR_REQUIRED},
+        {"src", ATTR_REQUIRED},
+        {"fontStyle", 0},
+        {"fontWeight", 0} } },
   },
   {
       "body",
@@ -3916,6 +3940,15 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
                 delete tmpMedia;
             }
 
+          gchar *scheme = g_uri_parse_scheme (src.c_str  ());
+          if (g_strcmp0 (scheme, "streambuf") == 0)
+            {
+              string filename = src.substr (12);
+              src = string ("file:/tmp/") + filename + ".mp4";
+            }
+          g_free (scheme);
+          // xmlFree (s);
+
           // add this Media as refer to MediaSettings
           parent = cast (Composition *, st->objStackPeek ());
           g_assert_nonnull (parent);
@@ -4148,6 +4181,77 @@ ParserState::pushBind (ParserState *st, ParserElt *elt)
   UDATA_SET (elt, "params", &binds->back ().params, nullptr);
 
   return true;
+}
+
+/**
+ * @brief Starts the processing of \<font\> element.
+ *
+ * This function parses \p elt and loads the font using fontconfig.
+ *
+ * @param st #ParserState
+ * @param elt Element wrapper.
+ * @return \c true if successful, or \c false otherwise.
+ */
+bool
+ParserState::pushFont (ParserState *st, ParserElt *elt)
+{
+  string family, src, style = "normal", weight = "normal";
+
+  g_assert (elt->getAttribute ("fontFamily", &family));
+  g_assert (elt->getAttribute ("src", &src));
+
+  elt->getAttribute ("fontStyle", &style);
+  elt->getAttribute ("fontWeight", &weight);
+
+  // fixme:  We should also handle remote URIs; g_file_move could help us.
+  if (st->getURI () != "")
+    {
+      xmlChar *s = xmlBuildURI (toXmlChar (src), toXmlChar (st->getURI()));
+      src = toCPPString (s);
+      xmlFree (s);
+      src = xpathfromuri (src.c_str ());
+    }
+  else
+    src = xpathmakeabs (src);
+
+  const FcChar8 *fcfilename = (const FcChar8 *) src.c_str();
+  FcBool fontAddStatus = FcConfigAppFontAddFile (NULL, fcfilename);
+
+  TRACE ("Adding font family='%s' src='%s' success: %d.",
+         family.c_str(), src.c_str(), fontAddStatus);
+
+  if (fontAddStatus == FcTrue)
+    {
+      //  Replaces font metadata with the specifications in the <font> elt.
+      FcFontSet *fontSet = FcConfigGetFonts (FcConfigGetCurrent(),
+                                             FcSetApplication);
+      FcPattern *font = fontSet->fonts[fontSet->nfont-1];
+
+      // family
+      const FcChar8 *fcfamily = (const FcChar8 *) family.c_str();
+      FcPatternRemove (font, FC_FAMILY, 0);
+      FcPatternAddString (font, FC_FAMILY, fcfamily);
+
+      FcPatternRemove (font, FC_FULLNAME, 0);
+      FcPatternAddString (font, FC_FULLNAME, fcfamily);
+
+      // style
+      FcPatternRemove (font, FC_STYLE, 0);
+      FcPatternAddString (font, FC_STYLE, (const FcChar8 *) style.c_str ());
+
+      // weight
+      FcPatternRemove (font, FC_WEIGHT, 0);
+      if (weight == "bold")
+        FcPatternAddInteger (font, FC_WEIGHT, FC_WEIGHT_BOLD);
+      else
+        FcPatternAddInteger (font, FC_WEIGHT, FC_WEIGHT_NORMAL);
+
+      FcPatternRemove (font, FC_POSTSCRIPT_NAME, 0);
+
+//      FcPatternPrint (new_font);
+    }
+
+  return (fontAddStatus == FcTrue);
 }
 
 // External API.
