@@ -202,7 +202,7 @@ void
 apply_theme ()
 {
   GError *error = NULL;
-  GtkCssProvider *css_provider = gtk_css_provider_get_default ();
+  GtkCssProvider *css_provider = gtk_css_provider_new ();
 
   gchar *filename;
   if (presentationAttributes.guiTheme == 0)
@@ -516,7 +516,7 @@ keyboard_callback (unused (GtkWidget *widget), GdkEventKey *e,
       break;
     case GDK_KEY_B:
     case GDK_KEY_b:
-      if (isCrtlModifierActive)
+        //if (isCrtlModifierActive)
         //  create_bigpicture_window ();
         break;
     case GDK_KEY_D:
