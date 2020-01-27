@@ -74,11 +74,13 @@ m4_define([lua_required_version],        [5.2])
 m4_define([nclua_required_version],      [1.0])
 m4_define([opengl_required_version],     [17.0])
 m4_define([soup_required_version],       [2.42])
+m4_define([fontconfig_required_version], [0.29.1])
 AC_SUBST([CEF_REQUIRED_VERSION],         cef_required_version)
 AC_SUBST([LIBRSVG_REQUIRED_VERSION],     librsvg_required_version)
 AC_SUBST([LUA_REQUIRED_VERSION],         cef_required_version)
 AC_SUBST([NCLUA_REQUIRED_VERSION],       nclua_required_version)
 AC_SUBST([OPENGL_REQUIRED_VERSION],      opengl_required_version)
+AC_SUBST([FONTCONFIG_REQUIRED_VERSION],  fontconfig_required_version)
 
 # Compiler checks.
 AC_PROG_CXX
@@ -203,6 +205,9 @@ AU_CHECK_PKG([PANGO],
  [pango >= pango_required_version
   pangocairo >= pango_required_version])
 
+AU_CHECK_PKG([FONTCONFIG],
+ [fontconfig >= fontconfig_required_version])
+
 # Optional dependencies.
 
 # AU_CHECK_OPTIONAL_PKG([SOUP], [libsoup-2.4 >= soup_required_version],
@@ -301,6 +306,7 @@ AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $NCLUA_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $OPENGL_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $PANGO_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $SOUP_CFLAGS"])
+AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $FONTCONFIG_CFLAGS"])
 AC_SUBST([GINGA_ALL_CXXFLAGS])
 
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $CAIRO_LIBS"])
@@ -315,6 +321,8 @@ AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $NCLUA_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $OPENGL_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $PANGO_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $SOUP_LIBS"])
+AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $FONTCONFIG_LIBS"])
+
 AC_SUBST([GINGA_ALL_LDFLAGS])
 
 # Directories.
