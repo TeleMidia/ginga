@@ -295,7 +295,9 @@ Player::setProperty (const string &name, const string &value)
   _value = value;
 
   code = Player::getPlayerProperty (name, &defval);
-  if (code == Player::PROP_UNKNOWN)
+
+  // NCLua media should perform the doSetProperty to trigger registred funcs
+  if (code == Player::PROP_UNKNOWN && this->getProperty("type") != "application/x-ginga-NCLua")
     goto done;
 
   if (_value == "")
