@@ -82,6 +82,7 @@ Required:
   * GTK+ >= 3.4
   * Pango >= 1.30
   * Libxml >= 2.9
+  * FontConfig
 
 Optional:
 
@@ -99,7 +100,7 @@ On Ubuntu-based distros, to install the dependencies run:
         cmake cmake-data liblua5.2-dev libglib2.0-dev libpango1.0-dev \
         librsvg2-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
         gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-libav \
-        libgtk-3-dev libsoup2.4-dev -qq
+        libgtk-3-dev libsoup2.4-dev libfontconfig1-dev -qq
 
 To build with autotools run:
 
