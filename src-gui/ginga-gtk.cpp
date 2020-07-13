@@ -180,10 +180,10 @@ main (int argc, char **argv)
   saved_argc = argc;
   saved_argv = g_strdupv (argv);
 
-  // #ifdef G_OS_WIN32
-  //   HWND var = GetConsoleWindow ();
-  //   ShowWindow (var, SW_HIDE);
-  // #endif
+  #ifdef G_OS_WIN32
+    HWND var = GetConsoleWindow ();
+    ShowWindow (var, SW_HIDE);
+  #endif
 
   opts.width = presentationAttributes.resolutionWidth;
   opts.height = presentationAttributes.resolutionHeight;
