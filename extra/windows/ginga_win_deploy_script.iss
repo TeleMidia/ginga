@@ -57,7 +57,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 
 ; Ginga
-;Source: "C:\tools\msys64\mingw64\bin\ginga.exe"; DestDir: "{app}\ginga\"; Flags: ignoreversion
+Source: "C:\tools\msys64\mingw64\bin\ginga.exe"; DestDir: "{app}\ginga\"; Flags: ignoreversion
 Source: "C:\tools\msys64\mingw64\bin\gingagui.exe"; DestDir: "{app}\ginga\"; Flags: ignoreversion
 Source: {#SourcePath}\{#MyAppIcoName}; DestDir: "{app}\"; Flags: ignoreversion
 
@@ -140,7 +140,6 @@ Source: "C:\tools\msys64\mingw64\bin\zlib1.dll"; DestDir: "{app}\ginga\"; Flags:
 Source: "C:\tools\msys64\mingw64\lib\gstreamer-1.0\*"; DestDir: "{app}\ginga\lib\gstreamer-1.0"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 ; Gstreamer plugin bin
-
 Source: "C:\tools\msys64\mingw64\bin\avcodec-58.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion
 Source: "C:\tools\msys64\mingw64\bin\avfilter-7.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion
 Source: "C:\tools\msys64\mingw64\bin\avformat-58.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion

@@ -22,12 +22,14 @@ Build with autotools.
 ## Create installer on Windows
 
 Download rcedit (<github.com/electron/rcedit/releases>) to extra/windows folder.
+
+    $ wget https://github.com/electron/rcedit/releases/download/v1.1.1/rcedit-x64.exe -O extra/windows/rcedit-x64.exe
+    
 Download Inno Setup (<www.jrsoftware.org/isinfo.php>).
 
 First, change ginga and gingagui icons using (run terminal with admin privileges):
 
-    $ extra/windows/rcedit-x64.exe /mingw64/bin/ginga.exe --set-icon extra/windows/icon.ico
-    $ extra/windows/rcedit-x64.exe /mingw64/bin/gingagui.exe --set-icon extra/windows/icon.ico
+    $ extra/windows/rcedit-x64.exe /mingw64/bin/ginga.exe --set-icon extra/windows/icon.ico && extra/windows/rcedit-x64.exe /mingw64/bin/gingagui.exe --set-icon extra/windows/icon.ico
 
 Run `ginga_win_deploy_script.iss` with Inno Setup.
 - If your Windows drive is not C:\\ the script must be modified
