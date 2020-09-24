@@ -208,32 +208,8 @@ AU_CHECK_PKG([PANGO],
 AU_CHECK_PKG([FONTCONFIG],
  [fontconfig >= fontconfig_required_version])
 
-# Optional dependencies.
-
-# AU_CHECK_OPTIONAL_PKG([SOUP], [libsoup-2.4 >= soup_required_version],
-#  [AC_LANG_PROGRAM([[
-# #include <libsoup/soup.h>
-# #if !SOUP_CHECK_VERSION  \
-#     (SOUP_REQUIRED_MAJOR,\
-#      SOUP_REQUIRED_MINOR,\
-#      SOUP_REQUIRED_MICRO)
-# # error "soup is too old"
-# #endif
-#  ]])],
-#  [AC_LANG_PROGRAM([[]], [[glib_check_version (0, 0, 0);]])])
-
-AU_CHECK_OPTIONAL_PKG([soup], [build with gingagui GTK support], [],
- [SOUP], libsoup-2.4 >= soup_required_version,
- [AC_LANG_PROGRAM([[
-#include <libsoup/soup.h>
-#if !SOUP_CHECK_VERSION  \
-    (SOUP_REQUIRED_MAJOR,\
-     SOUP_REQUIRED_MINOR,\
-     SOUP_REQUIRED_MICRO)
-# error "soup is too old"
-#endif
- ]])],
- [AC_LANG_PROGRAM([[]], [[soup_session_new_with_options (0, 0, 0);]])])
+AU_CHECK_PKG([SOUP],
+ [libsoup-2.4 >= soup_required_version])
 
 AC_ARG_WITH([cef],
  [AS_HELP_STRING([--with-cef=DIR],

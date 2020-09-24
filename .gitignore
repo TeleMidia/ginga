@@ -43,6 +43,8 @@ ginga.cbp
 .dirstamp
 .libs
 .patch_number
+/extra/macos/Ginga.app/
+/extra/macos/Ginga/
 /_build
 /INSTALL
 /TODO
