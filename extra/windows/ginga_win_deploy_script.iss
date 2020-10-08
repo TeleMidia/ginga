@@ -59,6 +59,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 ; Ginga
 Source: "C:\tools\msys64\mingw64\bin\ginga.exe"; DestDir: "{app}\ginga\"; Flags: ignoreversion
 Source: "C:\tools\msys64\mingw64\bin\gingagui.exe"; DestDir: "{app}\ginga\"; Flags: ignoreversion
+Source: "C:\tools\msys64\mingw64\bin\libginga-0.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion
 Source: {#SourcePath}\{#MyAppIcoName}; DestDir: "{app}\"; Flags: ignoreversion
 
 
@@ -208,14 +209,14 @@ Source: "C:\tools\msys64\mingw64\bin\libopenal-1.dll"; DestDir: "{app}\ginga\"; 
 Source: "C:\tools\msys64\mingw64\bin\libopenblas.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion
 Source: "C:\tools\msys64\mingw64\bin\libopencore-amrnb-0.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion
 Source: "C:\tools\msys64\mingw64\bin\libopencore-amrwb-0.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion
-Source: "C:\tools\msys64\mingw64\bin\libopencv_bgsegm430.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion
-Source: "C:\tools\msys64\mingw64\bin\libopencv_calib3d430.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion
-Source: "C:\tools\msys64\mingw64\bin\libopencv_core430.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion
-Source: "C:\tools\msys64\mingw64\bin\libopencv_flann430.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion
-Source: "C:\tools\msys64\mingw64\bin\libopencv_imgcodecs430.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion
-Source: "C:\tools\msys64\mingw64\bin\libopencv_imgproc430.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion
-Source: "C:\tools\msys64\mingw64\bin\libopencv_objdetect430.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion
-Source: "C:\tools\msys64\mingw64\bin\libopencv_video430.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion
+Source: "C:\tools\msys64\mingw64\bin\libopencv_bgsegm440.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion
+Source: "C:\tools\msys64\mingw64\bin\libopencv_calib3d440.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion
+Source: "C:\tools\msys64\mingw64\bin\libopencv_core440.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion
+Source: "C:\tools\msys64\mingw64\bin\libopencv_flann440.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion
+Source: "C:\tools\msys64\mingw64\bin\libopencv_imgcodecs440.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion
+Source: "C:\tools\msys64\mingw64\bin\libopencv_imgproc440.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion
+Source: "C:\tools\msys64\mingw64\bin\libopencv_objdetect440.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion
+Source: "C:\tools\msys64\mingw64\bin\libopencv_video440.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion
 Source: "C:\tools\msys64\mingw64\bin\libopenh264.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion
 Source: "C:\tools\msys64\mingw64\bin\libopenjp2-7.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion
 Source: "C:\tools\msys64\mingw64\bin\libopus-0.dll"; DestDir: "{app}\ginga\"; Flags: ignoreversion
