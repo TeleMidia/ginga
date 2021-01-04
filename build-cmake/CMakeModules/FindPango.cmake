@@ -1,47 +1,52 @@
-# - Try to find the pango library
-# Once done this will define
-#
-#  PANGO_FOUND - system has pango
-#  PANGO_INCLUDE_DIRS - the pango include directory
-#  PANGO_LIBRARIES - Link these to use pango
-#
-# Define PANGO_MIN_VERSION for which version desired.
-#
+find_package(PkgConfig)
+pkg_check_modules(PC_PANGO pango QUIET)
+if(PC_PANGO_FOUND)
+        find_package_handle_standard_args(Pango DEFAULT_MSG
+                PC_PANGO_INCLUDE_DIRS PC_PANGO_LIBRARIES
+                )
 
-INCLUDE(FindPkgConfig)
+        mark_as_advanced(PC_PANGO_FOUND)
+        set(PANGO_INCLUDE_DIRS ${PC_PANGO_INCLUDE_DIRS})
+        set(PANGO_LIBRARIES ${PC_PANGO_LIBRARIES})
+        set(PANGO_LIBRARY_DIRS ${PC_PANGO_LIBRARY_DIRS})
+        return()
+endif()
 
-IF(Pango_FIND_REQUIRED)
-        SET(_pkgconfig_REQUIRED "REQUIRED")
-ELSE(Pango_FIND_REQUIRED)
-        SET(_pkgconfig_REQUIRED "")
-ENDIF(Pango_FIND_REQUIRED)
+# Try manually if no pkg-config
+find_path(PANGO_INCLUDE_DIR
+        NAMES
+        pango/pango.h
+        HINTS
+        ${PC_PANGO_INCLUDEDIR}
+        ${PC_PANGO_INCLUDE_DIRS}
+        )
 
-IF(PANGO_MIN_VERSION)
-        PKG_SEARCH_MODULE(PANGO ${_pkgconfig_REQUIRED} "pango>=${PANGO_MIN_VERSION} pangocairo>=${PANGO_MIN_VERSION}")
-ELSE(PANGO_MIN_VERSION)
-        PKG_SEARCH_MODULE(PANGO ${_pkgconfig_REQUIRED} "pango pangocairo")
-ENDIF(PANGO_MIN_VERSION)
+find_library(PANGO_LIBRARY
+        NAMES
+        pango libpango pango-1.0
+        HINTS
+        ${PC_PANGO_LIBDIR}
+        ${PC_PANGO_LIBRARIES}
+        PATH_SUFFIXES
+        pango
+        )
 
-IF(NOT PANGO_FOUND AND NOT PKG_CONFIG_FOUND)
-        FIND_PATH(PANGO_INCLUDE_DIRS pango.h)
-        FIND_LIBRARY(PANGO_LIBRARIES pango pangocairo)
+pkg_check_modules(PC_GLIB REQUIRED glib-2.0)
+pkg_check_modules(PC_GOBJECT REQUIRED gobject-2.0)
+pkg_check_modules(PC_GMODULE REQUIRED gmodule-2.0)
 
-        # Report results
-        IF(PANGO_LIBRARIES AND PANGO_INCLUDE_DIRS)
-                SET(PANGO_FOUND 1)
-                IF(NOT Pango_FIND_QUIETLY)
-                        MESSAGE(STATUS "Found Pango: ${PANGO_LIBRARIES}")
-                ENDIF(NOT Pango_FIND_QUIETLY)
-        ELSE(PANGO_LIBRARIES AND PANGO_INCLUDE_DIRS)
-                IF(Pango_FIND_REQUIRED)
-                        MESSAGE(SEND_ERROR "Could not find Pango")
-                ELSE(Pango_FIND_REQUIRED)
-                        IF(NOT Pango_FIND_QUIETLY)
-                                MESSAGE(STATUS "Could not find Pango")
-                        ENDIF(NOT Pango_FIND_QUIETLY)
-                ENDIF(Pango_FIND_REQUIRED)
-        ENDIF(PANGO_LIBRARIES AND PANGO_INCLUDE_DIRS)
-ENDIF(NOT PANGO_FOUND AND NOT PKG_CONFIG_FOUND)
+if(PANGO_LIBRARY) # avoid false positive finds
+        list(APPEND PANGO_LIBRARY ${PC_GLIB_LIBRARIES} ${PC_GOBJECT_LIBRARIES} ${PC_GMODULE_LIBRARIES})
+        list(APPEND PANGO_INCLUDE_DIR ${PC_GLIB_INCLUDE_DIRS} ${PC_OBJECT_INCLUDE_DIRS} ${PC_GMODULE_INCLUDE_DIRS})
+        list(APPEND PANGO_LIBRARY_DIR ${PC_GLIB_LIBRARY_DIRS} ${PC_GOBJECT_LIBRARY_DIRS} ${PC_GMODULE_LIBRARY_DIRS})
+endif()
 
-# Hide advanced variables from CMake GUIs
-MARK_AS_ADVANCED(PANGO_LIBRARIES PANGO_INCLUDE_DIRS)
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(PANGO DEFAULT_MSG
+        PANGO_INCLUDE_DIR PANGO_LIBRARY
+        )
+
+mark_as_advanced(PANGO_INCLUDE_DIR PANGO_LIBRARY PANGO_LIBRARY_DIR)
+set(PANGO_INCLUDE_DIRS ${PANGO_INCLUDE_DIR})
+set(PANGO_LIBRARIES ${PANGO_LIBRARY})
+set(PANGO_LIBRARY_DIRS ${PANGO_LIBRARY_DIR})
