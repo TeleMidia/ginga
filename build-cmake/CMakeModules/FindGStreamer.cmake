@@ -63,6 +63,7 @@ macro(FIND_GSTREAMER_COMPONENT _component_prefix _pkgconfig_name _library)
         pkg_check_modules(PC_${_component_prefix} ${_pkgconfig_name})
     endif ()
     set(${_component_prefix}_INCLUDE_DIRS ${PC_${_component_prefix}_INCLUDE_DIRS})
+    set(${_component_prefix}_LIBRARIES ${PC_${_component_prefix}_LIBRARIES})
 
     find_library(${_component_prefix}_LIBRARIES
         NAMES ${_library}
