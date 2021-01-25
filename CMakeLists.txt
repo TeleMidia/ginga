@@ -24,7 +24,6 @@ find_package (GLIB 2.32 REQUIRED COMPONENTS gobject gio gthread gmodule)
 
 find_package (LibSoup 2.42.0)
 find_package (LibXml2 REQUIRED)
-find_package (GDKPixBuf REQUIRED)
 find_package (GDK3 REQUIRED)
 
 find_package (Cairo REQUIRED)
@@ -83,7 +82,7 @@ if (WITH_NCLUA_BUILD)
   link_directories ("${install_dir}/lib")
   add_definitions (-DWITH_NCLUA=1)
 else()
-  PKG_CHECK_MODULES(NCLUA nclua)
+  PKG_CHECK_MODULES(NCLUA nclua REQUIRED)
   add_definitions (-DWITH_NCLUA=1)
 endif ()
 
@@ -179,8 +178,6 @@ set (LIBGINGA_INCLUDE_DIRS
 
 set (LIBGINGA_LIBS
   pthread
-
-  expat
 
   ${GLIB_LIBRARIES}
   ${GLIB_GIO_LIBRARIES}
