@@ -1,46 +1,6 @@
-<div style="width:100%">
-<a href="https://travis-ci.org/TeleMidia/ginga/builds">
-  Ubuntu 16.04: 
-  <img src="https://travis-ci.org/TeleMidia/ginga.svg?branch=master"
-    alt="Build Status (Ubuntu 16.04)"
-    title="Build Status (Ubuntu 16.04)">
-</a>
-&nbsp; &nbsp; &nbsp;
-<a href="https://ci.appveyor.com/project/robertogerson/ginga">
-  Windows:
-   <img src="https://ci.appveyor.com/api/projects/status/1j9m853yd87o4691?svg=true"
-    alt="Build Status (Windows)" title="Build Status (Windows)">
-</a>
-</div>
-
 # Ginga
 
-The iTV middleware.
-
-+ http://www.ginga.org.br
-+ http://www.ncl.org.br
-+ http://www.telemidia.puc-rio.br
-
-<!-- ## Releases
-
-There are no stable releases yet. -->
-
-## Nightly builds
-
-**Linux Debian/Ubuntu/Mint**:
-
-To install a nightly build of this repository you can run:
-
-``` bash
-sudo add-apt-repository ppa:telemidia/daily-builds
-sudo apt-get update
-sudo apt-get install ginga-itv
-```
-
-WARNING:  Nightly builds are automatically generated builds from the latest
-development code.  By their nature these builds are likely to contain bugs.
-**We value your help**.  Please, [report problems or give us feedback if you
-find any problem](https://github.com/telemidia/ginga/issues).
+The iTV middleware. More information in http://www.ginga.org.br
 
 ## Usage
 
@@ -56,37 +16,27 @@ To check the available options, run:
 ginga --help
 ```
 
-## Building the repository
+## Nightly builds on Ubuntu-based systems
 
-### Dependencies
+``` bash
+sudo add-apt-repository ppa:telemidia/daily-builds
+sudo apt-get update
+sudo apt-get install ginga-itv
+```
 
-Required:
+## Build
 
-* Cairo >= 1.10
-* GLib >= 2.32
-* GStreamer >= 1.8
-* GTK+ >= 3.4
-* Pango >= 1.30
-* Libxml >= 2.9
-* FontConfig
+Required dependencies: Cairo >= 1.10, GLib >= 2.32, GStreamer >= 1.8, GTK+ >= 3.4, Pango >= 1.30, Libxml >= 2.9, FontConfig
+Optional dependencies: CEF >= 3.0, librsvg >= 2.40, libsoup >= 2.42, Lua</a> >= 5.2, <a href="https://github.com/TeleMidia/nclua">NCLua</a> >= 1.0
 
-Optional:
+### Build on Ubuntu-based system
 
-* <a href="https://bitbucket.org/chromiumembedded/cef">CEF</a> >= 3.0
-* <a href="https://wiki.gnome.org/LibRsvg"> librsvg </a> >= 2.40
-* <a href="https://wiki.gnome.org/LibSoup"> libsoup </a> >= 2.42
-* <a href="https://www.lua.org">Lua</a> >= 5.2
-* <a href="https://github.com/TeleMidia/nclua">NCLua</a> >= 1.0
-
-### Linux
-
-To install dependencies on a Ubuntu-based distro, run:
-
+Instal depedencies:
 ``` bash
 sudo apt-get install -y pkg-config dpkg-dev dh-autoreconf libltdl-dev liblua5.2-dev libglib2.0-dev libpango1.0-dev librsvg2-dev libsoup2.4-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libfontconfig1-dev libgtk-3-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav nclua -qq
 ```
 
-To build with autotools run:
+build with autotools:
 
 ``` bash
 ./bootstrap
@@ -94,7 +44,7 @@ To build with autotools run:
 make
 ```
 
-To build with `cmake` run:
+or build with `cmake`:
 
 ``` bash
 mkdir _build && cd _build
@@ -102,21 +52,19 @@ cmake ../build-cmake
 make
 ```
 
-Build with `cmake` will download and builds the <a
-href="https://github.com/TeleMidia/nclua">NCLua</a> library automatically.
+### Build on windows
 
-To build on windows, see [extra/windows/README.md](extra/windows/README.md).
+See [extra/windows/README.md](extra/windows/README.md).
 
-To build on macOS, see [extra/macos/README.md](extra/macos/README.md).
+### Build on macos
+
+See [extra/macos/README.md](extra/macos/README.md).
 
 ## Support
 
 There is not a dedicated mailing list for Ginga yet. If you have a question or want to discuss the develoment of Ginga itself post an [issue](https://github.com/telemidia/ginga/issues) or send a message to info@telemidia.puc-rio.br.
 
-## Development
-
 * <a href="http://www.telemidia.puc-rio.br/~gflima/misc/ginga">Read the API documentation</a>.
-
 * <a href="https://github.com/TeleMidia/ginga/issues">Find and file bug reports</a>.
 
 ---
