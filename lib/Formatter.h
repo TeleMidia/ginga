@@ -22,6 +22,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 
 #include "Document.h"
+#include "WebServices.h"
 
 GINGA_NAMESPACE_BEGIN
 
@@ -42,6 +43,7 @@ public:
 
   bool start (const std::string &, std::string *);
   bool stop ();
+  bool startWebServices ();
 
   void resize (int, int);
   void redraw (cairo_t *);
@@ -61,6 +63,7 @@ public:
   explicit Formatter (const GingaOptions *);
   ~Formatter ();
 
+  WebServices *getWebService ();
   Document *getDocument ();
   bool getEOS ();
   void setEOS (bool);
@@ -93,6 +96,9 @@ private:
   /// @brief The saved value of environment variable G_MESSAGES_DEBUG.
   string _saved_G_MESSAGES_DEBUG;
 
+  /// @brief Current WebServices.
+  WebServices *_webservices;
+  
   /// @brief Current document tree.
   Document *_doc;
 

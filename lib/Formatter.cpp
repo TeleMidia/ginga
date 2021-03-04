@@ -120,6 +120,11 @@ Formatter::getState ()
 }
 
 bool
+Formatter::startWebServices (){
+  return _webservices->start();
+}
+
+bool
 Formatter::start (const string &file, string *errmsg)
 {
   int w, h;
@@ -129,6 +134,9 @@ Formatter::start (const string &file, string *errmsg)
   if (_state != GINGA_STATE_STOPPED)
     return false;
 
+  if (!_webservices->isStarted())
+    this->startWebServices();
+  
   // Parse document.
   g_assert_null (_doc);
   w = _opts.width;
@@ -449,6 +457,7 @@ Formatter::Formatter (const GingaOptions *opts) : Ginga (opts)
       = (s = g_getenv ("G_MESSAGES_DEBUG")) ? string (s) : "";
 
   _doc = nullptr;
+  _webservices = new WebServices(this);
   _docPath = "";
   _eos = false;
 
