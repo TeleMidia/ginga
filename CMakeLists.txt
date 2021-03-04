@@ -122,6 +122,8 @@ else()
   add_definitions (-DWITH_CEF=0)
 endif()
 
+PKG_CHECK_MODULES(GSSDP gssdp-1.2 REQUIRED)
+
 set (LIBGINGA_SOURCES
   ./lib/ginga.h
   ./lib/aux-ginga.cpp
@@ -148,6 +150,8 @@ set (LIBGINGA_SOURCES
   ./lib/PlayerSigGen.cpp
   ./lib/PlayerText.cpp
   ./lib/PlayerVideo.cpp
+  
+  ./lib/WebServices.cpp
 
 #if WITH_LIBRSVG
   ./lib/PlayerSvg.cpp
@@ -172,6 +176,9 @@ set (LIBGINGA_INCLUDE_DIRS
   ${GSTREAMER_INCLUDE_DIRS}
   ${GSTREAMER_BASE_INCLUDE_DIRS}
 
+  ${LIBSOUP_INCLUDE_DIRS}
+  ${GSSDP_INCLUDE_DIRS}
+  
   ${NCLUA_INCLUDE_DIRS}
   ${LUA_INCLUDE_DIR}
 )
@@ -194,6 +201,9 @@ set (LIBGINGA_LIBS
   ${GSTREAMER_APP_LIBRARIES}
   ${GSTREAMER_VIDEO_LIBRARIES}
 
+  ${LIBSOUP_LIBRARIES}
+  ${GSSDP_LIBRARIES}
+  
   ${NCLUA_LIBRARIES}
   ${LUA_LIBRARIES}
 )
