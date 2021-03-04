@@ -26,7 +26,7 @@ sudo apt-get install ginga-itv
 
 ## Build
 
-Required dependencies: Cairo >= 1.10, GLib >= 2.32, GStreamer >= 1.8, GTK+ >= 3.4, Pango >= 1.30, Libxml >= 2.9, FontConfig
+Required dependencies: Cairo >= 1.10, GLib >= 2.32, GStreamer >= 1.8, GTK+ >= 3.4, Pango >= 1.30, Libxml >= 2.9, FontConfig  
 Optional dependencies: CEF >= 3.0, librsvg >= 2.40, libsoup >= 2.42, Lua</a> >= 5.2, <a href="https://github.com/TeleMidia/nclua">NCLua</a> >= 1.0
 
 ### Build on Ubuntu-based system
