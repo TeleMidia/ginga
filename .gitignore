@@ -39,7 +39,6 @@ ginga.cbp
 *~
 .#*
 .deps
-.vscode/*
 .dirstamp
 .libs
 .patch_number
