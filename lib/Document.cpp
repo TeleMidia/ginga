@@ -132,6 +132,9 @@ Document::addObject (Object *obj)
       Media *media = cast (Media *, obj);
       g_assert_nonnull (media);
       _medias.insert (media);
+        if (Player::mayUsePlayerRemote(media)){
+        _mediasRemote.insert (media);
+        }
     }
   else if (instanceof (Context *, obj))
     {
@@ -178,6 +181,12 @@ const set<Media *> *
 Document::getMedias ()
 {
   return &_medias;
+}
+
+const set<Media *> *
+Document::getMediasRemote ()
+{
+  return &_mediasRemote;
 }
 
 const set<Context *> *

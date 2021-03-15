@@ -123,6 +123,7 @@ else()
 endif()
 
 PKG_CHECK_MODULES(GSSDP gssdp-1.2 REQUIRED)
+PKG_CHECK_MODULES(JSON jsoncpp REQUIRED)
 
 set (LIBGINGA_SOURCES
   ./lib/ginga.h
@@ -142,7 +143,7 @@ set (LIBGINGA_SOURCES
   ./lib/ParserLua.cpp
   ./lib/Predicate.cpp
   ./lib/Switch.cpp
-
+  
   ./lib/Player.cpp
   ./lib/PlayerAnimator.cpp
   ./lib/PlayerImage.cpp
@@ -150,6 +151,7 @@ set (LIBGINGA_SOURCES
   ./lib/PlayerSigGen.cpp
   ./lib/PlayerText.cpp
   ./lib/PlayerVideo.cpp
+  ./lib/PlayerRemote.cpp
   
   ./lib/WebServices.cpp
 
@@ -178,6 +180,7 @@ set (LIBGINGA_INCLUDE_DIRS
 
   ${LIBSOUP_INCLUDE_DIRS}
   ${GSSDP_INCLUDE_DIRS}
+  ${JSON_INCLUDE_DIRS}
   
   ${NCLUA_INCLUDE_DIRS}
   ${LUA_INCLUDE_DIR}
@@ -203,6 +206,7 @@ set (LIBGINGA_LIBS
 
   ${LIBSOUP_LIBRARIES}
   ${GSSDP_LIBRARIES}
+  ${JSON_LIBRARIES}
   
   ${NCLUA_LIBRARIES}
   ${LUA_LIBRARIES}

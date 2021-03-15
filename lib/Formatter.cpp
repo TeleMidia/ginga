@@ -27,6 +27,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "Parser.h"
 #include "PlayerText.h"
+#include "WebServices.h"
 
 /**
  * @file Formatter.cpp

@@ -45,6 +45,7 @@ public:
   Context *getRoot ();
   MediaSettings *getSettings ();
   const set<Media *> *getMedias ();
+  const set<Media *> *getMediasRemote ();
   const set<Context *> *getContexts ();
   const set<Switch *> *getSwitches ();
 
@@ -63,6 +64,7 @@ private:
   Context *_root;                     ///< Root context (body).
   MediaSettings *_settings;           ///< Settings object.
   set<Media *> _medias;               ///< Media objects.
+  set<Media *> _mediasRemote;         ///< Media objects.
   set<Context *> _contexts;           ///< Context objects.
   set<Switch *> _switches;            ///< Switch objects.
   UserData _udata;                    ///< Attached user data.

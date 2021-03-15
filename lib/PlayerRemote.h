@@ -15,51 +15,36 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef WEBSERVICES_H
-#define WEBSERVICES_H
+#ifndef MEDIA_REMOTE_H
+#define MEDIA_REMOTE_H
 
-#include "aux-ginga.h"
-#include <libgssdp/gssdp.h>
+#include "Player.h"
 #include <libsoup/soup.h>
 
 GINGA_NAMESPACE_BEGIN
-class Formatter;
-class Media;
 
-/**
- * @brief PlayerRemoteData.
- */
-typedef struct
-{
-  string location;
-  string deviceType;
-  list<string> supportedFormats;
-  list<string> recognizedableEvents;
-} PlayerRemoteData;
+class WebServices;
 
-/**
- * @brief WebSercices.
- */
-
-class WebServices
+class PlayerRemote : public Player
 {
 public:
-  explicit WebServices (Formatter *);
-  ~WebServices ();
-  bool start ();
-  bool isStarted ();
-  const char *_host_addr;
-  bool machMediaThenSetPlayerRemote (PlayerRemoteData &);
+  explicit PlayerRemote (Formatter *, Media *);
+  ~PlayerRemote ();
+  void start ();
+  void startPreparation ();
+  void stop ();
+  void pause ();
+  void resume ();
 
-private:
-  Formatter *_formatter;
-  bool _started;
-  map<Media *, PlayerRemoteData> _playerMap;
-  GSSDPClient *_client;
-  GSSDPResourceGroup *_resource_group;
-  SoupServer *_ws;
+protected:
+  bool doSetProperty (Property, const string &, const string &);
+  bool sendAction (const string &);
+  char * _url;
+  bool _sessionStarted;
+  WebServices *_ws;
+  SoupSession *_session;
 };
 
 GINGA_NAMESPACE_END
 
-#endif // WebServices_H
+#endif // MEDIA_REMOTE_H

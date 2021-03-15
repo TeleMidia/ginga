@@ -22,10 +22,10 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 
 #include "Document.h"
-#include "WebServices.h"
 
 GINGA_NAMESPACE_BEGIN
 
+class WebServices;
 class Context;
 class Event;
 class Media;
