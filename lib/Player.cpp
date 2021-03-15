@@ -25,6 +25,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "PlayerText.h"
 #include "PlayerVideo.h"
 #include "PlayerSigGen.h"
+#include "PlayerRemote.h"
 
 #if defined WITH_NCLUA && WITH_NCLUA
 #include "PlayerLua.h"
@@ -120,6 +121,7 @@ static map<string, PlayerPropertyInfo> player_property_map = {
   { "fontWeight", { Player::PROP_FONT_WEIGHT, true, "" } },
   { "freeze", { Player::PROP_FREEZE, true, "false" } },
   { "freq", { Player::PROP_FREQ, true, "440" } },
+  { "remotePlayerBaseURL", { Player::PROP_REMOTE_PLAYER_BASE_URL, false, "" } },
   { "height", { Player::PROP_HEIGHT, true, "100%" } },
   { "horzAlign", { Player::PROP_HORZ_ALIGN, true, "left" } },
   { "left", { Player::PROP_LEFT, true, "0" } },
@@ -128,7 +130,7 @@ static map<string, PlayerPropertyInfo> player_property_map = {
   { "right", { Player::PROP_RIGHT, false, "0%" } },
   { "size", { Player::PROP_SIZE, false, "100%,100%" } },
   { "speed", { Player::PROP_SPEED, false, "1" } },
-  {"currentTime", {Player::PROP_TIME, false, "indefinite"} },
+  { "currentTime", { Player::PROP_TIME, false, "indefinite" } },
   { "time", { Player::PROP_TIME, false, "indefinite" } },
   { "top", { Player::PROP_TOP, true, "0" } },
   { "transparency", { Player::PROP_TRANSPARENCY, true, "0%" } },
@@ -142,8 +144,9 @@ static map<string, PlayerPropertyInfo> player_property_map = {
   { "zOrder", { Player::PROP_Z_ORDER, true, "0" } },
   { "uri", { Player::PROP_URI, true, "" } },
   { "type", { Player::PROP_TYPE, true, "application/x-ginga-timer" } },
-  {"offsetBuffer", {Player::PROP_BUFFER_OFFSET, true, "0"} },
-  {"endOffsetBuffer", {Player::PROP_BUFFER_OFFSET_END, true, "indefinite"} },
+  { "offsetBuffer", { Player::PROP_BUFFER_OFFSET, true, "0" } },
+  { "endOffsetBuffer",
+    { Player::PROP_BUFFER_OFFSET_END, true, "indefinite" } },
 };
 
 static map<string, string> player_property_aliases = {
@@ -320,7 +323,8 @@ Player::setProperty (const string &name, const string &value)
   code = Player::getPlayerProperty (name, &defval);
 
   // NCLua media should perform the doSetProperty to trigger registred funcs
-  if (code == Player::PROP_UNKNOWN && this->getProperty("type") != "application/x-ginga-NCLua")
+  if (code == Player::PROP_UNKNOWN
+      && this->getProperty ("type") != "application/x-ginga-NCLua")
     goto done;
 
   if (_value == "")
@@ -495,8 +499,7 @@ Player::redraw (cairo_t *cr)
     }
 }
 
-void
-Player::sendKeyEvent (unused (const string &key), unused (bool press))
+void Player::sendKeyEvent (unused (const string &key), unused (bool press))
 {
 }
 
@@ -515,6 +518,21 @@ void
 Player::setCurrentFocus (const string &index)
 {
   _currentFocus = index;
+}
+
+/**
+ * @brief Evaluates if Media uses PlayerRemote
+ */
+bool
+Player::mayUsePlayerRemote (Media *media)
+{
+  string mime = media->getProperty ("type");
+  if (mime == "application/x-ncl-360")
+    return true;
+  string device = media->getProperty ("device");
+  if (!device.empty())
+    return true;
+  return false;
 }
 
 Player::Property
@@ -593,6 +611,12 @@ Player::createPlayer (Formatter *formatter, Media *media, const string &uri,
     {
       player = new PlayerText (formatter, media);
     }
+  // if has WS setted a remotePlayerBaseURL
+  else if (media->getProperty("remotePlayerBaseURL") != "")
+    {
+      player = new PlayerRemote (formatter, media);
+      WARNING ("Create a PlayerRemote for Media '%s'", media->getId ().c_str());
+    }
 #if defined WITH_CEF && WITH_CEF
   else if (xstrhasprefix (mime, "text/html"))
     {
@@ -618,8 +642,9 @@ Player::createPlayer (Formatter *formatter, Media *media, const string &uri,
         {
           WARNING ("unknown mime '%s': creating an empty player",
                    mime.c_str ());
-          if (!media->getProperty("uri").empty ())
-            ERROR ("media from \"application/x-ginga-timer\" type should not have src");
+          if (!media->getProperty ("uri").empty ())
+            ERROR ("media from \"application/x-ginga-timer\" type should "
+                   "not have src");
         }
     }
 

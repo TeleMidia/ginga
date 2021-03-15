@@ -80,6 +80,7 @@ public:
     PROP_Z_ORDER,
     PROP_BUFFER_OFFSET,
     PROP_BUFFER_OFFSET_END,
+    PROP_REMOTE_PLAYER_BASE_URL,
   };
 
   Player (Formatter *, Media *);
@@ -127,6 +128,7 @@ public:
   // Static.
   static string getCurrentFocus ();
   static void setCurrentFocus (const string &);
+  static bool mayUsePlayerRemote (Media *);
   static Property getPlayerProperty (const string &, string *);
   static Player *createPlayer (Formatter *, Media *, const string &,
                                const string &type = "");
