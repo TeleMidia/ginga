@@ -241,7 +241,7 @@ set (GINGAGUI_GTK_INCLUDE_DIRS
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${GINGA_BINARY_DIR})
 
 # libginga target
-add_library (libginga STATIC ${LIBGINGA_SOURCES})
+add_library (libginga ${LIBGINGA_SOURCES})
 if (WITH_NCLUA_BUILD)
   add_dependencies (libginga nclua_build)
 endif()
