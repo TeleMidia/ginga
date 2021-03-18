@@ -404,6 +404,8 @@ set (CPACK_DEBIAN_COMPRESSION_TYPE "xz")
 set (CPACK_DEBIAN_REPLACES "xz")
 
 install (DIRECTORY ${CMAKE_BINARY_OUTPUT_DIR} DESTINATION bin)
+include(GNUInstallDirs)
+install(TARGETS libginga)
 install (TARGETS ginga DESTINATION bin)
 if (WITH_GINGAGUI_GTK)
   install (TARGETS gingagui DESTINATION bin)
