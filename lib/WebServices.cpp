@@ -51,7 +51,7 @@ WebServices::machMediaThenSetPlayerRemote (PlayerRemoteData &data)
 
   bool found = false;
   auto mrts = _formatter->getDocument ()->getMediasRemote ();
-  if (mrts->empty())
+  if (mrts->empty ())
     return false;
 
   // match media deviceType then set remotePlayerBaseURL
@@ -92,7 +92,7 @@ ws_null_callback (SoupServer *server, SoupMessage *msg, const char *path,
 {
   soup_message_set_status (msg, SOUP_STATUS_NOT_FOUND);
   soup_message_set_response (msg, "text/plan", SOUP_MEMORY_COPY,
-                             "route not implemented", 0);
+                             "Route not implemented", 0);
 }
 
 static void
@@ -131,7 +131,6 @@ ws_remoteplayer_callback (SoupServer *server, SoupMessage *msg,
   string errors;
   WebServices *ws = (WebServices *) user_data;
 
-  soup_message_set_status (msg, SOUP_STATUS_OK);
   WS_LOG_REQUEST (msg);
 
   if (!reader->parse (msg->request_body->data,
@@ -148,7 +147,10 @@ ws_remoteplayer_callback (SoupServer *server, SoupMessage *msg,
   list<string> recognizableEvents;
   for (const auto &item : root["recognizableEvents"])
     recognizableEvents.push_back (item.asString ());
-  ws->machMediaThenSetPlayerRemote (pdata);
+  if (ws->machMediaThenSetPlayerRemote (pdata))
+    soup_message_set_status (msg, SOUP_STATUS_OK);
+  else
+    soup_message_set_status (msg, SOUP_STATUS_NOT_FOUND);
 }
 
 bool

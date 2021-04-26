@@ -26,5 +26,6 @@ main (void)
   CHECK_TYPE (Event::SELECTION, "selection");
   CHECK_TYPE (Event::PRESENTATION, "presentation");
   CHECK_TYPE (Event::ATTRIBUTION, "attribution");
+  CHECK_TYPE (Event::LOOKAT, "lookAt");
   exit (EXIT_SUCCESS);
 }

@@ -14,8 +14,8 @@ endif()
 # Ginga-related cmake's variables
 include (GNUInstallDirs)
 set (PACKAGE "ginga")
-set (GINGA_BINARY_DIR ${CMAKE_BINARY_DIR}/bin)
-set (GINGA_BINARY_TESTS_DIR ${CMAKE_BINARY_DIR}/tests)
+set (GINGA_BINARY_DIR ${CMAKE_BINARY_DIR})
+set (GINGA_BINARY_TESTS_DIR ${CMAKE_BINARY_DIR})
 add_definitions (-DGINGADATADIR="${CMAKE_INSTALL_FULL_DATADIR}/${PACKAGE}")
 add_definitions (-DGINGABINDIR="${CMAKE_INSTALL_FULL_BINDIR}")
 
@@ -116,7 +116,7 @@ if (WITH_CEF) # Download, link, build with CEF
 
   # Logical target used to link the libcef library.
   ADD_LOGICAL_TARGET("libcef_lib" "${CEF_LIB_DEBUG}" "${CEF_LIB_RELEASE}")
-  SET (CEF_TARGET_OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/bin/")
+  SET (CEF_TARGET_OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/")
 
 else()
   add_definitions (-DWITH_CEF=0)
@@ -365,13 +365,14 @@ enable_testing ()
 add_custom_target (check COMMAND ${CMAKE_CTEST_COMMAND})
 macro (add_ginga_test target)
   add_executable (${target} EXCLUDE_FROM_ALL ${ARGN})
-  target_include_directories (${target} PRIVATE ${GTK3_INCLUDE_DIRS})
-  target_link_libraries (${target} PRIVATE libginga ${GTK3_LIBRARIES})
+  target_include_directories (${target} PUBLIC ${GTK3_INCLUDE_DIRS})
+  target_link_libraries (${target} PUBLIC libginga ${GTK3_LIBRARIES})
 
   set_target_properties (${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY
                          ${GINGA_BINARY_TESTS_DIR})
-  add_test (${target} tests/${target})
+  add_dependencies (${target} libginga)
   add_dependencies (check ${target})
+  add_test (${target} ${target})
 endmacro ()
 
 file(GLOB GINGA_TESTS_SRC

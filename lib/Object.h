@@ -60,6 +60,8 @@ public:
   Event *getPreparationEvent (const string &);
   void addPreparationEvent (const string &);
   void addPreparationEvent (const string &, Time, Time);
+  Event *getLookAtEvent (const string &);
+  void addLookAtEvent (const string &);
 
   Event *getLambda ();
   bool isOccurring ();

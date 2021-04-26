@@ -129,6 +129,20 @@ main (void)
     delete e;
   }
 
+  // LookAt
+  {
+    Event *e = new Event (Event::LOOKAT, m, "@lambda");
+    g_assert_nonnull (e);
+    g_assert (e->getType () == Event::LOOKAT);
+    g_assert (e->getObject () == m);
+    g_assert (e->getId () == "@lambda");
+    g_assert (e->getFullId () == "m<lookat>");
+    g_assert (e->getState () == Event::SLEEPING);
+    g_assert_false (e->isLambda ());
+    g_assert (!e->toString ().empty ());
+    delete e;
+  }
+
   // getStringAsTransition
   {
     g_assert (Event::getStringAsTransition ("start") == Event::START);
