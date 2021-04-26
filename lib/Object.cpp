@@ -310,6 +310,23 @@ Object::addPreparationEvent (const string &id, Time begin, Time end)
 }
 
 Event *
+Object::getLookAtEvent (const string &id)
+{
+  return this->getEvent (Event::LOOKAT, id);
+}
+
+void
+Object::addLookAtEvent (const string &id)
+{
+  Event *evt;
+  if (this->getLookAtEvent (id))
+    return;
+
+  evt = new Event (Event::LOOKAT, this, id);
+  _events.insert (evt);
+}
+
+Event *
 Object::getLambda ()
 {
   g_assert_nonnull (_lambda);

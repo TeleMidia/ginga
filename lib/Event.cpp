@@ -73,9 +73,11 @@ Event::getFullId ()
       return obj_id + "." + _id;
     case Event::SELECTION:
       return obj_id + "<" + _id + ">";
+    case Event::LOOKAT:
+      return obj_id + "<lookat>";
     case Event::PREPARATION:
       if (_id == "@lambda")
-        return obj_id + "$" + _id.substr (1, _id.length() - 1);
+        return obj_id + "$" + _id.substr (1, _id.length () - 1);
       else
         return obj_id + "$" + _id;
     default:
@@ -254,6 +256,8 @@ Event::getEventTypeAsString (Event::Type type)
       return "selection";
     case Event::PREPARATION:
       return "preparation";
+    case Event::LOOKAT:
+      return "lookAt";
     default:
       g_assert_not_reached ();
     }

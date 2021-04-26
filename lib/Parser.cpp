@@ -891,6 +891,8 @@ static map<string, pair<Event::Type, Event::Transition> >
       { "onBeginAttribution", { Event::ATTRIBUTION, Event::START } },
       { "onEndAttribution", { Event::ATTRIBUTION, Event::STOP } },
       { "onSelection", { Event::SELECTION, Event::START } },
+      { "onLookAt", { Event::LOOKAT, Event::START } },
+      { "onLookAway", { Event::LOOKAT, Event::STOP } },
       { "onBeginSelection", { Event::SELECTION, Event::START } },
       { "onEndSelection", { Event::SELECTION, Event::STOP } },
       { "onBeginPreparation", { Event::PREPARATION, Event::START } },
@@ -931,6 +933,7 @@ static map<string, Event::Type> parser_syntax_event_type_table = {
   { "presentation", Event::PRESENTATION },
   { "attribution", Event::ATTRIBUTION },
   { "selection", Event::SELECTION },
+  { "lookat", Event::LOOKAT },
   { "preparation", Event::PREPARATION },
 };
 
@@ -2775,12 +2778,19 @@ borderColor='%s'}",
                   {
                     string eventId = evt->getId ();
 
-                    if(evt->getId () == "@lambda")
+                    if(eventId == "@lambda")
                       {
                         obj->addPreparationEvent(eventId);
                       }
 
                     act.event = obj->getPreparationEvent (eventId);
+                    g_assert_nonnull (act.event);
+                    break;
+                  }
+                case Event::LOOKAT:
+                  {
+                    obj->addLookAtEvent ("@lambda");
+                    act.event = obj->getLookAtEvent ("@lambda");
                     g_assert_nonnull (act.event);
                     break;
                   }
