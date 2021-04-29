@@ -3999,10 +3999,9 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
               xmlChar *s = xmlBuildURI (toXmlChar (src),
                                         toXmlChar (st->getURI ()));
               src = toCPPString (s);
-              // If fails makes the uri based in the current dir
-              if (!xpathisuri (src) && !xpathisabs (src))
+              if (!xpathisuri (src))
                 {
-                  src = xpathmakeabs (src);
+                  src = xurifromsrc (src, "");
                 }
               xmlFree (s);
             }
