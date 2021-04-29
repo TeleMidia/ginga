@@ -63,7 +63,6 @@ public:
   explicit Formatter (const GingaOptions *);
   ~Formatter ();
 
-  WebServices *getWebService ();
   Document *getDocument ();
   bool getEOS ();
   void setEOS (bool);

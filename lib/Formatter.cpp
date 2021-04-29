@@ -40,16 +40,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
-// Option defaults.
-static GingaOptions opts_defaults = {
-  800,   // width
-  600,   // height
-  false, // debug
-  false, // experimental
-  false, // opengl
-  "",    // background ("" == none)
-};
-
 // Option data.
 typedef struct GingaOptionData
 {
@@ -121,8 +111,12 @@ Formatter::getState ()
 }
 
 bool
-Formatter::startWebServices (){
-  return _webservices->start();
+Formatter::startWebServices ()
+{
+  if (_opts.webservice && !_webservices->isStarted ())
+    return _webservices->start ();
+  else
+    return false;
 }
 
 bool
@@ -135,9 +129,9 @@ Formatter::start (const string &file, string *errmsg)
   if (_state != GINGA_STATE_STOPPED)
     return false;
 
-  if (!_webservices->isStarted())
-    this->startWebServices();
-  
+  if (_opts.webservice && !_webservices->isStarted ())
+    this->startWebServices ();
+
   // Parse document.
   g_assert_null (_doc);
   w = _opts.width;
@@ -448,7 +442,18 @@ Formatter::Formatter (const GingaOptions *opts) : Ginga (opts)
   const char *s;
 
   _state = GINGA_STATE_STOPPED;
-  _opts = (opts) ? *opts : opts_defaults;
+  if (opts)
+    _opts = *opts;
+  else
+    {
+      // defaults.
+      _opts.width = 800;
+      _opts.height = 600;
+      _opts.debug = false;
+      _opts.webservice = false;
+      _opts.opengl = false;
+      _opts.experimental = false;
+    };
   _background = { 0., 0., 0., 0. };
 
   _lastTickTotal = 0;
@@ -458,7 +463,7 @@ Formatter::Formatter (const GingaOptions *opts) : Ginga (opts)
       = (s = g_getenv ("G_MESSAGES_DEBUG")) ? string (s) : "";
 
   _doc = nullptr;
-  _webservices = new WebServices(this);
+  _webservices = new WebServices (this);
   _docPath = "";
   _eos = false;
 

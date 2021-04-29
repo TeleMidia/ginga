@@ -43,7 +43,7 @@ static Ginga *GINGA = nullptr;
 static gboolean opt_debug = FALSE;        // toggle debug
 static gboolean opt_experimental = FALSE; // toggle experimental stuff
 static gboolean opt_fullscreen = FALSE;   // toggle fullscreen-mode
-static gboolean opt_wsonly = FALSE;       // toggle webservices-only-mode
+static gboolean opt_ws = FALSE;       // toggle webservices-only-mode
 static gboolean opt_opengl = FALSE;       // toggle OpenGL backend
 static string opt_background = "";        // background color
 static gint opt_width = 800;              // initial window width
@@ -101,8 +101,8 @@ static GOptionEntry options[]
           "Enable debugging", NULL },
         { "fullscreen", 'f', 0, G_OPTION_ARG_NONE, &opt_fullscreen,
           "Enable full-screen mode", NULL },
-        { "wsonly", 'w', 0, G_OPTION_ARG_NONE, &opt_wsonly,
-          "Enable WebServices-only mode that start WS and ignore file arguments", NULL },
+        { "ws", 'w', 0, G_OPTION_ARG_NONE, &opt_ws,
+          "Enable WebService and turn file param optional.", NULL },
         { "opengl", 'g', 0, G_OPTION_ARG_NONE, &opt_opengl,
           "Use OpenGL backend", NULL },
         { "size", 's', 0, G_OPTION_ARG_CALLBACK, pointerof (opt_size_cb),
@@ -343,7 +343,7 @@ main (int argc, char **argv)
       _exit (0);
     }
 
-  if (!opt_wsonly && saved_argc < 2)
+  if (!opt_ws && saved_argc < 2)
     {
       usage_error ("Missing file operand");
       _exit (0);
@@ -406,6 +406,7 @@ main (int argc, char **argv)
   opts.width = opt_width;
   opts.height = opt_height;
   opts.debug = opt_debug;
+  opts.webservice = opt_ws;
   opts.experimental = opt_experimental;
   opts.opengl = opt_opengl;
   opts.background = string (opt_background);
@@ -414,7 +415,7 @@ main (int argc, char **argv)
   int fail_count = 0;
 
   // Run only GingaCC-WebServices
-  if (opt_wsonly && saved_argc < 2)
+  if (opt_ws && saved_argc < 2)
     {
       GINGA->startWebServices ();
       GMainLoop * main_loop = g_main_loop_new (NULL, FALSE);
