@@ -378,8 +378,8 @@ endmacro ()
 file(GLOB GINGA_TESTS_SRC
   "./tests/*.cpp")
 
-add_definitions (-DTOP_SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}/./")
-add_definitions (-DABS_TOP_SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}/./")
+add_definitions (-DTOP_SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}/")
+add_definitions (-DABS_TOP_SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}/")
 foreach (SRC ${GINGA_TESTS_SRC})
   get_filename_component (TEST_NAME ${SRC} NAME_WE)
   add_ginga_test (${TEST_NAME} ${SRC})

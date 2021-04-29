@@ -57,7 +57,7 @@ main (void)
       // --------------------------------
       // main check
       g_assert (m->getProperty ("uri")
-                == xstrbuild ("file:%s", samples[i].uri));
+                == xurifromsrc (samples[i].uri, ""));
       g_assert (m->getProperty ("type") == samples[i].mime);
 
       delete m;
