@@ -35,6 +35,7 @@ class Document
 {
 public:
   Document ();
+  Document (const string&);
   virtual ~Document ();
 
   const set<Object *> *getObjects ();
@@ -42,6 +43,7 @@ public:
   Object *getObjectByIdOrAlias (const string &);
   bool addObject (Object *);
 
+  const string getId ();
   Context *getRoot ();
   MediaSettings *getSettings ();
   const set<Media *> *getMedias ();
@@ -58,6 +60,7 @@ public:
   bool setData (const string &, void *, UserDataCleanFunc fn = nullptr);
 
 private:
+  string _id;
   list<Action> evalActionInContext (Action, Context *);
   set<Object *> _objects;             ///< Objects.
   map<string, Object *> _objectsById; ///< Objects indexed by id.
