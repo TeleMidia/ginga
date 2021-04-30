@@ -24,6 +24,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 class Formatter;
+class Document;
 class Media;
 
 /**
@@ -50,6 +51,7 @@ public:
   bool isStarted ();
   const char *_host_addr;
   bool machMediaThenSetPlayerRemote (PlayerRemoteData &);
+  Document *getCurrentDocument ();
 
 private:
   Formatter *_formatter;
