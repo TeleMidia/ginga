@@ -118,6 +118,7 @@ Object::toString ()
   list<string> pres;
   list<string> attr;
   list<string> sel;
+  list<string> prep;
   for (auto evt : _events)
     switch (evt->getType ())
       {
@@ -136,12 +137,20 @@ Object::toString ()
                        + Event::getEventStateAsString (evt->getState ())
                        + ')');
         break;
+      case Event::PREPARATION:
+        prep.push_back (evt->getId () + " ("
+                        + Event::getEventStateAsString (evt->getState ())
+                        + ')');
+        break;
       default:
         g_assert_not_reached ();
       }
 
   list<pair<string, list<string> *> > evts = {
-    { "evts pres.", &pres }, { "evts attr.", &attr }, { "evts sel.", &sel },
+    { "evts pres.", &pres },
+    { "evts attr.", &attr },
+    { "evts sel.", &sel },
+    { "evts prep.", &prep },
   };
 
   for (auto it_evts : evts)

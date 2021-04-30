@@ -26,11 +26,19 @@ main (void)
 
   tests_create_document (&doc, &root, &settings);
 
-  g_assert_cmpint (doc->getObjects ()->size (), ==, 2);  // root and settings
-  g_assert_cmpint (doc->getMedias ()->size (), ==,  1);   // settings
+  g_assert_cmpint (doc->getObjects ()->size (), ==, 2); // root and settings
+  g_assert_cmpint (doc->getMedias ()->size (), ==, 1);  // settings
   g_assert_cmpint (doc->getContexts ()->size (), ==, 1); // root
   g_assert_cmpint (doc->getSwitches ()->size (), ==, 0); // none
 
+  string *id = new string ("testId");
+  doc->setData ("id", (void *) id, xstrdelete);
+  g_assert (doc->getId () == "testId");
+
+  delete doc;
+
+  doc = new Document ("testId");
+  g_assert (doc->getId () == "testId");
   delete doc;
 
   exit (EXIT_SUCCESS);

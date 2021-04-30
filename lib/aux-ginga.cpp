@@ -561,6 +561,13 @@ xstrsplit (const string &s, char sep)
   return result;
 }
 
+void
+xstrdelete (void *str)
+{
+  string * tmp = (string*) str; 
+  delete (string*) str;
+}
+
 // Paths -------------------------------------------------------------------
 
 /**
