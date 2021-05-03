@@ -27,7 +27,7 @@ main (void)
   opts.height = 20;
   opts.debug = false;
   opts.experimental = false;
-  opts.webservice = false;
+  opts.webservices = false;
   opts.opengl = false;
   opts.background = "green";
   Ginga *ginga = Ginga::create (&opts);
@@ -37,7 +37,7 @@ main (void)
   g_assert (out->width == opts.width);
   g_assert (out->height == opts.height);
   g_assert (out->debug == opts.debug);
-  g_assert (out->webservice == opts.webservice);
+  g_assert (out->webservices == opts.webservices);
   g_assert (out->experimental == opts.experimental);
   g_assert (out->opengl == opts.opengl);
   g_assert (out->background == opts.background);

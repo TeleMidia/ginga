@@ -111,15 +111,6 @@ Formatter::getState ()
 }
 
 bool
-Formatter::startWebServices ()
-{
-  if (_opts.webservice && !_webservices->isStarted ())
-    return _webservices->start ();
-  else
-    return false;
-}
-
-bool
 Formatter::start (const string &file, string *errmsg)
 {
   int w, h;
@@ -129,8 +120,8 @@ Formatter::start (const string &file, string *errmsg)
   if (_state != GINGA_STATE_STOPPED)
     return false;
 
-  if (_opts.webservice && !_webservices->isStarted ())
-    this->startWebServices ();
+  if (_opts.webservices)
+    this->_webservices->start ();
 
   // Parse document.
   g_assert_null (_doc);
@@ -181,6 +172,10 @@ Formatter::start (const string &file, string *errmsg)
 
   // Sets formatter state.
   _state = GINGA_STATE_PLAYING;
+
+  // start webservices
+  if (_opts.webservices)
+    _webservices->start ();
 
   return true;
 }
@@ -450,7 +445,7 @@ Formatter::Formatter (const GingaOptions *opts) : Ginga (opts)
       _opts.width = 800;
       _opts.height = 600;
       _opts.debug = false;
-      _opts.webservice = false;
+      _opts.webservices = false;
       _opts.opengl = false;
       _opts.experimental = false;
     };
@@ -490,6 +485,16 @@ Document *
 Formatter::getDocument ()
 {
   return _doc;
+}
+
+/**
+ * @brief Gets WebServices.
+ * @return WebServices or null (no current document).
+ */
+WebServices *
+Formatter::getWebServices ()
+{
+  return _webservices;
 }
 
 /**
@@ -554,6 +559,24 @@ Formatter::setOptionDebug (Formatter *self, const string &name, bool value)
       g_assert (g_setenv ("G_MESSAGES_DEBUG",
                           self->_saved_G_MESSAGES_DEBUG.c_str (), true));
     }
+  TRACE ("%s:=%s", name.c_str (), strbool (value));
+}
+
+/**
+ * @brief Sets WebServices option option of the given Formatter.
+ * @param self Formatter.
+ * @param name Must be the string "webservies".
+ * @param value webservies flag value.
+ */
+void
+Formatter::setOptionWebServices (Formatter *self, const string &name,
+                                 bool value)
+{
+  g_assert (name == "webservices");
+  if (value)
+    self->_webservices->start ();
+  else
+    self->_webservices->stop ();
   TRACE ("%s:=%s", name.c_str (), strbool (value));
 }
 

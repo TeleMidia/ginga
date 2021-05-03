@@ -113,6 +113,19 @@ string __ginga_strfunc (const string &);
 #define ERROR_NOT_IMPLEMENTED(fmt, ...)\
   ERROR ("not implemented: " fmt, ## __VA_ARGS__)
 
+#define TRACE_SOUP_REQ_MSG(msg)                                                \
+  G_STMT_START                                                             \
+  {                                                                        \
+    SoupMessageHeadersIter it;                                             \
+    const gchar *name;                                                     \
+    const gchar *value;                                                    \
+    soup_message_headers_iter_init (&it, msg->request_headers);            \
+    while (soup_message_headers_iter_next (&it, &name, &value))            \
+      TRACE ("request header %s: %s", name, value);                        \
+    TRACE ("request body:\n%s\n", name, value, msg->request_body->data);   \
+  }                                                                        \
+  G_STMT_END
+
 // Internal types.
 typedef GdkRGBA Color;
 typedef GdkRectangle Rect;

@@ -53,7 +53,7 @@ struct GingaOptions
   bool debug;
 
   /// @brief Whether to enable debug mode.
-  bool webservice;
+  bool webservices;
 
   /// @brief Whether to enable experimental features.
   bool experimental;
@@ -89,7 +89,6 @@ public:
   virtual GingaState getState () = 0;
   virtual bool start (const std::string &path, std::string *errmsg) = 0;
   virtual bool stop () = 0;
-  virtual bool startWebServices () = 0;
 
   virtual void resize (int width, int height) = 0;
   virtual void redraw (cairo_t *cr) = 0;

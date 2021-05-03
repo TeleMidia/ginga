@@ -8,32 +8,10 @@
 #include <algorithm>
 #include <iostream>
 
-#define WS_ROURTE_LOC "/location"
-#define WS_ROURTE_RPLAYER "/remote-mediaplayer"
-#define WS_ROURTE_APPS "/current-service/apps/"
-#define WS_PORT 44642
-#define SSDP_UUID "uuid:b16f8e7e-8050-11eb-8036-00155dfe4f40"
-#define SSDP_DEVICE "upnp:rootdevice"
-#define SSDP_NAME "TeleMidia GingaCCWebServices"
-#define SSDP_USN "urn:schemas-sbtvd-org:service:GingaCCWebServices:1"
-
 #define WS_ADD_ROUTE(ws, r, f)                                             \
   G_STMT_START                                                             \
   {                                                                        \
     soup_server_add_handler (ws, r, f, this, nullptr);                     \
-  }                                                                        \
-  G_STMT_END
-
-#define TRACE_RQ_HEADERS(msg)                                              \
-  G_STMT_START                                                             \
-  {                                                                        \
-    SoupMessageHeadersIter it;                                             \
-    const gchar *name;                                                     \
-    const gchar *value;                                                    \
-    soup_message_headers_iter_init (&it, msg->request_headers);            \
-    while (soup_message_headers_iter_next (&it, &name, &value))            \
-      TRACE ("req %s: %s", name, value);                                   \
-    TRACE ("req body:\n%s\n", name, value, msg->request_body->data);       \
   }                                                                        \
   G_STMT_END
 
@@ -44,19 +22,31 @@
 WebServices::WebServices (Formatter *fmt)
 {
   _formatter = fmt;
-  _started = false;
+  _resource_group = nullptr;
+  _client = nullptr;
+  _ws = nullptr;
+  _state = WS_STATE_STOPPED;
 }
 
 WebServices::~WebServices ()
 {
   g_object_unref (_resource_group);
   g_object_unref (_client);
+  g_object_unref (_ws);
+}
+
+bool
+WebServices::stop ()
+{
+  _state = WS_STATE_STOPPED;
+  gssdp_resource_group_set_available (_resource_group, FALSE);
+  return true;
 }
 
 bool
 WebServices::machMediaThenSetPlayerRemote (PlayerRemoteData &data)
 {
-  if (!getCurrentDocument ())
+  if (!_formatter->getDocument ())
     return false;
 
   auto mrts = _formatter->getDocument ()->getMediasRemote ();
@@ -89,16 +79,16 @@ WebServices::machMediaThenSetPlayerRemote (PlayerRemoteData &data)
   return found;
 }
 
-bool
-WebServices::isStarted ()
+WebServicesState
+WebServices::getState ()
 {
-  return _started;
+  return _state;
 }
 
-Document *
-WebServices::getCurrentDocument ()
+Formatter *
+WebServices::getFormatter ()
 {
-  return _formatter->getDocument ();
+  return _formatter;
 }
 
 static void
@@ -122,16 +112,15 @@ ws_loc_callback (SoupServer *server, SoupMessage *msg, const char *path,
   soup_message_set_status (msg, SOUP_STATUS_OK);
   soup_message_set_response (msg, "text/plan", SOUP_MEMORY_COPY, NULL, 0);
 
-  // Add GingaCC-WS headers
-  value = g_strdup_printf ("http://%s:%d", ws->_host_addr, WS_PORT);
+  // add GingaCC-Server-* headers
+  value = g_strdup_printf ("http://%s:%d", ws->host_addr, WS_PORT);
   soup_message_headers_append (msg->response_headers,
                                "GingaCC-Server-BaseURL", value);
-
-  value = g_strdup_printf ("https://%s:%d", ws->_host_addr, WS_PORT);
+  g_free (value);
+  value = g_strdup_printf ("https://%s:%d", ws->host_addr, WS_PORT);
   soup_message_headers_append (msg->response_headers,
                                "GingaCC-Server-SecureBaseURL", value);
   g_free (value);
-
   soup_message_headers_append (
       msg->response_headers, "GingaCC-Server-PairingMethods", "qcode,kex");
 }
@@ -148,7 +137,7 @@ ws_remoteplayer_callback (SoupServer *server, SoupMessage *msg,
   WebServices *ws = (WebServices *) user_data;
   bool status;
 
-  TRACE_RQ_HEADERS (msg);
+  TRACE_SOUP_REQ_MSG (msg);
 
   if (!reader->parse (msg->request_body->data,
                       msg->request_body->data + msg->request_body->length,
@@ -183,19 +172,21 @@ ws_apps_callback (SoupServer *server, SoupMessage *msg, const char *path,
   string action, interface, value;
   Object *node;
   Event *evt;
+  Document *doc;
   const char *target = path + strlen (WS_ROURTE_APPS);
   gchar **params = g_strsplit (target, "/", 3);
+
+  doc = ws->getFormatter ()->getDocument ();
+  g_assert_nonnull (doc);
   const char *appId = params[0];
   const char *docId = params[1];
   const char *nodeId = params[2];
-
-  if (!ws->getCurrentDocument () || !strlen (appId) || !strlen (docId)
-      || !strlen (nodeId))
+  if (!strlen (appId) || !strlen (docId) || !strlen (nodeId))
     goto fail;
 
   TRACE ("request %s: app=%s, docId=%s nodeId=%s", WS_ROURTE_APPS, appId,
          docId, nodeId);
-  TRACE_RQ_HEADERS (msg);
+  TRACE_SOUP_REQ_MSG (msg);
 
   if (!reader->parse (msg->request_body->data,
                       msg->request_body->data + msg->request_body->length,
@@ -208,34 +199,35 @@ ws_apps_callback (SoupServer *server, SoupMessage *msg, const char *path,
   interface = root["interface"].asString ();
   value = root["value"].asString ();
 
-  node = ws->getCurrentDocument ()->getObjectById (nodeId);
-  g_assert_nonnull (node);
+  node = doc->getObjectById (nodeId);
+  g_strfreev (params);
 
-  if (xstrcasecmp (action, "select") == 0)
+  if (!node)
+    goto fail;
+
+  if (action == "select")
     {
       evt = node->getSelectionEvent (value);
-      ws->getCurrentDocument ()->evalAction (evt, Event::START);
-      ws->getCurrentDocument ()->evalAction (evt, Event::STOP);
+      doc->evalAction (evt, Event::START);
+      doc->evalAction (evt, Event::STOP);
     }
-  else if (xstrcasecmp (action, "lookAt") == 0)
+  else if (action == "lookAt")
     {
       evt = node->getLookAtEvent ("@lambda");
-      ws->getCurrentDocument ()->evalAction (evt, Event::START);
+      doc->evalAction (evt, Event::START);
     }
-  else if (xstrcasecmp (action, "lookAway") == 0)
+  else if (action == "lookAway")
     {
       evt = node->getLookAtEvent ("@lambda");
-      ws->getCurrentDocument ()->evalAction (evt, Event::STOP);
+      doc->evalAction (evt, Event::STOP);
     }
   else
-    {
-      goto fail;
-    }
+    goto fail;
 
   soup_message_set_status (msg, SOUP_STATUS_OK);
+  return;
 
 fail:
-  g_strfreev (params);
   soup_message_set_status (msg, SOUP_STATUS_NOT_FOUND);
 }
 
@@ -256,10 +248,10 @@ WebServices::start ()
     }
   _resource_group = gssdp_resource_group_new (_client);
   g_assert (_resource_group);
-  _host_addr = gssdp_client_get_host_ip (_client);
+  host_addr = gssdp_client_get_host_ip (_client);
 
   // ssdp avaliable
-  location = g_strdup_printf ("http://%s:%d/location", _host_addr, WS_PORT);
+  location = g_strdup_printf ("http://%s:%d/location", host_addr, WS_PORT);
   gssdp_resource_group_add_resource_simple (_resource_group, SSDP_USN,
                                             SSDP_USN, location);
   g_free (location);
@@ -284,7 +276,7 @@ WebServices::start ()
   WS_ADD_ROUTE (_ws, WS_ROURTE_APPS, ws_apps_callback);
   WS_ADD_ROUTE (_ws, nullptr, ws_null_callback);
 
-  _started = true;
+  _state = WS_STATE_STARTED;
   return true;
 fail:
   g_error_free (error);

@@ -21,11 +21,21 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include <libgssdp/gssdp.h>
 #include <libsoup/soup.h>
+#include "Event.h"
 
 GINGA_NAMESPACE_BEGIN
 class Formatter;
 class Document;
 class Media;
+
+/**
+ * @brief WevServices states.
+ */
+typedef enum
+{
+  WS_STATE_STARTED,
+  WS_STATE_STOPPED,
+} WebServicesState;
 
 /**
  * @brief PlayerRemoteData.
@@ -38,6 +48,16 @@ typedef struct
   list<string> recognizedableEvents;
 } PlayerRemoteData;
 
+
+#define WS_ROURTE_LOC "/location"
+#define WS_ROURTE_RPLAYER "/remote-mediaplayer"
+#define WS_ROURTE_APPS "/current-service/apps/"
+#define WS_PORT 44642
+#define SSDP_UUID "uuid:b16f8e7e-8050-11eb-8036-00155dfe4f40"
+#define SSDP_DEVICE "upnp:rootdevice"
+#define SSDP_NAME "TeleMidia GingaCCWebServices"
+#define SSDP_USN "urn:schemas-sbtvd-org:service:GingaCCWebServices:1"
+
 /**
  * @brief WebSercices.
  */
@@ -48,14 +68,15 @@ public:
   explicit WebServices (Formatter *);
   ~WebServices ();
   bool start ();
-  bool isStarted ();
-  const char *_host_addr;
+  bool stop ();
+  WebServicesState getState ();
   bool machMediaThenSetPlayerRemote (PlayerRemoteData &);
-  Document *getCurrentDocument ();
+  Formatter *getFormatter ();
+  const char *host_addr;
 
 private:
   Formatter *_formatter;
-  bool _started;
+  WebServicesState _state;
   map<Media *, PlayerRemoteData> _playerMap;
   GSSDPClient *_client;
   GSSDPResourceGroup *_resource_group;
