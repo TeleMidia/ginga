@@ -43,7 +43,6 @@ public:
 
   bool start (const std::string &, std::string *);
   bool stop ();
-  bool startWebServices ();
 
   void resize (int, int);
   void redraw (cairo_t *);
@@ -64,11 +63,13 @@ public:
   ~Formatter ();
 
   Document *getDocument ();
+  WebServices *getWebServices ();
   bool getEOS ();
   void setEOS (bool);
 
   static void setOptionBackground (Formatter *, const string &, string);
   static void setOptionDebug (Formatter *, const string &, bool);
+  static void setOptionWebServices (Formatter *, const string &, bool);
   static void setOptionExperimental (Formatter *, const string &, bool);
   static void setOptionOpenGL (Formatter *, const string &, bool);
   static void setOptionSize (Formatter *, const string &, int);
@@ -97,7 +98,7 @@ private:
 
   /// @brief Current WebServices.
   WebServices *_webservices;
-  
+
   /// @brief Current document tree.
   Document *_doc;
 

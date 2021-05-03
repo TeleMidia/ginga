@@ -25,6 +25,13 @@ GINGA_NAMESPACE_BEGIN
 
 class WebServices;
 
+#define REMOTE_PLAYER_JSON_ACT                                             \
+  "{\
+     \"action\" : \"%s\",\
+     \"delay\" : \"%d\"\
+   }"
+
+
 class PlayerRemote : public Player
 {
 public:
@@ -38,7 +45,7 @@ public:
 
 protected:
   bool doSetProperty (Property, const string &, const string &);
-  bool sendAction (const string &);
+  void sendAction (const string &);
   char * _url;
   bool _sessionStarted;
   WebServices *_ws;

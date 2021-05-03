@@ -43,7 +43,7 @@ static Ginga *GINGA = nullptr;
 static gboolean opt_debug = FALSE;        // toggle debug
 static gboolean opt_experimental = FALSE; // toggle experimental stuff
 static gboolean opt_fullscreen = FALSE;   // toggle fullscreen-mode
-static gboolean opt_ws = FALSE;       // toggle webservices-only-mode
+static gboolean opt_webservices = FALSE;       // toggle webservices-only-mode
 static gboolean opt_opengl = FALSE;       // toggle OpenGL backend
 static string opt_background = "";        // background color
 static gint opt_width = 800;              // initial window width
@@ -101,7 +101,7 @@ static GOptionEntry options[]
           "Enable debugging", NULL },
         { "fullscreen", 'f', 0, G_OPTION_ARG_NONE, &opt_fullscreen,
           "Enable full-screen mode", NULL },
-        { "ws", 'w', 0, G_OPTION_ARG_NONE, &opt_ws,
+        { "ws", 'w', 0, G_OPTION_ARG_NONE, &opt_webservices,
           "Enable WebService and turn file param optional.", NULL },
         { "opengl", 'g', 0, G_OPTION_ARG_NONE, &opt_opengl,
           "Use OpenGL backend", NULL },
@@ -343,7 +343,7 @@ main (int argc, char **argv)
       _exit (0);
     }
 
-  if (!opt_ws && saved_argc < 2)
+  if (!opt_webservices && saved_argc < 2)
     {
       usage_error ("Missing file operand");
       _exit (0);
@@ -406,7 +406,7 @@ main (int argc, char **argv)
   opts.width = opt_width;
   opts.height = opt_height;
   opts.debug = opt_debug;
-  opts.webservice = opt_ws;
+  opts.webservices = opt_webservices;
   opts.experimental = opt_experimental;
   opts.opengl = opt_opengl;
   opts.background = string (opt_background);
@@ -414,15 +414,15 @@ main (int argc, char **argv)
   g_assert_nonnull (GINGA);
   int fail_count = 0;
 
-  // Run only GingaCC-WebServices
-  if (opt_ws && saved_argc < 2)
-    {
-      GINGA->startWebServices ();
-      GMainLoop * main_loop = g_main_loop_new (NULL, FALSE);
-      g_main_loop_run (main_loop);
-      g_main_loop_unref (main_loop);
-      goto done;
-    }
+  // // Run only GingaCC-WebServices
+  // if (opt_webservices && saved_argc < 2)
+  //   {
+  //     GINGA->startWebServices ();
+  //     GMainLoop * main_loop = g_main_loop_new (NULL, FALSE);
+  //     g_main_loop_run (main_loop);
+  //     g_main_loop_unref (main_loop);
+  //     goto done;
+  //   }
 
   // Run each NCL file, one after another.
   for (int i = 1; i < saved_argc; i++)
