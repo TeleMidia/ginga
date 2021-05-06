@@ -27,10 +27,34 @@ class WebServices;
 
 #define REMOTE_PLAYER_JSON_ACT                                             \
   "{\
-     \"action\" : \"%s\",\
-     \"delay\" : \"%d\"\
+     \"action\": \"%s\",\
+     \"delay\": \"%d\"\
    }"
 
+#define REMOTE_PLAYER_JSON_ACT_WITH_PROPS                                  \
+  "{\
+     \"action\": \"%s\",\
+     \"delay\": \"%d\",\
+     \"properties\": \
+     {\
+        \"bounds\": {\"top\": \"%s\",\"left\": \"%s\",\"width\": \"%s\",\"height\": \"%s\"},\
+        \"zIndex\" : \"%s\",\
+        \"transparency\" : \"%s\"\
+      }\
+   }"
+
+#define REMOTE_PLAYER_JSON_MEDIA                                           \
+  "{\
+     \"appId\": \"%s\",\
+     \"documentId\": \"%s\",\
+     \"sceneNode\": \"%s\",\
+     \"type\": \"%s\",\
+     \"notifyEvents\": %s\
+   }"
+
+#define REMOTE_PLAYER_ROUTE_NODES "/scene/nodes/"
+
+#define REMOTE_PLAYER_MIME_NCL360 "application/x-ncl360"
 
 class PlayerRemote : public Player
 {
@@ -42,11 +66,15 @@ public:
   void stop ();
   void pause ();
   void resume ();
+  void reload ();
+  void redraw (cairo_t *);
+
+  static bool usesPlayerRemote (Media *);
 
 protected:
   bool doSetProperty (Property, const string &, const string &);
-  void sendAction (const string &);
-  char * _url;
+  void sendAction (const char *);
+  char *_url;
   bool _sessionStarted;
   WebServices *_ws;
   SoupSession *_session;

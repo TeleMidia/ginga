@@ -128,7 +128,6 @@ public:
   // Static.
   static string getCurrentFocus ();
   static void setCurrentFocus (const string &);
-  static bool mayUsePlayerRemote (Media *);
   static Property getPlayerProperty (const string &, string *);
   static Player *createPlayer (Formatter *, Media *, const string &,
                                const string &type = "");

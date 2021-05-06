@@ -520,21 +520,6 @@ Player::setCurrentFocus (const string &index)
   _currentFocus = index;
 }
 
-/**
- * @brief Evaluates if Media uses PlayerRemote
- */
-bool
-Player::mayUsePlayerRemote (Media *media)
-{
-  string mime = media->getProperty ("type");
-  if (mime == "application/x-ncl-360")
-    return true;
-  string device = media->getProperty ("device");
-  if (!device.empty())
-    return true;
-  return false;
-}
-
 Player::Property
 Player::getPlayerProperty (const string &name, string *defval)
 {

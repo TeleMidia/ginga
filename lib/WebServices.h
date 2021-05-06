@@ -40,23 +40,45 @@ typedef enum
 /**
  * @brief PlayerRemoteData.
  */
-typedef struct
+class PlayerRemoteData
 {
+public:
+  PlayerRemoteData (){};
+  bool isValid ();
   string location;
   string deviceType;
   list<string> supportedFormats;
   list<string> recognizedableEvents;
-} PlayerRemoteData;
+};
 
-
-#define WS_ROURTE_LOC "/location"
-#define WS_ROURTE_RPLAYER "/remote-mediaplayer"
-#define WS_ROURTE_APPS "/current-service/apps/"
-#define WS_PORT 44642
 #define SSDP_UUID "uuid:b16f8e7e-8050-11eb-8036-00155dfe4f40"
 #define SSDP_DEVICE "upnp:rootdevice"
 #define SSDP_NAME "TeleMidia GingaCCWebServices"
 #define SSDP_USN "urn:schemas-sbtvd-org:service:GingaCCWebServices:1"
+#define WS_ROUTE_LOC "/location"
+#define WS_ROUTE_PLAYER "/remote-mediaplayer"
+#define WS_ROUTE_APPS "/current-service/apps/"
+#define WS_PORT 44642
+#define WS_JSON_REMOTE_PLAYER                                              \
+  "{\
+     \"location\" : \"%s\", \
+     \"deviceType\" : \"%s\", \
+     \"supportedFormats\" : %s, \
+     \"recognizableEvents\" : %s, \
+   }"
+
+#define TRACE_SOUP_REQ_MSG(msg)                                            \
+  G_STMT_START                                                             \
+  {                                                                        \
+    SoupMessageHeadersIter it;                                             \
+    const gchar *name;                                                     \
+    const gchar *value;                                                    \
+    soup_message_headers_iter_init (&it, msg->request_headers);            \
+    while (soup_message_headers_iter_next (&it, &name, &value))            \
+      TRACE ("request header %s: %s", name, value);                        \
+    TRACE ("request body:\n%s\n", msg->request_body->data);                \
+  }                                                                        \
+  G_STMT_END
 
 /**
  * @brief WebSercices.
@@ -80,7 +102,7 @@ private:
   map<Media *, PlayerRemoteData> _playerMap;
   GSSDPClient *_client;
   GSSDPResourceGroup *_resource_group;
-  SoupServer *_ws;
+  SoupServer *_server;
 };
 
 GINGA_NAMESPACE_END
