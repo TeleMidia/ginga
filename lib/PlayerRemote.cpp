@@ -34,8 +34,23 @@ GINGA_NAMESPACE_BEGIN
 PlayerRemote::PlayerRemote (Formatter *fmt, Media *media)
     : Player (fmt, media)
 {
-  _sessionStarted = false;
+  _session = nullptr;
   _url = nullptr;
+}
+
+/**
+ * @brief Evaluates if Media uses PlayerRemote
+ */
+bool
+PlayerRemote::usesPlayerRemote (Media *media)
+{
+  string mime = media->getProperty ("type");
+  if (mime == REMOTE_PLAYER_MIME_NCL360)
+    return true;
+  string device = media->getProperty ("device");
+  if (!device.empty ())
+    return true;
+  return false;
 }
 
 bool
@@ -47,8 +62,8 @@ PlayerRemote::doSetProperty (Property code, const string &name,
     case PROP_REMOTE_PLAYER_BASE_URL:
       if (_url != nullptr)
         g_free (_url);
-      _url = g_strdup_printf ("http://%s/scene/nodes/%s", value.c_str (),
-                              _media->getId ().c_str ());
+      _url = g_strdup_printf ("%s" REMOTE_PLAYER_ROUTE_NODES "%s",
+                              value.c_str (), _media->getId ().c_str ());
       break;
     default:
       return Player::doSetProperty (code, name, value);
@@ -63,70 +78,83 @@ PlayerRemote::~PlayerRemote ()
 }
 
 static void
-ws_action_callback (SoupSession *session, SoupMessage *msg,
-                    gpointer user_data)
+cb_action (SoupSession *session, SoupMessage *msg, gpointer user_data)
 {
   string url;
   auto player = (PlayerRemote *) user_data;
-  url = player->getProperty ("remotePlayerBaseURL");
   if (!msg->status_code == SOUP_STATUS_OK)
-    WARNING ("Failed to perform request %s", url.c_str ());
-  TRACE_SOUP_REQ_MSG (msg);
+    WARNING ("Failed to perform request to %s",
+             player->getProperty ("remotePlayerBaseURL").c_str ());
 }
 
 void
-PlayerRemote::sendAction (const string &action)
+PlayerRemote::sendAction (const char *body)
 {
   guint status;
   SoupMessage *msg;
-  char *body;
 
   g_assert_nonnull (_url);
-  if (!_sessionStarted)
-    {
-      _session
-          = soup_session_new_with_options (SOUP_SESSION_ADD_FEATURE_BY_TYPE,
-                                           SOUP_TYPE_CONTENT_SNIFFER, NULL);
-      _sessionStarted = true;
-    }
-  msg = soup_message_new ("POST", _url);
-  body = g_strdup_printf (REMOTE_PLAYER_JSON_ACT, action.c_str (), 0);
+  if (!_session)
+    _session = soup_session_new ();
+  msg = soup_message_new (SOUP_METHOD_POST, _url);
   soup_message_set_request (msg, "application/json", SOUP_MEMORY_COPY, body,
                             strlen (body));
-  soup_session_queue_message (_session, msg, ws_action_callback, this);
-
-  g_free (msg);
-  g_free (body);
+  soup_session_queue_message (_session, msg, cb_action, this);
 }
 
 void
 PlayerRemote::start ()
 {
-  sendAction ("start");
+  string zOrder = getProperty ("zOrder");
+  string props = xstrbuild (
+      REMOTE_PLAYER_JSON_ACT_WITH_PROPS, "start", 0,
+      getProperty ("top").c_str (), getProperty ("left").c_str (),
+      getProperty ("width").c_str (), getProperty ("height").c_str (),
+      getProperty ("zOrder").c_str (), "0%");
+  sendAction (props.c_str ());
+  Player::start ();
 }
 
 void
 PlayerRemote::startPreparation ()
 {
-  sendAction ("prepare");
+  string body = xstrbuild (REMOTE_PLAYER_JSON_ACT, "prepare", 0);
+  sendAction (body.c_str ());
+  Player::startPreparation ();
 }
 
 void
 PlayerRemote::stop ()
 {
-  sendAction ("stop");
+  string body = xstrbuild (REMOTE_PLAYER_JSON_ACT, "stop", 0);
+  sendAction (body.c_str ());
+  Player::stop ();
 }
 
 void
 PlayerRemote::pause ()
 {
-  sendAction ("pause");
+  string body = xstrbuild (REMOTE_PLAYER_JSON_ACT, "pause", 0);
+  sendAction (body.c_str ());
+  Player::pause ();
 }
 
 void
 PlayerRemote::resume ()
 {
-  sendAction ("resume");
+  string body = xstrbuild (REMOTE_PLAYER_JSON_ACT, "resume", 0);
+  sendAction (body.c_str ());
+  Player::resume ();
+}
+
+void
+PlayerRemote::reload ()
+{
+}
+
+void
+PlayerRemote::redraw (cairo_t *)
+{
 }
 
 GINGA_NAMESPACE_END

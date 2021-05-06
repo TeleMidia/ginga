@@ -23,6 +23,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "MediaSettings.h"
 #include "Object.h"
 #include "Switch.h"
+#include "PlayerRemote.h"
 
 GINGA_NAMESPACE_BEGIN
 
@@ -152,7 +153,7 @@ Document::addObject (Object *obj)
       Media *media = cast (Media *, obj);
       g_assert_nonnull (media);
       _medias.insert (media);
-      if (Player::mayUsePlayerRemote (media))
+      if (PlayerRemote::usesPlayerRemote (media))
         {
           _mediasRemote.insert (media);
         }
