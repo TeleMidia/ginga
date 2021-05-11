@@ -48,6 +48,7 @@ class WebServices;
      \"appId\": \"%s\",\
      \"documentId\": \"%s\",\
      \"sceneNode\": \"%s\",\
+     \"sceneURL\": \"%s\",\
      \"type\": \"%s\",\
      \"notifyEvents\": %s\
    }"
