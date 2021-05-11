@@ -43,6 +43,7 @@ WebServices::WebServices (Formatter *fmt)
 
 WebServices::~WebServices ()
 {
+  this->stop ();
   g_object_unref (_resource_group);
   g_object_unref (_client);
   g_object_unref (_server);
@@ -52,9 +53,13 @@ bool
 WebServices::stop ()
 {
   _state = WS_STATE_STOPPED;
-  gssdp_resource_group_set_available (_resource_group, FALSE);
+  // stop ssdp
+  gssdp_resource_group_set_available (_resource_group, false);
+  // stop http
+  soup_server_disconnect (_server);
   return true;
 }
+
 static void
 cb_null (SoupServer *server, SoupMessage *msg, const char *path,
          GHashTable *query, SoupClientContext *client, gpointer user_data)
@@ -73,7 +78,8 @@ cb_locaction (SoupServer *server, SoupMessage *msg, const char *path,
   WebServices *ws = (WebServices *) user_data;
 
   soup_message_set_status (msg, SOUP_STATUS_OK);
-  soup_message_set_response (msg, "text/plan", SOUP_MEMORY_COPY, NULL, 0);
+  soup_message_set_response (msg, "text/plan", SOUP_MEMORY_COPY, nullptr,
+                             0);
 
   // add GingaCC-Server-* headers
   value = g_strdup_printf ("http://%s:%d", ws->host_addr, WS_PORT);
@@ -195,41 +201,41 @@ fail:
 bool
 WebServices::start ()
 {
-  GError *error = NULL;
+  GError *error = nullptr;
   int ret = 0;
   char *location;
 
   // create ssdpclient
-  _client = gssdp_client_new (NULL, &error);
+  _client = gssdp_client_new (nullptr, &error);
   if (error)
     {
       g_printerr ("Error creating the GSSDP client: %s\n", error->message);
       g_error_free (error);
       return false;
     }
+  gssdp_client_set_server_id (_client, WS_NAME);
   _resource_group = gssdp_resource_group_new (_client);
   g_assert (_resource_group);
   host_addr = gssdp_client_get_host_ip (_client);
 
   // ssdp avaliable
   location = g_strdup_printf ("http://%s:%d/location", host_addr, WS_PORT);
-  gssdp_resource_group_add_resource_simple (_resource_group, SSDP_USN,
-                                            SSDP_USN, location);
-  g_free (location);
-  gssdp_resource_group_set_available (_resource_group, TRUE);
+  gssdp_resource_group_add_resource_simple (
+      _resource_group, SSDP_ST, SSDP_UUID "::" SSDP_ST, location);
+  gssdp_resource_group_set_available (_resource_group, true);
   g_assert (gssdp_resource_group_get_available (_resource_group));
+  g_assert (gssdp_client_get_active (_client));
 
   // create server
-  _server = soup_server_new (SOUP_SERVER_SERVER_HEADER, SSDP_NAME, nullptr);
+  _server = soup_server_new (SOUP_SERVER_SERVER_HEADER, WS_NAME, nullptr);
   g_assert_nonnull (_server);
   // set server to handle both /location and other routes in WS_PORT
-  ret = soup_server_listen_all (_server, WS_PORT, SoupServerListenOptions (0),
-                                &error);
+  ret = soup_server_listen_all (_server, WS_PORT,
+                                SoupServerListenOptions (0), &error);
   if (!ret)
     {
-      g_printerr ("could not start webservices listen: %s\n",
-                  error->message);
-      goto fail;
+      g_printerr ("Fails start WebServices: %s\n", error->message);
+      g_assert_not_reached ();
     }
 
   WS_ADD_ROUTE (_server, WS_ROUTE_LOC, cb_locaction);
@@ -238,6 +244,8 @@ WebServices::start ()
   WS_ADD_ROUTE (_server, nullptr, cb_null);
 
   _state = WS_STATE_STARTED;
+
+  g_free (location);
   return true;
 fail:
   g_error_free (error);

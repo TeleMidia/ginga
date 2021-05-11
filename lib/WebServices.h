@@ -51,10 +51,9 @@ public:
   list<string> recognizedableEvents;
 };
 
-#define SSDP_UUID "uuid:b16f8e7e-8050-11eb-8036-00155dfe4f40"
-#define SSDP_DEVICE "upnp:rootdevice"
-#define SSDP_NAME "TeleMidia GingaCCWebServices"
-#define SSDP_USN "urn:schemas-sbtvd-org:service:GingaCCWebServices:1"
+#define SSDP_ST "urn:schemas-sbtvd-org:service:GingaCCWebServices:1"
+#define SSDP_UUID "uuid:1234abcd-12ab-12ab-12ab-1234567abc13"
+#define WS_NAME "TeleMidia GingaCC-WebServices"
 #define WS_ROUTE_LOC "/location"
 #define WS_ROUTE_PLAYER "/remote-mediaplayer"
 #define WS_ROUTE_APPS "/current-service/apps/"
