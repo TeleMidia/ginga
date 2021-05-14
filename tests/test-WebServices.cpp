@@ -80,7 +80,8 @@ ws_get_location (GMainLoop *loop)
 }
 
 void
-ws_post_action (const char *node, const char *action, GMainLoop *loop)
+ws_post_action (const char *node, const char *action, const char *interface,
+                GMainLoop *loop)
 {
   guint status;
   SoupMessage *msg;
@@ -94,7 +95,10 @@ ws_post_action (const char *node, const char *action, GMainLoop *loop)
   g_assert_nonnull (url);
   msg = soup_message_new (SOUP_METHOD_POST, url);
   g_assert_nonnull (msg);
-  body = g_strdup_printf (REMOTE_PLAYER_JSON_ACT, action, 0);
+  if (interface != nullptr)
+    body = g_strdup_printf (WS_JSON_ACT_WITH_INTERFACE, action, interface);
+  else
+    body = g_strdup_printf (WS_JSON_ACT, action);
   g_assert_nonnull (body);
   soup_message_set_request (msg, "application/json", SOUP_MEMORY_COPY, body,
                             strlen (body));
@@ -109,7 +113,8 @@ main (int argc, char **argv)
 {
   Document *doc;
   GMainLoop *loop = g_main_loop_new (NULL, FALSE);
-  tests_parse_and_start (&fmt, &doc, "\
+  tests_parse_and_start (&fmt, &doc,
+                         xstrbuild ("\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -125,9 +130,13 @@ main (int argc, char **argv)
  </head>\n\
  <body id='body'>\n\
   <port id='start' component='m1'/>\n\
-  <media id='m1' type='application/x-ncl360'/>\n\
+  <media id='m1' type='%s'>\n\
+    <area id='a1'/>\n\
+  </media>\n\
   <media id='m2'/>\n\
   <media id='m3'/>\n\
+  <media id='m4'/>\n\
+  <media id='m5'/>\n\
   <link xconnector='onLookAtStart'>\n\
    <bind role='onLookAt' component='m1'/>\n\
    <bind role='start' component='m2'/>\n\
@@ -136,8 +145,17 @@ main (int argc, char **argv)
    <bind role='onLookAway' component='m1'/>\n\
    <bind role='start' component='m3'/>\n\
   </link>\n\
+  <link xconnector='onLookAtStart'>\n\
+   <bind role='onLookAt' component='m1' interface='a1'/>\n\
+   <bind role='start' component='m4'/>\n\
+  </link>\n\
+  <link xconnector='onLookAwayStart'>\n\
+   <bind role='onLookAway' component='m1' interface='a1'/>\n\
+   <bind role='start' component='m5'/>\n\
+  </link>\n\
  </body>\n\
-</ncl>");
+</ncl>",
+                                    REMOTE_PLAYER_MIME_NCL360));
   Formatter::setOptionDebug (fmt, "debug", true);
   Formatter::setOptionWebServices (fmt, "webservices", true);
 
@@ -158,58 +176,95 @@ main (int argc, char **argv)
   g_assert_nonnull (m3);
   Event *m3_lambda = m3->getLambda ();
   g_assert_nonnull (m3_lambda);
-
-  // test mime
+  Media *m4 = cast (Media *, doc->getObjectById ("m4"));
+  g_assert_nonnull (m4);
+  Event *m4_lambda = m4->getLambda ();
+  g_assert_nonnull (m3_lambda);
+  Media *m5 = cast (Media *, doc->getObjectById ("m5"));
+  g_assert_nonnull (m5);
+  Event *m5_lambda = m5->getLambda ();
+  g_assert_nonnull (m5_lambda);
   g_assert (m1->getProperty ("type") == REMOTE_PLAYER_MIME_NCL360);
+
+  // when document is started, only the body_lambda is OCCURING
+  g_assert_cmpint ((body_lambda)->getState (), ==, Event::OCCURRING);
+  g_assert_cmpint ((m1_lambda)->getState (), ==, Event::SLEEPING);
+  g_assert_cmpint ((m2_lambda)->getState (), ==, Event::SLEEPING);
+  g_assert_cmpint ((m3_lambda)->getState (), ==, Event::SLEEPING);
+  g_assert_cmpint ((m4_lambda)->getState (), ==, Event::SLEEPING);
+  g_assert_cmpint ((m5_lambda)->getState (), ==, Event::SLEEPING);
+
+  // when advance time, m1_lambda is OCCURRING
+  (fmt)->sendTick (0, 0, 0);
+  g_assert_cmpint ((body_lambda)->getState (), ==, Event::OCCURRING);
+  g_assert_cmpint ((m1_lambda)->getState (), ==, Event::OCCURRING);
+  g_assert_cmpint ((m2_lambda)->getState (), ==, Event::SLEEPING);
+  g_assert_cmpint ((m3_lambda)->getState (), ==, Event::SLEEPING);
+  g_assert_cmpint ((m4_lambda)->getState (), ==, Event::SLEEPING);
+  g_assert_cmpint ((m5_lambda)->getState (), ==, Event::SLEEPING);
 
   // test get location
   ws_get_location (loop);
   g_main_loop_run (loop);
 
-  // test post actions: lookAt and lookAway
-  {
-    // when document is started, only the body_lambda is OCCURING
-    g_assert_cmpint ((body_lambda)->getState (), ==, Event::OCCURRING);
-    g_assert_cmpint ((m1_lambda)->getState (), ==, Event::SLEEPING);
-    g_assert_cmpint ((m2_lambda)->getState (), ==, Event::SLEEPING);
-    g_assert_cmpint ((m3_lambda)->getState (), ==, Event::SLEEPING);
+  // lookAt m1
+  Event *evtOnLook = m1->getLookAtEvent ("@lambda");
+  g_assert_nonnull (evtOnLook);
+  g_assert (evtOnLook->getState () == Event::SLEEPING);
+  ws_post_action ("m1", "lookAt", nullptr, loop);
+  g_main_loop_run (loop);
+  g_assert (evtOnLook->getState () == Event::OCCURRING);
 
-    // when advance time, m1_lambda is OCCURRING
-    (fmt)->sendTick (0, 0, 0);
-    g_assert_cmpint ((body_lambda)->getState (), ==, Event::OCCURRING);
-    g_assert_cmpint ((m1_lambda)->getState (), ==, Event::OCCURRING);
-    g_assert_cmpint ((m2_lambda)->getState (), ==, Event::SLEEPING);
-    g_assert_cmpint ((m3_lambda)->getState (), ==, Event::SLEEPING);
+  // after lookAt m1, m2 OCCURRING
+  (fmt)->sendTick (0, 0, 0);
+  g_assert_cmpint ((body_lambda)->getState (), ==, Event::OCCURRING);
+  g_assert_cmpint ((m1_lambda)->getState (), ==, Event::OCCURRING);
+  g_assert_cmpint ((m2_lambda)->getState (), ==, Event::OCCURRING);
+  g_assert_cmpint ((m3_lambda)->getState (), ==, Event::SLEEPING);
+  g_assert_cmpint ((m4_lambda)->getState (), ==, Event::SLEEPING);
+  g_assert_cmpint ((m5_lambda)->getState (), ==, Event::SLEEPING);
 
-    // START is done
-    Event *evtOnLook = m1->getLookAtEvent ("@lambda");
-    g_assert_nonnull (evtOnLook);
-    g_assert (evtOnLook->getState () == Event::SLEEPING);
+  // lookAway m1
+  ws_post_action ("m1", "lookAway", nullptr, loop);
+  g_main_loop_run (loop);
+  g_assert (evtOnLook->getState () == Event::SLEEPING);
 
-    // lookAt
-    ws_post_action ("m1", "lookAt", loop);
-    g_main_loop_run (loop);
-    g_assert (evtOnLook->getState () == Event::OCCURRING);
+  // after lookAway m1, m3 are OCCURRING
+  (fmt)->sendTick (0, 0, 0);
+  g_assert_cmpint ((body_lambda)->getState (), ==, Event::OCCURRING);
+  g_assert_cmpint ((m1_lambda)->getState (), ==, Event::OCCURRING);
+  g_assert_cmpint ((m2_lambda)->getState (), ==, Event::OCCURRING);
+  g_assert_cmpint ((m3_lambda)->getState (), ==, Event::OCCURRING);
 
-    // after START, m1_onLooAt m2 OCCURRING
-    (fmt)->sendTick (0, 0, 0);
-    g_assert_cmpint ((body_lambda)->getState (), ==, Event::OCCURRING);
-    g_assert_cmpint ((m1_lambda)->getState (), ==, Event::OCCURRING);
-    g_assert_cmpint ((m2_lambda)->getState (), ==, Event::OCCURRING);
-    g_assert_cmpint ((m3_lambda)->getState (), ==, Event::SLEEPING);
+  // lookAt a1
+  Event *evtOnLookAtA1 = m1->getLookAtEvent ("a1");
+  g_assert_nonnull (evtOnLookAtA1);
+  ws_post_action ("m1", "lookAt", "a1", loop);
+  g_main_loop_run (loop);
+  g_assert (evtOnLookAtA1->getState () == Event::OCCURRING);
 
-    // lookAway
-    ws_post_action ("m1", "lookAway", loop);
-    g_main_loop_run (loop);
-    g_assert (evtOnLook->getState () == Event::SLEEPING);
+  // after lookAt a1, m1_onLooAt m4 OCCURRING
+  (fmt)->sendTick (0, 0, 0);
+  g_assert_cmpint ((body_lambda)->getState (), ==, Event::OCCURRING);
+  g_assert_cmpint ((m1_lambda)->getState (), ==, Event::OCCURRING);
+  g_assert_cmpint ((m2_lambda)->getState (), ==, Event::OCCURRING);
+  g_assert_cmpint ((m3_lambda)->getState (), ==, Event::OCCURRING);
+  g_assert_cmpint ((m4_lambda)->getState (), ==, Event::OCCURRING);
+  g_assert_cmpint ((m5_lambda)->getState (), ==, Event::SLEEPING);
 
-    // after START, m1_onLooAway m3 are OCCURRING
-    (fmt)->sendTick (0, 0, 0);
-    g_assert_cmpint ((body_lambda)->getState (), ==, Event::OCCURRING);
-    g_assert_cmpint ((m1_lambda)->getState (), ==, Event::OCCURRING);
-    g_assert_cmpint ((m2_lambda)->getState (), ==, Event::OCCURRING);
-    g_assert_cmpint ((m3_lambda)->getState (), ==, Event::OCCURRING);
-  }
+  // lookAway a1
+  ws_post_action ("m1", "lookAway", "a1", loop);
+  g_main_loop_run (loop);
+  g_assert (evtOnLookAtA1->getState () == Event::SLEEPING);
+
+  // after lookAway a1, m1_onLooAway m5 are OCCURRING
+  (fmt)->sendTick (0, 0, 0);
+  g_assert_cmpint ((body_lambda)->getState (), ==, Event::OCCURRING);
+  g_assert_cmpint ((m1_lambda)->getState (), ==, Event::OCCURRING);
+  g_assert_cmpint ((m2_lambda)->getState (), ==, Event::OCCURRING);
+  g_assert_cmpint ((m3_lambda)->getState (), ==, Event::OCCURRING);
+  g_assert_cmpint ((m4_lambda)->getState (), ==, Event::OCCURRING);
+  g_assert_cmpint ((m5_lambda)->getState (), ==, Event::OCCURRING);
 
   g_main_loop_unref (loop);
   delete fmt;

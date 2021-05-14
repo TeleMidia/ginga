@@ -119,7 +119,7 @@ public:
 
   virtual void sendKeyEvent (const string &, bool);
 
-  // For now, only for the lua player (which reimplements it).
+  // For now, only for the PlayerLua and PlayerRemote (which reimplements it).
   virtual void
   sendPresentationEvent (const string &, const string &)
   {

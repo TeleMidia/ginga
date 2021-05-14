@@ -2315,7 +2315,7 @@ bool
 ParserState::pushNcl (ParserState *st, ParserElt *elt)
 {
   Context *root;
-  string *id = new string();
+  string *id = new string ();
 
   root = st->_doc->getRoot ();
   g_assert_nonnull (root);
@@ -2791,8 +2791,10 @@ borderColor='%s'}",
                   }
                 case Event::LOOKAT:
                   {
-                    obj->addLookAtEvent ("@lambda");
-                    act.event = obj->getLookAtEvent ("@lambda");
+                    string eventId = evt->getId ();
+                    if (obj->getLookAtEvent (eventId) == nullptr)
+                      obj->addLookAtEvent (eventId);
+                    act.event = obj->getLookAtEvent (eventId);
                     g_assert_nonnull (act.event);
                     break;
                   }

@@ -138,7 +138,7 @@ cb_apps (SoupServer *server, SoupMessage *msg, const char *path,
   bool status = false;
   string action, interface, value;
   Object *node;
-  Event *evt;
+  Event *evt = nullptr;
   Document *doc;
   const char *target = path + strlen (WS_ROUTE_APPS);
   gchar **params = g_strsplit (target, "/", 3);
@@ -180,13 +180,27 @@ cb_apps (SoupServer *server, SoupMessage *msg, const char *path,
     }
   else if (action == "lookAt")
     {
-      evt = node->getLookAtEvent ("@lambda");
-      doc->evalAction (evt, Event::START);
+      if (!interface.empty ())
+        evt = node->getLookAtEvent (interface);
+      else
+        evt = node->getLookAtEvent ("@lambda");
+        
+      if (evt != nullptr)
+        doc->evalAction (evt, Event::START);
+      else
+        goto fail;
     }
   else if (action == "lookAway")
     {
-      evt = node->getLookAtEvent ("@lambda");
-      doc->evalAction (evt, Event::STOP);
+      if (!interface.empty ())
+        evt = node->getLookAtEvent (interface);
+      else
+        evt = node->getLookAtEvent ("@lambda");
+        
+      if (evt != nullptr)
+        doc->evalAction (evt, Event::STOP);
+      else
+        goto fail;
     }
   else
     goto fail;
