@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "tests.h"
+#include "PlayerRemote.h"
 
 int
 main (void)
@@ -26,7 +27,8 @@ main (void)
     Formatter *fmt;
     Document *doc;
 
-    tests_parse_and_start (&fmt, &doc, "\
+    tests_parse_and_start (&fmt, &doc,
+                           xstrbuild ("\
 <ncl>\n\
  <head>\n\
   <connectorBase>\n\
@@ -42,9 +44,13 @@ main (void)
  </head>\n\
  <body id='body'>\n\
   <port id='start' component='m1'/>\n\
-  <media id='m1'/>\n\
+  <media id='m1' type='%s'>\n\
+    <area id='a1'/>\n\
+  </media>\n\
   <media id='m2'/>\n\
   <media id='m3'/>\n\
+  <media id='m4'/>\n\
+  <media id='m5'/>\n\
   <link xconnector='onLookAtStart'>\n\
    <bind role='onLookAt' component='m1'/>\n\
    <bind role='start' component='m2'/>\n\
@@ -53,14 +59,22 @@ main (void)
    <bind role='onLookAway' component='m1'/>\n\
    <bind role='start' component='m3'/>\n\
   </link>\n\
+  <link xconnector='onLookAtStart'>\n\
+   <bind role='onLookAt' component='m1' interface='a1'/>\n\
+   <bind role='start' component='m4'/>\n\
+  </link>\n\
+  <link xconnector='onLookAwayStart'>\n\
+   <bind role='onLookAway' component='m1' interface='a1'/>\n\
+   <bind role='start' component='m5'/>\n\
+  </link>\n\
  </body>\n\
-</ncl>");
+</ncl>",
+                                      REMOTE_PLAYER_MIME_NCL360));
 
     Context *body = cast (Context *, doc->getRoot ());
     g_assert_nonnull (body);
     Event *body_lambda = body->getLambda ();
     g_assert_nonnull (body_lambda);
-
     Media *m1 = cast (Media *, doc->getObjectById ("m1"));
     g_assert_nonnull (m1);
     Event *m1_lambda = m1->getLambda ();
@@ -73,15 +87,23 @@ main (void)
     g_assert_nonnull (m3);
     Event *m3_lambda = m3->getLambda ();
     g_assert_nonnull (m3_lambda);
-
-    // --------------------------------
-    // check start document
+    Media *m4 = cast (Media *, doc->getObjectById ("m4"));
+    g_assert_nonnull (m4);
+    Event *m4_lambda = m4->getLambda ();
+    g_assert_nonnull (m3_lambda);
+    Media *m5 = cast (Media *, doc->getObjectById ("m5"));
+    g_assert_nonnull (m5);
+    Event *m5_lambda = m5->getLambda ();
+    g_assert_nonnull (m5_lambda);
+    g_assert (m1->getProperty ("type") == REMOTE_PLAYER_MIME_NCL360);
 
     // when document is started, only the body_lambda is OCCURING
     g_assert_cmpint ((body_lambda)->getState (), ==, Event::OCCURRING);
     g_assert_cmpint ((m1_lambda)->getState (), ==, Event::SLEEPING);
     g_assert_cmpint ((m2_lambda)->getState (), ==, Event::SLEEPING);
     g_assert_cmpint ((m3_lambda)->getState (), ==, Event::SLEEPING);
+    g_assert_cmpint ((m4_lambda)->getState (), ==, Event::SLEEPING);
+    g_assert_cmpint ((m5_lambda)->getState (), ==, Event::SLEEPING);
 
     // when advance time, m1_lambda is OCCURRING
     (fmt)->sendTick (0, 0, 0);
@@ -89,28 +111,64 @@ main (void)
     g_assert_cmpint ((m1_lambda)->getState (), ==, Event::OCCURRING);
     g_assert_cmpint ((m2_lambda)->getState (), ==, Event::SLEEPING);
     g_assert_cmpint ((m3_lambda)->getState (), ==, Event::SLEEPING);
+    g_assert_cmpint ((m4_lambda)->getState (), ==, Event::SLEEPING);
+    g_assert_cmpint ((m5_lambda)->getState (), ==, Event::SLEEPING);
 
-    // START is done
+    // lookAt m1
     Event *evtOnLookAt = m1->getLookAtEvent ("@lambda");
     g_assert_nonnull (evtOnLookAt);
-
-    // after START, m1_onLooAt m2 OCCURRING
     doc->evalAction (evtOnLookAt, Event::START);
+    g_assert (evtOnLookAt->getState () == Event::OCCURRING);
+
+    // after lookAt m1, m2 OCCURRING
     (fmt)->sendTick (0, 0, 0);
     g_assert_cmpint ((body_lambda)->getState (), ==, Event::OCCURRING);
     g_assert_cmpint ((m1_lambda)->getState (), ==, Event::OCCURRING);
     g_assert_cmpint ((m2_lambda)->getState (), ==, Event::OCCURRING);
     g_assert_cmpint ((m3_lambda)->getState (), ==, Event::SLEEPING);
+    g_assert_cmpint ((m4_lambda)->getState (), ==, Event::SLEEPING);
+    g_assert_cmpint ((m5_lambda)->getState (), ==, Event::SLEEPING);
 
+    // lookAway m1
     doc->evalAction (evtOnLookAt, Event::STOP);
-    (fmt)->sendTick (0, 0, 0);
+    g_assert (evtOnLookAt->getState () == Event::SLEEPING);
 
-    // after START, m1_onLooAway m3 are OCCURRING
+    // after lookAway m1, m3 are OCCURRING
     (fmt)->sendTick (0, 0, 0);
     g_assert_cmpint ((body_lambda)->getState (), ==, Event::OCCURRING);
     g_assert_cmpint ((m1_lambda)->getState (), ==, Event::OCCURRING);
     g_assert_cmpint ((m2_lambda)->getState (), ==, Event::OCCURRING);
     g_assert_cmpint ((m3_lambda)->getState (), ==, Event::OCCURRING);
+    g_assert_cmpint ((m4_lambda)->getState (), ==, Event::SLEEPING);
+    g_assert_cmpint ((m5_lambda)->getState (), ==, Event::SLEEPING);
+
+    // lookAt a1
+    Event *evtOnLookAtA1 = m1->getLookAtEvent ("a1");
+    g_assert_nonnull (evtOnLookAtA1);
+    doc->evalAction (evtOnLookAtA1, Event::START);
+    g_assert (evtOnLookAtA1->getState () == Event::OCCURRING);
+
+    // after lookAt a1, m1_onLooAt m4 OCCURRING
+    (fmt)->sendTick (0, 0, 0);
+    g_assert_cmpint ((body_lambda)->getState (), ==, Event::OCCURRING);
+    g_assert_cmpint ((m1_lambda)->getState (), ==, Event::OCCURRING);
+    g_assert_cmpint ((m2_lambda)->getState (), ==, Event::OCCURRING);
+    g_assert_cmpint ((m3_lambda)->getState (), ==, Event::OCCURRING);
+    g_assert_cmpint ((m4_lambda)->getState (), ==, Event::OCCURRING);
+    g_assert_cmpint ((m5_lambda)->getState (), ==, Event::SLEEPING);
+
+    // lookAway a1
+    doc->evalAction (evtOnLookAtA1, Event::STOP);
+    g_assert (evtOnLookAtA1->getState () == Event::SLEEPING);
+
+    // after lookAway a1, m1_onLooAway m5 are OCCURRING
+    (fmt)->sendTick (0, 0, 0);
+    g_assert_cmpint ((body_lambda)->getState (), ==, Event::OCCURRING);
+    g_assert_cmpint ((m1_lambda)->getState (), ==, Event::OCCURRING);
+    g_assert_cmpint ((m2_lambda)->getState (), ==, Event::OCCURRING);
+    g_assert_cmpint ((m3_lambda)->getState (), ==, Event::OCCURRING);
+    g_assert_cmpint ((m4_lambda)->getState (), ==, Event::OCCURRING);
+    g_assert_cmpint ((m5_lambda)->getState (), ==, Event::OCCURRING);
 
     delete fmt;
   }

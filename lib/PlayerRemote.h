@@ -55,7 +55,7 @@ class WebServices;
 
 #define REMOTE_PLAYER_ROUTE_NODES "/scene/nodes/"
 
-#define REMOTE_PLAYER_MIME_NCL360 "application/x-ncl360"
+#define REMOTE_PLAYER_MIME_NCL360 "application/x-ginga-ncl360"
 
 class PlayerRemote : public Player
 {
@@ -71,11 +71,10 @@ public:
   void redraw (cairo_t *);
 
   static bool usesPlayerRemote (Media *);
+  void sendPresentationEvent (const string &, const string &);
 
 protected:
-  bool doSetProperty (Property, const string &, const string &);
-  void sendAction (const char *);
-  char *_url;
+  void sendAction (const string &, const string &);
   bool _sessionStarted;
   WebServices *_ws;
   SoupSession *_session;

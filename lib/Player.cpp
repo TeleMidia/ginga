@@ -63,6 +63,7 @@ static map<string, string> mime_table = {
   { "mpeg", "video/mpeg" },
   { "mpg", "video/mpeg" },
   { "mpv", "video/mpv" },
+  { "ncl360", REMOTE_PLAYER_MIME_NCL360 },
   { "ncl", "application/x-ginga-ncl" },
   { "oga", "audio/ogg" },
   { "ogg", "audio/ogg" },

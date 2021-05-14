@@ -35,7 +35,6 @@ PlayerRemote::PlayerRemote (Formatter *fmt, Media *media)
     : Player (fmt, media)
 {
   _session = nullptr;
-  _url = nullptr;
 }
 
 /**
@@ -53,27 +52,8 @@ PlayerRemote::usesPlayerRemote (Media *media)
   return false;
 }
 
-bool
-PlayerRemote::doSetProperty (Property code, const string &name,
-                             const string &value)
-{
-  switch (code)
-    {
-    case PROP_REMOTE_PLAYER_BASE_URL:
-      if (_url != nullptr)
-        g_free (_url);
-      _url = g_strdup_printf ("%s" REMOTE_PLAYER_ROUTE_NODES "%s",
-                              value.c_str (), _media->getId ().c_str ());
-      break;
-    default:
-      return Player::doSetProperty (code, name, value);
-    }
-  return true;
-}
-
 PlayerRemote::~PlayerRemote ()
 {
-  g_free (_url);
   g_object_unref (_session);
 }
 
@@ -88,17 +68,22 @@ cb_action (SoupSession *session, SoupMessage *msg, gpointer user_data)
 }
 
 void
-PlayerRemote::sendAction (const char *body)
+PlayerRemote::sendAction (const string &body, const string &label = "")
 {
   guint status;
   SoupMessage *msg;
 
-  g_assert_nonnull (_url);
   if (!_session)
     _session = soup_session_new ();
-  msg = soup_message_new (SOUP_METHOD_POST, _url);
-  soup_message_set_request (msg, "application/json", SOUP_MEMORY_COPY, body,
-                            strlen (body));
+
+  string url
+      = xstrbuild ("%s" REMOTE_PLAYER_ROUTE_NODES "%s",
+                   getProperty ("remotePlayerBaseURL").c_str (),
+                   (label == "") ? _media->getId ().c_str () : label.c_str ());
+
+  msg = soup_message_new (SOUP_METHOD_POST, url.c_str ());
+  soup_message_set_request (msg, "application/json", SOUP_MEMORY_COPY,
+                            body.c_str (), strlen (body.c_str ()));
   soup_session_queue_message (_session, msg, cb_action, this);
 }
 
@@ -106,12 +91,12 @@ void
 PlayerRemote::start ()
 {
   string zOrder = getProperty ("zOrder");
-  string props = xstrbuild (
+  string body_props = xstrbuild (
       REMOTE_PLAYER_JSON_ACT_WITH_PROPS, "start", 0,
       getProperty ("top").c_str (), getProperty ("left").c_str (),
       getProperty ("width").c_str (), getProperty ("height").c_str (),
       getProperty ("zOrder").c_str (), "0%");
-  sendAction (props.c_str ());
+  sendAction (body_props);
   Player::start ();
 }
 
@@ -119,7 +104,7 @@ void
 PlayerRemote::startPreparation ()
 {
   string body = xstrbuild (REMOTE_PLAYER_JSON_ACT, "prepare", 0);
-  sendAction (body.c_str ());
+  sendAction (body);
   Player::startPreparation ();
 }
 
@@ -127,7 +112,7 @@ void
 PlayerRemote::stop ()
 {
   string body = xstrbuild (REMOTE_PLAYER_JSON_ACT, "stop", 0);
-  sendAction (body.c_str ());
+  sendAction (body);
   Player::stop ();
 }
 
@@ -135,7 +120,7 @@ void
 PlayerRemote::pause ()
 {
   string body = xstrbuild (REMOTE_PLAYER_JSON_ACT, "pause", 0);
-  sendAction (body.c_str ());
+  sendAction (body);
   Player::pause ();
 }
 
@@ -145,6 +130,14 @@ PlayerRemote::resume ()
   string body = xstrbuild (REMOTE_PLAYER_JSON_ACT, "resume", 0);
   sendAction (body.c_str ());
   Player::resume ();
+}
+
+void
+PlayerRemote::sendPresentationEvent (const string &action,
+                                     const string &label)
+{
+  string body = xstrbuild (REMOTE_PLAYER_JSON_ACT, action.c_str (), 0);
+  sendAction (body, label);
 }
 
 void

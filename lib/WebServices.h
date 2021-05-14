@@ -66,6 +66,22 @@ public:
      \"recognizableEvents\" : %s, \
    }"
 
+#define WS_JSON_ACT                                                        \
+  "{\
+     \"action\": \"%s\",\
+   }"
+#define WS_JSON_ACT_WITH_INTERFACE                                         \
+  "{\
+     \"action\": \"%s\",\
+     \"interface\": \"%s\",\
+   }"
+#define WS_JSON_ACT_WITH_INTERFACE_VALUE                                   \
+  "{\
+     \"action\": \"%s\",\
+     \"interface\": \"%s\",\
+     \"value\": \"%s\"\
+   }"
+
 #define TRACE_SOUP_REQ_MSG(msg)                                            \
   G_STMT_START                                                             \
   {                                                                        \
