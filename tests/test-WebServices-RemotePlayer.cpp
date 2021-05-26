@@ -23,7 +23,8 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 Formatter *fmt;
 char *test_remote_player_location;
-int test_remote_player_port = WS_PORT + 10; // different port then WS_PORT;
+int test_remote_player_port
+    = WS_PORT_DEFAULT + 10; // different port then ws port;
 const char *expectedAction = nullptr;
 SoupServer *server = nullptr;
 
@@ -41,10 +42,12 @@ remoteplayer_registry (GMainLoop *loop)
   SoupMessage *msg;
   SoupSession *session;
   gchar *body, *url;
+  guint host_port = fmt->getWebServices ()->host_port;
 
   session = soup_session_new ();
   g_assert_nonnull (session);
-  url = g_strdup_printf ("http://localhost:%d%s", WS_PORT, WS_ROUTE_PLAYER);
+  url = g_strdup_printf ("http://localhost:%d%s", host_port,
+                         WS_ROUTE_PLAYER);
   g_assert_nonnull (url);
   msg = soup_message_new (SOUP_METHOD_POST, url);
   g_assert_nonnull (msg);
@@ -98,7 +101,7 @@ setup_remoteplayer_route (const char *id, GMainLoop *loop)
       server = soup_server_new (SOUP_SERVER_SERVER_HEADER, "remoteplayer",
                                 nullptr);
       g_assert_nonnull (server);
-      // set server to handle both /location and other routes in WS_PORT
+      // set server to handle both /location and other routes
       ret = soup_server_listen_all (server, test_remote_player_port,
                                     SoupServerListenOptions (0), &error);
       if (!ret)

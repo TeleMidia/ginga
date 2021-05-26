@@ -17,7 +17,6 @@ set (GINGA_BINARY_DIR ${CMAKE_BINARY_DIR}/bin)
 add_definitions (-DGINGADATADIR="${CMAKE_INSTALL_FULL_DATADIR}/${PACKAGE}")
 add_definitions (-DGINGABINDIR="${CMAKE_INSTALL_FULL_BINDIR}")
 
-
 # set all target runtime to bin
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${GINGA_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${GINGA_BINARY_DIR})
@@ -376,8 +375,8 @@ set (CPACK_DEBIAN_COMPRESSION_TYPE "xz")
 set (CPACK_DEBIAN_REPLACES "xz")
 
 install (DIRECTORY ${CMAKE_BINARY_OUTPUT_DIR} DESTINATION bin)
-include(GNUInstallDirs)
-install(TARGETS libginga DESTINATION bin)
+include (GNUInstallDirs)
+install (TARGETS libginga DESTINATION bin)
 install (TARGETS ginga DESTINATION bin)
 install (TARGETS gingagui DESTINATION bin)
 install (DIRECTORY src-gui/icons/ DESTINATION share/ginga/icons)

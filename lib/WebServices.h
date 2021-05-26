@@ -57,7 +57,7 @@ public:
 #define WS_ROUTE_LOC "/location"
 #define WS_ROUTE_PLAYER "/remote-mediaplayer"
 #define WS_ROUTE_APPS "/current-service/apps/"
-#define WS_PORT 44642
+#define WS_PORT_DEFAULT 44642
 #define WS_JSON_REMOTE_PLAYER                                              \
   "{\
      \"location\" : \"%s\", \
@@ -110,6 +110,7 @@ public:
   bool machMediaThenSetPlayerRemote (PlayerRemoteData &);
   Formatter *getFormatter ();
   const char *host_addr;
+  guint host_port;
 
 private:
   Formatter *_formatter;

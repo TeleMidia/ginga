@@ -120,9 +120,6 @@ Formatter::start (const string &file, string *errmsg)
   if (_state != GINGA_STATE_STOPPED)
     return false;
 
-  if (_opts.webservices)
-    this->_webservices->start ();
-
   // Parse document.
   g_assert_null (_doc);
   w = _opts.width;
