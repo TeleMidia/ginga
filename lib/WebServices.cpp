@@ -82,11 +82,11 @@ cb_locaction (SoupServer *server, SoupMessage *msg, const char *path,
                              0);
 
   // add GingaCC-Server-* headers
-  value = g_strdup_printf ("http://%s:%d", ws->host_addr, WS_PORT);
+  value = g_strdup_printf ("http://%s:%d", ws->host_addr, ws->host_port);
   soup_message_headers_append (msg->response_headers,
                                "GingaCC-Server-BaseURL", value);
   g_free (value);
-  value = g_strdup_printf ("https://%s:%d", ws->host_addr, WS_PORT);
+  value = g_strdup_printf ("https://%s:%d", ws->host_addr, ws->host_port);
   soup_message_headers_append (msg->response_headers,
                                "GingaCC-Server-SecureBaseURL", value);
   g_free (value);
@@ -184,7 +184,7 @@ cb_apps (SoupServer *server, SoupMessage *msg, const char *path,
         evt = node->getLookAtEvent (interface);
       else
         evt = node->getLookAtEvent ("@lambda");
-        
+
       if (evt != nullptr)
         doc->evalAction (evt, Event::START);
       else
@@ -196,7 +196,7 @@ cb_apps (SoupServer *server, SoupMessage *msg, const char *path,
         evt = node->getLookAtEvent (interface);
       else
         evt = node->getLookAtEvent ("@lambda");
-        
+
       if (evt != nullptr)
         doc->evalAction (evt, Event::STOP);
       else
@@ -232,25 +232,38 @@ WebServices::start ()
   g_assert (_resource_group);
   host_addr = gssdp_client_get_host_ip (_client);
 
+  // create server
+  _server = soup_server_new (SOUP_SERVER_SERVER_HEADER, WS_NAME, nullptr);
+  g_assert_nonnull (_server);
+  // set server to handle both /location and other routes in WS_PORT_DEFAULT
+
+  ret = soup_server_listen_all (_server, WS_PORT_DEFAULT,
+                                SoupServerListenOptions (0), &error);
+  if (ret)
+    {
+      this->host_port = WS_PORT_DEFAULT;
+    }
+  else
+    {
+      TRACE ("WebServices fail serve at default port %d: %s\n",
+             WS_PORT_DEFAULT, error->message);
+      g_error_free (error);
+      // if fail use WS_PORT_DEFAULT + 1
+      ret = soup_server_listen_all (_server, WS_PORT_DEFAULT + 1,
+                                    SoupServerListenOptions (0), &error);
+      g_assert (ret);
+      this->host_port = WS_PORT_DEFAULT + 1;
+    }
+
   // ssdp avaliable
-  location = g_strdup_printf ("http://%s:%d/location", host_addr, WS_PORT);
+  location = g_strdup_printf ("http://%s:%u/location", this->host_addr,
+                              this->host_port);
+  TRACE ("WebServices  location: %s\n", location);
   gssdp_resource_group_add_resource_simple (
       _resource_group, SSDP_ST, SSDP_UUID "::" SSDP_ST, location);
   gssdp_resource_group_set_available (_resource_group, true);
   g_assert (gssdp_resource_group_get_available (_resource_group));
   g_assert (gssdp_client_get_active (_client));
-
-  // create server
-  _server = soup_server_new (SOUP_SERVER_SERVER_HEADER, WS_NAME, nullptr);
-  g_assert_nonnull (_server);
-  // set server to handle both /location and other routes in WS_PORT
-  ret = soup_server_listen_all (_server, WS_PORT,
-                                SoupServerListenOptions (0), &error);
-  if (!ret)
-    {
-      g_printerr ("Fails start WebServices: %s\n", error->message);
-      g_assert_not_reached ();
-    }
 
   WS_ADD_ROUTE (_server, WS_ROUTE_LOC, cb_locaction);
   WS_ADD_ROUTE (_server, WS_ROUTE_PLAYER, cb_remoteplayer);

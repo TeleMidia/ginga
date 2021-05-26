@@ -39,12 +39,13 @@ cb_test_location (SoupSession *session, SoupMessage *msg, gpointer loop)
   char *url1;
   char *url2;
   const char *host_addr = fmt->getWebServices ()->host_addr;
+  guint host_port = fmt->getWebServices ()->host_port;
   SoupMessageHeaders *hdrs;
 
   g_assert (msg->status_code == SOUP_STATUS_OK);
 
-  url1 = g_strdup_printf ("http://%s:%d", host_addr, WS_PORT);
-  url2 = g_strdup_printf ("https://%s:%d", host_addr, WS_PORT);
+  url1 = g_strdup_printf ("http://%s:%d", host_addr, host_port);
+  url2 = g_strdup_printf ("https://%s:%d", host_addr, host_port);
 
   hdrs = msg->response_headers;
   g_assert_cmpstr (
@@ -67,10 +68,11 @@ ws_get_location (GMainLoop *loop)
   SoupMessage *msg;
   SoupSession *session;
   gchar *url;
+  guint host_port = fmt->getWebServices ()->host_port;
 
   session = soup_session_new ();
   g_assert_nonnull (session);
-  url = g_strdup_printf ("http://localhost:%d%s", WS_PORT, WS_ROUTE_LOC);
+  url = g_strdup_printf ("http://localhost:%d%s", host_port, WS_ROUTE_LOC);
   g_assert_nonnull (url);
   msg = soup_message_new (SOUP_METHOD_GET, url);
   g_assert_nonnull (msg);
@@ -87,10 +89,11 @@ ws_post_action (const char *node, const char *action, const char *interface,
   SoupMessage *msg;
   SoupSession *session;
   gchar *body, *url;
+  guint host_port = fmt->getWebServices ()->host_port;
 
   session = soup_session_new ();
   g_assert_nonnull (session);
-  url = g_strdup_printf ("http://localhost:%d%s1/docId/%s", WS_PORT,
+  url = g_strdup_printf ("http://localhost:%d%s1/docId/%s", host_port,
                          WS_ROUTE_APPS, node);
   g_assert_nonnull (url);
   msg = soup_message_new (SOUP_METHOD_POST, url);
