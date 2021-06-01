@@ -227,7 +227,7 @@ set (GINGAGUI_GTK_INCLUDE_DIRS
 )
 
 # libginga target
-add_library (libginga SHARED ${LIBGINGA_SOURCES})
+add_library (libginga ${LIBGINGA_SOURCES})
 if (WITH_NCLUA_BUILD)
   add_dependencies (libginga nclua_build)
 endif()
@@ -237,8 +237,8 @@ set_target_properties (libginga PROPERTIES OUTPUT_NAME "ginga")
 
 # ginga target
 add_executable (ginga src/ginga.cpp)
-target_include_directories (ginga PUBLIC ${GTK3_INCLUDE_DIRS})
-target_link_libraries (ginga PUBLIC libginga ${GTK3_LIBRARIES})
+target_include_directories (ginga PRIVATE ${GTK3_INCLUDE_DIRS})
+target_link_libraries (ginga PRIVATE libginga ${GTK3_LIBRARIES})
 
 # gingagui target
 list (APPEND GINGAGUI_GTK_INCLUDE_DIRS
@@ -250,16 +250,16 @@ set (GINGAGUI_GTK_LIBS
   ${GTK3_LIBRARIES}
 )
 add_executable (gingagui ${GINGAGUI_GTK_SOURCES})
-target_include_directories (gingagui PUBLIC ${GINGAGUI_GTK_INCLUDE_DIRS})
-target_link_libraries (gingagui PUBLIC libginga ${GINGAGUI_GTK_LIBS})
+target_include_directories (gingagui PRIVATE ${GINGAGUI_GTK_INCLUDE_DIRS})
+target_link_libraries (gingagui PRIVATE libginga ${GINGAGUI_GTK_LIBS})
 
 # ginga-gl target
 if (WITH_OPENGL)
   add_executable (ginga-gl src/ginga-gl.cpp)
-  target_include_directories (ginga-gl PUBLIC
+  target_include_directories (ginga-gl PRIVATE
     ${SDL2_INCLUDE_DIR}
   )
-  target_link_libraries (ginga-gl PUBLIC
+  target_link_libraries (ginga-gl PRIVATE
     libginga
     ${SDL2_LIBRARY}
     ${SDL2_IMAGE_LIBRARIES}
@@ -282,8 +282,8 @@ if (WITH_GINGAQT)
     Qt5::Widgets
     libginga
   )
-  target_compile_definitions(ginga-qt PUBLIC -DQT_NO_KEYWORDS)
-  target_include_directories(ginga-qt PUBLIC
+  target_compile_definitions(ginga-qt PRIVATE -DQT_NO_KEYWORDS)
+  target_include_directories(ginga-qt PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_BINARY_DIR}
     ${LIBGINGA_INCLUDE_DIRS}
@@ -350,6 +350,8 @@ CMAKE_SYSTEM_NAME:  ${CMAKE_SYSTEM_NAME}
 CMAKE_BUILD_TYPE:   ${CMAKE_BUILD_TYPE}
 CMAKE_C_COMPILER:   ${CMAKE_CXX_COMPILER}
 GINGA_BINARY_DIR:   ${GINGA_BINARY_DIR}
+STATIC_LINKING:     ${STATIC_LINKING}
+BUILD_SHARED_LIBS:  ${BUILD_SHARED_LIBS}
 
 Optional dependencies:
 with nclua_build:   ${WITH_NCLUA_BUILD}
