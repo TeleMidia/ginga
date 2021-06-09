@@ -44,6 +44,9 @@ bool
 PlayerRemote::usesPlayerRemote (Media *media)
 {
   string mime = media->getProperty ("type");
+  string uri = media->getProperty ("uri");
+  if (mime.empty ())
+    getMimeForURI (uri, &mime);
   if (mime == REMOTE_PLAYER_MIME_NCL360)
     return true;
   string device = media->getProperty ("device");
@@ -76,10 +79,10 @@ PlayerRemote::sendAction (const string &body, const string &label = "")
   if (!_session)
     _session = soup_session_new ();
 
-  string url
-      = xstrbuild ("%s" REMOTE_PLAYER_ROUTE_NODES "%s",
-                   getProperty ("remotePlayerBaseURL").c_str (),
-                   (label == "") ? _media->getId ().c_str () : label.c_str ());
+  string url = xstrbuild ("%s" REMOTE_PLAYER_ROUTE_NODES "%s",
+                          getProperty ("remotePlayerBaseURL").c_str (),
+                          (label == "") ? _media->getId ().c_str ()
+                                        : label.c_str ());
 
   msg = soup_message_new (SOUP_METHOD_POST, url.c_str ());
   soup_message_set_request (msg, "application/json", SOUP_MEMORY_COPY,

@@ -122,7 +122,8 @@ static map<string, PlayerPropertyInfo> player_property_map = {
   { "fontWeight", { Player::PROP_FONT_WEIGHT, true, "" } },
   { "freeze", { Player::PROP_FREEZE, true, "false" } },
   { "freq", { Player::PROP_FREQ, true, "440" } },
-  { "remotePlayerBaseURL", { Player::PROP_REMOTE_PLAYER_BASE_URL, false, "" } },
+  { "remotePlayerBaseURL",
+    { Player::PROP_REMOTE_PLAYER_BASE_URL, false, "" } },
   { "height", { Player::PROP_HEIGHT, true, "100%" } },
   { "horzAlign", { Player::PROP_HORZ_ALIGN, true, "left" } },
   { "left", { Player::PROP_LEFT, true, "0" } },
@@ -546,6 +547,24 @@ Player::getPlayerProperty (const string &name, string *defval)
   return info->code;
 }
 
+bool Player::getMimeForURI (const string &uri, string *result)
+{
+  string::size_type index, len;
+  index = uri.find_last_of (".");
+  if (index != std::string::npos)
+    {
+      index++;
+      len = uri.length ();
+      if (index < len)
+        {
+          string extension = uri.substr (index, (len - index));
+          if (extension != "")
+            return mime_table_index (extension, result);
+        }
+    }
+  return false;
+}
+
 Player *
 Player::createPlayer (Formatter *formatter, Media *media, const string &uri,
                       const string &type)
@@ -559,19 +578,7 @@ Player::createPlayer (Formatter *formatter, Media *media, const string &uri,
 
   if (mime == "" && uri != "")
     {
-      string::size_type index, len;
-      index = uri.find_last_of (".");
-      if (index != std::string::npos)
-        {
-          index++;
-          len = uri.length ();
-          if (index < len)
-            {
-              string extension = uri.substr (index, (len - index));
-              if (extension != "")
-                mime_table_index (extension, &mime);
-            }
-        }
+      getMimeForURI (uri, &mime);
     }
 
   if (mime == "")
@@ -598,10 +605,11 @@ Player::createPlayer (Formatter *formatter, Media *media, const string &uri,
       player = new PlayerText (formatter, media);
     }
   // if has WS setted a remotePlayerBaseURL
-  else if (media->getProperty("remotePlayerBaseURL") != "")
+  else if (PlayerRemote::usesPlayerRemote (media))
     {
       player = new PlayerRemote (formatter, media);
-      WARNING ("Create a PlayerRemote for Media '%s'", media->getId ().c_str());
+      WARNING ("Create a PlayerRemote for Media '%s'",
+               media->getId ().c_str ());
     }
 #if defined WITH_CEF && WITH_CEF
   else if (xstrhasprefix (mime, "text/html"))

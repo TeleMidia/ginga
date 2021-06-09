@@ -129,6 +129,7 @@ public:
   static string getCurrentFocus ();
   static void setCurrentFocus (const string &);
   static Property getPlayerProperty (const string &, string *);
+  static bool getMimeForURI (const string &, string*);
   static Player *createPlayer (Formatter *, Media *, const string &,
                                const string &type = "");
 
