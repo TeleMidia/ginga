@@ -313,7 +313,7 @@ WebServices::machMediaThenSetPlayerRemote (PlayerRemoteData &data)
                                  WS_DEFAULT_APPID,         // appId
                                  WS_DEFAULT_DOCID,         // documentID
                                  m->getId ().c_str (),     // sceneNode
-                                 m->getProperty ("type").c_str (), // type
+                                 m->getProperty ("uri").c_str (), // type
                                  WS_DEFAULT_JSON_NOTIFY_EVTS // notifyEvents
               );
           soup_message_set_request (msg, "application/json",
