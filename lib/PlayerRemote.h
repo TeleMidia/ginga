@@ -49,13 +49,12 @@ class WebServices;
      \"documentId\": \"%s\",\
      \"sceneNode\": \"%s\",\
      \"sceneURL\": \"%s\",\
-     \"type\": \"%s\",\
      \"notifyEvents\": %s\
    }"
 
 #define REMOTE_PLAYER_ROUTE_NODES "/scene/nodes/"
 
-#define REMOTE_PLAYER_MIME_NCL360 "application/x-ginga-ncl360"
+#define REMOTE_PLAYER_MIME_NCL360 "application/x-ncl360"
 
 class PlayerRemote : public Player
 {
