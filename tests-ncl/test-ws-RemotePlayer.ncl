@@ -26,7 +26,7 @@
     <port id="entry2" component="m2"/>
     <port id="entry3" component="m3"/>
     <media id="hidden"/>
-    <media id="m1" descriptor="desc1" type="application/x-ginga-ncl360"/>
+    <media id="m1" descriptor="desc1" type="application/x-ncl360"/>
     <media id="m2" descriptor="desc2">
       <property name="background" value="green"/>
     </media>
