@@ -94,7 +94,7 @@ GINGA_DEPS+="/mingw64/bin/libtheora-0.dll "
 GINGA_DEPS+="/mingw64/bin/libvpx-1.dll "
 GINGA_DEPS+="/mingw64/bin/libcurl-4.dll "
 GINGA_DEPS+="/mingw64/bin/libjpeg-8.dll "
-GINGA_DEPS+="/mingw64/bin/libvorbisidec-1.dll "
+# GINGA_DEPS+="/mingw64/bin/libvorbisidec-1.dll "
 
 # gst deps
 GINGA_DEPS+="/mingw64/bin/gst-play-1.0.exe "
