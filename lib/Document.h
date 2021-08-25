@@ -35,6 +35,7 @@ class Document
 {
 public:
   Document ();
+  Document (const string&);
   virtual ~Document ();
 
   const set<Object *> *getObjects ();
@@ -42,9 +43,11 @@ public:
   Object *getObjectByIdOrAlias (const string &);
   bool addObject (Object *);
 
+  const string getId ();
   Context *getRoot ();
   MediaSettings *getSettings ();
   const set<Media *> *getMedias ();
+  const set<Media *> *getMediasRemote ();
   const set<Context *> *getContexts ();
   const set<Switch *> *getSwitches ();
 
@@ -57,12 +60,14 @@ public:
   bool setData (const string &, void *, UserDataCleanFunc fn = nullptr);
 
 private:
+  string _id;
   list<Action> evalActionInContext (Action, Context *);
   set<Object *> _objects;             ///< Objects.
   map<string, Object *> _objectsById; ///< Objects indexed by id.
   Context *_root;                     ///< Root context (body).
   MediaSettings *_settings;           ///< Settings object.
   set<Media *> _medias;               ///< Media objects.
+  set<Media *> _mediasRemote;         ///< Media objects.
   set<Context *> _contexts;           ///< Context objects.
   set<Switch *> _switches;            ///< Switch objects.
   UserData _udata;                    ///< Attached user data.

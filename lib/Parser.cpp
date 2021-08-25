@@ -1,4 +1,4 @@
-      /* Copyright (C) 2006-2018 PUC-Rio/Laboratorio TeleMidia
+/* Copyright (C) 2006-2018 PUC-Rio/Laboratorio TeleMidia
 
 This file is part of Ginga (Ginga-NCL).
 
@@ -14,6 +14,8 @@ License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
+
+#include <memory>
 
 #include "aux-ginga.h"
 #include "Parser.h"
@@ -353,10 +355,10 @@ private:
 // NCL syntax.
 
 /// Type for element push function.
-typedef bool(ParserSyntaxEltPush) (ParserState *, ParserElt *);
+typedef bool (ParserSyntaxEltPush) (ParserState *, ParserElt *);
 
 /// Type for element pop function.
-typedef bool(ParserSyntaxEltPop) (ParserState *, ParserElt *);
+typedef bool (ParserSyntaxEltPop) (ParserState *, ParserElt *);
 
 /**
  * @brief NCL attribute syntax.
@@ -382,7 +384,8 @@ typedef struct ParserSyntaxElt
 /**
  * @brief NCL attribute processing flags.
  */
-typedef enum {
+typedef enum
+{
   PARSER_SYNTAX_ATTR_NONEMPTY = 1 << 1,   ///< Cannot be not empty.
   PARSER_SYNTAX_ATTR_REQUIRED = 1 << 2,   ///< Is required.
   PARSER_SYNTAX_ATTR_TYPE_ID = 1 << 3,    ///< Is an id.
@@ -410,7 +413,8 @@ typedef enum {
 /**
  * @brief NCL element processing flags.
  */
-typedef enum {
+typedef enum
+{
   PARSER_SYNTAX_ELT_CACHE = 1 << 1,  ///< Save element in #Parser cache.
   PARSER_SYNTAX_ELT_GEN_ID = 1 << 2, ///< Generate id if not present.
 } ParserSyntaxEltFlag;
@@ -444,7 +448,8 @@ static map<string, ParserSyntaxElt> parser_syntax_table = {
           { "xmlns", 0 } } },
   },
   {
-      "head", { nullptr, nullptr, 0, { "ncl" }, {} },
+      "head",
+      { nullptr, nullptr, 0, { "ncl" }, {} },
   },
   {
       "regionBase",
@@ -695,33 +700,27 @@ static map<string, ParserSyntaxElt> parser_syntax_table = {
       { ParserState::pushImportBase,
         nullptr,
         ELT_CACHE,
-        {"connectorBase", "descriptorBase", "regionBase", "ruleBase",
-          "transitionBase", "fontBase"},
+        { "connectorBase", "descriptorBase", "regionBase", "ruleBase",
+          "transitionBase", "fontBase" },
         { { "alias", ATTR_REQUIRED_NONEMPTY_NAME },
           { "documentURI", ATTR_REQUIRED },
           { "region", 0 },     // unused
           { "baseId", 0 } } }, // unused
   },
-  {
-    "fontBase",
+  { "fontBase",
     {
-      nullptr,
-      nullptr,
-      ELT_CACHE,
-      {"head"},
-      {} // no attributes
-    }
-  },
+        nullptr, nullptr, ELT_CACHE, { "head" }, {} // no attributes
+    } },
   {
-    "font",
-    {ParserState::pushFont,
-      nullptr,
-      ELT_CACHE,
-      {"fontBase"},
-      { {"fontFamily", ATTR_REQUIRED},
-        {"src", ATTR_REQUIRED},
-        {"fontStyle", 0},
-        {"fontWeight", 0} } },
+      "font",
+      { ParserState::pushFont,
+        nullptr,
+        ELT_CACHE,
+        { "fontBase" },
+        { { "fontFamily", ATTR_REQUIRED },
+          { "src", ATTR_REQUIRED },
+          { "fontStyle", 0 },
+          { "fontWeight", 0 } } },
   },
   {
       "body",
@@ -891,6 +890,8 @@ static map<string, pair<Event::Type, Event::Transition> >
       { "onBeginAttribution", { Event::ATTRIBUTION, Event::START } },
       { "onEndAttribution", { Event::ATTRIBUTION, Event::STOP } },
       { "onSelection", { Event::SELECTION, Event::START } },
+      { "onLookAt", { Event::LOOKAT, Event::START } },
+      { "onLookAway", { Event::LOOKAT, Event::STOP } },
       { "onBeginSelection", { Event::SELECTION, Event::START } },
       { "onEndSelection", { Event::SELECTION, Event::STOP } },
       { "onBeginPreparation", { Event::PREPARATION, Event::START } },
@@ -931,6 +932,7 @@ static map<string, Event::Type> parser_syntax_event_type_table = {
   { "presentation", Event::PRESENTATION },
   { "attribution", Event::ATTRIBUTION },
   { "selection", Event::SELECTION },
+  { "lookat", Event::LOOKAT },
   { "preparation", Event::PREPARATION },
 };
 
@@ -2313,13 +2315,16 @@ bool
 ParserState::pushNcl (ParserState *st, ParserElt *elt)
 {
   Context *root;
-  string id;
+  string *id = new string ();
 
   root = st->_doc->getRoot ();
   g_assert_nonnull (root);
 
-  if (elt->getAttribute ("id", &id))
-    root->addAlias (id);
+  if (elt->getAttribute ("id", id))
+    {
+      root->addAlias (*id);
+      st->_doc->setData ("id", id, xstrdelete);
+    }
 
   st->objStackPush (root);
   return true;
@@ -2775,12 +2780,21 @@ borderColor='%s'}",
                   {
                     string eventId = evt->getId ();
 
-                    if(evt->getId () == "@lambda")
+                    if (eventId == "@lambda")
                       {
-                        obj->addPreparationEvent(eventId);
+                        obj->addPreparationEvent (eventId);
                       }
 
                     act.event = obj->getPreparationEvent (eventId);
+                    g_assert_nonnull (act.event);
+                    break;
+                  }
+                case Event::LOOKAT:
+                  {
+                    string eventId = evt->getId ();
+                    if (obj->getLookAtEvent (eventId) == nullptr)
+                      obj->addLookAtEvent (eventId);
+                    act.event = obj->getLookAtEvent (eventId);
                     g_assert_nonnull (act.event);
                     break;
                   }
@@ -3544,9 +3558,8 @@ ParserState::pushImportBase (ParserState *st, ParserElt *elt)
   return status;
 
 fail_no_such_base:
-  return st->errEltImport (elt->getNode (),
-                           "no <" + parent_elt->getTag ()
-                               + "> in imported document");
+  return st->errEltImport (elt->getNode (), "no <" + parent_elt->getTag ()
+                                                + "> in imported document");
 }
 
 /**
@@ -3964,7 +3977,7 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
                 delete tmpMedia;
             }
 
-          gchar *scheme = g_uri_parse_scheme (src.c_str  ());
+          gchar *scheme = g_uri_parse_scheme (src.c_str ());
           if (g_strcmp0 (scheme, "streambuf") == 0)
             {
               string filename = src.substr (12);
@@ -3989,10 +4002,9 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
               xmlChar *s = xmlBuildURI (toXmlChar (src),
                                         toXmlChar (st->getURI ()));
               src = toCPPString (s);
-              // If fails makes the uri based in the current dir
-              if (!xpathisuri (src) && !xpathisabs (src))
+              if (!xpathisuri (src))
                 {
-                  src = xpathmakeabs (src);
+                  src = xurifromsrc (src, "");
                 }
               xmlFree (s);
             }
@@ -4231,7 +4243,7 @@ ParserState::pushFont (ParserState *st, ParserElt *elt)
   // fixme:  We should also handle remote URIs; g_file_move could help us.
   if (st->getURI () != "")
     {
-      xmlChar *s = xmlBuildURI (toXmlChar (src), toXmlChar (st->getURI()));
+      xmlChar *s = xmlBuildURI (toXmlChar (src), toXmlChar (st->getURI ()));
       src = toCPPString (s);
       xmlFree (s);
       src = xpathfromuri (src.c_str ());
@@ -4239,21 +4251,21 @@ ParserState::pushFont (ParserState *st, ParserElt *elt)
   else
     src = xpathmakeabs (src);
 
-  const FcChar8 *fcfilename = (const FcChar8 *) src.c_str();
+  const FcChar8 *fcfilename = (const FcChar8 *) src.c_str ();
   FcBool fontAddStatus = FcConfigAppFontAddFile (NULL, fcfilename);
 
-  TRACE ("Adding font family='%s' src='%s' success: %d.",
-         family.c_str(), src.c_str(), fontAddStatus);
+  TRACE ("Adding font family='%s' src='%s' success: %d.", family.c_str (),
+         src.c_str (), fontAddStatus);
 
   if (fontAddStatus == FcTrue)
     {
       //  Replaces font metadata with the specifications in the <font> elt.
-      FcFontSet *fontSet = FcConfigGetFonts (FcConfigGetCurrent(),
-                                             FcSetApplication);
-      FcPattern *font = fontSet->fonts[fontSet->nfont-1];
+      FcFontSet *fontSet
+          = FcConfigGetFonts (FcConfigGetCurrent (), FcSetApplication);
+      FcPattern *font = fontSet->fonts[fontSet->nfont - 1];
 
       // family
-      const FcChar8 *fcfamily = (const FcChar8 *) family.c_str();
+      const FcChar8 *fcfamily = (const FcChar8 *) family.c_str ();
       FcPatternRemove (font, FC_FAMILY, 0);
       FcPatternAddString (font, FC_FAMILY, fcfamily);
 
@@ -4273,7 +4285,7 @@ ParserState::pushFont (ParserState *st, ParserElt *elt)
 
       FcPatternRemove (font, FC_POSTSCRIPT_NAME, 0);
 
-//      FcPatternPrint (new_font);
+      //      FcPatternPrint (new_font);
     }
 
   return (fontAddStatus == FcTrue);

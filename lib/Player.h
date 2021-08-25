@@ -80,6 +80,7 @@ public:
     PROP_Z_ORDER,
     PROP_BUFFER_OFFSET,
     PROP_BUFFER_OFFSET_END,
+    PROP_REMOTE_PLAYER_BASE_URL,
   };
 
   Player (Formatter *, Media *);
@@ -118,7 +119,7 @@ public:
 
   virtual void sendKeyEvent (const string &, bool);
 
-  // For now, only for the lua player (which reimplements it).
+  // For now, only for the PlayerLua and PlayerRemote (which reimplements it).
   virtual void
   sendPresentationEvent (const string &, const string &)
   {
@@ -128,6 +129,7 @@ public:
   static string getCurrentFocus ();
   static void setCurrentFocus (const string &);
   static Property getPlayerProperty (const string &, string *);
+  static bool getMimeForURI (const string &, string*);
   static Player *createPlayer (Formatter *, Media *, const string &,
                                const string &type = "");
 

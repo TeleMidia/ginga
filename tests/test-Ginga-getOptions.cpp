@@ -22,14 +22,14 @@ main (void)
 {
   const GingaOptions *out;
   ignore_unused (out);
-  GingaOptions opts = {
-    10,      // width
-    20,      // height
-    false,   // debug
-    false,   // experimental
-    false,   // opengl
-    "green", // background
-  };
+  GingaOptions opts;
+  opts.width = 10;
+  opts.height = 20;
+  opts.debug = false;
+  opts.experimental = false;
+  opts.webservices = false;
+  opts.opengl = false;
+  opts.background = "green";
   Ginga *ginga = Ginga::create (&opts);
   g_assert_nonnull (ginga);
 
@@ -37,6 +37,7 @@ main (void)
   g_assert (out->width == opts.width);
   g_assert (out->height == opts.height);
   g_assert (out->debug == opts.debug);
+  g_assert (out->webservices == opts.webservices);
   g_assert (out->experimental == opts.experimental);
   g_assert (out->opengl == opts.opengl);
   g_assert (out->background == opts.background);

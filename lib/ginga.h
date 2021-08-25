@@ -52,6 +52,9 @@ struct GingaOptions
   /// @brief Whether to enable debug mode.
   bool debug;
 
+  /// @brief Whether to enable debug mode.
+  bool webservices;
+
   /// @brief Whether to enable experimental features.
   bool experimental;
 

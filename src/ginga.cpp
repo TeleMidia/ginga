@@ -28,6 +28,7 @@ PRAGMA_DIAG_IGNORE (-Wunused-macros)
 // clang-format on
 
 #include "ginga.h"
+#include "aux-ginga.h"
 using namespace ::std;
 
 // Global formatter.
@@ -42,6 +43,7 @@ static Ginga *GINGA = nullptr;
 static gboolean opt_debug = FALSE;        // toggle debug
 static gboolean opt_experimental = FALSE; // toggle experimental stuff
 static gboolean opt_fullscreen = FALSE;   // toggle fullscreen-mode
+static gboolean opt_webservices = FALSE;  // toggle webservices-only-mode
 static gboolean opt_opengl = FALSE;       // toggle OpenGL backend
 static string opt_background = "";        // background color
 static gint opt_width = 800;              // initial window width
@@ -99,6 +101,8 @@ static GOptionEntry options[]
           "Enable debugging", NULL },
         { "fullscreen", 'f', 0, G_OPTION_ARG_NONE, &opt_fullscreen,
           "Enable full-screen mode", NULL },
+        { "ws", 'w', 0, G_OPTION_ARG_NONE, &opt_webservices,
+          "Enable WebService and turn file param optional.", NULL },
         { "opengl", 'g', 0, G_OPTION_ARG_NONE, &opt_opengl,
           "Use OpenGL backend", NULL },
         { "size", 's', 0, G_OPTION_ARG_CALLBACK, pointerof (opt_size_cb),
@@ -141,8 +145,8 @@ static G_GNUC_PRINTF (3, 4) void _error (gboolean try_help, int die,
 // Callbacks.
 
 #if GTK_CHECK_VERSION(3, 16, 0)
-static gboolean
-render_gl_callback (unused (GtkGLArea *area), unused (GdkGLContext *ctx))
+static gboolean render_gl_callback (unused (GtkGLArea *area),
+                                    unused (GdkGLContext *ctx))
 {
   GINGA->redraw (nullptr);
   return TRUE;
@@ -339,7 +343,7 @@ main (int argc, char **argv)
       _exit (0);
     }
 
-  if (saved_argc < 2)
+  if (!opt_webservices && saved_argc < 2)
     {
       usage_error ("Missing file operand");
       _exit (0);
@@ -402,14 +406,20 @@ main (int argc, char **argv)
   opts.width = opt_width;
   opts.height = opt_height;
   opts.debug = opt_debug;
+  opts.webservices = opt_webservices;
   opts.experimental = opt_experimental;
   opts.opengl = opt_opengl;
   opts.background = string (opt_background);
   GINGA = Ginga::create (&opts);
   g_assert_nonnull (GINGA);
+  int fail_count = 0;
+
+  // add abort/ctrl+C handler
+  auto gingaStopFunc = [] (int signum) { GINGA->stop (); };
+  signal (SIGABRT, gingaStopFunc);
+  signal (SIGTERM, gingaStopFunc);
 
   // Run each NCL file, one after another.
-  int fail_count = 0;
   for (int i = 1; i < saved_argc; i++)
     {
       string errmsg;
@@ -427,7 +437,8 @@ main (int argc, char **argv)
       GINGA->stop ();
     }
 
-  // Done.
+// Done.
+done:
   delete GINGA;
   g_strfreev (saved_argv);
 

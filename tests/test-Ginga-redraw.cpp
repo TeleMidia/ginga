@@ -55,9 +55,8 @@ draw_callback (unused (GtkWidget *widget), cairo_t *cr,
 
   g_assert (gdk_pixbuf_get_colorspace (pixbuf) == GDK_COLORSPACE_RGB);
   g_assert_cmpint (gdk_pixbuf_get_bits_per_sample (pixbuf), ==, 8);
-  // g_assert (gdk_pixbuf_get_has_alpha (pixbuf));
-  // g_assert (n_channels == 4);
-  g_assert_cmpint (n_channels, ==, 3);
+  g_assert (gdk_pixbuf_get_has_alpha (pixbuf));
+  g_assert (n_channels == 4);
 
   WIDTH = gdk_pixbuf_get_width (pixbuf);
   HEIGHT = gdk_pixbuf_get_height (pixbuf);

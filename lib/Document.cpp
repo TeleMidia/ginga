@@ -23,6 +23,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "MediaSettings.h"
 #include "Object.h"
 #include "Switch.h"
+#include "PlayerRemote.h"
 
 GINGA_NAMESPACE_BEGIN
 
@@ -49,6 +50,16 @@ Document::Document ()
 }
 
 /**
+ * @brief Creates a new document with id
+ *
+ * @return New #Document.
+ */
+Document::Document (const string &id) : Document ()
+{
+  _id = id;
+}
+
+/**
  * @brief Destroys document.
  *
  * This function destroys the document and all its child objects.
@@ -56,6 +67,16 @@ Document::Document ()
 Document::~Document ()
 {
   delete _root;
+}
+
+/**
+ * @brief Gets document id.
+ * @return Id string.
+ */
+const string
+Document::getId ()
+{
+  return _id;
 }
 
 /**
@@ -132,6 +153,10 @@ Document::addObject (Object *obj)
       Media *media = cast (Media *, obj);
       g_assert_nonnull (media);
       _medias.insert (media);
+      if (PlayerRemote::usesPlayerRemote (media))
+        {
+          _mediasRemote.insert (media);
+        }
     }
   else if (instanceof (Context *, obj))
     {
@@ -178,6 +203,12 @@ const set<Media *> *
 Document::getMedias ()
 {
   return &_medias;
+}
+
+const set<Media *> *
+Document::getMediasRemote ()
+{
+  return &_mediasRemote;
 }
 
 const set<Context *> *
@@ -536,6 +567,10 @@ Document::getData (const string &key, void **value)
 bool
 Document::setData (const string &key, void *value, UserDataCleanFunc fn)
 {
+  if (key == "id"){
+    string *str = (string *) value;
+    _id = string(*str);
+  }
   return _udata.setData (key, value, fn);
 }
 

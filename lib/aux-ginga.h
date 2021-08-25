@@ -181,6 +181,7 @@ int G_GNUC_PRINTF (2,3) xstrassign (string &, const char *, ...);
 string G_GNUC_PRINTF (1,2) xstrbuild (const char *, ...);
 string xstrstrip (string);
 list<string> xstrsplit (const string &, char);
+void xstrdelete(void *);
 
 // Path functions.
 string xpathbasename (string);

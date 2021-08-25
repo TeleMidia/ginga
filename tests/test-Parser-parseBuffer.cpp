@@ -106,8 +106,9 @@ main (void)
          "(must not be empty)",
          "<ncl id=''/>");
 
-  XFAIL ("ncl: Bad id", "<ncl> at line 1: Bad value '@' for attribute 'id' "
-                        "(must not contain '@')",
+  XFAIL ("ncl: Bad id",
+         "<ncl> at line 1: Bad value '@' for attribute 'id' "
+         "(must not contain '@')",
          "<ncl id='@'/>");
 
   // -------------------------------------------------------------------------
@@ -127,8 +128,7 @@ main (void)
 </ncl>\n\
 ");
 
-  XFAIL ("Element <region> at line 4:", "Unknown attribute 'zOrder'",
-         "\
+  XFAIL ("Element <region> at line 4:", "Unknown attribute 'zOrder'", "\
 <ncl>\n\
  <head>\n\
   <regionBase>\n\
@@ -1461,12 +1461,13 @@ main (void)
 ");
 
   tmp = tests_write_tmp_file ("<x>\n");
-  XFAIL ("importBase: Bad imported document",
-         "<importBase> at line 4: Syntax error in imported document "
-             + xstrbuild ("(%s: XML error at line 2: Premature end of data "
-                          "in tag x line 1)",
-                          xurifromsrc (tmp, "").c_str ()),
-         xstrbuild ("\
+  string uri = xurifromsrc (tmp, "");
+  XFAIL (
+      "importBase: Bad imported document",
+      "Element <importBase> at line 4: Syntax error in imported document "
+          + xstrbuild ("(%s: XML error at line 2: EndTag: '</' not found)",
+                       uri.c_str ()),
+      xstrbuild ("\
 <ncl>\n\
  <head>\n\
   <regionBase>\n\
@@ -1475,7 +1476,7 @@ main (void)
  </head>\n\
 </ncl>\n\
 ",
-                    tmp.c_str ()));
+                 tmp.c_str ()));
   g_remove (tmp.c_str ());
 
   tmp = tests_write_tmp_file ("<x/>\n");
@@ -1675,9 +1676,10 @@ main (void)
 </ncl>\n\
 ");
 
-  XFAIL ("port: Bad interface", "<port> at line 3: Bad value 'nonexistent' "
-                                "for attribute 'interface' "
-                                "(no such interface)",
+  XFAIL ("port: Bad interface",
+         "<port> at line 3: Bad value 'nonexistent' "
+         "for attribute 'interface' "
+         "(no such interface)",
          "\
 <ncl>\n\
  <body>\n\
@@ -1687,9 +1689,10 @@ main (void)
 </ncl>\n\
 ");
 
-  XFAIL ("port: Bad interface", "<port> at line 3: Bad value 'nonexistent' "
-                                "for attribute 'interface' "
-                                "(no such interface)",
+  XFAIL ("port: Bad interface",
+         "<port> at line 3: Bad value 'nonexistent' "
+         "for attribute 'interface' "
+         "(no such interface)",
          "\
 <ncl>\n\
  <body>\n\
@@ -1807,9 +1810,10 @@ main (void)
 </ncl>\n\
   ");
 
-  XFAIL ("mapping: Bad component", "Element <mapping> at line 6: Bad value "
-                                   "'x' for attribute 'component' (no such "
-                                   "object in scope)",
+  XFAIL ("mapping: Bad component",
+         "Element <mapping> at line 6: Bad value "
+         "'x' for attribute 'component' (no such "
+         "object in scope)",
          "\
 <ncl>\n\
   <head/>\n\
@@ -1954,8 +1958,9 @@ main (void)
 </ncl>\n\
 ");
 
-  XFAIL ("media: Duplicated id", "<media> at line 5: Bad value 'a' "
-                                 "for attribute 'id' (must be unique)",
+  XFAIL ("media: Duplicated id",
+         "<media> at line 5: Bad value 'a' "
+         "for attribute 'id' (must be unique)",
          "\
 <ncl>\n\
  <head/>\n\
@@ -2057,8 +2062,9 @@ main (void)
 </ncl>\n\
 ");
 
-  XFAIL ("area: Duplicated id", "Element <area> at line 5: Bad value 'm'"
-                                " for attribute 'id' (must be unique)",
+  XFAIL ("area: Duplicated id",
+         "Element <area> at line 5: Bad value 'm'"
+         " for attribute 'id' (must be unique)",
          "\
 <ncl>\n\
  <head/>\n\
@@ -2070,8 +2076,9 @@ main (void)
 </ncl>\n\
 ");
 
-  XFAIL ("area: Bad begin", "Element <area> at line 5: Bad value 'a'"
-                            " for attribute 'begin'",
+  XFAIL ("area: Bad begin",
+         "Element <area> at line 5: Bad value 'a'"
+         " for attribute 'begin'",
          "\
 <ncl>\n\
  <head/>\n\
@@ -2083,8 +2090,9 @@ main (void)
 </ncl>\n\
 ");
 
-  XFAIL ("area: Bad end", "Element <area> at line 5: Bad value 'a' "
-                          "for attribute 'end'",
+  XFAIL ("area: Bad end",
+         "Element <area> at line 5: Bad value 'a' "
+         "for attribute 'end'",
          "\
 <ncl>\n\
  <head/>\n\
@@ -2599,6 +2607,7 @@ main (void)
 </ncl>\n\
 ");
     g_assert_nonnull (doc);
+    g_assert (doc->getId () == "x");
     g_assert (doc->getRoot ()->getAliases ()->front ().first == "x");
     delete doc;
 
@@ -2609,6 +2618,7 @@ main (void)
 </ncl>\n\
 ");
     g_assert_nonnull (doc);
+    g_assert (doc->getId () == "x");
     auto it = doc->getRoot ()->getAliases ()->begin ();
     g_assert ((*it++).first == "x");
     g_assert ((*it++).first == "y");
@@ -2693,7 +2703,6 @@ main (void)
 
     Media *m = cast (Media *, doc->getObjectById ("m"));
     g_assert_nonnull (m);
-    g_assert_cmpint (m->getEvents ()->size (), ==, 7);
 
     Time begin, end;
     Event *evt = m->getPresentationEvent ("a1");

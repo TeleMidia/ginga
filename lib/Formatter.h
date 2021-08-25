@@ -25,6 +25,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 GINGA_NAMESPACE_BEGIN
 
+class WebServices;
 class Context;
 class Event;
 class Media;
@@ -62,11 +63,13 @@ public:
   ~Formatter ();
 
   Document *getDocument ();
+  WebServices *getWebServices ();
   bool getEOS ();
   void setEOS (bool);
 
   static void setOptionBackground (Formatter *, const string &, string);
   static void setOptionDebug (Formatter *, const string &, bool);
+  static void setOptionWebServices (Formatter *, const string &, bool);
   static void setOptionExperimental (Formatter *, const string &, bool);
   static void setOptionOpenGL (Formatter *, const string &, bool);
   static void setOptionSize (Formatter *, const string &, int);
@@ -92,6 +95,9 @@ private:
 
   /// @brief The saved value of environment variable G_MESSAGES_DEBUG.
   string _saved_G_MESSAGES_DEBUG;
+
+  /// @brief Current WebServices.
+  WebServices *_webservices;
 
   /// @brief Current document tree.
   Document *_doc;

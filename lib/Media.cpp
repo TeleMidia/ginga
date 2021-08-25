@@ -316,6 +316,9 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
     case Event::PREPARATION:
       break; // nothing to do
 
+    case Event::LOOKAT:
+      break; // nothing to do
+
     default:
       g_assert_not_reached ();
     }
@@ -502,6 +505,19 @@ Media::afterTransition (Event *evt, Event::Transition transition)
           }
         break;
       }
+    case Event::LOOKAT:
+      switch (transition)
+        {
+        case Event::START:
+          TRACE ("start %s", evt->getFullId ().c_str ());
+          break;
+        case Event::STOP:
+          TRACE ("stop %s", evt->getFullId ().c_str ());
+          break;
+        default:
+          g_assert_not_reached ();
+        }
+      break;
     default:
       g_assert_not_reached ();
     }

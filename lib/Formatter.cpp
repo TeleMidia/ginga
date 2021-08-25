@@ -27,6 +27,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "Parser.h"
 #include "PlayerText.h"
+#include "WebServices.h"
 
 /**
  * @file Formatter.cpp
@@ -38,16 +39,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #endif
 
 GINGA_NAMESPACE_BEGIN
-
-// Option defaults.
-static GingaOptions opts_defaults = {
-  800,   // width
-  600,   // height
-  false, // debug
-  false, // experimental
-  false, // opengl
-  "",    // background ("" == none)
-};
 
 // Option data.
 typedef struct GingaOptionData
@@ -178,6 +169,10 @@ Formatter::start (const string &file, string *errmsg)
 
   // Sets formatter state.
   _state = GINGA_STATE_PLAYING;
+
+  // start webservices
+  if (_opts.webservices)
+    _webservices->start ();
 
   return true;
 }
@@ -439,7 +434,18 @@ Formatter::Formatter (const GingaOptions *opts) : Ginga (opts)
   const char *s;
 
   _state = GINGA_STATE_STOPPED;
-  _opts = (opts) ? *opts : opts_defaults;
+  if (opts)
+    _opts = *opts;
+  else
+    {
+      // defaults.
+      _opts.width = 800;
+      _opts.height = 600;
+      _opts.debug = false;
+      _opts.webservices = false;
+      _opts.opengl = false;
+      _opts.experimental = false;
+    };
   _background = { 0., 0., 0., 0. };
 
   _lastTickTotal = 0;
@@ -449,6 +455,7 @@ Formatter::Formatter (const GingaOptions *opts) : Ginga (opts)
       = (s = g_getenv ("G_MESSAGES_DEBUG")) ? string (s) : "";
 
   _doc = nullptr;
+  _webservices = new WebServices (this);
   _docPath = "";
   _eos = false;
 
@@ -475,6 +482,16 @@ Document *
 Formatter::getDocument ()
 {
   return _doc;
+}
+
+/**
+ * @brief Gets WebServices.
+ * @return WebServices or null (no current document).
+ */
+WebServices *
+Formatter::getWebServices ()
+{
+  return _webservices;
 }
 
 /**
@@ -539,6 +556,24 @@ Formatter::setOptionDebug (Formatter *self, const string &name, bool value)
       g_assert (g_setenv ("G_MESSAGES_DEBUG",
                           self->_saved_G_MESSAGES_DEBUG.c_str (), true));
     }
+  TRACE ("%s:=%s", name.c_str (), strbool (value));
+}
+
+/**
+ * @brief Sets WebServices option option of the given Formatter.
+ * @param self Formatter.
+ * @param name Must be the string "webservies".
+ * @param value webservies flag value.
+ */
+void
+Formatter::setOptionWebServices (Formatter *self, const string &name,
+                                 bool value)
+{
+  g_assert (name == "webservices");
+  if (value)
+    self->_webservices->start ();
+  else
+    self->_webservices->stop ();
   TRACE ("%s:=%s", name.c_str (), strbool (value));
 }
 
