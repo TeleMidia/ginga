@@ -11,6 +11,12 @@
                 "${workspaceFolder}/examples/primeiro-joao/00syncProp.ncl",
             ],
             "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    "name": "PATH",
+                    "value": "${env:PATH}:${command:cmake.getLaunchTargetDirectory}"
+                },
+            ],
             "externalConsole": false,
             "stopAtEntry": false,
             "setupCommands": [
