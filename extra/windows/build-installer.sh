@@ -181,4 +181,4 @@ create_folder ./share/lua/
 cp -r -u /mingw64/share/lua/* share/lua/
 
 # run inno setup
-iscc ./ginga.iss
+/c/Program\ Files\ \(x86\)/Inno\ Setup\ 6/ISCC.exe ./ginga.iss

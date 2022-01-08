@@ -24,7 +24,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${GINGA_BINARY_DIR})
 
 # Find dependencies
 find_package (GLIB 2.32 REQUIRED COMPONENTS gobject gio gthread gmodule)
-find_package (LibSoup 2.42.0 REQUIRED)
+find_package (LibSoup 2.4 REQUIRED)
 find_package (LibXml2 REQUIRED)
 find_package (GDK3 REQUIRED)
 find_package (Cairo REQUIRED)
