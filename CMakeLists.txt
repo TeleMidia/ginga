@@ -1,28 +1,26 @@
 cmake_minimum_required(VERSION 3.2)
 project(ginga)
 
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/build-cmake/CMakeModules)
-
-# Defaul C++ params
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
-if (UNIX)
-  add_definitions (-Wextra -Wall)
-endif()
-
-# Ginga-related cmake's variables
-include (GNUInstallDirs)
 set (PACKAGE "ginga")
-set (GINGA_BINARY_DIR ${CMAKE_BINARY_DIR}/bin)
-add_definitions (-DGINGADATADIR="${CMAKE_INSTALL_FULL_DATADIR}/${PACKAGE}")
-add_definitions (-DGINGABINDIR="${CMAKE_INSTALL_FULL_BINDIR}")
+set (VERSION 1.0)
+set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/build-cmake/CMakeModules)
+
+if (UNIX)
+  set (CMAKE_INSTALL_PREFIX /usr/)
+  set (GINGADATADIR /usr/share/ginga/)
+  set (GINGABINDIR /usr/bin)
+  add_definitions (-DGINGADATADIR="${GINGADATADIR}")
+  add_definitions (-DGINGABINDIR="${GINGABINDIR}")
+endif()
 
 # set all target runtime to bin
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${GINGA_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${GINGA_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${GINGA_BINARY_DIR})
 
-# Find dependencies
+# find dependencies
 find_package (GLIB 2.32 REQUIRED COMPONENTS gobject gio gthread gmodule)
 find_package (LibSoup 2.4 REQUIRED)
 find_package (LibXml2 REQUIRED)
@@ -37,7 +35,7 @@ find_package (GTK3 REQUIRED)
 pkg_check_modules (GSSDP gssdp-1.2 REQUIRED)
 pkg_check_modules (JSON jsoncpp REQUIRED)
 
-# Optional dependencies
+# optional dependencies
 option (WITH_NCLUA_BUILD "Download and build nclua." OFF)
 option (WITH_CEF "Build with chromium embedded support." OFF)
 option (WITH_OPENGL "Build Ginga with opengl support." OFF)
@@ -48,7 +46,7 @@ if (WITH_OPENGL)
   find_package (OpenGL)
   set (WITH_OPENGL ON)
 else ()
-  set (WITH_OPENGL OFF) # OpenGL not found, turn it off
+  set (WITH_OPENGL OFF) # openGL not found, turn it off
 endif()
 
 if (WITH_OPENGL)
@@ -105,7 +103,7 @@ if (WITH_CEF)
   add_definitions(-DWITH_CEF=1)
   add_subdirectory(${CEF_ROOT}/libcef_dll libcef_dll_bin)
 
-  # Logical target used to link the libcef library.
+  # logical target used to link the libcef library.
   ADD_LOGICAL_TARGET("libcef_lib" "${CEF_LIB_DEBUG}" "${CEF_LIB_RELEASE}")
   SET (CEF_TARGET_OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/")
 
@@ -253,7 +251,7 @@ add_executable (gingagui ${GINGAGUI_GTK_SOURCES})
 target_include_directories (gingagui PRIVATE ${GINGAGUI_GTK_INCLUDE_DIRS})
 target_link_libraries (gingagui PRIVATE libginga ${GINGAGUI_GTK_LIBS})
 
-# ginga-gl target
+# optional ginga-gl target
 if (WITH_OPENGL)
   add_executable (ginga-gl src/ginga-gl.cpp)
   target_include_directories (ginga-gl PRIVATE
@@ -266,13 +264,13 @@ if (WITH_OPENGL)
   )
 endif ()
 
-# ginga-qt executable.
+# optional ginga-qt target
 if (WITH_GINGAQT)
   set (CMAKE_INCLUDE_CURRENTDIR ON)
   set (CMAKE_AUTOMOC ON)
   set (CMAKE_AUTORCC ON)
   set (CMAKE_AUTOUIC ON)
-  # Find the QtWidgets library
+  # find the QtWidgets library
   find_package (Qt5 REQUIRED COMPONENTS Core Widgets)
   add_executable (ginga-qt
     ./src/ginga-qt.cpp
@@ -339,45 +337,27 @@ if(DOXYGEN_FOUND)
   )
 endif(DOXYGEN_FOUND)
 
-# message afeter configure
+# message after configure
 message ( "
 ---
 summary of main build options:
 
-version:            ${VERSION}
-install prefix:     ${CMAKE_INSTALL_PREFIX}
-CMAKE_SYSTEM_NAME:  ${CMAKE_SYSTEM_NAME}
-CMAKE_BUILD_TYPE:   ${CMAKE_BUILD_TYPE}
-CMAKE_C_COMPILER:   ${CMAKE_CXX_COMPILER}
-GINGA_BINARY_DIR:   ${GINGA_BINARY_DIR}
-STATIC_LINKING:     ${STATIC_LINKING}
-BUILD_SHARED_LIBS:  ${BUILD_SHARED_LIBS}
+version:              ${VERSION}
+CMAKE_SYSTEM_NAME:    ${CMAKE_SYSTEM_NAME}
+CMAKE_BUILD_TYPE:     ${CMAKE_BUILD_TYPE}
+CMAKE_C_COMPILER:     ${CMAKE_CXX_COMPILER}
+STATIC_LINKING:       ${STATIC_LINKING}
+BUILD_SHARED_LIBS:    ${BUILD_SHARED_LIBS}
+CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}
 
-Optional dependencies:
-with nclua_build:   ${WITH_NCLUA_BUILD}
-with cef:           ${WITH_CEF}
-
-Optional executables:
+Optional build:
+cef player:         ${WITH_CEF}
 ginga-qt:           ${WITH_GINGAQT}
 ginga-gl:           ${WITH_OPENGL}
 ")
 
-# cpack
-set (CPACK_GENERATOR "DEB")
-set (CPACK_PACKAGE_NAME "ginga-itv")
-set (CPACK_PACKAGE_VENDOR "TeleMídia Lab/PUC-Rio")
-set (CPACK_DEBIAN_PACKAGE_DESCRIPTION "Ginga® is the middleware of the Japanese-Brazilian Digital TV System (ISDB-TB) and ITU-T Recommendation for IPTV services. Ginga is made up by a set of standardized technologies and Brazilian innovations that make it the most advanced middleware specification.")
-set (CPACK_DEBIAN_PACKAGE_SECTION "contrib/graphics")
-set (CPACK_PACKAGE_CONTACT alan@telemidia.puc-rio.br)
-set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/README.md")
-set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/COPYING")
-set (CPACK_DEBIAN_PACKAGE_DEPENDS "liblua5.2-dev, libglib2.0-dev, libpango1.0-dev, librsvg2-dev, libsoup2.4-dev, libgstreamer1.0-dev, libgstreamer-plugins-base1.0-dev, libfontconfig1-dev, libgtk-3-dev, gstreamer1.0-plugins-good, gstreamer1.0-plugins-bad, gstreamer1.0-plugins-ugly, gstreamer1.0-libav, nclua")
-set (CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
-set (CPACK_DEBIAN_COMPRESSION_TYPE "xz")
-set (CPACK_DEBIAN_REPLACES "xz")
-
-install (DIRECTORY ${CMAKE_BINARY_OUTPUT_DIR} DESTINATION bin)
-include (GNUInstallDirs)
+# install
+# install (DIRECTORY ${CMAKE_BINARY_OUTPUT_DIR} DESTINATION bin)
 if (WIN32)
   install (TARGETS libginga DESTINATION bin)
 else ()
@@ -389,5 +369,26 @@ install (DIRECTORY src-gui/icons/ DESTINATION share/ginga/icons)
 install (FILES src-gui/style/dark.css src-gui/style/light.css DESTINATION share/ginga/style)
 install (FILES src-gui/application-x-ncl-NCL.xml DESTINATION share/ginga/mime)
 install (FILES src-gui/icons/common/ginga.ico DESTINATION share/pixmaps)
+
+# cpack
+set (CPACK_PACKAGE_NAME "ginga-itv") 
+set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "The Ginga middleware") 
+set (CPACK_PACKAGE_VENDOR "TeleMídia Lab/PUC-Rio")
+set (CPACK_PACKAGE_VERSION ${VERSION})
+set (CPACK_PACKAGE_EXECUTABLE "gingagui;ginga")
+set (CPACK_PACKAGE_CONTACT alan@telemidia.puc-rio.br)
+set (CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
+set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/COPYING")
+
+# deb
+set (CPACK_GENERATOR "DEB")
+set (CPACK_DEBIAN_PACKAGE_MAINTAINER "Alan Guedes")
+set (CPACK_DEBIAN_PACKAGE_SECTION "contrib/graphics")
+set (CPACK_DEBIAN_PACKAGE_DESCRIPTION "Ginga® is the middleware of the Japanese-Brazilian Digital TV System (ISDB-TB) and ITU-T Recommendation for IPTV services. Ginga is made up by a set of standardized technologies and Brazilian innovations that make it the most advanced middleware specification.")
+# set (CPACK_DEBIAN_PACKAGE_DEPENDS "liblua5.2-dev, libglib2.0-dev, libpango1.0-dev, librsvg2-dev, libsoup2.4-dev, libgstreamer1.0-dev, libgstreamer-plugins-base1.0-dev, libfontconfig1-dev, libgtk-3-dev, gstreamer1.0-plugins-good, gstreamer1.0-plugins-bad, gstreamer1.0-plugins-ugly, gstreamer1.0-libav, nclua")
+set (CPACK_DEBIAN_PACKAGE_DEPENDS "liblua5.2-0, libglib2.0-0, libpango-1.0-0, librsvg2-2, libsoup2.4-1, libgstreamer1.0-0, libgstreamer-plugins-base1.0-0, libfontconfig1, libgtk-3-0, gstreamer1.0-plugins-good, gstreamer1.0-plugins-bad, gstreamer1.0-plugins-ugly, gstreamer1.0-libav, libgssdp-1.2-0, libjsoncpp1, nclua")
+set (CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
+set (CPACK_DEBIAN_COMPRESSION_TYPE "xz")
+set (CPACK_DEBIAN_REPLACES "xz")
 
 include (CPack)

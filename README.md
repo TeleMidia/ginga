@@ -26,7 +26,7 @@ Optional dependencies: CEF >= 3.0, librsvg >= 2.40
 Install depedencies:
 
 ```bash
-sudo apt-get install -y pkg-config dpkg-dev dh-autoreconf libltdl-dev liblua5.2-dev libglib2.0-dev libpango1.0-dev librsvg2-dev libsoup2.4-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libfontconfig1-dev libgtk-3-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav libgssdp-1.2-dev libjsoncpp-dev nclua -qq
+sudo apt-get install -y cmake ninja-build pkg-config dpkg-dev dh-autoreconf libltdl-dev liblua5.2-dev libglib2.0-dev libpango1.0-dev librsvg2-dev libsoup2.4-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libfontconfig1-dev libgtk-3-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav libgssdp-1.2-dev libjsoncpp-dev nclua -qq
 ```
 
 Build with `cmake` (main way):
