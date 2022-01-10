@@ -64,7 +64,7 @@ Know issues:
 
 To run unit tests on VSCode, install [hbenl.vscode-test-explorer](https://marketplace.visualstudio.com/items?itemName=hbenl.vscode-test-explorer) and [fredericbonnet.cmake-test-adapter](https://marketplace.visualstudio.com/items?itemName=fredericbonnet.cmake-test-adapter) extensions, also see the its [guide](https://github.com/fredericbonnet/cmake-test-explorer).
 
-## Build installer
+### Build installer
 
 ```bash
   cd ginga _build
