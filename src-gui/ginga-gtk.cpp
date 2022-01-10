@@ -196,6 +196,7 @@ main (int argc, char **argv)
 
   env_init ();
   gtk_init (&saved_argc, &saved_argv);
+  g_assert (g_setenv ("G_MESSAGES_DEBUG", "all", true));
 
   // Parse command-line options.
   ctx = g_option_context_new (OPTION_LINE);
@@ -214,20 +215,19 @@ main (int argc, char **argv)
 
   setlocale (LC_ALL, "C");
 
+  g_debug ("DATADIR: %s",
+          g_build_path (G_DIR_SEPARATOR_S, get_data_dir (), NULL));
+          
   gtk_window_set_default_icon_from_file (
       g_build_path (G_DIR_SEPARATOR_S, get_data_dir (), "icons", "common",
                     "ginga_icon.png", NULL),
       &error);
 
-  printf ("PATH: %s",
-          g_build_path (G_DIR_SEPARATOR_S, get_data_dir (), "icons",
-                        "common", "ginga_icon.png", NULL));
 
   // send log message to server
   send_http_log_message (0, (gchar *) "Open Ginga");
   // check for ginga updates
   send_http_log_message (-1, (gchar *) "Check for Ginga updates");
-  g_assert (g_setenv ("G_MESSAGES_DEBUG", "all", true));
 
   create_main_window ();
 
