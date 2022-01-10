@@ -1,19 +1,10 @@
 cmake_minimum_required(VERSION 3.2)
 project(ginga)
-
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 set (PACKAGE "ginga")
 set (VERSION 1.0)
 set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/build-cmake/CMakeModules)
-
-if (UNIX)
-  set (CMAKE_INSTALL_PREFIX /usr/)
-  set (GINGADATADIR /usr/share/ginga/)
-  set (GINGABINDIR /usr/bin)
-  add_definitions (-DGINGADATADIR="${GINGADATADIR}")
-  add_definitions (-DGINGABINDIR="${GINGABINDIR}")
-endif()
 
 # set all target runtime to bin
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${GINGA_BINARY_DIR})
@@ -288,10 +279,6 @@ if (WITH_GINGAQT)
   )
 endif ()
 
-# Set rpath so that libraries can be placed next to the executable.
-# set_target_properties (ginga PROPERTIES INSTALL_RPATH "$ORIGIN")
-# set_target_properties (ginga PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
-
 if (WITH_CEF)
   # Copy binary and resource files to the target output directory.
   COPY_FILES(ginga "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CEF_TARGET_OUT_DIR}")
@@ -324,7 +311,7 @@ endforeach ()
 add_definitions (-DTOP_SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}/")
 add_definitions (-DABS_TOP_SRCDIR="${CMAKE_CURRENT_SOURCE_DIR}/")
 
-# Doxygen documentation
+# doxygen documentation
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
   set (top_builddir ${CMAKE_CURRENT_BINARY_DIR})
@@ -336,6 +323,37 @@ if(DOXYGEN_FOUND)
     COMMENT "Generating API documentation with Doxygen" VERBATIM
   )
 endif(DOXYGEN_FOUND)
+
+# install lib/bin/data
+set (ICON "${CMAKE_SOURCE_DIR}/src-gui/icons/common/ginga.ico") 
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  set (CMAKE_INSTALL_PREFIX "/usr/")
+  install (TARGETS libginga DESTINATION lib)
+  add_definitions (-DGINGADATADIR="/usr/share/ginga/")
+  add_definitions (-DGINGABINDIR="/usr/bin/")
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows" AND CMAKE_BUILD_TYPE MATCHES Debug)
+  set (CMAKE_INSTALL_PREFIX "C:/msys64/mingw64")
+  install (TARGETS libginga DESTINATION bin)
+  # windows do not uses GINGADATADIR/GINGABINDIR
+endif()
+
+install (TARGETS ginga DESTINATION bin )
+install (TARGETS gingagui DESTINATION bin )
+install (DIRECTORY src-gui/icons/ DESTINATION share/ginga/icons)
+install (FILES src-gui/style/dark.css src-gui/style/light.css DESTINATION share/ginga/style)
+install (FILES ${ICON} DESTINATION share/pixmaps)
+
+# win deploy require a parent folder or gst fail loading. TODO: fix it
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows" AND CMAKE_BUILD_TYPE MATCHES Release)
+  set (CMAKE_INSTALL_PREFIX "C:/Program Files/Ginga")
+  set (DST_DIR "dst")
+  install (TARGETS libginga DESTINATION ${DST_DIR})
+  install (TARGETS ginga DESTINATION ${DST_DIR} )
+  install (TARGETS gingagui DESTINATION ${DST_DIR})
+  install (DIRECTORY src-gui/icons/ DESTINATION ${DST_DIR}/share/ginga/icons)
+  install (FILES src-gui/style/dark.css src-gui/style/light.css DESTINATION ${DST_DIR}/share/ginga/style)
+  install (FILES ${ICON} DESTINATION ${DST_DIR}/share/pixmaps)
+endif()
 
 # message after configure
 message ( "
@@ -356,39 +374,87 @@ ginga-qt:           ${WITH_GINGAQT}
 ginga-gl:           ${WITH_OPENGL}
 ")
 
-# install
-# install (DIRECTORY ${CMAKE_BINARY_OUTPUT_DIR} DESTINATION bin)
-if (WIN32)
-  install (TARGETS libginga DESTINATION bin)
-else ()
-  install (TARGETS libginga DESTINATION lib)
-endif()
-install (TARGETS ginga DESTINATION bin)
-install (TARGETS gingagui DESTINATION bin)
-install (DIRECTORY src-gui/icons/ DESTINATION share/ginga/icons)
-install (FILES src-gui/style/dark.css src-gui/style/light.css DESTINATION share/ginga/style)
-install (FILES src-gui/application-x-ncl-NCL.xml DESTINATION share/ginga/mime)
-install (FILES src-gui/icons/common/ginga.ico DESTINATION share/pixmaps)
-
 # cpack
-set (CPACK_PACKAGE_NAME "ginga-itv") 
 set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "The Ginga middleware") 
 set (CPACK_PACKAGE_VENDOR "TeleMídia Lab/PUC-Rio")
 set (CPACK_PACKAGE_VERSION ${VERSION})
-set (CPACK_PACKAGE_EXECUTABLE "gingagui;ginga")
 set (CPACK_PACKAGE_CONTACT alan@telemidia.puc-rio.br)
 set (CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
 set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/COPYING")
+set (HELP "http://github.com/TeleMidia/ginga")
 
-# deb
-set (CPACK_GENERATOR "DEB")
-set (CPACK_DEBIAN_PACKAGE_MAINTAINER "Alan Guedes")
-set (CPACK_DEBIAN_PACKAGE_SECTION "contrib/graphics")
-set (CPACK_DEBIAN_PACKAGE_DESCRIPTION "Ginga® is the middleware of the Japanese-Brazilian Digital TV System (ISDB-TB) and ITU-T Recommendation for IPTV services. Ginga is made up by a set of standardized technologies and Brazilian innovations that make it the most advanced middleware specification.")
-# set (CPACK_DEBIAN_PACKAGE_DEPENDS "liblua5.2-dev, libglib2.0-dev, libpango1.0-dev, librsvg2-dev, libsoup2.4-dev, libgstreamer1.0-dev, libgstreamer-plugins-base1.0-dev, libfontconfig1-dev, libgtk-3-dev, gstreamer1.0-plugins-good, gstreamer1.0-plugins-bad, gstreamer1.0-plugins-ugly, gstreamer1.0-libav, nclua")
-set (CPACK_DEBIAN_PACKAGE_DEPENDS "liblua5.2-0, libglib2.0-0, libpango-1.0-0, librsvg2-2, libsoup2.4-1, libgstreamer1.0-0, libgstreamer-plugins-base1.0-0, libfontconfig1, libgtk-3-0, gstreamer1.0-plugins-good, gstreamer1.0-plugins-bad, gstreamer1.0-plugins-ugly, gstreamer1.0-libav, libgssdp-1.2-0, libjsoncpp1, nclua")
-set (CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
-set (CPACK_DEBIAN_COMPRESSION_TYPE "xz")
-set (CPACK_DEBIAN_REPLACES "xz")
+# cpack deb
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" )
+  set (CPACK_GENERATOR "DEB")
+  set (CPACK_PACKAGE_NAME "ginga-itv") # ginga already exist 
+  set (CPACK_DEBIAN_PACKAGE_MAINTAINER "Alan Guedes")
+  set (CPACK_DEBIAN_PACKAGE_SECTION "contrib/graphics")
+  set (CPACK_DEBIAN_PACKAGE_DESCRIPTION "Ginga® is the middleware of the Japanese-Brazilian Digital TV System (ISDB-TB) and ITU-T Recommendation for IPTV services. Ginga is made up by a set of standardized technologies and Brazilian innovations that make it the most advanced middleware specification.")
+  set (CPACK_DEBIAN_PACKAGE_DEPENDS "liblua5.2-0, libglib2.0-0, libpango-1.0-0, librsvg2-2, libsoup2.4-1, libgstreamer1.0-0, libgstreamer-plugins-base1.0-0, libfontconfig1, libgtk-3-0, gstreamer1.0-plugins-good, gstreamer1.0-plugins-bad, gstreamer1.0-plugins-ugly, gstreamer1.0-libav, libgssdp-1.2-0, libjsoncpp1, nclua")
+  set (CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
+  set (CPACK_DEBIAN_COMPRESSION_TYPE "xz")
+  set (CPACK_DEBIAN_REPLACES "xz")
+endif()
+
+# cpack nsis
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows" AND CMAKE_BUILD_TYPE MATCHES Release)
+  set (DISPLAY_NAME "Ginga")
+  set (CPACK_GENERATOR "NSIS")
+  set (CPACK_PACKAGE_NAME "ginga")
+  set (CPACK_NSIS_MUI_ICON ${ICON})
+  set (CPACK_NSIS_MUI_UNIICON ${ICON})
+  set (CPACK_NSIS_DISPLAY_NAME ${DISPLAY_NAME})
+  set (CPACK_NSIS_BRANDING_TEXT ${DISPLAY_NAME})
+  set (CPACK_NSIS_PACKAGE_NAME ${DISPLAY_NAME})
+  set (CPACK_NSIS_HELP_LINK ${HELP})
+  set (CPACK_NSIS_URL_INFO_ABOUT ${HELP})
+  set (CPACK_NSIS_CONTACT ${CPACK_PACKAGE_CONTACT})
+  
+  # win deploy require all dlls. TODO: automatic get them
+  set(BIN_DLLS 
+    libsoup-2.4-1.dll libjsoncpp-24.dll libgssdp-1.2-0.dll libcairo-2.dll libgdk-3-0.dll libgio-2.0-0.dll libglib-2.0-0.dll libgobject-2.0-0.dll libatk-1.0-0.dll libbz2-1.dll libcairo-2.dll libcairo-gobject-2.dll libcurl-4.dll libepoxy-0.dll libexpat-1.dll libffi-7.dll libfontconfig-1.dll libfreetype-6.dll libgcc_s_seh-1.dll libgdk_pixbuf-2.0-0.dll libgdk-3-0.dll libgio-2.0-0.dll libglib-2.0-0.dll libgmodule-2.0-0.dll libgobject-2.0-0.dll libgraphite2.dll libgstapp-1.0-0.dll libgstbase-1.0-0.dll libgstreamer-1.0-0.dll libgstvideo-1.0-0.dll libgtk-3-0.dll libharfbuzz-0.dll libiconv-2.dll libidn2-0.dll libintl-8.dll liblzma-5.dll libnclua-0.dll libnghttp2-14.dll liborc-0.4-0.dll libpango-1.0-0.dll libpangocairo-1.0-0.dll libpangoft2-1.0-0.dll libpangowin32-1.0-0.dll libpcre-1.dll libpixman-1-0.dll libpng16-16.dll librsvg-2-2.dll libssp-0.dll libpsl-5.dll libthai-0.dll libdatrie-1.dll libbrotlidec.dll libbrotlicommon.dll libstdc++-6.dll libunistring-2.dll libwinpthread-1.dll libxml2-2.dll lua53.dll zlib1.dll avcodec-58.dll avfilter-7.dll avformat-58.dll avutil-56.dll libfaac-0.dll libfaad-2.dll libFLAC-8.dll libmpg123-0.dll libmpg123-0.dll libmpeg2-0.dll libnice-10.dll libogg-0.dll libtheora-0.dll libvpx-1.dll libcurl-4.dll libjpeg-8.dll gst-play-1.0.exe gst-inspect-1.0.exe libgstadaptivedemux-1.0-0.dll libgstapp-1.0-0.dll libgstbase-1.0-0.dll libgstaudio-1.0-0.dll libgstvideo-1.0-0.dll libgstreamer-1.0-0.dll libgstbadaudio-1.0-0.dll libgstbasecamerabinsrc-1.0-0.dll libgstcodecparsers-1.0-0.dll libgstcontroller-1.0-0.dll libgstfft-1.0-0.dll libgstgl-1.0-0.dll libgstmpegts-1.0-0.dll libgstnet-1.0-0.dll libgstpbutils-1.0-0.dll libgstriff-1.0-0.dll libgstrtsp-1.0-0.dll libgstsdp-1.0-0.dll libaom.dll libass-9.dll libbluray-2.dll libcelt0-2.dll libcrypto-1_1-x64.dll libdav1d.dll libfribidi-0.dll libgmp-10.dll libgnutls-30.dll libgomp-1.dll libgsm.dll libgstrtp-1.0-0.dll libgsttag-1.0-0.dll libgsturidownloader-1.0-0.dll libhogweed-6.dll libmfx-1.dll libmodplug-1.dll libmp3lame-0.dll libnettle-8.dll libopencore-amrnb-0.dll libopencore-amrwb-0.dll libopenjp2-7.dll libopus-0.dll libp11-kit-0.dll librtmp-1.dll libsoxr.dll libspeex-1.dll libsqlite3-0.dll libsrt.dll libssh2-1.dll libssl-1_1-x64.dll libtasn1-6.dll libtheoradec-1.dll libtheoraenc-1.dll libvorbis-0.dll libvorbisenc-2.dll libvulkan-1.dll libwebp-7.dll libwebpmux-3.dll libx264-161.dll libx265.dll libzstd.dll postproc-55.dll swresample-3.dll swscale-5.dll xvidcore.dll 
+  )
+  foreach(DLL ${BIN_DLLS})
+    install (FILES "C:/msys64/mingw64/bin/${DLL}" DESTINATION ${DST_DIR} )
+  endforeach()
+  install (DIRECTORY "C:/msys64/mingw64/lib/gdk-pixbuf-2.0/" DESTINATION ${DST_DIR}/lib/gdk-pixbuf-2.0)
+  install (DIRECTORY "C:/msys64/mingw64/lib/gstreamer-1.0/" DESTINATION ${DST_DIR}/lib/gstreamer-1.0)
+  install (DIRECTORY "C:/msys64/mingw64/share/glib-2.0/" DESTINATION ${DST_DIR}/share/glib-2.0)
+  install (DIRECTORY "C:/msys64/mingw64/share/icons/hicolor/16x16/" DESTINATION ${DST_DIR}/share/icons/hicolor/16x16)
+  install (DIRECTORY "C:/msys64/mingw64/share/icons/Adwaita/16x16/" DESTINATION ${DST_DIR}/share/icons/Adwaita/16x16)
+  install (DIRECTORY "C:/msys64/mingw64/share/icons/Adwaita/scalable/ui/" DESTINATION ${DST_DIR}/share/icons/Adwaita/16x16/actions)
+  # nclua do not require dst parent dir
+  install (DIRECTORY "C:/msys64/mingw64/share/lua/5.3/nclua/" DESTINATION share/lua/5.3/nclua)
+  install (DIRECTORY "C:/msys64/mingw64/lib/lua/5.3/nclua/" DESTINATION lib/lua/5.3/nclua)
+  
+  # setup installer
+  set (CPACK_PACKAGE_INSTALL_DIRECTORY ${DISPLAY_NAME}) # C:\Programs..\Ginga
+  set (CPACK_NSIS_CREATE_ICONS_EXTRA "
+    CreateShortCut '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Ginga.lnk' '$INSTDIR\\\\${DST_DIR}\\\\gingagui.exe' ' ' '$INSTDIR\\\\${DST_DIR}\\\\share\\\\pixmaps\\\\ginga.ico'")
+  set (CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
+    WriteRegStr HKCR '.ncl' '' 'ncl'
+    WriteRegStr HKCR 'ncl' '' 'NCL Document'
+    WriteRegStr HKCR 'ncl\\\\DefaultIcon' '' '$INSTDIR\\\\${DST_DIR}\\\\share\\\\pixmaps\\\\ginga.ico'
+    WriteRegStr HKCR 'ncl\\\\shell\\\\open\\\\command' '' '$INSTDIR\\\\${DST_DIR}\\\\gingagui.exe %1'
+    WriteRegStr HKCR 'ncl\\\\shell\\\\print\\\\command' '' '$INSTDIR\\\\${DST_DIR}\\\\gingagui.exe /p %1'
+    WriteRegStr HKLM 'Software\\\\RegisteredApplications' 'Ginga' '$INSTDIR\\\\${DST_DIR}\\\\gingagui.exe'
+    WriteRegStr HKCU 'Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Explorer\\\\FileExts\\\\.ncl\\\\OpenWithList' 'a' '$INSTDIR\\\\${DST_DIR}\\\\gingagui.exe'
+  ")
+  
+  # setup uninstaller
+  set (CPACK_NSIS_UNINSTALL_NAME "Uninstall Ginga")
+  set (CPACK_NSIS_DELETE_ICONS_EXTRA "
+    Delete '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Ginga.lnk'
+    RMDir '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\'
+    ")
+  set (CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
+    DeleteRegKey HKCR '.ncl'
+    DeleteRegKey HKCR 'ncl'
+    DeleteRegKey HKCR 'ncl\\\\DefaultIcon'
+    DeleteRegKey HKCR 'ncl\\\\shell\\\\open\\\\command'
+    DeleteRegKey HKCU 'Software\\\\RegisteredApplications\\\\Ginga'
+    DeleteRegKey HKCU 'Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Explorer\\\\FileExts\\\\.ncl'  
+  ")
+endif()
 
 include (CPack)

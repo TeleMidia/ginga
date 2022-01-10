@@ -64,22 +64,17 @@ Know issues:
 
 To run unit tests on VSCode, install [hbenl.vscode-test-explorer](https://marketplace.visualstudio.com/items?itemName=hbenl.vscode-test-explorer) and [fredericbonnet.cmake-test-adapter](https://marketplace.visualstudio.com/items?itemName=fredericbonnet.cmake-test-adapter) extensions, also see the its [guide](https://github.com/fredericbonnet/cmake-test-explorer).
 
-## Release
-
-First download and install [InoSetup](https://jrsoftware.org/isdl.php).
-
-To build installer, run:
+## Build installer
 
 ```bash
   cd ginga _build
-  cmake --install . --prefix /mingw64
-  cd ../extra/windows
-  ./build-installer.sh
+  cmake .. -G -DSTATIC_LINKING=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release
+  ninja 
+  cpack
 ```
 
-To release installer, run:
+To deploy installer on github, run:
 
 ```bash
-  cd extra/windows
-  ./release-installer.sh
+  hub release edit v1.0 -m "" -a ginga-1.0-win64.exe
 ```
