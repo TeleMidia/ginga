@@ -1,0 +1,8 @@
+# put at ~/.config/autostart/startup.sh.desktop
+[Desktop Entry]
+Type=Application
+Exec=$HOME/ginga/extra/lirc/startup.sh
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name=gingagui-startup
