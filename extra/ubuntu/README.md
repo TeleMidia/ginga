@@ -14,14 +14,7 @@ Build with `cmake` (main way):
 mkdir _build && cd _build
 cmake ..
 ninja
-```
-
-Build with autotools (decrypted in favor cmake):
-
-```bash
-./bootstrap
-./configure --prefix=/usr/
-make
+cmake --install . --prefix /usr
 ```
 
 ### Build installer
@@ -37,4 +30,14 @@ To deploy installer on github, run:
 
 ```bash
   hub release edit v1.0 -m "" -a ginga-itv_1.0_amd64.deb
+```
+
+### decrypted autotools
+
+The Build with autotools is decrypted in favor cmake. You can try it with:
+
+```bash
+./bootstrap
+./configure --prefix=/usr/
+make
 ```
