@@ -31,9 +31,9 @@ To build nclua, gssdp and ginga, run on msys bash:
   git clone -b gssdp-1.4.0 https://gitlab.gnome.org/GNOME/gssdp.git
   cd gssdp
   mkdir build && cd build
-  meson .. --prefix=/mingw64
+  meson .. --prefix=/mingw64 -Dintrospection=false -Dsniffer=false -Dexamples=false -Dvapi=false
   ninja
-  make install
+  ninja install
 ```
 
 ```bash
