@@ -41,7 +41,7 @@ To build nclua, gssdp and ginga, run on msys bash:
 ```bash
   cd ginga
   mkdir build && cd build
-  cmake .. -G -DSTATIC_LINKING=OFF -DBUILD_SHARED_LIBS=ON
+  cmake .. -G Ninja -DSTATIC_LINKING=OFF -DBUILD_SHARED_LIBS=ON
   ninja 
   ninja install
 ```
