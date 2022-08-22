@@ -27,6 +27,8 @@ To build nclua, gssdp and ginga, run on msys bash:
   make install
 ```
 
+> When running `./configure`, if you get the error that C compilers weren't found, try restarting MSYS2 as 64 bits (can be found in the same folder as 32 bits MSYS2). Reference: https://stackoverflow.com/questions/64078800/gcc-not-added-to-system-path-on-pacman-install
+
 ```bash
   git clone -b gssdp-1.4.0 https://gitlab.gnome.org/GNOME/gssdp.git
   cd gssdp
@@ -52,7 +54,7 @@ To build nclua, gssdp and ginga, run on msys bash:
 
 Install the [ms-vscode.cpptools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) and [ms-vscode.cmake-tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools) extensions, also see the [debug-lanch guide](https://github.com/microsoft/vscode-cmake-tools/blob/main/docs/debug-launch.md).
 
-Know issues:
+Known issues:
 
 * Make sure msys dirs are in path to enable vscode find it and its run/debug use dependencies libs.
 
