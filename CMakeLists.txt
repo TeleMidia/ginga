@@ -314,6 +314,11 @@ file(GLOB GINGA_TESTS_SRC "./tests/*.cpp")
 foreach(SRC ${GINGA_TESTS_SRC})
   get_filename_component(TEST_NAME ${SRC} NAME_WE)
   add_ginga_test(${TEST_NAME} ${SRC})
+
+  # fix PATH when using not-msys testing tool (vscode cmake-test-explorer)
+  if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set_property(TEST ${TEST_NAME} PROPERTY ENVIRONMENT "PATH=%PATH%\;C:\\msys64\\mingw64\\bin")
+  endif()
 endforeach()
 
 # tests use TOP_SRCDIR and ABS_TOP_SRCDIR
