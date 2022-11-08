@@ -354,8 +354,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows" AND CMAKE_BUILD_TYPE MATCHES Debug)
   # windows do not uses GINGADATADIR/GINGABINDIR
 endif()
 
-install(TARGETS ginga DESTINATION bin)
-install(TARGETS gingagui DESTINATION bin)
 install(DIRECTORY src-gui/icons/ DESTINATION share/ginga/icons)
 install(FILES src-gui/style/dark.css src-gui/style/light.css DESTINATION share/ginga/style)
 install(FILES ${ICON} DESTINATION share/pixmaps)
