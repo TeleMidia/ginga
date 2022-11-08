@@ -3,7 +3,15 @@
 ### Dependecies
 
 ```bash
-sudo apt-get install -y cmake ninja-build pkg-config dpkg-dev dh-autoreconf libltdl-dev liblua5.2-dev libglib2.0-dev libpango1.0-dev librsvg2-dev libsoup2.4-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libfontconfig1-dev libgtk-3-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav libgssdp-1.2-dev libjsoncpp-dev nclua -qq
+sudo apt-get install -y cmake ninja-build pkg-config dpkg-dev dh-autoreconf libltdl-dev liblua5.2-dev libglib2.0-dev libpango1.0-dev librsvg2-dev libsoup2.4-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libfontconfig1-dev libgtk-3-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav libgssdp-1.2-dev libjsoncpp-dev -qq
+```
+
+```bash
+git clone http://github.com/TeleMidia/nclua.git
+cd nclua 
+$  ./bootstrap && ./configure --without-nclua-gst --without-nclua-gtk
+make
+sudo make install
 ```
 
 ### Build
@@ -11,6 +19,7 @@ sudo apt-get install -y cmake ninja-build pkg-config dpkg-dev dh-autoreconf libl
 Build with `cmake` (main way):
 
 ```bash
+cd ginga
 mkdir _build && cd _build
 cmake ..
 ninja
