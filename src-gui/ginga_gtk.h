@@ -19,6 +19,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #define GINGA_GTK_H
 
 #include "ginga.h"
+#include "config.h" 
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <stdlib.h>

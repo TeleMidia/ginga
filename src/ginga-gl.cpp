@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#include "config.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -219,7 +219,7 @@ main (int argc, char **argv)
       opt_width,                               // width, in pixels
       opt_height,                              // height, in pixels
       SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE // flags - see below
-      );
+  );
 
   if (window == NULL)
     {
