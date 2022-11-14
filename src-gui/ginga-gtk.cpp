@@ -190,6 +190,7 @@ main (int argc, char **argv)
   opts.debug = false;
   opts.opengl = false;
   opts.experimental = true;
+  opts.webservices = false;
 
   GINGA = Ginga::create (&opts);
   g_assert_nonnull (GINGA);
