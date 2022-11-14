@@ -356,15 +356,19 @@ set(GINGABINDIR ${CMAKE_INSTALL_PREFIX}/bin)
 # others required install at Windows 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows") 
   # Windows requires the following extra steps:
-  # * <install_prefix>/bin/gingagui.exe
+  # * <install_prefix>/bin/gingagui.exe requires:
   install(DIRECTORY "C:/msys64/mingw64/share/icons/hicolor/16x16/" DESTINATION share/icons/hicolor/16x16)
   install(DIRECTORY "C:/msys64/mingw64/share/icons/Adwaita/16x16/" DESTINATION share/icons/Adwaita/16x16)
   install(DIRECTORY "C:/msys64/mingw64/share/icons/Adwaita/scalable/ui/" DESTINATION share/icons/Adwaita/16x16/actions)
-  # * <install_prefix>/bin/libnclua-0.dll 
+  
+  # * <install_prefix>/bin/libnclua-0.dll  requires:
   install(DIRECTORY "C:/msys64/mingw64/share/lua/5.3/nclua/" DESTINATION share/lua/5.3/nclua)
   install(DIRECTORY "C:/msys64/mingw64/lib/lua/5.3/nclua/" DESTINATION lib/lua/5.3/nclua)
+  
+  # * <install_prefix>/bin/libginga.dll requires:
   install(DIRECTORY "C:/msys64/mingw64/lib/gdk-pixbuf-2.0/" DESTINATION lib/gdk-pixbuf-2.0)
-  # * <install_prefix>/bin/libglib-2.0-0.dll 
+  
+  # * <install_prefix>/bin/libglib-2.0-0.dll  requires:
   install(DIRECTORY "C:/msys64/mingw64/share/glib-2.0/" DESTINATION share/glib-2.0)
   # * <install_prefix>/bin/libgstreamer-1.0-0.dll 
   # https://gstreamer.freedesktop.org/documentation/installing/on-windows.html?gi-language=c#download-and-install-gstreamer-binaries
