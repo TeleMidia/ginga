@@ -20,9 +20,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "Player.h"
 
-#if defined WITH_NCLUA && WITH_NCLUA
 #include <ncluaw.h>
-#endif
 
 GINGA_NAMESPACE_BEGIN
 

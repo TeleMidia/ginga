@@ -17,10 +17,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 #include "PlayerSvg.h"
-
-#if defined WITH_LIBRSVG && WITH_LIBRSVG
 #include <librsvg/rsvg.h>
-#endif
 
 GINGA_NAMESPACE_BEGIN
 

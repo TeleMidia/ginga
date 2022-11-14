@@ -30,10 +30,8 @@ GINGA_NAMESPACE_BEGIN
 #define evt_ncl_send_presentation(nw, action, name)                        \
   ncluaw_send_ncl_event (nw, "presentation", action, name, NULL)
 
-#if 0
 #define evt_ncl_send_selection(nw, action, name)                           \
   ncluaw_send_ncl_event (nw, "selection", action, name, NULL)
-#endif
 
 #define evt_key_send ncluaw_send_key_event
 

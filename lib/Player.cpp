@@ -27,13 +27,9 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "PlayerSigGen.h"
 #include "PlayerRemote.h"
 
-#if defined WITH_NCLUA && WITH_NCLUA
 #include "PlayerLua.h"
-#endif
 
-#if defined WITH_LIBRSVG && WITH_LIBRSVG
 #include "PlayerSvg.h"
-#endif
 
 #if defined WITH_CEF && WITH_CEF
 #include "PlayerHTML.h"
@@ -617,18 +613,14 @@ Player::createPlayer (Formatter *formatter, Media *media, const string &uri,
       player = new PlayerHTML (formatter, media);
     }
 #endif // WITH_CEF
-#if defined WITH_LIBRSVG && WITH_LIBRSVG
   else if (xstrhasprefix (mime, "image/svg"))
     {
       player = new PlayerSvg (formatter, media);
     }
-#endif // WITH_LIBRSVG
-#if defined WITH_NCLUA && WITH_NCLUA
   else if (mime == "application/x-ginga-NCLua")
     {
       player = new PlayerLua (formatter, media);
     }
-#endif // WITH_NCLUA
   else
     {
       player = new Player (formatter, media);
