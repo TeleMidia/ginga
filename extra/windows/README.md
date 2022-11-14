@@ -4,12 +4,15 @@
 
 First download and install [MSYS2](http://www.msys2.org).
 
+```bash
+winget install msys2.msys 
+```
+
 To install the dependencies, run on msys bash:
 
 ```bash
-  pacman -Syu --noconfirm
-  pacman -Su --needed --noconfirm autoconf automake libtool pkgconf make mingw-w64-x86_64-gcc mingw64/mingw-w64-x86_64-cmake mingw64/mingw-w64-x86_64-ninja mingw64/mingw-w64-x86_64-glib2 mingw64/mingw-w64-x86_64-libsoup mingw64/mingw-w64-x86_64-gtk3 mingw64/mingw-w64-x86_64-gdk-pixbuf2 mingw64/mingw-w64-x86_64-cairo mingw64/mingw-w64-x86_64-pango mingw64/mingw-w64-x86_64-gst-libav  mingw-w64-x86_64-gstreamer  mingw-w64-x86_64-gst-plugins-{base,good,bad,ugly} mingw-w64-x86_64-meson
-  pacman -R mingw-w64-x86_64-lua # remove lua5.4 (ginga require 5.3)
+  pacman -Sy --needed --noconfirm glib2-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-libconfig autoconf automake libtool pkgconf make mingw-w64-x86_64-gcc mingw64/mingw-w64-x86_64-cmake mingw64/mingw-w64-x86_64-ninja mingw64/mingw-w64-x86_64-glib2 mingw64/mingw-w64-x86_64-libsoup mingw64/mingw-w64-x86_64-gtk3 mingw64/mingw-w64-x86_64-gdk-pixbuf2 mingw64/mingw-w64-x86_64-jp2-pixbuf-loader mingw64/mingw-w64-x86_64-cairo mingw64/mingw-w64-x86_64-pango mingw64/mingw-w64-x86_64-gst-libav  mingw-w64-x86_64-gstreamer mingw-w64-x86_64-gst-plugins-{base,good,bad,ugly} mingw-w64-x86_64-meson
+  pacman -R mingw-w64-x86_64-lua # remove lua5.4 if installed (ginga require 5.3)
   wget -P /tmp/ https://repo.msys2.org/mingw/x86_64/mingw-w64-x86_64-lua-5.3.5-1-any.pkg.tar.xz
   pacman --noconfirm -U  /tmp/mingw-w64-x86_64-lua-5.3.5-1-any.pkg.tar.xz
 ```
@@ -21,10 +24,9 @@ To build nclua, gssdp and ginga, run on msys bash:
 ```bash
   git clone https://github.com/TeleMidia/nclua.git
   cd nclua
-  ./bootstrap
-  ./configure
+  ./bootstrap && ./configure --without-nclua-gst --without-nclua-gtk
   make
-  make install
+  sudo make install
 ```
 
 > When running `./configure`, if you get the error that C compilers weren't found, try restarting MSYS2 as 64 bits (can be found in the same folder as 32 bits MSYS2). Reference: https://stackoverflow.com/questions/64078800/gcc-not-added-to-system-path-on-pacman-install
@@ -34,8 +36,7 @@ To build nclua, gssdp and ginga, run on msys bash:
   cd gssdp
   mkdir build && cd build
   meson .. --prefix=/mingw64 -Dintrospection=false -Dsniffer=false -Dexamples=false -Dvapi=false
-  ninja
-  ninja install
+  ninja . && ninja install
 ```
 
 ```bash
@@ -43,7 +44,6 @@ To build nclua, gssdp and ginga, run on msys bash:
   mkdir build && cd build
   cmake .. -G Ninja -DSTATIC_LINKING=OFF -DBUILD_SHARED_LIBS=ON
   ninja 
-  ninja install
 ```
 
 ### Debug on VSCode
