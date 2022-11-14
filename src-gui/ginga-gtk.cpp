@@ -225,9 +225,9 @@ main (int argc, char **argv)
 
 
   // send log message to server
-  send_http_log_message (0, (gchar *) "Open Ginga");
+  // send_http_log_message (0, (gchar *) "Open Ginga");
   // check for ginga updates
-  send_http_log_message (-1, (gchar *) "Check for Ginga updates");
+  // send_http_log_message (-1, (gchar *) "Check for Ginga updates");
 
   create_main_window ();
 
