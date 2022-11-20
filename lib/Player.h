@@ -33,7 +33,6 @@ public:
     SLEEPING = 1, // stopped
     OCCURRING,    // playing
     PAUSED,       // paused
-    PREPARING,    // preparing
   };
 
   enum Property // known properties
@@ -78,9 +77,7 @@ public:
     PROP_WIDTH,
     PROP_Z_INDEX,
     PROP_Z_ORDER,
-    PROP_BUFFER_OFFSET,
-    PROP_BUFFER_OFFSET_END,
-    PROP_REMOTE_PLAYER_BASE_URL,
+    PROP_REMOTE_PLAYER_BASE_URL
   };
 
   Player (Formatter *, Media *);
@@ -96,14 +93,10 @@ public:
   Time getDuration ();
   void setDuration (Time);
 
-  bool getPrepared ();
-  void setPrepared (bool prepared);
-
   bool getEOS ();
   void setEOS (bool);
 
   virtual void start ();
-  virtual void startPreparation ();
   virtual void stop ();
   virtual void pause ();
   virtual void resume ();
@@ -140,7 +133,6 @@ protected:
   State _state;              // current state
   Time _time;                // playback time
   bool _eos;                 // true if content was exhausted
-  bool _prepared;            // true if content is prepared in buffer
   cairo_surface_t *_surface; // player surface
   bool _opengl;              // true if OpenGL is used
   guint _gltexture;          // OpenGL texture (if OpenGL is used)

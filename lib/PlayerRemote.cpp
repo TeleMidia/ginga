@@ -104,14 +104,6 @@ PlayerRemote::start ()
 }
 
 void
-PlayerRemote::startPreparation ()
-{
-  string body = xstrbuild (REMOTE_PLAYER_JSON_ACT, "prepare", 0);
-  sendAction (body);
-  Player::startPreparation ();
-}
-
-void
 PlayerRemote::stop ()
 {
   string body = xstrbuild (REMOTE_PLAYER_JSON_ACT, "stop", 0);

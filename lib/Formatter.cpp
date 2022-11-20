@@ -375,7 +375,7 @@ Formatter::sendTick (uint64_t total, uint64_t diff, uint64_t frame)
   // Formatter::sendKeyEvent() applies here.  The difference is that ticks
   // should only be propagated to objects that are occurring.
   for (auto obj : *_doc->getObjects ())
-    if (obj->isOccurring () || obj->isPreparing ())
+    if (obj->isOccurring ())
       buf.push_back (obj);
   for (auto obj : buf)
     obj->sendTick (total, diff, frame);

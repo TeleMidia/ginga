@@ -31,7 +31,6 @@ GINGA_NAMESPACE_BEGIN
 Media::Media (const string &id) : Object (id)
 {
   _player = nullptr;
-  _currentPreparationEvent = nullptr;
 }
 
 Media::~Media ()
@@ -142,20 +141,6 @@ Media::sendTick (Time total, Time diff, Time frame)
 {
   Time dur;
 
-  if (this->isPreparing ())
-    {
-      g_assert_nonnull (_player);
-
-      if (_player->getPrepared () )
-      {
-        TRACE ("_player->getPrepared true");
-        Event *currentPreparation = this->getCurrentPreparationEvent ();
-        g_assert_nonnull (currentPreparation);
-        _doc->evalAction (currentPreparation, Event::STOP);
-        return;
-      }
-    }
-
   // Update object time.
   Object::sendTick (total, diff, frame);
 
@@ -202,11 +187,19 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
                   { // Lambda
                     Formatter *fmt;
 
-                    createPlayer ();
-
+                    g_assert (_doc->getData ("formatter", (void **) &fmt));
+                    g_assert_null (_player);
+                    _player = Player::createPlayer (
+                        fmt, this, _properties["uri"], _properties["type"]);
                     if (unlikely (_player == nullptr))
                       return false; // fail
 
+                    for (auto it : _properties)
+                      _player->setProperty (it.first, it.second);
+
+                    g_assert_nonnull (_player);
+                    // Start underlying player.
+                    // TODO: Check player failure.
                     _player->start (); // Just lambda events reaches this!
                   }
                 else
@@ -311,9 +304,6 @@ Media::beforeTransition (Event *evt, Event::Transition transition)
       break; // nothing to do
 
     case Event::SELECTION:
-      break; // nothing to do
-
-    case Event::PREPARATION:
       break; // nothing to do
 
     case Event::LOOKAT:
@@ -470,41 +460,6 @@ Media::afterTransition (Event *evt, Event::Transition transition)
           }
         break;
       }
-    case Event::PREPARATION:
-      {
-        switch (transition)
-          {
-          case Event::START:
-            TRACE ("start %s", evt->getFullId ().c_str ());
-
-            createPlayer ();
-
-            if(evt->getId() != "@lambda")
-              {
-                Time begin, end;
-                evt->getInterval(&begin, &end);
-
-                string offsetStart = xstrbuild ("%" G_GUINT64_FORMAT, begin / GINGA_SECOND);
-
-                string offsetEnd = xstrbuild ("%" G_GUINT64_FORMAT, end / GINGA_SECOND);
-
-                _player->setProperty("offsetBuffer", offsetStart);
-                _player->setProperty("offsetEndBuffer",offsetEnd);
-              }
-
-            _player->startPreparation();
-            _isPreparing = true;
-            _currentPreparationEvent = evt;
-            break;
-          case Event::STOP:
-            TRACE ("stop %s", evt->getFullId ().c_str ());
-            _isPreparing = false;
-            break;
-          default:
-            g_assert_not_reached ();
-          }
-        break;
-      }
     case Event::LOOKAT:
       switch (transition)
         {
@@ -523,27 +478,6 @@ Media::afterTransition (Event *evt, Event::Transition transition)
     }
 
   return true;
-}
-
-Event *
-Media::getCurrentPreparationEvent ()
-{
-  return _currentPreparationEvent;
-}
-
-void
-Media::createPlayer ()
-{
-  if (_player)
-    return;
-  Formatter *fmt;
-  g_assert (_doc->getData ("formatter", (void **) &fmt));
-  g_assert_null (_player);
-  _player = Player::createPlayer (fmt, this, _properties["uri"],
-                                  _properties["type"]);
-  g_assert_nonnull (_player);
-  for (auto it : _properties)
-    _player->setProperty (it.first, it.second);
 }
 
 // Public.

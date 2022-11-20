@@ -57,9 +57,6 @@ public:
   void addPresentationEvent (const string &, const string &);
   Event *getSelectionEvent (const string &);
   void addSelectionEvent (const string &);
-  Event *getPreparationEvent (const string &);
-  void addPreparationEvent (const string &);
-  void addPreparationEvent (const string &, Time, Time);
   Event *getLookAtEvent (const string &);
   void addLookAtEvent (const string &);
 
@@ -110,10 +107,7 @@ public:
    */
   virtual bool afterTransition (Event *, Event::Transition) = 0;
 
-  virtual bool isPreparing ();
-
 protected:
-  bool _isPreparing;
   string _id;                                  // id
   Document *_doc;                              // parent document
   Composition *_parent;                        // parent object

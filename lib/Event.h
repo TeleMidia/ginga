@@ -57,15 +57,8 @@ public:
      * directed to the object.
      */
     SELECTION,
-
-    /**
-     * @brief Preparation event.
-     *
-     * Stands for the preparation of a specific time interval of the object.
-     */
-    PREPARATION,
-
-    /**
+    
+     /**
      * @brief lookAt event.
      *
      * Stands for the user viewport is on the objet.

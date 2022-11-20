@@ -32,7 +32,6 @@ public:
   void pause () override;
   void resume () override;
   void redraw (cairo_t *) override;
-  void startPreparation ();
 
 protected:
   bool doSetProperty (Property, const string &, const string &) override;
@@ -44,7 +43,6 @@ protected:
 
 private:
   GstElement *_playbin; // pipeline
-  bool is_buffering;
   struct
   {                        // audio pipeline
     GstElement *bin;       // audio bin
@@ -71,8 +69,6 @@ private:
     double bass;    // bass level (Default: 0; Range: -24 and +12)
     bool freeze;    // true if player should freeze
     double speed;   // playback speed (Default: 1)
-    double bufferOffset; //offset in the source file of the beginning of the buffer
-    double bufferOffsetEnd;
   } _prop;
   typedef struct
   {
@@ -85,7 +81,6 @@ private:
   // without go to doSetProperty function
   void stackAction (Property, const string &, const string &);
   void doStackedActions ();
-  void doPreparationActions ();
   bool getFreeze ();
   string getPipelineState ();
 
@@ -93,9 +88,6 @@ private:
   static gboolean cb_Bus (GstBus *, GstMessage *, PlayerVideo *);
   static GstFlowReturn cb_NewSample (GstAppSink *, gpointer);
   static void cb_EOS (GstElement *, gpointer);
-  static void on_message_buffering (GstBus *bus, GstMessage *message, gpointer data);
-  static void on_message_async_done (GstBus *bus, GstMessage *message, gpointer data);
-  static gboolean buffer_timeout (gpointer data);
 };
 
 GINGA_NAMESPACE_END
