@@ -25,7 +25,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Switch.h"
 #include "PlayerRemote.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 /**
  * @brief Creates a new document.
@@ -574,4 +574,4 @@ Document::setData (const string &key, void *value, UserDataCleanFunc fn)
   return _udata.setData (key, value, fn);
 }
 
-GINGA_NAMESPACE_END
+}

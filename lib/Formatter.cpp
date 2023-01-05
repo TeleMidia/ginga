@@ -38,7 +38,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "ParserLua.h" // for ncl-ltab support
 #endif
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 // Option data.
 typedef struct GingaOptionData
@@ -625,4 +625,4 @@ Formatter::setOptionSize (Formatter *self, const string &name, int value)
   TRACE ("%s:=%d", name.c_str (), value);
 }
 
-GINGA_NAMESPACE_END
+}

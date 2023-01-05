@@ -19,7 +19,6 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "aux-gl.h"
 #include "PlayerVideo.h"
 
-GINGA_NAMESPACE_BEGIN
 
 #define gstx_element_get_state(elt, st, pend, tout)                        \
   g_assert (gst_element_get_state ((elt), (st), (pend), (tout))            \
@@ -39,6 +38,7 @@ GINGA_NAMESPACE_BEGIN
   }                                                                        \
   G_STMT_END
 
+namespace ginga {
 // Public.
 
 PlayerVideo::PlayerVideo (Formatter *formatter, Media *media)
@@ -694,5 +694,3 @@ PlayerVideo::cb_EOS (unused (GstElement *playbin), gpointer data)
   if (unlikely (!player->getFreeze ()))
     player->setEOS (true);
 }
-
-GINGA_NAMESPACE_END

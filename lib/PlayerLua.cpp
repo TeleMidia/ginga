@@ -21,7 +21,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "PlayerLua.h"
 #include "Media.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 // Event handling.
 #define evt_ncl_send_attribution(nw, action, name, value)                  \
@@ -267,4 +267,4 @@ PlayerLua::pwdRestore ()
   do_chdir (_saved_pwd);
 }
 
-GINGA_NAMESPACE_END
+}

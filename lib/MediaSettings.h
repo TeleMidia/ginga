@@ -20,7 +20,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "Media.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 class MediaSettings : public Media
 {
@@ -47,6 +47,6 @@ private:
   bool _hasNextFocus; // true if a focus update is scheduled
 };
 
-GINGA_NAMESPACE_END
+}
 
 #endif // MEDIA_SETTINGS_H

@@ -20,7 +20,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "aux-ginga.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 class Predicate
 {
@@ -75,6 +75,6 @@ private:
   Predicate *_parent;
 };
 
-GINGA_NAMESPACE_END
+}
 
 #endif // PREDICATE_H

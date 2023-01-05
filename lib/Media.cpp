@@ -24,7 +24,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Event.h"
 #include "Player.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 // Public.
 
@@ -527,4 +527,4 @@ Media::doStop ()
   Object::doStop ();
 }
 
-GINGA_NAMESPACE_END
+}

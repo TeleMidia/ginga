@@ -28,7 +28,7 @@ GINGA_BEGIN_DECLS
 #include "aux-lua.h"
 GINGA_END_DECLS
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 /* TODO:
 
@@ -841,4 +841,4 @@ ParserLua::parseFile (const string &path, string *errmsg)
   return doc;
 }
 
-GINGA_NAMESPACE_END
+}

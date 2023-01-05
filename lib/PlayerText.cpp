@@ -19,7 +19,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "aux-gl.h"
 #include "PlayerText.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 // Public: Static.
 
@@ -265,4 +265,4 @@ PlayerText::doSetProperty (Property code, unused (const string &name),
   return true;
 }
 
-GINGA_NAMESPACE_END
+}

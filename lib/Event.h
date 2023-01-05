@@ -21,7 +21,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "Predicate.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 class Object;
 
@@ -138,6 +138,6 @@ typedef struct
   string delay;                 ///< Delay.
 } Action;
 
-GINGA_NAMESPACE_END
+}
 
 #endif // EVENT_H

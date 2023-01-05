@@ -18,7 +18,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include <sstream> // for stringstream
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 // Logging -----------------------------------------------------------------
 
@@ -799,4 +799,4 @@ UserData::setData (const string &key, void *value, UserDataCleanFunc fn)
     }
 }
 
-GINGA_NAMESPACE_END
+}

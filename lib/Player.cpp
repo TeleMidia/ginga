@@ -35,7 +35,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "PlayerHTML.h"
 #endif
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 // Mime-type table.
 static map<string, string> mime_table = {
@@ -821,4 +821,4 @@ Player::redrawDebuggingInfo (cairo_t *cr)
   cairo_surface_destroy (debug);
 }
 
-GINGA_NAMESPACE_END
+}

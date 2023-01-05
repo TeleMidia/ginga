@@ -18,7 +18,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "PlayerAnimator.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 // PlayerAnimator: Public.
 
@@ -596,4 +596,4 @@ TransitionInfo::TransitionInfo (const string &type, const string &subtype,
 {
 }
 
-GINGA_NAMESPACE_END
+}

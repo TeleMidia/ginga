@@ -19,7 +19,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "aux-gl.h"
 #include "PlayerSigGen.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 #define gstx_element_get_state(elt, st, pend, tout)                        \
   g_assert (gst_element_get_state ((elt), (st), (pend), (tout))            \
@@ -429,4 +429,4 @@ PlayerSigGen::cb_NewSample (unused (GstAppSink *appsink), gpointer data)
   return GST_FLOW_OK;
 }
 
-GINGA_NAMESPACE_END
+}

@@ -21,7 +21,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Context.h"
 #include "Switch.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 // Public.
 
@@ -122,4 +122,4 @@ MediaSettings::scheduleFocusUpdate (const string &next)
   _nextFocus = next;
 }
 
-GINGA_NAMESPACE_END
+}

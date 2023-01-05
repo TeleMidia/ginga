@@ -60,13 +60,7 @@ GINGA_END_DECLS
 #include <vector>
 using namespace std;
 
-// Namespaces.
-#define GINGA_NAMESPACE_BEGIN                                              \
-  namespace ginga                                                          \
-  { /*}*/
-#define GINGA_NAMESPACE_END /*{*/ }
-
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 // Utility macros.
 #undef unused
@@ -218,7 +212,7 @@ private:
   map<string, pair<void *, void (*) (void *)> > _udata;
 };
 
-GINGA_NAMESPACE_END
+}
 using namespace ginga;
 
 #endif // AUX_GINGA_H

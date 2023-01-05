@@ -21,7 +21,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Composition.h"
 #include "Event.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 class Context : public Composition
 {
@@ -59,6 +59,6 @@ private:
   bool _status;       ///< Whether links are active.
 };
 
-GINGA_NAMESPACE_END
+}
 
 #endif // CONTEXT_H

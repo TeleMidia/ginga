@@ -20,7 +20,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "Player.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 class PlayerImage : public Player
 {
@@ -30,6 +30,6 @@ public:
   void reload () override;
 };
 
-GINGA_NAMESPACE_END
+}
 
 #endif // PLAYER_IMAGE_H

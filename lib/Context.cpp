@@ -21,7 +21,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Document.h"
 #include "MediaSettings.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 // Public.
 
@@ -389,4 +389,4 @@ Context::setLinksStatus (bool status)
   _status = status;
 }
 
-GINGA_NAMESPACE_END
+}

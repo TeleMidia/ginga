@@ -21,7 +21,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Composition.h"
 #include "Event.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 class Switch : public Composition
 {
@@ -47,6 +47,6 @@ private:
   Object *_selected;
 };
 
-GINGA_NAMESPACE_END
+}
 
 #endif // SWITCH_H

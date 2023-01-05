@@ -21,7 +21,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Player.h"
 #include <libsoup/soup.h>
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 class WebServices;
 
@@ -79,6 +79,6 @@ protected:
   SoupSession *_session;
 };
 
-GINGA_NAMESPACE_END
+}
 
 #endif // MEDIA_REMOTE_H

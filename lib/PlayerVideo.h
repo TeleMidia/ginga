@@ -20,7 +20,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "Player.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 class Media;
 class PlayerVideo : public Player
 {
@@ -90,6 +90,6 @@ private:
   static void cb_EOS (GstElement *, gpointer);
 };
 
-GINGA_NAMESPACE_END
+}
 
 #endif // PLAYER_VIDEO_H

@@ -20,7 +20,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "Document.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 // Public.
 
@@ -244,4 +244,4 @@ Switch::addSwitchPort (const string &id, const list<Event *> &evts)
   _switchPorts[id] = evts;
 }
 
-GINGA_NAMESPACE_END
+}

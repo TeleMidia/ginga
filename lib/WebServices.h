@@ -23,7 +23,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include <libsoup/soup.h>
 #include "Event.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 class Formatter;
 class Document;
 class Media;
@@ -121,6 +121,6 @@ private:
   SoupServer *_server;
 };
 
-GINGA_NAMESPACE_END
+}
 
 #endif // WebServices_H

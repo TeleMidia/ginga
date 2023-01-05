@@ -22,7 +22,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include <ncluaw.h>
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 class PlayerLua : public Player
 {
@@ -52,6 +52,6 @@ private:
   void pwdRestore ();
 };
 
-GINGA_NAMESPACE_END
+}
 
 #endif // PLAYER_LUA_H

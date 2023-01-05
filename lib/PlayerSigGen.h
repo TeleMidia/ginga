@@ -20,7 +20,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "Player.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 class PlayerSigGen : public Player
 {
@@ -71,6 +71,6 @@ private:
   static GstFlowReturn cb_NewSample (GstAppSink *, gpointer);
 };
 
-GINGA_NAMESPACE_END
+}
 
 #endif // PLAYER_SIGGEN_H

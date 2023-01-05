@@ -20,7 +20,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "Document.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 class Parser
 {
@@ -29,6 +29,6 @@ public:
   static Document *parseFile (const string &, int, int, string *);
 };
 
-GINGA_NAMESPACE_END
+}
 
 #endif // PARSER_H

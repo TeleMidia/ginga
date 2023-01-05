@@ -20,7 +20,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "Formatter.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 /**
  * @brief The AnimInfo class.
@@ -105,6 +105,6 @@ private:
                        const string &, Time);
 };
 
-GINGA_NAMESPACE_END
+}
 
 #endif // PLAYER_ANIMATOR_H

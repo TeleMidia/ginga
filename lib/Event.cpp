@@ -19,7 +19,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Event.h"
 #include "Object.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 // Public.
 
@@ -309,4 +309,4 @@ Event::getStringAsTransition (string str)
     g_assert_not_reached ();
 }
 
-GINGA_NAMESPACE_END
+}

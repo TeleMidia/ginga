@@ -21,7 +21,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Formatter.h"
 #include "PlayerAnimator.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 class Formatter;
 class Media;
@@ -166,6 +166,6 @@ private:
   static string _currentFocus; // current (global) focus index
 };
 
-GINGA_NAMESPACE_END
+}
 
 #endif // PLAYER_H

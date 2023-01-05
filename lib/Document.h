@@ -20,7 +20,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "Object.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 class Context;
 class Media;
@@ -73,6 +73,6 @@ private:
   UserData _udata;                    ///< Attached user data.
 };
 
-GINGA_NAMESPACE_END
+}
 
 #endif // DOCUMENT_H

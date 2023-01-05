@@ -18,7 +18,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "aux-ginga.h"
 #include "Predicate.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 Predicate::Predicate (Predicate::Type type)
 {
@@ -189,4 +189,4 @@ Predicate::getParent ()
   return _parent;
 }
 
-GINGA_NAMESPACE_END
+}

@@ -44,7 +44,7 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wunused - parameter)
 #include <wrapper/cef_helpers.h>
 GINGA_PRAGMA_DIAG_POP ()
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 /**
  * @brief A render handler class of CEF for Ginga.
@@ -398,6 +398,6 @@ private:
   bool _isPlaying;
 };
 
-GINGA_NAMESPACE_END
+}
 
 #endif /* HTML_PLAYER_H */

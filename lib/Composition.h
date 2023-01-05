@@ -20,7 +20,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "Object.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 class Composition : public Object
 {
@@ -37,6 +37,6 @@ protected:
   set<Object *> _children;
 };
 
-GINGA_NAMESPACE_END
+}
 
 #endif // COMPOSITION_H

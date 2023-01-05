@@ -20,7 +20,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "Event.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 class Document;
 class Composition;
@@ -122,6 +122,6 @@ protected:
   virtual void doStop ();
 };
 
-GINGA_NAMESPACE_END
+}
 
 #endif // OBJECT_H

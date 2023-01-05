@@ -26,7 +26,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "MediaSettings.h"
 #include "Switch.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 // Public.
 
@@ -432,4 +432,4 @@ Object::doStop ()
     cast (Context *, _parent)->decAwakeChildren ();
 }
 
-GINGA_NAMESPACE_END
+}

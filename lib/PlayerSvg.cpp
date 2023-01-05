@@ -19,7 +19,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "PlayerSvg.h"
 #include <librsvg/rsvg.h>
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 PlayerSvg::PlayerSvg (Formatter *formatter, Media *media)
     : Player (formatter, media)
@@ -81,4 +81,4 @@ PlayerSvg::reload ()
   Player::reload ();
 }
 
-GINGA_NAMESPACE_END
+}

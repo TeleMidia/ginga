@@ -28,7 +28,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "PlayerHTML.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 PlayerHTML::PlayerHTML (const string &location) : Player (location)
 {
@@ -419,4 +419,4 @@ GingaCefClient::GetRenderHandler ()
   return _handler;
 }
 
-GINGA_NAMESPACE_END
+}

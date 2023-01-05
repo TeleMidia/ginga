@@ -17,7 +17,7 @@
                     "value": "${env:PATH};${command:cmake.getLaunchTargetDirectory}"
                 },
             ],
-            "miDebuggerPath": "C:\\msys64\\usr\\bin\\gdb.exe",
+            "miDebuggerPath": "C:/msys64/mingw64/bin/gdb.exe",
             "externalConsole": false,
             "stopAtEntry": false,
             "setupCommands": [

@@ -31,7 +31,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include <fontconfig/fontconfig.h>
 #include <libxml/uri.h>
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 // XML helper macros and functions.
 #define toCString(s) deconst (char *, (s))
@@ -4351,4 +4351,4 @@ Parser::parseFile (const string &path, int width, int height,
   return doc;
 }
 
-GINGA_NAMESPACE_END
+}

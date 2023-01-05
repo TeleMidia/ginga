@@ -23,7 +23,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Formatter.h"
 #include <libsoup/soup.h>
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 /**
  * @brief Creates PlayerRemote
@@ -145,4 +145,4 @@ PlayerRemote::redraw (cairo_t *)
 {
 }
 
-GINGA_NAMESPACE_END
+}

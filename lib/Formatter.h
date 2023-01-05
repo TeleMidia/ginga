@@ -23,7 +23,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "Document.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 class WebServices;
 class Context;
@@ -109,6 +109,6 @@ private:
   bool _eos;
 };
 
-GINGA_NAMESPACE_END
+}
 
 #endif // FORMATTER_H

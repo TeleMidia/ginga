@@ -20,7 +20,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "Document.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 Composition::Composition (const string &id) : Object (id)
 {
@@ -68,4 +68,4 @@ Composition::addChild (Object *child)
     }
 }
 
-GINGA_NAMESPACE_END
+}

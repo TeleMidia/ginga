@@ -21,7 +21,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "Object.h"
 #include "Player.h"
 
-GINGA_NAMESPACE_BEGIN
+namespace ginga {
 
 class Media : public Object
 {
@@ -49,6 +49,6 @@ protected:
   void doStop () override;
 };
 
-GINGA_NAMESPACE_END
+}
 
 #endif // MEDIA_H
