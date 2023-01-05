@@ -19,6 +19,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #define PLAYER_VIDEO_H
 
 #include "Player.h"
+#include <gst/gstelement.h>
 
 namespace ginga {
 class Media;
@@ -32,9 +33,13 @@ public:
   void pause () override;
   void resume () override;
   void redraw (cairo_t *) override;
-
+  // GStreamer callback.
+  static gboolean cb_Bus (GstBus *, GstMessage *, PlayerVideo *);
+  
 protected:
   bool doSetProperty (Property, const string &, const string &) override;
+  void setURI (const string &uri);
+
   void seek (gint64);
   void speed (double);
   gint64 getPipelineTime ();
@@ -83,11 +88,6 @@ private:
   void doStackedActions ();
   bool getFreeze ();
   string getPipelineState ();
-
-  // GStreamer callbacks.
-  static gboolean cb_Bus (GstBus *, GstMessage *, PlayerVideo *);
-  static GstFlowReturn cb_NewSample (GstAppSink *, gpointer);
-  static void cb_EOS (GstElement *, gpointer);
 };
 
 }
