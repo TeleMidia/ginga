@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
 project(ginga)
+cmake_policy(SET CMP0087 NEW)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_compile_options(-Wno-deprecated-declarations)
@@ -7,15 +8,15 @@ set(PACKAGE "ginga")
 set(PACKAGE_URL "http://github.com/telemidia/ginga")
 set(PACKAGE_BUGREPORT "bugs@telemidia.puc-rio.br")
 set(VERSION 1.0)
-set(DPACKAGE_VERSION 1.0)
+set(PACKAGE_VERSION ${VERSION})
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/build-cmake/CMakeModules)
+
 # set all target runtime to CMAKE_BINARY_DIR
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-cmake_policy(SET CMP0087 NEW)
 
-# ------------------------  
+# ------------------------
 # required deps
 # ------------------------
 find_package(GLIB 2.32 REQUIRED COMPONENTS gobject gio gthread gmodule)
@@ -277,8 +278,6 @@ add_executable(gingagui ${GINGAGUI_GTK_SOURCES})
 target_include_directories(gingagui PRIVATE ${GINGAGUI_GTK_INCLUDE_DIRS})
 target_link_libraries(gingagui PRIVATE libginga ${GINGAGUI_GTK_LIBS})
 
-
-
 # ------------------------
 # tests
 # ------------------------
@@ -331,19 +330,15 @@ endif(DOXYGEN_FOUND)
 # ------------------------
 set(ICON "${CMAKE_SOURCE_DIR}/src-gui/icons/common/ginga.ico")
 
-# <install_prefix> should differ from Debug and Release 
+# <install_prefix> should differ from Debug and Release
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   set(CMAKE_INSTALL_PREFIX "/usr/")
   install(TARGETS libginga DESTINATION lib)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   install(TARGETS libginga DESTINATION bin)
-  if(CMAKE_BUILD_TYPE MATCHES Debug)
-    set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/deploy)
-  elseif(CMAKE_BUILD_TYPE MATCHES Release)
-    set(CMAKE_INSTALL_PREFIX "C:/Program Files/Ginga")
-  endif()
+  set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/deploy)
 endif()
-  
+
 # install files src
 install(TARGETS ginga DESTINATION bin)
 install(TARGETS gingagui DESTINATION bin)
