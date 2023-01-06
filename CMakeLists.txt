@@ -348,24 +348,24 @@ install(FILES ${ICON} DESTINATION share/pixmaps)
 set(GINGADATADIR ${CMAKE_INSTALL_PREFIX}/share/ginga/)
 set(GINGABINDIR ${CMAKE_INSTALL_PREFIX}/bin)
 
-# others required install at Windows 
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows") 
+# others required install at Windows
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   # Windows requires the following extra steps:
   # * <install_prefix>/bin/gingagui.exe requires:
   install(DIRECTORY "C:/msys64/mingw64/share/icons/hicolor/16x16/" DESTINATION share/icons/hicolor/16x16)
   install(DIRECTORY "C:/msys64/mingw64/share/icons/Adwaita/16x16/" DESTINATION share/icons/Adwaita/16x16)
   install(DIRECTORY "C:/msys64/mingw64/share/icons/Adwaita/scalable/ui/" DESTINATION share/icons/Adwaita/16x16/actions)
-  
+
   # * <install_prefix>/bin/libnclua-0.dll  requires:
   install(DIRECTORY "C:/msys64/mingw64/share/lua/5.3/nclua/" DESTINATION share/lua/5.3/nclua)
   install(DIRECTORY "C:/msys64/mingw64/lib/lua/5.3/nclua/" DESTINATION lib/lua/5.3/nclua)
-  
+
   # * <install_prefix>/bin/libginga.dll requires:
   install(DIRECTORY "C:/msys64/mingw64/lib/gdk-pixbuf-2.0/" DESTINATION lib/gdk-pixbuf-2.0)
-  
+
   # * <install_prefix>/bin/libglib-2.0-0.dll  requires:
   install(DIRECTORY "C:/msys64/mingw64/share/glib-2.0/" DESTINATION share/glib-2.0)
-  # * <install_prefix>/bin/libgstreamer-1.0-0.dll 
+  # * <install_prefix>/bin/libgstreamer-1.0-0.dll
   # https://gstreamer.freedesktop.org/documentation/installing/on-windows.html?gi-language=c#download-and-install-gstreamer-binaries
   install(DIRECTORY "C:/msys64/mingw64/lib/gstreamer-1.0/" DESTINATION lib/gstreamer-1.0)
   # * <install_prefix> is suposed to run outside msys2 bash (from cmd orpowershell), so ginga deps should be packaged.
@@ -390,7 +390,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
       POST_INCLUDE_REGEXES ${post_include_regexes}
       )
     # message("-- GET_RUNTIME_DEPENDENCIES LIBRARIES=$<TARGET_FILE:libginga> ${GST_PLUGINS}")
-    # message("-- GET_RUNTIME_DEPENDENCIES EXECUTABLES=$<TARGET_FILE:ginga> $<TARGET_FILE:gingagui> C:/msys64/mingw64/bin/gst-play-1.0.exe")  
+    # message("-- GET_RUNTIME_DEPENDENCIES EXECUTABLES=$<TARGET_FILE:ginga> $<TARGET_FILE:gingagui> C:/msys64/mingw64/bin/gst-play-1.0.exe")
     # message("-- GET_RUNTIME_DEPENDENCIES RESOLVED_DEPENDENCIES_VAR=${_r_deps}")
     # message("-- GET_RUNTIME_DEPENDENCIES UNRESOLVED_DEPENDENCIES_VAR=${_u_deps}")
     foreach(_file ${_r_deps})
@@ -402,7 +402,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         )
     endforeach()
   ]])
-  # * install gst-play-1.0.exe for testing 
+  # * install gst-play-1.0.exe for testing
   install(FILES "C:/msys64/mingw64/bin/gst-play-1.0.exe" DESTINATION bin)
 endif()
 
@@ -411,64 +411,67 @@ configure_file (${CMAKE_CURRENT_SOURCE_DIR}/build-cmake/config.h.in ${CMAKE_BINA
 # ------------------------
 # cpack
 # ------------------------
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "The Ginga middleware")
+set(DISPLAY_NAME "Ginga")
+set(DESCRIPTION "Ginga is the iTV middleware of the Japanese-Brazilian Digital TV System (ISDB-TB) and ITU-T Recommendation for IPTV services. Ginga is made up by a set of standardized technologies and Brazilian innovations that make it the most advanced middleware specification.")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "The Ginga iTV middleware")
 set(CPACK_PACKAGE_VENDOR "TeleMídia Lab/PUC-Rio")
 set(CPACK_PACKAGE_VERSION ${VERSION})
 set(CPACK_PACKAGE_CONTACT alan@telemidia.puc-rio.br)
 set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/COPYING")
-set(HELP "http://github.com/TeleMidia/ginga")
+set(CPACK_PACKAGE_NAME "ginga-itv") # ginga already exist in apt
 
-# cpack deb uses default install calls
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   set(CPACK_GENERATOR "DEB")
-  set(CPACK_PACKAGE_NAME "ginga-itv") # ginga already exist
   set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Alan Guedes")
   set(CPACK_DEBIAN_PACKAGE_SECTION "contrib/graphics")
-  set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "Ginga is the middleware of the Japanese-Brazilian Digital TV System (ISDB-TB) and ITU-T Recommendation for IPTV services. Ginga is made up by a set of standardized technologies and Brazilian innovations that make it the most advanced middleware specification.")
+  set(CPACK_DEBIAN_PACKAGE_DESCRIPTION ${DESCRIPTION})
   set(CPACK_DEBIAN_PACKAGE_DEPENDS "liblua5.2-0, libglib2.0-0, libpango-1.0-0, librsvg2-2, libsoup2.4-1, libgstreamer1.0-0, libgstreamer-plugins-base1.0-0, libfontconfig1, libgtk-3-0, gstreamer1.0-plugins-good, gstreamer1.0-plugins-bad, gstreamer1.0-plugins-ugly, gstreamer1.0-libav, libgssdp-1.2-0, libjsoncpp1, nclua")
   set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
   set(CPACK_DEBIAN_COMPRESSION_TYPE "xz")
   set(CPACK_DEBIAN_REPLACES "xz")
-elseif(CMAKE_BUILD_TYPE MATCHES Release)
-  set(DISPLAY_NAME "Ginga")
+
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set(CPACK_GENERATOR "NSIS")
-  set(CPACK_PACKAGE_NAME "ginga")
+  set(CPACK_DEFAULT_PACKAGE_DESCRIPTION_SUMMARY ${CPACK_PACKAGE_DESCRIPTION_SUMMARY})
+  set(CPACK_NSIS_INSTALLED_ICON_NAME ${ICON})
   set(CPACK_NSIS_MUI_ICON ${ICON})
   set(CPACK_NSIS_MUI_UNIICON ${ICON})
+  set(CPACK_NSIS_MANIFEST_DPI_AWARE "ON")
+  set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL "ON")
   set(CPACK_NSIS_DISPLAY_NAME ${DISPLAY_NAME})
   set(CPACK_NSIS_BRANDING_TEXT ${DISPLAY_NAME})
   set(CPACK_NSIS_PACKAGE_NAME ${DISPLAY_NAME})
-  set(CPACK_NSIS_HELP_LINK ${HELP})
-  set(CPACK_NSIS_URL_INFO_ABOUT ${HELP})
+  set(CPACK_NSIS_HELP_LINK ${PACKAGE_URL})
+  set(CPACK_NSIS_URL_INFO_ABOUT ${PACKAGE_URL})
   set(CPACK_NSIS_CONTACT ${CPACK_PACKAGE_CONTACT})
-  # setup installer
-  set(CPACK_PACKAGE_INSTALL_DIRECTORY ${DISPLAY_NAME}) # C:\Programs..\Ginga
-  set(CPACK_NSIS_CREATE_ICONS_EXTRA "
-    CreateShortCut '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Ginga.lnk' '$INSTDIR\\\\bin\\\\gingagui.exe' ' ' '$INSTDIR\\\\bin\\\\share\\\\pixmaps\\\\ginga.ico'")
-  set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
-    WriteRegStr HKCR '.ncl' '' 'ncl'
-    WriteRegStr HKCR 'ncl' '' 'NCL Document'
-    WriteRegStr HKCR 'ncl\\\\DefaultIcon' '' '$INSTDIR\\\\bin\\\\share\\\\pixmaps\\\\ginga.ico'
-    WriteRegStr HKCR 'ncl\\\\shell\\\\open\\\\command' '' '$INSTDIR\\\\bin\\\\gingagui.exe %1'
-    WriteRegStr HKCR 'ncl\\\\shell\\\\print\\\\command' '' '$INSTDIR\\\\bin\\\\gingagui.exe /p %1'
-    WriteRegStr HKLM 'Software\\\\RegisteredApplications' 'Ginga' '$INSTDIR\\\\bin\\\\gingagui.exe'
-    WriteRegStr HKCU 'Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Explorer\\\\FileExts\\\\.ncl\\\\OpenWithList' 'a' '$INSTDIR\\\\bin\\\\gingagui.exe'
-  ")
 
-  # setup uninstaller
-  set(CPACK_NSIS_UNINSTALL_NAME "Uninstall Ginga")
+  # install location
+  set(CPACK_NSIS_INSTALL_ROOT "$LOCALAPPDATA\\\\Programs")
+  set(CPACK_PACKAGE_INSTALL_DIRECTORY ${DISPLAY_NAME}) # CPACK_NSIS_INSTALL_ROOT\Ginga
+  string(APPEND CPACK_NSIS_DEFINES "\nRequestExecutionLevel user") # non-admin install
+
+  set(CPACK_NSIS_CREATE_ICONS_EXTRA "
+    CreateShortCut '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Ginga.lnk' '$INSTDIR\\\\bin\\\\gingagui.exe' ' ' '$INSTDIR\\\\share\\\\pixmaps\\\\ginga.ico'
+  ")
   set(CPACK_NSIS_DELETE_ICONS_EXTRA "
     Delete '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Ginga.lnk'
-    RMDir '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\'
-    ")
+  ")
+
+  # file association: https://cmake.org/cmake/help/book/mastering-cmake/chapter/Packaging%20With%20CPack.html#setting-file-extension-associations-with-nsis
+  # using HKCU: https://stackoverflow.com/questions/27091647/windows-file-association-using-nsis-script
+  set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
+    WriteRegStr HKCU 'Software\\\\Classes\\\\.ncl' '' 'NCL'
+    WriteRegStr HKCU 'Software\\\\Classes\\\\NCL' '' 'NCL Document'
+    WriteRegStr HKCU 'Software\\\\Classes\\\\NCL\\\\DefaultIcon' '' '$INSTDIR\\\\share\\\\pixmaps\\\\ginga.ico'
+    WriteRegStr HKCU 'Software\\\\Classes\\\\NCL\\\\shell' '' 'open'
+    WriteRegStr HKCU 'Software\\\\Classes\\\\NCL\\\\shell\\\\open\\\\command' '' '$INSTDIR\\\\bin\\\\gingagui.exe \\\"%1\\\"'
+    WriteRegStr HKCU 'Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Explorer\\\\FileExts\\\\.ncl\\\\OpenWithList' 'a' '$INSTDIR\\\\bin\\\\gingagui.exe'
+    System::Call 'Shell32::SHChangeNotify(i 0x8000000, i 0, i 0, i 0)'
+  ")
   set(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
-    DeleteRegKey HKCR '.ncl'
-    DeleteRegKey HKCR 'ncl'
-    DeleteRegKey HKCR 'ncl\\\\DefaultIcon'
-    DeleteRegKey HKCR 'ncl\\\\shell\\\\open\\\\command'
-    DeleteRegKey HKCU 'Software\\\\RegisteredApplications\\\\Ginga'
-    DeleteRegKey HKCU 'Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Explorer\\\\FileExts\\\\.ncl'  
+    DeleteRegKey HKCU 'Software\\\\Classes\\\\.ncl'
+    DeleteRegKey HKCU 'Software\\\\Classes\\\\NCL'
   ")
 endif()
 
