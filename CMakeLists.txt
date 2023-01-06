@@ -274,9 +274,16 @@ add_executable(ginga src/ginga.cpp)
 target_include_directories(ginga PRIVATE ${GINGAGUI_GTK_INCLUDE_DIRS})
 target_link_libraries(ginga PRIVATE libginga ${GTK3_LIBRARIES})
 
+
 add_executable(gingagui ${GINGAGUI_GTK_SOURCES})
 target_include_directories(gingagui PRIVATE ${GINGAGUI_GTK_INCLUDE_DIRS})
 target_link_libraries(gingagui PRIVATE libginga ${GINGAGUI_GTK_LIBS})
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows" AND CMAKE_BUILD_TYPE STREQUAL "Release")
+  # prevent open console
+  # https://stackoverflow.com/questions/2281514/how-to-hide-command-prompt-for-my-windows-gtk-apps
+  # https://github.com/baktragh/mmSAP/commit/f97531512e3c33fe71fd4eec36a4cb42f22bae90
+  target_link_libraries(gingagui PRIVATE "-mwindows" )
+endif()
 
 # ------------------------
 # tests
@@ -302,7 +309,6 @@ file(GLOB GINGA_TESTS_SRC "./tests/*.cpp")
 foreach(SRC ${GINGA_TESTS_SRC})
   get_filename_component(TEST_NAME ${SRC} NAME_WE)
   add_ginga_test(${TEST_NAME} ${SRC})
-
   # fix PATH when using not-msys testing tool (vscode cmake-test-explorer)
   if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set_property(TEST ${TEST_NAME} PROPERTY ENVIRONMENT "PATH=%PATH%\;C:\\msys64\\mingw64\\bin")
@@ -330,7 +336,7 @@ endif(DOXYGEN_FOUND)
 # ------------------------
 set(ICON "${CMAKE_SOURCE_DIR}/src-gui/icons/common/ginga.ico")
 
-# <install_prefix> should differ from Debug and Release
+# <install_prefix> should differ Linux and Windows
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   set(CMAKE_INSTALL_PREFIX "/usr/")
   install(TARGETS libginga DESTINATION lib)

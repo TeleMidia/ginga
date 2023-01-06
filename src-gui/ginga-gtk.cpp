@@ -163,7 +163,7 @@ env_init ()
       g_setenv ("GST_PLUGIN_PATH", libdir, TRUE);
     }
   g_free (libdir);
-  
+
 #endif
 }
 
@@ -179,11 +179,6 @@ main (int argc, char **argv)
 
   saved_argc = argc;
   saved_argv = g_strdupv (argv);
-
-  #ifdef G_OS_WIN32
-    HWND var = GetConsoleWindow ();
-    ShowWindow (var, SW_HIDE);
-  #endif
 
   opts.width = presentationAttributes.resolutionWidth;
   opts.height = presentationAttributes.resolutionHeight;
@@ -218,7 +213,7 @@ main (int argc, char **argv)
 
   g_debug ("DATADIR: %s",
           g_build_path (G_DIR_SEPARATOR_S, get_data_dir (), NULL));
-          
+
   gtk_window_set_default_icon_from_file (
       g_build_path (G_DIR_SEPARATOR_S, get_data_dir (), "icons", "common",
                     "ginga_icon.png", NULL),
