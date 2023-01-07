@@ -1,7 +1,24 @@
 Ginga NEWS
 
-* Version 0.13.6, ???
+* Version 1.1, 2023
 
-  - Support run ncl documents from file.
+  - Support WebServices for media control
+  - Support CMake-based build
+  - Drop support Autotools build
+  - Improve GStreamer backend
+  - Improve win deploy
 
-  - Support run transport stream files and execute an ncl from it. 
+* Version 1.0, 2022
+
+  - Support Autotools build
+  - New Formmater as a reactive-based engine
+  - New backend using gstreamer and GTK
+  - Drop support processing transport stream files and run ncl files from it
+
+
+* Version 0.13.6, 2015
+
+  - Backend using ffmpeg and SDL
+  - Formmater as an event-thread-based engine
+  - Support running ncl documents from file
+  - Support processing transport stream files and run ncl files from it
