@@ -1,0 +1,91 @@
+<ncl>
+  <head>
+    <connectorBase>
+      <causalConnector id="onBeginSet">
+        <connectorParam name="var"/>
+        <simpleCondition role="onBegin"/>
+        <simpleAction role="set" value="$var" max="unbounded"/>
+      </causalConnector>
+    </connectorBase>
+  </head>
+  <body>
+    <port id="start0" component="m0"/>
+    <port id="start1" component="m1"/>
+    <port id="start2" component="m2"/>
+    <port id="start3" component="m3"/>
+    <media id="m0">
+      <property name="background" value="green"/>
+      <property name="top" value="25%"/>
+      <property name="left" value="25%"/>
+      <property name="width" value="50%"/>
+      <property name="height" value="50%"/>
+      <property name="transparency" value="25%"/>
+      <property name="zIndex" value="-1"/>
+      <area id="a1" begin="1s"/>
+      <area id="a2" begin="2s"/>
+      <area id="a3" begin="3s"/>
+      <area id="a4" begin="4s"/>
+    </media>
+    <media id="m1" src="../samples/fps.lua">
+      <property name="width" value="50%"/>
+      <property name="height" value="50%"/>
+      <property name="top" value="25%"/>
+      <property name="left" value="25%"/>
+      <property name="zIndex" value="1"/>
+    </media>
+    <media id="m2" src="../samples/clock.ogv">
+      <property name="width" value="25%"/>
+      <property name="height" value="25%"/>
+      <property name="top" value="25%"/>
+      <property name="left" value="25%"/>
+      <property name="zIndex" value="2"/>
+    </media>
+    <media id="m3" src="../samples/text.txt">
+      <property name="width" value="25%"/>
+      <property name="height" value="25%"/>
+      <property name="top" value="50%"/>
+      <property name="left" value="50%"/>
+      <property name="zIndex" value="0"/>
+      <property name="textAlign" value="right"/>
+      <property name="fontColor" value="#ff0000"/>
+      <property name="fontWeight" value="bold"/>
+      <property name="fontFamily" value="helvetica"/>
+    </media>
+    <link xconnector="onBeginSet">
+      <bind role="onBegin" component="m0" interface="a1"/>
+      <bind role="set" component="m2" interface="zIndex">
+        <bindParam name="var" value="0"/>
+      </bind>
+      <bind role="set" component="m3" interface="zIndex">
+        <bindParam name="var" value="2"/>
+      </bind>
+    </link>
+    <link xconnector="onBeginSet">
+      <bind role="onBegin" component="m0" interface="a2"/>
+      <bind role="set" component="m2" interface="zIndex">
+        <bindParam name="var" value="2"/>
+      </bind>
+      <bind role="set" component="m3" interface="zIndex">
+        <bindParam name="var" value="0"/>
+      </bind>
+    </link>
+    <link xconnector="onBeginSet">
+      <bind role="onBegin" component="m0" interface="a3"/>
+      <bind role="set" component="m2" interface="zIndex">
+        <bindParam name="var" value="0"/>
+      </bind>
+      <bind role="set" component="m3" interface="zIndex">
+        <bindParam name="var" value="2"/>
+      </bind>
+    </link>
+    <link xconnector="onBeginSet">
+      <bind role="onBegin" component="m0" interface="a4"/>
+      <bind role="set" component="m2" interface="zIndex">
+        <bindParam name="var" value="2"/>
+      </bind>
+      <bind role="set" component="m3" interface="zIndex">
+        <bindParam name="var" value="0"/>
+      </bind>
+    </link>
+  </body>
+</ncl>
