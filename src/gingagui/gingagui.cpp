@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include "ginga_gtk.h"
+#include "gingagui.h"
 #include "aux-glib.h"
 #include <locale.h>
 #include <glib/gi18n.h>
@@ -219,11 +219,6 @@ main (int argc, char **argv)
                     "ginga_icon.png", NULL),
       &error);
 
-
-  // send log message to server
-  // send_http_log_message (0, (gchar *) "Open Ginga");
-  // check for ginga updates
-  // send_http_log_message (-1, (gchar *) "Check for Ginga updates");
 
   create_main_window ();
 

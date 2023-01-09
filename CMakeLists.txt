@@ -243,24 +243,26 @@ target_include_directories(libginga PRIVATE ${LIBGINGA_INCLUDE_DIRS})
 target_link_libraries(libginga PRIVATE ${LIBGINGA_LIBS})
 set_target_properties(libginga PROPERTIES OUTPUT_NAME "ginga")
 
-# ginga/gingagui source
+
+# ginga cli target
+add_executable(ginga src/ginga.cpp)
+target_include_directories(ginga PRIVATE ${GINGAGUI_GTK_INCLUDE_DIRS})
+target_link_libraries(ginga PRIVATE libginga ${GTK3_LIBRARIES})
+
+# gingagui target
 set(GINGAGUI_GTK_SOURCES
-  ./src-gui/ginga-gtk.cpp
-  ./src-gui/model/SaveLoadSettings.cpp
-  ./src-gui/model/HttpMessage.cpp
-  ./src-gui/view/TrackerWindow.cpp
-  ./src-gui/view/AboutWindow.cpp
-  ./src-gui/view/BigPictureWindow.cpp
-  ./src-gui/view/Draw.cpp
-  ./src-gui/view/FullscreenWindow.cpp
-  ./src-gui/view/HelpWindow.cpp
-  ./src-gui/view/MainWindow.cpp
-  ./src-gui/view/TvControlWindow.cpp
+  ./src/gingagui/gingagui.cpp
+  ./src/gingagui/SaveLoadSettings.cpp
+  ./src/gingagui/AboutWindow.cpp
+  ./src/gingagui/BigPictureWindow.cpp
+  ./src/gingagui/Draw.cpp
+  ./src/gingagui/FullscreenWindow.cpp
+  ./src/gingagui/HelpWindow.cpp
+  ./src/gingagui/MainWindow.cpp
+  ./src/gingagui/TvControlWindow.cpp
 )
 set(GINGAGUI_GTK_INCLUDE_DIRS
-  ./src-gui/
-  ./src-gui/model/
-  ./src-gui/view/
+  ./src/gingagui/
   ${LIBGINGA_INCLUDE_DIRS}
   ${GTK3_INCLUDE_DIRS}
 )
@@ -268,12 +270,6 @@ set(GINGAGUI_GTK_LIBS
   ${LIBGINGA_LIBS}
   ${GTK3_LIBRARIES}
 )
-
-# ginga/gingagui targets
-add_executable(ginga src/ginga.cpp)
-target_include_directories(ginga PRIVATE ${GINGAGUI_GTK_INCLUDE_DIRS})
-target_link_libraries(ginga PRIVATE libginga ${GTK3_LIBRARIES})
-
 
 add_executable(gingagui ${GINGAGUI_GTK_SOURCES})
 target_include_directories(gingagui PRIVATE ${GINGAGUI_GTK_INCLUDE_DIRS})
@@ -334,7 +330,7 @@ endif(DOXYGEN_FOUND)
 # ------------------------
 # install
 # ------------------------
-set(ICON "${CMAKE_SOURCE_DIR}/src-gui/icons/common/ginga.ico")
+set(ICON "${CMAKE_SOURCE_DIR}/src/gingagui/icons/common/ginga.ico")
 
 # <install_prefix> should differ Linux and Windows
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
@@ -348,8 +344,9 @@ endif()
 # install files src
 install(TARGETS ginga DESTINATION bin)
 install(TARGETS gingagui DESTINATION bin)
-install(DIRECTORY src-gui/icons/ DESTINATION share/ginga/icons)
-install(FILES src-gui/style/dark.css src-gui/style/light.css DESTINATION share/ginga/style)
+install(DIRECTORY src/gingagui/icons/ DESTINATION share/ginga/icons)
+install(FILES src/gingagui/ncl-apps.xml DESTINATION share/ginga/)
+install(FILES src/gingagui/style/dark.css src/gingagui/style/light.css DESTINATION share/ginga/style)
 install(FILES ${ICON} DESTINATION share/pixmaps)
 set(GINGADATADIR ${CMAKE_INSTALL_PREFIX}/share/ginga/)
 set(GINGABINDIR ${CMAKE_INSTALL_PREFIX}/bin)

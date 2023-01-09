@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include "ginga_gtk.h"
+#include "gingagui.h"
 #include <glib/gstdio.h>
 
 #define SETTINGS_FILENAME "ginga222.settings"
@@ -53,15 +53,6 @@ save_settings (void)
     }
 
   g_key_file_set_value (key_file, "ginga-gui", "historic", hist_str);
-
-  g_key_file_set_value (
-      key_file, "ginga-gui", "show-tracker-window",
-      g_markup_printf_escaped ("%d",
-                               presentationAttributes.showTrackerWindow));
-
-  g_key_file_set_value (
-      key_file, "ginga-gui", "tracker-accept",
-      g_markup_printf_escaped ("%d", trackerFlags.trackerAccept));
 
   g_key_file_save_to_file (key_file, file_path, &error);
 
@@ -113,12 +104,6 @@ load_settings (void)
         }
       g_strfreev (str_split);
     }
-
-  presentationAttributes.showTrackerWindow = atoi (g_key_file_get_value (
-      key_file, "ginga-gui", "show-tracker-window", &error));
-
-  trackerFlags.trackerAccept = atoi (g_key_file_get_value (
-      key_file, "ginga-gui", "tracker-accept", &error));
 
 endload:
   g_free (hist_str);

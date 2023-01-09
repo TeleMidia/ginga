@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include "ginga_gtk.h"
+#include "gingagui.h"
 
 GtkWidget *fullscreenWindow = NULL;
 gboolean isFullScreenMode = FALSE;
@@ -108,6 +108,6 @@ set_unfullscreen_mode (void)
 {
   if(inBigPictureMode)
     GINGA->stop();
-	
+
   destroy_fullscreen_window ();
 }

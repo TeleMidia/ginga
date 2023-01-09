@@ -18,7 +18,7 @@ along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
 
-#include "ginga_gtk.h"
+#include "gingagui.h"
 #include "aux-glib.h"
 #include "BigPictureWindow.h"
 
@@ -141,7 +141,7 @@ instantiateInAppLibrary (unused (xmlDocPtr doc), xmlNodePtr cur)
 bool
 loadApplicationsXML ()
 {
-  const char *docname = g_strdup (ABS_TOP_SRCDIR "/src-gui/ncl-apps.xml");
+  const char *docname = g_build_path (G_DIR_SEPARATOR_S, get_data_dir (), "ncl-apps.xml", NULL);
 
   xmlDocPtr doc;
   xmlNodePtr cur;

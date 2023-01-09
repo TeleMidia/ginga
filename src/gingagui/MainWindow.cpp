@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include "ginga_gtk.h"
+#include "gingagui.h"
 #include "aux-glib.h"
 
 GtkWidget *mainWindow = NULL;
@@ -134,8 +134,6 @@ g_log_default_handler (unused (const gchar *log_domain),
 
   if ((log_level == G_LOG_LEVEL_ERROR) || (log_level == G_LOG_FLAG_FATAL))
     {
-      // send error log to server
-      send_http_log_message (1, message);
       if (!strcmp (message,
                    "ginga::PlayerVideo::cb_Bus(): No decoder available "
                    "for type 'video/ogg'."))
@@ -971,8 +969,6 @@ create_window_components ()
   gtk_container_add (GTK_CONTAINER (mainWindow), vpaned);
 
   apply_theme ();
-
-  show_tracker_dialog (GTK_WINDOW (mainWindow));
 }
 
 void

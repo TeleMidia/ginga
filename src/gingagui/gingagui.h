@@ -15,11 +15,11 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef GINGA_GTK_H
-#define GINGA_GTK_H
+#ifndef gingagui_H
+#define gingagui_H
 
 #include "ginga.h"
-#include "config.h" 
+#include "config.h"
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <stdlib.h>
@@ -34,14 +34,7 @@ typedef struct
   guint resolutionHeight = 525;
   guint frameRate = 0; /* 0=30 1=60 2=Free  */
   guint guiTheme = 0;  /* 0=30 1=60 2=Free  */
-  gint showTrackerWindow = 1;
 } PresentationAttributes;
-
-typedef struct
-{
-  guint trackerAccept = 0;
-  guint installMessageSended = 0;
-} TrackerFlags;
 
 extern Ginga *GINGA; /* Ginga Scheduler */
 extern GtkWidget *mainWindow;
@@ -64,7 +57,6 @@ extern gboolean tvcontrolAsSidebar;
 extern gboolean isCrtlModifierActive;
 extern gchar *gingaID;
 extern PresentationAttributes presentationAttributes;
-extern TrackerFlags trackerFlags;
 
 /* View/MainWindow */
 void create_main_window (void);
@@ -106,9 +98,6 @@ void destroy_about_window (void);
 void create_help_window (void);
 void destroy_help_window (void);
 
-/* Model/TrackerWindow */
-void show_tracker_dialog (GtkWindow *);
-
 /* View/Draw */
 #if GTK_CHECK_VERSION(3, 8, 0)
 gboolean update_draw_callback (GtkWidget *widget,
@@ -129,4 +118,4 @@ void send_http_log_message (gint, const gchar *);
 /* util */
 const gchar * get_data_dir();
 
-#endif /* GINGA_GTK_H */
+#endif /* gingagui_H */
