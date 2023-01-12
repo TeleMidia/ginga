@@ -91,7 +91,6 @@ ginga.cbp
 /_build*
 /INSTALL
 /TODO
-/ChangeLog
 /README
 /Makefile
 /Makefile.in
