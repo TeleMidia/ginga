@@ -7,11 +7,11 @@ sudo apt-get install -y cmake ninja-build pkg-config dpkg-dev dh-autoreconf libl
 ```
 
 ```bash
-  git clone http://github.com/TeleMidia/nclua.git
-  cd nclua 
-  ./bootstrap && ./configure --without-nclua-gst --without-nclua-gtk
-  make
-  sudo make install
+git clone http://github.com/TeleMidia/nclua.git
+cd nclua 
+./bootstrap && ./configure --without-nclua-gst --without-nclua-gtk
+make
+sudo make install
 ```
 
 ### Build
@@ -21,7 +21,7 @@ Build with `cmake` (main way):
 ```bash
 cd ginga
 mkdir _build && cd _build
-cmake ..
+cmake .. -G Ninja 
 ninja
 cmake --install . --prefix /usr
 ```
@@ -29,16 +29,16 @@ cmake --install . --prefix /usr
 ### Build installer
 
 ```bash
-  cd ginga _build
-  cmake .. -G -DCMAKE_BUILD_TYPE=Release
-  ninja 
-  cpack
+cd ginga _build
+cmake .. -G Ninja  -DCMAKE_BUILD_TYPE=Release
+ninja 
+cpack
 ```
 
 To deploy installer on github, run:
 
 ```bash
-  hub release edit v1.0 -m "" -a ginga-itv_1.0_amd64.deb
+hub release edit v1.0 -m "" -a ginga-itv_1.0_amd64.deb
 ```
 
 ### decrypted autotools
