@@ -29,6 +29,7 @@ find_package(Pango REQUIRED)
 find_package(RSVG REQUIRED)
 find_package(GStreamer 1.0 REQUIRED)
 find_package(GTK3 REQUIRED)
+find_package(ATK REQUIRED)
 pkg_check_modules(JSON jsoncpp REQUIRED)
 find_package(Lua 5.3 REQUIRED)
 pkg_check_modules(GSSDP gssdp-1.2 REQUIRED)
@@ -197,6 +198,7 @@ set(LIBGINGA_INCLUDE_DIRS
   ${LIBXML2_INCLUDE_DIR}
   ${GDKPIXBUF_INCLUDE_DIRS}
   ${GDK3_INCLUDE_DIRS}
+  ${ATK_INCLUDE_DIRS}
   ${CAIRO_INCLUDE_DIRS}
   ${FONTCONFIG_INCLUDE_DIR}
   ${PANGO_INCLUDE_DIRS}
@@ -208,7 +210,7 @@ set(LIBGINGA_INCLUDE_DIRS
   ${JSON_INCLUDE_DIRS}
   ${NCLUA_INCLUDE_DIRS}
   ${LUA_INCLUDE_DIR}
-  ${CMAKE_BINARY_DIR} # conifured config.h
+  ${CMAKE_BINARY_DIR} # configured config.h
 )
 
 set(LIBGINGA_LIBS
@@ -246,6 +248,7 @@ set_target_properties(libginga PROPERTIES OUTPUT_NAME "ginga")
 
 # ginga cli target
 add_executable(ginga src/ginga.cpp)
+target_include_directories(ginga PRIVATE ${LIBGINGA_INCLUDE_DIRS})
 target_include_directories(ginga PRIVATE ${GINGAGUI_GTK_INCLUDE_DIRS})
 target_link_libraries(ginga PRIVATE libginga ${GTK3_LIBRARIES})
 
