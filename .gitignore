@@ -51,7 +51,6 @@ CPackConfig.cmake
 CPackSourceConfig.cmake
 CTestTestfile.cmake
 bin/
-build-cmake/*
 cmake-build-*
 cmake_install.cmake
 config.h
