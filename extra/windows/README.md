@@ -13,8 +13,8 @@ To install the dependencies, run on msys bash:
 ```bash
 pacman -Sy --needed --noconfirm glib2-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-libconfig autoconf automake libtool pkgconf make mingw-w64-x86_64-gcc mingw64/mingw-w64-x86_64-cmake mingw64/mingw-w64-x86_64-ninja mingw64/mingw-w64-x86_64-glib2 mingw64/mingw-w64-x86_64-libsoup mingw64/mingw-w64-x86_64-gtk3 mingw64/mingw-w64-x86_64-gdk-pixbuf2 mingw64/mingw-w64-x86_64-jp2-pixbuf-loader mingw64/mingw-w64-x86_64-cairo mingw64/mingw-w64-x86_64-pango mingw64/mingw-w64-x86_64-gst-libav  mingw-w64-x86_64-gstreamer mingw-w64-x86_64-gst-plugins-{base,good,bad,ugly} mingw-w64-x86_64-meson
 pacman -R mingw-w64-x86_64-lua # remove lua5.4 if installed (ginga require 5.3)
-wget -P /tmp/ https://repo.msys2.org/mingw/x86_64/mingw-w64-x86_64-lua-5.3.5-1-any.pkg.tar.xz
-pacman --noconfirm -U  /tmp/mingw-w64-x86_64-lua-5.3.5-1-any.pkg.tar.xz
+wget -P /tmp/ https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-lua53-5.3.6-1-any.pkg.tar.zst
+pacman --noconfirm -U  /tmp/mingw-w64-x86_64-lua53-5.3.6-1-any.pkg.tar.zst
 ```
 
 ### Build
