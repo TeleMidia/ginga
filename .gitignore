@@ -55,7 +55,6 @@ cmake-build-*
 cmake_install.cmake
 config.h
 ginga.cbp
-.vscode
 *.DS_Store
 *.a
 *.bak
