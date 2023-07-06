@@ -7,6 +7,7 @@ add_compile_options(-Wno-deprecated-declarations)
 set(PACKAGE "ginga")
 set(PACKAGE_URL "http://github.com/telemidia/ginga")
 set(PACKAGE_BUGREPORT "bugs@telemidia.puc-rio.br")
+set(PACKAGE_DESCRIPTION "The Ginga iTV middleware")
 set(VERSION 1.0)
 set(PACKAGE_VERSION ${VERSION})
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/build-cmake/CMakeModules)
@@ -321,14 +322,14 @@ find_package(Doxygen)
 
 if(DOXYGEN_FOUND)
   set(top_builddir ${CMAKE_CURRENT_BINARY_DIR})
-  set(top_srcdir ${CMAKE_CURRENT_SOURCE_DIR}/..)
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/./doc/Doxyfile.in
+  set(top_srcdir ${CMAKE_CURRENT_SOURCE_DIR})
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in
     ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile @ONLY)
   add_custom_target(doc ${DOXYGEN_EXECUTABLE} ${CMAKE_BINARY_DIR}/doc/Doxyfile
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc
     COMMENT "Generating API documentation with Doxygen" VERBATIM
   )
-endif(DOXYGEN_FOUND)
+endif()
 
 # ------------------------
 # install
@@ -419,7 +420,6 @@ configure_file (${CMAKE_CURRENT_SOURCE_DIR}/build-cmake/config.h.in ${CMAKE_BINA
 # ------------------------
 set(DISPLAY_NAME "Ginga")
 set(DESCRIPTION "Ginga is the iTV middleware of the Japanese-Brazilian Digital TV System (ISDB-TB) and ITU-T Recommendation for IPTV services. Ginga is made up by a set of standardized technologies and Brazilian innovations that make it the most advanced middleware specification.")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "The Ginga iTV middleware")
 set(CPACK_PACKAGE_VENDOR "TeleMídia Lab/PUC-Rio")
 set(CPACK_PACKAGE_VERSION ${VERSION})
 set(CPACK_PACKAGE_CONTACT alan@telemidia.puc-rio.br)
@@ -439,7 +439,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set(CPACK_GENERATOR "NSIS")
-  set(CPACK_DEFAULT_PACKAGE_DESCRIPTION_SUMMARY ${CPACK_PACKAGE_DESCRIPTION_SUMMARY})
+  set(CPACK_DEFAULT_PACKAGE_DESCRIPTION_SUMMARY ${PACKAGE_DESCRIPTION})
   set(CPACK_NSIS_INSTALLED_ICON_NAME ${ICON})
   set(CPACK_NSIS_MUI_ICON ${ICON})
   set(CPACK_NSIS_MUI_UNIICON ${ICON})
