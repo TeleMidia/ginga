@@ -1,0 +1,28 @@
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths:
+      - "lib/*"
+      - "doc/*"
+      - "src/*"
+
+permissions:
+  contents: write
+
+jobs:
+  gh-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ssciwr/doxygen-install@v1
+      - uses: symbitic/install-cmake@master
+      - run: mkdir _build
+      - run: cd _build
+      - run: cmake ..
+      - run: cmake --build . --target doc
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/html # Build output to publish to the `gh-pages` branch
