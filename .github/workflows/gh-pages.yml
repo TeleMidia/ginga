@@ -15,14 +15,20 @@ jobs:
   gh-pages:
     runs-on: ubuntu-latest
     steps:
-      - uses: ssciwr/doxygen-install@v1
-      - uses: symbitic/install-cmake@master
-      - run: mkdir _build
-      - run: cd _build
-      - run: cmake ..
-      - run: cmake --build . --target doc
+      - uses: actions/checkout@v3
+      - run: sudo apt-get update
+      - run: sudo apt-get install -y cmake make doxygen graphviz
+      - name: cmake
+        working-directory: ./doc
+        run: cmake .
+      - name: build docs
+        working-directory: ./doc
+        run: cmake --build .
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        if: success()
+        uses: crazy-max/ghaction-github-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/html # Build output to publish to the `gh-pages` branch
+          target_branch: gh-pages
+          build_dir: ./doc/html
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

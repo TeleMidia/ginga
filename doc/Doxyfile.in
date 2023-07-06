@@ -6,21 +6,23 @@ GENERATE_LATEX     = NO
 GENERATE_MAN       = NO
 GENERATE_RTF       = NO
 GENERATE_TREEVIEW  = YES
+HAVE_DOT           = YES
 
-OUTPUT_DIRECTORY   = @top_builddir@/doc
-INPUT              = @top_srcdir@/doc/index.doxygen \
-                     @top_srcdir@/lib
+OUTPUT_DIRECTORY   = @DOC_DIR@
+INPUT              = index.doxygen @DOC_DIR@/../lib
 RECURSIVE          = YES
 FILE_PATTERNS      = *.cpp *.h
 EXCLUDE_PATTERNS   = */aux-gl.h */aux-glib.h */aux-lua.h */config.h
-IMAGE_PATH         = @top_srcdir@/doc
+IMAGE_PATH         = @DOC_DIR@
 HAVE_DOT           = YES
 MACRO_EXPANSION    = YES
 EXPAND_ONLY_PREDEF = YES
-INCLUDE_PATH       = @top_srcdir@/lib
+INCLUDE_PATH       = @DOC_DIR@/../lib
 PREDEFINED         = unused(x)=x
 EXTRACT_PRIVATE    = YES
 
-QUIET              = NO
-WARNINGS           = YES
-WARN_NO_PARAMDOC   = YES
+QUIET                 = YES
+WARNINGS              = NO
+WARN_IF_UNDOCUMENTED  = NO
+WARN_IF_DOC_ERROR     = NO
+WARN_NO_PARAMDOC      = NO

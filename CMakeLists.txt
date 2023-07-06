@@ -1,17 +1,10 @@
 cmake_minimum_required(VERSION 3.2)
 project(ginga)
+include(CMakeLists.defs.txt)
 cmake_policy(SET CMP0087 NEW)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_compile_options(-Wno-deprecated-declarations)
-set(PACKAGE "ginga")
-set(PACKAGE_URL "http://github.com/telemidia/ginga")
-set(PACKAGE_BUGREPORT "bugs@telemidia.puc-rio.br")
-set(PACKAGE_DESCRIPTION "The Ginga iTV middleware")
-set(VERSION 1.0)
-set(PACKAGE_VERSION ${VERSION})
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/build-cmake/CMakeModules)
-
 # set all target runtime to CMAKE_BINARY_DIR
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
@@ -316,22 +309,6 @@ foreach(SRC ${GINGA_TESTS_SRC})
 endforeach()
 
 # ------------------------
-# doxygen documentation
-# ------------------------
-find_package(Doxygen)
-
-if(DOXYGEN_FOUND)
-  set(top_builddir ${CMAKE_CURRENT_BINARY_DIR})
-  set(top_srcdir ${CMAKE_CURRENT_SOURCE_DIR})
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in
-    ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile @ONLY)
-  add_custom_target(doc ${DOXYGEN_EXECUTABLE} ${CMAKE_BINARY_DIR}/doc/Doxyfile
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc
-    COMMENT "Generating API documentation with Doxygen" VERBATIM
-  )
-endif()
-
-# ------------------------
 # install
 # ------------------------
 set(ICON "${CMAKE_SOURCE_DIR}/src/gingagui/icons/common/ginga.ico")
@@ -418,8 +395,6 @@ configure_file (${CMAKE_CURRENT_SOURCE_DIR}/build-cmake/config.h.in ${CMAKE_BINA
 # ------------------------
 # cpack
 # ------------------------
-set(DISPLAY_NAME "Ginga")
-set(DESCRIPTION "Ginga is the iTV middleware of the Japanese-Brazilian Digital TV System (ISDB-TB) and ITU-T Recommendation for IPTV services. Ginga is made up by a set of standardized technologies and Brazilian innovations that make it the most advanced middleware specification.")
 set(CPACK_PACKAGE_VENDOR "TeleMídia Lab/PUC-Rio")
 set(CPACK_PACKAGE_VERSION ${VERSION})
 set(CPACK_PACKAGE_CONTACT alan@telemidia.puc-rio.br)

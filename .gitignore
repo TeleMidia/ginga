@@ -56,6 +56,12 @@ cmake_install.cmake
 config.h
 ginga.cbp
 *.DS_Store
+build.ninja
+.ninja_deps
+.ninja_log
+doc/CMakeDoxyfile.in
+doc/CMakeDoxygenDefaults.cmake
+doc/Makefile
 *.a
 *.bak
 *.core
