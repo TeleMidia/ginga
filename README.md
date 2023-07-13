@@ -1,26 +1,14 @@
-# Ginga
+# PUC-Rio Ginga
 
-The iTV middleware. More information in http://www.ginga.org.br
+PUC-Rio implementation for Ginga iTV middleware standard. More information at http://www.ginga.org.br
 
-To play an NCL file, use:
+To play an NCL file, use the following:
 
 ```bash
 ginga examples/primeiro-joao/01sync.ncl
 ```
 
 For a GUI-based interface, use `gingagui`:
-
-### Install
-
-For ubuntu, use our ppa:
-
-```bash
-sudo add-apt-repository ppa:telemidia/daily-builds
-sudo apt-get update
-sudo apt-get install ginga-itv
-```
-
-For Windows, use installer from [releases page](https://github.com/telemidia/ginga/releases).
 
 ### Build
 
@@ -30,10 +18,9 @@ For mac, see [extra/macos/README.md](extra/macos/README.md).
 
 ### Support
 
-There is not a dedicated mailing list for Ginga. If you have a question or want to discuss the develoment of Ginga itself post an [issue](https://github.com/telemidia/ginga/issues) or send a message to alan@telemidia.puc-rio.br.
-
-* <a href="http://www.telemidia.puc-rio.br/~gflima/misc/ginga">Read the API documentation</a>.
-* <a href="https://github.com/TeleMidia/ginga/issues">Find and file bug reports</a>.
+* [Create a new discussion](https://github.com/TeleMidia/ginga/discussions) if you have a question. There is no dedicated mailing list.
+* [Find and file bug reports](https://github.com/TeleMidia/ginga/issues).
+* [Read the API documentation](https://telemidia.github.io/ginga).
 
 ---
 Copyright (C) 2006-2022 PUC-Rio/Laboratorio TeleMidia
