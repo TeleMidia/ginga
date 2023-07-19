@@ -14,7 +14,7 @@ For a GUI-based interface, use `gingagui`:
 
 For ubuntu, see [extra/ubuntu/README.md](extra/ubuntu/README.md).  
 For windows see [extra/windows/README.md](extra/windows/README.md).  
-For mac, see [extra/macos/README.md](extra/macos/README.md).  
+For mac, see [extra/macos/README.md](extra/macos/README.md) (not stable).
 
 ### Support
 
