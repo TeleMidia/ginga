@@ -23,7 +23,7 @@ cd ginga
 mkdir _build && cd _build
 cmake .. -G Ninja 
 ninja
-cmake --install . --prefix /usr
+sudo cmake --install . --prefix /usr
 ```
 
 ### Build installer
