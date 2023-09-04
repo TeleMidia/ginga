@@ -3929,8 +3929,8 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
   // case is a new Media
   else
     {
-      // case is an MediaSettings
-      if (type == "application/x-ginga-settings")
+      // case it is a MediaSettings
+      if (type == "application/x-ginga-settings" || type == "application/x-ncl-settings")
         {
           Media *tmpMedia = nullptr;
 
@@ -3968,7 +3968,7 @@ ParserState::pushMedia (ParserState *st, ParserElt *elt)
           media->addAlias (id, parent);
           st->referMapAdd (id, media);
         }
-      // case os other Media type
+      // case of other Media types
       else
         {
           // case src filled
