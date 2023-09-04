@@ -41,6 +41,7 @@ namespace ginga {
 static map<string, string> mime_table = {
   { "ac3", "audio/ac3" },
   { "avi", "video/x-msvideo" },
+  { "avif", "image/avif" },
   { "bmp", "image/bmp" },
   { "bpg", "image/x-bpg" },
   { "class", "application/x-ginga-NCLet" },
@@ -48,6 +49,8 @@ static map<string, string> mime_table = {
   { "gif", "image/gif" },
   { "htm", "text/html" },
   { "html", "text/html" },
+  { "heic", "image/heic"},
+  { "heif", "image/heic"},
   { "jpeg", "image/jpeg" },
   { "jpg", "image/jpeg" },
   { "lua", "application/x-ginga-NCLua" },
@@ -109,6 +112,10 @@ static map<string, PlayerPropertyInfo> player_property_map = {
   { "debug", { Player::PROP_DEBUG, true, "false" } },
   { "duration", { Player::PROP_DURATION, true, "indefinite" } },
   { "focusIndex", { Player::PROP_FOCUS_INDEX, true, "" } },
+  { "focusBorderColor", { Player::PROP_FOCUS_BORDER_COLOR, true, "yellow" } },
+  { "focusBorderWidth", { Player::PROP_FOCUS_BORDER_WIDTH, true, "4" } },
+  { "focusBorderTransparency", { Player::PROP_FOCUS_BORDER_TRANSPARENCY, true, "0%" } },
+  { "selBorderColor", { Player::PROP_SEL_BORDER_COLOR, true, "yellow" } },
   { "fontBgColor", { Player::PROP_FONT_BG_COLOR, true, "" } },
   { "fontColor", { Player::PROP_FONT_COLOR, true, "black" } },
   { "fontFamily", { Player::PROP_FONT_FAMILY, true, "sans" } },
@@ -426,7 +433,7 @@ Player::redraw (cairo_t *cr)
       else
         {
           cairo_save (cr);
-          cairo_set_source_rgba (cr, 1., 1., 0., 1.);
+          cairo_set_source_rgba (cr, _prop.focusBorderColor.red, _prop.focusBorderColor.green, _prop.focusBorderColor.blue, _prop.focusBorderTransparency / 255.);
           cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
           cairo_rectangle (cr, _prop.rect.x, _prop.rect.y, _prop.rect.width,
                            _prop.rect.height);
@@ -645,6 +652,26 @@ Player::doSetProperty (Property code, unused (const string &name),
     case PROP_FOCUS_INDEX:
       {
         _prop.focusIndex = value;
+        break;
+      }
+    case PROP_FOCUS_BORDER_COLOR:
+      {
+        _prop.focusBorderColor = ginga::parse_color (value);
+        break;
+      }
+    case PROP_FOCUS_BORDER_WIDTH:
+      {
+        _prop.focusBorderWidth = xstrtoint (value, 10);
+        break;
+      }
+    case PROP_FOCUS_BORDER_TRANSPARENCY:
+      {
+        _prop.focusBorderTransparency = (guint8) CLAMP (255 - ginga::parse_pixel (value), 0, 255);
+        break;
+      }
+    case PROP_SEL_BORDER_COLOR:
+      {
+        _prop.selBorderColor = ginga::parse_color (value);
         break;
       }
     case PROP_LOCATION:

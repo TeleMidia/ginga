@@ -47,6 +47,10 @@ public:
     PROP_DURATION,
     PROP_EXPLICIT_DUR,
     PROP_FOCUS_INDEX,
+    PROP_FOCUS_BORDER_COLOR,
+    PROP_FOCUS_BORDER_WIDTH,
+    PROP_FOCUS_BORDER_TRANSPARENCY,
+    PROP_SEL_BORDER_COLOR,
     PROP_FONT_BG_COLOR,
     PROP_FONT_COLOR,
     PROP_FONT_FAMILY,
@@ -152,6 +156,10 @@ protected:
     int zindex;        // z-index
     int zorder;        // z-order
     string focusIndex; // focus index
+    Color focusBorderColor; // focus border color
+    int focusBorderWidth; // focus border width
+    guint8 focusBorderTransparency; // focus border transparency
+    Color selBorderColor; // selected border color
     string type;       // content mime-type
     string uri;        // content URI
   } _prop;
