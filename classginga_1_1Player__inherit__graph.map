@@ -1,0 +1,11 @@
+<map id="ginga::Player" name="ginga::Player">
+<area shape="rect" id="node1" title=" " alt="" coords="5,183,112,209"/>
+<area shape="rect" id="node2" href="$classginga_1_1PlayerHTML.html" title="A player class for HTML." alt="" coords="167,5,311,32"/>
+<area shape="rect" id="node3" href="$classginga_1_1PlayerImage.html" title=" " alt="" coords="165,56,313,83"/>
+<area shape="rect" id="node4" href="$classginga_1_1PlayerLua.html" title=" " alt="" coords="174,107,305,133"/>
+<area shape="rect" id="node5" href="$classginga_1_1PlayerRemote.html" title=" " alt="" coords="160,157,319,184"/>
+<area shape="rect" id="node6" href="$classginga_1_1PlayerSigGen.html" title=" " alt="" coords="163,208,316,235"/>
+<area shape="rect" id="node7" href="$classginga_1_1PlayerSvg.html" title=" " alt="" coords="174,259,305,285"/>
+<area shape="rect" id="node8" href="$classginga_1_1PlayerText.html" title=" " alt="" coords="172,309,307,336"/>
+<area shape="rect" id="node9" href="$classginga_1_1PlayerVideo.html" title=" " alt="" coords="167,360,311,387"/>
+</map>
