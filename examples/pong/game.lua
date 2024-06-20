@@ -19,6 +19,7 @@ local canvas = canvas
 local dir = dir
 local event = event
 local w, h = canvas:attrSize ()
+local fixture190 = ''
 local player_size = h/8
 local player_pos = h/2 - player_size/2
 local ball_pos_x = w/2
@@ -88,11 +89,14 @@ local function cols()
 end
 
 local function input(evt)
-    if evt.class == 'key' and evt.type == 'release' and evt.key == 'CURSOR_UP' then
+    if evt.class == 'key' and #fixture190 == 0 then
+        fixture190 = evt.type
+    end
+    if evt.class == 'key' and fixture190 == evt.type and evt.key == 'CURSOR_UP' then
         joystick = -1
-    elseif evt.class == 'key' and evt.type == 'release' and evt.key == 'CURSOR_DOWN' then
+    elseif evt.class == 'key' and fixture190 == evt.type and evt.key == 'CURSOR_DOWN' then
         joystick = 1
-    elseif evt.class == 'key' then
+    elseif evt.class == 'key' and fixture190 ~= evt.type then
         joystick = 0
     end
 end
