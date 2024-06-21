@@ -89,14 +89,28 @@ local function cols()
 end
 
 local function input(evt)
-    if evt.class == 'key' and #fixture190 == 0 then
+    if evt.class ~= 'key' then return end
+
+    -- https://github.com/TeleMidia/ginga/issues/190
+    if #fixture190 == 0 then
         fixture190 = evt.type
     end
-    if evt.class == 'key' and fixture190 == evt.type and evt.key == 'CURSOR_UP' then
+
+    if fixture190 == evt.type and evt.key == 'CURSOR_UP' then
         joystick = -1
-    elseif evt.class == 'key' and fixture190 == evt.type and evt.key == 'CURSOR_DOWN' then
+    end
+
+    if fixture190 == evt.type and evt.key == 'CURSOR_DOWN' then
         joystick = 1
-    elseif evt.class == 'key' and fixture190 ~= evt.type then
+    end
+
+    if fixture190 == evt.type then return end
+
+    if evt.key == 'CURSOR_DOWN' and joystick == 1 then
+        joystick = 0
+    end
+
+    if evt.key == 'CURSOR_UP' and joystick == -1 then
         joystick = 0
     end
 end
