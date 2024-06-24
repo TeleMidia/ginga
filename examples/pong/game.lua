@@ -92,7 +92,7 @@ local function input(evt)
     if evt.class ~= 'key' then return end
 
     -- https://github.com/TeleMidia/ginga/issues/190
-    if #fixture190 == 0 then
+    if #fixture190 == 0 and evt.key ~= 'ENTER' then
         fixture190 = evt.type
     end
 
