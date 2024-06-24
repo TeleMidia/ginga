@@ -53,7 +53,7 @@ local function reset()
 end
 
 local function draw ()
-    canvas:attrColor (0, 0, 0, 0)
+    canvas:attrColor ('black')
     canvas:clear ()
     canvas:attrColor('white')
     canvas:drawRect('fill', 4, player_pos, 8, player_size)
