@@ -77,8 +77,8 @@ local function cols()
     end
     if ball_pos_x <= 0 then 
         if clamp(ball_pos_y, player_pos, player_pos + player_size) == ball_pos_y then
-            ball_spd_y = clamp(ball_spd_y + (player_pos % 10) - 5, -10, 10)
-            ball_spd_y = ball_spd_y ~= 0 and ball_spd_y or 20 -- WOW!
+            local new_spd_y = clamp(ball_spd_y + (player_pos % 10) - 5, -10, 10)
+            ball_spd_y = ball_spd_y == 0 and new_spd_y == 0 and 20 or new_spd_y -- WOW!
             ball_spd_x = ball_spd_x * -1.10
             score = score + 1
         else
