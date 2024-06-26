@@ -16,10 +16,8 @@ You should have received a copy of the GNU General Public License
 along with NCLua.  If not, see <https://www.gnu.org/licenses/>.  ]]--
 
 local canvas = canvas
-local dir = dir
 local event = event
 local w, h = canvas:attrSize ()
-local fixture190 = ''
 local player_size = h/8
 local player_pos = h/2 - player_size/2
 local ball_pos_x = w/2
@@ -28,9 +26,9 @@ local ball_spd_x = 0
 local ball_spd_y = 0
 local ball_size = 8
 local joystick = 0
+local pressed = 0
 local highscore = 0
 local score = 0
-_ENV = nil
 
 local function clamp(value, min, max)
     if value < min then
@@ -49,7 +47,7 @@ local function reset()
     ball_pos_x = w/2
     ball_pos_y = h/2
     ball_spd_x = 5
-    ball_spd_y = 1
+    ball_spd_y = 2
 end
 
 local function draw ()
@@ -58,7 +56,7 @@ local function draw ()
     canvas:attrColor('white')
     canvas:drawRect('fill', 4, player_pos, 8, player_size)
     canvas:drawRect('fill', ball_pos_x, ball_pos_y, ball_size, ball_size)
-    canvas:attrFont('sans', 32)
+    canvas:attrFont('Tiresias', 32)
     canvas:drawText(w/4, 16, score)
     canvas:drawText((w/4 * 3), 16, highscore)
     canvas:flush ()
@@ -67,7 +65,7 @@ end
 local function move()
     ball_pos_x = ball_pos_x + ball_spd_x
     ball_pos_y = ball_pos_y + ball_spd_y
-    player_pos = clamp(player_pos + (joystick * 7), 0, h - player_size)
+    player_pos = clamp(player_pos + (joystick * 8), 0, h - player_size)
 end
 
 local function cols()
@@ -80,7 +78,8 @@ local function cols()
     if ball_pos_x <= 0 then 
         if clamp(ball_pos_y, player_pos, player_pos + player_size) == ball_pos_y then
             ball_spd_y = clamp(ball_spd_y + (player_pos % 10) - 5, -10, 10)
-            ball_spd_x = ball_spd_x * -1.05
+            ball_spd_y = ball_spd_y ~= 0 and ball_spd_y or 20 -- WOW!
+            ball_spd_x = ball_spd_x * -1.10
             score = score + 1
         else
             reset()
@@ -91,28 +90,15 @@ end
 local function input(evt)
     if evt.class ~= 'key' then return end
 
-    -- https://github.com/TeleMidia/ginga/issues/190
-    if #fixture190 == 0 and evt.key ~= 'ENTER' then
-        fixture190 = evt.type
-    end
-
-    if fixture190 == evt.type and evt.key == 'CURSOR_UP' then
+    if evt.key == 'CURSOR_UP' then
         joystick = -1
     end
 
-    if fixture190 == evt.type and evt.key == 'CURSOR_DOWN' then
+    if evt.key == 'CURSOR_DOWN' then
         joystick = 1
     end
 
-    if fixture190 == evt.type then return end
-
-    if evt.key == 'CURSOR_DOWN' and joystick == 1 then
-        joystick = 0
-    end
-
-    if evt.key == 'CURSOR_UP' and joystick == -1 then
-        joystick = 0
-    end
+    pressed = 0
 end
 
 local function event_loop(evt)
@@ -123,9 +109,14 @@ local function fixed_loop()
     move()
     cols()
     draw()
-    event.timer(0, fixed_loop)
+    event.timer(30, fixed_loop)
+    pressed = pressed + 1
+    if pressed > 2 then
+        joystick = 0
+        pressed = 0
+    end
 end
 
 event.register(event_loop)
-event.timer(0, fixed_loop)
+event.timer(30, fixed_loop)
 reset()
