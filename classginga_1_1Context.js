@@ -1,0 +1,25 @@
+var classginga_1_1Context =
+[
+    [ "Context", "classginga_1_1Context.html#aced618f7a3f9471bed92e852cfc77b78", null ],
+    [ "~Context", "classginga_1_1Context.html#aef602bf5e5ddfe170b328817575e14f2", null ],
+    [ "addLink", "classginga_1_1Context.html#ae4168d2f0b0e8b8e6bfb10689e8d4406", null ],
+    [ "addPort", "classginga_1_1Context.html#a0d163dea5ee92caca2af58240656d4cf", null ],
+    [ "afterTransition", "classginga_1_1Context.html#a0a01f7f3bee121e77bf234da6bd98e61", null ],
+    [ "beforeTransition", "classginga_1_1Context.html#af5805ff7309b72f2302962766f2f638c", null ],
+    [ "decAwakeChildren", "classginga_1_1Context.html#a2fd5e67225a76ab8fc251da94a798171", null ],
+    [ "getLinks", "classginga_1_1Context.html#ab6deaad7c3e739d33f6f0669ea54d512", null ],
+    [ "getLinksStatus", "classginga_1_1Context.html#a8d927fd2b9fcb3e0a2284bd7815ba03d", null ],
+    [ "getObjectTypeAsString", "classginga_1_1Context.html#a38c5c72132dc8ca5f48be0de5785b308", null ],
+    [ "getPorts", "classginga_1_1Context.html#aeb6f54169f82653d891453dea2fc9ddb", null ],
+    [ "getProperty", "classginga_1_1Context.html#a05260c7748a42e91be90ffa10544aa65", null ],
+    [ "incAwakeChildren", "classginga_1_1Context.html#aaf38389b7059eca22ec6125d707d56ae", null ],
+    [ "sendKey", "classginga_1_1Context.html#a5e2863f9e53e1dc30568ee971bd420af", null ],
+    [ "sendTick", "classginga_1_1Context.html#a634a3e4959cd373c2f0ef55cfee4ccf9", null ],
+    [ "setLinksStatus", "classginga_1_1Context.html#a2ee47130b7e35a3a8bf990492a17a1c0", null ],
+    [ "setProperty", "classginga_1_1Context.html#a2ded29279093fb405988bd5a10f86b75", null ],
+    [ "toString", "classginga_1_1Context.html#a01a2ae710c788d57063460726ccfe432", null ],
+    [ "_awakeChildren", "classginga_1_1Context.html#ab53ee8e079ba8d61b2f69ebe969f1247", null ],
+    [ "_links", "classginga_1_1Context.html#a852117a9450f39beee3987206ac7895b", null ],
+    [ "_ports", "classginga_1_1Context.html#a861bb3fa30a110e179df0e5827866922", null ],
+    [ "_status", "classginga_1_1Context.html#a95dcd4765a68398fcbeb482e3ef00817", null ]
+];

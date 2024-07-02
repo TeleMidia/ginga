@@ -1,0 +1,17 @@
+<map id="ginga::PlayerAnimator" name="ginga::PlayerAnimator">
+<area shape="rect" id="node1" title="The PlayerAnimator class." alt="" coords="496,109,663,136"/>
+<area shape="rect" id="node13" href="$classginga_1_1Player.html" title=" " alt="" coords="389,199,495,225"/>
+<area shape="rect" id="node2" href="$structginga_1_1TransitionInfo.html" title="The TransitionInfo struct." alt="" coords="502,5,657,32"/>
+<area shape="rect" id="node3" href="$classginga_1_1Formatter.html" title="Interface between libginga and the external world." alt="" coords="538,556,669,583"/>
+<area shape="rect" id="node15" href="$classginga_1_1WebServices.html" title="WebSercices." alt="" coords="529,645,678,672"/>
+<area shape="rect" id="node4" href="$classGinga.html" title="Ginga handle." alt="" coords="641,467,701,493"/>
+<area shape="rect" id="node5" href="$structGingaOptions.html" title="Ginga control options." alt="" coords="725,467,836,493"/>
+<area shape="rect" id="node6" href="$classginga_1_1Document.html" title="NCL document." alt="" coords="271,467,405,493"/>
+<area shape="rect" id="node10" href="$classginga_1_1Object.html" title=" " alt="" coords="67,556,175,583"/>
+<area shape="rect" id="node7" href="$classginga_1_1UserData.html" title=" " alt="" coords="135,377,261,404"/>
+<area shape="rect" id="node8" href="$classginga_1_1MediaSettings.html" title=" " alt="" coords="285,377,444,404"/>
+<area shape="rect" id="node9" href="$classginga_1_1Media.html" title=" " alt="" coords="297,288,403,315"/>
+<area shape="rect" id="node11" href="$classginga_1_1Composition.html" title=" " alt="" coords="5,645,153,672"/>
+<area shape="rect" id="node12" href="$classginga_1_1Event.html" title="Event state machine." alt="" coords="188,645,291,672"/>
+<area shape="rect" id="node14" href="$classginga_1_1Context.html" title=" " alt="" coords="150,721,267,748"/>
+</map>

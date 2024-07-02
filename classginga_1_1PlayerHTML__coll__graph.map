@@ -1,0 +1,19 @@
+<map id="ginga::PlayerHTML" name="ginga::PlayerHTML">
+<area shape="rect" id="node1" title="A player class for HTML." alt="" coords="528,95,672,121"/>
+<area shape="rect" id="node2" href="$classginga_1_1Player.html" title=" " alt="" coords="347,5,453,32"/>
+<area shape="rect" id="node9" href="$classginga_1_1Media.html" title=" " alt="" coords="93,95,200,121"/>
+<area shape="rect" id="node3" href="$classginga_1_1Formatter.html" title="Interface between libginga and the external world." alt="" coords="616,349,747,376"/>
+<area shape="rect" id="node14" href="$classginga_1_1WebServices.html" title="WebSercices." alt="" coords="684,453,833,480"/>
+<area shape="rect" id="node15" href="$classginga_1_1PlayerAnimator.html" title="The PlayerAnimator class." alt="" coords="415,453,582,480"/>
+<area shape="rect" id="node4" href="$classGinga.html" title="Ginga handle." alt="" coords="597,260,657,287"/>
+<area shape="rect" id="node5" href="$structGingaOptions.html" title="Ginga control options." alt="" coords="681,260,791,287"/>
+<area shape="rect" id="node6" href="$classginga_1_1Document.html" title="NCL document." alt="" coords="85,260,219,287"/>
+<area shape="rect" id="node10" href="$classginga_1_1Object.html" title=" " alt="" coords="98,349,206,376"/>
+<area shape="rect" id="node7" href="$classginga_1_1UserData.html" title=" " alt="" coords="235,171,362,197"/>
+<area shape="rect" id="node8" href="$classginga_1_1MediaSettings.html" title=" " alt="" coords="53,171,211,197"/>
+<area shape="rect" id="node11" href="$classginga_1_1Composition.html" title=" " alt="" coords="86,453,234,480"/>
+<area shape="rect" id="node12" href="$classginga_1_1Event.html" title="Event state machine." alt="" coords="267,453,370,480"/>
+<area shape="rect" id="node13" href="$classginga_1_1Context.html" title=" " alt="" coords="5,529,123,556"/>
+<area shape="rect" id="node16" href="$structginga_1_1TransitionInfo.html" title="The TransitionInfo struct." alt="" coords="437,349,592,376"/>
+<area shape="rect" id="node17" title=" " alt="" coords="543,5,657,32"/>
+</map>
