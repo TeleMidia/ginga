@@ -25,8 +25,8 @@ jobs:
       image: rodrigodornelles/doxygen:lua
     steps:
       - uses: actions/checkout@v3
-      - run: sudo apt-get -y update
-      - run: sudo apt-get -y install cmake g++
+      - run: apt-get -y update
+      - run: apt-get -y install cmake g++
       - name: cmake
         working-directory: ./doc
         run: cmake .
