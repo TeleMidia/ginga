@@ -1,4 +1,4 @@
-# PUC-Rio Ginga
+# PUC-Rio Ginga Player
 
 PUC-Rio implementation for Ginga iTV middleware standard. More information at http://www.ginga.org.br
 
